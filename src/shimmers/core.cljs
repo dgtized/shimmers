@@ -2,31 +2,24 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]))
 
-(defn xpos [[x y]]
-  x)
+(defn line-intersect
+  "Return intersection point between two point segment pairs.
 
-(defn ypos [[x y]]
-  y)
-
-(defn dist-x [[x0 _] [x1 _]]
-  (- x1 x0))
-
-(defn dist-y [[_ y0] [_ y1]]
-  (- y1 y0))
-
-(defn line-intersect [a b c d]
-  (let [a1 (dist-y a b)
-        b1 (dist-x b a)
-        c1 (+ (* a1 (xpos a)) (* b1 (ypos a)))
-
-        a2 (dist-y c d)
-        b2 (dist-x d c)
-        c2 (+ (* a2 (xpos c)) (* b2 (ypos c)))
-
-        determinant (- (* a1 b2) (* a2 b1))]
-    (when (>= (q/abs determinant) 0.000000000001)
-      [(/ (- (* b2 c1) (* b1 c2)) determinant)
-       (/ (- (* a1 c2) (* a2 c1)) determinant)])))
+  Equations from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line."
+  [[x1 y1] [x2 y2] [x3 y3] [x4 y4]]
+  (let [epsilon 0.000000001
+        denominator (- (* (- x1 x2) (- y3 y4))
+                       (* (- y1 y2) (- x3 x4)))]
+    (when (>= (q/abs denominator) epsilon)
+      (let [t (/ (- (* (- x1 x3) (- y3 y4))
+                    (* (- y1 y3) (- x3 x4)))
+                 denominator)
+            u (- (/ (- (* (- x1 x2) (- y1 y3))
+                       (* (- y1 y2) (- x1 x3)))
+                    denominator))]
+        (when (and (> t 0.0) (< t 1.0) (> u 0.0))
+          [(+ x1 (* t (- x2 x1)))
+           (+ y1 (* t (- y2 y1)))])))))
 
 (defn setup []
   (q/frame-rate 30)
@@ -77,9 +70,9 @@
     (q/line a d)
     (q/stroke 255)
 
-    (if-let [intersection (line-intersect a b c d)]
-      (do (println intersection )
-          (q/line a intersection)))
+    ;; FIXME: why does order matter?
+    (if-let [intersection (line-intersect c d a b)]
+      (q/line a intersection))
     (doseq [shape shapes]
       (draw-shape shape))))
 
