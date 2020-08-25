@@ -64,11 +64,6 @@
                              25 50)]
         ray [[0.0 0.0] [(q/width) (q/height)]]
         segment (take 2 (first shapes))]
-    ;; show segment boundary
-    (q/stroke 255 0 0)
-    (q/line (first ray) (first segment))
-    (q/line (first ray) (second segment))
-    (q/stroke 255)
 
     ;; FIXME: why does order matter?
     (if-let [intersection (line-intersect segment ray)]
