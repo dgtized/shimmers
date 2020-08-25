@@ -8,7 +8,7 @@
 (defn update-state [state]
   state)
 
-(defn draw-state [{:keys [dt]}]
+(defn draw-state []
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
@@ -18,7 +18,7 @@
     (loop [angle 0.0]
       (if (<= angle (* 2 Math/PI))
         (do
-          (let [dt (/ (q/frame-count) 100)
+          (let [dt (/ (q/frame-count) 50)
                 xoff (+ (q/cos angle) 1)
                 yoff (+ (q/sin angle) 1)
                 r (q/map-range (q/noise xoff yoff dt) 0 1 100 200)
