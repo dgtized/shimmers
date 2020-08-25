@@ -65,10 +65,12 @@
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
-  (draw-shape (circle-blob (polar-coord theta 50 100 100)
-                           25 50))
-  (draw-shape (circle-blob (polar-coord (+ theta 2) 25 400 400)
-                           25 50)))
+  (let [shapes [(circle-blob (polar-coord theta 50 100 100)
+                             25 50)
+                (circle-blob (polar-coord (+ theta 2) 25 400 400)
+                             25 50)]]
+    (doseq [shape shapes]
+      (draw-shape shape))))
 
 ;; this function is called in index.html
 (defn ^:export run-sketch []
