@@ -62,12 +62,15 @@
                              25 50)
                 (circle-blob (polar-coord (+ theta 2) 25 400 400)
                              25 50)]
-        ray [[0.0 0.0] [(q/width) (q/height)]]
         segment (take 2 (first shapes))]
 
     ;; FIXME: why does order matter?
-    (if-let [intersection (line-intersect segment ray)]
-      (q/line (first ray) intersection))
+    (doseq [angle (angles 1000)]
+      (let [x (* (q/width) (q/noise theta))
+            y (* (q/height) (q/noise theta))
+            ray [[x y] [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
+        (if-let [intersection (line-intersect segment ray)]
+          (q/line (first ray) intersection))))
     (doseq [shape shapes]
       (draw-shape shape))))
 
