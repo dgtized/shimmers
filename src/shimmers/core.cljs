@@ -6,7 +6,7 @@
   "Return intersection point between two point segment pairs.
 
   Equations from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line."
-  [[x1 y1] [x2 y2] [x3 y3] [x4 y4]]
+  [[[x1 y1] [x2 y2]] [[x3 y3] [x4 y4]]]
   (let [epsilon 0.000000001
         denominator (- (* (- x1 x2) (- y3 y4))
                        (* (- y1 y2) (- x3 x4)))]
@@ -62,17 +62,17 @@
                              25 50)
                 (circle-blob (polar-coord (+ theta 2) 25 400 400)
                              25 50)]
-        [a b] [[0.0 0.0] [(q/width) (q/height)]]
-        [c d] (take 2 (first shapes))]
+        ray [[0.0 0.0] [(q/width) (q/height)]]
+        segment (take 2 (first shapes))]
     ;; show segment boundary
     (q/stroke 255 0 0)
-    (q/line a c)
-    (q/line a d)
+    (q/line (first ray) (first segment))
+    (q/line (first ray) (second segment))
     (q/stroke 255)
 
     ;; FIXME: why does order matter?
-    (if-let [intersection (line-intersect c d a b)]
-      (q/line a intersection))
+    (if-let [intersection (line-intersect segment ray)]
+      (q/line (first ray) intersection))
     (doseq [shape shapes]
       (draw-shape shape))))
 
