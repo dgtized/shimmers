@@ -2,6 +2,32 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]))
 
+(defn xpos [[x y]]
+  x)
+
+(defn ypos [[x y]]
+  y)
+
+(defn dist-x [[x0 _] [x1 _]]
+  (- x1 x0))
+
+(defn dist-y [[_ y0] [_ y1]]
+  (- y1 y0))
+
+(defn line-intersect [a b c d]
+  (let [a1 (dist-y a b)
+        b1 (dist-x a b)
+        c1 (+ (* a1 (xpos a)) (* b1 (ypos a)))
+
+        a2 (dist-y c d)
+        b2 (dist-x c d)
+        c2 (+ (* a2 (xpos c)) (* b2 (ypos c)))
+
+        determinant (- (* a1 b2) (* a2 b1))]
+    (when (>= (q/abs determinant) 0.0001)
+      [(/ (- (* b2 c1) (* b1 c2)) determinant)
+       (/ (- (* a1 c2) (* a2 c1)) determinant)])))
+
 (defn setup []
   (q/frame-rate 30)
   {:theta 0.0})
