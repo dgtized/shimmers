@@ -16,15 +16,15 @@
 
 (defn line-intersect [a b c d]
   (let [a1 (dist-y a b)
-        b1 (dist-x a b)
+        b1 (dist-x b a)
         c1 (+ (* a1 (xpos a)) (* b1 (ypos a)))
 
         a2 (dist-y c d)
-        b2 (dist-x c d)
+        b2 (dist-x d c)
         c2 (+ (* a2 (xpos c)) (* b2 (ypos c)))
 
         determinant (- (* a1 b2) (* a2 b1))]
-    (when (>= (q/abs determinant) 0.0001)
+    (when (>= (q/abs determinant) 0.000000000001)
       [(/ (- (* b2 c1) (* b1 c2)) determinant)
        (/ (- (* a1 c2) (* a2 c1)) determinant)])))
 
@@ -68,7 +68,18 @@
   (let [shapes [(circle-blob (polar-coord theta 50 100 100)
                              25 50)
                 (circle-blob (polar-coord (+ theta 2) 25 400 400)
-                             25 50)]]
+                             25 50)]
+        [a b] [[0.0 0.0] [(q/width) (q/height)]]
+        [c d] (take 2 (first shapes))]
+    ;; show segment boundary
+    (q/stroke 255 0 0)
+    (q/line a c)
+    (q/line a d)
+    (q/stroke 255)
+
+    (if-let [intersection (line-intersect a b c d)]
+      (do (println intersection )
+          (q/line a intersection)))
     (doseq [shape shapes]
       (draw-shape shape))))
 
