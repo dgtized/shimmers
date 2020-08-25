@@ -12,17 +12,18 @@
 (defn circle-blob [pos rmin rmax]
   (q/with-translation pos
     (q/begin-shape)
-    (loop [angle 0.0]
-      (if (<= angle (* 2 Math/PI))
-        (do
-          (let [dt (/ (q/frame-count) 50)
-                xoff (+ (q/cos angle) 1)
-                yoff (+ (q/sin angle) 1)
-                r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
-                x (* r (q/cos angle))
-                y (* r (q/sin angle))]
-            (q/vertex x y))
-          (recur (+ angle 0.05)))))
+    (let [dtheta (/ (* 2 Math/PI) 10)]
+      (loop [angle 0.0]
+        (if (<= angle (* 2 Math/PI))
+          (do
+            (let [dt (/ (q/frame-count) 50)
+                  xoff (+ (q/cos angle) 1)
+                  yoff (+ (q/sin angle) 1)
+                  r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
+                  x (* r (q/cos angle))
+                  y (* r (q/sin angle))]
+              (q/vertex x y))
+            (recur (+ angle dtheta))))))
     (q/end-shape :close)))
 
 (defn polar-coord [theta radius x y]
