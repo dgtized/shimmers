@@ -31,8 +31,6 @@
 
 (defn draw-state [{:keys [theta]}]
   (q/background 0)
-  (q/fill 255)
-  (q/text (str "theta: " theta) 10 (- (q/height) 10))
   (q/stroke 255)
   (q/no-fill)
   (circle-blob (polar-coord theta 50 100 100)
