@@ -3,17 +3,14 @@
             [quil.middleware :as m]))
 
 (defn setup []
-  (q/frame-rate 30))
+  (q/frame-rate 30)
+  {:theta 0.0})
 
 (defn update-state [state]
-  state)
+  (update state :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI)))))
 
-(defn draw-state []
-  (q/background 0)
-  (q/stroke 255)
-  (q/no-fill)
-  (q/with-translation [(/ (q/width) 2)
-                       (/ (q/height) 2)]
+(defn circle-blob [pos rmin rmax]
+  (q/with-translation pos
     (q/begin-shape)
     (loop [angle 0.0]
       (if (<= angle (* 2 Math/PI))
@@ -21,12 +18,27 @@
           (let [dt (/ (q/frame-count) 50)
                 xoff (+ (q/cos angle) 1)
                 yoff (+ (q/sin angle) 1)
-                r (q/map-range (q/noise xoff yoff dt) 0 1 100 200)
+                r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
                 x (* r (q/cos angle))
                 y (* r (q/sin angle))]
             (q/vertex x y))
           (recur (+ angle 0.05)))))
     (q/end-shape :close)))
+
+(defn polar-coord [theta radius x y]
+  [(+ x (* radius (q/cos theta)))
+   (+ y (* radius (q/sin theta)))])
+
+(defn draw-state [{:keys [theta]}]
+  (q/background 0)
+  (q/fill 255)
+  (q/text (str "theta: " theta) 10 (- (q/height) 10))
+  (q/stroke 255)
+  (q/no-fill)
+  (circle-blob (polar-coord theta 50 100 100)
+               25 50)
+  (circle-blob (polar-coord (+ theta 2) 25 400 400)
+               25 50))
 
 ;; this function is called in index.html
 (defn ^:export run-sketch []
