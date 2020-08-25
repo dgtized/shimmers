@@ -9,17 +9,21 @@
 (defn update-state [state]
   (update state :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI)))))
 
+(defn angles
+  "Return sequence of angles from 0.0 to 2Pi subdivided by n."
+  [n]
+  (take-while (fn [x] (<= x (* 2 Math/PI)))
+              (iterate (partial + (/ (* 2 Math/PI) n)) 0.0)))
+
 (defn circle-blob [[cx cy] rmin rmax]
-  (let [dtheta (/ (* 2 Math/PI) 10)]
-    (for [angle (take-while (fn [x] (<= x (* 2 Math/PI)))
-                            (iterate (partial + dtheta) 0.0))]
-      (let [dt (/ (q/frame-count) 50)
-            xoff (+ (q/cos angle) 1)
-            yoff (+ (q/sin angle) 1)
-            r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
-            x (+ cx (* r (q/cos angle)))
-            y (+ cy (* r (q/sin angle)))]
-        [x y]))))
+  (for [angle (angles 10)]
+    (let [dt (/ (q/frame-count) 50)
+          xoff (+ (q/cos angle) 1)
+          yoff (+ (q/sin angle) 1)
+          r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
+          x (+ cx (* r (q/cos angle)))
+          y (+ cy (* r (q/sin angle)))]
+      [x y])))
 
 (defn draw-shape [vertices]
   (q/begin-shape)
