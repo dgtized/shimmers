@@ -1,0 +1,7 @@
+{:deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}
+        com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+        quil {:mvn/version "3.1.0"}}
+ ;; setup some development paths
+ :paths ["src" "target" "resources"]
+ ;; setup a helpful alias to start the build
+ :aliases {:build-dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}
