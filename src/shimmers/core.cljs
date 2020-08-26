@@ -74,7 +74,6 @@
     (doseq [shape shapes]
       (draw-shape shape))))
 
-;; this function is called in index.html
 (defn ^:export run-sketch []
   (q/defsketch shimmers
     :host "shimmers"
@@ -84,5 +83,5 @@
     :draw draw-state
     :middleware [m/fun-mode]))
 
-;; uncomment this line to reset the sketch:
-;; (run-sketch)
+;; initialize sketch on first-load
+(defonce start-up (run-sketch))
