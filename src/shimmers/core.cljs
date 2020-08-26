@@ -69,6 +69,13 @@
                     (q/dist x y sx sy))))
        first))
 
+(defn center-origin []
+  [(/ (q/width) 2)
+   (/ (q/height) 2)])
+
+(defn mouse-origin []
+  [(q/mouse-x) (q/mouse-y)])
+
 (defn draw-state [{:keys [theta]}]
   (q/background 0)
   (q/stroke 255)
@@ -81,9 +88,8 @@
 
     (doseq [angle (angles 200)
             segment segments]
-      (let [x (/ (q/width) 2)
-            y (/ (q/height) 2)
-            origin [x y]
+      (let [origin (mouse-origin)
+            [x y] origin
             ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
         (if-let [intersection (closest-intersection ray segments)]
           (q/line origin intersection))))
