@@ -54,6 +54,11 @@
   [(+ x (* radius (q/cos theta)))
    (+ y (* radius (q/sin theta)))])
 
+(defn shape-segments
+  "Convert vertices into a list of paired segments connecting each vertice in a loop."
+  [vertices]
+  (conj (partition 2 1 vertices) (list (last vertices) (first vertices))))
+
 (defn draw-state [{:keys [theta]}]
   (q/background 0)
   (q/stroke 255)
@@ -62,15 +67,17 @@
                              25 50)
                 (circle-blob (polar-coord (+ theta 2) 25 400 400)
                              25 50)]
-        segment (take 2 (first shapes))]
+        segments (mapcat shape-segments shapes)]
 
-    ;; FIXME: why does order matter?
-    (doseq [angle (angles 1000)]
-      (let [x (* (q/width) (q/noise theta))
-            y (* (q/height) (q/noise theta))
-            ray [[x y] [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
+    (doseq [angle (angles 200)
+            segment segments]
+      (let [x (/ (q/width) 2)
+            y (/ (q/height) 2)
+            origin [x y]
+            ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
+        ;; FIXME: why does order matter?
         (if-let [intersection (line-intersect segment ray)]
-          (q/line (first ray) intersection))))
+          (q/line origin intersection))))
     (doseq [shape shapes]
       (draw-shape shape))))
 
