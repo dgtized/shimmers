@@ -59,6 +59,16 @@
   [vertices]
   (conj (partition 2 1 vertices) (list (last vertices) (first vertices))))
 
+(defn closest-intersection [ray segments]
+  ;; FIXME: slow, this is all pairs
+  (->> segments
+       ;; FIXME: why does line-intersect order matter?
+       (keep (fn [segment] (line-intersect segment ray)))
+       (sort-by (fn [[sx sy]]
+                  (let [[x y] (first ray)]
+                    (q/dist x y sx sy))))
+       first))
+
 (defn draw-state [{:keys [theta]}]
   (q/background 0)
   (q/stroke 255)
@@ -75,8 +85,7 @@
             y (/ (q/height) 2)
             origin [x y]
             ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
-        ;; FIXME: why does order matter?
-        (if-let [intersection (line-intersect segment ray)]
+        (if-let [intersection (closest-intersection ray segments)]
           (q/line origin intersection))))
     (doseq [shape shapes]
       (draw-shape shape))))
