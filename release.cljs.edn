@@ -1,0 +1,4 @@
+{:main shimmers.core
+ :output-to "target/public/cljs-out/dev-main.js"
+ :output-dir "target/public/cljs-out/release"
+ :optimizations :advanced}
