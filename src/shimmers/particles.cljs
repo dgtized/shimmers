@@ -19,7 +19,7 @@
      :velocity (q/random-2d)
      :acceleration [0 0]
      :mass (q/random 1 50)
-     :color [32 128]}))
+     :color [64 64]}))
 
 (defn stokes-drag [velocity]
   "Viscous resistance is a negative force proportional to velocity.
@@ -49,7 +49,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn setup []
   (q/background "white")
-  {:particles (repeatedly 250 make-particle)})
+  {:particles (repeatedly 1000 make-particle)})
 
 (defn update-state [state]
   (update-in state [:particles] (partial map update-particle)))
@@ -66,7 +66,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 (defn draw-particles [particles]
   (doseq [{:keys [position last-pos color mass]} particles]
     (apply q/stroke color)
-    (q/stroke-weight (/ mass 100.0))
+    (q/stroke-weight (/ mass 300.0))
     (let [[lx ly] last-pos
           [x y] position]
       (q/line lx ly x y))))
