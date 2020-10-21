@@ -16,13 +16,17 @@
   [(wrap-value x 0 (q/width))
    (wrap-value y 0 (q/height))])
 
+(defn constrain2d [[x y] lower upper]
+  [(q/constrain x lower upper)
+   (q/constrain y lower upper)])
+
 (defn update-particle
   [{:keys [position velocity acceleration]} particle]
   (let [[px py] position
         [vx vy] velocity
         [dx dy] acceleration]
     {:position (wrap-around [(+ px vx) (+ py vy)])
-     :velocity [(+ vx dx) (+ vy dy)]
+     :velocity (constrain2d [(+ vx dx) (+ vy dy)] -5 5)
      :acceleration (q/random-2d)}))
 
 (defn setup []
