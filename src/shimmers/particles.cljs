@@ -41,8 +41,8 @@
   (update-in state [:particles] (partial map update-particle)))
 
 (defn draw [{:keys [particles]}]
-  ;; (q/background 255 10)
-  (q/stroke 50 20)
+  ;; (q/background 256 16)
+  (q/stroke 128 32)
   (doseq [{:keys [position last-pos]} particles]
     (let [[lx ly] last-pos
           [x y] position]
