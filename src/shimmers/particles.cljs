@@ -35,17 +35,22 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
         r (* 8 Math/PI n)]
     [(q/cos r) (q/sin r)]))
 
+(defn acceleration-at-point [{:keys [position mass]}]
+  (let [force (force-at-position position)
+        brownian (v/scale (q/random-2d) 0.0001)]
+    (v/add (v/scale force (* 0.8 (/ mass 100)))
+           brownian)))
+
 (defn update-particle
   [{:keys [position velocity acceleration mass] :as particle}]
   (let [new-velocity (stokes-drag (v/add velocity acceleration))
         new-position (v/add position new-velocity)
-        wrapped-position (wrap-around new-position)
-        force (force-at-position wrapped-position)]
+        wrapped-position (wrap-around new-position)]
     (assoc particle
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
            :position wrapped-position
            :velocity new-velocity
-           :acceleration (v/scale force (* 0.3 (/ mass 100))))))
+           :acceleration (acceleration-at-point particle))))
 
 (defn setup []
   (q/background "white")
