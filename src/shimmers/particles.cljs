@@ -21,6 +21,14 @@
      :mass (q/random 1 20)
      :color [32 128]}))
 
+(defn stokes-drag [velocity]
+  "Viscous resistance is a negative force proportional to velocity.
+From https://en.wikipedia.org/wiki/Drag_(physics)
+"
+  ;; (v/add velocity (v/scale velocity -0.1))
+  (v/scale velocity 0.90)
+  )
+
 (defn force-at-position [[x y]]
   (let [n (q/noise (/ x 100) (/ y 100)
                    (/ (q/frame-count) 500))
@@ -29,7 +37,7 @@
 
 (defn update-particle
   [{:keys [position velocity acceleration mass] :as particle}]
-  (let [new-velocity (-> (v/add velocity acceleration) (v/constrain2d -1.5 1.5))
+  (let [new-velocity (stokes-drag (v/add velocity acceleration))
         new-position (v/add position new-velocity)
         wrapped-position (wrap-around new-position)
         force (force-at-position wrapped-position)]
