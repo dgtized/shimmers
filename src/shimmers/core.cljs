@@ -7,14 +7,16 @@
 ;; initialize sketch on first-load
 
 (defn ^:export run-sketch []
-  (q/defsketch particles
+  (q/defsketch points
     :host "quil-host"
     :size [500 500]
     :setup (fn [] (q/background "white"))
     :draw (fn [] (q/point (q/random (q/width))
                          (q/random (q/height))))))
 
-(defonce start-up (ray-marching/run-sketch)
-  #_(run-sketch))
+(defonce start-up
+  (run-sketch)
+  #_(ray-marching/run-sketch)
+  )
 
 
