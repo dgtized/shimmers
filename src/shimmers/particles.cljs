@@ -25,12 +25,12 @@
 
 (defn update-particle
   [{:keys [position velocity acceleration]} particle]
-  (let [new-position (v/add position velocity)
-        wrapped-position (wrap-around new-position)
-        new-velocity (v/add velocity acceleration)]
+  (let [new-velocity (-> (v/add velocity acceleration) (constrain2d -1.5 1.5))
+        new-position (v/add position new-velocity)
+        wrapped-position (wrap-around new-position)]
     {:last-pos (if (= wrapped-position new-position) position wrapped-position)
      :position wrapped-position
-     :velocity (constrain2d new-velocity -1.5 1.5)
+     :velocity new-velocity
      :acceleration (q/random-2d)}))
 
 (defn setup []
