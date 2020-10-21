@@ -3,13 +3,15 @@
             [quil.middleware :as m]))
 
 (defn make-particle []
-  {:position [(q/random (q/width)) (q/random (q/height))]
-   :velocity (q/random-2d)
-   :acceleration (q/random-2d)})
+  (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
+    {:last-pos initial-pos
+     :position initial-pos
+     :velocity (q/random-2d)
+     :acceleration (q/random-2d)}))
 
 (defn wrap-value [x lower upper]
-  (if (< x lower) (- upper 1)
-      (if (>= x upper) lower
+  (if (< x lower) upper
+      (if (> x upper) lower
           x)))
 
 (defn wrap-around [[x y]]
@@ -24,9 +26,13 @@
   [{:keys [position velocity acceleration]} particle]
   (let [[px py] position
         [vx vy] velocity
-        [dx dy] acceleration]
-    {:position (wrap-around [(+ px vx) (+ py vy)])
-     :velocity (constrain2d [(+ vx dx) (+ vy dy)] -5 5)
+        [dx dy] acceleration
+        new-position [(+ px vx) (+ py vy)]
+        wrapped-position (wrap-around new-position)
+        new-velocity [(+ vx dx) (+ vy dy)]]
+    {:last-pos (if (= wrapped-position new-position) position wrapped-position)
+     :position wrapped-position
+     :velocity (constrain2d new-velocity -1 1)
      :acceleration (q/random-2d)}))
 
 (defn setup []
@@ -37,15 +43,17 @@
   (update-in state [:particles] (partial map update-particle)))
 
 (defn draw [{:keys [particles]}]
-  (q/stroke 100 200)
-  (doseq [{:keys [position]} particles]
-    (let [[x y] position]
-      (q/point x y))))
+  ;; (q/background 255 10)
+  (q/stroke 50 20)
+  (doseq [{:keys [position last-pos]} particles]
+    (let [[lx ly] last-pos
+          [x y] position]
+      (q/line lx ly x y))))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
-    :size [500 500]
+    :size [800 600]
     :setup setup
     :update update-state
     :draw draw
