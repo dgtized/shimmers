@@ -38,7 +38,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn acceleration-at-point [{:keys [position mass]}]
   (let [force (force-at-position position)
-        brownian (v/scale (q/random-2d) 0.0001)]
+        brownian (v/scale (q/random-2d) 0.005)]
     (v/add (v/scale force (* 0.8 (/ mass 100)))
            brownian)))
 
