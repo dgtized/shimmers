@@ -32,7 +32,7 @@
         new-velocity [(+ vx dx) (+ vy dy)]]
     {:last-pos (if (= wrapped-position new-position) position wrapped-position)
      :position wrapped-position
-     :velocity (constrain2d new-velocity -1 1)
+     :velocity (constrain2d new-velocity -1.5 1.5)
      :acceleration (q/random-2d)}))
 
 (defn setup []
@@ -53,7 +53,7 @@
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
-    :size [800 600]
+    :size [400 300]
     :setup setup
     :update update-state
     :draw draw
