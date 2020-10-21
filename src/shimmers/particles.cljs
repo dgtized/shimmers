@@ -7,10 +7,11 @@
   [(v/wrap-value x 0 (q/width))
    (v/wrap-value y 0 (q/height))])
 
-(def colors [[128 32]
-             [128 0 0 32]
-             [0 0 128 32]
-             [0 128 0 32]])
+(def colors [[128 192 128 64]
+             [128 0 0 64]
+             [0 128 0 64]
+             [0 0 128 64]
+             [0 0 192 64]])
 
 (defn make-particle []
   (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
@@ -19,7 +20,7 @@
      :velocity (q/random-2d)
      :acceleration [0 0]
      :mass (q/random 1 50)
-     :color [64 64]}))
+     :color (rand-nth colors)}))
 
 (defn stokes-drag [velocity]
   "Viscous resistance is a negative force proportional to velocity.
