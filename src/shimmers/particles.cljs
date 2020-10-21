@@ -62,7 +62,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn draw-forces []
   (q/background 256 10)
-  (q/stroke-weight 0.5)
+  (q/stroke-weight 0.25)
   (q/stroke 200 50)
   (doseq [x (range 0 400 10)
           y (range 0 300 10)
