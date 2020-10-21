@@ -3,19 +3,6 @@
             [quil.middleware :as m]
             [shimmers.vector :as v]))
 
-(def colors [[128 32]
-             [128 0 0 32]
-             [0 0 128 32]
-             [0 128 0 32]])
-
-(defn make-particle []
-  (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
-    {:last-pos initial-pos
-     :position initial-pos
-     :velocity (q/random-2d)
-     :acceleration (q/random-2d)
-     :color (rand-nth colors)}))
-
 (defn wrap-value [x lower upper]
   (if (< x lower) upper
       (if (> x upper) lower
@@ -28,6 +15,19 @@
 (defn constrain2d [[x y] lower upper]
   [(q/constrain x lower upper)
    (q/constrain y lower upper)])
+
+(def colors [[128 32]
+             [128 0 0 32]
+             [0 0 128 32]
+             [0 128 0 32]])
+
+(defn make-particle []
+  (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
+    {:last-pos initial-pos
+     :position initial-pos
+     :velocity (q/random-2d)
+     :acceleration (q/random-2d)
+     :color (rand-nth colors)}))
 
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
