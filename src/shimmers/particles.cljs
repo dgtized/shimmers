@@ -31,7 +31,7 @@
     {:last-pos (if (= wrapped-position new-position) position wrapped-position)
      :position wrapped-position
      :velocity new-velocity
-     :acceleration (q/random-2d)}))
+     :acceleration (v/scale (q/random-2d) 0.5)}))
 
 (defn setup []
   (q/background "white")
