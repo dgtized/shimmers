@@ -1,6 +1,7 @@
 (ns shimmers.particles
   (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [shimmers.vector :as v]))
 
 (defn make-particle []
   (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
@@ -24,12 +25,9 @@
 
 (defn update-particle
   [{:keys [position velocity acceleration]} particle]
-  (let [[px py] position
-        [vx vy] velocity
-        [dx dy] acceleration
-        new-position [(+ px vx) (+ py vy)]
+  (let [new-position (v/add position velocity)
         wrapped-position (wrap-around new-position)
-        new-velocity [(+ vx dx) (+ vy dy)]]
+        new-velocity (v/add velocity acceleration)]
     {:last-pos (if (= wrapped-position new-position) position wrapped-position)
      :position wrapped-position
      :velocity (constrain2d new-velocity -1.5 1.5)
