@@ -3,18 +3,9 @@
             [quil.middleware :as m]
             [shimmers.vector :as v]))
 
-(defn wrap-value [x lower upper]
-  (if (< x lower) upper
-      (if (> x upper) lower
-          x)))
-
 (defn wrap-around [[x y]]
-  [(wrap-value x 0 (q/width))
-   (wrap-value y 0 (q/height))])
-
-(defn constrain2d [[x y] lower upper]
-  [(q/constrain x lower upper)
-   (q/constrain y lower upper)])
+  [(v/wrap-value x 0 (q/width))
+   (v/wrap-value y 0 (q/height))])
 
 (def colors [[128 32]
              [128 0 0 32]
@@ -31,7 +22,7 @@
 
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
-  (let [new-velocity (-> (v/add velocity acceleration) (constrain2d -1.5 1.5))
+  (let [new-velocity (-> (v/add velocity acceleration) (v/constrain2d -1.5 1.5))
         new-position (v/add position new-velocity)
         wrapped-position (wrap-around new-position)]
     (assoc particle
