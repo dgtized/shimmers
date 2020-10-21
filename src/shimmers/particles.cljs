@@ -18,7 +18,7 @@
      :position initial-pos
      :velocity (q/random-2d)
      :acceleration [0 0]
-     :mass (q/random 1 20)
+     :mass (q/random 1 50)
      :color [32 128]}))
 
 (defn stokes-drag [velocity]
