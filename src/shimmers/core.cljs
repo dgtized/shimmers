@@ -1,6 +1,7 @@
 (ns shimmers.core
   (:require [quil.core :as q :include-macros true]
-            [shimmers.ray-marching :as ray-marching]))
+            [shimmers.ray-marching :as ray-marching]
+            [shimmers.particles :as particles]))
 
 (enable-console-print!)
 
@@ -15,8 +16,8 @@
                          (q/random (q/height))))))
 
 (defonce start-up
-  (run-sketch)
+  #_(run-sketch)
   #_(ray-marching/run-sketch)
-  )
+  (particles/run-sketch))
 
 
