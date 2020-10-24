@@ -10,19 +10,22 @@
   [(v/wrap-value x 0 (q/width))
    (v/wrap-value y 0 (q/height))])
 
-(def colors [[128 192 128 64]
-             [128 0 0 64]
-             [0 128 0 64]
-             [0 0 128 64]
-             [0 0 192 64]])
+(def colors [[128 192 128 32]
+             [128 0 0 32]
+             [0 128 0 32]
+             [0 0 128 32]
+             [0 0 192 32]])
+
+;; random distribution between 1 and 20 units of mass
+(def mass-range [1.0 20.0])
 
 (defn make-particle []
   (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
     {:last-pos initial-pos
      :position initial-pos
-     :velocity (q/random-2d)
+     :velocity [0 0]
      :acceleration [0 0]
-     :mass (q/random 1 50)
+     :mass (apply q/random mass-range)
      :color (rand-nth colors)}))
 
 (defn stokes-drag [velocity]
@@ -40,10 +43,15 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     [(q/cos r) (q/sin r)]))
 
 (defn acceleration-at-point [{:keys [position mass]}]
-  (let [force (force-at-position position)
-        brownian (v/scale (q/random-2d) 0.005)]
-    (v/add (v/scale force (* 0.8 (/ mass 100)))
-           brownian)))
+  (let [;; Pretending that wind-force at a position is inversely proportional to
+        ;; mass of object ie a = F/m. It's not particularly correct as a rule of
+        ;; physics, but it looks nice if the larger objects have slower
+        ;; acceleration.
+        wind (v/scale (force-at-position position) (/ 1 mass))
+        ;; Arbitrarily making additional random hops in some small direction
+        ;; inversely proportional to mass.
+        brownian (v/scale (q/random-2d) (/ 0.1 mass))]
+    (v/add wind brownian)))
 
 (defn update-particle
   [{:keys [position velocity acceleration mass] :as particle}]
@@ -80,7 +88,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn draw-forces []
   (q/stroke-weight 0.33)
-  (q/stroke 0 5)
+  (q/stroke 0 20)
   (doseq [x (range 0 400 10)
           y (range 0 300 10)
           :let [[fx fy] (force-at-position [x y])]]
@@ -89,9 +97,10 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 (defn draw-particles [particles]
   (doseq [{:keys [position last-pos color mass]} particles]
     (apply q/stroke color)
-    (q/stroke-weight (/ mass 300.0))
     (let [[lx ly] last-pos
-          [x y] position]
+          [x y] position
+          [lightest heaviest] mass-range]
+      (q/stroke-weight (q/map-range mass lightest heaviest 0.2 0.6))
       (q/line lx ly x y))))
 
 (defn draw [{:keys [particles ui framerate]}]
