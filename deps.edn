@@ -1,4 +1,4 @@
-{:deps {org.clojure/clojurescript {:mvn/version "1.10.764"}
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.773"}
         com.bhauman/figwheel-main {:mvn/version "0.2.11"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
         ;; p5 is excluded so that the latest version can be provided through npm
