@@ -57,24 +57,28 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn make-user-interface [{:keys [ui] :as state}]
   (let [forces (-> (quil.sketch/current-applet)
-                   (.createCheckbox "Draw Forces" (:draw-forces @ui)))]
+                   (.createCheckbox "Draw Forces" (:draw-forces @ui)))
+        background-div (-> (quil.sketch/current-applet) (.createDiv "Background Opacity"))
+        background (-> (quil.sketch/current-applet)
+                       (.createSlider 0 256 (:opacity @ui) 1))]
     ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
     (.changed forces (fn [] (swap! ui assoc :draw-forces (.checked forces))))
+    (.changed background (fn [] (swap! ui assoc :opacity (.value background))))
     state))
 
 (defn setup []
   (q/background "white")
   (make-user-interface
    {:particles (repeatedly 1000 make-particle)
-    :ui (atom {:draw-forces true})}))
+    :ui (atom {:draw-forces false
+               :opacity 0})}))
 
 (defn update-state [state]
   (update-in state [:particles] (partial map update-particle)))
 
 (defn draw-forces []
-  (q/background 256 10)
-  (q/stroke-weight 0.25)
-  (q/stroke 200 50)
+  (q/stroke-weight 0.33)
+  (q/stroke 0 5)
   (doseq [x (range 0 400 10)
           y (range 0 300 10)
           :let [[fx fy] (force-at-position [x y])]]
@@ -89,6 +93,8 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
       (q/line lx ly x y))))
 
 (defn draw [{:keys [particles ui]}]
+  (let [opacity (:opacity @ui)]
+    (q/background 256 opacity))
   (when (:draw-forces @ui)
     (draw-forces))
   (draw-particles particles))
