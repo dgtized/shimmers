@@ -18,6 +18,10 @@
                 [0 0 192 32]]]
     (rand-nth colors)))
 
+(defn random-lerp-color [from to]
+  (let [color (q/lerp-color from to (rand))]
+    [(q/red color) (q/green color) (q/blue color) 32]))
+
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
 
@@ -28,7 +32,7 @@
      :velocity [0 0]
      :acceleration [0 0]
      :mass (apply q/random mass-range)
-     :color (random-color)}))
+     :color (random-lerp-color (q/color "cyan") (q/color "blue"))}))
 
 (defn stokes-drag [velocity]
   "Viscous resistance is a negative force proportional to velocity.
