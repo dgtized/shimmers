@@ -11,3 +11,4 @@ figwheel_server.log
 /.cpcache/
 node_modules/
 resources/public/js/
+resources/public/shimmers.html
