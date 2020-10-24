@@ -1,6 +1,8 @@
-{:deps {com.bhauman/figwheel-main {:mvn/version "0.2.11"}
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.764"}
+        com.bhauman/figwheel-main {:mvn/version "0.2.11"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
-        quil/quil {:mvn/version "3.1.0"}}
+        ;; p5 is excluded so that the latest version can be provided through npm
+        quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}}
  ;; setup some development paths
  :paths ["src" "target" "resources"]
  ;; setup a helpful alias to start the build
