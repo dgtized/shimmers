@@ -70,16 +70,22 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
            :velocity new-velocity
            :acceleration (acceleration-at-point particle))))
 
+(declare run-sketch)
+
 (defn make-user-interface [{:keys [ui] :as state}]
   (let [forces (-> (quil.sketch/current-applet)
                    (.createCheckbox "Draw Forces" (:draw-forces @ui)))
         background-div (-> (quil.sketch/current-applet) (.createDiv "Background Opacity"))
         background (-> (quil.sketch/current-applet)
                        (.createSlider 0 256 (:opacity @ui) 1))
+        restart-button (-> (quil.sketch/current-applet) (.createButton "Restart"))
         framerate (.createDiv (quil.sketch/current-applet) "")]
     ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
     (.changed forces (fn [] (swap! ui assoc :draw-forces (.checked forces))))
     (.changed background (fn [] (swap! ui assoc :opacity (.value background))))
+    (.mousePressed restart-button (fn [] (q/with-sketch (q/get-sketch-by-id "quil-host")
+                                          (q/exit))
+                                    (run-sketch)))
     (assoc state :framerate framerate)))
 
 (defn setup []
