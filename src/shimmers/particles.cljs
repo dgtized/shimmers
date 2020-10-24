@@ -100,7 +100,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     (let [[lx ly] last-pos
           [x y] position
           [lightest heaviest] mass-range]
-      (q/stroke-weight (q/map-range mass lightest heaviest 0.2 0.6))
+      (q/stroke-weight (q/map-range mass lightest heaviest 0.2 0.5))
       (q/line lx ly x y))))
 
 (defn draw [{:keys [particles ui framerate]}]
