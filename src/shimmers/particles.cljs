@@ -55,15 +55,18 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
            :velocity new-velocity
            :acceleration (acceleration-at-point particle))))
 
-(defn setup []
-  (q/background "white")
-  (let [ui (atom {:draw-forces true})
-        forces (-> (quil.sketch/current-applet)
+(defn make-user-interface [{:keys [ui] :as state}]
+  (let [forces (-> (quil.sketch/current-applet)
                    (.createCheckbox "Draw Forces" (:draw-forces @ui)))]
     ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
     (.changed forces (fn [] (swap! ui assoc :draw-forces (.checked forces))))
-    {:particles (repeatedly 1000 make-particle)
-     :ui ui}))
+    state))
+
+(defn setup []
+  (q/background "white")
+  (make-user-interface
+   {:particles (repeatedly 1000 make-particle)
+    :ui (atom {:draw-forces true})}))
 
 (defn update-state [state]
   (update-in state [:particles] (partial map update-particle)))
