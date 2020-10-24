@@ -7,4 +7,6 @@
                  :provides ["cljsjs.p5"]}]
 
  :clean-outputs true
- :optimizations :advanced}
+ :optimizations :advanced
+ :source-map "target/public/cljs-out/release-main.js.map"
+ }
