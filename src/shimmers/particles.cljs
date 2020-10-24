@@ -3,7 +3,8 @@
   https://www.youtube.com/watch?v=BjoM9oKOAKY"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.vector :as v]))
+            [shimmers.vector :as v]
+            [goog.string :as gs]))
 
 (defn wrap-around [[x y]]
   [(v/wrap-value x 0 (q/width))
@@ -60,11 +61,12 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
                    (.createCheckbox "Draw Forces" (:draw-forces @ui)))
         background-div (-> (quil.sketch/current-applet) (.createDiv "Background Opacity"))
         background (-> (quil.sketch/current-applet)
-                       (.createSlider 0 256 (:opacity @ui) 1))]
+                       (.createSlider 0 256 (:opacity @ui) 1))
+        framerate (.createDiv (quil.sketch/current-applet) "")]
     ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
     (.changed forces (fn [] (swap! ui assoc :draw-forces (.checked forces))))
     (.changed background (fn [] (swap! ui assoc :opacity (.value background))))
-    state))
+    (assoc state :framerate framerate)))
 
 (defn setup []
   (q/background "white")
@@ -92,12 +94,13 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
           [x y] position]
       (q/line lx ly x y))))
 
-(defn draw [{:keys [particles ui]}]
+(defn draw [{:keys [particles ui framerate]}]
   (let [opacity (:opacity @ui)]
     (q/background 256 opacity))
   (when (:draw-forces @ui)
     (draw-forces))
-  (draw-particles particles))
+  (draw-particles particles)
+  (.html framerate (gs/format "Framerate: %.1f" (q/current-frame-rate))))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
