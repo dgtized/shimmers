@@ -57,7 +57,13 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn setup []
   (q/background "white")
-  {:particles (repeatedly 1000 make-particle)})
+  (let [ui (atom {:draw-forces true})
+        forces (-> (quil.sketch/current-applet)
+                   (.createCheckbox "Draw Forces" (:draw-forces @ui)))]
+    ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
+    (.changed forces (fn [] (swap! ui assoc :draw-forces (.checked forces))))
+    {:particles (repeatedly 1000 make-particle)
+     :ui ui}))
 
 (defn update-state [state]
   (update-in state [:particles] (partial map update-particle)))
@@ -79,10 +85,10 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
           [x y] position]
       (q/line lx ly x y))))
 
-(defn draw [{:keys [particles]}]
-  #_(draw-forces)
-  (draw-particles particles)
-  )
+(defn draw [{:keys [particles ui]}]
+  (when (:draw-forces @ui)
+    (draw-forces))
+  (draw-particles particles))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
