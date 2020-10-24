@@ -38,8 +38,8 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn force-at-position [[x y]]
   (let [n (q/noise (/ x 100) (/ y 100)
-                   (/ (q/frame-count) 500))
-        r (* 8 Math/PI n)]
+                   (/ (q/frame-count) 2000))
+        r (* 4 Math/PI n)]
     [(q/cos r) (q/sin r)]))
 
 (defn acceleration-at-point [{:keys [position mass]}]
