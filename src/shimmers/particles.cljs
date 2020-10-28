@@ -22,7 +22,7 @@
      :acceleration (v/vec2 0 0)
      :mass (apply q/random mass-range)
      ;; :color (color/random)
-     :color (color/random-lerp (q/color "cyan") (q/color "blue"))}))
+     :color (color/random-gradient :green-cyan)}))
 
 (defn stokes-drag [velocity]
   "Viscous resistance is a negative force proportional to velocity.
