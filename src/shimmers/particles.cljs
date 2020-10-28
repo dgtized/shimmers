@@ -7,8 +7,8 @@
             [goog.string :as gs]))
 
 (defn wrap-around [[x y]]
-  [(v/wrap-value x 0 (q/width))
-   (v/wrap-value y 0 (q/height))])
+  (v/vec2 (v/wrap-value x 0 (q/width))
+          (v/wrap-value y 0 (q/height))))
 
 (defn random-color []
   (let [colors [[128 192 128 32]
@@ -26,11 +26,11 @@
 (def mass-range [1.0 20.0])
 
 (defn make-particle []
-  (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
+  (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
     {:last-pos initial-pos
      :position initial-pos
-     :velocity [0 0]
-     :acceleration [0 0]
+     :velocity (v/vec2 0 0)
+     :acceleration (v/vec2 0 0)
      :mass (apply q/random mass-range)
      :color (random-lerp-color (q/color "cyan") (q/color "blue"))}))
 
@@ -46,7 +46,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (let [n (q/noise (/ x 100) (/ y 100)
                    (/ (q/frame-count) 2000))
         r (* 4 Math/PI n)]
-    [(q/cos r) (q/sin r)]))
+    (v/vec2 (q/cos r) (q/sin r))))
 
 (defn acceleration-at-point [{:keys [position mass]}]
   (let [;; Pretending that wind-force at a position is inversely proportional to
@@ -56,7 +56,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
         wind (v/scale (force-at-position position) (/ 1 mass))
         ;; Arbitrarily making additional random hops in some small direction
         ;; inversely proportional to mass.
-        brownian (v/scale (q/random-2d) (/ 0.1 mass))]
+        brownian (v/scale (v/vec2 (q/random-2d)) (/ 0.1 mass))]
     (v/add wind brownian)))
 
 (defn update-particle
@@ -107,7 +107,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     (doseq [x (range 0 (q/width) cols)
             y (range 0 (q/height) cols)
             :let [force (force-at-position [x y])
-                  from (v/add [x y] [hcols hcols])]]
+                  from (v/add (v/vec2 x y) (v/vec2 hcols hcols))]]
       (q/line from (v/add from (v/scale force len))))))
 
 (defn draw-particles [particles]

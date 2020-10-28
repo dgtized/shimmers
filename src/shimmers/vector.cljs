@@ -1,10 +1,14 @@
-(ns shimmers.vector)
+(ns shimmers.vector
+  (:require [thi.ng.geom.vector :as tv]
+            [thi.ng.math.core :as tm]))
 
-(defn add [[x1 y1] [x2 y2]]
-  [(+ x1 x2) (+ y1 y2)])
+(def vec2 tv/vec2)
 
-(defn scale [[x y] n]
-  [(* x n) (* y n)])
+(defn add [v1 v2]
+  (tm/+ v1 v2))
+
+(defn scale [v n]
+  (tm/* v n))
 
 (defn wrap-value [x lower upper]
   (cond (< x lower) upper
@@ -17,5 +21,5 @@
         :else x))
 
 (defn constrain2d [[x y] lower upper]
-  [(limit-value x lower upper)
-   (limit-value y lower upper)])
+  (vec2 (limit-value x lower upper)
+        (limit-value y lower upper)))
