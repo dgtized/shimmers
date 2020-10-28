@@ -101,10 +101,14 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 (defn draw-forces []
   (q/stroke-weight 0.33)
   (q/stroke 0 20)
-  (doseq [x (range 0 400 10)
-          y (range 0 300 10)
-          :let [[fx fy] (force-at-position [x y])]]
-    (q/line x y (+ x (* 5 fx)) (+ y (* 5 fy)))))
+  (let [cols (q/floor (/ (q/width) 20))
+        hcols (/ cols 2)
+        len (/ cols 4)]
+    (doseq [x (range 0 (q/width) cols)
+            y (range 0 (q/height) cols)
+            :let [force (force-at-position [x y])
+                  from (v/add [x y] [hcols hcols])]]
+      (q/line from (v/add from (v/scale force len))))))
 
 (defn draw-particles [particles]
   (doseq [{:keys [position last-pos color mass]} particles]
