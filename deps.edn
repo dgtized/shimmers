@@ -2,7 +2,10 @@
         com.bhauman/figwheel-main {:mvn/version "0.2.12"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
         ;; p5 is excluded so that the latest version can be provided through npm
-        quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}}
+        quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
+
+        ;; vectors math and such, kinda weird as it does much of what quil does
+        thi.ng/geom {:mvn/version "1.0.0-RC4"}}
  ;; setup some development paths
  :paths ["src" "target" "resources"]
  ;; setup a helpful alias to start the build
