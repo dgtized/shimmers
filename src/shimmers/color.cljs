@@ -19,6 +19,7 @@
   (map (fn [x] (float (* x 255)))
        [(col/red color) (col/green color) (col/blue color) (col/alpha color)]))
 
+;; FIXME: slow, can we cache the gradient instead of rebuilding for each particle?
 (defn random-gradient [scheme]
   (let [color (->> scheme
                    grad/cosine-schemes
