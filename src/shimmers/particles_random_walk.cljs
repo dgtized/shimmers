@@ -4,8 +4,8 @@
             [shimmers.vector :as v]))
 
 (defn wrap-around [[x y]]
-  [(v/wrap-value x 0 (q/width))
-   (v/wrap-value y 0 (q/height))])
+  (v/vec2 (v/wrap-value x 0 (q/width))
+          (v/wrap-value y 0 (q/height))))
 
 (def colors [[128 32]
              [128 0 0 32]
@@ -13,11 +13,11 @@
              [0 128 0 32]])
 
 (defn make-particle []
-  (let [initial-pos [(q/random (q/width)) (q/random (q/height))]]
+  (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
     {:last-pos initial-pos
      :position initial-pos
-     :velocity (q/random-2d)
-     :acceleration (q/random-2d)
+     :velocity (v/vec2 (q/random-2d))
+     :acceleration (v/vec2 (q/random-2d))
      :color (rand-nth colors)}))
 
 (defn update-particle
@@ -29,7 +29,7 @@
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
            :position wrapped-position
            :velocity new-velocity
-           :acceleration (v/scale (q/random-2d) 0.5))))
+           :acceleration (v/scale (v/vec2 (q/random-2d)) 0.5))))
 
 (defn setup []
   (q/background "white")
