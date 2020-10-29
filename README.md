@@ -2,6 +2,8 @@
 
 Shimmering quil sketches
 
+https://dgtized.github.io/shimmers
+
 ## Install
 
 $ npm install # overrides p5.js to current version over cljsjs coordinates
