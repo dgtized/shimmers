@@ -14,7 +14,7 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn ^:export run-sketch []
+(defn ^:export test-sketch []
   (q/defsketch points
     :host "quil-host"
     :size [500 500]
@@ -29,7 +29,7 @@
        (drop 1)
        first))
 
-(defonce state (atom {:sketches {;; :points run-sketch
+(defonce state (atom {:sketches {;; :test-sketch test-sketch
                                  :ray-marching ray-marching/run-sketch
                                  :random-walk particles-random-walk/run-sketch
                                  :particles particles/run-sketch}}))
