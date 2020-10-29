@@ -2,14 +2,20 @@
 <html>
   <head>
     <title>shimmers</title>
+    <link rel="stylesheet" href="css/shimmers.css" type="text/css">
   </head>
   <body>
-    <p>
-      <button id="next-sketch" type="button">Next Sketch</button>
-      <button id="restart-sketch" type="button">Restart Sketch</button>
-      <span id="framerate"></span>
-    </p>
-    <div id="quil-host"></div>
+    <section class="sketch">
+      <section class="controls">
+        <button id="next-sketch" type="button">Next Sketch</button>
+        <button id="restart-sketch" type="button">Restart Sketch</button>
+        <span id="framerate"></span>
+      </section>
+      <section class="canvas">
+        <div id="quil-host"/>
+      </section>
+    </section>
+
     <script src="cljs-out/dev-main.js"></script>
   </body>
 </html>
