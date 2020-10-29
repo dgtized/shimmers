@@ -6,15 +6,15 @@ https://dgtized.github.io/shimmers
 
 ## Install
 
-$ npm install # overrides p5.js to current version over cljsjs coordinates
+    $ npm install # overrides p5.js to current version over cljsjs coordinates
 
 ## Usage
 
-$ clojure -m figwheel.main -b dev
+    $ clojure -m figwheel.main -b dev
 
 ## Release
 
-$ clojure -m figwheel.main -b release
+    $ clojure -m figwheel.main -b release
 
 ## License
 
