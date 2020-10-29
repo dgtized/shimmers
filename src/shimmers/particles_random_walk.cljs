@@ -49,7 +49,7 @@
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
-    :size [400 300]
+    :size [600 400]
     :setup setup
     :update update-state
     :draw draw
