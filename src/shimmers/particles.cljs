@@ -126,9 +126,3 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     :draw draw
     :middleware [m/fun-mode]))
 
-(comment
-  ;; kill existing sketch
-  (q/with-sketch (q/get-sketch-by-id "quil-host")
-    (q/exit)))
-
-
