@@ -31,10 +31,10 @@
        (drop 1)
        first))
 
-(def state (atom {:sketches {:points run-sketch
-                             :ray-marching ray-marching/run-sketch
-                             :random-walk particles-random-walk/run-sketch
-                             :particles particles/run-sketch}}))
+(defonce state (atom {:sketches {:points run-sketch
+                                 :ray-marching ray-marching/run-sketch
+                                 :random-walk particles-random-walk/run-sketch
+                                 :particles particles/run-sketch}}))
 
 (defn run-current []
   (when-not (:current @state)
