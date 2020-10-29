@@ -14,8 +14,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-;; initialize sketch on first-load
-
 (defn ^:export run-sketch []
   (q/defsketch points
     :host "quil-host"
@@ -31,7 +29,7 @@
        (drop 1)
        first))
 
-(defonce state (atom {:sketches {:points run-sketch
+(defonce state (atom {:sketches {;; :points run-sketch
                                  :ray-marching ray-marching/run-sketch
                                  :random-walk particles-random-walk/run-sketch
                                  :particles particles/run-sketch}}))
@@ -63,6 +61,7 @@
                  (fn [] (restart-sketch)))
   (run-current))
 
+;; initialize sketch on first-load
 (defonce start-up (init))
 
 
