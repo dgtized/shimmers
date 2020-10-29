@@ -37,7 +37,7 @@
 
 (defn run-current []
   (when-not (:current @state)
-    (swap! state assoc :current :random-walk))
+    (swap! state assoc :current :particles))
   (let [{:keys [sketches current]} (deref state)]
     (apply (get sketches current) [])
     ))
