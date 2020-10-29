@@ -42,18 +42,23 @@
     (apply (get sketches current) [])
     ))
 
+(defn restart-sketch []
+  ;; kill existing sketch
+  (q/with-sketch (q/get-sketch-by-id "quil-host")
+    (q/exit))
+  (run-current))
+
 (defn cycle-sketch []
   (let [{:keys [sketches current]} (deref state)
         [sketch-name _] (find-next-sketch sketches current)]
     (swap! state assoc :current sketch-name)
-    ;; kill existing sketch
-    (q/with-sketch (q/get-sketch-by-id "quil-host")
-      (q/exit))
-    (run-current)))
+    (restart-sketch)))
 
 (defn init []
   (events/listen (dom/getElement "next-sketch") "click"
                  (fn [] (cycle-sketch)))
+  (events/listen (dom/getElement "restart-sketch") "click"
+                 (fn [] (restart-sketch)))
   (run-current))
 
 (defonce start-up (init))
