@@ -10,10 +10,9 @@
 (defn scale [v n]
   (tm/* v n))
 
-(defn wrap-value [x lower upper]
-  (cond (< x lower) upper
-        (> x upper) lower
-        :else x))
+(defn wrap2d [[x y] xmax ymax]
+  (vec2 (tm/wrap-range x xmax)
+        (tm/wrap-range y ymax)))
 
 (defn constrain2d [[x y] lower upper]
   (vec2 (tm/clamp x lower upper)

@@ -3,10 +3,6 @@
             [quil.middleware :as m]
             [shimmers.vector :as v]))
 
-(defn wrap-around [[x y]]
-  (v/vec2 (v/wrap-value x 0 (q/width))
-          (v/wrap-value y 0 (q/height))))
-
 (def colors [[128 32]
              [128 0 0 32]
              [0 0 128 32]
@@ -24,7 +20,7 @@
   [{:keys [position velocity acceleration] :as particle}]
   (let [new-velocity (-> (v/add velocity acceleration) (v/constrain2d -1.5 1.5))
         new-position (v/add position new-velocity)
-        wrapped-position (wrap-around new-position)]
+        wrapped-position (v/wrap2d new-position (q/width) (q/height))]
     (assoc particle
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
            :position wrapped-position

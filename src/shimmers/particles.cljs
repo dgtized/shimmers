@@ -7,10 +7,6 @@
             [shimmers.framerate :as framerate]
             [shimmers.vector :as v]))
 
-(defn wrap-around [[x y]]
-  (v/vec2 (v/wrap-value x 0 (q/width))
-          (v/wrap-value y 0 (q/height))))
-
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
 
@@ -53,7 +49,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   [{:keys [position velocity acceleration mass] :as particle}]
   (let [new-velocity (stokes-drag (v/add velocity acceleration))
         new-position (v/add position new-velocity)
-        wrapped-position (wrap-around new-position)]
+        wrapped-position (v/wrap2d new-position (q/width) (q/height))]
     (assoc particle
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
            :position wrapped-position
