@@ -6,6 +6,11 @@
 
 (enable-console-print!)
 
+;; detect window size for initial setup?
+(defn fit-window []
+  [(/ (.-innerWidth js/window) 2)
+   (/ (.-innerHeight js/window) 2)])
+
 ;; initialize sketch on first-load
 
 (defn ^:export run-sketch []
