@@ -15,11 +15,6 @@
         (> x upper) lower
         :else x))
 
-(defn limit-value [x lower upper]
-  (cond (< x lower) lower
-        (> x upper) upper
-        :else x))
-
 (defn constrain2d [[x y] lower upper]
-  (vec2 (limit-value x lower upper)
-        (limit-value y lower upper)))
+  (vec2 (tm/clamp x lower upper)
+        (tm/clamp y lower upper)))
