@@ -34,6 +34,7 @@
                                  :random-walk particles-random-walk/run-sketch
                                  :particles particles/run-sketch}}))
 
+;; TODO alternatively load from #url for direct linking?
 (defn run-current []
   (when-not (:current @state)
     (swap! state assoc :current :particles))
@@ -55,6 +56,8 @@
     (restart-sketch)))
 
 (defn init []
+  ;; TODO consider generating elements at runtime
+  ;; or change to reagent for top level function?
   (events/listen (dom/getElement "next-sketch") "click"
                  (fn [] (cycle-sketch)))
   (events/listen (dom/getElement "restart-sketch") "click"
