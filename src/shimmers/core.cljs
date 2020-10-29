@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [goog.dom :as dom]
             [goog.events :as events]
+            [shimmers.framerate :as framerate]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.particles-random-walk :as particles-random-walk]
             [shimmers.particles :as particles]))
@@ -46,6 +47,7 @@
   ;; kill existing sketch
   (q/with-sketch (q/get-sketch-by-id "quil-host")
     (q/exit))
+  (framerate/display "")
   (run-current))
 
 (defn cycle-sketch []
