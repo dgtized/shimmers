@@ -28,6 +28,11 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (v/scale velocity 0.90)
   )
 
+;; TODO: because of discontinuity when noise wraps around, there are often
+;; competing forces at the borders, it might interesting to add a normal force
+;; from each border or something to push particles away from the border.
+;; Alternatively figure out someway to make the noise map continuous at the
+;; edges?
 (defn force-at-position [[x y]]
   (let [n (q/noise (/ x 100) (/ y 100)
                    (/ (q/frame-count) 2000))
