@@ -4,7 +4,8 @@
 
 (defn noise-grid [x y]
   (let [factor 10]
-    (q/noise (/ x factor) (/ y factor))))
+    (q/noise (/ x factor) (/ y factor)
+             (/ (q/frame-count) factor))))
 
 (defn draw-square [size]
   (dotimes [y size]
