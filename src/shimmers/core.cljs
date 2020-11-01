@@ -4,6 +4,7 @@
             [goog.events :as events]
             [shimmers.framerate :as framerate]
             [shimmers.fluid :as fluid]
+            [shimmers.noise-grid :as noise-grid]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.particles-random-walk :as particles-random-walk]
             [shimmers.particles :as particles]))
@@ -32,6 +33,7 @@
 
 (defonce state (atom {:sketches {;; :test-sketch test-sketch
                                  :fluid fluid/run-sketch
+                                 :noise-grid noise-grid/run-sketch
                                  :ray-marching ray-marching/run-sketch
                                  :random-walk particles-random-walk/run-sketch
                                  :particles particles/run-sketch}}))
@@ -39,7 +41,7 @@
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
   (when-not (:current @state)
-    (swap! state assoc :current :fluid))
+    (swap! state assoc :current :noise-grid))
   (let [{:keys [sketches current]} (deref state)]
     (apply (get sketches current) [])
     ))
