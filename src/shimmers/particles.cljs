@@ -5,7 +5,8 @@
             [quil.middleware :as m]
             [shimmers.color :as color]
             [shimmers.framerate :as framerate]
-            [shimmers.vector :as v]))
+            [shimmers.vector :as v]
+            [shimmers.math.reflect :as reflect]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
@@ -28,13 +29,15 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (v/scale velocity 0.90)
   )
 
-;; TODO: because of discontinuity when noise wraps around, there are often
-;; competing forces at the borders, it might interesting to add a normal force
-;; from each border or something to push particles away from the border.
-;; Alternatively figure out someway to make the noise map continuous at the
-;; edges?
+;; Because of discontinuity when noise wraps around, there were often competing
+;; forces at the borders. We fix this by reflecting x and y coordinates around
+;; the halfway point for the purposes of calculating noise to ensure they are
+;; continuous at edges.
 (defn force-at-position [[x y]]
-  (let [n (q/noise (/ x 100) (/ y 100)
+  (let [factor 100
+        rx (reflect/reflect-into x (q/width))
+        ry (reflect/reflect-into y (q/height))
+        n (q/noise (/ rx factor) (/ ry factor)
                    (/ (q/frame-count) 2000))
         r (* 4 Math/PI n)]
     (v/vec2 (q/cos r) (q/sin r))))
