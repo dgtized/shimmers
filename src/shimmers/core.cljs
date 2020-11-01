@@ -42,7 +42,7 @@
 (defn run-current []
   (when-not (:current @state)
     (swap! state assoc :current :noise-grid))
-  (let [{:keys [sketches current]} (deref state)]
+  (let [{:keys [sketches current]} @state]
     (apply (get sketches current) [])
     ))
 
@@ -54,7 +54,7 @@
   (run-current))
 
 (defn cycle-sketch []
-  (let [{:keys [sketches current]} (deref state)
+  (let [{:keys [sketches current]} @state
         [sketch-name _] (find-next-sketch sketches current)]
     (swap! state assoc :current sketch-name)
     (restart-sketch)))
