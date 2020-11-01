@@ -3,7 +3,7 @@
   (:require [quil.core :as q :include-macros true]))
 
 (defn noise-grid [x y]
-  (let [factor 100]
+  (let [factor 10]
     (q/noise (/ x factor) (/ y factor))))
 
 (defn draw-square [size]
@@ -14,7 +14,7 @@
 
 (defn draw []
   (q/background "white")
-  (let [size 200]
+  (let [size 100]
     (dotimes [gy 3]
       (dotimes [gx 3]
         (q/with-translation [(* gx size) (* gy size)]
@@ -23,6 +23,6 @@
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
-    :size [600 600]
+    :size [300 300]
     :setup (fn [] (q/frame-rate 2))
     :draw draw))
