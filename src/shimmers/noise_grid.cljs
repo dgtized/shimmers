@@ -1,6 +1,7 @@
 (ns shimmers.noise-grid
   "Display a tiling grid of noise function to show dicontinuities."
-  (:require [quil.core :as q :include-macros true]))
+  (:require [quil.core :as q :include-macros true]
+            [shimmers.framerate :as framerate]))
 
 (defn noise-grid [x y]
   (let [factor 10]
@@ -15,15 +16,17 @@
 
 (defn draw []
   (q/background "white")
-  (let [size 100]
+  (let [size 100
+        tile (q/create-graphics size size)]
+    (q/with-graphics tile
+      (draw-square size))
     (dotimes [gy 3]
       (dotimes [gx 3]
-        (q/with-translation [(* gx size) (* gy size)]
-          (draw-square size))))))
+        (q/image tile (* gx size) (* gy size))))
+    (framerate/display (q/current-frame-rate))))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
     :size [300 300]
-    :setup (fn [] (q/frame-rate 2))
     :draw draw))
