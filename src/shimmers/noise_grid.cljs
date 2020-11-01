@@ -3,15 +3,30 @@
   (:require [quil.core :as q :include-macros true]
             [shimmers.framerate :as framerate]))
 
-(defn noise-grid [x y]
+(defn noise-grid [x y _]
   (let [factor 10]
     (q/noise (/ x factor) (/ y factor)
              (/ (q/frame-count) factor))))
 
+(defn reflect-into [v size]
+  (let [reflection (/ size 2)
+        v (mod v size)]
+    (cond (< v reflection)
+          v
+          (>= v reflection)
+          (- size v))))
+
+(defn noise-tile [x y size]
+  (let [factor 10]
+    (let [qx (reflect-into x size)
+          qy (reflect-into y size)]
+      (q/noise (/ qx factor) (/ qy factor)
+               (/ (q/frame-count) factor)))))
+
 (defn draw-square [size]
   (dotimes [y size]
     (dotimes [x size]
-      (q/stroke (* 255 (noise-grid x y)))
+      (q/stroke (* 255 (noise-tile x y size)))
       (q/point x y))))
 
 (defn setup []
