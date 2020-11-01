@@ -2,23 +2,16 @@
   "Display a tiling grid of noise function to show dicontinuities."
   (:require [quil.core :as q :include-macros true]
             [shimmers.framerate :as framerate]
+            [shimmers.math.reflect :as reflect]
             [quil.middleware :as m]))
 
 (defn noise-grid [x y _ factor]
   (q/noise (/ x factor) (/ y factor)
            (/ (q/frame-count) factor)))
 
-(defn reflect-into [v size]
-  (let [reflection (/ size 2)
-        v (mod v size)]
-    (cond (< v reflection)
-          v
-          (>= v reflection)
-          (- size v))))
-
 (defn noise-tile [x y size factor]
-  (let [qx (reflect-into x size)
-        qy (reflect-into y size)]
+  (let [qx (reflect/reflect-into x size)
+        qy (reflect/reflect-into y size)]
     (q/noise (/ qx factor) (/ qy factor)
              (/ (q/frame-count) factor))))
 
