@@ -14,6 +14,9 @@
       (q/stroke (* 255 (noise-grid x y)))
       (q/point x y))))
 
+(defn setup []
+  (q/frame-rate 10))
+
 (defn draw []
   (q/background "white")
   (let [size 100
@@ -29,4 +32,5 @@
   (q/defsketch particles
     :host "quil-host"
     :size [300 300]
+    :setup setup
     :draw draw))
