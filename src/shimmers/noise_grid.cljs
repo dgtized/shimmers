@@ -4,10 +4,9 @@
             [shimmers.framerate :as framerate]
             [quil.middleware :as m]))
 
-(defn noise-grid [x y _]
-  (let [factor 10]
-    (q/noise (/ x factor) (/ y factor)
-             (/ (q/frame-count) factor))))
+(defn noise-grid [x y _ factor]
+  (q/noise (/ x factor) (/ y factor)
+           (/ (q/frame-count) factor)))
 
 (defn reflect-into [v size]
   (let [reflection (/ size 2)
@@ -17,32 +16,40 @@
           (>= v reflection)
           (- size v))))
 
-(defn noise-tile [x y size]
-  (let [factor 10]
-    (let [qx (reflect-into x size)
-          qy (reflect-into y size)]
-      (q/noise (/ qx factor) (/ qy factor)
-               (/ (q/frame-count) factor)))))
+(defn noise-tile [x y size factor]
+  (let [qx (reflect-into x size)
+        qy (reflect-into y size)]
+    (q/noise (/ qx factor) (/ qy factor)
+             (/ (q/frame-count) factor))))
 
-(defn draw-square [size noise-fn]
+(defn draw-square [size factor noise-fn]
   (dotimes [y size]
     (dotimes [x size]
-      (q/stroke (* 255 (noise-fn x y size)))
+      (q/stroke (* 255 (noise-fn x y size factor)))
       (q/point x y))))
 
 (defn setup []
   (q/frame-rate 10)
-  (let [ui (atom {:reflect false})
-        reflect (.createCheckbox (quil.sketch/current-applet) "Reflect Tile" (:reflect @ui))]
+  (let [ui (atom {:reflect false
+                  :factor 10})
+        applet (quil.sketch/current-applet)
+        reflect (.createCheckbox applet "Reflect Tile" (:reflect @ui))
+        factor (.createSlider applet 2 64 (:factor @ui) 2)
+        _ (.createSpan applet "Factor")]
     (.changed reflect (fn [] (swap! ui assoc :reflect (.checked reflect))))
+    (.changed factor (fn [] (swap! ui assoc :factor (.value factor))))
     ui))
 
 (defn draw [ui]
   (q/background "white")
   (let [size 100
-        tile (q/create-graphics size size)]
+        tile (q/create-graphics size size)
+        {:keys [reflect factor]} @ui]
     (q/with-graphics tile
-      (draw-square size (if (:reflect @ui) noise-tile noise-grid)))
+      (draw-square
+       size
+       factor
+       (if reflect noise-tile noise-grid)))
     (dotimes [gy 3]
       (dotimes [gx 3]
         (q/image tile (* gx size) (* gy size))))
