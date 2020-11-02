@@ -32,12 +32,6 @@
        (drop 1)
        first))
 
-(defonce state (atom {:sketches {;; :test-sketch test-sketch
-                                 :fluid fluid/run-sketch
-                                 :noise-grid noise-grid/run-sketch
-                                 :ray-marching ray-marching/run-sketch
-                                 :random-walk particles-random-walk/run-sketch
-                                 :particles particles/run-sketch}}))
 (defn code-link [sketch]
   (if-let [{:keys [file line]} (meta sketch)]
     [(last (str/split file #"/"))
@@ -55,11 +49,21 @@
     (dom/setProperties link #js {"href" href})
     (dom/setTextContent link text)))
 
+(defn init-sketches [sketches default]
+  (atom {:sketches sketches
+         :current default}))
+
+(defonce state
+  (init-sketches {;; :test-sketch test-sketch
+                  :fluid fluid/run-sketch
+                  :noise-grid noise-grid/run-sketch
+                  :ray-marching ray-marching/run-sketch
+                  :random-walk particles-random-walk/run-sketch
+                  :particles particles/run-sketch}
+                 :particles))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
-  (when-not (:current @state)
-    (swap! state assoc :current :noise-grid))
   (let [{:keys [sketches current]} @state
         sketch-fn (get sketches current)]
     (set-code-link "" "")
