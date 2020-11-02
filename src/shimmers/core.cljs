@@ -7,7 +7,8 @@
             [shimmers.noise-grid :as noise-grid]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.particles-random-walk :as particles-random-walk]
-            [shimmers.particles :as particles]))
+            [shimmers.particles :as particles]
+            [clojure.string :as str]))
 
 (enable-console-print!)
 
@@ -37,6 +38,18 @@
                                  :ray-marching ray-marching/run-sketch
                                  :random-walk particles-random-walk/run-sketch
                                  :particles particles/run-sketch}}))
+(defn code-link [sketch]
+  (if-let [{:keys [file line]} (meta sketch)]
+    [(last (str/split file #"/"))
+     (str (str/replace-first file #"^.*shimmers/src"
+                             "https://github.com/dgtized/shimmers/blob/master/src")
+          "#L"
+          line)]
+    ["" ""]))
+
+(comment
+  (code-link (var particles/run-sketch)))
+
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
