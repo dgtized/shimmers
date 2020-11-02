@@ -1,12 +1,8 @@
 (ns shimmers.particles-random-walk
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.math.vector :as v]))
-
-(def colors [[128 32]
-             [128 0 0 32]
-             [0 0 128 32]
-             [0 128 0 32]])
+            [shimmers.math.vector :as v]
+            [shimmers.math.color :as color]))
 
 (defn make-particle []
   (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
@@ -14,7 +10,7 @@
      :position initial-pos
      :velocity (v/vec2 (q/random-2d))
      :acceleration (v/vec2 (q/random-2d))
-     :color (rand-nth colors)}))
+     :color (color/random)}))
 
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
