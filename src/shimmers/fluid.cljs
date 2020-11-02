@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [thi.ng.ndarray.core :as nd]))
 
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
 ;; https://www.math.nyu.edu/~billbao/report930.pdf
@@ -19,31 +20,28 @@
    ])
 
 (defn make-lattice [width height]
-  (let [directions (make-array float 9 (* width height))]
-    {:width width
-     :height height
-     :directions directions}))
+  (let [zeros (repeatedly (* width height) (fn [] (float 0)))]
+    (-> #(nd/ndarray :float32 zeros [width height])
+        (map (range 9))
+        array)))
 
 (def lattice (make-lattice 10 10))
 
 ;; denoted as c
 (def lattice-speed 0.1)
 
-(defn idx [[x y] width]
-  (+ (* y width) x))
-
 (defn get-flow-density
-  [{:keys [directions width]} position direction]
-  (aget (aget directions direction) (idx position width)))
+  [lattice [x y] direction]
+  (nd/get-at (aget lattice direction) x y))
 
 (defn set-flow-density
-  [{:keys [directions width]} position direction value]
-  (aset (aget directions direction)
-        (idx position width)
-        value))
+  [lattice [x y] direction value]
+  (nd/set-at (aget lattice direction)
+             x y
+             value))
 
 (defn flow-forces [lattice position]
-  (for [direction (range 0 9)]
+  (for [direction (range 9)]
     (get-flow-density lattice position direction)))
 
 (defn density [lattice position]
