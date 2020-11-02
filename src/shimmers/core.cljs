@@ -59,7 +59,7 @@
   (->
    (loader/sketches-with-meta
     ;; :test-sketch test-sketch
-    :fluid fluid/run-sketch
+    ;; :fluid fluid/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk particles-random-walk/run-sketch
