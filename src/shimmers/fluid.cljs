@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
-            [shimmers.vector :as v]))
+            [shimmers.math.vector :as v]))
 
 (defn setup []
   (q/background "black")

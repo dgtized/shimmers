@@ -1,4 +1,4 @@
-(ns shimmers.vector
+(ns shimmers.math.vector
   (:require [thi.ng.geom.vector :as tv]
             [thi.ng.math.core :as tm]))
 

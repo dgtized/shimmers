@@ -1,7 +1,7 @@
 (ns shimmers.particles-random-walk
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.vector :as v]))
+            [shimmers.math.vector :as v]))
 
 (def colors [[128 32]
              [128 0 0 32]
