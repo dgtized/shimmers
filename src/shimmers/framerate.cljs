@@ -10,5 +10,5 @@
 (defn display [value]
   (let [rate (if (= value "")
                ""
-               (goog.string/format "(%04.1f fps)" value))]
+               (goog.string/format "%04.1f fps" value))]
     (dom/setTextContent (dom/getElement "framerate") rate)))

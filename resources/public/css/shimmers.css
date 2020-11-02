@@ -5,9 +5,11 @@
 }
 
 .controls {
+  display: flex;
   padding: 0.3em;
   background: lightblue;
   flex-direction: row;
+  justify-content: space-between;
 }
 
 .canvas {
