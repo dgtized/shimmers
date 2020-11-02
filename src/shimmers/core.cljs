@@ -3,6 +3,7 @@
             [goog.dom :as dom]
             [goog.events :as events]
             [quil.core :as q :include-macros true]
+            [shimmers.cube :as cube]
             [shimmers.framerate :as framerate]
             [shimmers.fluid :as fluid]
             [shimmers.macros.loader :as loader :include-macros true]
@@ -59,12 +60,13 @@
   (->
    (loader/sketches-with-meta
     ;; :test-sketch test-sketch
+    :cube cube/run-sketch
     ;; :fluid fluid/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
     :particles particles/run-sketch)
-   (init-sketches :particles)))
+   (init-sketches :cube)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
