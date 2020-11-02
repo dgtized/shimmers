@@ -36,15 +36,15 @@
 (defn code-link [sketch]
   (if-let [{:keys [file line]} (:meta sketch)]
     {:filename (last (str/split file #"/"))
-     :href (str (str/replace-first file #"^.*shimmers/src"
-                                   "https://github.com/dgtized/shimmers/blob/master/src")
-                "#L"
-                line)}
+     :href
+     (-> file
+         (str/replace-first #"^.*shimmers/src"
+                            "https://github.com/dgtized/shimmers/blob/master/src")
+         (str "#L" line))}
     {:filename "" :href ""}))
 
-
 (comment
-  (code-link (loader/sketch-meta particles/run-sketch)))
+  (code-link (first (loader/sketches-with-meta :particles particles/run-sketch))))
 
 (defn set-code-link [text href]
   (let [link (dom/getElement "code-link")]
