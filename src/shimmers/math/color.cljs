@@ -1,4 +1,4 @@
-(ns shimmers.color
+(ns shimmers.math.color
   (:require [quil.core :as q :include-macros true]
             [thi.ng.color.core :as col]
             [thi.ng.color.gradients :as grad]))
