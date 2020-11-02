@@ -8,7 +8,7 @@
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.noise-grid :as noise-grid]
             [shimmers.particles :as particles]
-            [shimmers.particles-random-walk :as particles-random-walk]
+            [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]))
 
 (enable-console-print!)
@@ -62,7 +62,7 @@
     ;; :fluid fluid/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
-    :random-walk particles-random-walk/run-sketch
+    :random-walk random-walk/run-sketch
     :particles particles/run-sketch)
    (init-sketches :particles)))
 

@@ -1,4 +1,4 @@
-(ns shimmers.particles-random-walk
+(ns shimmers.random-walk
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.math.vector :as v]
