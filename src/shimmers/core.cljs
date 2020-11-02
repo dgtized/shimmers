@@ -1,15 +1,15 @@
 (ns shimmers.core
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.string :as str]
             [goog.dom :as dom]
             [goog.events :as events]
+            [quil.core :as q :include-macros true]
             [shimmers.framerate :as framerate]
             [shimmers.fluid :as fluid]
-            [shimmers.noise-grid :as noise-grid]
             [shimmers.macros.loader :as loader :include-macros true]
-            [shimmers.ray-marching :as ray-marching]
-            [shimmers.particles-random-walk :as particles-random-walk]
+            [shimmers.noise-grid :as noise-grid]
             [shimmers.particles :as particles]
-            [clojure.string :as str]))
+            [shimmers.particles-random-walk :as particles-random-walk]
+            [shimmers.ray-marching :as ray-marching]))
 
 (enable-console-print!)
 

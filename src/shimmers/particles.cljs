@@ -5,8 +5,8 @@
             [quil.middleware :as m]
             [shimmers.color :as color]
             [shimmers.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [shimmers.math.reflect :as reflect]))
+            [shimmers.math.reflect :as reflect]
+            [shimmers.math.vector :as v]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
