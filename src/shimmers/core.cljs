@@ -50,13 +50,20 @@
 (comment
   (code-link (var particles/run-sketch)))
 
+(defn set-code-link [href text]
+  (let [link (dom/getElement "code-link")]
+    (dom/setProperties link #js {"href" href})
+    (dom/setTextContent link text)))
+
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
   (when-not (:current @state)
     (swap! state assoc :current :noise-grid))
-  (let [{:keys [sketches current]} @state]
-    (apply (get sketches current) [])
+  (let [{:keys [sketches current]} @state
+        sketch-fn (get sketches current)]
+    (set-code-link "" "")
+    (apply sketch-fn [])
     ))
 
 (defn restart-sketch []
