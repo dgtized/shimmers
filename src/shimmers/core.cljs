@@ -7,6 +7,7 @@
             [shimmers.noise-grid :as noise-grid]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.particles-random-walk :as particles-random-walk]
+            [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.particles :as particles]
             [clojure.string :as str]))
 
@@ -33,7 +34,7 @@
        first))
 
 (defn code-link [sketch]
-  (if-let [{:keys [file line]} (meta sketch)]
+  (if-let [{:keys [file line]} (:meta sketch)]
     [(last (str/split file #"/"))
      (str (str/replace-first file #"^.*shimmers/src"
                              "https://github.com/dgtized/shimmers/blob/master/src")
@@ -41,10 +42,11 @@
           line)]
     ["" ""]))
 
-(comment
-  (code-link (var particles/run-sketch)))
 
-(defn set-code-link [href text]
+(comment
+  (code-link (loader/sketch-meta particles/run-sketch)))
+
+(defn set-code-link [text href]
   (let [link (dom/getElement "code-link")]
     (dom/setProperties link #js {"href" href})
     (dom/setTextContent link text)))
@@ -54,20 +56,20 @@
          :current default}))
 
 (defonce state
-  (init-sketches {;; :test-sketch test-sketch
-                  :fluid fluid/run-sketch
-                  :noise-grid noise-grid/run-sketch
-                  :ray-marching ray-marching/run-sketch
-                  :random-walk particles-random-walk/run-sketch
-                  :particles particles/run-sketch}
+  (init-sketches {;; :test-sketch (loader/sketch-meta test-sketch)
+                  :fluid (loader/sketch-meta fluid/run-sketch)
+                  :noise-grid (loader/sketch-meta noise-grid/run-sketch)
+                  :ray-marching (loader/sketch-meta ray-marching/run-sketch)
+                  :random-walk (loader/sketch-meta particles-random-walk/run-sketch)
+                  :particles (loader/sketch-meta particles/run-sketch)}
                  :particles))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
   (let [{:keys [sketches current]} @state
-        sketch-fn (get sketches current)]
-    (set-code-link "" "")
-    (apply sketch-fn [])
+        sketch (get sketches current)]
+    (apply set-code-link (code-link sketch))
+    (apply (:fn sketch) [])
     ))
 
 (defn restart-sketch []
