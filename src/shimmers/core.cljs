@@ -35,12 +35,12 @@
 
 (defn code-link [sketch]
   (if-let [{:keys [file line]} (:meta sketch)]
-    [(last (str/split file #"/"))
-     (str (str/replace-first file #"^.*shimmers/src"
-                             "https://github.com/dgtized/shimmers/blob/master/src")
-          "#L"
-          line)]
-    ["" ""]))
+    {:filename (last (str/split file #"/"))
+     :href (str (str/replace-first file #"^.*shimmers/src"
+                                   "https://github.com/dgtized/shimmers/blob/master/src")
+                "#L"
+                line)}
+    {:filename "" :href ""}))
 
 
 (comment
@@ -70,7 +70,7 @@
 (defn run-current []
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
-    (apply set-code-link (code-link sketch))
+    (set-code-link (name (:id sketch)) (:href (code-link sketch)))
     (apply (:fn sketch) [])
     ))
 
