@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.math.vector :as v]
-            [shimmers.math.color :as color]))
+            [shimmers.math.color :as color]
+            [shimmers.framerate :as framerate]))
 
 (defn make-particle []
   (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
@@ -36,7 +37,8 @@
     (apply q/stroke color)
     (let [[lx ly] last-pos
           [x y] position]
-      (q/line lx ly x y))))
+      (q/line lx ly x y)))
+  (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
