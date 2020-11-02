@@ -10,6 +10,9 @@
 (defn scale [v n]
   (tm/* v n))
 
+(defn dot [v1 v2]
+  (tm/dot v1 v2))
+
 (defn wrap2d [[x y] xmax ymax]
   (vec2 (tm/wrap-range x xmax)
         (tm/wrap-range y ymax)))
