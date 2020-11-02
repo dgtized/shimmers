@@ -5,9 +5,9 @@
             [shimmers.framerate :as framerate]
             [shimmers.fluid :as fluid]
             [shimmers.noise-grid :as noise-grid]
+            [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.particles-random-walk :as particles-random-walk]
-            [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.particles :as particles]
             [clojure.string :as str]))
 
@@ -52,17 +52,19 @@
     (dom/setTextContent link text)))
 
 (defn init-sketches [sketches default]
-  (atom {:sketches sketches
+  (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
          :current default}))
 
 (defonce state
-  (init-sketches {;; :test-sketch (loader/sketch-meta test-sketch)
-                  :fluid (loader/sketch-meta fluid/run-sketch)
-                  :noise-grid (loader/sketch-meta noise-grid/run-sketch)
-                  :ray-marching (loader/sketch-meta ray-marching/run-sketch)
-                  :random-walk (loader/sketch-meta particles-random-walk/run-sketch)
-                  :particles (loader/sketch-meta particles/run-sketch)}
-                 :particles))
+  (->
+   (loader/sketches-with-meta
+    ;; :test-sketch test-sketch
+    :fluid fluid/run-sketch
+    :noise-grid noise-grid/run-sketch
+    :ray-marching ray-marching/run-sketch
+    :random-walk particles-random-walk/run-sketch
+    :particles particles/run-sketch)
+   (init-sketches :particles)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
