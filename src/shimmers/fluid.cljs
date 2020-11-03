@@ -98,7 +98,8 @@
                          (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y)))))))
 
 (comment (loop/downto [y (dec 5) 0] (println y))
-         (loop/upto [x 0 4] (println x)))
+         (loop/upto [x 0 4] (println x))
+         (loop/c-for [x 0 (< x 4) (inc x)] (println x)))
 
 (defn setup []
   (q/background "black")

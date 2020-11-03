@@ -31,3 +31,10 @@
          (when (< ~i upper#)
            ~@body
            (recur (inc ~i)))))))
+
+(defmacro c-for
+  [[sym init check change] & body]
+  `(loop [~sym ~init]
+     (when ~check
+       ~@body
+       (recur ~change))))
