@@ -33,8 +33,20 @@
            (recur (inc ~i)))))))
 
 (defmacro c-for
-  [[sym init check change] & body]
-  `(loop [~sym ~init]
-     (when ~check
-       ~@body
-       (recur ~change))))
+  "[sym init check step ...] & body
+
+  Loops sym from initial value while check is true, and running step to update on
+  each loop, executing body for side effects. If more then one symbol, init,
+  check,step is defined, they are executed recursively, with each consecutive
+  sym operating as an inner loop."
+  [seq-exprs & body]
+  (let [group (take-last 4 seq-exprs) ;; last group first
+        next-group (drop-last 4 seq-exprs)
+        do-loop (fn [[sym init check step] body]
+                  `(loop [~sym ~init]
+                     (when ~check
+                       ~@body
+                       (recur ~step))))]
+    (if (seq next-group)
+      `(c-for ~next-group ~(do-loop group body))
+      (do-loop group body))))

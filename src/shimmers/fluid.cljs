@@ -99,7 +99,16 @@
 
 (comment (loop/downto [y (dec 5) 0] (println y))
          (loop/upto [x 0 4] (println x))
-         (loop/c-for [x 0 (< x 4) (inc x)] (println x)))
+         (loop/c-for [x 0 (< x 4) (inc x)] (println x))
+         (macroexpand-1 '(loop/c-for [x 2 (>= x 0) (dec x)] (println x)))
+         (macroexpand '(loop/c-for [x 0 (< x 3) (inc x)
+                                    y 1 (< y 3) (inc y)]
+                                   (+ x y)
+                                   (println [x y])))
+         (loop/c-for [x 0 (< x 3) (inc x)
+                      y 1 (< y 3) (inc y)]
+                     (+ x y)
+                     (println [x y])))
 
 (defn setup []
   (q/background "black")
