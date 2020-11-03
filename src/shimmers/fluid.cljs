@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
+            [shimmers.macros.loop :as loop :include-macros true]
             [thi.ng.ndarray.core :as nd]))
 
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
@@ -77,6 +78,27 @@
   [lattice position direction density velocity]
   (+ (* (weights direction) density)
      (* density (distribution velocity direction))))
+
+;; Borrowing from
+;; https://physics.weber.edu/schroeder/fluids/LatticeBoltzmannDemo.java.txt,
+;; from https://physics.weber.edu/schroeder/fluids/
+(defn stream [lattice]
+  (let [pN (aget lattice 1)
+        pE (aget lattice 2)
+        pNE (aget lattice 5)
+        pNW (aget lattice 6)
+        [xdim ydim] (nd/shape pN)]
+    (loop/upto [x 0 xdim]
+               (loop/downto [y (dec ydim) 0]
+                            (nd/set-at pN  x y (nd/get-at pN  x (dec y)))
+                            (nd/set-at pNW x y (nd/get-at pNW (inc x) (dec y)))))
+    (downto [x (dec xdim) 0]
+            (loop/downto [y (dec ydim) 0]
+                         (nd/set-at pE  x y (nd/get-at pE  (dec x) y))
+                         (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y)))))))
+
+(comment (loop/downto [y (dec 5) 0] (println y))
+         (loop/upto [x 0 4] (println x)))
 
 (defn setup []
   (q/background "black")
