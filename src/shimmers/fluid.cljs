@@ -83,19 +83,31 @@
 ;; https://physics.weber.edu/schroeder/fluids/LatticeBoltzmannDemo.java.txt,
 ;; from https://physics.weber.edu/schroeder/fluids/
 (defn stream [lattice]
-  (let [pN (aget lattice 1)
-        pE (aget lattice 2)
+  (let [pE (aget lattice 1)
+        pN (aget lattice 2)
+        pW (aget lattice 3)
+        pS (aget lattice 4)
         pNE (aget lattice 5)
         pNW (aget lattice 6)
-        [xdim ydim] (nd/shape pN)]
-    (loop/c-for [x 0 (< x xdim) (inc x)
-                 y (dec ydim) (> y 0) (dec y)]
+        pSW (aget lattice 7)
+        pSE (aget lattice 8)
+        [xdim-1 ydim-1] (map dec (nd/shape pN))]
+    (loop/c-for [x 0 (< x xdim-1) (inc x)
+                 y ydim-1 (> y 0) (dec y)]
       (nd/set-at pN  x y (nd/get-at pN  x (dec y)))
       (nd/set-at pNW x y (nd/get-at pNW (inc x) (dec y))))
-    (loop/c-for [x (dec xdim) (> x 0) (dec x)
-                 y (dec ydim) (> y 0) (dec y)]
+    (loop/c-for [x xdim-1 (> x 0) (dec x)
+                 y ydim-1 (> y 0) (dec y)]
       (nd/set-at pE  x y (nd/get-at pE  (dec x) y))
-      (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y))))))
+      (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y))))
+    (loop/c-for [x xdim-1 (> x 0) (dec x)
+                 y 0 (< y ydim-1) (inc y)]
+      (nd/set-at pS  x y (nd/get-at pS  x (inc y)))
+      (nd/set-at pSE x y (nd/get-at pSE (dec x) (inc y))))
+    (loop/c-for [x 0 (< x xdim-1) (inc x)
+                 y 0 (< y ydim-1) (inc y)]
+      (nd/set-at pW  x y (nd/get-at pW  (inc x) y))
+      (nd/set-at pSW x y (nd/get-at pSW (inc x) (inc y))))))
 
 (comment (loop/downto [y (dec 5) 0] (println y))
          (loop/upto [x 0 4] (println x))
