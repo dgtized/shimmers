@@ -88,14 +88,14 @@
         pNE (aget lattice 5)
         pNW (aget lattice 6)
         [xdim ydim] (nd/shape pN)]
-    (loop/upto [x 0 xdim]
-               (loop/downto [y (dec ydim) 0]
+    (loop/c-for [x 0 (< x xdim) (inc x)]
+                (loop/c-for [y (dec ydim) (> y 0) (dec y)]
                             (nd/set-at pN  x y (nd/get-at pN  x (dec y)))
                             (nd/set-at pNW x y (nd/get-at pNW (inc x) (dec y)))))
-    (downto [x (dec xdim) 0]
-            (loop/downto [y (dec ydim) 0]
-                         (nd/set-at pE  x y (nd/get-at pE  (dec x) y))
-                         (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y)))))))
+    (loop/c-for [x (dec xdim) (> x 0) (dec x)]
+                (loop/c-for [y (dec ydim) (> y 0) (dec y)]
+                            (nd/set-at pE  x y (nd/get-at pE  (dec x) y))
+                            (nd/set-at pNE x y (nd/get-at pNE (dec x) (dec y)))))))
 
 (comment (loop/downto [y (dec 5) 0] (println y))
          (loop/upto [x 0 4] (println x))
