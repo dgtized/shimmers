@@ -5,6 +5,7 @@
             [quil.core :as q :include-macros true]
             [shimmers.cube :as cube]
             [shimmers.framerate :as framerate]
+            [shimmers.fire :as fire]
             [shimmers.fluid :as fluid]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.noise-grid :as noise-grid]
@@ -61,12 +62,13 @@
    (loader/sketches-with-meta
     ;; :test-sketch test-sketch
     :cube cube/run-sketch
+    :fire fire/run-sketch
     ;; :fluid fluid/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
     :particles particles/run-sketch)
-   (init-sketches :cube)))
+   (init-sketches :fire)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
