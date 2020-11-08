@@ -12,6 +12,7 @@
     0.0))
 
 (defn setup []
+  (q/background "black")
   ;; (q/frame-rate 5)
   (let [size 10
         w    (/ (q/width) size)
@@ -63,9 +64,8 @@
                      (q/lerp 1 size v) (q/lerp 1 size v)))))))
 
 (defn draw [{:keys [fire fuel size]}]
-  (q/background "black")
-  (paint fuel size [0 255 0 255])
-  (paint fire size [255 0 0 255])
+  (paint fuel size [0 255 0 20])
+  (paint fire size [255 0 0 20])
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
