@@ -12,7 +12,7 @@
     0.0))
 
 (defn setup []
-  (q/background "black")
+  (q/background "white")
   ;; (q/frame-rate 5)
   (let [size 10
         w    (/ (q/width) size)
