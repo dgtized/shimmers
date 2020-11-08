@@ -51,7 +51,7 @@
   state)
 
 (defn paint [grid size color]
-  (q/ellipse-mode :corner)
+  (q/ellipse-mode :center)
   (let [[xdim ydim] (nd/shape grid)
         hsize (/ size 2)]
     (loop/c-for [x 0 (< x xdim) (inc x)
@@ -59,7 +59,8 @@
       (let [v (nd/get-at grid x y)]
         (when (> v 0.1)
           (apply q/stroke color)
-          (q/ellipse (* x size) (* y size) (q/lerp 1 size v) (q/lerp 1 size v)))))))
+          (q/ellipse (+ (* x size) hsize) (+ (* y size) hsize)
+                     (q/lerp 1 size v) (q/lerp 1 size v)))))))
 
 (defn draw [{:keys [fire fuel size]}]
   (q/background "black")
