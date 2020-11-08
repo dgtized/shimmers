@@ -42,11 +42,11 @@
                 (nd/set-at fuel x y (* wood 0.96)))
             (do (nd/set-at fire x y (min (* heat 0.75) 1))
                 (nd/set-at fuel x y (* wood 0.99))))
-          (when (and (> heat 0.6) (> (rand) 0.6))
+          (when (and (> heat 0.4) (> (rand) 0.75))
             (let [candidates (filterv (in-bounds xdim ydim) (surroundings x y))
                   [cx cy] (rand-nth candidates)
-                  cheat (nd/get-at fire cx cy)]
-              (nd/set-at fire cx cy (+ cheat 0.5)))
+                  growth (nd/get-at fire cx cy)]
+              (nd/set-at fire cx cy (min 1 (+ growth (* 0.3 heat)))))
             )))))
   state)
 
