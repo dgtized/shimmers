@@ -20,20 +20,33 @@
      :fire (nd/ndarray :float64 (repeatedly (* w h) #(fire-prob)) [w h])
      :fuel (nd/ndarray :float64 (repeatedly (* w h) #(rand)) [w h])}))
 
+(defn in-bounds [limit-x limit-y]
+  (fn [[x y]] (and (>= x 0) (< x limit-x)
+                  (>= y 0) (< y limit-y))))
+
+(defn surroundings [x y]
+  (for [dx [-1 0 1]
+        dy [-1 0 1]
+        :when (not= 0 dx dy)]
+    [(+ x dx) (+ y dy)]))
+
 (defn update-state [{:keys [fire fuel size] :as state}]
   (let [[xdim ydim] (nd/shape fire)]
     (loop/c-for [x 0 (< x xdim) (inc x)
                  y 0 (< y ydim) (inc y)]
       (let [heat (nd/get-at fire x y)
             wood (nd/get-at fuel x y)]
-        (if (> heat 0.1)
+        (when (> heat 0.1)
           (if (> wood 0.2)
             (do (nd/set-at fire x y (min (* heat 1.05) 1))
                 (nd/set-at fuel x y (* wood 0.96)))
             (do (nd/set-at fire x y (min (* heat 0.75) 1))
                 (nd/set-at fuel x y (* wood 0.99))))
           (when (and (> heat 0.6) (> (rand) 0.6))
-            ;; expand to neighbor
+            (let [candidates (filterv (in-bounds xdim ydim) (surroundings x y))
+                  [cx cy] (rand-nth candidates)
+                  cheat (nd/get-at fire cx cy)]
+              (nd/set-at fire cx cy (+ cheat 0.5)))
             )))))
   state)
 
