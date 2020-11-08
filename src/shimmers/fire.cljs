@@ -12,8 +12,8 @@
     0.0))
 
 (defn setup []
-  (q/frame-rate 5)
-  (let [size 20
+  ;; (q/frame-rate 5)
+  (let [size 10
         w    (/ (q/width) size)
         h    (/ (q/height) size)]
     {:size size
@@ -58,7 +58,7 @@
                  y 0 (< y ydim) (inc y)]
       (let [v (nd/get-at grid x y)]
         (when (> v 0.1)
-          (apply q/stroke color)
+          (apply q/fill color)
           (q/ellipse (+ (* x size) hsize) (+ (* y size) hsize)
                      (q/lerp 1 size v) (q/lerp 1 size v)))))))
 
