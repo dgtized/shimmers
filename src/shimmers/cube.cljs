@@ -5,7 +5,7 @@
             [shimmers.framerate :as framerate]))
 
 (defn project [[x y z]]
-  (let [perspective (* 400 0.8)
+  (let [perspective (* 200 0.8)
         scale (/ perspective (+ perspective z))]
     [(* scale x) (* scale y)]))
 
@@ -23,16 +23,21 @@
           (v/vec3 hw hh z)
           (v/vec3 (- hw) hh z)])))
 
-(defn setup []
-  {:vertices []})
-
-(defn update-state [state]
-  (let [theta (/ (q/frame-count) 100)]
-    {:vertices (concat (rectangle [200 200 25] [theta 0 0] [50 50])
-                       (rectangle [200 200 -25] [theta 0 0] [50 50]))
+(defn cube [[x y z] [pitch yaw roll] [width height depth]]
+  (let [hd (/ depth 2)]
+    {:vertices (concat (rectangle [x y (+ z hd)] [pitch 0 0] [width height])
+                       (rectangle [x y (- z hd)] [pitch 0 0] [width height]))
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
+
+(defn setup []
+  {:vertices []
+   :lines []})
+
+(defn update-state [state]
+  (let [theta (/ (q/frame-count) 100)]
+    (cube [200 200 0] [theta 0 0] [50 50 50])))
 
 (defn draw [{:keys [vertices lines]}]
   (q/background "white")
@@ -43,7 +48,7 @@
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
-  (q/defsketch cube
+  (q/defsketch cube-sketch
     :host "quil-host"
     :size [400 400]
     :setup setup
