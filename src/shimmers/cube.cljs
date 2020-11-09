@@ -4,26 +4,32 @@
             [shimmers.math.vector :as v]
             [shimmers.framerate :as framerate]))
 
-(defn rotation [theta [x y]]
+(defn project [[x y z]]
+  (let [perspective (* 400 0.8)
+        scale (/ perspective (+ perspective z))]
+    [(* scale x) (* scale y)]))
+
+(defn rotation [theta [x y z]]
   [(+ (* (q/cos theta) x) (* (- (q/sin theta)) y))
-   (+ (* (q/sin theta) x) (* (q/cos theta) y))])
+   (+ (* (q/sin theta) x) (* (q/cos theta) y))
+   z])
 
 (defn rectangle [[x y z] [pitch yaw roll] [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    (map (fn [p] (v/add (v/vec2 x y) (rotation pitch p)))
-         [(v/vec2 (- hw) (- hh))
-          (v/vec2 hw (- hh))
-          (v/vec2 hw hh)
-          (v/vec2 (- hw) hh)])))
+    (map (fn [p] (v/add (v/vec2 x y) (project (rotation pitch p))))
+         [(v/vec3 (- hw) (- hh) z)
+          (v/vec3 hw (- hh) z)
+          (v/vec3 hw hh z)
+          (v/vec3 (- hw) hh z)])))
 
 (defn setup []
   {:vertices []})
 
 (defn update-state [state]
   (let [theta (/ (q/frame-count) 100)]
-    {:vertices (concat (rectangle [200 200 0] [theta 0 0] [50 50])
-                       (rectangle [200 200 0] [theta 0 0] [40 40]))
+    {:vertices (concat (rectangle [200 200 25] [theta 0 0] [50 50])
+                       (rectangle [200 200 -25] [theta 0 0] [50 50]))
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))

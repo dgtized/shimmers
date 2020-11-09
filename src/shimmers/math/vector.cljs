@@ -3,6 +3,7 @@
             [thi.ng.math.core :as tm]))
 
 (def vec2 tv/vec2)
+(def vec3 tv/vec3)
 
 (defn add [v1 v2]
   (tm/+ v1 v2))
