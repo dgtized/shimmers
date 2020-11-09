@@ -4,13 +4,15 @@
             [shimmers.math.vector :as v]
             [shimmers.framerate :as framerate]))
 
-(defn rectangle [[x y z] width height]
-  [(v/vec2 x y) (v/vec2 (+ x width) y)
-   (v/vec2 (+ x width) (+ y height))
-   (v/vec2 x (+ y height))])
+(defn rectangle [[x y z] [pitch yaw roll] [width height]]
+  (let [hw (/ width 2)
+        hh (/ height 2)]
+    [(v/vec2 (- x hw) (- y hh)) (v/vec2 (+ x hw) (- y hh))
+     (v/vec2 (+ x hw) (+ y hh))
+     (v/vec2 (- x hw) (+ y hh))]))
 
 (defn setup []
-  {:vertices (rectangle [175 175 0] 50 50)})
+  {:vertices (rectangle [200 200 0] [0 0 0] [50 50])})
 
 (defn update-state [state]
   state)
