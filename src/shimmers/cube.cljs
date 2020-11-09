@@ -22,17 +22,18 @@
 
 (defn update-state [state]
   (let [theta (/ (q/frame-count) 100)]
-    {:vertices (rectangle [200 200 0] [theta 0 0] [50 50])}))
+    {:vertices (concat (rectangle [200 200 0] [theta 0 0] [50 50])
+                       (rectangle [200 200 0] [theta 0 0] [40 40]))
+     :lines [[0 1] [1 2] [2 3] [3 0]
+             [4 5] [5 6] [6 7] [7 4]
+             [0 4] [1 5] [2 6] [3 7]]}))
 
-(defn draw [{:keys [vertices]}]
+(defn draw [{:keys [vertices lines]}]
   (q/background "white")
   (q/stroke "black")
   (q/stroke-weight 1)
-  (q/begin-shape)
-  (doseq [vertex vertices]
-    (apply q/vertex vertex))
-  (apply q/vertex (first vertices))
-  (q/end-shape)
+  (doseq [[a b] lines]
+    (q/line (nth vertices a) (nth vertices b)))
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
