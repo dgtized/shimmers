@@ -4,18 +4,25 @@
             [shimmers.math.vector :as v]
             [shimmers.framerate :as framerate]))
 
+(defn rotation [theta [x y]]
+  [(+ (* (q/cos theta) x) (* (- (q/sin theta)) y))
+   (+ (* (q/sin theta) x) (* (q/cos theta) y))])
+
 (defn rectangle [[x y z] [pitch yaw roll] [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    [(v/vec2 (- x hw) (- y hh)) (v/vec2 (+ x hw) (- y hh))
-     (v/vec2 (+ x hw) (+ y hh))
-     (v/vec2 (- x hw) (+ y hh))]))
+    (map (fn [p] (v/add (v/vec2 x y) (rotation pitch p)))
+         [(v/vec2 (- hw) (- hh))
+          (v/vec2 hw (- hh))
+          (v/vec2 hw hh)
+          (v/vec2 (- hw) hh)])))
 
 (defn setup []
-  {:vertices (rectangle [200 200 0] [0 0 0] [50 50])})
+  {:vertices []})
 
 (defn update-state [state]
-  state)
+  (let [theta (/ (q/frame-count) 100)]
+    {:vertices (rectangle [200 200 0] [theta 0 0] [50 50])}))
 
 (defn draw [{:keys [vertices]}]
   (q/background "white")
