@@ -45,13 +45,16 @@
 (defn update-state [state]
   (let [fc (q/frame-count)
         theta (/ fc 100)]
-    (cube [200 200 0] [0 theta 0] [50 50 50])))
+    [(cube [100 100 0] [theta 0 0] [50 50 50])
+     (cube [200 100 0] [0 theta 0] [50 50 50])
+     (cube [100 200 0] [0 0 theta] [50 50 50])]))
 
-(defn draw [{:keys [vertices lines]}]
+(defn draw [shapes]
   (q/background "white")
   (q/stroke "black")
   (q/stroke-weight 1)
-  (doseq [[a b] lines]
+  (doseq [{:keys [lines vertices]} shapes
+          [a b] lines]
     (q/line (nth vertices a) (nth vertices b)))
   (framerate/display (q/current-frame-rate)))
 
