@@ -10,14 +10,14 @@
     [(* scale x) (* scale y)]))
 
 (defn rotation [[x y z] [pitch yaw roll]]
-  (let [cp (q/cos pitch)
-        sp (q/sin pitch)
+  (let [cx (q/cos pitch)
+        sx (q/sin pitch)
         cy (q/cos yaw)
         sy (q/sin yaw)
-        cr (q/cos roll)
-        sr (q/sin roll)]
-    [(+ (* cr x) (* (- sr) y))
-     (+ (* sr x) (* cr y))
+        cz (q/cos roll)
+        sz (q/sin roll)]
+    [(+ (* cz x) (* (- sz) y))
+     (+ (* sz x) (* cz y))
      z]))
 
 (defn rectangle [[x y z] angles [width height]]
