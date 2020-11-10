@@ -5,7 +5,7 @@
             [shimmers.framerate :as framerate]))
 
 (defn project [[x y z]]
-  (let [perspective (* 200 0.8)
+  (let [perspective (* 300 0.8)
         scale (/ perspective (+ perspective z))]
     [(* scale x) (* scale y)]))
 
@@ -47,7 +47,13 @@
         theta (/ fc 100)]
     [(cube [100 100 0] [theta 0 0] [50 50 50])
      (cube [200 100 0] [0 theta 0] [50 50 50])
-     (cube [100 200 0] [0 0 theta] [50 50 50])]))
+     (cube [300 100 0] [0 0 theta] [50 50 50])
+     (cube [100 200 0] [theta theta 0] [50 50 50])
+     (cube [200 200 0] [0 theta theta] [50 50 50])
+     (cube [300 200 0] [theta 0 theta] [50 50 50])
+     (cube [100 300 0] [theta theta theta] [50 50 50])
+     (cube [100 300 100] [theta theta theta] [50 50 50])
+     (cube [100 300 -100] [theta theta theta] [20 20 50])]))
 
 (defn draw [shapes]
   (q/background "white")
