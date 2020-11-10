@@ -39,8 +39,7 @@
              [0 4] [1 5] [2 6] [3 7]]}))
 
 (defn setup []
-  {:vertices []
-   :lines []})
+  [])
 
 (defn update-state [state]
   (let [fc (q/frame-count)
