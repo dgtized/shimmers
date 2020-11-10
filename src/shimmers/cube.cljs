@@ -4,8 +4,9 @@
             [shimmers.math.vector :as v]
             [shimmers.framerate :as framerate]))
 
+;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
-  (let [perspective (* 400 0.8)
+  (let [perspective (* 600 0.8)
         scale (/ perspective (+ perspective z))]
     [(* scale x) (* scale y)]))
 
@@ -21,14 +22,16 @@
      (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
      (+ (* x (- sy)) (* y sx cy) (* z cx cy))]))
 
+;; something is wrong with the z coordinates
+;; I suspect the order of operations is wrong for applying translation/rotation?
 (defn rectangle [[x y z] angles [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    (map (fn [p] (v/add (v/vec2 x y) (project (rotation p angles))))
-         [(v/vec3 (- hw) (- hh) z)
-          (v/vec3 hw (- hh) z)
-          (v/vec3 hw hh z)
-          (v/vec3 (- hw) hh z)])))
+    (map (fn [p] (v/add (v/vec3 x y z) (rotation p angles)))
+         [(v/vec3 (- hw) (- hh) 0)
+          (v/vec3 hw (- hh) 0)
+          (v/vec3 hw hh 0)
+          (v/vec3 (- hw) hh 0)])))
 
 (defn cube [[x y z] angles [width height depth]]
   (let [hd (/ depth 2)]
@@ -61,7 +64,7 @@
   (q/stroke-weight 1)
   (doseq [{:keys [lines vertices]} shapes
           [a b] lines]
-    (q/line (nth vertices a) (nth vertices b)))
+    (q/line (project (nth vertices a)) (project (nth vertices b))))
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
