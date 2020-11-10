@@ -68,7 +68,7 @@
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
     :particles particles/run-sketch)
-   (init-sketches :cube)))
+   (init-sketches :particles)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
