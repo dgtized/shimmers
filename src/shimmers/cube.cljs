@@ -9,24 +9,24 @@
         scale (/ perspective (+ perspective z))]
     [(* scale x) (* scale y)]))
 
-(defn rotation [theta [x y z]]
-  [(+ (* (q/cos theta) x) (* (- (q/sin theta)) y))
-   (+ (* (q/sin theta) x) (* (q/cos theta) y))
+(defn rotation [[x y z] [pitch yaw roll]]
+  [(+ (* (q/cos roll) x) (* (- (q/sin roll)) y))
+   (+ (* (q/sin roll) x) (* (q/cos roll) y))
    z])
 
-(defn rectangle [[x y z] [pitch yaw roll] [width height]]
+(defn rectangle [[x y z] angles [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    (map (fn [p] (v/add (v/vec2 x y) (project (rotation pitch p))))
+    (map (fn [p] (v/add (v/vec2 x y) (project (rotation p angles))))
          [(v/vec3 (- hw) (- hh) z)
           (v/vec3 hw (- hh) z)
           (v/vec3 hw hh z)
           (v/vec3 (- hw) hh z)])))
 
-(defn cube [[x y z] [pitch yaw roll] [width height depth]]
+(defn cube [[x y z] angles [width height depth]]
   (let [hd (/ depth 2)]
-    {:vertices (concat (rectangle [x y (+ z hd)] [pitch 0 0] [width height])
-                       (rectangle [x y (- z hd)] [pitch 0 0] [width height]))
+    {:vertices (concat (rectangle [x y (+ z hd)] angles [width height])
+                       (rectangle [x y (- z hd)] angles [width height]))
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
@@ -37,7 +37,7 @@
 
 (defn update-state [state]
   (let [theta (/ (q/frame-count) 100)]
-    (cube [200 200 0] [theta 0 0] [50 50 50])))
+    (cube [200 200 0] [0 0 theta] [50 50 50])))
 
 (defn draw [{:keys [vertices lines]}]
   (q/background "white")
