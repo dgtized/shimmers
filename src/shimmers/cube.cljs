@@ -10,15 +10,16 @@
     [(* scale x) (* scale y)]))
 
 (defn rotation [[x y z] [pitch yaw roll]]
+  ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
   (let [cx (q/cos pitch)
         sx (q/sin pitch)
         cy (q/cos yaw)
         sy (q/sin yaw)
         cz (q/cos roll)
         sz (q/sin roll)]
-    [(+ (* cz x) (* (- sz) y))
-     (+ (* sz x) (* cz y))
-     z]))
+    [(+ (* x cy cz) (* y (+ (- (* cx sz)) (* sx sy cz))) (* z (+ (* sx sz) (* cx sy cz))))
+     (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
+     (+ (* x (- sy)) (* y sx cy) (* z cx cy))]))
 
 (defn rectangle [[x y z] angles [width height]]
   (let [hw (/ width 2)
@@ -42,8 +43,9 @@
    :lines []})
 
 (defn update-state [state]
-  (let [theta (/ (q/frame-count) 100)]
-    (cube [200 200 0] [0 0 theta] [50 50 50])))
+  (let [fc (q/frame-count)
+        theta (/ fc 100)]
+    (cube [200 200 0] [0 theta 0] [50 50 50])))
 
 (defn draw [{:keys [vertices lines]}]
   (q/background "white")
