@@ -51,9 +51,9 @@
      (cube [100 200 0] [theta theta 0] [50 50 50])
      (cube [200 200 0] [0 theta theta] [50 50 50])
      (cube [300 200 0] [theta 0 theta] [50 50 50])
-     (cube [100 300 0] [theta theta theta] [50 50 50])
-     (cube [100 300 100] [theta theta theta] [50 50 50])
-     (cube [100 300 -100] [theta theta theta] [20 20 50])
+     (cube [100 300 0] [theta theta theta] [30 30 30])
+     (cube [100 300 50] [theta theta theta] [50 50 50])
+     (cube [100 300 -50] [theta theta theta] [20 20 20])
      (cube [300 300 (q/lerp -50 50 (q/cos theta))] [0 0 0] [50 50 50])]))
 
 (defn draw [shapes]
