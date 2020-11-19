@@ -30,7 +30,7 @@
   (if (vector? op)
     op
     (case op
-      :forward [:forward 75]
+      :forward [:forward 50]
       :left [:rotate (- (/ Math/PI 2))]
       :right [:rotate (+ (/ Math/PI 2))])))
 
@@ -45,7 +45,7 @@
    :ip 0
    :program program})
 
-(def petals (compile [:forward :forward :left :forward :forward :left :forward :left [:rotate 1]]))
+(def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 
 (defn setup
   []
