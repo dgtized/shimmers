@@ -71,7 +71,7 @@
     :random-walk random-walk/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch)
-   (init-sketches :probabilistic-automata)))
+   (init-sketches :particles)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
