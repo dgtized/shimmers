@@ -156,10 +156,10 @@
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-random-automata [100 100])
-              (make-random-automata [300 100])
-              (make-random-automata [100 300])
-              (make-random-automata [300 300])]})
+  {:automata [(make-random-automata [150 100])
+              (make-random-automata [450 100])
+              (make-random-automata [150 300])
+              (make-random-automata [450 300])]})
 
 (defn update-state
   [state]
@@ -179,7 +179,7 @@
 (defn ^:export run-sketch []
   (q/defsketch particles
     :host "quil-host"
-    :size [400 400]
+    :size [600 400]
     :setup setup
     :update update-state
     :draw draw
