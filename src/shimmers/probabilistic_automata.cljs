@@ -186,7 +186,8 @@
 (defn describe [bot]
   [:p
    (print-str (:position bot))
-   [:pre {:style {:font-size 10}} (interpose [:br] (map prettify-instruction (:program bot)))]])
+   [:pre {:style {:font-size 10}}
+    "[\n" (interpose [:br] (map prettify-instruction (:program bot))) "\n]"]])
 
 (defn render-explanation [automata]
   (let [explanation (dom/getElement "explanation")]
