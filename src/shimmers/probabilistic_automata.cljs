@@ -173,7 +173,7 @@
 
 (defn render-explanation [automata]
   (let [explanation (dom/getElement "explanation")]
-    (rdom/render [:div {:style {:display :flex}}
+    (rdom/render [:div {:style {:display :grid :grid-template-columns "auto auto"}}
                   (map describe automata)] explanation)))
 
 (defn setup
