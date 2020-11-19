@@ -164,7 +164,7 @@
 
 (defn generate-instruction []
   ((rand-nth
-    (weighted 4 (fn [] [:forward (+ 1 (rand-int 50))])
+    (weighted 5 (fn [] [:forward (+ 1 (rand-int 50))])
               2 (fn [] [:rotate (rand (* Math/PI 2))])
               1 (fn [] (rotate 60))
               3 (fn [] [:rotate (- (rand (/ Math/PI 3)) (/ Math/PI 3))]) ;; small angles
@@ -180,7 +180,7 @@
   (repeatedly n generate-instruction))
 
 (defn make-random-automata [position]
-  (let [program (generate-program (+ 2 (rand-int 10)))]
+  (let [program (generate-program (+ 3 (rand-int 10)))]
     (print {:position position :program program})
     {:position position
      :heading (* 3 (/ Math/PI 2))
