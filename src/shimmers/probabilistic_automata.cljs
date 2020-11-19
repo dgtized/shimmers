@@ -7,19 +7,22 @@
   (and (>= x 0) (< x (q/width))
        (>= y 0) (< y (q/height))))
 
-(defn interpret [{:keys [ip state program position heading velocity] :as automata}]
+(defn interpret [{:keys [position heading velocity] :as bot} instruction]
+  (case instruction
+    :left (assoc bot :heading (- heading (/ Math/PI 2)))
+    :right (assoc bot :heading (+ heading (/ Math/PI 2)))
+    :forward (let [[x y] position
+                   new-position [(+ x (* velocity (q/cos heading)))
+                                 (+ y (* velocity (q/sin heading)))]]
+               (if (in-bounds? new-position)
+                 (assoc bot
+                        :position new-position
+                        :last-position position)
+                 (assoc bot :state :halt)))))
+
+(defn execute [{:keys [ip state program] :as bot}]
   (when (= state :running)
-    (assoc (case (nth program ip)
-             :left (assoc automata :heading (- heading (/ Math/PI 2)))
-             :right (assoc automata :heading (+ heading (/ Math/PI 2)))
-             :forward (let [[x y] position
-                            new-position [(+ x (* velocity (q/cos heading)))
-                                          (+ y (* velocity (q/sin heading)))]]
-                        (if (in-bounds? new-position)
-                          (assoc automata
-                                 :position new-position
-                                 :last-position position)
-                          (assoc automata :state :halt))))
+    (assoc (interpret bot (nth program ip))
            :ip (mod (inc ip) (count program)))))
 
 (defn make-automata []
@@ -38,7 +41,7 @@
 
 (defn update-state
   [state]
-  (update state :automata (partial map interpret)))
+  (update state :automata (partial map execute)))
 
 (defn draw
   [{:keys [automata]}]
