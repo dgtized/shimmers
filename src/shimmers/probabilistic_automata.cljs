@@ -22,10 +22,11 @@
       :one-of (interpret bot (rand-nth arg)))))
 
 (defn execute [{:keys [ip state program] :as bot}]
-  (when (= state :running)
+  (if (= state :running)
     (assoc (interpret bot (nth program (mod ip (count program))))
            :last-position (:position bot)
-           :ip (inc ip))))
+           :ip (inc ip))
+    bot))
 
 (defn op->instruction [op]
   (if (vector? op)
