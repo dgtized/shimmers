@@ -12,6 +12,17 @@
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
        (>= y (- bounds)) (< y (+ (q/height) bounds))))
 
+(def lifespan 1000)
+(def max-population 128)
+(defn make-automata [position program]
+  {:position position
+   :heading (* 3 (/ Math/PI 2))
+   :last-position nil
+   :state :running
+   :color [0 0 0 10]
+   :ip 0
+   :program program})
+
 (defn interpret-argument [arg]
   (if (vector? arg)
     (let [[op value] arg]
@@ -40,9 +51,6 @@
       :one-of (interpret bot (rand-nth arg))
       :halt (assoc bot :state :halt)
       :fork (assoc bot :state :forking))))
-
-(def lifespan 1000)
-(def max-population 128)
 
 (defn execute [{:keys [ip state program] :as bot}]
   (cond (> ip lifespan) (assoc bot :state :halt)
@@ -80,15 +88,6 @@
 
 (defn rotate [degrees]
   [:rotate (/ (* 180 degrees) Math/PI)])
-
-(defn make-automata [position program]
-  {:position position
-   :heading (* 3 (/ Math/PI 2))
-   :last-position nil
-   :state :running
-   :color [0 0 0 10]
-   :ip 0
-   :program program})
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20]
@@ -168,19 +167,9 @@
               1 (fn [] [:color [255 255 255 255]])
               1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
-(defn generate-program [n]
-  (repeatedly n generate-instruction))
-
-(defn make-random-automata [position]
-  (let [program (generate-program (+ 3 (rand-int 10)))]
-    (print {:position position :program program})
-    {:position position
-     :heading (* 3 (/ Math/PI 2))
-     :last-position nil
-     :state :running
-     :color [0 0 0 10]
-     :ip 0
-     :program program}))
+(defn generate-program
+  ([] (generate-program (+ 3 (rand-int 10))))
+  ([n] (repeatedly n generate-instruction)))
 
 (defn prettify-instruction [instruction]
   (let [[op argument] instruction
@@ -207,10 +196,10 @@
 (defn setup
   []
   (q/background "white")
-  (let [automata [(make-random-automata [150 100])
-                  (make-random-automata [450 100])
-                  (make-random-automata [150 300])
-                  (make-random-automata [450 300])]]
+  (let [automata [(make-automata [150 100] (generate-program))
+                  (make-automata [450 100] (generate-program))
+                  (make-automata [150 300] (generate-program))
+                  (make-automata [450 300] (generate-program))]]
     (render-explanation automata)
     {:automata automata}))
 
