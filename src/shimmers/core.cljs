@@ -10,6 +10,7 @@
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.noise-grid :as noise-grid]
             [shimmers.particles :as particles]
+            [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]))
 
@@ -67,8 +68,9 @@
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
-    :particles particles/run-sketch)
-   (init-sketches :particles)))
+    :particles particles/run-sketch
+    :probabilistic-automata probabilistic-automata/run-sketch)
+   (init-sketches :probabilistic-automata)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
