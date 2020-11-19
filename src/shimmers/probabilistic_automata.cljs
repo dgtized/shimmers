@@ -163,7 +163,9 @@
 
 (defn update-state
   [state]
-  (update state :automata execute-all))
+  (if (= (mod (inc (q/frame-count)) 1200) 0)
+    (setup)
+    (update state :automata execute-all)))
 
 (defn draw
   [{:keys [automata]}]
