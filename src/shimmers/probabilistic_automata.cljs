@@ -23,8 +23,8 @@
 
 (defn execute [{:keys [ip state program] :as bot}]
   (when (= state :running)
-    (assoc (interpret bot (nth program ip))
-           :ip (mod (inc ip) (count program)))))
+    (assoc (interpret bot (nth program (mod ip (count program))))
+           :ip (inc ip))))
 
 (defn op->instruction [op]
   (if (vector? op)
