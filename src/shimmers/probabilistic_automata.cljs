@@ -62,7 +62,7 @@
 (comment (weighted 1 [:forward 10] 3 [:forward 5]))
 
 (defn rotate [degrees]
-  [:rotate (q/radians degrees)])
+  [:rotate (/ (* 180 degrees) Math/PI)])
 
 (defn make-automata [program]
   {:position [200 375]
