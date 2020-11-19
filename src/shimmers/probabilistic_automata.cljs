@@ -66,7 +66,7 @@
    :heading (* 3 (/ Math/PI 2))
    :last-position nil
    :state :running
-   :color [0 0 0 25]
+   :color [0 0 0 10]
    :ip 0
    :program program})
 
@@ -78,7 +78,7 @@
 (def test-halt [[:forward 50] [:halt 0]])
 (def test-fork [[:forward 10]
                 [:fork 0]
-                [:one-of [[:rotate 1] [:rotate -1] [:halt 0]]]])
+                [:one-of [[:rotate (/ Math/PI 3)] [:rotate (- (/ Math/PI 3))] [:halt 0]]]])
 
 (def make-tree [[:forward 10]
                 [:one-of [[:fork 0] [:fork 0] [:fork 0]
@@ -101,7 +101,7 @@
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata recursive-tree)]}) 
+  {:automata [(make-automata test-fork)]}) 
 
 (defn update-state
   [state]
