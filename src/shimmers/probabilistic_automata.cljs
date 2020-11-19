@@ -89,8 +89,8 @@
 (defn rotate [degrees]
   [:rotate (/ (* 180 degrees) Math/PI)])
 
-(defn make-automata [program]
-  {:position [200 375]
+(defn make-automata [position program]
+  {:position position
    :heading (* 3 (/ Math/PI 2))
    :last-position nil
    :state :running
@@ -128,6 +128,31 @@
 
 (def test-random [[:forward [:random 50]] [:rotate 1]])
 (def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
+
+(def test-interesting [[:rotate 4.2]
+                       [:rotate 0.8]
+                       [:one-of [[:forward 18.0]
+                                 [:halt 0.0]
+                                 [:rotate -0.8]]]
+                       [:fork 0.0]
+                       [:rotate -0.1]
+                       [:forward 23.0]
+                       [:heading 4.8]
+                       [:rotate 0.3]])
+
+(def test-interesting2 [[:forward 42.0]
+                        [:fork 0.0]
+                        [:color [0 0 0 10]]
+                        [:heading 2.4]
+                        [:one-of [[:forward 43.0]
+                                  [:halt 0.0]
+                                  [:fork 0.0]
+                                  [:rotate 4.2]]]
+                        [:fork 0.0]
+                        [:rotate -0.9]
+                        [:color [:color :rainbow1]]
+                        [:color [:color :rainbow1]]
+                        [:rotate 2.1]])
 
 (defn generate-instruction []
   ((rand-nth
