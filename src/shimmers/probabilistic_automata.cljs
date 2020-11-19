@@ -12,6 +12,7 @@
     (case op
       :rotate (assoc bot :heading (+ heading arg))
       :forward (let [[x y] position
+                     velocity arg
                      new-position [(+ x (* velocity (q/cos heading)))
                                    (+ y (* velocity (q/sin heading)))]]
                  (if (in-bounds? new-position)
@@ -29,7 +30,7 @@
   (if (vector? op)
     op
     (case op
-      :forward [:forward 0]
+      :forward [:forward 75]
       :left [:rotate (- (/ Math/PI 2))]
       :right [:rotate (+ (/ Math/PI 2))])))
 
@@ -39,7 +40,6 @@
 (defn make-automata [program]
   {:position [200 200]
    :heading 0
-   :velocity 10
    :last-position nil
    :state :running
    :ip 0
