@@ -16,15 +16,14 @@
                      new-position [(+ x (* velocity (q/cos heading)))
                                    (+ y (* velocity (q/sin heading)))]]
                  (if (in-bounds? new-position)
-                   (assoc bot
-                          :position new-position
-                          :last-position position)
+                   (assoc bot :position new-position)
                    (assoc bot :state :halt)))
       :one-of (interpret bot (rand-nth arg)))))
 
 (defn execute [{:keys [ip state program] :as bot}]
   (when (= state :running)
     (assoc (interpret bot (nth program (mod ip (count program))))
+           :last-position (:position bot)
            :ip (inc ip))))
 
 (defn op->instruction [op]
@@ -43,6 +42,7 @@
    :heading 0
    :last-position nil
    :state :running
+   :color [0 0 0 25]
    :ip 0
    :program program})
 
@@ -61,8 +61,9 @@
 (defn draw
   [{:keys [automata]}]
   (doseq [bot (filter #(= (:state %) :running) automata)
-          :let [{:keys [position last-position]} bot]]
-    (if last-position
+          :let [{:keys [position last-position color]} bot]]
+    (when (and last-position (not= position last-position))
+      (apply q/stroke color)
       (q/line last-position position)))
   (framerate/display (q/current-frame-rate)))
 
