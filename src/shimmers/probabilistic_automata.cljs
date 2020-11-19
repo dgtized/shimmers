@@ -28,11 +28,11 @@
 (defn make-automata []
   {:position [200 200]
    :heading 0
-   :velocity 5
+   :velocity 10
    :last-position nil
    :state :running
    :ip 0
-   :program [:left :forward :forward :right :forward :forward :right :forward :forward :forward :forward :left :left]})
+   :program [:forward :forward :left :forward :forward :left :forward :left :forward]})
 
 (defn setup
   []
