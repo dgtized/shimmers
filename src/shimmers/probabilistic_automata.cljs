@@ -3,9 +3,9 @@
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]))
 
-(defn in-bounds? [[x y]]
-  (and (>= x 0) (< x (q/width))
-       (>= y 0) (< y (q/height))))
+(defn in-bounds? [[x y] bounds]
+  (and (>= x (- bounds)) (< x (+ (q/width) bounds))
+       (>= y (- bounds)) (< y (+ (q/height) bounds))))
 
 (defn interpret [{:keys [position heading velocity] :as bot} instruction]
   (let [[op arg] instruction]
@@ -15,7 +15,7 @@
                      velocity arg
                      new-position [(+ x (* velocity (q/cos heading)))
                                    (+ y (* velocity (q/sin heading)))]]
-                 (if (in-bounds? new-position)
+                 (if (in-bounds? new-position 100)
                    (assoc bot :position new-position)
                    (assoc bot :state :halt)))
       :color (assoc bot :color arg)
