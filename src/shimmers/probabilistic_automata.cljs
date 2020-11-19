@@ -188,7 +188,10 @@
               (print-str argument)
               (goog.string/format "%.1f" argument))]
     (case op
-      :one-of (print-str [:one-of (interpose "\n\t" (map prettify-instruction argument))])
+      :one-of (print-str [:one-of (->> argument
+                                       (map prettify-instruction)
+                                       (interpose "\n\t")
+                                       vec)])
       (print-str [op arg]))))
 
 (defn describe [bot]
