@@ -54,6 +54,13 @@
 (defn compile [program]
   (map op->instruction program))
 
+;; (weighted [frequency instruction] ...)
+(defn weighted [& options]
+  (into [] (mapcat (fn [[n instruction]]
+                     (repeat n instruction))
+                   (partition 2 options))))
+(comment (weighted 1 [:forward 10] 3 [:forward 5]))
+
 (defn make-automata [program]
   {:position [200 375]
    :heading (* 3 (/ Math/PI 2))
@@ -85,9 +92,11 @@
 
 (def recursive-tree [[:forward 10]
                      [:one-of [[:one-of [[:rotate 0.5] [:rotate -0.5]]]
-                               [:one-of [[:forward 2] [:forward 5]]]
-                               [:heading (* 3 (/ Math/PI 2))]]]
-                     [:one-of [[:forward 10] [:fork 0] [:halt 0]]]]) 
+                               [:one-of [[:forward 2] [:forward 5]]]]]
+                     [:one-of (weighted 2 [:forward 10]
+                                        2 [:fork 0]
+                                        1 [:heading (* 3 (/ Math/PI 2))]
+                                        1 [:halt 0])]]) 
 
 (defn setup
   []
