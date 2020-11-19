@@ -8,36 +8,47 @@
        (>= y 0) (< y (q/height))))
 
 (defn interpret [{:keys [position heading velocity] :as bot} instruction]
-  (case instruction
-    :left (assoc bot :heading (- heading (/ Math/PI 2)))
-    :right (assoc bot :heading (+ heading (/ Math/PI 2)))
-    :forward (let [[x y] position
-                   new-position [(+ x (* velocity (q/cos heading)))
-                                 (+ y (* velocity (q/sin heading)))]]
-               (if (in-bounds? new-position)
-                 (assoc bot
-                        :position new-position
-                        :last-position position)
-                 (assoc bot :state :halt)))))
+  (let [[op arg] instruction]
+    (case op
+      :rotate (assoc bot :heading (+ heading arg))
+      :forward (let [[x y] position
+                     new-position [(+ x (* velocity (q/cos heading)))
+                                   (+ y (* velocity (q/sin heading)))]]
+                 (if (in-bounds? new-position)
+                   (assoc bot
+                          :position new-position
+                          :last-position position)
+                   (assoc bot :state :halt))))))
 
 (defn execute [{:keys [ip state program] :as bot}]
   (when (= state :running)
     (assoc (interpret bot (nth program ip))
            :ip (mod (inc ip) (count program)))))
 
-(defn make-automata []
+(defn op->instruction [op]
+  (case op
+    :forward [:forward 0]
+    :left [:rotate (- (/ Math/PI 2))]
+    :right [:rotate (+ (/ Math/PI 2))]))
+
+(defn compile [program]
+  (map op->instruction program))
+
+(defn make-automata [program]
   {:position [200 200]
    :heading 0
    :velocity 10
    :last-position nil
    :state :running
    :ip 0
-   :program [:forward :forward :left :forward :forward :left :forward :left :forward]})
+   :program program})
+
+(def petals (compile [:forward :forward :left :forward :forward :left :forward :left :forward]))
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata)]})
+  {:automata [(make-automata petals)]})
 
 (defn update-state
   [state]
