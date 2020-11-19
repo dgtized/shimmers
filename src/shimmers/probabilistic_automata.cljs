@@ -127,13 +127,16 @@
 
 (defn generate-instruction []
   ((rand-nth
-    (weighted 4 (fn [] [:forward (+ 5 (rand-int 50))])
+    (weighted 4 (fn [] [:forward (+ 1 (rand-int 50))])
               2 (fn [] [:rotate (rand (* Math/PI 2))])
+              1 (fn [] (rotate 60))
               3 (fn [] [:rotate (- (rand (/ Math/PI 3)) (/ Math/PI 3))]) ;; small angles
+              1 (fn [] [:heading (rand (* Math/PI 2))])
               2 (fn [] [:fork 0])
               1 (fn [] [:halt 0])
               3 (fn [] [:color [:color :rainbow1]])
               2 (fn [] [:color [0 0 0 10]])
+              1 (fn [] [:color [255 255 255 255]])
               1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
 (defn generate-program [n]
