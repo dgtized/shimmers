@@ -14,7 +14,7 @@
         :random (rand-int value)))
     arg))
 
-(defn interpret [{:keys [position heading velocity] :as bot} instruction]
+(defn interpret [{:keys [position heading velocity ip program] :as bot} instruction]
   (let [[op argument] instruction
         arg (interpret-argument argument)]
     (case op
@@ -28,9 +28,19 @@
                    (assoc bot :position new-position)
                    (interpret bot [:halt 0])))
       :color (assoc bot :color arg)
+
+      :goto (assoc bot :ip (dec (+ ip (- (count program) (mod ip (count program))) arg)))
       :one-of (interpret bot (rand-nth arg))
       :halt (assoc bot :state :halt)
       :fork (assoc bot :state :forking))))
+
+;; 0 1 2 3 4 5 ip
+;; 0 1 2 0 1 2 (mod ip)
+;; [[:forward 5] [:rotate 1] [:goto 0]]
+
+;; 55
+;; 1 (mod n program)
+;; 0 (mod 0 program)
 
 (def lifespan 1000)
 (def max-population 128)
@@ -38,9 +48,9 @@
 (defn execute [{:keys [ip state program] :as bot}]
   (cond (> ip lifespan) (assoc bot :state :halt)
         (= state :running)
-        (assoc (interpret bot (nth program (mod ip (count program))))
-               :last-position (:position bot)
-               :ip (inc ip))
+        (update (assoc (interpret bot (nth program (mod ip (count program))))
+                       :last-position (:position bot))
+                :ip inc)
         (= state :forking)
         (assoc bot :state :running)
         :else bot))
@@ -110,11 +120,12 @@
                                         1 [:halt 0])]])
 
 (def test-random [[:forward [:random 50]] [:rotate 1]])
+(def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata test-random)]}) 
+  {:automata [(make-automata test-goto)]}) 
 
 (defn update-state
   [state]
