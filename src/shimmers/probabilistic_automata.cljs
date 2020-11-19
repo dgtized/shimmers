@@ -55,7 +55,7 @@
 
 (defn make-automata [program]
   {:position [200 200]
-   :heading 0
+   :heading (* 3 (/ Math/PI 2))
    :last-position nil
    :state :running
    :color [0 0 0 25]
@@ -72,7 +72,7 @@
 (def make-tree [[:forward 10]
                 [:one-of [[:fork 0] [:fork 0]
                           [:halt 0]
-                          [:rotate 0.5] [:rotate -0.25] [:rotate 0.25]
+                          [:rotate 0.5] [:rotate -0.5] [:rotate 0.25] [:rotate -0.25]
                           [:forward 2] [:forward 5]]]])
 
 (defn setup
