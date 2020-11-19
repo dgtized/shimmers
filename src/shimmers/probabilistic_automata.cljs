@@ -10,6 +10,7 @@
 (defn interpret [{:keys [position heading velocity] :as bot} instruction]
   (let [[op arg] instruction]
     (case op
+      :heading (assoc bot :heading arg)
       :rotate (assoc bot :heading (+ heading arg))
       :forward (let [[x y] position
                      velocity arg
@@ -54,7 +55,7 @@
   (map op->instruction program))
 
 (defn make-automata [program]
-  {:position [200 200]
+  {:position [200 375]
    :heading (* 3 (/ Math/PI 2))
    :last-position nil
    :state :running
@@ -73,15 +74,25 @@
                 [:one-of [[:rotate 1] [:rotate -1] [:halt 0]]]])
 
 (def make-tree [[:forward 10]
-                [:one-of [[:fork 0] [:fork 0]
-                          [:halt 0]
+                [:one-of [[:fork 0] [:fork 0] [:fork 0]
+                          [:halt 0] [:halt 0] [:halt 0] [:halt 0]
                           [:rotate 0.5] [:rotate -0.5] [:rotate 0.25] [:rotate -0.25]
-                          [:forward 2] [:forward 5]]]])
+                          [:forward 2] [:forward 5] [:forward 2] [:forward 5]
+                          [:heading (* 3 (/ Math/PI 2))]]]])
+
+(def test-recursive [[:one-of [[:forward 10]
+                               [:one-of [[:rotate 0.5] [:rotate -0.5]]]]]])
+
+(def recursive-tree [[:forward 10]
+                     [:one-of [[:one-of [[:rotate 0.5] [:rotate -0.5]]]
+                               [:one-of [[:forward 2] [:forward 5]]]
+                               [:heading (* 3 (/ Math/PI 2))]]]
+                     [:one-of [[:forward 10] [:fork 0] [:halt 0]]]]) 
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata make-tree)]})
+  {:automata [(make-automata recursive-tree)]}) 
 
 (defn update-state
   [state]
