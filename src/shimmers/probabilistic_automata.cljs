@@ -178,11 +178,26 @@
               1 (fn [] [:color [255 255 255 255]])
               1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
+(defn collapse-trivial-one-of
+  "Recursively collapses single choice one-of's into that instruction"
+  [[op argument]]
+  (if (= op :one-of)
+    (let [options (mapcat collapse-trivial-one-of argument)]
+      (if (> (count options) 1)
+        [[:one-of options]]
+        options))
+    [[op argument]]))
+
+(comment (mapcat collapse-trivial-one-of [[:one-of [[:forward 1]]]])
+         (mapcat collapse-trivial-one-of [[:one-of [[:forward 1] [:one-of [[:forward 2]]]]]])
+         (mapcat collapse-trivial-one-of [[:one-of []]]))
+
 (defn simplify-program
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
   [program]
   (transduce
-   (comp (partition-by (fn [val] [(first val) (vector? (second val))]))
+   (comp (mapcat collapse-trivial-one-of)
+         (partition-by (fn [val] [(first val) (vector? (second val))]))
          (mapcat (fn [snippet]
                    (let [[op arg] (first snippet)]
                      (case op
