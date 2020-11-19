@@ -7,16 +7,14 @@
   (and (>= x 0) (< x (q/width))
        (>= y 0) (< y (q/height))))
 
-(def speed 5)
-
-(defn interpret [{:keys [ip state program position heading] :as automata}]
+(defn interpret [{:keys [ip state program position heading velocity] :as automata}]
   (when (= state :running)
     (assoc (case (nth program ip)
              :left (assoc automata :heading (- heading (/ Math/PI 2)))
              :right (assoc automata :heading (+ heading (/ Math/PI 2)))
              :forward (let [[x y] position
-                            new-position [(+ x (* speed (q/cos heading)))
-                                          (+ y (* speed (q/sin heading)))]]
+                            new-position [(+ x (* velocity (q/cos heading)))
+                                          (+ y (* velocity (q/sin heading)))]]
                         (if (in-bounds? new-position)
                           (assoc automata
                                  :position new-position
@@ -27,6 +25,7 @@
 (defn make-automata []
   {:position [200 200]
    :heading 0
+   :velocity 5
    :last-position nil
    :state :running
    :ip 0
