@@ -26,10 +26,12 @@
            :ip (mod (inc ip) (count program)))))
 
 (defn op->instruction [op]
-  (case op
-    :forward [:forward 0]
-    :left [:rotate (- (/ Math/PI 2))]
-    :right [:rotate (+ (/ Math/PI 2))]))
+  (if (vector? op)
+    op
+    (case op
+      :forward [:forward 0]
+      :left [:rotate (- (/ Math/PI 2))]
+      :right [:rotate (+ (/ Math/PI 2))])))
 
 (defn compile [program]
   (map op->instruction program))
@@ -43,7 +45,7 @@
    :ip 0
    :program program})
 
-(def petals (compile [:forward :forward :left :forward :forward :left :forward :left :forward]))
+(def petals (compile [:forward :forward :left :forward :forward :left :forward :left [:rotate 1]]))
 
 (defn setup
   []
