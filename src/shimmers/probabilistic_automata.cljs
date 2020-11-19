@@ -17,9 +17,10 @@
                                    (+ y (* velocity (q/sin heading)))]]
                  (if (in-bounds? new-position 100)
                    (assoc bot :position new-position)
-                   (assoc bot :state :halt)))
+                   (interpret bot [:halt 0])))
       :color (assoc bot :color arg)
-      :one-of (interpret bot (rand-nth arg)))))
+      :one-of (interpret bot (rand-nth arg))
+      :halt (assoc bot :state :halt))))
 
 (defn execute [{:keys [ip state program] :as bot}]
   (if (= state :running)
@@ -50,11 +51,12 @@
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1] [:one-of [[:color [0 50 200 50]] [:color [0 0 0 25]]]]])
+(def test-halt [[:forward 50] [:halt 0]])
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata skribbles)]})
+  {:automata [(make-automata test-halt)]})
 
 (defn update-state
   [state]
