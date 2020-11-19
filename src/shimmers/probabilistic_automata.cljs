@@ -69,10 +69,16 @@
                 [:fork 0]
                 [:one-of [[:rotate 1] [:rotate -1] [:halt 0]]]])
 
+(def make-tree [[:forward 10]
+                [:one-of [[:fork 0] [:fork 0]
+                          [:halt 0]
+                          [:rotate 0.5] [:rotate -0.25] [:rotate 0.25]
+                          [:forward 2] [:forward 5]]]])
+
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata test-fork)]})
+  {:automata [(make-automata make-tree)]})
 
 (defn update-state
   [state]
