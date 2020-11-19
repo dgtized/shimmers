@@ -61,6 +61,9 @@
                    (partition 2 options))))
 (comment (weighted 1 [:forward 10] 3 [:forward 5]))
 
+(defn rotate [degrees]
+  [:rotate (q/radians degrees)])
+
 (defn make-automata [program]
   {:position [200 375]
    :heading (* 3 (/ Math/PI 2))
@@ -78,7 +81,7 @@
 (def test-halt [[:forward 50] [:halt 0]])
 (def test-fork [[:forward 10]
                 [:fork 0]
-                [:one-of [[:rotate (/ Math/PI 3)] [:rotate (- (/ Math/PI 3))] [:halt 0]]]])
+                [:one-of [(rotate 60) (rotate -60) [:halt 0]]]])
 
 (def make-tree [[:forward 10]
                 [:one-of [[:fork 0] [:fork 0] [:fork 0]
