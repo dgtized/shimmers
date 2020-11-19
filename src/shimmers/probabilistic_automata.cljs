@@ -63,7 +63,10 @@
    :program program})
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
-(def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1] [:one-of [[:color [0 50 200 50]] [:color [0 0 0 25]]]]])
+(def skribbles [[:forward 20]
+                [:one-of [[:forward 10] [:forward 20]]]
+                [:rotate 1]
+                [:one-of [[:color [0 50 200 50]] [:color [0 0 0 25]]]]])
 (def test-halt [[:forward 50] [:halt 0]])
 (def test-fork [[:forward 10]
                 [:fork 0]
