@@ -23,4 +23,6 @@ xdg-open index.html
 
 popd
 
-# TODO: cleanup nested .git, and checkout correct version of index.html
+# cleanup nested .git, and checkout correct version of index.html
+rm -rf resources/public/.git
+git checkout resources/public/index.html
