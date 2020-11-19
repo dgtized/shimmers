@@ -154,6 +154,14 @@
                         [:color [:color :rainbow1]]
                         [:rotate 2.1]])
 
+(def interesting-star-grid [[:forward 1.0]
+                            [:one-of [[:fork 0.0]
+                                      [:rotate -0.1]
+                                      [:forward 47.0]
+                                      [:fork 0.0]]]
+                            [:fork 0.0]
+                            [:rotate 1.4]])
+
 (defn generate-instruction []
   ((rand-nth
     (weighted 4 (fn [] [:forward (+ 1 (rand-int 50))])
