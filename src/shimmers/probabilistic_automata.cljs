@@ -126,12 +126,15 @@
 (def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
 
 (defn generate-instruction []
-  ((rand-nth (weighted 3 (fn [] [:forward (+ 5 (rand-int 50))])
-                       3 (fn [] [:rotate (rand (* Math/PI 2))])
-                       2 (fn [] [:fork 0])
-                       0 (fn [] [:halt 0])
-                       2 (fn [] [:color [:color :rainbow1]])
-                       1 (fn [] [:color [0 0 0 10]])))))
+  ((rand-nth
+    (weighted 4 (fn [] [:forward (+ 5 (rand-int 50))])
+              2 (fn [] [:rotate (rand (* Math/PI 2))])
+              3 (fn [] [:rotate (- (rand (/ Math/PI 3)) (/ Math/PI 3))]) ;; small angles
+              2 (fn [] [:fork 0])
+              1 (fn [] [:halt 0])
+              3 (fn [] [:color [:color :rainbow1]])
+              2 (fn [] [:color [0 0 0 10]])
+              1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
 (defn generate-program [n]
   (repeatedly n generate-instruction))
