@@ -18,6 +18,7 @@
                  (if (in-bounds? new-position)
                    (assoc bot :position new-position)
                    (assoc bot :state :halt)))
+      :color (assoc bot :color arg)
       :one-of (interpret bot (rand-nth arg)))))
 
 (defn execute [{:keys [ip state program] :as bot}]
@@ -47,7 +48,7 @@
    :program program})
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
-(def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1]])
+(def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1] [:one-of [[:color [0 50 200 50]] [:color [0 0 0 25]]]]])
 
 (defn setup
   []
