@@ -20,18 +20,27 @@
                    (interpret bot [:halt 0])))
       :color (assoc bot :color arg)
       :one-of (interpret bot (rand-nth arg))
-      :halt (assoc bot :state :halt))))
+      :halt (assoc bot :state :halt)
+      :fork (assoc bot :state :forking))))
+
+(def lifespan 1000)
+(def max-population 128)
 
 (defn execute [{:keys [ip state program] :as bot}]
-  (if (= state :running)
-    (assoc (interpret bot (nth program (mod ip (count program))))
-           :last-position (:position bot)
-           :ip (inc ip))
-    bot))
+  (cond (> ip lifespan) (assoc bot :state :halt)
+        (= state :running)
+        (assoc (interpret bot (nth program (mod ip (count program))))
+               :last-position (:position bot)
+               :ip (inc ip))
+        (= state :forking)
+        (assoc bot :state :running)
+        :else bot))
 
 (defn execute-all
   [automata]
-  (map execute automata))
+  (let [alive (remove #(= (:state %) :halt) automata)
+        forks (filter #(= (:state %) :forking) alive)]
+    (map execute (concat (take-last max-population alive) forks))))
 
 (defn op->instruction [op]
   (if (vector? op)
@@ -56,12 +65,14 @@
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1] [:one-of [[:color [0 50 200 50]] [:color [0 0 0 25]]]]])
 (def test-halt [[:forward 50] [:halt 0]])
+(def test-fork [[:forward 10]
+                [:fork 0]
+                [:one-of [[:rotate 1] [:rotate -1] [:halt 0]]]])
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata skribbles)
-              (make-automata petals)]})
+  {:automata [(make-automata test-fork)]})
 
 (defn update-state
   [state]
