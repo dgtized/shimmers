@@ -2,7 +2,11 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
-            [shimmers.math.color :as color]))
+            [shimmers.math.color :as color]
+            [goog.dom :as dom]
+            [goog.string.format]
+            [reagent.core :as r]
+            [reagent.dom :as rdom]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
@@ -153,13 +157,34 @@
      :ip 0
      :program program}))
 
+(defn prettify-instruction [instruction]
+  (let [[op argument] instruction
+        arg (if (vector? argument)
+              (print-str argument)
+              (goog.string/format "%.1f" argument))]
+    (case op
+      :one-of (print-str [:one-of (interpose "\n\t" (map prettify-instruction argument))])
+      (print-str [op arg]))))
+
+(defn describe [bot]
+  [:p
+   (print-str (:position bot))
+   [:pre {:style {:font-size 10}} (interpose [:br] (map prettify-instruction (:program bot)))]])
+
+(defn render-explanation [automata]
+  (let [explanation (dom/getElement "explanation")]
+    (rdom/render [:div {:style {:display :flex}}
+                  (map describe automata)] explanation)))
+
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-random-automata [150 100])
-              (make-random-automata [450 100])
-              (make-random-automata [150 300])
-              (make-random-automata [450 300])]})
+  (let [automata [(make-random-automata [150 100])
+                  (make-random-automata [450 100])
+                  (make-random-automata [150 300])
+                  (make-random-automata [450 300])]]
+    (render-explanation automata)
+    {:automata automata}))
 
 (defn update-state
   [state]

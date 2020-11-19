@@ -12,7 +12,8 @@
             [shimmers.particles :as particles]
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
-            [shimmers.ray-marching :as ray-marching]))
+            [shimmers.ray-marching :as ray-marching]
+            [reagent.dom :as rdom]))
 
 (enable-console-print!)
 
@@ -77,6 +78,7 @@
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
     (set-code-link (name (:id sketch)) (:href (code-link sketch)))
+    (rdom/unmount-component-at-node (dom/getElement "explanation"))
     (apply (:fn sketch) [])
     ))
 
