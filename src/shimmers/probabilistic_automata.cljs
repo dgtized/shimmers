@@ -19,7 +19,8 @@
                    (assoc bot
                           :position new-position
                           :last-position position)
-                   (assoc bot :state :halt))))))
+                   (assoc bot :state :halt)))
+      :one-of (interpret bot (rand-nth arg)))))
 
 (defn execute [{:keys [ip state program] :as bot}]
   (when (= state :running)
@@ -46,11 +47,12 @@
    :program program})
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
+(def skribbles [[:forward 20] [:one-of [[:forward 10] [:forward 20]]] [:rotate 1]])
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata petals)]})
+  {:automata [(make-automata skribbles)]})
 
 (defn update-state
   [state]
