@@ -7,8 +7,16 @@
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
        (>= y (- bounds)) (< y (+ (q/height) bounds))))
 
+(defn interpret-argument [arg]
+  (if (vector? arg)
+    (let [[op value] arg]
+      (case op
+        :random (rand-int value)))
+    arg))
+
 (defn interpret [{:keys [position heading velocity] :as bot} instruction]
-  (let [[op arg] instruction]
+  (let [[op argument] instruction
+        arg (interpret-argument argument)]
     (case op
       :heading (assoc bot :heading arg)
       :rotate (assoc bot :heading (+ heading arg))
@@ -99,12 +107,14 @@
                      [:one-of (weighted 2 [:forward 10]
                                         2 [:fork 0]
                                         1 [:heading (* 3 (/ Math/PI 2))]
-                                        1 [:halt 0])]]) 
+                                        1 [:halt 0])]])
+
+(def test-random [[:forward [:random 50]] [:rotate 1]])
 
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata test-fork)]}) 
+  {:automata [(make-automata test-random)]}) 
 
 (defn update-state
   [state]
