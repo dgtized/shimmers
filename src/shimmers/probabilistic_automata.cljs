@@ -153,6 +153,17 @@
                             [:fork 0.0]
                             [:rotate 1.4]])
 
+(def interesting-gears [
+                        [:forward 63.0]
+                        [:rotate -0.6]
+                        [:fork 0.0]
+                        [:one-of [[:color [0 0 0 10]]
+                                  [:fork 0.0]
+                                  [:fork 0.0]
+                                  [:rotate -0.7]]]
+                        [:rotate -0.1]
+                        ])
+
 (defn generate-instruction []
   ((rand-nth
     (weighted 5 (fn [] [:forward (+ 1 (rand-int 50))])
