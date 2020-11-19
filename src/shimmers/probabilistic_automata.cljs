@@ -87,7 +87,7 @@
 (comment (weighted 1 [:forward 10] 3 [:forward 5]))
 
 (defn rotate [degrees]
-  [:rotate (/ (* 180 degrees) Math/PI)])
+  [:rotate (/ (* degrees Math/PI) 180)])
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20]
