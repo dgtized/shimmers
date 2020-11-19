@@ -41,14 +41,6 @@
       :halt (assoc bot :state :halt)
       :fork (assoc bot :state :forking))))
 
-;; 0 1 2 3 4 5 ip
-;; 0 1 2 0 1 2 (mod ip)
-;; [[:forward 5] [:rotate 1] [:goto 0]]
-
-;; 55
-;; 1 (mod n program)
-;; 0 (mod 0 program)
-
 (def lifespan 1000)
 (def max-population 128)
 
