@@ -122,10 +122,18 @@
 (def test-random [[:forward [:random 50]] [:rotate 1]])
 (def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
 
+(defn generate-instruction []
+  (rand-nth (weighted 3 [:forward (rand-int 20)] 3 [:rotate (rand (* Math/PI 2))] 2 [:fork 0] 0 [:halt 0])))
+
+(defn generate-program [n]
+  (repeatedly n generate-instruction))
+
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata test-goto)]}) 
+  (let [program (generate-program (+ 2 (rand-int 5)))]
+    (print program)
+    {:automata [(make-automata program)]})) 
 
 (defn update-state
   [state]
