@@ -28,7 +28,7 @@
     (let [[op value] arg]
       (case op
         :random (rand-int value)
-        :color (color/random-gradient value)
+        :gradient (color/random-gradient value)
         arg))
     arg))
 
@@ -141,8 +141,8 @@
                                   [:rotate 4.2]]]
                         [:fork 0.0]
                         [:rotate -0.9]
-                        [:color [:color :rainbow1]]
-                        [:color [:color :rainbow1]]
+                        [:color [:gradient :rainbow1]]
+                        [:color [:gradient :rainbow1]]
                         [:rotate 2.1]])
 
 (def interesting-star-grid [[:forward 1.0]
@@ -162,7 +162,7 @@
               1 (fn [] [:heading (rand (* Math/PI 2))])
               2 (fn [] [:fork 0])
               1 (fn [] [:halt 0])
-              3 (fn [] [:color [:color :rainbow1]])
+              3 (fn [] [:color [:gradient :rainbow1]])
               2 (fn [] [:color [0 0 0 10]])
               1 (fn [] [:color [255 255 255 255]])
               1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
