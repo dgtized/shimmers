@@ -29,6 +29,10 @@
            :ip (inc ip))
     bot))
 
+(defn execute-all
+  [automata]
+  (map execute automata))
+
 (defn op->instruction [op]
   (if (vector? op)
     op
@@ -56,11 +60,12 @@
 (defn setup
   []
   (q/background "white")
-  {:automata [(make-automata test-halt)]})
+  {:automata [(make-automata skribbles)
+              (make-automata petals)]})
 
 (defn update-state
   [state]
-  (update state :automata (partial map execute)))
+  (update state :automata execute-all))
 
 (defn draw
   [{:keys [automata]}]
