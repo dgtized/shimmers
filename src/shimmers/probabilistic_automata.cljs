@@ -185,14 +185,20 @@
 
 (defn describe [bot]
   [:p
-   (print-str (:position bot))
+   "Program @ "(print-str (:position bot))
    [:pre {:style {:font-size 10}}
     "[\n" (interpose [:br] (map prettify-instruction (:program bot))) "\n]"]])
 
 (defn render-explanation [automata]
-  (let [explanation (dom/getElement "explanation")]
-    (rdom/render [:div {:style {:display :grid :grid-template-columns "auto auto"}}
-                  (map describe automata)] explanation)))
+  [:div {:style {:padding "1em"}}
+   [:p {:style {:width "45em"}}
+    "Each of the four visualizations are generated from a corresponding program below.
+    Each program is randomly generated from the available instructions, ie a
+    subset of the space of possible programs in this language. Sometimes the
+    programs are boring or do not create output, so the examples cycle every ~30
+    seconds."]
+   [:div {:style {:display :grid :grid-template-columns "auto auto"}}
+    (map describe automata)]])
 
 (defn setup
   []
@@ -201,12 +207,13 @@
                   (make-automata [450 100] (generate-program))
                   (make-automata [150 300] (generate-program))
                   (make-automata [450 300] (generate-program))]]
-    (render-explanation automata)
+    (rdom/render [render-explanation automata]
+                 (dom/getElement "explanation"))
     {:automata automata}))
 
 (defn update-state
   [state]
-  (if (= (mod (inc (q/frame-count)) 1200) 0)
+  (if (= (mod (inc (q/frame-count)) (* 30 60)) 0)
     (setup)
     (update state :automata execute-all)))
 
