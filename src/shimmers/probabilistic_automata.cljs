@@ -1,7 +1,8 @@
 (ns shimmers.probabilistic-automata
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.framerate :as framerate]))
+            [shimmers.framerate :as framerate]
+            [shimmers.math.color :as color]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
@@ -11,7 +12,9 @@
   (if (vector? arg)
     (let [[op value] arg]
       (case op
-        :random (rand-int value)))
+        :random (rand-int value)
+        :color (color/random-gradient value)
+        arg))
     arg))
 
 (defn interpret [{:keys [position heading velocity ip program] :as bot} instruction]
@@ -123,17 +126,34 @@
 (def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
 
 (defn generate-instruction []
-  (rand-nth (weighted 3 [:forward (rand-int 20)] 3 [:rotate (rand (* Math/PI 2))] 2 [:fork 0] 0 [:halt 0])))
+  ((rand-nth (weighted 3 (fn [] [:forward (+ 5 (rand-int 50))])
+                       3 (fn [] [:rotate (rand (* Math/PI 2))])
+                       2 (fn [] [:fork 0])
+                       0 (fn [] [:halt 0])
+                       2 (fn [] [:color [:color :rainbow1]])
+                       1 (fn [] [:color [0 0 0 10]])))))
 
 (defn generate-program [n]
   (repeatedly n generate-instruction))
 
+(defn make-random-automata [position]
+  (let [program (generate-program (+ 2 (rand-int 10)))]
+    (print {:position position :program program})
+    {:position position
+     :heading (* 3 (/ Math/PI 2))
+     :last-position nil
+     :state :running
+     :color [0 0 0 10]
+     :ip 0
+     :program program}))
+
 (defn setup
   []
   (q/background "white")
-  (let [program (generate-program (+ 2 (rand-int 5)))]
-    (print program)
-    {:automata [(make-automata program)]})) 
+  {:automata [(make-random-automata [100 100])
+              (make-random-automata [300 100])
+              (make-random-automata [100 300])
+              (make-random-automata [300 300])]})
 
 (defn update-state
   [state]
@@ -156,4 +176,3 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode]))
-
