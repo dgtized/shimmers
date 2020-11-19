@@ -167,8 +167,32 @@
               1 (fn [] [:color [255 255 255 255]])
               1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
+(defn simplify-program
+  "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
+  [program]
+  (transduce
+   (comp (partition-by (fn [val] [(first val) (vector? (second val))]))
+         (mapcat (fn [snippet]
+                   (let [[op arg] (first snippet)]
+                     (case op
+                       :rotate (if (vector? arg)
+                                 snippet
+                                 [[:rotate (reduce + (map second snippet))]]) ;; sum up consecutive rotations
+                       :forward (if (vector? arg)
+                                  snippet
+                                  [[:forward (reduce + (map second snippet))]]) ;; sum up consecutive forwards
+                       :color [(last snippet)] ;; last color wins
+                       :heading [(last snippet)] ;; last heading wins
+                       snippet)))))
+   conj program))
+
+(comment
+  (partition-by first [[:color [:gradient :rainbow1]] [:color [:gradient :rainbow1]]])
+  (def sprogram [[:color [:gradient :rainbow1]] [:color [:gradient :rainbow1]] [:rotate 0.1] [:rotate 0.2] [:rotate [:random 5]] [:rotate [:random 5]] [:color [0 0 0 0]]])
+  (simplify-program sprogram))
+
 (defn generate-program
-  ([] (generate-program (+ 3 (rand-int 10))))
+  ([] (simplify-program (generate-program (+ 3 (rand-int 10)))))
   ([n] (repeatedly n generate-instruction)))
 
 (defn prettify-instruction [instruction]
