@@ -10,10 +10,6 @@
         options))
     [[op argument]]))
 
-(comment (mapcat collapse-trivial-one-of [[:one-of [[:forward 1]]]])
-         (mapcat collapse-trivial-one-of [[:one-of [[:forward 1] [:one-of [[:forward 2]]]]]])
-         (mapcat collapse-trivial-one-of [[:one-of []]]))
-
 (defn collapse-commutative-groups
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
   [snippet]
@@ -36,8 +32,3 @@
          (partition-by (fn [val] [(first val) (vector? (second val))]))
          (mapcat collapse-commutative-groups))
    conj program))
-
-(comment
-  (partition-by first [[:color [:gradient :rainbow1]] [:color [:gradient :rainbow1]]])
-  (def sprogram [[:color [:gradient :rainbow1]] [:color [:gradient :rainbow1]] [:rotate 0.1] [:rotate 0.2] [:rotate [:random 5]] [:rotate [:random 5]] [:color [0 0 0 0]]])
-  (simplify-program sprogram))
