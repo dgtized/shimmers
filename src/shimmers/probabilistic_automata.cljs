@@ -120,16 +120,16 @@
 (def test-random [[:forward [:random 50]] [:rotate 1]])
 (def test-goto [[:forward 100] [:rotate 1] [:forward 20] [:goto 1]])
 
-(def test-interesting [[:rotate 4.2]
-                       [:rotate 0.8]
-                       [:one-of [[:forward 18.0]
-                                 [:halt 0.0]
-                                 [:rotate -0.8]]]
-                       [:fork 0.0]
-                       [:rotate -0.1]
-                       [:forward 23.0]
-                       [:heading 4.8]
-                       [:rotate 0.3]])
+(def test-interesting
+  [[:rotate 5]
+   [:one-of [[:forward 18]
+             [:halt 0]
+             [:rotate -0.8]]]
+   [:fork 0]
+   [:rotate -0.1]
+   [:forward 23]
+   [:heading 4.8]
+   [:rotate 0.3]])
 
 (def test-interesting2
   [[:forward 42]
