@@ -131,19 +131,19 @@
                        [:heading 4.8]
                        [:rotate 0.3]])
 
-(def test-interesting2 [[:forward 42.0]
-                        [:fork 0.0]
-                        [:color [0 0 0 10]]
-                        [:heading 2.4]
-                        [:one-of [[:forward 43.0]
-                                  [:halt 0.0]
-                                  [:fork 0.0]
-                                  [:rotate 4.2]]]
-                        [:fork 0.0]
-                        [:rotate -0.9]
-                        [:color [:gradient :rainbow1]]
-                        [:color [:gradient :rainbow1]]
-                        [:rotate 2.1]])
+(def test-interesting2
+  [[:forward 42]
+   [:fork 0]
+   [:color [0 0 0 10]]
+   [:heading 2.4]
+   [:one-of [[:forward 43]
+             [:halt 0]
+             [:fork 0]
+             [:rotate 4.2]]]
+   [:fork 0]
+   [:rotate -0.9]
+   [:color [:gradient :rainbow1]]
+   [:rotate 2.1]])
 
 (def interesting-star-grid [[:forward 1.0]
                             [:one-of [[:fork 0.0]
