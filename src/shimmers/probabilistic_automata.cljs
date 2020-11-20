@@ -100,24 +100,27 @@
          (mapcat collapse-trivial-one-of [[:one-of [[:forward 1] [:one-of [[:forward 2]]]]]])
          (mapcat collapse-trivial-one-of [[:one-of []]]))
 
-(defn simplify-program
+(defn collapse-commutative-groups
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
+  [snippet]
+  (let [[op arg] (first snippet)]
+    (case op
+      :rotate (if (vector? arg)
+                snippet
+                [[:rotate (reduce + (map second snippet))]]) ;; sum up consecutive rotations
+      :forward (if (vector? arg)
+                 snippet
+                 [[:forward (reduce + (map second snippet))]]) ;; sum up consecutive forwards
+      :color [(last snippet)] ;; last color wins
+      :heading [(last snippet)] ;; last heading wins
+      snippet)))
+
+(defn simplify-program
   [program]
   (transduce
    (comp (mapcat collapse-trivial-one-of)
          (partition-by (fn [val] [(first val) (vector? (second val))]))
-         (mapcat (fn [snippet]
-                   (let [[op arg] (first snippet)]
-                     (case op
-                       :rotate (if (vector? arg)
-                                 snippet
-                                 [[:rotate (reduce + (map second snippet))]]) ;; sum up consecutive rotations
-                       :forward (if (vector? arg)
-                                  snippet
-                                  [[:forward (reduce + (map second snippet))]]) ;; sum up consecutive forwards
-                       :color [(last snippet)] ;; last color wins
-                       :heading [(last snippet)] ;; last heading wins
-                       snippet)))))
+         (mapcat collapse-commutative-groups))
    conj program))
 
 (comment
