@@ -32,3 +32,22 @@
          (partition-by (fn [val] [(first val) (vector? (second val))]))
          (mapcat collapse-commutative-groups))
    conj program))
+
+(defn expand-possible-instructions
+  "For the purposes of detecting if a program does something meaningful before halting."
+  [program]
+  (mapcat (fn [[op argument]]
+            (if (= op :one-of)
+              ;; TODO: sort so halt instructions are last
+              (expand-possible-instructions argument)
+              [[op argument]]))
+          program))
+
+(defn accept-program?
+  [program]
+  (let [expanded (map first (expand-possible-instructions program))
+        up-to-halt (take-while #(not= % :halt) expanded)]
+    (boolean (some #{:forward} up-to-halt))))
+
+(comment (accept-program? [[:halt 0]])
+         (accept-program? [[:one-of [[:forward 1] [:halt 0]]] [:halt 0]]))

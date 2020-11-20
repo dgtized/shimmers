@@ -87,29 +87,10 @@
      1 (fn [] [:color [255 255 255 255]])
      1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
-(defn expand-possible-instructions
-  "For the purposes of detecting if a program does something meaningful before halting."
-  [program]
-  (mapcat (fn [[op argument]]
-            (if (= op :one-of)
-              ;; TODO: sort so halt instructions are last
-              (expand-possible-instructions argument)
-              [[op argument]]))
-          program))
-
-(defn accept-program?
-  [program]
-  (let [expanded (map first (expand-possible-instructions program))
-        up-to-halt (take-while #(not= % :halt) expanded)]
-    (boolean (some #{:forward} up-to-halt))))
-
-(comment (accept-program? [[:halt 0]])
-         (accept-program? [[:one-of [[:forward 1] [:halt 0]]] [:halt 0]]))
-
 (defn generate-program
   ([] (->> (fn [] (simplify/simplify-program (generate-program (+ 3 (rand-int 10)))))
            repeatedly
-           (filter accept-program?)
+           (filter simplify/accept-program?)
            first))
   ([n] (repeatedly n generate-instruction)))
 
