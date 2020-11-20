@@ -44,10 +44,8 @@
           program))
 
 (defn accept-program?
+  "Only accept programs that have a forward instruction before halting."
   [program]
   (let [expanded (map first (expand-possible-instructions program))
         up-to-halt (take-while #(not= % :halt) expanded)]
     (boolean (some #{:forward} up-to-halt))))
-
-(comment (accept-program? [[:halt 0]])
-         (accept-program? [[:one-of [[:forward 1] [:halt 0]]] [:halt 0]]))

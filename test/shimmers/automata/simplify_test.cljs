@@ -28,4 +28,10 @@
            [:rotate [:random 5]]
            [:color [0 0 0 0]]]))))
 
+(deftest accept-program
+  (is (not (sut/accept-program? [[:halt 0]])))
+  (is (sut/accept-program? [[:one-of [[:forward 1]
+                                      [:halt 0]]]
+                            [:halt 0]])))
+
 (run-tests)
