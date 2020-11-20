@@ -51,8 +51,8 @@
       `(c-for ~next-group ~(do-loop group body))
       (do-loop group body))))
 
-;; TODO doesn't work here, needs to be required as loop
-(comment (loop/downto [y (dec 5) 0] (println y))
+(comment (require-macros '[shimmers.macros.loop :as loop])
+         (loop/downto [y (dec 5) 0] (println y))
          (loop/upto [x 0 4] (println x))
          (loop/c-for [x 0 (< x 4) (inc x)] (println x))
          (macroexpand-1 '(loop/c-for [x 2 (>= x 0) (dec x)] (println x)))
