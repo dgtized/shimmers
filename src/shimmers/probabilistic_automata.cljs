@@ -67,7 +67,9 @@
   [automata]
   (let [alive (remove #(= (:state %) :halt) automata)
         forks (filter #(= (:state %) :forking) alive)]
-    (map execute (concat (take-last max-population alive) forks))))
+    (->> (concat alive forks)
+         (take-last max-population)
+         (map execute))))
 
 (defn generate-instruction []
   ((rand-nth
