@@ -192,13 +192,15 @@
     (setup)
     (update state :automata execute-all)))
 
+(defn draw-bot [{:keys [position last-position color]}]
+  (when (and last-position (not= position last-position))
+    (apply q/stroke color)
+    (q/line last-position position)))
+
 (defn draw
   [{:keys [automata]}]
-  (doseq [bot (filter #(= (:state %) :running) automata)
-          :let [{:keys [position last-position color]} bot]]
-    (when (and last-position (not= position last-position))
-      (apply q/stroke color)
-      (q/line last-position position)))
+  (doseq [bot (filter #(= (:state %) :running) automata)]
+    (draw-bot bot))
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
