@@ -1,6 +1,4 @@
 {:deps {org.clojure/clojurescript {:mvn/version "1.10.773"}
-        com.bhauman/figwheel-main {:mvn/version "0.2.12"}
-        com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
         ;; p5 is excluded so that the latest version can be provided through npm
         quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
 
@@ -10,8 +8,16 @@
         ;; clientside view rendering, routing, and HTML5 pushState support
         reagent/reagent {:mvn/version "1.0.0-alpha2"}
         bidi/bidi {:mvn/version "2.1.6"}
-        kibu/pushy {:mvn/version "0.3.8"}}
+        kibu/pushy {:mvn/version "0.3.8"}
+
+        ;; FIXME: these are dev only?
+        com.bhauman/figwheel-main {:mvn/version "0.2.12"}
+        com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}
+        com.bhauman/cljs-test-display {:mvn/version "0.1.1"}
+        }
  ;; setup some development paths
- :paths ["src" "target" "resources"]
+ :paths ["src" "target" "resources"
+         "test" ;; dev only
+         ]
  ;; setup a helpful alias to start the build
  :aliases {:build-dev {:main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}

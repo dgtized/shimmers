@@ -34,4 +34,4 @@
                                       [:halt 0]]]
                             [:halt 0]])))
 
-(run-tests)
+(comment (run-tests))

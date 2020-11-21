@@ -1,4 +1,6 @@
-^{:css-dirs ["resources/public/css"]}
+^{:css-dirs ["resources/public/css"]
+  :watch-dirs ["src" "test"]
+  :extra-main-files {:tests {:main shimmers.test-runner}}}
 {:main shimmers.core
 
  ;; used http://jmmk.github.io/javascript-externs-generator/ to create
@@ -15,4 +17,7 @@
  ;; :bundle-cmd {:none ["npx" "webpack" "--mode=development" :output-to "-o" :final-output-to]
  ;;              :default ["npx" "webpack" :output-to "-o" :final-output-to]}
  ;; :closure-defines {cljs.core/*global* "window"}
+
+ :closure-defines {cljs-test-display.core/notifications false
+                   cljs-test-display.core/printing false}
  }
