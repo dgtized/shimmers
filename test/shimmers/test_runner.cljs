@@ -5,6 +5,7 @@
 
 (enable-console-print!)
 
+;; to view, visit http://localhost:9500/figwheel-extra-main/tests
 (defn test-run []
   (cljs.test/run-tests
    (cljs-test-display.core/init! "app-tests")
