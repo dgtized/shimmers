@@ -4,6 +4,7 @@
             [goog.events :as events]
             [quil.core :as q :include-macros true]
             [shimmers.cube :as cube]
+            [shimmers.dithering :as dithering]
             [shimmers.framerate :as framerate]
             [shimmers.fire :as fire]
             [shimmers.fluid :as fluid]
@@ -64,6 +65,7 @@
    (loader/sketches-with-meta
     ;; :test-sketch test-sketch
     :cube cube/run-sketch
+    :dithering dithering/run-sketch
     :fire fire/run-sketch
     ;; :fluid fluid/run-sketch
     :noise-grid noise-grid/run-sketch
