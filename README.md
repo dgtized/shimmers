@@ -10,7 +10,10 @@ https://dgtized.github.io/shimmers
 
 ## Usage
 
-    $ clojure -m figwheel.main -b dev
+    $ bin/repl
+
+https://localhost:9500 shows main app,
+http://localhost:9500/figwheel-extra-main/tests shows test results.
 
 ## Release
 
