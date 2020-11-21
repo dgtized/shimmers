@@ -1,0 +1,9 @@
+#kaocha/v1
+{:tests [{:id :unit-cljs
+          :type :kaocha.type/cljs
+          :test-paths ["test"]
+          :source-paths ["src"]
+          ;; :cljs/repl-env cljs.repl.node/repl-env ; this is the default
+          ;; :cljs/repl-env cljs.repl.browser/repl-env
+          }]
+ :reporter [kaocha.report/documentation]}

@@ -24,4 +24,9 @@
    :extra-deps {com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
   :repl
   {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
-   :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}}}
+   :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
+  :test
+  {:extra-paths ["test"]
+   :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
+                lambdaisland/kaocha {:mvn/version "1.0.700"}
+                lambdaisland/kaocha-cljs {:mvn/version "0.0-71"}}}}}
