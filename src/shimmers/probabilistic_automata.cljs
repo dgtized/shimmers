@@ -107,8 +107,8 @@
       (print-str [op arg]))))
 
 (defn describe [bot]
-  [:p
-   "Program @ "(print-str (:position bot))
+  [:div
+   [:p "Program @ " (print-str (:position bot))]
    [:pre {:style {:font-size 10}}
     "[\n" (interpose [:br] (map prettify-instruction (:program bot))) "\n]"]])
 
