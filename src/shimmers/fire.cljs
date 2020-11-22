@@ -31,7 +31,7 @@
         :when (not= 0 dx dy)]
     [(+ x dx) (+ y dy)]))
 
-(defn update-state [{:keys [fire fuel size] :as state}]
+(defn update-fire [{:keys [fire fuel size] :as state}]
   (let [[xdim ydim] (nd/shape fire)]
     (loop/c-for [x 0 (< x xdim) (inc x)
                  y 0 (< y ydim) (inc y)]
@@ -48,8 +48,13 @@
                   [cx cy] (rand-nth candidates)
                   growth (nd/get-at fire cx cy)]
               (nd/set-at fire cx cy (min 1 (+ growth (* 0.3 heat)))))
-            )))))
-  state)
+            ))))
+    state))
+
+(defn update-state [state]
+  (if (= (mod (inc (q/frame-count)) 1000) 0)
+    (setup)
+    (update-fire state)))
 
 (defn paint [grid size color]
   (q/ellipse-mode :center)
