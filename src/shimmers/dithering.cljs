@@ -14,6 +14,20 @@
     (.hide capture)
     {:capture capture}))
 
+(defn idx [x y width]
+  (* 4 (+ x (* y width))))
+
+(defn read [pixels x y]
+  (aget pixels (idx x y width)))
+
+(defn write [pixels x y v]
+  (let [i (idx x y width)]
+    (when (and (>= i 0) (< i (* 4 width height)))
+      (aset pixels (+ i 0) v)
+      (aset pixels (+ i 1) v)
+      (aset pixels (+ i 2) v)
+      (aset pixels (+ i 3) 255))))
+
 ;; https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
 (defn dither [capture]
   (let [image (q/create-image width height)
@@ -22,12 +36,8 @@
         size (* 4 width height)]
     (dotimes [y height]
       (dotimes [x width]
-        (let [i (* 4 (+ x (* y width)))
-              v (if (> 100 (aget source (+ i 0))) 255 0)]
-          (aset target (+ i 0) v)
-          (aset target (+ i 1) v)
-          (aset target (+ i 2) v)
-          (aset target (+ i 3) 255))))
+        (let [v (read source x y)]
+          (write target x y v))))
     (q/update-pixels image)
     image))
 
