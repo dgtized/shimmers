@@ -3,6 +3,7 @@
             [goog.dom :as dom]
             [goog.events :as events]
             [quil.core :as q :include-macros true]
+            [reagent.dom :as rdom]
             [shimmers.cube :as cube]
             [shimmers.dithering :as dithering]
             [shimmers.framerate :as framerate]
@@ -14,8 +15,7 @@
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
-            [shimmers.ui :as ui]
-            [reagent.dom :as rdom]))
+            [shimmers.ui :as ui]))
 
 (enable-console-print!)
 
