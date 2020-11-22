@@ -1,8 +1,14 @@
 # shimmers
 
-Shimmering quil sketches
+Shimmering quil sketches; a few particle simulations, video processing
+experiments, randomly generated L-systems, 3d transformations, and cellular
+automata.
 
 https://dgtized.github.io/shimmers
+
+Note: Some sketches require camera input, so it will prompt for video
+permissions, but it's not transmitting the video anywhere, just processing it
+locally.
 
 ## Install
 
