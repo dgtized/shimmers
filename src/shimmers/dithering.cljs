@@ -38,8 +38,7 @@
 (defn dither [capture]
   (let [image (q/create-image width height)
         source(q/pixels capture)
-        target (q/pixels image)
-        size (* 4 width height)]
+        target (q/pixels image)]
     (dotimes [y height]
       (dotimes [x width]
         (let [old (read source x y)
