@@ -4,8 +4,8 @@
             [shimmers.macros.loop :as loop]
             [shimmers.framerate :as framerate]))
 
-(def width 256)
-(def height 192)
+(def width 320)
+(def height 240)
 
 (defn setup []
   (let [applet (quil.sketch/current-applet)
@@ -55,8 +55,8 @@
 
 (defn draw [{:keys [capture]}]
   (q/background 255)
-  (q/image (dither capture) 0 0)
-  (q/image capture (+ 10 width) 0)
+  (q/image (dither capture) 0 0 (* width 2) (* height 2))
+  ;; (q/image capture (+ 10 width) 0)
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
