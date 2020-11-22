@@ -14,7 +14,7 @@
        (drop 1)
        first))
 
-(def modes [:boxes :dither])
+(def modes [:dither :boxes :circles])
 (defn cycle-mode [state]
   {:mode (next-mode modes (:mode state))})
 
@@ -92,12 +92,28 @@
           ;; (println [x y c])
           (q/rect (* x 2 box-size ) (* y 2 box-size) size size))))))
 
+(defn circles [capture width height]
+  (q/rect-mode :corner)
+  (q/no-stroke)
+  (q/fill 0)
+  (let [box-size 3
+        pixels (q/pixels capture)]
+    (dotimes [y (/ height box-size)]
+      (dotimes [x (/ width box-size)]
+        (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
+              g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
+              b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
+              size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
+          ;; (println [x y c])
+          (q/ellipse (* x 2 box-size ) (* y 2 box-size) size size))))))
+
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
   (let [ui-mode (:mode (deref ui-state))]
     (case ui-mode
       :dither (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
-      :boxes (boxes capture width height)))
+      :boxes (boxes capture width height)
+      :circles (circles capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   (framerate/display (q/current-frame-rate)))
 
