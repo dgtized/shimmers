@@ -1,6 +1,10 @@
 #!/bin/bash -ex
 
-rm -rf resources/public/.git
+function cleanup() {
+    rm -rf resources/public/.git target
+}
+
+cleanup
 
 clojure -m figwheel.main -bo release
 
@@ -24,5 +28,5 @@ xdg-open index.html
 popd
 
 # cleanup nested .git, and checkout correct version of index.html
-rm -rf resources/public/.git
+cleanup
 git checkout resources/public/index.html
