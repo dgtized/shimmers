@@ -5,18 +5,13 @@
             [shimmers.framerate :as framerate]
             [reagent.dom :as rdom]
             [goog.dom :as dom]
-            [reagent.core :as r]))
-
-(defn next-mode [modes current]
-  (->> modes
-       cycle
-       (drop-while (fn [x] (not= current x)))
-       (drop 1)
-       first))
+            [reagent.core :as r]
+            [shimmers.ui :as ui]))
 
 (def modes [:dither :boxes :circles])
+
 (defn cycle-mode [state]
-  {:mode (next-mode modes (:mode state))})
+  {:mode (ui/cycle-next modes (:mode state))})
 
 (defonce ui-state (r/atom {:mode :dither}))
 

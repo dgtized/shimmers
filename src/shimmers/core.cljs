@@ -14,6 +14,7 @@
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
+            [shimmers.ui :as ui]
             [reagent.dom :as rdom]))
 
 (enable-console-print!)
@@ -30,13 +31,6 @@
     :setup (fn [] (q/background "white"))
     :draw (fn [] (q/point (q/random (q/width))
                          (q/random (q/height))))))
-
-(defn find-next-sketch [sketches current]
-  (->> sketches
-       cycle
-       (drop-while (fn [x] (not (= current (first x)))))
-       (drop 1)
-       first))
 
 (defn code-link [sketch]
   (if-let [{:keys [file line]} (:meta sketch)]
@@ -93,7 +87,7 @@
 
 (defn cycle-sketch []
   (let [{:keys [sketches current]} @state
-        [sketch-name _] (find-next-sketch sketches current)]
+        sketch-name (ui/cycle-next (keys sketches) current)]
     (swap! state assoc :current sketch-name)
     (restart-sketch)))
 
