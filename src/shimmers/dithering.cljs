@@ -2,7 +2,30 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.macros.loop :as loop]
-            [shimmers.framerate :as framerate]))
+            [shimmers.framerate :as framerate]
+            [reagent.dom :as rdom]
+            [goog.dom :as dom]
+            [reagent.core :as r]))
+
+(defn next-mode [modes current]
+  (->> modes
+       cycle
+       (drop-while (fn [x] (not= current x)))
+       (drop 1)
+       first))
+
+(def modes [:boxes :dither])
+(defn cycle-mode [state]
+  {:mode (next-mode modes (:mode state))})
+
+(defonce ui-state (r/atom {:mode :dither}))
+
+(defn render-interface []
+  (let [mode (:mode @ui-state)]
+    [:div {:style {:padding-left "2em" :padding-bottom "1em"}}
+     [:input {:type "button" :value "Cycle Mode"
+              :on-click #(swap! ui-state cycle-mode)}]
+     [:span {:style {:padding "1em"}} "Mode: " (name mode)]]))
 
 (defn setup []
   (let [width 320
@@ -11,6 +34,7 @@
         capture (.createCapture applet "video")]
     (.size capture width height)
     (.hide capture)
+    (rdom/render [render-interface] (dom/getElement "explanation"))
     {:width width
      :height height
      :capture capture}))
@@ -53,9 +77,27 @@
     (q/update-pixels image)
     image))
 
+(defn boxes [capture width height]
+  (q/rect-mode :corner)
+  (q/no-stroke)
+  (q/fill 0)
+  (let [box-size 3
+        pixels (q/pixels capture)]
+    (dotimes [y (/ height box-size)]
+      (dotimes [x (/ width box-size)]
+        (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
+              g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
+              b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
+              size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.75) 1)]
+          ;; (println [x y c])
+          (q/rect (* x 2 box-size ) (* y 2 box-size) size size))))))
+
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
-  (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
+  (let [ui-mode (:mode (deref ui-state))]
+    (case ui-mode
+      :dither (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
+      :boxes (boxes capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   (framerate/display (q/current-frame-rate)))
 
