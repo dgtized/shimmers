@@ -79,6 +79,9 @@
     ))
 
 (defn restart-sketch []
+  ;; force active video capture to stop
+  (doseq [video (dom/getElementsByTagName "video")]
+    (.stop (first (.getTracks (aget video "srcObject")))))
   ;; kill existing sketch
   (q/with-sketch (q/get-sketch-by-id "quil-host")
     (q/exit))
