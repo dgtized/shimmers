@@ -14,6 +14,9 @@
     (.hide capture)
     {:capture capture}))
 
+(defn closest-color [color]
+  (* 256 (q/round (/ color 256))))
+
 (defn idx [x y width]
   (* 4 (+ x (* y width))))
 
@@ -22,11 +25,14 @@
 
 (defn write [pixels x y v]
   (let [i (idx x y width)]
-    (when (and (>= i 0) (< i (* 4 width height)))
-      (aset pixels (+ i 0) v)
-      (aset pixels (+ i 1) v)
-      (aset pixels (+ i 2) v)
-      (aset pixels (+ i 3) 255))))
+    (aset pixels (+ i 0) v)
+    (aset pixels (+ i 1) v)
+    (aset pixels (+ i 2) v)
+    (aset pixels (+ i 3) 255)))
+
+(defn propagate [source x y error]
+  (let [i (idx x y width)]
+    (aset source i (+ error (aget source i)))))
 
 ;; https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
 (defn dither [capture]
@@ -36,8 +42,14 @@
         size (* 4 width height)]
     (dotimes [y height]
       (dotimes [x width]
-        (let [v (read source x y)]
-          (write target x y v))))
+        (let [old (read source x y)
+              new (closest-color old)
+              error (- old new)]
+          (write target x y new)
+          (propagate source (inc x) y (* error (/ 7 16)))
+          (propagate source (dec x) (inc y) (* error (/ 3 16)))
+          (propagate source x (inc y) (* error (/ 5 16)))
+          (propagate source (inc x) (inc y) (* error (/ 1 16))))))
     (q/update-pixels image)
     image))
 
