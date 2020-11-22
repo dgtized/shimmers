@@ -27,6 +27,9 @@
         height 240
         applet (quil.sketch/current-applet)
         capture (.createCapture applet "video")]
+    ;; TODO: use faceMode constraints to add controls to flip between "user"
+    ;; and "environment" for mobile use. See documentation @
+    ;; https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     (.size capture width height)
     (.hide capture)
     (rdom/render [render-interface] (dom/getElement "explanation"))
