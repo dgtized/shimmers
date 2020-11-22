@@ -8,7 +8,7 @@
             [reagent.core :as r]
             [shimmers.ui :as ui]))
 
-(def modes [:dither :boxes :circles])
+(def modes [:dither :boxes :circles :color-displace])
 
 (defn cycle-mode [state]
   {:mode (ui/cycle-next modes (:mode state))})
@@ -100,13 +100,38 @@
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
           (q/ellipse (* x 2 box-size ) (* y 2 box-size) size size))))))
 
+(defn color-displace [capture width height]
+  (q/rect-mode :corner)
+  (q/no-stroke)
+  (let [box-size 4
+        pixels (q/pixels capture)
+        displace (/ box-size 4)
+        v 200
+        a 128]
+    (dotimes [y (/ height box-size)]
+      (dotimes [x (/ width box-size)]
+        (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
+              g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
+              b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
+              rsize (q/map-range r 0 255 (* box-size 1.2) 0.2)
+              gsize (q/map-range g 0 255 (* box-size 1.2) 0.2)
+              bsize (q/map-range b 0 255 (* box-size 1.2) 0.2)]
+          (q/fill v 0 0 255)
+          (q/ellipse (+ (* x 2 box-size) displace) (+ (* y 2 box-size) displace) rsize rsize)
+          (q/fill 0 v 0 255)
+          (q/ellipse (+ (* x 2 box-size) (- displace)) (+ (* y 2 box-size) displace) gsize gsize)
+          (q/fill 0 0 v 48)
+          (q/ellipse (+ (* x 2 box-size) 0) (+ (* y 2 box-size) (- displace)) bsize bsize))))))
+
+
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
   (let [ui-mode (:mode (deref ui-state))]
     (case ui-mode
       :dither (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
       :boxes (boxes capture width height)
-      :circles (circles capture width height)))
+      :circles (circles capture width height)
+      :color-displace (color-displace capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   (framerate/display (q/current-frame-rate)))
 
