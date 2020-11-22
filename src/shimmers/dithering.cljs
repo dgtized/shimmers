@@ -84,7 +84,6 @@
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.75) 0.5)]
-          ;; (println [x y c])
           (q/rect (* x 2 box-size ) (* y 2 box-size) size size))))))
 
 (defn circles [capture width height]
@@ -99,7 +98,6 @@
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
-          ;; (println [x y c])
           (q/ellipse (* x 2 box-size ) (* y 2 box-size) size size))))))
 
 (defn draw [{:keys [capture width height]}]
