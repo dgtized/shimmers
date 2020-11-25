@@ -15,6 +15,7 @@
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
+            [shimmers.space-colonization :as space-colonization]
             [shimmers.ui :as ui]))
 
 (enable-console-print!)
@@ -65,9 +66,10 @@
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
+    :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch)
-   (init-sketches :particles)))
+   (init-sketches :space-colonization)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
