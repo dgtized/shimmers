@@ -83,7 +83,8 @@
              :attractors (remove prune attractors)))))
 
 (defn init-settings []
-  {:debug {:attractors true
+  {:attractor-power 8
+   :debug {:attractors true
            :bubbles false
            :influenced-by false
            :next-branch false}})
@@ -95,8 +96,9 @@
   {:influence-distance 24
    :prune-distance 4
    :segment-distance 4
-   :attractors (repeatedly 256 #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
-                                        (+ 30 (q/random (- (q/height) 40)))))
+   :attractors (repeatedly (Math/pow 2 (:attractor-power @settings))
+                           #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
+                                    (+ 30 (q/random (- (q/height) 40)))))
    :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]})
 
 (defn update-state [state]
@@ -158,8 +160,19 @@
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
+(Math/pow 2 2)
+
+(defn slider [label field-ref [lower upper]]
+  (let [value (get-in @settings field-ref)]
+    [:div
+     [:label (if (string? label) label (label value))]
+     [:input {:type "range" :value value :min lower :max upper
+              :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
+
 (defn explanation []
   [:div
+   (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
+           [:attractor-power] [4 10])
    (checkbox "Show Attractors" [:debug :attractors])
    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
