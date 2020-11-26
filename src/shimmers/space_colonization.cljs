@@ -72,7 +72,9 @@
                                    growth)))
                    set)]
     (if (and (empty? growth) (empty? prune))
-      state
+      (if (:completed-frame state)
+        state
+        (assoc state :completed-frame (q/frame-count)))
       (do
         (println {:growth (mapv :position growth)
                   :prune prune
@@ -91,9 +93,11 @@
    :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]})
 
 (defn update-state [state]
-  (grow state)
-  ;; state
-  )
+  (let [fc (q/frame-count)
+        diff (- fc (get state :completed-frame fc))]
+    (if (> (/ diff (q/current-frame-rate)) 5)
+      (setup)
+      (grow state))))
 
 (defn draw-attractor [[x y] influence prune]
   (q/stroke-weight 0.2)
