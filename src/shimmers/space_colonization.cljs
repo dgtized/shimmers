@@ -114,18 +114,8 @@
   (q/stroke "red")
   (q/ellipse x y prune prune))
 
-(defn draw [{:keys [attractors branches influence-distance prune-distance] :as state}]
-  (q/ellipse-mode :radius)
-  (q/background "white")
-  (q/no-fill)
-
-  (q/stroke "black")
-  (q/stroke-weight 0.5)
-  (doseq [branch branches]
-    (when-let [parent (:parent branch)]
-      (q/line (:position parent) (:position branch))))
-
-  (when (:debug @settings)
+(defn draw-debug [{:keys [attractors influence-distance prune-distance] :as state} options]
+  (when (:debug options)
     (doseq [[x y] attractors]
       (q/stroke-weight 1)
       (q/stroke "green")
@@ -145,6 +135,19 @@
         (q/line (:position branch)
                 (v/add (:position branch)
                        (v/scale (influence-direction branch influencers) 5)))))))
+
+(defn draw [{:keys [branches] :as state}]
+  (q/ellipse-mode :radius)
+  (q/background "white")
+  (q/no-fill)
+
+  (q/stroke "black")
+  (q/stroke-weight 0.5)
+  (doseq [branch branches]
+    (when-let [parent (:parent branch)]
+      (q/line (:position parent) (:position branch))))
+
+  (draw-debug state @settings))
 
 (defn explanation []
   (let [{:keys [debug]} @settings]
