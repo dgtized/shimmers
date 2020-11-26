@@ -97,7 +97,7 @@
    :segment-distance 5
    :attractors (repeatedly 256 #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
                                         (+ 30 (q/random (- (q/height) 40)))))
-   :branches [(make-branch nil (v/vec2 200 400))]})
+   :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]})
 
 (defn update-state [state]
   (grow state)
@@ -129,10 +129,8 @@
 (defn ^:export run-sketch []
   (q/defsketch space-colonization
     :host "quil-host"
-    :size [400 400]
+    :size [200 200]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode]))
-
-
