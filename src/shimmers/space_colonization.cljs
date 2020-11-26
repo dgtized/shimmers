@@ -7,9 +7,43 @@
             [shimmers.math.vector :as v]
             [shimmers.framerate :as framerate]))
 
+(defn make-branch [parent position]
+  {:position position :parent parent})
+
+(defn grow-branch [parent direction length]
+  (make-branch parent
+               (v/add (:position parent)
+                      (v/scale direction length))))
+
+(defn branch-distance [attractor branch]
+  (v/distance attractor (:position branch)))
+
+(defn influenced-branches [attractor influence branches]
+  (filter (fn [branch] (< (branch-distance attractor branch) influence))
+          branches))
+
+(defn closest-branch [attractor branches]
+  (apply min-key (partial branch-distance attractor) branches))
+
+(defn average-attraction [branch attractors]
+  (-> (->> attractors
+           (map #(v/normalize (v/sub % (:position branch))))
+           (reduce v/add))
+      (v/scale (/ 1 (count attractors)))
+      v/normalize))
+
+(defn grow [state]
+  (let [influencing-attractors (into {} (for [attractor (:attractors state)]
+                                          [attractor (map influenced-branches (:branches state))]))]
+    state))
+
 (defn setup []
-  {:attractors (repeatedly 128 #(v/vec2 (+ 10 (q/random (- (q/width) 20)))
-                                        (+ 10 (q/random (- (q/height) 50)))))})
+  {:influence-distance 50
+   :prune-distance 10
+   :segment-distance 5
+   :attractors (repeatedly 128 #(v/vec2 (+ 10 (q/random (- (q/width) 20)))
+                                        (+ 10 (q/random (- (q/height) 50)))))
+   :branches [(make-branch (v/vec2 200 400) nil)]})
 
 (defn update-state [state]
   state)
