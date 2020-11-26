@@ -76,11 +76,11 @@
                :attractors (remove prune (:attractors state)))))))
 
 (defn setup []
-  {:influence-distance 75
-   :prune-distance 40
+  {:influence-distance 40
+   :prune-distance 5
    :segment-distance 5
-   :attractors (repeatedly 512 #(v/vec2 (+ 10 (q/random (- (q/width) 20)))
-                                        (+ 10 (q/random (- (q/height) 50)))))
+   :attractors (repeatedly 256 #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
+                                        (+ 30 (q/random (- (q/height) 40)))))
    :branches [(make-branch nil (v/vec2 200 400))]})
 
 (defn update-state [state]
