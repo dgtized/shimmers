@@ -38,10 +38,10 @@
       (v/scale (/ 1 (count attractors)))
       v/normalize))
 
-(defn influencing-attractors [state]
+(defn influencing-attractors [{:keys [attractors influence-distance branches]}]
   (into {}
-        (for [attractor (:attractors state)
-              :let [influences (influenced-branches attractor (:influence-distance state) (:branches state))]
+        (for [attractor attractors
+              :let [influences (influenced-branches attractor influence-distance branches)]
               :when (seq influences)]
           [attractor influences])))
 
@@ -49,20 +49,22 @@
   (filter (fn [attractor] (< (branch-distance attractor branch) influence-distance))
           attractors))
 
-(defn grow [state]
+(defn grow [{:keys [influence-distance segment-distance prune-distance
+                    branches attractors]
+             :as state}]
   (let [influencers (influencing-attractors state)
         closest-branches (distinct (for [[attractor influences] influencers]
                                      (closest-branch attractor influences)))
         growth (for [closest closest-branches
                      :let [direction (->> (keys influencers)
-                                          (influenced-by closest (:influence-distance state))
+                                          (influenced-by closest influence-distance)
                                           (average-attraction closest))]]
-                 (grow-branch closest direction (:segment-distance state)))
+                 (grow-branch closest direction segment-distance))
         prune (->> influencers
                    keys
                    (filter (fn [attractor]
                              (some (fn [branch] (< (branch-distance attractor branch)
-                                                  (:prune-distance state)))
+                                                  prune-distance))
                                    growth)))
                    set)]
     (if (and (empty? growth) (empty? prune))
@@ -70,10 +72,10 @@
       (do
         (println {:growth (mapv :position growth)
                   :prune prune
-                  :branches (count (:branches state))})
+                  :branches (count branches)})
         (assoc state
-               :branches (concat (:branches state) growth)
-               :attractors (remove prune (:attractors state)))))))
+               :branches (concat branches growth)
+               :attractors (remove prune attractors))))))
 
 (defn setup []
   {:influence-distance 40
