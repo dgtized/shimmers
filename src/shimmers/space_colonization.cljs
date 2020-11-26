@@ -1,9 +1,12 @@
-(ns shimmers.space-colonization
+(ns ^:figwheel-hooks shimmers.space-colonization
   "Inspired by https://thecodingtrain.com/CodingChallenges/017-spacecolonizer.html and
   https://medium.com/@jason.webb/space-colonization-algorithm-in-javascript-6f683b743dc5
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
-  (:require [quil.core :as q :include-macros true]
+  (:require [goog.dom :as dom]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [reagent.core :as r]
+            [reagent.dom :as rdom]
             [shimmers.math.vector :as v]))
 
 (defn make-branch [parent position]
@@ -83,6 +86,11 @@
                :branches (concat branches growth)
                :attractors (remove prune attractors))))))
 
+(defn init-settings []
+  {:debug false})
+
+(defonce settings (r/atom (init-settings)))
+
 (defn setup []
   (q/frame-rate 10)
   {:influence-distance 24
@@ -120,23 +128,38 @@
     (when-let [parent (:parent branch)]
       (q/line (:position parent) (:position branch))))
 
-  (let [influencers (influencing-attractors state)]
-    (doseq [[attractor branch] influencers
-            :let [[x y] attractor]]
-      (draw-attractor attractor influence-distance prune-distance)
+  (when (:debug @settings)
+    (let [influencers (influencing-attractors state)]
+      (doseq [[attractor branch] influencers
+              :let [[x y] attractor]]
+        (draw-attractor attractor influence-distance prune-distance)
 
-      (q/stroke-weight 0.05)
-      (q/stroke 128 128)
-      (q/line (:position branch) attractor)
+        (q/stroke-weight 0.05)
+        (q/stroke 128 128)
+        (q/line (:position branch) attractor)
 
-      (q/stroke-weight 0.2)
-      (q/stroke 0 0 200 128)
-      (q/line (:position branch)
-              (v/add (:position branch)
-                     (v/scale (influence-direction branch influencers) 5)))))
-  )
+        (q/stroke-weight 0.2)
+        (q/stroke 0 0 200 128)
+        (q/line (:position branch)
+                (v/add (:position branch)
+                       (v/scale (influence-direction branch influencers) 5)))))))
+
+(defn explanation []
+  (let [{:keys [debug]} @settings]
+    [:div
+     [:input {:type "checkbox" :checked debug
+              :on-click #(swap! settings update-in [:debug] not)}]
+     [:label "Debug"]]))
+
+(defn mount-reagent
+  "Mounts reagent component to render in explanation element.
+
+  Helper method so it can be invoked on run-sketch OR on figwheel reload."
+  []
+  (rdom/render [explanation] (dom/getElement "explanation")))
 
 (defn ^:export run-sketch []
+  (mount-reagent)
   (q/defsketch space-colonization
     :host "quil-host"
     :size [200 200]
@@ -144,3 +167,7 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode]))
+
+;; reload reagent components after figwheel save
+(defn ^:after-load after-reload []
+  (mount-reagent))
