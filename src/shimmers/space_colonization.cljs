@@ -118,10 +118,7 @@
   (q/ellipse-mode :radius)
   (q/background "white")
   (q/no-fill)
-  (doseq [[x y] attractors]
-    (q/stroke-weight 1)
-    (q/stroke "green")
-    (q/point x y))
+
   (q/stroke "black")
   (q/stroke-weight 0.5)
   (doseq [branch branches]
@@ -129,6 +126,11 @@
       (q/line (:position parent) (:position branch))))
 
   (when (:debug @settings)
+    (doseq [[x y] attractors]
+      (q/stroke-weight 1)
+      (q/stroke "green")
+      (q/point x y))
+
     (let [influencers (influencing-attractors state)]
       (doseq [[attractor branch] influencers
               :let [[x y] attractor]]
