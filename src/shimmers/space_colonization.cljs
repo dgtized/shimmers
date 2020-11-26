@@ -45,9 +45,10 @@
 
 (defn grow [state]
   (let [influencers (influencing-attractors state)
-        growth (for [[attractor influences] influencers
-                     :let [closest (closest-branch attractor influences)
-                           direction (->> (keys influencers)
+        closest-branches (distinct (for [[attractor influences] influencers]
+                                     (closest-branch attractor influences)))
+        growth (for [closest closest-branches
+                     :let [direction (->> (keys influencers)
                                           (influenced-by closest (:influence-distance state))
                                           (average-attraction closest))]]
                  (grow-branch closest direction (:segment-distance state)))
