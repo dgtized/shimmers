@@ -58,13 +58,13 @@
                                                   (:prune-distance state)))
                                    growth)))
                    set)]
-    (if (or (seq growth) (seq prune))
+    (if (and (empty? growth) (empty? prune))
+      state
       (do
         (println {:growth (mapv :position growth) :prune prune})
         (assoc state
                :branches (concat (:branches state) growth)
-               :attractors (remove prune (:attractors state))))
-      state)))
+               :attractors (remove prune (:attractors state)))))))
 
 (defn setup []
   {:influence-distance 120
