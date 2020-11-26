@@ -83,7 +83,10 @@
              :attractors (remove prune attractors)))))
 
 (defn init-settings []
-  {:attractor-power 8
+  {:influence-distance 24
+   :prune-distance 4
+   :segment-distance 4
+   :attractor-power 8
    :debug {:attractors true
            :bubbles false
            :influenced-by false
@@ -93,13 +96,15 @@
 
 (defn setup []
   (q/frame-rate 10)
-  {:influence-distance 24
-   :prune-distance 4
-   :segment-distance 4
-   :attractors (repeatedly (Math/pow 2 (:attractor-power @settings))
-                           #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
-                                    (+ 30 (q/random (- (q/height) 40)))))
-   :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]})
+  (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
+        @settings]
+    {:influence-distance influence-distance
+     :prune-distance prune-distance
+     :segment-distance segment-distance
+     :attractors (repeatedly (Math/pow 2 attractor-power)
+                             #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
+                                      (+ 30 (q/random (- (q/height) 40)))))
+     :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]}))
 
 (defn update-state [state]
   (let [fc (q/frame-count)
@@ -166,7 +171,7 @@
 (defn slider [label field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
     [:div
-     [:label (if (string? label) label (label value))]
+     [:label (label value)]
      [:input {:type "range" :value value :min lower :max upper
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
 
@@ -174,6 +179,12 @@
   [:div
    (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
            [:attractor-power] [4 10])
+   (slider (fn [v] (str "Influence Distance " v))
+           [:influence-distance] [10 50])
+   (slider (fn [v] (str "Prune Distance " v))
+           [:prune-distance] [2 30])
+   (slider (fn [v] (str "Segment Distance " v))
+           [:segment-distance] [2 20])
    (checkbox "Show Attractors" [:debug :attractors])
    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
