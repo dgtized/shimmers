@@ -4,8 +4,7 @@
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.math.vector :as v]
-            [shimmers.framerate :as framerate]))
+            [shimmers.math.vector :as v]))
 
 (defn make-branch [parent position]
   {:position position :parent parent})
