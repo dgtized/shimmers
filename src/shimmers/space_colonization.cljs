@@ -155,7 +155,7 @@
 (defn checkbox [label field-ref]
   [:div
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
-            :on-click #(swap! settings update-in field-ref not)}]
+            :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
 (defn explanation []
