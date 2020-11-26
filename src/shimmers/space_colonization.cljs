@@ -147,7 +147,8 @@
   (q/no-fill)
 
   (q/stroke "black")
-  (q/stroke-weight 0.5)
+  (q/stroke-weight 0.2) ;; TODO: back propagate weight based on children
+
   (doseq [branch branches]
     (when-let [parent (:parent branch)]
       (q/line (:position parent) (:position branch))))
