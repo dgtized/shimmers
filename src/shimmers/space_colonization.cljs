@@ -68,7 +68,9 @@
     (if (and (empty? growth) (empty? prune))
       state
       (do
-        (println {:growth (mapv :position growth) :prune prune})
+        (println {:growth (mapv :position growth)
+                  :prune prune
+                  :branches (count (:branches state))})
         (assoc state
                :branches (concat (:branches state) growth)
                :attractors (remove prune (:attractors state)))))))
