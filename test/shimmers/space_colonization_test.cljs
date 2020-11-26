@@ -5,7 +5,7 @@
             [shimmers.math.vector :as v]))
 
 (deftest closest
-  (is (= (v/vec2 2 1)
+  (is (= {:position (v/vec2 2 1)}
          (sut/closest-branch (v/vec2 1 1)
                              [{:position (v/vec2 3 3)}
                               {:position (v/vec2 2 2)}
