@@ -53,25 +53,20 @@
         (for [attractor attractors
               :let [influences (influenced-branches attractor influence-distance branches)]
               :when (seq influences)]
-          [attractor influences])))
+          [attractor (closest-branch attractor influences)])))
 
-(defn influenced-by [branch influence-distance attractors]
-  (filter (fn [attractor] (< (branch-distance attractor branch) influence-distance))
-          attractors))
-
-(defn influence-direction [closest influence-distance attractors]
-  (->> attractors
-       (influenced-by closest influence-distance)
+(defn influence-direction [closest influencers]
+  (->> influencers
+       (keep (fn [[attractor branch]] (when (= branch closest) attractor)))
        (average-attraction closest)))
 
 (defn grow [{:keys [influence-distance segment-distance prune-distance
                     branches attractors]
              :as state}]
   (let [influencers (influencing-attractors state)
-        closest-branches (distinct (for [[attractor influences] influencers]
-                                     (closest-branch attractor influences)))
+        closest-branches (vals influencers)
         growth (for [closest closest-branches
-                     :let [direction (influence-direction closest influence-distance (keys influencers))]]
+                     :let [direction (influence-direction closest influencers)]]
                  (grow-branch closest direction segment-distance))
         prune (->> influencers
                    keys
@@ -126,19 +121,19 @@
       (q/line (:position parent) (:position branch))))
 
   (let [influencers (influencing-attractors state)]
-    (doseq [[attractor influences] influencers
+    (doseq [[attractor branch] influencers
             :let [[x y] attractor]]
       (draw-attractor attractor influence-distance prune-distance)
-      (doseq [branch influences]
-        (q/stroke-weight 0.05)
-        (q/stroke 128 128)
-        (q/line (:position branch) attractor))
-      (let [closest (closest-branch attractor influences)]
-        (q/stroke-weight 0.2)
-        (q/stroke 0 0 200 128)
-        (q/line (:position closest)
-                (v/add (:position closest)
-                       (v/scale (influence-direction closest influence-distance (keys influencers)) 5))))))
+
+      (q/stroke-weight 0.05)
+      (q/stroke 128 128)
+      (q/line (:position branch) attractor)
+
+      (q/stroke-weight 0.2)
+      (q/stroke 0 0 200 128)
+      (q/line (:position branch)
+              (v/add (:position branch)
+                     (v/scale (influence-direction branch influencers) 5)))))
   )
 
 (defn ^:export run-sketch []
