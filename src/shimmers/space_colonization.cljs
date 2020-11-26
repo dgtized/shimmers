@@ -83,7 +83,10 @@
              :attractors (remove prune attractors)))))
 
 (defn init-settings []
-  {:debug false})
+  {:debug {:attractors true
+           :bubbles false
+           :influenced-by false
+           :next-branch false}})
 
 (defonce settings (r/atom (init-settings)))
 
@@ -110,27 +113,31 @@
   (q/stroke "red")
   (q/ellipse x y prune prune))
 
-(defn draw-debug [{:keys [attractors influence-distance prune-distance] :as state} options]
-  (when (:debug options)
+(defn draw-debug [{:keys [attractors influence-distance prune-distance] :as state} debug]
+  (when (:attractors debug)
     (doseq [[x y] attractors]
       (q/stroke-weight 1)
       (q/stroke "green")
-      (q/point x y))
+      (q/point x y)))
 
+  (when ((some-fn :bubbles :influenced-by :next-branch) debug)
     (let [influencers (influencing-attractors state)]
       (doseq [[attractor branch] influencers
               :let [[x y] attractor]]
-        (draw-attractor attractor influence-distance prune-distance)
+        (when (:bubbles debug)
+          (draw-attractor attractor influence-distance prune-distance))
 
-        (q/stroke-weight 0.05)
-        (q/stroke 128 128)
-        (q/line (:position branch) attractor)
+        (when (:influenced-by debug)
+          (q/stroke-weight 0.05)
+          (q/stroke 128 128)
+          (q/line (:position branch) attractor))
 
-        (q/stroke-weight 0.2)
-        (q/stroke 0 0 200 128)
-        (q/line (:position branch)
-                (v/add (:position branch)
-                       (v/scale (influence-direction branch influencers) 5)))))))
+        (when (:next-branch debug)
+          (q/stroke-weight 0.2)
+          (q/stroke 0 0 200 128)
+          (q/line (:position branch)
+                  (v/add (:position branch)
+                         (v/scale (influence-direction branch influencers) 5))))))))
 
 (defn draw [{:keys [branches] :as state}]
   (q/ellipse-mode :radius)
@@ -143,14 +150,20 @@
     (when-let [parent (:parent branch)]
       (q/line (:position parent) (:position branch))))
 
-  (draw-debug state @settings))
+  (draw-debug state (:debug @settings)))
+
+(defn checkbox [label field-ref]
+  [:div
+   [:input {:type "checkbox" :checked (get-in @settings field-ref)
+            :on-click #(swap! settings update-in field-ref not)}]
+   [:label label]])
 
 (defn explanation []
-  (let [{:keys [debug]} @settings]
-    [:div
-     [:input {:type "checkbox" :checked debug
-              :on-click #(swap! settings update-in [:debug] not)}]
-     [:label "Debug"]]))
+  [:div
+   (checkbox "Show Attractors" [:debug :attractors])
+   (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
+   (checkbox "Show Influence-By Lines" [:debug :influenced-by])
+   (checkbox "Show Next Branch Direction" [:debug :next-branch])])
 
 (defn mount-reagent
   "Mounts reagent component to render in explanation element.
