@@ -24,10 +24,6 @@
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
 
-(comment
-  (closest-branch (v/vec2 1 1)
-                  [{:position (v/vec2 3 3)} {:position (v/vec2 2 2)} {:position (v/vec2 2 1)}]))
-
 (defn jitter [lower upper]
   (let [r (- upper lower)]
     (v/vec2 (+ (rand r) lower) (+ (rand r) lower))))
