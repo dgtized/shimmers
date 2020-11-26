@@ -105,26 +105,41 @@
   )
 
 (defn draw-attractor [[x y] influence prune]
-  (q/stroke-weight 1)
-  (q/stroke "green")
-  (q/point x y)
   (q/stroke-weight 0.2)
   (q/stroke "lightblue")
   (q/ellipse x y influence influence)
   (q/stroke "red")
   (q/ellipse x y prune prune))
 
-(defn draw [{:keys [attractors branches influence-distance prune-distance]}]
+(defn draw [{:keys [attractors branches influence-distance prune-distance] :as state}]
   (q/ellipse-mode :radius)
   (q/background "white")
   (q/no-fill)
-  (doseq [p attractors]
-    (draw-attractor p influence-distance prune-distance))
+  (doseq [[x y] attractors]
+    (q/stroke-weight 1)
+    (q/stroke "green")
+    (q/point x y))
   (q/stroke "black")
   (q/stroke-weight 0.5)
   (doseq [branch branches]
     (when-let [parent (:parent branch)]
-      (q/line (:position parent) (:position branch)))))
+      (q/line (:position parent) (:position branch))))
+
+  (let [influencers (influencing-attractors state)]
+    (doseq [[attractor influences] influencers
+            :let [[x y] attractor]]
+      (draw-attractor attractor influence-distance prune-distance)
+      (doseq [branch influences]
+        (q/stroke-weight 0.05)
+        (q/stroke 128 128)
+        (q/line (:position branch) attractor))
+      (let [closest (closest-branch attractor influences)]
+        (q/stroke-weight 0.2)
+        (q/stroke 0 0 200 128)
+        (q/line (:position closest)
+                (v/add (:position closest)
+                       (v/scale (influence-direction closest influence-distance (keys influencers)) 5))))))
+  )
 
 (defn ^:export run-sketch []
   (q/defsketch space-colonization
