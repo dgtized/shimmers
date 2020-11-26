@@ -21,6 +21,15 @@
 
 (defonce settings (r/atom (init-settings)))
 
+;; Ideas:
+;;  * attractors could have influence PER attractor instead of global, or a weight on their influence?
+;;  * some implementations have a branching likelyhood, or can just experiment with only creating one leaf per branch per cycle?
+;;    - using distinct on closest branch kinda does this, but looks odd, maybe (take 2) of each unique branch or only N per iteration?
+;;    - need kd-tree, or voronoi for faster "closest" lookups
+;;  * build up an initial trunk if no attractors are in range?
+;;  * add more weight to roots of the tree
+;;  * improve rules for detecting steady state completion
+;;  * grow to fit shapes or other distributions of attractors
 (defn make-branch [parent position]
   {:position position :parent parent})
 
