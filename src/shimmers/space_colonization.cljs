@@ -59,6 +59,11 @@
   (filter (fn [attractor] (< (branch-distance attractor branch) influence-distance))
           attractors))
 
+(defn influence-direction [closest influence-distance attractors]
+  (->> attractors
+       (influenced-by closest influence-distance)
+       (average-attraction closest)))
+
 (defn grow [{:keys [influence-distance segment-distance prune-distance
                     branches attractors]
              :as state}]
@@ -66,9 +71,7 @@
         closest-branches (distinct (for [[attractor influences] influencers]
                                      (closest-branch attractor influences)))
         growth (for [closest closest-branches
-                     :let [direction (->> (keys influencers)
-                                          (influenced-by closest influence-distance)
-                                          (average-attraction closest))]]
+                     :let [direction (influence-direction closest influence-distance (keys influencers))]]
                  (grow-branch closest direction segment-distance))
         prune (->> influencers
                    keys
