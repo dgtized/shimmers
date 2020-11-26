@@ -77,6 +77,7 @@
                :attractors (remove prune attractors))))))
 
 (defn setup []
+  (q/frame-rate 10)
   {:influence-distance 40
    :prune-distance 5
    :segment-distance 5
