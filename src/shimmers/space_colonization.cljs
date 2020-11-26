@@ -78,13 +78,9 @@
       (if (:completed-frame state)
         state
         (assoc state :completed-frame (q/frame-count)))
-      (do
-        (println {:growth (mapv :position growth)
-                  :prune prune
-                  :branches (count branches)})
-        (assoc state
-               :branches (concat branches growth)
-               :attractors (remove prune attractors))))))
+      (assoc state
+             :branches (concat branches growth)
+             :attractors (remove prune attractors)))))
 
 (defn init-settings []
   {:debug false})
