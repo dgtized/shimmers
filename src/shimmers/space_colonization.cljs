@@ -9,6 +9,18 @@
             [reagent.dom :as rdom]
             [shimmers.math.vector :as v]))
 
+(defn init-settings []
+  {:influence-distance 24
+   :prune-distance 4
+   :segment-distance 4
+   :attractor-power 8
+   :debug {:attractors true
+           :bubbles false
+           :influenced-by false
+           :next-branch false}})
+
+(defonce settings (r/atom (init-settings)))
+
 (defn make-branch [parent position]
   {:position position :parent parent})
 
@@ -81,18 +93,6 @@
       (assoc state
              :branches (concat branches growth)
              :attractors (remove prune attractors)))))
-
-(defn init-settings []
-  {:influence-distance 24
-   :prune-distance 4
-   :segment-distance 4
-   :attractor-power 8
-   :debug {:attractors true
-           :bubbles false
-           :influenced-by false
-           :next-branch false}})
-
-(defonce settings (r/atom (init-settings)))
 
 (defn setup []
   (q/frame-rate 10)
