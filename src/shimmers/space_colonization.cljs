@@ -47,7 +47,7 @@
   (-> (->> attractors
            (map #(v/normalize (v/sub % (:position branch))))
            (reduce v/add))
-      (v/add (jitter -0.2 0.2))
+      (v/add (jitter -0.1 0.1))
       v/normalize
       (v/scale (/ 1 (count attractors)))
       v/normalize))
