@@ -90,10 +90,11 @@
   )
 
 (defn draw [{:keys [attractors branches]}]
-  (q/background "black")
-  (q/stroke "white")
+  (q/background "white")
+  (q/stroke "green")
   (doseq [p attractors]
     (apply q/point p))
+  (q/stroke "black")
   (doseq [branch branches]
     (when-let [parent (:parent branch)]
       (q/line (:position parent) (:position branch)))))
