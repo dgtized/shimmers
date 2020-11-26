@@ -32,7 +32,7 @@
   (-> (->> attractors
            (map #(v/normalize (v/sub % (:position branch))))
            (reduce v/add))
-      (v/add (jitter -2 2))
+      (v/add (jitter -0.2 0.2))
       v/normalize
       (v/scale (/ 1 (count attractors)))
       v/normalize))
@@ -83,9 +83,9 @@
 
 (defn setup []
   (q/frame-rate 10)
-  {:influence-distance 40
-   :prune-distance 5
-   :segment-distance 5
+  {:influence-distance 24
+   :prune-distance 4
+   :segment-distance 4
    :attractors (repeatedly 256 #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
                                         (+ 30 (q/random (- (q/height) 40)))))
    :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]})
