@@ -89,12 +89,24 @@
   ;; state
   )
 
-(defn draw [{:keys [attractors branches]}]
-  (q/background "white")
+(defn draw-attractor [[x y] influence prune]
+  (q/stroke-weight 1)
   (q/stroke "green")
+  (q/point x y)
+  (q/stroke-weight 0.2)
+  (q/stroke "lightblue")
+  (q/ellipse x y influence influence)
+  (q/stroke "red")
+  (q/ellipse x y prune prune))
+
+(defn draw [{:keys [attractors branches influence-distance prune-distance]}]
+  (q/ellipse-mode :radius)
+  (q/background "white")
+  (q/no-fill)
   (doseq [p attractors]
-    (apply q/point p))
+    (draw-attractor p influence-distance prune-distance))
   (q/stroke "black")
+  (q/stroke-weight 0.5)
   (doseq [branch branches]
     (when-let [parent (:parent branch)]
       (q/line (:position parent) (:position branch)))))
