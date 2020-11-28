@@ -214,6 +214,7 @@
     :draw draw
     :middleware [m/fun-mode]))
 
-;; reload reagent components after figwheel save
-(defn ^:after-load after-reload []
-  (mount-reagent))
+;; Temporarily disable so it doesn't load on saving other sketches
+;; ;; reload reagent components after figwheel save
+;; (defn ^:after-load after-reload []
+;;   (mount-reagent))
