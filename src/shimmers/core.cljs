@@ -9,6 +9,7 @@
             [shimmers.framerate :as framerate]
             [shimmers.fire :as fire]
             [shimmers.fluid :as fluid]
+            [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.noise-grid :as noise-grid]
             [shimmers.particles :as particles]
@@ -63,13 +64,14 @@
     :dithering dithering/run-sketch
     :fire fire/run-sketch
     ;; :fluid fluid/run-sketch
+    :kd-tree kd-tree/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch)
-   (init-sketches :particles)))
+   (init-sketches :kd-tree)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
