@@ -175,8 +175,6 @@
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
-(Math/pow 2 2)
-
 (defn slider [label field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
     [:div
