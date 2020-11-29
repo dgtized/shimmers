@@ -77,6 +77,19 @@
                :when (seq influences)]
            {(closest-branch attractor influences) [attractor]})))
 
+(defn steady-state?
+  "Check if growth is complete or has stalled somehow."
+  [growth prune attractors]
+  ;; (println {:growth (count growth) :prune (count prune) :attractors (count attractors)})
+  (or
+   ;; no remaining growth possible
+   (empty? attractors)
+   ;; no changes on this iteration
+   (and (empty? growth) (empty? prune))
+   ;; only creating branches stuck halfway between two attractors
+   (and (empty? prune) (even? (count attractors))
+        (= (/ (count attractors) 2) (count growth)))))
+
 (defn grow [{:keys [influence-distance segment-distance prune-distance
                     branches attractors]
              :as state}]
@@ -94,7 +107,7 @@
                                         prune-distance))
                                    growth)))
                    set)]
-    (if (and (empty? growth) (empty? prune))
+    (if (steady-state? growth prune attractors)
       (if (:completed-frame state)
         state
         (assoc state :completed-frame (q/frame-count)))
