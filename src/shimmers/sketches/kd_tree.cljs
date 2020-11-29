@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]))
 
-(defrecord node [location axis lesser greater])
+(defrecord Node [location axis lesser greater])
 
 (defn kd-tree [points k depth]
   (when (seq points)
@@ -10,7 +10,7 @@
           sorted (sort-by #(nth % axis) points)
           half (int (/ (count sorted) 2))
           median (nth sorted half)]
-      (->node median
+      (->Node median
               axis
               (kd-tree (take half sorted) k (inc depth))
               (kd-tree (drop (inc half) sorted) k (inc depth))))))
