@@ -65,33 +65,33 @@
   (v/sub (v/vec2 2 2) (v/vec2 0 0))
   (reduce v/add (map v/normalize [(v/vec2 2 2) (v/vec2 2 2)]))
   (v/scale (v/vec2 4 4) (/ 1 2))
-  (average-attraction {:position (v/vec2 0 0)} [(v/vec2 2 2) (v/vec2 2 2)]))
+  (average-attraction {:position (v/vec2 0 0) :direction (v/vec2 0 0)}
+                      [(v/vec2 2 2) (v/vec2 2 2)])
+  (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
+                      [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
 (defn influencing-attractors [{:keys [attractors influence-distance branches]}]
-  (into {}
-        (for [attractor attractors
-              :let [influences (influenced-branches attractor influence-distance branches)]
-              :when (seq influences)]
-          [attractor (closest-branch attractor influences)])))
-
-(defn influence-direction [closest influencers]
-  (->> influencers
-       (keep (fn [[attractor branch]] (when (= branch closest) attractor)))
-       (average-attraction closest)))
+  (apply merge-with into
+         (for [attractor attractors
+               :let [influences (influenced-branches attractor influence-distance branches)]
+               :when (seq influences)]
+           {(closest-branch attractor influences) [attractor]})))
 
 (defn grow [{:keys [influence-distance segment-distance prune-distance
                     branches attractors]
              :as state}]
   (let [influencers (influencing-attractors state)
-        closest-branches (vals influencers)
-        growth (for [closest closest-branches
-                     :let [direction (influence-direction closest influencers)]]
-                 (grow-branch closest direction segment-distance))
+        growth (for [[branch attractors] influencers]
+                 (grow-branch branch
+                              (average-attraction branch attractors)
+                              segment-distance))
         prune (->> influencers
-                   keys
+                   vals
+                   (apply concat)
                    (filter (fn [attractor]
-                             (some (fn [branch] (< (branch-distance attractor branch)
-                                                  prune-distance))
+                             (some (fn [branch]
+                                     (< (branch-distance attractor branch)
+                                        prune-distance))
                                    growth)))
                    set)]
     (if (and (empty? growth) (empty? prune))
@@ -137,22 +137,22 @@
 
   (when ((some-fn :bubbles :influenced-by :next-branch) debug)
     (let [influencers (influencing-attractors state)]
-      (doseq [[attractor branch] influencers
-              :let [[x y] attractor]]
-        (when (:bubbles debug)
-          (draw-attractor attractor influence-distance prune-distance))
+      (doseq [[branch active-attractors] influencers]
+        (doseq [attractor active-attractors]
+          (when (:bubbles debug)
+            (draw-attractor attractor influence-distance prune-distance))
 
-        (when (:influenced-by debug)
-          (q/stroke-weight 0.05)
-          (q/stroke 128 128)
-          (q/line (:position branch) attractor))
+          (when (:influenced-by debug)
+            (q/stroke-weight 0.05)
+            (q/stroke 128 128)
+            (q/line (:position branch) attractor)))
 
         (when (:next-branch debug)
           (q/stroke-weight 0.2)
           (q/stroke 0 0 200 128)
           (q/line (:position branch)
                   (v/add (:position branch)
-                         (v/scale (influence-direction branch influencers) 5))))))))
+                         (v/scale (average-attraction branch active-attractors) 5))))))))
 
 (defn draw [{:keys [branches] :as state}]
   (q/ellipse-mode :radius)
