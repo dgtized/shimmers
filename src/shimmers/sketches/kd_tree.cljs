@@ -23,16 +23,17 @@
                             [(q/random (q/width))
                              (q/random (q/height))]))})
 
-(defn draw-tree [tree]
+(defn draw-tree [tree bounds]
   (doseq [{:keys [axis location]}
           (->> tree
                (tree-seq record? children)
                (keep identity))
-          :let [[x y] location]]
+          :let [[x y] location
+                [bound-lower bound-upper] (nth bounds axis)]]
     (cond (= axis 0) ;; x axis
-          (q/line x 0 x (q/height))
+          (q/line x bound-lower x bound-upper)
           :else
-          (q/line 0 y (q/width) y))))
+          (q/line bound-lower y bound-upper y))))
 
 (defn draw [{:keys [points] :as state}]
   (q/background "white")
@@ -43,7 +44,7 @@
       (apply q/point point))
     (q/stroke "grey")
     (q/stroke-weight 0.5)
-    (draw-tree tree)))
+    (draw-tree tree [[0 (q/width)] [0 (q/height)]])))
 
 (defn ^:export run-sketch []
   (q/defsketch show-kd-tree
