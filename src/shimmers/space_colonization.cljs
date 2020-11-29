@@ -12,10 +12,10 @@
             [thi.ng.geom.spatialtree :as spatialtree]))
 
 (defn init-settings []
-  {:influence-distance 24
-   :prune-distance 4
-   :segment-distance 4
-   :attractor-power 8
+  {:influence-distance 32
+   :prune-distance 6
+   :segment-distance 6
+   :attractor-power 9
    :debug {:attractors true
            :bubbles false
            :influenced-by false
