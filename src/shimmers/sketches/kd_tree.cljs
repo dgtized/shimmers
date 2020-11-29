@@ -18,10 +18,17 @@
               (kd-tree (take half sorted) k (inc depth))
               (kd-tree (drop (inc half) sorted) k (inc depth))))))
 
+(defn example []
+  (map (fn [[x y]] [(* x 40) (- 400 (* y 40))])
+       [[2 3] [5 4] [9 6] [4 7] [8 1] [7 2]]))
+
+(defn random-example [n]
+  (repeatedly n (fn []
+                  [(int (q/random (q/width)))
+                   (int (q/random (q/height)))])))
+
 (defn setup []
-  {:points (repeatedly 16 (fn []
-                            [(q/random (q/width))
-                             (q/random (q/height))]))})
+  {:points (random-example 64)})
 
 (defn draw-tree [tree bounds]
   (doseq [{:keys [axis location]}
