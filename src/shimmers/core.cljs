@@ -71,7 +71,7 @@
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch)
-   (init-sketches :kd-tree)))
+   (init-sketches :particles)))
 
 ;; TODO alternatively load from #url for direct linking?
 (defn run-current []
