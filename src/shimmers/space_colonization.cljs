@@ -34,8 +34,8 @@
 ;;  * grow to fit shapes or other distributions of attractors
 (defrecord Branch [parent position direction])
 
-(defn grow-branch [parent direction length]
-  (->Branch parent
+(defn grow-branch [parent parent-idx direction length]
+  (->Branch parent-idx
             (v/add (:position parent)
                    (v/scale direction length))
             direction))
@@ -104,8 +104,11 @@
                     branches attractors quadtree]
              :as state}]
   (let [influencers (influencing-attractors state)
+        branch-index (->> branches
+                          (map-indexed (fn [idx branch] {branch idx}))
+                          (into {}))
         growth (for [[branch attractors] influencers]
-                 (grow-branch branch
+                 (grow-branch branch (get branch-index branch)
                               (average-attraction branch attractors)
                               segment-distance))
         prune (->> influencers
@@ -191,7 +194,7 @@
 
   (doseq [branch branches]
     (when-let [parent (:parent branch)]
-      (q/line (:position parent) (:position branch))))
+      (q/line (:position (nth branches parent)) (:position branch))))
 
   (draw-debug state (:debug @settings)))
 
