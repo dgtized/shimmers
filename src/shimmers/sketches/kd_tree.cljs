@@ -18,6 +18,12 @@
               (kd-tree (take half sorted) k (inc depth))
               (kd-tree (drop (inc half) sorted) k (inc depth))))))
 
+;; TODO: implement nearest neighbors of radius and show points from mouse press position
+;; pausing for now as thi.ng/geom has a quadtree library I can use.
+(defn nearest-neighbor
+  [tree point radius]
+  )
+
 (defn example []
   (map (fn [[x y]] [(* x 40) (- 400 (* y 40))])
        [[2 3] [5 4] [9 6] [4 7] [8 1] [7 2]]))
