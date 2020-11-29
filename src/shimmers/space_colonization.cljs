@@ -30,13 +30,12 @@
 ;;  * add more weight to roots of the tree
 ;;  * improve rules for detecting steady state completion
 ;;  * grow to fit shapes or other distributions of attractors
-(defn make-branch [parent position]
-  {:position position :parent parent})
+(defrecord Branch [parent position])
 
 (defn grow-branch [parent direction length]
-  (make-branch parent
-               (v/add (:position parent)
-                      (v/scale direction length))))
+  (->Branch parent
+            (v/add (:position parent)
+                   (v/scale direction length))))
 
 (defn branch-distance [attractor branch]
   (v/distance attractor (:position branch)))
@@ -113,7 +112,7 @@
      :attractors (repeatedly (Math/pow 2 attractor-power)
                              #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
                                       (+ 30 (q/random (- (q/height) 40)))))
-     :branches [(make-branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]}))
+     :branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)))]}))
 
 (defn update-state [state]
   (let [fc (q/frame-count)
