@@ -7,7 +7,9 @@
             [quil.middleware :as m]
             [reagent.core :as r]
             [reagent.dom :as rdom]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.spatialtree :as spatialtree]))
 
 (defn init-settings []
   {:influence-distance 24
@@ -41,9 +43,8 @@
 (defn branch-distance [attractor branch]
   (v/distance attractor (:position branch)))
 
-(defn influenced-branches [attractor influence-distance branches]
-  (filter (fn [branch] (< (branch-distance attractor branch) influence-distance))
-          branches))
+(defn influenced-branches [attractor {:keys [quadtree influence-distance]}]
+  (spatialtree/select-with-circle quadtree attractor influence-distance))
 
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
@@ -70,10 +71,10 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn influencing-attractors [{:keys [attractors influence-distance branches]}]
+(defn influencing-attractors [{:keys [attractors] :as state}]
   (apply merge-with into
          (for [attractor attractors
-               :let [influences (influenced-branches attractor influence-distance branches)]
+               :let [influences (influenced-branches attractor state)]
                :when (seq influences)]
            {(closest-branch attractor influences) [attractor]})))
 
@@ -93,8 +94,14 @@
    (and (empty? prune) (even? (count attractors))
         (= (/ (count attractors) 2) (count growth)))))
 
+(defn add-branch-positions [quadtree branches]
+  (reduce (fn [tree branch]
+            (geom/add-point tree (:position branch) branch))
+          quadtree
+          branches))
+
 (defn grow [{:keys [influence-distance segment-distance prune-distance
-                    branches attractors]
+                    branches attractors quadtree]
              :as state}]
   (let [influencers (influencing-attractors state)
         growth (for [[branch attractors] influencers]
@@ -116,19 +123,23 @@
         (assoc state :completed-frame (q/frame-count)))
       (assoc state
              :branches (concat branches growth)
-             :attractors (remove prune attractors)))))
+             :attractors (remove prune attractors)
+             :quadtree (add-branch-positions quadtree growth)))))
 
 (defn setup []
   (q/frame-rate 10)
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
-        @settings]
+        @settings
+        branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractors (repeatedly (Math/pow 2 attractor-power)
-                             #(v/vec2 (+ 40 (q/random (- (q/width) 80)))
-                                      (+ 30 (q/random (- (q/height) 40)))))
-     :branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]}))
+                             #(v/vec2 (+ 80 (q/random (- (q/width) 160)))
+                                      (+ 20 (q/random (- (q/height) 30)))))
+     :branches branches
+     :quadtree (add-branch-positions (spatialtree/quadtree 0 0 (q/width) (q/height))
+                                     branches)}))
 
 (defn update-state [state]
   (let [fc (q/frame-count)
@@ -223,7 +234,7 @@
   (mount-reagent)
   (q/defsketch space-colonization
     :host "quil-host"
-    :size [200 200]
+    :size [500 500]
     :setup setup
     :update update-state
     :draw draw
