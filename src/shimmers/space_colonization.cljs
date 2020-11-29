@@ -190,7 +190,7 @@
   (or (reduce (fn [children branch]
                 (when-let [parent (:parent branch)]
                   (update children (nth branches parent) (fnil conj []) branch)))
-              {} branches)
+              {} (into [] branches))
       {}))
 
 ;; from https://gist.github.com/stathissideris/1397681b9c63f09c6992
