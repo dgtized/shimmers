@@ -31,24 +31,33 @@
   {:points (random-example 64)})
 
 (defn draw-tree [tree bounds]
-  (doseq [{:keys [axis location]}
-          (->> tree
-               (tree-seq record? children)
-               (keep identity))
-          :let [[x y] location
-                [bound-lower bound-upper] (nth bounds axis)]]
-    (cond (= axis 0) ;; x axis
-          (q/line x bound-lower x bound-upper)
-          :else
-          (q/line bound-lower y bound-upper y))))
+  (when (record? tree)
+    (let [{:keys [axis location lesser greater]} tree
+          [x y] location
+          [lower upper] (nth bounds axis)
+          next-axis (mod (inc axis) 2)
+          [nlower nupper] (nth bounds next-axis)
+          axis-bound (nth location axis)]
+      (if (= axis 0)
+        (do (q/stroke "red")
+            (q/line x lower x upper))
+        (do (q/stroke "blue")
+            (q/line lower y upper y)))
+      (draw-tree lesser (assoc bounds next-axis [nlower axis-bound]))
+      (draw-tree greater (assoc bounds next-axis [axis-bound nupper])))))
 
 (defn draw [{:keys [points] :as state}]
   (q/background "white")
-  (q/stroke-weight 2)
   (q/stroke "black")
+  ;; (q/fill "black")
+  ;; (q/text-size 6)
   (let [tree (kd-tree points 2 0)]
     (doseq [point points]
-      (apply q/point point))
+      (q/stroke-weight 4)
+      (apply q/point point)
+      ;; (q/stroke-weight 0.5)
+      ;; (apply q/text (str point) point)
+      )
     (q/stroke "grey")
     (q/stroke-weight 0.5)
     (draw-tree tree [[0 (q/width)] [0 (q/height)]])))
