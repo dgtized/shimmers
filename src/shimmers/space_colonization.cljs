@@ -184,6 +184,41 @@
                   (v/add (:position branch)
                          (v/scale (average-attraction branch active-attractors) 5))))))))
 
+(defn index-children
+  "creates an index mapping branch => [children]"
+  [branches]
+  (or (reduce (fn [children branch]
+                (when-let [parent (:parent branch)]
+                  (update children (nth branches parent) (fnil conj []) branch)))
+              {} branches)
+      {}))
+
+;; from https://gist.github.com/stathissideris/1397681b9c63f09c6992
+(defn tree-seq-depth
+  "Returns a lazy sequence of vectors of the nodes in a tree and their
+  depth as [node depth], via a depth-first walk.  branch? must be a fn
+  of one arg that returns true if passed a node that can have
+  children (but may not).  children must be a fn of one arg that
+  returns a sequence of the children. Will only be called on nodes for
+  which branch? returns true. Root is the root node of the tree."
+  [branch? children root]
+  (let [walk (fn walk [depth node]
+               (lazy-seq
+                (cons [node depth]
+                      (when (branch? node)
+                        (mapcat (partial walk (inc depth)) (children node))))))]
+    (walk 0 root)))
+
+(defn tree-weight [children root]
+  (tree-seq-depth children children root))
+
+(defn weights [branches]
+  (let [roots (filter #(nil? (:parent %)) branches)
+        children (index-children branches)]
+    (if (empty? roots)
+      {}
+      (into {} (mapcat (partial tree-weight children) roots)))))
+
 (defn draw [{:keys [branches] :as state}]
   (q/ellipse-mode :radius)
   (q/background "white")
@@ -192,9 +227,12 @@
   (q/stroke "black")
   (q/stroke-weight 0.2) ;; TODO: back propagate weight based on children
 
-  (doseq [branch branches]
-    (when-let [parent (:parent branch)]
-      (q/line (:position (nth branches parent)) (:position branch))))
+  (let [weight (weights branches)]
+    (doseq [branch branches]
+      (when-let [parent (:parent branch)]
+        (let [w (get weight branch)]
+          (q/stroke-weight (/ 9 (+ 3 w))))
+        (q/line (:position (nth branches parent)) (:position branch)))))
 
   (draw-debug state (:debug @settings)))
 
