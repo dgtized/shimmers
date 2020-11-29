@@ -87,6 +87,9 @@
    ;; no changes on this iteration
    (and (empty? growth) (empty? prune))
    ;; only creating branches stuck halfway between two attractors
+   ;;
+   ;; TODO: improve this heuristic, alternatively maybe should discard any new
+   ;; branches that are too close to an existing branch?
    (and (empty? prune) (even? (count attractors))
         (= (/ (count attractors) 2) (count growth)))))
 
