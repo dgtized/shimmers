@@ -4,6 +4,9 @@
 
 (defrecord Node [location axis lesser greater])
 
+(defn children [{:keys [lesser greater]}]
+  [lesser greater])
+
 (defn kd-tree [points k depth]
   (when (seq points)
     (let [axis (mod depth k)
@@ -23,7 +26,7 @@
 (defn draw-tree [tree]
   (doseq [{:keys [axis location]}
           (->> tree
-               (tree-seq record? (fn [node] [(:lesser node) (:greater node)]))
+               (tree-seq record? children)
                (keep identity))
           :let [[x y] location]]
     (cond (= axis 0) ;; x axis
