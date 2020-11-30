@@ -45,7 +45,7 @@
 (defn branch-distance [attractor branch]
   (v/distance attractor (:position branch)))
 
-(defn influenced-branches [attractor {:keys [quadtree influence-distance]}]
+(defn influenced-branches [quadtree influence-distance attractor]
   (spatialtree/select-with-circle quadtree attractor influence-distance))
 
 (defn close-to-branch? [quadtree epsilon-distance position]
@@ -75,10 +75,10 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn influencing-attractors [{:keys [attractors] :as state}]
+(defn influencing-attractors [{:keys [attractors quadtree influence-distance] :as state}]
   (apply merge-with into
          (for [attractor attractors
-               :let [influences (influenced-branches attractor state)]
+               :let [influences (influenced-branches quadtree influence-distance attractor)]
                :when (seq influences)]
            {(closest-branch attractor influences) [attractor]})))
 
