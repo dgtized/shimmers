@@ -1,4 +1,4 @@
-^{:open-url "http://[[server-hostname]]:[[server-port]]/shimmers.html"
+^{:open-url "http://[[server-hostname]]:[[server-port]]/index.html"
   :post-build-hooks [shimmers.release/make-index]}
 {:main shimmers.core
 

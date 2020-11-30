@@ -13,7 +13,7 @@ cp target/public/cljs-out/release-main* resources/public/js
 
 pushd resources/public
 
-sed -i -e 's/cljs-out\/dev-main.js/js\/release-main.js/' index.html
+sed -i -e 's/cljs-out\/release-main.js/js\/release-main.js/' index.html
 
 # TODO: add circle ci exclusion for gh-pages?
 
