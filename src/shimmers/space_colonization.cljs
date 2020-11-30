@@ -12,9 +12,9 @@
             [thi.ng.geom.spatialtree :as spatialtree]))
 
 (defn init-settings []
-  {:influence-distance 32
+  {:influence-distance 48
    :prune-distance 6
-   :segment-distance 6
+   :segment-distance 4
    :attractor-power 9
    :debug {:attractors true
            :bubbles false
@@ -265,7 +265,7 @@
   (mount-reagent)
   (q/defsketch space-colonization
     :host "quil-host"
-    :size [500 500]
+    :size [400 300]
     :setup setup
     :update update-state
     :draw draw
