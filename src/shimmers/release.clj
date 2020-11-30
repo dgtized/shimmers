@@ -26,7 +26,7 @@
   (let [index "resources/public/index.html"
         revision (revision-tag)
         contents (slurp index)]
-    (println (str "[shimmers.release] Rewriting index.html -> shimmers.html - " revision))
+    (println (str "[shimmers.release] Rewriting index.html - " revision))
     (spit index
           (-> contents
               (str/replace-first #"dev-main\.js" "release-main.js")
