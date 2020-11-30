@@ -79,6 +79,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (q/background "white")
   (make-user-interface
    {:particles (repeatedly 1000 make-particle)
+    :particle-graphics (q/create-graphics (q/width) (q/height))
     :ui (atom {:draw-forces false
                :opacity 0})}))
 
@@ -87,7 +88,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 
 (defn draw-forces []
   (q/stroke-weight 0.33)
-  (q/stroke 0 20)
+  (q/stroke 0 128)
   (let [cols (q/floor (/ (q/width) 20))
         hcols (/ cols 2)
         len (/ cols 4)]
@@ -106,12 +107,17 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
       (q/stroke-weight (q/map-range mass lightest heaviest 0.2 0.5))
       (q/line lx ly x y))))
 
-(defn draw [{:keys [particles ui]}]
+(defn draw [{:keys [particles ui particle-graphics]}]
   (let [opacity (:opacity @ui)]
-    (q/background 256 opacity))
+    (q/with-graphics particle-graphics
+      (q/background 256 opacity)
+      (draw-particles particles)))
+
+  (q/background 256)
   (when (:draw-forces @ui)
     (draw-forces))
-  (draw-particles particles)
+  (q/image particle-graphics 0 0)
+
   (framerate/display (q/current-frame-rate)))
 
 (defn ^:export run-sketch []
