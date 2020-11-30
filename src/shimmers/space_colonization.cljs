@@ -46,8 +46,8 @@
 (defn influenced-branches [attractor {:keys [quadtree influence-distance]}]
   (spatialtree/select-with-circle quadtree attractor influence-distance))
 
-(defn crowding-existing-branch? [quadtree epsilon-distance branch]
-  (spatialtree/points-in-circle? quadtree (:position branch) epsilon-distance))
+(defn close-to-branch? [quadtree epsilon-distance position]
+  (spatialtree/points-in-circle? quadtree position epsilon-distance))
 
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
@@ -110,16 +110,14 @@
            (grow-branch branch (get branch-index branch)
                         (average-attraction branch attractors)
                         segment-distance))
-         (remove (partial crowding-existing-branch? quadtree (/ segment-distance 4))))
+         (remove (fn [branch] (close-to-branch? quadtree (/ segment-distance 4) (:position branch)))))
 
+        new-quadtree (add-branch-positions quadtree growth)
         prune (->> influencers
                    vals
                    (apply concat)
-                   (filter (fn [attractor]
-                             (some (fn [branch]
-                                     (< (branch-distance attractor branch)
-                                        prune-distance))
-                                   growth)))
+                   distinct
+                   (filter (partial close-to-branch? new-quadtree prune-distance))
                    set)]
     (if (steady-state? growth prune attractors)
       (if (:completed-frame state)
@@ -128,10 +126,10 @@
       (assoc state
              :branches (concat branches growth)
              :attractors (remove prune attractors)
-             :quadtree (add-branch-positions quadtree growth)))))
+             :quadtree new-quadtree))))
 
 (defn setup []
-    ;; (.clear js/console)
+  ;; (.clear js/console)
   (q/frame-rate 10)
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
