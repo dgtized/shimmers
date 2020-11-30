@@ -11,7 +11,7 @@
         revision (-> (sh "git" "rev-parse" "HEAD")
                      :out
                      str/trimr)]
-    (str "<span id=\"revision\"><code>"
+    (str "<span id=\"revision\">rev:<code>"
          (subs revision 0 10)
          " "
          date
