@@ -252,13 +252,13 @@
 (defn explanation []
   [:div
    (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
-           [:attractor-power] [4 10])
+           [:attractor-power] [4 12])
    (slider (fn [v] (str "Influence Distance " v))
-           [:influence-distance] [10 50])
+           [:influence-distance] [10 100])
    (slider (fn [v] (str "Prune Distance " v))
-           [:prune-distance] [2 30])
+           [:prune-distance] [2 50])
    (slider (fn [v] (str "Segment Distance " v))
-           [:segment-distance] [2 20])
+           [:segment-distance] [1 30])
    (checkbox "Show Attractors" [:debug :attractors])
    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
