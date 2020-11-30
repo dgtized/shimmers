@@ -21,10 +21,21 @@ canvas {
   padding: 1em;
 }
 
-.footer {
-  padding: 0.3em;
+#explanation {
+  padding-left: 1em;
 }
 
-.revision {
-  font-size: 0.66em;
+input[type=checkbox] {
+  height: 1em;
+}
+
+input[type=range] {
+  height: 1em;
+  width: 200px
+}
+
+.footer {
+  font-size: 0.8em;
+  padding: 0.3em;
+  padding-top: 1em;
 }

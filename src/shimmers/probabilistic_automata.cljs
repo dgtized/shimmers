@@ -113,7 +113,7 @@
     "[\n" (interpose [:br] (map prettify-instruction (:program bot))) "\n]"]])
 
 (defn render-explanation [automata]
-  [:div {:style {:padding "1em"}}
+  [:div
    [:p {:style {:width "45em"}}
     "Each of the four visualizations are generated from a corresponding program below.
     Each program is randomly generated from the available instructions, ie a

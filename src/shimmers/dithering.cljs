@@ -17,10 +17,10 @@
 
 (defn render-interface []
   (let [mode (:mode @ui-state)]
-    [:div {:style {:padding-left "2em" :padding-bottom "1em"}}
+    [:div
      [:input {:type "button" :value "Cycle Mode"
               :on-click #(swap! ui-state cycle-mode)}]
-     [:span {:style {:padding "1em"}} "Mode: " (name mode)]]))
+     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
 
 (defn setup []
   (let [width 320
