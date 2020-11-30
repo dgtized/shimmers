@@ -153,9 +153,7 @@
              :attractors (remove prune attractors)
              :quadtree new-quadtree))))
 
-(defn setup []
-  ;; (.clear js/console)
-  (q/frame-rate 15)
+(defn create-tree []
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
         branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]]
@@ -170,11 +168,16 @@
      :quadtree (add-branch-positions (spatialtree/quadtree 0 0 (q/width) (q/height))
                                      branches)}))
 
+(defn setup []
+  ;; (.clear js/console)
+  (q/frame-rate 15)
+  (create-tree))
+
 (defn update-state [state]
   (let [fc (q/frame-count)
         diff (- fc (get state :completed-frame fc))]
     (if (> (/ diff (q/current-frame-rate)) 5)
-      (setup)
+      (create-tree)
       (grow state))))
 
 (defn draw-attractor [[x y] influence prune]
