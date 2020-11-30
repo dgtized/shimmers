@@ -116,9 +116,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (q/background 256)
   (q/image particle-graphics 0 0)
   (when (:draw-forces @ui)
-    (draw-forces))
-
-  (framerate/display (q/current-frame-rate)))
+    (draw-forces)))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
@@ -127,5 +125,5 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))
 
