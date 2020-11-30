@@ -11,10 +11,10 @@
         revision (-> (sh "git" "rev-parse" "HEAD")
                      :out
                      str/trimr)]
-    (str "<span id=\"revision\">rev:<code>"
-         (subs revision 0 10)
-         " "
+    (str "<span id=\"revision\"><code>rev:"
          date
+         "-"
+         (subs revision 0 10)
          "</code></span>")))
 
 (defn make-index [_]
