@@ -212,11 +212,12 @@
 (defn index-children
   "creates an index mapping branch => [children]"
   [branches]
-  (or (reduce (fn [children branch]
-                (when-let [parent (:parent branch)]
-                  (update children (nth branches parent) (fnil conj []) branch)))
-              {} (into [] branches))
-      {}))
+  (reduce-kv
+   (fn [children _ branch]
+     (if-let [parent (:parent branch)]
+       (update children (nth branches parent) (fnil conj []) branch)
+       children))
+   {} branches))
 
 ;; from https://gist.github.com/stathissideris/1397681b9c63f09c6992
 (defn tree-seq-depth
