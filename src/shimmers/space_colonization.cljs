@@ -156,11 +156,13 @@
 (defn create-tree []
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
+        attractor-count (Math/pow 2 attractor-power)
         branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
      :segment-distance segment-distance
-     :attractors (repeatedly (Math/pow 2 attractor-power)
+     :attractor-count attractor-count
+     :attractors (repeatedly attractor-count
                              #(v/vec2 (+ 110 (q/random (- (q/width) 220)))
                                       (+ 30 (q/random (- (q/height) 40)))))
      :branches branches
