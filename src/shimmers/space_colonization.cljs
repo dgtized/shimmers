@@ -9,7 +9,8 @@
             [reagent.dom :as rdom]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.spatialtree :as spatialtree]))
+            [thi.ng.geom.spatialtree :as spatialtree]
+            [shimmers.framerate :as framerate]))
 
 (defn init-settings []
   {:influence-distance 48
@@ -223,7 +224,8 @@
         (q/stroke-weight (if (:canalization debug) (get weights branch) 0.2))
         (q/line (:position (nth branches parent)) (:position branch))))
 
-    (draw-debug state debug)))
+    (draw-debug state debug)
+    (framerate/display (q/current-frame-rate))))
 
 (defn checkbox [label field-ref]
   [:div
