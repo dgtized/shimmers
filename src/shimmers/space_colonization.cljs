@@ -54,16 +54,15 @@
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
 
-(defn jitter [lower upper]
-  (let [r (- upper lower)]
-    (v/vec2 (+ (rand r) lower) (+ (rand r) lower))))
+(defn jitter [amount]
+  (v/scale (apply v/vec2 (q/random-2d)) amount))
 
 (defn average-attraction [branch attractors]
   (-> (->> attractors
            (map #(v/normalize (v/sub % (:position branch))))
            (reduce v/add (:direction branch)))
-      (v/add (jitter -0.1 0.1))
       (v/scale (/ 1 (+ (count attractors) 2)))
+      (v/add (jitter 0.15))
       v/normalize))
 
 (comment
