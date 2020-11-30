@@ -114,9 +114,9 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
       (draw-particles particles)))
 
   (q/background 256)
+  (q/image particle-graphics 0 0)
   (when (:draw-forces @ui)
     (draw-forces))
-  (q/image particle-graphics 0 0)
 
   (framerate/display (q/current-frame-rate)))
 
