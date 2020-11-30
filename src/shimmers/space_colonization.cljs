@@ -155,7 +155,7 @@
 
 (defn setup []
   ;; (.clear js/console)
-  (q/frame-rate 10)
+  (q/frame-rate 15)
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
         branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]]
@@ -163,8 +163,8 @@
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractors (repeatedly (Math/pow 2 attractor-power)
-                             #(v/vec2 (+ 80 (q/random (- (q/width) 160)))
-                                      (+ 20 (q/random (- (q/height) 30)))))
+                             #(v/vec2 (+ 110 (q/random (- (q/width) 220)))
+                                      (+ 30 (q/random (- (q/height) 40)))))
      :branches branches
      :weights (update-weights {} branches branches)
      :quadtree (add-branch-positions (spatialtree/quadtree 0 0 (q/width) (q/height))
@@ -265,7 +265,7 @@
   (mount-reagent)
   (q/defsketch space-colonization
     :host "quil-host"
-    :size [400 300]
+    :size [600 400]
     :setup setup
     :update update-state
     :draw draw
