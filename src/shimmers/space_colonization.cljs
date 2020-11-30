@@ -46,6 +46,9 @@
 (defn influenced-branches [attractor {:keys [quadtree influence-distance]}]
   (spatialtree/select-with-circle quadtree attractor influence-distance))
 
+(defn crowding-existing-branch? [quadtree epsilon-distance branch]
+  (spatialtree/points-in-circle? quadtree (:position branch) epsilon-distance))
+
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
 
@@ -86,13 +89,7 @@
    ;; no remaining growth possible
    (empty? attractors)
    ;; no changes on this iteration
-   (and (empty? growth) (empty? prune))
-   ;; only creating branches stuck halfway between two attractors
-   ;;
-   ;; TODO: improve this heuristic, alternatively maybe should discard any new
-   ;; branches that are too close to an existing branch?
-   (and (empty? prune) (even? (count attractors))
-        (= (/ (count attractors) 2) (count growth)))))
+   (and (empty? growth) (empty? prune))))
 
 (defn add-branch-positions [quadtree branches]
   (reduce (fn [tree branch]
@@ -107,10 +104,14 @@
         branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))
-        growth (for [[branch attractors] influencers]
-                 (grow-branch branch (get branch-index branch)
-                              (average-attraction branch attractors)
-                              segment-distance))
+        growth
+        (->>
+         (for [[branch attractors] influencers]
+           (grow-branch branch (get branch-index branch)
+                        (average-attraction branch attractors)
+                        segment-distance))
+         (remove (partial crowding-existing-branch? quadtree (/ segment-distance 4))))
+
         prune (->> influencers
                    vals
                    (apply concat)
@@ -130,6 +131,7 @@
              :quadtree (add-branch-positions quadtree growth)))))
 
 (defn setup []
+    ;; (.clear js/console)
   (q/frame-rate 10)
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
