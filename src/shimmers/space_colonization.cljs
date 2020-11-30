@@ -107,13 +107,10 @@
     weights))
 
 (defn update-weights [weights branches growth]
-  (loop [weights weights growth growth]
-    (if-not (seq growth)
-      weights
-      (let [bud (first growth)]
-        (recur (propagate-branch-weight (assoc weights bud 0.01)
-                                        branches bud)
-               (rest growth))))))
+  (reduce-kv
+   (fn [weights _ bud]
+     (propagate-branch-weight (assoc weights bud 0.05) branches bud))
+   weights growth))
 
 (defn add-branch-positions [quadtree branches]
   (reduce (fn [tree branch]
@@ -134,7 +131,8 @@
            (grow-branch branch (get branch-index branch)
                         (average-attraction branch attractors)
                         segment-distance))
-         (remove (fn [branch] (close-to-branch? quadtree (/ segment-distance 4) (:position branch)))))
+         (remove (fn [branch] (close-to-branch? quadtree (/ segment-distance 4) (:position branch))))
+         vec)
 
         new-quadtree (add-branch-positions quadtree growth)
         prune (->> influencers
