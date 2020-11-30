@@ -18,6 +18,7 @@
    :attractor-power 9
    :debug {:attractors true
            :bubbles false
+           :canalization true
            :influenced-by false
            :next-branch false}})
 
@@ -209,20 +210,20 @@
                   (v/add (:position branch)
                          (v/scale (average-attraction branch active-attractors) 5))))))))
 
-(defn draw [{:keys [branches weights] :as state}]
-  (q/ellipse-mode :radius)
-  (q/background "white")
-  (q/no-fill)
+(defn draw [{:keys [branches weights debug] :as state}]
+  (let [debug (:debug @settings)]
+    (q/ellipse-mode :radius)
+    (q/background "white")
+    (q/no-fill)
 
-  (q/stroke "black")
-  (q/stroke-weight 0.2) ;; TODO: back propagate weight based on children
+    (q/stroke "black")
 
-  (doseq [branch branches]
-    (when-let [parent (:parent branch)]
-      (q/stroke-weight (get weights branch))
-      (q/line (:position (nth branches parent)) (:position branch))))
+    (doseq [branch branches]
+      (when-let [parent (:parent branch)]
+        (q/stroke-weight (if (:canalization debug) (get weights branch) 0.2))
+        (q/line (:position (nth branches parent)) (:position branch))))
 
-  (draw-debug state (:debug @settings)))
+    (draw-debug state debug)))
 
 (defn checkbox [label field-ref]
   [:div
@@ -247,6 +248,7 @@
            [:prune-distance] [2 50])
    (slider (fn [v] (str "Segment Distance " v))
            [:segment-distance] [1 30])
+   (checkbox "Show Canalization" [:debug :canalization])
    (checkbox "Show Attractors" [:debug :attractors])
    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
