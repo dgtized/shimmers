@@ -91,6 +91,30 @@
    ;; no changes on this iteration
    (and (empty? growth) (empty? prune))))
 
+;; Approach borrowed from
+;; https://github.com/jasonwebb/2d-space-colonization-experiments/blob/master/core/Network.js#L108-L114
+(defn propagate-branch-weight [weights branches branch]
+  (if-let [parent-idx (:parent branch)]
+    (let [parent (nth branches parent-idx)
+          current-weight (get weights branch)]
+      (recur (update weights parent
+                     (fn [parent-weight]
+                       (if (< parent-weight (+ current-weight 0.1))
+                         (+ parent-weight 0.01)
+                         parent-weight)))
+             branches
+             parent))
+    weights))
+
+(defn update-weights [weights branches growth]
+  (loop [weights weights growth growth]
+    (if-not (seq growth)
+      weights
+      (let [bud (first growth)]
+        (recur (propagate-branch-weight (assoc weights bud 0.01)
+                                        branches bud)
+               (rest growth))))))
+
 (defn add-branch-positions [quadtree branches]
   (reduce (fn [tree branch]
             (geom/add-point tree (:position branch) branch))
@@ -98,7 +122,7 @@
           branches))
 
 (defn grow [{:keys [influence-distance segment-distance prune-distance
-                    branches attractors quadtree]
+                    attractors branches quadtree weights]
              :as state}]
   (let [influencers (influencing-attractors state)
         branch-index (->> branches
@@ -118,13 +142,15 @@
                    (apply concat)
                    distinct
                    (filter (partial close-to-branch? new-quadtree prune-distance))
-                   set)]
+                   set)
+        new-branches (concat branches growth)]
     (if (steady-state? growth prune attractors)
       (if (:completed-frame state)
         state
         (assoc state :completed-frame (q/frame-count)))
       (assoc state
-             :branches (concat branches growth)
+             :weights (update-weights weights new-branches growth)
+             :branches new-branches
              :attractors (remove prune attractors)
              :quadtree new-quadtree))))
 
@@ -141,6 +167,7 @@
                              #(v/vec2 (+ 80 (q/random (- (q/width) 160)))
                                       (+ 20 (q/random (- (q/height) 30)))))
      :branches branches
+     :weights (update-weights {} branches branches)
      :quadtree (add-branch-positions (spatialtree/quadtree 0 0 (q/width) (q/height))
                                      branches)}))
 
@@ -219,7 +246,7 @@
       {}
       (into {} (mapcat (partial tree-weight children) roots)))))
 
-(defn draw [{:keys [branches] :as state}]
+(defn draw [{:keys [branches weights] :as state}]
   (q/ellipse-mode :radius)
   (q/background "white")
   (q/no-fill)
@@ -227,12 +254,10 @@
   (q/stroke "black")
   (q/stroke-weight 0.2) ;; TODO: back propagate weight based on children
 
-  (let [weight (weights branches)]
-    (doseq [branch branches]
-      (when-let [parent (:parent branch)]
-        (let [w (get weight branch)]
-          (q/stroke-weight (/ 9 (+ 3 w))))
-        (q/line (:position (nth branches parent)) (:position branch)))))
+  (doseq [branch branches]
+    (when-let [parent (:parent branch)]
+      (q/stroke-weight (get weights branch))
+      (q/line (:position (nth branches parent)) (:position branch))))
 
   (draw-debug state (:debug @settings)))
 
