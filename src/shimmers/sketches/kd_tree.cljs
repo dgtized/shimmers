@@ -33,8 +33,20 @@
                   [(int (q/random (q/width)))
                    (int (q/random (q/height)))])))
 
+(defn init-state []
+  {:source (random-example 96)
+   :points []})
+
 (defn setup []
-  {:points (random-example 64)})
+  (q/frame-rate 3)
+  (init-state))
+
+(defn update-state [{:keys [points source] :as state}]
+  (if (= (count points) (count source))
+    (init-state)
+    (assoc state
+           :points (conj points (first source))
+           :source (rest source))))
 
 (defn draw-tree [tree bounds]
   (when (record? tree)
@@ -73,6 +85,7 @@
     :host "quil-host"
     :size [400 400]
     :setup setup
+    :update update-state
     :draw draw
     :middleware [m/fun-mode]))
 
