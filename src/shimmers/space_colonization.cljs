@@ -226,14 +226,14 @@
     (draw-debug state debug)))
 
 (defn checkbox [label field-ref]
-  [:div
+  [:div.label-set
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
 (defn slider [label field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
-    [:div
+    [:div.label-set
      [:label (label value)]
      [:input {:type "range" :value value :min lower :max upper
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
