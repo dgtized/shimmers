@@ -1,20 +1,25 @@
 (ns shimmers.release
   (:require [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.java.shell :refer [sh]]))
+            [clojure.java.shell :refer [sh]])
+  (:import java.text.SimpleDateFormat
+           [java.util Calendar TimeZone]))
+
+(defn timestamp-iso8601
+  "Returns current ISO 8601 compliant date."
+  []
+  (let [sdf (SimpleDateFormat. "yyyy-MM-dd'T'HH:mm:ss'Z'")]
+    (.setTimeZone sdf (TimeZone/getTimeZone "UTC"))
+    (.format sdf (.getTime (Calendar/getInstance)))))
 
 (defn revision-tag []
-  (let [date (-> (sh "date" "--iso-8601=seconds" "-u")
-                 :out
-                 str/trimr
-                 (str/replace #"\+00:00" "Z"))
-        revision (-> (sh "git" "rev-parse" "HEAD")
+  (let [revision (-> (sh "git" "rev-parse" "HEAD")
                      :out
                      str/trimr)]
-    (str "<span id=\"revision\"><code>rev:"
-         date
-         "-"
-         (subs revision 0 10)
+    (str "<span id=\"revision\" title=\""
+         (timestamp-iso8601)
+         "\"><code>rev:"
+         (subs revision 0 8)
          "</code></span>")))
 
 (defn make-index [_]
