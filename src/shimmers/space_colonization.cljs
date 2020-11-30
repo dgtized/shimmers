@@ -224,8 +224,7 @@
         (q/stroke-weight (if (:canalization debug) (get weights branch) 0.2))
         (q/line (:position (nth branches parent)) (:position branch))))
 
-    (draw-debug state debug)
-    (framerate/display (q/current-frame-rate))))
+    (draw-debug state debug)))
 
 (defn checkbox [label field-ref]
   [:div
@@ -271,7 +270,7 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))
 
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save

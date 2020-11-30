@@ -136,7 +136,7 @@
       :circles (circles capture width height)
       :color-displace (color-displace capture width height)))
   ;; (q/image capture (+ 10 width) 0)
-  (framerate/display (q/current-frame-rate)))
+  )
 
 (defn ^:export run-sketch []
   (q/defsketch shimmers
@@ -144,4 +144,4 @@
     :size [640 480]
     :setup setup
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))

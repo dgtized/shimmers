@@ -70,8 +70,7 @@
 
 (defn draw [{:keys [fire fuel size]}]
   (paint fuel size [0 255 0 20])
-  (paint fire size [255 0 0 20])
-  (framerate/display (q/current-frame-rate)))
+  (paint fire size [255 0 0 20]))
 
 (defn ^:export run-sketch []
   (q/defsketch fire
@@ -80,4 +79,4 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))

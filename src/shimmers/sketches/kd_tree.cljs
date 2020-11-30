@@ -1,6 +1,7 @@
 (ns shimmers.sketches.kd-tree
   (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [shimmers.framerate :as framerate]))
 
 (defrecord Node [location axis lesser greater])
 
@@ -87,6 +88,6 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))
 
 

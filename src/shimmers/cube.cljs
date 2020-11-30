@@ -64,8 +64,7 @@
   (q/stroke-weight 1)
   (doseq [{:keys [lines vertices]} shapes
           [a b] lines]
-    (q/line (project (nth vertices a)) (project (nth vertices b))))
-  (framerate/display (q/current-frame-rate)))
+    (q/line (project (nth vertices a)) (project (nth vertices b)))))
 
 (defn ^:export run-sketch []
   (q/defsketch cube-sketch
@@ -74,6 +73,6 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))
 
 

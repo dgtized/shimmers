@@ -45,8 +45,7 @@
        (if reflect noise-tile noise-grid)))
     (dotimes [gy 3]
       (dotimes [gx 3]
-        (q/image tile (* gx size) (* gy size))))
-    (framerate/display (q/current-frame-rate))))
+        (q/image tile (* gx size) (* gy size))))))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
@@ -54,4 +53,4 @@
     :size [300 300]
     :setup setup
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))

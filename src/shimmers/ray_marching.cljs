@@ -1,6 +1,7 @@
 (ns shimmers.ray-marching
   (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]))
+            [quil.middleware :as m]
+            [shimmers.framerate :as framerate]))
 
 (defn line-intersect
   "Return intersection point between two point segment pairs.
@@ -103,4 +104,4 @@
     :setup setup
     :update update-state
     :draw draw-state
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))

@@ -117,7 +117,7 @@
   state)
 
 (defn draw [state]
-  (framerate/display (q/current-frame-rate)))
+  )
 
 (defn ^:export run-sketch []
   (q/defsketch fluid
@@ -126,4 +126,4 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))

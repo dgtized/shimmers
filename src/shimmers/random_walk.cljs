@@ -37,8 +37,7 @@
     (apply q/stroke color)
     (let [[lx ly] last-pos
           [x y] position]
-      (q/line lx ly x y)))
-  (framerate/display (q/current-frame-rate)))
+      (q/line lx ly x y))))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
@@ -47,6 +46,6 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode]))
+    :middleware [m/fun-mode framerate/mode]))
 
 
