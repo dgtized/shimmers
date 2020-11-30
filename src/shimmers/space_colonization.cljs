@@ -45,11 +45,11 @@
 (defn branch-distance [attractor branch]
   (v/distance attractor (:position branch)))
 
-(defn influenced-branches [quadtree influence-distance attractor]
-  (spatialtree/select-with-circle quadtree attractor influence-distance))
+(defn influenced-branches [quadtree radius position]
+  (spatialtree/select-with-circle quadtree position radius))
 
-(defn close-to-branch? [quadtree epsilon-distance position]
-  (spatialtree/points-in-circle? quadtree position epsilon-distance))
+(defn close-to-branch? [quadtree radius position]
+  (spatialtree/points-in-circle? quadtree position radius))
 
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
