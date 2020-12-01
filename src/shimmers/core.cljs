@@ -96,6 +96,7 @@
   (let [{:keys [sketches current]} @state
         sketch-name (ui/cycle-next (keys sketches) current)]
     (swap! state assoc :current sketch-name)
+    (ui/screen-view (name sketch-name))
     (restart-sketch)))
 
 (defn init []
@@ -105,6 +106,7 @@
                  (fn [] (cycle-sketch)))
   (events/listen (dom/getElement "restart-sketch") "click"
                  (fn [] (restart-sketch)))
+  (ui/screen-view (name (get @state :current)))
   (run-current))
 
 ;; initialize sketch on first-load
