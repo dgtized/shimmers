@@ -2,6 +2,12 @@
   (:require [meander.epsilon :as m]
             [meander.strategy.epsilon :as m*]))
 
+;; Term Rewriting using Meander - https://github.com/noprompt/meander
+;; References:
+;; https://github.com/noprompt/meander/blob/epsilon/doc/cookbook.md
+;; https://jimmyhmiller.github.io/meander-rewriting
+;; https://jimmyhmiller.github.io/meander-practical
+;; https://jimmyhmiller.github.io/building-meander-in-meander
 (defn collapse-trivial-one-of
   "Recursively collapses single choice one-of's into that instruction"
   [instruction]
