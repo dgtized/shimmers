@@ -4,14 +4,14 @@
             [shimmers.automata.simplify :as sut]))
 
 (deftest collapse-trivial-one-of
-  (is (empty? (mapcat sut/collapse-trivial-one-of [[:one-of []]])))
-  (is (= [[:forward 1]]
-         (mapcat sut/collapse-trivial-one-of
-                 [[:one-of [[:forward 1]]]])))
-  (is (= [[:one-of [[:forward 1] [:forward 2]]]]
-         (mapcat sut/collapse-trivial-one-of
-                 [[:one-of [[:forward 1]
-                            [:one-of [[:forward 2]]]]]]))))
+  (is (empty? (sut/collapse-trivial-one-of [:one-of []])))
+  (is (= [:forward 1]
+         (sut/collapse-trivial-one-of
+          [:one-of [[:forward 1]]])))
+  (is (= [:one-of [[:forward 1] [:forward 2]]]
+         (sut/collapse-trivial-one-of
+          [:one-of [[:forward 1]
+                    [:one-of [[:forward 2]]]]]))))
 
 (deftest simplify-program
   (is (= [[:color [:gradient :rainbow1]]

@@ -1,14 +1,16 @@
-(ns shimmers.automata.simplify)
+(ns shimmers.automata.simplify
+  (:require [meander.epsilon :as m]
+            [meander.strategy.epsilon :as m*]))
 
 (defn collapse-trivial-one-of
   "Recursively collapses single choice one-of's into that instruction"
-  [[op argument]]
-  (if (= op :one-of)
-    (let [options (mapcat collapse-trivial-one-of argument)]
-      (if (> (count options) 1)
-        [[:one-of options]]
-        options))
-    [[op argument]]))
+  [instruction]
+  ((-> (m*/rewrite
+        [:one-of []] []
+        [:one-of [?instruction ..1]] ?instruction)
+       m*/attempt
+       m*/bottom-up)
+   instruction))
 
 (defn collapse-commutative-groups
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
@@ -28,7 +30,7 @@
 (defn simplify-program
   [program]
   (transduce
-   (comp (mapcat collapse-trivial-one-of)
+   (comp collapse-trivial-one-of
          (partition-by (fn [val] [(first val) (vector? (second val))]))
          (mapcat collapse-commutative-groups))
    conj program))
