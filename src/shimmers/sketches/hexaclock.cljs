@@ -14,11 +14,16 @@
    (* radius (q/sin angle))])
 
 (defn hexagon [radius amt]
-  (let [angles (spur-angles)]
+  (let [angles (spur-angles)
+        full (q/floor amt)]
     (doseq [idx (range 0 6)
-            :while (< idx amt)]
+            :while (< idx full)]
       (q/line (spur radius (nth angles idx))
-              (spur radius (nth angles (mod (inc idx) 6)))))))
+              (spur radius (nth angles (mod (inc idx) 6)))))
+    (let [delta (- amt full)
+          [x y] (spur radius (nth angles full))
+          [x' y'] (spur radius (nth angles (mod (inc full) 6)))]
+      (q/line x y (q/lerp x x' delta) (q/lerp y y' delta)))))
 
 (defn draw []
   (q/background 255 32)
@@ -29,8 +34,8 @@
         cx (/ (q/width) 2)
         cy (/ (q/height) 2)
         rH (/ (q/width) (Math/sqrt 5))
-        rM (/ (q/width) (Math/sqrt 6))
-        rS (/ (q/width) (Math/sqrt 7))]
+        rM (/ (q/width) (Math/sqrt 7))
+        rS (/ (q/width) (Math/sqrt 9))]
     (q/translate cx cy)
     (q/stroke-weight 1)
     (hexagon rS sec)
