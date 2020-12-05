@@ -3,20 +3,18 @@
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]))
 
+(defn seconds-since-epoch []
+  (/ (.getTime (js/Date.)) 1000.0))
+
 (defn polar-noise [angle]
   (q/noise (+ (q/cos angle) 1)
            (+ (q/sin angle) 1)))
 
-(defn setup []
-  (q/frame-rate 30)
-  {})
-
 (defn zig [gap [x y] t]
-  ;; (q/stroke-weight (+ (* 0.8 (rand)) 0.2))
   (if (and (> x 0) (< y (q/height)))
-    (let [step-size (* gap (/ 3 8))
+    (let [step-size (* gap (/ 9 16))
           h (- gap step-size)
-          a (+ (+ x y) t)
+          a (+ (/ (+ x y) 32) t)
           jitter (* h (polar-noise a))
           nx (- x step-size jitter)
           ny (+ y step-size jitter)]
@@ -24,20 +22,21 @@
       (q/line nx y nx ny)
       (recur gap [nx ny] t))))
 
-(defn draw [state]
-  (q/background 255 20)
-  (q/stroke 0 10)
-  (let [m 50
-        gap (/ (q/width) (/ m 2))
-        t (/ (q/frame-count) 300)]
+(defn draw []
+  (q/background 255 32)
+  (q/stroke 0 32)
+  (q/stroke-weight 0.6)
+  (let [t (/ (seconds-since-epoch) 10)
+        m (q/map-range (q/cos (/ t 4)) -1 1 16 64)
+        gap (/ (q/width) (/ m 2))]
+    ;; (q/print-every-n-millisec 200 (str t " " m))
     (dotimes [i m]
-      (zig gap [(* i gap) 0] t))))
+      (zig gap [(* i gap) 0] (/ t 256)))))
 
 (defn ^:export run-sketch []
   (q/defsketch zigzag
     :host "quil-host"
-    :size [400 400]
-    :setup setup
+    :size [600 600]
     :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+    :middleware [framerate/mode]))
 
