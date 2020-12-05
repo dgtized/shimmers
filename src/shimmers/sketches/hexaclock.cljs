@@ -19,7 +19,7 @@
   (let [s (q/seconds)
         cx (/ (q/width) 2)
         cy (/ (q/height) 2)
-        radius (/ (q/width) 3)]
+        radius (/ (q/width) (Math/sqrt 6))]
     (q/translate cx cy)
     (doseq [idx (range 0 6)]
       (q/line (spur radius (nth (angles) (mod idx 6)))
