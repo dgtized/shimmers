@@ -6,18 +6,18 @@
             [reagent.dom :as rdom]
             [shimmers.cube :as cube]
             [shimmers.dithering :as dithering]
-            [shimmers.framerate :as framerate]
             [shimmers.fire :as fire]
             [shimmers.fluid :as fluid]
-            [shimmers.sketches.kd-tree :as kd-tree]
+            [shimmers.framerate :as framerate]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.noise-grid :as noise-grid]
             [shimmers.particles :as particles]
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
-            [shimmers.space-colonization :as space-colonization]
+            [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.zigzag :as zigzag]
+            [shimmers.space-colonization :as space-colonization]
             [shimmers.ui :as ui]))
 
 (enable-console-print!)
