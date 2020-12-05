@@ -17,6 +17,7 @@
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
             [shimmers.space-colonization :as space-colonization]
+            [shimmers.sketches.zigzag :as zigzag]
             [shimmers.ui :as ui]))
 
 (enable-console-print!)
@@ -70,7 +71,8 @@
     :random-walk random-walk/run-sketch
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
-    :probabilistic-automata probabilistic-automata/run-sketch)
+    :probabilistic-automata probabilistic-automata/run-sketch
+    :zigzag zigzag/run-sketch)
    (init-sketches :particles)))
 
 ;; TODO alternatively load from #url for direct linking?
