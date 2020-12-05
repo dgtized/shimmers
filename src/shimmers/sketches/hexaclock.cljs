@@ -13,6 +13,9 @@
   [(* radius (q/cos angle))
    (* radius (q/sin angle))])
 
+(defn lerp-line [[x y] [x' y'] amt]
+  (q/line x y (q/lerp x x' amt) (q/lerp y y' amt)))
+
 (defn hexagon [radius amt]
   (let [angles (spur-angles)
         full (q/floor amt)]
@@ -20,10 +23,9 @@
             :while (< idx full)]
       (q/line (spur radius (nth angles idx))
               (spur radius (nth angles (mod (inc idx) 6)))))
-    (let [delta (- amt full)
-          [x y] (spur radius (nth angles full))
-          [x' y'] (spur radius (nth angles (mod (inc full) 6)))]
-      (q/line x y (q/lerp x x' delta) (q/lerp y y' delta)))))
+    (lerp-line (spur radius (nth angles full))
+               (spur radius (nth angles (mod (inc full) 6)))
+               (- amt full))))
 
 (defn draw []
   (q/background 255 32)
