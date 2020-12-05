@@ -31,7 +31,7 @@
   (q/background 255 32)
   (let [sec (q/map-range (q/seconds) 0 60 0 6)
         min (q/map-range (q/minute) 0 60 0 6)
-        hour (q/map-range (q/hour) 0 24 0 6)
+        hour (q/map-range (mod (q/hour) 12) 0 12 0 6)
         cx (/ (q/width) 2)
         cy (/ (q/height) 2)
         rH (/ (q/width) (Math/sqrt 5))
