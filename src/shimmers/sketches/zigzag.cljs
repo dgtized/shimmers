@@ -24,7 +24,7 @@
 
 (defn draw []
   (q/background 255 32)
-  (q/stroke 0 32)
+  (q/stroke 32 16)
   (q/stroke-weight 0.6)
   (let [t (/ (seconds-since-epoch) 10)
         m (q/map-range (q/cos (/ t 4)) -1 1 16 64)
