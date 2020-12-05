@@ -7,9 +7,6 @@
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
 
-        ;; rewrite rules for probabilistic-automata
-        meander/epsilon {:mvn/version "0.0.543"}
-
         ;; clientside view rendering, routing, and HTML5 pushState support
         reagent/reagent {:mvn/version "1.0.0-alpha2"}
         bidi/bidi {:mvn/version "2.1.6"}
