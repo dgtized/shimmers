@@ -28,7 +28,8 @@
                (- amt full))))
 
 (defn draw []
-  (q/background 255 64)
+  (q/frame-rate 6)
+  (q/background 255 24)
   (let [sec (q/map-range (q/seconds) 0 60 0 6)
         min (q/map-range (q/minute) 0 60 0 6)
         hour (q/map-range (mod (q/hour) 12) 0 12 0 6)
