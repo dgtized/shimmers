@@ -15,6 +15,7 @@
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
             [shimmers.ray-marching :as ray-marching]
+            [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.zigzag :as zigzag]
             [shimmers.space-colonization :as space-colonization]
@@ -65,6 +66,7 @@
     :dithering dithering/run-sketch
     :fire fire/run-sketch
     ;; :fluid fluid/run-sketch
+    :hexaclock hexaclock/run-sketch
     :kd-tree kd-tree/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
