@@ -27,21 +27,23 @@
 
 (defn draw []
   (q/background 255 32)
-  (q/stroke 32 16)
   (let [sec (q/map-range (q/seconds) 0 60 0 6)
         min (q/map-range (q/minute) 0 60 0 6)
         hour (q/map-range (q/hour) 0 24 0 6)
         cx (/ (q/width) 2)
         cy (/ (q/height) 2)
         rH (/ (q/width) (Math/sqrt 5))
-        rM (/ (q/width) (Math/sqrt 7))
-        rS (/ (q/width) (Math/sqrt 9))]
+        rM (/ (q/width) (Math/sqrt 8))
+        rS (/ (q/width) (Math/sqrt 13))]
     (q/translate cx cy)
-    (q/stroke-weight 1)
-    (hexagon rS sec)
-    (q/stroke-weight 2)
-    (hexagon rM min)
+    (q/stroke 0 0 200 64)
     (q/stroke-weight 4)
+    (hexagon rS sec)
+    (q/stroke 0 200 0 64)
+    (q/stroke-weight 8)
+    (hexagon rM min)
+    (q/stroke 200 0 0 64)
+    (q/stroke-weight 16)
     (hexagon rH hour)))
 
 (defn ^:export run-sketch []
