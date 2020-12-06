@@ -14,9 +14,9 @@
             [shimmers.particles :as particles]
             [shimmers.probabilistic-automata :as probabilistic-automata]
             [shimmers.random-walk :as random-walk]
-            [shimmers.ray-marching :as ray-marching]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.kd-tree :as kd-tree]
+            [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.zigzag :as zigzag]
             [shimmers.space-colonization :as space-colonization]
             [shimmers.ui :as ui]))

@@ -1,4 +1,4 @@
-(ns shimmers.ray-marching
+(ns shimmers.sketches.ray-marching
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]))
