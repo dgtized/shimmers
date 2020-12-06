@@ -1,4 +1,4 @@
-(ns shimmers.dithering
+(ns shimmers.sketches.dithering
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.macros.loop :as loop]
