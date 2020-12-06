@@ -1,4 +1,4 @@
-(ns shimmers.probabilistic-automata
+(ns shimmers.sketches.probabilistic-automata
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
