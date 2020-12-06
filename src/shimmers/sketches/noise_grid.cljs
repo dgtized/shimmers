@@ -1,4 +1,4 @@
-(ns shimmers.noise-grid
+(ns shimmers.sketches.noise-grid
   "Display a tiling grid of noise function to show dicontinuities."
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
