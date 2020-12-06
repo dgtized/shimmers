@@ -1,8 +1,8 @@
 (ns shimmers.space-colonization-test
-  (:require [shimmers.space-colonization :as sut]
-            [cljs.test :as t :include-macros true
-             :refer-macros [deftest is testing run-tests]]
-            [shimmers.math.vector :as v]))
+  (:require [cljs.test :as t :include-macros true
+             :refer-macros [deftest is run-tests testing]]
+            [shimmers.math.vector :as v]
+            [shimmers.sketches.space-colonization :as sut]))
 
 (deftest closest
   (is (= {:position (v/vec2 2 1)}

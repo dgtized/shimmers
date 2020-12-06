@@ -1,4 +1,4 @@
-(ns ^:figwheel-hooks shimmers.space-colonization
+(ns ^:figwheel-hooks shimmers.sketches.space-colonization
   "Inspired by https://thecodingtrain.com/CodingChallenges/017-spacecolonizer.html and
   https://medium.com/@jason.webb/space-colonization-algorithm-in-javascript-6f683b743dc5
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"

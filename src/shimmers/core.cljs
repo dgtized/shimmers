@@ -17,8 +17,8 @@
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.random-walk :as random-walk]
             [shimmers.sketches.ray-marching :as ray-marching]
+            [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.zigzag :as zigzag]
-            [shimmers.space-colonization :as space-colonization]
             [shimmers.ui :as ui]))
 
 (enable-console-print!)
