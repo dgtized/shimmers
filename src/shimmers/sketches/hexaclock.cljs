@@ -31,20 +31,21 @@
   (q/frame-rate 6)
   (q/background 255 24)
   (let [sec (q/map-range (q/seconds) 0 60 0 6)
-        min (q/map-range (q/minute) 0 60 0 6)
+        minute (q/map-range (q/minute) 0 60 0 6)
         hour (q/map-range (mod (q/hour) 12) 0 12 0 6)
         cx (/ (q/width) 2)
         cy (/ (q/height) 2)
-        rH (/ (q/width) (Math/sqrt 5))
-        rM (/ (q/width) (Math/sqrt 8))
-        rS (/ (q/width) (Math/sqrt 13))]
+        small-radius (min cx cy)
+        rH (/ small-radius 1.2)
+        rM (/ small-radius 1.6)
+        rS (/ small-radius 2.2)]
     (q/translate cx cy)
     (q/stroke 0 0 200 64)
     (q/stroke-weight 4)
     (hexagon rS sec)
     (q/stroke 0 200 0 64)
     (q/stroke-weight 8)
-    (hexagon rM min)
+    (hexagon rM minute)
     (q/stroke 200 0 0 64)
     (q/stroke-weight 16)
     (hexagon rH hour)))
@@ -52,7 +53,7 @@
 (defn ^:export run-sketch []
   (q/defsketch hexaclock
     :host "quil-host"
-    :size [600 600]
+    :size [600 400]
     :draw draw
     :middleware [framerate/mode]))
 
