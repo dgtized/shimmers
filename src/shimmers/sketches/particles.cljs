@@ -1,4 +1,4 @@
-(ns shimmers.particles
+(ns shimmers.sketches.particles
   "Loosely derived from Coding Challenge #24: Perlin Noise Flow Field
   https://www.youtube.com/watch?v=BjoM9oKOAKY"
   (:require [quil.core :as q :include-macros true]
