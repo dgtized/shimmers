@@ -153,27 +153,27 @@
              :attractors (remove prune attractors)
              :quadtree new-quadtree))))
 
-(defn create-tree []
+(defn create-tree [[width height]]
   (let [{:keys [influence-distance prune-distance segment-distance attractor-power]}
         @settings
         attractor-count (Math/pow 2 attractor-power)
-        branches [(->Branch nil (v/vec2 (/ (q/width) 2) (- (q/height) 5)) (v/vec2 0 -1))]]
+        branches [(->Branch nil (v/vec2 (/ width 2) (- height 5)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractor-count attractor-count
      :attractors (repeatedly attractor-count
-                             #(v/vec2 (+ 110 (q/random (- (q/width) 220)))
-                                      (+ 30 (q/random (- (q/height) 40)))))
+                             #(v/vec2 (+ 110 (q/random (- width 220)))
+                                      (+ 30 (q/random (- height 40)))))
      :branches branches
      :weights (update-weights {} branches branches)
-     :quadtree (add-branch-positions (spatialtree/quadtree 0 0 (q/width) (q/height))
+     :quadtree (add-branch-positions (spatialtree/quadtree 0 0 width height)
                                      branches)}))
 
 (defn setup []
   ;; (.clear js/console)
   (q/frame-rate 15)
-  (create-tree))
+  (create-tree [(q/width) (q/height)]))
 
 (defn update-state [state]
   (let [fc (q/frame-count)
