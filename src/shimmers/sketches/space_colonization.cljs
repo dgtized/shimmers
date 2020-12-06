@@ -180,7 +180,7 @@
   (let [fc (q/frame-count)
         diff (- fc (get state :completed-frame fc))]
     (if (> (/ diff (q/current-frame-rate)) 5)
-      (create-tree)
+      (create-tree [(q/width) (q/height)] @settings)
       (grow state))))
 
 (defn draw-attractor [[x y] influence prune]
