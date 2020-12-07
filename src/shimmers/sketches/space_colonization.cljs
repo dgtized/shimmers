@@ -58,7 +58,7 @@
 (defn jitter [amount]
   (v/scale (v/unit2-from-angle (rand (* 2 Math/PI))) amount))
 
-(defn snap-to-closest [dir radians]
+(defn snap-to [dir radians]
   (-> (geom/heading dir)
       (/ radians)
       Math/round
@@ -144,7 +144,7 @@
          (for [[branch attractors] influencers
                :let [average-dir (average-attraction branch attractors)
                      new-dir (if (> snap-theta 0)
-                               (snap-to-closest average-dir snap-theta)
+                               (snap-to average-dir snap-theta)
                                average-dir)]]
            (grow-branch branch (get branch-index branch)
                         new-dir
