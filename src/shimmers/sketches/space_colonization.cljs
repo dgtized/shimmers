@@ -19,6 +19,7 @@
    :prune-distance 6
    :segment-distance 4
    :attractor-power 9
+   :snap-theta 0
    :debug {:attractors true
            :bubbles false
            :canalization true
@@ -194,7 +195,8 @@
 
 (defn create-tree
   [[width height]
-   {:keys [influence-distance prune-distance segment-distance attractor-power]
+   {:keys [influence-distance prune-distance segment-distance
+           snap-theta attractor-power]
     :as settings}]
   (let [attractor-count (Math/pow 2 attractor-power)
         branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
@@ -202,7 +204,7 @@
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractor-count attractor-count
-     :snap-theta 0
+     :snap-theta snap-theta
      :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
      :branches branches
      :weights (update-weights {} branches branches)
