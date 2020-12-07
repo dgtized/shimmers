@@ -173,32 +173,32 @@
 
 (defn generate-attractors
   [[width height] n mode]
-  (->> (condp = mode
-         :triangle
-         (let [base (- height 25)
-               left (/ width 5)
-               right (- width left)]
-           (triangle/triangle2
-            [left base]
-            [(/ width 2) 0]
-            [right base]))
-         :square
-         (let [left (/ width 8)
-               base 25
-               top 20]
-           (rect/rect left top
-                      (- width (* left 2))
-                      (- height top base))))
+  (let [top 25
+        bottom 30]
+    (->> (condp = mode
+           :triangle
+           (let [base (- height bottom)
+                 left (/ width 5)
+                 right (- width left)]
+             (triangle/triangle2
+              [left base]
+              [(/ width 2) 0]
+              [right base]))
+           :square
+           (let [left (/ width 6)]
+             (rect/rect left top
+                        (- width (* left 2))
+                        (- height top bottom))))
 
-       (partial geom/random-point-inside)
-       (repeatedly n)))
+         (partial geom/random-point-inside)
+         (repeatedly n))))
 
 (defn create-tree
   [[width height]
    {:keys [influence-distance prune-distance segment-distance attractor-power]
     :as settings}]
   (let [attractor-count (Math/pow 2 attractor-power)
-        branches [(->Branch nil (v/vec2 (/ width 2) (- height 5)) (v/vec2 0 -1))]]
+        branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
      :segment-distance segment-distance
