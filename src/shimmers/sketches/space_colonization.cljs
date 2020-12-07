@@ -56,9 +56,14 @@
   (apply min-key (partial branch-distance attractor) branches))
 
 (defn jitter [amount]
-  (let [theta (rand (* 2 Math/PI))]
-    (v/scale (v/vec2 (Math/cos theta)
-                     (Math/sin theta)) amount)))
+  (v/scale (v/unit2-from-angle (rand (* 2 Math/PI))) amount))
+
+(defn snap-to-closest [dir new-dir radians]
+  (let [theta (-> (geom/angle-between dir new-dir)
+                  (/ radians)
+                  Math/round
+                  (* radians))]
+    (v/unit2-from-angle (+ theta (geom/heading dir)))))
 
 (defn average-attraction
   [{:keys [position direction]} attractors]
@@ -129,15 +134,20 @@
 (defn grow [{:keys [influence-distance segment-distance prune-distance
                     attractors branches quadtree weights]
              :as state}]
-  (let [influencers (influencing-attractors state)
+  (let [snap-theta 0
+        influencers (influencing-attractors state)
         branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))
         growth
         (->>
-         (for [[branch attractors] influencers]
+         (for [[branch attractors] influencers
+               :let [average-dir (average-attraction branch attractors)
+                     new-dir (if (> snap-theta 0)
+                               (snap-to-closest (:direction branch) average-dir snap-theta)
+                               average-dir)]]
            (grow-branch branch (get branch-index branch)
-                        (average-attraction branch attractors)
+                        new-dir
                         segment-distance))
          (remove (fn [branch] (close-to-branch? quadtree (/ segment-distance 4) (:position branch))))
          vec)

@@ -31,3 +31,6 @@
 
 (defn normalize [v]
   (tm/normalize v))
+
+(defn unit2-from-angle [theta]
+  (vec2 (Math/cos theta) (Math/sin theta)))
