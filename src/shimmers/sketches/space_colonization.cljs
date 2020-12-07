@@ -9,6 +9,7 @@
             [reagent.dom :as rdom]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.triangle :as triangle]
             [thi.ng.geom.spatialtree :as spatialtree]
             [shimmers.framerate :as framerate]))
 
@@ -159,6 +160,21 @@
              :attractors (remove prune attractors)
              :quadtree new-quadtree))))
 
+(defn generate-attractors
+  [[width height] n mode]
+  (condp = mode
+    :triangle (let [base (- height 10)
+                    left (/ width 5)
+                    right (- width left)
+                    shape (triangle/triangle2
+                           [left base]
+                           [(/ width 2) 0]
+                           [right base])]
+                (repeatedly n #(geom/random-point-inside shape)))
+    :square (repeatedly n
+                        #(v/vec2 (+ 110 (q/random (- width 220)))
+                                 (+ 30 (q/random (- height 40)))))))
+
 (defn create-tree
   [[width height]
    {:keys [influence-distance prune-distance segment-distance attractor-power]
@@ -169,9 +185,7 @@
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractor-count attractor-count
-     :attractors (repeatedly attractor-count
-                             #(v/vec2 (+ 110 (q/random (- width 220)))
-                                      (+ 30 (q/random (- height 40)))))
+     :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
      :branches branches
      :weights (update-weights {} branches branches)
      :quadtree (add-branch-positions (spatialtree/quadtree 0 0 width height)
