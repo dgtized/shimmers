@@ -128,6 +128,8 @@
    weights growth))
 
 (defn add-branch-positions [quadtree branches]
+  ;; CAUTION: if add-point fails the return value is nil
+  ;; I believe this happens if point is out of bounds of the quadtree
   (reduce (fn [tree branch]
             (geom/add-point tree (:position branch) branch))
           quadtree
