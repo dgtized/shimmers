@@ -10,6 +10,7 @@
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as triangle]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [shimmers.framerate :as framerate]))
 
@@ -173,17 +174,21 @@
 (defn generate-attractors
   [[width height] n mode]
   (condp = mode
-    :triangle (let [base (- height 10)
-                    left (/ width 5)
-                    right (- width left)
-                    shape (triangle/triangle2
-                           [left base]
-                           [(/ width 2) 0]
-                           [right base])]
-                (repeatedly n #(geom/random-point-inside shape)))
-    :square (repeatedly n
-                        #(v/vec2 (+ 110 (q/random (- width 220)))
-                                 (+ 30 (q/random (- height 40)))))))
+    :triangle
+    (let [base (- height 25)
+          left (/ width 5)
+          right (- width left)
+          shape (triangle/triangle2
+                 [left base]
+                 [(/ width 2) 0]
+                 [right base])]
+      (repeatedly n #(geom/random-point-inside shape)))
+
+    :square
+    (let [left (/ width 8)
+          base 25
+          top 20]
+      (repeatedly n #(geom/random-point-inside (rect/rect left top (- width (* left 2)) (- height top base)))))))
 
 (defn create-tree
   [[width height]
