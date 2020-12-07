@@ -132,11 +132,10 @@
           quadtree
           branches))
 
-(defn grow [{:keys [influence-distance segment-distance prune-distance
+(defn grow [{:keys [influence-distance segment-distance prune-distance snap-theta
                     attractors branches quadtree weights]
              :as state}]
-  (let [snap-theta 0
-        influencers (influencing-attractors state)
+  (let [influencers (influencing-attractors state)
         branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))
@@ -203,6 +202,7 @@
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractor-count attractor-count
+     :snap-theta 0
      :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
      :branches branches
      :weights (update-weights {} branches branches)
