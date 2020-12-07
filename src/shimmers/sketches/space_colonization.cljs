@@ -286,21 +286,41 @@
      [:input {:type "range" :value value :min lower :max upper
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
 
+(defn dropdown [label field-ref options]
+  (let [selected (get-in @settings field-ref)]
+    [:div.lable-set
+     [:label label]
+     [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))}
+      (for [[name value] options]
+        [:option (if (< (Math/abs (- selected value)) 0.01)
+                   {:value value :selected true}
+                   {:value value})
+         name])]]))
+
 (defn explanation []
   [:div
-   (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
-           [:attractor-power] [4 12])
-   (slider (fn [v] (str "Influence Distance " v))
-           [:influence-distance] [10 100])
-   (slider (fn [v] (str "Prune Distance " v))
-           [:prune-distance] [2 50])
-   (slider (fn [v] (str "Segment Distance " v))
-           [:segment-distance] [1 30])
-   (checkbox "Show Canalization" [:debug :canalization])
-   (checkbox "Show Attractors" [:debug :attractors])
-   (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
-   (checkbox "Show Influence-By Lines" [:debug :influenced-by])
-   (checkbox "Show Next Branch Direction" [:debug :next-branch])])
+   [:p
+    "Applies on next run:"
+    (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
+            [:attractor-power] [4 12])
+    (slider (fn [v] (str "Influence Distance " v))
+            [:influence-distance] [10 100])
+    (slider (fn [v] (str "Prune Distance " v))
+            [:prune-distance] [2 50])
+    (slider (fn [v] (str "Segment Distance " v))
+            [:segment-distance] [1 30])
+    (dropdown "Snap Angles To " [:snap-theta] {"Disabled" 0
+                                               "90 degrees" (/ Math/PI 2)
+                                               "60 degrees" (/ Math/PI 3)
+                                               "45 degrees" (/ Math/PI 4)
+                                               "30 degrees" (/ Math/PI 6)})]
+   [:p
+    "Applies immediately:"
+    (checkbox "Show Canalization" [:debug :canalization])
+    (checkbox "Show Attractors" [:debug :attractors])
+    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
+    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
+    (checkbox "Show Next Branch Direction" [:debug :next-branch])]])
 
 (defn mount-reagent
   "Mounts reagent component to render in explanation element.
