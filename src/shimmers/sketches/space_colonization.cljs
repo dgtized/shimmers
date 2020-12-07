@@ -173,22 +173,25 @@
 
 (defn generate-attractors
   [[width height] n mode]
-  (condp = mode
-    :triangle
-    (let [base (- height 25)
-          left (/ width 5)
-          right (- width left)
-          shape (triangle/triangle2
-                 [left base]
-                 [(/ width 2) 0]
-                 [right base])]
-      (repeatedly n #(geom/random-point-inside shape)))
+  (->> (condp = mode
+         :triangle
+         (let [base (- height 25)
+               left (/ width 5)
+               right (- width left)]
+           (triangle/triangle2
+            [left base]
+            [(/ width 2) 0]
+            [right base]))
+         :square
+         (let [left (/ width 8)
+               base 25
+               top 20]
+           (rect/rect left top
+                      (- width (* left 2))
+                      (- height top base))))
 
-    :square
-    (let [left (/ width 8)
-          base 25
-          top 20]
-      (repeatedly n #(geom/random-point-inside (rect/rect left top (- width (* left 2)) (- height top base)))))))
+       (partial geom/random-point-inside)
+       (repeatedly n)))
 
 (defn create-tree
   [[width height]
