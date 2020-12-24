@@ -10,24 +10,23 @@
 (defn turn-right [dir] (+ dir (/ Math/PI 2)))
 (defn turn-left [dir] (- dir (/ Math/PI 2)))
 
-(defn create-grid []
-  {(v/vec2 0 0) false})
+(def default-grid-cell false)
 
 (defn create-ant [position direction]
   {:position position :direction direction})
 
 (defn setup []
-  {:grid (create-grid)
+  {:grid {}
    :ants [(create-ant (v/vec2 0 0) 0)]})
 
 (defn advance [grid ant]
   (let [new-pos (v/add (:position ant) (v/unit2-from-angle (:direction ant)))]
-    [(update grid new-pos (fnil identity false))
+    [(update grid new-pos (fnil identity default-grid-cell))
      (assoc ant :position new-pos)]))
 
 (defn move-ant [grid ant]
   (let [pixel (get grid (:position ant))]
-    (advance (update grid (:position ant) not)
+    (advance (update grid (:position ant) (fnil not default-grid-cell))
              (update ant :direction
                      (if pixel turn-right turn-left)))))
 
