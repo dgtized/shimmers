@@ -52,7 +52,7 @@
   (let [{[x0 x1] :x [y0 y1] :y} (grid-range grid first)
         center (v/vec2 (/ (q/width) 2) (/ (q/height) 2))
         r (/ (+ (q/width) (q/height))
-             (* 3 (+ (- x1 x0) (- y1 y0))))]
+             (+ 20 (* 2 (+ (- x1 x0) (- y1 y0)))))]
     (doseq [[position value] grid]
       (when value
         (let [[x y] (v/add center (v/scale position r))]
