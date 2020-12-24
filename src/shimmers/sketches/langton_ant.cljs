@@ -17,7 +17,8 @@
 
 (defn setup []
   {:grid {}
-   :ants [(create-ant (v/vec2 0 0) 0)]})
+   :ants [(create-ant (v/vec2 0 0) (/ Math/PI 2))
+          (create-ant (v/vec2 2 0) 0)]})
 
 (defn advance [grid ant]
   (let [new-pos (v/add (:position ant) (v/unit2-from-angle (:direction ant)))]
