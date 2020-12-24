@@ -32,6 +32,7 @@
                (update ant :direction turn-right)
                (update ant :direction turn-left)))))
 
+;; TODO: make this work for N ants
 (defn update-state [{:keys [grid ants]}]
   (let [[new-grid new-ant] (move-ant grid (first ants))]
     {:grid new-grid :ants [new-ant]}))
