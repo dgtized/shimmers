@@ -36,12 +36,19 @@
   (let [[new-grid new-ant] (move-ant grid (first ants))]
     {:grid new-grid :ants [new-ant]}))
 
+(defn grid-range [grid f]
+  (let [xs (map f (keys grid))]
+    [(reduce min xs) (reduce max xs)]))
+
 (defn draw [{:keys [grid ants] :as state}]
   (q/background 255)
   (q/fill 0)
   (q/rect-mode :center)
-  (let [center (v/vec2 (/ (q/width) 2) (/ (q/height) 2))
-        r 6]
+  (let [[x0 x1] (grid-range grid first)
+        [y0 y1] (grid-range grid second)
+        center (v/vec2 (/ (q/width) 2) (/ (q/height) 2))
+        r (/ (+ (q/width) (q/height))
+             (* 3 (+ (- x1 x0) (- y1 y0))))]
     (doseq [[position value] grid]
       (when value
         (let [[x y] (v/add center (v/scale position r))]
