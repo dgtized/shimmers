@@ -8,7 +8,7 @@
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
 
         ;; clientside view rendering, routing, and HTML5 pushState support
-        reagent/reagent {:mvn/version "1.0.0-alpha2"}
+        reagent/reagent {:mvn/version "1.0.0"}
         bidi/bidi {:mvn/version "2.1.6"}
         kibu/pushy {:mvn/version "0.3.8"}
 
