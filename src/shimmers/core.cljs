@@ -12,6 +12,7 @@
             [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.kd-tree :as kd-tree]
+            [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.particles :as particles]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
@@ -68,6 +69,7 @@
     ;; :fluid fluid/run-sketch
     :hexaclock hexaclock/run-sketch
     :kd-tree kd-tree/run-sketch
+    :langton-ant langton-ant/run-sketch
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
