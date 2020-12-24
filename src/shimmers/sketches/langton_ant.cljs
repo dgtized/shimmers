@@ -38,15 +38,17 @@
       {:grid grid :ants processed})))
 
 (defn grid-range [grid f]
-  (let [xs (map f (keys grid))]
-    [(reduce min xs) (reduce max xs)]))
+  (let [active-cells (keep (fn [[pos v]] (when v pos)) grid)
+        xs (map first active-cells)
+        ys (map second active-cells)]
+    {:x [(reduce min xs) (reduce max xs)]
+     :y [(reduce min xs) (reduce max xs)]}))
 
 (defn draw [{:keys [grid ants] :as state}]
   (q/background 255)
   (q/fill 0)
   (q/rect-mode :center)
-  (let [[x0 x1] (grid-range grid first)
-        [y0 y1] (grid-range grid second)
+  (let [{[x0 x1] :x [y0 y1] :y} (grid-range grid first)
         center (v/vec2 (/ (q/width) 2) (/ (q/height) 2))
         r (/ (+ (q/width) (q/height))
              (* 3 (+ (- x1 x0) (- y1 y0))))]
