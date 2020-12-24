@@ -32,10 +32,12 @@
                (update ant :direction turn-right)
                (update ant :direction turn-left)))))
 
-;; TODO: make this work for N ants
 (defn update-state [{:keys [grid ants]}]
-  (let [[new-grid new-ant] (move-ant grid (first ants))]
-    {:grid new-grid :ants [new-ant]}))
+  (loop [grid grid ants ants processed []]
+    (if (seq ants)
+      (let [[new-grid new-ant] (move-ant grid (first ants))]
+        (recur new-grid (rest ants) (conj processed new-ant)))
+      {:grid grid :ants processed})))
 
 (defn grid-range [grid f]
   (let [xs (map f (keys grid))]
