@@ -28,9 +28,8 @@
 (defn move-ant [grid ant]
   (let [pixel (get grid (:position ant))]
     (advance (update grid (:position ant) not)
-             (if pixel
-               (update ant :direction turn-right)
-               (update ant :direction turn-left)))))
+             (update ant :direction
+                     (if pixel turn-right turn-left)))))
 
 (defn update-state [{:keys [grid ants]}]
   (loop [grid grid ants ants processed []]
