@@ -20,16 +20,14 @@
    :ants [(create-ant (v/vec2 0 0) (/ Math/PI 2))
           (create-ant (v/vec2 2 0) 0)]})
 
-(defn advance [grid ant]
-  (let [new-pos (v/add (:position ant) (v/unit2-from-angle (:direction ant)))]
-    [(update grid new-pos (fnil identity default-grid-cell))
-     (assoc ant :position new-pos)]))
-
-(defn move-ant [grid ant]
-  (let [pixel (get grid (:position ant))]
-    (advance (update grid (:position ant) (fnil not default-grid-cell))
-             (update ant :direction
-                     (if pixel turn-right turn-left)))))
+(defn move-ant [grid {:keys [position direction] :as ant}]
+  (let [pixel (get grid (:position ant))
+        new-dir ((if pixel turn-right turn-left) direction)
+        new-pos (v/add position (v/unit2-from-angle new-dir))]
+    [(-> grid
+         (update position (fnil not default-grid-cell))
+         (update new-pos (fnil identity default-grid-cell)))
+     (assoc ant :position new-pos :direction new-dir)]))
 
 (defn update-state [{:keys [grid ants]}]
   (loop [grid grid ants ants processed []]
