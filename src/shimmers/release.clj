@@ -1,6 +1,5 @@
 (ns shimmers.release
-  (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [clojure.java.shell :refer [sh]])
   (:import java.text.SimpleDateFormat
            [java.util Calendar TimeZone]))
