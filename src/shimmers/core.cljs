@@ -18,6 +18,7 @@
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.random-walk :as random-walk]
             [shimmers.sketches.ray-marching :as ray-marching]
+            [shimmers.sketches.ring :as ring]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.zigzag :as zigzag]
             [shimmers.ui :as ui]))
@@ -73,6 +74,7 @@
     :noise-grid noise-grid/run-sketch
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
+    :ring ring/run-sketch
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch
