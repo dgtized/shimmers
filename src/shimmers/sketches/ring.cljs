@@ -11,8 +11,8 @@
   (update state :theta + 0.08))
 
 (defn draw [{:keys [theta]}]
-  (q/background 255 2)
-  (q/stroke 10 32)
+  (q/background 255 4)
+  (q/stroke 10 64)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (let [radial-noise (q/noise (q/cos (/ theta 2)) (q/sin (/ theta 2)))
         radius (+ 120 (* (- radial-noise 0.5) 10))
