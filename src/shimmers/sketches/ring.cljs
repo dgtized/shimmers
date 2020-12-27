@@ -8,18 +8,22 @@
   {:theta 0.0})
 
 (defn update-state [state]
-  (update state :theta + 0.1))
+  (update state :theta + 0.08))
 
 (defn draw [{:keys [theta]}]
   (q/background 255 2)
-  (q/stroke 0 32)
-  (q/stroke-weight 0.5)
+  (q/stroke 10 32)
+  (q/stroke-weight 1)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (let [radius 120
         x (* radius (q/cos theta))
-        y (* radius (q/sin theta))]
-    (q/line [x y] (v/add (v/vec2 x y)
-                         (v/scale (v/unit2-from-angle theta) 20)))))
+        y (* radius (q/sin theta))
+        radial-noise (q/noise x y)]
+    (q/line [x y]
+            (v/add (v/vec2 x y)
+                   (v/scale (v/unit2-from-angle theta)
+                            (* radial-noise 32))))
+    ))
 
 (defn ^:export run-sketch []
   (q/defsketch ring
