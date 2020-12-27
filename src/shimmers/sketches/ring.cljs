@@ -13,15 +13,15 @@
 (defn draw [{:keys [theta]}]
   (q/background 255 2)
   (q/stroke 10 32)
-  (q/stroke-weight 1)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (let [radius 120
+  (let [radial-noise (q/noise (q/cos (/ theta 2)) (q/sin (/ theta 2)))
+        radius (+ 120 (* (- radial-noise 0.5) 10))
         x (* radius (q/cos theta))
-        y (* radius (q/sin theta))
-        radial-noise (q/noise x y)]
+        y (* radius (q/sin theta))]
+    (q/stroke-weight (+ 0.8 radial-noise))
     (q/line [x y]
             (v/add (v/vec2 x y)
-                   (v/scale (v/unit2-from-angle theta)
+                   (v/scale (v/unit2-from-angle (+ theta radial-noise))
                             (* radial-noise 32))))
     ))
 
