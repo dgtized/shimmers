@@ -7,6 +7,11 @@
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
 
+        ;; Helper libraries
+        org.clojure/core.async {:mvn/version "1.3.610"}
+        org.clojure/core.logic {:mvn/version "1.0.0"}
+        org.clojure/core.match {:mvn/version "1.0.0"}
+
         ;; clientside view rendering, routing, and HTML5 pushState support
         reagent/reagent {:mvn/version "1.0.0"}
         metosin/reitit {:mvn/version "0.5.10"}
