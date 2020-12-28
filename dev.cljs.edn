@@ -1,6 +1,9 @@
 ^{:css-dirs ["resources/public/css"]
   :watch-dirs ["src" "test"]
-  :extra-main-files {:tests {:main shimmers.test-runner}}}
+  :extra-main-files {:tests {:main shimmers.test-runner}}
+
+  ;; Define handler to enable clientside SPA routing
+  :ring-handler shimmers.ring-server/handler}
 {:main shimmers.core
 
  ;; used http://jmmk.github.io/javascript-externs-generator/ to create

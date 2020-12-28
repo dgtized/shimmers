@@ -3,7 +3,11 @@
             [goog.dom :as dom]
             [goog.events :as events]
             [quil.core :as q :include-macros true]
+            [reagent.core :as r]
             [reagent.dom :as rdom]
+            [reitit.frontend :as rf]
+            [reitit.frontend.easy :as rfe]
+            [reitit.frontend.controllers :as rfc]
             [shimmers.framerate :as framerate]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.cube :as cube]
@@ -90,32 +94,99 @@
     (apply (:fn sketch) [])
     ))
 
-(defn restart-sketch []
+(defn stop-sketch []
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
   ;; kill existing sketch
   (q/with-sketch (q/get-sketch-by-id "quil-host")
     (q/exit))
-  (framerate/display "")
+  (framerate/display ""))
+
+(defn restart-sketch []
+  (stop-sketch)
   (run-current))
 
 (defn cycle-sketch []
   (let [{:keys [sketches current]} @state
         sketch-name (ui/cycle-next (keys sketches) current)]
-    (swap! state assoc :current sketch-name)
-    (ui/screen-view (name sketch-name))
-    (restart-sketch)))
+    (rfe/push-state ::sketch-by-name {:name sketch-name})))
+
+(defonce match (r/atom nil))
+
+(defn logging-controller [name & opts]
+  (let [default {:start (println "start controller" name)
+                 :stop (println "stop controller" name)}]
+    (if opts
+      (merge default opts)
+      default)))
+
+(defn sketch-list [params]
+  (let [{:keys [sketches]} @state]
+    [:div [:h1 "Sketch List"]
+     (into [:ul]
+           (for [[sketch _] sketches]
+             [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
+                   (name sketch)]]))
+     [:pre (pr-str params)]]))
+
+(defn sketch-by-name [params]
+  [:div [:h1 "Sketch By Name"]
+   [:pre (pr-str params)]])
+
+(def routes
+  ["/"
+   ["" ::root]
+   ["sketches"
+    [""
+     {:name ::sketch-list
+      :view sketch-list
+      :controllers [(logging-controller "sketch list")]}]
+    ["/:name"
+     {:name ::sketch-by-name
+      :view sketch-by-name
+      :parameters {:path {:name keyword?}}
+      :controllers
+      [{:parameters {:path [:name]}
+        :start (fn [{:keys [path]}]
+                 (let [sketch-name (:name path)]
+                   (println "start" "sketch" sketch-name)
+                   (ui/screen-view (name sketch-name))
+                   (swap! state assoc :current (keyword sketch-name))
+                   (run-current)))
+        :stop (fn [{:keys [path]}]
+                (println "stop" "sketch" (:name path))
+                (stop-sketch))}]}]]])
+
+(defn on-navigate [new-match]
+  (swap! match
+         (fn [old-match]
+           (println "router: " old-match "->" new-match)
+           (if new-match
+             (assoc new-match :controllers
+                    (rfc/apply-controllers (:controllers old-match) new-match))))))
+
+(defn page-root []
+  (let [page @match
+        view (:view (:data page))]
+    (when view
+      [view (:parameters page)])))
 
 (defn init []
+  (rfe/start!
+   (rf/router routes)
+   on-navigate
+   {:use-fragment false})
+
+  (rdom/render [page-root] (dom/getElement "list-sketches"))
+
   ;; TODO consider generating elements at runtime
   ;; or change to reagent for top level function?
   (events/listen (dom/getElement "next-sketch") "click"
                  (fn [] (cycle-sketch)))
   (events/listen (dom/getElement "restart-sketch") "click"
                  (fn [] (restart-sketch)))
-  (ui/screen-view (name (get @state :current)))
-  (run-current))
+  (ui/screen-view (name (get @state :current))))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))

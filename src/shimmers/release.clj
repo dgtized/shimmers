@@ -21,6 +21,8 @@
          (subs revision 0 8)
          "</code></span>")))
 
+(def base-href "https://dgtized.github.io/shimmers/")
+
 (defn make-index [_]
   (let [index "resources/public/index.html"
         revision (revision-tag)
@@ -28,5 +30,7 @@
     (println (str "[shimmers.release] Rewriting index.html - " revision))
     (spit index
           (-> contents
+              (str/replace-first #"<base href=\".*\" />"
+                                 (str "<base href=\"" base-href "\" />"))
               (str/replace-first #"dev-main\.js" "release-main.js")
               (str/replace-first "<span id=\"revision\"></span>" revision)))))
