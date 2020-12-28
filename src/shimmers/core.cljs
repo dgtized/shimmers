@@ -106,13 +106,6 @@
 
 (defonce match (r/atom nil))
 
-(defn logging-controller [name & opts]
-  (let [default {:start (println "start controller" name)
-                 :stop (println "stop controller" name)}]
-    (if opts
-      (merge default opts)
-      default)))
-
 (defn sketch-list [params]
   (let [{:keys [sketches]} @state]
     [:section
