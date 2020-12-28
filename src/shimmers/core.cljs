@@ -32,12 +32,12 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn init-sketches [sketches default]
+(defn init-sketches [sketches]
   (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
-         :current default}))
+         :current nil}))
 
 (defonce state
-  (->
+  (init-sketches
    (loader/sketches-with-meta
     :cube cube/run-sketch
     :dithering dithering/run-sketch
@@ -53,13 +53,13 @@
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch
-    :zigzag zigzag/run-sketch)
-   (init-sketches :particles)))
+    :zigzag zigzag/run-sketch)))
 
 (defn run-current []
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
-    (apply (:fn sketch) [])))
+    (when sketch
+      (apply (:fn sketch) []))))
 
 (defn stop-sketch []
   ;; force active video capture to stop
