@@ -116,7 +116,7 @@
 
 (defn sketch-list [params]
   (let [{:keys [sketches]} @state]
-    [:div [:h1 "Sketch List"]
+    [:div [:h1 "All Sketches"]
      (into [:ul]
            (for [[sketch _] sketches]
              [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
@@ -126,11 +126,11 @@
   (let [{:keys [sketches current]} @state]
     [:section {:class "controls"}
      [:span
-      [:a {:href (:href (code-link (get sketches current)))} (name current)]]
-     [:span
       [:button {:on-click cycle-sketch} "Next"]
       [:button {:on-click restart-sketch} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
+     [:span
+      [:a {:href (:href (code-link (get sketches current)))} (name current)]]
      [:span {:id "framerate"}]]))
 
 (def routes
