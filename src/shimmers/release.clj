@@ -30,7 +30,6 @@
     (println (str "[shimmers.release] Rewriting index.html - " revision))
     (spit index
           (-> contents
-              (str/replace-first #"<base href=\".*\">$"
-                                 (str "<base href=\"" base-href "\" />"))
+              (str/replace-first #"<base href=\"\">$" (str "<base href=\"" base-href "\">"))
               (str/replace-first #"dev-main\.js" "release-main.js")
               (str/replace-first "<span id=\"revision\"></span>" revision)))))
