@@ -55,11 +55,6 @@
 (comment
   (code-link (first (loader/sketches-with-meta :particles particles/run-sketch))))
 
-(defn set-code-link [text href]
-  (let [link (dom/getElement "code-link")]
-    (dom/setProperties link #js {"href" href})
-    (dom/setTextContent link text)))
-
 (defn init-sketches [sketches default]
   (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
          :current default}))
@@ -89,7 +84,6 @@
 (defn run-current []
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
-    (set-code-link (name (:id sketch)) (:href (code-link sketch)))
     (rdom/unmount-component-at-node (dom/getElement "explanation"))
     (apply (:fn sketch) [])
     ))
@@ -127,12 +121,18 @@
      (into [:ul]
            (for [[sketch _] sketches]
              [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
-                   (name sketch)]]))
-     [:pre (pr-str params)]]))
+                   (name sketch)]]))]))
 
 (defn sketch-by-name [params]
-  [:div [:h1 "Sketch By Name"]
-   [:pre (pr-str params)]])
+  (let [{:keys [sketches current]} @state]
+    [:section {:class "controls"}
+     [:span
+      [:a {:href (:href (code-link (get sketches current)))} (name current)]]
+     [:span
+      [:button {:on-click cycle-sketch} "Next"]
+      [:button {:on-click restart-sketch} "Restart"]
+      [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
+     [:span {:id "framerate"}]]))
 
 (def routes
   ["/"
@@ -180,12 +180,6 @@
 
   (rdom/render [page-root] (dom/getElement "list-sketches"))
 
-  ;; TODO consider generating elements at runtime
-  ;; or change to reagent for top level function?
-  (events/listen (dom/getElement "next-sketch") "click"
-                 (fn [] (cycle-sketch)))
-  (events/listen (dom/getElement "restart-sketch") "click"
-                 (fn [] (restart-sketch)))
   (ui/screen-view (name (get @state :current))))
 
 ;; initialize sketch on first-load
