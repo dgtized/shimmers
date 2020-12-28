@@ -1,20 +1,17 @@
 (ns shimmers.core
-  (:require [clojure.string :as str]
-            [goog.dom :as dom]
-            [goog.events :as events]
+  (:require [goog.dom :as dom]
             [quil.core :as q :include-macros true]
             [reagent.core :as r]
             [reagent.dom :as rdom]
-            [reitit.frontend :as rf]
-            [reitit.frontend.easy :as rfe]
-            [reitit.frontend.controllers :as rfc]
             [reitit.coercion.spec :as rss]
-            [shimmers.framerate :as framerate]
+            [reitit.frontend :as rf]
+            [reitit.frontend.controllers :as rfc]
+            [reitit.frontend.easy :as rfe]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.fire :as fire]
-            [shimmers.sketches.fluid :as fluid]
+            ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
@@ -42,19 +39,6 @@
     :setup (fn [] (q/background "white"))
     :draw (fn [] (q/point (q/random (q/width))
                          (q/random (q/height))))))
-
-(defn code-link [sketch]
-  (if-let [{:keys [file line]} (:meta sketch)]
-    {:filename (last (str/split file #"/"))
-     :href
-     (-> file
-         (str/replace-first #"^.*shimmers/src"
-                            "https://github.com/dgtized/shimmers/blob/master/src")
-         (str "#L" line))}
-    {:filename "" :href ""}))
-
-(comment
-  (code-link (first (loader/sketches-with-meta :particles particles/run-sketch))))
 
 (defn init-sketches [sketches default]
   (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
@@ -123,7 +107,7 @@
       [:button {:on-click restart-sketch} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
-      [:a {:href (:href (code-link (get sketches current)))} (name current)]]
+      [:a {:href (:href (ui/code-link (get sketches current)))} (name current)]]
      [:span {:id "framerate"}]]))
 
 (def routes
