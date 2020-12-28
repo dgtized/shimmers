@@ -178,9 +178,7 @@
    on-navigate
    {:use-fragment false})
 
-  (rdom/render [page-root] (dom/getElement "list-sketches"))
-
-  (ui/screen-view (name (get @state :current))))
+  (rdom/render [page-root] (dom/getElement "list-sketches")))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
