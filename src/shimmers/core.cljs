@@ -84,7 +84,6 @@
 (defn run-current []
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
-    (rdom/unmount-component-at-node (dom/getElement "explanation"))
     (apply (:fn sketch) [])
     ))
 
@@ -95,7 +94,7 @@
   ;; kill existing sketch
   (q/with-sketch (q/get-sketch-by-id "quil-host")
     (q/exit))
-  (framerate/display ""))
+  (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
 (defn restart-sketch []
   (stop-sketch)
