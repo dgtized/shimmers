@@ -80,12 +80,10 @@
     :zigzag zigzag/run-sketch)
    (init-sketches :particles)))
 
-;; TODO alternatively load from #url for direct linking?
 (defn run-current []
   (let [{:keys [sketches current]} @state
         sketch (get sketches current)]
-    (apply (:fn sketch) [])
-    ))
+    (apply (:fn sketch) [])))
 
 (defn stop-sketch []
   ;; force active video capture to stop
@@ -116,7 +114,8 @@
 
 (defn sketch-list [params]
   (let [{:keys [sketches]} @state]
-    [:div [:h1 "All Sketches"]
+    [:section
+     [:h1 "All Sketches"]
      (into [:ul]
            (for [[sketch _] sketches]
              [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
@@ -177,7 +176,7 @@
    on-navigate
    {:use-fragment false})
 
-  (rdom/render [page-root] (dom/getElement "list-sketches")))
+  (rdom/render [page-root] (dom/getElement "shimmer-mount")))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
