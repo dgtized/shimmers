@@ -15,6 +15,8 @@ cp target/public/cljs-out/release-main* resources/public/js
 pushd resources/public
 
 sed -i -e 's/cljs-out\/release-main.js/js\/release-main.js/' index.html
+# For routing to page handler after not using fragments
+# ln -sf index.html 404.html
 
 # TODO: add circle ci exclusion for gh-pages?
 

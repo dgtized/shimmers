@@ -102,7 +102,8 @@
      [:span {:id "framerate"}]]))
 
 (def routes
-  [["/" ::root]
+  [;; "/shimmers"
+   ["/" ::root]
    ["/sketches" {:name ::sketch-list :view sketch-list}]
    ["/sketches/:name"
     {:name ::sketch-by-name
@@ -143,7 +144,7 @@
    ;; coercion here will cause missing sketches to explode
    (rf/router routes {:data {:coercion rss/coercion}})
    on-navigate
-   {:use-fragment false})
+   {:use-fragment true})
 
   (rdom/render [page-root] (dom/getElement "shimmer-mount")))
 
