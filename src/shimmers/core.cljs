@@ -8,6 +8,7 @@
             [reitit.frontend :as rf]
             [reitit.frontend.easy :as rfe]
             [reitit.frontend.controllers :as rfc]
+            [reitit.coercion.spec :as rss]
             [shimmers.framerate :as framerate]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.cube :as cube]
@@ -133,36 +134,35 @@
      [:span {:id "framerate"}]]))
 
 (def routes
-  ["/"
-   ["" ::root]
-   ["sketches"
-    [""
-     {:name ::sketch-list
-      :view sketch-list
-      :controllers [(logging-controller "sketch list")]}]
-    ["/:name"
-     {:name ::sketch-by-name
-      :view sketch-by-name
-      :parameters {:path {:name keyword?}}
-      :controllers
-      [{:parameters {:path [:name]}
-        :start (fn [{:keys [path]}]
-                 (let [sketch-name (:name path)]
-                   (println "start" "sketch" sketch-name)
-                   (ui/screen-view (name sketch-name))
-                   (swap! state assoc :current (keyword sketch-name))
-                   (run-current)))
-        :stop (fn [{:keys [path]}]
-                (println "stop" "sketch" (:name path))
-                (stop-sketch))}]}]]])
+  [["/" ::root]
+   ["/sketches" {:name ::sketch-list :view sketch-list}]
+   ["/sketches/:name"
+    {:name ::sketch-by-name
+     :view sketch-by-name
+     :parameters
+     {:path {:name (every-pred string?
+                               (set (map name (keys (get @state :sketches)))))}}
+     :controllers
+     [{:parameters {:path [:name]}
+       :start (fn [{:keys [path]}]
+                (let [sketch-name (:name path)]
+                  (println "start" "sketch" sketch-name)
+                  (ui/screen-view (name sketch-name))
+                  (swap! state assoc :current (keyword sketch-name))
+                  (run-current)))
+       :stop (fn [{:keys [path]}]
+               (println "stop" "sketch" (:name path))
+               (stop-sketch))}]}]])
 
 (defn on-navigate [new-match]
-  (swap! match
-         (fn [old-match]
-           (println "router: " old-match "->" new-match)
-           (if new-match
-             (assoc new-match :controllers
-                    (rfc/apply-controllers (:controllers old-match) new-match))))))
+  (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
+    ;; default route, not sure on reitit for frontend routing
+    (rfe/replace-state ::sketch-by-name {:name :particles})
+    (swap! match
+           (fn [old-match]
+             (if new-match
+               (assoc new-match :controllers
+                      (rfc/apply-controllers (:controllers old-match) new-match)))))))
 
 (defn page-root []
   (let [page @match
@@ -172,7 +172,8 @@
 
 (defn init []
   (rfe/start!
-   (rf/router routes)
+   ;; coercion here will cause missing sketches to explode
+   (rf/router routes {:data {:coercion rss/coercion}})
    on-navigate
    {:use-fragment false})
 
