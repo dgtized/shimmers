@@ -32,14 +32,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn ^:export test-sketch []
-  (q/defsketch points
-    :host "quil-host"
-    :size [500 500]
-    :setup (fn [] (q/background "white"))
-    :draw (fn [] (q/point (q/random (q/width))
-                         (q/random (q/height))))))
-
 (defn init-sketches [sketches default]
   (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
          :current default}))
@@ -47,7 +39,6 @@
 (defonce state
   (->
    (loader/sketches-with-meta
-    ;; :test-sketch test-sketch
     :cube cube/run-sketch
     :dithering dithering/run-sketch
     :fire fire/run-sketch
