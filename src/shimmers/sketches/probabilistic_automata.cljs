@@ -1,5 +1,6 @@
 (ns shimmers.sketches.probabilistic-automata
-  (:require [quil.core :as q :include-macros true]
+  (:require [cljs.core.match :refer-macros [match]]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
             [shimmers.math.color :as color]
@@ -26,13 +27,10 @@
    :program program})
 
 (defn interpret-argument [arg]
-  (if (vector? arg)
-    (let [[op value] arg]
-      (case op
-        :random (rand-int value)
-        :gradient (color/random-gradient value)
-        arg))
-    arg))
+  (match arg
+    [:random value] (rand-int value)
+    [:gradient value] (color/random-gradient value)
+    :else arg))
 
 (defn interpret [{:keys [position heading velocity ip program] :as bot} instruction]
   (let [[op argument] instruction
