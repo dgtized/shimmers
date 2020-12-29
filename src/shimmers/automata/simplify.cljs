@@ -1,4 +1,5 @@
-(ns shimmers.automata.simplify)
+(ns shimmers.automata.simplify
+  (:require [cljs.core.match :refer-macros [match]]))
 
 (defn collapse-trivial-one-of
   "Recursively collapses single choice one-of's into that instruction"
@@ -13,17 +14,15 @@
 (defn collapse-commutative-groups
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
   [snippet]
-  (let [[op arg] (first snippet)]
-    (case op
-      :rotate (if (vector? arg)
-                snippet
-                [[:rotate (reduce + (map second snippet))]]) ;; sum up consecutive rotations
-      :forward (if (vector? arg)
-                 snippet
-                 [[:forward (reduce + (map second snippet))]]) ;; sum up consecutive forwards
-      :color [(last snippet)] ;; last color wins
-      :heading [(last snippet)] ;; last heading wins
-      snippet)))
+  (match (first snippet)
+         ;; sum up consecutive rotations/forwards
+         [(op :guard #{:rotate :forward}) arg]
+         (if (vector? arg) snippet
+             [[op (reduce + (map second snippet))]])
+         ;; last color/heading wins
+         [(:or :color :heading) _]
+         [(last snippet)]
+         :else snippet))
 
 (defn simplify-program
   [program]
