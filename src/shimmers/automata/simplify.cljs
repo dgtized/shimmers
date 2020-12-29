@@ -15,14 +15,14 @@
   "Collapse consecutive rotates, forward commands, and drop all but the last consecutive call to color and heading."
   [snippet]
   (match (first snippet)
-         ;; sum up consecutive rotations/forwards
-         [(op :guard #{:rotate :forward}) arg]
-         (if (vector? arg) snippet
-             [[op (reduce + (map second snippet))]])
-         ;; last color/heading wins
-         [(:or :color :heading) _]
-         [(last snippet)]
-         :else snippet))
+    ;; sum up consecutive rotations/forwards
+    [(op :guard #{:rotate :forward}) arg]
+    (if (vector? arg) snippet
+        [[op (reduce + (map second snippet))]])
+    ;; last color/heading wins
+    [(:or :color :heading) _]
+    [(last snippet)]
+    :else snippet))
 
 (defn simplify-program
   [program]
