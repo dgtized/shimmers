@@ -1,15 +1,14 @@
 (ns shimmers.sketches.probabilistic-automata
   (:require [cljs.core.match :refer-macros [match]]
+            [goog.dom :as dom]
+            [goog.string.format]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [reagent.dom :as rdom]
             [shimmers.framerate :as framerate]
             [shimmers.math.color :as color]
             [shimmers.automata.simplify :as simplify]
-            [shimmers.automata.programs :as programs]
-            [goog.dom :as dom]
-            [goog.string.format]
-            [reagent.core :as r]
-            [reagent.dom :as rdom]))
+            [shimmers.automata.programs :as programs]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
