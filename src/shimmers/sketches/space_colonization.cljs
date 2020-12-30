@@ -89,7 +89,7 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn influencing-attractors [{:keys [attractors quadtree influence-distance] :as state}]
+(defn influencing-attractors [{:keys [attractors quadtree influence-distance]}]
   (apply merge-with into
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
@@ -135,9 +135,10 @@
           quadtree
           branches))
 
-(defn grow [{:keys [influence-distance segment-distance prune-distance snap-theta
-                    attractors branches quadtree weights]
-             :as state}]
+(defn grow
+  [{:keys [segment-distance prune-distance snap-theta
+           attractors branches quadtree weights]
+    :as state}]
   (let [influencers (influencing-attractors state)
         branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
@@ -198,8 +199,7 @@
 (defn create-tree
   [[width height]
    {:keys [influence-distance prune-distance segment-distance
-           snap-theta attractor-power]
-    :as settings}]
+           snap-theta attractor-power]}]
   (let [attractor-count (Math/pow 2 attractor-power)
         branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
@@ -258,7 +258,7 @@
                   (v/add (:position branch)
                          (v/scale (average-attraction branch active-attractors) 5))))))))
 
-(defn draw [{:keys [branches weights debug] :as state}]
+(defn draw [{:keys [branches weights] :as state}]
   (let [debug (:debug @settings)]
     (q/ellipse-mode :radius)
     (q/background "white")
