@@ -5,7 +5,6 @@
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.triangle :as triangle]))
 
-
 ;; Ideas:
 ;;  * attractors could have influence PER attractor instead of global, or a weight on their influence?
 ;;  * some implementations have a branching likelyhood, or can just experiment with only creating one leaf per branch per cycle?
