@@ -131,7 +131,8 @@
            (fn [old-match]
              (if new-match
                (assoc new-match :controllers
-                      (rfc/apply-controllers (:controllers old-match) new-match)))))))
+                      (rfc/apply-controllers (:controllers old-match) new-match))
+               old-match)))))
 
 (defn page-root []
   (let [page @match
