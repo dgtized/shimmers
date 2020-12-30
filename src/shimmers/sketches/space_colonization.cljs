@@ -7,12 +7,12 @@
             [quil.middleware :as m]
             [reagent.core :as r]
             [reagent.dom :as rdom]
+            [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as triangle]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
-            [shimmers.framerate :as framerate]))
+            [thi.ng.geom.triangle :as triangle]))
 
 (defn init-settings []
   {:influence-distance 48
