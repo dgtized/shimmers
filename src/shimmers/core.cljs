@@ -81,7 +81,7 @@
 
 (defonce match (r/atom nil))
 
-(defn sketch-list [params]
+(defn sketch-list []
   (let [{:keys [sketches]} @state]
     [:section
      [:h1 "All Sketches"]
@@ -90,7 +90,7 @@
              [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
                    (name sketch)]]))]))
 
-(defn sketch-by-name [params]
+(defn sketch-by-name []
   (let [{:keys [sketches current]} @state]
     [:section {:class "controls"}
      [:span
