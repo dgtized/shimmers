@@ -1,9 +1,19 @@
 #kaocha/v1
 {:tests [{:id :unit-cljs
           :type :kaocha.type/cljs
-          :test-paths ["test"]
           :source-paths ["src"]
+          :test-paths ["test"]
           ;; :cljs/repl-env cljs.repl.node/repl-env ; this is the default
           ;; :cljs/repl-env cljs.repl.browser/repl-env
+
+          :cljs/compiler-options
+          {:externs ["p5-externs.js"]
+           :foreign-libs [{:file "node_modules/p5/lib/p5.js"
+                           :file-min "node_modules/p5/lib/p5.min.js"
+                           :provides ["cljsjs.p5"]
+                           :global-exports {p5 P5}}]}
           }]
- :reporter [kaocha.report/documentation]}
+ ;; :capture-output? false
+ ;; :bindings {kaocha.type.cljs/*debug* true}
+ :reporter [kaocha.report/documentation]
+ }
