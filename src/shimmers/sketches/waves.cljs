@@ -19,7 +19,7 @@
      :previous (make-buffer width height)}))
 
 (defn update-state [{:keys [width height buffer previous] :as state}]
-  (when (= 0 (mod (q/frame-count) 30))
+  (when (= 0 (mod (q/frame-count) 40))
     (let [i (int (q/random width))
           j (int (q/random height))]
       (println (str "droplet at " i " " j))
