@@ -11,20 +11,21 @@
     (nd/ndarray :float32 zeros [width height])))
 
 (defn setup []
-  (let [width (/ (q/width) 3)
-        height (/ (q/height) 3)]
-    {:width width
-     :height height
+  (let [factor 3
+        width (q/width)
+        height (q/height)]
+    {:factor factor
+     :width (/ width factor)
+     :height (/ height factor)
      :buffer (make-buffer width height)
      :previous (make-buffer width height)}))
 
-(def dampening 0.975)
+(def dampening 0.98)
 
 (defn update-state [{:keys [width height buffer previous] :as state}]
-  (when (= 0 (mod (q/frame-count) 40))
+  (when (= 0 (mod (q/frame-count) 30))
     (let [i (int (q/random width))
           j (int (q/random height))]
-      (println (str "droplet at " i " " j))
       (nd/set-at buffer i j 1)))
   (loop/c-for [j 1 (< j (- height 1)) (inc j)
                i 1 (< i (- width 1)) (inc i)]
@@ -52,15 +53,15 @@
          :buffer previous
          :previous buffer))
 
-(defn draw [{:keys [width height buffer]}]
+(defn draw [{:keys [factor width height buffer]}]
   (q/background 255 32)
   (q/no-stroke)
   (loop/c-for [j 0 (< j height) (inc j)
                i 0 (< i width) (inc i)]
     (let [amount (nd/get-at buffer i j)]
-      (when (> amount 0)
-        (q/fill 128 128 (+ (* amount 64) 128) 16)
-        (q/rect (* 3 i) (* 3 j) 3 3)))))
+      (when (> amount 0.0001)
+        (q/fill 96 96 (+ (* amount 64) 128) 16)
+        (q/rect (* factor i) (* factor j) factor factor)))))
 
 (defn ^:export run-sketch []
   (q/defsketch waves
