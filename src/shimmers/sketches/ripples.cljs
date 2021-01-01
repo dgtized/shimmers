@@ -1,4 +1,4 @@
-(ns shimmers.sketches.waves
+(ns shimmers.sketches.ripples
   "Based on https://thecodingtrain.com/CodingChallenges/102-2d-water-ripple.html"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]

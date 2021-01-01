@@ -22,7 +22,7 @@
             [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.ring :as ring]
             [shimmers.sketches.space-colonization :as space-colonization]
-            [shimmers.sketches.waves :as waves]
+            [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.zigzag :as zigzag]
             [shimmers.ui :as ui]))
 
@@ -51,10 +51,10 @@
     :ray-marching ray-marching/run-sketch
     :random-walk random-walk/run-sketch
     :ring ring/run-sketch
+    :ripples ripples/run-sketch
     :space-colonization space-colonization/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch
-    :waves waves/run-sketch
     :zigzag zigzag/run-sketch)))
 
 (defn run-current []
