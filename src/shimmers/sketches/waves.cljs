@@ -18,6 +18,8 @@
      :buffer (make-buffer width height)
      :previous (make-buffer width height)}))
 
+(def dampening 0.975)
+
 (defn update-state [{:keys [width height buffer previous] :as state}]
   (when (= 0 (mod (q/frame-count) 40))
     (let [i (int (q/random width))
@@ -27,13 +29,25 @@
   (loop/c-for [j 1 (< j (- height 1)) (inc j)
                i 1 (< i (- width 1)) (inc i)]
     (nd/set-at buffer i j
-               (* 0.9
+               (* dampening
                   (- (/ (+ (nd/get-at previous (inc i) j)
                            (nd/get-at previous (dec i) j)
                            (nd/get-at previous i (inc j))
                            (nd/get-at previous i (dec j)))
                         2)
                      (nd/get-at buffer i j)))))
+  (let [bottom (dec height)
+        right (dec width)]
+    (loop/c-for [i 0 (< i width) (inc i)]
+      (nd/set-at buffer i 0
+                 (* dampening (nd/get-at buffer i 0)))
+      (nd/set-at buffer i bottom
+                 (* dampening (nd/get-at buffer i bottom))))
+    (loop/c-for [j 0 (< j height) (inc j)]
+      (nd/set-at buffer 0 j
+                 (* dampening (nd/get-at buffer 0 j)))
+      (nd/set-at buffer right j
+                 (* dampening (nd/get-at buffer right j)))))
   (assoc state
          :buffer previous
          :previous buffer))
