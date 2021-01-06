@@ -25,7 +25,7 @@
   (let [r 150]
     (make-body (v/vec2 (q/random (- r) r)
                        (q/random (- r) r))
-               (q/random 1 5)
+               (q/random 1 8)
                [0 0 0 96])))
 
 (defn gravitational-pull
@@ -76,10 +76,11 @@
 
 (defn draw-bodies [bodies]
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (doseq [{:keys [position last-pos color mass]} bodies]
-    (apply q/stroke color)
-    (q/stroke-weight (q/map-range mass 1 1000 1 15))
-    (q/line last-pos position)))
+  (let [max-mass (apply max (map :mass bodies))]
+    (doseq [{:keys [position last-pos color mass]} bodies]
+      (apply q/stroke color)
+      (q/stroke-weight (q/map-range mass 1 max-mass 1 6))
+      (q/line last-pos position))))
 
 (defn draw [{:keys [bodies]}]
   (q/background 255 24)
