@@ -47,9 +47,9 @@
 
 (defn draw-bodies [bodies]
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (q/stroke-weight 1)
   (doseq [{:keys [position last-pos color mass]} bodies]
     (apply q/stroke color)
+    (q/stroke-weight (q/map-range mass 0.05 0.2 0.1 2))
     (q/line last-pos position)))
 
 (defn draw [{:keys [bodies]}]
