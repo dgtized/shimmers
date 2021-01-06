@@ -34,11 +34,11 @@
           (v/vec2 0 0)
           (for [body bodies
                 :when (not= body current)
-                :let [gravity 0.001
+                :let [gravity 0.006
                       d2 (tg/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
                      (/ (* gravity (:mass body) mass)
-                        (max d2 2))))))
+                        (max d2 1))))))
 
 (defn update-body
   [bodies {:keys [position velocity acceleration mass] :as body}]
@@ -57,8 +57,8 @@
                  (rand-nth
                   [[]
                    [(make-sun (v/vec2 0 0))]
-                   [(make-sun (v/vec2 -100 -100))
-                    (make-sun (v/vec2 100 100))]]))})
+                   [(make-sun (v/vec2 -200 0))
+                    (make-sun (v/vec2 200 0))]]))})
 
 (defn update-state [state]
   (update state :bodies (fn [bodies] (map (partial update-body bodies) bodies))))
