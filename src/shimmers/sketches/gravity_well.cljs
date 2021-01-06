@@ -26,10 +26,11 @@
           (v/vec2 0 0)
           (for [body bodies
                 :when (not= body current)
-                :let [gravity 1
+                :let [gravity 0.2
                       d2 (tg/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
-                     (min 0.001 (/ (* gravity (:mass body) mass) d2))))))
+                     (/ (* gravity (:mass body) mass)
+                        (max d2 1))))))
 
 (defn update-body
   [bodies {:keys [position velocity acceleration] :as body}]
