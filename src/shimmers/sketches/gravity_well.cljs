@@ -34,11 +34,11 @@
           (v/vec2 0 0)
           (for [body bodies
                 :when (not= body current)
-                :let [gravity 0.006
+                :let [gravity 0.004
                       d2 (tg/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
                      (/ (* gravity (:mass body) mass)
-                        (max d2 1))))))
+                        (max d2 2))))))
 
 (defn update-body
   [bodies {:keys [position velocity acceleration mass] :as body}]
@@ -49,7 +49,7 @@
            :position new-position
            :velocity new-velocity
            :acceleration (v/scale (gravitational-pull body bodies)
-                                  (/ 0.1 mass)))))
+                                  (/ 0.3 mass)))))
 
 (defn visible? [body]
   (< (tg/dist (:position body) (v/vec2 0 0)) 400))
