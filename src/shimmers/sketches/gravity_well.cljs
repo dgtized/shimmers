@@ -8,8 +8,8 @@
             [thi.ng.math.core :as tm]))
 
 (defn make-body []
-  (let [initial-pos (v/vec2 (q/random -30 30)
-                            (q/random -30 30))]
+  (let [initial-pos (v/vec2 (q/random -50 50)
+                            (q/random -50 50))]
     {:last-pos initial-pos
      :position initial-pos
      :velocity (v/scale (v/vec2 (q/random-2d)) 0.1)
@@ -26,17 +26,17 @@
                 :let [gravity 1
                       d2 (tg/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
-                     (max 0.001 (/ (* gravity (:mass body) mass) d2))))))
+                     (min 0.001 (/ (* gravity (:mass body) mass) d2))))))
 
 (defn update-body
-  [bodies {:keys [position velocity acceleration mass] :as body}]
+  [bodies {:keys [position velocity acceleration] :as body}]
   (let [new-velocity (v/add velocity acceleration)
         new-position (v/add position new-velocity)]
     (assoc body
            :last-pos position
            :position new-position
            :velocity new-velocity
-           :acceleration (v/scale (gravitational-pull body bodies) 0.05))))
+           :acceleration (gravitational-pull body bodies))))
 
 (defn setup []
   (q/background 255)
