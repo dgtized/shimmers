@@ -10,14 +10,15 @@
     [position last-pos velocity acceleration mass color])
 
 (defn make-body []
-  (let [initial-pos (v/vec2 (q/random -50 50)
-                            (q/random -50 50))]
+  (let [r 150
+        initial-pos (v/vec2 (q/random (- r) r)
+                            (q/random (- r) r))]
     (map->Body
      {:last-pos initial-pos
       :position initial-pos
-      :velocity (v/scale (v/vec2 (q/random-2d)) 0.01)
+      :velocity (v/vec2 0 0)
       :acceleration (v/vec2 0 0)
-      :mass (q/random 0.05 0.2)
+      :mass (q/random 0.05 0.3)
       :color [0 0 0 96]})))
 
 (defn gravitational-pull
@@ -53,7 +54,7 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (doseq [{:keys [position last-pos color mass]} bodies]
     (apply q/stroke color)
-    (q/stroke-weight (q/map-range mass 0.05 0.2 0.1 2))
+    (q/stroke-weight (q/map-range mass 0.05 0.3 0.3 3))
     (q/line last-pos position)))
 
 (defn draw [{:keys [bodies]}]
