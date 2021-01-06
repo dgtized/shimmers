@@ -6,15 +6,19 @@
             [thi.ng.geom.core :as tg]
             [thi.ng.math.core :as tm]))
 
+(defrecord Body
+    [position last-pos velocity acceleration mass color])
+
 (defn make-body []
   (let [initial-pos (v/vec2 (q/random -50 50)
                             (q/random -50 50))]
-    {:last-pos initial-pos
-     :position initial-pos
-     :velocity (v/scale (v/vec2 (q/random-2d)) 0.1)
-     :acceleration (v/vec2 0 0)
-     :mass (q/random 0.05 0.2)
-     :color [0 0 0 96]}))
+    (map->Body
+     {:last-pos initial-pos
+      :position initial-pos
+      :velocity (v/scale (v/vec2 (q/random-2d)) 0.01)
+      :acceleration (v/vec2 0 0)
+      :mass (q/random 0.05 0.2)
+      :color [0 0 0 96]})))
 
 (defn gravitational-pull
   [{:keys [position mass] :as current} bodies]
