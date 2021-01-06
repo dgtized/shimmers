@@ -9,17 +9,24 @@
 (defrecord Body
     [position last-pos velocity acceleration mass color])
 
-(defn make-body []
-  (let [r 150
-        initial-pos (v/vec2 (q/random (- r) r)
-                            (q/random (- r) r))]
-    (map->Body
-     {:last-pos initial-pos
-      :position initial-pos
-      :velocity (v/vec2 0 0)
-      :acceleration (v/vec2 0 0)
-      :mass (q/random 0.05 0.3)
-      :color [0 0 0 96]})))
+(defn make-body [position mass color]
+  (map->Body
+   {:last-pos position
+    :position position
+    :velocity (v/vec2 0 0)
+    :acceleration (v/vec2 0 0)
+    :mass mass
+    :color color}))
+
+(defn make-sun [pos]
+  (make-body pos 1000 [200 200 0 96]))
+
+(defn make-random-body []
+  (let [r 150]
+    (make-body (v/vec2 (q/random (- r) r)
+                       (q/random (- r) r))
+               (q/random 1 5)
+               [0 0 0 96])))
 
 (defn gravitational-pull
   [{:keys [position mass] :as current} bodies]
@@ -27,25 +34,31 @@
           (v/vec2 0 0)
           (for [body bodies
                 :when (not= body current)
-                :let [gravity 0.2
+                :let [gravity 0.001
                       d2 (tg/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
                      (/ (* gravity (:mass body) mass)
-                        (max d2 1))))))
+                        (max d2 2))))))
 
 (defn update-body
-  [bodies {:keys [position velocity acceleration] :as body}]
+  [bodies {:keys [position velocity acceleration mass] :as body}]
   (let [new-velocity (v/add velocity acceleration)
         new-position (v/add position new-velocity)]
     (assoc body
            :last-pos position
            :position new-position
            :velocity new-velocity
-           :acceleration (gravitational-pull body bodies))))
+           :acceleration (v/scale (gravitational-pull body bodies)
+                                  (/ 0.1 mass)))))
 
 (defn setup []
   (q/background 255)
-  {:bodies (repeatedly 128 make-body)})
+  {:bodies (into (repeatedly 128 make-random-body)
+                 (rand-nth
+                  [[]
+                   [(make-sun (v/vec2 0 0))]
+                   [(make-sun (v/vec2 -100 -100))
+                    (make-sun (v/vec2 100 100))]]))})
 
 (defn update-state [state]
   (update state :bodies (fn [bodies] (map (partial update-body bodies) bodies))))
@@ -54,7 +67,7 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (doseq [{:keys [position last-pos color mass]} bodies]
     (apply q/stroke color)
-    (q/stroke-weight (q/map-range mass 0.05 0.3 0.3 3))
+    (q/stroke-weight (q/map-range mass 1 1000 1 15))
     (q/line last-pos position)))
 
 (defn draw [{:keys [bodies]}]
