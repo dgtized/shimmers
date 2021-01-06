@@ -51,9 +51,18 @@
            :acceleration (v/scale (gravitational-pull body bodies)
                                   (/ 0.1 mass)))))
 
+(defn visible? [body]
+  (< (tg/dist (:position body) (v/vec2 0 0)) 400))
+
+(defn restart-sim? [{:keys [start-frame bodies]} frame-count]
+  (let [age (- frame-count start-frame)
+        visible (count (filter visible? bodies))]
+    (or (> age 12000) (< visible 16))))
+
 (defn setup []
   (q/background 255)
-  {:bodies (into (repeatedly 128 make-random-body)
+  {:start-frame (q/frame-count)
+   :bodies (into (repeatedly 128 make-random-body)
                  (rand-nth
                   [[]
                    [(make-sun (v/vec2 0 0))]
@@ -61,7 +70,9 @@
                     (make-sun (v/vec2 200 0))]]))})
 
 (defn update-state [state]
-  (update state :bodies (fn [bodies] (map (partial update-body bodies) bodies))))
+  (if (restart-sim? state (q/frame-count))
+    (setup)
+    (update state :bodies (fn [bodies] (map (partial update-body bodies) bodies)))))
 
 (defn draw-bodies [bodies]
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
