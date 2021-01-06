@@ -27,4 +27,4 @@ http://localhost:9500/figwheel-extra-main/tests shows test results.
 
 ## License
 
-Copyright © 2020 Charles L.G. Comstock
+Copyright © 2020-2021 Charles L.G. Comstock
