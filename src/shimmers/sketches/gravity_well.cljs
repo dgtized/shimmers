@@ -4,7 +4,6 @@
             [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as tg]
-            [thi.ng.geom.vector :as tv]
             [thi.ng.math.core :as tm]))
 
 (defn make-body []
