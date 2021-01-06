@@ -12,6 +12,7 @@
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.fire :as fire]
             ;; [shimmers.sketches.fluid :as fluid]
+            [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
@@ -44,6 +45,7 @@
     :dithering dithering/run-sketch
     :fire fire/run-sketch
     ;; :fluid fluid/run-sketch
+    :gravity-well gravity-well/run-sketch
     :hexaclock hexaclock/run-sketch
     :kd-tree kd-tree/run-sketch
     :langton-ant langton-ant/run-sketch
