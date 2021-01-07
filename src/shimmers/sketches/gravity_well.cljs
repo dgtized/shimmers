@@ -62,7 +62,7 @@
 (defn setup []
   (q/background 255)
   {:start-frame (q/frame-count)
-   :bodies (into (repeatedly 128 make-random-body)
+   :bodies (into (repeatedly 100 make-random-body)
                  (rand-nth
                   [[]
                    [(make-sun (v/vec2 0 0))]
