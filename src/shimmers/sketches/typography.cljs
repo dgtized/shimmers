@@ -12,7 +12,8 @@
           "This is how the world ends, this is how the world ends, not with a bang, but with a whimper."
           "With a whimper."
           "With a bang."
-          ""]})
+          "and so it goes"
+          "This is only a test of the emergency broadcast system."]})
 
 (defn update-state [state]
   state)
