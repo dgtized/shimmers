@@ -18,6 +18,7 @@
 (defn update-state [state]
   state)
 
+;; TODO; typewriter effect with delays over multiple draw cycles
 (defn draw [{:keys [text]}]
   (q/background 255 (rand-nth [16 64 128 255 200]))
   (q/fill 0 255)
