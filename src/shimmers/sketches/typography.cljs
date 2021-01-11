@@ -26,16 +26,20 @@
         y (atom 50)]
     (doseq [word (str/split (rand-nth text) #"\s+")]
       (let [style (rand-nth [:normal :italic :bold :bolditalic])
-            size (rand-nth [10 15 20 25 30])]
+            size (rand-nth [10 15 20 25 30])
+            text-width (q/text-width (str word " "))]
         (q/rotate (rand-nth [0 0 0 0 0 0 0 0 0.02 -0.02 -0.05]))
         (q/text-style style)
         (q/text-size size)
         (q/text word @x @y)
-        (let [yset (rand-nth [0 0 0 0 0 20 40])
-              text-width (q/text-width (str word " "))]
-          (if (or (and (> yset 0) (>= @x 50) (>= @x 150)))
+        (let [yset (rand-nth [0 0 0 0 0 20 40])]
+          (cond
+            (> (+ @x text-width) (+ 20 (q/width)))
+            (do (swap! y + 20) (reset! x 50))
+            (or (and (> yset 0) (>= @x 50) (>= @x 150)))
             (swap! x - (rand-nth [0 30 50 50]))
-            (swap! x + (rand-nth [-10 50 text-width text-width])))
+            :else
+            (swap! x + (rand-nth [-10 50 text-width text-width 100])))
           (swap! y + yset))))))
 
 (defn ^:export run-sketch []
