@@ -12,6 +12,9 @@
 (defn in-bounds? [{:keys [position]}]
   (every? (fn [v] (< (Math/abs v) 200)) position))
 
+(defn alive? [{:keys [lifespan]}]
+  (> lifespan 0))
+
 (defn make-particle [source position velocity]
   (map->Particle
    {:source source
@@ -34,14 +37,14 @@
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
   (let [new-velocity (v/add velocity acceleration)]
-    (assoc particle
+    (assoc (update particle :lifespan dec)
            :last-pos position
            :position (v/add position new-velocity)
            :velocity new-velocity
            :acceleration (v/scale (v/vec2 (q/random-2d)) 0.05))))
 
 (defn update-state [{:keys [particles emitters] :as state}]
-  (let [active-particles (filterv in-bounds? particles)
+  (let [active-particles (filterv (every-pred in-bounds? alive?) particles)
         particles-by-source (map-kv count (group-by :source active-particles))
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
