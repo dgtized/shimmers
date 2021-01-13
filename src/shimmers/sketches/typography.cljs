@@ -5,7 +5,7 @@
             [clojure.string :as str]))
 
 (defn setup []
-  (q/frame-rate 6)
+  (q/frame-rate 5)
   {:text ["This is how the world ends, not with a bang, but with a whimper."
           "This is often how the world ends, not with a bang, but with a whimper."
           "This is slowly how the world ends, not with a bang, but with a whimper."
