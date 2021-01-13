@@ -47,7 +47,7 @@
            :last-pos position
            :position (v/add position new-velocity)
            :velocity new-velocity
-           :acceleration (v/scale (v/vec2 (q/random-2d)) 0.05))))
+           :acceleration (v/scale (v/vec2 (q/random-2d)) 0.01))))
 
 (defn update-state [{:keys [particles emitters] :as state}]
   (let [active-particles (filterv (every-pred in-bounds? alive?) particles)
@@ -55,7 +55,7 @@
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
                                    (< probability (rand)))]
-                    (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.01)))]
+                    (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.001)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 
 (defn draw-particles [particles]
