@@ -1,4 +1,4 @@
-(ns shimmers.sketches.inclinations
+(ns shimmers.sketches.emitters
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
@@ -73,7 +73,7 @@
   (draw-particles particles))
 
 (defn ^:export run-sketch []
-  (q/defsketch inclinations
+  (q/defsketch emitters
     :host "quil-host"
     :size [600 400]
     :setup setup
