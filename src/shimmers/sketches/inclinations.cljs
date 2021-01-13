@@ -22,13 +22,13 @@
     :position position
     :velocity velocity
     :acceleration (v/vec2 0 0)
-    :color [0 0 0 64]
-    :lifespan (rand-int 200)}))
+    :color [0 0 0 96]
+    :lifespan (rand-int 500)}))
 
 (defn create-emitter [position n]
   {:position position
    :max-particles n
-   :probability 0.3})
+   :probability 0.1})
 
 (defn setup []
   (let [size 50]
@@ -53,7 +53,7 @@
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
                                    (< probability (rand)))]
-                    (make-particle emitter position (v/vec2 (q/random-2d))))]
+                    (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.01)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 
 (defn draw-particles [particles]
@@ -61,11 +61,11 @@
     (apply q/stroke color)
     (let [[lx ly] last-pos
           [x y] position]
-      (q/stroke-weight (q/random 0.3 0.8))
+      (q/stroke-weight (q/random 0.3 1.0))
       (q/line lx ly x y))))
 
 (defn draw [{:keys [particles]}]
-  (q/background 255 12)
+  (q/background 255 8)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (draw-particles particles))
 
