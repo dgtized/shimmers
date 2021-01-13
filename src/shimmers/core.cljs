@@ -14,6 +14,7 @@
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
+            [shimmers.sketches.inclinations :as inclinations]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
@@ -48,6 +49,7 @@
     ;; :fluid fluid/run-sketch
     :gravity-well gravity-well/run-sketch
     :hexaclock hexaclock/run-sketch
+    :inclinations inclinations/run-sketch
     :kd-tree kd-tree/run-sketch
     :langton-ant langton-ant/run-sketch
     :noise-grid noise-grid/run-sketch
