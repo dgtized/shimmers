@@ -23,8 +23,10 @@
   (q/background 255 (rand-nth [16 64 128 255 200]))
   (q/fill 0 255)
   ;; (q/text-font (rand-nth fonts))
-  (let [x (atom 20)
-        y (atom 50)]
+  (let [startx 20
+        starty (+ 50 (* 50 (rand-nth [0 0 0 0 0 1 2])))
+        x (atom startx)
+        y (atom starty)]
     (doseq [word (str/split (rand-nth text) #"\s+")]
       (let [style (rand-nth [:normal :italic :bold :bolditalic])
             size (rand-nth [10 15 20 25 30])
@@ -36,8 +38,8 @@
         (let [yset (rand-nth [0 0 0 0 0 20 40])]
           (cond
             (> (+ @x text-width) (+ 20 (q/width)))
-            (do (swap! y + 20) (reset! x 50))
-            (or (and (> yset 0) (>= @x 50) (>= @x 150)))
+            (do (swap! y + 20) (reset! x starty))
+            (or (and (> yset 0) (>= @x starty) (>= @x 150)))
             (swap! x - (rand-nth [0 30 50 50]))
             :else
             (swap! x + (rand-nth [-10 50 text-width text-width 100])))
