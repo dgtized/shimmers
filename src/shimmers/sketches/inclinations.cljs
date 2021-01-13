@@ -10,7 +10,9 @@
 (defrecord Particle [source last-pos position velocity acceleration])
 
 (defn in-bounds? [{:keys [position]}]
-  (every? (fn [v] (< (Math/abs v) 200)) position))
+  (let [[x y] position
+        r 200]
+    (< (+ (* x x) (* y y)) (* r r))))
 
 (defn alive? [{:keys [lifespan]}]
   (> lifespan 0))
