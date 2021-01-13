@@ -7,7 +7,7 @@
 (defn map-kv [f coll]
   (reduce-kv (fn [m k v] (assoc m k (f v))) (empty coll) coll))
 
-(defrecord Particle [source last-pos position velocity acceleration])
+(defrecord Particle [source last-pos position velocity acceleration color lifespan])
 
 (defn in-bounds? [{:keys [position]}]
   (let [[x y] position
