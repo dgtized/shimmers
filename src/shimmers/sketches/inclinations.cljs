@@ -23,7 +23,7 @@
     :velocity velocity
     :acceleration (v/vec2 0 0)
     :color [0 0 0 64]
-    :lifespan 100}))
+    :lifespan (rand-int 200)}))
 
 (defn create-emitter [position n]
   {:position position
@@ -31,8 +31,12 @@
    :probability 0.3})
 
 (defn setup []
-  {:emitters [(create-emitter (v/vec2 0 0) 32)]
-   :particles []})
+  (let [size 50]
+    {:emitters [(create-emitter (v/vec2 size size) 64)
+                (create-emitter (v/vec2 size (- size)) 64)
+                (create-emitter (v/vec2 (- size) size) 64)
+                (create-emitter (v/vec2 (- size) (- size)) 64)]
+     :particles []}))
 
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
