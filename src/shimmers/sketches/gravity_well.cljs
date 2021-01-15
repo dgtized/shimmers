@@ -4,7 +4,8 @@
             [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as tg]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.particles.core :as particles]))
 
 (defrecord Body
     [position last-pos velocity acceleration mass color])
@@ -74,17 +75,12 @@
     (setup)
     (update state :bodies (fn [bodies] (map (partial update-body bodies) bodies)))))
 
-(defn draw-bodies [bodies]
-  (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (let [max-mass (apply max (map :mass bodies))]
-    (doseq [{:keys [position last-pos color mass]} bodies]
-      (apply q/stroke color)
-      (q/stroke-weight (q/map-range mass 1 max-mass 1 6))
-      (q/line last-pos position))))
-
 (defn draw [{:keys [bodies]}]
   (q/background 255 24)
-  (draw-bodies bodies))
+  (q/translate (/ (q/width) 2) (/ (q/height) 2))
+  (let [max-mass (apply max (map :mass bodies))
+        weight-fn (fn [{:keys [mass]}] (q/map-range mass 1 max-mass 1 6))]
+    (particles/draw bodies :weight weight-fn)))
 
 (defn ^:export run-sketch []
   (q/defsketch gravity-well
