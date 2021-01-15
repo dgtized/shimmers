@@ -43,13 +43,11 @@
      :particles []}))
 
 (defn update-particle
-  [{:keys [position velocity acceleration] :as particle}]
-  (let [new-velocity (v/add velocity acceleration)]
-    (assoc (update particle :lifespan dec)
-           :last-pos position
-           :position (v/add position new-velocity)
-           :velocity new-velocity
-           :acceleration (v/scale (v/vec2 (q/random-2d)) 0.01))))
+  [particle]
+  (-> particle
+      (update :lifespan dec)
+      (assoc :acceleration (v/scale (v/vec2 (q/random-2d)) 0.01))
+      particles/step))
 
 (defn update-state [{:keys [particles emitters] :as state}]
   (let [active-particles (filterv (every-pred in-bounds? alive?) particles)

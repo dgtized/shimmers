@@ -42,15 +42,11 @@
                         (max d2 2))))))
 
 (defn update-body
-  [bodies {:keys [position velocity acceleration mass] :as body}]
-  (let [new-velocity (v/add velocity acceleration)
-        new-position (v/add position new-velocity)]
-    (assoc body
-           :last-pos position
-           :position new-position
-           :velocity new-velocity
-           :acceleration (v/scale (gravitational-pull body bodies)
-                                  (/ 0.3 mass)))))
+  [bodies {:keys [mass] :as body}]
+  (-> body
+      (assoc :acceleration (v/scale (gravitational-pull body bodies)
+                                    (/ 0.3 mass)))
+      particles/step))
 
 (defn visible? [body]
   (< (tg/dist (:position body) (v/vec2 0 0)) 400))
