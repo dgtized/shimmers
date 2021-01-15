@@ -63,8 +63,7 @@
 (defn draw [{:keys [particles]}]
   (q/background 255 8)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (particles/draw particles
-                  :weight (fn [_] (q/random 0.3 1.0))))
+  (particles/draw particles :weight #(q/random 0.3 1.0)))
 
 (defn ^:export run-sketch []
   (q/defsketch emitters
