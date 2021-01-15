@@ -1,12 +1,10 @@
 (ns shimmers.sketches.emitters
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.helpers :refer [map-kv]]
             [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
             [shimmers.particles.core :as particles]))
-
-(defn map-kv [f coll]
-  (reduce-kv (fn [m k v] (assoc m k (f v))) (empty coll) coll))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 
