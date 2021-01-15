@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.particles.core :as particles]))
 
 (defn map-kv [f coll]
   (reduce-kv (fn [m k v] (assoc m k (f v))) (empty coll) coll))
@@ -59,18 +60,11 @@
                     (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.001)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 
-(defn draw-particles [particles]
-  (doseq [{:keys [position last-pos color]} particles]
-    (apply q/stroke color)
-    (let [[lx ly] last-pos
-          [x y] position]
-      (q/stroke-weight (q/random 0.3 1.0))
-      (q/line lx ly x y))))
-
 (defn draw [{:keys [particles]}]
   (q/background 255 8)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (draw-particles particles))
+  (particles/draw particles
+                  {:weight (fn [_] (q/random 0.3 1.0))}))
 
 (defn ^:export run-sketch []
   (q/defsketch emitters
