@@ -106,7 +106,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
       (let [[lightest heaviest] mass-range
             weight-fn (fn [{:keys [mass]}]
                         (q/map-range mass lightest heaviest 0.2 0.5))]
-        (particles/draw particles {:weight weight-fn}))))
+        (particles/draw particles :weight weight-fn))))
 
   (q/background 256)
   (q/image particle-graphics 0 0)

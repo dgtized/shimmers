@@ -3,7 +3,8 @@
             [quil.middleware :as m]
             [shimmers.math.vector :as v]
             [shimmers.math.color :as color]
-            [shimmers.framerate :as framerate]))
+            [shimmers.framerate :as framerate]
+            [shimmers.particles.core :as particles]))
 
 (defn make-particle []
   (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
@@ -33,11 +34,7 @@
 
 (defn draw [{:keys [particles]}]
   ;; (q/background 256 16)
-  (doseq [{:keys [position last-pos color]} particles]
-    (apply q/stroke color)
-    (let [[lx ly] last-pos
-          [x y] position]
-      (q/line lx ly x y))))
+  (particles/draw particles))
 
 (defn ^:export run-sketch []
   (q/defsketch particles
