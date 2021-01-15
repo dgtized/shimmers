@@ -6,7 +6,8 @@
             [shimmers.framerate :as framerate]
             [shimmers.math.color :as color]
             [shimmers.math.reflect :as reflect]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.particles.core :as particles]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
@@ -98,20 +99,14 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
                   from (v/add (v/vec2 x y) (v/vec2 hcols hcols))]]
       (q/line from (v/add from (v/scale force len))))))
 
-(defn draw-particles [particles]
-  (doseq [{:keys [position last-pos color mass]} particles]
-    (apply q/stroke color)
-    (let [[lx ly] last-pos
-          [x y] position
-          [lightest heaviest] mass-range]
-      (q/stroke-weight (q/map-range mass lightest heaviest 0.2 0.5))
-      (q/line lx ly x y))))
-
 (defn draw [{:keys [particles ui particle-graphics]}]
   (let [opacity (:opacity @ui)]
     (q/with-graphics particle-graphics
       (q/background 256 opacity)
-      (draw-particles particles)))
+      (let [[lightest heaviest] mass-range
+            weight-fn (fn [{:keys [mass]}]
+                        (q/map-range mass lightest heaviest 0.2 0.5))]
+        (particles/draw particles {:weight weight-fn}))))
 
   (q/background 256)
   (q/image particle-graphics 0 0)
