@@ -24,6 +24,7 @@
             [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.ring :as ring]
             [shimmers.sketches.space-colonization :as space-colonization]
+            [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.typography :as typography]
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.zigzag :as zigzag]
@@ -58,6 +59,7 @@
     :ring ring/run-sketch
     :ripples ripples/run-sketch
     :space-colonization space-colonization/run-sketch
+    :scintillation scintillation/run-sketch
     :typography typography/run-sketch
     :particles particles/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch
