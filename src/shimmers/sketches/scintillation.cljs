@@ -10,7 +10,7 @@
   (update state :theta + 0.005))
 
 (defn draw [{:keys [theta]}]
-  (q/background 255)
+  (q/background 255 32)
   (q/stroke-weight 0.5)
   (let [hspacing 20
         hcount (/ (q/width) hspacing)
