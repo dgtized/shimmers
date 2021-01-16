@@ -7,7 +7,7 @@
   {:theta 0})
 
 (defn update-state [state]
-  (update state :theta + 0.01))
+  (update state :theta + 0.005))
 
 (defn draw [{:keys [theta]}]
   (q/background 255)
