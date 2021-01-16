@@ -27,7 +27,7 @@
             [shimmers.sketches.typography :as typography]
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.zigzag :as zigzag]
-            [shimmers.ui :as ui]))
+            [shimmers.common.ui :as ui]))
 
 (enable-console-print!)
 

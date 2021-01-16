@@ -1,4 +1,4 @@
-(ns shimmers.ui
+(ns shimmers.common.ui
   (:require [clojure.string :as str]))
 
 ;; https://coderwall.com/p/s3j4va/google-analytics-tracking-in-clojurescript

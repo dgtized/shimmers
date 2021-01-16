@@ -6,7 +6,7 @@
             [reagent.dom :as rdom]
             [goog.dom :as dom]
             [reagent.core :as r]
-            [shimmers.ui :as ui]))
+            [shimmers.common.ui :as ui]))
 
 (def modes [:dither :boxes :circles :color-displace])
 
