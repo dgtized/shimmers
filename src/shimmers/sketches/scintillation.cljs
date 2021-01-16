@@ -17,11 +17,15 @@
         vspacing (+ 20 (* (q/sin theta) 10))
         vcount (/ (q/height) vspacing)]
     (dotimes [i hcount]
-      (q/line (* i hspacing) 0
-              (+ 20 (* i 2 hspacing (q/cos theta))) (q/height)))
+      (let [x0 (* i hspacing)
+            x1 (+ 20 (* i 2 hspacing (q/cos theta)))]
+        (q/line x0 0 x1 (q/height))
+        (q/line x1 0 x0 (q/height))))
     (dotimes [j vcount]
-      (q/line 0 (* j vspacing)
-              (q/width) (+ 20 (* j 2 vspacing (q/sin theta)))))))
+      (let [y0 (* j vspacing)
+            y1 (+ 20 (* j 2 vspacing (q/sin theta)))]
+        (q/line 0 y0 (q/width) y1)
+        (q/line 0 y1 (q/width) y0)))))
 
 (defn ^:export run-sketch []
   (q/defsketch scintillation
