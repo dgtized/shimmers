@@ -4,7 +4,7 @@
             [shimmers.math.vector :as v]
             [shimmers.math.color :as color]
             [shimmers.framerate :as framerate]
-            [shimmers.particles.core :as particles]))
+            [shimmers.common.particle-system :as particles]))
 
 (defn make-particle []
   (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]

@@ -4,7 +4,7 @@
             [shimmers.algorithm.helpers :refer [map-kv]]
             [shimmers.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [shimmers.particles.core :as particles]))
+            [shimmers.common.particle-system :as particles]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 

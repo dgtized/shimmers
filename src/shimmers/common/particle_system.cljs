@@ -1,4 +1,4 @@
-(ns shimmers.particles.core
+(ns shimmers.common.particle-system
   (:require [quil.core :as q :include-macros true]
             [shimmers.math.vector :as v]))
 

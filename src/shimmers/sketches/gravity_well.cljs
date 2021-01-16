@@ -5,7 +5,7 @@
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as tg]
             [thi.ng.math.core :as tm]
-            [shimmers.particles.core :as particles]))
+            [shimmers.common.particle-system :as particles]))
 
 (defrecord Body
     [position last-pos velocity acceleration mass color])

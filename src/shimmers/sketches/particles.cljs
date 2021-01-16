@@ -7,7 +7,7 @@
             [shimmers.math.color :as color]
             [shimmers.math.reflect :as reflect]
             [shimmers.math.vector :as v]
-            [shimmers.particles.core :as particles]))
+            [shimmers.common.particle-system :as particles]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
