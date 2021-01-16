@@ -12,16 +12,16 @@
 (defn draw [{:keys [theta]}]
   (q/background 255 32)
   (q/stroke-weight 0.5)
-  (let [hspacing 20
+  (let [hspacing (+ 20 (* (q/cos theta) 10))
         hcount (/ (q/width) hspacing)
-        vspacing 20
+        vspacing (+ 20 (* (q/sin theta) 10))
         vcount (/ (q/height) vspacing)]
     (dotimes [i hcount]
       (q/line (* i hspacing) 0
-              (* i 2 hspacing (q/cos theta)) (q/height)))
+              (+ 20 (* i 2 hspacing (q/cos theta))) (q/height)))
     (dotimes [j vcount]
       (q/line 0 (* j vspacing)
-              (q/width) (* j 2 vspacing (q/sin theta))))))
+              (q/width) (+ 20 (* j 2 vspacing (q/sin theta)))))))
 
 (defn ^:export run-sketch []
   (q/defsketch scintillation
