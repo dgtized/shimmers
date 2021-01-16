@@ -1,7 +1,7 @@
 (ns shimmers.sketches.typography
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [clojure.string :as str]))
 
 (defn setup []

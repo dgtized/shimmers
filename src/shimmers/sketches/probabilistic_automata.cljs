@@ -5,7 +5,7 @@
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [reagent.dom :as rdom]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [shimmers.math.color :as color]
             [shimmers.automata.simplify :as simplify]
             [shimmers.automata.programs :as programs]))

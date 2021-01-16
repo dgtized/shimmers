@@ -1,4 +1,4 @@
-(ns shimmers.framerate
+(ns shimmers.common.framerate
   ;; see https://martinklepsch.org/posts/requiring-closure-namespaces.html for
   ;; weirdness around requiring goog.string.format to force it to create format
   ;; in goog.string. Requiring goog.string will not add format to the namespace,

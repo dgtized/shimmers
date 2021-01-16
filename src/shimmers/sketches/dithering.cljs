@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.macros.loop :as loop]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [reagent.dom :as rdom]
             [goog.dom :as dom]
             [reagent.core :as r]

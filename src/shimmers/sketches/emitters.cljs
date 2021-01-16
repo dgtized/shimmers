@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.helpers :refer [map-kv]]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
             [shimmers.common.particle-system :as particles]))
 

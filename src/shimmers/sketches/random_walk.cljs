@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [shimmers.math.vector :as v]
             [shimmers.math.color :as color]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [shimmers.common.particle-system :as particles]))
 
 (defn make-particle []

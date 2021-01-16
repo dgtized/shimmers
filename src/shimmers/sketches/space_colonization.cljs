@@ -7,7 +7,7 @@
             [quil.middleware :as m]
             [reagent.core :as r]
             [reagent.dom :as rdom]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
             [shimmers.algorithm.space-colonization :as colonize]))
 

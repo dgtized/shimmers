@@ -1,7 +1,7 @@
 (ns shimmers.sketches.hexaclock
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.framerate :as framerate]
+            [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]))
 
 (defn spur-angles []

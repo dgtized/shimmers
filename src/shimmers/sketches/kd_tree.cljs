@@ -1,7 +1,7 @@
 (ns shimmers.sketches.kd-tree
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]))
 
 (defrecord Node [location axis lesser greater])
 
