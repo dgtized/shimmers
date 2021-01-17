@@ -38,10 +38,12 @@
 
 (defn draw-point-hit [theta radius center point]
   (let [tpoint (tm/- point center)
-        delta (- (tg/heading tpoint) (mod theta (* 2 Math/PI)))]
+        heading (tg/heading tpoint)
+        mtheta (mod theta (* 2 Math/PI))
+        delta (- heading mtheta)]
     (when (and (< (tg/dist (v/vec2 0 0) tpoint) radius)
                (< -0.1 delta 0.001))
-      (println [(tg/heading tpoint) (mod theta (* 2 Math/PI)) delta tpoint])
+      ;; (println [heading mtheta delta tpoint])
       (apply q/point tpoint))))
 
 (defn draw [{:keys [theta center radius particles]}]
