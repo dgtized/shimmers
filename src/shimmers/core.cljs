@@ -7,10 +7,11 @@
             [reitit.frontend :as rf]
             [reitit.frontend.controllers :as rfc]
             [reitit.frontend.easy :as rfe]
+            [shimmers.common.ui :as ui]
             [shimmers.macros.loader :as loader :include-macros true]
-            [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.dithering :as dithering]
+            [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.fire :as fire]
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gravity-well :as gravity-well]
@@ -20,15 +21,15 @@
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.particles :as particles]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
+            [shimmers.sketches.radar :as radar]
             [shimmers.sketches.random-walk :as random-walk]
             [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.ring :as ring]
-            [shimmers.sketches.space-colonization :as space-colonization]
-            [shimmers.sketches.scintillation :as scintillation]
-            [shimmers.sketches.typography :as typography]
             [shimmers.sketches.ripples :as ripples]
-            [shimmers.sketches.zigzag :as zigzag]
-            [shimmers.common.ui :as ui]))
+            [shimmers.sketches.scintillation :as scintillation]
+            [shimmers.sketches.space-colonization :as space-colonization]
+            [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.zigzag :as zigzag]))
 
 (enable-console-print!)
 
@@ -54,8 +55,9 @@
     :kd-tree kd-tree/run-sketch
     :langton-ant langton-ant/run-sketch
     :noise-grid noise-grid/run-sketch
-    :ray-marching ray-marching/run-sketch
+    :radar radar/run-sketch
     :random-walk random-walk/run-sketch
+    :ray-marching ray-marching/run-sketch
     :ring ring/run-sketch
     :ripples ripples/run-sketch
     :space-colonization space-colonization/run-sketch
