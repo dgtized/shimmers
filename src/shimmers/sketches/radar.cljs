@@ -17,19 +17,21 @@
     {:theta 0.0
      :center (v/vec2 hw hh)
      :radius radius
-     :point (v/vec2 (- radius) 20)}))
+     :point (v/vec2 0 60)}))
 
 (defn update-state [state]
-  (-> state (update :theta + 0.01)
-      (update :point v/add (v/vec2 0.1 -0.0001))))
+  (-> state
+      (update :theta + 0.01)
+      (update :point v/add (v/vec2 0.1 0.01))
+      (update :point (fn [pos] (v/wrap2d pos (q/width) (q/height))))))
 
 (defn draw [{:keys [theta center radius point]}]
   (q/background 0 3)
   (apply q/stroke green)
+  (apply q/point point)
   (apply q/translate center)
   (q/stroke-weight 2)
   (q/point 0 0)
-  (q/point 10 10)
   (q/stroke-weight 0.8)
   (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta))))
 
