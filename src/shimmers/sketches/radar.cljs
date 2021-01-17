@@ -2,7 +2,9 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [thi.ng.geom.core :as tg]
+            [thi.ng.math.core :as tm]))
 
 (def green [0 230 0 200])
 
@@ -21,15 +23,20 @@
 
 (defn update-state [state]
   (-> state
-      (update :theta + 0.01)
-      (update :point v/add (v/vec2 0.1 0.01))
+      (update :theta + 0.012)
+      (update :point v/add (v/vec2 0.15 0.02))
       (update :point (fn [pos] (v/wrap2d pos (q/width) (q/height))))))
 
 (defn draw [{:keys [theta center radius point]}]
   (q/background 0 3)
   (apply q/stroke green)
-  (apply q/point point)
   (apply q/translate center)
+  (let [tpoint (tm/- point center)
+        delta (- (tg/heading tpoint) (mod theta (* 2 Math/PI)))]
+    (when (and (< (tg/dist (v/vec2 0 0) tpoint) radius)
+               (< -0.1 delta 0.001))
+      (println [(tg/heading tpoint) (mod theta (* 2 Math/PI)) delta tpoint])
+      (apply q/point tpoint)))
   (q/stroke-weight 2)
   (q/point 0 0)
   (q/stroke-weight 0.8)
