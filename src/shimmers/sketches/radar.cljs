@@ -27,18 +27,21 @@
       (update :point v/add (v/vec2 0.15 0.02))
       (update :point (fn [pos] (v/wrap2d pos (q/width) (q/height))))))
 
-(defn draw [{:keys [theta center radius point]}]
-  (when (= 0 (mod (q/frame-count) 8))
-    (q/background 0 12))
-  (apply q/stroke (green 255))
-  (apply q/translate center)
-  (q/stroke-weight 2)
+(defn draw-point-hit [theta radius center point]
   (let [tpoint (tm/- point center)
         delta (- (tg/heading tpoint) (mod theta (* 2 Math/PI)))]
     (when (and (< (tg/dist (v/vec2 0 0) tpoint) radius)
                (< -0.1 delta 0.001))
       (println [(tg/heading tpoint) (mod theta (* 2 Math/PI)) delta tpoint])
-      (apply q/point tpoint)))
+      (apply q/point tpoint))))
+
+(defn draw [{:keys [theta center radius point]}]
+  (when (= 0 (mod (q/frame-count) 6))
+    (q/background 0 8))
+  (apply q/stroke (green 255))
+  (apply q/translate center)
+  (q/stroke-weight 2)
+  (draw-point-hit theta radius center point)
   (q/point 0 0)
   (apply q/stroke (green 255))
   (q/stroke-weight 1)
