@@ -33,7 +33,7 @@
 
 (defn update-state [state]
   (-> state
-      (update :theta + 0.012)
+      (update :theta + (/ (* 2 Math/PI) (* 60 15)))
       (update :particles (partial map step))))
 
 (defn draw-point-hit [theta radius center point]
