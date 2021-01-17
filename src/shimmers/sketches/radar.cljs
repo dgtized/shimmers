@@ -48,10 +48,9 @@
     (q/background 0 8))
   (apply q/stroke (green 255))
   (apply q/translate center)
-  (q/stroke-weight 2)
+  (q/stroke-weight 3)
   (doseq [{:keys [position]} particles]
     (draw-point-hit theta radius center position))
-  (q/point 0 0)
   (apply q/stroke (green 192))
   (q/stroke-weight 1)
   (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta))))
