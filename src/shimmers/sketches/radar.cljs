@@ -27,7 +27,8 @@
      :center (v/vec2 hw hh)
      :radius radius
      :particles [(->Particle (v/vec2 0 60) (v/vec2 0.15 0.02))
-                 (->Particle (v/vec2 (- (q/width)) 60) (v/vec2 -0.2 0.02))
+                 (->Particle (v/vec2 (* 2 hw) 60) (v/vec2 -0.2 0.02))
+                 (->Particle (v/vec2 hw 0) (v/vec2 -0.02 0.1))
                  (->Particle (v/vec2 120 0) (v/vec2 -0.05 0.15))]}))
 
 (defn update-state [state]
