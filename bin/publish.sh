@@ -7,7 +7,7 @@ function cleanup() {
 cleanup
 
 npm install
-clojure -m figwheel.main -bo release
+clojure -M -m figwheel.main -bo release
 
 mkdir -p resources/public/js
 cp target/public/cljs-out/release-main* resources/public/js
