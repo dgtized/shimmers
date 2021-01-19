@@ -18,7 +18,7 @@
   (q/background 0 10)
   (q/stroke 255 128)
   (let [noise (q/noise 0 (/ (q/frame-count) 1000))]
-    (q/print-every-n-millisec 500 noise)
+    ;; (q/print-every-n-millisec 500 noise)
     (dotimes [i (q/round (q/random (* 8 noise)))]
       (rain noise))))
 
