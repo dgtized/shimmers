@@ -19,6 +19,7 @@
   (let [hw (/ (q/width) 2)
         hh (/ (q/height) 2)
         radius (* 0.45 (q/height))]
+    (q/background 0)
     {:theta 0.0
      :center (v/vec2 hw hh)
      :radius radius
@@ -26,52 +27,48 @@
                  (->Particle (v/vec2 (* 2 hw) 60) (v/vec2 -0.2 0.02))
                  (->Particle (v/vec2 hw 0) (v/vec2 -0.02 0.1))
                  (->Particle (v/vec2 120 0) (v/vec2 -0.05 0.15))]
-     :contacts (q/create-graphics (q/width) (q/height))
-     :sweep (q/create-graphics (q/width) (q/height))}))
+     :contacts []}))
+
+(defn contact-hit [{:keys [theta radius center]} point]
+  (let [translated-point (tm/- point center)
+        heading (tg/heading translated-point)
+        mtheta (mod theta (* 2 Math/PI))
+        delta (- heading mtheta)
+        tolerance 0.01]
+    (when (and (< (tg/dist (v/vec2 0 0) translated-point) radius)
+               (< (- tolerance) delta tolerance))
+      (println [heading mtheta delta translated-point])
+      {:position translated-point :lifespan 200})))
 
 (defn update-state [state]
-  (-> state
-      (update :theta + (/ (* 2 Math/PI) (* 40 15)))
-      (update :particles (partial map step))))
-
-(defn draw-point-hit [theta radius center point]
-  (let [tpoint (tm/- point center)
-        heading (tg/heading tpoint)
-        mtheta (mod theta (* 2 Math/PI))
-        delta (- heading mtheta)]
-    (when (and (< (tg/dist (v/vec2 0 0) tpoint) radius)
-               (< -0.1 delta 0.001))
-      ;; (println [heading mtheta delta tpoint])
-      (apply q/point tpoint))))
+  (let [new-contacts
+        (keep (fn [{:keys [position]}]
+                (contact-hit state position))
+              (:particles state))]
+    (-> state
+        (update :contacts
+                (fn [contacts]
+                  (->> (into contacts new-contacts)
+                       (map #(update % :lifespan - 1))
+                       (filter #(> (:lifespan %) 0)))))
+        (update :theta + (/ (* 2 Math/PI) (* 60 15)))
+        (update :particles (partial map step)))))
 
 (defn draw
-  [{:keys [contacts sweep particles
-           theta center radius]}]
-  (q/with-graphics contacts
-    (q/push-matrix)
-    (apply q/translate center)
-    (when (= 0 (mod (q/frame-count) 24))
-      (q/background 0 6))
-    (apply q/stroke (green 255))
-    (q/stroke-weight 2.5)
-    (doseq [{:keys [position]} particles]
-      (draw-point-hit theta radius center position))
-    (q/pop-matrix))
-  (q/with-graphics sweep
-    (q/push-matrix)
-    (apply q/translate center)
-    (when (= 0 (mod (q/frame-count) 10))
-      (q/background 0 8))
-    (apply q/stroke (green 255))
-    (q/stroke-weight 2)
-    (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta)))
-    (q/pop-matrix))
+  [{:keys [contacts theta center radius]}]
+  (apply q/translate center)
 
   ;; (q/background 0)
-  (q/image contacts 0 0)
-  (q/tint 255 200)
-  (q/image sweep 0 0)
-  )
+  (when (= 0 (mod (q/frame-count) 8))
+    (q/background 0 6))
+  (apply q/stroke (green 255))
+  (q/stroke-weight 2)
+  (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta)))
+
+  (doseq [{:keys [position lifespan]} contacts]
+    (apply q/stroke (green lifespan))
+    (q/stroke-weight 2)
+    (apply q/point position)))
 
 (defn ^:export run-sketch []
   (q/defsketch radar
