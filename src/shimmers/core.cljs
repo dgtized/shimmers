@@ -20,6 +20,7 @@
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.particles :as particles]
+            [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.radar :as radar]
             [shimmers.sketches.random-walk :as random-walk]
@@ -64,6 +65,7 @@
     :scintillation scintillation/run-sketch
     :typography typography/run-sketch
     :particles particles/run-sketch
+    :precipitation precipitation/run-sketch
     :probabilistic-automata probabilistic-automata/run-sketch
     :zigzag zigzag/run-sketch)))
 
