@@ -19,21 +19,19 @@
   (let [hw (/ (q/width) 2)
         hh (/ (q/height) 2)
         radius (* 0.45 (q/height))]
-    (apply q/stroke (green 255))
-    (apply q/fill (green 32))
-    (q/ellipse-mode :radius)
-    (q/ellipse hw hh radius radius)
     {:theta 0.0
      :center (v/vec2 hw hh)
      :radius radius
      :particles [(->Particle (v/vec2 0 60) (v/vec2 0.15 0.02))
                  (->Particle (v/vec2 (* 2 hw) 60) (v/vec2 -0.2 0.02))
                  (->Particle (v/vec2 hw 0) (v/vec2 -0.02 0.1))
-                 (->Particle (v/vec2 120 0) (v/vec2 -0.05 0.15))]}))
+                 (->Particle (v/vec2 120 0) (v/vec2 -0.05 0.15))]
+     :contacts (q/create-graphics (q/width) (q/height))
+     :sweep (q/create-graphics (q/width) (q/height))}))
 
 (defn update-state [state]
   (-> state
-      (update :theta + (/ (* 2 Math/PI) (* 60 15)))
+      (update :theta + (/ (* 2 Math/PI) (* 40 15)))
       (update :particles (partial map step))))
 
 (defn draw-point-hit [theta radius center point]
@@ -46,17 +44,34 @@
       ;; (println [heading mtheta delta tpoint])
       (apply q/point tpoint))))
 
-(defn draw [{:keys [theta center radius particles]}]
-  (when (= 0 (mod (q/frame-count) 6))
-    (q/background 0 8))
-  (apply q/stroke (green 255))
-  (apply q/translate center)
-  (q/stroke-weight 3)
-  (doseq [{:keys [position]} particles]
-    (draw-point-hit theta radius center position))
-  (apply q/stroke (green 192))
-  (q/stroke-weight 1)
-  (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta))))
+(defn draw
+  [{:keys [contacts sweep particles
+           theta center radius]}]
+  (q/with-graphics contacts
+    (q/push-matrix)
+    (apply q/translate center)
+    (when (= 0 (mod (q/frame-count) 24))
+      (q/background 0 6))
+    (apply q/stroke (green 255))
+    (q/stroke-weight 2.5)
+    (doseq [{:keys [position]} particles]
+      (draw-point-hit theta radius center position))
+    (q/pop-matrix))
+  (q/with-graphics sweep
+    (q/push-matrix)
+    (apply q/translate center)
+    (when (= 0 (mod (q/frame-count) 10))
+      (q/background 0 8))
+    (apply q/stroke (green 255))
+    (q/stroke-weight 2)
+    (q/line 0 0 (* radius (q/cos theta)) (* radius (q/sin theta)))
+    (q/pop-matrix))
+
+  ;; (q/background 0)
+  (q/image contacts 0 0)
+  (q/tint 255 200)
+  (q/image sweep 0 0)
+  )
 
 (defn ^:export run-sketch []
   (q/defsketch radar
