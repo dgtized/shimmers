@@ -58,7 +58,6 @@
   [{:keys [contacts theta center radius]}]
   (apply q/translate center)
 
-  ;; (q/background 0)
   (when (= 0 (mod (q/frame-count) 8))
     (q/background 0 6))
   (apply q/stroke (green 255))
@@ -67,7 +66,6 @@
 
   (doseq [{:keys [position lifespan]} contacts]
     (apply q/stroke (green lifespan))
-    (q/stroke-weight 2)
     (apply q/point position)))
 
 (defn ^:export run-sketch []
