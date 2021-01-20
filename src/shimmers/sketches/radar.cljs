@@ -37,7 +37,7 @@
         tolerance 0.01]
     (when (and (< (tg/dist (v/vec2 0 0) translated-point) radius)
                (< (- tolerance) delta tolerance))
-      (println [heading mtheta delta translated-point])
+      ;; (println [heading mtheta delta translated-point])
       {:position translated-point :lifespan 200})))
 
 (defn update-state [state]
