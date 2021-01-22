@@ -28,6 +28,7 @@
             [shimmers.sketches.ring :as ring]
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.scintillation :as scintillation]
+            [shimmers.sketches.substrate :as substrate]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.typography :as typography]
             [shimmers.sketches.zigzag :as zigzag]))
@@ -63,6 +64,7 @@
     :ripples ripples/run-sketch
     :space-colonization space-colonization/run-sketch
     :scintillation scintillation/run-sketch
+    :substrate substrate/run-sketch
     :typography typography/run-sketch
     :particles particles/run-sketch
     :precipitation precipitation/run-sketch
