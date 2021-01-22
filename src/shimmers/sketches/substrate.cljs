@@ -26,7 +26,11 @@
         false
         (= (:parent self) crack)
         false
-        :else false))
+        :else (let [{:keys [start position]} crack
+                    dseg (v/distance start position)
+                    dstart (v/distance start point)
+                    dend (v/distance point position)]
+                (< (Math/abs (- dseg dstart dend)) 0.01))))
 
 (defn update-crack [cracks {:keys [position angle parent] :as crack}]
   (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.3))]
