@@ -43,8 +43,11 @@
   (make-crack (v/vec2 (q/random (q/width)) (q/random (q/height)))
               (* (rand-nth [0 1 2 3]) (/ Math/PI 2))))
 
-(defn setup []
+(defn create-cracks []
   {:cracks (repeatedly 8 make-random-crack)})
+
+(defn setup []
+  (create-cracks))
 
 (defn update-cracks [cracks]
   (let [by-active (group-by :active cracks)
@@ -53,12 +56,20 @@
         fresh-cracks (if (and (< (rand) 0.15) (not-empty active))
                        (conj active (spawn-crack (rand-nth active)))
                        active)]
-    (concat inactive
-            (map (partial update-crack cracks)
-                 fresh-cracks))))
+    [(empty? fresh-cracks)
+     (concat inactive
+             (map (partial update-crack cracks)
+                  fresh-cracks))]))
 
-(defn update-state [state]
-  (update state :cracks update-cracks))
+(defn update-state [{:keys [cracks] :as state}]
+  (let [fc (q/frame-count)
+        diff (- fc (get state :completed-frame fc))]
+    (if (> (/ diff (q/current-frame-rate)) 5)
+      (create-cracks)
+      (let [[done? new-cracks] (update-cracks cracks)]
+        (if (and done? (nil? (:completed-frame state)))
+          (assoc state :completed-frame fc)
+          (assoc state :cracks new-cracks))))))
 
 (defn draw [{:keys [cracks]}]
   (q/background 255 32)
