@@ -3,9 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [thi.ng.geom.line :as tgl]
-            [thi.ng.geom.core :as tg]))
+            [shimmers.math.vector :as v]))
 
 (defn in-bounds? [[x y]]
   (and (>= x 0) (< x (q/width))
@@ -23,19 +21,17 @@
                  (* 0.1 (q/random-gaussian)))
               crack))
 
-(defn as-line [{:keys [start position]}]
-  (tgl/line2 start position))
+(defn intersects [self point crack]
+  (cond (= self crack)
+        false
+        (= (:parent self) crack)
+        false
+        :else false))
 
-(defn update-crack [lines {:keys [position angle parent] :as crack}]
-  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.3))
-        self (as-line crack)]
+(defn update-crack [cracks {:keys [position angle parent] :as crack}]
+  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.3))]
     (if (or (not (in-bounds? position))
-            #_(some (fn [line]
-                      (when (and (not= self line) (if parent (not= (as-line parent) line) true))
-                        (let [intersect (tg/intersect-line line self)]
-                          (when (#{:intersect} (:type intersect))
-                            (println {:line line :crack self :intersect intersect})
-                            true)))) lines))
+            (some (partial intersects crack new-pos) cracks))
       (update crack :active not)
       (assoc crack :position new-pos))))
 
@@ -46,11 +42,10 @@
 (defn update-cracks [cracks]
   (let [fresh-cracks (if (< (rand) 0.03)
                        (conj cracks (spawn-crack (rand-nth cracks)))
-                       cracks)
-        lines (map as-line cracks)]
+                       cracks)]
     (concat
      (remove :active fresh-cracks)
-     (map (partial update-crack lines)
+     (map (partial update-crack cracks)
           (filter :active fresh-cracks)))))
 
 (defn update-state [state]
