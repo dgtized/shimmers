@@ -18,7 +18,7 @@
   (make-crack position
               (+ angle
                  (* (rand-nth [-1 1]) (/ Math/PI 2))
-                 (* 0.1 (q/random-gaussian)))
+                 (* 0.15 (q/random-gaussian)))
               crack))
 
 (defn intersects [self point crack]
@@ -30,7 +30,7 @@
                     dseg (v/distance start position)
                     dstart (v/distance start point)
                     dend (v/distance point position)]
-                (< (Math/abs (- dseg dstart dend)) 0.01))))
+                (< (Math/abs (- dseg dstart dend)) 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
   (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.8))]
@@ -47,7 +47,7 @@
   (let [by-active (group-by :active cracks)
         active (get by-active true)
         inactive (get by-active false)
-        fresh-cracks (if (and (< (rand) 0.08) (not-empty active))
+        fresh-cracks (if (and (< (rand) 0.1) (not-empty active))
                        (conj active (spawn-crack (rand-nth active)))
                        active)]
     (concat inactive
@@ -58,9 +58,9 @@
   (update state :cracks update-cracks))
 
 (defn draw [{:keys [cracks]}]
-  (q/background 255)
-  (q/stroke-weight 0.8)
-  (q/stroke 0 96)
+  (q/background 255 32)
+  (q/stroke-weight 0.6)
+  (q/stroke 0 64)
   (doseq [{:keys [start position]} cracks]
     (q/line start position)))
 
