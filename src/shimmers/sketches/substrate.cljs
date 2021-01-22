@@ -32,8 +32,8 @@
                     dend (v/distance point position)]
                 (< (Math/abs (- dseg dstart dend)) 0.01))))
 
-(defn update-crack [cracks {:keys [position angle parent] :as crack}]
-  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.3))]
+(defn update-crack [cracks {:keys [position angle] :as crack}]
+  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.8))]
     (if (or (not (in-bounds? position))
             (some (partial intersects crack new-pos) cracks))
       (update crack :active not)
@@ -44,13 +44,15 @@
             (make-crack (v/vec2 (/ (q/width) 2) 0) (/ Math/PI 2))]})
 
 (defn update-cracks [cracks]
-  (let [fresh-cracks (if (< (rand) 0.03)
-                       (conj cracks (spawn-crack (rand-nth cracks)))
-                       cracks)]
-    (concat
-     (remove :active fresh-cracks)
-     (map (partial update-crack cracks)
-          (filter :active fresh-cracks)))))
+  (let [by-active (group-by :active cracks)
+        active (get by-active true)
+        inactive (get by-active false)
+        fresh-cracks (if (and (< (rand) 0.08) (not-empty active))
+                       (conj active (spawn-crack (rand-nth active)))
+                       active)]
+    (concat inactive
+            (map (partial update-crack cracks)
+                 fresh-cracks))))
 
 (defn update-state [state]
   (update state :cracks update-cracks))
