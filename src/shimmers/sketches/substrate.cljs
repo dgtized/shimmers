@@ -39,15 +39,18 @@
       (update crack :active not)
       (assoc crack :position new-pos))))
 
+(defn make-random-crack []
+  (make-crack (v/vec2 (q/random (q/width)) (q/random (q/height)))
+              (* (rand-nth [0 1 2 3]) (/ Math/PI 2))))
+
 (defn setup []
-  {:cracks [(make-crack (v/vec2 0 (/ (q/height) 2)) 0)
-            (make-crack (v/vec2 (/ (q/width) 2) 0) (/ Math/PI 2))]})
+  {:cracks (repeatedly 8 make-random-crack)})
 
 (defn update-cracks [cracks]
   (let [by-active (group-by :active cracks)
         active (get by-active true)
         inactive (get by-active false)
-        fresh-cracks (if (and (< (rand) 0.1) (not-empty active))
+        fresh-cracks (if (and (< (rand) 0.15) (not-empty active))
                        (conj active (spawn-crack (rand-nth active)))
                        active)]
     (concat inactive
