@@ -40,34 +40,28 @@
       1 (q/stroke low high low)
       2 (q/stroke low low high))))
 
-(defn x-offset [left cw index]
-  (+ left (* cw index)))
-
 (defn draw-strand
-  [center dw row dh
-   position percent]
+  [cw rh row position percent]
   (let [strands (braid-row next-row row)
         next-strands (braid-row next-row (inc row))
         value (nth strands position)
-        x0 (x-offset center dw (index-of strands value))
-        x1 (x-offset center dw (index-of next-strands value))]
+        x0 (* cw (index-of strands value))
+        x1 (* cw (index-of next-strands value))]
     (color value)
-    (cq/lerp-line [x0 (* row dh)]
-                  [x1 (* (inc row) dh)]
-                  percent)))
+    (cq/lerp-line [x0 0] [x1 rh] percent)))
 
 (defn draw [{:keys [rate row]}]
-  (let [dh 10
-        left 290
-        cw 10
+  (let [rh 10 ;; row height
+        cw 10 ;; column width
         percent (/ (mod (q/frame-count) (q/floor rate)) rate)]
     (when (= row 0)
       (q/background 255))
     (q/stroke-weight 3)
+    (q/translate 290 (* row rh))
 
-    (draw-strand left cw row dh 1 percent)
-    (draw-strand left cw row dh 0 percent)
-    (draw-strand left cw row dh 2 percent)
+    (draw-strand cw rh row 1 percent)
+    (draw-strand cw rh row 0 percent)
+    (draw-strand cw rh row 2 percent)
     ))
 
 (defn ^:export run-sketch []
