@@ -15,12 +15,11 @@
 
 (defn update-state [state]
   (let [mouse (mouse-position)]
-    (q/print-every-n-millisec 100 [state mouse])
+    ;; (q/print-every-n-millisec 100 [state mouse])
     (update state :looking-at #(v/normalize (v/add % (v/scale mouse 0.15))))))
 
 (defn draw-eye [x y looking-at]
   (q/ellipse x y 20 16)
-  ;; (q/ellipse x y 10 8)
   (let [[lx ly] (v/scale looking-at 2)
         dx (+ x lx)
         dy (+ y ly)]
