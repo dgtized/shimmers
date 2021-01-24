@@ -35,9 +35,13 @@
           :let [value (nth strands position)]]
       [(color value) position (index-of next-strands value)])))
 
+(defn candy-cain [row]
+  [[(color (mod row 2)) 0 1]
+   [(color (mod (inc row) 2)) 1 0]])
+
 (defn setup []
   {:rate 10.0
-   :braids (repeat 6 strand-changes)})
+   :braids [strand-changes candy-cain strand-changes]})
 
 (defn draw [{:keys [rate braids]}]
   (let [rh 10 ;; row height
