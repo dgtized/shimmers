@@ -33,6 +33,7 @@
         eye-x (/ W 14)
         eye-y (- (/ H 10))]
     (q/translate (/ W 2) (/ H 2))
+    (q/rotate (q/lerp -0.02 0.02 (first looking-at)))
     (q/ellipse 0 0 (/ W 3) (/ H 1.5))
     (draw-eye (- eye-x) eye-y looking-at)
     (draw-eye eye-x eye-y looking-at)
