@@ -19,6 +19,7 @@
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
+            [shimmers.sketches.object-permanence :as object-permanence]
             [shimmers.sketches.particles :as particles]
             [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
@@ -57,6 +58,7 @@
     :kd-tree kd-tree/run-sketch
     :langton-ant langton-ant/run-sketch
     :noise-grid noise-grid/run-sketch
+    :object-permanence object-permanence/run-sketch
     :radar radar/run-sketch
     :random-walk random-walk/run-sketch
     :ray-marching ray-marching/run-sketch
