@@ -40,15 +40,15 @@
    [(color (mod (inc row) 2)) 1 0]])
 
 (defn setup []
-  {:rate 10.0
-   :braids [strand-changes candy-cain strand-changes]})
+  {:braids [strand-changes candy-cain strand-changes]})
 
-(defn draw [{:keys [rate braids]}]
-  (let [rh 10 ;; row height
+(defn draw [{:keys [braids]}]
+  (let [rate 20
+        rh 10 ;; row height
         cw 10 ;; column width
         fc (q/frame-count)
-        row (mod (q/floor (/ fc (q/floor rate))) (/ (q/height) rh))
-        percent (/ (mod fc (q/floor rate)) rate)
+        row (mod (q/floor (/ fc rate)) (/ (q/height) rh))
+        percent (/ (mod fc rate) rate)
         even-split (/ (q/width) (count braids))]
     (when (= row 0)
       (q/background 255))
