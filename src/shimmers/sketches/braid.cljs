@@ -1,7 +1,8 @@
 (ns shimmers.sketches.braid
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.algorithm.helpers :refer [index-of]]))
 
 (defn setup []
   (q/frame-rate 10)
@@ -32,10 +33,6 @@
     0 (q/stroke 255 0 0)
     1 (q/stroke 0 255 0)
     2 (q/stroke 0 0 255)))
-
-(defn index-of [coll value]
-  (some (fn [[idx item]] (when (= value item) idx))
-        (map-indexed vector coll)))
 
 (defn x-offset [left cw index]
   (+ left (* cw index)))
