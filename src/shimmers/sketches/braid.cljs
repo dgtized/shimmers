@@ -7,8 +7,7 @@
 
 (defn setup []
   {:rate 10.0
-   :row 0
-   :strands [0 1 2]})
+   :row 0})
 
 ;;   0 1 2
 ;; L 1 0 2
