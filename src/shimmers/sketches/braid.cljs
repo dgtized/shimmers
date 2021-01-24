@@ -2,11 +2,12 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.algorithm.helpers :refer [index-of]]))
+            [shimmers.algorithm.helpers :refer [index-of]]
+            [shimmers.common.quil :as cq]))
 
 (defn setup []
-  (q/frame-rate 10)
-  {:row 0
+  {:rate 10.0
+   :row 0
    :strands [0 1 2]})
 
 ;;   0 1 2
@@ -22,11 +23,13 @@
     [a c b]
     [b a c]))
 
-(defn update-state [{:keys [row] :as state}]
-  (-> state
-      (update :row + 1)
-      (update :strands braid-row row)
-      (update :row mod 40)))
+(defn update-state [{:keys [rate row] :as state}]
+  (if (= 0 (mod (q/frame-count) rate))
+    (-> state
+        (update :row + 1)
+        (update :strands braid-row row)
+        (update :row mod 40))
+    state))
 
 (defn color [value]
   (let [low 64 high 192]
@@ -41,26 +44,28 @@
 (defn draw-strand
   [strands
    center dw row dh
-   position]
+   position percent]
   (let [value (nth strands position)
         next-strands (braid-row strands row)
         x0 (x-offset center dw (index-of strands value))
         x1 (x-offset center dw (index-of next-strands value))]
     (color value)
-    (q/line x0 (* row dh)
-            x1 (* (inc row) dh))))
+    (cq/lerp-line [x0 (* row dh)]
+                  [x1 (* (inc row) dh)]
+                  percent)))
 
-(defn draw [{:keys [row strands]}]
+(defn draw [{:keys [rate row strands]}]
   (let [dh 10
         left 290
-        cw 10]
+        cw 10
+        percent (/ (mod (q/frame-count) (q/floor rate)) rate)]
     (when (= row 0)
       (q/background 255))
     (q/stroke-weight 3)
 
-    (draw-strand strands left cw row dh 1)
-    (draw-strand strands left cw row dh 0)
-    (draw-strand strands left cw row dh 2)
+    (draw-strand strands left cw row dh 1 percent)
+    (draw-strand strands left cw row dh 0 percent)
+    (draw-strand strands left cw row dh 2 percent)
     ))
 
 (defn ^:export run-sketch []
