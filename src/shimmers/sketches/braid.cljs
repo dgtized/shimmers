@@ -5,22 +5,6 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]))
 
-;;   0 1 2
-;; L 1 0 2
-;; R 1 2 0
-;; L 2 1 0
-;; R 2 0 1
-;; L 0 2 1
-;; R 0 1 2
-
-(defn next-row [[[a b c] row]]
-  (if (= 0 (mod row 2))
-    [[a c b] (inc row)]
-    [[b a c] (inc row)]))
-
-(defn braid-row [braid-fn row]
-  (first (nth (iterate braid-fn [[0 1 2] 0]) row)))
-
 (defn color [value]
   (let [low 64 high 192]
     (condp = value
@@ -28,9 +12,23 @@
       1 [low high low]
       2 [low low high])))
 
-(defn strand-changes [row]
-  (let [strands (braid-row next-row row)
-        next-strands (braid-row next-row (inc row))]
+;;   0 1 2
+;; L 1 0 2
+;; R 1 2 0
+;; L 2 1 0
+;; R 2 0 1
+;; L 0 2 1
+;; R 0 1 2
+(defn classic-3-strand [row]
+  (let [next-row
+        (fn [[[a b c] row]]
+          (if (= 0 (mod row 2))
+            [[a c b] (inc row)]
+            [[b a c] (inc row)]))
+        braid-row
+        (fn [row] (first (nth (iterate next-row [[0 1 2] 0]) row)))
+        strands (braid-row row)
+        next-strands (braid-row (inc row))]
     (for [position [1 0 2]
           :let [value (nth strands position)]]
       [(color value) position (index-of next-strands value)])))
@@ -40,7 +38,7 @@
    [(color (mod (inc row) 2)) 1 0]])
 
 (defn setup []
-  {:braids [strand-changes candy-cain strand-changes]})
+  {:braids [classic-3-strand candy-cain classic-3-strand]})
 
 (defn draw [{:keys [braids]}]
   (let [rate 20
