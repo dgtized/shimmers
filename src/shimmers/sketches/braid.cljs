@@ -1,8 +1,8 @@
 (ns shimmers.sketches.braid
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
             [shimmers.algorithm.helpers :refer [index-of]]
+            [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]))
 
 (defn setup []
