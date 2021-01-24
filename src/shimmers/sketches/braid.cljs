@@ -5,9 +5,6 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]))
 
-(defn setup []
-  {:rate 10.0})
-
 ;;   0 1 2
 ;; L 1 0 2
 ;; R 1 2 0
@@ -31,6 +28,10 @@
           :let [value (nth strands position)]]
       [value position (index-of next-strands value)])))
 
+(defn setup []
+  {:rate 10.0
+   :braids (repeat 6 strand-changes)})
+
 (defn color [value]
   (let [low 64 high 192]
     (condp = value
@@ -38,20 +39,24 @@
       1 (q/stroke low high low)
       2 (q/stroke low low high))))
 
-(defn draw [{:keys [rate]}]
+(defn draw [{:keys [rate braids]}]
   (let [rh 10 ;; row height
         cw 10 ;; column width
         fc (q/frame-count)
         row (mod (q/floor (/ fc (q/floor rate))) (/ (q/height) rh))
-        percent (/ (mod fc (q/floor rate)) rate)]
+        percent (/ (mod fc (q/floor rate)) rate)
+        even-split (/ (q/width) (count braids))]
     (when (= row 0)
       (q/background 255))
     (q/stroke-weight 3)
-    (q/translate 290 (* row rh))
 
-    (doseq [[value from to] (strand-changes row)]
-      (color value)
-      (cq/lerp-line [(* from cw) 0] [(* to cw) rh] percent))))
+    (q/translate (- (/ even-split 2)) 0)
+    (doseq [strand-changes braids]
+      (q/translate even-split 0)
+      (q/with-translation [0 (* row rh)]
+        (doseq [[value from to] (strand-changes row)]
+          (color value)
+          (cq/lerp-line [(* from cw) 0] [(* to cw) rh] percent))))))
 
 (defn ^:export run-sketch []
   (q/defsketch braid
