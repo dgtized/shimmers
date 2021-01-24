@@ -18,16 +18,18 @@
 ;; L 0 2 1
 ;; R 0 1 2
 
-(defn braid-row [[a b c] row]
+(defn next-row [[[a b c] row]]
   (if (= 0 (mod row 2))
-    [a c b]
-    [b a c]))
+    [[a c b] (inc row)]
+    [[b a c] (inc row)]))
 
-(defn update-state [{:keys [rate row] :as state}]
+(defn braid-row [braid-fn row]
+  (first (nth (iterate braid-fn [[0 1 2] 0]) row)))
+
+(defn update-state [{:keys [rate] :as state}]
   (if (= 0 (mod (q/frame-count) rate))
     (-> state
         (update :row + 1)
-        (update :strands braid-row row)
         (update :row mod 40))
     state))
 
@@ -42,11 +44,11 @@
   (+ left (* cw index)))
 
 (defn draw-strand
-  [strands
-   center dw row dh
+  [center dw row dh
    position percent]
-  (let [value (nth strands position)
-        next-strands (braid-row strands row)
+  (let [strands (braid-row next-row row)
+        next-strands (braid-row next-row (inc row))
+        value (nth strands position)
         x0 (x-offset center dw (index-of strands value))
         x1 (x-offset center dw (index-of next-strands value))]
     (color value)
@@ -54,7 +56,7 @@
                   [x1 (* (inc row) dh)]
                   percent)))
 
-(defn draw [{:keys [rate row strands]}]
+(defn draw [{:keys [rate row]}]
   (let [dh 10
         left 290
         cw 10
@@ -63,9 +65,9 @@
       (q/background 255))
     (q/stroke-weight 3)
 
-    (draw-strand strands left cw row dh 1 percent)
-    (draw-strand strands left cw row dh 0 percent)
-    (draw-strand strands left cw row dh 2 percent)
+    (draw-strand left cw row dh 1 percent)
+    (draw-strand left cw row dh 0 percent)
+    (draw-strand left cw row dh 2 percent)
     ))
 
 (defn ^:export run-sketch []
