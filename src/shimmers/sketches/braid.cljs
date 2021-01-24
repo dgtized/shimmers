@@ -29,10 +29,11 @@
       (update :row mod 40)))
 
 (defn color [value]
-  (condp = value
-    0 (q/stroke 255 0 0)
-    1 (q/stroke 0 255 0)
-    2 (q/stroke 0 0 255)))
+  (let [low 64 high 192]
+    (condp = value
+      0 (q/stroke high low low)
+      1 (q/stroke low high low)
+      2 (q/stroke low low high))))
 
 (defn x-offset [left cw index]
   (+ left (* cw index)))
