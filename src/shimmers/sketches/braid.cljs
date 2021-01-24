@@ -26,6 +26,13 @@
 (defn braid-row [braid-fn row]
   (first (nth (iterate braid-fn [[0 1 2] 0]) row)))
 
+(defn strand-changes [row]
+  (let [strands (braid-row next-row row)
+        next-strands (braid-row next-row (inc row))]
+    (for [position [1 0 2]
+          :let [value (nth strands position)]]
+      [value position (index-of next-strands value)])))
+
 (defn update-state [{:keys [rate] :as state}]
   (if (= 0 (mod (q/frame-count) rate))
     (-> state
@@ -40,16 +47,6 @@
       1 (q/stroke low high low)
       2 (q/stroke low low high))))
 
-(defn draw-strand
-  [cw rh row position percent]
-  (let [strands (braid-row next-row row)
-        next-strands (braid-row next-row (inc row))
-        value (nth strands position)
-        x0 (* cw (index-of strands value))
-        x1 (* cw (index-of next-strands value))]
-    (color value)
-    (cq/lerp-line [x0 0] [x1 rh] percent)))
-
 (defn draw [{:keys [rate row]}]
   (let [rh 10 ;; row height
         cw 10 ;; column width
@@ -59,10 +56,9 @@
     (q/stroke-weight 3)
     (q/translate 290 (* row rh))
 
-    (draw-strand cw rh row 1 percent)
-    (draw-strand cw rh row 0 percent)
-    (draw-strand cw rh row 2 percent)
-    ))
+    (doseq [[value from to] (strand-changes row)]
+      (color value)
+      (cq/lerp-line [(* from cw) 0] [(* to cw) rh] percent))))
 
 (defn ^:export run-sketch []
   (q/defsketch braid
