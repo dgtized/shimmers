@@ -32,7 +32,12 @@
 (defn draw [_]
   (q/background 255)
 
-  (let [theta (/ (q/frame-count) 10)]
+  (let [theta (/ (q/frame-count) 10)
+        noise (* 2 (q/noise (/ theta 50)))]
+    ;; add some pitch & yaw
+    (q/rotate-z (q/sin (/ theta 20)))
+    (q/rotate-x noise)
+    ;; body
     (q/ellipsoid 5 50 5)
     (wing (* 0.9 (q/cos theta)))
     (wing (- Math/PI (* 0.9 (q/cos theta))))))
