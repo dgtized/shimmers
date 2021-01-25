@@ -32,6 +32,10 @@
 
 (defn wing [angle]
   (q/push-matrix)
+  (q/fill 0 8)
+  ;; TODO: experiment with real lighting?
+  ;; (q/shininess 100)
+  ;; (q/specular 200)
   (q/rotate-y angle)
   (q/begin-shape)
   (doseq [[x y] wing-points]
