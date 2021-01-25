@@ -3,6 +3,13 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
+;; TODO: Perturb parameters a little to generate random wings? Similarly is it
+;; possible to flex the leading/trailing edges a little as a function of angle
+;; to add some curl
+;; TODO: Texture the wings?
+;; TODO: Add some gliding or irregular flapping?
+;; TODO: Instancing for multiple butterflies?
+;; TODO: Boids?
 (defn wing [angle]
   (q/push-matrix)
   (q/rotate-y angle)
