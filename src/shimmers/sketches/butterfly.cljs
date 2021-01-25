@@ -10,27 +10,32 @@
 ;; TODO: Add some gliding or irregular flapping?
 ;; TODO: Instancing for multiple butterflies?
 ;; TODO: Boids?
+
+(def wing-points
+  [[0 -10]
+   [0 -40]
+   [75 -70]
+   [100 -60]
+   [90 -20]
+   [70 0]
+   [25 -10]
+   [0 -10]
+   [0 -10]
+   [0 40]
+   [0 -5]
+   [50 0]
+   [60 10]
+   [40 40]
+   [30 60]
+   [0 40]
+   [0 40]])
+
 (defn wing [angle]
   (q/push-matrix)
   (q/rotate-y angle)
   (q/begin-shape)
-  (q/curve-vertex 0 -10 0)
-  (q/curve-vertex 0 -40 0)
-  (q/curve-vertex 75 -70 0)
-  (q/curve-vertex 100 -60 0)
-  (q/curve-vertex 90 -20 0)
-  (q/curve-vertex 70 0 0)
-  (q/curve-vertex 25 -10 0)
-  (q/curve-vertex 0  -10 0)
-  (q/curve-vertex 0  -10 0)
-  (q/curve-vertex 0 40 0)
-  (q/curve-vertex 0 -5 0)
-  (q/curve-vertex 50 0 0)
-  (q/curve-vertex 60 10 0)
-  (q/curve-vertex 40 40 0)
-  (q/curve-vertex 30 60 0)
-  (q/curve-vertex 0 40 0)
-  (q/curve-vertex 0 40 0)
+  (doseq [[x y] wing-points]
+    (q/curve-vertex x y 0))
   (q/end-shape :close)
   (q/pop-matrix))
 
