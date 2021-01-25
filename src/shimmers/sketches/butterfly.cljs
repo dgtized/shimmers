@@ -31,6 +31,7 @@
 
 (defn draw [_]
   (q/background 255)
+  (q/stroke 0 160)
 
   (let [theta (/ (q/frame-count) 10)
         noise (* 2 (q/noise (/ theta 50)))]
