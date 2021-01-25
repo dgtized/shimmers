@@ -34,24 +34,34 @@
   (q/end-shape :close)
   (q/pop-matrix))
 
+(defn butterfly [theta]
+  (q/ellipsoid 5 50 5)
+  (let [angle (- (* (/ Math/PI 3) (q/cos theta)) 0.4)]
+    (wing angle)
+    (q/rotate-y Math/PI)
+    (wing (- angle))))
+
 (defn draw [_]
   (q/background 255)
   (q/stroke 0 160)
+  (q/ortho)
 
-  (let [theta (/ (q/frame-count) 15)
-        noise (* 2 (q/noise (/ theta 50)))]
-    ;; add some pitch & yaw
-    (q/rotate-z (q/sin (/ theta 20)))
-    (q/rotate-x noise)
-    ;; body
-    (q/ellipsoid 5 50 5)
-    (let [angle (- (* (/ Math/PI 3) (q/cos theta)) 0.4)]
-      (wing angle)
-      (q/rotate-y Math/PI)
-      (wing (- angle)))))
+  (let [theta (/ (q/frame-count) 15)]
+    (q/with-translation [-130 120 0]
+      (butterfly theta))
+
+    (q/with-translation [-130 -70 0]
+      (q/rotate-x (/ Math/PI 2.2))
+      (butterfly theta))
+
+    (q/with-translation [130 0 0]
+      (let [noise (* 2 (q/noise (/ theta 50)))]
+        (q/rotate-z (q/sin (/ theta 20)))
+        (q/rotate-x noise))
+      (butterfly theta))))
 
 (defn ^:export run-sketch []
-  (q/defsketch butterfly
+  (q/defsketch butterfly-sketch
     :host "quil-host"
     :renderer :p3d
     :size [600 400]
