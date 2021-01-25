@@ -10,6 +10,7 @@
             [shimmers.common.ui :as ui]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.braid :as braid]
+            [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
@@ -50,6 +51,7 @@
   (init-sketches
    (loader/sketches-with-meta
     :braid braid/run-sketch
+    :butterfly butterfly/run-sketch
     :cube cube/run-sketch
     :dithering dithering/run-sketch
     :fire fire/run-sketch
