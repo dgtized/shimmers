@@ -23,8 +23,6 @@
   (q/curve-vertex 25 -10 0)
   (q/curve-vertex 0  -10 0)
   (q/curve-vertex 0  -10 0)
-  (q/end-shape :close)
-  (q/begin-shape)
   (q/curve-vertex 0 40 0)
   (q/curve-vertex 0 -5 0)
   (q/curve-vertex 50 0 0)
