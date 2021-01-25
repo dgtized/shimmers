@@ -38,15 +38,17 @@
   (q/background 255)
   (q/stroke 0 160)
 
-  (let [theta (/ (q/frame-count) 10)
+  (let [theta (/ (q/frame-count) 15)
         noise (* 2 (q/noise (/ theta 50)))]
     ;; add some pitch & yaw
     (q/rotate-z (q/sin (/ theta 20)))
     (q/rotate-x noise)
     ;; body
     (q/ellipsoid 5 50 5)
-    (wing (* 0.9 (q/cos theta)))
-    (wing (- Math/PI (* 0.9 (q/cos theta))))))
+    (let [angle (- (* (/ Math/PI 3) (q/cos theta)) 0.4)]
+      (wing angle)
+      (q/rotate-y Math/PI)
+      (wing (- angle)))))
 
 (defn ^:export run-sketch []
   (q/defsketch butterfly
