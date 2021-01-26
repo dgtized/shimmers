@@ -45,7 +45,7 @@
 
 (defn butterfly [theta]
   (q/ellipsoid 5 50 5)
-  (let [angle (q/lerp (- (/ Math/PI 2)) (/ Math/PI 4)
+  (let [angle (q/lerp (- (* Math/PI (/ 63 128))) (/ Math/PI 4)
                       (/ (+ 1 (q/cos theta)) 2))]
     (wing angle)
     (q/rotate-y Math/PI)
