@@ -39,13 +39,15 @@
   (q/rotate-y angle)
   (q/begin-shape)
   (doseq [[x y] wing-points]
-    (q/curve-vertex x y 0))
+    (if (zero? x)
+      (q/curve-vertex x y 0)
+      (q/curve-vertex x y (* 20 (q/sin angle)))))
   (q/end-shape :close)
   (q/pop-matrix))
 
 (defn butterfly [theta]
   (q/ellipsoid 5 50 5)
-  (let [angle (q/lerp (- (* Math/PI (/ 63 128))) (/ Math/PI 4)
+  (let [angle (q/lerp (- (* Math/PI (/ 70 128))) (/ Math/PI 3)
                       (/ (+ 1 (q/cos theta)) 2))]
     (wing angle)
     (q/rotate-y Math/PI)
