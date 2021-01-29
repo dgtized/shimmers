@@ -139,7 +139,7 @@
         new-quadtree (add-branch-positions quadtree growth)
         prune (pruning-set (partial close-to-branch? new-quadtree prune-distance)
                            influencers)
-        new-branches (concat branches growth)]
+        new-branches (vec (concat branches growth))]
     (if (steady-state? growth prune attractors)
       [true state]
       [false
