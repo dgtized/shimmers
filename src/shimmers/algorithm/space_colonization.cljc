@@ -56,13 +56,6 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn influencing-attractors [attractors quadtree influence-distance]
-  (apply merge-with into
-         (for [attractor attractors
-               :let [influences (influenced-branches quadtree influence-distance attractor)]
-               :when (seq influences)]
-           {(closest-branch attractor influences) [attractor]})))
-
 (defn steady-state?
   "Check if growth is complete or has stalled somehow."
   [growth prune attractors]
@@ -101,6 +94,13 @@
             (geom/add-point tree (:position branch) branch))
           quadtree
           branches))
+
+(defn influencing-attractors [attractors quadtree influence-distance]
+  (apply merge-with into
+         (for [attractor attractors
+               :let [influences (influenced-branches quadtree influence-distance attractor)]
+               :when (seq influences)]
+           {(closest-branch attractor influences) [attractor]})))
 
 (defn grow-branches
   [branches influencers segment-distance snap-theta]
