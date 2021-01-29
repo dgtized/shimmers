@@ -34,9 +34,6 @@
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
 
-(defn jitter [amount]
-  (v/scale (v/unit2-from-angle (rand (* 2 Math/PI))) amount))
-
 (defn snap-to [dir radians]
   (-> (geom/heading dir)
       (/ radians)
@@ -51,7 +48,7 @@
                      (v/sub attractor)
                      v/normalize
                      (v/add acc)))
-              (v/add direction (jitter 0.33))
+              (v/add direction (v/jitter 0.33))
               attractors)
       (v/scale (/ 1 (+ (count attractors) 2)))
       v/normalize))

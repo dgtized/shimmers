@@ -34,3 +34,6 @@
 
 (defn unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
+
+(defn jitter [amount]
+  (scale (unit2-from-angle (rand (* 2 Math/PI))) amount))
