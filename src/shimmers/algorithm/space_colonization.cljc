@@ -102,6 +102,20 @@
           quadtree
           branches))
 
+(defn grow-branches
+  [branches influencers segment-distance snap-theta]
+  (let [branch-index (->> branches
+                          (map-indexed (fn [idx branch] {branch idx}))
+                          (into {}))]
+    (for [[branch attractors] influencers
+          :let [average-dir (average-attraction branch attractors)
+                new-dir (if (> snap-theta 0)
+                          (v/snap-to average-dir snap-theta)
+                          average-dir)]]
+      (grow-branch branch (get branch-index branch)
+                   new-dir
+                   segment-distance))))
+
 (defn pruning-set
   [closest-fn influencers]
   (->> influencers
@@ -116,21 +130,12 @@
            attractors branches quadtree weights]
     :as state}]
   (let [influencers (influencing-attractors state)
-        branch-index (->> branches
-                          (map-indexed (fn [idx branch] {branch idx}))
-                          (into {}))
         growth
-        (->>
-         (for [[branch attractors] influencers
-               :let [average-dir (average-attraction branch attractors)
-                     new-dir (if (> snap-theta 0)
-                               (v/snap-to average-dir snap-theta)
-                               average-dir)]]
-           (grow-branch branch (get branch-index branch)
-                        new-dir
-                        segment-distance))
-         (remove (fn [branch] (close-to-branch? quadtree (/ segment-distance 4) (:position branch))))
-         vec)
+        (->> (grow-branches branches influencers segment-distance snap-theta)
+             (remove (fn [branch]
+                       (close-to-branch? quadtree (/ segment-distance 4)
+                                         (:position branch))))
+             vec)
 
         new-quadtree (add-branch-positions quadtree growth)
         prune (pruning-set (partial close-to-branch? new-quadtree prune-distance)
