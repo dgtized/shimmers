@@ -108,13 +108,9 @@
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
-    (for [[branch attractors] influencers
-          :let [average-dir (average-attraction branch attractors)
-                new-dir (if (> snap-theta 0)
-                          (v/snap-to average-dir snap-theta)
-                          average-dir)]]
+    (for [[branch attractors] influencers]
       (grow-branch branch (get branch-index branch)
-                   new-dir
+                   (v/snap-to (average-attraction branch attractors) snap-theta)
                    segment-distance))))
 
 (defn pruning-set

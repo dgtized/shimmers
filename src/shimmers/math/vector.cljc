@@ -43,8 +43,10 @@
 (defn snap-to
   "Snap an input angle `dir` to the closest multiple of `radians`."
   [dir radians]
-  (-> (geom/heading dir)
-      (/ radians)
-      Math/round
-      (* radians)
-      unit2-from-angle))
+  (if (> radians 0)
+    (-> (geom/heading dir)
+        (/ radians)
+        Math/round
+        (* radians)
+        unit2-from-angle)
+    dir))
