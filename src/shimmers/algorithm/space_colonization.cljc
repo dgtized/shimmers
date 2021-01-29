@@ -56,7 +56,7 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn influencing-attractors [{:keys [attractors quadtree influence-distance]}]
+(defn influencing-attractors [attractors quadtree influence-distance]
   (apply merge-with into
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
@@ -126,10 +126,10 @@
        set))
 
 (defn grow
-  [{:keys [segment-distance prune-distance snap-theta
+  [{:keys [influence-distance segment-distance prune-distance snap-theta
            attractors branches quadtree weights]
     :as state}]
-  (let [influencers (influencing-attractors state)
+  (let [influencers (influencing-attractors attractors quadtree influence-distance)
         growth
         (->> (grow-branches branches influencers segment-distance snap-theta)
              (remove (fn [branch]

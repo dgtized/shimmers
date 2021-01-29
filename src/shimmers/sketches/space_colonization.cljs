@@ -46,7 +46,8 @@
   (q/stroke "red")
   (q/ellipse x y prune prune))
 
-(defn draw-debug [{:keys [attractors influence-distance prune-distance] :as state} debug]
+(defn draw-debug [{:keys [attractors influence-distance prune-distance
+                          quadtree] :as state} debug]
   (when (:attractors debug)
     (doseq [[x y] attractors]
       (q/stroke-weight 1)
@@ -54,7 +55,7 @@
       (q/point x y)))
 
   (when ((some-fn :bubbles :influenced-by :next-branch) debug)
-    (let [influencers (colonize/influencing-attractors state)]
+    (let [influencers (colonize/influencing-attractors attractors quadtree influence-distance)]
       (doseq [[branch active-attractors] influencers]
         (doseq [attractor active-attractors]
           (when (:bubbles debug)
