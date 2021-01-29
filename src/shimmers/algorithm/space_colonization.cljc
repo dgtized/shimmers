@@ -34,13 +34,6 @@
 (defn closest-branch [attractor branches]
   (apply min-key (partial branch-distance attractor) branches))
 
-(defn snap-to [dir radians]
-  (-> (geom/heading dir)
-      (/ radians)
-      Math/round
-      (* radians)
-      v/unit2-from-angle))
-
 (defn average-attraction
   [{:keys [position direction]} attractors]
   (-> (reduce (fn [acc attractor]
@@ -122,7 +115,7 @@
          (for [[branch attractors] influencers
                :let [average-dir (average-attraction branch attractors)
                      new-dir (if (> snap-theta 0)
-                               (snap-to average-dir snap-theta)
+                               (v/snap-to average-dir snap-theta)
                                average-dir)]]
            (grow-branch branch (get branch-index branch)
                         new-dir

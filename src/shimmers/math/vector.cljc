@@ -37,3 +37,10 @@
 
 (defn jitter [amount]
   (scale (unit2-from-angle (rand (* 2 Math/PI))) amount))
+
+(defn snap-to [dir radians]
+  (-> (geom/heading dir)
+      (/ radians)
+      Math/round
+      (* radians)
+      unit2-from-angle))
