@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.space-colonization
-  (:require [shimmers.math.vector :as v]
+  (:require [clojure.set :as set]
+            [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
@@ -96,11 +97,11 @@
           branches))
 
 (defn influencing-attractors [attractors quadtree influence-distance]
-  (apply merge-with into
+  (apply merge-with set/union
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
                :when (seq influences)]
-           {(closest-branch attractor influences) [attractor]})))
+           {(closest-branch attractor influences) #{attractor}})))
 
 (defn grow-branches
   [branches influencers segment-distance snap-theta]
@@ -120,8 +121,7 @@
   [closest-fn influencers]
   (->> influencers
        vals
-       (apply concat)
-       distinct
+       (apply set/union)
        (filter closest-fn)
        set))
 
