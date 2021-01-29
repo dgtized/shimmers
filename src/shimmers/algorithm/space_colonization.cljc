@@ -132,6 +132,9 @@
   (let [influencers (influencing-attractors attractors quadtree influence-distance)
         growth
         (->> (grow-branches branches influencers segment-distance snap-theta)
+             ;; remove any branches created too close to an existing branch this
+             ;; forces it to select a given jitter influenced branch instead of
+             ;; repeatedly adding new children at a point.
              (remove (fn [branch]
                        (close-to-branch? quadtree (/ segment-distance 4)
                                          (:position branch))))
