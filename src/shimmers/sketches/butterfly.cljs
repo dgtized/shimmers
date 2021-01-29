@@ -30,7 +30,7 @@
    [0 40]
    [0 40]])
 
-(defn wing [angle]
+(defn wing [wing-shape angle]
   (q/push-matrix)
   (q/fill 0 8)
   ;; TODO: experiment with real lighting?
@@ -38,27 +38,29 @@
   ;; (q/specular 200)
   (q/rotate-y angle)
   (q/begin-shape)
-  (doseq [[x y] wing-points]
+  (doseq [[x y] wing-shape]
     (if (zero? x)
       (q/curve-vertex x y 0)
       (q/curve-vertex x y (* 20 (q/sin angle)))))
   (q/end-shape :close)
   (q/pop-matrix))
 
-(defn butterfly [theta]
-  (q/ellipsoid 5 50 5)
-  (let [angle (q/lerp (- (* Math/PI (/ 70 128))) (/ Math/PI 3)
-                      (/ (+ 1 (q/cos theta)) 2))]
-    (wing angle)
-    (q/rotate-y Math/PI)
-    (wing (- angle))))
+(defn make-butterfly [wing-shape]
+  (fn [theta]
+    (q/ellipsoid 5 50 5)
+    (let [angle (q/lerp (- (* Math/PI (/ 70 128))) (/ Math/PI 3)
+                        (/ (+ 1 (q/cos theta)) 2))]
+      (wing wing-shape angle)
+      (q/rotate-y Math/PI)
+      (wing wing-shape (- angle)))))
 
 (defn draw [_]
   (q/background 255)
   (q/stroke 0 160)
   (q/ortho)
 
-  (let [theta (/ (q/frame-count) 15)]
+  (let [butterfly (make-butterfly wing-points)
+        theta (/ (q/frame-count) 15)]
     (q/with-translation [-130 120 0]
       (butterfly theta))
 
