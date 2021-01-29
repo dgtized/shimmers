@@ -33,7 +33,7 @@
                 (< (Math/abs (- dseg dstart dend)) 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
-  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.1))]
+  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.33))]
     (if (or (not (in-bounds? position))
             (some (partial intersects crack new-pos) cracks))
       (update crack :active not)
@@ -53,9 +53,12 @@
   (let [by-active (group-by :active cracks)
         active (get by-active true)
         inactive (get by-active false)
-        fresh-cracks (if (and (< (rand) 0.2) (not-empty active))
-                       (conj active (spawn-crack (rand-nth active)))
-                       active)]
+        fresh-cracks (into active (if (< (count active) 64)
+                                    (for [crack active
+                                          :when (< (rand) 0.01)]
+                                      (spawn-crack crack))
+                                    []))]
+    ;; (println [(count inactive) (count active)])
     [(empty? fresh-cracks)
      (concat inactive
              (map (partial update-crack cracks)
