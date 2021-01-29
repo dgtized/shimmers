@@ -102,6 +102,15 @@
           quadtree
           branches))
 
+(defn pruning-set
+  [closest-fn influencers]
+  (->> influencers
+       vals
+       (apply concat)
+       distinct
+       (filter closest-fn)
+       set))
+
 (defn grow
   [{:keys [segment-distance prune-distance snap-theta
            attractors branches quadtree weights]
@@ -124,12 +133,8 @@
          vec)
 
         new-quadtree (add-branch-positions quadtree growth)
-        prune (->> influencers
-                   vals
-                   (apply concat)
-                   distinct
-                   (filter (partial close-to-branch? new-quadtree prune-distance))
-                   set)
+        prune (pruning-set (partial close-to-branch? new-quadtree prune-distance)
+                           influencers)
         new-branches (concat branches growth)]
     (if (steady-state? growth prune attractors)
       [true state]
