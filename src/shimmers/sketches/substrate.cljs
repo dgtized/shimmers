@@ -3,6 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as quil]
             [shimmers.math.vector :as v]))
 
 (defn in-bounds? [[x y]]
@@ -49,7 +50,7 @@
 (defn setup []
   (create-cracks))
 
-(defn update-cracks [cracks]
+(defn update-cracks [{:keys [cracks] :as state}]
   (let [by-active (group-by :active cracks)
         active (get by-active true)
         inactive (get by-active false)
@@ -60,19 +61,15 @@
                                     []))]
     ;; (println [(count inactive) (count active)])
     [(empty? fresh-cracks)
-     (concat inactive
-             (map (partial update-crack cracks)
-                  fresh-cracks))]))
+     (assoc state :cracks
+            (concat inactive
+                    (map (partial update-crack cracks)
+                         fresh-cracks)))]))
 
-(defn update-state [{:keys [cracks] :as state}]
-  (let [fc (q/frame-count)
-        diff (- fc (get state :completed-frame fc))]
-    (if (> (/ diff (q/current-frame-rate)) 5)
-      (create-cracks)
-      (let [[done? new-cracks] (update-cracks cracks)]
-        (if (and done? (nil? (:completed-frame state)))
-          (assoc state :completed-frame fc)
-          (assoc state :cracks new-cracks))))))
+(defn update-state [state]
+  (quil/if-steady-state state 5
+                        create-cracks
+                        update-cracks))
 
 (defn draw [{:keys [cracks]}]
   (q/background 255 32)
