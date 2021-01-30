@@ -33,12 +33,12 @@
           :let [value (nth strands position)]]
       [(color value) position (index-of next-strands value)])))
 
-(defn candy-cain [row]
+(defn candy-cane [row]
   [[(color (mod row 2)) 0 1]
    [(color (mod (inc row) 2)) 1 0]])
 
 (defn setup []
-  {:braids [classic-3-strand candy-cain classic-3-strand]})
+  {:braids [classic-3-strand candy-cane classic-3-strand]})
 
 (defn draw [{:keys [braids]}]
   (let [rate 20
