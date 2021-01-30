@@ -8,6 +8,7 @@
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as quil]
             [shimmers.math.vector :as v]
             [shimmers.algorithm.space-colonization :as colonize]))
 
@@ -30,14 +31,10 @@
   (colonize/create-tree [(q/width) (q/height)] @settings))
 
 (defn update-state [state]
-  (let [fc (q/frame-count)
-        diff (- fc (get state :completed-frame fc))]
-    (if (> (/ diff (q/current-frame-rate)) 5)
-      (colonize/create-tree [(q/width) (q/height)] @settings)
-      (let [[done? new-state] (colonize/grow state)]
-        (if (and done? (nil? (:completed-frame state)))
-          (assoc new-state :completed-frame (q/frame-count))
-          new-state)))))
+  (quil/if-steady-state
+   state 5
+   (fn [] (colonize/create-tree [(q/width) (q/height)] @settings))
+   colonize/grow))
 
 (defn draw-attractor [[x y] influence prune]
   (q/stroke-weight 0.2)
