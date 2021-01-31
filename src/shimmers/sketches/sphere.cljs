@@ -38,12 +38,12 @@
 
 (defn setup []
   {:active-count 10
-   :vertices (sphere-points 64)
+   :vertices (sphere-points 32)
    :radius 150})
 
 (defn update-state [{:keys [vertices] :as state}]
   (-> state
-      (assoc :active-count (int (tm/mix-cosine 0 (count vertices) (/ (q/millis) 10000))))
+      (assoc :active-count (int (tm/mix-cosine 0 (count vertices) (/ (q/millis) 8000))))
       vertice-update))
 
 (defn draw [{:keys [radius active-count vertices]}]
