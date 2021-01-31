@@ -29,6 +29,7 @@
     ;; TODO: use faceMode constraints to add controls to flip between "user"
     ;; and "environment" for mobile use. See documentation @
     ;; https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    ;; https://p5js.org/reference/#/p5/createCapture
     (.size capture width height)
     (.hide capture)
     (rdom/render [render-interface] (dom/getElement "explanation"))
