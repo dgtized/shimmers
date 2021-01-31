@@ -17,10 +17,22 @@
   [shuffle
    (partial sort-by first)
    (partial sort-by second)
-   (partial sort-by last)])
+   (partial sort-by last)
+   (partial sort-by (juxt first second))
+   (partial sort-by (juxt first last))
+   (partial sort-by (juxt second first))
+   (partial sort-by (juxt second last))
+   (partial sort-by (juxt last first))
+   (partial sort-by (juxt last second))
+   (partial sort-by (fn [p] (* (first p) (last p))))
+   ;; FIXME: this sort is unstable, and dependent on previous ordering
+   (partial sort (fn [a b]
+                   (let [crossA (- (* (first a) (second b)) (* (first b) (second a)))
+                         crossB (- (* (second a) (last b)) (* (second b) (last a)))]
+                     (> crossA crossB))))])
 
 (defn vertice-update [{:keys [active-count vertices] :as state}]
-  (if (<= active-count 1)
+  (if (and (<= active-count 1) (> (q/millis) 2000))
     (assoc state :vertices ((rand-nth ordering-fns) vertices))
     state))
 
