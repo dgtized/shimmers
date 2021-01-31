@@ -51,33 +51,33 @@
 (defonce state
   (init-sketches
    (loader/sketches-with-meta
-    :braid braid/run-sketch
-    :butterfly butterfly/run-sketch
-    :cube cube/run-sketch
-    :dithering dithering/run-sketch
-    :fire fire/run-sketch
-    ;; :fluid fluid/run-sketch
-    :gravity-well gravity-well/run-sketch
-    :hexaclock hexaclock/run-sketch
-    :emitters emitters/run-sketch
-    :kd-tree kd-tree/run-sketch
-    :langton-ant langton-ant/run-sketch
-    :noise-grid noise-grid/run-sketch
-    :object-permanence object-permanence/run-sketch
-    :radar radar/run-sketch
-    :random-walk random-walk/run-sketch
-    :ray-marching ray-marching/run-sketch
-    :ring ring/run-sketch
-    :ripples ripples/run-sketch
-    :space-colonization space-colonization/run-sketch
-    :scintillation scintillation/run-sketch
-    :sphere sphere/run-sketch
-    :substrate substrate/run-sketch
-    :typography typography/run-sketch
-    :particles particles/run-sketch
-    :precipitation precipitation/run-sketch
-    :probabilistic-automata probabilistic-automata/run-sketch
-    :zigzag zigzag/run-sketch)))
+    [braid/run-sketch
+     butterfly/run-sketch
+     cube/run-sketch
+     dithering/run-sketch
+     fire/run-sketch
+     ;; fluid/run-sketch
+     gravity-well/run-sketch
+     hexaclock/run-sketch
+     emitters/run-sketch
+     kd-tree/run-sketch
+     langton-ant/run-sketch
+     noise-grid/run-sketch
+     object-permanence/run-sketch
+     radar/run-sketch
+     random-walk/run-sketch
+     ray-marching/run-sketch
+     ring/run-sketch
+     ripples/run-sketch
+     space-colonization/run-sketch
+     scintillation/run-sketch
+     sphere/run-sketch
+     substrate/run-sketch
+     typography/run-sketch
+     particles/run-sketch
+     precipitation/run-sketch
+     probabilistic-automata/run-sketch
+     zigzag/run-sketch])))
 
 (defn current-sketch []
   (let [{:keys [sketches current]} @state]

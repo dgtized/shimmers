@@ -33,4 +33,4 @@
 (comment
   (require '[shimmers.macros.loader :as loader :include-macros true]
            '[shimmers.sketches.particles :as particles])
-  (code-link (first (loader/sketches-with-meta :particles particles/run-sketch))))
+  (code-link (first (loader/sketches-with-meta [particles/run-sketch]))))
