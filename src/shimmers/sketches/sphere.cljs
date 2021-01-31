@@ -23,7 +23,10 @@
 (defn draw [{:keys [radius vertice-count]}]
   (q/orbit-control)
   (q/background 255)
-  (q/fill 0)
+  (q/stroke 0)
+  (q/rotate-x 0.6)
+  (q/rotate-y -0.2)
+  (q/rotate-z (/ (q/frame-count) 1000))
   (doseq [position (sphere-points vertice-count)]
     (apply q/point (map (partial * radius) position))))
 
