@@ -1,11 +1,11 @@
 (ns shimmers.sketches.dithering
-  (:require [quil.core :as q :include-macros true]
+  (:require [goog.dom :as dom]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.macros.loop :as loop]
-            [shimmers.common.framerate :as framerate]
-            [reagent.dom :as rdom]
-            [goog.dom :as dom]
+            quil.sketch
             [reagent.core :as r]
+            [reagent.dom :as rdom]
+            [shimmers.common.framerate :as framerate]
             [shimmers.common.ui :as ui]))
 
 (def modes [:dither :boxes :circles :color-displace])
@@ -25,8 +25,7 @@
 (defn setup []
   (let [width 320
         height 240
-        applet (quil.sketch/current-applet)
-        capture (.createCapture applet "video")]
+        capture (.createCapture (quil.sketch/current-applet) "video")]
     ;; TODO: use faceMode constraints to add controls to flip between "user"
     ;; and "environment" for mobile use. See documentation @
     ;; https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
