@@ -4,13 +4,6 @@
             [shimmers.common.framerate :as framerate]
             [thi.ng.math.core :as tm]))
 
-(defn setup []
-  {:radius 150
-   :vertice-count 48})
-
-(defn update-state [state]
-  (assoc state :percent (tm/mix-cosine 0 1 (/ (q/millis) 10000))))
-
 (defn sphere-points [vertice-count]
   (for [j (range vertice-count)
         i (range vertice-count)
@@ -20,16 +13,36 @@
      (* (Math/sin longitude) (Math/sin latitude))
      (Math/cos longitude)]))
 
-(defn draw [{:keys [radius vertice-count percent]}]
+(def ordering-fns
+  [shuffle
+   (partial sort-by first)
+   (partial sort-by second)
+   (partial sort-by last)])
+
+(defn vertice-update [{:keys [active-count vertices] :as state}]
+  (if (<= active-count 1)
+    (assoc state :vertices ((rand-nth ordering-fns) vertices))
+    state))
+
+(defn setup []
+  {:active-count 10
+   :vertices (sphere-points 64)
+   :radius 150})
+
+(defn update-state [{:keys [vertices] :as state}]
+  (-> state
+      (assoc :active-count (int (tm/mix-cosine 0 (count vertices) (/ (q/millis) 10000))))
+      vertice-update))
+
+(defn draw [{:keys [radius active-count vertices]}]
   (q/orbit-control)
   (q/background 255)
   (q/stroke 0)
   (q/rotate-x 0.6)
   (q/rotate-y -0.2)
   (q/rotate-z (/ (q/frame-count) 1000))
-  (let [points (sphere-points vertice-count)]
-    (doseq [position (take (* percent (count points)) points)]
-      (apply q/point (map (partial * radius) position)))))
+  (doseq [position (take active-count vertices)]
+    (apply q/point (map (partial * radius) position))))
 
 (defn ^:export run-sketch []
   (q/defsketch sphere-sketch
