@@ -25,12 +25,14 @@
     {:filename (last (str/split file #"/"))
      :href
      (-> file
-         (str/replace-first #"^.*shimmers/src"
-                            "https://github.com/dgtized/shimmers/blob/master/src")
+         ;; file can either be relative from src or an absolute path
+         (str/replace-first #"^.*src/"
+                            "https://github.com/dgtized/shimmers/blob/master/src/")
          (str "#L" line))}
     {:filename "" :href ""}))
 
 (comment
   (require '[shimmers.macros.loader :as loader :include-macros true]
-           '[shimmers.sketches.particles :as particles])
-  (code-link (first (loader/sketches-with-meta [particles/run-sketch]))))
+           '[shimmers.sketches.particles :as particles]
+           '[shimmers.sketches.object-permanence :as object-permanence])
+  (map code-link (loader/sketches-with-meta [particles/run-sketch object-permanence/run-sketch])))
