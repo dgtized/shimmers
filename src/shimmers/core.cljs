@@ -45,7 +45,7 @@
    (/ (.-innerHeight js/window) 2)])
 
 (defn init-sketches [sketches]
-  (atom {:sketches (into {} (for [sketch sketches] [(:id sketch) sketch]))
+  (atom {:sketches (sort-by (comp name :id) sketches)
          :current nil}))
 
 (defonce state
@@ -79,11 +79,13 @@
     :probabilistic-automata probabilistic-automata/run-sketch
     :zigzag zigzag/run-sketch)))
 
+(defn current-sketch []
+  (let [{:keys [sketches current]} @state]
+    (first (filter #(= current (:id %)) sketches))))
+
 (defn run-current []
-  (let [{:keys [sketches current]} @state
-        sketch (get sketches current)]
-    (when sketch
-      (apply (:fn sketch) []))))
+  (when-let [sketch (current-sketch)]
+    (apply (:fn sketch) [])))
 
 (defn stop-sketch []
   ;; force active video capture to stop
@@ -100,8 +102,8 @@
 
 (defn cycle-sketch []
   (let [{:keys [sketches current]} @state
-        sketch-name (ui/cycle-next (keys sketches) current)]
-    (rfe/push-state ::sketch-by-name {:name sketch-name})))
+        next-sketch (ui/cycle-next (map :id sketches) current)]
+    (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defonce match (r/atom nil))
 
@@ -110,20 +112,23 @@
     [:section
      [:h1 "All Sketches"]
      (into [:ul]
-           (for [[sketch _] sketches]
-             [:li [:a {:href (rfe/href ::sketch-by-name {:name sketch})}
-                   (name sketch)]]))]))
+           (for [sketch sketches]
+             [:li [:a {:href (rfe/href ::sketch-by-name {:name (:id sketch)})}
+                   (:id sketch)]]))]))
 
 (defn sketch-by-name []
-  (let [{:keys [sketches current]} @state]
+  (let [active (current-sketch)]
     [:section {:class "controls"}
      [:span
       [:button {:on-click cycle-sketch} "Next"]
       [:button {:on-click restart-sketch} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
-      [:a {:href (:href (ui/code-link (get sketches current)))} (name current)]]
+      [:a {:href (:href (ui/code-link active))} (name (:id active))]]
      [:span {:id "framerate"}]]))
+
+(defn known-sketches []
+  (map (comp name :id) (get @state :sketches)))
 
 (def routes
   [;; "/shimmers"
@@ -133,8 +138,7 @@
     {:name ::sketch-by-name
      :view sketch-by-name
      :parameters
-     {:path {:name (every-pred string?
-                               (set (map name (keys (get @state :sketches)))))}}
+     {:path {:name (every-pred string? (set (known-sketches)))}}
      :controllers
      [{:parameters {:path [:name]}
        :start (fn [{:keys [path]}]
