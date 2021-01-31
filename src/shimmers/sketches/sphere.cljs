@@ -12,10 +12,10 @@
   (assoc state :percent (tm/mix-cosine 0 1 (/ (q/millis) 10000))))
 
 (defn sphere-points [vertice-count]
-  (for [i (range vertice-count)
-        :let [longitude (tm/map-interval i 0 vertice-count (- Math/PI) Math/PI)]
-        j (range vertice-count)
-        :let [latitude (tm/map-interval j 0 vertice-count (- (/ Math/PI 2)) (/ Math/PI 2))]]
+  (for [j (range vertice-count)
+        i (range vertice-count)
+        :let [longitude (tm/map-interval i 0 vertice-count (- Math/PI) Math/PI)
+              latitude (tm/map-interval j 0 vertice-count (- (/ Math/PI 2)) (/ Math/PI 2))]]
     [(* (Math/sin longitude) (Math/cos latitude))
      (* (Math/sin longitude) (Math/sin latitude))
      (Math/cos longitude)]))
