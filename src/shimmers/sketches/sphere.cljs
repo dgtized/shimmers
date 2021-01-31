@@ -9,7 +9,7 @@
    :vertice-count 48})
 
 (defn update-state [state]
-  state)
+  (assoc state :percent (tm/mix-cosine 0 1 (/ (q/millis) 10000))))
 
 (defn sphere-points [vertice-count]
   (for [i (range vertice-count)
@@ -20,15 +20,16 @@
      (* (Math/sin longitude) (Math/sin latitude))
      (Math/cos longitude)]))
 
-(defn draw [{:keys [radius vertice-count]}]
+(defn draw [{:keys [radius vertice-count percent]}]
   (q/orbit-control)
   (q/background 255)
   (q/stroke 0)
   (q/rotate-x 0.6)
   (q/rotate-y -0.2)
   (q/rotate-z (/ (q/frame-count) 1000))
-  (doseq [position (sphere-points vertice-count)]
-    (apply q/point (map (partial * radius) position))))
+  (let [points (sphere-points vertice-count)]
+    (doseq [position (take (* percent (count points)) points)]
+      (apply q/point (map (partial * radius) position)))))
 
 (defn ^:export run-sketch []
   (q/defsketch sphere-sketch
