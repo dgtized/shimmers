@@ -48,9 +48,10 @@
              active))))
 
 (defn draw [{:keys [bubbles]}]
-  (q/background 250 150 140 32)
+  (q/background 250 150 140 10)
   (q/no-fill)
-  (q/stroke 0 192)
+  (q/stroke-weight 0.05)
+  (q/stroke 40 40 240)
   (q/ellipse-mode :radius)
   (doseq [{:keys [p r]} bubbles
           :let [[x y] p]]
