@@ -49,9 +49,7 @@
   (create-cracks))
 
 (defn update-cracks [{:keys [cracks] :as state}]
-  (let [by-active (group-by :active cracks)
-        active (get by-active true)
-        inactive (get by-active false)
+  (let [[active inactive] ((juxt filter remove) :active cracks)
         fresh-cracks (into active (if (< (count active) 64)
                                     (for [crack active
                                           :when (< (rand) 0.01)]
