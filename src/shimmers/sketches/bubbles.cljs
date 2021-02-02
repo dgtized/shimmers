@@ -24,8 +24,9 @@
    :size (+ (:size a) (:size b))})
 
 (defn intersects? [a b]
-  (< (apply v/distance (map :position [a b]))
-     (+ (:size a) (:size b))))
+  (when (< (apply v/distance (map :position [a b]))
+           (+ (:size a) (:size b)))
+    b))
 
 (defn combine-intersecting [bubbles]
   (loop [ordered (sort-by (comp :position :x) bubbles)
@@ -34,10 +35,9 @@
       [([] :seq)] results
       [([a] :seq)] (conj results a)
       [([a & xs] :seq)]
-      (let [b (first xs)]
-        (if (and b (intersects? a b))
-          (recur (conj (rest xs) (combine-bubble a b)) results)
-          (recur xs (conj results a)))))))
+      (if-let [b (some (partial intersects? a) xs)]
+        (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
+        (recur xs (conj results a))))))
 
 (defn update-state [{:keys [bubbles] :as state}]
   (let [active (keep update-bubble (combine-intersecting bubbles))]
