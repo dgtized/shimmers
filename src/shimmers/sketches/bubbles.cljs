@@ -1,11 +1,13 @@
 (ns shimmers.sketches.bubbles
-  (:require [quil.core :as q :include-macros true]
+  (:require [cljs.core.match :refer-macros [match]]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]))
 
 (defn make-bubble []
-  {:position (v/vec2 (q/random (q/width)) (q/height))})
+  {:position (v/vec2 (q/random (q/width)) (q/height))
+   :size 10})
 
 (defn setup []
   {:bubbles []})
@@ -17,8 +19,28 @@
   (when (in-bounds? position)
     (assoc bubble :position (v/sub position (v/vec2 0 0.1)))))
 
+(defn combine-bubble [a b]
+  {:position (:position a) ;; TODO weighted average position?
+   :size (+ (:size a) (:size b))})
+
+(defn intersects? [a b]
+  (< (apply v/distance (map :position [a b]))
+     (+ (:size a) (:size b))))
+
+(defn combine-intersecting [bubbles]
+  (loop [ordered (sort-by (comp :position :x) bubbles)
+         results []]
+    (match [ordered]
+      [([] :seq)] results
+      [([a] :seq)] (conj results a)
+      [([a & xs] :seq)]
+      (let [b (first xs)]
+        (if (and b (intersects? a b))
+          (recur (conj (rest xs) (combine-bubble a b)) results)
+          (recur xs (conj results a)))))))
+
 (defn update-state [{:keys [bubbles] :as state}]
-  (let [active (keep update-bubble bubbles)]
+  (let [active (keep update-bubble (combine-intersecting bubbles))]
     (assoc state :bubbles
            (if (and (< (rand) 0.01)
                     (< (count active) 512))
@@ -29,8 +51,8 @@
   (q/background 250 150 140 32)
   (q/no-fill)
   (q/stroke 0 192)
-  (doseq [{:keys [position]} bubbles]
-    (apply q/ellipse (concat position [10 10]))))
+  (doseq [{:keys [position size]} bubbles]
+    (apply q/ellipse (concat position [size]))))
 
 (defn ^:export run-sketch []
   (q/defsketch bubbles
