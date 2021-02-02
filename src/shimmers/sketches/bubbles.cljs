@@ -9,7 +9,7 @@
 
 (defn make-bubble []
   (tc/circle (v/vec2 (q/random (q/width)) (q/height))
-             (+ 1 (rand-int 6))))
+             (+ 1 (rand-int 4))))
 
 (defn setup []
   {:bubbles []})
@@ -19,7 +19,7 @@
 
 (defn update-bubble [bubble]
   (when (in-bounds? bubble)
-    (geom/translate bubble (v/vec2 0 (- (/ 0.3 (:r bubble)))))))
+    (geom/translate bubble (v/vec2 0 (- (/ 0.25 (:r bubble)))))))
 
 (defn combine-bubble [a b]
   (tc/circle (if (> (:r a) (:r b))
@@ -51,6 +51,7 @@
   (q/background 250 150 140 32)
   (q/no-fill)
   (q/stroke 0 192)
+  (q/ellipse-mode :radius)
   (doseq [{:keys [p r]} bubbles
           :let [[x y] p]]
     (q/ellipse x y r r)))
