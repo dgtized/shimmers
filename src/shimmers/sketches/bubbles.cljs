@@ -36,9 +36,7 @@
       [([a] :seq)] (conj results a)
       [([a & xs] :seq)]
       (if-let [b (some (fn [b] (when (geom/intersect-shape a b) b)) xs)]
-        (do
-          (println [a b (combine-bubble a b)])
-          (recur (conj (remove #{b} xs) (combine-bubble a b)) results))
+        (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
         (recur xs (conj results a))))))
 
 (defn update-state [{:keys [bubbles] :as state}]
