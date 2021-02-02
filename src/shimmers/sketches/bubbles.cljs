@@ -18,6 +18,7 @@
   (<= 0 (get-in c [:p :y]) (q/height)))
 
 (defn update-bubble [bubble]
+  ;; consider adding acc/vel and horizontal motion from wind?
   (when (in-bounds? bubble)
     (geom/translate bubble (v/vec2 0 (- (/ 0.25 (:r bubble)))))))
 
@@ -49,6 +50,7 @@
 
 (defn draw [{:keys [bubbles]}]
   ;; color cycle for streaking effect
+  ;; TODO: consider just cycling across predefined color curve?
   (let [fc (q/frame-count)]
     (when (zero? (mod fc 4))
       (q/background (+ 150 (* 100 (q/noise 0 (/ fc 360))))
