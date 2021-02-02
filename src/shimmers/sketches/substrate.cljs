@@ -23,15 +23,13 @@
               crack))
 
 (defn intersects [self point crack]
-  (cond (= self crack)
-        false
-        (= (:parent self) crack)
-        false
-        :else (let [{:keys [start position]} crack
-                    dseg (v/distance start position)
-                    dstart (v/distance start point)
-                    dend (v/distance point position)]
-                (< (Math/abs (- dseg dstart dend)) 0.005))))
+  (if (#{self (:parent self)} crack)
+    false
+    (let [{:keys [start position]} crack
+          dseg (v/distance start position)
+          dstart (v/distance start point)
+          dend (v/distance point position)]
+      (< (Math/abs (- dseg dstart dend)) 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
   (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.33))]
