@@ -51,8 +51,9 @@
   (q/background 250 150 140 32)
   (q/no-fill)
   (q/stroke 0 192)
-  (doseq [{:keys [position size]} bubbles]
-    (apply q/ellipse (concat position [size]))))
+  (doseq [{:keys [position size]} bubbles
+          :let [[x y] position]]
+    (q/ellipse x y size size)))
 
 (defn ^:export run-sketch []
   (q/defsketch bubbles
