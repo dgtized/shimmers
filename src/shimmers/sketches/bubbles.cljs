@@ -1,6 +1,5 @@
 (ns shimmers.sketches.bubbles
-  (:require [cljs.core.match :refer-macros [match]]
-            [quil.core :as q :include-macros true]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
@@ -32,12 +31,13 @@
 (defn combine-intersecting [bubbles]
   (loop [ordered (sort-by (comp :p :x) bubbles)
          results []]
-    (match [ordered]
-      [([] :seq)] results
-      [([a & xs] :seq)]
-      (if-let [b (some (fn [b] (when (geom/intersect-shape a b) b)) xs)]
-        (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
-        (recur xs (conj results a))))))
+    (if (empty? ordered)
+      results
+      (let [[a & xs] ordered
+            b (some (fn [b] (when (geom/intersect-shape a b) b)) xs)]
+        (if b
+          (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
+          (recur xs (conj results a)))))))
 
 (defn update-state [{:keys [bubbles] :as state}]
   (let [active (keep update-bubble (combine-intersecting bubbles))]
