@@ -34,7 +34,6 @@
          results []]
     (match [ordered]
       [([] :seq)] results
-      [([a] :seq)] (conj results a)
       [([a & xs] :seq)]
       (if-let [b (some (fn [b] (when (geom/intersect-shape a b) b)) xs)]
         (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
