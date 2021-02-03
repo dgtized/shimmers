@@ -54,9 +54,9 @@
   (let [fc (q/frame-count)]
     (when (zero? (mod fc 4))
       (q/background (+ 150 (* 100 (q/noise 0 (/ fc 360))))
-                    (+ 150 (* 100 (q/noise 10 (/ fc 540))))
-                    (+ 150 (* 100 (q/noise 30 (/ fc 720))))
-                    6)))
+                    (+ 150 (* 100 (q/noise 64 (/ fc 540))))
+                    (+ 150 (* 100 (q/noise 128 (/ fc 720))))
+                    8)))
   (q/no-fill)
   (q/stroke-weight 0.05)
   (q/stroke 40 40 240 96)
