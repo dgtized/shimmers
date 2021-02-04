@@ -7,7 +7,6 @@
   (+ (* r1 r1) (* r2 r2)))
 
 (defn setup []
-  (q/frame-rate 60)
   {:direction 0.001
    :r1 64
    :r2 64})
