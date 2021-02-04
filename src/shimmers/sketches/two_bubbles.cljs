@@ -23,9 +23,9 @@
 (defn draw [{:keys [r1 r2]}]
   (q/ellipse-mode :radius)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (q/rotate (/ (q/frame-count) 150))
-  (q/stroke 0 48)
-  (q/fill 255 8)
+  (q/rotate (/ (q/frame-count) 180))
+  (q/stroke 0 32)
+  (q/fill 255 3)
   (q/ellipse (- r1) 0 r1 r1)
   (q/ellipse r2 0 r2 r2))
 
