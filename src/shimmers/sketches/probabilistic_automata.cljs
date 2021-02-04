@@ -91,6 +91,9 @@
            first))
   ([n] (repeatedly n generate-instruction)))
 
+(defn str-vec [xs]
+  (str "[\n" (apply str xs) "\n]"))
+
 (defn prettify-instruction [instruction]
   (let [[op argument] instruction
         arg (if (vector? argument)
@@ -100,9 +103,8 @@
       :one-of
       (print-str [:one-of (->> argument
                                (map prettify-instruction)
-                               (interpose "\n  ")
-                               vec
-                               (into ["\n  "]))])
+                               (map (partial str "\n  "))
+                               vec)])
       (print-str [op arg]))))
 
 (defn describe [bot]
@@ -110,7 +112,11 @@
     [:div {:key pos}
      [:p "Program @ " pos]
      [:pre {:style {:font-size 10}}
-      (str "[\n" (apply str (interpose "\n" (map prettify-instruction (:program bot)))) "\n]")]]))
+      (->> bot
+           :program
+           (map prettify-instruction)
+           (interpose "\n")
+           str-vec)]]))
 
 (defn render-explanation [automata]
   [:div
