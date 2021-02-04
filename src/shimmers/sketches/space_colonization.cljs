@@ -86,14 +86,14 @@
     (draw-debug state debug)))
 
 (defn checkbox [label field-ref]
-  [:div.label-set
+  [:div.label-set {:key label}
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
 (defn slider [label field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
-    [:div.label-set
+    [:div.label-set {:key label}
      [:label (label value)]
      [:input {:type "range" :value value :min lower :max upper
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
@@ -105,8 +105,8 @@
      [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))}
       (for [[name value] options]
         [:option (if (< (Math/abs (- selected value)) 0.01)
-                   {:value value :selected true}
-                   {:value value})
+                   {:key value :value value :selected true}
+                   {:key value :value value})
          name])]]))
 
 (defn explanation []
