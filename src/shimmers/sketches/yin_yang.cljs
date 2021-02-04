@@ -7,6 +7,7 @@
   (+ (* r1 r1) (* r2 r2)))
 
 (defn setup []
+  (q/color-mode :hsl 255 255 255 255)
   {:direction 0.001
    :r1 64
    :r2 64})
@@ -25,12 +26,16 @@
 (defn draw [{:keys [r1 r2]}]
   (q/ellipse-mode :radius)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (let [fc (q/frame-count)]
-    (when (zero? (mod fc 4))
+  (let [fc (q/frame-count)
+        sc (/ fc 20)]
+    (when (#{0 1 3 6 10 15} (mod fc 19))
       (q/rotate (/ fc 180))
-      (q/stroke 0 32)
-      (q/fill 255 6)
+      (if (even? fc)
+        (q/fill 255 255 255 6)
+        (q/no-fill))
+      (q/stroke (mod (+ sc r1) 255) 100 140 32)
       (q/ellipse (- r1) 0 r1 r1)
+      (q/stroke (mod (- sc r2) 255) 100 140 32)
       (q/ellipse r2 0 r2 r2))))
 
 (defn ^:export run-sketch []
