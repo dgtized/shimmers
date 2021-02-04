@@ -31,11 +31,11 @@
     (when (#{0 1 3 6 10 15} (mod fc 19))
       (q/rotate (/ fc 180))
       (if (even? fc)
-        (q/fill 255 255 255 6)
+        (q/fill 255 255 255 10)
         (q/no-fill))
-      (q/stroke (mod (+ sc r1) 255) 100 140 32)
+      (q/stroke (mod (+ sc r1) 255) 100 140 48)
       (q/ellipse (- r1) 0 r1 r1)
-      (q/stroke (mod (- sc r2) 255) 100 140 32)
+      (q/stroke (mod (- sc r2) 255) 100 140 48)
       (q/ellipse r2 0 r2 r2))))
 
 (defn ^:export run-sketch []
