@@ -111,8 +111,8 @@
 
 (defn explanation []
   [:div
-   [:p
-    "Applies on next run:"
+   [:section
+    [:b "Applies on next run:"]
     (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
             [:attractor-power] [4 12])
     (slider (fn [v] (str "Influence Distance " v))
@@ -126,8 +126,9 @@
                                                "60 degrees" (/ Math/PI 3)
                                                "45 degrees" (/ Math/PI 4)
                                                "30 degrees" (/ Math/PI 6)})]
-   [:p
-    "Applies immediately:"
+   [:br]
+   [:section
+    [:b "Applies immediately:"]
     (checkbox "Show Canalization" [:debug :canalization])
     (checkbox "Show Attractors" [:debug :attractors])
     (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
