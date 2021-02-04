@@ -35,8 +35,8 @@
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
-            [shimmers.sketches.two-bubbles :as two-bubbles]
             [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.yin-yang :as yin-yang]
             [shimmers.sketches.zigzag :as zigzag]))
 
 (enable-console-print!)
@@ -76,11 +76,11 @@
      scintillation/run-sketch
      sphere/run-sketch
      substrate/run-sketch
-     two-bubbles/run-sketch
      typography/run-sketch
      particles/run-sketch
      precipitation/run-sketch
      probabilistic-automata/run-sketch
+     yin-yang/run-sketch
      zigzag/run-sketch])))
 
 (defn current-sketch []

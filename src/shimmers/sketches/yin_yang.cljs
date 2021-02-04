@@ -1,4 +1,4 @@
-(ns shimmers.sketches.two-bubbles
+(ns shimmers.sketches.yin-yang
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
@@ -33,7 +33,7 @@
   (q/ellipse r2 0 r2 r2))
 
 (defn ^:export run-sketch []
-  (q/defsketch two-bubbles
+  (q/defsketch yin-yang
     :host "quil-host"
     :size [600 400]
     :setup setup
