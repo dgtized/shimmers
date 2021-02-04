@@ -25,11 +25,13 @@
 (defn draw [{:keys [r1 r2]}]
   (q/ellipse-mode :radius)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (q/rotate (/ (q/frame-count) 240))
-  (q/stroke 0 16)
-  (q/fill 255 2)
-  (q/ellipse (- r1) 0 r1 r1)
-  (q/ellipse r2 0 r2 r2))
+  (let [fc (q/frame-count)]
+    (when (zero? (mod fc 4))
+      (q/rotate (/ fc 180))
+      (q/stroke 0 32)
+      (q/fill 255 6)
+      (q/ellipse (- r1) 0 r1 r1)
+      (q/ellipse r2 0 r2 r2))))
 
 (defn ^:export run-sketch []
   (q/defsketch yin-yang
