@@ -97,17 +97,20 @@
               (print-str argument)
               (goog.string/format "%.1f" argument))]
     (case op
-      :one-of (print-str [:one-of (->> argument
-                                       (map prettify-instruction)
-                                       (interpose "\n\t")
-                                       vec)])
+      :one-of
+      (print-str [:one-of (->> argument
+                               (map prettify-instruction)
+                               (interpose "\n  ")
+                               vec
+                               (into ["\n  "]))])
       (print-str [op arg]))))
 
 (defn describe [bot]
-  [:div
-   [:p "Program @ " (print-str (:position bot))]
-   [:pre {:style {:font-size 10}}
-    "[\n" (interpose [:br] (map prettify-instruction (:program bot))) "\n]"]])
+  (let [pos (print-str (:position bot))]
+    [:div {:key pos}
+     [:p "Program @ " pos]
+     [:pre {:style {:font-size 10}}
+      (str "[\n" (apply str (interpose "\n" (map prettify-instruction (:program bot)))) "\n]")]]))
 
 (defn render-explanation [automata]
   [:div
