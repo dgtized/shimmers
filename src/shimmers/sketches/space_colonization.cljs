@@ -9,6 +9,7 @@
             [reagent.dom :as rdom]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as quil]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.algorithm.space-colonization :as colonize]))
 
@@ -85,12 +86,6 @@
 
     (draw-debug state debug)))
 
-(defn checkbox [label field-ref]
-  [:div.label-set {:key label}
-   [:input {:type "checkbox" :checked (get-in @settings field-ref)
-            :on-change #(swap! settings update-in field-ref not)}]
-   [:label label]])
-
 (defn slider [label field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
     [:div.label-set {:key label}
@@ -129,11 +124,11 @@
    [:br]
    [:section
     [:b "Applies immediately:"]
-    (checkbox "Show Canalization" [:debug :canalization])
-    (checkbox "Show Attractors" [:debug :attractors])
-    (checkbox "Show Influence/Prune Bubbles" [:debug :bubbles])
-    (checkbox "Show Influence-By Lines" [:debug :influenced-by])
-    (checkbox "Show Next Branch Direction" [:debug :next-branch])]])
+    (ctrl/checkbox settings "Show Canalization" [:debug :canalization])
+    (ctrl/checkbox settings "Show Attractors" [:debug :attractors])
+    (ctrl/checkbox settings "Show Influence/Prune Bubbles" [:debug :bubbles])
+    (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
+    (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]])
 
 (defn mount-reagent
   "Mounts reagent component to render in explanation element.
