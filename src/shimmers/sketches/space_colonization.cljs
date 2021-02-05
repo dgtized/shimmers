@@ -44,8 +44,9 @@
   (q/stroke "red")
   (q/ellipse x y prune prune))
 
-(defn draw-debug [{:keys [attractors influence-distance prune-distance
-                          quadtree] :as state} debug]
+(defn draw-debug
+  [{:keys [attractors influence-distance prune-distance quadtree]} debug]
+
   (when (:attractors debug)
     (doseq [[x y] attractors]
       (q/stroke-weight 1)
