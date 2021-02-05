@@ -86,13 +86,6 @@
 
     (draw-debug state debug)))
 
-(defn slider [label field-ref [lower upper]]
-  (let [value (get-in @settings field-ref)]
-    [:div.label-set {:key label}
-     [:label (label value)]
-     [:input {:type "range" :value value :min lower :max upper
-              :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
-
 (defn dropdown [label field-ref options]
   (let [selected (get-in @settings field-ref)]
     [:div.lable-set
@@ -108,14 +101,14 @@
   [:div
    [:section
     [:b "Applies on next run:"]
-    (slider (fn [v] (str "Attractor Count " (Math/pow 2 v)))
-            [:attractor-power] [4 12])
-    (slider (fn [v] (str "Influence Distance " v))
-            [:influence-distance] [10 100])
-    (slider (fn [v] (str "Prune Distance " v))
-            [:prune-distance] [2 50])
-    (slider (fn [v] (str "Segment Distance " v))
-            [:segment-distance] [1 30])
+    (ctrl/slider settings (fn [v] (str "Attractor Count " (Math/pow 2 v)))
+                 [:attractor-power] [4 12])
+    (ctrl/slider settings (fn [v] (str "Influence Distance " v))
+                 [:influence-distance] [10 100])
+    (ctrl/slider settings (fn [v] (str "Prune Distance " v))
+                 [:prune-distance] [2 50])
+    (ctrl/slider settings (fn [v] (str "Segment Distance " v))
+                 [:segment-distance] [1 30])
     (dropdown "Snap Angles To " [:snap-theta] {"Disabled" 0
                                                "90 degrees" (/ Math/PI 2)
                                                "60 degrees" (/ Math/PI 3)
