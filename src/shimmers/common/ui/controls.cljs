@@ -6,13 +6,13 @@
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
-(defn dropdown [settings label field-ref options]
+(defn dropdown [settings label field-ref selected-fn options]
   (let [selected (get-in @settings field-ref)]
     [:div.label-set {:key (str "dropdown-" field-ref)}
      [:label label]
      [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))}
       (for [[name value] options]
-        [:option (if (< (Math/abs (- selected value)) 0.01)
+        [:option (if (selected-fn selected value)
                    {:key value :value value :selected true}
                    {:key value :value value})
          name])]]))
