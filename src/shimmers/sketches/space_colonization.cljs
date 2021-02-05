@@ -86,17 +86,6 @@
 
     (draw-debug state debug)))
 
-(defn dropdown [label field-ref options]
-  (let [selected (get-in @settings field-ref)]
-    [:div.lable-set
-     [:label label]
-     [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))}
-      (for [[name value] options]
-        [:option (if (< (Math/abs (- selected value)) 0.01)
-                   {:key value :value value :selected true}
-                   {:key value :value value})
-         name])]]))
-
 (defn explanation []
   [:div
    [:section
@@ -109,11 +98,13 @@
                  [:prune-distance] [2 50])
     (ctrl/slider settings (fn [v] (str "Segment Distance " v))
                  [:segment-distance] [1 30])
-    (dropdown "Snap Angles To " [:snap-theta] {"Disabled" 0
-                                               "90 degrees" (/ Math/PI 2)
-                                               "60 degrees" (/ Math/PI 3)
-                                               "45 degrees" (/ Math/PI 4)
-                                               "30 degrees" (/ Math/PI 6)})]
+    (ctrl/dropdown settings
+                   "Snap Angles To " [:snap-theta]
+                   {"Disabled" 0
+                    "90 degrees" (/ Math/PI 2)
+                    "60 degrees" (/ Math/PI 3)
+                    "45 degrees" (/ Math/PI 4)
+                    "30 degrees" (/ Math/PI 6)})]
    [:br]
    [:section
     [:b "Applies immediately:"]

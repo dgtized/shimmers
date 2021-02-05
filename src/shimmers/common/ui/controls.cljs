@@ -6,6 +6,17 @@
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
+(defn dropdown [settings label field-ref options]
+  (let [selected (get-in @settings field-ref)]
+    [:div.label-set {:key (str "dropdown-" field-ref)}
+     [:label label]
+     [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))}
+      (for [[name value] options]
+        [:option (if (< (Math/abs (- selected value)) 0.01)
+                   {:key value :value value :selected true}
+                   {:key value :value value})
+         name])]]))
+
 (defn slider [settings label-fn field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
     [:div.label-set {:key (str "slider-" field-ref)}
