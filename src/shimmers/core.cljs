@@ -13,6 +13,7 @@
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.cube :as cube]
+            [shimmers.sketches.color-grid :as color-grid]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.fire :as fire]
@@ -56,6 +57,7 @@
     [braid/run-sketch
      bubbles/run-sketch
      butterfly/run-sketch
+     color-grid/run-sketch
      cube/run-sketch
      dithering/run-sketch
      fire/run-sketch
