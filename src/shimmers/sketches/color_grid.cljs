@@ -4,25 +4,28 @@
             [shimmers.common.framerate :as framerate]))
 
 (defn sample-color [x y]
-  [(/ (+ x y) 12) (+ 0.2 (/ x 12)) (+ 0.2 (/ y 8)) 1])
+  [(/ (+ x y) 20) (+ 0.2 (/ x 20)) (+ 0.2 (/ y 12)) 1])
 
 (defn make-grid [cols rows]
-  (apply merge
-         (for [r (range rows)
-               c (range cols)]
-           {[c r] (sample-color (inc c) (inc r))})))
+  {:dims [cols rows]
+   :grid
+   (apply merge
+          (for [r (range rows)
+                c (range cols)]
+            {[c r] (sample-color (inc c) (inc r))}))})
 
 (defn setup []
-  {:grid (make-grid 6 4)})
+  (make-grid 12 8))
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [grid]}]
+(defn draw [{:keys [grid dims]}]
   (q/color-mode :hsl 1 1 1 1)
   (q/rect-mode :corner)
-  (let [w (/ (q/width) 6)
-        h (/ (q/height) 4)]
+  (let [[cols rows] dims
+        w (/ (q/width) cols)
+        h (/ (q/height) rows)]
     (doseq [[[c r] color] grid]
       (apply q/fill color)
       (q/rect (* c w) (* r h) w h))))
