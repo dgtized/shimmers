@@ -27,4 +27,8 @@ http://localhost:9500/figwheel-extra-main/tests shows test results.
 
 ## License
 
+This source repository is released under the AGPL 3.0 free software license.
+
+See [LICENSE](LICENSE) for details.
+
 Copyright © 2020-2021 Charles L.G. Comstock
