@@ -36,16 +36,16 @@
 ;; TODO:
 ;; Horizontal / vertical slides
 ;; swap random pair / disolve / teleport?
-(defn pinwheel [c r dir rotations]
+(defn pinwheel [c r speed dir rotations]
   (let [target (* (/ Math/PI 2) rotations)]
     ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
      :step
-     (fn [effect] (update effect :theta + (* dir 0.03)))
+     (fn [effect] (update effect :theta + (* dir speed)))
      :done?
      (fn [{:keys [theta]}]
-       (< (Math/abs (- (* dir target) theta)) 0.05))
+       (< (Math/abs (- (* dir target) theta)) (* speed 0.5)))
      :on-complete
      (fn [{:keys [cells]} {:keys [grid] :as state}]
        (let [colors (map (partial get grid) cells)
@@ -71,6 +71,7 @@
   (let [[w h] (:dims state)]
     (pinwheel (rand-nth (range 1 w))
               (rand-nth (range 1 h))
+              (rand-nth [0.02 0.03 0.04 0.06 0.08 0.10 0.12])
               (if (> (rand) 0.5) 1 -1)
               (rand-nth (range 1 4)))))
 
