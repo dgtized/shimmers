@@ -6,8 +6,8 @@
 
 (defn sample-color [x y cols rows]
   [(/ (+ x y) (+ cols rows))
-   (q/lerp 0.3 0.9 (/ x cols))
-   (q/lerp 0.35 0.9 (/ y rows))
+   (q/lerp 0.4 0.8 (/ x cols))
+   (q/lerp 0.4 0.8 (/ y rows))
    1])
 
 (defn make-grid [cols rows]
