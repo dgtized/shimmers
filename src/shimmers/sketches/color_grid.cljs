@@ -47,7 +47,7 @@
      (fn [{:keys [theta]}]
        (< (Math/abs (- (* dir target) theta)) (* speed 0.5)))
      :on-complete
-     (fn [{:keys [cells]} {:keys [grid] :as state}]
+     (fn [{:keys [grid] :as state} {:keys [cells]}]
        (let [colors (map (partial get grid) cells)
              cells' (rotate (* dir rotations) cells)]
          (assoc state :grid (merge grid (zipmap cells' colors)))))
@@ -80,7 +80,7 @@
 
 (defn apply-effects [{:keys [effects] :as state}]
   (let [completed (filter (partial e-call :done?) effects)]
-    (assoc (reduce (fn [s e] ((:on-complete e) e s)) state completed)
+    (assoc (reduce (fn [s e] ((:on-complete e) s e)) state completed)
            :effects
            (->> effects
                 (remove (set completed))
