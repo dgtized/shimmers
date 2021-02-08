@@ -178,7 +178,9 @@
       state)))
 
 (defn setup []
-  (make-grid 12 8))
+  (let [n 12
+        ratio 1.5]
+    (make-grid (int (* n ratio)) n)))
 
 (defn update-state [state]
   (let [{:keys [effects] :as state'} (apply-effects state)]
