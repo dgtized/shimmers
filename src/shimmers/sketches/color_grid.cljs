@@ -69,10 +69,10 @@
 
 (defn make-pinwheel [state]
   (let [[w h] (:dims state)]
-    (pinwheel (+ 1 (rand-int (dec w)))
-              (+ 1 (rand-int (dec h)))
+    (pinwheel (rand-nth (range 1 w))
+              (rand-nth (range 1 h))
               (if (> (rand) 0.5) 1 -1)
-              (+ 1 (rand-int 2)))))
+              (rand-nth (range 1 4)))))
 
 (defn e-call [msg e]
   ((get e msg) e))
