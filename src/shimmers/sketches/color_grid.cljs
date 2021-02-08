@@ -39,12 +39,17 @@
     (apply q/fill (get grid (nth cells 3)))
     (q/rect 0 0 w h)))
 
+(defn create-pinwheel [[w h]]
+  ;; note this should check for collisions with effects or another pinwheel
+  (pinwheel (+ 1 (rand-int (dec w)))
+            (+ 1 (rand-int (dec h)))))
+
 (defn setup []
   (make-grid 12 8))
 
-(defn update-state [{:keys [effects] :as state}]
+(defn update-state [{:keys [effects dims] :as state}]
   (if (empty? effects)
-    (update state :effects into [(pinwheel 7 5) (pinwheel 3 2)])
+    (update state :effects into (repeatedly 2 (partial create-pinwheel dims)))
     (update state :effects apply-step)))
 
 (defn draw [{:keys [grid dims effects]}]
