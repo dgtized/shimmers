@@ -15,11 +15,20 @@
                 c (range cols)]
             {[c r] (sample-color (inc c) (inc r))}))})
 
+(defn rotate
+  [n xs]
+  (if (>= n 0)
+    (take (count xs) (drop n (cycle xs)))
+    (reverse (take (count xs) (drop (Math/abs n) (cycle (reverse xs)))))))
+
+(comment (rotate 1 [1 2 3])
+         (rotate -1 [1 2 3]))
+
 ;; TODO:
 ;; Horizontal / vertical slides
 ;; swap random pair / disolve / teleport?
-(defn pinwheel [c r dir]
-  (let [target (* (/ Math/PI 2) (+ 1 (rand-int 11)))]
+(defn pinwheel [c r dir rotations]
+  (let [target (* (/ Math/PI 2) rotations)]
     ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
@@ -27,7 +36,12 @@
      (fn [effect] (update effect :theta + (* dir 0.03)))
      :done?
      (fn [{:keys [theta]}]
-       (< (Math/abs (- (* dir target) theta)) 0.05))}))
+       (< (Math/abs (- (* dir target) theta)) 0.05))
+     :on-complete
+     (fn [{:keys [cells]} {:keys [grid] :as state}]
+       (let [colors (map (partial get grid) cells)
+             cells' (rotate (* dir rotations) cells)]
+         (assoc state :grid (merge grid (zipmap cells' colors)))))}))
 
 (defn e-call [msg e]
   ((get e msg) e))
@@ -36,6 +50,11 @@
   (->> effects
        (remove (partial e-call :done?))
        (map (partial e-call :step))))
+
+(defn apply-effects [state effects]
+  (->> effects
+       (filter (partial e-call :done?))
+       (reduce (fn [s e] ((:on-complete e) e s)) state)))
 
 (defn draw-step [grid effect w h]
   (let [cells (:cells effect)
@@ -56,17 +75,19 @@
   ;; note this should check for collisions with effects or another pinwheel
   (pinwheel (+ 1 (rand-int (dec w)))
             (+ 1 (rand-int (dec h)))
-            (if (> (rand) 0.5) 1 -1)))
+            (if (> (rand) 0.5) 1 -1)
+            (+ 1 (rand-int 2))))
 
 (defn setup []
   (make-grid 12 8))
 
 (defn update-state [{:keys [effects dims] :as state}]
-  (let [active-effects (apply-step effects)]
-    (assoc state :effects (if (and (< (count active-effects) 3)
-                                   (< (rand) 0.1))
-                            (conj active-effects (create-pinwheel dims))
-                            active-effects))))
+  (let [state' (apply-effects state effects)
+        active-effects (apply-step effects)]
+    (assoc state' :effects (if (and (< (count active-effects) 3)
+                                    (< (rand) 0.03))
+                             (conj active-effects (create-pinwheel dims))
+                             active-effects))))
 
 (defn draw [{:keys [grid dims effects]}]
   (q/color-mode :hsl 1 1 1 1)
