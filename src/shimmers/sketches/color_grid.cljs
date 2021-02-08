@@ -61,6 +61,8 @@
         p (nth cells 2)
         [c r] p]
     (q/translate (* c w) (* r h))
+    (q/fill 255)
+    (q/rect (- w) (- h) (* w 2) (* h 2))
     (q/rotate (:theta effect))
     (apply q/fill (get grid (nth cells 0)))
     (q/rect (- w) (- h) w h)
