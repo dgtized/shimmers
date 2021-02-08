@@ -42,7 +42,22 @@
      (fn [{:keys [cells]} {:keys [grid] :as state}]
        (let [colors (map (partial get grid) cells)
              cells' (rotate (* dir rotations) cells)]
-         (assoc state :grid (merge grid (zipmap cells' colors)))))}))
+         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :draw
+     (fn [effect grid w h]
+       (let [cells (:cells effect)]
+         (q/translate (* c w) (* r h))
+         (q/fill 255)
+         (q/rect (- w) (- h) (* w 2) (* h 2))
+         (q/rotate (:theta effect))
+         (apply q/fill (get grid (nth cells 0)))
+         (q/rect (- w) (- h) w h)
+         (apply q/fill (get grid (nth cells 1)))
+         (q/rect 0 (- h) w h)
+         (apply q/fill (get grid (nth cells 2)))
+         (q/rect 0 0 w h)
+         (apply q/fill (get grid (nth cells 3)))
+         (q/rect (- w) 0 w h)))}))
 
 (defn e-call [msg e]
   ((get e msg) e))
@@ -56,23 +71,6 @@
   (->> effects
        (filter (partial e-call :done?))
        (reduce (fn [s e] ((:on-complete e) e s)) state)))
-
-(defn draw-step [grid effect w h]
-  (let [cells (:cells effect)
-        p (nth cells 2)
-        [c r] p]
-    (q/translate (* c w) (* r h))
-    (q/fill 255)
-    (q/rect (- w) (- h) (* w 2) (* h 2))
-    (q/rotate (:theta effect))
-    (apply q/fill (get grid (nth cells 0)))
-    (q/rect (- w) (- h) w h)
-    (apply q/fill (get grid (nth cells 1)))
-    (q/rect 0 (- h) w h)
-    (apply q/fill (get grid (nth cells 2)))
-    (q/rect 0 0 w h)
-    (apply q/fill (get grid (nth cells 3)))
-    (q/rect (- w) 0 w h)))
 
 (defn create-effect [effects [w h]]
   (let [effect (pinwheel (+ 1 (rand-int (dec w)))
@@ -106,7 +104,7 @@
       (q/rect (* c w) (* r h) w h))
     (doseq [effect effects]
       (q/push-matrix)
-      (draw-step grid effect w h)
+      ((:draw effect) effect grid w h)
       (q/pop-matrix))))
 
 (defn ^:export run-sketch []
