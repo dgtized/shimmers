@@ -88,19 +88,18 @@
                          (+ 1 (rand-int 2)))
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
-      [effect]
-      [])))
+      (update state :effects conj effect)
+      state)))
 
 (defn setup []
   (make-grid 12 8))
 
 (defn update-state [state]
   (let [{:keys [effects] :as state'} (apply-effects state)]
-    (assoc state' :effects
-           (if (and (< (count effects) 3)
-                    (< (rand) 0.03))
-             (into effects (create-effect state'))
-             effects))))
+    (if (and (< (count effects) 3)
+             (< (rand) 0.03))
+      (create-effect state')
+      state')))
 
 (defn draw [{:keys [grid dims effects]}]
   (q/color-mode :hsl 1 1 1 1)
