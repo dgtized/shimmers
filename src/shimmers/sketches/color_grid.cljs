@@ -53,9 +53,11 @@
   (make-grid 12 8))
 
 (defn update-state [{:keys [effects dims] :as state}]
-  (if (empty? effects)
-    (update state :effects into (repeatedly 3 (partial create-pinwheel dims)))
-    (update state :effects apply-step)))
+  (let [active-effects (apply-step effects)]
+    (assoc state :effects (if (and (< (count active-effects) 3)
+                                   (< (rand) 0.1))
+                            (conj active-effects (create-pinwheel dims))
+                            active-effects))))
 
 (defn draw [{:keys [grid dims effects]}]
   (q/color-mode :hsl 1 1 1 1)
