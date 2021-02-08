@@ -28,7 +28,7 @@
 ;; TODO:
 ;; Horizontal / vertical slides
 ;; swap random pair / disolve / teleport?
-(defn pinwheel [c r dir rotations]
+(defn pinwheel [_ c r dir rotations]
   (let [target (* (/ Math/PI 2) rotations)]
     ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
@@ -62,18 +62,19 @@
 (defn e-call [msg e]
   ((get e msg) e))
 
-(defn apply-step [effects]
-  (->> effects
-       (remove (partial e-call :done?))
-       (map (partial e-call :step))))
+(defn apply-effects [{:keys [effects] :as state}]
+  (assoc (->> effects
+              (filter (partial e-call :done?))
+              (reduce (fn [s e] ((:on-complete e) e s)) state))
+         :effects
+         (->> effects
+              (remove (partial e-call :done?))
+              (map (partial e-call :step)))))
 
-(defn apply-effects [state effects]
-  (->> effects
-       (filter (partial e-call :done?))
-       (reduce (fn [s e] ((:on-complete e) e s)) state)))
-
-(defn create-effect [effects [w h]]
-  (let [effect (pinwheel (+ 1 (rand-int (dec w)))
+(defn create-effect [{:keys [effects] :as state}]
+  (let [[w h] (:dims state)
+        effect (pinwheel state
+                         (+ 1 (rand-int (dec w)))
                          (+ 1 (rand-int (dec h)))
                          (if (> (rand) 0.5) 1 -1)
                          (+ 1 (rand-int 2)))
@@ -85,13 +86,13 @@
 (defn setup []
   (make-grid 12 8))
 
-(defn update-state [{:keys [effects dims] :as state}]
-  (let [state' (apply-effects state effects)
-        active-effects (apply-step effects)]
-    (assoc state' :effects (if (and (< (count active-effects) 3)
-                                    (< (rand) 0.03))
-                             (into active-effects (create-effect effects dims))
-                             active-effects))))
+(defn update-state [state]
+  (let [{:keys [effects] :as state'} (apply-effects state)]
+    (assoc state' :effects
+           (if (and (< (count effects) 3)
+                    (< (rand) 0.03))
+             (into effects (create-effect state'))
+             effects))))
 
 (defn draw [{:keys [grid dims effects]}]
   (q/color-mode :hsl 1 1 1 1)
