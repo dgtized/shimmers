@@ -43,12 +43,13 @@
           cells' (rotate n cells)]
       (assoc state :grid (merge grid (zipmap cells' colors))))))
 
-;; TODO:
-;; Horizontal / vertical slides
+;; Effect Ideas:
 ;; swap random pair / disolve / teleport?
+;; larger pinwheels
+;; rings or paths?
+
 (defn pinwheel [c r speed dir rotations]
   (let [target (* (/ Math/PI 2) rotations)]
-    ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
      :step
@@ -85,7 +86,8 @@
      :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
-       ;; FIXME: fill color correctly for missing leading/trailing element
+       ;; FIXME: fill color correctly for missing leading element
+       ;; right and bottom color fill correctly, but left and top do not
        (q/fill 255)
        (q/rect 0 (* row h) (q/width) h)
        (let [colors (map (partial get grid) cells)]
