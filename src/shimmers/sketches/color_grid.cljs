@@ -15,10 +15,10 @@
                 c (range cols)]
             {[c r] (sample-color (inc c) (inc r))}))})
 
-(defn pinwheel [c r]
+(defn pinwheel [c r dir]
   {:cells [[(dec c) (dec r)] [(dec c) r] [c (dec r)] [c r]]
    :theta 0
-   :delta -0.1})
+   :delta (* dir 0.1)})
 
 (defn apply-step [effects]
   (map (fn [effect] (update effect :theta + (:delta effect)))
@@ -42,7 +42,8 @@
 (defn create-pinwheel [[w h]]
   ;; note this should check for collisions with effects or another pinwheel
   (pinwheel (+ 1 (rand-int (dec w)))
-            (+ 1 (rand-int (dec h)))))
+            (+ 1 (rand-int (dec h)))
+            (if (> (rand) 0.5) 1 -1)))
 
 (defn setup []
   (make-grid 12 8))
