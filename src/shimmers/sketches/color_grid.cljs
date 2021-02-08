@@ -19,9 +19,9 @@
   (let [target (* (/ Math/PI 2) (+ 1 (rand-int 11)))]
     {:cells [[(dec c) (dec r)] [(dec c) r] [c (dec r)] [c r]]
      :theta 0
-     :step (fn [effect] (update effect :theta + (* dir 0.1)))
+     :step (fn [effect] (update effect :theta + (* dir 0.03)))
      :complete (fn [{:keys [theta]}]
-                 (< (Math/abs (- (* dir target) theta)) (/ Math/PI 10)))}))
+                 (< (Math/abs (- (* dir target) theta)) 0.05))}))
 
 (defn apply-step [effects]
   (->> effects
