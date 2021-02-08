@@ -16,13 +16,17 @@
             {[c r] (sample-color (inc c) (inc r))}))})
 
 (defn pinwheel [c r dir]
-  {:cells [[(dec c) (dec r)] [(dec c) r] [c (dec r)] [c r]]
-   :theta 0
-   :delta (* dir 0.1)})
+  (let [target (* (/ Math/PI 2) (+ 1 (rand-int 11)))]
+    {:cells [[(dec c) (dec r)] [(dec c) r] [c (dec r)] [c r]]
+     :theta 0
+     :step (fn [effect] (update effect :theta + (* dir 0.1)))
+     :complete (fn [{:keys [theta]}]
+                 (< (Math/abs (- (* dir target) theta)) (/ Math/PI 10)))}))
 
 (defn apply-step [effects]
-  (map (fn [effect] (update effect :theta + (:delta effect)))
-       effects))
+  (->> effects
+       (remove (fn [effect] ((:complete effect) effect)))
+       (map (fn [effect] ((:step effect) effect)))))
 
 (defn draw-step [grid effect w h]
   (let [cells (:cells effect)
