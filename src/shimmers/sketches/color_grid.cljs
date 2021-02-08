@@ -71,13 +71,12 @@
   ((get e msg) e))
 
 (defn apply-effects [{:keys [effects] :as state}]
-  (assoc (->> effects
-              (filter (partial e-call :done?))
-              (reduce (fn [s e] ((:on-complete e) e s)) state))
-         :effects
-         (->> effects
-              (remove (partial e-call :done?))
-              (map (partial e-call :step)))))
+  (let [completed (filter (partial e-call :done?) effects)]
+    (assoc (reduce (fn [s e] ((:on-complete e) e s)) state completed)
+           :effects
+           (->> effects
+                (remove (set completed))
+                (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
   (let [[w h] (:dims state)
