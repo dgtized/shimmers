@@ -15,6 +15,9 @@
                 c (range cols)]
             {[c r] (sample-color (inc c) (inc r))}))})
 
+;; TODO:
+;; Horizontal / vertical slides
+;; swap random pair / disolve / teleport?
 (defn pinwheel [c r dir]
   (let [target (* (/ Math/PI 2) (+ 1 (rand-int 11)))]
     ;; TODO: apply completion effect on grid positions to rotate actual grid
