@@ -17,7 +17,8 @@
 
 (defn pinwheel [c r dir]
   (let [target (* (/ Math/PI 2) (+ 1 (rand-int 11)))]
-    {:cells [[(dec c) (dec r)] [(dec c) r] [c (dec r)] [c r]]
+    ;; TODO: apply completion effect on grid positions to rotate actual grid
+    {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
      :step (fn [effect] (update effect :theta + (* dir 0.03)))
      :complete (fn [{:keys [theta]}]
