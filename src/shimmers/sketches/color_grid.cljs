@@ -39,18 +39,18 @@
 
 (defn draw-step [grid effect w h]
   (let [cells (:cells effect)
-        p (last cells)
+        p (nth cells 2)
         [c r] p]
     (q/translate (* c w) (* r h))
     (q/rotate (:theta effect))
     (apply q/fill (get grid (nth cells 0)))
     (q/rect (- w) (- h) w h)
     (apply q/fill (get grid (nth cells 1)))
-    (q/rect (- w) 0 w h)
-    (apply q/fill (get grid (nth cells 2)))
     (q/rect 0 (- h) w h)
+    (apply q/fill (get grid (nth cells 2)))
+    (q/rect 0 0 w h)
     (apply q/fill (get grid (nth cells 3)))
-    (q/rect 0 0 w h)))
+    (q/rect (- w) 0 w h)))
 
 (defn create-pinwheel [[w h]]
   ;; note this should check for collisions with effects or another pinwheel
