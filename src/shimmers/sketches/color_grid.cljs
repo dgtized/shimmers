@@ -23,14 +23,16 @@
     ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
-     :step (fn [effect] (update effect :theta + (* dir 0.03)))
-     :complete (fn [{:keys [theta]}]
-                 (< (Math/abs (- (* dir target) theta)) 0.05))}))
+     :step
+     (fn [effect] (update effect :theta + (* dir 0.03)))
+     :done?
+     (fn [{:keys [theta]}]
+       (< (Math/abs (- (* dir target) theta)) 0.05))}))
 
 (defn apply-step [effects]
   (->> effects
-       (remove (fn [effect] ((:complete effect) effect)))
-       (map (fn [effect] ((:step effect) effect)))))
+       (remove (fn [{:keys [done?] :as e}] (done? e)))
+       (map (fn [{:keys [step] :as e}] (step e)))))
 
 (defn draw-step [grid effect w h]
   (let [cells (:cells effect)
