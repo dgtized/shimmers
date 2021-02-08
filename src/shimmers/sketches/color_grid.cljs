@@ -67,6 +67,37 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
+(defn rotate-row [{:keys [dims]} row n]
+  (let [[cols _] dims
+        dir (if (>= n 0) 1 -1)
+        speed 0.01]
+    {:cells (for [c (range cols)] [c row])
+     :offset 0
+     :step
+     (fn [effect] (update effect :offset + speed))
+     :done?
+     (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
+     :on-complete
+     (fn [{:keys [grid] :as state} {:keys [cells]}]
+       (let [colors (map (partial get grid) cells)
+             cells' (rotate n cells)]
+         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :draw
+     (fn [{:keys [cells offset]} grid w h]
+       ;; FIXME: fill color correctly for missing leading/trailing element
+       (q/fill 255)
+       (q/rect 0 (* row h) (q/width) h)
+       (let [colors (map (partial get grid) cells)]
+         (doseq [c (range cols)
+                 :let [x (mod (+ c (* dir offset)) cols)
+                       color (nth colors (mod c cols))]]
+           (apply q/fill color)
+           (q/rect (* x w) (* row h) w h)
+           ;; (q/fill 255)
+           ;; (q/text (str c) (+ (* x w) 30) (+ (* row h) 20))
+           ;; (q/text (str x) (+ (* x w) 30) (+ (* row h) 40))
+           )))}))
+
 (defn make-pinwheel [state]
   (let [[w h] (:dims state)]
     (pinwheel (rand-nth (range 1 w))
@@ -74,6 +105,13 @@
               (rand-nth [0.02 0.03 0.04 0.06 0.08 0.10 0.12])
               (if (> (rand) 0.5) 1 -1)
               (rand-nth (range 1 4)))))
+
+(defn make-rotate-row [{:keys [dims] :as state}]
+  (let [[cols rows] dims]
+    (rotate-row state
+                (rand-nth (range rows))
+                (* (rand-nth [-1 1])
+                   (rand-nth (range 1 cols))))))
 
 (defn e-call [msg e]
   ((get e msg) e))
@@ -87,7 +125,11 @@
                 (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
-  (let [effect (make-pinwheel state)
+  (let [distribution [make-rotate-row
+                      make-pinwheel
+                      make-pinwheel
+                      make-pinwheel]
+        effect ((rand-nth distribution) state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
       (update state :effects conj effect)
