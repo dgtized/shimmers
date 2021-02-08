@@ -179,7 +179,7 @@
 
 (defn update-state [state]
   (let [{:keys [effects] :as state'} (apply-effects state)]
-    (if (and (< (count effects) 3)
+    (if (and (< (count effects) 4)
              (< (rand) 0.03))
       (create-effect state')
       state')))
