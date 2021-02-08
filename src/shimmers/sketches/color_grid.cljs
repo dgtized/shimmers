@@ -4,8 +4,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defn sample-color [x y]
-  [(/ (+ x y) 20) (+ 0.2 (/ x 20)) (+ 0.2 (/ y 12)) 1])
+(defn sample-color [x y cols rows]
+  [(/ (+ x y) (+ cols rows))
+   (q/lerp 0.3 0.9 (/ x cols))
+   (q/lerp 0.35 0.9 (/ y rows))
+   1])
 
 (defn make-grid [cols rows]
   {:effects []
@@ -14,7 +17,7 @@
    (apply merge
           (for [r (range rows)
                 c (range cols)]
-            {[c r] (sample-color (inc c) (inc r))}))})
+            {[c r] (sample-color (inc c) (inc r) cols rows)}))})
 
 (defn rotate
   [n xs]
