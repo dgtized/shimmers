@@ -67,10 +67,9 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
-(defn rotate-row [{:keys [dims]} row n]
+(defn rotate-row [{:keys [dims]} row n speed]
   (let [[cols _] dims
-        dir (if (>= n 0) 1 -1)
-        speed 0.01]
+        dir (if (>= n 0) 1 -1)]
     {:cells (for [c (range cols)] [c row])
      :offset 0
      :step
@@ -111,7 +110,8 @@
     (rotate-row state
                 (rand-nth (range rows))
                 (* (rand-nth [-1 1])
-                   (rand-nth (range 1 cols))))))
+                   (rand-nth (range 1 cols)))
+                (rand-nth [0.02 0.04 0.08]))))
 
 (defn e-call [msg e]
   ((get e msg) e))
