@@ -50,7 +50,7 @@
 
 (defn update-state [{:keys [effects dims] :as state}]
   (if (empty? effects)
-    (update state :effects into (repeatedly 2 (partial create-pinwheel dims)))
+    (update state :effects into (repeatedly 3 (partial create-pinwheel dims)))
     (update state :effects apply-step)))
 
 (defn draw [{:keys [grid dims effects]}]
