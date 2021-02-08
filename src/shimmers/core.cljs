@@ -13,7 +13,6 @@
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.cube :as cube]
-            [shimmers.sketches.color-grid :as color-grid]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.fire :as fire]
@@ -25,6 +24,7 @@
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.object-permanence :as object-permanence]
             [shimmers.sketches.particles :as particles]
+            [shimmers.sketches.permutations-of-transfiguration :as permutations-of-transfiguration]
             [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.radar :as radar]
@@ -57,7 +57,6 @@
     [braid/run-sketch
      bubbles/run-sketch
      butterfly/run-sketch
-     color-grid/run-sketch
      cube/run-sketch
      dithering/run-sketch
      fire/run-sketch
@@ -80,6 +79,7 @@
      substrate/run-sketch
      typography/run-sketch
      particles/run-sketch
+     permutations-of-transfiguration/run-sketch
      precipitation/run-sketch
      probabilistic-automata/run-sketch
      yin-yang/run-sketch

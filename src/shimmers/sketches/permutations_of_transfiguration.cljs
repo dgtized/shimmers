@@ -1,4 +1,4 @@
-(ns shimmers.sketches.color-grid
+(ns shimmers.sketches.permutations-of-transfiguration
   (:require [clojure.set :as set]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
@@ -201,7 +201,7 @@
       (q/pop-matrix))))
 
 (defn ^:export run-sketch []
-  (q/defsketch color-grid
+  (q/defsketch permutations-of-transfiguration
     :host "quil-host"
     :size [600 400]
     :setup setup
