@@ -97,6 +97,36 @@
            ;; (q/text (str x) (+ (* x w) 30) (+ (* row h) 40))
            )))}))
 
+(defn rotate-column [{:keys [dims]} column n speed]
+  (let [[_ rows] dims
+        dir (if (>= n 0) 1 -1)]
+    {:cells (for [r (range rows)] [column r])
+     :offset 0
+     :step
+     (fn [effect] (update effect :offset + speed))
+     :done?
+     (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
+     :on-complete
+     (fn [{:keys [grid] :as state} {:keys [cells]}]
+       (let [colors (map (partial get grid) cells)
+             cells' (rotate n cells)]
+         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :draw
+     (fn [{:keys [cells offset]} grid w h]
+       ;; FIXME: fill color correctly for missing leading/trailing element
+       (q/fill 255)
+       (q/rect (* column w) 0 w (q/height))
+       (let [colors (map (partial get grid) cells)]
+         (doseq [r (range rows)
+                 :let [y (mod (+ r (* dir offset)) rows)
+                       color (nth colors (mod r rows))]]
+           (apply q/fill color)
+           (q/rect (* column w) (* y h) w h)
+           ;; (q/fill 255)
+           ;; (q/text (str c) (+ (* x w) 30) (+ (* row h) 20))
+           ;; (q/text (str x) (+ (* x w) 30) (+ (* row h) 40))
+           )))}))
+
 (defn make-pinwheel [state]
   (let [[w h] (:dims state)]
     (pinwheel (rand-nth (range 1 w))
@@ -113,6 +143,14 @@
                    (rand-nth (range 1 cols)))
                 (rand-nth [0.02 0.04 0.08]))))
 
+(defn make-rotate-column [{:keys [dims] :as state}]
+  (let [[cols rows] dims]
+    (rotate-column state
+                   (rand-nth (range cols))
+                   (* (rand-nth [-1 1])
+                      (rand-nth (range 1 rows)))
+                   (rand-nth [0.02 0.04 0.08]))))
+
 (defn e-call [msg e]
   ((get e msg) e))
 
@@ -126,6 +164,7 @@
 
 (defn create-effect [{:keys [effects] :as state}]
   (let [distribution [make-rotate-row
+                      make-rotate-column
                       make-pinwheel
                       make-pinwheel
                       make-pinwheel]
