@@ -36,6 +36,13 @@
 (comment (rotate 1 [1 2 3])
          (rotate -1 [1 2 3]))
 
+(defn rotate-grid-cells
+  [n]
+  (fn [{:keys [grid] :as state} {:keys [cells]}]
+    (let [colors (map (partial get grid) cells)
+          cells' (rotate n cells)]
+      (assoc state :grid (merge grid (zipmap cells' colors))))))
+
 ;; TODO:
 ;; Horizontal / vertical slides
 ;; swap random pair / disolve / teleport?
@@ -49,11 +56,7 @@
      :done?
      (fn [{:keys [theta]}]
        (< (Math/abs (- (* dir target) theta)) (* speed 0.5)))
-     :on-complete
-     (fn [{:keys [grid] :as state} {:keys [cells]}]
-       (let [colors (map (partial get grid) cells)
-             cells' (rotate (* dir rotations) cells)]
-         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :on-complete (rotate-grid-cells (* dir rotations))
      :draw
      (fn [effect grid w h]
        (let [cells (:cells effect)]
@@ -79,11 +82,7 @@
      (fn [effect] (update effect :offset + speed))
      :done?
      (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
-     :on-complete
-     (fn [{:keys [grid] :as state} {:keys [cells]}]
-       (let [colors (map (partial get grid) cells)
-             cells' (rotate n cells)]
-         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
        ;; FIXME: fill color correctly for missing leading/trailing element
@@ -109,11 +108,7 @@
      (fn [effect] (update effect :offset + speed))
      :done?
      (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
-     :on-complete
-     (fn [{:keys [grid] :as state} {:keys [cells]}]
-       (let [colors (map (partial get grid) cells)
-             cells' (rotate n cells)]
-         (assoc state :grid (merge grid (zipmap cells' colors)))))
+     :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
        ;; FIXME: fill color correctly for missing leading/trailing element
