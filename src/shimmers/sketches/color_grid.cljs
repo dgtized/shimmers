@@ -19,8 +19,16 @@
 (defn rotate
   [n xs]
   (if (>= n 0)
-    (take (count xs) (drop n (cycle xs)))
-    (reverse (take (count xs) (drop (Math/abs n) (cycle (reverse xs)))))))
+    (->> xs
+         cycle
+         (drop n)
+         (take (count xs)))
+    (->> xs
+         reverse
+         cycle
+         (drop (Math/abs n))
+         (take (count xs))
+         reverse)))
 
 (comment (rotate 1 [1 2 3])
          (rotate -1 [1 2 3]))
