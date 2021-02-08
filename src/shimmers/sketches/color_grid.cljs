@@ -36,7 +36,7 @@
 ;; TODO:
 ;; Horizontal / vertical slides
 ;; swap random pair / disolve / teleport?
-(defn pinwheel [_ c r dir rotations]
+(defn pinwheel [c r dir rotations]
   (let [target (* (/ Math/PI 2) rotations)]
     ;; TODO: apply completion effect on grid positions to rotate actual grid
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
@@ -67,6 +67,13 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
+(defn make-pinwheel [state]
+  (let [[w h] (:dims state)]
+    (pinwheel (+ 1 (rand-int (dec w)))
+              (+ 1 (rand-int (dec h)))
+              (if (> (rand) 0.5) 1 -1)
+              (+ 1 (rand-int 2)))))
+
 (defn e-call [msg e]
   ((get e msg) e))
 
@@ -79,12 +86,7 @@
                 (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
-  (let [[w h] (:dims state)
-        effect (pinwheel state
-                         (+ 1 (rand-int (dec w)))
-                         (+ 1 (rand-int (dec h)))
-                         (if (> (rand) 0.5) 1 -1)
-                         (+ 1 (rand-int 2)))
+  (let [effect (make-pinwheel state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
       (update state :effects conj effect)
