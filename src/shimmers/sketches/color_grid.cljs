@@ -29,10 +29,13 @@
      (fn [{:keys [theta]}]
        (< (Math/abs (- (* dir target) theta)) 0.05))}))
 
+(defn e-call [msg e]
+  ((get e msg) e))
+
 (defn apply-step [effects]
   (->> effects
-       (remove (fn [{:keys [done?] :as e}] (done? e)))
-       (map (fn [{:keys [step] :as e}] (step e)))))
+       (remove (partial e-call :done?))
+       (map (partial e-call :step))))
 
 (defn draw-step [grid effect w h]
   (let [cells (:cells effect)
