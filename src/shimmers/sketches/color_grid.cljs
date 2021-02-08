@@ -1,5 +1,6 @@
 (ns shimmers.sketches.color-grid
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.set :as set]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
@@ -73,12 +74,15 @@
     (apply q/fill (get grid (nth cells 3)))
     (q/rect (- w) 0 w h)))
 
-(defn create-pinwheel [[w h]]
-  ;; note this should check for collisions with effects or another pinwheel
-  (pinwheel (+ 1 (rand-int (dec w)))
-            (+ 1 (rand-int (dec h)))
-            (if (> (rand) 0.5) 1 -1)
-            (+ 1 (rand-int 2))))
+(defn create-effect [effects [w h]]
+  (let [effect (pinwheel (+ 1 (rand-int (dec w)))
+                         (+ 1 (rand-int (dec h)))
+                         (if (> (rand) 0.5) 1 -1)
+                         (+ 1 (rand-int 2)))
+        avoid-cells (set (mapcat :cells effects))]
+    (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
+      [effect]
+      [])))
 
 (defn setup []
   (make-grid 12 8))
@@ -88,7 +92,7 @@
         active-effects (apply-step effects)]
     (assoc state' :effects (if (and (< (count active-effects) 3)
                                     (< (rand) 0.03))
-                             (conj active-effects (create-pinwheel dims))
+                             (into active-effects (create-effect effects dims))
                              active-effects))))
 
 (defn draw [{:keys [grid dims effects]}]
