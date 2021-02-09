@@ -105,9 +105,8 @@
          (rollover-sliver-color colors offset dir)
          (q/rect 0 (* row h) (* (mod (* dir offset) 1) w) h)
          (doseq [c (range cols)
-                 :let [x (mod (+ c (* dir offset)) cols)
-                       color (nth colors (mod c cols))]]
-           (apply q/fill color)
+                 :let [x (mod (+ c (* dir offset)) cols)]]
+           (apply q/fill (nth colors c))
            (q/rect (* x w) (* row h) w h)
            #_(debug-cell c x (* x w) (* row h))
            )))}))
@@ -128,9 +127,8 @@
          (rollover-sliver-color colors offset dir)
          (q/rect (* column w) 0 w (* (mod (* dir offset) 1) h))
          (doseq [r (range rows)
-                 :let [y (mod (+ r (* dir offset)) rows)
-                       color (nth colors (mod r rows))]]
-           (apply q/fill color)
+                 :let [y (mod (+ r (* dir offset)) rows)]]
+           (apply q/fill (nth colors r))
            (q/rect (* column w) (* y h) w h)
            #_(debug-cell r y (* column w) (* y h))
            )))}))
