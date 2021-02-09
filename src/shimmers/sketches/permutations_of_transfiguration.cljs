@@ -82,6 +82,13 @@
   (q/text (str n) (+ x 4) (+ y 12))
   (q/text (.toFixed offset 2) (+ x 4) (+ y 22)))
 
+(defn rollover-sliver-color [colors offset dir]
+  (let [f (if (>= dir 0)
+            (- (- (int offset)) 1)
+            (int offset)
+            )]
+    (apply q/fill (nth colors (mod f (count colors))))))
+
 (defn rotate-row [{:keys [dims]} row n speed]
   (let [[cols _] dims
         dir (sign n)]
@@ -94,11 +101,9 @@
      :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
-       ;; FIXME: fill color correctly for missing leading element
-       ;; right and bottom color fill correctly, but left and top do not
-       (q/fill 255)
-       (q/rect 0 (* row h) (q/width) h)
        (let [colors (map (partial get grid) cells)]
+         (rollover-sliver-color colors offset dir)
+         (q/rect 0 (* row h) (* (mod (* dir offset) 1) w) h)
          (doseq [c (range cols)
                  :let [x (mod (+ c (* dir offset)) cols)
                        color (nth colors (mod c cols))]]
@@ -119,10 +124,9 @@
      :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
-       ;; FIXME: fill color correctly for missing leading/trailing element
-       (q/fill 255)
-       (q/rect (* column w) 0 w (q/height))
        (let [colors (map (partial get grid) cells)]
+         (rollover-sliver-color colors offset dir)
+         (q/rect (* column w) 0 w (* (mod (* dir offset) 1) h))
          (doseq [r (range rows)
                  :let [y (mod (+ r (* dir offset)) rows)
                        color (nth colors (mod r rows))]]
