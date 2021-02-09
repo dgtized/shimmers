@@ -77,6 +77,11 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
+(defn debug-cell [n offset x y]
+  (q/fill 255)
+  (q/text (str n) (+ x 4) (+ y 12))
+  (q/text (.toFixed offset 2) (+ x 4) (+ y 22)))
+
 (defn rotate-row [{:keys [dims]} row n speed]
   (let [[cols _] dims
         dir (sign n)]
@@ -99,9 +104,7 @@
                        color (nth colors (mod c cols))]]
            (apply q/fill color)
            (q/rect (* x w) (* row h) w h)
-           ;; (q/fill 255)
-           ;; (q/text (str c) (+ (* x w) 30) (+ (* row h) 20))
-           ;; (q/text (str x) (+ (* x w) 30) (+ (* row h) 40))
+           #_(debug-cell c x (* x w) (* row h))
            )))}))
 
 (defn rotate-column [{:keys [dims]} column n speed]
@@ -125,9 +128,7 @@
                        color (nth colors (mod r rows))]]
            (apply q/fill color)
            (q/rect (* column w) (* y h) w h)
-           ;; (q/fill 255)
-           ;; (q/text (str c) (+ (* x w) 30) (+ (* row h) 20))
-           ;; (q/text (str x) (+ (* x w) 30) (+ (* row h) 40))
+           #_(debug-cell r y (* column w) (* y h))
            )))}))
 
 (defn make-pinwheel [state]
