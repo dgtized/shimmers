@@ -33,6 +33,9 @@
          (take (count xs))
          reverse)))
 
+(defn sign [n]
+  (if (>= n 0) 1 -1))
+
 (comment (rotate 1 [1 2 3])
          (rotate -1 [1 2 3]))
 
@@ -76,7 +79,7 @@
 
 (defn rotate-row [{:keys [dims]} row n speed]
   (let [[cols _] dims
-        dir (if (>= n 0) 1 -1)]
+        dir (sign n)]
     {:cells (for [c (range cols)] [c row])
      :offset 0
      :step
@@ -103,7 +106,7 @@
 
 (defn rotate-column [{:keys [dims]} column n speed]
   (let [[_ rows] dims
-        dir (if (>= n 0) 1 -1)]
+        dir (sign n)]
     {:cells (for [r (range rows)] [column r])
      :offset 0
      :step
