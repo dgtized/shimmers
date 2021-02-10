@@ -2,7 +2,8 @@
   (:require [clojure.set :as set]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.sequence :as cs]))
 
 (defn sample-color [x y cols rows]
   [(/ (+ x y) (+ cols rows))
@@ -19,31 +20,14 @@
                 c (range cols)]
             {[c r] (sample-color (inc c) (inc r) cols rows)}))})
 
-(defn rotate
-  [n xs]
-  (if (>= n 0)
-    (->> xs
-         cycle
-         (drop n)
-         (take (count xs)))
-    (->> xs
-         reverse
-         cycle
-         (drop (Math/abs n))
-         (take (count xs))
-         reverse)))
-
 (defn sign [n]
   (if (>= n 0) 1 -1))
-
-(comment (rotate 1 [1 2 3])
-         (rotate -1 [1 2 3]))
 
 (defn rotate-grid-cells
   [n]
   (fn [{:keys [grid] :as state} {:keys [cells]}]
     (let [colors (map (partial get grid) cells)
-          cells' (rotate n cells)]
+          cells' (cs/rotate n cells)]
       (assoc state :grid (merge grid (zipmap cells' colors))))))
 
 ;; Effect Ideas:
