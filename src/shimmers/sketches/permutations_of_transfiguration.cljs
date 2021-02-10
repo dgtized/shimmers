@@ -32,6 +32,7 @@
 
 ;; Effect Ideas:
 ;; swap random pair / disolve / teleport?
+;; rotate a pair or longer around y or x axis?
 ;; larger pinwheels
 ;; rings or paths?
 
