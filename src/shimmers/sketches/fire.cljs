@@ -2,7 +2,6 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
             [shimmers.macros.loop :as loop :include-macros true]
             [thi.ng.ndarray.core :as nd]))
 
