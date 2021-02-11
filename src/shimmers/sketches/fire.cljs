@@ -57,13 +57,13 @@
 
 (defn paint [grid size color]
   (q/ellipse-mode :center)
+  (apply q/fill color)
   (let [[xdim ydim] (nd/shape grid)
         hsize (/ size 2)]
     (loop/c-for [x 0 (< x xdim) (inc x)
                  y 0 (< y ydim) (inc y)]
       (let [v (nd/get-at grid x y)]
         (when (> v 0.1)
-          (apply q/fill color)
           (q/ellipse (+ (* x size) hsize) (+ (* y size) hsize)
                      (q/lerp 1 size v) (q/lerp 1 size v)))))))
 
