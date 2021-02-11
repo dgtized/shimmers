@@ -1,5 +1,18 @@
 (ns shimmers.common.sequence)
 
+(defn index-of
+  "Find the index of a particular value in coll."
+  [coll value]
+  (some (fn [[idx item]] (when (= value item) idx))
+        (map-indexed vector coll)))
+
+(defn map-kv
+  "Apply f to every value in coll."
+  [f coll]
+  (reduce-kv (fn [m k v] (assoc m k (f v)))
+             (empty coll)
+             coll))
+
 (defn rotate
   [n xs]
   (if (>= n 0)
