@@ -55,6 +55,9 @@
     (setup)
     (update-fire state)))
 
+(defn lerp [a b x]
+  (+ a (* (- b a) x)))
+
 (defn paint [grid size color]
   (q/ellipse-mode :center)
   (apply q/fill color)
@@ -64,8 +67,8 @@
                  y 0 (< y ydim) (inc y)]
       (let [v (nd/get-at grid x y)]
         (when (> v 0.1)
-          (q/ellipse (+ (* x size) hsize) (+ (* y size) hsize)
-                     (q/lerp 1 size v) (q/lerp 1 size v)))))))
+          (let [r (lerp 1 size v)]
+            (q/ellipse (+ (* x size) hsize) (+ (* y size) hsize) r r)))))))
 
 (defn draw [{:keys [fire fuel size]}]
   (paint fuel size [0 255 0 20])
