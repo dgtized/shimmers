@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.math.polar :refer [angles]]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]))
 
 (defn line-intersect
   "Return intersection point between two point segment pairs.
@@ -39,12 +40,6 @@
           x (+ cx (* r (q/cos angle)))
           y (+ cy (* r (q/sin angle)))]
       [x y])))
-
-(defn draw-shape [vertices]
-  (q/begin-shape)
-  (doseq [[x y] vertices]
-    (q/vertex x y))
-  (q/end-shape :close))
 
 (defn polar-coord [theta radius x y]
   [(+ x (* radius (q/cos theta)))
@@ -90,7 +85,7 @@
         (if-let [intersection (closest-intersection ray segments)]
           (q/line origin intersection))))
     (doseq [shape shapes]
-      (draw-shape shape))))
+      (cq/draw-shape shape))))
 
 (defn ^:export run-sketch []
   (q/defsketch shimmers
