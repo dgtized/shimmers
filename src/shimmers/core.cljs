@@ -68,6 +68,10 @@
      langton-ant/run-sketch
      noise-grid/run-sketch
      object-permanence/run-sketch
+     particles/run-sketch
+     permutations-of-transfiguration/run-sketch
+     precipitation/run-sketch
+     probabilistic-automata/run-sketch
      radar/run-sketch
      random-walk/run-sketch
      ray-marching/run-sketch
@@ -78,10 +82,6 @@
      sphere/run-sketch
      substrate/run-sketch
      typography/run-sketch
-     particles/run-sketch
-     permutations-of-transfiguration/run-sketch
-     precipitation/run-sketch
-     probabilistic-automata/run-sketch
      yin-yang/run-sketch
      zigzag/run-sketch])))
 
