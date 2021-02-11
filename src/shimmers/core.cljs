@@ -36,6 +36,7 @@
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
+            [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
             [shimmers.sketches.yin-yang :as yin-yang]
             [shimmers.sketches.zigzag :as zigzag]))
@@ -82,6 +83,7 @@
      sphere/run-sketch
      substrate/run-sketch
      typography/run-sketch
+     tunnel-flight/run-sketch
      yin-yang/run-sketch
      zigzag/run-sketch])))
 
