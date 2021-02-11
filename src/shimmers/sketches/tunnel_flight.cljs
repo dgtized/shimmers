@@ -8,7 +8,7 @@
 
 (defn blob [base r0 r1]
   {:shape
-   (for [theta (angles (rand-nth [6 8 10 12 16]))
+   (for [theta (angles 10)
          :let [xoff (+ 1 (q/cos theta))
                yoff (+ 1 (q/sin theta))
                r (q/map-range (q/noise xoff yoff base) 0 1
