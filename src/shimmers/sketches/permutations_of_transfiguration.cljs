@@ -75,7 +75,7 @@
    (fn [effect grid w h]
      (let [cells (:cells effect)
            theta (:theta effect)
-           pw (q/map-range theta 0 Math/PI (- w) w)]
+           pw (* w (Math/cos theta))]
        (q/translate (* (inc c) w) (* r h))
        (q/fill 255)
        (q/rect (- w) 0 (* w 2) h)
