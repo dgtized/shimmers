@@ -210,16 +210,12 @@
                 (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
-  (let [distribution [make-rotate-row
-                      make-rotate-column
-                      make-pinwheel
-                      make-pinwheel
-                      make-pinwheel
-                      make-flip-x
-                      make-flip-x
-                      make-flip-y
-                      make-flip-y
-                      ]
+  (let [distribution (cs/weighted
+                      1 make-rotate-row
+                      1 make-rotate-column
+                      3 make-pinwheel
+                      1 make-flip-x
+                      1 make-flip-y)
         effect ((rand-nth distribution) state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
@@ -234,7 +230,7 @@
 (defn update-state [state]
   (let [{:keys [effects] :as state'} (apply-effects state)]
     (if (and (< (count effects) 4)
-             (< (rand) 0.03))
+             (< (rand) 0.035))
       (create-effect state')
       state')))
 
