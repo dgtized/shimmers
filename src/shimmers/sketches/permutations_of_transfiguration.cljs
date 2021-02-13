@@ -62,7 +62,7 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
-(defn flip [c r speed]
+(defn flip-x [c r speed]
   {:cells [[c r] [(inc c) r]]
    :theta 0
    :step
@@ -149,11 +149,11 @@
               (if (> (rand) 0.5) 1 -1)
               (rand-nth (range 1 4)))))
 
-(defn make-flip [state]
+(defn make-flip-x [state]
   (let [[w h] (:dims state)]
-    (flip (rand-nth (range 0 (dec w)))
-          (rand-nth (range 0 (dec h)))
-          0.05)))
+    (flip-x (rand-nth (range 0 (dec w)))
+            (rand-nth (range 0 (dec h)))
+            (rand-nth [0.04 0.08]))))
 
 (defn make-rotate-row [{:keys [dims] :as state}]
   (let [[cols rows] dims]
@@ -188,8 +188,8 @@
                       make-pinwheel
                       make-pinwheel
                       make-pinwheel
-                      make-flip
-                      make-flip]
+                      make-flip-x
+                      make-flip-x]
         effect ((rand-nth distribution) state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
