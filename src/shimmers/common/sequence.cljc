@@ -26,3 +26,9 @@
          (drop (- n))
          (take (count xs))
          reverse)))
+
+;; (weighted [frequency value] ...)
+(defn weighted [& options]
+  (into [] (mapcat (fn [[frequency value]]
+                     (repeat frequency value))
+                   (partition 2 options))))

@@ -1,4 +1,5 @@
-(ns shimmers.automata.programs)
+(ns shimmers.automata.programs
+  (:require [shimmers.common.sequence :refer [weighted]]))
 
 (defn op->instruction [op]
   (if (vector? op)
@@ -13,13 +14,6 @@
 
 (defn rotate [degrees]
   [:rotate (/ (* degrees Math/PI) 180)])
-
-;; (weighted [frequency instruction] ...)
-(defn weighted [& options]
-  (into [] (mapcat (fn [[n instruction]]
-                     (repeat n instruction))
-                   (partition 2 options))))
-(comment (weighted 1 [:forward 10] 3 [:forward 5]))
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20]

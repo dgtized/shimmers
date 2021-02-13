@@ -5,10 +5,11 @@
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [reagent.dom :as rdom]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.color :as color]
+            [shimmers.automata.programs :as programs]
             [shimmers.automata.simplify :as simplify]
-            [shimmers.automata.programs :as programs]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.sequence :refer [weighted]]
+            [shimmers.math.color :as color]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
@@ -71,7 +72,7 @@
 
 (defn generate-instruction []
   ((rand-nth
-    (programs/weighted
+    (weighted
      5 (fn [] [:forward (+ 1 (rand-int 50))])
      2 (fn [] [:rotate (rand (* Math/PI 2))])
      1 (fn [] (programs/rotate 60))

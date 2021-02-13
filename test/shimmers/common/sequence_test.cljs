@@ -9,4 +9,7 @@
   (t/is (= [3 4 1 2] (sut/rotate 2 [1 2 3 4])))
   (t/is (= [2 3 4 1] (sut/rotate -3 [1 2 3 4]))))
 
-
+(t/deftest weighted
+  (t/is (= [] (sut/weighted)))
+  (t/is (= [:a :a] (sut/weighted 2 :a)))
+  (t/is (= [:a :b :b] (sut/weighted 1 :a 2 :b))))
