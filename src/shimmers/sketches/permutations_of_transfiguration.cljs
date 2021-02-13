@@ -62,6 +62,8 @@
          (apply q/fill (get grid (nth cells 3)))
          (q/rect (- w) 0 w h)))}))
 
+;; rotation is correctly but doesn't quite look like rotation.
+;; maybe width needs a perspective adjustment?
 (defn flip-x [c r speed]
   {:cells [[c r] [(inc c) r]]
    :theta 0
