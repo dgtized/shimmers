@@ -152,7 +152,7 @@
 (defn make-flip-x [state]
   (let [[w h] (:dims state)]
     (flip-x (rand-nth (range 0 (dec w)))
-            (rand-nth (range 0 (dec h)))
+            (rand-nth (range 0 h))
             (rand-nth [0.04 0.08]))))
 
 (defn make-rotate-row [{:keys [dims] :as state}]
