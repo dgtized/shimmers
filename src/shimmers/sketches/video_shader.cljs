@@ -9,8 +9,8 @@
 
 (defn setup []
   (let [camera (.createCapture (quil.sketch/current-applet) "video")
-        shader (q/load-shader "shaders/video-shader.frag"
-                              "shaders/video-shader.vert")]
+        shader (q/load-shader "shaders/video-shader.frag.c"
+                              "shaders/video-shader.vert.c")]
     (.size camera 640 480)
     (.hide camera)
     {:camera camera
