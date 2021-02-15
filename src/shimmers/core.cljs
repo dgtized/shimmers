@@ -38,6 +38,7 @@
             [shimmers.sketches.substrate :as substrate]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.video-shader :as video-shader]
             [shimmers.sketches.yin-yang :as yin-yang]
             [shimmers.sketches.zigzag :as zigzag]))
 
@@ -84,6 +85,7 @@
      substrate/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
+     video-shader/run-sketch
      yin-yang/run-sketch
      zigzag/run-sketch])))
 
