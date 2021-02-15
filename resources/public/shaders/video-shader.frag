@@ -20,6 +20,7 @@ void main() {
   pos.y = 1.0 - pos.y;
 
   vec4 tex = texture2D(videoTexture, pos);
-  vec4 color = vec4(tex.rgb, pct);
-  gl_FragColor = color;
+  vec4 color = vec4(tex.rgb, 1.0);
+  vec4 blend = vec4(st.x, st.y, st.x + st.y, 1.0);
+  gl_FragColor = mix(color, blend, 1.0-pct);
 }
