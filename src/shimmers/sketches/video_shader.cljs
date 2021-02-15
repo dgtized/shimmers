@@ -20,9 +20,9 @@
   (let [[w h] [(q/width) (q/height)]]
     (when (q/loaded? shader)
       (q/shader shader)
-      (q/set-uniform shader "u_resolution" [w h])
+      (q/set-uniform shader "u_resolution" (array w h))
       (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
-      (q/set-uniform shader "u_mouse" [(q/mouse-x) (q/map-range (q/mouse-y) 0 h h 0)])
+      (q/set-uniform shader "u_mouse" (array (q/mouse-x) (q/map-range (q/mouse-y) 0 h h 0)))
       (q/set-uniform shader "videoTexture" camera)
       (q/rect 0 0 w h))))
 
