@@ -7,7 +7,9 @@
             [shimmers.math.vector :as v]))
 
 (defn blob [base r0 r1]
-  {:shape
+  {:position (v/sub (v/vec2 (q/noise base r0) (q/noise base r1))
+                    (v/vec2 0.5 0.5))
+   :shape
    (for [theta (angles 10)
          :let [xoff (+ 1 (q/cos theta))
                yoff (+ 1 (q/sin theta))
@@ -44,7 +46,10 @@
   (q/no-fill)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (doseq [ring rings]
-    (cq/draw-shape (scale-shape ring z))))
+    (q/push-matrix)
+    (apply q/translate (v/scale (:position ring) (* 1.2 (- z (:base ring)))))
+    (cq/draw-shape (scale-shape ring z))
+    (q/pop-matrix)))
 
 (defn ^:export run-sketch []
   (q/defsketch tunnel-flight
