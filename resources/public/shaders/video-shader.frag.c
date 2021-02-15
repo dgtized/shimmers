@@ -22,5 +22,5 @@ void main() {
   vec4 tex = texture2D(videoTexture, pos);
   vec4 color = vec4(tex.rgb, 1.0);
   vec4 blend = vec4(st.x, st.y, (st.x + st.y), abs(sin(u_time/1.2)));
-  gl_FragColor = mix(color, blend, 1.0-pct);
+  gl_FragColor = mix(color, blend, clamp(1.2-pct, -0.3, 0.5));
 }
