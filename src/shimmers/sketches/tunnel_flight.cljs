@@ -21,23 +21,22 @@
    :z 0})
 
 (defn out-of-bounds? [z {:keys [base]}]
-  (> (- z base) 100))
+  (> (- z base) 50))
 
 (defn add-rings [z rings]
   (if (and (< (count rings) 100)
-           (> (- z (get (first rings) :base 0.0)) 4))
-    (conj rings (blob z 0.2 0.6))
+           (> (- z (get (first rings) :base 0.0)) 2.0))
+    (conj rings (blob z 0.3 0.6))
     rings))
 
 (defn update-state [{:keys [z rings] :as state}]
-  (assoc (update state :z + 0.1)
+  (assoc (update state :z + 0.11)
          :rings (add-rings z (remove (partial out-of-bounds? z) rings))))
 
-;; outer scaling is too slow, need to make it exponential to appear linear maybe?
 (defn scale-shape [{:keys [shape base]} z]
   (map (fn [[theta r]]
          (v/scale (v/unit2-from-angle theta)
-                  (* r 6 (+ 1 (- z base)))))
+                  (* r (q/pow 2 (/ (- z base) 3.0)))))
        shape))
 
 (defn draw [{:keys [z rings]}]
