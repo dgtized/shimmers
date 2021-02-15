@@ -7,17 +7,18 @@
             [shimmers.math.vector :as v]))
 
 (defn blob [base r0 r1]
-  {:position
-   (let [seed (* base 0.05)]
-     (v/sub (v/vec2 (q/noise seed 5) (q/noise seed 10)) (v/vec2 0.5 0.5)))
-   :shape
-   (for [theta (angles 10)
-         :let [xoff (+ 1 (q/cos theta))
-               yoff (+ 1 (q/sin theta))
-               r (q/map-range (q/noise xoff yoff base) 0 1
-                              r0 r1)]]
-     [theta r])
-   :base base})
+  (let [seed (* base 0.05)]
+    {:position
+     (v/sub (v/vec2 (q/noise seed 5) (q/noise seed 10))
+            (v/vec2 0.5 0.5))
+     :shape
+     (for [theta (angles 10)
+           :let [xoff (+ 1 (q/cos theta))
+                 yoff (+ 1 (q/sin theta))
+                 r (q/map-range (q/noise xoff yoff (* 3 seed)) 0 1
+                                r0 r1)]]
+       [theta r])
+     :base base}))
 
 (defn setup []
   {:rings []
@@ -29,7 +30,7 @@
 (defn add-rings [z rings]
   (if (and (< (count rings) 100)
            (> (- z (get (first rings) :base 0.0)) 2.0))
-    (conj rings (blob z 0.3 0.6))
+    (conj rings (blob z 0.3 0.8))
     rings))
 
 (defn update-state [{:keys [z rings] :as state}]
