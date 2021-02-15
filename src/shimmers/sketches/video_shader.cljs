@@ -7,6 +7,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
+;; HACK: Shaders are renamed to .c because github-pages requires a mime type to
+;; serve, per [1], but [2] has no extension for mime-type x-shader/x-fragment, or
+;; x-shader/x-vertex.
+;; [1] https://docs.github.com/en/github/working-with-github-pages/about-github-pages#mime-types-on-github-pages
+;; [2] https://github.com/jshttp/mime-db/blob/93b1c9c90316484c682532384c493c682f4a459f/db.json#L8307-L8312
 (defn setup []
   (let [camera (.createCapture (quil.sketch/current-applet) "video")
         shader (q/load-shader "shaders/video-shader.frag.c"
