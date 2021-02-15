@@ -82,8 +82,8 @@
      scintillation/run-sketch
      sphere/run-sketch
      substrate/run-sketch
-     typography/run-sketch
      tunnel-flight/run-sketch
+     typography/run-sketch
      yin-yang/run-sketch
      zigzag/run-sketch])))
 
