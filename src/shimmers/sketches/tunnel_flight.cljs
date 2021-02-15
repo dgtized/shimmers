@@ -43,7 +43,10 @@
        shape))
 
 (defn draw [{:keys [z rings]}]
-  (q/background 255)
+  (q/background 255 48)
+  (let [noise (q/noise (* 0.1 z))]
+    (q/stroke (* 100 noise) 50 (* 150 noise) 250))
+  (q/stroke-weight 0.25)
   (q/no-fill)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (q/rotate (* 2 Math/PI (q/noise (* 0.05 z) 30)))
