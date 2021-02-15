@@ -14,7 +14,7 @@ void main() {
   vec2 mp = u_mouse/u_resolution;
   vec2 st = gl_FragCoord.xy/u_resolution;
   float pct = 0.0;
-  pct = distance(st-mp, vec2(1.5));
+  pct = distance(st-(mp-vec2(0.2)), vec2(1.5));
 
   vec2 pos = vTexCoord;
   pos.y = 1.0 - pos.y;
