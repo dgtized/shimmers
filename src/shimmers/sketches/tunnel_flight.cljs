@@ -24,7 +24,7 @@
    :z 0})
 
 (defn out-of-bounds? [z {:keys [base]}]
-  (> (- z base) 50))
+  (> (- z base) 32))
 
 (defn add-rings [z rings]
   (if (and (< (count rings) 100)
