@@ -1,6 +1,7 @@
 (ns shimmers.sketches.video-shader
-  "Basic concepts Translated from
-  https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/image_effects
+  "Basic concepts translated from
+  https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/image_effects and
+  combined with https://thebookofshaders.com/07/.
   "
   (:require [quil.core :as q :include-macros true]
             quil.sketch
@@ -34,7 +35,7 @@
 (defn ^:export run-sketch []
   (q/defsketch video-shader
     :host "quil-host"
-    :size [600 400]
+    :size [640 480]
     :renderer :p3d
     :setup setup
     :draw draw
