@@ -7,8 +7,9 @@
             [shimmers.math.vector :as v]))
 
 (defn blob [base r0 r1]
-  {:position (v/sub (v/vec2 (q/noise base r0) (q/noise base r1))
-                    (v/vec2 0.5 0.5))
+  {:position
+   (let [seed (* base 0.05)]
+     (v/sub (v/vec2 (q/noise seed 5) (q/noise seed 10)) (v/vec2 0.5 0.5)))
    :shape
    (for [theta (angles 10)
          :let [xoff (+ 1 (q/cos theta))
@@ -45,10 +46,10 @@
   (q/background 255)
   (q/no-fill)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (q/rotate (* 2 Math/PI (q/noise (* 0.06 z))))
+  (q/rotate (* 2 Math/PI (q/noise (* 0.05 z) 30)))
   (doseq [ring rings]
     (q/push-matrix)
-    (apply q/translate (v/scale (:position ring) (* 1.2 (- z (:base ring)))))
+    (apply q/translate (v/scale (:position ring) (* 4 (- z (:base ring)))))
     (cq/draw-shape (scale-shape ring z))
     (q/pop-matrix)))
 
