@@ -22,7 +22,7 @@ sed -i -e 's/cljs-out\/release-main.js/js\/release-main.js/' index.html
 
 git init
 git checkout -b gh-pages
-git add index.html .gitignore js/* css/*
+git add index.html .gitignore js/* css/* shaders/*
 git commit -m "Deploy to Github Pages"
 git push --force --quiet "git@github.com:dgtized/shimmers.git" gh-pages:gh-pages
 
