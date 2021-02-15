@@ -14,7 +14,7 @@ void main() {
   vec2 mp = u_mouse/u_resolution;
   vec2 st = gl_FragCoord.xy/u_resolution;
   float pct = 0.0;
-  pct = distance(st-mp, vec2(1));
+  pct = distance(st-mp, vec2(1.5));
 
   vec2 pos = vTexCoord;
   pos.y = 1.0 - pos.y;
@@ -22,5 +22,5 @@ void main() {
   vec4 tex = texture2D(videoTexture, pos);
   vec4 color = vec4(tex.rgb, 1.0);
   vec4 blend = vec4(st.x, st.y, (st.x + st.y), abs(sin(u_time/1.2)));
-  gl_FragColor = mix(color, blend, 0.8-pct);
+  gl_FragColor = mix(color, blend, 1.0-pct);
 }

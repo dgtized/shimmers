@@ -23,12 +23,17 @@
      :shader shader}))
 
 (defn draw [{:keys [camera shader]}]
-  (let [[w h] [(q/width) (q/height)]]
+  (let [[w h] [(q/width) (q/height)]
+        ;; Note quite working, p3d context is supposed to be relative to
+        ;; -0.5*w,-0.5*h or something? https://p5js.org/reference/#/p5/mouseX,
+        ;; but it's all over the place and also a function of display-density I
+        ;; think?
+        mouse (array (- (q/mouse-x) w) (- (* 0.5 h) (q/mouse-y)))]
     (when (q/loaded? shader)
       (q/shader shader)
       (q/set-uniform shader "u_resolution" (array w h))
       (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
-      (q/set-uniform shader "u_mouse" (array (q/mouse-x) (q/map-range (q/mouse-y) 0 h h 0)))
+      (q/set-uniform shader "u_mouse" mouse)
       (q/set-uniform shader "videoTexture" camera)
       (q/rect 0 0 w h))))
 
