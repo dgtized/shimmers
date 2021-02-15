@@ -11,10 +11,15 @@ uniform float u_time;
 uniform sampler2D videoTexture;
 
 void main() {
+  vec2 mp = u_mouse.xy/u_resolution.xy;
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  float pct = 0.0;
+  pct = distance(st-mp, vec2(1));
+
   vec2 pos = vTexCoord;
   pos.y = 1.0 - pos.y;
 
   vec4 tex = texture2D(videoTexture, pos);
-  vec4 blend = vec4(tex.bgr, 1.0);
-  gl_FragColor = blend;
+  vec4 color = vec4(tex.rgb, pct);
+  gl_FragColor = color;
 }
