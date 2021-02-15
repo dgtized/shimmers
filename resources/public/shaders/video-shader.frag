@@ -11,8 +11,8 @@ uniform float u_time;
 uniform sampler2D videoTexture;
 
 void main() {
-  vec2 mp = u_mouse.xy/u_resolution.xy;
-  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  vec2 mp = u_mouse/u_resolution;
+  vec2 st = gl_FragCoord.xy/u_resolution;
   float pct = 0.0;
   pct = distance(st-mp, vec2(1));
 
