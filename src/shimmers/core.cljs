@@ -32,6 +32,7 @@
             [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.ring :as ring]
             [shimmers.sketches.ripples :as ripples]
+            [shimmers.sketches.rose :as rose]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
@@ -79,6 +80,7 @@
      ray-marching/run-sketch
      ring/run-sketch
      ripples/run-sketch
+     rose/run-sketch
      space-colonization/run-sketch
      scintillation/run-sketch
      sphere/run-sketch
