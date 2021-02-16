@@ -7,6 +7,12 @@
     (q/vertex x y))
   (q/end-shape :close))
 
+(defn draw-curve-shape [vertices]
+  (q/begin-shape)
+  (doseq [[x y] vertices]
+    (q/curve-vertex x y))
+  (q/end-shape :close))
+
 (defn lerp-line [[x y] [x' y'] amt]
   (q/line x y (q/lerp x x' amt) (q/lerp y y' amt)))
 

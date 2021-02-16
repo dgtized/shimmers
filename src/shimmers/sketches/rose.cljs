@@ -49,7 +49,7 @@
   (q/no-fill)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (doseq [ring rings]
-    (cq/draw-shape (scale-shape ring z))))
+    (cq/draw-curve-shape (scale-shape ring z))))
 
 (defn ^:export run-sketch []
   (q/defsketch rose
