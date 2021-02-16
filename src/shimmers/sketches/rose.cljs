@@ -21,7 +21,7 @@
    :z 0})
 
 (defn scale [z base]
-  (q/sin (/ (- z base) 12.0)))
+  (q/sin (/ (- z base) 20.0)))
 
 (defn out-of-bounds? [z {:keys [base]}]
   (< (scale z base) 0.0))
@@ -43,7 +43,7 @@
        shape))
 
 (defn draw [{:keys [z rings]}]
-  (q/background 255 (rand-nth [4.0 4.0 4.0 16.0]))
+  (q/background 255 (rand-nth [2.0 4.0 4.0 16.0]))
   (q/stroke 200 50 50 255)
   (q/stroke-weight 0.25)
   (q/no-fill)
