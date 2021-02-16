@@ -20,8 +20,11 @@
   {:rings []
    :z 0})
 
+(defn scale [z base]
+  (q/sin (/ (- z base) 12.0)))
+
 (defn out-of-bounds? [z {:keys [base]}]
-  (> (- z base) 48))
+  (< (scale z base) 0.0))
 
 (defn add-rings [z rings]
   (if (and (< (count rings) 100)
@@ -30,17 +33,17 @@
     rings))
 
 (defn update-state [{:keys [z rings] :as state}]
-  (assoc (update state :z + 0.1)
+  (assoc (update state :z + 0.05)
          :rings (add-rings z (remove (partial out-of-bounds? z) rings))))
 
 (defn scale-shape [{:keys [shape base]} z]
   (map (fn [[theta r]]
          (v/scale (v/unit2-from-angle theta)
-                  (* r 8.0 (/ (- z base) 2))))
+                  (* r 192.0 (scale z base))))
        shape))
 
 (defn draw [{:keys [z rings]}]
-  (q/background 255 8)
+  (q/background 255 (rand-nth [4.0 4.0 4.0 16.0]))
   (q/stroke 200 50 50 255)
   (q/stroke-weight 0.25)
   (q/no-fill)
