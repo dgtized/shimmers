@@ -29,7 +29,7 @@
 (defn add-rings [z rings]
   (if (and (< (count rings) 100)
            (> (- z (get (first rings) :base 0.0)) 6.0))
-    (conj rings (blob z 0.1 0.8))
+    (conj rings (blob z 0.3 0.9))
     rings))
 
 (defn update-state [{:keys [z rings] :as state}]
@@ -39,7 +39,7 @@
 (defn scale-shape [{:keys [shape base]} z]
   (map (fn [[theta r]]
          (v/scale (v/unit2-from-angle theta)
-                  (* r 192.0 (scale z base))))
+                  (* r (/ (q/height) 1.9) (scale z base))))
        shape))
 
 (defn draw [{:keys [z rings]}]
