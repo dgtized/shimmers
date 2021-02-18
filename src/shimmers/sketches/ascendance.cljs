@@ -8,7 +8,9 @@
 (defn make-particle [t]
   (map->Particle
    (let [decay (/ (rand) 16)]
-     {:t0 t :t1 (+ t (* 4 decay)) :lifespan 100.0
+     {:t0 t
+      :t1 (+ t (* 20 decay))
+      :lifespan 100.0
       :decay decay
       :offset (* Math/PI (rand))
       :ascension (rand-nth [1.5 2.0 3.0 4.0])
@@ -58,7 +60,7 @@
   (let [h (q/height)]
     (doseq [{:keys [t0 t1 decay weight] :as p} particles
             :let [point-pairs
-                  (->> (range t0 t1 decay)
+                  (->> (range t0 t1 (* 4 decay))
                        (map (fn [t] (position p t h)))
                        (partition 2 1))]]
       (q/stroke-weight weight)
