@@ -7,7 +7,7 @@
 
 (defn make-particle [t]
   (->Particle t t 100.0
-              (/ (rand) 2)
+              (/ (rand) 16)
               (rand-nth [1.5 2.0 3.0 4.0])
               (rand-nth [(fn [_] 150)
                          (fn [t] (- 150 t))
@@ -22,10 +22,11 @@
 
 (defn position [{:keys [ascension radius]} t h]
   (let [hh (/ h 2)
-        r (radius t)]
-    [(* r (q/cos t))
+        r (radius t)
+        pt (/ t ascension)]
+    [(* r (q/cos pt))
      (q/map-range (* ascension t) 0.0 100.0 hh (- hh))
-     (* r (q/sin t))]))
+     (* r (q/sin pt))]))
 
 (defn setup []
   (q/ortho)
