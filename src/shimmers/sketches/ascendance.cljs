@@ -7,21 +7,24 @@
 
 (defn make-particle [t]
   (map->Particle
-   {:t0 t :t1 t :lifespan 100.0
-    :decay (/ (rand) 16)
-    :offset (* Math/PI (rand))
-    :ascension (rand-nth [1.5 2.0 3.0 4.0])
-    :radius
-    (let [r (* 200 (rand))]
-      (rand-nth [(fn [_] 150)
-                 (fn [t] (- r t))
-                 (fn [_] r)
-                 (fn [t] (/ r (+ t 1)))]))
-    :weight (q/random 1.0 4.0)}))
+   (let [decay (/ (rand) 16)]
+     {:t0 t :t1 (+ t (* 4 decay)) :lifespan 100.0
+      :decay decay
+      :offset (* Math/PI (rand))
+      :ascension (rand-nth [1.5 2.0 3.0 4.0])
+      :radius
+      (let [r (* 200 (rand))]
+        (rand-nth [(fn [_] 150)
+                   (fn [t] (- r t))
+                   (fn [_] r)
+                   (fn [t] (/ r (+ t 1)))]))
+      :weight (q/random 1.0 4.0)})))
 
 (defn update-particle
-  [{:keys [t1 decay] :as p}]
-  (assoc p :t0 t1 :t1 (+ t1 decay)))
+  [{:keys [t0 t1 decay] :as p}]
+  (assoc p
+         :t0 (+ t0 decay)
+         :t1 (+ t1 decay)))
 
 (defn position [{:keys [ascension radius offset]} t h]
   (let [hh (/ h 2)
@@ -41,7 +44,7 @@
 (defn add-particle [particles]
   (let [alive (map update-particle
                    (filter alive? particles))]
-    (if (and (< (count alive) 1000)
+    (if (and (< (count alive) 256)
              (< (rand) 0.05))
       (conj alive (make-particle 0.0))
       alive)))
@@ -50,11 +53,17 @@
   (update state :particles add-particle))
 
 (defn draw [{:keys [particles]}]
+  (q/background 255)
   (q/stroke 0 192)
   (let [h (q/height)]
-    (doseq [{:keys [t0 t1 weight] :as p} particles]
+    (doseq [{:keys [t0 t1 decay weight] :as p} particles
+            :let [point-pairs
+                  (->> (range t0 t1 decay)
+                       (map (fn [t] (position p t h)))
+                       (partition 2 1))]]
       (q/stroke-weight weight)
-      (q/line (position p t0 h) (position p t1 h)))))
+      (doseq [[p0 p1] point-pairs]
+        (q/line p0 p1)))))
 
 (defn ^:export run-sketch []
   (q/defsketch template
