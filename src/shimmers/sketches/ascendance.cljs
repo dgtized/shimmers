@@ -6,15 +6,16 @@
 (defrecord Particle [t0 t1 lifespan decay ascension radius weight])
 
 (defn make-particle [t]
-  (->Particle t t 100.0
-              (/ (rand) 16)
-              (rand-nth [1.5 2.0 3.0 4.0])
-              (rand-nth [(fn [_] 150)
-                         (fn [t] (- 150 t))
-                         (let [r (rand)]
-                           (fn [_] (* r 200)))
-                         (fn [t] (/ 150 (+ t 1)))])
-              (q/random 1.0 4.0)))
+  (map->Particle
+   {:t0 t :t1 t :lifespan 100.0
+    :decay (/ (rand) 16)
+    :ascension (rand-nth [1.5 2.0 3.0 4.0])
+    :radius (rand-nth [(fn [_] 150)
+                       (fn [t] (- 150 t))
+                       (let [r (rand)]
+                         (fn [_] (* r 200)))
+                       (fn [t] (/ 150 (+ t 1)))])
+    :weight (q/random 1.0 4.0)}))
 
 (defn update-particle
   [{:keys [t1 decay] :as p}]
