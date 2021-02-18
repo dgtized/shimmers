@@ -10,7 +10,8 @@
               (/ (rand) 10)
               (rand-nth [1.5 2.0 3.0 4.0])
               (rand-nth [(fn [_] 150)
-                         (fn [t] (- 150 t))])))
+                         (fn [t] (- 150 t))
+                         (fn [t] (/ 150 (+ t 1)))])))
 
 (defn update-particle
   [{:keys [t1 decay] :as p}]
