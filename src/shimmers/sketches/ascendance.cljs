@@ -45,9 +45,8 @@
   (update state :particles add-particle))
 
 (defn draw [{:keys [particles]}]
-  (q/stroke-weight 0.5)
-  ;; (q/background 255 1)
-  (q/color 0)
+  (q/stroke-weight 2)
+  (q/stroke 0 64)
   (let [h (q/height)]
     (doseq [{:keys [t0 t1] :as p} particles]
       (q/line (position p t0 h) (position p t1 h)))))
