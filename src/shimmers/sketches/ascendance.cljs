@@ -3,14 +3,14 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 lifespan])
+(defrecord Particle [t0 t1 lifespan decay])
 
 (defn make-particle [t]
-  (->Particle t t 100.0))
+  (->Particle t t 100.0 (/ (rand) 10)))
 
 (defn update-particle
-  [{:keys [t1] :as p}]
-  (assoc p :t0 t1 :t1 (+ t1 0.1)))
+  [{:keys [t1 decay] :as p}]
+  (assoc p :t0 t1 :t1 (+ t1 decay)))
 
 (defn position [p t h]
   (let [hh (/ h 2)]
