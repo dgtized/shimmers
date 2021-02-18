@@ -7,7 +7,7 @@
 
 (defn make-particle [t]
   (->Particle t t 100.0
-              (/ (rand) 10)
+              (/ (rand) 2)
               (rand-nth [1.5 2.0 3.0 4.0])
               (rand-nth [(fn [_] 150)
                          (fn [t] (- 150 t))
@@ -35,7 +35,7 @@
   (let [alive (map update-particle
                    (filter alive? particles))]
     (if (and (< (count alive) 100)
-             (< (rand) 0.01))
+             (< (rand) 0.05))
       (conj alive (make-particle 0.0))
       alive)))
 
