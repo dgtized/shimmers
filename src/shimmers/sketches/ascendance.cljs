@@ -3,20 +3,25 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 lifespan decay])
+(defrecord Particle [t0 t1 lifespan decay ascension radius])
 
 (defn make-particle [t]
-  (->Particle t t 100.0 (/ (rand) 10)))
+  (->Particle t t 100.0
+              (/ (rand) 10)
+              (rand-nth [1.5 2.0 3.0 4.0])
+              (rand-nth [(fn [_] 150)
+                         (fn [t] (- 150 t))])))
 
 (defn update-particle
   [{:keys [t1 decay] :as p}]
   (assoc p :t0 t1 :t1 (+ t1 decay)))
 
-(defn position [p t h]
-  (let [hh (/ h 2)]
-    [(* 150 (q/cos t))
-     (q/map-range t 0.0 100.0 hh (- hh))
-     (* 150 (q/sin t))]))
+(defn position [{:keys [ascension radius]} t h]
+  (let [hh (/ h 2)
+        r (radius t)]
+    [(* r (q/cos t))
+     (q/map-range (* ascension t) 0.0 100.0 hh (- hh))
+     (* r (q/sin t))]))
 
 (defn setup []
   (q/ortho)
@@ -36,7 +41,8 @@
   (update state :particles add-particle))
 
 (defn draw [{:keys [particles]}]
-  (q/background 255 1)
+  (q/stroke-weight 0.5)
+  ;; (q/background 255 1)
   (q/color 0)
   (let [h (q/height)]
     (doseq [{:keys [t0 t1] :as p} particles]
