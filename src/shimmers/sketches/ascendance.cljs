@@ -9,6 +9,7 @@
   (map->Particle
    {:t0 t :t1 t :lifespan 100.0
     :decay (/ (rand) 16)
+    :offset (* Math/PI (rand))
     :ascension (rand-nth [1.5 2.0 3.0 4.0])
     :radius
     (let [r (* 200 (rand))]
@@ -22,10 +23,10 @@
   [{:keys [t1 decay] :as p}]
   (assoc p :t0 t1 :t1 (+ t1 decay)))
 
-(defn position [{:keys [ascension radius]} t h]
+(defn position [{:keys [ascension radius offset]} t h]
   (let [hh (/ h 2)
         r (radius t)
-        pt (/ t ascension)]
+        pt (+ (/ (+ offset t) ascension) offset)]
     [(* r (q/cos pt))
      (q/map-range (* ascension t) 0.0 100.0 hh (- hh))
      (* r (q/sin pt))]))
