@@ -34,7 +34,8 @@
 (defn add-particle [particles]
   (let [alive (map update-particle
                    (filter alive? particles))]
-    (if (and (< (count alive) 100) (< (rand) 0.01))
+    (if (and (< (count alive) 100)
+             (< (rand) 0.01))
       (conj alive (make-particle 0.0))
       alive)))
 
