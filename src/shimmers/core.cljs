@@ -9,6 +9,7 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.ui :as ui]
             [shimmers.macros.loader :as loader :include-macros true]
+            [shimmers.sketches.ascendance :as ascendance]
             [shimmers.sketches.braid :as braid]
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
@@ -57,7 +58,8 @@
 (defonce state
   (init-sketches
    (loader/sketches-with-meta
-    [braid/run-sketch
+    [ascendance/run-sketch
+     braid/run-sketch
      bubbles/run-sketch
      butterfly/run-sketch
      cube/run-sketch
