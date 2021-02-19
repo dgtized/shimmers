@@ -3,66 +3,68 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 fuel delta-v velocity radius mass])
+(defrecord Particle [t0 fuel delta-v velocity radius mass])
 
-(defn make-particle [t]
+(defn make-particle [t0]
   (map->Particle
-   (let [delta-v (/ (rand) 16)]
-     {:t0 t
-      :t1 (+ t (* 20 delta-v))
-      :fuel 100.0
-      :delta-v delta-v
-      :mass (q/random 1.0 4.0)
+   {:t0 t0
+    :fuel 100.0
+    :delta-v (/ (rand) 16)
+    :mass (q/random 1.0 4.0)
 
-      :offset (* Math/PI (rand))
-      :velocity (rand-nth [1.5 2.0 3.0 4.0])
-      :radius
-      (let [r (* 200 (rand))]
-        (rand-nth [(fn [_] 150)
-                   (fn [t] (- r t))
-                   (fn [_] r)
-                   (fn [t] (/ r (+ t 1)))]))})))
+    :velocity (rand-nth [1.5 2.0 3.0 4.0])
+    :radius
+    (let [r (* 200 (rand))]
+      (rand-nth [(fn [_] 150)
+                 (fn [t] (- r t))
+                 (fn [_] r)
+                 (fn [t] (/ r (+ t 1)))]))}))
 
 (defn update-particle
   [{:keys [delta-v] :as p}]
-  (-> p
-      (update :t0 + delta-v)
-      (update :t1 + delta-v)
-      (update :fuel - delta-v)))
+  (update p :fuel - delta-v))
 
-(defn position [{:keys [velocity radius offset]} t h]
+(defn position [{:keys [t0 velocity radius]} now h]
   (let [hh (/ h 2)
+        t (- now t0)
         r (radius t)
-        pt (+ (/ (+ offset t) velocity) offset)]
+        pt (/ t velocity)]
     [(* r (q/cos pt))
      (q/map-range (* velocity t) 0.0 100.0 hh (- hh))
      (* r (q/sin pt))]))
 
 (defn setup []
   (q/ortho)
-  {:particles []})
+  {:time 0.0
+   :particles []})
 
-(defn alive? [{:keys [fuel]}]
-  (> fuel 0.0))
+(defn alive? [time {:keys [t0 fuel]}]
+  (and (> fuel 0.0)
+       (< (- time t0) 50.0)))
 
-(defn add-particle [particles]
+(defn add-particle [particles t1]
   (let [alive (map update-particle
-                   (filter alive? particles))]
+                   (filter (partial alive? t1) particles))]
     (if (and (< (count alive) 16)
              (< (rand) 0.05))
-      (conj alive (make-particle 0.0))
+      (conj alive (make-particle t1))
       alive)))
 
-(defn update-state [state]
-  (update state :particles add-particle))
+(def dt 0.1)
 
-(defn draw [{:keys [particles]}]
+(defn update-state [{:keys [time] :as state}]
+  (let [t1 (+ time dt)]
+    (-> state
+        (assoc :time t1)
+        (update :particles add-particle t1))))
+
+(defn draw [{:keys [particles time]}]
   (q/background 255)
   (q/stroke 0 192)
   (let [h (q/height)]
-    (doseq [{:keys [t0 t1 delta-v mass] :as p} particles
+    (doseq [{:keys [mass] :as p} particles
             :let [point-pairs
-                  (->> (range t0 t1 (* 4 delta-v))
+                  (->> (range (- time (* 8 dt)) time (* 2 dt))
                        (map (fn [t] (position p t h)))
                        (partition 2 1))]]
       (q/stroke-weight mass)
