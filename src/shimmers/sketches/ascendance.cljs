@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 fuel delta-v ascension radius mass])
+(defrecord Particle [t0 t1 fuel delta-v velocity radius mass])
 
 (defn make-particle [t]
   (map->Particle
@@ -15,7 +15,7 @@
       :mass (q/random 1.0 4.0)
 
       :offset (* Math/PI (rand))
-      :ascension (rand-nth [1.5 2.0 3.0 4.0])
+      :velocity (rand-nth [1.5 2.0 3.0 4.0])
       :radius
       (let [r (* 200 (rand))]
         (rand-nth [(fn [_] 150)
@@ -30,12 +30,12 @@
       (update :t1 + delta-v)
       (update :fuel - delta-v)))
 
-(defn position [{:keys [ascension radius offset]} t h]
+(defn position [{:keys [velocity radius offset]} t h]
   (let [hh (/ h 2)
         r (radius t)
-        pt (+ (/ (+ offset t) ascension) offset)]
+        pt (+ (/ (+ offset t) velocity) offset)]
     [(* r (q/cos pt))
-     (q/map-range (* ascension t) 0.0 100.0 hh (- hh))
+     (q/map-range (* velocity t) 0.0 100.0 hh (- hh))
      (* r (q/sin pt))]))
 
 (defn setup []
