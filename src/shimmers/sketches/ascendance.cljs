@@ -3,15 +3,17 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 lifespan decay ascension radius weight])
+(defrecord Particle [t0 t1 lifespan delta-v ascension radius mass])
 
 (defn make-particle [t]
   (map->Particle
-   (let [decay (/ (rand) 16)]
+   (let [delta-v (/ (rand) 16)]
      {:t0 t
-      :t1 (+ t (* 20 decay))
+      :t1 (+ t (* 20 delta-v))
       :lifespan 100.0
-      :decay decay
+      :delta-v delta-v
+      :mass (q/random 1.0 4.0)
+
       :offset (* Math/PI (rand))
       :ascension (rand-nth [1.5 2.0 3.0 4.0])
       :radius
@@ -19,14 +21,13 @@
         (rand-nth [(fn [_] 150)
                    (fn [t] (- r t))
                    (fn [_] r)
-                   (fn [t] (/ r (+ t 1)))]))
-      :weight (q/random 1.0 4.0)})))
+                   (fn [t] (/ r (+ t 1)))]))})))
 
 (defn update-particle
-  [{:keys [t0 t1 decay] :as p}]
+  [{:keys [t0 t1 delta-v] :as p}]
   (assoc p
-         :t0 (+ t0 decay)
-         :t1 (+ t1 decay)))
+         :t0 (+ t0 delta-v)
+         :t1 (+ t1 delta-v)))
 
 (defn position [{:keys [ascension radius offset]} t h]
   (let [hh (/ h 2)
@@ -46,7 +47,7 @@
 (defn add-particle [particles]
   (let [alive (map update-particle
                    (filter alive? particles))]
-    (if (and (< (count alive) 256)
+    (if (and (< (count alive) 16)
              (< (rand) 0.05))
       (conj alive (make-particle 0.0))
       alive)))
@@ -58,12 +59,12 @@
   (q/background 255)
   (q/stroke 0 192)
   (let [h (q/height)]
-    (doseq [{:keys [t0 t1 decay weight] :as p} particles
+    (doseq [{:keys [t0 t1 delta-v mass] :as p} particles
             :let [point-pairs
-                  (->> (range t0 t1 (* 4 decay))
+                  (->> (range t0 t1 (* 4 delta-v))
                        (map (fn [t] (position p t h)))
                        (partition 2 1))]]
-      (q/stroke-weight weight)
+      (q/stroke-weight mass)
       (doseq [[p0 p1] point-pairs]
         (q/line p0 p1)))))
 
