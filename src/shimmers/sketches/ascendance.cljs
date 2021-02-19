@@ -38,19 +38,22 @@
   {:time 0.0
    :particles []})
 
+(def dt 0.1)
+(def population 256)
+(def pop-growth 0.1)
+(def lifespan 100.0)
+
 (defn alive? [time {:keys [t0 fuel]}]
   (and (> fuel 0.0)
-       (< (- time t0) 50.0)))
+       (< (- time t0) lifespan)))
 
 (defn add-particle [particles t1]
   (let [alive (map update-particle
                    (filter (partial alive? t1) particles))]
-    (if (and (< (count alive) 16)
-             (< (rand) 0.05))
+    (if (and (< (count alive) population)
+             (< (rand) pop-growth))
       (conj alive (make-particle t1))
       alive)))
-
-(def dt 0.1)
 
 (defn update-state [{:keys [time] :as state}]
   (let [t1 (+ time dt)]
