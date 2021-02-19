@@ -3,14 +3,14 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]))
 
-(defrecord Particle [t0 t1 lifespan delta-v ascension radius mass])
+(defrecord Particle [t0 t1 fuel delta-v ascension radius mass])
 
 (defn make-particle [t]
   (map->Particle
    (let [delta-v (/ (rand) 16)]
      {:t0 t
       :t1 (+ t (* 20 delta-v))
-      :lifespan 100.0
+      :fuel 100.0
       :delta-v delta-v
       :mass (q/random 1.0 4.0)
 
@@ -24,10 +24,11 @@
                    (fn [t] (/ r (+ t 1)))]))})))
 
 (defn update-particle
-  [{:keys [t0 t1 delta-v] :as p}]
-  (assoc p
-         :t0 (+ t0 delta-v)
-         :t1 (+ t1 delta-v)))
+  [{:keys [delta-v] :as p}]
+  (-> p
+      (update :t0 + delta-v)
+      (update :t1 + delta-v)
+      (update :fuel - delta-v)))
 
 (defn position [{:keys [ascension radius offset]} t h]
   (let [hh (/ h 2)
@@ -41,8 +42,8 @@
   (q/ortho)
   {:particles []})
 
-(defn alive? [{:keys [t1 lifespan]}]
-  (< t1 lifespan))
+(defn alive? [{:keys [fuel]}]
+  (> fuel 0.0))
 
 (defn add-particle [particles]
   (let [alive (map update-particle
