@@ -47,16 +47,15 @@
        (< (Math/abs (- (* dir target) theta)) (* speed 0.5)))
      :on-complete (rotate-grid-cells (* dir rotations))
      :draw
-     (fn [effect grid w h]
-       (let [cells (:cells effect)]
-         (q/translate (* c w) (* r h))
-         (q/fill 255)
-         (q/rect (- w) (- h) (* w 2) (* h 2))
-         (q/rotate (:theta effect))
-         (doseq [cell cells
-                 :let [[i j] cell]]
-           (apply q/fill (get grid cell))
-           (q/rect (* w (- i c)) (* h (- j r)) w h))))}))
+     (fn [{:keys [cells theta]} grid w h]
+       (q/translate (* c w) (* r h))
+       (q/fill 255)
+       (q/rect (- w) (- h) (* w 2) (* h 2))
+       (q/rotate theta)
+       (doseq [cell cells
+               :let [[i j] cell]]
+         (apply q/fill (get grid cell))
+         (q/rect (* w (- i c)) (* h (- j r)) w h)))}))
 
 ;; rotation is correctly but doesn't quite look like rotation.
 ;; maybe width needs a perspective adjustment?
