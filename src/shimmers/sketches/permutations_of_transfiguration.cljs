@@ -72,14 +72,14 @@
    :draw
    (fn [effect grid w h]
      (let [pw (* w (Math/cos (:theta effect)))
-           [r0 r1] (:cells effect)]
+           [a b] (:cells effect)]
        (q/translate (* (inc c) w) (* r h))
        (q/fill 255)
        (q/rect (- w) 0 (* w 2) h)
        (q/stroke-weight 1.3)
-       (apply q/fill (get grid r0))
+       (apply q/fill (get grid a))
        (q/rect 0 0 (- pw) h)
-       (apply q/fill (get grid r1))
+       (apply q/fill (get grid b))
        (q/rect 0 0 pw h)
        ))})
 
@@ -94,14 +94,15 @@
    :on-complete (rotate-grid-cells 1)
    :draw
    (fn [effect grid w h]
-     (let [ph (* h (Math/cos (:theta effect)))]
+     (let [ph (* h (Math/cos (:theta effect)))
+           [a b] (:cells effect)]
        (q/translate (* c w) (* (inc r) h))
        (q/fill 255)
        (q/rect 0 (- h) w (* h 2))
        (q/stroke-weight 1.3)
-       (apply q/fill (get grid [c r]))
+       (apply q/fill (get grid a))
        (q/rect 0 0 w (- ph))
-       (apply q/fill (get grid [c (inc r)]))
+       (apply q/fill (get grid b))
        (q/rect 0 0 w ph)
        ))})
 
