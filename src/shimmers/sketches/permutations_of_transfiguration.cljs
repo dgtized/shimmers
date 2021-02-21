@@ -53,14 +53,10 @@
          (q/fill 255)
          (q/rect (- w) (- h) (* w 2) (* h 2))
          (q/rotate (:theta effect))
-         (doseq [[p cell]
-                 (map (fn [p cell] [p cell])
-                      [[(- w) (- h)] [w (- h)]
-                       [w h] [(- w) h]]
-                      cells)
-                 :let [[x y] p]]
+         (doseq [cell cells
+                 :let [[i j] cell]]
            (apply q/fill (get grid cell))
-           (q/rect 0 0 x y))))}))
+           (q/rect (* w (- i c)) (* h (- j r)) h w))))}))
 
 ;; rotation is correctly but doesn't quite look like rotation.
 ;; maybe width needs a perspective adjustment?
