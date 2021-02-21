@@ -56,7 +56,7 @@
          (doseq [cell cells
                  :let [[i j] cell]]
            (apply q/fill (get grid cell))
-           (q/rect (* w (- i c)) (* h (- j r)) h w))))}))
+           (q/rect (* w (- i c)) (* h (- j r)) w h))))}))
 
 ;; rotation is correctly but doesn't quite look like rotation.
 ;; maybe width needs a perspective adjustment?
