@@ -69,12 +69,22 @@
          (gt/triangle2 c mbc mca)
          (gt/triangle2 mab mbc mca)]))))
 
+(defn one-triangle [w h]
+  (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
+        left (v/vec2 (* 0.1 w) (* 0.9 h))
+        right (v/vec2 (* 0.9 w) (* 0.9 h))]
+    [(add-color (gt/triangle2 top left right) (new-color))]))
+
+(defn split-rectangle [w h]
+  (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
+        b (v/vec2 (* 0.95 w) (* 0.05 h))
+        c (v/vec2 (* 0.05 w) (* 0.95 h))
+        d (v/vec2 (* 0.95 w) (* 0.95 h))]
+    [(add-color (gt/triangle2 a b c) [180 60 70 0.8])
+     (add-color (gt/triangle2 c d b) [0 60 70 0.8])]))
+
 (defn initial-conditions []
-  (let [top (v/vec2 (* (q/random 0.1 0.9) (q/width)) (* 0.1 (q/height)))
-        left (v/vec2 (* 0.1 (q/width)) (* 0.9 (q/height)))
-        right (v/vec2 (* 0.9 (q/width)) (* 0.9 (q/height)))]
-    {:triangles [(add-color (gt/triangle2 top left right)
-                            (new-color))]}))
+  {:triangles ((rand-nth [one-triangle split-rectangle]) (q/width) (q/height))})
 
 (defn setup []
   (q/frame-rate 60)
