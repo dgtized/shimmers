@@ -14,7 +14,7 @@
    (->Line c a)])
 
 (defn subdivide-line [{:keys [a b]}]
-  (v/add b (v/scale (v/sub a b) (rand))))
+  (v/add b (v/scale (v/sub a b) (q/random 0.25 0.75))))
 
 (defn subdivide-triangle [{:keys [a b c]}]
   (let [[a b c] (shuffle [a b c])
