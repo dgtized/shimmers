@@ -37,7 +37,7 @@
          (gt/triangle2 mab mbc mca)]))))
 
 (defn initial-conditions []
-  (let [top (v/vec2 (* 0.5 (q/width)) (* 0.1 (q/height)))
+  (let [top (v/vec2 (* (q/random 0.1 0.9) (q/width)) (* 0.1 (q/height)))
         left (v/vec2 (* 0.1 (q/width)) (* 0.9 (q/height)))
         right (v/vec2 (* 0.9 (q/width)) (* 0.9 (q/height)))]
     {:triangles [(gt/triangle2 top left right)]}))
