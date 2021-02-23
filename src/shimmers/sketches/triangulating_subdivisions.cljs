@@ -13,9 +13,6 @@
 ;; Ideas:
 ;; Color each triangle and then shade the subdivisions by the parent somehow?
 
-(defn triangle->lines [t]
-  (map (fn [[a b]] (gl/line2 a b)) (geom/edges t)))
-
 (defn subdivide-line [p q]
   (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
 
@@ -79,8 +76,8 @@
 (defn draw [{:keys [triangles]}]
   (q/background 255)
   (q/stroke-weight 0.05)
-  (doseq [{[p q] :points} (mapcat triangle->lines triangles)]
-    (q/line p q)))
+  (doseq [{[a b c] :points} triangles]
+    (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c))))
 
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions
