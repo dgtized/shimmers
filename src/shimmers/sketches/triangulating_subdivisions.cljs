@@ -26,6 +26,23 @@
           [a c b]
           :else [b c a])))
 
+(defn new-color []
+  [(q/random 360) 40 70 0.5])
+
+(defn add-color [t color]
+  (if color
+    (assoc t :color color)
+    t))
+
+(defn drift [n [h s l a]]
+  [(mod (+ (* n (rand)) h) 360) s l a])
+
+(defn map-colors [color triangles]
+  (for [t triangles]
+    (if (and color (< (rand) 0.90))
+      (add-color t (drift (* 20 (q/random-gaussian)) color))
+      t)))
+
 (defn subdivide-triangle [t]
   (let [[a b c] (longest-edge t)
         distribution (cs/weighted 8 :midpoint
@@ -54,10 +71,12 @@
   (let [top (v/vec2 (* (q/random 0.1 0.9) (q/width)) (* 0.1 (q/height)))
         left (v/vec2 (* 0.1 (q/width)) (* 0.9 (q/height)))
         right (v/vec2 (* 0.9 (q/width)) (* 0.9 (q/height)))]
-    {:triangles [(gt/triangle2 top left right)]}))
+    {:triangles [(add-color (gt/triangle2 top left right)
+                            (new-color))]}))
 
 (defn setup []
   (q/frame-rate 60)
+  (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
 (defn area [t]
@@ -69,14 +88,18 @@
     ;; bias towards subdividing largest triangles
     (let [ordered (sort-by area triangles)
           cutoff (int (* 0.33 (count triangles)))
-          [s & r] (shuffle (drop cutoff ordered))]
+          [s & r] (shuffle (drop cutoff ordered))
+          divisions (map-colors (:color s) (subdivide-triangle s))]
       (assoc state :triangles (into (take cutoff ordered)
-                                    (into (subdivide-triangle s) r))))))
+                                    (into divisions r))))))
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
   (q/stroke-weight 0.05)
-  (doseq [{[a b c] :points} triangles]
+  (doseq [{[a b c] :points color :color} triangles]
+    (if color
+      (apply q/fill color)
+      (q/no-fill))
     (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c))))
 
 (defn ^:export run-sketch []
