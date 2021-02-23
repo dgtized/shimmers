@@ -16,9 +16,20 @@
 
 (defn subdivide-triangle [t]
   (let [[a b c] (shuffle (:points t))
-        m (subdivide-line (->Line a b))]
-    [(gt/triangle2 a m c)
-     (gt/triangle2 b m c)]))
+        approach (rand-nth [:midpoint :midpoint :inset])]
+    (case approach
+      :midpoint
+      (let [m (subdivide-line (->Line a b))]
+        [(gt/triangle2 a m c)
+         (gt/triangle2 b m c)])
+      :inset
+      (let [mab (subdivide-line (->Line a b))
+            mbc (subdivide-line (->Line b c))
+            mca (subdivide-line (->Line c a))]
+        [(gt/triangle2 a mab mca)
+         (gt/triangle2 b mab mbc)
+         (gt/triangle2 c mbc mca)
+         (gt/triangle2 mab mbc mca)]))))
 
 (defn initial-conditions []
   (let [top (v/vec2 (* 0.5 (q/width)) (* 0.1 (q/height)))
