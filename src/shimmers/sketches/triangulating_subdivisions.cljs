@@ -6,6 +6,9 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.core :as geom]))
 
+;; Ideas:
+;; Color each triangle and then shade the subdivisions by the parent somehow?
+
 (defrecord Line [a b])
 
 (defn triangle->lines [t]
