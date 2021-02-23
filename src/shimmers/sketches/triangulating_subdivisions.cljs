@@ -47,13 +47,15 @@
   (initial-conditions))
 
 (defn update-state [{:keys [triangles] :as state}]
-  (if (> (count triangles) 100)
+  (if (> (count triangles) 200)
     (initial-conditions)
     (let [[s & r] (shuffle triangles)]
+      ;; Don't subdivide if area < threshold?
       (assoc state :triangles (into (subdivide-triangle s) r)))))
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
+  (q/stroke-weight 0.05)
   (doseq [line (mapcat triangle->lines triangles)]
     (q/line (:a line) (:b line))))
 
