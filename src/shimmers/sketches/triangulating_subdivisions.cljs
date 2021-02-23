@@ -16,12 +16,17 @@
 
 (defn subdivide-triangle [t]
   (let [[a b c] (shuffle (:points t))
-        approach (rand-nth [:midpoint :midpoint :inset])]
+        approach (rand-nth [:midpoint :midpoint :inset :inset :centroid])]
     (case approach
       :midpoint
       (let [m (subdivide-line (->Line a b))]
         [(gt/triangle2 a m c)
          (gt/triangle2 b m c)])
+      :centroid
+      (let [inner (geom/random-point-inside t)]
+        [(gt/triangle2 a b inner)
+         (gt/triangle2 b c inner)
+         (gt/triangle2 c a inner)])
       :inset
       (let [mab (subdivide-line (->Line a b))
             mbc (subdivide-line (->Line b c))
