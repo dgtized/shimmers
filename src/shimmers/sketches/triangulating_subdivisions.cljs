@@ -37,7 +37,7 @@
      (+ (* 2 (q/random-gaussian)) s)
      (+ (* 2 (q/random-gaussian)) l)
      (* 0.5 a)]
-    [(mod (+ (* 20 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
+    [(mod (+ (* 8 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
 (defn map-colors [color triangles]
   (for [t triangles]
