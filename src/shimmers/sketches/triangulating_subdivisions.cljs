@@ -46,12 +46,18 @@
   (q/frame-rate 10)
   (initial-conditions))
 
+(defn area [t]
+  (* 0.5 (geom/height t) (geom/width t)))
+
 (defn update-state [{:keys [triangles] :as state}]
   (if (> (count triangles) 200)
     (initial-conditions)
-    (let [[s & r] (shuffle triangles)]
-      ;; Don't subdivide if area < threshold?
-      (assoc state :triangles (into (subdivide-triangle s) r)))))
+    ;; bias towards subdividing largest triangles
+    (let [ordered (sort-by area triangles)
+          cutoff (int (* 0.33 (count triangles)))
+          [s & r] (shuffle (drop cutoff ordered))]
+      (assoc state :triangles (into (take cutoff ordered)
+                                    (into (subdivide-triangle s) r))))))
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
