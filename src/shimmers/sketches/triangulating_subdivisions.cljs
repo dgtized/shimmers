@@ -14,8 +14,8 @@
 (defn triangle->lines [t]
   (map (fn [[a b]] (gl/line2 a b)) (geom/edges t)))
 
-(defn subdivide-line [l]
-  (geom/point-at l (q/random 0.25 0.75)))
+(defn subdivide-line [p q]
+  (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
 
 (defn subdivide-triangle [t]
   (let [[a b c] (shuffle (:points t))
@@ -24,7 +24,7 @@
                                   1 :centroid)]
     (case (rand-nth distribution)
       :midpoint
-      (let [m (subdivide-line (gl/line2 a b))]
+      (let [m (subdivide-line a b)]
         [(gt/triangle2 a m c)
          (gt/triangle2 b m c)])
       :centroid
@@ -33,9 +33,9 @@
          (gt/triangle2 b c inner)
          (gt/triangle2 c a inner)])
       :inset
-      (let [mab (subdivide-line (gl/line2 a b))
-            mbc (subdivide-line (gl/line2 b c))
-            mca (subdivide-line (gl/line2 c a))]
+      (let [mab (subdivide-line a b)
+            mbc (subdivide-line b c)
+            mca (subdivide-line c a)]
         [(gt/triangle2 a mab mca)
          (gt/triangle2 b mab mbc)
          (gt/triangle2 c mbc mca)
