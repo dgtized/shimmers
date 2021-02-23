@@ -87,7 +87,7 @@
   {:triangles ((rand-nth [one-triangle split-rectangle]) (q/width) (q/height))})
 
 (defn setup []
-  (q/frame-rate 60)
+  (q/frame-rate 30)
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
@@ -95,15 +95,18 @@
   (* 0.5 (geom/height t) (geom/width t)))
 
 (defn update-state [{:keys [triangles] :as state}]
-  (if (> (count triangles) 900)
+  (if (> (count triangles) 3000)
     (initial-conditions)
     ;; bias towards subdividing largest triangles
     (let [ordered (sort-by area triangles)
           cutoff (int (* 0.33 (count triangles)))
-          [s & r] (shuffle (drop cutoff ordered))
-          divisions (map-colors (:color s) (subdivide-triangle s))]
+          batch 8
+          randomized (shuffle (drop cutoff ordered))
+          divisions
+          (mapcat (fn [s] (map-colors (:color s) (subdivide-triangle s)))
+                  (take batch randomized))]
       (assoc state :triangles (into (take cutoff ordered)
-                                    (into divisions r))))))
+                                    (into divisions (drop batch randomized)))))))
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
