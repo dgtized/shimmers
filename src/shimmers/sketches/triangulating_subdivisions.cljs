@@ -1,4 +1,6 @@
 (ns shimmers.sketches.triangulating-subdivisions
+  "Playing with concepts from
+  https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision."
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -17,9 +19,19 @@
 (defn subdivide-line [p q]
   (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
 
+(defn longest-edge [{[a b c] :points}]
+  (let [dist-ab (geom/dist a b)
+        dist-bc (geom/dist b c)
+        dist-ca (geom/dist c a)]
+    (cond (and (>= dist-ab dist-bc) (>= dist-ab dist-ca))
+          [a b c]
+          (and (>= dist-ca dist-bc) (>= dist-ca dist-ab))
+          [a c b]
+          :else [b c a])))
+
 (defn subdivide-triangle [t]
-  (let [[a b c] (shuffle (:points t))
-        distribution (cs/weighted 2 :midpoint
+  (let [[a b c] (longest-edge t)
+        distribution (cs/weighted 8 :midpoint
                                   2 :inset
                                   1 :centroid)]
     (case (rand-nth distribution)
