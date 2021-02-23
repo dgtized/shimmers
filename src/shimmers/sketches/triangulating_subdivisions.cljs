@@ -20,18 +20,24 @@
     [(gt/triangle2 a m c)
      (gt/triangle2 b m c)]))
 
-(defn setup []
-  (q/frame-rate 2)
+(defn initial-conditions []
   (let [top (v/vec2 (* 0.5 (q/width)) (* 0.1 (q/height)))
         left (v/vec2 (* 0.1 (q/width)) (* 0.9 (q/height)))
         right (v/vec2 (* 0.9 (q/width)) (* 0.9 (q/height)))]
     {:triangles [(gt/triangle2 top left right)]}))
 
+(defn setup []
+  (q/frame-rate 10)
+  (initial-conditions))
+
 (defn update-state [{:keys [triangles] :as state}]
-  (let [[s & r] (shuffle triangles)]
-    (assoc state :triangles (into (subdivide-triangle s) r))))
+  (if (> (count triangles) 100)
+    (initial-conditions)
+    (let [[s & r] (shuffle triangles)]
+      (assoc state :triangles (into (subdivide-triangle s) r)))))
 
 (defn draw [{:keys [triangles]}]
+  (q/background 255)
   (doseq [line (mapcat triangle->lines triangles)]
     (q/line (:a line) (:b line))))
 
