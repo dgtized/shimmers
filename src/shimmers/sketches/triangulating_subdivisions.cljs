@@ -10,9 +10,6 @@
             [thi.ng.geom.line :as gl]
             [shimmers.common.sequence :as cs]))
 
-;; Ideas:
-;; Color each triangle and then shade the subdivisions by the parent somehow?
-
 (defn subdivide-line [p q]
   (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
 
@@ -34,18 +31,18 @@
     (assoc t :color color)
     t))
 
-(defn drift [n [h s l a]]
+(defn drift [[h s l a]]
   (if (< (rand) 0.05)
     [(mod (+ h 90) 360)
      (+ (* 2 (q/random-gaussian)) s)
      (+ (* 2 (q/random-gaussian)) l)
      (* 0.5 a)]
-    [(mod (+ (* n (rand)) h) 360) s (+ 1 l) a]))
+    [(mod (+ (* 20 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
 (defn map-colors [color triangles]
   (for [t triangles]
     (if (and color (< (rand) 0.90))
-      (add-color t (drift (* 20 (q/random-gaussian)) color))
+      (add-color t (drift color))
       t)))
 
 (defn subdivide-triangle [t]
