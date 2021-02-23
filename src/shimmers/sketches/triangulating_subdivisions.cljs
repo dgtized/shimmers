@@ -60,14 +60,14 @@
     {:triangles [(gt/triangle2 top left right)]}))
 
 (defn setup []
-  (q/frame-rate 10)
+  (q/frame-rate 60)
   (initial-conditions))
 
 (defn area [t]
   (* 0.5 (geom/height t) (geom/width t)))
 
 (defn update-state [{:keys [triangles] :as state}]
-  (if (> (count triangles) 200)
+  (if (> (count triangles) 900)
     (initial-conditions)
     ;; bias towards subdividing largest triangles
     (let [ordered (sort-by area triangles)
