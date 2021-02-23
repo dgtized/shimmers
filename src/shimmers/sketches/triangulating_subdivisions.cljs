@@ -4,7 +4,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as geom]
+            [shimmers.common.sequence :as cs]))
 
 ;; Ideas:
 ;; Color each triangle and then shade the subdivisions by the parent somehow?
@@ -19,8 +20,10 @@
 
 (defn subdivide-triangle [t]
   (let [[a b c] (shuffle (:points t))
-        approach (rand-nth [:midpoint :midpoint :inset :inset :centroid])]
-    (case approach
+        distribution (cs/weighted 2 :midpoint
+                                  2 :inset
+                                  1 :centroid)]
+    (case (rand-nth distribution)
       :midpoint
       (let [m (subdivide-line (->Line a b))]
         [(gt/triangle2 a m c)
