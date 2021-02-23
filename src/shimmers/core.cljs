@@ -38,6 +38,7 @@
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
+            [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
             [shimmers.sketches.video-shader :as video-shader]
@@ -87,6 +88,7 @@
      scintillation/run-sketch
      sphere/run-sketch
      substrate/run-sketch
+     triangulating-subdivisions/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
      video-shader/run-sketch
