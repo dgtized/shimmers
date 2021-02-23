@@ -24,7 +24,7 @@
           :else [b c a])))
 
 (defn new-color []
-  [(q/random 360) 40 70 0.5])
+  [(q/random 360) 75 85 0.5])
 
 (defn add-color [t color]
   (if color
