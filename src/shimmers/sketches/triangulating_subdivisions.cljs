@@ -5,18 +5,17 @@
             [shimmers.math.vector :as v]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [shimmers.common.sequence :as cs]))
 
 ;; Ideas:
 ;; Color each triangle and then shade the subdivisions by the parent somehow?
 
-(defrecord Line [a b])
-
 (defn triangle->lines [t]
-  (map (fn [[a b]] (->Line a b)) (geom/edges t)))
+  (map (fn [[a b]] (gl/line2 a b)) (geom/edges t)))
 
-(defn subdivide-line [{:keys [a b]}]
-  (v/add b (v/scale (v/sub a b) (q/random 0.25 0.75))))
+(defn subdivide-line [l]
+  (geom/point-at l (q/random 0.25 0.75)))
 
 (defn subdivide-triangle [t]
   (let [[a b c] (shuffle (:points t))
@@ -25,7 +24,7 @@
                                   1 :centroid)]
     (case (rand-nth distribution)
       :midpoint
-      (let [m (subdivide-line (->Line a b))]
+      (let [m (subdivide-line (gl/line2 a b))]
         [(gt/triangle2 a m c)
          (gt/triangle2 b m c)])
       :centroid
@@ -34,9 +33,9 @@
          (gt/triangle2 b c inner)
          (gt/triangle2 c a inner)])
       :inset
-      (let [mab (subdivide-line (->Line a b))
-            mbc (subdivide-line (->Line b c))
-            mca (subdivide-line (->Line c a))]
+      (let [mab (subdivide-line (gl/line2 a b))
+            mbc (subdivide-line (gl/line2 b c))
+            mca (subdivide-line (gl/line2 c a))]
         [(gt/triangle2 a mab mca)
          (gt/triangle2 b mab mbc)
          (gt/triangle2 c mbc mca)
@@ -68,8 +67,8 @@
 (defn draw [{:keys [triangles]}]
   (q/background 255)
   (q/stroke-weight 0.05)
-  (doseq [line (mapcat triangle->lines triangles)]
-    (q/line (:a line) (:b line))))
+  (doseq [{[p q] :points} (mapcat triangle->lines triangles)]
+    (q/line p q)))
 
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions
