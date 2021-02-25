@@ -137,15 +137,15 @@
   (initial-conditions))
 
 (defn subdivide-batch [{:keys [triangles] :as state}]
-  (if (> (count triangles) 12000)
+  (if (> (count triangles) 20000)
     [true state]
     (let [[above below] (cs/split-by dividable? triangles)
-          [to-divide remaining] (split-at 16 (shuffle above))]
+          [to-divide remaining] (split-at 32 (shuffle above))
+          subdivided (mapcat subdivide to-divide)]
       [false
-       (assoc state :triangles
-              (concat below
-                      (mapcat subdivide to-divide)
-                      remaining))])))
+       (assoc state
+              :triangles (concat below subdivided remaining)
+              :to-draw subdivided)])))
 
 (defn update-state [state]
   (quil/if-steady-state
@@ -156,14 +156,16 @@
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
 
-(defn draw [{:keys [triangles]}]
-  (q/background 255)
+(defn draw [{:keys [triangles to-draw]}]
+  (when (empty? to-draw)
+    (q/background 255))
   (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
-  (doseq [{[a b c] :points color :color} triangles]
-    (if color
-      (apply q/fill color)
-      (q/no-fill))
+  (doseq [{[a b c] :points color :color}
+          (if (seq to-draw) to-draw triangles)]
+    (q/fill 0 100 100 1.0)
+    (when color
+      (apply q/fill color))
     (draw-triangle a b c)))
 
 (defn ^:export run-sketch []
