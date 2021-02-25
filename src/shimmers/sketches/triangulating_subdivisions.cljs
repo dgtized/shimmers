@@ -27,10 +27,13 @@
 (defn new-color []
   [(q/random 360) 75 85 0.5])
 
-(defn make-triangle [a b c & {:keys [color depth] :or {depth 0}}]
+(defn make-triangle
+  [a b c & {:keys [color depth max-depth]
+            :or {depth 0 max-depth 15}}]
   (assoc (gt/triangle2 a b c)
          :color color
-         :depth depth))
+         :depth depth
+         :max-depth max-depth))
 
 (defn drift [[h s l a]]
   (if (< (rand) 0.05)
@@ -64,17 +67,20 @@
          (make-triangle c mbc mca)
          (make-triangle mab mbc mca)]))))
 
-(defn dividable? [{:keys [depth final]}]
-  (and (not final) (< depth 16)))
+(defn dividable? [{:keys [depth max-depth]}]
+  (< depth max-depth))
 
-(defn subdivide [{:keys [color depth] :as s}]
-  (for [child (subdivide-triangle s)
-        :let [t (assoc child
-                       :final (and (> depth 1) (< (rand) 0.3))
-                       :depth depth)]]
-    (if (and color (< (rand) 0.90))
-      (assoc t :color (drift color))
-      t)))
+(defn subdivide [{:keys [color depth max-depth] :as s}]
+  (for [child (subdivide-triangle s)]
+    (assoc child
+           :color
+           (when (and color (< (rand) 0.90))
+             (drift color))
+           :depth (inc depth)
+           :max-depth
+           (if (and (> depth 2) (< (rand) 0.2))
+             (+ depth 2)
+             max-depth))))
 
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
