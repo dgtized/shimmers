@@ -73,9 +73,8 @@
   (fn [{:keys [depth]}] (< depth 12)))
 
 (defn subdivide [{:keys [color depth] :as s}]
-  (for [t (->> s
-               subdivide-triangle
-               (map (fn [x] (assoc x :depth depth))))]
+  (for [child (subdivide-triangle s)
+        :let [t (assoc child :depth depth)]]
     (if (and color (< (rand) 0.90))
       (add-color t (drift color))
       t)))
