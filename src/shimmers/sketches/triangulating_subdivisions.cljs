@@ -31,9 +31,10 @@
     (assoc t :color color)
     t))
 
-(defn make-triangle [a b c & {:keys [color]}]
+(defn make-triangle [a b c & {:keys [color depth] :or {depth 0}}]
   (-> (gt/triangle2 a b c)
-      (add-color color)))
+      (add-color color)
+      (assoc :depth depth)))
 
 (defn drift [[h s l a]]
   (if (< (rand) 0.05)
@@ -43,8 +44,8 @@
      (* 0.5 a)]
     [(mod (+ (* 8 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
-(defn map-colors [color triangles]
-  (for [t triangles]
+(defn map-colors [color depth triangles]
+  (for [t (map (fn [x] (assoc x :depth depth)) triangles)]
     (if (and color (< (rand) 0.90))
       (add-color t (drift color))
       t)))
@@ -97,16 +98,20 @@
   (initial-conditions))
 
 (defn update-state [{:keys [triangles] :as state}]
-  (if (> (count triangles) 8192)
+  (if (> (count triangles) (Math/pow 2 13))
     (initial-conditions)
     ;; bias towards subdividing largest triangles
-    (let [batch 16
-          randomized (shuffle triangles)
+    (let [batch 32
+          [above below] ((juxt filter remove)
+                         (fn [{:keys [depth]}] (< depth 12))
+                         triangles)
+          randomized (shuffle above)
           divisions
-          (mapcat (fn [s] (map-colors (:color s) (subdivide-triangle s)))
+          (mapcat (fn [s] (map-colors (:color s) (inc (:depth s))
+                                     (subdivide-triangle s)))
                   (take batch randomized))]
       (assoc state :triangles
-             (into divisions (drop batch randomized))))))
+             (into below (into divisions (drop batch randomized)))))))
 
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
