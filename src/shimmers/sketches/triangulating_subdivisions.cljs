@@ -64,12 +64,14 @@
          (make-triangle c mbc mca)
          (make-triangle mab mbc mca)]))))
 
-(defn dividable? [t]
-  (fn [{:keys [depth]}] (< depth 12)))
+(defn dividable? [{:keys [depth final]}]
+  (and (not final) (< depth 16)))
 
 (defn subdivide [{:keys [color depth] :as s}]
   (for [child (subdivide-triangle s)
-        :let [t (assoc child :depth depth)]]
+        :let [t (assoc child
+                       :final (and (> depth 1) (< (rand) 0.3))
+                       :depth depth)]]
     (if (and color (< (rand) 0.90))
       (assoc t :color (drift color))
       t)))
