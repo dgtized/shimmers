@@ -8,7 +8,8 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
-            [shimmers.common.sequence :as cs]))
+            [shimmers.common.sequence :as cs]
+            [shimmers.common.quil :as quil]))
 
 (defn subdivide-line [p q]
   (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
@@ -104,15 +105,22 @@
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
-(defn update-state [{:keys [triangles] :as state}]
+(defn subdivide-batch [{:keys [triangles] :as state}]
   (if (> (count triangles) (Math/pow 2 13))
-    (initial-conditions)
+    [true state]
     (let [[above below] (cs/split-by dividable triangles)
           [to-divide remaining] (split-at 32 (shuffle above))]
-      (assoc state :triangles
-             (concat below
-                     (mapcat subdivide to-divide)
-                     remaining)))))
+      [false
+       (assoc state :triangles
+              (concat below
+                      (mapcat subdivide to-divide)
+                      remaining))])))
+
+(defn update-state [state]
+  (quil/if-steady-state
+   state 5
+   initial-conditions
+   subdivide-batch))
 
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
