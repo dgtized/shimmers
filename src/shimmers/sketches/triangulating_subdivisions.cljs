@@ -93,8 +93,8 @@
         b (v/vec2 (* 0.95 w) (* 0.05 h))
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
-    [(make-triangle a b c :color [180 60 55 0.8])
-     (make-triangle c d b :color [0 55 45 0.8])]))
+    [(make-triangle a b c :color [200 70 35 0.8])
+     (make-triangle c d b :color [5 85 30 0.8])]))
 
 (defn empty-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
