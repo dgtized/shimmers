@@ -32,3 +32,6 @@
   (into [] (mapcat (fn [[frequency value]]
                      (repeat frequency value))
                    (partition 2 options))))
+
+(defn split-by [pred coll]
+  ((juxt filter remove) pred coll))

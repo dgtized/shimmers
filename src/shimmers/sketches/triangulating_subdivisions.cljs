@@ -102,7 +102,7 @@
     (initial-conditions)
     ;; bias towards subdividing largest triangles
     (let [batch 32
-          [above below] ((juxt filter remove)
+          [above below] (cs/split-by
                          (fn [{:keys [depth]}] (< depth 12))
                          triangles)
           randomized (shuffle above)
