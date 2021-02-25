@@ -44,12 +44,6 @@
      (* 0.5 a)]
     [(mod (+ (* 8 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
-(defn map-colors [color depth triangles]
-  (for [t (map (fn [x] (assoc x :depth depth)) triangles)]
-    (if (and color (< (rand) 0.90))
-      (add-color t (drift color))
-      t)))
-
 (defn subdivide-triangle [t]
   (let [[a b c] (longest-edge t)
         distribution (cs/weighted 8 :midpoint
@@ -76,6 +70,12 @@
 
 (defn dividable [t]
   (fn [{:keys [depth]}] (< depth 12)))
+
+(defn map-colors [color depth triangles]
+  (for [t (map (fn [x] (assoc x :depth depth)) triangles)]
+    (if (and color (< (rand) 0.90))
+      (add-color t (drift color))
+      t)))
 
 (defn subdivide [t]
   (map-colors (:color t) (inc (:depth t))
