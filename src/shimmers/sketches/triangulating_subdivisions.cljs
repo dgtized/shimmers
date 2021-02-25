@@ -31,6 +31,10 @@
     (assoc t :color color)
     t))
 
+(defn make-triangle [a b c & {:keys [color]}]
+  (-> (gt/triangle2 a b c)
+      (add-color color)))
+
 (defn drift [[h s l a]]
   (if (< (rand) 0.05)
     [(mod (+ h 90) 360)
@@ -53,35 +57,35 @@
     (case (rand-nth distribution)
       :midpoint
       (let [m (subdivide-line a b)]
-        [(gt/triangle2 a m c)
-         (gt/triangle2 b m c)])
+        [(make-triangle a m c)
+         (make-triangle b m c)])
       :centroid
       (let [inner (geom/random-point-inside t)]
-        [(gt/triangle2 a b inner)
-         (gt/triangle2 b c inner)
-         (gt/triangle2 c a inner)])
+        [(make-triangle a b inner)
+         (make-triangle b c inner)
+         (make-triangle c a inner)])
       :inset
       (let [mab (subdivide-line a b)
             mbc (subdivide-line b c)
             mca (subdivide-line c a)]
-        [(gt/triangle2 a mab mca)
-         (gt/triangle2 b mab mbc)
-         (gt/triangle2 c mbc mca)
-         (gt/triangle2 mab mbc mca)]))))
+        [(make-triangle a mab mca)
+         (make-triangle b mab mbc)
+         (make-triangle c mbc mca)
+         (make-triangle mab mbc mca)]))))
 
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
         left (v/vec2 (* 0.1 w) (* 0.9 h))
         right (v/vec2 (* 0.9 w) (* 0.9 h))]
-    [(add-color (gt/triangle2 top left right) (new-color))]))
+    [(make-triangle top left right :color (new-color))]))
 
 (defn split-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
         b (v/vec2 (* 0.95 w) (* 0.05 h))
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
-    [(add-color (gt/triangle2 a b c) [180 60 70 0.8])
-     (add-color (gt/triangle2 c d b) [0 60 70 0.8])]))
+    [(make-triangle a b c :color [180 60 70 0.8])
+     (make-triangle c d b :color [0 60 70 0.8])]))
 
 (defn initial-conditions []
   (let [shape-fn (rand-nth [one-triangle split-rectangle])]
