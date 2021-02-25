@@ -84,7 +84,8 @@
      (add-color (gt/triangle2 c d b) [0 60 70 0.8])]))
 
 (defn initial-conditions []
-  {:triangles ((rand-nth [one-triangle split-rectangle]) (q/width) (q/height))})
+  (let [shape-fn (rand-nth [one-triangle split-rectangle])]
+    {:triangles (shape-fn (q/width) (q/height))}))
 
 (defn setup []
   (q/frame-rate 30)
