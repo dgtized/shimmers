@@ -39,8 +39,8 @@
 (defn drift [[h s l a]]
   (if (< (rand) 0.05)
     [(mod (+ h 90) 360)
-     (+ (* 2 (q/random-gaussian)) s)
-     (+ (* 2 (q/random-gaussian)) l)
+     (+ (* 0.75 (q/random-gaussian)) s)
+     (+ (* 0.1 (q/random-gaussian)) l)
      (* 0.5 a)]
     [(mod (+ (* 8 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
