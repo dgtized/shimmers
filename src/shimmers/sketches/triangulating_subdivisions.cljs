@@ -88,26 +88,21 @@
     {:triangles (shape-fn (q/width) (q/height))}))
 
 (defn setup []
-  (q/frame-rate 30)
+  (q/frame-rate 60)
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
-(defn area [t]
-  (* 0.5 (geom/height t) (geom/width t)))
-
 (defn update-state [{:keys [triangles] :as state}]
-  (if (> (count triangles) 3000)
+  (if (> (count triangles) 8192)
     (initial-conditions)
     ;; bias towards subdividing largest triangles
-    (let [ordered (sort-by area triangles)
-          cutoff (int (* 0.33 (count triangles)))
-          batch 8
-          randomized (shuffle (drop cutoff ordered))
+    (let [batch 16
+          randomized (shuffle triangles)
           divisions
           (mapcat (fn [s] (map-colors (:color s) (subdivide-triangle s)))
                   (take batch randomized))]
-      (assoc state :triangles (into (take cutoff ordered)
-                                    (into divisions (drop batch randomized)))))))
+      (assoc state :triangles
+             (into divisions (drop batch randomized))))))
 
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
