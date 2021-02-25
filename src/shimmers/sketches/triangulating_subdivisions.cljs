@@ -69,7 +69,7 @@
          (make-triangle c mbc mca)
          (make-triangle mab mbc mca)]))))
 
-(defn dividable [t]
+(defn dividable? [t]
   (fn [{:keys [depth]}] (< depth 12)))
 
 (defn subdivide [{:keys [color depth] :as s}]
@@ -106,7 +106,7 @@
 (defn subdivide-batch [{:keys [triangles] :as state}]
   (if (> (count triangles) (Math/pow 2 13))
     [true state]
-    (let [[above below] (cs/split-by dividable triangles)
+    (let [[above below] (cs/split-by dividable? triangles)
           [to-divide remaining] (split-at 32 (shuffle above))]
       [false
        (assoc state :triangles
