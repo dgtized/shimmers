@@ -74,6 +74,10 @@
          (make-triangle c mbc mca)
          (make-triangle mab mbc mca)]))))
 
+(defn subdivide [t]
+  (map-colors (:color t) (inc (:depth t))
+              (subdivide-triangle t)))
+
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
         left (v/vec2 (* 0.1 w) (* 0.9 h))
@@ -107,10 +111,7 @@
           [to-divide remaining] (split-at 32 (shuffle above))]
       (assoc state :triangles
              (concat below
-                     (mapcat
-                      (fn [s] (map-colors (:color s) (inc (:depth s))
-                                         (subdivide-triangle s)))
-                      to-divide)
+                     (mapcat subdivide to-divide)
                      remaining)))))
 
 (defn draw-triangle [a b c]
