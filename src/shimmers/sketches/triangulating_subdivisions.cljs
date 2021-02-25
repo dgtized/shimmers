@@ -93,8 +93,8 @@
         b (v/vec2 (* 0.95 w) (* 0.05 h))
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
-    [(make-triangle a b c :color [200 70 35 0.8])
-     (make-triangle c d b :color [5 85 30 0.8])]))
+    [(make-triangle a b c :color [200 70 35 0.9])
+     (make-triangle c d b :color [5 85 30 0.7])]))
 
 (defn empty-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
@@ -158,6 +158,7 @@
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
+  (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
   (doseq [{[a b c] :points color :color} triangles]
     (if color
