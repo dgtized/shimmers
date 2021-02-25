@@ -27,15 +27,10 @@
 (defn new-color []
   [(q/random 360) 75 85 0.5])
 
-(defn add-color [t color]
-  (if color
-    (assoc t :color color)
-    t))
-
 (defn make-triangle [a b c & {:keys [color depth] :or {depth 0}}]
-  (-> (gt/triangle2 a b c)
-      (add-color color)
-      (assoc :depth depth)))
+  (assoc (gt/triangle2 a b c)
+         :color color
+         :depth depth))
 
 (defn drift [[h s l a]]
   (if (< (rand) 0.05)
@@ -76,7 +71,7 @@
   (for [child (subdivide-triangle s)
         :let [t (assoc child :depth depth)]]
     (if (and color (< (rand) 0.90))
-      (add-color t (drift color))
+      (assoc t :color (drift color))
       t)))
 
 (defn one-triangle [w h]
