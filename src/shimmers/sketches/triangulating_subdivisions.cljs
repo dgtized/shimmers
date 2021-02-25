@@ -74,6 +74,9 @@
          (make-triangle c mbc mca)
          (make-triangle mab mbc mca)]))))
 
+(defn dividable [t]
+  (fn [{:keys [depth]}] (< depth 12)))
+
 (defn subdivide [t]
   (map-colors (:color t) (inc (:depth t))
               (subdivide-triangle t)))
@@ -104,10 +107,7 @@
 (defn update-state [{:keys [triangles] :as state}]
   (if (> (count triangles) (Math/pow 2 13))
     (initial-conditions)
-    ;; bias towards subdividing largest triangles
-    (let [[above below] (cs/split-by
-                         (fn [{:keys [depth]}] (< depth 12))
-                         triangles)
+    (let [[above below] (cs/split-by dividable triangles)
           [to-divide remaining] (split-at 32 (shuffle above))]
       (assoc state :triangles
              (concat below
