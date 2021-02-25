@@ -145,8 +145,11 @@
 (defn subdivide-batch [{:keys [total triangles] :as state}]
   (if (> total (Math/pow 2 15))
     [true state]
-    (let [[above _] (cs/split-by dividable? triangles)
-          [to-divide remaining] (split-at 48 (sort-by by-depth above))
+    (let [[to-divide remaining]
+          (->> triangles
+               (filter dividable?)
+               (sort-by by-depth)
+               (split-at 48))
           subdivided (mapcat subdivide to-divide)]
       (if (empty? to-divide)
         [true state]
