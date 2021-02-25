@@ -126,26 +126,32 @@
       (make-triangle a c d :color [140 40 35 1.0] :max-depth 4)])))
 
 (defn initial-conditions []
+  (q/background 255)
   (let [shapes [one-triangle
                 split-rectangle empty-rectangle
-                subset-rectangle]]
-    {:triangles ((rand-nth shapes) (q/width) (q/height))}))
+                subset-rectangle]
+        triangles ((rand-nth shapes) (q/width) (q/height))]
+    {:triangles triangles
+     :total (count triangles)}))
 
 (defn setup []
   (q/frame-rate 60)
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
-(defn subdivide-batch [{:keys [triangles] :as state}]
-  (if (> (count triangles) (Math/pow 2 14))
+(defn subdivide-batch [{:keys [total triangles] :as state}]
+  (if (> total (Math/pow 2 15))
     [true state]
-    (let [[above below] (cs/split-by dividable? triangles)
-          [to-divide remaining] (split-at 32 (shuffle above))
+    (let [[above _] (cs/split-by dividable? triangles)
+          [to-divide remaining] (split-at 64 (shuffle above))
           subdivided (mapcat subdivide to-divide)]
-      [false
-       (assoc state
-              :triangles (concat below subdivided remaining)
-              :to-draw subdivided)])))
+      (if (empty? to-divide)
+        [true state]
+        [false
+         (assoc state
+                :total (+ total (count subdivided))
+                :triangles (concat subdivided remaining)
+                :to-draw subdivided)]))))
 
 (defn update-state [state]
   (quil/if-steady-state
@@ -157,8 +163,6 @@
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
 
 (defn draw [{:keys [triangles to-draw]}]
-  (when (empty? to-draw)
-    (q/background 255))
   (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
   (doseq [{[a b c] :points color :color}
