@@ -90,9 +90,17 @@
     [(make-triangle a b c :color [180 60 55 0.8])
      (make-triangle c d b :color [0 55 45 0.8])]))
 
+(defn empty-rectangle [w h]
+  (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
+        b (v/vec2 (* 0.95 w) (* 0.05 h))
+        c (v/vec2 (* 0.05 w) (* 0.95 h))
+        d (v/vec2 (* 0.95 w) (* 0.95 h))]
+    [(make-triangle a b d)
+     (make-triangle a c d)]))
+
 (defn initial-conditions []
-  (let [shape-fn (rand-nth [one-triangle split-rectangle])]
-    {:triangles (shape-fn (q/width) (q/height))}))
+  (let [shapes [one-triangle split-rectangle empty-rectangle]]
+    {:triangles ((rand-nth shapes) (q/width) (q/height))}))
 
 (defn setup []
   (q/frame-rate 60)
