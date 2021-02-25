@@ -137,7 +137,7 @@
   (initial-conditions))
 
 (defn subdivide-batch [{:keys [triangles] :as state}]
-  (if (> (count triangles) 20000)
+  (if (> (count triangles) (Math/pow 2 14))
     [true state]
     (let [[above below] (cs/split-by dividable? triangles)
           [to-divide remaining] (split-at 32 (shuffle above))
@@ -171,7 +171,7 @@
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions
     :host "quil-host"
-    :size [600 400]
+    :size [600 600]
     :setup setup
     :update update-state
     :draw draw
