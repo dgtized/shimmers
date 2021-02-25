@@ -78,9 +78,12 @@
              (drift color))
            :depth (inc depth)
            :max-depth
-           (if (and (> depth 2.5) (< (rand) 0.05))
-             (+ depth 1.5)
-             max-depth))))
+           (cond (and (> depth 2.5) (< (rand) 0.05))
+                 (+ depth 1.5)
+                 color
+                 (- max-depth 0.2)
+                 :else
+                 max-depth))))
 
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
