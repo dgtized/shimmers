@@ -29,7 +29,7 @@
 
 (defn make-triangle
   [a b c & {:keys [color depth max-depth]
-            :or {depth 0 max-depth 15}}]
+            :or {depth 0 max-depth 16}}]
   (assoc (gt/triangle2 a b c)
          :color color
          :depth depth
@@ -155,7 +155,7 @@
 
 (defn update-state [state]
   (quil/if-steady-state
-   state 5
+   state 8
    initial-conditions
    subdivide-batch))
 
