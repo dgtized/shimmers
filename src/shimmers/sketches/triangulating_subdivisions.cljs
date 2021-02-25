@@ -108,6 +108,9 @@
       (assoc state :triangles (into (take cutoff ordered)
                                     (into divisions (drop batch randomized)))))))
 
+(defn draw-triangle [a b c]
+  (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
+
 (defn draw [{:keys [triangles]}]
   (q/background 255)
   (q/stroke-weight 0.05)
@@ -115,7 +118,7 @@
     (if color
       (apply q/fill color)
       (q/no-fill))
-    (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c))))
+    (draw-triangle a b c)))
 
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions
