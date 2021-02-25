@@ -36,12 +36,12 @@
          :max-depth max-depth))
 
 (defn drift [[h s l a]]
-  (if (< (rand) 0.05)
+  (if (< (rand) 0.02)
     [(mod (+ h 90) 360)
      (+ (* 0.75 (q/random-gaussian)) s)
      (+ (* 0.1 (q/random-gaussian)) l)
      (* 0.5 a)]
-    [(mod (+ (* 8 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
+    [(mod (+ (* 4 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
 (defn subdivide-triangle [t]
   (let [[a b c] (longest-edge t)
@@ -104,8 +104,31 @@
     [(make-triangle a b d)
      (make-triangle a c d)]))
 
+(defn subset-rectangle [w h]
+  (concat
+   (let [a (v/vec2 (* 0.10 w) (* 0.10 h))
+         b (v/vec2 (* 0.90 w) (* 0.10 h))
+         c (v/vec2 (* 0.10 w) (* 0.50 h))
+         d (v/vec2 (* 0.90 w) (* 0.50 h))]
+     [(make-triangle a b d)
+      (make-triangle a c d)])
+   (let [a (v/vec2 (* 0.10 w) (* 0.50 h))
+         b (v/vec2 (* 0.50 w) (* 0.50 h))
+         c (v/vec2 (* 0.10 w) (* 0.90 h))
+         d (v/vec2 (* 0.50 w) (* 0.90 h))]
+     [(make-triangle a b c)
+      (make-triangle d b c)])
+   (let [a (v/vec2 (* 0.52 w) (* 0.52 h))
+         b (v/vec2 (* 0.92 w) (* 0.52 h))
+         c (v/vec2 (* 0.52 w) (* 0.92 h))
+         d (v/vec2 (* 0.92 w) (* 0.92 h))]
+     [(make-triangle a b d :color [200 35 35 1.0] :max-depth 7)
+      (make-triangle a c d :color [140 40 35 1.0] :max-depth 4)])))
+
 (defn initial-conditions []
-  (let [shapes [one-triangle split-rectangle empty-rectangle]]
+  (let [shapes [one-triangle
+                split-rectangle empty-rectangle
+                subset-rectangle]]
     {:triangles ((rand-nth shapes) (q/width) (q/height))}))
 
 (defn setup []
@@ -114,7 +137,7 @@
   (initial-conditions))
 
 (defn subdivide-batch [{:keys [triangles] :as state}]
-  (if (> (count triangles) 10000)
+  (if (> (count triangles) 12000)
     [true state]
     (let [[above below] (cs/split-by dividable? triangles)
           [to-divide remaining] (split-at 16 (shuffle above))]
