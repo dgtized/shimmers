@@ -101,17 +101,17 @@
   (if (> (count triangles) (Math/pow 2 13))
     (initial-conditions)
     ;; bias towards subdividing largest triangles
-    (let [batch 32
-          [above below] (cs/split-by
+    (let [[above below] (cs/split-by
                          (fn [{:keys [depth]}] (< depth 12))
                          triangles)
-          randomized (shuffle above)
-          divisions
-          (mapcat (fn [s] (map-colors (:color s) (inc (:depth s))
-                                     (subdivide-triangle s)))
-                  (take batch randomized))]
+          [to-divide remaining] (split-at 32 (shuffle above))]
       (assoc state :triangles
-             (into below (into divisions (drop batch randomized)))))))
+             (concat below
+                     (mapcat
+                      (fn [s] (map-colors (:color s) (inc (:depth s))
+                                         (subdivide-triangle s)))
+                      to-divide)
+                     remaining)))))
 
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
