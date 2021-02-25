@@ -72,15 +72,13 @@
 (defn dividable [t]
   (fn [{:keys [depth]}] (< depth 12)))
 
-(defn map-colors [color depth triangles]
-  (for [t (map (fn [x] (assoc x :depth depth)) triangles)]
+(defn subdivide [{:keys [color depth] :as s}]
+  (for [t (->> s
+               subdivide-triangle
+               (map (fn [x] (assoc x :depth depth))))]
     (if (and color (< (rand) 0.90))
       (add-color t (drift color))
       t)))
-
-(defn subdivide [t]
-  (map-colors (:color t) (inc (:depth t))
-              (subdivide-triangle t)))
 
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
