@@ -100,10 +100,10 @@
   (initial-conditions))
 
 (defn subdivide-batch [{:keys [triangles] :as state}]
-  (if (> (count triangles) (Math/pow 2 13))
+  (if (> (count triangles) 10000)
     [true state]
     (let [[above below] (cs/split-by dividable? triangles)
-          [to-divide remaining] (split-at 32 (shuffle above))]
+          [to-divide remaining] (split-at 16 (shuffle above))]
       [false
        (assoc state :triangles
               (concat below
@@ -121,7 +121,7 @@
 
 (defn draw [{:keys [triangles]}]
   (q/background 255)
-  (q/stroke-weight 0.05)
+  (q/stroke-weight 0.1)
   (doseq [{[a b c] :points color :color} triangles]
     (if color
       (apply q/fill color)
