@@ -29,10 +29,10 @@
 
 (defn make-triangle
   [a b c & {:keys [color depth max-depth]
-            :or {depth 0 max-depth 16}}]
+            :or {depth 0 max-depth 14}}]
   (assoc (gt/triangle2 a b c)
          :color color
-         :depth depth
+         :depth (+ depth (* 0.9 (rand)))
          :max-depth max-depth))
 
 (defn drift [[h s l a]]
@@ -139,11 +139,14 @@
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))
 
+(defn by-depth [t]
+  (:depth t))
+
 (defn subdivide-batch [{:keys [total triangles] :as state}]
   (if (> total (Math/pow 2 15))
     [true state]
     (let [[above _] (cs/split-by dividable? triangles)
-          [to-divide remaining] (split-at 64 (shuffle above))
+          [to-divide remaining] (split-at 48 (sort-by by-depth above))
           subdivided (mapcat subdivide to-divide)]
       (if (empty? to-divide)
         [true state]
