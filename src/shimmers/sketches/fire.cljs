@@ -3,10 +3,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.macros.loop :as loop :include-macros true]
+            [shimmers.math.probability :as p]
             [thi.ng.ndarray.core :as nd]))
 
 (defn fire-prob []
-  (if (> (rand) 0.95)
+  (if (p/chance 0.05)
     (rand)
     0.0))
 
@@ -42,7 +43,7 @@
                 (nd/set-at fuel x y (* wood 0.96)))
             (do (nd/set-at fire x y (min (* heat 0.75) 1))
                 (nd/set-at fuel x y (* wood 0.99))))
-          (when (and (> heat 0.4) (> (rand) 0.75))
+          (when (and (> heat 0.4) (p/chance 0.25))
             (let [candidates (filterv (in-bounds xdim ydim) (surroundings x y))
                   [cx cy] (rand-nth candidates)
                   growth (nd/get-at fire cx cy)]

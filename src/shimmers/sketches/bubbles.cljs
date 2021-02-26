@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]))
@@ -42,7 +43,7 @@
 (defn update-state [{:keys [bubbles] :as state}]
   (let [active (keep update-bubble (combine-intersecting bubbles))]
     (assoc state :bubbles
-           (if (and (< (rand) 0.03)
+           (if (and (p/chance 0.03)
                     (< (count active) 512))
              (conj active (make-bubble))
              active))))

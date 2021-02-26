@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.particle-system :as particles]
             [shimmers.common.sequence :refer [map-kv]]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
@@ -29,7 +30,7 @@
 (defn create-emitter [position n]
   {:position position
    :max-particles n
-   :probability 0.1})
+   :probability 0.9})
 
 (defn setup []
   (let [size 50
@@ -52,7 +53,7 @@
         particles-by-source (map-kv count (group-by :source active-particles))
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
-                                   (< probability (rand)))]
+                                   (p/chance probability))]
                     (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.001)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 

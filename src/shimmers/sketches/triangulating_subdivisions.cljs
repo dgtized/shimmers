@@ -4,12 +4,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as quil]
+            [shimmers.common.sequence :as cs]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
-            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
-            [shimmers.common.sequence :as cs]
-            [shimmers.common.quil :as quil]))
+            [thi.ng.geom.triangle :as gt]))
 
 (defn subdivide-line [p q]
   (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
@@ -36,7 +37,7 @@
          :max-depth max-depth))
 
 (defn drift [[h s l a]]
-  (if (< (rand) 0.02)
+  (if (p/chance 0.02)
     [(mod (+ h 90) 360)
      (+ (* 0.75 (q/random-gaussian)) s)
      (+ (* 0.1 (q/random-gaussian)) l)
@@ -74,11 +75,11 @@
   (for [child (subdivide-triangle s)]
     (assoc child
            :color
-           (when (and color (< (rand) 0.90))
+           (when (and color (p/chance 0.90))
              (drift color))
            :depth (inc depth)
            :max-depth
-           (cond (and (> depth 2.5) (< (rand) 0.05))
+           (cond (and (> depth 2.5) (p/chance 0.05))
                  (+ depth 1.5)
                  color
                  (- max-depth 0.2)

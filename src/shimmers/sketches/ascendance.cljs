@@ -1,7 +1,8 @@
 (ns shimmers.sketches.ascendance
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.math.probability :as p]))
 
 (defrecord Particle [t0 fuel delta-v velocity radius mass])
 
@@ -51,7 +52,7 @@
   (let [alive (map update-particle
                    (filter (partial alive? t1) particles))]
     (if (and (< (count alive) population)
-             (< (rand) pop-growth))
+             (p/chance pop-growth))
       (conj alive (make-particle t1))
       alive)))
 

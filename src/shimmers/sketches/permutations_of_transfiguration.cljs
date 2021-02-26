@@ -3,7 +3,8 @@
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.sequence :as cs]))
+            [shimmers.common.sequence :as cs]
+            [shimmers.math.probability :as p]))
 
 (defn sample-color [x y cols rows]
   [(/ (+ x y) (+ cols rows))
@@ -166,7 +167,7 @@
     (pinwheel (rand-nth (range 1 w))
               (rand-nth (range 1 h))
               (rand-nth [0.02 0.03 0.04 0.06 0.08 0.10 0.12])
-              (if (> (rand) 0.5) 1 -1)
+              (if (p/chance 0.5) 1 -1)
               (rand-nth (range 1 4)))))
 
 (defn make-flip-x [state]

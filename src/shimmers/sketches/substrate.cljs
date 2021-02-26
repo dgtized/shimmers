@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as quil]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]))
 
 (defn in-bounds? [[x y]]
@@ -52,7 +53,7 @@
   (let [[active inactive] ((juxt filter remove) :active cracks)
         fresh-cracks (into active (if (< (count active) 64)
                                     (for [crack active
-                                          :when (< (rand) 0.01)]
+                                          :when (p/chance 0.01)]
                                       (spawn-crack crack))
                                     []))]
     ;; (println [(count inactive) (count active)])
