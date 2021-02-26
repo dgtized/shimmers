@@ -139,6 +139,10 @@
      :total (count triangles)}))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (q/frame-rate 60)
   (q/color-mode :hsl 360 100.0 100.0 1.0)
   (initial-conditions))

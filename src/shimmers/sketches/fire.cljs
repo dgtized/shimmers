@@ -13,6 +13,7 @@
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
+  ;; https://p5js.org/reference/#/p5/disableFriendlyErrors
   ;; still dominated by calls to fill
   (set! (.-disableFriendlyErrors js/p5) true)
 
