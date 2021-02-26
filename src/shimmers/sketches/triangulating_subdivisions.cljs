@@ -86,57 +86,67 @@
                  :else
                  max-depth))))
 
+(defn initialize-shape
+  ([triangles] (initialize-shape triangles (Math/pow 2 15)))
+  ([triangles triangle-limit]
+   {:triangles triangles
+    :total (count triangles)
+    :triangle-limit triangle-limit}))
+
 (defn one-triangle [w h]
   (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
         left (v/vec2 (* 0.1 w) (* 0.9 h))
         right (v/vec2 (* 0.9 w) (* 0.9 h))]
-    [(make-triangle top left right :color (new-color) :max-depth 10)]))
+    (initialize-shape
+     [(make-triangle top left right :color (new-color) :max-depth 10)])))
 
 (defn split-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
         b (v/vec2 (* 0.95 w) (* 0.05 h))
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
-    [(make-triangle a b c :color [200 70 35 0.9] :max-depth 9)
-     (make-triangle c d b :color [5 85 30 0.7] :max-depth 9)]))
+    (initialize-shape
+     [(make-triangle a b c :color [200 70 35 0.9] :max-depth 9)
+      (make-triangle c d b :color [5 85 30 0.7] :max-depth 9)])))
 
 (defn empty-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
         b (v/vec2 (* 0.95 w) (* 0.05 h))
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
-    [(make-triangle a b d)
-     (make-triangle a c d)]))
+    (initialize-shape
+     [(make-triangle a b d)
+      (make-triangle a c d)]
+     (Math/pow 2 16))))
 
 (defn subset-rectangle [w h]
-  (concat
-   (let [a (v/vec2 (* 0.10 w) (* 0.10 h))
-         b (v/vec2 (* 0.90 w) (* 0.10 h))
-         c (v/vec2 (* 0.10 w) (* 0.50 h))
-         d (v/vec2 (* 0.90 w) (* 0.50 h))]
-     [(make-triangle a b d)
-      (make-triangle a c d :max-depth 8)])
-   (let [a (v/vec2 (* 0.10 w) (* 0.50 h))
-         b (v/vec2 (* 0.50 w) (* 0.50 h))
-         c (v/vec2 (* 0.10 w) (* 0.90 h))
-         d (v/vec2 (* 0.50 w) (* 0.90 h))]
-     [(make-triangle a b c)
-      (make-triangle d b c)])
-   (let [a (v/vec2 (* 0.52 w) (* 0.52 h))
-         b (v/vec2 (* 0.92 w) (* 0.52 h))
-         c (v/vec2 (* 0.52 w) (* 0.92 h))
-         d (v/vec2 (* 0.92 w) (* 0.92 h))]
-     [(make-triangle a b d :color [200 35 35 1.0] :max-depth 7)
-      (make-triangle a c d :color [140 40 35 1.0] :max-depth 4)])))
+  (initialize-shape
+   (concat
+    (let [a (v/vec2 (* 0.10 w) (* 0.10 h))
+          b (v/vec2 (* 0.90 w) (* 0.10 h))
+          c (v/vec2 (* 0.10 w) (* 0.50 h))
+          d (v/vec2 (* 0.90 w) (* 0.50 h))]
+      [(make-triangle a b d)
+       (make-triangle a c d :max-depth 8)])
+    (let [a (v/vec2 (* 0.10 w) (* 0.50 h))
+          b (v/vec2 (* 0.50 w) (* 0.50 h))
+          c (v/vec2 (* 0.10 w) (* 0.90 h))
+          d (v/vec2 (* 0.50 w) (* 0.90 h))]
+      [(make-triangle a b c)
+       (make-triangle d b c)])
+    (let [a (v/vec2 (* 0.52 w) (* 0.52 h))
+          b (v/vec2 (* 0.92 w) (* 0.52 h))
+          c (v/vec2 (* 0.52 w) (* 0.92 h))
+          d (v/vec2 (* 0.92 w) (* 0.92 h))]
+      [(make-triangle a b d :color [200 35 35 1.0] :max-depth 7)
+       (make-triangle a c d :color [140 40 35 1.0] :max-depth 4)]))))
 
 (defn initial-conditions []
   (q/background 255)
   (let [shapes [one-triangle
                 split-rectangle empty-rectangle
-                subset-rectangle]
-        triangles ((rand-nth shapes) (q/width) (q/height))]
-    {:triangles triangles
-     :total (count triangles)}))
+                subset-rectangle]]
+    ((rand-nth shapes) (q/width) (q/height))))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
@@ -150,8 +160,8 @@
 (defn by-depth [t]
   (:depth t))
 
-(defn subdivide-batch [{:keys [total triangles] :as state}]
-  (if (> total (Math/pow 2 15))
+(defn subdivide-batch [{:keys [total triangles triangle-limit] :as state}]
+  (if (> total triangle-limit)
     [true state]
     (let [[to-divide remaining]
           (->> triangles
