@@ -90,6 +90,7 @@
   ([triangles] (initialize-shape triangles (Math/pow 2 15)))
   ([triangles triangle-limit]
    {:triangles triangles
+    :to-draw triangles
     :total (count triangles)
     :triangle-limit triangle-limit}))
 
@@ -186,11 +187,10 @@
 (defn draw-triangle [a b c]
   (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
 
-(defn draw [{:keys [triangles to-draw]}]
+(defn draw [{:keys [to-draw]}]
   (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
-  (doseq [{[a b c] :points color :color}
-          (if (seq to-draw) to-draw triangles)]
+  (doseq [{[a b c] :points color :color} to-draw]
     (q/fill 0 100 100 1.0)
     (when color
       (apply q/fill color))
