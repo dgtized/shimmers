@@ -12,6 +12,10 @@
     0.0))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; still dominated by calls to fill
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (q/background "white")
   ;; (q/frame-rate 5)
   (let [size 10
