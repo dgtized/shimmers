@@ -166,7 +166,6 @@
     [true state]
     (let [[to-divide remaining]
           (->> triangles
-               (filter dividable?)
                (sort-by by-depth)
                (split-at 48))
           subdivided (mapcat subdivide to-divide)]
@@ -175,7 +174,7 @@
         [false
          (assoc state
                 :total (+ total (count subdivided))
-                :triangles (concat subdivided remaining)
+                :triangles (concat remaining (filter dividable? subdivided))
                 :to-draw subdivided)]))))
 
 (defn update-state [state]
