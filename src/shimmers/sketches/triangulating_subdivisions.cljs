@@ -169,7 +169,7 @@
                ;; Less randomization from depth, but roughly stays sorted if
                ;; always taking from front and adding to the back.
                ;; (sort-by by-depth)
-               (split-at 48))
+               (split-at (int (Math/pow 1.75 (int (Math/log total))))))
           subdivided (mapcat subdivide to-divide)]
       (if (empty? to-divide)
         [true state]
