@@ -166,7 +166,9 @@
     [true state]
     (let [[to-divide remaining]
           (->> triangles
-               (sort-by by-depth)
+               ;; Less randomization from depth, but roughly stays sorted if
+               ;; always taking from front and adding to the back.
+               ;; (sort-by by-depth)
                (split-at 48))
           subdivided (mapcat subdivide to-divide)]
       (if (empty? to-divide)
