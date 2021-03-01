@@ -1,7 +1,8 @@
 (ns shimmers.sketches.folding-triangles
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as quil]))
 
 (defn setup []
   {})
@@ -13,7 +14,7 @@
   (q/background 255)
   (q/rotate-y (/ (q/millis) 1000))
   (q/scale 50)
-  (.normalMaterial (q/current-graphics))
+  (quil/normal-material)
   (q/begin-shape :triangles)
   (q/vertex 0 0 0)
   (q/vertex 0 1 0)

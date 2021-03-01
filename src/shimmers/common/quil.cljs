@@ -30,3 +30,6 @@
         (if (and done? (nil? (:completed-frame state)))
           (assoc new-state :completed-frame fc)
           new-state)))))
+
+(defn normal-material []
+  (.normalMaterial (q/current-graphics)))
