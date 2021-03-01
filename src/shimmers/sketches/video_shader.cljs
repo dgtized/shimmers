@@ -3,10 +3,29 @@
   https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/image_effects and
   combined with https://thebookofshaders.com/07/.
   "
-  (:require [quil.core :as q :include-macros true]
-            quil.sketch
+  (:require [goog.dom :as dom]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            quil.sketch
+            [reagent.core :as r]
+            [reagent.dom :as rdom]
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.ui :as ui]))
+
+(def modes {:specular-mouse 0
+            :edge-detection 1})
+
+(defn cycle-mode [state]
+  {:mode (ui/cycle-next (keys modes) (:mode state))})
+
+(defonce ui-state (r/atom {:mode :edge-detection}))
+
+(defn interface []
+  (let [mode (:mode @ui-state)]
+    [:div
+     [:input {:type "button" :value "Cycle Mode"
+              :on-click #(swap! ui-state cycle-mode)}]
+     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
 
 ;; HACK: Shaders are renamed to .c because github-pages requires a mime type to
 ;; serve, per [1], but [2] has no extension for mime-type x-shader/x-fragment, or
@@ -35,9 +54,12 @@
       (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
       (q/set-uniform shader "u_mouse" mouse)
       (q/set-uniform shader "videoTexture" camera)
+      (q/set-uniform shader "u_mode" (get modes (:mode @ui-state)))
       (q/rect 0 0 w h))))
 
 (defn ^:export run-sketch []
+  (rdom/render [interface] (dom/getElement "explanation"))
+
   (q/defsketch video-shader
     :host "quil-host"
     :size [640 480]
