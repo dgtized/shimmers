@@ -17,6 +17,7 @@
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.fire :as fire]
+            [shimmers.sketches.folding-triangles :as folding-triangles]
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
@@ -66,6 +67,7 @@
      cube/run-sketch
      dithering/run-sketch
      fire/run-sketch
+     folding-triangles/run-sketch
      ;; fluid/run-sketch
      gravity-well/run-sketch
      hexaclock/run-sketch
