@@ -50,6 +50,7 @@
   (q/orbit-control)
   (q/background 255)
   (q/stroke 0)
+  (q/stroke-weight 1.25)
   (q/rotate-x 0.6)
   (q/rotate-y -0.2)
   (q/rotate-z (/ (q/frame-count) 1000))
