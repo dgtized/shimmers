@@ -51,7 +51,8 @@ void edge_detection() {
   if(length(edge.rgb) > 0.33) {
     color = vec4(edge.rgb,1.0);
   } else {
-    color = vec4(n[4].rgb, 0.5);
+    vec4 avg = (n[4] + n[1] + n[3] + n[5] + n[7])/5.0;
+    color = vec4(avg.rgb, 0.66);
   }
   gl_FragColor = color;
 }
