@@ -43,10 +43,17 @@ void edge_detection() {
   pos.y = 1.0 - pos.y;
 
   vec4 n[9];
-  kernel(n, videoTexture, pos, 1.0/u_resolution.x, 1.0/u_resolution.y);
+  kernel(n, videoTexture, pos, 2.0/u_resolution.x, 2.0/u_resolution.y);
   vec4 edge = 8.0*n[4] - n[0] - n[1] - n[2] - n[3] - n[5] - n[6] - n[7] - n[8];
 
-  gl_FragColor = vec4(edge.xyz,1.0);
+  vec4 color = vec4(0.0);
+
+  if(length(edge.rgb) > 0.33) {
+    color = vec4(edge.rgb,1.0);
+  } else {
+    color = vec4(n[4].rgb, 0.5);
+  }
+  gl_FragColor = color;
 }
 
 void main() {
