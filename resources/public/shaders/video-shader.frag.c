@@ -26,27 +26,27 @@ void specular_mouse() {
   gl_FragColor = mix(color, blend, clamp(1.2-pct, -0.3, 0.5));
 }
 
-void kernel(inout float n[9], sampler2D tex, vec2 pos, float w, float h) {
-  n[0] = texture2D(tex, pos + vec2(-w,-h)).r;
-  n[1] = texture2D(tex, pos + vec2(0.0, -h)).r;
-  n[2] = texture2D(tex, pos + vec2(w, -h)).r;
-  n[3] = texture2D(tex, pos + vec2(-w, 0.0)).r;
-  n[4] = texture2D(tex, pos).r;
-  n[5] = texture2D(tex, pos + vec2(w, 0.0)).r;
-  n[6] = texture2D(tex, pos + vec2(-w, h)).r;
-  n[7] = texture2D(tex, pos + vec2(0.0, h)).r;
-  n[8] = texture2D(tex, pos + vec2(w, h)).r;
+void kernel(inout vec4 n[9], sampler2D tex, vec2 pos, float w, float h) {
+  n[0] = texture2D(tex, pos + vec2(-w,-h));
+  n[1] = texture2D(tex, pos + vec2(0.0, -h));
+  n[2] = texture2D(tex, pos + vec2(w, -h));
+  n[3] = texture2D(tex, pos + vec2(-w, 0.0));
+  n[4] = texture2D(tex, pos);
+  n[5] = texture2D(tex, pos + vec2(w, 0.0));
+  n[6] = texture2D(tex, pos + vec2(-w, h));
+  n[7] = texture2D(tex, pos + vec2(0.0, h));
+  n[8] = texture2D(tex, pos + vec2(w, h));
 }
 
 void edge_detection() {
   vec2 pos = vTexCoord;
   pos.y = 1.0 - pos.y;
 
-  float n[9];
+  vec4 n[9];
   kernel(n, videoTexture, pos, 1.0/u_resolution.x, 1.0/u_resolution.y);
-  float edge = 8.0*n[4] - n[0] - n[1] - n[2] - n[3] - n[5] - n[6] - n[7] - n[8];
+  vec4 edge = 8.0*n[4] - n[0] - n[1] - n[2] - n[3] - n[5] - n[6] - n[7] - n[8];
 
-  gl_FragColor = vec4(edge, edge, edge, 1.0);
+  gl_FragColor = vec4(edge.xyz,1.0);
 }
 
 void main() {
