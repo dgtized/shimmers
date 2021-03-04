@@ -30,6 +30,11 @@
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
 
+(defn right-angle []
+  (geom/as-polygon (gt/triangle2 (gv/vec2 0 0)
+                                 (gv/vec2 19 0)
+                                 (gv/vec2 0 23))))
+
 (defn generate-strokes [brush random-position n]
   (repeatedly n #(rotate-around-centroid
                   (geom/translate brush (random-position))
@@ -47,7 +52,7 @@
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
-        brush (geom/as-polygon (gt/triangle2 (gv/vec2 0 0) (gv/vec2 (* 0.05 w) 0) (gv/vec2 0 (* 0.05 h))))]
+        brush (right-angle)]
     ;; (draw-polygon poly)
     (q/stroke-weight 0.05)
     (q/no-stroke)
