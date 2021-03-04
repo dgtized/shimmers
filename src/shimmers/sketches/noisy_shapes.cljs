@@ -31,8 +31,9 @@
     (q/fill 0 0.5 0.8 0.1)
     (doseq [copy [(geom/translate poly (gv/randvec2 3))
                   (geom/translate poly (gv/randvec2 2))
-                  #_(geom/rotate (geom/center poly (gv/vec2 (* w 0.5) (* h 0.5)))
-                                 (* 0.2 (rand)))
+                  (geom/translate (geom/rotate (geom/center poly (gv/vec2 0 0))
+                                               (q/random -0.2 0.2))
+                                  (geom/centroid poly))
                   ]]
       (draw-polygon copy))))
 
