@@ -65,13 +65,16 @@
         shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
         shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
         shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
-        brush (right-angle)]
-    (fuzzy-shape shape1 brush [10 0.5 0.5 0.2]
-                 (q/random 600 2000) 300)
-    (fuzzy-shape shape2 brush [210 0.5 0.5 0.2]
-                 (q/random 600 2000) 300)
-    (fuzzy-shape shape3 brush [105 0.5 0.5 0.2]
-                 (q/random 500 1300) 300)))
+        brush (right-angle)
+        shapes [[shape3 brush [105 0.5 0.5 0.2]
+                 (q/random 500 1300) 300]
+                [shape1 brush [10 0.5 0.5 0.2]
+                 (q/random 600 2000) 300]
+                [shape2 brush [210 0.5 0.5 0.2]
+                 (q/random 600 2000) 300]
+                ]]
+    (doseq [args (shuffle shapes)]
+      (apply fuzzy-shape args))))
 
 
 (defn ^:export run-sketch []
