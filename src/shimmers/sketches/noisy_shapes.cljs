@@ -29,7 +29,7 @@
       (geom/translate (geom/centroid polygon))))
 
 (defn draw [{:keys [shape]}]
-  (q/background 255)
+  (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
         poly (geom/as-polygon shape)
@@ -37,12 +37,14 @@
     ;; (draw-polygon poly)
     (q/stroke-weight 0.1)
     (q/fill 0 0.5 0.8 0.1)
-    (doseq [copy [(geom/translate poly (gv/randvec2 3))
-                  (geom/translate poly (gv/randvec2 2))
-                  (rotate-around-centroid poly (q/random -0.2 0.2))
+    (doseq [copy [
+                  ;; (geom/translate poly (gv/randvec2 3))
+                  ;; (geom/translate poly (gv/randvec2 2))
+                  ;; (rotate-around-centroid poly (q/random -0.2 0.2))
+                  (rotate-around-centroid (geom/translate brush (geom/random-point poly))
+                                          (q/random 0 Math/PI))
                   ]]
-      (draw-polygon copy))
-    (draw-polygon (rotate-around-centroid brush (q/random 0 Math/PI)))))
+      (draw-polygon copy))))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
