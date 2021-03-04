@@ -54,15 +54,15 @@
         shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
         shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
         brush (right-angle)]
-    (q/fill 5 0.5 0.5 0.2)
+    (q/fill 10 0.5 0.5 0.2)
     (sample-shape shape1 brush
-                  (* (+ 0.25 (* 0.5 (rand))) 2500) 400)
+                  (* (+ 0.25 (* 0.5 (rand))) 2500) 300)
     (q/fill 210 0.5 0.5 0.2)
     (sample-shape shape2 brush
-                  (* (+ 0.25 (* 0.5 (rand))) 2500) 400)
-    (q/fill 120 0.5 0.5 0.2)
+                  (* (+ 0.25 (* 0.5 (rand))) 2500) 300)
+    (q/fill 105 0.5 0.5 0.2)
     (sample-shape shape3 brush
-                  (* (+ 0.25 (* 0.3 (rand))) 2500) 400)))
+                  (* (+ 0.25 (* 0.3 (rand))) 2500) 300)))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
