@@ -24,6 +24,7 @@
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
+            [shimmers.sketches.noisy-shapes :as noisy-shapes]
             [shimmers.sketches.object-permanence :as object-permanence]
             [shimmers.sketches.particles :as particles]
             [shimmers.sketches.permutations-of-transfiguration :as permutations-of-transfiguration]
@@ -75,6 +76,7 @@
      kd-tree/run-sketch
      langton-ant/run-sketch
      noise-grid/run-sketch
+     noisy-shapes/run-sketch
      object-permanence/run-sketch
      particles/run-sketch
      permutations-of-transfiguration/run-sketch
