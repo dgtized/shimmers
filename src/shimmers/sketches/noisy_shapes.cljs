@@ -35,22 +35,25 @@
                   (geom/translate brush (random-position))
                   (q/random 0 Math/PI))))
 
+(defn sample-shape [shape brush fill-density edge-density]
+  (doseq [copy
+          (concat (generate-strokes brush #(geom/random-point-inside shape) fill-density)
+                  (generate-strokes brush #(geom/random-point shape) edge-density))]
+    (draw-polygon copy)))
+
 (defn draw [{:keys [shape]}]
   (q/background 255)
   ;; (q/no-loop)
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
-        poly (geom/as-polygon shape)
         brush (geom/as-polygon (gt/triangle2 (gv/vec2 0 0) (gv/vec2 (* 0.05 w) 0) (gv/vec2 0 (* 0.05 h))))]
     ;; (draw-polygon poly)
     (q/stroke-weight 0.05)
     (q/no-stroke)
     (q/fill 0 0.5 0.5 0.2)
-    (doseq [copy (concat (generate-strokes brush #(geom/random-point-inside shape)
-                                           (* (+ 0.25 (* 0.5 (rand))) 3000))
-                         (generate-strokes brush #(geom/random-point shape) 400))]
-      (draw-polygon copy))))
+    (sample-shape shape brush
+                  (* (+ 0.25 (* 0.5 (rand))) 3000) 400)))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
