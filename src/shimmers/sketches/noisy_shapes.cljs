@@ -10,10 +10,7 @@
 
 (defn setup []
   (q/frame-rate 0.5)
-  (q/color-mode :hsl 360 1.0 1.0 1.0)
-  (let [w (q/width)
-        h (q/height)]
-    {:shape (rect/rect (* 0.2 w) (* 0.2 h) (* 0.5 w) (* 0.6 h))}))
+  (q/color-mode :hsl 360 1.0 1.0 1.0))
 
 (defn update-state [state]
   state)
@@ -46,12 +43,13 @@
                   (generate-strokes brush #(geom/random-point shape) edge-density))]
     (draw-polygon copy)))
 
-(defn draw [{:keys [shape]}]
+(defn draw []
   (q/background 255)
   ;; (q/no-loop)
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
+        shape (rect/rect (* 0.2 w) (* 0.2 h) (* 0.5 w) (* 0.6 h))
         brush (right-angle)]
     ;; (draw-polygon poly)
     (q/stroke-weight 0.05)
