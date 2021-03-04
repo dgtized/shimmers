@@ -28,18 +28,20 @@
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
 
-(defn right-angle []
+(defn right-angle [s]
   (gt/triangle2 (gv/vec2 0 0)
-                (gv/vec2 19 0)
-                (gv/vec2 0 23)))
+                (gv/vec2 (* s 19) 0)
+                (gv/vec2 0 (* s 23))))
 
-(defn small-rectangle []
-  (rect/rect 0 0 13 17))
+(defn small-rectangle [s]
+  (rect/rect 0 0 (* s 13) (* s 17)))
 
 (defn random-brush []
-  (let [brushes [small-rectangle
-                 right-angle
-                 #(tc/circle (q/random 3 8))]]
+  (let [brushes [
+                 #(small-rectangle (q/random 0.4 1.1))
+                 #(right-angle (q/random 0.4 1.1))
+                 #(tc/circle (q/random 3 8))
+                 ]]
     ((rand-nth brushes))))
 
 (defn generate-strokes [brush random-position n]
