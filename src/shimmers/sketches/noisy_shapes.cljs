@@ -6,7 +6,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as poly]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.circle :as tc]))
 
 (defn setup []
   (q/frame-rate 1)
@@ -31,6 +32,15 @@
   (geom/as-polygon (gt/triangle2 (gv/vec2 0 0)
                                  (gv/vec2 19 0)
                                  (gv/vec2 0 23))))
+
+(defn small-rectangle []
+  (geom/as-polygon (rect/rect 0 0 13 17)))
+
+(defn random-brush []
+  (let [brushes [small-rectangle
+                 right-angle
+                 #(tc/circle (q/random 3 8))]]
+    ((rand-nth brushes))))
 
 (defn generate-strokes [brush random-position n]
   (repeatedly n #(rotate-around-centroid
@@ -65,13 +75,13 @@
         shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
         shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
         shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
-        brush (right-angle)
+        brush (random-brush)
         shapes [[shape3 brush [105 0.5 0.5 0.2]
-                 (q/random 500 1300) 300]
+                 (q/random 500 1300) 200]
                 [shape1 brush [10 0.5 0.5 0.2]
-                 (q/random 600 2000) 300]
+                 (q/random 600 2000) 200]
                 [shape2 brush [210 0.5 0.5 0.2]
-                 (q/random 600 2000) 300]
+                 (q/random 600 2000) 200]
                 ]]
     (doseq [args (shuffle shapes)]
       (apply fuzzy-shape args))))
