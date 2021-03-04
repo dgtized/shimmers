@@ -9,7 +9,7 @@
             [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
-  (q/frame-rate 0.5)
+  (q/frame-rate 1)
   (q/color-mode :hsl 360 1.0 1.0 1.0))
 
 (defn update-state [state]
@@ -45,18 +45,24 @@
 
 (defn draw []
   (q/background 255)
+  (q/no-stroke)
   ;; (q/no-loop)
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
-        shape (rect/rect (* 0.2 w) (* 0.2 h) (* 0.5 w) (* 0.6 h))
+        shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
+        shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
+        shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
         brush (right-angle)]
-    ;; (draw-polygon poly)
-    (q/stroke-weight 0.05)
-    (q/no-stroke)
-    (q/fill 0 0.5 0.5 0.2)
-    (sample-shape shape brush
-                  (* (+ 0.25 (* 0.5 (rand))) 3000) 400)))
+    (q/fill 5 0.5 0.5 0.2)
+    (sample-shape shape1 brush
+                  (* (+ 0.25 (* 0.5 (rand))) 2500) 400)
+    (q/fill 210 0.5 0.5 0.2)
+    (sample-shape shape2 brush
+                  (* (+ 0.25 (* 0.5 (rand))) 2500) 400)
+    (q/fill 120 0.5 0.5 0.2)
+    (sample-shape shape3 brush
+                  (* (+ 0.25 (* 0.3 (rand))) 2500) 400)))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
