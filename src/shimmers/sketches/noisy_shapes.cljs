@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.polygon :as poly]
             [thi.ng.geom.rect :as rect]))
 
 (defn setup []
@@ -15,12 +16,13 @@
 
 (defn draw-polygon [poly]
   (q/begin-shape)
-  (doseq [p poly]
+  (doseq [p (geom/vertices poly)]
     (apply q/vertex p))
-  (q/end-shape))
+  (q/end-shape :close))
 
 (defn draw [{:keys [shape]}]
-  (draw-polygon (geom/as-polygon shape)))
+  (let [poly (geom/as-polygon shape)]
+    (draw-polygon poly)))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
