@@ -9,6 +9,7 @@
             [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
+  (q/frame-rate 1)
   (let [w (q/width)
         h (q/height)]
     {:shape (rect/rect (* 0.2 w) (* 0.2 h) (* 0.5 w) (* 0.6 h))}))
@@ -28,8 +29,15 @@
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
 
+(defn generate-strokes [brush random-position n]
+  (repeatedly n #(rotate-around-centroid
+                  (geom/translate brush (random-position))
+                  (q/random 0 Math/PI))))
+
 (defn draw [{:keys [shape]}]
-  (q/background 255 0.1)
+  (q/background 255)
+  ;; (q/no-loop)
+  ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
         poly (geom/as-polygon shape)
@@ -37,13 +45,8 @@
     ;; (draw-polygon poly)
     (q/stroke-weight 0.1)
     (q/fill 0 0.5 0.8 0.1)
-    (doseq [copy [
-                  ;; (geom/translate poly (gv/randvec2 3))
-                  ;; (geom/translate poly (gv/randvec2 2))
-                  ;; (rotate-around-centroid poly (q/random -0.2 0.2))
-                  (rotate-around-centroid (geom/translate brush (geom/random-point-inside shape))
-                                          (q/random 0 Math/PI))
-                  ]]
+    (doseq [copy (concat (generate-strokes brush #(geom/random-point-inside shape) 10000)
+                         (generate-strokes brush #(geom/random-point shape) 2000))]
       (draw-polygon copy))))
 
 (defn ^:export run-sketch []
