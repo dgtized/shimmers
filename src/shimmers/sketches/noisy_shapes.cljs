@@ -13,9 +13,14 @@
 (defn update-state [state]
   state)
 
+(defn draw-polygon [poly]
+  (q/begin-shape)
+  (doseq [p poly]
+    (apply q/vertex p))
+  (q/end-shape))
+
 (defn draw [{:keys [shape]}]
-  (q/rect (rect/left shape) (rect/bottom shape)
-          (geom/width shape) (geom/height shape)))
+  (draw-polygon (geom/as-polygon shape)))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
