@@ -37,6 +37,14 @@
                   (geom/translate brush (random-position))
                   (q/random 0 Math/PI))))
 
+;; FIXME: random-point-inside is not implemented for Polygon2
+;; See https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
+;; or https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
+;; ie tesselate convex Polygon, and sample uniformly per triangle
+
+;; If this is implemented, rectangle can be rotated/translated and still use
+;; fuzzy shapes.
+
 (defn sample-shape [shape brush fill-density edge-density]
   (doseq [copy
           (concat (generate-strokes brush #(geom/random-point-inside shape) fill-density)
