@@ -21,6 +21,12 @@
     (apply q/vertex p))
   (q/end-shape :close))
 
+(defn rotate-around-centroid [polygon t]
+  (-> polygon
+      (geom/center (gv/vec2 0 0))
+      (geom/rotate t)
+      (geom/translate (geom/centroid polygon))))
+
 (defn draw [{:keys [shape]}]
   (q/background 255)
   (let [w (q/width)
@@ -31,9 +37,7 @@
     (q/fill 0 0.5 0.8 0.1)
     (doseq [copy [(geom/translate poly (gv/randvec2 3))
                   (geom/translate poly (gv/randvec2 2))
-                  (geom/translate (geom/rotate (geom/center poly (gv/vec2 0 0))
-                                               (q/random -0.2 0.2))
-                                  (geom/centroid poly))
+                  (rotate-around-centroid poly (q/random -0.2 0.2))
                   ]]
       (draw-polygon copy))))
 
