@@ -5,7 +5,8 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as poly]
-            [thi.ng.geom.rect :as rect]))
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
   (let [w (q/width)
@@ -31,7 +32,8 @@
   (q/background 255)
   (let [w (q/width)
         h (q/height)
-        poly (geom/as-polygon shape)]
+        poly (geom/as-polygon shape)
+        brush (geom/as-polygon (gt/triangle2 (gv/vec2 0 0) (gv/vec2 (* 0.05 w) 0) (gv/vec2 0 (* 0.05 h))))]
     ;; (draw-polygon poly)
     (q/stroke-weight 0.1)
     (q/fill 0 0.5 0.8 0.1)
@@ -39,7 +41,8 @@
                   (geom/translate poly (gv/randvec2 2))
                   (rotate-around-centroid poly (q/random -0.2 0.2))
                   ]]
-      (draw-polygon copy))))
+      (draw-polygon copy))
+    (draw-polygon (rotate-around-centroid brush (q/random 0 Math/PI)))))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
