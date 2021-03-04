@@ -29,12 +29,12 @@
       (geom/translate (geom/centroid polygon))))
 
 (defn right-angle []
-  (geom/as-polygon (gt/triangle2 (gv/vec2 0 0)
-                                 (gv/vec2 19 0)
-                                 (gv/vec2 0 23))))
+  (gt/triangle2 (gv/vec2 0 0)
+                (gv/vec2 19 0)
+                (gv/vec2 0 23)))
 
 (defn small-rectangle []
-  (geom/as-polygon (rect/rect 0 0 13 17)))
+  (rect/rect 0 0 13 17))
 
 (defn random-brush []
   (let [brushes [small-rectangle
