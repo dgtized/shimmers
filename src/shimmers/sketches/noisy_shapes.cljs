@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as poly]
             [thi.ng.geom.rect :as rect]))
@@ -21,8 +22,19 @@
   (q/end-shape :close))
 
 (defn draw [{:keys [shape]}]
-  (let [poly (geom/as-polygon shape)]
-    (draw-polygon poly)))
+  (q/background 255)
+  (let [w (q/width)
+        h (q/height)
+        poly (geom/as-polygon shape)]
+    ;; (draw-polygon poly)
+    (q/stroke-weight 0.1)
+    (q/fill 0 0.5 0.8 0.1)
+    (doseq [copy [(geom/translate poly (gv/randvec2 3))
+                  (geom/translate poly (gv/randvec2 2))
+                  #_(geom/rotate (geom/center poly (gv/vec2 (* w 0.5) (* h 0.5)))
+                                 (* 0.2 (rand)))
+                  ]]
+      (draw-polygon copy))))
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes
