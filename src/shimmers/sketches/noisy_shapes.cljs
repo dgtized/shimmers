@@ -41,7 +41,7 @@
                   ;; (geom/translate poly (gv/randvec2 3))
                   ;; (geom/translate poly (gv/randvec2 2))
                   ;; (rotate-around-centroid poly (q/random -0.2 0.2))
-                  (rotate-around-centroid (geom/translate brush (geom/random-point poly))
+                  (rotate-around-centroid (geom/translate brush (geom/random-point-inside shape))
                                           (q/random 0 Math/PI))
                   ]]
       (draw-polygon copy))))
