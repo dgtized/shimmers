@@ -9,7 +9,8 @@
             [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
-  (q/frame-rate 1)
+  (q/frame-rate 0.5)
+  (q/color-mode :hsl 360 1.0 1.0 1.0)
   (let [w (q/width)
         h (q/height)]
     {:shape (rect/rect (* 0.2 w) (* 0.2 h) (* 0.5 w) (* 0.6 h))}))
@@ -43,10 +44,12 @@
         poly (geom/as-polygon shape)
         brush (geom/as-polygon (gt/triangle2 (gv/vec2 0 0) (gv/vec2 (* 0.05 w) 0) (gv/vec2 0 (* 0.05 h))))]
     ;; (draw-polygon poly)
-    (q/stroke-weight 0.1)
-    (q/fill 0 0.5 0.8 0.1)
-    (doseq [copy (concat (generate-strokes brush #(geom/random-point-inside shape) 10000)
-                         (generate-strokes brush #(geom/random-point shape) 2000))]
+    (q/stroke-weight 0.05)
+    (q/no-stroke)
+    (q/fill 0 0.5 0.5 0.2)
+    (doseq [copy (concat (generate-strokes brush #(geom/random-point-inside shape)
+                                           (* (+ 0.25 (* 0.5 (rand))) 3000))
+                         (generate-strokes brush #(geom/random-point shape) 400))]
       (draw-polygon copy))))
 
 (defn ^:export run-sketch []
