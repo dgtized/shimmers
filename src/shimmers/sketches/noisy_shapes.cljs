@@ -63,9 +63,9 @@
                   (generate-strokes brush #(geom/random-point shape) edge-density))]
     (draw-polygon copy)))
 
-(defn fuzzy-shape [shape brush fill fill-density edge-density]
+(defn fuzzy-shape [shape fill fill-density edge-density]
   (apply q/fill fill)
-  (sample-shape shape brush fill-density edge-density))
+  (sample-shape shape (random-brush) fill-density edge-density))
 
 (defn draw []
   (q/background 255)
@@ -77,12 +77,11 @@
         shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
         shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
         shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
-        brush (random-brush)
-        shapes [[shape3 brush [105 0.5 0.5 0.2]
+        shapes [[shape3 [105 0.5 0.5 0.2]
                  (q/random 500 1300) 200]
-                [shape1 brush [10 0.5 0.5 0.2]
+                [shape1 [10 0.5 0.5 0.2]
                  (q/random 600 2000) 200]
-                [shape2 brush [210 0.5 0.5 0.2]
+                [shape2 [210 0.5 0.5 0.2]
                  (q/random 600 2000) 200]
                 ]]
     (doseq [args (shuffle shapes)]
