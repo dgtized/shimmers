@@ -14,9 +14,6 @@
   (q/frame-rate 1)
   (q/color-mode :hsl 360 1.0 1.0 1.0))
 
-(defn update-state [state]
-  state)
-
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
@@ -78,6 +75,5 @@
     :host "quil-host"
     :size [600 400]
     :setup setup
-    :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode]))
