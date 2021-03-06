@@ -44,7 +44,7 @@
 
 (defn rotate-around-centroid [polygon t]
   (-> polygon
-      (geom/center (gv/vec2 0 0))
+      geom/center
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
 
