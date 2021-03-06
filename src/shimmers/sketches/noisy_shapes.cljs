@@ -8,19 +8,26 @@
             thi.ng.geom.polygon
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.types :refer [Polygon2]]
             [thi.ng.geom.vector :as gv]
-            ;; [thi.ng.math.core :as tm]
-            ;; [thi.ng.geom.utils :as gu]
-            [thi.ng.geom.types :refer [Polygon2]]))
+            [thi.ng.math.core :as tm]))
 
+;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
+;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
+(defn random-point-in-triangle2 [{:keys [points]}]
+  (let [[s t] (sort [(rand) (rand)])
+        weighting (gv/vec3 s (- t s) (- 1 t))]
+    (gv/vec2 (tm/dot (apply gv/vec3 (map :x points)) weighting)
+             (tm/dot (apply gv/vec3 (map :y points)) weighting))))
+
+;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
 (extend-type Polygon2
   geom/ISample
   (random-point-inside
-    [_] (let [triangles (map gt/triangle2 (geom/tessellate _))
-              triangle (p/weighted-by geom/area triangles)]
-          ;; FIXME: triangle random point is barycentric and not uniform
-          ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
-          (geom/random-point-inside triangle))))
+    [_] (->> (geom/tessellate _)
+             (map gt/triangle2)
+             (p/weighted-by geom/area)
+             random-point-in-triangle2)))
 
 (defn setup []
   (q/frame-rate 1)
@@ -88,7 +95,8 @@
   (let [w (q/width)
         h (q/height)
         shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
-        shape2 (rect/rect (* 0.6 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
+        shape2 (rotate-around-centroid (rect/rect (* 0.55 w) (* 0.2 h) (* 0.3 w) (* 0.4 h))
+                                       0.2)
         shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
         shapes [[shape3 [105 0.5 0.5 0.2]
                  (q/random 500 1300) 200]
