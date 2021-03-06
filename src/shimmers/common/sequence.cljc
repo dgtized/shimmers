@@ -13,6 +13,11 @@
              (empty coll)
              coll))
 
+(defn mapping
+  "Create a mapping of every value in collection to f(value)."
+  [f coll]
+  (reduce (fn [m x] (assoc m x (f x))) {} coll))
+
 (defn rotate
   [n xs]
   (if (>= n 0)

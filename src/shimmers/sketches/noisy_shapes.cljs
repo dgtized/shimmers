@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.sequence :as cs]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
             thi.ng.geom.polygon
@@ -32,7 +33,7 @@
   (random-weighted {:a 0.2 :b 0.8}))
 
 (defn random-weighted-by [f xs]
-  (random-weighted (reduce (fn [m x] (assoc m x (f x))) {} xs)))
+  (random-weighted (cs/mapping f xs)))
 
 (comment (random-weighted-by inc [1 2 3]))
 
