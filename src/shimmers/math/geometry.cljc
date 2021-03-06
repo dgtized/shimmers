@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry
   (:require [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
+            thi.ng.geom.polygon
             [thi.ng.geom.triangle :as gt]
             #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2]])
             [thi.ng.geom.vector :as gv]
