@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.probability :as p]
+            [shimmers.math.geometry :refer [rotate-around-centroid]]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
             thi.ng.geom.polygon
@@ -41,12 +42,6 @@
   (doseq [p (geom/vertices poly)]
     (apply q/vertex p))
   (q/end-shape :close))
-
-(defn rotate-around-centroid [polygon t]
-  (-> polygon
-      geom/center
-      (geom/rotate t)
-      (geom/translate (geom/centroid polygon))))
 
 (defn right-angle [s]
   (gt/triangle2 (gv/vec2 0 0)
