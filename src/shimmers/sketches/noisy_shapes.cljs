@@ -14,7 +14,7 @@
 
 ;; Modified from https://github.com/clojure/data.generators/blob/master/src/main/clojure/clojure/data/generators.clj#L73
 ;; not available for clojurescript
-(defn weighted
+(defn random-weighted
   "Given a map of generators and weights, return a value from one of
    the generators, selecting generator based on weights."
   [m]
@@ -29,18 +29,18 @@
           (recur more))))))
 
 (comment
-  (weighted {:a 0.2 :b 0.8}))
+  (random-weighted {:a 0.2 :b 0.8}))
 
-(defn weighted-by [f xs]
-  (weighted (reduce (fn [acc x] (assoc acc x (f x))) {} xs)))
+(defn random-weighted-by [f xs]
+  (random-weighted (reduce (fn [m x] (assoc m x (f x))) {} xs)))
 
-(comment (weighted-by inc [1 2 3]))
+(comment (random-weighted-by inc [1 2 3]))
 
 (extend-type Polygon2
   geom/ISample
   (random-point-inside
     [_] (let [triangles (map gt/triangle2 (geom/tessellate _))
-              triangle (weighted-by geom/area triangles)]
+              triangle (random-weighted-by geom/area triangles)]
           ;; FIXME: triangle random point is barycentric and not uniform
           ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
           (geom/random-point-inside triangle))))
