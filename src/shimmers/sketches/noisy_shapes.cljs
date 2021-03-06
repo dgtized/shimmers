@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
@@ -17,10 +18,7 @@
   state)
 
 (defn draw-polygon [poly]
-  (q/begin-shape)
-  (doseq [p (geom/vertices poly)]
-    (apply q/vertex p))
-  (q/end-shape :close))
+  (cq/draw-shape (geom/vertices poly)))
 
 (defn right-angle [s]
   (gt/triangle2 (gv/vec2 0 0)
