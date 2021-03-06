@@ -33,7 +33,7 @@
             :or {depth 0 max-depth 14}}]
   (assoc (gt/triangle2 a b c)
          :color color
-         :depth (+ depth (* 0.9 (rand)))
+         :depth (inc depth)
          :max-depth max-depth))
 
 (defn drift [[h s l a]]
