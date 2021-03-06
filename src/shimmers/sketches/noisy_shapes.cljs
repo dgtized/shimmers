@@ -2,12 +2,12 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.vector :as gv]
+            [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as poly]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.circle :as tc]))
+            [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   (q/frame-rate 1)
