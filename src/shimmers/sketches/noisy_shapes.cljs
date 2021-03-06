@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.sequence :as cs]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
             thi.ng.geom.polygon
@@ -13,35 +13,11 @@
             ;; [thi.ng.geom.utils :as gu]
             [thi.ng.geom.types :refer [Polygon2]]))
 
-;; Modified from https://github.com/clojure/data.generators/blob/master/src/main/clojure/clojure/data/generators.clj#L73
-;; not available for clojurescript
-(defn random-weighted
-  "Given a map of generators and weights, return a value from one of
-   the generators, selecting generator based on weights."
-  [m]
-  (let [weights   (reductions + (vals m))
-        total   (last weights)
-        choices (map vector (keys m) weights)
-        choice (* total (rand))]
-    (loop [[[c w] & more] choices]
-      (when w
-        (if (< choice w)
-          c
-          (recur more))))))
-
-(comment
-  (random-weighted {:a 0.2 :b 0.8}))
-
-(defn random-weighted-by [f xs]
-  (random-weighted (cs/mapping f xs)))
-
-(comment (random-weighted-by inc [1 2 3]))
-
 (extend-type Polygon2
   geom/ISample
   (random-point-inside
     [_] (let [triangles (map gt/triangle2 (geom/tessellate _))
-              triangle (random-weighted-by geom/area triangles)]
+              triangle (p/weighted-by geom/area triangles)]
           ;; FIXME: triangle random point is barycentric and not uniform
           ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
           (geom/random-point-inside triangle))))
