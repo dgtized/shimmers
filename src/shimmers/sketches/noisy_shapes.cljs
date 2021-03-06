@@ -4,10 +4,13 @@
             [shimmers.common.framerate :as framerate]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.polygon :as poly]
+            thi.ng.geom.polygon
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            ;; [thi.ng.math.core :as tm]
+            ;; [thi.ng.geom.utils :as gu]
+            [thi.ng.geom.types :refer [Polygon2]]))
 
 ;; Modified from https://github.com/clojure/data.generators/blob/master/src/main/clojure/clojure/data/generators.clj#L73
 ;; not available for clojurescript
@@ -27,6 +30,21 @@
 
 (comment
   (weighted {:a 0.2 :b 0.8}))
+
+(defn weighted-by [f xs]
+  (weighted (reduce (fn [acc x] (assoc acc x (f x))) {} xs)))
+
+(comment (weighted-by inc [1 2 3]))
+
+(extend-type Polygon2
+  geom/ISample
+  (random-point-inside
+    [_] (let [triangles (map gt/triangle2 (geom/tessellate _))
+              triangle (weighted-by geom/area triangles)]
+          ;; FIXME: triangle random point is barycentric and not uniform
+          ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
+          (geom/random-point-inside triangle))))
+
 (defn setup []
   (q/frame-rate 1)
   (q/color-mode :hsl 360 1.0 1.0 1.0))
