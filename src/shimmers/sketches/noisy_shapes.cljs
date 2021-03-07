@@ -8,7 +8,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/frame-rate 1)
@@ -38,9 +39,17 @@
                   (geom/translate brush (random-position))
                   (q/random 0 Math/PI))))
 
+(defn random-displace [shapes p offset]
+  (let [sampling (random-sample p shapes)
+        remaining (remove (set sampling) shapes)]
+    (concat remaining
+            (for [shape sampling]
+              (geom/translate shape (tm/* offset (rand)))))))
+
 (defn sample-shape [shape brush fill-density edge-density]
-  (concat (generate-strokes brush #(geom/random-point-inside shape) fill-density)
-          (generate-strokes brush #(geom/random-point shape) edge-density)))
+  (random-displace (concat (generate-strokes brush #(geom/random-point shape) edge-density)
+                           (generate-strokes brush #(geom/random-point-inside shape) fill-density))
+                   (* 0.3 (rand)) (gv/vec2 0 150)))
 
 (defn fuzzy-shape [shape fill fill-density edge-density]
   (apply q/fill fill)
