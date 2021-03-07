@@ -63,10 +63,10 @@
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
-        shape1 (rect/rect (* 0.1 w) (* 0.25 h) (* 0.3 w) (* 0.4 h))
-        shape2 (-> (rect/rect (* 0.55 w) (* 0.2 h) (* 0.3 w) (* 0.4 h))
+        shape1 (rect/rect (* 0.1 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
+        shape2 (-> (rect/rect (* 0.55 w) (* 0.1 h) (* 0.3 w) (* 0.4 h))
                    (geometry/rotate-around-centroid 0.2))
-        shape3 (rect/rect (* 0.35 w) (* 0.5 h) (* 0.3 w) (* 0.4 h))
+        shape3 (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
         shapes [[shape3 [105 0.5 0.5 0.2]
                  (q/random 500 1300) 200]
                 [shape1 [10 0.5 0.5 0.2]
