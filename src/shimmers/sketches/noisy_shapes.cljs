@@ -49,7 +49,7 @@
 (defn sample-shape [shape brush fill-density edge-density]
   (random-displace (concat (generate-strokes brush #(geom/random-point shape) edge-density)
                            (generate-strokes brush #(geom/random-point-inside shape) fill-density))
-                   (* 0.3 (rand)) (gv/vec2 0 150)))
+                   (* 0.25 (rand)) (gv/vec2 0 (* 0.5 (q/height)))))
 
 (defn fuzzy-shape [shape fill fill-density edge-density]
   (apply q/fill fill)
