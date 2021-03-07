@@ -39,14 +39,13 @@
                   (q/random 0 Math/PI))))
 
 (defn sample-shape [shape brush fill-density edge-density]
-  (doseq [copy
-          (concat (generate-strokes brush #(geom/random-point-inside shape) fill-density)
-                  (generate-strokes brush #(geom/random-point shape) edge-density))]
-    (draw-polygon copy)))
+  (concat (generate-strokes brush #(geom/random-point-inside shape) fill-density)
+          (generate-strokes brush #(geom/random-point shape) edge-density)))
 
 (defn fuzzy-shape [shape fill fill-density edge-density]
   (apply q/fill fill)
-  (sample-shape shape (random-brush) fill-density edge-density))
+  (doseq [poly (sample-shape shape (random-brush) fill-density edge-density)]
+    (draw-polygon poly)))
 
 (defn draw []
   (q/background 255)
