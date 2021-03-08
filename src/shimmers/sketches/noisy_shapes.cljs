@@ -9,7 +9,8 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
 
 (defn setup []
   (q/frame-rate 1)
@@ -47,13 +48,14 @@
               (geom/translate shape (tm/* offset (rand)))))))
 
 (defn sample-shape [shape brush fill-density edge-density]
-  (random-displace (concat (generate-strokes brush #(geom/random-point shape) edge-density)
-                           (generate-strokes brush #(geom/random-point-inside shape) fill-density))
-                   (* 0.25 (rand)) (gv/vec2 0 (* 0.5 (q/height)))))
+  (concat (generate-strokes brush #(geom/random-point shape) edge-density)
+          (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
 
 (defn fuzzy-shape [shape fill fill-density edge-density]
   (apply q/fill fill)
-  (doseq [poly (sample-shape shape (random-brush) fill-density edge-density)]
+  (doseq [poly (-> (sample-shape shape (random-brush) fill-density edge-density)
+                   (random-displace (if (p/chance 0.5) (* 0.25 (rand)) 0)
+                                    (gv/vec2 0 (* 0.5 (q/height)))))]
     (draw-polygon poly)))
 
 (defn draw []
