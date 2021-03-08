@@ -47,6 +47,9 @@
             (for [shape sampling]
               (geom/translate shape (tm/* offset (rand)))))))
 
+(defn happensity [likelyhood amount]
+  (if (p/chance likelyhood) (* amount (rand)) 0))
+
 (defn sample-shape [shape brush fill-density edge-density]
   (concat (generate-strokes brush #(geom/random-point shape) edge-density)
           (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
@@ -54,7 +57,7 @@
 (defn fuzzy-shape [shape fill {:keys [fill-density edge-density displacement]
                                :or {fill-density (q/random 500 2500)
                                     edge-density 200
-                                    displacement (if (p/chance 0.5) (* 0.25 (rand)) 0)}}]
+                                    displacement (happensity 0.2 0.25)}}]
   (apply q/fill fill)
   (doseq [poly (-> (sample-shape shape (random-brush) fill-density edge-density)
                    (random-displace displacement
@@ -73,7 +76,7 @@
                    (geometry/rotate-around-centroid 0.2))
         shape3 (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
         shapes [[shape1 [10 0.5 0.5 0.2]]
-                [shape2 [210 0.5 0.5 0.2]]
+                [shape2 [210 0.5 0.5 0.2] {:displacement (happensity 0.6 0.3)}]
                 [shape3 [105 0.5 0.5 0.2]]]]
     (doseq [args (shuffle shapes)]
       (apply fuzzy-shape args))))
