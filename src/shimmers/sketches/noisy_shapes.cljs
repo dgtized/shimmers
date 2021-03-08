@@ -68,11 +68,11 @@
                    (geometry/rotate-around-centroid 0.2))
         shape3 (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
         shapes [[shape3 [105 0.5 0.5 0.2]
-                 (q/random 500 1300) 200]
+                 (q/random 500 2500) 200]
                 [shape1 [10 0.5 0.5 0.2]
-                 (q/random 600 2000) 200]
+                 (q/random 500 2500) 200]
                 [shape2 [210 0.5 0.5 0.2]
-                 (q/random 600 2000) 200]
+                 (q/random 500 2500) 200]
                 ]]
     (doseq [args (shuffle shapes)]
       (apply fuzzy-shape args))))
