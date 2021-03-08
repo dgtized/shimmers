@@ -23,7 +23,7 @@
   state)
 
 (defn draw [{:keys [shapes]}]
-  (doseq [shape (mapcat (fn [s] (geom/tessellate s)) shapes)]
+  (doseq [shape shapes]
     (draw-polygon shape)))
 
 (defn ^:export run-sketch []
