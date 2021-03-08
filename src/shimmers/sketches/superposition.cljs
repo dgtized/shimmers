@@ -39,21 +39,23 @@
              (rel-w 0.3) (rel-h 0.3)))
 
 (defn random-circle []
-  (gc/circle (+ (rel-w (tm/clamp (rand) 0.2 0.8)))
-             (+ (rel-h (tm/clamp (rand) 0.2 0.8)))
-             (rel-h 0.2)))
+  (let [r (+ 0.1 (* 0.23 (rand)))]
+    (gc/circle (rel-w (tm/clamp (rand) r (- 1 r)))
+               (rel-h (tm/clamp (rand) r (- 1 r)))
+               (rel-h r))))
+
+(defn tween-cycle [cycle]
+  (/ (+ 1 (q/cos (/ (q/frame-count) cycle))) 2))
 
 (defn update-state [state]
-  (let [fc (q/frame-count)
-        tween (/ (+ 1 (q/cos (/ fc 50))) 2)]
-    (if (= (mod fc 500) 0)
-      (let [target ((rand-nth [random-rect random-circle]))]
-        (assoc state :current (:target state)
-               :target target
-               :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
-                             (:brushes state))
-               :tween tween))
-      (assoc state :tween tween))))
+  (if (= (mod (q/frame-count) 500) 0)
+    (let [target ((rand-nth [random-rect random-circle]))]
+      (assoc state :current (:target state)
+             :target target
+             :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
+                           (:brushes state))
+             :tween (tween-cycle 50)))
+    (assoc state :tween (tween-cycle 50))))
 
 (defn draw [{:keys [tween current target brushes]}]
   (q/stroke-weight 1)
@@ -65,7 +67,7 @@
   (draw-polygon target)
 
   ;; (q/no-stroke)
-  (q/stroke-weight 0.1)
+  (q/stroke-weight (* 0.6 (tween-cycle 200)))
   (q/fill (* 360 tween) 0.5 0.5 0.1)
   (doseq [brush brushes]
     (draw-polygon (random-shape-at brush tween))))
