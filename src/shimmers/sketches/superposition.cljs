@@ -24,23 +24,28 @@
         (geom/translate (tm/mix p1 p2 t)))))
 
 (defn setup []
+  (q/color-mode :hsl 360 1.0 1.0 1.0)
   (let [shapes [(rect/rect (rel-w 0.15) (rel-h 0.15) (rel-w 0.3) (rel-h 0.3))
                 (rect/rect (rel-w 0.55) (rel-h 0.55) (rel-w 0.3) (rel-h 0.3))]]
     {:shapes shapes
      :brushes (->> (fn [] [(geom/random-point-inside (first shapes))
                           (geom/random-point-inside (second shapes))])
-                   (repeatedly 100)
+                   (repeatedly 64)
                    (map random-shape-at))}))
 
 (defn update-state [state]
   state)
 
 (defn draw [{:keys [shapes brushes]}]
-  ;; (q/background 255)
-  ;; (doseq [shape shapes]
-  ;;   (draw-polygon shape))
-  (doseq [brush brushes]
-    (draw-polygon (brush (Math/abs (q/cos (/ (q/frame-count) 1000)))))))
+  (q/no-stroke)
+  (let [tween (Math/abs (q/cos (/ (q/frame-count) 500)))]
+    (q/stroke-weight 0.1)
+    (q/fill (* 360 tween) 0.5 0.5 0.1)
+    ;; (q/background 255)
+    ;; (doseq [shape shapes]
+    ;;   (draw-polygon shape))
+    (doseq [brush brushes]
+      (draw-polygon (brush tween)))))
 
 (defn ^:export run-sketch []
   ;; 20210308
