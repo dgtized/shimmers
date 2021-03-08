@@ -55,9 +55,9 @@
           (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
 
 (defn fuzzy-shape
-  [shape fill
-   {:keys [brush fill-density edge-density displacement]
-    :or {brush (random-brush)
+  [{:keys [shape fill brush fill-density edge-density displacement]
+    :or {fill [0 0 0 0.2]
+         brush (random-brush)
          fill-density (q/random 500 2500)
          edge-density (q/random 100 300)
          displacement (happensity 0.2 0.25)}}]
@@ -78,11 +78,12 @@
         shape2 (-> (rect/rect (* 0.55 w) (* 0.1 h) (* 0.3 w) (* 0.4 h))
                    (geometry/rotate-around-centroid 0.2))
         shape3 (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
-        shapes [[shape1 [10 0.5 0.5 0.2]]
-                [shape2 [210 0.5 0.5 0.2] {:displacement (happensity 0.6 0.3)}]
-                [shape3 [105 0.5 0.5 0.2]]]]
+        shapes [{:shape shape1 :fill [10 0.5 0.5 0.2]}
+                {:shape shape2 :fill [210 0.5 0.5 0.2]
+                 :displacement (happensity 0.6 0.3)}
+                {:shape shape3 :fill [105 0.5 0.5 0.2]}]]
     (doseq [args (shuffle shapes)]
-      (apply fuzzy-shape args))))
+      (fuzzy-shape args))))
 
 
 (defn ^:export run-sketch []
