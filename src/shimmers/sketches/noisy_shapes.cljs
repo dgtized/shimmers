@@ -56,7 +56,7 @@
 
 (defn fuzzy-shape [shape fill {:keys [fill-density edge-density displacement]
                                :or {fill-density (q/random 500 2500)
-                                    edge-density 200
+                                    edge-density (q/random 100 300)
                                     displacement (happensity 0.2 0.25)}}]
   (apply q/fill fill)
   (doseq [poly (-> (sample-shape shape (random-brush) fill-density edge-density)
