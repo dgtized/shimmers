@@ -55,7 +55,9 @@
           (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
 
 (defn fuzzy-shape
-  [{:keys [shape fill brush fill-density edge-density displacement direction]
+  [{:keys [shape fill
+           brush fill-density edge-density
+           displacement direction]
     :or {fill [0 0 0 0.2]
          brush (random-brush)
          fill-density (q/random 500 2500)
