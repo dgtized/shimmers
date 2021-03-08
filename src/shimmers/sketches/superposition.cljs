@@ -6,6 +6,7 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.math.core :as tm]))
 
 (defn rel-h [p]
@@ -33,11 +34,20 @@
                                  (geom/random-point-inside target)]))
      :tween 1.0}))
 
+(defn random-rect []
+  (rect/rect (rel-w (* 0.7 (rand))) (rel-h (* 0.7 (rand)))
+             (rel-w 0.3) (rel-h 0.3)))
+
+(defn random-circle []
+  (gc/circle (+ (rel-w (tm/clamp (rand) 0.2 0.8)))
+             (+ (rel-h (tm/clamp (rand) 0.2 0.8)))
+             (rel-h 0.2)))
+
 (defn update-state [state]
   (let [fc (q/frame-count)
         tween (/ (+ 1 (q/cos (/ fc 50))) 2)]
     (if (= (mod fc 500) 0)
-      (let [target (rect/rect (rel-w (* 0.7 (rand))) (rel-h (* 0.7 (rand))) (rel-w 0.3) (rel-h 0.3))]
+      (let [target ((rand-nth [random-rect random-circle]))]
         (assoc state :current (:target state)
                :target target
                :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
@@ -54,7 +64,8 @@
   (q/stroke 0 0.0 0.0 1.0)
   (draw-polygon target)
 
-  (q/no-stroke)
+  ;; (q/no-stroke)
+  (q/stroke-weight 0.1)
   (q/fill (* 360 tween) 0.5 0.5 0.1)
   (doseq [brush brushes]
     (draw-polygon (random-shape-at brush tween))))
