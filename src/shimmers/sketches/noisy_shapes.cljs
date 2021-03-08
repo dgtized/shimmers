@@ -76,14 +76,14 @@
   ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
-        shape1 (rect/rect (* 0.1 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
-        shape2 (-> (rect/rect (* 0.55 w) (* 0.1 h) (* 0.3 w) (* 0.4 h))
-                   (geometry/rotate-around-centroid 0.2))
-        shape3 (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
-        shapes [{:shape shape1 :fill [10 0.5 0.5 0.2]}
-                {:shape shape2 :fill [210 0.5 0.5 0.2]
+        shapes [{:shape (rect/rect (* 0.1 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
+                 :fill [10 0.5 0.5 0.2]}
+                {:shape (-> (rect/rect (* 0.55 w) (* 0.1 h) (* 0.3 w) (* 0.4 h))
+                            (geometry/rotate-around-centroid 0.2))
+                 :fill [210 0.5 0.5 0.2]
                  :displacement (happensity 0.6 0.3)}
-                {:shape shape3 :fill [105 0.5 0.5 0.2]}]]
+                {:shape (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
+                 :fill [105 0.5 0.5 0.2]}]]
     (doseq [args (shuffle shapes)]
       (fuzzy-shape args))))
 
