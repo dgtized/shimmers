@@ -95,9 +95,10 @@
     (q/stroke 0 0 0 0.35)
     (q/stroke-weight (-> (- (q/noise (/ fc 600) 0.0) 0.35)
                          (tm/map-interval-clamped [0 0.65] [0 0.6])))
-    (q/fill (mod (* 1080 (q/noise (/ fc 2000) 100.0)) 360)
-            0.5
-            0.5 0.035))
+    (q/fill (mod (* 1080 (q/noise (/ fc 3000) 100.0)) 360)
+            (tm/map-interval (q/noise (/ fc 800) 200.0) [0 1] [0.4 1.0])
+            (tm/map-interval (q/noise (/ fc 800) 400.0) [0 1] [0.45 1.0])
+            0.035))
   (doseq [brush brushes]
     (draw-polygon (random-shape-at brush tween spin))))
 
