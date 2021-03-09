@@ -84,9 +84,9 @@
                                                   (inc (count cluster))))
                              clusters)]
     ;; (println [:update (keys clusters) positions])
-    (map (fn [{:keys [position cluster] :as shape}]
-           (assoc shape :position (tm/mix position (get positions cluster) 0.01)))
-         shapes)))
+    (for [{:keys [position cluster] :as shape} shapes
+          :let [centroid (tm/+ (gv/randvec2 5) (get positions cluster))]]
+      (assoc shape :position (tm/mix position centroid 0.005)))))
 
 (defn update-state [state]
   (update state :shapes (comp update-cluster assign-cluster)))
