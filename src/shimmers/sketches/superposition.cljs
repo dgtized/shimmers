@@ -32,7 +32,7 @@
      :brushes (repeatedly 64
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
-     :tween 1.0}))
+     :tween 0.0}))
 
 (defn random-rect []
   (let [w (q/random 0.1 0.5)
