@@ -47,6 +47,9 @@
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
 
+(defn var-rate [n]
+  (Math/sin (* (/ Math/PI 2) n)))
+
 (defn update-state [{:keys [base interval] :as state}]
   (let [fc (q/frame-count)]
     (if (= (- fc base) interval)
@@ -58,7 +61,7 @@
                :base fc
                :interval (q/floor (q/random 200 600))
                :tween 0.0))
-      (assoc state :tween (/ (- fc base) interval)))))
+      (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
 (defn draw [{:keys [tween current target brushes]}]
   ;; (q/background 255)
