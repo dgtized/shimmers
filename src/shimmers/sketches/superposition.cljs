@@ -59,9 +59,9 @@
       (assoc state :tween tween))))
 
 (defn draw [{:keys [tween current target brushes]}]
-  (q/stroke-weight 1)
-  (q/no-fill)
   ;; (q/background 255)
+  ;; (q/no-fill)
+  ;; (q/stroke-weight 1)
   ;; (q/stroke 0 1.0 1.0 1.0)
   ;; (draw-polygon current)
   ;; (q/stroke 0 0.0 0.0 1.0)
