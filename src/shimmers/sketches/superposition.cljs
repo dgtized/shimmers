@@ -40,8 +40,8 @@
      :interval 500}))
 
 (defn random-rect []
-  (let [w (q/random 0.1 0.5)
-        h (q/random 0.1 0.5)]
+  (let [w (q/random 0.1 0.4)
+        h (q/random 0.1 0.4)]
     (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
                (rel-w w) (rel-h h))))
 
