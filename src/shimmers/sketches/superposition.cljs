@@ -74,9 +74,10 @@
 
   ;; (q/no-stroke)
   ;; measure/beat
+  (q/stroke 0 0 0 0.5)
   (q/stroke-weight (-> (- (q/noise (/ (q/frame-count) 600) 0.0) 0.35)
-                       (tm/map-interval-clamped [0 0.65] [0 0.3])))
-  (q/fill (mod (* 720 (q/noise (/ (q/frame-count) 1000) 100.0)) 360)
+                       (tm/map-interval-clamped [0 0.65] [0 0.5])))
+  (q/fill (mod (* 1080 (q/noise (/ (q/frame-count) 2000) 100.0)) 360)
           0.5 0.5 0.1)
   (doseq [brush brushes]
     (draw-polygon (random-shape-at brush tween))))
