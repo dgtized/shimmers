@@ -35,13 +35,14 @@
                          (rel-h (q/random 0.2 0.8))]))))
 
 (defn random-rect []
-  (let [w (q/random 0.1 0.4)
-        h (q/random 0.1 0.4)]
-    (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
-               (rel-w w) (rel-h h))))
+  (let [w (q/random 0.1 0.3)
+        h (q/random 0.1 0.3)]
+    (-> (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
+                   (rel-w w) (rel-h h))
+        (geometry/rotate-around-centroid (* 2 Math/PI (rand))))))
 
 (defn random-circle []
-  (let [r (q/random 0.1 0.4)]
+  (let [r (q/random 0.1 0.3)]
     (gc/circle (rel-w (tm/clamp (rand) r (- 1 r)))
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
