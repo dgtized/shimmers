@@ -26,19 +26,6 @@
                             (rand))))
       (geom/translate (tm/mix p1 p2 t))))
 
-(defn setup []
-  (q/color-mode :hsl 360 1.0 1.0 1.0)
-  (let [current (rect/rect (rel-w 0.15) (rel-h 0.15) (rel-w 0.3) (rel-h 0.3))
-        target (rect/rect (rel-w 0.55) (rel-h 0.55) (rel-w 0.3) (rel-h 0.3))]
-    {:current current
-     :target target
-     :brushes (repeatedly 64
-                          (fn [] [(geom/random-point-inside current)
-                                 (geom/random-point-inside target)]))
-     :base 0
-     :spin (p/chance 0.5)
-     :interval 500}))
-
 (defn random-rect []
   (let [w (q/random 0.1 0.4)
         h (q/random 0.1 0.4)]
@@ -51,13 +38,29 @@
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
 
+(defn random-target []
+  ((rand-nth [random-rect random-circle])))
+
 (defn var-rate [n]
   (Math/sin (* (/ Math/PI 2) n)))
+
+(defn setup []
+  (q/color-mode :hsl 360 1.0 1.0 1.0)
+  (let [current (random-target)
+        target (random-target)]
+    {:current current
+     :target target
+     :brushes (repeatedly 64
+                          (fn [] [(geom/random-point-inside current)
+                                 (geom/random-point-inside target)]))
+     :base 0
+     :spin (p/chance 0.5)
+     :interval 500}))
 
 (defn update-state [{:keys [base interval] :as state}]
   (let [fc (q/frame-count)]
     (if (= (- fc base) interval)
-      (let [target ((rand-nth [random-rect random-circle]))]
+      (let [target (random-target)]
         (assoc state :current (:target state)
                :target target
                :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
