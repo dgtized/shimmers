@@ -58,6 +58,7 @@
                     (fn [cluster] (cos-similarity (grouping-vector shape) (get colors cluster)))
                     (keys colors))))))
 
+;; Generate initial triangles by sampling from video or an image?
 (defn setup []
   (q/frame-rate 60)
   (q/color-mode :hsl 360.0 1.0 1.0 1.0)
