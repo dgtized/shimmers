@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
@@ -26,6 +27,13 @@
                             (rand))))
       (geom/translate (tm/mix p1 p2 t))))
 
+(defn random-triangle []
+  (let [s (q/random 0.1 0.2)]
+    (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
+        (geometry/rotate-around-centroid (* 2 Math/PI (rand)))
+        (geom/translate [(rel-w (q/random 0.2 0.8))
+                         (rel-h (q/random 0.2 0.8))]))))
+
 (defn random-rect []
   (let [w (q/random 0.1 0.4)
         h (q/random 0.1 0.4)]
@@ -39,7 +47,7 @@
                (rel-h r))))
 
 (defn random-target []
-  ((rand-nth [random-rect random-circle])))
+  ((rand-nth [random-rect random-circle random-triangle])))
 
 (defn var-rate [n]
   (Math/sin (* (/ Math/PI 2) n)))
