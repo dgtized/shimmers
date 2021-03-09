@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -28,7 +29,7 @@
 
 (defn draw-shape [{:keys [position shape color]}]
   (apply q/fill color)
-  (cq/draw-shape (geom/vertices (geom/translate shape position))))
+  (cq/draw-shape (geom/vertices (geometry/rotate-around-centroid (geom/translate shape position) (* 2 Math/PI (rand))))))
 
 (defn make-shape []
   {:position (gv/vec2 (rel-w (rand)) (rel-h (rand)))
