@@ -36,7 +36,9 @@
    :color [(mod (q/random 1080) 360) (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
 
 (defn grouping-vector [{:keys [color position]}]
-  (concat (map * color (repeat 12000)) position))
+  (let [v (concat (map * color (repeat 1)) position)
+        m (magnitude v)]
+    (mapv (fn [x] (/ x m)) v)))
 
 (defn color-add [c1 c2]
   (map + c1 c2))
