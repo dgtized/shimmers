@@ -44,18 +44,14 @@
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
 
-(defn tween-cycle [fc cycle]
-  (/ (+ 1 (q/cos (/ fc cycle))) 2))
-
 (defn update-state [state]
   (let [fc (q/frame-count)
-        tween (tween-cycle fc 50)]
-    (if (and (> tween (tween-cycle (dec fc) 50))
-             (> tween (tween-cycle (inc fc) 50)))
+        tween (mod (/ fc 500) 1.0)]
+    (if (= tween 0)
       (let [target ((rand-nth [random-rect random-circle]))]
         (assoc state :current (:target state)
                :target target
-               :brushes (map (fn [b] [(geom/random-point-inside target) (second b)])
+               :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
                              (:brushes state))
                :tween tween))
       (assoc state :tween tween))))
@@ -71,8 +67,10 @@
 
   ;; (q/no-stroke)
   ;; measure/beat
-  (q/stroke-weight (* 0.6 (tween-cycle (q/frame-count) 200)))
-  (q/fill (* 360 tween) 0.5 0.5 0.1)
+  (q/stroke-weight (-> (- (q/noise (/ (q/frame-count) 500) 0.0) 0.3)
+                       (tm/clamp 0 0.4)))
+  (q/fill (mod (* 720 (q/noise (/ (q/frame-count) 300) 100.0)) 360)
+          0.5 0.5 0.1)
   (doseq [brush brushes]
     (draw-polygon (random-shape-at brush tween))))
 
