@@ -35,11 +35,13 @@
      :tween 1.0}))
 
 (defn random-rect []
-  (rect/rect (rel-w (* 0.7 (rand))) (rel-h (* 0.7 (rand)))
-             (rel-w 0.3) (rel-h 0.3)))
+  (let [w (q/random 0.1 0.5)
+        h (q/random 0.1 0.5)]
+    (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
+               (rel-w w) (rel-h h))))
 
 (defn random-circle []
-  (let [r (+ 0.1 (* 0.23 (rand)))]
+  (let [r (q/random 0.1 0.4)]
     (gc/circle (rel-w (tm/clamp (rand) r (- 1 r)))
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
