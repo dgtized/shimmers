@@ -32,7 +32,8 @@
      :brushes (repeatedly 64
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
-     :tween 0.0}))
+     :base 0
+     :interval 500}))
 
 (defn random-rect []
   (let [w (q/random 0.1 0.5)
@@ -46,17 +47,17 @@
                (rel-h (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
 
-(defn update-state [state]
-  (let [fc (q/frame-count)
-        tween (mod (/ fc 500) 1.0)]
-    (if (= tween 0)
+(defn update-state [{:keys [base interval] :as state}]
+  (let [fc (q/frame-count)]
+    (if (= (- fc base) interval)
       (let [target ((rand-nth [random-rect random-circle]))]
         (assoc state :current (:target state)
                :target target
                :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
                              (:brushes state))
-               :tween tween))
-      (assoc state :tween tween))))
+               :base fc
+               :tween 0.0))
+      (assoc state :tween (/ (- fc base) interval)))))
 
 (defn draw [{:keys [tween current target brushes]}]
   ;; (q/background 255)
