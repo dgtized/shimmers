@@ -33,13 +33,7 @@
 (defn make-shape []
   {:position (gv/vec2 (rel-w (rand)) (rel-h (rand)))
    :shape (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
-   :color [(mod (q/random 1080) 360) (q/random 0.5 0.8) (q/random 0.5 0.8) 0.1]
-   :cluster (rand-nth (range 0 8))})
-
-(defn setup []
-  (q/frame-rate 60)
-  (q/color-mode :hsl 360.0 1.0 1.0 1.0)
-  {:shapes (repeatedly 1024 make-shape)})
+   :color [(mod (q/random 1080) 360) (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
 
 (defn grouping-vector [{:keys [color position]}]
   (concat (map * color (repeat 12000)) position))
@@ -50,6 +44,21 @@
 (defn pr-dbg [v]
   (pr v)
   v)
+
+(defn seed-cluster [shapes n]
+  (let [colors (into {} (map-indexed (fn [i s] {i (grouping-vector s)})
+                                     (take n (shuffle shapes))))]
+    (for [shape shapes]
+      (assoc shape
+             :cluster
+             (apply max-key
+                    (fn [cluster] (cos-similarity (grouping-vector shape) (get colors cluster)))
+                    (keys colors))))))
+
+(defn setup []
+  (q/frame-rate 60)
+  (q/color-mode :hsl 360.0 1.0 1.0 1.0)
+  {:shapes (seed-cluster (repeatedly 512 make-shape) 12)})
 
 (defn assign-cluster [shapes]
   (let [clusters (group-by :cluster shapes)
