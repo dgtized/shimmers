@@ -3,10 +3,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.circle :as gc]
             [thi.ng.math.core :as tm]))
 
 (defn rel-h [p]
@@ -18,9 +19,11 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn random-shape-at [[p1 p2] t]
+(defn random-shape-at [[p1 p2] t spin]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
-      (geom/rotate (* 2 Math/PI (rand)))
+      (geom/rotate (* 2 Math/PI (if spin
+                            (mod (* t 200) 3)
+                            (rand))))
       (geom/translate (tm/mix p1 p2 t))))
 
 (defn setup []
@@ -33,6 +36,7 @@
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
      :base 0
+     :spin (p/chance 0.5)
      :interval 500}))
 
 (defn random-rect []
@@ -60,10 +64,11 @@
                              (:brushes state))
                :base fc
                :interval (q/floor (q/random 200 600))
+               :spin (p/chance 0.5)
                :tween 0.0))
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween current target brushes]}]
+(defn draw [{:keys [tween current target brushes spin]}]
   ;; (q/background 255)
   ;; (q/no-fill)
   ;; (q/stroke-weight 1)
@@ -80,7 +85,7 @@
   (q/fill (mod (* 1080 (q/noise (/ (q/frame-count) 2000) 100.0)) 360)
           0.5 0.5 0.1)
   (doseq [brush brushes]
-    (draw-polygon (random-shape-at brush tween))))
+    (draw-polygon (random-shape-at brush tween spin))))
 
 (defn ^:export run-sketch []
   ;; 20210308
