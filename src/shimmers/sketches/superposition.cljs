@@ -56,6 +56,7 @@
                :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
                              (:brushes state))
                :base fc
+               :interval (q/floor (q/random 200 600))
                :tween 0.0))
       (assoc state :tween (/ (- fc base) interval)))))
 
