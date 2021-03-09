@@ -69,14 +69,14 @@
                                              (reduce color-add (map grouping-vector cluster))))
                           clusters)]
     ;; (println [:assign (cs/map-kv count clusters) colors])
-    (println [:assign (cs/map-kv count clusters)])
-    (map (fn [shape]
-           (assoc shape
-                  :cluster
-                  (apply max-key
-                         (fn [cluster] (cos-similarity (grouping-vector shape) (get colors cluster)))
-                         (keys clusters))))
-         shapes)))
+    ;; (println [:assign (cs/map-kv count clusters)])
+    (for [shape shapes
+          :let [s (grouping-vector shape)]]
+      (assoc shape
+             :cluster
+             (apply max-key
+                    (fn [cluster] (cos-similarity s (get colors cluster)))
+                    (keys clusters))))))
 
 (defn update-cluster [shapes]
   (let [clusters (group-by :cluster shapes)
