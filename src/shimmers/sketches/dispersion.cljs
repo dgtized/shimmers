@@ -18,6 +18,11 @@
   (q/color-mode :hsl 1.0)
   {})
 
+(defn rdirection [distrib]
+  (tm/* (gv/vec2 (* 0.6 (Math/abs (ksd/draw distrib)))
+                 (* -0.4 (Math/abs (ksd/draw distrib))))
+        (cq/rel-w 0.09)))
+
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
@@ -32,9 +37,7 @@
                                       (geom/subdivide s)
                                       [s])]
                               (if (p/chance (* 0.03 (- (/ max-dist 1.5) corner-dist)))
-                                (geometry/displace t (rand) (tm/* (gv/vec2 (* 0.6 (Math/abs (ksd/draw distribution)))
-                                                                           (* -0.4 (Math/abs (ksd/draw distribution))))
-                                                                  (cq/rel-w 0.09)))
+                                (geometry/displace t (rand) (rdirection distribution))
                                 t))))
                         tessellated)]
     (doseq [shape divided]
