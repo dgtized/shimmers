@@ -19,7 +19,7 @@
 (defn curly-line [a b]
   (for [t (remove #(p/chance 0.6) (range 0 1.0 0.03))
         :let [point (tm/mix a b t)]]
-    (if (p/chance (* 0.05 t))
+    (if (p/chance (* 0.08 t))
       (tm/+ point (gv/randvec2 0.05))
       point)))
 
