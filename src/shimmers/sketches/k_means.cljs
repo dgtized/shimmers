@@ -21,9 +21,13 @@
          mag)
       0)))
 
-(defn draw-shape [{:keys [position shape color]}]
+(defn draw-shape [{:keys [position shape color theta] :or {theta 0}}]
   (apply q/fill color)
-  (cq/draw-shape (geom/vertices (geometry/rotate-around-centroid (geom/translate shape position) (* 2 Math/PI (rand))))))
+  (-> shape
+      (geom/translate position)
+      (geometry/rotate-around-centroid theta)
+      geom/vertices
+      cq/draw-shape))
 
 (defn make-shape []
   {:position (gv/vec2 (rel-w (rand)) (rel-h (rand)))
@@ -89,7 +93,7 @@
 (defn draw [{:keys [shapes]}]
   (q/no-stroke)
   (doseq [shape shapes]
-    (draw-shape shape)))
+    (draw-shape (assoc shape :theta (* 2 Math/PI (rand))))))
 
 (defn ^:export run-sketch []
   (q/defsketch k-means
