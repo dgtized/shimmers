@@ -38,6 +38,7 @@
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.rose :as rose]
             [shimmers.sketches.scintillation :as scintillation]
+            [shimmers.sketches.scribbles :as scribbles]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
@@ -91,8 +92,9 @@
      ring/run-sketch
      ripples/run-sketch
      rose/run-sketch
-     space-colonization/run-sketch
      scintillation/run-sketch
+     scribbles/run-sketch
+     space-colonization/run-sketch
      sphere/run-sketch
      substrate/run-sketch
      superposition/run-sketch
