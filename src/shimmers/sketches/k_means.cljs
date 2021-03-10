@@ -96,6 +96,7 @@
     (draw-shape (assoc shape :theta (* 2 Math/PI (rand))))))
 
 (defn ^:export run-sketch []
+  ;; 20210309
   (q/defsketch k-means
     :host "quil-host"
     :size [600 400]
