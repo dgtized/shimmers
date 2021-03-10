@@ -33,3 +33,8 @@
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
 
+(defn displace [polygon theta dir]
+  (-> polygon
+      geom/center
+      (geom/rotate theta)
+      (geom/translate (tm/+ (geom/centroid polygon) dir))))

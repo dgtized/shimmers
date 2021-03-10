@@ -17,11 +17,6 @@
   (q/color-mode :hsl 1.0)
   {})
 
-(defn displace [shape theta direction]
-  (-> shape
-      (geometry/rotate-around-centroid theta)
-      (geom/translate direction)))
-
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
@@ -35,8 +30,8 @@
                                       (geom/subdivide s)
                                       [s])]
                               (if (p/chance (* 0.03 (- (/ max-dist 1.5) corner-dist)))
-                                (displace t (rand) (tm/* (gv/vec2 (* 0.9 (rand)) (* -0.6 (rand)))
-                                                         (* (rand) (cq/rel-w 0.8))))
+                                (geometry/displace t (rand) (tm/* (gv/vec2 (* 0.9 (rand)) (* -0.6 (rand)))
+                                                                  (* (rand) (cq/rel-w 0.8))))
                                 t))))
                         tessellated)]
     (doseq [shape divided]
