@@ -41,7 +41,7 @@
   (doseq [y (range 0.01 0.9 0.02)]
     (scribble (curly-line (gv/vec2 0 (+ 0.3 y)) (gv/vec2 1.0 (- y 0.1))) 4.0))
   (q/no-stroke)
-  (q/fill 0.0 0.8 0.8 0.2)
+  (q/fill 0.35 0.6 0.8 0.2)
   (q/rect (cq/rel-w 0.3) (cq/rel-h 0.15) (cq/rel-w 0.3) (cq/rel-h 0.1))
   (q/rect (cq/rel-w 0.2) (cq/rel-h 0.35) (cq/rel-w 0.3) (cq/rel-h 0.15))
   (q/rect (cq/rel-w 0.1) (cq/rel-h 0.6) (cq/rel-w 0.3) (cq/rel-h 0.1))
@@ -49,9 +49,9 @@
   (q/rect (cq/rel-w 0.6) (cq/rel-h 0.3) (cq/rel-w 0.3) (cq/rel-h 0.15))
   (q/rect (cq/rel-w 0.5) (cq/rel-h 0.6) (cq/rel-w 0.25) (cq/rel-h 0.1))
   (q/rect (cq/rel-w 0.4) (cq/rel-h 0.8) (cq/rel-w 0.2) (cq/rel-h 0.15))
-  (q/stroke 0 0 0 0.8)
+  (q/stroke 0.3 0.4 0.2 0.8)
   (q/stroke-weight 1)
-  (doseq [point (repeatedly 100 random-vertex)]
+  (doseq [point (repeatedly 128 random-vertex)]
     (q/line (rel-v point) (rel-v (tm/+ point (gv/vec2 0 (- (* 0.015 (rand)))))))))
 
 (defn ^:export run-sketch []
