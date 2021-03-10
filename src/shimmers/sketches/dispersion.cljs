@@ -1,5 +1,6 @@
 (ns shimmers.sketches.dispersion
-  (:require [quil.core :as q :include-macros true]
+  (:require [kixi.stats.distribution :as ksd]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
@@ -24,14 +25,16 @@
         [_ ne _ sw] (geom/vertices building)
         max-dist (geom/dist ne sw)
         tessellated (geom/tessellate building {:num 32})
+        distribution (ksd/normal {:sd 3.5})
         divided (mapcat (fn [s]
                           (let [corner-dist (geom/dist (geom/centroid s) ne)]
                             (for [t (if (p/chance (* 0.01 (- (/ max-dist 1.9) corner-dist)))
                                       (geom/subdivide s)
                                       [s])]
                               (if (p/chance (* 0.03 (- (/ max-dist 1.5) corner-dist)))
-                                (geometry/displace t (rand) (tm/* (gv/vec2 (* 0.9 (rand)) (* -0.6 (rand)))
-                                                                  (* (rand) (cq/rel-w 0.8))))
+                                (geometry/displace t (rand) (tm/* (gv/vec2 (* 0.6 (Math/abs (ksd/draw distribution)))
+                                                                           (* -0.4 (Math/abs (ksd/draw distribution))))
+                                                                  (cq/rel-w 0.1)))
                                 t))))
                         tessellated)]
     (doseq [shape divided]
