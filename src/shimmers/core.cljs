@@ -21,6 +21,7 @@
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
+            [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.langton-ant :as langton-ant]
@@ -38,7 +39,6 @@
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.rose :as rose]
             [shimmers.sketches.scintillation :as scintillation]
-            [shimmers.sketches.scribbles :as scribbles]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
@@ -70,12 +70,13 @@
      butterfly/run-sketch
      cube/run-sketch
      dithering/run-sketch
+     emitters/run-sketch
      fire/run-sketch
      ;; folding-triangles/run-sketch
      ;; fluid/run-sketch
      gravity-well/run-sketch
      hexaclock/run-sketch
-     emitters/run-sketch
+     impressions-of-open-space/run-sketch
      k-means/run-sketch
      kd-tree/run-sketch
      langton-ant/run-sketch
@@ -93,7 +94,6 @@
      ripples/run-sketch
      rose/run-sketch
      scintillation/run-sketch
-     scribbles/run-sketch
      space-colonization/run-sketch
      sphere/run-sketch
      substrate/run-sketch

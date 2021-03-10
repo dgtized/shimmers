@@ -1,4 +1,4 @@
-(ns shimmers.sketches.scribbles
+(ns shimmers.sketches.impressions-of-open-space
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
@@ -60,7 +60,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210309
-  (q/defsketch scribbles
+  (q/defsketch impressions-of-open-space
     :host "quil-host"
     :size [600 400]
     :setup setup
