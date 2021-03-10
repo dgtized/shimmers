@@ -1,7 +1,6 @@
 (ns shimmers.sketches.scribbles
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [thi.ng.geom.vector :as gv]
@@ -31,9 +30,6 @@
   (q/color-mode :hsl 1.0)
   {})
 
-(defn update-state [state]
-  state)
-
 (defn draw [_]
   (q/background 255)
   (doseq [y (range 0.01 0.9 0.008)]
@@ -47,6 +43,5 @@
     :host "quil-host"
     :size [600 400]
     :setup setup
-    :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+    :middleware [m/fun-mode]))
