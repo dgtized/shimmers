@@ -14,6 +14,7 @@
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.cube :as cube]
+            [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.fire :as fire]
@@ -69,6 +70,7 @@
      bubbles/run-sketch
      butterfly/run-sketch
      cube/run-sketch
+     dispersion/run-sketch
      dithering/run-sketch
      emitters/run-sketch
      fire/run-sketch
