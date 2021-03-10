@@ -8,7 +8,8 @@
             [thi.ng.math.core :as tm]))
 
 (defn scribble [points]
-  (q/stroke-weight 0.3)
+  (q/stroke-weight 0.2)
+  (q/stroke 0 0 0 0.9)
   (q/curve-tightness 4.0)
   (q/begin-shape)
   (doseq [p points]
@@ -19,13 +20,15 @@
   (gv/vec2 (rand) (rand)))
 
 (defn curly-line [a b]
-  (for [point (map #(tm/mix a b %) (range 0 1.0 0.05))]
-    (if (p/chance 0.2)
+  (for [t (remove #(p/chance 0.6) (range 0 1.0 0.03))
+        :let [point (tm/mix a b t)]]
+    (if (p/chance (* 0.05 t))
       (tm/+ point (gv/randvec2 0.05))
       point)))
 
 (defn setup []
-  (q/frame-rate 1)
+  (q/no-loop)
+  (q/color-mode :hsl 1.0)
   {})
 
 (defn update-state [state]
@@ -33,8 +36,10 @@
 
 (defn draw [_]
   (q/background 255)
-  (doseq [y (range 0.1 0.9 0.02)]
-    (scribble (curly-line (gv/vec2 0 y) (gv/vec2 1.0 y)))))
+  (doseq [y (range 0.01 0.9 0.008)]
+    (scribble (curly-line (gv/vec2 0 y) (gv/vec2 1.0 (+ 0.1 y)))))
+  (doseq [y (range 0.01 0.9 0.02)]
+    (scribble (curly-line (gv/vec2 0 (+ 0.3 y)) (gv/vec2 1.0 (- y 0.1))))))
 
 (defn ^:export run-sketch []
   ;; 20210309
