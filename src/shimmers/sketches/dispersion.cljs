@@ -39,7 +39,10 @@
                         tessellated)]
     (doseq [shape divided]
       (q/stroke-weight 0.02)
-      (q/fill 0.55 0.6 (+ 0.1 (/ (geom/dist (geom/centroid shape) (gv/vec2 0 (q/height))) (q/width))) 0.5)
+      (q/fill (+ (* 0.005 (ksd/draw distribution)) 0.55)
+              (+ (* 0.01 (ksd/draw distribution)) 0.6)
+              (+ 0.1 (/ (geom/dist (geom/centroid shape) (gv/vec2 0 (q/height))) (q/width)))
+              0.9)
       (draw-polygon shape))))
 
 (defn ^:export run-sketch []
