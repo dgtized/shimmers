@@ -7,6 +7,9 @@
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
 
+        ;; probability distributions
+        kixi/stats {:mvn/version "0.5.4"}
+
         ;; Helper libraries
         org.clojure/core.async {:mvn/version "1.3.610"}
         org.clojure/core.logic {:mvn/version "1.0.0"}
