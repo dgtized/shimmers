@@ -21,7 +21,7 @@
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
-  (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.55) (cq/rel-w 0.2) (cq/rel-h 0.44))
+  (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.5) (cq/rel-w 0.3) (cq/rel-h 0.5))
         [_ ne _ sw] (geom/vertices building)
         max-dist (geom/dist ne sw)
         tessellated (geom/tessellate building {:num 48})
@@ -34,7 +34,7 @@
                               (if (p/chance (* 0.03 (- (/ max-dist 1.5) corner-dist)))
                                 (geometry/displace t (rand) (tm/* (gv/vec2 (* 0.6 (Math/abs (ksd/draw distribution)))
                                                                            (* -0.4 (Math/abs (ksd/draw distribution))))
-                                                                  (cq/rel-w 0.1)))
+                                                                  (cq/rel-w 0.09)))
                                 t))))
                         tessellated)]
     (doseq [shape divided]
