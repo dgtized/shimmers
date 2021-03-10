@@ -24,7 +24,7 @@
   (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.55) (cq/rel-w 0.2) (cq/rel-h 0.44))
         [_ ne _ sw] (geom/vertices building)
         max-dist (geom/dist ne sw)
-        tessellated (geom/tessellate building {:num 32})
+        tessellated (geom/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
         divided (mapcat (fn [s]
                           (let [corner-dist (geom/dist (geom/centroid s) ne)]
@@ -38,6 +38,8 @@
                                 t))))
                         tessellated)]
     (doseq [shape divided]
+      (q/stroke-weight 0.02)
+      (q/fill 0.55 0.6 (+ 0.1 (/ (geom/dist (geom/centroid shape) (gv/vec2 0 (q/height))) (q/width))) 0.5)
       (draw-polygon shape))))
 
 (defn ^:export run-sketch []
