@@ -2,12 +2,14 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.vector :as gv]
-            [shimmers.common.quil :as cq]))
+            [thi.ng.math.core :as tm]))
 
 (defn scribble [points]
   (q/stroke-weight 0.4)
-  (q/curve-tightness 2.5)
+  (q/curve-tightness 4.0)
   (q/begin-shape)
   (doseq [p points]
     (q/curve-vertex (cq/rel-w (:x p)) (cq/rel-h (:y p))))
@@ -16,12 +18,17 @@
 (defn random-vertex []
   (gv/vec2 (rand) (rand)))
 
+(defn curly-line [a b]
+  (for [point (map #(tm/mix a b %) (range 0 1.0 0.1))]
+    (if (p/chance 0.3)
+      (tm/+ point (gv/randvec2 0.05))
+      point)))
+
 (defn setup []
-  (q/frame-rate 1)
-  {:points (repeatedly 8 random-vertex)})
+  {:points (curly-line (gv/vec2 0 0.5) (gv/vec2 1.0 0.5))})
 
 (defn update-state [state]
-  {:points (repeatedly 8 random-vertex)})
+  state)
 
 (defn draw [{:keys [points]}]
   (q/background 255)
