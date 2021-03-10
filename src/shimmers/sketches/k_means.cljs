@@ -2,19 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
+            [shimmers.common.quil :as cq :refer [rel-h rel-w]]
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
-
-(defn rel-h [p]
-  (* (q/height) p))
-
-(defn rel-w [p]
-  (* (q/width) p))
 
 (defn magnitude [v]
   (Math/sqrt (reduce + (map * v v))))

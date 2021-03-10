@@ -1,6 +1,12 @@
 (ns shimmers.common.quil
   (:require [quil.core :as q :include-macros true]))
 
+(defn rel-h [p]
+  (* (q/height) p))
+
+(defn rel-w [p]
+  (* (q/width) p))
+
 (defn draw-shape [vertices]
   (q/begin-shape)
   (doseq [[x y] vertices]

@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
+            [shimmers.common.quil :as cq :refer [rel-h rel-w]]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
@@ -10,12 +10,6 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
-
-(defn rel-h [p]
-  (* (q/height) p))
-
-(defn rel-w [p]
-  (* (q/width) p))
 
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
