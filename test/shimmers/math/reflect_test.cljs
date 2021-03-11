@@ -36,9 +36,9 @@
     (is (tm/delta= 0.1 (sut/mix-mod 0.9 0.1 1.0))))
 
   (testing "modulus 360"
-    (is (tm/delta= 0 (sut/mix-mod 0 359 360 0)))
-    (is (tm/delta= 359 (sut/mix-mod 0 359 360 1.0)))
-    (is (tm/delta= 359.5 (sut/mix-mod 0 359 360 0.5)))
-    (is (tm/delta= 90 (sut/mix-mod 0 180 360 0.5)))))
+    (is (tm/delta= 0 (sut/mix-mod 0 359 0 360)))
+    (is (tm/delta= 359 (sut/mix-mod 0 359 1.0 360)))
+    (is (tm/delta= 359.5 (sut/mix-mod 0 359 0.5 360)))
+    (is (tm/delta= 90 (sut/mix-mod 0 180 0.5 360)))))
 
 (comment (run-tests))

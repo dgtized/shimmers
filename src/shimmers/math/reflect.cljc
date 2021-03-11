@@ -20,8 +20,8 @@
 
   Ie `a` and `b` might be closer by moving `a`
   counter-clockwise towards `b`."
-  ([a b t] (mix-mod a b 1.0 t))
-  ([a b m t]
+  ([a b t] (mix-mod a b t 1.0))
+  ([a b t m]
    (let [d (Math/abs (- b a))]
      (if (<= d (* 0.5 m))
        (tm/mix* a b t)
