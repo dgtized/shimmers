@@ -23,22 +23,24 @@
                  (* -0.4 (Math/abs (ksd/draw distrib))))
         (cq/rel-w 0.09)))
 
+(defn epicenter-distance [epicenter max-dist s]
+  (/ (geom/dist epicenter (geom/centroid s)) max-dist))
+
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
-  (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.5) (cq/rel-w 0.3) (cq/rel-h 0.5))
+  (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.4) (cq/rel-w 0.3) (cq/rel-h 0.6))
         [_ ne _ sw] (geom/vertices building)
         max-dist (geom/dist ne sw)
         tessellated (geom/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
         divided (mapcat (fn [s]
-                          (let [corner-dist (geom/dist (geom/centroid s) ne)]
-                            (for [t (if (p/chance (* 0.01 (- (/ max-dist 1.9) corner-dist)))
-                                      (geom/subdivide s)
-                                      [s])]
-                              (if (p/chance (* 0.03 (- (/ max-dist 1.5) corner-dist)))
-                                (geometry/displace t (rand) (rdirection distribution))
-                                t))))
+                          (for [t (if (p/chance (- 0.8 (epicenter-distance ne max-dist s)))
+                                    (geom/subdivide s)
+                                    [s])]
+                            (if (p/chance (- 1.5 (epicenter-distance ne (/ max-dist 1.9) s)))
+                              (geometry/displace t (rand) (rdirection distribution))
+                              t)))
                         tessellated)]
     (doseq [shape divided]
       (q/stroke-weight 0.02)
