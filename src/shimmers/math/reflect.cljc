@@ -15,10 +15,15 @@
           (- size v))))
 
 ;; TODO simplify
-(defn mix-mod [c1 c2 t]
-  (let [d (Math/abs (- c2 c1))]
+(defn mix-mod
+  "Linear mix between `a` and `b` by `t` in a modular space
+
+  Ie `a` and `b` might be closer by moving `a`
+  counter-clockwise towards `b`."
+  [a b t]
+  (let [d (Math/abs (- b a))]
     (if (< d 0.5)
-      (tm/mix* c1 c2 t)
-      (if (< c1 c2)
-        (mod (tm/mix* (+ 1 c1) c2 t) 1.0)
-        (mod (tm/mix* c1 (+ 1 c2) t) 1.0)))))
+      (tm/mix* a b t)
+      (if (< a b)
+        (mod (tm/mix* (+ 1 a) b t) 1.0)
+        (mod (tm/mix* a (+ 1 b) t) 1.0)))))
