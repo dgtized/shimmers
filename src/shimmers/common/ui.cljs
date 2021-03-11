@@ -10,7 +10,7 @@
         (apply nil (clj->js args)))))
 
 (defn screen-view [sketch-name]
-  (gtag "event" "screen_view" {:screen_name sketch-name}))
+  (gtag "event" "screen_view" {"screen_name" sketch-name}))
 
 (defn cycle-next [lst current]
   (->> lst
