@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.reflect :refer [mod-mix]]
+            [shimmers.math.reflect :refer [mix-mod]]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -21,7 +21,7 @@
    (q/random 0.25 0.8)])
 
 (defn mixv [[c1 & v1] [c2 & v2] t]
-  (into [(mod (+ (mod-mix c1 c2 t) (* (q/random-gaussian) 0.05)) 1.0)]
+  (into [(mod (+ (mix-mod c1 c2 t) (* (q/random-gaussian) 0.05)) 1.0)]
         (mapv (fn [a b]
                 (-> (tm/mix* a b t)
                     (+ (* (q/random-gaussian) 0.05))

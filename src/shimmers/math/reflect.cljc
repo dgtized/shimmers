@@ -15,7 +15,7 @@
           (- size v))))
 
 ;; TODO simplify
-(defn mod-mix [c1 c2 t]
+(defn mix-mod [c1 c2 t]
   (let [d (Math/abs (- c2 c1))]
     (if (< d 0.5)
       (tm/mix* c1 c2 t)
