@@ -7,8 +7,11 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]))
+            [thi.ng.math.core :as tm]))
+
+;; TODO: represent circles as polygons and grow individual points until it
+;; intersects a neighbor and only mark the individual vertex as "done".
+;; Scott says this should be called "cell-munging"
 
 (defn random-color []
   [(rand)
@@ -63,6 +66,7 @@
 
 (defn intersects [c1 c2]
   ;; inside or intersecting from growth
+  ;; TODO: add checkbox for allowing containment or not
   (when (or (geom/contains-point? c2 (:p c1))
             (geom/intersect-shape c1 c2)) c2))
 
