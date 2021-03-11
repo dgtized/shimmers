@@ -12,7 +12,7 @@
   (q/color-mode :hsl 1.0)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
    :boundary (rect/rect 0 0 (q/width) (q/height))
-   :radius 2
+   :radius 1
    :circles []})
 
 (defn contains-entity? [boundary {:keys [p r]}]
