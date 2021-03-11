@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.math.reflect :refer [mod-mix]]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -18,12 +19,6 @@
    (q/random 0.15 0.9)
    (q/random 0.25 0.8)
    (q/random 0.25 0.8)])
-
-(defn mod-mix [c1 c2 t]
-  (let [d (Math/abs (- c1 c2))]
-    (if (>= d 0.5)
-      (mod (tm/mix* (+ 1 c1) c2 t) 1.0)
-      (tm/mix* c1 c2 t))))
 
 (comment (mod-mix 0.1 0.7 0.5)
          (mod-mix 0.1 0.7 0.6)
