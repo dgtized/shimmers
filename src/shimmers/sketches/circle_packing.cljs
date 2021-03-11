@@ -30,10 +30,11 @@
     (:color c1)))
 
 (defn setup []
+  (q/frame-rate 20)
   (q/color-mode :hsl 1.0)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
    :boundary (rect/rect 0 0 (q/width) (q/height))
-   :radius 1
+   :radius 2
    :circles []})
 
 (defn contains-entity? [boundary {:keys [p r]}]
@@ -64,7 +65,7 @@
 
 (defn grow [quadtree boundary search-radius circle]
   (if-not (:done circle)
-    (let [growth (assoc (geom/scale-size circle 1.02) :color (:color circle))
+    (let [growth (assoc (geom/scale-size circle 1.12) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
           intersecting-circle (some (partial intersects growth) near)
           ]
@@ -84,6 +85,7 @@
            :circles circles'
            :quadtree (reduce spatial-replace quadtree (remove :done circles')))))
 
+;; TODO performance from sampling cost?
 (defn fresh-circles [state n]
   (loop [i 0 {:keys [boundary quadtree radius circles] :as state} state]
     (if (>= i n)
@@ -96,9 +98,11 @@
         (recur i state)))))
 
 (defn update-state [state]
-  (-> state
-      grow-circles
-      (fresh-circles 3)))
+  (let [c (count (:circles state))
+        additions (q/ceil (* 6 (max 0 (- 1.0 (/ c 1500)))))]
+    (-> state
+        grow-circles
+        (fresh-circles additions))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
