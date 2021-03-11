@@ -6,13 +6,28 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn random-color []
   [(rand)
    (q/random 0.3 0.9)
    (q/random 0.3 0.8)
    0.5])
+
+(defn mix [c1 c2]
+  (if c2
+    (let [[h1 s1 l1 o1] (:color c1)
+          [h2 s2 l2 o2] (:color c2)
+          [r1 r2] [(:r c1) (:r c2)]
+          t (/ (Math/abs (- r1 r2)) (max r1 r2))
+          mixed [(tm/mix* h1 h2 t)
+                 (tm/mix* s1 s2 t)
+                 (tm/mix* l1 l2 t)
+                 (tm/mix* o1 o2 t)]]
+      #_(q/print-first-n 120 [(:color c1) (:color c2) t :-> mixed])
+      mixed)
+    (:color c1)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -48,11 +63,13 @@
 (defn grow [quadtree boundary search-radius circle]
   (if-not (:done circle)
     (let [growth (assoc (geom/scale-size circle 1.02) :color (:color circle))
-          near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))]
-      (if (and (contains-entity? boundary growth)
-               (not (some (partial intersects growth) near)))
+          near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
+          intersecting-circle (some (partial intersects growth) near)
+          ]
+      (if (and (contains-entity? boundary growth) (not intersecting-circle))
         growth
-        (assoc circle :done true)))
+        (assoc circle :done true
+               :color (mix circle intersecting-circle))))
     circle))
 
 (defn max-radius [circles]
@@ -76,7 +93,7 @@
   (doseq [{:keys [p r color done] :as circle} circles]
     (apply q/fill color)
     (if done
-      (q/stroke 0 0.5 0.5 0.5)
+      (q/no-stroke)
       (q/stroke 0 0 0 1.0))
     (q/ellipse (:x p) (:y p) r r)))
 
