@@ -15,8 +15,7 @@
           (- size v))))
 
 (defn mod-mix [c1 c2 t]
-  (let [d (Math/abs (- c1 c2))]
-    (if (>= d 0.5)
-      (mod (tm/mix* (+ 1 c1) c2 t) 1.0)
-      (tm/mix* c1 c2 t))))
-
+  (let [d (Math/abs (- c2 c1))]
+    (if (< d 0.5)
+      (tm/mix* c1 c2 t)
+      (mod (tm/mix* (+ 1 c1) c2 t) 1.0))))
