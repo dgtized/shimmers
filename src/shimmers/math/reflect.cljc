@@ -20,10 +20,11 @@
 
   Ie `a` and `b` might be closer by moving `a`
   counter-clockwise towards `b`."
-  [a b t]
-  (let [d (Math/abs (- b a))]
-    (if (< d 0.5)
-      (tm/mix* a b t)
-      (if (< a b)
-        (mod (tm/mix* (+ 1 a) b t) 1.0)
-        (mod (tm/mix* a (+ 1 b) t) 1.0)))))
+  ([a b t] (mix-mod a b 1.0 t))
+  ([a b m t]
+   (let [d (Math/abs (- b a))]
+     (if (<= d (* 0.5 m))
+       (tm/mix* a b t)
+       (if (< a b)
+         (mod (tm/mix* (+ m a) b t) m)
+         (mod (tm/mix* a (+ m b) t) m))))))
