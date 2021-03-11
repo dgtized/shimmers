@@ -107,11 +107,11 @@
 
 (defn update-state [state]
   (let [c (count (:circles state))
-        additions (q/ceil (* 6 (max 0 (- 1.0 (/ c 1500)))))]
+        pct (max 0 (- 1.0 (/ c 1600)))]
     (-> state
         grow-circles
-        (fresh-circles additions)
-        (cull-circles 0.0002))))
+        (fresh-circles (q/round (* (mod (+ c (q/frame-count)) 4) (rand) pct)))
+        (cull-circles 0.00005))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
