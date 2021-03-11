@@ -16,10 +16,10 @@
 
 ;; TODO simplify
 (defn mix-mod
-  "Linear mix between `a` and `b` by `t` in a modular space
+  "Linear mix between `a` and `b` by `t` in a modular space `m`
 
-  Ie `a` and `b` might be closer by moving `a`
-  counter-clockwise towards `b`."
+  Ie `a` and `b` might be closer by moving `a` counter-clockwise towards `b`
+  with 0/`m` as a point in between."
   ([a b t] (mix-mod a b t 1.0))
   ([a b t m]
    (let [d (Math/abs (- b a))]
