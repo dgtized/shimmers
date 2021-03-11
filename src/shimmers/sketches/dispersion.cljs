@@ -26,6 +26,13 @@
 (defn epicenter-distance [epicenter max-dist s]
   (/ (geom/dist epicenter (geom/centroid s)) max-dist))
 
+(defn possibly-subdivide [p-fn shapes]
+  (mapcat (fn [s]
+            (if (p/chance (p-fn s))
+              (geom/subdivide s)
+              [s]))
+          shapes))
+
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
@@ -34,15 +41,13 @@
         max-dist (geom/dist ne sw)
         tessellated (geom/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
-        divided (mapcat (fn [s]
-                          (for [t (if (p/chance (- 0.8 (epicenter-distance ne max-dist s)))
-                                    (geom/subdivide s)
-                                    [s])]
-                            (if (p/chance (- 1.5 (epicenter-distance ne (/ max-dist 1.9) s)))
-                              (geometry/displace t (rand) (rdirection distribution))
-                              t)))
-                        tessellated)]
-    (doseq [shape divided]
+        divided (possibly-subdivide (fn [s] (- 0.8 (epicenter-distance ne max-dist s))) tessellated)
+        shapes (map (fn [t]
+                      (if (p/chance (- 1.5 (epicenter-distance ne (/ max-dist 1.9) t)))
+                        (geometry/displace t (rand) (rdirection distribution))
+                        t))
+                    divided)]
+    (doseq [shape shapes]
       (q/stroke-weight 0.02)
       (q/fill (+ (* 0.005 (ksd/draw distribution)) 0.55)
               (+ (* 0.01 (ksd/draw distribution)) 0.6)
