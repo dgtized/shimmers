@@ -49,7 +49,7 @@
         tessellated (geom/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
         divided (possibly-subdivide (fn [s] (- 0.8 (epicenter-distance ne max-dist s))) tessellated)
-        shapes (possibly-disperse (fn [s] (- 1.5 (epicenter-distance ne (/ max-dist 1.9) s)))
+        shapes (possibly-disperse (fn [s] (- 2.0 (epicenter-distance ne (/ max-dist 2.8) s)))
                                   (fn [_] (rdirection distribution))
                                   divided)]
     (doseq [shape shapes]
