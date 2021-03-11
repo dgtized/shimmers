@@ -13,6 +13,7 @@
             [shimmers.sketches.braid :as braid]
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
+            [shimmers.sketches.circle-packing :as circle-packing]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
@@ -70,6 +71,7 @@
      bubbles/run-sketch
      butterfly/run-sketch
      cube/run-sketch
+     circle-packing/run-sketch
      dispersion/run-sketch
      dithering/run-sketch
      emitters/run-sketch
