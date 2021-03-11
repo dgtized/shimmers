@@ -12,20 +12,22 @@
 
 (defn random-color []
   [(rand)
-   (q/random 0.3 0.9)
-   (q/random 0.3 0.8)
-   0.5])
+   (q/random 0.15 0.9)
+   (q/random 0.25 0.8)
+   (q/random 0.25 0.8)])
 
-(defn mix [c1 c2]
+(defn mixv [v1 v2 t]
+  (mapv (fn [a b]
+          (-> (tm/mix* a b t)
+              (+ (* (q/random-gaussian) 0.05))
+              (tm/clamp 0 1)))
+        v1 v2))
+
+(defn color-mix [c1 c2]
   (if c2
-    (let [[h1 s1 l1 o1] (:color c1)
-          [h2 s2 l2 o2] (:color c2)
-          [r1 r2] [(:r c1) (:r c2)]
+    (let [[r1 r2] [(:r c1) (:r c2)]
           t (/ (Math/abs (- r1 r2)) (max r1 r2))
-          mixed [(tm/mix* h1 h2 t)
-                 (tm/mix* s1 s2 t)
-                 (tm/mix* l1 l2 t)
-                 (tm/mix* o1 o2 t)]]
+          mixed (mixv (:color c1) (:color c2) t)]
       #_(q/print-first-n 120 [(:color c1) (:color c2) t :-> mixed])
       mixed)
     (:color c1)))
@@ -74,7 +76,7 @@
       (if (and (contains-entity? boundary growth) (not intersecting-circle))
         growth
         (assoc circle :done true
-               :color (mix circle intersecting-circle))))
+               :color (color-mix circle intersecting-circle))))
     circle))
 
 (defn max-radius [circles]
