@@ -75,16 +75,24 @@
 (defn max-radius [circles]
   (* 2 (apply max (map :r circles))))
 
-(defn update-state [{:keys [boundary quadtree radius circles] :as state}]
+(defn grow-circles [{:keys [boundary quadtree circles] :as state}]
   (let [search-radius (max-radius circles)
-        circles' (map (partial grow quadtree boundary search-radius) circles)
-        quadtree' (reduce spatial-replace quadtree (remove :done circles'))
-        s' (assoc state :circles circles' :quadtree quadtree')]
-    (if-let [circle (add-circle quadtree' boundary (max-radius circles') radius)]
-      (-> s'
-          (update :circles conj circle)
-          (update :quadtree geom/add-point (:p circle) circle))
-      s')))
+        circles' (map (partial grow quadtree boundary search-radius) circles)]
+    (assoc state
+           :circles circles'
+           :quadtree (reduce spatial-replace quadtree (remove :done circles')))))
+
+(defn fresh-circles [{:keys [boundary quadtree radius circles] :as state}]
+  (if-let [circle (add-circle quadtree boundary (max-radius circles) radius)]
+    (-> state
+        (update :circles conj circle)
+        (update :quadtree geom/add-point (:p circle) circle))
+    state))
+
+(defn update-state [state]
+  (-> state
+      grow-circles
+      fresh-circles))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
