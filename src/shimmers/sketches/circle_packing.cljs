@@ -36,6 +36,7 @@
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
    :boundary (rect/rect 0 0 (q/width) (q/height))
    :radius 2
+   :scale 1.05
    :circles []})
 
 (defn contains-entity? [boundary {:keys [p r]}]
@@ -64,9 +65,9 @@
 (defn spatial-replace [tree {:keys [p] :as circle}]
   (geom/add-point (geom/delete-point tree p) p circle))
 
-(defn grow [quadtree boundary search-radius circle]
+(defn grow [quadtree boundary search-radius scale circle]
   (if-not (:done circle)
-    (let [growth (assoc (geom/scale-size circle 1.12) :color (:color circle))
+    (let [growth (assoc (geom/scale-size circle scale) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
           intersecting-circle (some (partial intersects growth) near)
           ]
@@ -79,9 +80,9 @@
 (defn max-radius [circles]
   (* 2 (apply max (map :r circles))))
 
-(defn grow-circles [{:keys [boundary quadtree circles] :as state}]
+(defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
   (let [search-radius (max-radius circles)
-        circles' (map (partial grow quadtree boundary search-radius) circles)]
+        circles' (map (partial grow quadtree boundary search-radius scale) circles)]
     (assoc state
            :circles circles'
            :quadtree (reduce spatial-replace quadtree (remove :done circles')))))
