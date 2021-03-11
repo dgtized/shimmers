@@ -44,7 +44,9 @@
          (> (- y r) (rect/bottom boundary)))))
 
 (defn intersects [c1 c2]
-  (when (geom/intersect-shape c1 c2) c2))
+  ;; inside or intersecting from growth
+  (when (or (geom/contains-point? c2 (:p c1))
+            (geom/intersect-shape c1 c2)) c2))
 
 (defn add-circle [quadtree boundary search-radius radius]
   (let [r radius
