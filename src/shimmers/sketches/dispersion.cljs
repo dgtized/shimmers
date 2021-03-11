@@ -33,6 +33,13 @@
               [s]))
           shapes))
 
+(defn possibly-disperse [p-fn displacement shapes]
+  (map (fn [s]
+         (if (p/chance (p-fn s))
+           (geometry/displace s (rand) (displacement s))
+           s))
+       shapes))
+
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
@@ -42,11 +49,9 @@
         tessellated (geom/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
         divided (possibly-subdivide (fn [s] (- 0.8 (epicenter-distance ne max-dist s))) tessellated)
-        shapes (map (fn [t]
-                      (if (p/chance (- 1.5 (epicenter-distance ne (/ max-dist 1.9) t)))
-                        (geometry/displace t (rand) (rdirection distribution))
-                        t))
-                    divided)]
+        shapes (possibly-disperse (fn [s] (- 1.5 (epicenter-distance ne (/ max-dist 1.9) s)))
+                                  (fn [_] (rdirection distribution))
+                                  divided)]
     (doseq [shape shapes]
       (q/stroke-weight 0.02)
       (q/fill (+ (* 0.005 (ksd/draw distribution)) 0.55)
