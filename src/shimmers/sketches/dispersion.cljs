@@ -56,10 +56,8 @@
       (q/stroke-weight 0.02)
       (q/fill (+ (* 0.005 (ksd/draw distribution)) 0.55)
               (+ (* 0.01 (ksd/draw distribution)) 0.6)
-              (-> (geom/centroid shape)
-                  (geom/dist (gv/vec2 0 (q/height)))
-                  (/ (q/width))
-                  (tm/clamp 0.2 0.75))
+              (-> (epicenter-distance sw (q/width) shape)
+                  (tm/clamp 0.25 0.75))
               0.9)
       (draw-polygon shape))))
 
