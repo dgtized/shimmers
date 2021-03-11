@@ -82,17 +82,21 @@
            :circles circles'
            :quadtree (reduce spatial-replace quadtree (remove :done circles')))))
 
-(defn fresh-circles [{:keys [boundary quadtree radius circles] :as state}]
-  (if-let [circle (add-circle quadtree boundary (max-radius circles) radius)]
-    (-> state
-        (update :circles conj circle)
-        (update :quadtree geom/add-point (:p circle) circle))
-    state))
+(defn fresh-circles [state n]
+  (loop [i 0 {:keys [boundary quadtree radius circles] :as state} state]
+    (if (>= i n)
+      state
+      (if-let [circle (add-circle quadtree boundary (max-radius circles) radius)]
+        (recur (inc i)
+               (-> state
+                   (update :circles conj circle)
+                   (update :quadtree geom/add-point (:p circle) circle)))
+        (recur i state)))))
 
 (defn update-state [state]
   (-> state
       grow-circles
-      fresh-circles))
+      (fresh-circles 3)))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
