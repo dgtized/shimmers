@@ -7,7 +7,8 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
 
 (defn random-color []
   [(rand)
@@ -97,12 +98,19 @@
                    (update :quadtree geom/add-point (:p circle) circle)))
         (recur i state)))))
 
+;; Re-enable growth of nearby circles after cull?
+(defn cull-circles [{:keys [circles quadtree] :as state} p]
+  (let [culled (filter #(< (rand) p) circles)]
+    (assoc state :circles (remove (set culled) circles)
+           :quadtree (reduce geom/delete-point quadtree (map :p culled)))))
+
 (defn update-state [state]
   (let [c (count (:circles state))
         additions (q/ceil (* 6 (max 0 (- 1.0 (/ c 1500)))))]
     (-> state
         grow-circles
-        (fresh-circles additions))))
+        (fresh-circles additions)
+        (cull-circles 0.0002))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
