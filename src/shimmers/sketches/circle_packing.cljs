@@ -10,7 +10,6 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 1)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
    :boundary (rect/rect 0 0 (q/width) (q/height))
    :circles []})
@@ -26,7 +25,7 @@
   (when (geom/intersect-shape c1 c2) c2))
 
 (defn add-circle [quadtree boundary]
-  (let [r 100
+  (let [r 2
         center (gv/vec2 (q/random r (- (q/width) r))
                         (q/random  r (- (q/height) r)))
         circle (gc/circle center r)
@@ -41,14 +40,12 @@
 
 (defn grow [quadtree boundary circle]
   (if-not (:done circle)
-    (let [growth (geom/scale-size circle 1.1)
+    (let [growth (geom/scale-size circle 1.01)
           near (spatialtree/select-with-circle quadtree (:p growth) (* (:r growth) 10))]
       (if (and (contains-entity? boundary growth)
                (not (some (partial intersects growth) near)))
         growth
-        (do (println {:growth near :near near})
-            (pr (some (partial intersects growth) near))
-            (assoc circle :done true))))
+        (assoc circle :done true)))
     circle))
 
 (defn update-state [{:keys [boundary quadtree circles] :as state}]
@@ -63,6 +60,7 @@
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
   (doseq [{:keys [p r done]} circles]
     (if done
