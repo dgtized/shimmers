@@ -12,6 +12,7 @@
   (q/color-mode :hsl 1.0)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
    :boundary (rect/rect 0 0 (q/width) (q/height))
+   :radius 2
    :circles []})
 
 (defn contains-entity? [boundary {:keys [p r]}]
@@ -24,12 +25,12 @@
 (defn intersects [c1 c2]
   (when (geom/intersect-shape c1 c2) c2))
 
-(defn add-circle [quadtree boundary]
-  (let [r 2
+(defn add-circle [quadtree boundary search-radius radius]
+  (let [r radius
         center (gv/vec2 (q/random r (- (q/width) r))
                         (q/random  r (- (q/height) r)))
         circle (gc/circle center r)
-        near (spatialtree/select-with-circle quadtree center (* r 10))]
+        near (spatialtree/select-with-circle quadtree center search-radius)]
     (if (and (contains-entity? boundary circle)
              (not (some (partial intersects circle) near)))
       circle
@@ -38,21 +39,25 @@
 (defn spatial-replace [tree {:keys [p] :as circle}]
   (geom/add-point (geom/delete-point tree p) p circle))
 
-(defn grow [quadtree boundary circle]
+(defn grow [quadtree boundary search-radius circle]
   (if-not (:done circle)
-    (let [growth (geom/scale-size circle 1.01)
-          near (spatialtree/select-with-circle quadtree (:p growth) (* (:r growth) 10))]
+    (let [growth (geom/scale-size circle 1.02)
+          near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))]
       (if (and (contains-entity? boundary growth)
                (not (some (partial intersects growth) near)))
         growth
         (assoc circle :done true)))
     circle))
 
-(defn update-state [{:keys [boundary quadtree circles] :as state}]
-  (let [circles' (map (partial grow quadtree boundary) circles)
+(defn max-radius [circles]
+  (* 2 (apply max (map :r circles))))
+
+(defn update-state [{:keys [boundary quadtree radius circles] :as state}]
+  (let [search-radius (max-radius circles)
+        circles' (map (partial grow quadtree boundary search-radius) circles)
         quadtree' (reduce spatial-replace quadtree (remove :done circles'))
         s' (assoc state :circles circles' :quadtree quadtree')]
-    (if-let [circle (add-circle quadtree' boundary)]
+    (if-let [circle (add-circle quadtree' boundary (max-radius circles') radius)]
       (-> s'
           (update :circles conj circle)
           (update :quadtree geom/add-point (:p circle) circle))
