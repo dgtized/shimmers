@@ -8,6 +8,12 @@
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]))
 
+(defn random-color []
+  [(rand)
+   (q/random 0.3 0.9)
+   (q/random 0.3 0.8)
+   0.5])
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
@@ -29,7 +35,7 @@
   (let [r radius
         center (gv/vec2 (q/random r (- (q/width) r))
                         (q/random  r (- (q/height) r)))
-        circle (gc/circle center r)
+        circle (assoc (gc/circle center r) :color (random-color))
         near (spatialtree/select-with-circle quadtree center search-radius)]
     (if (and (contains-entity? boundary circle)
              (not (some (partial intersects circle) near)))
@@ -41,7 +47,7 @@
 
 (defn grow [quadtree boundary search-radius circle]
   (if-not (:done circle)
-    (let [growth (geom/scale-size circle 1.02)
+    (let [growth (assoc (geom/scale-size circle 1.02) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))]
       (if (and (contains-entity? boundary growth)
                (not (some (partial intersects growth) near)))
@@ -67,7 +73,8 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
-  (doseq [{:keys [p r done]} circles]
+  (doseq [{:keys [p r color done] :as circle} circles]
+    (apply q/fill color)
     (if done
       (q/stroke 0 0.5 0.5 0.5)
       (q/stroke 0 0 0 1.0))
