@@ -2,6 +2,7 @@
   (:require [shimmers.algorithm.space-colonization-test]
             [shimmers.automata.simplify-test]
             [shimmers.common.sequence-test]
+            [shimmers.math.reflect-test]
             [cljs.test]
             [cljs-test-display.core]))
 
@@ -13,7 +14,8 @@
    (cljs-test-display.core/init! "app-tests")
    'shimmers.algorithm.space-colonization-test
    'shimmers.automata.simplify-test
-   'shimmers.common.sequence-test))
+   'shimmers.common.sequence-test
+   'shimmers.math.reflect-test))
 
 (defn ^:after-load render-on-reload []
   (test-run))

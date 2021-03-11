@@ -20,12 +20,6 @@
    (q/random 0.25 0.8)
    (q/random 0.25 0.8)])
 
-(comment (mod-mix 0.1 0.7 0.5)
-         (mod-mix 0.1 0.7 0.6)
-         (mod-mix 0.1 0.9 0.5)
-         (mod-mix 0.1 0.9 0.4)
-         (mod-mix 0.1 0.9 0.6))
-
 (defn mixv [[c1 & v1] [c2 & v2] t]
   (into [(mod (+ (mod-mix c1 c2 t) (* (q/random-gaussian) 0.05)) 1.0)]
         (mapv (fn [a b]
