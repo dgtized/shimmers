@@ -12,11 +12,13 @@
   (fn []
     [:div
      (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
-                  [:lightness] [0 100])]))
+                  [:lightness] [0 100])
+     (ctrl/slider ui (fn [v] (str "Opacity: " (/ v 100)))
+                  [:alpha] [0 100])]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [ui (r/atom {:lightness 50})]
+  (let [ui (r/atom {:lightness 50 :alpha 100})]
     (ctrl/mount (controls ui))
     {:ui ui}))
 
@@ -26,12 +28,14 @@
 (defn draw [{:keys [ui]}]
   (q/background 1.0)
   (q/no-stroke)
-  (let [dx 0.01
+  (let [{:keys [lightness alpha]} @ui
+        dx 0.01
         dy 0.01
-        l (/ (:lightness @ui) 100)]
+        l (/ lightness 100)
+        a (/ alpha 100)]
     (doseq [h (range 0 1 dx)]
       (doseq [s (range 0 1 dy)]
-        (q/fill h s l 1.0)
+        (q/fill h s l a)
         (q/rect (cq/rel-w h) (cq/rel-h s) (cq/rel-w dx) (cq/rel-h dy))))))
 
 (defn ^:export run-sketch []
