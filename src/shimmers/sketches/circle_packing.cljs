@@ -21,7 +21,9 @@
    (q/random 0.25 0.8)])
 
 (defn mixv [[c1 & v1] [c2 & v2] t]
-  (into [(mod (+ (sm/mix-mod c1 c2 t) (* (q/random-gaussian) 0.05)) 1.0)]
+  (into [(-> (sm/mix-mod c1 c2 t)
+             (+ (* (q/random-gaussian) 0.05))
+             (mod 1.0))]
         (mapv (fn [a b]
                 (-> (tm/mix* a b t)
                     (+ (* (q/random-gaussian) 0.05))
