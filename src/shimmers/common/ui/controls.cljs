@@ -28,7 +28,7 @@
 
 (defn slider [settings label-fn field-ref [lower upper]]
   (let [value (get-in @settings field-ref)]
-    [:div.label-set {:key (str "slider-" field-ref)}
+    [:div.label-set.slider {:key (str "slider-" field-ref)}
      [:label (label-fn value)]
      [:input {:type "range" :value value :min lower :max upper
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))

@@ -22,7 +22,14 @@ canvas {
 }
 
 #explanation {
-  padding-left: 1em;
+  padding-left: 2em;
+}
+
+.slider {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 input[type=checkbox] {
