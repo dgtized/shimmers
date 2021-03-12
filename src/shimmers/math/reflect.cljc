@@ -28,3 +28,10 @@
        (if (< a b)
          (mod (tm/mix* (+ m a) b t) m)
          (mod (tm/mix* a (+ m b) t) m))))))
+
+(defn relative-diff
+  "Calculate relative difference between two positive values `a` and `b`"
+  [a b]
+  (/ (tm/abs-diff a b)
+     (max a b)))
+

@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.reflect :refer [mix-mod]]
+            [shimmers.math.reflect :as sm :refer [mix-mod]]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -31,7 +31,7 @@
 (defn color-mix [c1 c2]
   (if c2
     (let [[r1 r2] [(:r c1) (:r c2)]
-          t (/ (Math/abs (- r1 r2)) (max r1 r2))
+          t (sm/relative-diff r1 r2)
           mixed (mixv (:color c1) (:color c2) t)]
       #_(q/print-first-n 120 [(:color c1) (:color c2) t :-> mixed])
       mixed)
