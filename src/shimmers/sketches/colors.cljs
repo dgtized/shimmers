@@ -6,6 +6,8 @@
             [reagent.core :as r]
             [shimmers.common.ui.controls :as ctrl]))
 
+;; TODO: add hover color info for hsl values?
+;; Limit range to show spectrum / palette somehow?
 (defn controls [ui]
   (fn []
     [:div
