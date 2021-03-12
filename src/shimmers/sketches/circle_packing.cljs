@@ -31,9 +31,13 @@
 (defn color-mix [c1 c2]
   (if c2
     (let [[r1 r2] [(:r c1) (:r c2)]
-          t (sm/relative-diff r1 r2)
+          ;; proportional radius, ie if equal size use 0.5, otherwise weight
+          ;; interpolation by color of larger radius
+          t (/ r2 (+ r1 r2))
           mixed (mixv (:color c1) (:color c2) t)]
-      #_(q/print-first-n 120 [(:color c1) (:color c2) t :-> mixed])
+      #_(q/print-first-n 300 [:c1 (:color c1)
+                              :c2 (:color c2)
+                              [r1 r2 t] :-> mixed])
       mixed)
     (:color c1)))
 
