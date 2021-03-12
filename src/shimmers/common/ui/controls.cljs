@@ -3,6 +3,9 @@
             [goog.dom :as dom]))
 
 (defn mount
+  "Mounts reagent component to render in explanation element.
+
+  Helper method so it can be invoked on run-sketch OR on figwheel reload."
   [view]
   (rdom/render [view] (dom/getElement "explanation")))
 

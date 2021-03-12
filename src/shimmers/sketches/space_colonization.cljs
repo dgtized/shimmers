@@ -116,15 +116,8 @@
     (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
     (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]])
 
-(defn mount-reagent
-  "Mounts reagent component to render in explanation element.
-
-  Helper method so it can be invoked on run-sketch OR on figwheel reload."
-  []
-  (rdom/render [explanation] (dom/getElement "explanation")))
-
 (defn ^:export run-sketch []
-  (mount-reagent)
+  (ctrl/mount explanation)
   (q/defsketch space-colonization
     :host "quil-host"
     :size [600 400]
@@ -136,4 +129,4 @@
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save
 ;; (defn ^:after-load after-reload []
-;;   (mount-reagent))
+;;   (ctrl/mount explanation))
