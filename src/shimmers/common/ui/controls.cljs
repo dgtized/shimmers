@@ -1,4 +1,10 @@
-(ns shimmers.common.ui.controls)
+(ns shimmers.common.ui.controls
+  (:require [reagent.dom :as rdom]
+            [goog.dom :as dom]))
+
+(defn mount
+  [view]
+  (rdom/render [view] (dom/getElement "explanation")))
 
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}

@@ -2,21 +2,26 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [reagent.core :as r]
+            [shimmers.common.ui.controls :as ctrl]))
+
+(defn controls [ui]
+  (fn []
+    [:div
+     (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
+                  [:lightness] [0 100])]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [ui (atom {:lightness 50})
-        applet (quil.sketch/current-applet)
-        lightness (.createSlider applet 0 100 (:lightness @ui) 1)
-        _ (.createSpan applet "Lightness")]
-    (.changed lightness (fn [] (swap! ui assoc :lightness (.value lightness))))
-    ui))
+  (let [ui (r/atom {:lightness 50})]
+    (ctrl/mount (controls ui))
+    {:ui ui}))
 
 (defn update-state [state]
   state)
 
-(defn draw [ui]
+(defn draw [{:keys [ui]}]
   (q/background 1.0)
   (q/no-stroke)
   (let [dx 0.01
