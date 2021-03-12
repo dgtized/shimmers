@@ -6,17 +6,22 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  (let [ui (atom {:lightness 50})
+        applet (quil.sketch/current-applet)
+        lightness (.createSlider applet 0 100 (:lightness @ui) 1)
+        _ (.createSpan applet "Lightness")]
+    (.changed lightness (fn [] (swap! ui assoc :lightness (.value lightness))))
+    ui))
 
 (defn update-state [state]
   state)
 
-(defn draw [_]
+(defn draw [ui]
   (q/background 1.0)
   (q/no-stroke)
   (let [dx 0.01
         dy 0.01
-        l (/ (+ 1 (q/cos (/ (q/frame-count) 30))) 2)]
+        l (/ (:lightness @ui) 100)]
     (doseq [h (range 0 1 dx)]
       (doseq [s (range 0 1 dy)]
         (q/fill h s l 1.0)
