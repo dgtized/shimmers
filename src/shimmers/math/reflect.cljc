@@ -22,7 +22,7 @@
   with 0/`m` as a point in between."
   ([a b t] (mix-mod a b t 1.0))
   ([a b t m]
-   (let [d (Math/abs (- b a))]
+   (let [d (tm/abs-diff b a)]
      (if (<= d (* 0.5 m))
        (tm/mix* a b t)
        (if (< a b)
