@@ -1,4 +1,4 @@
-(ns shimmers.math.reflect
+(ns shimmers.math.core
   (:require [thi.ng.math.core :as tm]))
 
 (defn reflect-into

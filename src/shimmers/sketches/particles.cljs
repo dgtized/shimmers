@@ -5,7 +5,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.color :as color]
-            [shimmers.math.reflect :as reflect]
+            [shimmers.math.core :as sm]
             [shimmers.math.vector :as v]
             [shimmers.common.particle-system :as particles]))
 
@@ -36,8 +36,8 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
 ;; continuous at edges.
 (defn force-at-position [[x y]]
   (let [factor 100
-        rx (reflect/reflect-into x (q/width))
-        ry (reflect/reflect-into y (q/height))
+        rx (sm/reflect-into x (q/width))
+        ry (sm/reflect-into y (q/height))
         n (q/noise (/ rx factor) (/ ry factor)
                    (/ (q/frame-count) 2000))
         r (* 4 Math/PI n)]

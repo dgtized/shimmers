@@ -1,5 +1,5 @@
-(ns shimmers.math.reflect-test
-  (:require [shimmers.math.reflect :as sut]
+(ns shimmers.math.core-test
+  (:require [shimmers.math.core :as sut]
             [cljs.test :as t :include-macros true
              :refer-macros [deftest is run-tests testing]]
             [thi.ng.math.core :as tm]))

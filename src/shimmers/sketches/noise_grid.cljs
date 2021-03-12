@@ -3,15 +3,15 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.reflect :as reflect]))
+            [shimmers.math.core :as sm]))
 
 (defn noise-grid [x y _ factor]
   (q/noise (/ x factor) (/ y factor)
            (/ (q/frame-count) factor)))
 
 (defn noise-tile [x y size factor]
-  (let [qx (reflect/reflect-into x size)
-        qy (reflect/reflect-into y size)]
+  (let [qx (sm/reflect-into x size)
+        qy (sm/reflect-into y size)]
     (q/noise (/ qx factor) (/ qy factor)
              (/ (q/frame-count) factor))))
 
