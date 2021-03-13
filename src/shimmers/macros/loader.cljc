@@ -17,6 +17,13 @@
 
 (defmacro all-sketches
   []
-  `(list ~@(map (fn [ns] `(quote ~(ana-api/ns-resolve ns 'run-sketch)))
-                (filter #(re-matches #"^shimmers.sketches.sp.*" (name %))
-                        (ana-api/all-ns)))))
+  `(remove nil?
+           (list ~@(map (fn [ns]
+                          (when (ana-api/find-ns ns)
+                            `{:id (namespace-to-id (quote ~ns))
+                              ;; :doc (:doc (quote ~(ana-api/find-ns ns)))
+                              :fn ~(symbol (name ns) "run-sketch")
+                              :meta (select-keys (quote ~(ana-api/ns-resolve ns 'run-sketch))
+                                                 [:file :line])}))
+                        (filter #(re-matches #"^shimmers.sketches.s.*" (name %))
+                                (ana-api/all-ns))))))
