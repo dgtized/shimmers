@@ -111,6 +111,8 @@
      yin-yang/run-sketch
      zigzag/run-sketch])))
 
+(comment (loader/all-sketches))
+
 (defn current-sketch []
   (let [{:keys [sketches current]} @state]
     (first (filter #(= current (:id %)) sketches))))
