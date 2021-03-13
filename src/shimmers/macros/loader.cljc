@@ -28,12 +28,11 @@
               ;;
               ;; Need a mechanism for detecting if namespace loaded that works
               ;; at runtime & compile time.
-              (when (and (ana-api/find-ns ns) (ana-api/ns-resolve ns 'run-sketch))
-                `{:id (namespace-to-id (quote ~ns))
-                  :doc (:doc (quote ~(ana-api/find-ns ns)))
-                  :fn ~(symbol (name ns) "run-sketch")
-                  :meta (select-keys (quote ~(ana-api/ns-resolve ns 'run-sketch))
-                                     [:file :line])
-                  }))
-            (filter #(re-matches #"^shimmers.sketches.*" (name %))
+              (when-let [raw-ns# (ana-api/find-ns ns)]
+                (when-let [raw-fn# (ana-api/ns-resolve ns 'run-sketch)]
+                  `(merge (select-keys (quote ~raw-fn#) [:file :line])
+                          {:id (namespace-to-id (quote ~ns))
+                           :doc (:doc (quote ~raw-ns#))
+                           :fn ~(symbol (name ns) "run-sketch")}))))
+            (filter #(re-matches #"^shimmers.sketches.s.*" (name %))
                     (ana-api/all-ns)))])
