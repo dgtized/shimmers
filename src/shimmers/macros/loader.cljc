@@ -28,7 +28,7 @@
               ;;
               ;; Need a mechanism for detecting if namespace loaded that works
               ;; at runtime & compile time.
-              (when (and (ana-api/find-ns ns (ana-api/ns-resolve ns 'run-sketch)))
+              (when (and (ana-api/find-ns ns) (ana-api/ns-resolve ns 'run-sketch))
                 `{:id (namespace-to-id (quote ~ns))
                   :doc (:doc (quote ~(ana-api/find-ns ns)))
                   :fn ~(symbol (name ns) "run-sketch")
