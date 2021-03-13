@@ -11,9 +11,11 @@
   [sketches]
   (into []
         (for [sketch sketches]
-          `{:id (namespace-to-id (:ns (meta (var ~sketch))))
-            :fn ~sketch
-            :meta (meta (var ~sketch))})))
+          `(let [m# (meta (var ~sketch))]
+             {:id (namespace-to-id (:ns m#))
+              :fn ~sketch
+              :file (:file m#)
+              :line (:line m#)}))))
 
 (defmacro all-sketches
   "Create sketch definitions from every namespace under shimmers.sketches"

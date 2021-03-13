@@ -21,7 +21,7 @@
        first))
 
 (defn code-link [sketch]
-  (if-let [{:keys [file line]} (:meta sketch)]
+  (if-let [{:keys [file line]} sketch]
     {:filename (last (str/split file #"/"))
      :href
      (-> file
