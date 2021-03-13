@@ -16,14 +16,22 @@
             :meta (meta (var ~sketch))})))
 
 (defmacro all-sketches
+  "Create sketch definitions from every namespace under shimmers.sketches"
   []
-  `(remove nil?
-           (list ~@(map (fn [ns]
-                          (when (ana-api/find-ns ns)
-                            `{:id (namespace-to-id (quote ~ns))
-                              ;; :doc (:doc (quote ~(ana-api/find-ns ns)))
-                              :fn ~(symbol (name ns) "run-sketch")
-                              :meta (select-keys (quote ~(ana-api/ns-resolve ns 'run-sketch))
-                                                 [:file :line])}))
-                        (filter #(re-matches #"^shimmers.sketches.s.*" (name %))
-                                (ana-api/all-ns))))))
+  `[~@(keep (fn [ns]
+              ;; This *attempts* to handle if a sketch is required or not from
+              ;; shimmers.core. However it appears that at compile time *all*
+              ;; namespaces are known, but at runtime, the symbol creation
+              ;; fails as the namespace isn't technically loaded.
+              ;;
+              ;; Need a mechanism for detecting if namespace loaded that works
+              ;; at runtime & compile time.
+              (when (and (ana-api/find-ns ns (ana-api/ns-resolve ns 'run-sketch)))
+                `{:id (namespace-to-id (quote ~ns))
+                  :doc (:doc (quote ~(ana-api/find-ns ns)))
+                  :fn ~(symbol (name ns) "run-sketch")
+                  :meta (select-keys (quote ~(ana-api/ns-resolve ns 'run-sketch))
+                                     [:file :line])
+                  }))
+            (filter #(re-matches #"^shimmers.sketches.*" (name %))
+                    (ana-api/all-ns)))])
