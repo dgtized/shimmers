@@ -1,5 +1,7 @@
 (ns shimmers.math.probability
-  (:require [shimmers.common.sequence :as cs]))
+  (:require [shimmers.common.sequence :as cs]
+            [kixi.stats.distribution :as ksd]
+            [thi.ng.math.core :as tm]))
 
 (defn chance [prob]
   (< (rand) prob))
@@ -41,3 +43,10 @@
   (map (fn [x] (if (chance prob) (f x) x)) coll))
 
 (comment (map-random-sample 0.1 inc (range 10)))
+
+(defn gaussian-clamped [mean sd]
+  (let [dist (ksd/normal {:mu mean :sd sd})]
+    (fn []
+      (-> dist
+          ksd/draw
+          (tm/clamp 0 1)))))

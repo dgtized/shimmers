@@ -6,12 +6,11 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as quil]
             [shimmers.common.sequence :as cs]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
-            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.geom.triangle :as gt]))
 
 (defn new-color []
   [(q/random 360) 75 85 0.5])
@@ -32,9 +31,6 @@
      (* 0.5 a)]
     [(mod (+ (* 4 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
-(defn gaussian [mean variance]
-  (tm/clamp (+ mean (* variance (q/random-gaussian))) 0 1))
-
 (defn dividable? [{:keys [depth max-depth]}]
   (< depth max-depth))
 
@@ -44,7 +40,7 @@
                                   1 :centroid)
         opts {:mode (rand-nth distribution)
               :inner-point geom/random-point-inside
-              :sample #(gaussian 0.5 0.1)}]
+              :sample (p/gaussian-clamped 0.5 0.1)}]
     (for [child (geometry/decompose t opts)]
       (assoc child
              :color
