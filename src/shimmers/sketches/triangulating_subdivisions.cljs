@@ -10,7 +10,8 @@
             [shimmers.math.vector :as v]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.math.core :as tm]))
 
 (defn new-color []
   [(q/random 360) 75 85 0.5])
@@ -31,6 +32,9 @@
      (* 0.5 a)]
     [(mod (+ (* 4 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
+(defn gaussian [mean variance]
+  (tm/clamp (+ mean (* variance (q/random-gaussian))) 0 1))
+
 (defn subdivide-triangle [t]
   (geometry/decompose
    t
@@ -38,7 +42,7 @@
                                  2 :inset
                                  1 :centroid))
     :inner-point geom/random-point-inside
-    :sample (fn [] (+ 0.25 (* 0.5 (rand))))}))
+    :sample #(gaussian 0.5 0.1)}))
 
 (defn dividable? [{:keys [depth max-depth]}]
   (< depth max-depth))
