@@ -40,12 +40,10 @@
                   (geom/translate brush (random-position))
                   (q/random 0 Math/PI))))
 
-(defn random-displace [shapes p offset]
-  (let [sampling (random-sample p shapes)
-        remaining (remove (set sampling) shapes)]
-    (concat remaining
-            (for [shape sampling]
-              (geom/translate shape (tm/* offset (rand)))))))
+(defn random-displace [shapes prob offset]
+  (p/map-random-sample prob
+                       (fn [shape] (geom/translate shape (tm/* offset (rand))))
+                       shapes))
 
 (defn happensity [likelyhood amount]
   (if (p/chance likelyhood) (* amount (rand)) 0))
