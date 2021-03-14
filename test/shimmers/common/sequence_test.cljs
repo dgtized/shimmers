@@ -16,4 +16,5 @@
 
 (t/deftest separate
   (t/is (= [[] []] (sut/separate #(> % 1) [])))
-  (t/is (= [[3 2] [1 0]] (sut/separate #(> % 1) (range 4)))))
+  (t/is (= [[3 2] [1 0]] (sut/separate #(> % 1) (range 4))))
+  (t/is (= [[2 3] [0 1]] (sut/separate #(> % 1) (vec (range 4))))))
