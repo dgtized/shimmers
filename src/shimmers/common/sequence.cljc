@@ -50,6 +50,3 @@
           (recur (rest elems) (conj pos elem) neg)
           (recur (rest elems) pos (conj neg elem))))
       [pos neg])))
-
-(defn split-by [pred coll]
-  ((juxt filter remove) pred coll))
