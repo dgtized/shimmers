@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.polar :refer [angles]]
+            [shimmers.math.core :refer [angles]]
             [shimmers.math.vector :as v]))
 
 (defn blob [base r0 r1]

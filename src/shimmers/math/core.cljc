@@ -1,6 +1,12 @@
 (ns shimmers.math.core
   (:require [thi.ng.math.core :as tm]))
 
+(defn angles
+  "Return sequence of angles from 0.0 to 2Pi subdivided by n."
+  [n]
+  (let [m (* 2 Math/PI)]
+    (range 0 m (/ m n))))
+
 (defn reflect-into
   "Map a value `v` into a space bounded by `size`, by using modular arithmetic for
   `v` with respect to `size`, and reflecting at the halfway point.

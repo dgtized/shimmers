@@ -1,7 +1,7 @@
 (ns shimmers.sketches.ray-marching
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.math.polar :refer [angles]]
+            [shimmers.math.core :refer [angles]]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]))
 
