@@ -9,14 +9,14 @@
 
 (defn draw-shape [vertices]
   (q/begin-shape)
-  (doseq [[x y] vertices]
-    (q/vertex x y))
+  (doseq [v vertices]
+    (apply q/vertex v))
   (q/end-shape :close))
 
 (defn draw-curve-shape [vertices]
   (q/begin-shape)
-  (doseq [[x y] vertices]
-    (q/curve-vertex x y))
+  (doseq [v vertices]
+    (apply q/curve-vertex v))
   (q/end-shape :close))
 
 (defn lerp-line [[x y] [x' y'] amt]
