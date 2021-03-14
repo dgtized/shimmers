@@ -13,3 +13,7 @@
   (t/is (= [] (sut/weighted)))
   (t/is (= [:a :a] (sut/weighted 2 :a)))
   (t/is (= [:a :b :b] (sut/weighted 1 :a 2 :b))))
+
+(t/deftest separate
+  (t/is (= [[] []] (sut/separate #(> % 1) [])))
+  (t/is (= [[3 2] [1 0]] (sut/separate #(> % 1) (range 4)))))

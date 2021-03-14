@@ -38,5 +38,18 @@
                      (repeat frequency value))
                    (partition 2 options))))
 
+(defn separate
+  "Separate `coll` by `pred` in a single pass.
+
+  This allows `pred` to work with side-effects like random values."
+  [pred coll]
+  (loop [elems coll pos (empty coll) neg (empty coll)]
+    (if (seq elems)
+      (let [elem (first elems)]
+        (if (pred elem)
+          (recur (rest elems) (conj pos elem) neg)
+          (recur (rest elems) pos (conj neg elem))))
+      [pos neg])))
+
 (defn split-by [pred coll]
   ((juxt filter remove) pred coll))
