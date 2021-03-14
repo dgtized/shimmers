@@ -8,22 +8,9 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.line :as gl]
             [thi.ng.geom.triangle :as gt]))
-
-(defn subdivide-line [p q]
-  (geom/point-at (gl/line2 p q) (q/random 0.25 0.75)))
-
-(defn longest-edge [{[a b c] :points}]
-  (let [dist-ab (geom/dist a b)
-        dist-bc (geom/dist b c)
-        dist-ca (geom/dist c a)]
-    (cond (and (>= dist-ab dist-bc) (>= dist-ab dist-ca))
-          [a b c]
-          (and (>= dist-ca dist-bc) (>= dist-ca dist-ab))
-          [a c b]
-          :else [b c a])))
 
 (defn new-color []
   [(q/random 360) 75 85 0.5])
@@ -45,28 +32,13 @@
     [(mod (+ (* 4 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
 
 (defn subdivide-triangle [t]
-  (let [[a b c] (longest-edge t)
-        distribution (cs/weighted 8 :midpoint
-                                  2 :inset
-                                  1 :centroid)]
-    (case (rand-nth distribution)
-      :midpoint
-      (let [m (subdivide-line a b)]
-        [(make-triangle a m c)
-         (make-triangle b m c)])
-      :centroid
-      (let [inner (geom/random-point-inside t)]
-        [(make-triangle a b inner)
-         (make-triangle b c inner)
-         (make-triangle c a inner)])
-      :inset
-      (let [mab (subdivide-line a b)
-            mbc (subdivide-line b c)
-            mca (subdivide-line c a)]
-        [(make-triangle a mab mca)
-         (make-triangle b mab mbc)
-         (make-triangle c mbc mca)
-         (make-triangle mab mbc mca)]))))
+  (geometry/decompose
+   t
+   {:mode (rand-nth (cs/weighted 8 :midpoint
+                                 2 :inset
+                                 1 :centroid))
+    :inner-point geom/random-point-inside
+    :sample (fn [] (+ 0.25 (* 0.5 (rand))))}))
 
 (defn dividable? [{:keys [depth max-depth]}]
   (< depth max-depth))
