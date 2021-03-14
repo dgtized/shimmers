@@ -38,3 +38,41 @@
       geom/center
       (geom/rotate theta)
       (geom/translate (tm/+ (geom/centroid polygon) dir))))
+
+(defn longest-edge
+  "Returns points of a triangle ordered from longest to shortest edge"
+  [{[a b c] :points}]
+  (let [dist-ab (geom/dist a b)
+        dist-bc (geom/dist b c)
+        dist-ca (geom/dist c a)]
+    (cond (and (>= dist-ab dist-bc) (>= dist-ab dist-ca))
+          [a b c]
+          (and (>= dist-ca dist-bc) (>= dist-ca dist-ab))
+          [a c b]
+          :else [b c a])))
+
+(defn decompose
+  "Decompose triangle into a collection of smaller triangles"
+  [t {:keys [mode inner-point sample]
+      :or {mode :midpoint
+           inner-point geom/random-point-inside
+           sample (fn [] (+ 0.25 (* 0.5 (rand))))}}]
+  (let [[a b c] (longest-edge t)]
+    (case mode
+      :midpoint
+      (let [mid (tm/mix a b (sample))]
+        [(gt/triangle2 a mid c)
+         (gt/triangle2 b mid c)])
+      :centroid
+      (let [inner (inner-point t)]
+        [(gt/triangle2 a b inner)
+         (gt/triangle2 b c inner)
+         (gt/triangle2 c a inner)])
+      :inset
+      (let [mab (tm/mix a b (sample))
+            mbc (tm/mix b c (sample))
+            mca (tm/mix c a (sample))]
+        [(gt/triangle2 a mab mca)
+         (gt/triangle2 b mab mbc)
+         (gt/triangle2 c mbc mca)
+         (gt/triangle2 mab mbc mca)]))))

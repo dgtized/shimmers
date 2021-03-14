@@ -3,6 +3,7 @@
             [shimmers.automata.simplify-test]
             [shimmers.common.sequence-test]
             [shimmers.math.core-test]
+            [shimmers.math.geometry-test]
             [cljs.test]
             [cljs-test-display.core]))
 
@@ -15,7 +16,8 @@
    'shimmers.algorithm.space-colonization-test
    'shimmers.automata.simplify-test
    'shimmers.common.sequence-test
-   'shimmers.math.core-test))
+   'shimmers.math.core-test
+   'shimmers.math.geometry-test))
 
 (defn ^:after-load render-on-reload []
   (test-run))
