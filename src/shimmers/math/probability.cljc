@@ -4,6 +4,13 @@
 (defn chance [prob]
   (< (rand) prob))
 
+(defn happensity
+  "Returns a 0 with probability `prob`, otherwise evenly distributes"
+  [prob]
+  (if (chance prob)
+    (rand)
+    0))
+
 ;; Modified from https://github.com/clojure/data.generators/blob/master/src/main/clojure/clojure/data/generators.clj#L73
 ;; as it was not available for Clojurescript
 (defn weighted

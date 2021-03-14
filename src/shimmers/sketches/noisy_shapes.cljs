@@ -45,9 +45,6 @@
                        (fn [shape] (geom/translate shape (tm/* offset (rand))))
                        shapes))
 
-(defn happensity [likelyhood amount]
-  (if (p/chance likelyhood) (* amount (rand)) 0))
-
 (defn sample-shape [shape brush fill-density edge-density]
   (concat (generate-strokes brush #(geom/random-point shape) edge-density)
           (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
@@ -60,7 +57,7 @@
          brush (random-brush)
          fill-density (q/random 500 2500)
          edge-density (q/random 100 300)
-         displacement (happensity 0.2 0.25)
+         displacement (* 0.25 (p/happensity 0.2))
          direction (gv/vec2 0 (* 0.5 (q/height)))}}]
   (apply q/fill fill)
   (doseq [poly (-> (sample-shape shape brush fill-density edge-density)
@@ -79,7 +76,7 @@
                 {:shape (-> (rect/rect (* 0.55 w) (* 0.1 h) (* 0.3 w) (* 0.4 h))
                             (geometry/rotate-around-centroid 0.2))
                  :fill [210 0.5 0.5 0.2]
-                 :displacement (happensity 0.6 0.3)}
+                 :displacement (* 0.3 (p/happensity 0.6))}
                 {:shape (rect/rect (* 0.35 w) (* 0.4 h) (* 0.3 w) (* 0.4 h))
                  :fill [105 0.5 0.5 0.2]}]]
     (doseq [args (shuffle shapes)]
