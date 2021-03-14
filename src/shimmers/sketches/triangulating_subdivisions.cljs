@@ -35,32 +35,29 @@
 (defn gaussian [mean variance]
   (tm/clamp (+ mean (* variance (q/random-gaussian))) 0 1))
 
-(defn subdivide-triangle [t]
-  (geometry/decompose
-   t
-   {:mode (rand-nth (cs/weighted 8 :midpoint
-                                 2 :inset
-                                 1 :centroid))
-    :inner-point geom/random-point-inside
-    :sample #(gaussian 0.5 0.1)}))
-
 (defn dividable? [{:keys [depth max-depth]}]
   (< depth max-depth))
 
-(defn subdivide [{:keys [color depth max-depth] :as s}]
-  (for [child (subdivide-triangle s)]
-    (assoc child
-           :color
-           (when (and color (p/chance 0.90))
-             (drift color))
-           :depth (inc depth)
-           :max-depth
-           (cond (and (> depth 2.5) (p/chance 0.05))
-                 (+ depth 1.5)
-                 color
-                 (- max-depth 0.2)
-                 :else
-                 max-depth))))
+(defn subdivide-triangle [{:keys [color depth max-depth] :as t}]
+  (let [distribution (cs/weighted 8 :midpoint
+                                  2 :inset
+                                  1 :centroid)
+        opts {:mode (rand-nth distribution)
+              :inner-point geom/random-point-inside
+              :sample #(gaussian 0.5 0.1)}]
+    (for [child (geometry/decompose t opts)]
+      (assoc child
+             :color
+             (when (and color (p/chance 0.90))
+               (drift color))
+             :depth (inc depth)
+             :max-depth
+             (cond (and (> depth 2.5) (p/chance 0.05))
+                   (+ depth 1.5)
+                   color
+                   (- max-depth 0.2)
+                   :else
+                   max-depth)))))
 
 (defn initialize-shape
   ([triangles] (initialize-shape triangles (Math/pow 2 15)))
@@ -146,7 +143,7 @@
                ;; always taking from front and adding to the back.
                ;; (sort-by by-depth)
                (split-at (int (Math/pow 1.5 (int (Math/log total))))))
-          subdivided (mapcat subdivide to-divide)]
+          subdivided (mapcat subdivide-triangle to-divide)]
       (if (empty? to-divide)
         [true state]
         [false
