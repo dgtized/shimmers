@@ -15,14 +15,6 @@
 (defn new-color []
   [(q/random 360) 75 85 0.5])
 
-(defn make-triangle
-  [a b c & {:keys [color depth max-depth]
-            :or {depth 0 max-depth 14}}]
-  (assoc (gt/triangle2 a b c)
-         :color color
-         :depth (inc depth)
-         :max-depth max-depth))
-
 (defn drift [[h s l a]]
   (if (p/chance 0.02)
     [(mod (+ h 90) 360)
@@ -54,6 +46,14 @@
                    (- max-depth 0.2)
                    :else
                    max-depth)))))
+
+(defn make-triangle
+  [a b c & {:keys [color depth max-depth]
+            :or {depth 0 max-depth 14}}]
+  (assoc (gt/triangle2 a b c)
+         :color color
+         :depth (inc depth)
+         :max-depth max-depth))
 
 (defn initialize-shape
   ([triangles] (initialize-shape triangles (Math/pow 2 15)))
