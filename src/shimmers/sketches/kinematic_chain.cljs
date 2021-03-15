@@ -13,7 +13,7 @@
   (q/color-mode :hsl 1.0)
   {:chains [(assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) 0)
                                      80 4)
-                   :color [0.3 0.5 0.5 0.025])
+                   :color [0.35 0.5 0.5 0.025])
             (assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
                                      80 4)
                    :color [0.6 0.5 0.5 0.025])
@@ -39,11 +39,11 @@
     (gv/vec2 (cq/rel-w (q/noise bw (/ fc rate)))
              (cq/rel-h (q/noise bh (/ fc rate))))))
 
-(defn circle-target [r]
+(defn circle-target [center r]
   (let [fc (/ (q/frame-count) 100)
-        adjusted-r (+ (* 50 (- (q/noise r fc) 0.5)) r)]
+        adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
     (geom/translate (geom/as-cartesian (gv/vec2 adjusted-r fc))
-                    (screen-point 0.5 0.5))))
+                    center)))
 
 (defn update-state [{:keys [chains] :as state}]
   (cond-> state
@@ -51,10 +51,11 @@
                 (map-indexed (fn [idx chain]
                                (chain/chain-update
                                 chain
-                                nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
-                                (circle-target (* (inc idx) (cq/rel-h 0.15)))))
+                                (screen-point (/ idx 2) 0.5)
+                                (circle-target (screen-point (/ idx 2) 0.5)
+                                               (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
                              chains))
-    (p/chance 0.001) (update :chains shuffle)))
+    (p/chance 0) (update :chains shuffle)))
 
 (defn draw [{:keys [chains]}]
   (q/no-fill)
