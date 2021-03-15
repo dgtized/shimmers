@@ -44,9 +44,10 @@
     base (chain-propagate base)))
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
-                      50
-                      6)})
+                      80
+                      4)})
 
 (defn draw-chain [{:keys [segments]}]
   (q/begin-shape)
@@ -61,11 +62,13 @@
 (defn update-state [state]
   (update state :chain
           chain-update
-          (gv/vec2 (/ (q/width) 2) (q/height))
+          nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
           (mouse-target)))
 
 (defn draw [{:keys [chain]}]
-  (q/background 255)
+  (q/no-fill)
+  ;; (q/background 255)
+  (q/stroke 0.6 0.5 0.5 0.05)
   (draw-chain chain))
 
 (defn ^:export run-sketch []
