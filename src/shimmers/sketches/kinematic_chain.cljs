@@ -60,16 +60,16 @@
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
-(defn noise-target []
+(defn noise-target [rate bw bh]
   (let [fc (q/frame-count)]
-    (gv/vec2 (cq/rel-w (q/noise 50 (/ fc 200)))
-             (cq/rel-h (q/noise 100 (/ fc 200))))))
+    (gv/vec2 (cq/rel-w (q/noise bw (/ fc rate)))
+             (cq/rel-h (q/noise bh (/ fc rate))))))
 
 (defn update-state [state]
   (update state :chain
           chain-update
           nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
-          (noise-target)))
+          (noise-target 200 10 20)))
 
 (defn draw [{:keys [chain]}]
   (q/no-fill)
