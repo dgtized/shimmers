@@ -16,10 +16,10 @@
                    :color [0.35 0.5 0.5 0.025])
             (assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
                                      80 4)
-                   :color [0.6 0.5 0.5 0.025])
+                   :color [0.65 0.5 0.5 0.025])
             (assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) (q/height))
                                      80 4)
-                   :color [0.9 0.5 0.5 0.025])]})
+                   :color [0.95 0.5 0.5 0.025])]})
 
 (defn draw-chain [{:keys [segments]}]
   (q/begin-shape)
@@ -51,7 +51,7 @@
                 (map-indexed (fn [idx chain]
                                (chain/chain-update
                                 chain
-                                (screen-point (/ idx 2) 0.5)
+                                (screen-point (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
                                 (circle-target (screen-point (/ idx 2) 0.5)
                                                (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
                              chains))
