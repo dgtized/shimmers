@@ -39,9 +39,9 @@
         (recur (rest segments) (segment-endpoint s) (conj new-chain s))))))
 
 (defn chain-update [chain base target]
-  (-> chain
-      (chain-follow target)
-      (chain-propagate base)))
+  (cond-> chain
+    target (chain-follow target)
+    base (chain-propagate base)))
 
 (defn setup []
   {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
