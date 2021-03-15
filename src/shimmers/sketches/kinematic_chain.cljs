@@ -6,7 +6,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]))
 
 (defrecord KinematicChain [segments])
 
@@ -46,9 +47,15 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
-                      80
-                      4)})
+  {:chains [(assoc (make-chain (gv/vec2 (* (q/width) 0.5) 0)
+                               80 4)
+                   :color [0.3 0.5 0.5 0.025])
+            (assoc (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
+                               80 4)
+                   :color [0.6 0.5 0.5 0.025])
+            (assoc (make-chain (gv/vec2 (* (q/width) 0.5) (q/height))
+                               80 4)
+                   :color [0.9 0.5 0.5 0.025])]})
 
 (defn draw-chain [{:keys [segments]}]
   (q/begin-shape)
@@ -56,6 +63,9 @@
     (apply q/vertex (:base s)))
   (apply q/vertex (segment-endpoint (last segments)))
   (q/end-shape))
+
+(defn screen-point [w h]
+  (gv/vec2 (cq/rel-w w) (cq/rel-h h)))
 
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
@@ -65,17 +75,29 @@
     (gv/vec2 (cq/rel-w (q/noise bw (/ fc rate)))
              (cq/rel-h (q/noise bh (/ fc rate))))))
 
-(defn update-state [state]
-  (update state :chain
-          chain-update
-          nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
-          (noise-target 200 10 20)))
+(defn circle-target [r]
+  (let [fc (/ (q/frame-count) 100)
+        adjusted-r (+ (* 50 (- (q/noise r fc) 0.5)) r)]
+    (geom/translate (geom/as-cartesian (gv/vec2 adjusted-r fc))
+                    (screen-point 0.5 0.5))))
 
-(defn draw [{:keys [chain]}]
+(defn update-state [{:keys [chains] :as state}]
+  (cond-> state
+    true (assoc :chains
+                (map-indexed (fn [idx chain]
+                               (chain-update
+                                chain
+                                nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
+                                (circle-target (* (inc idx) (cq/rel-h 0.15)))))
+                             chains))
+    (p/chance 0.001) (update :chains shuffle)))
+
+(defn draw [{:keys [chains]}]
   (q/no-fill)
   ;; (q/background 255)
-  (q/stroke 0.6 0.5 0.5 0.025)
-  (draw-chain chain))
+  (doseq [chain chains]
+    (apply q/stroke (:color chain))
+    (draw-chain chain)))
 
 (defn ^:export run-sketch []
   (q/defsketch kinematic-chain
