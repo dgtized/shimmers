@@ -27,6 +27,7 @@
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
+            [shimmers.sketches.kinematic-chain :as kinematic-chain]
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.noisy-shapes :as noisy-shapes]
@@ -85,6 +86,7 @@
      impressions-of-open-space/run-sketch
      k-means/run-sketch
      kd-tree/run-sketch
+     kinematic-chain/run-sketch
      langton-ant/run-sketch
      noise-grid/run-sketch
      noisy-shapes/run-sketch
