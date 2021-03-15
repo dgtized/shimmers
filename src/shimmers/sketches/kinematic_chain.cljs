@@ -38,6 +38,11 @@
       (let [s (assoc (first segments) :base base)]
         (recur (rest segments) (segment-endpoint s) (conj new-chain s))))))
 
+(defn chain-update [chain base target]
+  (-> chain
+      (chain-follow target)
+      (chain-propagate base)))
+
 (defn setup []
   {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
                       50
@@ -54,9 +59,10 @@
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
 (defn update-state [state]
-  (-> state
-      (update :chain chain-follow (mouse-target))
-      (update :chain chain-propagate (gv/vec2 (/ (q/width) 2) (q/height)))))
+  (update state :chain
+          chain-update
+          (gv/vec2 (/ (q/width) 2) (q/height))
+          (mouse-target)))
 
 (defn draw [{:keys [chain]}]
   (q/background 255)
