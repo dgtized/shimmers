@@ -24,17 +24,24 @@
 (defn make-chain [start n length]
   (->KinematicChain (repeatedly n #(->KinematicSegment start 0 length))))
 
-(defn update-chain [{:keys [segments] :as chain} target]
+(defn chain-follow [{:keys [segments] :as chain} target]
   (loop [segments (reverse segments) target target new-chain []]
     (if (empty? segments)
       (assoc chain :segments (reverse new-chain))
       (let [segment (segment-follow (first segments) target)]
         (recur (rest segments) (:base segment) (conj new-chain segment))))))
 
+(defn chain-propagate [{:keys [segments] :as chain} base]
+  (loop [segments segments base base new-chain []]
+    (if (empty? segments)
+      (assoc chain :segments new-chain)
+      (let [s (assoc (first segments) :base base)]
+        (recur (rest segments) (segment-endpoint s) (conj new-chain s))))))
+
 (defn setup []
   {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
                       50
-                      8)})
+                      6)})
 
 (defn draw-chain [{:keys [segments]}]
   (q/begin-shape)
@@ -47,7 +54,9 @@
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
 (defn update-state [state]
-  (update state :chain update-chain (mouse-target)))
+  (-> state
+      (update :chain chain-follow (mouse-target))
+      (update :chain chain-propagate (gv/vec2 (/ (q/width) 2) (q/height)))))
 
 (defn draw [{:keys [chain]}]
   (q/background 255)
