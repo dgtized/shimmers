@@ -22,7 +22,7 @@
   (tm/+ base (geom/as-cartesian (gv/vec2 length angle))))
 
 (defn make-chain [start n length]
-  (->KinematicChain [(->KinematicSegment start 0 length)]))
+  (->KinematicChain (repeatedly n #(->KinematicSegment start 0 length))))
 
 (defn update-chain [{:keys [segments] :as chain} target]
   (loop [segments (reverse segments) target target new-chain []]
@@ -33,8 +33,8 @@
 
 (defn setup []
   {:chain (make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
-                      1
-                      100)})
+                      50
+                      8)})
 
 (defn draw-chain [{:keys [segments]}]
   (q/begin-shape)
