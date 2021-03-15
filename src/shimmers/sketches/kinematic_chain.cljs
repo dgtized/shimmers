@@ -5,7 +5,8 @@
             [shimmers.common.framerate :as framerate]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.common.quil :as cq]))
 
 (defrecord KinematicChain [segments])
 
@@ -59,16 +60,21 @@
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
+(defn noise-target []
+  (let [fc (q/frame-count)]
+    (gv/vec2 (cq/rel-w (q/noise 50 (/ fc 200)))
+             (cq/rel-h (q/noise 100 (/ fc 200))))))
+
 (defn update-state [state]
   (update state :chain
           chain-update
           nil ;; (gv/vec2 (/ (q/width) 2) (q/height))
-          (mouse-target)))
+          (noise-target)))
 
 (defn draw [{:keys [chain]}]
   (q/no-fill)
   ;; (q/background 255)
-  (q/stroke 0.6 0.5 0.5 0.05)
+  (q/stroke 0.6 0.5 0.5 0.025)
   (draw-chain chain))
 
 (defn ^:export run-sketch []
