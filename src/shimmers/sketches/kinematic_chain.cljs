@@ -5,7 +5,6 @@
             [shimmers.algorithm.kinematic-chain :as chain]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
 
@@ -46,16 +45,14 @@
                     center)))
 
 (defn update-state [{:keys [chains] :as state}]
-  (cond-> state
-    true (assoc :chains
-                (map-indexed (fn [idx chain]
-                               (chain/chain-update
-                                chain
-                                (screen-point (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
-                                (circle-target (screen-point (/ idx 2) 0.5)
-                                               (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
-                             chains))
-    (p/chance 0) (update :chains shuffle)))
+  (assoc state :chains
+         (map-indexed (fn [idx chain]
+                        (chain/chain-update
+                         chain
+                         (screen-point (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
+                         (circle-target (screen-point (/ idx 2) 0.5)
+                                        (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
+                      chains)))
 
 (defn draw [{:keys [chains]}]
   (q/no-fill)
