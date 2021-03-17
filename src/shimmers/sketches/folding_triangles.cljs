@@ -10,6 +10,12 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; Quaternion
+;; https://www.weizmann.ac.il/sci-tea/benari/sites/sci-tea.benari/files/uploads/softwareAndLearningMaterials/quaternion-tutorial-2-0-1.pdf
+;; http://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
+;; https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+;; https://en.wikipedia.org/wiki/Gimbal_lock
+
 (defn setup []
   {})
 
