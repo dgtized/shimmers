@@ -17,7 +17,7 @@
 (defn update-state [state]
   (assoc state :theta (/ (q/millis) 1000)))
 
-(defn rotate-over-edge [poly a b theta]
+(defn rotate-over-edge [poly [a b] theta]
   (let [axis (tm/- b a)
         rotation (quat/quat-from-axis-angle axis theta)]
     (-> poly
@@ -58,10 +58,8 @@
     (q/translate 150 170)
     (q/scale 5)
     (cq/draw-shape (geom/vertices triangle))
-    (cq/draw-shape (geom/vertices (rotate-over-edge triangle b a theta)))
-    (cq/draw-shape (geom/vertices (rotate-over-edge triangle a c theta)))
-    (cq/draw-shape (geom/vertices (rotate-over-edge triangle c b theta)))
-    )
+    (doseq [edge (geom/edges triangle)]
+      (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge theta)))))
   (q/pop-matrix)
   (let [triangle (gt/triangle3 [0 -5 0] [0 10 0] [10 0 0])]
     (q/push-matrix)
