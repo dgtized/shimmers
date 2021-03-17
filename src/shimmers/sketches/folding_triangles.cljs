@@ -40,13 +40,13 @@
 (defn draw [{:keys [theta]}]
   (q/background 255)
   (q/push-matrix)
-  (let [triangle (geom/center (gt/equilateral2 5 10) (gv/vec3))]
+  (let [triangle (geom/rotate (geom/center (gt/equilateral2 5 10) (gv/vec3)) (/ theta 10))]
     (q/scale 10)
     (doseq [edge (geom/edges triangle)]
-      (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge (+ Math/PI (mod (- theta) Math/PI))))))
+      (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge (- theta)))))
     (let [u (unfurled triangle)]
       (doseq [edge (geom/edges u)]
-        (cq/draw-shape (geom/vertices (rotate-over-edge u edge (+ Math/PI (mod (- theta) Math/PI))))))))
+        (cq/draw-shape (geom/vertices (rotate-over-edge u edge (- theta)))))))
   (q/pop-matrix))
 
 (defn ^:export run-sketch []
