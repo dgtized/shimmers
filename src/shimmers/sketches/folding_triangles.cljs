@@ -28,11 +28,10 @@
 (defn draw [{:keys [theta]}]
   (q/background 255)
   (q/push-matrix)
-  (let [a (gv/vec3 [0 -5 0])
+  (let [a (gv/vec3 [0 0 0])
         b (gv/vec3 [5 10 0])
         c (gv/vec3 [10 0 0])
-        triangle (gt/triangle3 a b c)]
-    (apply q/translate (geom/centroid triangle))
+        triangle (geom/center (gt/triangle3 a b c) (gv/vec3))]
     (q/scale 5)
     (cq/draw-shape (geom/vertices triangle))
     (doseq [edge (geom/edges triangle)]
