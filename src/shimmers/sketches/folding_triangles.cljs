@@ -7,15 +7,16 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.geom.quaternion :as quat]))
 
 (defn setup []
   {})
 
 (defn update-state [state]
-  state)
+  (assoc state :theta (/ (q/millis) 1000)))
 
-(defn draw [_]
+(defn draw [{:keys [theta]}]
   (q/background 255)
   (q/push-matrix)
   (q/translate -100 -100)
@@ -32,17 +33,30 @@
       (cq/draw-shape (geom/vertices s))))
   (q/push-matrix)
   (q/translate 150 -50)
+  (q/scale 1)
   (let [a (gv/vec3 [0 0 0])
         b (gv/vec3 [2 4 0])
         c (gv/vec3 [4 1 0])]
     (doseq [s [(geom/rotate-around-axis (gt/triangle3 a b c) (tm/- b a)
-                                        (/ (q/millis) 1000))]]
+                                        theta)]]
       (cq/draw-shape (geom/vertices s))))
   (q/pop-matrix)
+  (q/push-matrix)
+  (let [a (gv/vec3 [0 0 0])
+        b (gv/vec3 [0 10 0])
+        c (gv/vec3 [10 0 0])
+        triangle (gt/triangle3 a b c)
+        r (quat/quat-from-axis-angle (tm/- b c) theta)
+        rotated (gt/triangle3 (tm/* (quat/quat a 10) r) b c)
+        ]
+    (q/translate 150 200)
+    (q/scale 5)
+    (cq/draw-shape (geom/vertices triangle))
+    (cq/draw-shape (geom/vertices rotated)))
   (q/pop-matrix)
   (let [triangle (gt/triangle3 [0 -5 0] [0 10 0] [10 0 0])]
     (q/push-matrix)
-    (q/rotate-y (/ (q/millis) 1000))
+    (q/rotate-y theta)
     (q/scale 10)
     (cq/draw-shape (geom/vertices triangle))
     (q/pop-matrix)))
