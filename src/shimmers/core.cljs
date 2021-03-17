@@ -79,7 +79,7 @@
      dithering/run-sketch
      emitters/run-sketch
      fire/run-sketch
-     ;; folding-triangles/run-sketch
+     folding-triangles/run-sketch
      ;; fluid/run-sketch
      gravity-well/run-sketch
      hexaclock/run-sketch
