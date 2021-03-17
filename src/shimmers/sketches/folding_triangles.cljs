@@ -4,12 +4,11 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.line :as gl]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
             [thi.ng.geom.quaternion :as quat]
-            [thi.ng.geom.vector :as tv]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   {})
@@ -25,17 +24,29 @@
         (geom/transform rotation)
         (geom/translate a))))
 
+(defn reflect-over-edge [c [a b]]
+  (let [edge (gl/line3 a b)
+        close (gl/line3 c (geom/closest-point edge c))]
+    (first (:points (geom/reflect close edge)))))
+
+(defn unfurled [triangle]
+  (let [[a b c] (:points triangle)]
+    (gt/triangle3 (reflect-over-edge c [a b])
+                  (reflect-over-edge b [a c])
+                  (reflect-over-edge a [b c]))))
+
+(comment (unfurled (gt/equilateral2 5 10)))
+
 (defn draw [{:keys [theta]}]
   (q/background 255)
   (q/push-matrix)
-  (let [a (gv/vec3 [0 0 0])
-        b (gv/vec3 [5 10 0])
-        c (gv/vec3 [10 0 0])
-        triangle (geom/center (gt/triangle3 a b c) (gv/vec3))]
-    (q/scale 5)
-    (cq/draw-shape (geom/vertices triangle))
+  (let [triangle (geom/center (gt/equilateral2 5 10) (gv/vec3))]
+    (q/scale 10)
     (doseq [edge (geom/edges triangle)]
-      (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge theta)))))
+      (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge (+ Math/PI (mod (- theta) Math/PI))))))
+    (let [u (unfurled triangle)]
+      (doseq [edge (geom/edges u)]
+        (cq/draw-shape (geom/vertices (rotate-over-edge u edge (+ Math/PI (mod (- theta) Math/PI))))))))
   (q/pop-matrix))
 
 (defn ^:export run-sketch []
