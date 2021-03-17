@@ -28,45 +28,16 @@
 (defn draw [{:keys [theta]}]
   (q/background 255)
   (q/push-matrix)
-  (q/translate -100 -100)
-  (let [a (gv/vec3 [-80 -50 0])
-        b (gv/vec3 [-40 -55 0])
-        c (gv/vec3 [-60 -30 0])
-        close (gl/line3 c (geom/closest-point (gl/line3 a b) c))
-        reflect (geom/reflect close (gl/line3 a b))
-        reflect-c (first (:points reflect))]
-    (doseq [s [(gt/triangle3 a b c)
-               close
-               reflect
-               (gt/triangle3 a b reflect-c)]]
-      (cq/draw-shape (geom/vertices s))))
-  (q/push-matrix)
-  (q/translate 150 -50)
-  (q/scale 2)
-  (let [a (gv/vec3 [0 0 0])
-        b (gv/vec3 [2 4 0])
-        c (gv/vec3 [4 1 0])]
-    (doseq [s [(geom/rotate-around-axis (gt/triangle3 a b c) b
-                                        theta)]]
-      (cq/draw-shape (geom/vertices s))))
-  (q/pop-matrix)
-  (q/push-matrix)
-  (let [a (gv/vec3 [0 1 0])
+  (let [a (gv/vec3 [0 -5 0])
         b (gv/vec3 [5 10 0])
         c (gv/vec3 [10 0 0])
         triangle (gt/triangle3 a b c)]
-    (q/translate 150 170)
+    (apply q/translate (geom/centroid triangle))
     (q/scale 5)
     (cq/draw-shape (geom/vertices triangle))
     (doseq [edge (geom/edges triangle)]
       (cq/draw-shape (geom/vertices (rotate-over-edge triangle edge theta)))))
-  (q/pop-matrix)
-  (let [triangle (gt/triangle3 [0 -5 0] [0 10 0] [10 0 0])]
-    (q/push-matrix)
-    (q/rotate-y theta)
-    (q/scale 10)
-    (cq/draw-shape (geom/vertices triangle))
-    (q/pop-matrix)))
+  (q/pop-matrix))
 
 (defn ^:export run-sketch []
   (q/defsketch folding-triangles
