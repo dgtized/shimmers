@@ -72,6 +72,12 @@
           [a c b]
           :else [b c a])))
 
+(comment ;; TODO generalize for polygon points?
+  (->> (gt/triangle2 [0 10] [0 3] [1 0])
+       geom/edges
+       (sort-by (partial apply geom/dist) #(compare %2 %1)))
+  ;; Ranks edges, but need to extract unique points)
+
 (defn decompose
   "Decompose triangle into a collection of smaller triangles"
   [t {:keys [mode inner-point sample]
