@@ -68,6 +68,7 @@
       (cq/draw-shape (geom/vertices t)))))
 
 (defn ^:export run-sketch []
+  ;; 20210228
   (q/defsketch folding-triangles
     :host "quil-host"
     :size [600 400]
