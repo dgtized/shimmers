@@ -22,7 +22,7 @@
   {})
 
 (defn update-state [state]
-  (assoc state :theta (/ (q/millis) 1000)))
+  (assoc state :theta (/ (q/millis) 500)))
 
 (defn rotate-over-edge [poly [a b] theta]
   (let [axis (tm/- b a)
@@ -45,10 +45,19 @@
 
 (defn draw [{:keys [theta]}]
   (q/background 255)
-  (let [triangle (geom/rotate (geom/center (gt/equilateral2 1 2) (gv/vec3)) (/ theta 10))
-        all (mapcat (fn [t] (map (fn [e] (rotate-over-edge t e (- theta))) (geom/edges t)))
-                    (take 6 (iterate unfurled triangle)))]
-    (q/scale 6)
+  (let [depth 7
+        triangle (-> (gt/equilateral2 1 2)
+                     (geom/center (gv/vec3))
+                     (geom/rotate (/ theta 12)))
+        all (mapcat (fn [t start]
+                      (if (> theta start)
+                        (map (fn [e]
+                               (rotate-over-edge t e (- theta start)))
+                             (geom/edges t))
+                        []))
+                    (take depth (iterate unfurled triangle))
+                    (take depth (iterate (partial + Math/PI) 0)))]
+    (q/scale 4)
     (q/fill 0.35 0.8 0.6 0.1)
     (doseq [t all]
       (cq/draw-shape (geom/vertices t)))))
