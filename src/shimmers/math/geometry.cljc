@@ -60,6 +60,8 @@
       (geom/rotate theta)
       (geom/translate (tm/+ (geom/centroid polygon) dir))))
 
+;; Longest edge is aesthetically more pleasing per:
+;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
 (defn longest-edge
   "Returns points of a triangle ordered from longest to shortest edge"
   [{[a b c] :points}]
@@ -76,7 +78,8 @@
   (->> (gt/triangle2 [0 10] [0 3] [1 0])
        geom/edges
        (sort-by (partial apply geom/dist) #(compare %2 %1)))
-  ;; Ranks edges, but need to extract unique points)
+  ;; Ranks edges, but need to extract unique points
+  )
 
 (defn decompose
   "Decompose triangle into a collection of smaller triangles"
