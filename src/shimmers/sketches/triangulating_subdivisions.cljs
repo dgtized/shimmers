@@ -29,6 +29,7 @@
 (defn subdivide-triangle [{:keys [color depth max-depth] :as t}]
   (let [distribution (cs/weighted 8 :midpoint
                                   2 :inset
+                                  2 :trisect
                                   1 :centroid)
         opts {:mode (rand-nth distribution)
               :inner-point geom/random-point-inside

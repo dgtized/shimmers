@@ -88,21 +88,29 @@
            inner-point geom/random-point-inside
            sample (fn [] (+ 0.25 (* 0.5 (rand))))}}]
   (let [[a b c] (longest-edge t)]
-    (case mode
-      :midpoint
-      (let [mid (tm/mix a b (sample))]
-        [(gt/triangle2 a mid c)
-         (gt/triangle2 b mid c)])
-      :centroid
-      (let [inner (inner-point t)]
-        [(gt/triangle2 a b inner)
-         (gt/triangle2 b c inner)
-         (gt/triangle2 c a inner)])
-      :inset
-      (let [mab (tm/mix a b (sample))
-            mbc (tm/mix b c (sample))
-            mca (tm/mix c a (sample))]
-        [(gt/triangle2 a mab mca)
-         (gt/triangle2 b mab mbc)
-         (gt/triangle2 c mbc mca)
-         (gt/triangle2 mab mbc mca)]))))
+    (->> (case mode
+           :midpoint
+           (let [mid (tm/mix a b (sample))]
+             [[a mid c]
+              [b mid c]])
+           :centroid
+           (let [inner (inner-point t)]
+             [[a b inner]
+              [b c inner]
+              [c a inner]])
+           :inset
+           (let [mab (tm/mix a b (sample))
+                 mbc (tm/mix b c (sample))
+                 mca (tm/mix c a (sample))]
+             [[a mab mca]
+              [b mab mbc]
+              [c mbc mca]
+              [mab mbc mca]])
+           :trisect ;; TODO: sample gaussian around 0.33 and 0.66?
+           (let [[m1 m2] (->> [(sample) (sample)]
+                              sort
+                              (map (partial tm/mix a b)))]
+             [[a m1 c]
+              [b m2 c]
+              [m1 m2 c]]))
+         (mapv gt/triangle2))))
