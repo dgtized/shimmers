@@ -45,7 +45,7 @@
 
 (defn draw [_]
   (q/background 255)
-  (let [depth 7
+  (let [depth 10
         theta (mod (/ (q/millis) 500) (* depth 6 Math/PI))
         base (-> (gt/equilateral2 1 1.5)
                  (geom/center (gv/vec3))
@@ -57,12 +57,12 @@
                     (if (and (> theta start) (< theta end))
                       (map (fn [edge]
                              (assoc (rotate-over-edge triangle edge (- theta start))
-                                    :color (mod (- (* 0.1 i) 0.3) 1.0)))
+                                    :color (mod (- (* 0.1 i) 0.5) 1.0)))
                            (geom/edges triangle))
                       [])))
                 (take depth (iterate unfurled base))
                 (take depth (iterate inc 0)))]
-    (q/scale 8)
+    (q/scale 3)
     (doseq [t all]
       (q/fill (:color t) 0.8 0.5 0.1)
       (cq/draw-shape (geom/vertices t)))))
