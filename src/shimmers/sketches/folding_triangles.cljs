@@ -15,8 +15,10 @@
 ;; http://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
 ;; https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 ;; https://en.wikipedia.org/wiki/Gimbal_lock
+;; https://developerblog.myo.com/quaternions/
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {})
 
 (defn update-state [state]
@@ -41,18 +43,15 @@
                   (reflect-over-edge b [a c])
                   (reflect-over-edge a [b c]))))
 
-(comment (unfurled (gt/equilateral2 5 10)))
-
 (defn draw [{:keys [theta]}]
   (q/background 255)
-  (q/push-matrix)
   (let [triangle (geom/rotate (geom/center (gt/equilateral2 1 2) (gv/vec3)) (/ theta 10))
         all (mapcat (fn [t] (map (fn [e] (rotate-over-edge t e (- theta))) (geom/edges t)))
                     (take 6 (iterate unfurled triangle)))]
     (q/scale 6)
+    (q/fill 0.35 0.8 0.6 0.1)
     (doseq [t all]
-      (cq/draw-shape (geom/vertices t))))
-  (q/pop-matrix))
+      (cq/draw-shape (geom/vertices t)))))
 
 (defn ^:export run-sketch []
   (q/defsketch folding-triangles
