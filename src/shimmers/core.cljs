@@ -190,7 +190,7 @@
 (defn on-navigate [new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
     ;; default route, not sure on reitit for frontend routing
-    (rfe/replace-state ::sketch-by-name {:name :particles})
+    (rfe/replace-state ::sketch-by-name {:name :superposition})
     (swap! match
            (fn [old-match]
              (if new-match
