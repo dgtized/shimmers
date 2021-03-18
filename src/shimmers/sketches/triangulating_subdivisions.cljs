@@ -33,7 +33,9 @@
                                   1 :centroid)
         opts {:mode (rand-nth distribution)
               :inner-point geom/random-point-inside
-              :sample (p/gaussian-clamped 0.5 0.1)}]
+              :sample (p/gaussian-clamped 0.5 0.1)
+              :sample-low (p/gaussian-clamped 0.33 0.1)
+              :sample-high (p/gaussian-clamped 0.66 0.1)}]
     (for [child (geometry/decompose t opts)]
       (assoc child
              :color

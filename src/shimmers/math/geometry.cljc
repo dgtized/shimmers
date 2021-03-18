@@ -83,10 +83,12 @@
 
 (defn decompose
   "Decompose triangle into a collection of smaller triangles"
-  [t {:keys [mode inner-point sample]
+  [t {:keys [mode inner-point sample sample-low sample-high]
       :or {mode :midpoint
            inner-point geom/random-point-inside
-           sample (fn [] (+ 0.25 (* 0.5 (rand))))}}]
+           sample (p/gaussian-clamped 0.5 0.1)
+           sample-low (p/gaussian-clamped 0.33 0.1)
+           sample-high (p/gaussian-clamped 0.33 0.1)}}]
   (let [[a b c] (longest-edge t)]
     (->> (case mode
            :midpoint
@@ -106,8 +108,8 @@
               [b mab mbc]
               [c mbc mca]
               [mab mbc mca]])
-           :trisect ;; TODO: sample gaussian around 0.33 and 0.66?
-           (let [[m1 m2] (->> [(sample) (sample)]
+           :trisect
+           (let [[m1 m2] (->> [(sample-low) (sample-high)]
                               sort
                               (map (partial tm/mix a b)))]
              [[a m1 c]

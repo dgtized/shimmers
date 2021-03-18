@@ -20,6 +20,12 @@
             (gt/triangle2 [0 0] [0.5 0] [0 0.5])
             (gt/triangle2 [0.5 0.5] [0.5 0] [0 0.5])]
            (sut/decompose t {:mode :inset
-                             :sample (fn [] 0.5)})))))
+                             :sample (fn [] 0.5)})))
+    (is (= [(gt/triangle2 [[0 1] [0.2 0.8] [0 0]])
+            (gt/triangle2 [[1 0] [0.8 0.2] [0 0]])
+            (gt/triangle2 [0.2 0.8] [0.8 0.2] [0 0])]
+           (sut/decompose t {:mode :trisect
+                             :sample-low (fn [] 0.2)
+                             :sample-high (fn [] 0.8)})))))
 
 (comment (run-tests))
