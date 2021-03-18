@@ -1,6 +1,8 @@
 (ns shimmers.math.geometry
   (:require [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
+            [thi.ng.geom.quaternion :as quat]
             thi.ng.geom.polygon
             [thi.ng.geom.triangle :as gt]
             #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2]])
@@ -32,6 +34,25 @@
       geom/center
       (geom/rotate t)
       (geom/translate (geom/centroid polygon))))
+
+;; Quaternion
+;; https://www.weizmann.ac.il/sci-tea/benari/sites/sci-tea.benari/files/uploads/softwareAndLearningMaterials/quaternion-tutorial-2-0-1.pdf
+;; http://danceswithcode.net/engineeringnotes/quaternions/quaternions.html
+;; https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
+;; https://en.wikipedia.org/wiki/Gimbal_lock
+;; https://developerblog.myo.com/quaternions/
+(defn rotate-over-edge [poly [a b] theta]
+  (let [axis (tm/- b a)
+        rotation (quat/quat-from-axis-angle axis theta)]
+    (-> poly
+        (geom/translate (tm/- a))
+        (geom/transform rotation)
+        (geom/translate a))))
+
+(defn reflect-over-edge [c [a b]]
+  (let [edge (gl/line3 a b)
+        close (gl/line3 c (geom/closest-point edge c))]
+    (first (:points (geom/reflect close edge)))))
 
 (defn displace [polygon theta dir]
   (-> polygon
