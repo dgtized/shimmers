@@ -46,7 +46,7 @@
 (defn draw [{:keys [theta]}]
   (q/background 255)
   (let [depth 7
-        triangle (-> (gt/equilateral2 1 2)
+        triangle (-> (gt/equilateral2 1 1.5)
                      (geom/center (gv/vec3))
                      (geom/rotate (/ theta 12)))
         all (mapcat (fn [t start]
@@ -57,7 +57,7 @@
                         []))
                     (take depth (iterate unfurled triangle))
                     (take depth (iterate (partial + Math/PI) 0)))]
-    (q/scale 4)
+    (q/scale 8)
     (q/fill 0.35 0.8 0.6 0.1)
     (doseq [t all]
       (cq/draw-shape (geom/vertices t)))))
