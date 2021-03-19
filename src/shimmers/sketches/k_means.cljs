@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq :refer [rel-h rel-w]]
+            [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
@@ -30,7 +30,7 @@
       cq/draw-shape))
 
 (defn make-shape []
-  {:position (gv/vec2 (rel-w (rand)) (rel-h (rand)))
+  {:position (gv/vec2 (cq/rel-pos (rand) (rand)))
    :shape (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
    :color [(rand-nth [0 100 170 260]) (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
 
