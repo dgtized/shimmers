@@ -8,16 +8,19 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
 
+(defn screen-point [w h]
+  (gv/vec2 (cq/rel-w w) (cq/rel-h h)))
+
+(defn mouse-target []
+  (gv/vec2 (q/mouse-x) (q/mouse-y)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:chains [(assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) 0)
-                                     80 4)
+  {:chains [(assoc (chain/make-chain (screen-point 0.5 0) 80 4)
                    :color [0.35 0.5 0.5 0.025])
-            (assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) (* (q/height) 0.5))
-                                     80 4)
+            (assoc (chain/make-chain (screen-point 0.5 0.5) 80 4)
                    :color [0.65 0.5 0.5 0.025])
-            (assoc (chain/make-chain (gv/vec2 (* (q/width) 0.5) (q/height))
-                                     80 4)
+            (assoc (chain/make-chain (screen-point 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
 (defn draw-chain [{:keys [segments]}]
@@ -27,16 +30,10 @@
   (apply q/vertex (chain/segment-endpoint (last segments)))
   (q/end-shape))
 
-(defn screen-point [w h]
-  (gv/vec2 (cq/rel-w w) (cq/rel-h h)))
-
-(defn mouse-target []
-  (gv/vec2 (q/mouse-x) (q/mouse-y)))
-
 (defn noise-target [rate bw bh]
   (let [fc (q/frame-count)]
-    (gv/vec2 (cq/rel-w (q/noise bw (/ fc rate)))
-             (cq/rel-h (q/noise bh (/ fc rate))))))
+    (screen-point (q/noise bw (/ fc rate))
+                  (q/noise bh (/ fc rate)))))
 
 (defn circle-target [center r]
   (let [fc (/ (q/frame-count) 100)
