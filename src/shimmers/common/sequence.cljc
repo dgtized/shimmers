@@ -32,6 +32,14 @@
          (take (count xs))
          reverse)))
 
+(defn cycle-next [coll current]
+  (->> coll
+       (into [])
+       cycle
+       (drop-while (fn [x] (not= current x)))
+       (drop 1)
+       first))
+
 ;; (weighted [frequency value] ...)
 (defn weighted [& options]
   (into [] (mapcat (fn [[frequency value]]

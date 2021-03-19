@@ -7,6 +7,7 @@
             [reitit.frontend :as rf]
             [reitit.frontend.controllers :as rfc]
             [reitit.frontend.easy :as rfe]
+            [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.ascendance :as ascendance]
@@ -138,7 +139,7 @@
 
 (defn cycle-sketch []
   (let [{:keys [sketches current]} @state
-        next-sketch (ui/cycle-next (map :id sketches) current)]
+        next-sketch (cs/cycle-next (map :id sketches) current)]
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defonce match (r/atom nil))

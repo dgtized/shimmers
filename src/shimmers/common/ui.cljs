@@ -12,14 +12,6 @@
 (defn screen-view [sketch-name]
   (gtag "event" "screen_view" {"screen_name" sketch-name}))
 
-(defn cycle-next [lst current]
-  (->> lst
-       (into [])
-       cycle
-       (drop-while (fn [x] (not= current x)))
-       (drop 1)
-       first))
-
 (defn code-link [sketch]
   (if-let [{:keys [file line]} sketch]
     {:filename (last (str/split file #"/"))

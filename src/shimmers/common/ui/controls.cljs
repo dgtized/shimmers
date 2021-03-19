@@ -1,7 +1,7 @@
 (ns shimmers.common.ui.controls
-  (:require [reagent.dom :as rdom]
-            [goog.dom :as dom]
-            [shimmers.common.ui :as ui]))
+  (:require [goog.dom :as dom]
+            [reagent.dom :as rdom]
+            [shimmers.common.sequence :as cs]))
 
 (defn mount
   "Mounts reagent component to render in explanation element.
@@ -11,10 +11,12 @@
   (rdom/render [view] (dom/getElement "explanation")))
 
 (defn change-mode [ui-state modes]
-  (let [mode (:mode @ui-state)]
+  (let [mode (:mode @ui-state)
+        cycle-mode #(swap! ui-state update :mode
+                           (partial cs/cycle-next modes))]
     [:div
      [:input {:type "button" :value "Cycle Mode"
-              :on-click #(swap! ui-state assoc :mode (ui/cycle-next modes mode))}]
+              :on-click cycle-mode}]
      [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
 
 (defn checkbox [settings label field-ref]
