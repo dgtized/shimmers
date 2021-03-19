@@ -2,16 +2,14 @@
   "Inspired by https://thecodingtrain.com/CodingChallenges/017-spacecolonizer.html and
   https://medium.com/@jason.webb/space-colonization-algorithm-in-javascript-6f683b743dc5
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
-  (:require [goog.dom :as dom]
-            [quil.core :as q :include-macros true]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [reagent.core :as r]
-            [reagent.dom :as rdom]
+            [shimmers.algorithm.space-colonization :as colonize]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as quil]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.vector :as v]
-            [shimmers.algorithm.space-colonization :as colonize]))
+            [shimmers.math.vector :as v]))
 
 (defn init-settings []
   {:influence-distance 48
