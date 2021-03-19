@@ -12,3 +12,5 @@ figwheel_server.log
 node_modules/
 resources/public/js/
 resources/public/shimmers.html
+.cljs_node_repl/
+/out/
