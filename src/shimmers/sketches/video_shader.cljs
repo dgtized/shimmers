@@ -14,9 +14,6 @@
 (def modes {:specular-mouse 0
             :edge-detection 1})
 
-(defn cycle-mode [state]
-  {:mode (ui/cycle-next (keys modes) (:mode state))})
-
 (defonce ui-state (r/atom {:mode :edge-detection}))
 
 ;; HACK: Shaders are renamed to .c because github-pages requires a mime type to
@@ -50,7 +47,7 @@
       (q/rect 0 0 w h))))
 
 (defn ^:export run-sketch []
-  (ctrl/mount (partial ctrl/change-mode ui-state cycle-mode))
+  (ctrl/mount (partial ctrl/change-mode ui-state (keys modes)))
   (q/defsketch video-shader
     :host "quil-host"
     :size [640 480]

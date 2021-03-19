@@ -9,9 +9,6 @@
 
 (def modes [:dither :boxes :circles :color-displace])
 
-(defn cycle-mode [state]
-  {:mode (ui/cycle-next modes (:mode state))})
-
 (defonce ui-state (r/atom {:mode :dither}))
 
 (defn setup []
@@ -24,7 +21,7 @@
     ;; https://p5js.org/reference/#/p5/createCapture
     (.size capture width height)
     (.hide capture)
-    (ctrl/mount (partial ctrl/change-mode ui-state cycle-mode))
+    (ctrl/mount (partial ctrl/change-mode ui-state modes))
     {:width width
      :height height
      :capture capture}))
