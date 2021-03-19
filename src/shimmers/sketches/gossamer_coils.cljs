@@ -1,5 +1,4 @@
 (ns shimmers.sketches.gossamer-coils
-  "Inspired by https://www.youtube.com/watch?v=hbgDqyy8bIwa"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.kinematic-chain :as chain]
@@ -10,14 +9,6 @@
 
 (defn rel-v [w h]
   (gv/vec2 (cq/rel-pos w h)))
-
-(defn mouse-target []
-  (gv/vec2 (q/mouse-x) (q/mouse-y)))
-
-(defn noise-target [rate bw bh]
-  (let [fc (q/frame-count)]
-    (rel-v (q/noise bw (/ fc rate))
-           (q/noise bh (/ fc rate)))))
 
 (defn circle-target [center r]
   (let [fc (/ (q/frame-count) 100)
