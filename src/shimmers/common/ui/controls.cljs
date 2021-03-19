@@ -9,6 +9,13 @@
   [view]
   (rdom/render [view] (dom/getElement "explanation")))
 
+(defn change-mode [ui-state cycle-mode]
+  (let [mode (:mode @ui-state)]
+    [:div
+     [:input {:type "button" :value "Cycle Mode"
+              :on-click #(swap! ui-state cycle-mode)}]
+     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
+
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}
    [:input {:type "checkbox" :checked (get-in @settings field-ref)

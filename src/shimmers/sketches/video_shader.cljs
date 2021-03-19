@@ -19,13 +19,6 @@
 
 (defonce ui-state (r/atom {:mode :edge-detection}))
 
-(defn interface []
-  (let [mode (:mode @ui-state)]
-    [:div
-     [:input {:type "button" :value "Cycle Mode"
-              :on-click #(swap! ui-state cycle-mode)}]
-     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
-
 ;; HACK: Shaders are renamed to .c because github-pages requires a mime type to
 ;; serve, per [1], but [2] has no extension for mime-type x-shader/x-fragment, or
 ;; x-shader/x-vertex.
@@ -57,7 +50,7 @@
       (q/rect 0 0 w h))))
 
 (defn ^:export run-sketch []
-  (ctrl/mount interface)
+  (ctrl/mount (partial ctrl/change-mode ui-state cycle-mode))
   (q/defsketch video-shader
     :host "quil-host"
     :size [640 480]

@@ -14,13 +14,6 @@
 
 (defonce ui-state (r/atom {:mode :dither}))
 
-(defn render-interface []
-  (let [mode (:mode @ui-state)]
-    [:div
-     [:input {:type "button" :value "Cycle Mode"
-              :on-click #(swap! ui-state cycle-mode)}]
-     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
-
 (defn setup []
   (let [width 320
         height 240
@@ -31,7 +24,7 @@
     ;; https://p5js.org/reference/#/p5/createCapture
     (.size capture width height)
     (.hide capture)
-    (ctrl/mount render-interface)
+    (ctrl/mount (partial ctrl/change-mode ui-state cycle-mode))
     {:width width
      :height height
      :capture capture}))
