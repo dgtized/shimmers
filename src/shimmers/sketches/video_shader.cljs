@@ -3,14 +3,13 @@
   https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/image_effects and
   combined with https://thebookofshaders.com/07/.
   "
-  (:require [goog.dom :as dom]
-            [quil.core :as q :include-macros true]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             quil.sketch
             [reagent.core :as r]
-            [reagent.dom :as rdom]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui :as ui]))
+            [shimmers.common.ui :as ui]
+            [shimmers.common.ui.controls :as ctrl]))
 
 (def modes {:specular-mouse 0
             :edge-detection 1})
@@ -58,8 +57,7 @@
       (q/rect 0 0 w h))))
 
 (defn ^:export run-sketch []
-  (rdom/render [interface] (dom/getElement "explanation"))
-
+  (ctrl/mount interface)
   (q/defsketch video-shader
     :host "quil-host"
     :size [640 480]

@@ -1,14 +1,13 @@
 (ns shimmers.sketches.probabilistic-automata
   (:require [cljs.core.match :refer-macros [match]]
-            [goog.dom :as dom]
             [goog.string.format]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.dom :as rdom]
             [shimmers.automata.programs :as programs]
             [shimmers.automata.simplify :as simplify]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :refer [weighted]]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]))
 
 (defn in-bounds? [[x y] bounds]
@@ -137,8 +136,7 @@
                   (make-automata [450 100] (generate-program))
                   (make-automata [150 300] (generate-program))
                   (make-automata [450 300] (generate-program))]]
-    (rdom/render [render-explanation automata]
-                 (dom/getElement "explanation"))
+    (ctrl/mount (partial render-explanation automata))
     {:automata automata}))
 
 (defn update-state
@@ -158,7 +156,7 @@
     (draw-bot bot)))
 
 (defn ^:export run-sketch []
-  (q/defsketch particles
+  (q/defsketch probabilistic-automata
     :host "quil-host"
     :size [600 400]
     :setup setup

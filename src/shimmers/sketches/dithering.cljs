@@ -1,12 +1,11 @@
 (ns shimmers.sketches.dithering
-  (:require [goog.dom :as dom]
-            [quil.core :as q :include-macros true]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             quil.sketch
             [reagent.core :as r]
-            [reagent.dom :as rdom]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui :as ui]))
+            [shimmers.common.ui :as ui]
+            [shimmers.common.ui.controls :as ctrl]))
 
 (def modes [:dither :boxes :circles :color-displace])
 
@@ -32,7 +31,7 @@
     ;; https://p5js.org/reference/#/p5/createCapture
     (.size capture width height)
     (.hide capture)
-    (rdom/render [render-interface] (dom/getElement "explanation"))
+    (ctrl/mount render-interface)
     {:width width
      :height height
      :capture capture}))
