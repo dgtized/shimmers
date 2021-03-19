@@ -23,6 +23,7 @@
             [shimmers.sketches.fire :as fire]
             [shimmers.sketches.folding-triangles :as folding-triangles]
             ;; [shimmers.sketches.fluid :as fluid]
+            [shimmers.sketches.gossamer-coils :as gossamer-coils]
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
@@ -82,6 +83,7 @@
      fire/run-sketch
      folding-triangles/run-sketch
      ;; fluid/run-sketch
+     gossamer-coils/run-sketch
      gravity-well/run-sketch
      hexaclock/run-sketch
      impressions-of-open-space/run-sketch

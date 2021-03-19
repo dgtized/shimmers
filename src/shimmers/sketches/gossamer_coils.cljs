@@ -1,4 +1,4 @@
-(ns shimmers.sketches.kinematic-chain
+(ns shimmers.sketches.gossamer-coils
   "Inspired by https://www.youtube.com/watch?v=hbgDqyy8bIwa"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
@@ -59,8 +59,8 @@
     (draw-chain chain)))
 
 (defn ^:export run-sketch []
-  ;; 20210319
-  (q/defsketch kinematic-chain
+  ;; 20210315
+  (q/defsketch gossamer-coils
     :host "quil-host"
     :size [600 400]
     :setup setup
