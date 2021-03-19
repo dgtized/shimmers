@@ -9,7 +9,7 @@
             [thi.ng.geom.vector :as gv]))
 
 (defn rel-v [w h]
-  (gv/vec2 (cq/rel-w w) (cq/rel-h h)))
+  (gv/vec2 (cq/rel-pos w h)))
 
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))

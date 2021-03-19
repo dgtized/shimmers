@@ -25,8 +25,8 @@
   (let [s (q/random 0.1 0.2)]
     (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
         (geometry/rotate-around-centroid (* 2 Math/PI (rand)))
-        (geom/translate [(rel-w (q/random 0.2 0.8))
-                         (rel-h (q/random 0.2 0.8))]))))
+        (geom/translate (cq/rel-pos (q/random 0.2 0.8)
+                                    (q/random 0.2 0.8))))))
 
 (defn random-rect []
   (let [w (q/random 0.1 0.3)
@@ -37,8 +37,8 @@
 
 (defn random-circle []
   (let [r (q/random 0.1 0.3)]
-    (gc/circle (rel-w (tm/clamp (rand) r (- 1 r)))
-               (rel-h (tm/clamp (rand) r (- 1 r)))
+    (gc/circle (cq/rel-pos (tm/clamp (rand) r (- 1 r))
+                           (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
 
 (defn random-target []

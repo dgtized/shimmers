@@ -43,7 +43,7 @@
 (defn draw [_]
   (q/background 1.0)
   (q/stroke-weight 0.2)
-  (let [building (rect/rect (cq/rel-w 0.1) (cq/rel-h 0.4) (cq/rel-w 0.3) (cq/rel-h 0.6))
+  (let [building (rect/rect (cq/rel-pos 0.1 0.4) (cq/rel-w 0.3) (cq/rel-h 0.6))
         [_ ne _ sw] (geom/vertices building)
         max-dist (geom/dist ne sw)
         tessellated (geom/tessellate building {:num 48})

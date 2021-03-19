@@ -29,7 +29,7 @@
   {})
 
 (defn rel-v [[x y]]
-  (gv/vec2 (cq/rel-w x) (cq/rel-h y)))
+  (gv/vec2 (cq/rel-pos x y)))
 
 (defn draw [_]
   (q/background 1.0)
