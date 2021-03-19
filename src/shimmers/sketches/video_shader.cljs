@@ -8,7 +8,6 @@
             quil.sketch
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui :as ui]
             [shimmers.common.ui.controls :as ctrl]))
 
 (def modes {:specular-mouse 0
