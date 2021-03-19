@@ -14,6 +14,17 @@
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
+(defn noise-target [rate bw bh]
+  (let [fc (q/frame-count)]
+    (screen-point (q/noise bw (/ fc rate))
+                  (q/noise bh (/ fc rate)))))
+
+(defn circle-target [center r]
+  (let [fc (/ (q/frame-count) 100)
+        adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
+    (geom/translate (geom/as-cartesian (gv/vec2 adjusted-r fc))
+                    center)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:chains [(assoc (chain/make-chain (screen-point 0.5 0) 80 4)
@@ -29,17 +40,6 @@
     (apply q/vertex (:base s)))
   (apply q/vertex (chain/segment-endpoint (last segments)))
   (q/end-shape))
-
-(defn noise-target [rate bw bh]
-  (let [fc (q/frame-count)]
-    (screen-point (q/noise bw (/ fc rate))
-                  (q/noise bh (/ fc rate)))))
-
-(defn circle-target [center r]
-  (let [fc (/ (q/frame-count) 100)
-        adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
-    (geom/translate (geom/as-cartesian (gv/vec2 adjusted-r fc))
-                    center)))
 
 (defn update-state [{:keys [chains] :as state}]
   (assoc state :chains
