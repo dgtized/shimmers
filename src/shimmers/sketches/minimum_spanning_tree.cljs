@@ -43,9 +43,9 @@
           remaining (disj vertices v)
           [weights' best-edge']
           (prim-update v remaining (dissoc weights v) (dissoc best-edge v))]
-      (recur (cond-> forest
-               v (update :vertices conj v)
-               e (update :edges conj e))
+      (recur (-> forest
+                 (update :vertices conj v)
+                 (update :edges conj e))
              remaining
              weights'
              best-edge'))))
@@ -59,7 +59,7 @@
 
 (defn setup []
   (q/no-loop)
-  {:points (generate-points 192 (partial q/random 0.05 0.95))})
+  {:points (generate-points 256 (partial q/random 0.05 0.95))})
 
 (defn update-state [state]
   state)
