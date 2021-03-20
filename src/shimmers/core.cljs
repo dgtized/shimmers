@@ -31,6 +31,7 @@
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.kinematic-chain :as kinematic-chain]
             [shimmers.sketches.langton-ant :as langton-ant]
+            [shimmers.sketches.minimum-spanning-tree :as minimum-spanning-tree]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.noisy-shapes :as noisy-shapes]
             [shimmers.sketches.object-permanence :as object-permanence]
@@ -91,6 +92,7 @@
      kd-tree/run-sketch
      kinematic-chain/run-sketch
      langton-ant/run-sketch
+     minimum-spanning-tree/run-sketch
      noise-grid/run-sketch
      noisy-shapes/run-sketch
      object-permanence/run-sketch

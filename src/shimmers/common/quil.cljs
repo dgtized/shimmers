@@ -7,8 +7,9 @@
 (defn rel-w [p]
   (* (q/width) p))
 
-(defn rel-pos [w h]
-  [(rel-w w) (rel-h h)])
+(defn rel-pos
+  ([[w h]] (rel-pos w h))
+  ([w h] [(rel-w w) (rel-h h)]))
 
 (defn draw-shape [vertices]
   (q/begin-shape)
