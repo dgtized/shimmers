@@ -58,20 +58,23 @@
                (into {} (for [p remaining] {p [vertex p]})))))
 
 (defn setup []
-  (q/no-loop)
-  {:points (generate-points 256 (partial q/random 0.05 0.95))})
+  (let [points (generate-points 256 (partial q/random 0.05 0.95))
+        mst (prim-mst points)]
+    {:points points
+     :edges (:edges mst)
+     :step 0}))
 
 (defn update-state [state]
-  state)
+  (update state :step inc))
 
-(defn draw [{:keys [points]}]
+(defn draw [{:keys [points edges step]}]
+  (q/background 255)
   (q/stroke-weight 2)
   (doseq [point points]
     (apply q/point (cq/rel-pos point)))
   (q/stroke-weight 0.5)
-  (let [mst (prim-mst points)]
-    (doseq [[p q] (:edges mst)]
-      (q/line (cq/rel-pos p) (cq/rel-pos q)))))
+  (doseq [[p q] (take step edges)]
+    (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
 (defn ^:export run-sketch []
   (q/defsketch minimum-spanning-tree
