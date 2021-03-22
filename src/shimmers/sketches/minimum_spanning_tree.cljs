@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [tailrecursion.priority-map :refer [priority-map]]
+            [nifty.disjoint-set :as djs]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
 
@@ -16,6 +17,28 @@
           {} points))
 
 (defrecord Forest [vertices edges])
+
+(defn kruskal-step [forest edges union-set]
+  (if (empty? edges)
+    forest
+    (let [[[u v] & remaining] edges]
+      (if (not= (djs/canonical union-set u)
+                (djs/canonical union-set v))
+        (recur (conj forest [u v])
+               remaining
+               (djs/union union-set u v))
+        (recur forest remaining union-set)))))
+
+(defn kruskal-mst [points]
+  (let [ranked-edges
+        (->> (for [u points
+                   v points
+                   :when (not= u v)]
+               [(geom/dist u v) [u v]])
+             (sort-by first)
+             (map second))]
+    (kruskal-step [] ranked-edges
+                  (apply djs/disjoint-set points))))
 
 (defn prim-update [added vertices weights best-edges]
   (if (empty? vertices)
