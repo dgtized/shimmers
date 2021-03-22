@@ -10,12 +10,6 @@
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
 
-(defn all-pairs [points]
-  (for [p1 points
-        p2 points
-        :when (not= p1 p2)]
-    [p1 p2]))
-
 (defn distances [v points]
   (reduce (fn [m p] (assoc m p (geom/dist v p)))
           {} points))
