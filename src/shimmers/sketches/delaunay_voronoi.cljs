@@ -17,13 +17,17 @@
 
 (defn draw [{:keys [points]}]
   (q/background 255)
+  (q/stroke-weight 0.5)
+  (q/no-fill)
+  (doseq [triangle (delaunay/triangulate points)]
+    (apply q/triangle (mapcat cq/rel-pos triangle)))
+
   (q/ellipse-mode :radius)
+  (q/fill 0 0 0)
   (doseq [p points
           :let [[x y] (cq/rel-pos p)]]
-    (q/ellipse x y 0.2 0.2))
-  (q/stroke-weight 0.5)
-  (doseq [triangle (delaunay/triangulate points)]
-    (apply q/triangle (mapcat cq/rel-pos triangle))))
+    (q/ellipse x y 1 1))
+  )
 
 (defn ^:export run-sketch []
   (q/defsketch delaunay-voronoi
