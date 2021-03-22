@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.utils.delaunay :as delaunay]
             [thi.ng.geom.vector :as gv]
@@ -21,7 +22,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 4 #(q/random 0.15 0.85))]
+  (let [points (generate-points 32 #(q/random 0.15 0.85))]
     {:points points
      :triangles (delaunay/triangulate points)}))
 
@@ -37,7 +38,8 @@
           :let [view-pts (map cq/rel-pos triangle)]]
     (apply q/triangle (flatten view-pts))
     (doseq [edge (geom/edges (apply gt/triangle2 view-pts))
-            :let [[a b] (bisect edge)]]
+            :let [line (gl/line2 (bisect edge))
+                  [a b] (:points (geom/scale-size line 0.02))]]
       (q/line a b)))
 
   (q/ellipse-mode :radius)
