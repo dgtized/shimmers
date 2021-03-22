@@ -17,6 +17,7 @@
             [shimmers.sketches.circle-packing :as circle-packing]
             [shimmers.sketches.colors :as colors]
             [shimmers.sketches.cube :as cube]
+            [shimmers.sketches.delaunay-voronoi :as delaunay-voronoi]
             [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
@@ -78,6 +79,7 @@
      circle-packing/run-sketch
      colors/run-sketch
      cube/run-sketch
+     delaunay-voronoi/run-sketch
      dispersion/run-sketch
      dithering/run-sketch
      emitters/run-sketch
