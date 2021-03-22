@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [tailrecursion.priority-map :refer [priority-map]]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
@@ -52,7 +53,9 @@
                (into {} (for [p remaining] {p [vertex p]})))))
 
 (defn fresh-graph []
-  (let [points (generate-points 256 (partial q/random 0.05 0.95))
+  (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
+                             (p/gaussian-clamped 0.5 0.15)])
+        points (generate-points 256 point-gen)
         mst (prim-mst points)]
     {:points points
      :edges (:edges mst)
