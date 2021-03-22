@@ -16,8 +16,6 @@
   (reduce (fn [m p] (assoc m p (geom/dist v p)))
           {} points))
 
-(defrecord Forest [vertices edges])
-
 (defn kruskal-step [forest edges union-set]
   (if (empty? edges)
     forest
@@ -57,20 +55,18 @@
   (if (empty? vertices)
     forest
     (let [[v _] (first weights)
-          e (get best-edge v)
+          edge (get best-edge v)
           remaining (disj vertices v)
           [weights' best-edge']
           (prim-update v remaining (dissoc weights v) (dissoc best-edge v))]
-      (recur (-> forest
-                 (update :vertices conj v)
-                 (update :edges conj e))
+      (recur (conj forest edge)
              remaining
              weights'
              best-edge'))))
 
 (defn prim-mst [points]
   (let [[vertex & remaining] points]
-    (prim-step (->Forest [vertex] [])
+    (prim-step []
                (set remaining)
                (apply priority-map (mapcat identity (distances vertex remaining)))
                (into {} (for [p remaining] {p [vertex p]})))))
@@ -79,9 +75,9 @@
   (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
                              (p/gaussian-clamped 0.5 0.15)])
         points (generate-points 256 point-gen)
-        mst (prim-mst points)]
+        edges ((rand-nth [prim-mst kruskal-mst]) points)]
     {:points points
-     :edges (:edges mst)
+     :edges edges
      :step 0}))
 
 (defn graph-step [{:keys [step edges] :as state}]
