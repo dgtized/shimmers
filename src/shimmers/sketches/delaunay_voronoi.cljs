@@ -10,16 +10,19 @@
   (repeatedly n #(gv/vec2 (dist) (dist))))
 
 (defn setup []
-  {:points (generate-points 30 #(q/random 0.15 0.85))})
+  (let [points (generate-points 30 #(q/random 0.15 0.85))]
+    {:points points
+     :triangles (delaunay/triangulate points)}))
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [points]}]
+(defn draw [{:keys [points triangles]}]
   (q/background 255)
+
   (q/stroke-weight 0.5)
   (q/no-fill)
-  (doseq [triangle (delaunay/triangulate points)]
+  (doseq [triangle triangles]
     (apply q/triangle (mapcat cq/rel-pos triangle)))
 
   (q/ellipse-mode :radius)
