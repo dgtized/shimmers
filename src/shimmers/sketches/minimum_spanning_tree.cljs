@@ -2,10 +2,10 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.core :as geom]
-            [thi.ng.geom.vector :as gv]
             [shimmers.common.quil :as cq]
-            [tailrecursion.priority-map :refer [priority-map]]))
+            [tailrecursion.priority-map :refer [priority-map]]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.vector :as gv]))
 
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
@@ -51,15 +51,26 @@
                (apply priority-map (mapcat identity (distances vertex remaining)))
                (into {} (for [p remaining] {p [vertex p]})))))
 
-(defn setup []
+(defn fresh-graph []
   (let [points (generate-points 256 (partial q/random 0.05 0.95))
         mst (prim-mst points)]
     {:points points
      :edges (:edges mst)
      :step 0}))
 
+(defn graph-step [{:keys [step edges] :as state}]
+  (if (= step (count edges))
+    [true state]
+    [false (update state :step inc)]))
+
+(defn setup []
+  (fresh-graph))
+
 (defn update-state [state]
-  (update state :step inc))
+  (cq/if-steady-state
+   state 5
+   fresh-graph
+   graph-step))
 
 (defn draw [{:keys [points edges step]}]
   (q/background 255)
