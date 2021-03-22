@@ -75,9 +75,13 @@
 (defn draw [{:keys [points edges step]}]
   (q/background 255)
   (q/stroke-weight 2)
-  (doseq [point points]
-    (apply q/point (cq/rel-pos point)))
+  (q/ellipse-mode :radius)
+  (q/stroke 0 0 0)
+  (doseq [point points
+          :let [[x y] (cq/rel-pos point)]]
+    (q/ellipse x y 0.2 0.2))
   (q/stroke-weight 0.5)
+  (q/stroke 50 50 230)
   (doseq [[p q] (take step edges)]
     (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
