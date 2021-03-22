@@ -2,9 +2,9 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.vector :as gv]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.utils.delaunay :as delaunay]))
+            [thi.ng.geom.utils.delaunay :as delaunay]
+            [thi.ng.geom.vector :as gv]))
 
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
