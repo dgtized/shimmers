@@ -14,11 +14,11 @@
   (repeatedly n #(gv/vec2 (dist) (dist))))
 
 (defn bisect
+  "Calculate intersection points for circles of radius (p - q) centered at p and q."
   [[p q]]
-  (let [s (tm/- q p)]
-    (->> [(/ Math/PI 3)
-          (* 5 (/ Math/PI 3))]
-         (mapv (fn [t] (geom/translate p (geom/rotate s t)))))))
+  (let [d (tm/- q p)]
+    (mapv (fn [θ] (tm/+ p (geom/rotate d θ)))
+          [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
 
 (defn setup []
   (q/no-loop)
