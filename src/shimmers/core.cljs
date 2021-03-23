@@ -16,6 +16,7 @@
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.circle-packing :as circle-packing]
             [shimmers.sketches.colors :as colors]
+            [shimmers.sketches.convex-spiral :as convex-spiral]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.delaunay-voronoi :as delaunay-voronoi]
             [shimmers.sketches.dispersion :as dispersion]
@@ -78,6 +79,7 @@
      butterfly/run-sketch
      circle-packing/run-sketch
      colors/run-sketch
+     convex-spiral/run-sketch
      cube/run-sketch
      delaunay-voronoi/run-sketch
      dispersion/run-sketch
