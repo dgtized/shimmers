@@ -13,7 +13,19 @@
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
 
+;; FIXME: sometimes there is overlap of an outer path and an inner?
+;; Might just be at transition from outer to inner hull?
+;; also is there a way to handle the last 3 to continue spiral?
+(defn convex-spiral [points]
+  (loop [path [] points points]
+    (if (< (count points) 3)
+      (into path points)
+      (let [hull (gp/convex-hull* points)]
+        (recur (into path hull)
+               (remove (set hull) points))))))
+
 (defn setup []
+  (q/no-loop)
   {:points (generate-points 64 #(q/random 0.15 0.85))})
 
 (defn update-state [state]
@@ -28,12 +40,12 @@
           :let [[x y] (cq/rel-pos p)]]
     (q/ellipse x y 1 1))
 
-  (doseq [[p q] (partition 2 1 (gp/convex-hull* (map cq/rel-pos points)))]
+  (doseq [[p q] (partition 2 1 (convex-spiral (map cq/rel-pos points)))]
     (q/line p q)))
 
 (defn ^:export run-sketch []
   ;; 20210322
-  (q/defsketch convex-spiral
+  (q/defsketch convex-spiral-sketch
     :host "quil-host"
     :size [600 400]
     :setup setup
