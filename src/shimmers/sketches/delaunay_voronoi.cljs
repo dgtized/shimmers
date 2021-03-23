@@ -20,9 +20,23 @@
     (mapv (fn [θ] (tm/+ p (geom/rotate d θ)))
           [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
 
+(defn bisect-line
+  [[p q]]
+  (let [[mid-x mid-y] (tm/div (tm/+ p q) 2)
+        reciprocal-slope (let [d (tm/- q p)]
+                           (if (not= 0 (:x d))
+                             (/ -1 (geom/slope-xy d))
+                             0))
+        b (- mid-y (* reciprocal-slope mid-x))]
+    [reciprocal-slope b]))
+
+(defn plot [[m b]]
+  (doseq [x (range 0 (q/width) 4)]
+    (q/point x (+ (* m x) b))))
+
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 32 #(q/random 0.15 0.85))]
+  (let [points (generate-points 5 #(q/random 0.15 0.85))]
     {:points points
      :triangles (delaunay/triangulate points)}))
 
@@ -40,6 +54,7 @@
     (doseq [edge (geom/edges (apply gt/triangle2 view-pts))
             :let [line (gl/line2 (bisect edge))
                   [a b] (:points (geom/scale-size line 0.02))]]
+      (plot (bisect-line edge))
       (q/line a b)))
 
   (q/ellipse-mode :radius)
