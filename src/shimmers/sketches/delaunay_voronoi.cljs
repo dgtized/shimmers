@@ -31,8 +31,11 @@
     [reciprocal-slope b]))
 
 (defn plot [[m b]]
-  (doseq [x (range 0 (q/width) 4)]
-    (q/point x (+ (* m x) b))))
+  (q/push-style)
+  (q/stroke-weight 0.1)
+  (let [w (q/width)]
+    (q/line 0 b w (+ (* w m) b)))
+  (q/pop-style))
 
 (defn setup []
   (q/no-loop)
