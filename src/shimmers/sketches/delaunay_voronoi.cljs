@@ -32,6 +32,19 @@
                  (update m vertex set/union triangle))
                {})))
 
+(defn neighboring-vertices [neighborhood vertex]
+  (->> vertex
+       (get neighborhood)
+       (map set)
+       (reduce set/union)
+       ;; This is not removing the source vertex for some reason, is equality
+       ;; working on vectors?
+       (remove (set vertex))))
+
+(comment (let [a (rand)
+               b (rand)]
+           (= (gv/vec2 a b) (gv/vec2 a b))))
+
 (defn bisect
   "Calculate intersection points for circles of radius (p - q) centered at p and q."
   [[p q]]
@@ -70,7 +83,6 @@
 
   (q/stroke-weight 0.5)
   (q/no-fill)
-  (println (neighboring-triangles triangles))
   (doseq [triangle triangles
           :let [view-pts (map cq/rel-pos triangle)]]
     (apply q/triangle (flatten view-pts))
@@ -85,6 +97,10 @@
   (doseq [p points
           :let [[x y] (cq/rel-pos p)]]
     (q/ellipse x y 1 1))
+
+  (let [neighborhood (neighboring-triangles triangles)]
+    (println (first points))
+    (println (neighboring-vertices neighborhood (last points))))
   )
 
 (defn ^:export run-sketch []
