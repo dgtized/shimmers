@@ -1,5 +1,6 @@
 (ns shimmers.sketches.delaunay-voronoi
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.set :as set]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
@@ -12,6 +13,24 @@
 
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
+
+(defn neighboring-triangles
+  "Map every distinct vertex in triangles to the set of neighboring triangles that
+  include that point as a vertex.
+
+  (neighborhood [[a b c] [a b d]])
+  =>
+  {a #{[a b c] [a b d]}
+   b #{[a b c] [a b d]}
+   c #{[a b c]}
+   d #{[a b d]}}"
+  [triangles]
+  (->> (for [triangle triangles
+             vertex triangle]
+         [vertex #{triangle}])
+       (reduce (fn [m [vertex triangle]]
+                 (update m vertex set/union triangle))
+               {})))
 
 (defn bisect
   "Calculate intersection points for circles of radius (p - q) centered at p and q."
@@ -39,7 +58,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 5 #(q/random 0.15 0.85))]
+  (let [points (generate-points 6 #(q/random 0.15 0.85))]
     {:points points
      :triangles (delaunay/triangulate points)}))
 
@@ -51,6 +70,7 @@
 
   (q/stroke-weight 0.5)
   (q/no-fill)
+  (println (neighboring-triangles triangles))
   (doseq [triangle triangles
           :let [view-pts (map cq/rel-pos triangle)]]
     (apply q/triangle (flatten view-pts))
