@@ -129,21 +129,25 @@
       (println point)
       (q/stroke 255 0 0)
       (let [[x y] (cq/rel-pos point)]
+        (println [x y])
         (q/ellipse x y 2 2))
 
       (let [neighbors (map cq/rel-pos (neighboring-vertices neighborhood point))
             centroid (gv/vec2 (cq/rel-pos point))
-            edges (map (fn [p] [centroid (gv/vec2 p)]) neighbors)
+            edges (take 2 (sort-by (fn [[p o]] (geom/heading (tm/- o p)))
+                                   (map (fn [p] [centroid (gv/vec2 p)]) neighbors)))
             bisects (map bisect-line edges)
-            intersections [(intercept-point (first bisects) (second bisects))]]
+            intersections (map intercept-point bisects (rest bisects))]
         (doseq [edge edges
                 :let [[x y] (second edge)]]
+          (println [x y (geom/heading (tm/- (gv/vec2 x y) centroid))])
           (q/stroke 0 255 0)
           (q/ellipse x y 2 2)
           (q/stroke 0 0 0)
           (plot (bisect-line edge)))
 
         (q/stroke 0 0 255)
+        (println bisects)
         (doseq [[x y] intersections]
           (println [x y])
           (q/ellipse x y 2 2)))
