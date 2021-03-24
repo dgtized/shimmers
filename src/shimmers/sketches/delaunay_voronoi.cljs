@@ -91,7 +91,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 12 #(q/random 0.15 0.85))]
+  (let [points (generate-points 8 #(q/random 0.15 0.85))]
     {:points points
      :triangles (delaunay/triangulate points)}))
 
@@ -102,6 +102,9 @@
   (let [line (gl/line2 (bisect edge))
         [a b] (:points (geom/scale-size line 0.02))]
     (q/line a b)))
+
+(defn relative-heading [centroid point]
+  (geom/heading (tm/- (gv/vec2 point) centroid)))
 
 (defn draw [{:keys [points triangles]}]
   (println "draw")
@@ -125,7 +128,7 @@
 
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
-    (doseq [point [(rand-nth points)]]
+    (doseq [point (take 1 (shuffle points))]
       (q/stroke 255 0 0)
       (let [[x y] (cq/rel-pos point)]
         (println [x y])
@@ -147,7 +150,13 @@
         (q/stroke 0 0 255)
         (doseq [[x y] intersections]
           (println [x y])
-          (q/ellipse x y 2 2)))
+          (q/ellipse x y 2 2))
+
+        (q/no-fill)
+        (q/begin-shape)
+        (doseq [p (sort-by (partial relative-heading centroid) intersections)]
+          (apply q/vertex p))
+        (q/end-shape :close))
       ))
   )
 
