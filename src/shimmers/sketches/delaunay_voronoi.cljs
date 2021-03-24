@@ -40,14 +40,6 @@
        (remove #{vertex})))
 
 (comment
-  (let [a (rand)
-        b (rand)]
-    (= (gv/vec2 a b) (gv/vec2 a b)))
-
-  ;; (set v) is different than #{v}
-  (let [v (gv/vec2 0 2)]
-    [#{v} (set v)])
-
   (let [points (generate-points 5 rand)
         triangles (delaunay/triangulate points)
         neighborhood (neighboring-triangles triangles)
