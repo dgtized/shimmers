@@ -39,20 +39,6 @@
        (reduce set/union)
        (remove #{vertex})))
 
-(comment
-  (let [points (generate-points 5 rand)
-        triangles (delaunay/triangulate points)
-        neighborhood (neighboring-triangles triangles)
-        vertex (first points)]
-    [vertex (neighboring-vertices neighborhood vertex)]))
-
-(defn bisect
-  "Calculate intersection points for circles of radius (p - q) centered at p and q."
-  [[p q]]
-  (let [d (tm/- q p)]
-    (mapv (fn [θ] (tm/+ p (geom/rotate d θ)))
-          [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
-
 (defn bisect-line
   [[p q]]
   (let [[mid-x mid-y] (tm/div (tm/+ p q) 2)
@@ -63,6 +49,39 @@
         b (- mid-y (* reciprocal-slope mid-x))]
     [reciprocal-slope b]))
 
+;; https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+(defn intercept-point [[a c] [b d]]
+  (when-not (zero? (- a b))
+    (let [x (/ (- d c) (- a b))]
+      [x (+ (* a x) b)])))
+
+(defn voronoi-edges [neighborhood vertex]
+  (for [triangle (get neighborhood vertex)]
+    (let [[a b] (for [p triangle
+                      :when (not= p vertex)]
+                  (bisect-line [vertex p]))]
+      (intercept-point a b))))
+
+(comment
+  (let [points (generate-points 5 rand)
+        triangles (delaunay/triangulate points)
+        neighborhood (neighboring-triangles triangles)
+        vertex (first points)]
+    [vertex (neighboring-vertices neighborhood vertex)])
+
+  (let [points (generate-points 8 rand)
+        triangles (delaunay/triangulate points)
+        neighborhood (neighboring-triangles triangles)
+        vertex (first points)]
+    [vertex (voronoi-edges neighborhood vertex)]))
+
+(defn bisect
+  "Calculate intersection points for circles of radius (p - q) centered at p and q."
+  [[p q]]
+  (let [d (tm/- q p)]
+    (mapv (fn [θ] (tm/+ p (geom/rotate d θ)))
+          [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
+
 (defn plot [[m b]]
   (q/push-style)
   (q/stroke-weight 0.1)
@@ -72,7 +91,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 6 #(q/random 0.15 0.85))]
+  (let [points (generate-points 12 #(q/random 0.15 0.85))]
     {:points points
      :triangles (delaunay/triangulate points)}))
 
@@ -99,9 +118,20 @@
           :let [[x y] (cq/rel-pos p)]]
     (q/ellipse x y 1 1))
 
+  (q/stroke 255 0 0)
+  (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
-    (println (first points))
-    (println (neighboring-vertices neighborhood (last points))))
+    (doseq [point (take 1 points)]
+      (let [edge-points (voronoi-edges neighborhood point)]
+        (println point)
+        (println edge-points)
+        (let [[x y] (cq/rel-pos point)]
+          (q/ellipse x y 2 2))
+        (when (> (count edge-points) 2)
+          (q/begin-shape)
+          (doseq [vertex edge-points]
+            (apply q/vertex (cq/rel-pos vertex)))
+          (q/end-shape)))))
   )
 
 (defn ^:export run-sketch []
