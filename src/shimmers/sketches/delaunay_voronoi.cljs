@@ -123,13 +123,14 @@
           :let [[x y] (cq/rel-pos p)]]
     (q/ellipse x y 1 1))
 
-  (q/stroke 255 0 0)
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
     (doseq [point [(rand-nth points)]]
-      (let [edge-points (voronoi-edges neighborhood point)]
+      (let [edge-triangles (get neighborhood point)
+            edge-points (voronoi-edges neighborhood point)]
         (println point)
         (println edge-points)
+        (q/stroke 255 0 0)
         (let [[x y] (cq/rel-pos point)]
           (q/ellipse x y 2 2))
 
@@ -139,7 +140,17 @@
             (let [[x y] (cq/rel-pos vertex)]
               (q/ellipse x y 2 2))
             (apply q/vertex (cq/rel-pos vertex)))
-          (q/end-shape)))))
+          (q/end-shape))
+
+        (q/stroke 0 255 0)
+        (doseq [[x y] (map cq/rel-pos (neighboring-vertices neighborhood point))]
+          (q/ellipse x y 2 2))
+
+        (q/stroke 0 0 0)
+        (doseq [triangle edge-triangles]
+          (doseq [edge (geom/edges (apply gt/triangle2 (map cq/rel-pos triangle)))]
+            (println edge)
+            (plot (bisect-line edge)))))))
   )
 
 (defn ^:export run-sketch []
