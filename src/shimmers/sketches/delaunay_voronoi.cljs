@@ -37,13 +37,22 @@
        (get neighborhood)
        (map set)
        (reduce set/union)
-       ;; This is not removing the source vertex for some reason, is equality
-       ;; working on vectors?
-       (remove (set vertex))))
+       (remove #{vertex})))
 
-(comment (let [a (rand)
-               b (rand)]
-           (= (gv/vec2 a b) (gv/vec2 a b))))
+(comment
+  (let [a (rand)
+        b (rand)]
+    (= (gv/vec2 a b) (gv/vec2 a b)))
+
+  ;; (set v) is different than #{v}
+  (let [v (gv/vec2 0 2)]
+    [#{v} (set v)])
+
+  (let [points (generate-points 5 rand)
+        triangles (delaunay/triangulate points)
+        neighborhood (neighboring-triangles triangles)
+        vertex (first points)]
+    [vertex (neighboring-vertices neighborhood vertex)]))
 
 (defn bisect
   "Calculate intersection points for circles of radius (p - q) centered at p and q."
