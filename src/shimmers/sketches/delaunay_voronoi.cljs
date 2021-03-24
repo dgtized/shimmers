@@ -98,7 +98,13 @@
 (defn update-state [state]
   state)
 
+(defn draw-bisect [edge]
+  (let [line (gl/line2 (bisect edge))
+        [a b] (:points (geom/scale-size line 0.02))]
+    (q/line a b)))
+
 (defn draw [{:keys [points triangles]}]
+  (println "draw")
   (q/background 255)
 
   (q/stroke-weight 0.5)
@@ -106,11 +112,10 @@
   (doseq [triangle triangles
           :let [view-pts (map cq/rel-pos triangle)]]
     (apply q/triangle (flatten view-pts))
-    (doseq [edge (geom/edges (apply gt/triangle2 view-pts))
-            :let [line (gl/line2 (bisect edge))
-                  [a b] (:points (geom/scale-size line 0.02))]]
-      (plot (bisect-line edge))
-      (q/line a b)))
+    (doseq [edge (geom/edges (apply gt/triangle2 view-pts))]
+      #_(plot (bisect-line edge))
+      (draw-bisect edge))
+    )
 
   (q/ellipse-mode :radius)
   (q/fill 0 0 0)
@@ -121,15 +126,18 @@
   (q/stroke 255 0 0)
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
-    (doseq [point (take 1 points)]
+    (doseq [point [(rand-nth points)]]
       (let [edge-points (voronoi-edges neighborhood point)]
         (println point)
         (println edge-points)
         (let [[x y] (cq/rel-pos point)]
           (q/ellipse x y 2 2))
+
         (when (> (count edge-points) 2)
           (q/begin-shape)
           (doseq [vertex edge-points]
+            (let [[x y] (cq/rel-pos vertex)]
+              (q/ellipse x y 2 2))
             (apply q/vertex (cq/rel-pos vertex)))
           (q/end-shape)))))
   )
