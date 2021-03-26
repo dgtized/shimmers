@@ -81,7 +81,7 @@
          :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
                        (:brushes state))
          :base fc
-         :interval (q/floor (q/random 200 600))
+         :interval (q/floor (q/random 120 600))
          :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
          :orbit [(second (:orbit state))
                  (if (p/chance 0.35)
