@@ -39,7 +39,7 @@
         (geometry/rotate-around-centroid (* 2 Math/PI (rand))))))
 
 (defn random-circle []
-  (let [r (q/random 0.1 0.3)]
+  (let [r (q/random 0.05 0.35)]
     (gc/circle (cq/rel-pos (tm/clamp (rand) r (- 1 r))
                            (tm/clamp (rand) r (- 1 r)))
                (rel-h r))))
@@ -75,6 +75,7 @@
                :base fc
                :interval (q/floor (q/random 200 600))
                :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
+               ;; FIXME: handle brush jump from orbit displacement?
                :orbit (if (p/chance 0.35)
                         [(* (cq/rel-h 0.1) (q/random-gaussian)) (* 50 (q/random-gaussian))]
                         [0 0])
