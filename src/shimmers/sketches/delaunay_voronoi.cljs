@@ -96,6 +96,7 @@
     {:points points
      ;; FIXME sometimes triangulation is not convex, suggesting not actually on hull?
      ;; maybe a problem with the triangulation function here?
+     ;; See https://towardsdatascience.com/delaunay-triangulation-228a86d1ddad
      :triangles (delaunay/triangulate points)
      :hull (set (gp/convex-hull* points))}))
 
