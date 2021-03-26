@@ -65,22 +65,26 @@
      :orbit [0 0]
      :interval 500}))
 
+(defn transition-to [state fc target]
+  (assoc state :current (:target state)
+         :target target
+         :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
+                       (:brushes state))
+         :base fc
+         :interval (q/floor (q/random 200 600))
+         :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
+         ;; FIXME: handle brush jump from orbit displacement?
+         :orbit (if (p/chance 0.35)
+                  [(* (cq/rel-h 0.1) (q/random-gaussian)) (* 50 (q/random-gaussian))]
+                  [0 0])
+         :tween 0.0))
+
 (defn update-state [{:keys [base interval] :as state}]
   (let [fc (q/frame-count)]
     (if (= (- fc base) interval)
-      (let [target (random-target)]
-        (assoc state :current (:target state)
-               :target target
-               :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
-                             (:brushes state))
-               :base fc
-               :interval (q/floor (q/random 200 600))
-               :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
-               ;; FIXME: handle brush jump from orbit displacement?
-               :orbit (if (p/chance 0.35)
-                        [(* (cq/rel-h 0.1) (q/random-gaussian)) (* 50 (q/random-gaussian))]
-                        [0 0])
-               :tween 0.0))
+      (let [state' (transition-to state fc (random-target))]
+        (println [(dissoc state' :brushes) (q/width) (q/height)])
+        state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
 (defn draw [{:keys [tween current target brushes spin orbit]}]
