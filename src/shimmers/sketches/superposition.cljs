@@ -54,10 +54,13 @@
 (defn setup []
   (q/color-mode :hsl 360 1.0 1.0 1.0)
   (let [current (random-target)
-        target (random-target)]
+        target (random-target)
+        factor (/ (+ (q/width) (q/height)) 1000)]
+    (println "Display Factor " factor)
     {:current current
      :target target
-     :brushes (repeatedly 64
+     :factor factor
+     :brushes (repeatedly (int (* 64 factor))
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
      :base 0
@@ -87,7 +90,7 @@
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween current target brushes spin orbit]}]
+(defn draw [{:keys [tween current target factor brushes spin orbit]}]
   ;; (q/background 255)
   ;; (q/no-fill)
   ;; (q/stroke-weight 1)
@@ -108,7 +111,7 @@
             (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.45 1.0])
             (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.001 0.040]))
     (doseq [brush brushes]
-      (draw-polygon (random-shape-at brush tween spin orbit scale)))))
+      (draw-polygon (random-shape-at brush tween spin orbit (* factor scale))))))
 
 (defn ^:export run-sketch []
   ;; 20210308
