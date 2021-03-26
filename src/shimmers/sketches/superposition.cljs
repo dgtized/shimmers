@@ -78,7 +78,7 @@
          :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
          ;; FIXME: handle brush jump from orbit displacement?
          :orbit (if (p/chance 0.35)
-                  [(* (cq/rel-h 0.1) (q/random-gaussian)) (* 50 (q/random-gaussian))]
+                  [(* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian))]
                   [0 0])
          :tween 0.0))
 
