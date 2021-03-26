@@ -149,6 +149,7 @@
                                (rest (if inside (cycle bisects) bisects)))]
         (doseq [edge edges
                 :let [[x y] (second edge)]]
+          (println {:edge [x y] :heading (geom/heading (tm/- (gv/vec2 x y) centroid))})
           (q/stroke 0 255 0)
           (q/ellipse x y 2 2)
           (q/stroke 0 0 0)
@@ -156,7 +157,7 @@
 
         (q/stroke 0 0 255)
         (doseq [[x y] intersections]
-          (println [x y])
+          (println [x y :heading (geom/heading (tm/- (gv/vec2 x y) centroid))])
           (q/ellipse x y 2 2))
 
         (q/no-fill)
