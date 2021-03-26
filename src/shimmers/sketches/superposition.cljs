@@ -90,14 +90,14 @@
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween current target factor brushes spin orbit]}]
+(defn draw [{:keys [tween factor brushes spin orbit] :as state}]
   ;; (q/background 255)
   ;; (q/no-fill)
   ;; (q/stroke-weight 1)
   ;; (q/stroke 0 1.0 1.0 1.0)
-  ;; (draw-polygon current)
+  ;; (draw-polygon (:current state))
   ;; (q/stroke 0 0.0 0.0 1.0)
-  ;; (draw-polygon target)
+  ;; (draw-polygon (:target state))
 
   ;; (q/no-stroke)
   ;; measure/beat
