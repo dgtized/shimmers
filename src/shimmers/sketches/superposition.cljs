@@ -106,8 +106,7 @@
     (q/stroke 0 0
               (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
               (tm/map-interval (q/noise (/ fc 650) 6000.0) [0 1] [0.2 0.6]))
-    (q/stroke-weight (-> (- (q/noise (/ fc 600) 0.0) 0.35)
-                         (tm/map-interval-clamped [0 0.65] [0 0.6])))
+    (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
     (q/fill (mod (* 1080 (q/noise (/ fc 3000) 200.0)) 360)
             (tm/map-interval (q/noise (/ fc 800) 500.0) [0 1] [0.4 1.0])
             (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.45 1.0])
