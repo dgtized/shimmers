@@ -15,13 +15,13 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn random-shape-at [[p1 p2] t spin [orbit freq] scale]
+(defn random-shape-at [[p1 p2] t spin [radius freq] scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
       (geom/scale-size scale)
       (geom/rotate (if spin
                      (* spin t)
                      (* 2 Math/PI (rand))))
-      (geom/translate (gv/vec2 orbit 0))
+      (geom/translate (gv/vec2 radius 0))
       (geom/rotate (* t freq))
       (geom/translate (tm/mix p1 p2 t))))
 
@@ -65,8 +65,15 @@
                                  (geom/random-point-inside target)]))
      :base 0
      :spin nil
-     :orbit [0 0]
+     :orbit [(gv/vec2) (gv/vec2)]
      :interval 500}))
+
+(defn orbit-transition
+  "Transition from old orbit to new in the first 20% of the motion from A to B.
+
+  Reduces discontinuities when brush moves into a new orbit."
+  [{:keys [orbit tween]}]
+  (tm/mix (first orbit) (second orbit) (tm/smoothstep* 0 0.2 tween)))
 
 (defn transition-to [state fc target]
   (assoc state :current (:target state)
@@ -76,10 +83,10 @@
          :base fc
          :interval (q/floor (q/random 200 600))
          :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
-         ;; FIXME: handle brush jump from orbit displacement?
-         :orbit (if (p/chance 0.35)
-                  [(* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian))]
-                  [0 0])
+         :orbit [(second (:orbit state))
+                 (if (p/chance 0.35)
+                   (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
+                   (gv/vec2))]
          :tween 0.0))
 
 (defn update-state [{:keys [base interval] :as state}]
@@ -90,7 +97,7 @@
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween factor brushes spin orbit] :as state}]
+(defn draw [{:keys [tween factor brushes spin] :as state}]
   ;; (q/background 255)
   ;; (q/no-fill)
   ;; (q/stroke-weight 1)
@@ -102,7 +109,8 @@
   ;; (q/no-stroke)
   ;; measure/beat
   (let [fc (q/frame-count)
-        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)]
+        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)
+        orbit (orbit-transition state)]
     (q/stroke 0 0
               (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
               (tm/map-interval (q/noise (/ fc 650) 6000.0) [0 1] [0.2 0.6]))
