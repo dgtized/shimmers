@@ -55,7 +55,7 @@
   (q/color-mode :hsl 360 1.0 1.0 1.0)
   (let [current (random-target)
         target (random-target)
-        factor (/ (+ (q/width) (q/height)) 1000)]
+        factor (/ (+ (q/width) (q/height)) 800)]
     (println "Display Factor " factor)
     {:current current
      :target target
@@ -117,7 +117,7 @@
   ;; 20210308
   (q/defsketch superposition
     :host "quil-host"
-    :size [600 400]
+    :size [1200 900]
     :setup setup
     :update update-state
     :draw draw
