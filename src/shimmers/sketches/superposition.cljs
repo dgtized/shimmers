@@ -75,7 +75,7 @@
                        (:brushes state))
          :base fc
          :interval (q/floor (q/random 200 600))
-         :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
+         :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
          ;; FIXME: handle brush jump from orbit displacement?
          :orbit (if (p/chance 0.35)
                   [(* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian))]
