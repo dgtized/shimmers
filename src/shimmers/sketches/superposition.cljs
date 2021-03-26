@@ -15,8 +15,9 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn random-shape-at [[p1 p2] t spin [orbit freq]]
+(defn random-shape-at [[p1 p2] t spin [orbit freq] scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
+      (geom/scale-size scale)
       (geom/rotate (if spin
                      (* spin t)
                      (* 2 Math/PI (rand))))
@@ -93,16 +94,17 @@
 
   ;; (q/no-stroke)
   ;; measure/beat
-  (let [fc (q/frame-count)]
+  (let [fc (q/frame-count)
+        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)]
     (q/stroke 0 0 0 0.35)
     (q/stroke-weight (-> (- (q/noise (/ fc 600) 0.0) 0.40)
                          (tm/map-interval-clamped [0 0.6] [0 0.5])))
     (q/fill (mod (* 1080 (q/noise (/ fc 3000) 200.0)) 360)
             (tm/map-interval (q/noise (/ fc 800) 500.0) [0 1] [0.4 1.0])
             (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.45 1.0])
-            (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.001 0.040])))
-  (doseq [brush brushes]
-    (draw-polygon (random-shape-at brush tween spin orbit))))
+            (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.001 0.040]))
+    (doseq [brush brushes]
+      (draw-polygon (random-shape-at brush tween spin orbit scale)))))
 
 (defn ^:export run-sketch []
   ;; 20210308
