@@ -8,10 +8,12 @@
             [quil.core :as q]))
 
 (defn display [value]
-  (let [rate (if (= value "")
-               ""
-               (goog.string/format "%04.1f fps" value))]
-    (dom/setTextContent (dom/getElement "framerate") rate)))
+  (let [node (dom/getElement "framerate")
+        rate (cond (= value "") ""
+                   (= value 0) ""
+                   :else (goog.string/format "%04.1f fps" value))]
+    (when node
+      (dom/setTextContent node rate))))
 
 (defn mode
   "Quil Middleware to update framerate"
