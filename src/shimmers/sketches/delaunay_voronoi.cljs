@@ -6,6 +6,7 @@
             [shimmers.common.quil :as cq]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.utils.delaunay :as delaunay]
             [thi.ng.geom.vector :as gv]
@@ -93,7 +94,10 @@
   (q/no-loop)
   (let [points (generate-points 8 #(q/random 0.15 0.85))]
     {:points points
-     :triangles (delaunay/triangulate points)}))
+     ;; FIXME sometimes triangulation is not convex, suggesting not actually on hull?
+     ;; maybe a problem with the triangulation function here?
+     :triangles (delaunay/triangulate points)
+     :hull (set (gp/convex-hull* points))}))
 
 (defn update-state [state]
   state)
@@ -106,7 +110,7 @@
 (defn relative-heading [centroid point]
   (geom/heading (tm/- (gv/vec2 point) centroid)))
 
-(defn draw [{:keys [points triangles]}]
+(defn draw [{:keys [points triangles hull]}]
   (println "draw")
   (q/background 255)
 
@@ -128,10 +132,11 @@
 
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
-    (doseq [point (take 1 (shuffle points))]
+    (doseq [point (take 1 (shuffle points))
+            :let [inside (if (get hull point) false true)]]
       (q/stroke 255 0 0)
       (let [[x y] (cq/rel-pos point)]
-        (println [x y])
+        (println [x y :inside inside])
         (q/ellipse x y 2 2))
 
       (let [neighbors (map cq/rel-pos (neighboring-vertices neighborhood point))
@@ -139,7 +144,9 @@
             edges (sort-by (fn [[p o]] (geom/heading (tm/- o p)))
                            (map (fn [p] [centroid (gv/vec2 p)]) neighbors))
             bisects (map bisect-line edges)
-            intersections (map intercept-point bisects (rest (cycle bisects)))]
+            intersections (map intercept-point
+                               bisects
+                               (rest (if inside (cycle bisects) bisects)))]
         (doseq [edge edges
                 :let [[x y] (second edge)]]
           (q/stroke 0 255 0)
@@ -156,7 +163,9 @@
         (q/begin-shape)
         (doseq [p (sort-by (partial relative-heading centroid) intersections)]
           (apply q/vertex p))
-        (q/end-shape :close))
+        (if inside
+          (q/end-shape :close)
+          (q/end-shape)))
       ))
   )
 
