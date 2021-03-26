@@ -9,16 +9,19 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn random-shape-at [[p1 p2] t spin]
+(defn random-shape-at [[p1 p2] t spin [orbit freq]]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
       (geom/rotate (* 2 Math/PI (if spin
                             (mod (* t 200) 3)
                             (rand))))
+      (geom/translate (gv/vec2 orbit 0))
+      (geom/rotate (* t freq))
       (geom/translate (tm/mix p1 p2 t))))
 
 (defn random-triangle []
@@ -58,6 +61,7 @@
                                  (geom/random-point-inside target)]))
      :base 0
      :spin (p/chance 0.5)
+     :orbit [0 0]
      :interval 500}))
 
 (defn update-state [{:keys [base interval] :as state}]
@@ -71,10 +75,13 @@
                :base fc
                :interval (q/floor (q/random 200 600))
                :spin (p/chance 0.5)
+               :orbit (if (p/chance 0.4)
+                        [(* 20 (q/random-gaussian)) (* 20 (q/random-gaussian))]
+                        [0 0])
                :tween 0.0))
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween current target brushes spin]}]
+(defn draw [{:keys [tween current target brushes spin orbit]}]
   ;; (q/background 255)
   ;; (q/no-fill)
   ;; (q/stroke-weight 1)
@@ -94,7 +101,7 @@
             (tm/map-interval (q/noise (/ fc 800) 400.0) [0 1] [0.45 1.0])
             0.035))
   (doseq [brush brushes]
-    (draw-polygon (random-shape-at brush tween spin))))
+    (draw-polygon (random-shape-at brush tween spin orbit))))
 
 (defn ^:export run-sketch []
   ;; 20210308
