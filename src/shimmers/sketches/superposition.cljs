@@ -17,9 +17,9 @@
 
 (defn random-shape-at [[p1 p2] t spin [orbit freq]]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
-      (geom/rotate (* 2 Math/PI (if spin
-                            (mod (* t 200) 3)
-                            (rand))))
+      (geom/rotate (if spin
+                     (* spin t)
+                     (* 2 Math/PI (rand))))
       (geom/translate (gv/vec2 orbit 0))
       (geom/rotate (* t freq))
       (geom/translate (tm/mix p1 p2 t))))
@@ -60,7 +60,7 @@
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
      :base 0
-     :spin (p/chance 0.5)
+     :spin nil
      :orbit [0 0]
      :interval 500}))
 
@@ -74,9 +74,9 @@
                              (:brushes state))
                :base fc
                :interval (q/floor (q/random 200 600))
-               :spin (p/chance 0.5)
-               :orbit (if (p/chance 0.4)
-                        [(* 20 (q/random-gaussian)) (* 20 (q/random-gaussian))]
+               :spin (when (p/chance 0.5) (* 200 (q/random-gaussian)))
+               :orbit (if (p/chance 0.35)
+                        [(* (cq/rel-h 0.1) (q/random-gaussian)) (* 50 (q/random-gaussian))]
                         [0 0])
                :tween 0.0))
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
