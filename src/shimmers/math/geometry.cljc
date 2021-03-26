@@ -60,6 +60,11 @@
       (geom/rotate theta)
       (geom/translate (tm/+ (geom/centroid polygon) dir))))
 
+(defn radial-sort
+  "Counter-clockwise sort of all points around an origin point"
+  [origin points]
+  (sort-by (fn [p] (geom/heading (tm/- p origin))) points))
+
 ;; Longest edge is aesthetically more pleasing per:
 ;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
 (defn longest-edge

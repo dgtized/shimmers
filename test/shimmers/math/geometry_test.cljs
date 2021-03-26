@@ -5,6 +5,16 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]))
 
+(deftest radial-sort
+  (let [points (map gv/vec2 [[0 0]
+                             [1 0] [1 1] [0 1]
+                             [-1 1] [-1 0] [-1 -1]
+                             [0 -1] [1 -1]])]
+    (is (= [[0 0] [1 0] [1 1] [0 1] [-1 1] [-1 0] [-1 -1] [0 -1] [1 -1]]
+           (sut/radial-sort (gv/vec2 0 0) points)))
+    (is (= [[1 1] [0 1] [-1 1] [0 0] [1 0] [-1 0] [-1 -1] [0 -1] [1 -1]]
+           (sut/radial-sort (gv/vec2 2 0) points)))))
+
 (deftest decomposition
   (let [t (gt/triangle2 [0 0] [0 1] [1 0])]
     (is (= [(gt/triangle2 [0 1] [0.5 0.5] [0 0])
