@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
@@ -142,8 +143,10 @@
 
       (let [neighbors (map cq/rel-pos (neighboring-vertices neighborhood point))
             centroid (gv/vec2 (cq/rel-pos point))
-            edges (sort-by (fn [[p o]] (geom/heading (tm/- o p)))
-                           (map (fn [p] [centroid (gv/vec2 p)]) neighbors))
+            edges (->> neighbors
+                       (map gv/vec2)
+                       (geometry/radial-sort centroid)
+                       (map (fn [p] [centroid p])))
             bisects (map bisect-line edges)
             intersections (map intercept-point
                                bisects
