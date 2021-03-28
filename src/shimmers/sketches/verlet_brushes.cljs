@@ -33,8 +33,9 @@
             d (tm/- pos closest)
             l (+ (tm/mag-squared d) 1e-6)]
         (when (< l rsq)
-          (physics/add-force particle (tm/* d (/ (* (- 1.0 (/ l rsq)) (* strength delta))
-                                                 (Math/sqrt l)))))))))
+          (physics/add-force particle (tm/* d
+                                            (/ (* (- 1.0 (/ l rsq)) (* strength delta))
+                                               (Math/sqrt l)))))))))
 
 (defn setup []
   (let [screen-bounds (rect/rect 0 0 (q/width) (q/height))]
@@ -42,14 +43,14 @@
      (physics/physics
       {:particles (repeatedly 256 make-particle)
        :behaviors
-       {:position-noise (position-noise)
-        :boundary-push (boundary-push screen-bounds 50 2)}
+       {;; :position-noise (position-noise)
+        :boundary-push (boundary-push screen-bounds 150 0.5)}
        :constraints
        {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
-       :drag 0.15})}))
+       :drag 0.01})}))
 
 (defn update-state [state]
-  (update state :physics physics/timestep 5))
+  (update state :physics physics/timestep 16))
 
 (defn draw [{:keys [physics]}]
   (q/stroke-weight 0.05)
