@@ -23,7 +23,7 @@
     (fn [particle delta]
       (let [pos (physics/position particle)
             closest (geom/closest-point boundary pos)
-            d (tm/- closest pos)
+            d (tm/- pos closest)
             b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 strength))
             l (+ (tm/mag-squared d) 1e-6)]
         (if (< l rsq)
@@ -41,11 +41,11 @@
    (physics/physics
     {:particles (repeatedly 64 make-particle)
      :behaviors
-     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.01)
-                       (cq/rel-h 0.5) 1.2)
-      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.01)
-                       (cq/rel-h 0.5) 1.2)}
-     :drag 0.1})})
+     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
+                       (cq/rel-h 0.4) 1.2)
+      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
+                       (cq/rel-h 0.4) -1.3)}
+     :drag 0.05})})
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
