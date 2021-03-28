@@ -11,6 +11,7 @@
 
 (defn make-particle []
   ;; physics/particle sets initial previous to 0,0
+  ;; https://github.com/thi-ng/geom/pull/81
   (let [pos (gv/vec2 (cq/rel-pos (rand) (rand)))]
     (physics/VerletParticle. pos pos (geom/clear* pos)
                              false nil nil
