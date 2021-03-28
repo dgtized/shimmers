@@ -31,14 +31,16 @@
     (fn [particle delta]
       (let [pos (physics/position particle)
             closest (geom/closest-point boundary pos)
-            v (physics/velocity particle)
             d (tm/- closest pos)
-            b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 1))
+            b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 strength))
             l (+ (tm/mag-squared d) 1e-6)]
         (when (< l rsq)
           (physics/add-force particle (tm/* (gv/vec2 (:x b) (:y b))
                                             (/ (* (- 1.0 (/ l rsq)) (* strength delta))
                                                (Math/sqrt l)))))))))
+
+(defn dipole [pos r1 r2 strength]
+  (boundary-push (gc/circle pos r1) r2 strength))
 
 (defn setup []
   (let [ring (gc/circle (cq/rel-w 0.5) (cq/rel-h 0.5) (cq/rel-h 0.35))
@@ -47,11 +49,12 @@
      (physics/physics
       {:particles (repeatedly 64 make-particle)
        :behaviors
-       {:position-noise (position-noise)
-        :boundary-push (boundary-push ring (cq/rel-h 0.25) 0.1)}
-       :constraints
-       {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
-       :drag 0.01})}))
+       {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
+                         (cq/rel-h 0.5) 0.8)
+        :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
+                         (cq/rel-h 0.5) -0.8)}
+       ;; :constraints {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
+       :drag 0.2})}))
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
