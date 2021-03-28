@@ -17,25 +17,46 @@
                              false nil nil
                              (/ 1.0 (+ 1 (* 4 (rand)))) nil)))
 
+(defn position-noise []
+  (fn [particle delta]
+    (let [[x y] (physics/position particle)
+          factor 200
+          theta (q/noise (/ x factor) (/ y factor) (/ (q/frame-count) 2000))
+          force (geom/as-cartesian (gv/vec2 1.0 (* 4 Math/PI theta)))]
+      (physics/add-force particle (tm/* force delta)))))
+
+(defn boundary-push [boundary r strength]
+  (let [rsq (* r r)]
+    (fn [particle delta]
+      (let [pos (physics/position particle)
+            closest (geom/closest-point boundary pos)
+            d (tm/- pos closest)
+            l (+ (tm/mag-squared d) 1e-6)]
+        (when (< l rsq)
+          (physics/add-force particle (tm/* d (/ (* (- 1.0 (/ l rsq)) (* strength delta))
+                                                 (Math/sqrt l)))))))))
+
 (defn setup []
-  (let [screen-bounds (rect/rect 0 0 (q/width) (q/height))]
+  (let [lip 200
+        screen-bounds (rect/rect (- lip) (- lip) (+ (* 2 lip) (q/width)) (+ (* 2 lip) (q/height)))]
     {:physics
      (physics/physics
-      {:particles (repeatedly 32 make-particle)
+      {:particles (repeatedly 256 make-particle)
        :behaviors
-       {:wind (physics/gravity (gv/vec2 1 0))
-        :gravity (physics/gravity (gv/vec2 0 9.8))}
+       {:position-noise (position-noise)
+        :boundary-push (boundary-push screen-bounds (/ lip 2) 3)}
        :constraints
        {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
-       :drag 0.1})}))
+       :drag 0.15})}))
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
 
 (defn draw [{:keys [physics]}]
+  (q/stroke-weight 0.05)
   (doseq [{:keys [inv-weight] :as particle} (:particles physics)]
     (let [[x y] (physics/position particle)
-          size (tm/map-interval inv-weight [0 1] [0.5 40])]
+          size (tm/map-interval inv-weight [0 1] [0.2 2])]
       (q/ellipse x y size size))))
 
 (defn ^:export run-sketch []
