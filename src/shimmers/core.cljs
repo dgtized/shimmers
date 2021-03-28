@@ -55,6 +55,7 @@
             [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.verlet-brushes :as verlet-brushes]
             [shimmers.sketches.video-shader :as video-shader]
             [shimmers.sketches.yin-yang :as yin-yang]
             [shimmers.sketches.zigzag :as zigzag]))
@@ -118,6 +119,7 @@
      triangulating-subdivisions/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
+     verlet-brushes/run-sketch
      video-shader/run-sketch
      yin-yang/run-sketch
      zigzag/run-sketch])))
