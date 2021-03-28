@@ -52,7 +52,7 @@
 (defn update-state [state]
   (update state :physics physics/timestep 10))
 
-(defn brush [{:keys [inv-weight] :as particle}]
+(defn brush [particle]
   (let [[x y] (physics/position particle)
         [dx dy] (physics/velocity particle)]
     (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
