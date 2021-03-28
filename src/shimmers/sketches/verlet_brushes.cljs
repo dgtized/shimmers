@@ -43,18 +43,15 @@
   (boundary-push (gc/circle pos r1) r2 strength))
 
 (defn setup []
-  (let [ring (gc/circle (cq/rel-w 0.5) (cq/rel-h 0.5) (cq/rel-h 0.35))
-        screen-bounds (rect/rect 0 0 (q/width) (q/height))]
-    {:physics
-     (physics/physics
-      {:particles (repeatedly 64 make-particle)
-       :behaviors
-       {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
-                         (cq/rel-h 0.5) 0.8)
-        :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
-                         (cq/rel-h 0.5) -0.8)}
-       ;; :constraints {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
-       :drag 0.2})}))
+  {:physics
+   (physics/physics
+    {:particles (repeatedly 64 make-particle)
+     :behaviors
+     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
+                       (cq/rel-h 0.5) 0.8)
+      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
+                       (cq/rel-h 0.5) -0.8)}
+     :drag 0.2})})
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
