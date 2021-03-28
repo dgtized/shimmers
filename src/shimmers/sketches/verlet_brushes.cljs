@@ -18,14 +18,6 @@
                              false nil nil
                              (/ 1.0 (+ 1 (* 4 (rand)))) nil)))
 
-(defn position-noise []
-  (fn [particle delta]
-    (let [[x y] (physics/position particle)
-          factor 100
-          theta (q/noise (/ x factor) (/ y factor) (/ (q/frame-count) 1000))
-          force (geom/as-cartesian (gv/vec2 0.01 (* 4 Math/PI theta)))]
-      (physics/add-force particle (tm/* force delta)))))
-
 (defn boundary-push [boundary r strength]
   (let [rsq (* r r)]
     (fn [particle delta]
@@ -34,33 +26,36 @@
             d (tm/- closest pos)
             b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 strength))
             l (+ (tm/mag-squared d) 1e-6)]
-        (when (< l rsq)
+        (if (< l rsq)
           (physics/add-force particle (tm/* (gv/vec2 (:x b) (:y b))
                                             (/ (* (- 1.0 (/ l rsq)) (* strength delta))
-                                               (Math/sqrt l)))))))))
+                                               (Math/sqrt l))))
+          (physics/add-force particle (tm/* (tm/- closest pos) 0.0001)))))))
 
 (defn dipole [pos r1 r2 strength]
   (boundary-push (gc/circle pos r1) r2 strength))
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {:physics
    (physics/physics
     {:particles (repeatedly 64 make-particle)
      :behaviors
-     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
-                       (cq/rel-h 0.5) 0.8)
-      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
-                       (cq/rel-h 0.5) -0.8)}
-     :drag 0.2})})
+     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.01)
+                       (cq/rel-h 0.5) 1.2)
+      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.01)
+                       (cq/rel-h 0.5) 1.2)}
+     :drag 0.1})})
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
 
 (defn draw [{:keys [physics]}]
+  (q/background 1.0 0.1)
   (q/stroke-weight 1)
   (doseq [{:keys [inv-weight] :as particle} (:particles physics)]
     (let [[x y] (physics/position particle)
-          size (tm/map-interval inv-weight [0 1] [1 20])]
+          size (tm/map-interval inv-weight [0 1] [1 10])]
       (q/ellipse x y size size))))
 
 (defn ^:export run-sketch []
