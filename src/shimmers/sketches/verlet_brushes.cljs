@@ -37,20 +37,19 @@
                                                  (Math/sqrt l)))))))))
 
 (defn setup []
-  (let [lip 200
-        screen-bounds (rect/rect (- lip) (- lip) (+ (* 2 lip) (q/width)) (+ (* 2 lip) (q/height)))]
+  (let [screen-bounds (rect/rect 0 0 (q/width) (q/height))]
     {:physics
      (physics/physics
       {:particles (repeatedly 256 make-particle)
        :behaviors
        {:position-noise (position-noise)
-        :boundary-push (boundary-push screen-bounds (/ lip 2) 3)}
+        :boundary-push (boundary-push screen-bounds 50 2)}
        :constraints
        {:screen-bounds (physics/shape-constraint-inside screen-bounds)}
        :drag 0.15})}))
 
 (defn update-state [state]
-  (update state :physics physics/timestep 10))
+  (update state :physics physics/timestep 5))
 
 (defn draw [{:keys [physics]}]
   (q/stroke-weight 0.05)
