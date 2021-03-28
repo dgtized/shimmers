@@ -53,8 +53,7 @@
   (update state :physics physics/timestep 10))
 
 (defn brush [particle]
-  (let [[x y] (physics/position particle)
-        [dx dy] (physics/velocity particle)]
+  (let [[x y] (physics/position particle)]
     (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
         (geom/scale-size 5)
         (geom/rotate (rand))
