@@ -8,7 +8,8 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
-            [thi.ng.geom.circle :as gc]))
+            [thi.ng.geom.circle :as gc]
+            [thi.ng.geom.triangle :as gt]))
 
 (defn make-particle []
   ;; physics/particle sets initial previous to 0,0
@@ -37,7 +38,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:physics
+  {:base-color (rand)
+   :physics
    (physics/physics
     {:particles (repeatedly 64 make-particle)
      :behaviors
@@ -50,13 +52,28 @@
 (defn update-state [state]
   (update state :physics physics/timestep 10))
 
-(defn draw [{:keys [physics]}]
-  (q/background 1.0 0.1)
+(defn brush [{:keys [inv-weight] :as particle}]
+  (let [[x y] (physics/position particle)
+        [dx dy] (physics/velocity particle)]
+    (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
+        (geom/scale-size 5)
+        (geom/rotate (rand))
+        (geom/translate (gv/vec2 x y))
+        geom/vertices
+        cq/draw-shape)))
+
+(defn draw [{:keys [physics base-color]}]
+  ;; (q/background 1.0 0.1)
+  (q/stroke 0 0.5 0.5 0.1)
   (q/stroke-weight 1)
-  (doseq [{:keys [inv-weight] :as particle} (:particles physics)]
-    (let [[x y] (physics/position particle)
-          size (tm/map-interval inv-weight [0 1] [1 10])]
-      (q/ellipse x y size size))))
+  (q/no-stroke)
+  (let [fc (q/frame-count)]
+    (q/fill (mod (+ (* (Math/abs (q/cos (/ fc 1000))) 0.2) base-color) 1.0)
+            (tm/map-interval (q/noise (/ fc 600) 500.0) [0 1] [0.4 0.75])
+            (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.5 0.8])
+            (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.01 0.1])))
+  (doseq [particle (:particles physics)]
+    (brush particle)))
 
 (defn ^:export run-sketch []
   (q/defsketch verlet-brushes
