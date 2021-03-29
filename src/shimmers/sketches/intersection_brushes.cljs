@@ -36,7 +36,7 @@
              :p (tm/+ close reflected)))))
 
 (defn update-positions [circles]
-  (for [{:keys [p velocity] :as circle} circles]
+  (for [{:keys [velocity] :as circle} circles]
     (-> circle
         (update :p tm/+ velocity)
         (reflect-boundary (rect/rect)))))
