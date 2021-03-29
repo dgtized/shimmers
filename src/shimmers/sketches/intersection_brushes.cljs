@@ -2,13 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.vector :as gv]
             [shimmers.common.quil :as cq]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.rect :as rect]
+            [shimmers.common.sequence :as cs]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
-            [shimmers.common.sequence :as cs]))
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 ;; Trying out the technique Casey Reas described in
 ;; https://www.youtube.com/watch?v=_8DMEHxOLQE, ie move circles through space,
