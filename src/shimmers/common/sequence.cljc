@@ -58,3 +58,9 @@
           (recur (rest elems) (conj pos elem) neg)
           (recur (rest elems) pos (conj neg elem))))
       [pos neg])))
+
+;; https://stackoverflow.com/questions/4053845/idiomatic-way-to-iterate-through-all-pairs-of-a-collection-in-clojure
+(defn all-pairs [coll]
+  (when-let [s (next coll)]
+    (lazy-cat (for [y s] [(first coll) y])
+              (all-pairs s))))
