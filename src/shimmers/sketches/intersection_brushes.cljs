@@ -29,6 +29,8 @@
         :when (geom/intersect-shape a b)]
     [a b]))
 
+;; TODO: set initial positions with matching velocities?
+;; ie everyone starts on line Y and goes up or down or something?
 (defn make-circle [hue rand-velocity]
   (let [r (+ 0.01 (* 0.03 (rand)))
         x (q/random r (- 1 r))
