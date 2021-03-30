@@ -91,7 +91,7 @@
                :radius (rand-nth [0.02 0.03 0.03 0.06])
                :position (position-seed)
                :rand-velocity (velocity-seed)}]
-    {:color (p/chance 0.8)
+    {:color (p/chance 0.66)
      :circles (repeatedly 96 (partial make-circle rules))}))
 
 (defn update-state [state]
