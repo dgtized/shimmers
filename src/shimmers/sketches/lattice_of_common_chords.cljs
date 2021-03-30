@@ -8,6 +8,7 @@
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -31,10 +32,9 @@
 
 ;; TODO: set initial positions with matching velocities?
 ;; ie everyone starts on line Y and goes up or down or something?
-(defn make-circle [{:keys [radius hue rand-velocity]}]
+(defn make-circle [{:keys [position radius hue rand-velocity]}]
   (let [r (+ 0.01 (* radius (rand)))
-        x (q/random r (- 1 r))
-        y (q/random r (- 1 r))]
+        [x y] (position r)]
     (assoc (gc/circle x y r)
            :velocity (tm/* (rand-velocity) (* (rand) 0.001))
            :color [(mod (+ hue (* 0.1 (q/random-gaussian))) 1.0)
@@ -71,11 +71,22 @@
   []
   (rand-nth [random-cardinal random-diagonal random-hexagon gv/randvec2]))
 
+(defn position-seed
+  []
+  (p/weighted
+   {(fn [_] (geom/random-point (gc/circle 0.5 0.5 0.2))) 1
+    (let [[y0 y1] (repeatedly 2 #(rand-nth [0.35 0.5 0.65]))
+          line (gl/line2 0.1 y0 0.9 y1)]
+      (fn [_] (geom/random-point line))) 2
+    (fn [r] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
+    (fn [r] (repeatedly 2 #(q/random r (- 1 r)))) 1.5}))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1)
   (let [rules {:hue (rand)
                :radius (rand-nth [0.02 0.03 0.03 0.06])
+               :position (position-seed)
                :rand-velocity (velocity-seed)}]
     {:color (p/chance 0.8)
      :circles (repeatedly 128 (partial make-circle rules))}))
