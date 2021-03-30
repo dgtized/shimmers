@@ -92,7 +92,7 @@
                :position (position-seed)
                :rand-velocity (velocity-seed)}]
     {:color (p/chance 0.8)
-     :circles (repeatedly 128 (partial make-circle rules))}))
+     :circles (repeatedly 96 (partial make-circle rules))}))
 
 (defn update-state [state]
   (cq/if-steady-state state 10 setup
