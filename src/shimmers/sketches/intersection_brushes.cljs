@@ -34,7 +34,7 @@
         x (q/random r (- 1 r))
         y (q/random r (- 1 r))]
     (assoc (gc/circle x y r)
-           :velocity (tm/* (rand-velocity) 0.0005)
+           :velocity (tm/* (rand-velocity) (* (rand) 0.001))
            :color [(mod (+ hue (* 0.1 (q/random-gaussian))) 1.0)
                    (q/random 0.4 0.8)
                    (q/random 0.4 0.6)
