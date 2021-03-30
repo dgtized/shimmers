@@ -142,7 +142,7 @@
   ;; 20210310
   (q/defsketch circle-packing
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw

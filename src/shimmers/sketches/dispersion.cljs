@@ -65,7 +65,7 @@
   ;; 20210310
   (q/defsketch dispersion
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode]))

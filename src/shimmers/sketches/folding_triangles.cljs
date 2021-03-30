@@ -49,7 +49,7 @@
   ;; 20210228
   (q/defsketch folding-triangles
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :renderer :p3d
     :setup setup
     :update update-state

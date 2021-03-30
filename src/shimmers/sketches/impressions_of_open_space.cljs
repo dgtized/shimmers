@@ -62,7 +62,7 @@
   ;; 20210309
   (q/defsketch impressions-of-open-space
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode]))

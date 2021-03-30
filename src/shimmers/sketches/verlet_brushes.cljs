@@ -77,7 +77,7 @@
 (defn ^:export run-sketch []
   (q/defsketch verlet-brushes
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
