@@ -27,6 +27,13 @@
     (into [(sm/mix-mod hueA hueB t)]
           (mapv #(tm/mix* %1 %2 t) v1 v2))))
 
+;; Something is either funky with the draw radius or intersection as it looks
+;; like it starts drawing a line when they are a not yet intersecting. It
+;; doesn't break the effect but looks odd in debug. Possibly just related to
+;; aspect ratio?
+
+;; TODO: Can we avoid N^2 / 2 compares using a quadtree or some kind of regional
+;; optimization?
 (defn intersecting [circles]
   (for [[a b] (cs/all-pairs circles)
         :when (geom/intersect-shape a b)]
