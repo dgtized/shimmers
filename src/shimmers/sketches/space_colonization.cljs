@@ -7,7 +7,7 @@
             [reagent.core :as r]
             [shimmers.algorithm.space-colonization :as colonize]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as quil]
+            [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]))
 
@@ -30,7 +30,7 @@
   (colonize/create-tree [(q/width) (q/height)] @settings))
 
 (defn update-state [state]
-  (quil/if-steady-state
+  (cq/if-steady-state
    state 5
    (fn [] (colonize/create-tree [(q/width) (q/height)] @settings))
    colonize/grow))

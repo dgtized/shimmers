@@ -4,7 +4,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as quil]
+            [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
@@ -152,7 +152,7 @@
                 :to-draw subdivided)]))))
 
 (defn update-state [state]
-  (quil/if-steady-state
+  (cq/if-steady-state
    state 8
    initial-conditions
    subdivide-batch))

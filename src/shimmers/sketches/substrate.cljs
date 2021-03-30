@@ -3,7 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as quil]
+            [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]))
 
@@ -64,9 +64,9 @@
                          fresh-cracks)))]))
 
 (defn update-state [state]
-  (quil/if-steady-state state 5
-                        create-cracks
-                        update-cracks))
+  (cq/if-steady-state state 5
+                      create-cracks
+                      update-cracks))
 
 (defn draw [{:keys [cracks]}]
   (q/background 255 32)
