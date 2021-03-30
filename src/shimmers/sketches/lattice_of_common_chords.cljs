@@ -78,6 +78,9 @@
     (let [[y0 y1] (repeatedly 2 #(rand-nth [0.35 0.5 0.65]))
           line (gl/line2 0.1 y0 0.9 y1)]
       (fn [_] (geom/random-point line))) 2
+    (let [[x0 x1] (repeatedly 2 #(rand-nth [0.4 0.5 0.4]))
+          line (gl/line2 x0 0.1 x1 0.9)]
+      (fn [_] (geom/random-point line))) 1
     (fn [r] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
     (fn [r] (repeatedly 2 #(q/random r (- 1 r)))) 1.5}))
 
