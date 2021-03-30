@@ -29,13 +29,13 @@
         :when (geom/intersect-shape a b)]
     [a b]))
 
-(defn make-circle []
+(defn make-circle [hue]
   (let [r (+ 0.01 (* 0.03 (rand)))
         x (q/random r (- 1 r))
         y (q/random r (- 1 r))]
     (assoc (gc/circle x y r)
            :velocity (tm/* (gv/randvec2) 0.0005)
-           :color [(mod (+ 0.5 (* 0.12 (q/random-gaussian))) 1.0)
+           :color [(mod (+ hue (* 0.1 (q/random-gaussian))) 1.0)
                    (q/random 0.4 0.8)
                    (q/random 0.4 0.6)
                    0.02])))
@@ -58,8 +58,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1)
-  {:color (p/chance 0.5)
-   :circles (repeatedly 128 make-circle)})
+  {:color (p/chance 0.8)
+   :circles (repeatedly 128 (partial make-circle (rand)))})
 
 (defn update-state [state]
   (update state :circles update-positions))
