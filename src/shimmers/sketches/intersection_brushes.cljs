@@ -29,12 +29,12 @@
         :when (geom/intersect-shape a b)]
     [a b]))
 
-(defn make-circle [hue]
+(defn make-circle [hue rand-velocity]
   (let [r (+ 0.01 (* 0.03 (rand)))
         x (q/random r (- 1 r))
         y (q/random r (- 1 r))]
     (assoc (gc/circle x y r)
-           :velocity (tm/* (gv/randvec2) 0.0005)
+           :velocity (tm/* (rand-velocity) 0.0005)
            :color [(mod (+ hue (* 0.1 (q/random-gaussian))) 1.0)
                    (q/random 0.4 0.8)
                    (q/random 0.4 0.6)
@@ -55,11 +55,25 @@
         (update :p tm/+ velocity)
         (reflect-boundary (rect/rect)))))
 
+(defn random-cardinal []
+  (rand-nth [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)]))
+
+(defn random-diagonal []
+  (rand-nth [(gv/vec2 0.5 0.5) (gv/vec2 -0.5 0.5) (gv/vec2 0.5 -0.5) (gv/vec2 -0.5 -0.5)]))
+
+(defn random-hexagon []
+  (rand-nth (for [theta (range 0 (* 2 Math/PI) (/ Math/PI 3))] (geom/as-cartesian (gv/vec2 1 theta)))))
+
+(defn velocity-seed
+  "Generates starting velocities according to some common randomized approach"
+  []
+  (rand-nth [random-cardinal random-diagonal random-hexagon gv/randvec2]))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1)
   {:color (p/chance 0.8)
-   :circles (repeatedly 128 (partial make-circle (rand)))})
+   :circles (repeatedly 128 (partial make-circle (rand) (velocity-seed)))})
 
 (defn update-state [state]
   (update state :circles update-positions))
