@@ -29,11 +29,11 @@
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
-            [shimmers.sketches.intersection-brushes :as intersection-brushes]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.kinematic-chain :as kinematic-chain]
             [shimmers.sketches.langton-ant :as langton-ant]
+            [shimmers.sketches.lattice-of-common-chords :as lattice-of-common-chords]
             [shimmers.sketches.minimum-spanning-tree :as minimum-spanning-tree]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.noisy-shapes :as noisy-shapes]
@@ -94,11 +94,11 @@
      gravity-well/run-sketch
      hexaclock/run-sketch
      impressions-of-open-space/run-sketch
-     intersection-brushes/run-sketch
      k-means/run-sketch
      kd-tree/run-sketch
      kinematic-chain/run-sketch
      langton-ant/run-sketch
+     lattice-of-common-chords/run-sketch
      minimum-spanning-tree/run-sketch
      noise-grid/run-sketch
      noisy-shapes/run-sketch

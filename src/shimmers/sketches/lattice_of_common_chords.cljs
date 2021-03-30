@@ -1,4 +1,4 @@
-(ns shimmers.sketches.intersection-brushes
+(ns shimmers.sketches.lattice-of-common-chords
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -81,7 +81,9 @@
      :circles (repeatedly 128 (partial make-circle rules))}))
 
 (defn update-state [state]
-  (update state :circles update-positions))
+  (cq/if-steady-state state 10 setup
+                      (fn [state] [(= 0 (mod (q/frame-count) (* 1 60 60)))
+                                  (update state :circles update-positions)])))
 
 (defn draw [{:keys [color circles]}]
   ;; (q/background 1.0 1.0 1.0 1.0)
@@ -101,7 +103,7 @@
       (q/line pa pb))))
 
 (defn ^:export run-sketch []
-  (q/defsketch intersection-brushes
+  (q/defsketch lattice-of-common-chords
     :host "quil-host"
     :size [900 600]
     :setup setup
