@@ -31,8 +31,8 @@
 
 ;; TODO: set initial positions with matching velocities?
 ;; ie everyone starts on line Y and goes up or down or something?
-(defn make-circle [hue rand-velocity]
-  (let [r (+ 0.01 (* 0.03 (rand)))
+(defn make-circle [r hue rand-velocity]
+  (let [r (+ 0.01 (* r (rand)))
         x (q/random r (- 1 r))
         y (q/random r (- 1 r))]
     (assoc (gc/circle x y r)
@@ -75,7 +75,10 @@
   (q/color-mode :hsl 1.0)
   (q/background 1)
   {:color (p/chance 0.8)
-   :circles (repeatedly 128 (partial make-circle (rand) (velocity-seed)))})
+   :circles (repeatedly 128 (partial make-circle
+                                     (rand-nth [0.02 0.03 0.03 0.06])
+                                     (rand)
+                                     (velocity-seed)))})
 
 (defn update-state [state]
   (update state :circles update-positions))
