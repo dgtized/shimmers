@@ -4,6 +4,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
+            [shimmers.math.core :as sm]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -13,6 +15,14 @@
 ;; Trying out the technique Casey Reas described in
 ;; https://www.youtube.com/watch?v=_8DMEHxOLQE, ie move circles through space,
 ;; and draw a line between centers if circle intersects.
+
+(defn color-mix [a b]
+  (let [r (:r b)
+        t (/ r (+ (:r a) r))
+        [hueA & v1] (:color a)
+        [hueB & v2] (:color b)]
+    (into [(sm/mix-mod hueA hueB t)]
+          (mapv #(tm/mix* %1 %2 t) v1 v2))))
 
 (defn intersecting [circles]
   (for [[a b] (cs/all-pairs circles)
@@ -24,7 +34,11 @@
         x (q/random r (- 1 r))
         y (q/random r (- 1 r))]
     (assoc (gc/circle x y r)
-           :velocity (tm/* (gv/randvec2) 0.0005))))
+           :velocity (tm/* (gv/randvec2) 0.0005)
+           :color [(mod (+ 0.5 (* 0.12 (q/random-gaussian))) 1.0)
+                   (q/random 0.4 0.8)
+                   (q/random 0.4 0.6)
+                   0.02])))
 
 (defn reflect-boundary [{:keys [p velocity] :as circle} bounds]
   (if (geom/contains-point? bounds p)
@@ -44,12 +58,13 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1)
-  {:circles (repeatedly 128 make-circle)})
+  {:color (p/chance 0.5)
+   :circles (repeatedly 128 make-circle)})
 
 (defn update-state [state]
   (update state :circles update-positions))
 
-(defn draw [{:keys [circles]}]
+(defn draw [{:keys [color circles]}]
   ;; (q/background 1.0 1.0 1.0 1.0)
   ;; (q/ellipse-mode :radius)
   ;; (doseq [{:keys [p r]} circles
@@ -62,6 +77,8 @@
   (doseq [[a b] (intersecting circles)]
     (let [pa (cq/rel-pos (:p a))
           pb (cq/rel-pos (:p b))]
+      (when color
+        (apply q/stroke (color-mix a b)))
       (q/line pa pb))))
 
 (defn ^:export run-sketch []
