@@ -1,9 +1,11 @@
 (ns shimmers.sketches.lattice-of-common-chords
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
@@ -99,25 +101,33 @@
                       (fn [state] [(= 0 (mod (q/frame-count) (* 1 60 60)))
                                   (update state :circles update-positions)])))
 
-(defn draw [{:keys [color circles]}]
-  ;; (q/background 1.0 1.0 1.0 1.0)
-  ;; (q/ellipse-mode :radius)
-  ;; (doseq [{:keys [p r]} circles
-  ;;         :let [[x y] (cq/rel-pos p)
-  ;;               radius (cq/rel-h r)]]
-  ;;   (q/ellipse x y radius radius))
+(defonce ui-state (r/atom {:debug false}))
+(defn explanation []
+  [:div
+   (ctrl/checkbox ui-state "Debug" [:debug])])
 
+(defn draw [{:keys [color circles]}]
   (q/stroke-weight 0.5)
-  (q/stroke 0 0.01)
+  (if (:debug @ui-state)
+    (do (q/background 1.0 1.0 1.0 1.0)
+        (q/ellipse-mode :radius)
+        (q/stroke 0 1)
+        (doseq [{:keys [p r]} circles
+                :let [[x y] (cq/rel-pos p)
+                      radius (cq/rel-h r)]]
+          (q/ellipse x y radius radius)))
+    (q/stroke 0 0.01))
+
   (doseq [[a b] (intersecting circles)]
     (let [pa (cq/rel-pos (:p a))
           pb (cq/rel-pos (:p b))]
-      (when color
+      (when (and color (not (:debug @ui-state)))
         (apply q/stroke (color-mix a b)))
       (q/line pa pb))))
 
 (defn ^:export run-sketch []
   ;; 20210329
+  (ctrl/mount explanation)
   (q/defsketch lattice-of-common-chords
     :host "quil-host"
     :size [900 600]
