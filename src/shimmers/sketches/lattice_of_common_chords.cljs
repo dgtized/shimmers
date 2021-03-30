@@ -107,10 +107,10 @@
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
 (defn draw [{:keys [color circles]}]
+  (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
   (if (:debug @ui-state)
     (do (q/background 1.0 1.0 1.0 1.0)
-        (q/ellipse-mode :radius)
         (q/stroke 0 1)
         (doseq [{:keys [p r]} circles
                 :let [[x y] (cq/rel-pos p)
