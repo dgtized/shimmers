@@ -7,6 +7,10 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]))
 
+(defn random-hues []
+  {:hue1 (int (* 100 (rand)))
+   :hue2 (int (* 100 (rand)))})
+
 ;; TODO: add hover color info for hsl values?
 ;; Limit range to show spectrum / palette somehow?
 (defn controls [ui]
@@ -14,23 +18,27 @@
     [:div
      (ctrl/change-mode ui [:hsla :mix-mod])
      (case (:mode @ui)
-       :hsla [:div
-              (ctrl/checkbox ui "Animate" [:animate])
-              (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
-                           [:lightness] [0 100])
-              (ctrl/slider ui (fn [v] (str "Opacity: " (/ v 100)))
-                           [:alpha] [0 100])]
-       :mix-mod [:div
-                 (ctrl/slider ui (fn [v] (str "Hue1: " v))
-                              [:hue1] [0 100])
-                 (ctrl/slider ui (fn [v] (str "Hue2: " v))
-                              [:hue2] [0 100])])]))
+       :hsla
+       [:div
+        (ctrl/checkbox ui "Animate" [:animate])
+        (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
+                     [:lightness] [0 100])
+        (ctrl/slider ui (fn [v] (str "Opacity: " (/ v 100)))
+                     [:alpha] [0 100])]
+
+       :mix-mod
+       [:div
+        (ctrl/slider ui (fn [v] (str "Hue1: " v))
+                     [:hue1] [0 100])
+        (ctrl/slider ui (fn [v] (str "Hue2: " v))
+                     [:hue2] [0 100])
+        [:input {:type "button" :value "Randomize"
+                 :on-click #(swap! ui merge (random-hues))}]])]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [ui (r/atom {:mode :hsla :lightness 50 :alpha 100
-                    :hue1 (int (* 100 (rand)))
-                    :hue2 (int (* 100 (rand)))})]
+  (let [ui (r/atom (merge {:mode :hsla :lightness 50 :alpha 100}
+                          (random-hues)))]
     (ctrl/mount (controls ui))
     {:ui ui}))
 
