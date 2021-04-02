@@ -18,6 +18,7 @@
        (map second)))
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {:circles (map #(assoc {}
                          :p %
                          :theta (* 2 Math/PI (rand))
@@ -59,7 +60,7 @@
            )]))
 
 (defn draw [{:keys [points]}]
-  (q/background 255)
+  (q/background 1.0 1.0)
   (q/stroke-weight 2)
   (q/ellipse-mode :radius)
   (q/stroke 0 0 0)
@@ -67,13 +68,17 @@
           :let [[x y] (cq/rel-pos point)]]
     (q/ellipse x y 0.2 0.2))
 
-  (q/stroke-weight 0.2)
+  (q/stroke-weight 0.5)
+  (q/stroke 0.99 0.5 0.5)
   (doseq [[p q] (take (* 1.2 (count points)) (short-pairs points))]
     (q/line (cq/rel-pos p) (cq/rel-pos q)))
 
+  (q/stroke 0 0 0)
+  (q/stroke-weight 0.2)
   (all-lines points)
 
-  (q/stroke-weight 0.75)
+  (q/stroke 0.45 0.3 0.5)
+  (q/stroke-weight 1.0)
   (doseq [[p q] (shortest-to-edge points)]
     (q/line (cq/rel-pos p) (cq/rel-pos q)))
   )
