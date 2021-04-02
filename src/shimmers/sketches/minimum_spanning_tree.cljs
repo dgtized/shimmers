@@ -50,25 +50,24 @@
                (assoc best-edges vertex [added vertex]))
         (recur added (rest vertices) weights best-edges)))))
 
-(defn prim-step [forest vertices weights best-edge]
-  (if (empty? vertices)
-    forest
-    (let [[v _] (first weights)
-          edge (get best-edge v)
-          remaining (disj vertices v)
-          [weights' best-edge']
-          (prim-update v remaining (dissoc weights v) (dissoc best-edge v))]
-      (recur (conj forest edge)
-             remaining
-             weights'
-             best-edge'))))
-
 (defn prim-mst [points]
-  (let [[vertex & remaining] points]
-    (prim-step []
-               (set remaining)
-               (apply priority-map (mapcat identity (distances vertex remaining)))
-               (into {} (for [p remaining] {p [vertex p]})))))
+  (letfn [(prim-step [forest vertices weights best-edge]
+            (if (empty? vertices)
+              forest
+              (let [[v _] (first weights)
+                    edge (get best-edge v)
+                    remaining (disj vertices v)
+                    [weights' best-edge']
+                    (prim-update v remaining (dissoc weights v) (dissoc best-edge v))]
+                (recur (conj forest edge)
+                       remaining
+                       weights'
+                       best-edge'))))]
+    (let [[vertex & remaining] points]
+      (prim-step []
+                 (set remaining)
+                 (apply priority-map (mapcat identity (distances vertex remaining)))
+                 (into {} (for [p remaining] {p [vertex p]}))))))
 
 (defn fresh-graph []
   (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
