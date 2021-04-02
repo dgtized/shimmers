@@ -16,7 +16,7 @@
        (map second)))
 
 (defn setup []
-  {:points (geometry/generate-points 64 #(+ 0.5 (* 0.15 (q/random-gaussian))))})
+  {:points (geometry/generate-points 24 #(+ 0.42 (* 0.13 (q/random-gaussian))))})
 
 (defn update-state [state]
   state)
@@ -57,12 +57,13 @@
           :let [[x y] (cq/rel-pos point)]]
     (q/ellipse x y 0.2 0.2))
 
-  (q/stroke-weight 0.25)
-  ;; (doseq [[p q] (take (* 0.5 (count points)) (short-pairs points))]
-  ;;   (q/line (cq/rel-pos p) (cq/rel-pos q)))
+  (q/stroke-weight 0.2)
+  (doseq [[p q] (take (* 0.8 (count points)) (short-pairs points))]
+    (q/line (cq/rel-pos p) (cq/rel-pos q)))
 
-  ;; (all-lines points)
+  (all-lines points)
 
+  (q/stroke-weight 0.75)
   (doseq [[p q] (shortest-to-edge points)]
     (q/line (cq/rel-pos p) (cq/rel-pos q)))
   )
