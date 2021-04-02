@@ -7,7 +7,8 @@
             [tailrecursion.priority-map :refer [priority-map]]
             [nifty.disjoint-set :as djs]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [shimmers.common.sequence :as cs]))
 
 (defn generate-points [n dist]
   (repeatedly n #(gv/vec2 (dist) (dist))))
@@ -27,11 +28,12 @@
                (djs/union union-set u v))
         (recur forest remaining union-set)))))
 
+;; Something off about performance here. Points to edges is <N^2, but pretty
+;; close, so maybe sort x/y and find close somehow? On top of that though,
+;; kruskal-step is not performing as quickly as prim's.
 (defn kruskal-mst [points]
   (let [ranked-edges
-        (->> (for [u points
-                   v points
-                   :when (not= u v)]
+        (->> (for [[u v] (cs/all-pairs points)]
                [(geom/dist u v) [u v]])
              (sort-by first)
              (map second))]
