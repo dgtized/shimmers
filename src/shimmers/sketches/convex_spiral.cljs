@@ -3,15 +3,12 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.vector :as gv]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.polygon :as gp]))
 
 ;; Concept:
 ;; Draw a convex hull, remove points on hull, recurse until 3 points, connecting
 ;; end of outer with start of inner.
-
-(defn generate-points [n dist]
-  (repeatedly n #(gv/vec2 (dist) (dist))))
 
 ;; FIXME: sometimes there is overlap of an outer path and an inner?
 ;; Might just be at transition from outer to inner hull?
@@ -26,7 +23,7 @@
 
 (defn setup []
   (q/no-loop)
-  {:points (generate-points 64 #(q/random 0.15 0.85))})
+  {:points (geometry/generate-points 64 #(q/random 0.15 0.85))})
 
 (defn update-state [state]
   state)

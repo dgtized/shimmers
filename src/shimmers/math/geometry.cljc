@@ -10,6 +10,9 @@
             [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Polygon2])))
 
+(defn generate-points [n dist]
+  (repeatedly n #(gv/vec2 (dist) (dist))))
+
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
 ;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
 (defn random-point-in-triangle2 [{:keys [points]}]

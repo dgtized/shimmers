@@ -1,17 +1,14 @@
 (ns shimmers.sketches.minimum-spanning-tree
-  (:require [quil.core :as q :include-macros true]
+  (:require [nifty.disjoint-set :as djs]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [tailrecursion.priority-map :refer [priority-map]]
-            [nifty.disjoint-set :as djs]
-            [thi.ng.geom.core :as geom]
-            [thi.ng.geom.vector :as gv]
-            [shimmers.common.sequence :as cs]))
-
-(defn generate-points [n dist]
-  (repeatedly n #(gv/vec2 (dist) (dist))))
+            [thi.ng.geom.core :as geom]))
 
 (defn distances [v points]
   (reduce (fn [m p] (assoc m p (geom/dist v p)))
@@ -76,7 +73,7 @@
 (defn fresh-graph []
   (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
                              (p/gaussian-clamped 0.5 0.15)])
-        points (generate-points 256 point-gen)
+        points (geometry/generate-points 256 point-gen)
         edges ((rand-nth [prim-mst kruskal-mst]) points)]
     {:points points
      :edges edges

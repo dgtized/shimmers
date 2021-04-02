@@ -13,9 +13,6 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn generate-points [n dist]
-  (repeatedly n #(gv/vec2 (dist) (dist))))
-
 (defn neighboring-triangles
   "Map every distinct vertex in triangles to the set of neighboring triangles that
   include that point as a vertex.
@@ -65,13 +62,13 @@
       (intercept-point a b))))
 
 (comment
-  (let [points (generate-points 5 rand)
+  (let [points (geometry/generate-points 5 rand)
         triangles (delaunay/triangulate points)
         neighborhood (neighboring-triangles triangles)
         vertex (first points)]
     [vertex (neighboring-vertices neighborhood vertex)])
 
-  (let [points (generate-points 8 rand)
+  (let [points (geometry/generate-points 8 rand)
         triangles (delaunay/triangulate points)
         neighborhood (neighboring-triangles triangles)
         vertex (first points)]
@@ -93,7 +90,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (generate-points 8 #(q/random 0.15 0.85))]
+  (let [points (geometry/generate-points 8 #(q/random 0.15 0.85))]
     {:points points
      ;; FIXME sometimes triangulation is not convex, suggesting not actually on hull?
      ;; maybe a problem with the triangulation function here?
