@@ -37,21 +37,20 @@
     (kruskal-step [] (ranked-edges points)
                   (apply djs/disjoint-set points))))
 
-(defn prim-update [added vertices weights best-edges]
-  (if (empty? vertices)
-    [weights best-edges]
-    (let [vertex (first vertices)
-          dist (geom/dist vertex added)
-          prior (get weights vertex)
-          better (and prior (< dist prior))]
-      (if better
-        (recur added (rest vertices)
-               (assoc weights vertex dist)
-               (assoc best-edges vertex [added vertex]))
-        (recur added (rest vertices) weights best-edges)))))
-
 (defn prim-mst [points]
-  (letfn [(prim-step [forest vertices weights best-edge]
+  (letfn [(prim-update [added vertices weights best-edges]
+            (if (empty? vertices)
+              [weights best-edges]
+              (let [vertex (first vertices)
+                    dist (geom/dist vertex added)
+                    prior (get weights vertex)
+                    better (and prior (< dist prior))]
+                (if better
+                  (recur added (rest vertices)
+                         (assoc weights vertex dist)
+                         (assoc best-edges vertex [added vertex]))
+                  (recur added (rest vertices) weights best-edges)))))
+          (prim-step [forest vertices weights best-edge]
             (if (empty? vertices)
               forest
               (let [[v _] (first weights)
