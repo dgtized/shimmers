@@ -14,27 +14,27 @@
   (reduce (fn [m p] (assoc m p (geom/dist v p)))
           {} points))
 
-(defn kruskal-step [forest edges union-set]
-  (if (empty? edges)
-    forest
-    (let [[[u v] & remaining] edges]
-      (if (not= (djs/canonical union-set u)
-                (djs/canonical union-set v))
-        (recur (conj forest [u v])
-               remaining
-               (djs/union union-set u v))
-        (recur forest remaining union-set)))))
+(defn ranked-edges [points]
+  (->> (for [[u v] (cs/all-pairs points)]
+         [(geom/dist u v) [u v]])
+       (sort-by first)
+       (map second)))
 
 ;; Something off about performance here. Points to edges is <N^2, but pretty
 ;; close, so maybe sort x/y and find close somehow? On top of that though,
 ;; kruskal-step is not performing as quickly as prim's.
 (defn kruskal-mst [points]
-  (let [ranked-edges
-        (->> (for [[u v] (cs/all-pairs points)]
-               [(geom/dist u v) [u v]])
-             (sort-by first)
-             (map second))]
-    (kruskal-step [] ranked-edges
+  (letfn [(kruskal-step [forest edges union-set]
+            (if (empty? edges)
+              forest
+              (let [[[u v] & remaining] edges]
+                (if (not= (djs/canonical union-set u)
+                          (djs/canonical union-set v))
+                  (recur (conj forest [u v])
+                         remaining
+                         (djs/union union-set u v))
+                  (recur forest remaining union-set)))))]
+    (kruskal-step [] (ranked-edges points)
                   (apply djs/disjoint-set points))))
 
 (defn prim-update [added vertices weights best-edges]
