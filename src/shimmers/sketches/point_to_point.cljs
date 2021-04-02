@@ -21,6 +21,33 @@
 (defn update-state [state]
   state)
 
+(defn all-lines [points]
+  (doseq [point points
+          :let [[x y] (cq/rel-pos point)]]
+    (q/line 0 y (q/width) y)
+    (q/line x 0 x (q/height))))
+
+(defn shortest-to-edge [points]
+  (for [[x y] points]
+    [[x y]
+     (cond (and (>= x 0.5) (>= y 0.5))
+           (if (> x y)
+             [1.0 y]
+             [x 1.0])
+           (and (< x 0.5) (< y 0.5))
+           (if (> x y)
+             [x 0.0]
+             [0.0 y])
+           (and (>= x 0.5) (< y 0.5))
+           (if (> (- 1.0 x) y)
+             [x 0.0]
+             [1.0 y])
+           (and (< x 0.5) (>= y 0.5))
+           (if (> x (- 1.0 y))
+             [x 1.0]
+             [0.0 y])
+           )]))
+
 (defn draw [{:keys [points]}]
   (q/background 255)
   (q/stroke-weight 2)
@@ -31,13 +58,13 @@
     (q/ellipse x y 0.2 0.2))
 
   (q/stroke-weight 0.25)
-  (doseq [[p q] (take (* 0.5 (count points)) (short-pairs points))]
-    (q/line (cq/rel-pos p) (cq/rel-pos q)))
+  ;; (doseq [[p q] (take (* 0.5 (count points)) (short-pairs points))]
+  ;;   (q/line (cq/rel-pos p) (cq/rel-pos q)))
 
-  (doseq [point points
-          :let [[x y] (cq/rel-pos point)]]
-    (q/line 0 y (q/width) y)
-    (q/line x 0 x (q/height)))
+  ;; (all-lines points)
+
+  (doseq [[p q] (shortest-to-edge points)]
+    (q/line (cq/rel-pos p) (cq/rel-pos q)))
   )
 
 (defn ^:export run-sketch []
