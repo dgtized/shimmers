@@ -19,11 +19,12 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:circles (map #(assoc {}
-                         :p %
-                         :theta (- (* 2 Math/PI (rand)) Math/PI)
-                         :radius (tm/clamp (+ 0.05 (* 0.02 (q/random-gaussian))) 0 0.5))
-                 (geometry/generate-points 24 #(+ 0.5 (* 0.13 (q/random-gaussian)))))})
+  {:circles
+   (map #(assoc {}
+                :p %
+                :theta (- (* 2 Math/PI (rand)) Math/PI)
+                :radius (tm/clamp (+ 0.05 (* 0.02 (q/random-gaussian))) 0 0.5))
+        (geometry/generate-points 24 #(+ 0.5 (* 0.13 (q/random-gaussian)))))})
 
 (defn sign+
   "Increase magnitude of `n` by `v` without changing sign of `n`"
