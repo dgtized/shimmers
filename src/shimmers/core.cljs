@@ -40,6 +40,7 @@
             [shimmers.sketches.object-permanence :as object-permanence]
             [shimmers.sketches.particles :as particles]
             [shimmers.sketches.permutations-of-transfiguration :as permutations-of-transfiguration]
+            [shimmers.sketches.point-to-point :as point-to-point]
             [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.radar :as radar]
@@ -105,6 +106,7 @@
      object-permanence/run-sketch
      particles/run-sketch
      permutations-of-transfiguration/run-sketch
+     point-to-point/run-sketch
      precipitation/run-sketch
      probabilistic-automata/run-sketch
      radar/run-sketch
