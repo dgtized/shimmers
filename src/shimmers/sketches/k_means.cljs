@@ -99,7 +99,7 @@
   ;; 20210309
   (q/defsketch k-means
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
