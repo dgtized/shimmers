@@ -21,9 +21,9 @@
          mag)
       0)))
 
-(defn draw-shape [{:keys [position shape color theta] :or {theta 0}}]
+(defn draw-shape [{:keys [position color theta] :or {theta 0}}]
   (apply q/fill color)
-  (-> shape
+  (-> (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
       (geom/translate position)
       (geometry/rotate-around-centroid theta)
       geom/vertices
@@ -31,7 +31,6 @@
 
 (defn make-shape []
   {:position (gv/vec2 (cq/rel-pos (rand) (rand)))
-   :shape (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
    :color [(rand-nth (range 0 1 0.25))
            (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
 
