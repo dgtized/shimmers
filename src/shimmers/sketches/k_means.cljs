@@ -31,8 +31,10 @@
 
 (defn make-shape []
   {:position (gv/vec2 (rand) (rand))
-   :color [(rand-nth (range 0 1 0.25))
-           (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
+   :color [(rand-nth (range 0 1 0.05))
+           (q/random 0.3 0.8)
+           (q/random 0.3 0.8)
+           0.04]})
 
 (defn grouping-vector [{:keys [color position]}]
   (let [v (concat (map * color (repeat 3)) position)
@@ -56,6 +58,7 @@
                     (fn [cluster] (cos-similarity (grouping-vector shape) (get colors cluster)))
                     (keys colors))))))
 
+;; Add "attractor" points that can't move or are outside bounds?
 ;; Generate initial triangles by sampling from video or an image?
 (defn setup []
   (q/frame-rate 60)
