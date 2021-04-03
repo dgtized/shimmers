@@ -24,13 +24,13 @@
 (defn draw-shape [{:keys [position color theta] :or {theta 0}}]
   (apply q/fill color)
   (-> (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
-      (geom/translate position)
+      (geom/translate (cq/rel-pos position))
       (geometry/rotate-around-centroid theta)
       geom/vertices
       cq/draw-shape))
 
 (defn make-shape []
-  {:position (gv/vec2 (cq/rel-pos (rand) (rand)))
+  {:position (gv/vec2 (rand) (rand))
    :color [(rand-nth (range 0 1 0.25))
            (q/random 0.5 0.8) (q/random 0.5 0.8) 0.05]})
 
@@ -84,8 +84,8 @@
                              clusters)]
     ;; (println [:update (keys clusters) positions])
     (for [{:keys [position cluster] :as shape} shapes
-          :let [centroid (tm/+ (gv/randvec2 5) (get positions cluster))]]
-      (assoc shape :position (tm/mix position centroid 0.005)))))
+          :let [centroid (tm/+ (get positions cluster) (gv/randvec2 0.0003))]]
+      (assoc shape :position (tm/mix position centroid 0.003)))))
 
 (defn update-state [state]
   (update state :shapes (comp update-cluster assign-cluster)))
