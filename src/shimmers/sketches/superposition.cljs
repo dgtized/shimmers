@@ -52,7 +52,7 @@
   (Math/sin (* (/ Math/PI 2) n)))
 
 (defn setup []
-  (q/color-mode :hsl 360 1.0 1.0 1.0)
+  (q/color-mode :hsl 1.0)
   (let [current (random-target)
         target (random-target)
         factor (/ (+ (q/width) (q/height)) 800)]
@@ -115,7 +115,7 @@
               (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
               (tm/map-interval (q/noise (/ fc 650) 6000.0) [0 1] [0.2 0.6]))
     (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
-    (q/fill (mod (* 1080 (q/noise (/ fc 3000) 200.0)) 360)
+    (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
             (tm/map-interval (q/noise (/ fc 800) 500.0) [0 1] [0.4 1.0])
             (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.45 1.0])
             (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.001 0.040]))
