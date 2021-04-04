@@ -15,7 +15,11 @@
   geom/IVertexAccess
   (vertices [_]
     (conj (mapv :base segments)
-          (segment-endpoint (last segments)))))
+          (segment-endpoint (last segments))))
+
+  geom/IEdgeAccess
+  (edges [_]
+    (partition 2 1 (geom/vertices _))))
 
 (defn segment-follow [{:keys [base length]} target]
   (let [direction (tm/- target base)
