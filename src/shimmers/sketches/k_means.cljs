@@ -31,7 +31,7 @@
 
 (defn make-shape []
   {:position (gv/vec2 (rand) (rand))
-   :color [(rand-nth (range 0 1 0.05))
+   :color [(rand-nth (range 0 1 0.12))
            (q/random 0.3 0.8)
            (q/random 0.3 0.8)
            0.04]})
@@ -63,7 +63,7 @@
 (defn setup []
   (q/frame-rate 60)
   (q/color-mode :hsl 1.0)
-  {:shapes (seed-cluster (repeatedly 256 make-shape) 6)})
+  {:shapes (seed-cluster (repeatedly 256 make-shape) 12)})
 
 (defn cluster->centroid
   [cluster-shapes]
