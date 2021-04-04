@@ -21,7 +21,7 @@
   (edges [_]
     (partition 2 1 (geom/vertices _))))
 
-(defn segment-follow [{:keys [base length]} target]
+(defn- segment-follow [{:keys [base length]} target]
   (let [direction (tm/- target base)
         heading (geom/heading direction)]
     (->KinematicSegment (tm/- target (project heading length))
