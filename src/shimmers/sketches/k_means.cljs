@@ -65,11 +65,15 @@
   (q/color-mode :hsl 1.0)
   {:shapes (seed-cluster (repeatedly 256 make-shape) 6)})
 
+(defn cluster->centroid [cluster-shapes]
+  (->> cluster-shapes
+       (map grouping-vector)
+       (reduce color-add)
+       (mapv (fn [x] (/ x (inc (count cluster-shapes)))))))
+
 (defn assign-cluster [shapes]
   (let [clusters (group-by :cluster shapes)
-        colors (cs/map-kv (fn [cluster] (mapv (fn [x] (/ x (inc (count cluster))))
-                                             (reduce color-add (map grouping-vector cluster))))
-                          clusters)]
+        centroids (cs/map-kv cluster->centroid clusters)]
     ;; (println [:assign (cs/map-kv count clusters) colors])
     ;; (println [:assign (cs/map-kv count clusters)])
     (for [shape shapes
@@ -77,7 +81,7 @@
       (assoc shape
              :cluster
              (apply max-key
-                    (fn [cluster] (cos-similarity s (get colors cluster)))
+                    (fn [cluster] (cos-similarity s (get centroids cluster)))
                     (keys clusters))))))
 
 (defn update-cluster [shapes]
