@@ -91,18 +91,21 @@
         shapes
         (recur (inc epoch) shapes')))))
 
+(defn cluster->centroid-position
+  [cluster]
+  (tm/div (reduce tm/+ (map :position cluster))
+          (inc (count cluster))))
+
 (defn update-positions [shapes]
   (let [clusters (group-by :cluster shapes)
-        positions (cs/map-kv (fn [cluster] (tm/div (reduce tm/+ (map :position cluster))
-                                                  (inc (count cluster))))
-                             clusters)]
+        centroid-positions (cs/map-kv cluster->centroid-position clusters)]
     ;; (println [:update (keys clusters) positions])
     (for [{:keys [position cluster] :as shape} shapes
-          :let [centroid (tm/+ (get positions cluster) (gv/randvec2 0.0003))]]
+          :let [centroid (tm/+ (get centroid-positions cluster) (gv/randvec2 0.0003))]]
       (assoc shape :position (tm/mix position centroid 0.003)))))
 
 (defn update-state [state]
-  (update state :shapes (comp update-cluster assign-cluster)))
+  (update state :shapes (comp update-positions kmeans-cluster)))
 
 (defn draw [{:keys [shapes]}]
   (q/no-stroke)
