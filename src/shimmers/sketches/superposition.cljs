@@ -56,7 +56,6 @@
   (let [current (random-target)
         target (random-target)
         factor (/ (+ (q/width) (q/height)) 800)]
-    (println "Display Factor " factor)
     {:current current
      :target target
      :factor factor
@@ -93,7 +92,7 @@
   (let [fc (q/frame-count)]
     (if (= (- fc base) interval)
       (let [state' (transition-to state fc (random-target))]
-        (println [(dissoc state' :brushes) (q/width) (q/height)])
+        (.log js/console (dissoc state' :brushes))
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
