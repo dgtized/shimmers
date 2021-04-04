@@ -96,13 +96,25 @@
   (tm/div (reduce tm/+ (map :position cluster))
           (inc (count cluster))))
 
+;; FIXME: centroids trend towards 0,0 once in steady-state?
 (defn update-positions [shapes]
   (let [clusters (group-by :cluster shapes)
-        centroid-positions (cs/map-kv cluster->centroid-position clusters)]
-    ;; (println [:update (keys clusters) positions])
+        centroid-positions (cs/map-kv cluster->centroid-position clusters)
+        sum-dist-to-centroid
+        (cs/map-kv (fn [cluster]
+                     (let [centroid (get centroid-positions cluster)]
+                       (->> cluster
+                            (map (fn [s] (geom/dist (:position s) centroid)))
+                            (reduce +))))
+                   clusters)]
+    ;;(println [:update (keys clusters) centroid-positions])
     (for [{:keys [position cluster] :as shape} shapes
-          :let [centroid (get centroid-positions cluster)]]
-      (assoc shape :position (tm/mix position centroid 0.003)))))
+          :let [centroid (get centroid-positions cluster)
+                sum-dist (get sum-dist-to-centroid cluster)]]
+      (assoc shape :position
+             (tm/mix position centroid
+                     (max 0.001 (/ (geom/dist position centroid)
+                                   sum-dist)))))))
 
 (defn update-state [state]
   (update state :shapes (comp update-positions kmeans-cluster)))
