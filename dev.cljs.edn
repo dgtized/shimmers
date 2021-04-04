@@ -4,7 +4,8 @@
 
   ;; Define handler to enable clientside SPA routing
   :ring-handler shimmers.ring-server/handler}
-{:main shimmers.core
+{:preloads [shimmers.dev]
+ :main shimmers.core
 
  ;; used http://jmmk.github.io/javascript-externs-generator/ to create
  ;; resources/p5-externs.js with latest externs from p5.js version 1.1.9

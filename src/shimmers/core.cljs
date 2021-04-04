@@ -62,8 +62,6 @@
             [shimmers.sketches.yin-yang :as yin-yang]
             [shimmers.sketches.zigzag :as zigzag]))
 
-(enable-console-print!)
-
 ;; detect window size for initial setup?
 (defn fit-window []
   [(/ (.-innerWidth js/window) 2)

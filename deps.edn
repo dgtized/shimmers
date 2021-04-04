@@ -24,6 +24,9 @@
 
         ;; This is not dev only because of production build
         com.bhauman/figwheel-main {:mvn/version "0.2.12"}
+
+        ;; Better debug output
+        binaryage/devtools {:mvn/version "1.0.2"}
         }
  ;; setup some development paths
  :paths ["src" "target" "resources"]
