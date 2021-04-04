@@ -101,7 +101,7 @@
         centroid-positions (cs/map-kv cluster->centroid-position clusters)]
     ;; (println [:update (keys clusters) positions])
     (for [{:keys [position cluster] :as shape} shapes
-          :let [centroid (tm/+ (get centroid-positions cluster) (gv/randvec2 0.0003))]]
+          :let [centroid (get centroid-positions cluster)]]
       (assoc shape :position (tm/mix position centroid 0.003)))))
 
 (defn update-state [state]
