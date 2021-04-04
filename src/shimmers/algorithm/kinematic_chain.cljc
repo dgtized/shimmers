@@ -7,15 +7,18 @@
 
 (defrecord KinematicSegment [base angle length])
 
+(defn- project [angle length]
+  (geom/as-cartesian (gv/vec2 length angle)))
+
 (defn segment-follow [{:keys [base length]} target]
   (let [direction (tm/- target base)
         heading (geom/heading direction)]
-    (->KinematicSegment (tm/- target (geom/as-cartesian (gv/vec2 length heading)))
+    (->KinematicSegment (tm/- target (project heading length))
                         heading
                         length)))
 
 (defn segment-endpoint [{:keys [base angle length]}]
-  (tm/+ base (geom/as-cartesian (gv/vec2 length angle))))
+  (tm/+ base (project angle length)))
 
 (defn make-chain [start n length]
   (->KinematicChain (repeatedly n #(->KinematicSegment start 0 length))))
