@@ -65,26 +65,33 @@
   (q/color-mode :hsl 1.0)
   {:shapes (seed-cluster (repeatedly 256 make-shape) 6)})
 
-(defn cluster->centroid [cluster-shapes]
+(defn cluster->centroid
+  [cluster-shapes]
   (->> cluster-shapes
        (map grouping-vector)
        (reduce color-add)
        (mapv (fn [x] (/ x (inc (count cluster-shapes)))))))
 
-(defn assign-cluster [shapes]
-  (let [clusters (group-by :cluster shapes)
-        centroids (cs/map-kv cluster->centroid clusters)]
-    ;; (println [:assign (cs/map-kv count clusters) colors])
-    ;; (println [:assign (cs/map-kv count clusters)])
-    (for [shape shapes
-          :let [s (grouping-vector shape)]]
-      (assoc shape
-             :cluster
-             (apply max-key
-                    (fn [cluster] (cos-similarity s (get centroids cluster)))
-                    (keys clusters))))))
+(defn kmeans-cluster [shapes]
+  (loop [epoch 0 shapes shapes]
+    (let [clusters (group-by :cluster shapes)
+          centroids (cs/map-kv cluster->centroid clusters)
+          shapes' (for [shape shapes
+                        :let [gvs (grouping-vector shape)]]
+                    (assoc shape
+                           :cluster
+                           (apply max-key
+                                  (fn [cluster] (cos-similarity gvs (get centroids cluster)))
+                                  (keys clusters))))]
+      ;; (println [:assign epoch (cs/map-kv count clusters) colors])
+      ;; (println [:assign epoch (cs/map-kv count clusters)])
 
-(defn update-cluster [shapes]
+      ;; iterate until fixed-point
+      (if (= shapes shapes')
+        shapes
+        (recur (inc epoch) shapes')))))
+
+(defn update-positions [shapes]
   (let [clusters (group-by :cluster shapes)
         positions (cs/map-kv (fn [cluster] (tm/div (reduce tm/+ (map :position cluster))
                                                   (inc (count cluster))))
