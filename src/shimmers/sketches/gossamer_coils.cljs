@@ -25,11 +25,10 @@
             (assoc (chain/make-chain (rel-v 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
-(defn draw-chain [{:keys [segments]}]
+(defn draw-chain [chain]
   (q/begin-shape)
-  (doseq [s segments]
-    (apply q/vertex (:base s)))
-  (apply q/vertex (chain/segment-endpoint (last segments)))
+  (doseq [[x y] (geom/vertices chain)]
+    (q/vertex x y))
   (q/end-shape))
 
 (defn update-state [{:keys [chains] :as state}]

@@ -3,12 +3,19 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defrecord KinematicChain [segments])
+(defn- project [angle length]
+  (geom/as-cartesian (gv/vec2 length angle)))
+
+(defn- segment-endpoint [{:keys [base angle length]}]
+  (tm/+ base (project angle length)))
 
 (defrecord KinematicSegment [base angle length])
 
-(defn- project [angle length]
-  (geom/as-cartesian (gv/vec2 length angle)))
+(defrecord KinematicChain [segments]
+  geom/IVertexAccess
+  (vertices [_]
+    (conj (mapv :base segments)
+          (segment-endpoint (last segments)))))
 
 (defn segment-follow [{:keys [base length]} target]
   (let [direction (tm/- target base)
@@ -16,9 +23,6 @@
     (->KinematicSegment (tm/- target (project heading length))
                         heading
                         length)))
-
-(defn segment-endpoint [{:keys [base angle length]}]
-  (tm/+ base (project angle length)))
 
 (defn make-chain [start n length]
   (->KinematicChain (repeatedly n #(->KinematicSegment start 0 length))))

@@ -7,6 +7,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -35,11 +36,10 @@
 (defn follow []
   ((get modes (:mode @ui-state))))
 
-(defn draw-chain [{:keys [segments]}]
+(defn draw-chain [chain]
   (q/begin-shape)
-  (doseq [s segments]
-    (apply q/vertex (:base s)))
-  (apply q/vertex (chain/segment-endpoint (last segments)))
+  (doseq [[x y] (geom/vertices chain)]
+    (q/vertex x y))
   (q/end-shape))
 
 (defn setup []
