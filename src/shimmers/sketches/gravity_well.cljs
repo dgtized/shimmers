@@ -5,7 +5,6 @@
             [shimmers.common.particle-system :as particles]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defrecord Body
@@ -29,8 +28,6 @@
                        (q/random (- r) r))
                (q/random 1e3 1e4)
                [0 0 0 96])))
-
-gv/vec2
 
 (defn gravitational-pull
   [{:keys [position mass] :as current} bodies]
