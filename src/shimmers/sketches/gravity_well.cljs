@@ -39,9 +39,9 @@ gv/vec2
               :when (not= body current)
               :let [gravity 9.8
                     d2 (geom/dist-squared position (:position body))]]
-          (v/scale (tm/normalize (tm/- (:position body) position))
-                   (/ (* gravity (:mass body) mass)
-                      (max d2 1))))]
+          (tm/normalize (tm/- (:position body) position)
+                        (/ (* gravity (:mass body) mass)
+                           (max d2 2))))]
     (tm/div (reduce v/add (v/vec2 0 0) forces)
             (count bodies))))
 
