@@ -45,7 +45,7 @@
   [bodies {:keys [mass] :as body}]
   (-> body
       (assoc :acceleration (v/scale (gravitational-pull body bodies)
-                                    (/ 0.3 mass)))
+                                    (/ 1.0 mass)))
       particles/step))
 
 (defn visible? [body]
