@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [thi.ng.geom.core :as tg]
+            [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]
             [shimmers.common.particle-system :as particles]))
 
@@ -36,7 +36,7 @@
           (for [body bodies
                 :when (not= body current)
                 :let [gravity 0.004
-                      d2 (tg/dist-squared position (:position body))]]
+                      d2 (geom/dist-squared position (:position body))]]
             (v/scale (tm/normalize (tm/- (:position body) position))
                      (/ (* gravity (:mass body) mass)
                         (max d2 2))))))
@@ -49,7 +49,7 @@
       particles/step))
 
 (defn visible? [body]
-  (< (tg/dist (:position body) (v/vec2 0 0)) 400))
+  (< (geom/dist (:position body) (v/vec2 0 0)) 400))
 
 (defn restart-sim? [{:keys [start-frame bodies]} frame-count]
   (let [age (- frame-count start-frame)

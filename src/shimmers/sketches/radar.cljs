@@ -3,7 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [thi.ng.geom.core :as tg]
+            [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]))
 
 (defrecord Particle [position velocity])
@@ -31,11 +31,11 @@
 
 (defn contact-hit [{:keys [theta radius center]} point]
   (let [translated-point (tm/- point center)
-        heading (tg/heading translated-point)
+        heading (geom/heading translated-point)
         mtheta (mod theta (* 2 Math/PI))
         delta (- heading mtheta)
         tolerance 0.01]
-    (when (and (< (tg/dist (v/vec2 0 0) translated-point) radius)
+    (when (and (< (geom/dist (v/vec2 0 0) translated-point) radius)
                (< (- tolerance) delta tolerance))
       ;; (println [heading mtheta delta translated-point])
       {:position translated-point :lifespan 200})))
