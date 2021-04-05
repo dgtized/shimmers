@@ -48,8 +48,8 @@ gv/vec2
 (defn update-body
   [bodies {:keys [mass] :as body}]
   (-> body
-      (assoc :acceleration (tm/* (tm/div (gravitational-pull body bodies) mass)
-                                 1e-6))
+      (assoc :acceleration (tm/div (tm/div (gravitational-pull body bodies) mass)
+                                   (/ (reduce + (map :mass bodies)) (dec (count bodies)))))
       particles/step))
 
 (defn visible? [body]
