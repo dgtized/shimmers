@@ -2,10 +2,11 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.particle-system :as particles]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.particle-system :as particles]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defrecord Body
     [position last-pos velocity acceleration mass color])
@@ -20,32 +21,35 @@
     :color color}))
 
 (defn make-sun [pos]
-  (make-body pos 1000 [200 200 0 96]))
+  (make-body pos 1e9 [200 200 0 96]))
 
 (defn make-random-body []
   (let [r 150]
     (make-body (v/vec2 (q/random (- r) r)
                        (q/random (- r) r))
-               (q/random 1 8)
+               (q/random 1e3 1e4)
                [0 0 0 96])))
+
+gv/vec2
 
 (defn gravitational-pull
   [{:keys [position mass] :as current} bodies]
-  (reduce v/add
-          (v/vec2 0 0)
-          (for [body bodies
-                :when (not= body current)
-                :let [gravity 0.004
-                      d2 (geom/dist-squared position (:position body))]]
-            (v/scale (tm/normalize (tm/- (:position body) position))
-                     (/ (* gravity (:mass body) mass)
-                        (max d2 2))))))
+  (let [forces
+        (for [body bodies
+              :when (not= body current)
+              :let [gravity 9.8
+                    d2 (geom/dist-squared position (:position body))]]
+          (v/scale (tm/normalize (tm/- (:position body) position))
+                   (/ (* gravity (:mass body) mass)
+                      (max d2 1))))]
+    (tm/div (reduce v/add (v/vec2 0 0) forces)
+            (count bodies))))
 
 (defn update-body
   [bodies {:keys [mass] :as body}]
   (-> body
-      (assoc :acceleration (v/scale (gravitational-pull body bodies)
-                                    (/ 1.0 mass)))
+      (assoc :acceleration (tm/* (tm/div (gravitational-pull body bodies) mass)
+                                 1e-6))
       particles/step))
 
 (defn visible? [body]
