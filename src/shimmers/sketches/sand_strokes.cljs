@@ -14,7 +14,7 @@
   (cq/rel-h (* 0.3 (q/noise (/ t 2) v))))
 
 (defn rand-color []
-  [(rand-nth [0 0.25 0.4 0.6]) 0.5 0.5 0.2])
+  [(rand-nth [0 0.25 0.4 0.8]) 0.5 0.5 0.2])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -39,17 +39,12 @@
            :color color'
            :displacement (displacement-noise t' v'))))
 
-(defn rand-gauss []
-  (let [d (ksd/normal {:mu 0.5 :sd 0.1})]
-    (fn [] (ksd/draw d))))
-
 (defn draw [{:keys [t density shape displacement color]}]
   (apply q/stroke color)
   (let [[x y] (geom/point-at shape t)
-        line (gl/line2 x (- y displacement) x (+ y displacement))
-        rnd (rand-gauss)]
-    (dotimes [_ density]
-      (apply q/point (geom/point-at line (rnd))))))
+        line (gl/line2 x (- y displacement) x (+ y displacement))]
+    (doseq [p (ksd/sample density (ksd/normal {:mu 0.5 :sd 0.2}))]
+      (apply q/point (geom/point-at line p)))))
 
 (defn ^:export run-sketch []
   (q/defsketch sand-strokes
