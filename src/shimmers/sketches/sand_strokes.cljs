@@ -11,18 +11,19 @@
             [thi.ng.geom.line :as gl]))
 
 (defn displacement-noise [t v]
-  (cq/rel-h (* 0.3 (q/noise (/ t 2) v))))
+  (cq/rel-h (* 0.2 (q/noise (/ t 2) v))))
 
 (defn rand-color []
-  [0 0 0 0.002])
+  [0 0 0 0.05])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-detail 6 0.75)
+  (q/ellipse-mode :radius)
   {:t 0
    :v 0
-   :density 750
+   :density 256
    :shape (gl/line2 (cq/rel-pos 0.05 0.5)
                     (cq/rel-pos 0.95 0.5))
    :displacement (displacement-noise 0 0)
@@ -30,7 +31,7 @@
    :color (rand-color)})
 
 (defn update-state [{:keys [t v color] :as state}]
-  (let [t' (mod (+ t (* 0.003 (rand))) 1.0)
+  (let [t' (mod (+ t (* 0.0002 (rand))) 1.0)
         new-pass (< t' t)
         v' (if new-pass (inc v) v)
         color' (if new-pass (rand-color) color)]
@@ -38,18 +39,21 @@
            :t t'
            :v v'
            :color color'
-           :angle (ksd/draw (ksd/normal {:mu 0 :sd 3}))
+           :angle (ksd/draw (ksd/normal {:mu 0 :sd 2}))
            :displacement (displacement-noise t' v'))))
 
 (defn draw [{:keys [t density shape angle displacement color]}]
+  (q/stroke-weight 0.2)
+  (q/no-fill)
   (apply q/stroke color)
   (let [[x y] (geom/point-at shape t)
         s-disp displacement
         line (gl/line2 (+ x angle) (- y s-disp) (- x angle) (+ y (* 1.2 s-disp)))
         ;; normal (ksd/normal {:mu 0.5 :sd 0.05})
         uniform (ksd/uniform {:a 0.1 :b 0.9})]
-    (doseq [p (ksd/sample density uniform)]
-      (apply q/point (geom/point-at line p)))))
+    (doseq [p (ksd/sample density uniform)
+            :let [[x y] (geom/point-at line p)]]
+      (q/ellipse x y 0.03 0.03))))
 
 (defn ^:export run-sketch []
   (q/defsketch sand-strokes
