@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]))
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {})
 
 (defn update-state [state]
