@@ -21,7 +21,7 @@
   (q/noise-detail 6 0.75)
   {:t 0
    :v 0
-   :density 10
+   :density 20
    :shape (gl/line2 (cq/rel-pos 0.05 0.5)
                     (cq/rel-pos 0.95 0.5))
    :displacement (displacement-noise 0 0)
@@ -48,7 +48,7 @@
 (defn ^:export run-sketch []
   (q/defsketch sand-strokes
     :host "quil-host"
-    :size [600 600]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
