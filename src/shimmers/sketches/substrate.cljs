@@ -1,5 +1,8 @@
 (ns shimmers.sketches.substrate
-  "Inspired by http://www.complexification.net/gallery/machines/substrate/ and using https://discourse.processing.org/t/trying-to-understand-the-substrate-algorithm/3031/14 for guidance."
+  "Inspired by http://www.complexification.net/gallery/machines/substrate/ and
+  using
+  https://discourse.processing.org/t/trying-to-understand-the-substrate-algorithm/3031/14
+  for guidance."
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
