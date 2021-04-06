@@ -11,10 +11,10 @@
             [kixi.stats.distribution :as ksd]))
 
 (defn displacement-noise [t v]
-  (cq/rel-h (* 0.3 (q/noise (/ t 2) v))))
+  (cq/rel-h (* 0.2 (q/noise (/ t 2) v))))
 
 (defn rand-color []
-  [(rand-nth [0 0.25 0.4 0.8]) 0.5 0.5 0.2])
+  [0 0 (* 0.4 (rand)) 0.005])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -22,10 +22,11 @@
   (q/noise-detail 6 0.75)
   {:t 0
    :v 0
-   :density 20
+   :density 1500
    :shape (gl/line2 (cq/rel-pos 0.05 0.5)
                     (cq/rel-pos 0.95 0.5))
    :displacement (displacement-noise 0 0)
+   :angle 0
    :color (rand-color)})
 
 (defn update-state [{:keys [t v color] :as state}]
@@ -37,13 +38,16 @@
            :t t'
            :v v'
            :color color'
+           :angle (ksd/draw (ksd/normal {:mu 0 :sd 3}))
            :displacement (displacement-noise t' v'))))
 
-(defn draw [{:keys [t density shape displacement color]}]
+(defn draw [{:keys [t density shape angle displacement color]}]
   (apply q/stroke color)
   (let [[x y] (geom/point-at shape t)
-        line (gl/line2 x (- y displacement) x (+ y displacement))]
-    (doseq [p (ksd/sample density (ksd/normal {:mu 0.5 :sd 0.2}))]
+        line (gl/line2 (+ x angle) (- y displacement) (- x angle) (+ y displacement))
+        ;; normal (ksd/normal {:mu 0.5 :sd 0.05})
+        uniform (ksd/uniform {:a 0.1 :b 0.9})]
+    (doseq [p (ksd/sample density uniform)]
       (apply q/point (geom/point-at line p)))))
 
 (defn ^:export run-sketch []
