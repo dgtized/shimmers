@@ -1,5 +1,6 @@
 (ns shimmers.sketches.lattice-of-common-chords
-  (:require [quil.core :as q :include-macros true]
+  (:require [kixi.stats.distribution :as ksd]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
@@ -95,6 +96,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/ellipse-mode :radius)
   (q/background 1)
   (let [rules {:hue (rand)
                :radius (rand-nth [0.02 0.03 0.03 0.06])
@@ -108,13 +110,21 @@
                       (fn [state] [(= 0 (mod (q/frame-count) (* 1 60 60)))
                                   (update state :circles update-positions)])))
 
-(defonce ui-state (r/atom {:debug false}))
+(defonce ui-state (r/atom {:debug false :sand false}))
 (defn explanation []
   [:div
-   (ctrl/checkbox ui-state "Debug" [:debug])])
+   (ctrl/checkbox ui-state "Debug" [:debug])
+   (ctrl/checkbox ui-state "Sand" [:sand])])
+
+(defn sand-line [pa pb]
+  (q/stroke-weight 1)
+  (let [line (gl/line2 pa pb)
+        r 0.1]
+    (doseq [p (ksd/sample 10 (ksd/uniform {:b 1}))
+            :let [[x y] (geom/point-at line p)]]
+      (q/ellipse x y r r))))
 
 (defn draw [{:keys [color circles]}]
-  (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
   (if (:debug @ui-state)
     (do (q/background 1.0 1.0 1.0 1.0)
@@ -130,7 +140,9 @@
           pb (cq/rel-pos (:p b))]
       (when (and color (not (:debug @ui-state)))
         (apply q/stroke (color-mix a b)))
-      (q/line pa pb))))
+      (if (:sand @ui-state)
+        (sand-line pa pb)
+        (q/line pa pb)))))
 
 (defn ^:export run-sketch []
   ;; 20210329
