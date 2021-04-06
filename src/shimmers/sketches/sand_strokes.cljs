@@ -11,7 +11,7 @@
             [thi.ng.geom.line :as gl]))
 
 (defn displacement-noise [t v]
-  (cq/rel-h (* 0.3 (q/noise t (* 2 v)))))
+  (cq/rel-h (* 0.25 (q/noise (/ t 1.2) (* 2 v)))))
 
 (defn rand-color []
   [0 0 0 0.15])
@@ -23,14 +23,14 @@
   (q/ellipse-mode :radius)
   {:t 0
    :v 0
-   :density 384
+   :density 256
    :shape (gl/line2 (cq/rel-pos 0.05 0.5)
                     (cq/rel-pos 0.95 0.5))
    :displacement (displacement-noise 0 0)
    :angle 0
    :color (rand-color)})
 
-(def dt 0.02)
+(def dt 0.025)
 
 (defn update-state [{:keys [t v color] :as state}]
   (let [t' (mod (+ t dt) 1.0)
@@ -44,10 +44,10 @@
            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))))
 
 (defn draw [{:keys [t v density shape angle displacement color]}]
-  (q/stroke-weight 0.2)
+  (q/stroke-weight 0.3)
   (q/no-fill)
   (apply q/stroke color)
-  (let [cols 40
+  (let [cols 50
         ;; normal (ksd/normal {:mu 0.5 :sd 0.05})
         uniform (ksd/uniform {:a 0.1 :b 0.9})]
     (dotimes [iter cols]
