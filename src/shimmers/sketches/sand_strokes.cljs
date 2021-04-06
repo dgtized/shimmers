@@ -9,28 +9,36 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]))
 
-(defn displacement-noise [t]
-  (cq/rel-h (* 0.15 (q/noise t 100))))
+(defn displacement-noise [t v]
+  (cq/rel-h (* 0.3 (q/noise (/ t 2) v))))
+
+(defn rand-color []
+  [(rand-nth [0 0.25 0.4 0.6]) 0.5 0.5 0.2])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-detail 6 0.75)
   {:t 0
-   :density 100
-   :shape (gl/line2 (cq/rel-pos 0.1 0.5)
-                    (cq/rel-pos 0.9 0.5))
-   :displacement (displacement-noise 0)
-   :color [0 0.5 0.5 0.05]})
+   :v 0
+   :density 10
+   :shape (gl/line2 (cq/rel-pos 0.05 0.5)
+                    (cq/rel-pos 0.95 0.5))
+   :displacement (displacement-noise 0 0)
+   :color (rand-color)})
 
-(defn update-state [{:keys [t] :as state}]
-  (let [t (mod (+ t (* 0.0025 (rand))) 1.0)]
+(defn update-state [{:keys [t v color] :as state}]
+  (let [t' (mod (+ t (* 0.001 (rand))) 1.0)
+        new-pass (< t' t)
+        v' (if new-pass (inc v) v)
+        color' (if new-pass (rand-color) color)]
     (assoc state
-           :t t
-           :displacement (displacement-noise t))))
+           :t t'
+           :v v'
+           :color color'
+           :displacement (displacement-noise t' v'))))
 
 (defn draw [{:keys [t density shape displacement color]}]
-  (q/stroke-weight 0.5)
   (apply q/stroke color)
   (let [[x y] (geom/point-at shape t)
         line (gl/line2 x (- y displacement) x (+ y displacement))]
@@ -40,7 +48,7 @@
 (defn ^:export run-sketch []
   (q/defsketch sand-strokes
     :host "quil-host"
-    :size [600 400]
+    :size [600 600]
     :setup setup
     :update update-state
     :draw draw
