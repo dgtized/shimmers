@@ -7,7 +7,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.line :as gl]))
+            [thi.ng.geom.line :as gl]
+            [kixi.stats.distribution :as ksd]))
 
 (defn displacement-noise [t v]
   (cq/rel-h (* 0.3 (q/noise (/ t 2) v))))
@@ -38,12 +39,17 @@
            :color color'
            :displacement (displacement-noise t' v'))))
 
+(defn rand-gauss []
+  (let [d (ksd/normal {:mu 0.5 :sd 0.1})]
+    (fn [] (ksd/draw d))))
+
 (defn draw [{:keys [t density shape displacement color]}]
   (apply q/stroke color)
   (let [[x y] (geom/point-at shape t)
-        line (gl/line2 x (- y displacement) x (+ y displacement))]
+        line (gl/line2 x (- y displacement) x (+ y displacement))
+        rnd (rand-gauss)]
     (dotimes [_ density]
-      (apply q/point (geom/random-point line)))))
+      (apply q/point (geom/point-at line (rnd))))))
 
 (defn ^:export run-sketch []
   (q/defsketch sand-strokes
