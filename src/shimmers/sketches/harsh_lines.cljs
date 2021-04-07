@@ -26,9 +26,10 @@
 (defn draw [{:keys [lines]}]
   (q/stroke-weight 0.3)
   (doseq [line lines]
-    (let [dx 0.004]
+    (let [dx 0.004
+          normal (ksd/normal {:mu 0 :sd dx})]
       (doseq [x (range 0 1 dx)]
-        (let [t (+ x (* dx (rand)))
+        (let [t (+ x (ksd/draw normal))
               {[p q] :points} (verticle-line line t)]
           (q/line p q))))))
 
