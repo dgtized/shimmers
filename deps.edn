@@ -26,7 +26,7 @@
         com.bhauman/figwheel-main {:mvn/version "0.2.12"}
 
         ;; Better debug output
-        binaryage/devtools {:mvn/version "1.0.2"}
+        binaryage/devtools {:mvn/version "1.0.3"}
         }
  ;; setup some development paths
  :paths ["src" "target" "resources"]
