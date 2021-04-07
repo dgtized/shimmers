@@ -33,16 +33,31 @@
 
 (def dt 0.2)
 
-(defn update-state [{:keys [t v color] :as state}]
+(defn update-state [{:keys [t v color shape] :as state}]
   (let [t' (mod (+ t (* dt (rand))) 1.0)
         new-pass (< t' t)
         v' (if new-pass (inc v) v)
-        color' (if new-pass (rand-color) color)]
+        color' (if new-pass (rand-color) color)
+        offsets [0.2 0.35 0.5 0.65 0.80]]
     (assoc state
            :t t'
            :v v'
            :color color'
+           :shape (if (and new-pass (= (mod v' 50) 0))
+                    (gl/line2 (cq/rel-pos 0.05 (rand-nth offsets))
+                              (cq/rel-pos 0.95 (rand-nth offsets)))
+                    shape)
            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))))
+
+(defn perpindicular-line-at [shape t scale]
+  (let [p (geom/point-at shape t)
+        grad (geom/point-at shape (+ t 0.01))
+        lv (tm/normalize (tm/- grad p))
+        a (geom/rotate lv (- (/ Math/PI 2)))
+        b (geom/rotate lv (/ Math/PI 2))]
+    (-> (gl/line2 a b)
+        (geom/scale-size scale)
+        (geom/translate p))))
 
 (defn draw [{:keys [t v density shape angle color]}]
   (q/stroke-weight 0.3)
@@ -54,8 +69,7 @@
     (dotimes [iter cols]
       (let [t (+ t (* dt (+ (/ iter cols) (* (/ 1 cols) (rand)))))
             s-disp (displacement-noise t v)
-            [x y] (geom/point-at shape t)
-            line (gl/line2 (+ x angle) (- y s-disp) (- x angle) (+ y (* 1.2 s-disp)))]
+            line (perpindicular-line-at shape t s-disp)]
         (doseq [p (ksd/sample density uniform)
                 :let [[x y] (geom/point-at line p)]]
           (q/ellipse x y 0.05 0.05))))))
