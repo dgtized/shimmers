@@ -7,6 +7,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.math.core :as tm]))
@@ -33,20 +35,24 @@
 
 (def dt 0.2)
 
+(defn new-shape []
+  (let [offsets [0.2 0.35 0.5 0.65 0.80]]
+    ((p/weighted
+      {(fn [] (gc/circle (cq/rel-pos (rand-nth (range 0.35 0.65 0.05)) 0.5)
+                        (cq/rel-h 0.3))) 0.5
+       (fn [] (gl/line2 (cq/rel-pos 0.05 (rand-nth offsets))
+                       (cq/rel-pos 0.95 (rand-nth offsets)))) 1.0}))))
+
 (defn update-state [{:keys [t v color shape] :as state}]
   (let [t' (mod (+ t (* dt (rand))) 1.0)
         new-pass (< t' t)
         v' (if new-pass (inc v) v)
-        color' (if new-pass (rand-color) color)
-        offsets [0.2 0.35 0.5 0.65 0.80]]
+        color' (if new-pass (rand-color) color)]
     (assoc state
            :t t'
            :v v'
            :color color'
-           :shape (if (and new-pass (= (mod v' 50) 0))
-                    (gl/line2 (cq/rel-pos 0.05 (rand-nth offsets))
-                              (cq/rel-pos 0.95 (rand-nth offsets)))
-                    shape)
+           :shape (if (and new-pass (= (mod v' 40) 0)) (new-shape) shape)
            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))))
 
 (defn perpindicular-line-at [shape t scale]
