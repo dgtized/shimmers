@@ -23,6 +23,10 @@
         (geom/scale-size (gaussian (cq/rel-h 0.025) height-sd))
         (geom/translate p))))
 
+(defn flip [line]
+  (let [{[p q] :points} line]
+    (gl/line2 q p)))
+
 (defn draw [{:keys [lines]}]
   (doseq [[i line] (map-indexed vector lines)]
     (let [dx 0.003
@@ -33,7 +37,8 @@
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (gaussian 0 (* x dx)))
               {[p q] :points}
-              (verticle-line line t
+              (verticle-line (if (= i 5) (flip line) line)
+                             t
                              (* x (* 0.2 (inc i)) (cq/rel-h 0.01))
                              (* 0.03 (* t (inc i))))]
           (q/line p q))))))
