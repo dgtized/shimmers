@@ -10,8 +10,8 @@
   (q/color-mode :hsl 1.0)
   (q/no-loop)
   {:lines (for [y (range 0.2 0.8 0.1)]
-            (gl/line2 (cq/rel-pos (q/random 0.05 0.4) y)
-                      (cq/rel-pos (q/random 0.6 0.95) y)))})
+            (gl/line2 (cq/rel-pos (q/random 0.05 0.35) y)
+                      (cq/rel-pos (q/random 0.65 0.95) y)))})
 
 (defn verticle-line [line t angle-sd]
   (let [p (geom/point-at line t)]
@@ -23,11 +23,11 @@
 (defn draw [{:keys [lines]}]
   (q/stroke-weight 0.3)
   (doseq [[i line] (map-indexed vector lines)]
-    (let [dx 0.004
+    (let [dx 0.005
           normal (ksd/normal {:mu 0 :sd dx})]
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (ksd/draw normal))
-              {[p q] :points} (verticle-line line t (* 0.03 (inc i)))]
+              {[p q] :points} (verticle-line line t (* 0.03 (* t (inc i))))]
           (q/line p q))))))
 
 (defn ^:export run-sketch []
