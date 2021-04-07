@@ -11,13 +11,14 @@
   (q/no-loop)
   {:lines (for [y (range 0.2 0.8 0.1)]
             (gl/line2 (cq/rel-pos (q/random 0.05 0.35) y)
-                      (cq/rel-pos (q/random 0.65 0.95) y)))})
+                      (cq/rel-pos (q/random 0.65 0.95)
+                                  (ksd/draw (ksd/normal {:mu y :sd 0.02})))))})
 
 (defn verticle-line [line t angle-sd]
   (let [p (geom/point-at line t)]
     (-> (gl/line2 [0 -1] [0 1])
         (geom/rotate (ksd/draw (ksd/normal {:mu 0 :sd angle-sd})))
-        (geom/scale-size (cq/rel-h 0.035))
+        (geom/scale-size (ksd/draw (ksd/normal {:mu (cq/rel-h 0.025) :sd (cq/rel-h 0.005)})))
         (geom/translate p))))
 
 (defn draw [{:keys [lines]}]
