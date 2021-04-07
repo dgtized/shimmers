@@ -55,18 +55,19 @@
             :v v'
             :color color'
             :shape (if (and new-pass (= (mod v' passes) 0)) (new-shape) shape)
-            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))]))
+            :angle (ksd/draw (ksd/normal {:mu 0 :sd 0.05})))]))
 
 (defn update-state [state]
   (cq/if-steady-state state 5 setup shade-shape))
 
-(defn perpindicular-line-at [shape t scale]
+(defn perpindicular-line-at [shape t scale angle]
   (let [p (geom/point-at shape t)
         grad (geom/point-at shape (+ t 0.01))
         lv (tm/normalize (tm/- grad p))
         a (geom/rotate lv (- (/ Math/PI 2)))
         b (geom/rotate lv (/ Math/PI 2))]
     (-> (gl/line2 a b)
+        (geom/rotate angle)
         (geom/scale-size scale)
         (geom/translate p))))
 
@@ -80,7 +81,7 @@
     (dotimes [iter cols]
       (let [t (+ t (* dt (+ (/ iter cols) (* (/ 1 cols) (rand)))))
             s-disp (displacement-noise t v)
-            line (perpindicular-line-at shape t s-disp)]
+            line (perpindicular-line-at shape t s-disp angle)]
         (doseq [p (ksd/sample density uniform)
                 :let [[x y] (geom/point-at line p)]]
           (q/ellipse x y 0.05 0.05))))))
