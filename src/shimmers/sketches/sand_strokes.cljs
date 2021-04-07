@@ -43,17 +43,22 @@
        (fn [] (gl/line2 (cq/rel-pos 0.05 (rand-nth offsets))
                        (cq/rel-pos 0.95 (rand-nth offsets)))) 1.0}))))
 
-(defn update-state [{:keys [t v color shape] :as state}]
+(defn shade-shape [{:keys [t v color shape] :as state}]
   (let [t' (mod (+ t (* dt (rand))) 1.0)
         new-pass (< t' t)
         v' (if new-pass (inc v) v)
-        color' (if new-pass (rand-color) color)]
-    (assoc state
-           :t t'
-           :v v'
-           :color color'
-           :shape (if (and new-pass (= (mod v' 40) 0)) (new-shape) shape)
-           :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))))
+        color' (if new-pass (rand-color) color)
+        passes 40]
+    [(> v' (* passes 10))
+     (assoc state
+            :t t'
+            :v v'
+            :color color'
+            :shape (if (and new-pass (= (mod v' passes) 0)) (new-shape) shape)
+            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))]))
+
+(defn update-state [state]
+  (cq/if-steady-state state 5 setup shade-shape))
 
 (defn perpindicular-line-at [shape t scale]
   (let [p (geom/point-at shape t)
