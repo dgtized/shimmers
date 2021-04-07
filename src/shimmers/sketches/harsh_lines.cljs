@@ -16,11 +16,11 @@
             (gl/line2 (cq/rel-pos (q/random 0.05 0.35) y)
                       (cq/rel-pos (q/random 0.65 0.95) (gaussian y 0.02))))})
 
-(defn verticle-line [line t angle-sd]
+(defn verticle-line [line t height-sd angle-sd]
   (let [p (geom/point-at line t)]
     (-> (gl/line2 [0 -1] [0 1])
         (geom/rotate (gaussian 0 angle-sd))
-        (geom/scale-size (gaussian (cq/rel-h 0.025) (cq/rel-h 0.005)))
+        (geom/scale-size (gaussian (cq/rel-h 0.025) height-sd))
         (geom/translate p))))
 
 (defn draw [{:keys [lines]}]
@@ -29,7 +29,9 @@
     (let [dx 0.003]
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (gaussian 0 (* x dx)))
-              {[p q] :points} (verticle-line line t (* 0.03 (* t (inc i))))]
+              {[p q] :points} (verticle-line line t
+                                             (* x (cq/rel-h 0.009))
+                                             (* 0.03 (* t (inc i))))]
           (q/line p q))))))
 
 (defn ^:export run-sketch []
