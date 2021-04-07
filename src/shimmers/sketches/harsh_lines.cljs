@@ -3,6 +3,7 @@
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
+            [shimmers.math.geometry] ;; for IFlip extensions
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]))
 
@@ -23,10 +24,6 @@
         (geom/scale-size (gaussian (cq/rel-h 0.025) height-sd))
         (geom/translate p))))
 
-(defn flip [line]
-  (let [{[p q] :points} line]
-    (gl/line2 q p)))
-
 (defn draw [{:keys [lines]}]
   (doseq [[i line] (map-indexed vector lines)]
     (let [dx 0.003
@@ -38,7 +35,7 @@
       (doseq [x (range 0 1 dx)]
         (let [t (gaussian x (* x dx))
               {[p q] :points}
-              (verticle-line (if (= i flip-row) (flip line) line)
+              (verticle-line (if (= i flip-row) (geom/flip line) line)
                              t
                              (* x (* 0.2 (inc i)) (cq/rel-h 0.01))
                              (* 0.03 (* t (inc i))))]

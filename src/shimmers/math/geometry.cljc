@@ -5,10 +5,10 @@
             [thi.ng.geom.quaternion :as quat]
             thi.ng.geom.polygon
             [thi.ng.geom.triangle :as gt]
-            #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2]])
+            #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm])
-  #?(:clj (:import [thi.ng.geom.types Polygon2])))
+  #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
 
 (defn generate-points
   "Generate point 2d points in space"
@@ -34,6 +34,16 @@
              (map gt/triangle2)
              (p/weighted-by geom/area)
              random-point-in-triangle2)))
+
+(extend-type Line2
+  geom/IFlip
+  (flip [_]
+    (Line2. (vec (rseq (:points _))))))
+
+(extend-type Line3
+  geom/IFlip
+  (flip [_]
+    (Line3. (vec (rseq (:points _))))))
 
 (defn rotate-around-centroid [polygon t]
   (-> polygon
