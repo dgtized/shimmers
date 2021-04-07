@@ -43,7 +43,7 @@
            :color color'
            :angle (ksd/draw (ksd/normal {:mu 0 :sd 1})))))
 
-(defn draw [{:keys [t v density shape angle displacement color]}]
+(defn draw [{:keys [t v density shape angle color]}]
   (q/stroke-weight 0.3)
   (q/no-fill)
   (apply q/stroke color)
