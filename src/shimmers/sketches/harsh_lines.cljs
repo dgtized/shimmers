@@ -26,12 +26,11 @@
 (defn draw [{:keys [lines]}]
   (q/stroke-weight 0.3)
   (doseq [line lines]
-    (let [dx 0.01]
+    (let [dx 0.004]
       (doseq [x (range 0 1 dx)]
-        (dotimes [_ 5]
-          (let [t (+ x (* dx (rand)))
-                {[p q] :points} (verticle-line line t)]
-            (q/line p q)))))))
+        (let [t (+ x (* dx (rand)))
+              {[p q] :points} (verticle-line line t)]
+          (q/line p q))))))
 
 (defn ^:export run-sketch []
   ;; 20210407
