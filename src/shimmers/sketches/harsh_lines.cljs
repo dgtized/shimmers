@@ -13,21 +13,21 @@
             (gl/line2 (cq/rel-pos (q/random 0.05 0.4) y)
                       (cq/rel-pos (q/random 0.6 0.95) y)))})
 
-(defn verticle-line [line t]
+(defn verticle-line [line t angle-sd]
   (let [p (geom/point-at line t)]
     (-> (gl/line2 [0 -1] [0 1])
-        (geom/rotate (ksd/draw (ksd/normal {:mu 0 :sd 0.1})))
+        (geom/rotate (ksd/draw (ksd/normal {:mu 0 :sd angle-sd})))
         (geom/scale-size (cq/rel-h 0.035))
         (geom/translate p))))
 
 (defn draw [{:keys [lines]}]
   (q/stroke-weight 0.3)
-  (doseq [line lines]
+  (doseq [[i line] (map-indexed vector lines)]
     (let [dx 0.004
           normal (ksd/normal {:mu 0 :sd dx})]
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (ksd/draw normal))
-              {[p q] :points} (verticle-line line t)]
+              {[p q] :points} (verticle-line line t (* 0.03 (inc i)))]
           (q/line p q))))))
 
 (defn ^:export run-sketch []
