@@ -36,7 +36,7 @@
       (q/line a b)
       (q/stroke-weight 0.3)
       (doseq [x (range 0 1 dx)]
-        (let [t (+ x (gaussian 0 (* x dx)))
+        (let [t (gaussian x (* x dx))
               {[p q] :points}
               (verticle-line (if (= i flip-row) (flip line) line)
                              t
