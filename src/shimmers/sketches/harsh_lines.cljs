@@ -29,9 +29,10 @@
     (let [dx 0.003]
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (gaussian 0 (* x dx)))
-              {[p q] :points} (verticle-line line t
-                                             (* x (cq/rel-h 0.009))
-                                             (* 0.03 (* t (inc i))))]
+              {[p q] :points}
+              (verticle-line line t
+                             (* x (* 0.2 (inc i)) (cq/rel-h 0.01))
+                             (* 0.03 (* t (inc i))))]
           (q/line p q))))))
 
 (defn ^:export run-sketch []
