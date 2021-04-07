@@ -1,20 +1,16 @@
 (ns shimmers.sketches.harsh-lines
-  (:require [quil.core :as q :include-macros true]
+  (:require [kixi.stats.distribution :as ksd]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.line :as gl]
             [shimmers.common.quil :as cq]
             [thi.ng.geom.core :as geom]
-            [kixi.stats.distribution :as ksd]))
+            [thi.ng.geom.line :as gl]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-loop)
   {:lines (for [y (range 0.2 0.8 0.1)]
             (gl/line2 (cq/rel-pos 0.1 y) (cq/rel-pos 0.9 y)))})
-
-(defn update-state [state]
-  state)
 
 (defn verticle-line [line t]
   (let [p (geom/point-at line t)]
@@ -39,6 +35,5 @@
     :host "quil-host"
     :size [600 400]
     :setup setup
-    :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+    :middleware [m/fun-mode]))
