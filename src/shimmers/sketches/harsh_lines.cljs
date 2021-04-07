@@ -10,7 +10,8 @@
   (q/color-mode :hsl 1.0)
   (q/no-loop)
   {:lines (for [y (range 0.2 0.8 0.1)]
-            (gl/line2 (cq/rel-pos 0.1 y) (cq/rel-pos 0.9 y)))})
+            (gl/line2 (cq/rel-pos (q/random 0.05 0.4) y)
+                      (cq/rel-pos (q/random 0.6 0.95) y)))})
 
 (defn verticle-line [line t]
   (let [p (geom/point-at line t)]
