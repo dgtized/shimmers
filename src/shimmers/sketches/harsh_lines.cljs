@@ -26,10 +26,9 @@
 (defn draw [{:keys [lines]}]
   (q/stroke-weight 0.3)
   (doseq [[i line] (map-indexed vector lines)]
-    (let [dx 0.005
-          normal (ksd/normal {:mu 0 :sd dx})]
+    (let [dx 0.003]
       (doseq [x (range 0 1 dx)]
-        (let [t (+ x (ksd/draw normal))
+        (let [t (+ x (gaussian 0 (* x dx)))
               {[p q] :points} (verticle-line line t (* 0.03 (* t (inc i))))]
           (q/line p q))))))
 
@@ -37,7 +36,7 @@
   ;; 20210407
   (q/defsketch harsh-lines
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode]))
