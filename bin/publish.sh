@@ -26,6 +26,8 @@ git add index.html .gitignore js/* css/* shaders/*
 git commit -m "Deploy to Github Pages"
 git push --force --quiet "git@github.com:dgtized/shimmers.git" gh-pages:gh-pages
 
+ls -hs js/release-main.js
+
 # xdg-open index.html
 
 popd
