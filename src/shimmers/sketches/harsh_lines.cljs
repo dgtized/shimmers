@@ -24,9 +24,12 @@
         (geom/translate p))))
 
 (defn draw [{:keys [lines]}]
-  (q/stroke-weight 0.3)
   (doseq [[i line] (map-indexed vector lines)]
-    (let [dx 0.003]
+    (let [dx 0.003
+          {[a b] :points} (geom/scale-size line 1.03)]
+      (q/stroke-weight 1.0)
+      (q/line a b)
+      (q/stroke-weight 0.3)
       (doseq [x (range 0 1 dx)]
         (let [t (+ x (gaussian 0 (* x dx)))
               {[p q] :points}
