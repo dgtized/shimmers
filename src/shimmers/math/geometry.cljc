@@ -35,6 +35,7 @@
              (p/weighted-by geom/area)
              random-point-in-triangle2)))
 
+;; TODO: remove once https://github.com/thi-ng/geom/pull/82 is published
 (extend-type Line2
   geom/IFlip
   (flip [_]
