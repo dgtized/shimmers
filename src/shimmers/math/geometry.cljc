@@ -16,13 +16,13 @@
    (generate-points n dist dist))
   ([n dist-x dist-y] (repeatedly n #(gv/vec2 (dist-x) (dist-y)))))
 
+;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
 ;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
 (defn random-point-in-triangle2 [{:keys [points]}]
   (let [[s t] (sort [(rand) (rand)])
-        weighting (gv/vec3 s (- t s) (- 1 t))]
-    (gv/vec2 (tm/dot (apply gv/vec3 (map :x points)) weighting)
-             (tm/dot (apply gv/vec3 (map :y points)) weighting))))
+        weighting [s (- t s) (- 1 t)]]
+    (apply tm/+ (map tm/* points weighting))))
 
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
