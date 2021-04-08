@@ -51,6 +51,7 @@
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.rose :as rose]
             [shimmers.sketches.sand-strokes :as sand-strokes]
+            [shimmers.sketches.sediment :as sediment]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
@@ -117,6 +118,7 @@
      ripples/run-sketch
      rose/run-sketch
      sand-strokes/run-sketch
+     sediment/run-sketch
      scintillation/run-sketch
      space-colonization/run-sketch
      sphere/run-sketch
