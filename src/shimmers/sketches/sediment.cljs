@@ -1,4 +1,5 @@
 (ns shimmers.sketches.sediment
+  "Experiment influenced by https://inconvergent.net/2016/shepherding-random-numbers/"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
