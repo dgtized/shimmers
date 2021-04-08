@@ -13,26 +13,36 @@
   (q/color-mode :hsl 1.0)
   (let [dx 0.025]
     {:particles (for [i (range 0 1 dx)
-                      :let [pos (gv/vec2 (cq/rel-pos i 0.5))]]
+                      :let [pos (gv/vec2 (cq/rel-pos i 1.0))]]
                   (Particle. pos pos))}))
 
+(defn velocity [{:keys [pos prev]}]
+  (:y (tm/- pos prev)))
+
+(defn update-point [{:keys [pos] :as point} surrounding]
+  (let [vel (/ (reduce + (map velocity surrounding))
+               (count surrounding))
+        acc (* 0.05 (q/random-gaussian))
+        vel' (gv/vec2 0 (+ vel acc))
+        pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
+    (assoc point
+           :prev pos
+           :pos pos')))
+
 (defn update-particles [particles]
-  (for [{:keys [pos prev] :as point} particles]
-    (let [vel (:y (tm/- pos prev))
-          acc (* 0.1 (q/random-gaussian))
-          vel' (gv/vec2 0 (+ vel acc))
-          pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
-      (assoc point
-             :prev pos
-             :pos pos'))))
+  (concat
+   [(update-point (first particles) (take 3 particles))]
+   (for [surrounding (partition 3 1 particles)]
+     (update-point (second surrounding) surrounding))
+   [(update-point (last particles) (drop (- (count particles) 3) particles))]))
 
 (defn update-state [state]
   (update state :particles update-particles))
 
 (defn draw [{:keys [particles]}]
   ;; (q/no-loop)
-  ;; (q/background 1.0)
-  (q/stroke 0 0.5)
+  (q/no-fill)
+  (q/stroke 0 0.05)
   (q/stroke-weight 0.5)
   (doseq [segment (partition 4 1 particles)]
     (apply q/curve (mapcat #(:pos %) segment))))
@@ -41,7 +51,7 @@
   ;; 2021
   (q/defsketch sediment
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     ;; :mouse-clicked (fn [state] (q/redraw) state)
