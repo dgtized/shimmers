@@ -4,11 +4,13 @@
             [shimmers.common.sequence :as cs]))
 
 (defn mount
-  "Mounts reagent component to render in explanation element.
+  "Mounts reagent component to render in an element, defaults to explanation.
 
   Helper method so it can be invoked on run-sketch OR on figwheel reload."
-  [view]
-  (rdom/render [view] (dom/getElement "explanation")))
+  ([view]
+   (mount view "explanation"))
+  ([view host]
+   (rdom/render [view] (dom/getElement host))))
 
 (defn change-mode [ui-state modes]
   (let [mode (:mode @ui-state)

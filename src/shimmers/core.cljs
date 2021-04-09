@@ -60,6 +60,7 @@
             [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.uniform-distribution :as uniform-distribution]
             [shimmers.sketches.verlet-brushes :as verlet-brushes]
             [shimmers.sketches.video-shader :as video-shader]
             [shimmers.sketches.yin-yang :as yin-yang]
@@ -127,6 +128,7 @@
      triangulating-subdivisions/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
+     uniform-distribution/run-sketch
      verlet-brushes/run-sketch
      video-shader/run-sketch
      yin-yang/run-sketch
@@ -146,9 +148,10 @@
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
-  ;; kill existing sketch
-  (q/with-sketch (q/get-sketch-by-id "quil-host")
-    (q/exit))
+  ;; kill existing sketch at quil-host if present
+  (when-let [sketch (q/get-sketch-by-id "quil-host")]
+    (q/with-sketch sketch (q/exit)))
+  (rdom/unmount-component-at-node (dom/getElement "svg-host"))
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
 (defn restart-sketch []
