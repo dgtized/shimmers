@@ -13,7 +13,7 @@
   (q/color-mode :hsl 1.0)
   (let [dx 0.001]
     {:particles (for [i (range 0 1 dx)
-                      :let [pos (gv/vec2 (cq/rel-pos i 1.0))]]
+                      :let [pos (gv/vec2 (cq/rel-pos i 0.5))]]
                   (Particle. pos pos))}))
 
 (defn velocity [{:keys [pos prev]}]
@@ -22,8 +22,8 @@
 (defn update-point [{:keys [pos] :as point} surrounding]
   (let [vel (/ (reduce + (map velocity surrounding))
                (count surrounding))
-        acc (* 0.1 (q/random-gaussian))
-        vel' (gv/vec2 0 (* 0.999 (+ vel acc)))
+        acc (* 0.25 (q/random-gaussian))
+        vel' (gv/vec2 0 (* 0.995 (+ vel acc)))
         pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
     (assoc point
            :prev pos
@@ -55,7 +55,7 @@
   (doseq [segment (partition 4 1 particles)]
     ;; (apply q/curve (mapcat #(:pos %) segment))
     (doseq [{:keys [pos]} (butlast (drop 1 segment))
-            :let [[x y] (confusion pos 0.4)]]
+            :let [[x y] (confusion pos 0.2)]]
       (q/ellipse x y 0.4 0.4))))
 
 (defn ^:export run-sketch []
