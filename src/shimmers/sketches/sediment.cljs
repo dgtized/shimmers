@@ -71,7 +71,7 @@
   ;; (q/no-loop)
   (q/no-fill)
   (q/stroke 0 0.05)
-  (q/stroke-weight 0.5)
+  (q/stroke-weight 0.35)
   (if (:sand @ui-state)
     (doseq [{:keys [pos]} particles
             :let [[x y] (confusion pos 0.2)]]
