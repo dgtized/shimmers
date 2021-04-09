@@ -44,9 +44,8 @@
 (defn confusion [[x y] r]
   (let [radius (Math/sqrt (* r (rand)))
         alpha (* 2 Math/PI (rand))]
-    (q/ellipse (+ x (* radius (Math/cos alpha)))
-               (+ y (* radius (Math/sin alpha)))
-               0.2 0.2)))
+    [(+ x (* radius (Math/cos alpha)))
+     (+ y (* radius (Math/sin alpha)))]))
 
 (defn draw [{:keys [particles]}]
   ;; (q/no-loop)
@@ -55,9 +54,9 @@
   (q/stroke-weight 0.5)
   (doseq [segment (partition 4 1 particles)]
     ;; (apply q/curve (mapcat #(:pos %) segment))
-    (doseq [{:keys [pos]} (butlast (drop 1 segment))]
-      (confusion pos 0.5))
-    ))
+    (doseq [{:keys [pos]} (butlast (drop 1 segment))
+            :let [[x y] (confusion pos 0.4)]]
+      (q/ellipse x y 0.4 0.4))))
 
 (defn ^:export run-sketch []
   ;; 2021
