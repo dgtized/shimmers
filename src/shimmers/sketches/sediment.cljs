@@ -13,6 +13,8 @@
 (defonce ui-state
   (r/atom {:sand false
            :particle-count 100
+           :horizontal-start 5
+           :average-window 16
            :acceleration 2}))
 
 (defn explanation []
@@ -20,7 +22,11 @@
    [:h5 "Applies at Restart"]
    (ctrl/slider ui-state (fn [v] (str "Particles: " v))
                 [:particle-count] [20 1000 20])
+   (ctrl/slider ui-state (fn [v] (str "Y-Axis Start: " v))
+                [:horizontal-start] [0 10 1])
    [:h5 "Applies Immediately"]
+   (ctrl/slider ui-state (fn [v] (str "Averaging Window: " v))
+                [:average-window] [4 64 4])
    (ctrl/slider ui-state (fn [v] (str "Acceleration: " v))
                 [:acceleration] [1 20 1])
    (ctrl/checkbox ui-state "Sand" [:sand])])
@@ -29,9 +35,11 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [dx (/ 1 (:particle-count @ui-state))]
+  (let [{:keys [particle-count horizontal-start]} @ui-state
+        y-start (/ horizontal-start 10)
+        dx (/ 1 particle-count)]
     {:particles (for [i (range 0 1 dx)
-                      :let [pos (gv/vec2 (cq/rel-pos i 0.5))]]
+                      :let [pos (gv/vec2 (cq/rel-pos i y-start))]]
                   (Particle. pos pos))}))
 
 (defn velocity [{:keys [pos prev]}]
@@ -48,7 +56,7 @@
            :pos pos')))
 
 (defn update-particles [particles]
-  (cs/map-with-window 16 update-point particles))
+  (cs/map-with-window (:average-window @ui-state) update-point particles))
 
 (defn update-state [state]
   (update state :particles update-particles))
