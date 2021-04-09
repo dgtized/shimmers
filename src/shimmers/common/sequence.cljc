@@ -18,6 +18,21 @@
   [f coll]
   (reduce (fn [m x] (assoc m x (f x))) {} coll))
 
+(defn map-with-window
+  "For every element in coll, and the surrounding window of n elements, return f(x,window).
+
+  The first and last n/2 elements will have share a window with the n/2th
+  element or the n/2th element from the end."
+  [n f coll]
+  (let [chunks (partition n 1 coll)
+        middle (int (/ n 2))]
+    (concat (map (fn [x] (f x (first chunks)))
+                 (take middle (first chunks)) )
+            (map (fn [chunk] (f (nth chunk middle) chunk))
+                 chunks)
+            (map (fn [x] (f x (last chunks)))
+                 (drop (inc middle) (last chunks))))))
+
 (defn rotate
   [n xs]
   (if (>= n 0)
