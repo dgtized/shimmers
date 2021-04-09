@@ -26,7 +26,7 @@
                 [:horizontal-start] [0 10 1])
    [:h5 "Applies Immediately"]
    (ctrl/slider ui-state (fn [v] (str "Averaging Window: " v))
-                [:average-window] [4 64 4])
+                [:average-window] [4 128 4])
    (ctrl/slider ui-state (fn [v] (str "Acceleration: " v))
                 [:acceleration] [1 20 1])
    (ctrl/checkbox ui-state "Sand" [:sand])])
