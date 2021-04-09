@@ -41,6 +41,13 @@
 (defn update-state [state]
   (update state :particles update-particles))
 
+(defn confusion [[x y] r]
+  (let [radius (Math/sqrt (* r (rand)))
+        alpha (* 2 Math/PI (rand))]
+    (q/ellipse (+ x (* radius (Math/cos alpha)))
+               (+ y (* radius (Math/sin alpha)))
+               0.2 0.2)))
+
 (defn draw [{:keys [particles]}]
   ;; (q/no-loop)
   (q/no-fill)
@@ -49,7 +56,7 @@
   (doseq [segment (partition 4 1 particles)]
     ;; (apply q/curve (mapcat #(:pos %) segment))
     (doseq [{:keys [pos]} (butlast (drop 1 segment))]
-      (q/ellipse (:x pos) (:y pos) 0.2 0.2))
+      (confusion pos 0.5))
     ))
 
 (defn ^:export run-sketch []
