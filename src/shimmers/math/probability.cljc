@@ -53,7 +53,7 @@
 
 ;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
 (defn confusion-disk [[x y] r]
-  (let [radius (Math/sqrt (* r (rand)))
+  (let [radius (* r (Math/sqrt (rand)))
         alpha (* 2 Math/PI (rand))]
     [(+ x (* radius (Math/cos alpha)))
      (+ y (* radius (Math/sin alpha)))]))
