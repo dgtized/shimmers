@@ -67,17 +67,24 @@
     [(+ x (* radius (Math/cos alpha)))
      (+ y (* radius (Math/sin alpha)))]))
 
+(defn x-confusion [[x y] r]
+  (let [rx (- (* 2 r (rand)) r)]
+    [(+ x rx) y]))
+
 (defn draw [{:keys [particles]}]
   ;; (q/no-loop)
-  (q/no-fill)
-  (q/stroke 0 0.05)
-  (q/stroke-weight 0.35)
-  (if (:sand @ui-state)
-    (doseq [{:keys [pos]} particles
-            :let [[x y] (confusion pos 0.2)]]
-      (q/ellipse x y 0.4 0.4))
-    (doseq [segment (partition 4 1 particles)]
-      (apply q/curve (mapcat :pos segment)))))
+  (let [{:keys [sand]} @ui-state
+        radius (/ (q/width) 2 (count particles))]
+    (q/ellipse-mode :radius)
+    (q/no-fill)
+    (q/stroke 0 0.05)
+    (q/stroke-weight 0.35)
+    (if sand
+      (doseq [{:keys [pos]} particles
+              :let [[x y] (x-confusion pos radius)]]
+        (q/ellipse x y radius radius))
+      (doseq [segment (partition 4 1 particles)]
+        (apply q/curve (mapcat :pos segment))))))
 
 (defn ^:export run-sketch []
   ;; 20210408
