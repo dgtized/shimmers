@@ -5,7 +5,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.common.sequence :as cs]))
 
 (defrecord Particle [pos prev])
 
@@ -30,13 +31,7 @@
            :pos pos')))
 
 (defn update-particles [particles]
-  (concat
-   [(update-point (first particles) (take 5 particles))
-    (update-point (second particles) (take 5 particles))]
-   (for [surrounding (partition 5 1 particles)]
-     (update-point (nth surrounding 2) surrounding))
-   [(update-point (last (butlast particles)) (drop (- (count particles) 5) particles))
-    (update-point (last particles) (drop (- (count particles) 5) particles))]))
+  (cs/map-with-window 16 update-point particles))
 
 (defn update-state [state]
   (update state :particles update-particles))
