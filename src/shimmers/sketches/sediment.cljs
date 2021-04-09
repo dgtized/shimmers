@@ -10,16 +10,20 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defonce ui-state (r/atom {:sand true}))
+(defonce ui-state (r/atom {:sand true :particle-count 100}))
 (defn explanation []
   [:div
+   [:h5 "Applies at Restart"]
+   (ctrl/slider ui-state (fn [v] (str "Particles: " v))
+                [:particle-count] [10 1000])
+   [:h5 "Applies Immediately"]
    (ctrl/checkbox ui-state "Sand" [:sand])])
 
 (defrecord Particle [pos prev])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [dx 0.001]
+  (let [dx (/ 1 (:particle-count @ui-state))]
     {:particles (for [i (range 0 1 dx)
                       :let [pos (gv/vec2 (cq/rel-pos i 0.5))]]
                   (Particle. pos pos))}))
