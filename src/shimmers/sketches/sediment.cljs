@@ -10,13 +10,19 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defonce ui-state (r/atom {:sand true :particle-count 100}))
+(defonce ui-state
+  (r/atom {:sand false
+           :particle-count 100
+           :acceleration 2}))
+
 (defn explanation []
   [:div
    [:h5 "Applies at Restart"]
    (ctrl/slider ui-state (fn [v] (str "Particles: " v))
                 [:particle-count] [20 1000 20])
    [:h5 "Applies Immediately"]
+   (ctrl/slider ui-state (fn [v] (str "Acceleration: " v))
+                [:acceleration] [1 20 1])
    (ctrl/checkbox ui-state "Sand" [:sand])])
 
 (defrecord Particle [pos prev])
@@ -34,7 +40,7 @@
 (defn update-point [{:keys [pos] :as point} surrounding]
   (let [vel (/ (reduce + (map velocity surrounding))
                (count surrounding))
-        acc (* 0.1 (q/random-gaussian))
+        acc (* (/ (:acceleration @ui-state) 20) (q/random-gaussian))
         vel' (gv/vec2 0 (* 0.995 (+ vel acc)))
         pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
     (assoc point
@@ -59,11 +65,11 @@
   (q/stroke 0 0.05)
   (q/stroke-weight 0.5)
   (if (:sand @ui-state)
-    (doseq [segment (partition 4 1 particles)]
-      (apply q/curve (mapcat :pos segment)))
     (doseq [{:keys [pos]} particles
             :let [[x y] (confusion pos 0.2)]]
-      (q/ellipse x y 0.4 0.4))))
+      (q/ellipse x y 0.4 0.4))
+    (doseq [segment (partition 4 1 particles)]
+      (apply q/curve (mapcat :pos segment)))))
 
 (defn ^:export run-sketch []
   ;; 20210408
