@@ -51,6 +51,16 @@
           [6 [3 4 5 6 7]]
           [7 [3 4 5 6 7]]
           [8 [3 4 5 6 7]]]
-         (sut/map-with-window 5 (fn [x w] [(inc x) w]) (range 8)))))
+         (sut/map-with-window 5 (fn [x w] [(inc x) w]) (range 8))))
+  (is (= [[1 [0 1 2 3]]
+          [2 [0 1 2 3]]
+          [3 [0 1 2 3]]
+          [4 [0 1 2 3]]]
+         (sut/map-with-window 4 (fn [x w] [(inc x) w]) (range 4))))
+  (is (= [[1 [0 1 2]]
+          [2 [0 1 2]]
+          [3 [0 1 2]]]
+         (sut/map-with-window 4 (fn [x w] [(inc x) w]) (range 3)))
+      "Allows window sizes > than the number of elements in coll"))
 
 (comment (t/run-tests))

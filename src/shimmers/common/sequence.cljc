@@ -24,7 +24,7 @@
   The first and last n/2 elements will have share a window with the n/2th
   element or the n/2th element from the end."
   [n f coll]
-  (let [chunks (partition n 1 coll)
+  (let [chunks (partition (min n (count coll)) 1 coll)
         middle (int (/ n 2))]
     (concat (map (fn [x] (f x (first chunks)))
                  (take middle (first chunks)) )
