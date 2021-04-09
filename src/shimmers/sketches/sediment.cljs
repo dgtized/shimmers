@@ -15,7 +15,7 @@
   [:div
    [:h5 "Applies at Restart"]
    (ctrl/slider ui-state (fn [v] (str "Particles: " v))
-                [:particle-count] [10 1000])
+                [:particle-count] [20 1000 20])
    [:h5 "Applies Immediately"]
    (ctrl/checkbox ui-state "Sand" [:sand])])
 
