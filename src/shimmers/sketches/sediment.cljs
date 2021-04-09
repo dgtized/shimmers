@@ -2,11 +2,18 @@
   "Experiment influenced by https://inconvergent.net/2016/shepherding-random-numbers/"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
+            [shimmers.common.ui.controls :as ctrl]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.sequence :as cs]))
+            [thi.ng.math.core :as tm]))
+
+(defonce ui-state (r/atom {:sand true}))
+(defn explanation []
+  [:div
+   (ctrl/checkbox ui-state "Sand" [:sand])])
 
 (defrecord Particle [pos prev])
 
@@ -23,7 +30,7 @@
 (defn update-point [{:keys [pos] :as point} surrounding]
   (let [vel (/ (reduce + (map velocity surrounding))
                (count surrounding))
-        acc (* 0.25 (q/random-gaussian))
+        acc (* 0.1 (q/random-gaussian))
         vel' (gv/vec2 0 (* 0.995 (+ vel acc)))
         pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
     (assoc point
@@ -47,14 +54,16 @@
   (q/no-fill)
   (q/stroke 0 0.05)
   (q/stroke-weight 0.5)
-  (doseq [segment (partition 4 1 particles)]
-    ;; (apply q/curve (mapcat #(:pos %) segment))
-    (doseq [{:keys [pos]} (butlast (drop 1 segment))
+  (if (:sand @ui-state)
+    (doseq [segment (partition 4 1 particles)]
+      (apply q/curve (mapcat :pos segment)))
+    (doseq [{:keys [pos]} particles
             :let [[x y] (confusion pos 0.2)]]
       (q/ellipse x y 0.4 0.4))))
 
 (defn ^:export run-sketch []
-  ;; 2021
+  ;; 20210408
+  (ctrl/mount explanation)
   (q/defsketch sediment
     :host "quil-host"
     :size [900 600]
