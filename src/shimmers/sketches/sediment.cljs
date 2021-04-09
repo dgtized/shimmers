@@ -7,6 +7,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -61,16 +62,6 @@
 (defn update-state [state]
   (update state :particles update-particles))
 
-(defn confusion [[x y] r]
-  (let [radius (Math/sqrt (* r (rand)))
-        alpha (* 2 Math/PI (rand))]
-    [(+ x (* radius (Math/cos alpha)))
-     (+ y (* radius (Math/sin alpha)))]))
-
-(defn x-confusion [[x y] r]
-  (let [rx (- (* 2 r (rand)) r)]
-    [(+ x rx) y]))
-
 (defn draw [{:keys [particles]}]
   ;; (q/no-loop)
   (let [{:keys [sand]} @ui-state
@@ -81,7 +72,7 @@
     (q/stroke-weight 0.35)
     (if sand
       (doseq [{:keys [pos]} particles
-              :let [[x y] (x-confusion pos radius)]]
+              :let [[x y] (p/jitter-x pos radius)]]
         (q/ellipse x y radius radius))
       (doseq [segment (partition 4 1 particles)]
         (apply q/curve (mapcat :pos segment))))))

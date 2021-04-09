@@ -50,3 +50,18 @@
       (-> dist
           ksd/draw
           (tm/clamp 0 1)))))
+
+;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
+(defn confusion-disk [[x y] r]
+  (let [radius (Math/sqrt (* r (rand)))
+        alpha (* 2 Math/PI (rand))]
+    [(+ x (* radius (Math/cos alpha)))
+     (+ y (* radius (Math/sin alpha)))]))
+
+(defn jitter-x [[x y] r]
+  (let [rx (- (* 2 r (rand)) r)]
+    [(+ x rx) y]))
+
+(defn jitter-y [[x y] r]
+  (let [ry (- (* 2 r (rand)) r)]
+    [x (+ y ry)]))
