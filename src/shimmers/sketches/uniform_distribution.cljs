@@ -1,11 +1,13 @@
 (ns shimmers.sketches.uniform-distribution
   (:require [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
+            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -38,9 +40,15 @@
        (example (gv/vec2 350 100) (gc/circle 0 0 50)
                 (fn [_] (p/confusion-disk (gv/vec2 0 0) 50))
                 "g/sample-uniform-inside circle")
-       (example (gv/vec2 100 250) (rect/rect -50 -50 100 100)
+       (example (gv/vec2 100 250) (geom/center (rect/rect 0 0 100 100))
                 geom/random-point-inside
-                "g/random-point-inside rect")))
+                "g/random-point-inside rect")
+       (example (gv/vec2 100 400) (geom/center (gt/triangle2 (gv/vec2 0 0) (gv/vec2 100 50) (gv/vec2 25 100)))
+                geom/random-point-inside
+                "g/random-point-inside triangle")
+       (example (gv/vec2 350 400) (geom/center (gt/triangle2 (gv/vec2 0 0) (gv/vec2 100 50) (gv/vec2 25 100)))
+                geometry/random-point-in-triangle2
+                "g/sample-uniform-inside triangle")))
 
 (defn page []
   (adapt/all-as-svg (scene)))
