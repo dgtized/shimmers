@@ -27,6 +27,16 @@
 (defn translate [cells pos]
   (map #(update % :pos geom/translate pos) cells))
 
+(defn column [cells col]
+  (filter (fn [cell] (= col (get-in cell [:pos 0]))) cells))
+
+(defn rotate-r [width cells]
+  (mapcat (fn [col]
+            (map-indexed
+             (fn [j cell] (assoc cell :pos (gv/vec2 j col)))
+             (reverse (column cells col))))
+          (range width)))
+
 (defn cells->svg-rect [cells size]
   (let [rect (rect/rect 0 0 size size)]
     (for [{:keys [pos fill]} cells
@@ -35,16 +45,15 @@
           (geom/translate (tm/* pos (gv/vec2 size size)))
           (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
-(defn larger-grid [seed]
-  (concat seed
-          (translate seed (gv/vec2 5 0))
-          (translate seed (gv/vec2 0 5))
-          (translate seed (gv/vec2 5 5))))
+(defn rotate-group [n seed]
+  (mapcat translate
+          (iterate (partial rotate-r n) seed)
+          [(gv/vec2 0 0) (gv/vec2 n 0) (gv/vec2 n n) (gv/vec2 0 n)]))
 
 (defn scene []
   (let [seed (seed-rect 5 5 paleta-6)]
     (svg {:width 800 :height 600 :stroke "black"}
-         (cells->svg-rect (larger-grid seed) 20))))
+         (cells->svg-rect (rotate-group 10 (rotate-group 5 seed)) 20))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
