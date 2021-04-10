@@ -78,7 +78,7 @@
                   (sample-points triangle geom/random-point-inside)
                   "g/random-point-inside triangle")
          (example (gv/vec2 300 400) triangle
-                  (sample-points triangle  geometry/random-point-in-triangle2)
+                  (sample-points triangle geometry/random-point-in-triangle)
                   "random point uniform triangle")
          (example (gv/vec2 500 400) triangle
                   (sample-points triangle geom/random-point 200)

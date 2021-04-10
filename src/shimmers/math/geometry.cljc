@@ -19,7 +19,7 @@
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
 ;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
-(defn random-point-in-triangle2 [{:keys [points]}]
+(defn random-point-in-triangle [{:keys [points]}]
   (let [[s t] (sort [(rand) (rand)])
         weighting [s (- t s) (- 1 t)]]
     (apply tm/+ (map tm/* points weighting))))
@@ -41,7 +41,7 @@
     [_] (->> (geom/tessellate _)
              (map gt/triangle2)
              (p/weighted-by geom/area)
-             random-point-in-triangle2)))
+             random-point-in-triangle)))
 
 ;; TODO: remove once https://github.com/thi-ng/geom/pull/82 is published
 (extend-type Line2
