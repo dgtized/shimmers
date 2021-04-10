@@ -28,10 +28,10 @@
                          description
                          {:text-anchor "middle"})
                (svg/group {:fill "none"} (geom/translate shape-centered pos))
-               (svg/group {:fill "black" :opacity 0.6}
+               (svg/group {:opacity 0.8}
                           (for [i (range 500)
                                 :let [[x y] (sample-method shape-centered)]]
-                            (with-meta (geom/translate (gc/circle x y 1) pos)
+                            (with-meta (geom/translate (gc/circle x y 0.5) pos)
                               {:key (str description "-" i)}))))))
 
 (defn scene []
@@ -48,7 +48,7 @@
                   "g/random-point-inside circle")
          (example (gv/vec2 350 100) circle
                   (fn [_] (p/confusion-disk (gv/vec2 0 0) 50))
-                  "g/sample-uniform-inside circle")
+                  "random point uniform circle")
          (example (gv/vec2 100 250) rectangle
                   geom/random-point-inside
                   "g/random-point-inside rect")
@@ -60,7 +60,7 @@
                   "g/random-point-inside triangle")
          (example (gv/vec2 350 400) triangle
                   geometry/random-point-in-triangle2
-                  "g/sample-uniform-inside triangle")
+                  "random point uniform triangle")
          (example (gv/vec2 350 550) polygon
                   geom/random-point-inside
                   "g/random-point-inside polygon"))))
