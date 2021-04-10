@@ -43,6 +43,14 @@
              (reverse (column cells col))))
           (range (max-width cells))))
 
+;; FIXME: broken, transposing or something?
+(defn rotate-l [cells]
+  (mapcat (fn [row]
+            (map-indexed
+             (fn [i cell] (assoc cell :pos (gv/vec2 i row)))
+             (column cells row)))
+          (reverse (range (max-width cells)))))
+
 (defn cells->svg-rect [cells size]
   (let [rect (rect/rect 0 0 size size)]
     (for [{:keys [pos fill]} cells
@@ -51,17 +59,24 @@
           (geom/translate (tm/* pos (gv/vec2 size size)))
           (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
-(defn rotate-group [seed]
+(defn rotate-group-r [seed]
   (let [w (max-width seed)
         h (max-height seed)]
     (mapcat translate
             (iterate rotate-r seed)
             [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])))
 
+(defn rotate-group-l [seed]
+  (let [w (max-width seed)
+        h (max-height seed)]
+    (mapcat translate
+            (iterate rotate-l seed)
+            [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])))
+
 (defn scene []
-  (let [seed (seed-rect 5 5 paleta-6)]
+  (let [seed (seed-rect 4 4 paleta-6)]
     (svg {:width 800 :height 600 :stroke "black"}
-         (cells->svg-rect (rotate-group (rotate-group seed)) 20))))
+         (cells->svg-rect (rotate-group-l seed) 20))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
