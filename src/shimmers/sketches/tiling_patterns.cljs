@@ -24,6 +24,9 @@
         j (range cols)]
     {:pos (gv/vec2 i j) :fill (rand-nth palette)}))
 
+(defn translate [cells pos]
+  (map #(update % :pos geom/translate pos) cells))
+
 (defn cells->svg-rect [cells size]
   (let [rect (rect/rect 0 0 size size)]
     (for [{:keys [pos fill]} cells
@@ -32,10 +35,16 @@
           (geom/translate (tm/* pos (gv/vec2 size size)))
           (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
+(defn larger-grid [seed]
+  (concat seed
+          (translate seed (gv/vec2 5 0))
+          (translate seed (gv/vec2 0 5))
+          (translate seed (gv/vec2 5 5))))
+
 (defn scene []
-  (let [a 0]
+  (let [seed (seed-rect 5 5 paleta-6)]
     (svg {:width 800 :height 600 :stroke "black"}
-         (cells->svg-rect (seed-rect 5 5 paleta-6) 20))))
+         (cells->svg-rect (larger-grid seed) 20))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
