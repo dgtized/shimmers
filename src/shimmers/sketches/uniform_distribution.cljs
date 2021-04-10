@@ -27,7 +27,7 @@
                (svg/text (tm/+ pos (gv/vec2 0 -70))
                          description
                          {:text-anchor "middle"})
-               (svg/group {:fill "none"} (geom/translate shape-centered pos))
+               (svg/group {:fill "none" :stroke "red"} (geom/translate shape-centered pos))
                (svg/group {:opacity 0.8}
                           (for [i (range 500)
                                 :let [[x y] (sample-method shape-centered)]]
@@ -46,24 +46,44 @@
          (example (gv/vec2 100 100) circle
                   geom/random-point-inside
                   "g/random-point-inside circle")
-         (example (gv/vec2 350 100) circle
+         (example (gv/vec2 300 100) circle
                   (fn [_] (p/confusion-disk (gv/vec2 0 0) 50))
                   "random point uniform circle")
+         (example (gv/vec2 500 100) circle
+                  geom/random-point
+                  "g/random-point circle")
+         #_(example (gv/vec2 700 100) circle
+                    (fn [s] (geom/sample-uniform s 100 true))
+                    "g/sample-uniform circle")
+
          (example (gv/vec2 100 250) rectangle
                   geom/random-point-inside
                   "g/random-point-inside rect")
-         (example (gv/vec2 350 250) rotated-rectangle
+         (example (gv/vec2 300 250) rotated-rectangle
                   geom/random-point-inside
                   "g/random-point-inside rect")
+         (example (gv/vec2 500 250) rectangle
+                  geom/random-point
+                  "g/random-point rect")
+         #_(example (gv/vec2 700 250) rectangle
+                    (fn [s] (geom/sample-uniform s 0.1 true))
+                    "g/sample-uniform rect")
+
          (example (gv/vec2 100 400) triangle
                   geom/random-point-inside
                   "g/random-point-inside triangle")
-         (example (gv/vec2 350 400) triangle
+         (example (gv/vec2 300 400) triangle
                   geometry/random-point-in-triangle2
                   "random point uniform triangle")
-         (example (gv/vec2 350 550) polygon
+         (example (gv/vec2 500 400) triangle
+                  geom/random-point
+                  "g/random-point triangle")
+         (example (gv/vec2 300 550) polygon
                   geom/random-point-inside
-                  "g/random-point-inside polygon"))))
+                  "g/random-point-inside polygon")
+         (example (gv/vec2 500 550) polygon
+                  geom/random-point
+                  "g/random-point polygon"))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
