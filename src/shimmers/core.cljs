@@ -57,6 +57,7 @@
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
             [shimmers.sketches.superposition :as superposition]
+            [shimmers.sketches.tiling-patterns :as tiling-patterns]
             [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
@@ -125,6 +126,7 @@
      sphere/run-sketch
      substrate/run-sketch
      superposition/run-sketch
+     tiling-patterns/run-sketch
      triangulating-subdivisions/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
