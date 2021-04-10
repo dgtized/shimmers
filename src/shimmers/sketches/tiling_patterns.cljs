@@ -16,9 +16,10 @@
         body))
 
 ;; palette from https://htmlcolors.com/palette/288/paleta-6
-(defn tiling-rect [n width]
-  (let [rect (rect/rect 0 0 width width)
-        palette ["rgb(7,31,65)" "rgb(0,75,90)" "rgb(246,199,111)", "rgb(237,69,52)" "rgb(188,52,44)"]]
+(def paleta-6 ["rgb(7,31,65)" "rgb(0,75,90)" "rgb(246,199,111)", "rgb(237,69,52)" "rgb(188,52,44)"])
+
+(defn tiling-rect [n width palette]
+  (let [rect (rect/rect 0 0 width width)]
     (for [i (range n)
           j (range n)]
       (-> rect
@@ -28,7 +29,7 @@
 (defn scene []
   (let [a 0]
     (svg {:width 800 :height 600 :stroke "black"}
-         (tiling-rect 5 20))))
+         (tiling-rect 5 20 paleta-6))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
