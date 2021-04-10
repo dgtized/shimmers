@@ -3,6 +3,7 @@
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
@@ -35,7 +36,10 @@
                 "g/random-point-inside circle")
        (example (gv/vec2 450 150) (gc/circle 450 150 100)
                 (fn [_] (p/confusion-disk (gv/vec2 450 150) 100))
-                "g/sample-uniform-inside circle")))
+                "g/sample-uniform-inside circle")
+       (example (gv/vec2 150 400) (rect/rect 100 300 100 100)
+                geom/random-point-inside
+                "g/random-point-inside rect")))
 
 (defn page []
   (adapt/all-as-svg (scene)))
