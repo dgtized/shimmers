@@ -53,7 +53,7 @@
                   geom/random-point
                   "g/random-point circle")
          #_(example (gv/vec2 700 100) circle
-                    (fn [s] (geom/sample-uniform s 100 true))
+                    (fn [s] (geom/sample-uniform s 10 true))
                     "g/sample-uniform circle")
 
          (example (gv/vec2 100 250) rectangle
@@ -66,7 +66,7 @@
                   geom/random-point
                   "g/random-point rect")
          #_(example (gv/vec2 700 250) rectangle
-                    (fn [s] (geom/sample-uniform s 0.1 true))
+                    (fn [s] (geom/sample-uniform s 10 true))
                     "g/sample-uniform rect")
 
          (example (gv/vec2 100 400) triangle
@@ -78,12 +78,19 @@
          (example (gv/vec2 500 400) triangle
                   geom/random-point
                   "g/random-point triangle")
+         #_(example (gv/vec2 700 400) triangle
+                    (fn [s] (geom/sample-uniform s 10 true))
+                    "g/sample-uniform triangle")
+
          (example (gv/vec2 300 550) polygon
                   geom/random-point-inside
                   "g/random-point-inside polygon")
          (example (gv/vec2 500 550) polygon
                   geom/random-point
-                  "g/random-point polygon"))))
+                  "g/random-point polygon")
+         #_(example (gv/vec2 700 550) polygon
+                    (fn [s] (geom/sample-uniform s 10 true))
+                    "g/sample-uniform polygon"))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
