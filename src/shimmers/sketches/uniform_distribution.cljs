@@ -31,13 +31,13 @@
 
 (defn scene []
   (svg {:width 900 :height 600 :stroke "black"}
-       (example (gv/vec2 150 150) (gc/circle 150 150 100)
+       (example (gv/vec2 150 150) (gc/circle 150 100 50)
                 geom/random-point-inside
                 "g/random-point-inside circle")
-       (example (gv/vec2 450 150) (gc/circle 450 150 100)
-                (fn [_] (p/confusion-disk (gv/vec2 450 150) 100))
+       (example (gv/vec2 450 150) (gc/circle 450 100 50)
+                (fn [_] (p/confusion-disk (gv/vec2 450 100) 50))
                 "g/sample-uniform-inside circle")
-       (example (gv/vec2 150 400) (rect/rect 100 300 100 100)
+       (example (gv/vec2 150 300) (rect/rect 100 200 100 100)
                 geom/random-point-inside
                 "g/random-point-inside rect")))
 
