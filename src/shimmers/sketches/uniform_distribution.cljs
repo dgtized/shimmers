@@ -21,7 +21,11 @@
           {:xmlns "http://www.w3.org/2000/svg"})]
         body))
 
-(defn example [pos shape sample-method description]
+(defn sample-points [shape sample-method]
+  (let [centered (geom/center shape)]
+    (repeatedly 500 #(sample-method centered))))
+
+(defn example [pos shape points description]
   (let [shape-centered (geom/center shape)]
     (svg/group {}
                (svg/text (tm/+ pos (gv/vec2 0 -70))
@@ -29,8 +33,7 @@
                          {:text-anchor "middle"})
                (svg/group {:fill "none" :stroke "red"} (geom/translate shape-centered pos))
                (svg/group {:opacity 0.8}
-                          (for [i (range 500)
-                                :let [[x y] (sample-method shape-centered)]]
+                          (for [[i [x y]] (map-indexed vector points)]
                             (with-meta (geom/translate (gc/circle x y 0.5) pos)
                               {:key (str description "-" i)}))))))
 
@@ -44,53 +47,53 @@
         ]
     (svg {:width 900 :height 600 :stroke "black"}
          (example (gv/vec2 100 100) circle
-                  geom/random-point-inside
+                  (sample-points circle geom/random-point-inside)
                   "g/random-point-inside circle")
          (example (gv/vec2 300 100) circle
-                  (fn [_] (p/confusion-disk (gv/vec2 0 0) 50))
+                  (sample-points circle (fn [_] (p/confusion-disk (gv/vec2 0 0) 50)))
                   "random point uniform circle")
          (example (gv/vec2 500 100) circle
-                  geom/random-point
+                  (sample-points circle geom/random-point)
                   "g/random-point circle")
-         #_(example (gv/vec2 700 100) circle
-                    (fn [s] (geom/sample-uniform s 10 true))
-                    "g/sample-uniform circle")
+         (example (gv/vec2 700 100) circle
+                  (geom/sample-uniform (geom/center circle) 10 true)
+                  "g/sample-uniform circle")
 
          (example (gv/vec2 100 250) rectangle
-                  geom/random-point-inside
+                  (sample-points rectangle geom/random-point-inside)
                   "g/random-point-inside rect")
          (example (gv/vec2 300 250) rotated-rectangle
-                  geom/random-point-inside
+                  (sample-points rotated-rectangle geom/random-point-inside)
                   "g/random-point-inside rect")
          (example (gv/vec2 500 250) rectangle
-                  geom/random-point
+                  (sample-points rectangle geom/random-point)
                   "g/random-point rect")
-         #_(example (gv/vec2 700 250) rectangle
-                    (fn [s] (geom/sample-uniform s 10 true))
-                    "g/sample-uniform rect")
+         (example (gv/vec2 700 250) rectangle
+                  (geom/sample-uniform (geom/center rectangle) 10 true)
+                  "g/sample-uniform rect")
 
          (example (gv/vec2 100 400) triangle
-                  geom/random-point-inside
+                  (sample-points triangle geom/random-point-inside)
                   "g/random-point-inside triangle")
          (example (gv/vec2 300 400) triangle
-                  geometry/random-point-in-triangle2
+                  (sample-points triangle  geometry/random-point-in-triangle2)
                   "random point uniform triangle")
          (example (gv/vec2 500 400) triangle
-                  geom/random-point
+                  (sample-points triangle geom/random-point)
                   "g/random-point triangle")
-         #_(example (gv/vec2 700 400) triangle
-                    (fn [s] (geom/sample-uniform s 10 true))
-                    "g/sample-uniform triangle")
+         (example (gv/vec2 700 400) triangle
+                  (geom/sample-uniform (geom/center triangle) 10 true)
+                  "g/sample-uniform triangle")
 
          (example (gv/vec2 300 550) polygon
-                  geom/random-point-inside
+                  (sample-points polygon geom/random-point-inside)
                   "g/random-point-inside polygon")
          (example (gv/vec2 500 550) polygon
-                  geom/random-point
+                  (sample-points polygon geom/random-point)
                   "g/random-point polygon")
-         #_(example (gv/vec2 700 550) polygon
-                    (fn [s] (geom/sample-uniform s 10 true))
-                    "g/sample-uniform polygon"))))
+         (example (gv/vec2 700 550) polygon
+                  (geom/sample-uniform (geom/center polygon) 10 true)
+                  "g/sample-uniform polygon"))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
