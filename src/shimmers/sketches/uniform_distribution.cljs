@@ -28,10 +28,10 @@
           (let [[x y] (p/confusion-disk [500 150] 100)]
             (with-meta (gc/circle x y 1) {:key (str "c2-" i)})))]
     (svg {:width 900 :height 600 :stroke "black"}
-         (svg/text (gv/vec2 75 30) "g/random-point-inside")
+         (svg/text (gv/vec2 150 30) "g/random-point-inside circle" {:text-anchor "middle"})
          (svg/group {:fill "none"} c1)
          (svg/group {:fill "black" :opacity 0.6} points1)
-         (svg/text (gv/vec2 450 30) "confusion-disk")
+         (svg/text (gv/vec2 500 30) "g/sample-uniform-inside circle" {:text-anchor "middle"})
          (svg/group {:fill "none"} c2)
          (svg/group {:fill "black" :opacity 0.6} points2))))
 
