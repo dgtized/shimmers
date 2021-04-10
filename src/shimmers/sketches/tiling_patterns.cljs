@@ -26,10 +26,11 @@
 
 (defn cells->svg-rect [cells size]
   (let [rect (rect/rect 0 0 size size)]
-    (for [{:keys [pos fill]} cells]
+    (for [{:keys [pos fill]} cells
+          :let [[i j] pos]]
       (-> rect
           (geom/translate (tm/* pos (gv/vec2 size size)))
-          (with-meta {:fill fill})))))
+          (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
 (defn scene []
   (let [a 0]
