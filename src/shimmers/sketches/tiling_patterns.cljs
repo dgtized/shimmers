@@ -30,12 +30,15 @@
 (defn column [cells col]
   (filter (fn [cell] (= col (get-in cell [:pos 0]))) cells))
 
-(defn rotate-r [width cells]
+(defn max-width [cells]
+  (inc (apply max (map #(get-in % [:pos 0]) cells))))
+
+(defn rotate-r [cells]
   (mapcat (fn [col]
             (map-indexed
              (fn [j cell] (assoc cell :pos (gv/vec2 j col)))
              (reverse (column cells col))))
-          (range width)))
+          (range (max-width cells))))
 
 (defn cells->svg-rect [cells size]
   (let [rect (rect/rect 0 0 size size)]
@@ -47,7 +50,7 @@
 
 (defn rotate-group [n seed]
   (mapcat translate
-          (iterate (partial rotate-r n) seed)
+          (iterate rotate-r seed)
           [(gv/vec2 0 0) (gv/vec2 n 0) (gv/vec2 n n) (gv/vec2 0 n)]))
 
 (defn scene []
