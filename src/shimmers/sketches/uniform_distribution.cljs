@@ -5,7 +5,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn svg
   "Replaces svg/svg, and removes warnings about xlink & react keys"
@@ -16,24 +17,25 @@
           {:xmlns "http://www.w3.org/2000/svg"})]
         body))
 
+(defn example [pos shape sample-method description]
+  (svg/group {}
+             (svg/text (tm/- pos (gv/vec2 0 120))
+                       description
+                       {:text-anchor "middle"})
+             (svg/group {:fill "none"} shape)
+             (svg/group {:fill "black" :opacity 0.6}
+                        (for [i (range 500)
+                              :let [[x y] (sample-method shape)]]
+                          (with-meta (gc/circle x y 1) {:key (str description "-" i)})))))
+
 (defn scene []
-  (let [c1 (gc/circle 150 150 100)
-        points1
-        (for [i (range 1000)]
-          (let [[x y] (geom/random-point-inside c1)]
-            (with-meta (gc/circle x y 1) {:key (str "c1-" i)})))
-        c2 (gc/circle 500 150 100)
-        points2
-        (for [i (range 1000)]
-          (let [[x y] (p/confusion-disk [500 150] 100)]
-            (with-meta (gc/circle x y 1) {:key (str "c2-" i)})))]
-    (svg {:width 900 :height 600 :stroke "black"}
-         (svg/text (gv/vec2 150 30) "g/random-point-inside circle" {:text-anchor "middle"})
-         (svg/group {:fill "none"} c1)
-         (svg/group {:fill "black" :opacity 0.6} points1)
-         (svg/text (gv/vec2 500 30) "g/sample-uniform-inside circle" {:text-anchor "middle"})
-         (svg/group {:fill "none"} c2)
-         (svg/group {:fill "black" :opacity 0.6} points2))))
+  (svg {:width 900 :height 600 :stroke "black"}
+       (example (gv/vec2 150 150) (gc/circle 150 150 100)
+                geom/random-point-inside
+                "g/random-point-inside circle")
+       (example (gv/vec2 450 150) (gc/circle 450 150 100)
+                (fn [_] (p/confusion-disk (gv/vec2 450 150) 100))
+                "g/sample-uniform-inside circle")))
 
 (defn page []
   (adapt/all-as-svg (scene)))
