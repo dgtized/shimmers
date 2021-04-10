@@ -1,7 +1,6 @@
 (ns shimmers.sketches.uniform-distribution
   (:require [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
-            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
