@@ -20,24 +20,25 @@
 
 (defn example [pos shape sample-method description]
   (svg/group {}
-             (svg/text (tm/- pos (gv/vec2 0 120))
+             (svg/text (tm/+ pos (gv/vec2 0 -70))
                        description
                        {:text-anchor "middle"})
-             (svg/group {:fill "none"} shape)
+             (svg/group {:fill "none"} (geom/translate shape pos))
              (svg/group {:fill "black" :opacity 0.6}
                         (for [i (range 500)
                               :let [[x y] (sample-method shape)]]
-                          (with-meta (gc/circle x y 1) {:key (str description "-" i)})))))
+                          (with-meta (geom/translate (gc/circle x y 1) pos)
+                            {:key (str description "-" i)})))))
 
 (defn scene []
   (svg {:width 900 :height 600 :stroke "black"}
-       (example (gv/vec2 150 150) (gc/circle 150 100 50)
+       (example (gv/vec2 150 150) (gc/circle 0 0 50)
                 geom/random-point-inside
                 "g/random-point-inside circle")
-       (example (gv/vec2 450 150) (gc/circle 450 100 50)
-                (fn [_] (p/confusion-disk (gv/vec2 450 100) 50))
+       (example (gv/vec2 450 150) (gc/circle 0 0 50)
+                (fn [_] (p/confusion-disk (gv/vec2 0 0) 50))
                 "g/sample-uniform-inside circle")
-       (example (gv/vec2 150 300) (rect/rect 100 200 100 100)
+       (example (gv/vec2 150 300) (rect/rect -50 -50 100 100)
                 geom/random-point-inside
                 "g/random-point-inside rect")))
 
