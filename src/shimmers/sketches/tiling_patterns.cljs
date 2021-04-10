@@ -30,6 +30,9 @@
 (defn column [cells col]
   (filter (fn [cell] (= col (get-in cell [:pos 0]))) cells))
 
+(defn max-height [cells]
+  (inc (apply max (map #(get-in % [:pos 1]) cells))))
+
 (defn max-width [cells]
   (inc (apply max (map #(get-in % [:pos 0]) cells))))
 
@@ -48,15 +51,17 @@
           (geom/translate (tm/* pos (gv/vec2 size size)))
           (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
-(defn rotate-group [n seed]
-  (mapcat translate
-          (iterate rotate-r seed)
-          [(gv/vec2 0 0) (gv/vec2 n 0) (gv/vec2 n n) (gv/vec2 0 n)]))
+(defn rotate-group [seed]
+  (let [w (max-width seed)
+        h (max-height seed)]
+    (mapcat translate
+            (iterate rotate-r seed)
+            [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])))
 
 (defn scene []
   (let [seed (seed-rect 5 5 paleta-6)]
     (svg {:width 800 :height 600 :stroke "black"}
-         (cells->svg-rect (rotate-group 10 (rotate-group 5 seed)) 20))))
+         (cells->svg-rect (rotate-group (rotate-group seed)) 20))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
