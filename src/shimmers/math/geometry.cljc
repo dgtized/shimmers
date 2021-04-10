@@ -24,6 +24,14 @@
         weighting [s (- t s) (- 1 t)]]
     (apply tm/+ (map tm/* points weighting))))
 
+;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
+(defn random-point-in-circle [_]
+  (-> (gv/vec2
+       (* (get _ :r) (Math/sqrt (tm/random)))
+       (* tm/TWO_PI (tm/random)))
+      geom/as-cartesian
+      (tm/+ (get _ :p))))
+
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
 ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon

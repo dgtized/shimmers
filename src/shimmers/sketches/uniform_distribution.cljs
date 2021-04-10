@@ -52,7 +52,7 @@
                   (sample-points circle geom/random-point-inside)
                   "g/random-point-inside circle")
          (example (gv/vec2 300 100) circle
-                  (sample-points circle (fn [_] (p/confusion-disk (gv/vec2 0 0) 50)))
+                  (sample-points circle geometry/random-point-in-circle)
                   "random point uniform circle")
          (example (gv/vec2 500 100) circle
                   (sample-points circle geom/random-point 200)
