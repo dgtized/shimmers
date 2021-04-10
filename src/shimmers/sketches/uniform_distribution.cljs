@@ -4,6 +4,7 @@
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
@@ -35,8 +36,12 @@
 
 (defn scene []
   (let [circle (gc/circle 0 0 50)
+        ;; ellipse is not implemented?
+        rectangle (rect/rect 0 0 100 100)
+        rotated-rectangle (geom/rotate rectangle 0.25)
         triangle (gt/triangle2 (gv/vec2 0 0) (gv/vec2 100 50) (gv/vec2 25 100))
-        rectangle (rect/rect 0 0 100 100)]
+        polygon (gp/polygon2 [0 0] [50 75] [100 100] [100 50] [75 25])
+        ]
     (svg {:width 900 :height 600 :stroke "black"}
          (example (gv/vec2 100 100) circle
                   geom/random-point-inside
@@ -47,12 +52,18 @@
          (example (gv/vec2 100 250) rectangle
                   geom/random-point-inside
                   "g/random-point-inside rect")
+         (example (gv/vec2 350 250) rotated-rectangle
+                  geom/random-point-inside
+                  "g/random-point-inside rect")
          (example (gv/vec2 100 400) triangle
                   geom/random-point-inside
                   "g/random-point-inside triangle")
          (example (gv/vec2 350 400) triangle
                   geometry/random-point-in-triangle2
-                  "g/sample-uniform-inside triangle"))))
+                  "g/sample-uniform-inside triangle")
+         (example (gv/vec2 350 550) polygon
+                  geom/random-point-inside
+                  "g/random-point-inside polygon"))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
