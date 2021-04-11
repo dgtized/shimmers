@@ -133,9 +133,10 @@
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
 (defn scene [mode]
-  (let [n 6
-        square-size 9
-        depth 4
+  (let [screen-size 900
+        n (rand-nth [3 4 5 6])
+        depth (if (< n 6) 4 3)
+        cell-size (/ screen-size (* n (Math/pow 2 depth)))
         palette (rand-nth [paleta-6 cherry-5 eae5e2-5 eulbink-7 citrink-8])
         seed (seed-rect n n palette)
         operations (case mode
@@ -144,10 +145,11 @@
                      :mirror-yx (repeat depth mirror-yx-group)
                      :rotate-l (repeat depth (partial rotate-group-l clockwise))
                      :rotate-r (repeat depth (partial rotate-group-r clockwise)))
-        size (* square-size n (Math/pow 2 depth))]
-    (svg {:width size :height size :stroke "black"}
-         (cells->svg-rect ((apply comp operations) seed)
-                          square-size))))
+        size (* cell-size n (Math/pow 2 depth))]
+    (println {:n n :depth depth})
+    (time (svg {:width screen-size :height screen-size :stroke "black"}
+               (cells->svg-rect ((apply comp operations) seed)
+                                cell-size)))))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
