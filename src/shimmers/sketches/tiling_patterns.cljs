@@ -25,6 +25,12 @@
 ;; https://htmlcolors.com/palette/1469/eae5e2
 (def eae5e2-5 ["#7AF8D4" "#01585B" "#9FC3BB" "#B8E7C2" "#19CF54"])
 
+;; https://htmlcolors.com/palette/1268/egg
+(def egg-5 ["#F1AF3A" "#0E0C0A" "#E2E1DD" "#7E4E06" "#64746C"])
+
+;; https://htmlcolors.com/palette/1111/sunflowers
+(def sunflowers-5 ["#D1AE68" "#2E363C" "#71493E" "#E7DFD5" "#B37A29"])
+
 ;; https://lospec.com/palette-list/eulbink
 (def eulbink-7 ["#ffffff" "#0ce6f2" "#0098db" "#1e579c"
                 "#203562" "#252446" "#201533"])
@@ -32,6 +38,8 @@
 ;; https://lospec.com/palette-list/citrink
 (def citrink-8 ["#ffffff" "#fcf660" "#b2d942" "#52c33f"
                 "#166e7a" "#254d70" "#252446" "#201533"])
+
+(def palettes [paleta-6 cherry-5 eae5e2-5 egg-5 sunflowers-5 eulbink-7 citrink-8])
 
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
@@ -140,7 +148,7 @@
         n (rand-nth [3 4 5 6])
         depth (if (< n 6) 4 3)
         cell-size (/ screen-size (* n (Math/pow 2 depth)))
-        palette (rand-nth [paleta-6 cherry-5 eae5e2-5 eulbink-7 citrink-8])
+        palette (rand-nth palettes)
         seed (seed-rect n n palette)
         operations (random-operations depth)]
     (.log js/console {:n n :ops operations :colors palette})
