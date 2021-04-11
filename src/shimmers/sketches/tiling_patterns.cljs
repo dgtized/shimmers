@@ -65,19 +65,19 @@
 (defn counter-clockwise [w h]
   [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])
 
-(defn rotate-group-r [seed]
+(defn rotate-group-r [dir seed]
   (let [w (max-width seed)
         h (max-height seed)]
     (mapcat translate
             (iterate rotate-r seed)
-            (clockwise w h))))
+            (dir w h))))
 
-(defn rotate-group-l [seed]
+(defn rotate-group-l [dir seed]
   (let [w (max-width seed)
         h (max-height seed)]
     (mapcat translate
             (iterate rotate-l seed)
-            (counter-clockwise w h))))
+            (dir w h))))
 
 (defn flip-x [seed]
   (let [w (max-width seed)]
@@ -105,30 +105,30 @@
   ((comp mirror-x-group mirror-y-group) seed))
 
 (defn random-operations [depth]
-  (take depth (shuffle [rotate-group-r
-                        rotate-group-r
-                        rotate-group-l
-                        rotate-group-l
+  (take depth (shuffle [(partial rotate-group-r clockwise)
+                        (partial rotate-group-r counter-clockwise)
+                        (partial rotate-group-l clockwise)
+                        (partial rotate-group-l counter-clockwise)
                         mirror-xy-group
                         mirror-xy-group])))
 
-(defn scene []
+(defn scene [mode]
   (let [n 4
         square-size 10
-        depth 1
+        depth 4
         seed (seed-rect n n paleta-6)
-        operations (case :rotate-l
+        operations (case mode
                      :random (random-operations depth)
-                     :mirror [mirror-xy-group]
-                     :rotate-l [rotate-group-l]
-                     :rotate-r [rotate-group-r])
+                     :mirror (repeat depth mirror-xy-group)
+                     :rotate-l (repeat depth (partial rotate-group-l clockwise))
+                     :rotate-r (repeat depth (partial rotate-group-r clockwise)))
         size (* square-size n (Math/pow 2 depth))]
     (svg {:width size :height size :stroke "black"}
          (cells->svg-rect ((apply comp operations) seed)
                           square-size))))
 
 (defn page []
-  (adapt/all-as-svg (scene)))
+  (adapt/all-as-svg (scene :random)))
 
 (defn ^:export run-sketch []
   ;; 20210409
