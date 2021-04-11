@@ -19,6 +19,20 @@
 ;; palette from https://htmlcolors.com/palette/288/paleta-6
 (def paleta-6 ["rgb(7,31,65)" "rgb(0,75,90)" "rgb(246,199,111)", "rgb(237,69,52)" "rgb(188,52,44)"])
 
+;; https://htmlcolors.com/palette/1345/cherry
+(def cherry-5 ["#FFE5D7" "#E78B89" "#D2271F" "#B21D39" "#820539"])
+
+;; https://htmlcolors.com/palette/1469/eae5e2
+(def eae5e2-5 ["#7AF8D4" "#01585B" "#9FC3BB" "#B8E7C2" "#19CF54"])
+
+;; https://lospec.com/palette-list/eulbink
+(def eulbink-7 ["#ffffff" "#0ce6f2" "#0098db" "#1e579c"
+                "#203562" "#252446" "#201533"])
+
+;; https://lospec.com/palette-list/citrink
+(def citrink-8 ["#ffffff" "#fcf660" "#b2d942" "#52c33f"
+                "#166e7a" "#254d70" "#252446" "#201533"])
+
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
         j (range cols)]
@@ -119,7 +133,8 @@
   (let [n 6
         square-size 9
         depth 4
-        seed (seed-rect n n paleta-6)
+        palette (rand-nth [paleta-6 cherry-5 eae5e2-5 eulbink-7 citrink-8])
+        seed (seed-rect n n palette)
         operations (case mode
                      :random (random-operations depth)
                      :mirror (repeat depth mirror-xy-group)
