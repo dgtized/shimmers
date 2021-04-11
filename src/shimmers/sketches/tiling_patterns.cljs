@@ -145,7 +145,9 @@
 ;; and then the error compounds?
 (defn scene [n seed palette]
   (let [screen-size 900
-        depth (if (< n 6) 4 3)
+        depth (cond (< n 3) 5
+                    (< n 6) 4
+                    :else 3)
         cell-size (/ screen-size (* n (Math/pow 2 depth)))
         operations (random-operations depth)]
     (println {:n n :ops operations :colors palette})
@@ -155,7 +157,7 @@
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
-  (let [n (rand-nth [3 4 5 6])
+  (let [n (rand-nth [2 3 4 5 6])
         palette (rand-nth palettes)
         seed (seed-rect n n palette)]
     [:div
