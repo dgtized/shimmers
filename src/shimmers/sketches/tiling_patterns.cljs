@@ -135,28 +135,22 @@
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
-(defn scene [mode]
+(defn scene []
   (let [screen-size 900
         n (rand-nth [3 4 5 6])
         depth (if (< n 6) 4 3)
         cell-size (/ screen-size (* n (Math/pow 2 depth)))
         palette (rand-nth [paleta-6 cherry-5 eae5e2-5 eulbink-7 citrink-8])
         seed (seed-rect n n palette)
-        operations (case mode
-                     :random (random-operations depth)
-                     :mirror-xy (repeat depth mirror-xy-group)
-                     :mirror-yx (repeat depth mirror-yx-group)
-                     :rotate-l (repeat depth (partial rotate-group-l clockwise))
-                     :rotate-r (repeat depth (partial rotate-group-r clockwise)))]
-    (println {:n n :depth depth})
-    (println operations)
+        operations (random-operations depth)]
+    (.log js/console {:n n :ops operations :colors palette})
     (time (svg {:width screen-size :height screen-size :stroke "black"}
                (cells->svg-rect ((apply comp (map transformations operations)) seed)
                                 cell-size)))))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
-  (adapt/all-as-svg (scene :random)))
+  (adapt/all-as-svg (scene)))
 
 (defn ^:export run-sketch []
   ;; 20210409
