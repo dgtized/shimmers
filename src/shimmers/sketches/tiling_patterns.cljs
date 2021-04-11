@@ -59,19 +59,25 @@
           (geom/translate (tm/* pos (gv/vec2 size size)))
           (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
 
+(defn clockwise [w h]
+  [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])
+
+(defn counter-clockwise [w h]
+  [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])
+
 (defn rotate-group-r [seed]
   (let [w (max-width seed)
         h (max-height seed)]
     (mapcat translate
             (iterate rotate-r seed)
-            [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])))
+            (clockwise w h))))
 
 (defn rotate-group-l [seed]
   (let [w (max-width seed)
         h (max-height seed)]
     (mapcat translate
             (iterate rotate-l seed)
-            [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])))
+            (counter-clockwise w h))))
 
 (defn flip-x [seed]
   (let [w (max-width seed)]
