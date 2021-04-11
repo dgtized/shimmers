@@ -112,9 +112,12 @@
                         mirror-xy-group
                         mirror-xy-group])))
 
+;; FIXME: something is still off sometimes about the initial square
+;; I think at least one operation is transposing or something instead of what it's supposed to do
+;; and then the error compounds?
 (defn scene [mode]
-  (let [n 4
-        square-size 10
+  (let [n 6
+        square-size 9
         depth 4
         seed (seed-rect n n paleta-6)
         operations (case mode
@@ -127,6 +130,7 @@
          (cells->svg-rect ((apply comp operations) seed)
                           square-size))))
 
+;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
   (adapt/all-as-svg (scene :random)))
 
