@@ -151,7 +151,7 @@
         palette (rand-nth palettes)
         seed (seed-rect n n palette)
         operations (random-operations depth)]
-    (.log js/console {:n n :ops operations :colors palette})
+    (println {:n n :ops operations :colors palette})
     (time (svg {:width screen-size :height screen-size :stroke "black"}
                (cells->svg-rect ((apply comp (map transformations operations)) seed)
                                 cell-size)))))
