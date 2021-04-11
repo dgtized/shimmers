@@ -1,4 +1,4 @@
-(ns shimmers.sketches.tiling-patterns
+(ns shimmers.sketches.mosaic-tiling
   (:require [shimmers.common.ui.controls :as ctrl]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]

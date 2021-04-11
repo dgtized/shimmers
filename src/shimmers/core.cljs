@@ -36,6 +36,7 @@
             [shimmers.sketches.langton-ant :as langton-ant]
             [shimmers.sketches.lattice-of-common-chords :as lattice-of-common-chords]
             [shimmers.sketches.minimum-spanning-tree :as minimum-spanning-tree]
+            [shimmers.sketches.mosaic-tiling :as mosaic-tiling]
             [shimmers.sketches.noise-grid :as noise-grid]
             [shimmers.sketches.noisy-shapes :as noisy-shapes]
             [shimmers.sketches.object-permanence :as object-permanence]
@@ -57,7 +58,6 @@
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
             [shimmers.sketches.superposition :as superposition]
-            [shimmers.sketches.tiling-patterns :as tiling-patterns]
             [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
@@ -105,6 +105,7 @@
      langton-ant/run-sketch
      lattice-of-common-chords/run-sketch
      minimum-spanning-tree/run-sketch
+     mosaic-tiling/run-sketch
      noise-grid/run-sketch
      noisy-shapes/run-sketch
      object-permanence/run-sketch
@@ -126,7 +127,6 @@
      sphere/run-sketch
      substrate/run-sketch
      superposition/run-sketch
-     tiling-patterns/run-sketch
      triangulating-subdivisions/run-sketch
      tunnel-flight/run-sketch
      typography/run-sketch
