@@ -73,13 +73,46 @@
             (iterate rotate-l seed)
             [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])))
 
+(defn flip-x [seed]
+  (let [w (max-width seed)]
+    (map (fn [cell]
+           (update-in cell [:pos 0] (fn [x] (- w x 1))))
+         seed)))
+
+(defn flip-y [seed]
+  (let [h (max-height seed)]
+    (map (fn [cell]
+           (update-in cell [:pos 1] (fn [y] (- h y 1))))
+         seed)))
+
+(defn mirror-x-group [seed]
+  (concat seed
+          (-> (flip-x seed)
+              (translate (gv/vec2 (max-width seed) 0)))))
+
+(defn mirror-y-group [seed]
+  (concat seed
+          (-> (flip-y seed)
+              (translate (gv/vec2 0 (max-height seed))))))
+
+(defn mirror-xy-group [seed]
+  ((comp mirror-x-group mirror-y-group) seed))
+
 (defn scene []
-  (let [n 5
-        seed (seed-rect n n paleta-6)]
-    (svg {:width 800 :height 600 :stroke "black"}
-         (cells->svg-rect (concat (rotate-group-r seed)
-                                  (translate (rotate-group-l seed) (gv/vec2 (inc (* n 2)) 0)))
-                          40))))
+  (let [n 6
+        square-size 8
+        depth 4
+        seed (seed-rect n n paleta-6)
+        operations (take depth (shuffle [rotate-group-r
+                                         rotate-group-r
+                                         rotate-group-l
+                                         rotate-group-l
+                                         mirror-xy-group
+                                         mirror-xy-group]))
+        size (* 8 n (Math/pow 2 depth))]
+    (svg {:width size :height size :stroke "black"}
+         (cells->svg-rect ((apply comp operations) seed)
+                          square-size))))
 
 (defn page []
   (adapt/all-as-svg (scene)))
