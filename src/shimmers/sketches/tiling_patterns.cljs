@@ -121,13 +121,16 @@
 (defn mirror-yx-group [seed]
   ((comp mirror-y-group mirror-x-group) seed))
 
+(def transformations
+  {:rotate-rc (partial rotate-group-r clockwise)
+   :rotate-rcc (partial rotate-group-r counter-clockwise)
+   :rotate-lc (partial rotate-group-l clockwise)
+   :rotate-lcc (partial rotate-group-l counter-clockwise)
+   :mirror-xy mirror-xy-group
+   :mirror-yx mirror-yx-group})
+
 (defn random-operations [depth]
-  (take depth (shuffle [(partial rotate-group-r clockwise)
-                        (partial rotate-group-r counter-clockwise)
-                        (partial rotate-group-l clockwise)
-                        (partial rotate-group-l counter-clockwise)
-                        mirror-xy-group
-                        mirror-yx-group])))
+  (repeatedly depth #(rand-nth (keys transformations))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
@@ -144,11 +147,11 @@
                      :mirror-xy (repeat depth mirror-xy-group)
                      :mirror-yx (repeat depth mirror-yx-group)
                      :rotate-l (repeat depth (partial rotate-group-l clockwise))
-                     :rotate-r (repeat depth (partial rotate-group-r clockwise)))
-        size (* cell-size n (Math/pow 2 depth))]
+                     :rotate-r (repeat depth (partial rotate-group-r clockwise)))]
     (println {:n n :depth depth})
+    (println operations)
     (time (svg {:width screen-size :height screen-size :stroke "black"}
-               (cells->svg-rect ((apply comp operations) seed)
+               (cells->svg-rect ((apply comp (map transformations operations)) seed)
                                 cell-size)))))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
