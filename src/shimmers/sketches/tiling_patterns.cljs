@@ -118,13 +118,16 @@
 (defn mirror-xy-group [seed]
   ((comp mirror-x-group mirror-y-group) seed))
 
+(defn mirror-yx-group [seed]
+  ((comp mirror-y-group mirror-x-group) seed))
+
 (defn random-operations [depth]
   (take depth (shuffle [(partial rotate-group-r clockwise)
                         (partial rotate-group-r counter-clockwise)
                         (partial rotate-group-l clockwise)
                         (partial rotate-group-l counter-clockwise)
                         mirror-xy-group
-                        mirror-xy-group])))
+                        mirror-yx-group])))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
@@ -137,7 +140,8 @@
         seed (seed-rect n n palette)
         operations (case mode
                      :random (random-operations depth)
-                     :mirror (repeat depth mirror-xy-group)
+                     :mirror-xy (repeat depth mirror-xy-group)
+                     :mirror-yx (repeat depth mirror-yx-group)
                      :rotate-l (repeat depth (partial rotate-group-l clockwise))
                      :rotate-r (repeat depth (partial rotate-group-r clockwise)))
         size (* square-size n (Math/pow 2 depth))]
