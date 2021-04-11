@@ -122,7 +122,7 @@
                      :mirror [mirror-xy-group]
                      :rotate-l [rotate-group-l]
                      :rotate-r [rotate-group-r])
-        size (* 8 (inc n) (Math/pow 2 depth))]
+        size (* square-size n (Math/pow 2 depth))]
     (svg {:width size :height size :stroke "black"}
          (cells->svg-rect ((apply comp operations) seed)
                           square-size))))
