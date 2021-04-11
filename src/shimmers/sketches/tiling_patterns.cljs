@@ -104,18 +104,25 @@
 (defn mirror-xy-group [seed]
   ((comp mirror-x-group mirror-y-group) seed))
 
+(defn random-operations [depth]
+  (take depth (shuffle [rotate-group-r
+                        rotate-group-r
+                        rotate-group-l
+                        rotate-group-l
+                        mirror-xy-group
+                        mirror-xy-group])))
+
 (defn scene []
-  (let [n 6
-        square-size 8
-        depth 4
+  (let [n 4
+        square-size 10
+        depth 1
         seed (seed-rect n n paleta-6)
-        operations (take depth (shuffle [rotate-group-r
-                                         rotate-group-r
-                                         rotate-group-l
-                                         rotate-group-l
-                                         mirror-xy-group
-                                         mirror-xy-group]))
-        size (* 8 n (Math/pow 2 depth))]
+        operations (case :rotate-l
+                     :random (random-operations depth)
+                     :mirror [mirror-xy-group]
+                     :rotate-l [rotate-group-l]
+                     :rotate-r [rotate-group-r])
+        size (* 8 (inc n) (Math/pow 2 depth))]
     (svg {:width size :height size :stroke "black"}
          (cells->svg-rect ((apply comp operations) seed)
                           square-size))))
