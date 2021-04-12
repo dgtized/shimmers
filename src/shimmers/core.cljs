@@ -9,63 +9,7 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
-            [shimmers.macros.loader :as loader :include-macros true]
-            [shimmers.sketches.ascendance :as ascendance]
-            [shimmers.sketches.braid :as braid]
-            [shimmers.sketches.bubbles :as bubbles]
-            [shimmers.sketches.butterfly :as butterfly]
-            [shimmers.sketches.circle-packing :as circle-packing]
-            [shimmers.sketches.colors :as colors]
-            [shimmers.sketches.convex-spiral :as convex-spiral]
-            [shimmers.sketches.cube :as cube]
-            [shimmers.sketches.delaunay-voronoi :as delaunay-voronoi]
-            [shimmers.sketches.dispersion :as dispersion]
-            [shimmers.sketches.dithering :as dithering]
-            [shimmers.sketches.emitters :as emitters]
-            [shimmers.sketches.fire :as fire]
-            [shimmers.sketches.folding-triangles :as folding-triangles]
-            ;; [shimmers.sketches.fluid :as fluid]
-            [shimmers.sketches.gossamer-coils :as gossamer-coils]
-            [shimmers.sketches.gravity-well :as gravity-well]
-            [shimmers.sketches.harsh-lines :as harsh-lines]
-            [shimmers.sketches.hexaclock :as hexaclock]
-            [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
-            [shimmers.sketches.k-means :as k-means]
-            [shimmers.sketches.kd-tree :as kd-tree]
-            [shimmers.sketches.kinematic-chain :as kinematic-chain]
-            [shimmers.sketches.langton-ant :as langton-ant]
-            [shimmers.sketches.lattice-of-common-chords :as lattice-of-common-chords]
-            [shimmers.sketches.minimum-spanning-tree :as minimum-spanning-tree]
-            [shimmers.sketches.mosaic-tiling :as mosaic-tiling]
-            [shimmers.sketches.noise-grid :as noise-grid]
-            [shimmers.sketches.noisy-shapes :as noisy-shapes]
-            [shimmers.sketches.object-permanence :as object-permanence]
-            [shimmers.sketches.particles :as particles]
-            [shimmers.sketches.permutations-of-transfiguration :as permutations-of-transfiguration]
-            [shimmers.sketches.point-to-point :as point-to-point]
-            [shimmers.sketches.precipitation :as precipitation]
-            [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
-            [shimmers.sketches.radar :as radar]
-            [shimmers.sketches.random-walk :as random-walk]
-            [shimmers.sketches.ray-marching :as ray-marching]
-            [shimmers.sketches.ring :as ring]
-            [shimmers.sketches.ripples :as ripples]
-            [shimmers.sketches.rose :as rose]
-            [shimmers.sketches.sand-strokes :as sand-strokes]
-            [shimmers.sketches.sediment :as sediment]
-            [shimmers.sketches.scintillation :as scintillation]
-            [shimmers.sketches.space-colonization :as space-colonization]
-            [shimmers.sketches.sphere :as sphere]
-            [shimmers.sketches.substrate :as substrate]
-            [shimmers.sketches.superposition :as superposition]
-            [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
-            [shimmers.sketches.tunnel-flight :as tunnel-flight]
-            [shimmers.sketches.typography :as typography]
-            [shimmers.sketches.uniform-distribution :as uniform-distribution]
-            [shimmers.sketches.verlet-brushes :as verlet-brushes]
-            [shimmers.sketches.video-shader :as video-shader]
-            [shimmers.sketches.yin-yang :as yin-yang]
-            [shimmers.sketches.zigzag :as zigzag]))
+            [shimmers.sketches :as sketches]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -76,67 +20,7 @@
   (atom {:sketches (sort-by (comp name :id) sketches)
          :current nil}))
 
-(defonce state
-  (init-sketches
-   (loader/sketches-with-meta
-    [ascendance/run-sketch
-     braid/run-sketch
-     bubbles/run-sketch
-     butterfly/run-sketch
-     circle-packing/run-sketch
-     colors/run-sketch
-     convex-spiral/run-sketch
-     cube/run-sketch
-     delaunay-voronoi/run-sketch
-     dispersion/run-sketch
-     dithering/run-sketch
-     emitters/run-sketch
-     fire/run-sketch
-     folding-triangles/run-sketch
-     ;; fluid/run-sketch
-     gossamer-coils/run-sketch
-     gravity-well/run-sketch
-     hexaclock/run-sketch
-     harsh-lines/run-sketch
-     impressions-of-open-space/run-sketch
-     k-means/run-sketch
-     kd-tree/run-sketch
-     kinematic-chain/run-sketch
-     langton-ant/run-sketch
-     lattice-of-common-chords/run-sketch
-     minimum-spanning-tree/run-sketch
-     mosaic-tiling/run-sketch
-     noise-grid/run-sketch
-     noisy-shapes/run-sketch
-     object-permanence/run-sketch
-     particles/run-sketch
-     permutations-of-transfiguration/run-sketch
-     point-to-point/run-sketch
-     precipitation/run-sketch
-     probabilistic-automata/run-sketch
-     radar/run-sketch
-     random-walk/run-sketch
-     ray-marching/run-sketch
-     ring/run-sketch
-     ripples/run-sketch
-     rose/run-sketch
-     sand-strokes/run-sketch
-     sediment/run-sketch
-     scintillation/run-sketch
-     space-colonization/run-sketch
-     sphere/run-sketch
-     substrate/run-sketch
-     superposition/run-sketch
-     triangulating-subdivisions/run-sketch
-     tunnel-flight/run-sketch
-     typography/run-sketch
-     uniform-distribution/run-sketch
-     verlet-brushes/run-sketch
-     video-shader/run-sketch
-     yin-yang/run-sketch
-     zigzag/run-sketch])))
-
-(comment (loader/all-sketches))
+(defonce state (init-sketches (sketches/all)))
 
 (defn current-sketch []
   (let [{:keys [sketches current]} @state]

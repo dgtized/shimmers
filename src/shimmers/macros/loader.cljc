@@ -18,7 +18,7 @@
               :line (:line m#)}))))
 
 (defmacro all-sketches
-  "Create sketch definitions from every namespace under shimmers.sketches"
+  "Create sketch definitions from every namespace under shimmers.sketches.*"
   []
   `[~@(keep (fn [ns]
               ;; This *attempts* to handle if a sketch is required or not from
