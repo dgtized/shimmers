@@ -27,7 +27,7 @@
   (let [chunks (partition (min n (count coll)) 1 coll)
         middle (int (/ n 2))]
     (concat (map (fn [x] (f x (first chunks)))
-                 (take middle (first chunks)) )
+                 (take middle (first chunks)))
             (map (fn [chunk] (f (nth chunk middle) chunk))
                  chunks)
             (map (fn [x] (f x (last chunks)))

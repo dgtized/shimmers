@@ -28,11 +28,9 @@
   (rect/rect 0 0 (* s 13) (* s 17)))
 
 (defn random-brush []
-  (let [brushes [
-                 #(small-rectangle (q/random 0.4 1.1))
+  (let [brushes [#(small-rectangle (q/random 0.4 1.1))
                  #(right-angle (q/random 0.4 1.1))
-                 #(tc/circle (q/random 3 8))
-                 ]]
+                 #(tc/circle (q/random 3 8))]]
     ((rand-nth brushes))))
 
 (defn generate-strokes [brush random-position n]
@@ -81,7 +79,6 @@
                  :fill [105 0.5 0.5 0.2]}]]
     (doseq [args (shuffle shapes)]
       (fuzzy-shape args))))
-
 
 (defn ^:export run-sketch []
   (q/defsketch noisy-shapes

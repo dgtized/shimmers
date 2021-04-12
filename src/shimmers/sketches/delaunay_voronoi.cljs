@@ -120,8 +120,7 @@
     (apply q/triangle (flatten view-pts))
     (doseq [edge (geom/edges (apply gt/triangle2 view-pts))]
       #_(plot (bisect-line edge))
-      (draw-bisect edge))
-    )
+      (draw-bisect edge)))
 
   (q/ellipse-mode :radius)
   (q/fill 0 0 0)
@@ -167,9 +166,7 @@
           (apply q/vertex p))
         (if inside
           (q/end-shape :close)
-          (q/end-shape)))
-      ))
-  )
+          (q/end-shape))))))
 
 (defn ^:export run-sketch []
   ;; 20210321

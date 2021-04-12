@@ -22,8 +22,7 @@
     (q/line [x y]
             (v/add (v/vec2 x y)
                    (v/scale (v/unit2-from-angle (+ theta radial-noise))
-                            (* radial-noise 32))))
-    ))
+                            (* radial-noise 32))))))
 
 (defn ^:export run-sketch []
   (q/defsketch ring

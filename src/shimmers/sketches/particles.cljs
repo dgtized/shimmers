@@ -27,8 +27,7 @@
 From https://en.wikipedia.org/wiki/Drag_(physics)
 "
   ;; (v/add velocity (v/scale velocity -0.1))
-  (v/scale velocity 0.90)
-  )
+  (v/scale velocity 0.90))
 
 ;; Because of discontinuity when noise wraps around, there were often competing
 ;; forces at the borders. We fix this by reflecting x and y coordinates around

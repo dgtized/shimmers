@@ -43,7 +43,7 @@
 ;; https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
 (defn dither [capture width height]
   (let [image (q/create-image width height)
-        source(q/pixels capture)
+        source (q/pixels capture)
         target (q/pixels image)]
     (dotimes [y height]
       (dotimes [x width]
@@ -75,7 +75,7 @@
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.75) 0.5)]
-          (q/rect (* x 2 box-size ) (* y 2 box-size) size size))))))
+          (q/rect (* x 2 box-size) (* y 2 box-size) size size))))))
 
 (defn circles [capture width height]
   (q/rect-mode :corner)
@@ -89,7 +89,7 @@
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
-          (q/ellipse (* x 2 box-size ) (* y 2 box-size) size size))))))
+          (q/ellipse (* x 2 box-size) (* y 2 box-size) size size))))))
 
 (defn color-displace [capture width height]
   (q/rect-mode :corner)
@@ -113,7 +113,6 @@
           (q/ellipse (+ (* x 2 box-size) (- displace)) (+ (* y 2 box-size) displace) gsize gsize)
           (q/fill 0 0 v 48)
           (q/ellipse (+ (* x 2 box-size) 0) (+ (* y 2 box-size) (- displace)) bsize bsize))))))
-
 
 (defn draw [{:keys [capture width height]}]
   (q/background 255)

@@ -83,8 +83,7 @@
   (if-not (:done circle)
     (let [growth (assoc (geom/scale-size circle scale) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
-          intersecting-circle (some (partial intersects growth) near)
-          ]
+          intersecting-circle (some (partial intersects growth) near)]
       (if (and (contains-entity? boundary growth) (not intersecting-circle))
         growth
         (assoc circle :done true

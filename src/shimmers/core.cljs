@@ -53,7 +53,7 @@
 (defn sketch-list []
   (let [{:keys [sketches]} @state]
     [:section
-     [:h1 (str "All Sketches (" (count sketches ) ")")]
+     [:h1 (str "All Sketches (" (count sketches) ")")]
      (into [:ul]
            (for [sketch sketches]
              [:li [:a {:href (rfe/href ::sketch-by-name {:name (:id sketch)})}

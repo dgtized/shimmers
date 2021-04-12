@@ -44,8 +44,7 @@
         rectangle (rect/rect 0 0 100 100)
         rotated-rectangle (geom/rotate rectangle 0.25)
         triangle (gt/triangle2 (gv/vec2 0 0) (gv/vec2 100 50) (gv/vec2 25 100))
-        polygon (gp/polygon2 [0 0] [50 75] [100 100] [100 50] [75 25])
-        ]
+        polygon (gp/polygon2 [0 0] [50 75] [100 100] [100 50] [75 25])]
     (svg {:width 800 :height 600 :stroke "black"}
          (example (gv/vec2 100 100) circle
                   (sample-points circle geom/random-point-inside)

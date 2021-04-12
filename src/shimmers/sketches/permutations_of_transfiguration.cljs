@@ -80,8 +80,7 @@
        (apply q/fill (get grid a))
        (q/rect 0 0 (- pw) h)
        (apply q/fill (get grid b))
-       (q/rect 0 0 pw h)
-       ))})
+       (q/rect 0 0 pw h)))})
 
 (defn flip-y [c r speed]
   {:cells [[c r] [c (inc r)]]
@@ -103,8 +102,7 @@
        (apply q/fill (get grid a))
        (q/rect 0 0 w (- ph))
        (apply q/fill (get grid b))
-       (q/rect 0 0 w ph)
-       ))})
+       (q/rect 0 0 w ph)))})
 
 (defn debug-cell [n offset x y]
   (q/fill 255)
@@ -114,8 +112,7 @@
 (defn rollover-sliver-color [colors offset dir]
   (let [f (if (>= dir 0)
             (- (- (int offset)) 1)
-            (int offset)
-            )]
+            (int offset))]
     (apply q/fill (nth colors (mod f (count colors))))))
 
 (defn rotate-row [{:keys [dims]} row n speed]
@@ -137,8 +134,7 @@
                  :let [x (mod (+ c (* dir offset)) cols)]]
            (apply q/fill (nth colors c))
            (q/rect (* x w) (* row h) w h)
-           #_(debug-cell c x (* x w) (* row h))
-           )))}))
+           #_(debug-cell c x (* x w) (* row h)))))}))
 
 (defn rotate-column [{:keys [dims]} column n speed]
   (let [[_ rows] dims
@@ -159,8 +155,7 @@
                  :let [y (mod (+ r (* dir offset)) rows)]]
            (apply q/fill (nth colors r))
            (q/rect (* column w) (* y h) w h)
-           #_(debug-cell r y (* column w) (* y h))
-           )))}))
+           #_(debug-cell r y (* column w) (* y h)))))}))
 
 (defn make-pinwheel [state]
   (let [[w h] (:dims state)]

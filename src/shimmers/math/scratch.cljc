@@ -6,5 +6,4 @@
   (map #(tm/mix-circular-flipped 0.98 16 %) (range 0 1 0.05))
   (map #(tm/mix-cosine 0.5 2 %) (range 0 1 0.05))
   (map #(tm/mix-lens 0.5 0.1 % 1 100) (range 0 1 0.05))
-  (map #(tm/mix-bezier 0.9 3 % 1.5 0.1) (range 0 1 0.05))
-  )
+  (map #(tm/mix-bezier 0.9 3 % 1.5 0.1) (range 0 1 0.05)))
