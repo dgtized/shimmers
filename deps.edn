@@ -23,7 +23,7 @@
         metosin/reitit {:mvn/version "0.5.12"}
 
         ;; This is not dev only because of production build
-        com.bhauman/figwheel-main {:mvn/version "0.2.12"}
+        com.bhauman/figwheel-main {:mvn/version "0.2.13"}
 
         ;; Better debug output
         binaryage/devtools {:mvn/version "1.0.3"}
