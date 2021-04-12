@@ -21,6 +21,7 @@
          :current nil}))
 
 (defonce state (init-sketches (sketches/all)))
+(defonce match (r/atom nil))
 
 (defn current-sketch []
   (let [{:keys [sketches current]} @state]
@@ -48,8 +49,6 @@
   (let [{:keys [sketches current]} @state
         next-sketch (cs/cycle-next (map :id sketches) current)]
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
-
-(defonce match (r/atom nil))
 
 (defn sketch-list []
   (let [{:keys [sketches]} @state]
