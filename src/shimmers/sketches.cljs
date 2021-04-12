@@ -2,6 +2,7 @@
   (:require [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.ascendance :as ascendance]
             [shimmers.sketches.braid :as braid]
+            [shimmers.sketches.brush-sweep :as brush-sweep]
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.circle-packing :as circle-packing]
@@ -62,6 +63,7 @@
   (loader/sketches-with-meta
    [ascendance/run-sketch
     braid/run-sketch
+    brush-sweep/run-sketch
     bubbles/run-sketch
     butterfly/run-sketch
     circle-packing/run-sketch
