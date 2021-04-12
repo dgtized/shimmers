@@ -20,11 +20,11 @@
   (atom {:sketches (sort-by (comp name :id) sketches)
          :current nil}))
 
-(defonce state (init-sketches (sketches/all)))
+(defonce app-state (init-sketches (sketches/all)))
 (defonce match (r/atom nil))
 
 (defn current-sketch []
-  (let [{:keys [sketches current]} @state]
+  (let [{:keys [sketches current]} @app-state]
     (first (filter #(= current (:id %)) sketches))))
 
 (defn run-current []
@@ -46,12 +46,12 @@
   (run-current))
 
 (defn cycle-sketch []
-  (let [{:keys [sketches current]} @state
+  (let [{:keys [sketches current]} @app-state
         next-sketch (cs/cycle-next (map :id sketches) current)]
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defn sketch-list []
-  (let [{:keys [sketches]} @state]
+  (let [{:keys [sketches]} @app-state]
     [:section
      [:h1 (str "All Sketches (" (count sketches) ")")]
      (into [:ul]
@@ -71,7 +71,7 @@
      [:span {:id "framerate"}]]))
 
 (defn known-sketches []
-  (map (comp name :id) (get @state :sketches)))
+  (map (comp name :id) (get @app-state :sketches)))
 
 (def routes
   [;; "/shimmers"
@@ -88,7 +88,7 @@
                 (let [sketch-name (:name path)]
                   (println "start" "sketch" sketch-name)
                   (ui/screen-view (name sketch-name))
-                  (swap! state assoc :current (keyword sketch-name))
+                  (swap! app-state assoc :current (keyword sketch-name))
                   (run-current)))
        :stop (fn [{:keys [path]}]
                (println "stop" "sketch" (:name path))
