@@ -21,24 +21,31 @@
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
                  geom/center
                  (geom/scale-size 2))]
-    (->> (geom/sample-uniform line 25 true)
+    (->> (geom/sample-uniform line 15 true)
          (map (fn [p] (-> hair
                          (geom/rotate (* tm/TWO_PI (tm/random)))
                          (geom/translate p)))))))
 
 (defn draw [{:keys [t line]}]
   (q/stroke-weight 0.5)
-  (q/stroke 0 0.05)
-  (q/no-fill)
-  (let [offset (gv/vec2 (cq/rel-pos -0.1 (* 0.01 t)))]
-    (doseq [hair (shuffle (hairs (geom/translate line offset)))]
-      (cq/draw-shape (geom/vertices hair)))))
+  (q/stroke 0 0.01)
+  (let [t' (/ t 100)]
+    (q/fill (tm/mix* 0.5 0.9 t')
+            (tm/mix-circular 0.5 0.8 t')
+            0.6
+            0.05)
+    (let [offset (cq/rel-pos (+ -0.1
+                                (/ (tm/smoothstep* 0.3 0.4 t') 50)
+                                (/ (- (tm/step* 0.7 t')) 40))
+                             (* 0.01 t))]
+      (doseq [hair (shuffle (hairs (geom/translate line (gv/vec2 offset))))]
+        (cq/draw-shape (geom/vertices hair))))))
 
 (defn ^:export run-sketch []
   ;; 20210412
   (q/defsketch brush-sweep
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
