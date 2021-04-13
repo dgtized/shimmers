@@ -19,7 +19,7 @@
 (defn hairs [line]
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
                  geom/center
-                 (geom/scale-size 2))]
+                 (geom/scale-size 5))]
     (->> (geom/sample-uniform line 15 true)
          (map (fn [p] (-> hair
                          (geom/rotate (* tm/TWO_PI (tm/random)))
@@ -33,9 +33,9 @@
 
             (tm/mix-circular 0.5 0.8 t')
             0.6
-            0.05)
+            0.025)
     (let [pos (gv/vec2 (cq/rel-pos (+ -0.1
-                                      (/ (tm/smoothstep* 0.3 0.4 t') 50)
+                                      (/ (tm/smoothstep* 0.3 0.4 t') 30)
                                       (/ (- (tm/step* 0.6 t')) 40))
                                    (* 0.01 t)))
           slope (* 0.1 t')
