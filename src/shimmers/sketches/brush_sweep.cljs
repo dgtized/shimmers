@@ -32,8 +32,8 @@
     (q/fill (tm/mix* 0.5 0.9 (+ t' (tm/random -0.05 0.05)))
 
             (tm/mix-circular 0.5 0.8 t')
-            0.6
-            0.025)
+            (tm/random 0.5 0.7)
+            0.02)
     (let [pos (gv/vec2 (cq/rel-pos (+ -0.1
                                       (/ (tm/smoothstep* 0.3 0.4 t') 30)
                                       (/ (- (tm/step* 0.6 t')) 40))
