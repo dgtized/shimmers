@@ -14,7 +14,7 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t (fn [t] (mod (+ t (tm/random 0.2)) 100.0))))
+  (update state :t (fn [t] (mod (+ t (tm/random 0.1)) 100.0))))
 
 (defn hairs [line]
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
@@ -48,7 +48,7 @@
   ;; 20210412
   (q/defsketch brush-sweep
     :host "quil-host"
-    :size [900 600]
+    :size [1200 900]
     :setup setup
     :update update-state
     :draw draw
