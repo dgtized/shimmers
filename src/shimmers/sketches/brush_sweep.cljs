@@ -20,7 +20,9 @@
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
                  geom/center
                  (geom/scale-size 5))]
-    (->> (geom/sample-uniform line 15 true)
+    (->> (if true
+           (geom/sample-uniform line 20 true)
+           (repeatedly 64 #(geom/random-point line)))
          (map (fn [p] (-> hair
                          (geom/rotate (* tm/TWO_PI (tm/random)))
                          (geom/translate p)))))))
