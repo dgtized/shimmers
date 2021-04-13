@@ -14,7 +14,7 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t (fn [t] (mod (+ t (tm/random 0.1)) 100.0))))
+  (update state :t (fn [t] (mod (+ t (tm/random 0.05)) 100.0))))
 
 (defn hairs [line]
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
