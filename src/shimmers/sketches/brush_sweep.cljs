@@ -36,9 +36,9 @@
             0.02)
     (let [pos (gv/vec2 (cq/rel-pos (+ -0.1
                                       (/ (tm/smoothstep* 0.3 0.4 t') 30)
-                                      (/ (- (tm/step* 0.6 t')) 40))
+                                      (/ (- (tm/step* 0.6 t')) 30))
                                    (* 0.01 t)))
-          slope (* 0.1 t')
+          slope (* (q/random 0.1) t')
           line (gl/line2 pos
                          (gv/vec2 (q/width) (+ (* slope (q/width)) (:y pos))))]
       (doseq [hair (shuffle (hairs line))]
