@@ -11,8 +11,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:line (gl/line2 (cq/rel-pos -0.1 0) (cq/rel-pos 1.1 0))
-   :t 0})
+  {:t 0})
 
 (defn update-state [state]
   (update state :t (fn [t] (mod (+ t (tm/random 0.2)) 100.0))))
@@ -26,19 +25,23 @@
                          (geom/rotate (* tm/TWO_PI (tm/random)))
                          (geom/translate p)))))))
 
-(defn draw [{:keys [t line]}]
+(defn draw [{:keys [t]}]
   (q/stroke-weight 0.5)
   (q/stroke 0 0.01)
   (let [t' (/ t 100)]
     (q/fill (tm/mix* 0.5 0.9 t')
+
             (tm/mix-circular 0.5 0.8 t')
             0.6
             0.05)
-    (let [offset (cq/rel-pos (+ -0.1
-                                (/ (tm/smoothstep* 0.3 0.4 t') 50)
-                                (/ (- (tm/step* 0.7 t')) 40))
-                             (* 0.01 t))]
-      (doseq [hair (shuffle (hairs (geom/translate line (gv/vec2 offset))))]
+    (let [pos (gv/vec2 (cq/rel-pos (+ -0.1
+                                      (/ (tm/smoothstep* 0.3 0.4 t') 50)
+                                      (/ (- (tm/step* 0.6 t')) 40))
+                                   (* 0.01 t)))
+          slope (* 0.1 t')
+          line (gl/line2 pos
+                         (gv/vec2 (q/width) (+ (* slope (q/width)) (:y pos))))]
+      (doseq [hair (shuffle (hairs line))]
         (cq/draw-shape (geom/vertices hair))))))
 
 (defn ^:export run-sketch []
