@@ -29,7 +29,7 @@
   (q/stroke-weight 0.5)
   (q/stroke 0 0.01)
   (let [t' (/ t 100)]
-    (q/fill (tm/mix* 0.5 0.9 t')
+    (q/fill (tm/mix* 0.5 0.9 (+ t' (tm/random -0.05 0.05)))
 
             (tm/mix-circular 0.5 0.8 t')
             0.6
