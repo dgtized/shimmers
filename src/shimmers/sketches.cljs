@@ -10,6 +10,7 @@
             [shimmers.sketches.convex-spiral :as convex-spiral]
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.delaunay-voronoi :as delaunay-voronoi]
+            [shimmers.sketches.decaying-foundations :as decaying-foundations]
             [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
@@ -71,6 +72,7 @@
     convex-spiral/run-sketch
     cube/run-sketch
     delaunay-voronoi/run-sketch
+    decaying-foundations/run-sketch
     dispersion/run-sketch
     dithering/run-sketch
     emitters/run-sketch
