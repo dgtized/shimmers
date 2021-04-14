@@ -22,17 +22,18 @@
                     (gv/vec2 x y))))
 
 (defn wall [height]
-  (mapcat identity
-          (for [y (range 0 (q/height) height)]
-            (layer (+ y (tm/random 4))
-                   (rand-nth (map (partial * height) (range 1 3.5 0.5)))
-                   (- height (tm/random 8))))))
+  (let [gap (tm/random 8 14)]
+    (mapcat identity
+            (for [y (range (- (tm/random height)) (q/height) height)]
+              (layer (+ y (/ gap 2))
+                     (rand-nth (map (partial * height) (range 1 3.5 0.5)))
+                     (- height gap))))))
 
 (defn update-state [state]
   state)
 
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size} (wall 30)]
+  (doseq [{[x y] :p  [w h] :size} (wall 80)]
     (q/rect x y w h)))
 
 (defn ^:export run-sketch []
