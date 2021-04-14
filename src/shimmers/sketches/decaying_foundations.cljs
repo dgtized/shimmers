@@ -18,11 +18,11 @@
 
 (defn layer [y width height]
   (for [x (range (* (rand) (- width)) (q/width) width)]
-    (geom/translate (brick (- width (* 10 (rand))) height)
+    (geom/translate (brick (- width (tm/random (/ width 24) (/ width 12))) height)
                     (gv/vec2 x y))))
 
 (defn wall [height]
-  (let [gap (tm/random 8 14)]
+  (let [gap (tm/random (/ height 16) (/ height 8))]
     (mapcat identity
             (for [y (range (- (tm/random height)) (q/height) height)]
               (layer (+ y (/ gap 2))
