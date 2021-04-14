@@ -9,13 +9,14 @@
 
 (defn setup []
   (q/no-loop)
+  (q/rect-mode :corner)
   (q/color-mode :hsl 1.0)
   {})
 
 (defn brick [w h]
   (rect/rect 0 0 w h))
 
-(defn layer [width height y]
+(defn layer [y width height]
   (for [x (range (* (rand) (- width)) (q/width) width)]
     (geom/translate (brick (- width (* 10 (rand))) height)
                     (gv/vec2 x y))))
@@ -23,15 +24,15 @@
 (defn wall [height]
   (mapcat identity
           (for [y (range 0 (q/height) height)]
-            (layer (rand-nth [30 50 60 75 80])
-                   (- height (tm/random 4))
-                   (+ y (tm/random 4))))))
+            (layer (+ y (tm/random 4))
+                   (rand-nth (map (partial * height) (range 1 3.5 0.5)))
+                   (- height (tm/random 8))))))
 
 (defn update-state [state]
   state)
 
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size} (wall 20)]
+  (doseq [{[x y] :p  [w h] :size} (wall 30)]
     (q/rect x y w h)))
 
 (defn ^:export run-sketch []
