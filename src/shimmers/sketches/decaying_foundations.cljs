@@ -27,14 +27,14 @@
     (mapcat identity
             (for [y (range (- (tm/random height)) (q/height) height)]
               (layer (+ y (/ y-gap 2))
-                     (rand-nth (map (partial * height) (range 1 3.5 0.5)))
+                     (rand-nth (map (partial * height) (range 1.1 3 0.5)))
                      (- height y-gap))))))
 
 (defn update-state [state]
   state)
 
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size} (wall 80)]
+  (doseq [{[x y] :p  [w h] :size} (wall 60)]
     (q/rect x y w h)))
 
 (defn ^:export run-sketch []
