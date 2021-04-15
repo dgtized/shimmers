@@ -24,11 +24,11 @@
 
 (defn wall [height]
   (let [y-gap (tm/random (/ height 16) (/ height 8))]
-    (mapcat identity
-            (for [y (range (- (tm/random height)) (q/height) height)]
-              (layer (+ y (/ y-gap 2))
-                     (rand-nth (map (partial * height) (range 1.1 3 0.5)))
-                     (- height y-gap))))))
+    (flatten
+     (for [y (range (- (tm/random height)) (q/height) height)]
+       (layer (+ y (/ y-gap 2))
+              (rand-nth (map (partial * height) (range 1.1 3 0.5)))
+              (- height y-gap))))))
 
 (defn update-state [state]
   state)
