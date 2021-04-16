@@ -13,28 +13,27 @@
     (rand)
     0))
 
-;; Modified from https://github.com/clojure/data.generators/blob/master/src/main/clojure/clojure/data/generators.clj#L73
-;; as it was not available for Clojurescript
 (defn weighted
-  "Given a map of generators and weights, return a value from one of
-   the generators, selecting generator based on weights."
-  [m]
-  (let [weights (reductions + (vals m))
-        total   (last weights)
-        choices (map vector (keys m) weights)
-        choice  (* total (rand))]
-    (loop [[[c w] & more] choices]
-      (when w
-        (if (< choice w)
-          c
-          (recur more))))))
+  "Given a mapping of values to weights, randomly choose a value biased by weight"
+  [weights]
+  (let [sample (tm/random (apply + (vals weights)))]
+    (loop [cumulative 0.0
+           [[choice weight] & remaining] weights]
+      (when weight
+        (let [sum (+ cumulative weight)]
+          (if (< sample sum)
+            choice
+            (recur sum remaining)))))))
 
-(defn weighted-by [f xs]
+(defn weighted-by
+  "Given a sequence of values `xs`, weight each value by a function `f` and return
+  a weighted random selection."
+  [f xs]
   (weighted (cs/mapping f xs)))
 
 (comment
-  (weighted {:a 0.2 :b 0.8})
-  (weighted-by inc [1 2 3]))
+  (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9})))
+  (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn map-random-sample
   "Apply `f` to the subset of `coll` selected with probability `prob` with the
