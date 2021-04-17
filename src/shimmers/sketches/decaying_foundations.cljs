@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -50,7 +51,9 @@
     (q/rect x y w h)
     (when (p/chance 0.5)
       (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 96]))]
-        (q/line p q)))))
+        (apply q/line (-> (gl/line2 p q)
+                          (geom/scale-size (tm/random 0.88 0.99))
+                          geom/vertices))))))
 
 (defn ^:export run-sketch []
   ;; 20210414
