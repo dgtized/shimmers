@@ -18,9 +18,9 @@
 (defn brick [w h]
   (rect/rect 0 0 w h))
 
-(defn layer [y width height]
+(defn layer [y x-off width height]
   (let [x-gap (tm/random (/ width 24) (/ width 12))]
-    (for [x (range (- (tm/random width)) (q/width) width)]
+    (for [x (range (* -0.33 width x-off) (q/width) width)]
       (geom/translate (brick (- width x-gap) height)
                       (gv/vec2 x y)))))
 
@@ -31,6 +31,7 @@
      (for [y (range (- (tm/random brick-height)) screen-height brick-height)
            :let [py (/ y screen-height)]]
        (layer (+ y (/ y-gap 2))
+              (inc (mod (int (/ y brick-height)) 3))
               (* brick-height (p/weighted {1.2 (* 1.2 py)
                                            1.5 (* 1.0 py)
                                            1.8 (- 2.0 py)
