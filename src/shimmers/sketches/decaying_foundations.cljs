@@ -56,7 +56,7 @@
     (q/rect x y w h)
     (q/stroke-weight 0.7)
     (when (p/chance (/ y 1.5 (q/height)))
-      (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 96]))]
+      (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 84]))]
         (apply q/line (-> (gl/line2 p q)
                           (geom/scale-size (tm/random 0.88 0.99))
                           geom/vertices))))))
