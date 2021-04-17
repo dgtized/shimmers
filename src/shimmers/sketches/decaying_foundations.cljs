@@ -30,14 +30,16 @@
     (flatten
      (for [y (range (- (tm/random brick-height)) screen-height brick-height)
            :let [py (/ y screen-height)]]
-       (layer (+ y (/ y-gap 2))
-              (inc (mod (int (/ y brick-height)) 3))
-              (* brick-height (p/weighted {1.2 (* 1.2 py)
-                                           1.5 (* 1.0 py)
-                                           1.8 (- 2.0 py)
-                                           2.1 (- 1.5 py)
-                                           2.4 (- 1.0 py)}))
-              (- brick-height y-gap))))))
+       (->> (layer (+ y (/ y-gap 2))
+                   (inc (mod (int (/ y brick-height)) 3))
+                   (* brick-height (p/weighted {1.2 (* 1.2 py)
+                                                1.5 (* 1.0 py)
+                                                1.8 (- 2.0 py)
+                                                2.1 (- 1.5 py)
+                                                2.4 (- 1.0 py)}))
+                   (- brick-height y-gap))
+            shuffle
+            (drop (int (* py (tm/random 2.9)))))))))
 
 (defn update-state [state]
   state)
