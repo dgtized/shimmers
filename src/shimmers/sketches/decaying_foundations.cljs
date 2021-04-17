@@ -29,7 +29,11 @@
     (flatten
      (for [y (range (- (tm/random height)) (q/height) height)]
        (layer (+ y (/ y-gap 2))
-              (rand-nth (map (partial * height) (range 1.1 3 0.5)))
+              (* height (p/weighted {1.2 1
+                                     1.5 2
+                                     1.8 3
+                                     2.1 2.5
+                                     2.4 1}))
               (- height y-gap))))))
 
 (defn update-state [state]
