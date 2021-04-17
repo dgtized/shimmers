@@ -6,8 +6,10 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [[w h] [100 66]
-        rate 12
+  (let [s 50
+        buffer 36
+        [w h] [(* 3 s) (* 2 s)]
+        rate 24
         capture (.createCapture (quil.sketch/current-applet) "video")]
     (.size capture w h)
     (.hide capture)
@@ -15,7 +17,7 @@
     {:width w
      :height h
      :capture capture
-     :frames (vec (repeatedly (* rate 3) #(q/create-image w h)))}))
+     :frames (vec (repeatedly buffer #(q/create-image w h)))}))
 
 (defn update-state [{:keys [capture frames width height] :as state}]
   (update-in state
@@ -29,18 +31,18 @@
                dest)))
 
 (defn draw [{:keys [frames width height]}]
-  (let [[w h] [width height]]
-    (doseq [i (range (count frames))
-            :let [frame (nth frames i)]]
-      (when frame
-        (q/image frame (* w (mod i 6)) (* h (int (/ i 6)))
-                 w h)))))
+  (doseq [i (range (count frames))
+          :let [frame (nth frames i)]]
+    (q/image frame
+             (* width (mod i 6))
+             (* height (int (/ i 6)))
+             width height)))
 
 (defn ^:export run-sketch []
   ;; 20210417
   (q/defsketch zoetropic
     :host "quil-host"
-    :size [600 400]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
