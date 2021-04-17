@@ -54,11 +54,11 @@
   (doseq [{[x y] :p  [w h] :size :as rect} (wall 60)]
     (q/stroke-weight 1.0)
     (q/rect x y w h)
-    (q/stroke-weight 0.7)
     (when (p/chance (/ y 1.5 (q/height)))
       (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 84]))]
-        (apply q/line (-> (gl/line2 p q)
-                          (geom/scale-size (tm/random 0.88 0.99))
+        (q/stroke-weight (tm/random 0.5 0.8))
+        (apply q/line (-> (gl/line2 (p/jitter-x p 0.66) (p/jitter-x q 0.66))
+                          (geom/scale-size (tm/random 0.88 0.96))
                           geom/vertices))))))
 
 (defn ^:export run-sketch []
