@@ -34,18 +34,10 @@
                  (drop (inc middle) (last chunks))))))
 
 (defn rotate
+  "Rotate sequence `xs`, `n` steps left if positive, or to the right if negative."
   [n xs]
-  (if (>= n 0)
-    (->> xs
-         cycle
-         (drop n)
-         (take (count xs)))
-    (->> xs
-         reverse
-         cycle
-         (drop (- n))
-         (take (count xs))
-         reverse)))
+  (let [s (count xs)]
+    (take s (drop (mod n s) (cycle xs)))))
 
 (defn cycle-next [coll current]
   (->> coll
