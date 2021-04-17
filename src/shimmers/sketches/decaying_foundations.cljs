@@ -24,17 +24,19 @@
       (geom/translate (brick (- width x-gap) height)
                       (gv/vec2 x y)))))
 
-(defn wall [height]
-  (let [y-gap (tm/random (/ height 16) (/ height 8))]
+(defn wall [brick-height]
+  (let [screen-height (q/height)
+        y-gap (tm/random (/ brick-height 16) (/ brick-height 8))]
     (flatten
-     (for [y (range (- (tm/random height)) (q/height) height)]
+     (for [y (range (- (tm/random brick-height)) screen-height brick-height)
+           :let [py (/ y screen-height)]]
        (layer (+ y (/ y-gap 2))
-              (* height (p/weighted {1.2 1
-                                     1.5 2
-                                     1.8 3
-                                     2.1 2.5
-                                     2.4 1}))
-              (- height y-gap))))))
+              (* brick-height (p/weighted {1.2 (* 1.2 py)
+                                           1.5 (* 1.0 py)
+                                           1.8 (- 2.0 py)
+                                           2.1 (- 1.5 py)
+                                           2.4 (- 1.0 py)}))
+              (- brick-height y-gap))))))
 
 (defn update-state [state]
   state)
@@ -51,7 +53,7 @@
           (recur (rest (butlast points)) (conj lines [p q])))))))
 
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size :as rect} (wall 60)]
+  (doseq [{[x y] :p  [w h] :size :as rect} (wall 45)]
     (q/stroke-weight 1.0)
     (q/rect x y w h)
     (when (p/chance (/ y 1.5 (q/height)))
