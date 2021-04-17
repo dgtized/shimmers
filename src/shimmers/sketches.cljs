@@ -57,7 +57,8 @@
             [shimmers.sketches.verlet-brushes :as verlet-brushes]
             [shimmers.sketches.video-shader :as video-shader]
             [shimmers.sketches.yin-yang :as yin-yang]
-            [shimmers.sketches.zigzag :as zigzag]))
+            [shimmers.sketches.zigzag :as zigzag]
+            [shimmers.sketches.zoetropic :as zoetropic]))
 
 (defn all
   []
@@ -119,6 +120,7 @@
     verlet-brushes/run-sketch
     video-shader/run-sketch
     yin-yang/run-sketch
-    zigzag/run-sketch]))
+    zigzag/run-sketch
+    zoetropic/run-sketch]))
 
 (comment (loader/all-sketches))
