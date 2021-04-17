@@ -54,10 +54,11 @@
           (recur (rest (butlast points)) (conj lines [p q])))))))
 
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size :as rect} (wall 45)]
+  (doseq [{[x y] :p  [w h] :size :as rect} (wall 45)
+          :let [py (/ y (q/height))]]
     (q/stroke-weight 1.0)
     (q/rect x y w h)
-    (when (p/chance (/ y 1.5 (q/height)))
+    (when (p/chance (/ py 1.5))
       (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 84]))]
         (q/stroke-weight (tm/random 0.5 0.8))
         (apply q/line (-> (gl/line2 (p/jitter-x p 0.66) (p/jitter-x q 0.66))
