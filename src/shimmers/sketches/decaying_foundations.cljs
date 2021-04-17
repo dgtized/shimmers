@@ -55,24 +55,14 @@
               q (last points)]
           (recur (rest (butlast points)) (conj lines [p q])))))))
 
-(defn normal-density [x mean sd]
-  (let [v (/ (- x mean) sd)]
-    (/ (Math/pow Math/E (* -0.5 (* v v)))
-       (* sd (Math/sqrt (* 2 Math/PI))))))
-
-(comment
-  ;; Why is f(0.5) > 1.0?
-  (for [x (range 0 1 0.1)]
-    (normal-density x 0.5 0.3)))
-
 (defn draw [_]
   (q/background 0.9 1.0)
   (doseq [{[x y] :p  [w h] :size :as rect} (wall 45)
           :let [py (/ y (q/height))]]
-    (q/fill (if (< py 0.5) (tm/random -0.05 0.05) (tm/random 0.35 0.45))
+    (q/fill (if (< py 0.55) (tm/random -0.05 0.05) (tm/random 0.35 0.45))
             (* (- 1.8 py) (tm/random 0.3 0.6))
             (* (- 1.2 py) (tm/random 0.2 0.4))
-            (* 0.3 (- 2.0 (normal-density py 0.5 0.3))))
+            (+ (Math/pow (- py 0.45) 2) 0.25))
     (q/stroke-weight 1.0)
     (q/rect x y w h)
     (when (p/chance (/ py 1.5))

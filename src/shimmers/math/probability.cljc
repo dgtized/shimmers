@@ -64,3 +64,17 @@
 (defn jitter-y [[x y] r]
   (let [ry (tm/random (- r) r)]
     [x (+ y ry)]))
+
+(defn normal-density [x mean sd]
+  (let [v (/ (- x mean) sd)]
+    (/ (Math/pow Math/E (* -0.5 (* v v)))
+       (* sd (Math/sqrt (* 2 Math/PI))))))
+
+(comment
+  ;; Why is f(0.5) > 1.0?
+  (for [x (range 0 1 0.1)]
+    (normal-density x 0.5 0.1))
+  (for [x (range 0 1 0.1)]
+    (normal-density x 0.5 0.4))
+  (for [x (range 0 10 1.0)]
+    (normal-density x 5 1)))
