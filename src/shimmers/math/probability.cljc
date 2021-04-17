@@ -58,9 +58,9 @@
      (+ y (* radius (Math/sin alpha)))]))
 
 (defn jitter-x [[x y] r]
-  (let [rx (- (* 2 r (rand)) r)]
+  (let [rx (tm/random (- r) r)]
     [(+ x rx) y]))
 
 (defn jitter-y [[x y] r]
-  (let [ry (- (* 2 r (rand)) r)]
+  (let [ry (tm/random (- r) r)]
     [x (+ y ry)]))
