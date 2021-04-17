@@ -56,8 +56,13 @@
           (recur (rest (butlast points)) (conj lines [p q])))))))
 
 (defn draw [_]
+  (q/background 0.9 1.0)
   (doseq [{[x y] :p  [w h] :size :as rect} (wall 45)
           :let [py (/ y (q/height))]]
+    (q/fill (tm/random -0.05 0.05)
+            (* (- 1.8 py) (tm/random 0.3 0.6))
+            (* (- 1.2 py) (tm/random 0.2 0.4))
+            (* 0.5 (- 1.1 py)))
     (q/stroke-weight 1.0)
     (q/rect x y w h)
     (when (p/chance (/ py 1.5))
