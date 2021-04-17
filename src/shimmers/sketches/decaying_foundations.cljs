@@ -49,7 +49,7 @@
 (defn draw [_]
   (doseq [{[x y] :p  [w h] :size :as rect} (wall 60)]
     (q/rect x y w h)
-    (when (p/chance 0.5)
+    (when (p/chance (/ y 1.5 (q/height)))
       (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 96]))]
         (apply q/line (-> (gl/line2 p q)
                           (geom/scale-size (tm/random 0.88 0.99))
