@@ -2,8 +2,9 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.rect :as rect]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -33,9 +34,23 @@
 (defn update-state [state]
   state)
 
+(defn hatches [rect skip n]
+  (let [spacing (/ (geom/circumference rect) n)
+        points (geom/sample-uniform rect spacing false)]
+    (loop [points (drop skip points)
+           lines []]
+      (if (<= (count points) skip)
+        lines
+        (let [p (first points)
+              q (last points)]
+          (recur (rest (butlast points)) (conj lines [p q])))))))
+
 (defn draw [_]
-  (doseq [{[x y] :p  [w h] :size} (wall 60)]
-    (q/rect x y w h)))
+  (doseq [{[x y] :p  [w h] :size :as rect} (wall 60)]
+    (q/rect x y w h)
+    (when (p/chance 0.5)
+      (doseq [[p q] (hatches rect 0 64)]
+        (q/line p q)))))
 
 (defn ^:export run-sketch []
   ;; 20210414
