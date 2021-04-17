@@ -49,7 +49,7 @@
   (doseq [{[x y] :p  [w h] :size :as rect} (wall 60)]
     (q/rect x y w h)
     (when (p/chance 0.5)
-      (doseq [[p q] (hatches rect 0 64)]
+      (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 96]))]
         (q/line p q)))))
 
 (defn ^:export run-sketch []
