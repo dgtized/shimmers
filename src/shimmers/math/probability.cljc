@@ -7,7 +7,7 @@
   (< (rand) prob))
 
 (defn happensity
-  "Returns a 0 with probability `prob`, otherwise evenly distributes"
+  "Returns an even distribution with with probability `prob`, otherwise returns 0."
   [prob]
   (if (chance prob)
     (rand)
