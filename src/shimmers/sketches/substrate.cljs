@@ -81,7 +81,7 @@
 (defn ^:export run-sketch []
   (q/defsketch substrate
     :host "quil-host"
-    :size [600 400]
+    :size [800 600]
     :setup setup
     :update update-state
     :draw draw
