@@ -2,14 +2,15 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             quil.sketch
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.common.sequence :as cs]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [s 50
         buffer 36
         [w h] [(* 3 s) (* 2 s)]
-        rate 24
+        rate 12
         capture (.createCapture (quil.sketch/current-applet) "video")]
     (.size capture w h)
     (.hide capture)
@@ -19,16 +20,17 @@
      :capture capture
      :frames (vec (repeatedly buffer #(q/create-image w h)))}))
 
-(defn update-state [{:keys [capture frames width height] :as state}]
-  (update-in state
-             [:frames (mod (q/frame-count) (count frames))]
-             (fn [dest]
-               (if capture
-                 (q/copy capture dest
-                         [0 0 width height]
-                         [0 0 width height])
-                 dest)
-               dest)))
+(defn update-state [{:keys [capture width height] :as state}]
+  (-> state
+      (update :frames (comp vec (partial cs/rotate -1)))
+      (update-in [:frames 0]
+                 (fn [dest]
+                   (if capture
+                     (q/copy capture dest
+                             [0 0 width height]
+                             [0 0 width height])
+                     dest)
+                   dest))))
 
 (defn draw [{:keys [frames width height]}]
   (doseq [i (range (count frames))
