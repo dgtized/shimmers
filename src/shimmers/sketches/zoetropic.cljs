@@ -7,7 +7,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]))
 
-(def modes [:modular :delayed])
+(def modes [:modular :delayed :random])
 (defonce ui-state (r/atom {:mode :modular}))
 
 (defn setup []
@@ -28,7 +28,8 @@
 (defn active-mode [{:keys [frames]}]
   (case (:mode @ui-state)
     :modular [0 (mod (q/frame-count) (count frames))]
-    :delayed [-1 0]))
+    :delayed [-1 0]
+    :random [0 (rand-int (count frames))]))
 
 (defn copy-frame [capture width height dest]
   (if capture
