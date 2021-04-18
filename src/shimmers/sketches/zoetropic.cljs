@@ -30,18 +30,20 @@
     :modular [0 (mod (q/frame-count) (count frames))]
     :delayed [-1 0]))
 
+(defn copy-frame [capture width height dest]
+  (if capture
+    (do (q/copy capture dest
+                [0 0 width height]
+                [0 0 width height])
+        dest)
+    dest))
+
 (defn update-state [{:keys [capture width height] :as state}]
   (let [[r offset] (active-mode state)]
     (-> state
         (update :frames (comp vec (partial cs/rotate r)))
         (update-in [:frames offset]
-                   (fn [dest]
-                     (if capture
-                       (q/copy capture dest
-                               [0 0 width height]
-                               [0 0 width height])
-                       dest)
-                     dest)))))
+                   (partial copy-frame capture width height)))))
 
 (defn draw [{:keys [frames width height]}]
   (doseq [i (range (count frames))
