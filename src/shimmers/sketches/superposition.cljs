@@ -1,8 +1,10 @@
 (ns shimmers.sketches.superposition
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq :refer [rel-h rel-w]]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
@@ -11,6 +13,11 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
+
+(defonce ui-state (r/atom {:debug false}))
+(defn explanation []
+  [:div
+   (ctrl/checkbox ui-state "Debug" [:debug])])
 
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
@@ -97,13 +104,13 @@
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
 (defn draw [{:keys [tween factor brushes spin] :as state}]
-  ;; (q/background 255)
-  ;; (q/no-fill)
-  ;; (q/stroke-weight 1)
-  ;; (q/stroke 0 1.0 1.0 1.0)
-  ;; (draw-polygon (:current state))
-  ;; (q/stroke 0 0.0 0.0 1.0)
-  ;; (draw-polygon (:target state))
+  (when (:debug @ui-state)
+    (q/no-fill)
+    (q/stroke-weight 1)
+    (q/stroke 0 1.0 1.0 1.0)
+    (draw-polygon (:current state))
+    (q/stroke 0 0.0 0.0 1.0)
+    (draw-polygon (:target state)))
 
   ;; (q/no-stroke)
   ;; measure/beat
@@ -123,6 +130,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210308
+  (ctrl/mount explanation)
   (q/defsketch superposition
     :host "quil-host"
     :size [1200 900]
