@@ -103,14 +103,15 @@
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
-(defn draw [{:keys [tween factor brushes spin] :as state}]
+(defn draw
+  [{:keys [current target tween factor brushes spin] :as state}]
   (when (:debug @ui-state)
     (q/no-fill)
     (q/stroke-weight 1)
     (q/stroke 0 1.0 1.0 1.0)
-    (draw-polygon (:current state))
+    (draw-polygon current)
     (q/stroke 0 0.0 0.0 1.0)
-    (draw-polygon (:target state)))
+    (draw-polygon target))
 
   ;; (q/no-stroke)
   ;; measure/beat
