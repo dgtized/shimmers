@@ -2,8 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             quil.sketch
+            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.sequence :as cs]))
+            [shimmers.common.sequence :as cs]
+            [shimmers.common.ui.controls :as ctrl]))
+
+(def modes [:modular :delayed])
+(defonce ui-state (r/atom {:mode :modular}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -20,17 +25,23 @@
      :capture capture
      :frames (vec (repeatedly buffer #(q/create-image w h)))}))
 
+(defn active-mode [{:keys [frames]}]
+  (case (:mode @ui-state)
+    :modular [0 (mod (q/frame-count) (count frames))]
+    :delayed [-1 0]))
+
 (defn update-state [{:keys [capture width height] :as state}]
-  (-> state
-      (update :frames (comp vec (partial cs/rotate -1)))
-      (update-in [:frames 0]
-                 (fn [dest]
-                   (if capture
-                     (q/copy capture dest
-                             [0 0 width height]
-                             [0 0 width height])
-                     dest)
-                   dest))))
+  (let [[r offset] (active-mode state)]
+    (-> state
+        (update :frames (comp vec (partial cs/rotate r)))
+        (update-in [:frames offset]
+                   (fn [dest]
+                     (if capture
+                       (q/copy capture dest
+                               [0 0 width height]
+                               [0 0 width height])
+                       dest)
+                     dest)))))
 
 (defn draw [{:keys [frames width height]}]
   (doseq [i (range (count frames))
@@ -42,6 +53,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210417
+  (ctrl/mount (partial ctrl/change-mode ui-state modes))
   (q/defsketch zoetropic
     :host "quil-host"
     :size [900 600]
