@@ -5,9 +5,10 @@
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :as cs]
-            [shimmers.common.ui.controls :as ctrl]))
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.probability :as p]))
 
-(def modes [:modular :delayed :random])
+(def modes [:modular :delayed :rewind :chance-rewind :random])
 (defonce ui-state (r/atom {:mode :modular}))
 
 (defn setup []
@@ -29,6 +30,9 @@
   (case (:mode @ui-state)
     :modular [0 (mod (q/frame-count) (count frames))]
     :delayed [-1 0]
+    :rewind [1 (dec (count frames))]
+    :chance-rewind (p/weighted {[-1 0] 5
+                                [(rand-int 8) (+ 6 (rand-int 12))] 1})
     :random [0 (rand-int (count frames))]))
 
 (defn copy-frame [capture width height dest]
