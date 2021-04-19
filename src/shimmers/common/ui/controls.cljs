@@ -12,14 +12,16 @@
   ([view host]
    (rdom/render [view] (dom/getElement host))))
 
-(defn change-mode [ui-state modes]
-  (let [mode (:mode @ui-state)
-        cycle-mode #(swap! ui-state update :mode
-                           (partial cs/cycle-next modes))]
-    [:div
-     [:input {:type "button" :value "Cycle Mode"
-              :on-click cycle-mode}]
-     [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]]))
+(defn change-mode
+  ([ui-state modes] (change-mode ui-state modes :mode))
+  ([ui-state modes key-name]
+   (let [mode (key-name @ui-state)
+         cycle-mode #(swap! ui-state update key-name
+                            (partial cs/cycle-next modes))]
+     [:div
+      [:input {:type "button" :value "Cycle Mode"
+               :on-click cycle-mode}]
+      [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]])))
 
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}
