@@ -5,10 +5,10 @@
   "
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            quil.sketch
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui.controls :as ctrl]))
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.video :as video]))
 
 (def modes {:specular-mouse 0
             :edge-detection 1})
@@ -21,13 +21,9 @@
 ;; [1] https://docs.github.com/en/github/working-with-github-pages/about-github-pages#mime-types-on-github-pages
 ;; [2] https://github.com/jshttp/mime-db/blob/93b1c9c90316484c682532384c493c682f4a459f/db.json#L8307-L8312
 (defn setup []
-  (let [camera (.createCapture (quil.sketch/current-applet) "video")
-        shader (q/load-shader "shaders/video-shader.frag.c"
-                              "shaders/video-shader.vert.c")]
-    (.size camera 640 480)
-    (.hide camera)
-    {:camera camera
-     :shader shader}))
+  {:camera (video/capture 640 480)
+   :shader (q/load-shader "shaders/video-shader.frag.c"
+                          "shaders/video-shader.vert.c")})
 
 (defn draw [{:keys [camera shader]}]
   (let [[w h] [(q/width) (q/height)]
