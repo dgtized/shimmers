@@ -2,7 +2,6 @@
   "Experiment influenced by https://inconvergent.net/2016/shepherding-random-numbers/"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
@@ -12,11 +11,11 @@
             [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (r/atom {:sand false
-           :particle-count 100
-           :horizontal-start 5
-           :average-window 16
-           :acceleration 2}))
+  (ctrl/state {:sand false
+               :particle-count 100
+               :horizontal-start 5
+               :average-window 16
+               :acceleration 2}))
 
 (defn explanation []
   [:div

@@ -2,7 +2,6 @@
   "Inspired by https://www.youtube.com/watch?v=hbgDqyy8bIwa"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.algorithm.kinematic-chain :as chain]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
@@ -11,7 +10,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defonce ui-state (r/atom {:mode :sin}))
+(defonce ui-state (ctrl/state {:mode :sin}))
 
 (defn rel-v [w h]
   (gv/vec2 (cq/rel-pos w h)))

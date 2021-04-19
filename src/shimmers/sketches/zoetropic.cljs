@@ -1,7 +1,6 @@
 (ns shimmers.sketches.zoetropic
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
@@ -9,7 +8,7 @@
             [shimmers.math.probability :as p]))
 
 (def modes [:modular :delayed :rewind :chance-rewind :random])
-(defonce ui-state (r/atom {:mode :modular}))
+(defonce ui-state (ctrl/state {:mode :modular}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

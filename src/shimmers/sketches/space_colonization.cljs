@@ -4,26 +4,25 @@
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.algorithm.space-colonization :as colonize]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]))
 
-(defn init-settings []
-  {:influence-distance 48
-   :prune-distance 6
-   :segment-distance 4
-   :attractor-power 9
-   :snap-theta 0
-   :debug {:attractors true
-           :bubbles false
-           :canalization true
-           :influenced-by false
-           :next-branch false}})
+(defonce settings
+  (ctrl/state
+   {:influence-distance 48
+    :prune-distance 6
+    :segment-distance 4
+    :attractor-power 9
+    :snap-theta 0
+    :debug {:attractors true
+            :bubbles false
+            :canalization true
+            :influenced-by false
+            :next-branch false}}))
 
-(defonce settings (r/atom (init-settings)))
 (defn setup []
   ;; (.clear js/console)
   (q/frame-rate 15)

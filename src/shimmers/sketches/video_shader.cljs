@@ -5,7 +5,6 @@
   "
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]))
@@ -13,7 +12,7 @@
 (def modes {:specular-mouse 0
             :edge-detection 1})
 
-(defonce ui-state (r/atom {:mode :edge-detection}))
+(defonce ui-state (ctrl/state {:mode :edge-detection}))
 
 ;; HACK: Shaders are renamed to .c because github-pages requires a mime type to
 ;; serve, per [1], but [2] has no extension for mime-type x-shader/x-fragment, or

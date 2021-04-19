@@ -1,7 +1,6 @@
 (ns shimmers.sketches.colors
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
@@ -54,7 +53,7 @@
          :saturation2 50
          :lightness1 50
          :lightness2 50}
-        ui (r/atom (merge defaults (random-hues)))]
+        ui (ctrl/state (merge defaults (random-hues)))]
     (ctrl/mount (controls ui))
     {:ui ui}))
 

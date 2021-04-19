@@ -1,14 +1,13 @@
 (ns shimmers.sketches.dithering
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]))
 
 (def modes [:dither :boxes :circles :color-displace])
 
-(defonce ui-state (r/atom {:mode :dither}))
+(defonce ui-state (ctrl/state {:mode :dither}))
 
 (defn setup []
   (let [width 320

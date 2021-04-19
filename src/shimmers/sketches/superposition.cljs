@@ -1,7 +1,6 @@
 (ns shimmers.sketches.superposition
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq :refer [rel-h rel-w]]
             [shimmers.common.ui.controls :as ctrl]
@@ -14,7 +13,8 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defonce ui-state (r/atom {:debug false}))
+(defonce ui-state (ctrl/state {:debug false}))
+
 (defn explanation []
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])])

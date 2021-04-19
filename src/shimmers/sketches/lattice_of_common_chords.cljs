@@ -2,7 +2,6 @@
   (:require [kixi.stats.distribution :as ksd]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
@@ -110,7 +109,7 @@
                       (fn [state] [(= 0 (mod (q/frame-count) (* 1 60 60)))
                                   (update state :circles update-positions)])))
 
-(defonce ui-state (r/atom {:debug false :sand false}))
+(defonce ui-state (ctrl/state {:debug false :sand false}))
 (defn explanation []
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])

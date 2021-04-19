@@ -1,5 +1,6 @@
 (ns shimmers.common.ui.controls
   (:require [goog.dom :as dom]
+            [reagent.core :as r]
             [reagent.dom :as rdom]
             [shimmers.common.sequence :as cs]))
 
@@ -11,6 +12,9 @@
    (mount view "explanation"))
   ([view host]
    (rdom/render [view] (dom/getElement host))))
+
+(defn state [m]
+  (r/atom m))
 
 (defn change-mode
   ([ui-state modes] (change-mode ui-state modes :mode))
