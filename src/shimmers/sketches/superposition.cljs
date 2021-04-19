@@ -103,6 +103,9 @@
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
+(defn map-noise [t rate offset interval]
+  (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
+
 (defn draw
   [{:keys [current target tween factor brushes spin] :as state}]
   (when (:debug @ui-state)
@@ -120,12 +123,12 @@
         orbit (orbit-transition state)]
     (q/stroke 0 0
               (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
-              (tm/map-interval (q/noise (/ fc 650) 6000.0) [0 1] [0.2 0.6]))
+              (map-noise fc 650 6000.0 [0.2 0.6]))
     (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
     (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
-            (tm/map-interval (q/noise (/ fc 800) 500.0) [0 1] [0.4 1.0])
-            (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.45 1.0])
-            (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.001 0.040]))
+            (map-noise fc 800 500.00 [0.4 1.0])
+            (map-noise fc 800 1000.0 [0.45 1.0])
+            (map-noise fc 500 2000.0 [0.001 0.040]))
     (doseq [brush brushes]
       (draw-polygon (random-shape-at brush tween spin orbit (* factor scale))))))
 
