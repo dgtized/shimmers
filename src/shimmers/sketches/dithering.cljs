@@ -1,10 +1,10 @@
 (ns shimmers.sketches.dithering
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            quil.sketch
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui.controls :as ctrl]))
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.video :as video]))
 
 (def modes [:dither :boxes :circles :color-displace])
 
@@ -12,18 +12,11 @@
 
 (defn setup []
   (let [width 320
-        height 240
-        capture (.createCapture (quil.sketch/current-applet) "video")]
-    ;; TODO: use faceMode constraints to add controls to flip between "user"
-    ;; and "environment" for mobile use. See documentation @
-    ;; https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    ;; https://p5js.org/reference/#/p5/createCapture
-    (.size capture width height)
-    (.hide capture)
+        height 240]
     (ctrl/mount (partial ctrl/change-mode ui-state modes))
     {:width width
      :height height
-     :capture capture}))
+     :capture (video/capture width height)}))
 
 (defn closest-color [color]
   (* 256 (q/round (/ color 256))))
