@@ -1,11 +1,11 @@
 (ns shimmers.sketches.zoetropic
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            quil.sketch
             [reagent.core :as r]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.video :as video]
             [shimmers.math.probability :as p]))
 
 (def modes [:modular :delayed :rewind :chance-rewind :random])
@@ -16,14 +16,11 @@
   (let [s 50
         buffer 36
         [w h] [(* 3 s) (* 2 s)]
-        rate 12
-        capture (.createCapture (quil.sketch/current-applet) "video")]
-    (.size capture w h)
-    (.hide capture)
+        rate 12]
     (q/frame-rate rate)
-    {:width w
+    {:capture (video/capture w h)
+     :width w
      :height h
-     :capture capture
      :frames (vec (repeatedly buffer #(q/create-image w h)))}))
 
 (defn active-mode [{:keys [frames]}]
