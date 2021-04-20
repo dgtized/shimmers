@@ -2,12 +2,23 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [thi.ng.geom.circle :as gc]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.core :as geom]
-            [shimmers.common.quil :as cq]
             [thi.ng.math.core :as tm]))
+
+(defn pitch-diameter [{:keys [teeth circular-pitch]}]
+  ;; alternatively teeth * outside diameter / (teeth + 2)
+  (/ (* teeth circular-pitch) Math/PI))
+
+;; https://blog.misumiusa.com/center-to-center-spacing-for-shafts-spur-gears/
+(defn center-distance [gear1 gear2]
+  (* 0.5 (+ (pitch-diameter gear1) (pitch-diameter gear2))))
+
+(defn gear-ratio [input output]
+  (/ (:teeth output) (:teeth input)))
 
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
