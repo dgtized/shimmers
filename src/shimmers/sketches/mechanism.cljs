@@ -33,13 +33,14 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (cq/draw-shape (geom/vertices (-> (gear (cq/rel-w 0.06) 8)
-                                    (geom/rotate t)
-                                    (geom/translate (gv/vec2 (cq/rel-pos 0.5 0.5))))))
-  (cq/draw-shape (geom/vertices (-> (gear (cq/rel-w 0.08) 10)
-                                    ;; solve for offset for meshing & change in rate from differential?
-                                    (geom/rotate (- 0.3 t))
-                                    (geom/translate (gv/vec2 (cq/rel-pos 0.34 0.5)))))))
+  (doseq [g [(-> (gear (cq/rel-w 0.06) 8)
+                 (geom/rotate t)
+                 (geom/translate (gv/vec2 (cq/rel-pos 0.5 0.5))))
+             (-> (gear (cq/rel-w 0.08) 10)
+                 ;; solve for offset for meshing & change in rate from differential?
+                 (geom/rotate (- 0.3 t))
+                 (geom/translate (gv/vec2 (cq/rel-pos 0.34 0.5))))]]
+    (cq/draw-shape (geom/vertices g))))
 
 (defn ^:export run-sketch []
   ;; 20210419
