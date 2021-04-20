@@ -35,18 +35,21 @@
           [[(- pitch) (- width)] [0 (- width)] [height (- qw)]
            [height qw] [0 width] [(- pitch) width]])))
 
+(defn poly-at [polygon pos t]
+  (-> polygon
+      (geom/rotate t)
+      (geom/translate pos)
+      geom/vertices))
+
 (defn gear [radius teeth pos t]
   (let [points (-> (gc/circle (gv/vec2) radius)
                    (geom/vertices teeth))]
     {:radius radius
      :teeth teeth
-     :shape
-     (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
-         (geom/rotate t)
-         (geom/translate pos))
+     :shape (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
+                (poly-at pos t))
      :angle (-> (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))
-                (geom/rotate t)
-                (geom/translate pos))}))
+                (poly-at pos t))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -65,9 +68,9 @@
              (gear (cq/rel-w 0.10) 13 (gv/vec2 (cq/rel-pos 0.673 0.5))
                    (- 0 (* t (/ 8 13))))]]
     (q/stroke 0)
-    (cq/draw-shape (geom/vertices (:shape g)))
+    (cq/draw-shape (:shape g))
     (q/stroke 0 0.6 0.6)
-    (apply q/line (geom/vertices (:angle g)))))
+    (apply q/line (:angle g))))
 
 (defn ^:export run-sketch []
   ;; 20210419
