@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -37,9 +38,13 @@
 (defn gear [radius teeth pos t]
   (let [points (-> (gc/circle (gv/vec2) radius)
                    (geom/vertices teeth))]
-    (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
-        (geom/rotate t)
-        (geom/translate pos))))
+    {:shape
+     (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
+         (geom/rotate t)
+         (geom/translate pos))
+     :angle (-> (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))
+                (geom/rotate t)
+                (geom/translate pos))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -57,7 +62,10 @@
                    (- 0.33 (* t (/ 8 10))))
              (gear (cq/rel-w 0.10) 13 (gv/vec2 (cq/rel-pos 0.673 0.5))
                    (- 0 (* t (/ 8 13))))]]
-    (cq/draw-shape (geom/vertices g))))
+    (q/stroke 0)
+    (cq/draw-shape (geom/vertices (:shape g)))
+    (q/stroke 0 0.6 0.6)
+    (apply q/line (geom/vertices (:angle g)))))
 
 (defn ^:export run-sketch []
   ;; 20210419
