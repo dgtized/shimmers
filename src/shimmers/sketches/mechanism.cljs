@@ -39,7 +39,11 @@
              (-> (gear (cq/rel-w 0.08) 10)
                  ;; solve for offset for meshing & change in rate from differential?
                  (geom/rotate (- 0.35 (* t (/ 8 10))))
-                 (geom/translate (gv/vec2 (cq/rel-pos 0.35 0.5))))]]
+                 (geom/translate (gv/vec2 (cq/rel-pos 0.35 0.5))))
+             (-> (gear (cq/rel-w 0.10) 12)
+                 ;; solve for offset for meshing & change in rate from differential?
+                 (geom/rotate (- 0.28 (* t (/ 8 12))))
+                 (geom/translate (gv/vec2 (cq/rel-pos 0.673 0.5))))]]
     (cq/draw-shape (geom/vertices g))))
 
 (defn ^:export run-sketch []
