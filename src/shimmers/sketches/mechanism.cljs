@@ -20,6 +20,10 @@
 (defn gear-ratio [input output]
   (/ (:teeth output) (:teeth input)))
 
+;; more useful formula
+;; https://www.engineersedge.com/gear_formula.htm
+;; https://www.cs.cmu.edu/~rapidproto/mechanisms/chpt7.html
+
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
 (defn tooth [height width p]
