@@ -30,10 +30,12 @@
           [[(- pitch) (- width)] [0 (- width)] [height (- qw)]
            [height qw] [0 width] [(- pitch) width]])))
 
-(defn gear [radius teeth]
+(defn gear [radius teeth pos t]
   (let [points (-> (gc/circle (gv/vec2) radius)
                    (geom/vertices teeth))]
-    (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))))
+    (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
+        (geom/rotate t)
+        (geom/translate pos))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -44,17 +46,14 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (doseq [g [(-> (gear (cq/rel-w 0.061) 8)
-                 (geom/rotate t)
-                 (geom/translate (gv/vec2 (cq/rel-pos 0.5 0.5))))
-             (-> (gear (cq/rel-w 0.08) 10)
-                 ;; solve for offset for meshing & change in rate from differential?
-                 (geom/rotate (- 0.35 (* t (/ 8 10))))
-                 (geom/translate (gv/vec2 (cq/rel-pos 0.35 0.5))))
-             (-> (gear (cq/rel-w 0.10) 13)
-                 ;; solve for offset for meshing & change in rate from differential?
-                 (geom/rotate (- 0.01 (* t (/ 8 13))))
-                 (geom/translate (gv/vec2 (cq/rel-pos 0.673 0.5))))]]
+  (doseq [g [(gear (cq/rel-w 0.061) 8 (gv/vec2 (cq/rel-pos 0.5 0.5))
+                   t)
+             ;; solve for offset for meshing & change in rate from differential?
+             (gear (cq/rel-w 0.08) 10 (gv/vec2 (cq/rel-pos 0.35 0.5))
+                   (- 0.35 (* t (/ 8 10))))
+             ;; solve for offset for meshing & change in rate from differential?
+             (gear (cq/rel-w 0.10) 13 (gv/vec2 (cq/rel-pos 0.673 0.5))
+                   (- 0.01 (* t (/ 8 13))))]]
     (cq/draw-shape (geom/vertices g))))
 
 (defn ^:export run-sketch []
