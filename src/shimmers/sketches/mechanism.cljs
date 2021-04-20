@@ -38,7 +38,9 @@
 (defn gear [radius teeth pos t]
   (let [points (-> (gc/circle (gv/vec2) radius)
                    (geom/vertices teeth))]
-    {:shape
+    {:radius radius
+     :teeth teeth
+     :shape
      (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
          (geom/rotate t)
          (geom/translate pos))
@@ -51,7 +53,7 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t + 0.001))
+  (update state :t + 0.02))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
