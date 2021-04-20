@@ -9,20 +9,20 @@
             [shimmers.common.quil :as cq]
             [thi.ng.math.core :as tm]))
 
+;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
 (defn tooth [height width p]
   (let [polar (geom/as-polar p)
-        hw (/ width 2)
-        qw (/ width 3)
-        pitch (* height 0.66)]
+        qw (/ width 2.2)
+        pitch (* height 0.5)]
     (mapv (fn [t] (geom/as-cartesian (tm/+ polar (gv/vec2 t))))
-          [[0 (- width)] [pitch (- hw)] [height (- qw)]
-           [height qw] [pitch hw] [0 width]])))
+          [[(- pitch) (- width)] [0 (- width)] [height (- qw)]
+           [height qw] [0 width] [(- pitch) width]])))
 
 (defn gear [radius teeth]
   (let [points (-> (gc/circle (gv/vec2) radius)
                    (geom/vertices teeth))]
-    (gp/polygon2 (mapcat (partial tooth (* radius 0.3) (/ tm/TWO_PI teeth 3)) points))))
+    (gp/polygon2 (mapcat (partial tooth (* radius 0.25) (/ tm/TWO_PI teeth 4)) points))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -33,9 +33,13 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (cq/draw-shape (geom/vertices (-> (gear 50 8)
+  (cq/draw-shape (geom/vertices (-> (gear (cq/rel-w 0.06) 8)
                                     (geom/rotate t)
-                                    (geom/translate (gv/vec2 (cq/rel-pos 0.5 0.5)))))))
+                                    (geom/translate (gv/vec2 (cq/rel-pos 0.5 0.5))))))
+  (cq/draw-shape (geom/vertices (-> (gear (cq/rel-w 0.08) 10)
+                                    ;; solve for offset for meshing & change in rate from differential?
+                                    (geom/rotate (- 0.3 t))
+                                    (geom/translate (gv/vec2 (cq/rel-pos 0.34 0.5)))))))
 
 (defn ^:export run-sketch []
   ;; 20210419
