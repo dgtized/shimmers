@@ -52,12 +52,11 @@
   (q/background 1.0)
   (doseq [g [(gear (cq/rel-w 0.061) 8 (gv/vec2 (cq/rel-pos 0.5 0.5))
                    t)
-             ;; solve for offset for meshing & change in rate from differential?
+             ;; how to solve for offset for meshing?
              (gear (cq/rel-w 0.08) 10 (gv/vec2 (cq/rel-pos 0.35 0.5))
-                   (- 0.35 (* t (/ 8 10))))
-             ;; solve for offset for meshing & change in rate from differential?
+                   (- 0.33 (* t (/ 8 10))))
              (gear (cq/rel-w 0.10) 13 (gv/vec2 (cq/rel-pos 0.673 0.5))
-                   (- 0.01 (* t (/ 8 13))))]]
+                   (- 0 (* t (/ 8 13))))]]
     (cq/draw-shape (geom/vertices g))))
 
 (defn ^:export run-sketch []
