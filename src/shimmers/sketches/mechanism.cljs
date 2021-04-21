@@ -106,12 +106,13 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (let [center (gv/vec2 (cq/rel-pos 0.5 0.5))
-        driver (assoc (gear 0.2 13) :pos center :rotation identity :dir 1 :ratio 1)
-        left (driven-by (gear 0.2 24) driver Math/PI 0)
-        right (driven-by (gear 0.2 52) driver 0 0.3)
-        above (driven-by (gear 0.2 20) right (- (/ Math/PI 2)) 0)
-        below (driven-by (gear 0.2 30) right (/ Math/PI 2) 0.3)]
+  (let [dp 0.2 ;; diametral-pitch
+        center (gv/vec2 (cq/rel-pos 0.5 0.5))
+        driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
+        left (driven-by (gear dp 30) driver Math/PI 0)
+        right (driven-by (gear dp 52) driver 0 0.3)
+        above (driven-by (gear dp 20) right (- (/ Math/PI 2)) 0)
+        below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)]
     (doseq [{:keys [shape angle pos rotation]}
             [driver left right above below]]
       (q/stroke 0)
