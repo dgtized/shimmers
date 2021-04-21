@@ -104,6 +104,14 @@
            :rotation
            (fn [t] (* direction (+ offset (/ t speed)))))))
 
+;; TODO: solve for starting offset automatically so it meshes correctly?
+;; randomly generate gear systems that don't intersect with themselves
+;; additional mechanisms like:
+;;  * planatary gears (adjusts position of subystem relative to t)
+;;  * piston/rod -- or at least lateral movement
+;;  * flat gears?
+;;  * screw gears?
+;;  * pulley/belt systems?
 (defn gear-system [center]
   (let [dp 0.25 ;; diametral-pitch
         driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
@@ -116,6 +124,8 @@
         big (driven-by (gear dp 128) below (/ Math/PI 3) 1.4)]
     [driver left right above above2 below small big]))
 
+;; Add stroke shading along the teeth somehow?
+;; Add inner shapes like N spokes or crankshaft hole?
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (doseq [{:keys [shape angle pos rotation]}
