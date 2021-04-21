@@ -10,20 +10,44 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn pitch-diameter [{:keys [teeth circular-pitch]}]
-  ;; alternatively teeth * outside diameter / (teeth + 2)
-  (/ (* teeth circular-pitch) Math/PI))
+;; useful formula
+;; https://www.engineersedge.com/gear_formula.htm
+;; https://www.cs.cmu.edu/~rapidproto/mechanisms/chpt7.html
+;; https://www.bostongear.com/-/media/Files/Literature/Brand/boston-gear/catalogs/p-1930-bg-sections/p-1930-bg_engineering-info-spur-gears.ashx
+
+;; Teeth Count; N = P * D
+;; Diametral Pitch; P = π / p or N/D
+;; Pitch Diameter; D = N/P or D0 - 2/P
+;; Tooth Thickness; t = π / (2P)
+;; Addendum; a = 1/P
+;; Outside Diameter; D0 = D + 2a
+;; Whole Depth; h_t = 2.2/P + .002 or 2.157/P
+;; Dedendum; b = h_t - a
+
+(defn pitch-diameter [{:keys [teeth diametral-pitch]}]
+  (/ teeth diametral-pitch))
+
+(defn gear-radius [gear]
+  (/ (pitch-diameter gear) 2))
 
 ;; https://blog.misumiusa.com/center-to-center-spacing-for-shafts-spur-gears/
 (defn center-distance [gear1 gear2]
   (* 0.5 (+ (pitch-diameter gear1) (pitch-diameter gear2))))
 
-(defn gear-ratio [input output]
-  (/ (:teeth output) (:teeth input)))
+(defn gear-ratio [gear-in gear-out]
+  (/ (:teeth gear-out) (:teeth gear-in)))
 
-;; more useful formula
-;; https://www.engineersedge.com/gear_formula.htm
-;; https://www.cs.cmu.edu/~rapidproto/mechanisms/chpt7.html
+(defn addendum [{:keys [diametral-pitch]}]
+  (/ 1 diametral-pitch))
+
+(defn outside-diameter [{:keys [diametral-pitch] :as gear}]
+  ( + diametral-pitch (* 2 (addendum gear))))
+
+(defn whole-depth [{:keys [diametral-pitch]}]
+  (/ 2.157 diametral-pitch))
+
+(defn dedendum [gear]
+  (- (whole-depth gear) (addendum gear)))
 
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
