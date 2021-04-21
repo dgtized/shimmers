@@ -105,14 +105,16 @@
            (fn [t] (* direction (+ offset (/ t speed)))))))
 
 (defn gear-system [center]
-  (let [dp 0.2 ;; diametral-pitch
+  (let [dp 0.25 ;; diametral-pitch
         driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
         left (driven-by (gear dp 30) driver Math/PI 0)
         right (driven-by (gear dp 52) driver 0 0.3)
         above (driven-by (gear dp 20) right (- (/ Math/PI 2)) 0)
+        above2 (driven-by (gear dp 50) above (- (/ Math/PI 3)) 0.01)
         below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)
-        small (driven-by (gear dp 8) right -0.5 0.1)]
-    [driver left right above below small]))
+        small (driven-by (gear dp 8) right -0.5 0.1)
+        big (driven-by (gear dp 128) below (/ Math/PI 3) 1.4)]
+    [driver left right above above2 below small big]))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
