@@ -10,18 +10,22 @@
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.math.core :as tm]))
 
 (defn new-color []
-  [(q/random 360) 75 85 0.5])
+  [(q/random 1) 0.75 0.85 0.5])
 
 (defn drift [[h s l a]]
   (if (p/chance 0.02)
-    [(mod (+ h 90) 360)
-     (+ (* 0.75 (q/random-gaussian)) s)
-     (+ (* 0.1 (q/random-gaussian)) l)
-     (* 0.5 a)]
-    [(mod (+ (* 4 (q/random-gaussian)) h) 360) s (+ 1 l) a]))
+    [(mod (+ h 0.25) 1.0)
+     (tm/clamp (+ (* 0.0075 (q/random-gaussian)) s) 0.0 1.0)
+     (tm/clamp (+ (* 0.0010 (q/random-gaussian)) l) 0.0 1.0)
+     a]
+    [(mod (+ (* 0.01 (q/random-gaussian)) h) 1)
+     s
+     (tm/clamp (+ 0.01 l) 0.0 1.0)
+     a]))
 
 (defn dividable? [{:keys [depth max-depth]}]
   (< depth max-depth))
@@ -79,8 +83,8 @@
         c (v/vec2 (* 0.05 w) (* 0.95 h))
         d (v/vec2 (* 0.95 w) (* 0.95 h))]
     (initialize-shape
-     [(make-triangle a b c :color [200 70 35 0.9] :max-depth 9)
-      (make-triangle c d b :color [5 85 30 0.7] :max-depth 9)])))
+     [(make-triangle a b c :color [0.55 0.70 0.35 0.9] :max-depth 9)
+      (make-triangle c d b :color [0.01 0.85 0.30 0.7] :max-depth 9)])))
 
 (defn empty-rectangle [w h]
   (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
@@ -111,8 +115,8 @@
           b (v/vec2 (* 0.92 w) (* 0.52 h))
           c (v/vec2 (* 0.52 w) (* 0.92 h))
           d (v/vec2 (* 0.92 w) (* 0.92 h))]
-      [(make-triangle a b d :color [200 35 35 1.0] :max-depth 7)
-       (make-triangle a c d :color [140 40 35 1.0] :max-depth 4)]))))
+      [(make-triangle a b d :color [0.55 0.35 0.35 1.0] :max-depth 7)
+       (make-triangle a c d :color [0.39 0.40 0.35 1.0] :max-depth 4)]))))
 
 (defn initial-conditions []
   (q/background 255)
@@ -127,7 +131,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/frame-rate 60)
-  (q/color-mode :hsl 360 100.0 100.0 1.0)
+  (q/color-mode :hsl 1.0)
   (initial-conditions))
 
 (defn by-depth [t]
@@ -164,7 +168,7 @@
   (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
   (doseq [{[a b c] :points color :color} to-draw]
-    (q/fill 0 100 100 1.0)
+    (q/fill 0 1 1 1.0)
     (when color
       (apply q/fill color))
     (draw-triangle a b c)))
