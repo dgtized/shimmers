@@ -90,29 +90,30 @@
 (defn update-state [state]
   (update state :t + 0.02))
 
+;; how to solve for offset for meshing?
 (defn driven-by
-  [gear {:keys [pos] :as driver} angle offset t]
-  [gear
-   (->> (gv/vec2 (center-distance driver gear) angle)
-        geom/as-cartesian
-        (tm/+ pos))
-   (- offset (/ t (gear-ratio driver gear)))])
+  [gear {:keys [pos dir] :as driver} angle offset]
+  (assoc gear
+         :pos (->> (gv/vec2 (center-distance driver gear) angle)
+                   geom/as-cartesian
+                   (tm/+ pos))
+         :dir (* -1 dir)
+         :rotation
+         (fn [t] (* -1 dir (+ offset (/ t (gear-ratio driver gear)))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [center (gv/vec2 (cq/rel-pos 0.5 0.5))
-        driver (assoc (gear 0.2 13) :pos center)
-        left (gear 0.2 24)
-        right (gear 0.2 52)]
-    (doseq [[g pos t]
-            [[driver center t]
-             ;; how to solve for offset for meshing?
-             (driven-by left driver Math/PI 0 t)
-             (driven-by right driver 0 0.3 t)]]
+        driver (assoc (gear 0.2 13) :pos center :rotation identity :dir 1)
+        left (driven-by (gear 0.2 24) driver Math/PI 0)
+        right (driven-by (gear 0.2 52) driver 0 0.3)
+        above (driven-by (gear 0.2 20) right (- (/ Math/PI 2)) 0)]
+    (doseq [{:keys [shape angle pos rotation]}
+            [driver left right above]]
       (q/stroke 0)
-      (cq/draw-shape (poly-at (:shape g) pos t))
+      (cq/draw-shape (poly-at shape pos (rotation t)))
       (q/stroke 0 0.6 0.6)
-      (apply q/line (poly-at (:angle g) pos t)))))
+      (apply q/line (poly-at angle pos (rotation t))))))
 
 (defn ^:export run-sketch []
   ;; 20210419
