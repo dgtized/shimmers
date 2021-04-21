@@ -161,9 +161,6 @@
    initial-conditions
    subdivide-batch))
 
-(defn draw-triangle [a b c]
-  (q/triangle (:x a) (:y a) (:x b) (:y b) (:x c) (:y c)))
-
 (defn draw [{:keys [to-draw]}]
   (q/stroke 0 0 0 0.5)
   (q/stroke-weight 0.1)
@@ -171,7 +168,7 @@
     (q/fill 0 1 1 1.0)
     (when color
       (apply q/fill color))
-    (draw-triangle a b c)))
+    (cq/draw-triangle a b c)))
 
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions

@@ -23,6 +23,9 @@
     (apply q/curve-vertex v))
   (q/end-shape :close))
 
+(defn draw-triangle [[ax ay] [bx by] [cx cy]]
+  (q/triangle ax ay bx by cx cy))
+
 (defn lerp-line [[x y] [x' y'] amt]
   (q/line x y (q/lerp x x' amt) (q/lerp y y' amt)))
 
