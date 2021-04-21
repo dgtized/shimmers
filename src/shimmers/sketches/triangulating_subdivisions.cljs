@@ -176,7 +176,7 @@
 (defn ^:export run-sketch []
   (q/defsketch triangulating-subdivisions
     :host "quil-host"
-    :size [600 600]
+    :size [900 900]
     :setup setup
     :update update-state
     :draw draw
