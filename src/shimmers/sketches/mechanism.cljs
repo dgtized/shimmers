@@ -92,24 +92,28 @@
 
 ;; how to solve for offset for meshing?
 (defn driven-by
-  [gear {:keys [pos dir] :as driver} angle offset]
-  (assoc gear
-         :pos (->> (gv/vec2 (center-distance driver gear) angle)
-                   geom/as-cartesian
-                   (tm/+ pos))
-         :dir (* -1 dir)
-         :rotation
-         (fn [t] (* -1 dir (+ offset (/ t (gear-ratio driver gear)))))))
+  [gear {:keys [pos dir ratio] :as driver} angle offset]
+  (let [direction (* -1 dir)
+        speed (* ratio (gear-ratio driver gear))]
+    (assoc gear
+           :pos (->> (gv/vec2 (center-distance driver gear) angle)
+                     geom/as-cartesian
+                     (tm/+ pos))
+           :dir direction
+           :ratio speed
+           :rotation
+           (fn [t] (* direction (+ offset (/ t speed)))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [center (gv/vec2 (cq/rel-pos 0.5 0.5))
-        driver (assoc (gear 0.2 13) :pos center :rotation identity :dir 1)
+        driver (assoc (gear 0.2 13) :pos center :rotation identity :dir 1 :ratio 1)
         left (driven-by (gear 0.2 24) driver Math/PI 0)
         right (driven-by (gear 0.2 52) driver 0 0.3)
-        above (driven-by (gear 0.2 20) right (- (/ Math/PI 2)) 0)]
+        above (driven-by (gear 0.2 20) right (- (/ Math/PI 2)) 0)
+        below (driven-by (gear 0.2 30) right (/ Math/PI 2) 0.3)]
     (doseq [{:keys [shape angle pos rotation]}
-            [driver left right above]]
+            [driver left right above below]]
       (q/stroke 0)
       (cq/draw-shape (poly-at shape pos (rotation t)))
       (q/stroke 0 0.6 0.6)
