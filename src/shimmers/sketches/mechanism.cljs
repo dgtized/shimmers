@@ -110,8 +110,9 @@
         left (driven-by (gear dp 30) driver Math/PI 0)
         right (driven-by (gear dp 52) driver 0 0.3)
         above (driven-by (gear dp 20) right (- (/ Math/PI 2)) 0)
-        below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)]
-    [driver left right above below]))
+        below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)
+        small (driven-by (gear dp 8) right -0.5 0.1)]
+    [driver left right above below small]))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
