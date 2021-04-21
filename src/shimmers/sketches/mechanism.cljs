@@ -90,19 +90,25 @@
 (defn update-state [state]
   (update state :t + 0.02))
 
+(defn driven-by
+  [gear {:keys [pos] :as driver} angle offset t]
+  [gear
+   (->> (gv/vec2 (center-distance driver gear) angle)
+        geom/as-cartesian
+        (tm/+ pos))
+   (- offset (/ t (gear-ratio driver gear)))])
+
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (let [center (gv/vec2 (cq/rel-pos 0.5 0.5))
-        driver (gear 0.2 13)
+        driver (assoc (gear 0.2 13) :pos center)
         left (gear 0.2 24)
         right (gear 0.2 52)]
     (doseq [[g pos t]
             [[driver center t]
              ;; how to solve for offset for meshing?
-             [left (tm/- center (gv/vec2 (center-distance driver left) 0))
-              (- 0 (/ t (gear-ratio driver left)))]
-             [right (tm/+ center (gv/vec2 (center-distance driver right) 0))
-              (- 0.3 (/ t (gear-ratio driver right)))]]]
+             (driven-by left driver Math/PI 0 t)
+             (driven-by right driver 0 0.3 t)]]
       (q/stroke 0)
       (cq/draw-shape (poly-at (:shape g) pos t))
       (q/stroke 0 0.6 0.6)
