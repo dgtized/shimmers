@@ -104,21 +104,23 @@
            :rotation
            (fn [t] (* direction (+ offset (/ t speed)))))))
 
-(defn draw [{:keys [t]}]
-  (q/background 1.0)
+(defn gear-system [center]
   (let [dp 0.2 ;; diametral-pitch
-        center (gv/vec2 (cq/rel-pos 0.5 0.5))
         driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
         left (driven-by (gear dp 30) driver Math/PI 0)
         right (driven-by (gear dp 52) driver 0 0.3)
         above (driven-by (gear dp 20) right (- (/ Math/PI 2)) 0)
         below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)]
-    (doseq [{:keys [shape angle pos rotation]}
-            [driver left right above below]]
-      (q/stroke 0)
-      (cq/draw-shape (poly-at shape pos (rotation t)))
-      (q/stroke 0 0.6 0.6)
-      (apply q/line (poly-at angle pos (rotation t))))))
+    [driver left right above below]))
+
+(defn draw [{:keys [t]}]
+  (q/background 1.0)
+  (doseq [{:keys [shape angle pos rotation]}
+          (gear-system (gv/vec2 (cq/rel-pos 0.5 0.5)))]
+    (q/stroke 0)
+    (cq/draw-shape (poly-at shape pos (rotation t)))
+    (q/stroke 0 0.6 0.6)
+    (apply q/line (poly-at angle pos (rotation t)))))
 
 (defn ^:export run-sketch []
   ;; 20210419
