@@ -27,7 +27,7 @@
 (defn pitch-diameter [{:keys [teeth diametral-pitch]}]
   (/ teeth diametral-pitch))
 
-(defn gear-radius [gear]
+(defn pitch-radius [gear]
   (/ (pitch-diameter gear) 2))
 
 ;; https://blog.misumiusa.com/center-to-center-spacing-for-shafts-spur-gears/
@@ -36,6 +36,10 @@
 
 (defn gear-ratio [gear-in gear-out]
   (/ (:teeth gear-out) (:teeth gear-in)))
+
+;; in radians
+(defn tooth-thickness [{:keys [teeth]}]
+  (/ Math/PI (* 2 teeth)))
 
 (defn addendum [{:keys [diametral-pitch]}]
   (/ 1 diametral-pitch))
@@ -51,13 +55,19 @@
 
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
-(defn tooth [height width p]
+(defn tooth [gear p]
   (let [polar (geom/as-polar p)
-        qw (/ width 2.2)
-        pitch (* height 0.5)]
+        thickness (tooth-thickness gear)
+        pitch (/ thickness 2.5)
+        addendum (addendum gear)
+        dedendum (dedendum gear)]
     (mapv (fn [t] (geom/as-cartesian (tm/+ polar (gv/vec2 t))))
-          [[(- pitch) (- width)] [0 (- width)] [height (- qw)]
-           [height qw] [0 width] [(- pitch) width]])))
+          [[(- dedendum) (- thickness)]
+           [0 (- thickness)]
+           [addendum (- pitch)]
+           [addendum pitch]
+           [0 thickness]
+           [(- dedendum) thickness]])))
 
 (defn poly-at [polygon pos t]
   (-> polygon
@@ -65,15 +75,15 @@
       (geom/translate pos)
       geom/vertices))
 
-(defn gear [radius teeth pos t]
-  (let [points (-> (gc/circle (gv/vec2) radius)
-                   (geom/vertices teeth))]
-    {:radius radius
-     :teeth teeth
-     :shape (-> (gp/polygon2 (mapcat (partial tooth (* radius 0.15) (/ tm/TWO_PI teeth 4)) points))
-                (poly-at pos t))
-     :angle (-> (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))
-                (poly-at pos t))}))
+(defn gear [diametral-pitch teeth pos t]
+  (let [gear {:diametral-pitch diametral-pitch :teeth teeth :pos pos}
+        radius (pitch-radius gear)
+        points (geom/vertices (gc/circle (gv/vec2) radius) teeth)]
+    (merge gear
+           {:shape (-> (gp/polygon2 (mapcat (partial tooth gear) points))
+                       (poly-at pos t))
+            :angle (-> (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))
+                       (poly-at pos t))})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -84,12 +94,12 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (doseq [g [(gear (cq/rel-w 0.061) 8 (gv/vec2 (cq/rel-pos 0.5 0.5))
+  (doseq [g [(gear 0.2 10 (gv/vec2 (cq/rel-pos 0.5 0.5))
                    t)
              ;; how to solve for offset for meshing?
-             (gear (cq/rel-w 0.08) 10 (gv/vec2 (cq/rel-pos 0.35 0.5))
+             (gear 0.2 20 (gv/vec2 (cq/rel-pos 0.35 0.5))
                    (- 0.33 (* t (/ 8 10))))
-             (gear (cq/rel-w 0.10) 13 (gv/vec2 (cq/rel-pos 0.673 0.5))
+             (gear 0.2 30 (gv/vec2 (cq/rel-pos 0.673 0.5))
                    (- 0 (* t (/ 8 13))))]]
     (q/stroke 0)
     (cq/draw-shape (:shape g))
