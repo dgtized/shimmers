@@ -75,15 +75,13 @@
       (geom/translate pos)
       geom/vertices))
 
-(defn gear [diametral-pitch teeth pos t]
-  (let [gear {:diametral-pitch diametral-pitch :teeth teeth :pos pos}
+(defn gear [diametral-pitch teeth]
+  (let [gear {:diametral-pitch diametral-pitch :teeth teeth}
         radius (pitch-radius gear)
         points (geom/vertices (gc/circle (gv/vec2) radius) teeth)]
     (merge gear
-           {:shape (-> (gp/polygon2 (mapcat (partial tooth gear) points))
-                       (poly-at pos t))
-            :angle (-> (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))
-                       (poly-at pos t))})))
+           {:shape (gp/polygon2 (mapcat (partial tooth gear) points))
+            :angle (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -94,17 +92,21 @@
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
-  (doseq [g [(gear 0.2 10 (gv/vec2 (cq/rel-pos 0.5 0.5))
-                   t)
+  (let [center (gv/vec2 (cq/rel-pos 0.5 0.5))
+        driver (gear 0.2 13)
+        left (gear 0.2 24)
+        right (gear 0.2 52)]
+    (doseq [[g pos t]
+            [[driver center t]
              ;; how to solve for offset for meshing?
-             (gear 0.2 20 (gv/vec2 (cq/rel-pos 0.35 0.5))
-                   (- 0.33 (* t (/ 8 10))))
-             (gear 0.2 30 (gv/vec2 (cq/rel-pos 0.673 0.5))
-                   (- 0 (* t (/ 8 13))))]]
-    (q/stroke 0)
-    (cq/draw-shape (:shape g))
-    (q/stroke 0 0.6 0.6)
-    (apply q/line (:angle g))))
+             [left (tm/- center (gv/vec2 (center-distance driver left) 0))
+              (- 0 (/ t (gear-ratio driver left)))]
+             [right (tm/+ center (gv/vec2 (center-distance driver right) 0))
+              (- 0.3 (/ t (gear-ratio driver right)))]]]
+      (q/stroke 0)
+      (cq/draw-shape (poly-at (:shape g) pos t))
+      (q/stroke 0 0.6 0.6)
+      (apply q/line (poly-at (:angle g) pos t)))))
 
 (defn ^:export run-sketch []
   ;; 20210419
