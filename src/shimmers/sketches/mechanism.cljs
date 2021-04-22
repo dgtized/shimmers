@@ -116,10 +116,6 @@
            :rotation
            (fn [t] (* direction (+ sync-offset (/ t speed)))))))
 
-(comment (let [driver (assoc (gear 0.25 25) :pos (gv/vec2 0 0) :rotation identity
-                             :dir 1 :ratio 1 :offset 0)]
-           (driven-by (gear 0.25 52) driver 0)))
-
 ;; TODO: solve for starting offset automatically so it meshes correctly?
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
@@ -141,6 +137,8 @@
         small (driven-by (gear dp 8) right -0.5)
         big (driven-by (gear dp 128) below (/ Math/PI 3))]
     [driver left right above above2 below small big]))
+
+(comment (map #(dissoc % :shape :angle :rotation) (gear-system (gv/vec2 0 0))))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
