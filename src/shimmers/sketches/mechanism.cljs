@@ -94,17 +94,17 @@
 
 ;; how to solve for offset for meshing?
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
-;; FIXME: still not working, but closer
+;; and http://kirox.de/html/Gears.html (GearView.setPos)
+;; Still looks a little off but really close now
 (defn driven-by
   [{:keys [teeth] :as gear}
    {:keys [pos dir ratio] :as driver} angle]
   (let [direction (* -1 dir)
         speed (* ratio (gear-ratio driver gear))
         sync-offset (cond driver
-                          (+ angle
-                             ;; (* speed (:offset driver))
-                             (if (odd? teeth) (/ Math/PI teeth) 0)
-                             (if (neg? direction) (/ Math/PI teeth) 0))
+                          (+ (- (* ratio (:offset driver)))
+                             (+ (* (+ 1 ratio) (Math/abs angle)))
+                             (* (mod (inc teeth) 2) (/ Math/PI teeth)))
                           :else 0)]
     (assoc gear
            :pos (->> (gv/vec2 (center-distance driver gear) angle)
