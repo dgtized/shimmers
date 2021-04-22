@@ -112,6 +112,8 @@
 ;;  * flat gears?
 ;;  * screw gears?
 ;;  * pulley/belt systems?
+;;  * sun & planet?
+;;  * kinematic chain to another gear?
 (defn gear-system [center]
   (let [dp 0.25 ;; diametral-pitch
         driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
