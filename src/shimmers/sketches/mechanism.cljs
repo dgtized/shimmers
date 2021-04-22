@@ -88,21 +88,37 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t + 0.02))
+  (if true
+    (update state :t + 0.01)
+    (assoc state :t 0)))
 
 ;; how to solve for offset for meshing?
+;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
+;; FIXME: still not working, but closer
 (defn driven-by
-  [gear {:keys [pos dir ratio] :as driver} angle offset]
+  [{:keys [teeth] :as gear}
+   {:keys [pos dir ratio] :as driver} angle]
   (let [direction (* -1 dir)
-        speed (* ratio (gear-ratio driver gear))]
+        speed (* ratio (gear-ratio driver gear))
+        sync-offset (cond driver
+                          (+ angle
+                             ;; (* speed (:offset driver))
+                             (if (odd? teeth) (/ Math/PI teeth) 0)
+                             (if (neg? direction) (/ Math/PI teeth) 0))
+                          :else 0)]
     (assoc gear
            :pos (->> (gv/vec2 (center-distance driver gear) angle)
                      geom/as-cartesian
                      (tm/+ pos))
            :dir direction
            :ratio speed
+           :offset sync-offset
            :rotation
-           (fn [t] (* direction (+ offset (/ t speed)))))))
+           (fn [t] (* direction (+ sync-offset (/ t speed)))))))
+
+(comment (let [driver (assoc (gear 0.25 25) :pos (gv/vec2 0 0) :rotation identity
+                             :dir 1 :ratio 1 :offset 0)]
+           (driven-by (gear 0.25 52) driver 0)))
 
 ;; TODO: solve for starting offset automatically so it meshes correctly?
 ;; randomly generate gear systems that don't intersect with themselves
@@ -116,14 +132,14 @@
 ;;  * kinematic chain to another gear?
 (defn gear-system [center]
   (let [dp 0.25 ;; diametral-pitch
-        driver (assoc (gear dp 25) :pos center :rotation identity :dir 1 :ratio 1)
-        left (driven-by (gear dp 30) driver Math/PI 0)
-        right (driven-by (gear dp 52) driver 0 0.3)
-        above (driven-by (gear dp 20) right (- (/ Math/PI 2)) 0)
-        above2 (driven-by (gear dp 50) above (- (/ Math/PI 3)) 0.01)
-        below (driven-by (gear dp 30) right (/ Math/PI 2) 0.3)
-        small (driven-by (gear dp 8) right -0.5 0.1)
-        big (driven-by (gear dp 128) below (/ Math/PI 3) 1.4)]
+        driver (assoc (gear dp 30) :pos center :rotation identity :dir 1 :ratio 1 :offset 0)
+        left (driven-by (gear dp 40) driver Math/PI)
+        right (driven-by (gear dp 24) driver 0)
+        above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
+        above2 (driven-by (gear dp 50) above (- (/ Math/PI 3)))
+        below (driven-by (gear dp 30) right (/ Math/PI 2))
+        small (driven-by (gear dp 8) right -0.5)
+        big (driven-by (gear dp 128) below (/ Math/PI 3))]
     [driver left right above above2 below small big]))
 
 ;; Add stroke shading along the teeth somehow?
