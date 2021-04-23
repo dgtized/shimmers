@@ -60,14 +60,14 @@
                    (:id sketch)]]))]))
 
 (defn sketch-by-name []
-  (let [active (current-sketch)]
+  (let [sketch (current-sketch)]
     [:section {:class "controls"}
      [:span
       [:button {:on-click cycle-sketch} "Next"]
       [:button {:on-click restart-sketch} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
-      [:a {:href (:href (ui/code-link active))} (name (:id active))]]
+      [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
      [:span {:id "framerate"}]]))
 
 (defn known-sketches []
