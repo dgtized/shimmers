@@ -73,6 +73,7 @@
 (defn known-sketches []
   (map (comp name :id) (get @app-state :sketches)))
 
+;; FIXME: handle invalid paths, re-route to sketch-list
 (def routes
   [;; "/shimmers"
    ["/" ::root]

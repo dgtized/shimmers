@@ -20,7 +20,7 @@
 
         ;; clientside view rendering, routing, and HTML5 pushState support
         reagent/reagent {:mvn/version "1.0.0"}
-        metosin/reitit {:mvn/version "0.5.12"}
+        metosin/reitit {:mvn/version "0.5.13"}
 
         ;; This is not dev only because of production build
         com.bhauman/figwheel-main {:mvn/version "0.2.13"}
