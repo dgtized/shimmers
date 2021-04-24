@@ -27,13 +27,13 @@
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
         (tm/mix p1 p2 t)))
 
-(defn random-shape-at [[p1 p2] t spin [radius freq] scale]
+(defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
       (geom/scale-size scale)
       (geom/rotate (if spin
                      (* spin t)
                      (* 2 Math/PI (rand))))
-      (geom/translate (brush-at [p1 p2] [radius freq] t))))
+      (geom/translate position)))
 
 (defn random-triangle []
   (let [s (q/random 0.1 0.2)]
@@ -136,8 +136,9 @@
             (map-noise fc 800 500.00 [0.4 1.0])
             (map-noise fc 800 1000.0 [0.45 1.0])
             (map-noise fc 500 2000.0 [0.001 0.040]))
-    (doseq [brush brushes]
-      (draw-polygon (random-shape-at brush tween spin orbit (* factor scale))))))
+    (doseq [brush brushes
+            :let [position (brush-at brush orbit tween)]]
+      (draw-polygon (random-shape-at position tween spin (* factor scale))))))
 
 (defn ^:export run-sketch []
   ;; 20210308
