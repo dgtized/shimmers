@@ -84,8 +84,9 @@
   [{:keys [orbit tween]}]
   (tm/mix (first orbit) (second orbit) (tm/smoothstep* 0 0.2 tween)))
 
-(defn transition-to [state fc target]
-  (assoc state :current (:target state)
+(defn transition-to
+  [{previous :target :as state} fc target]
+  (assoc state :current previous
          :target target
          :brushes (map (fn [brush]
                          [(brush-at brush (second (:orbit state)) 1.0)
