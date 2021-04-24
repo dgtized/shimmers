@@ -104,7 +104,7 @@
   (let [fc (q/frame-count)]
     (if (= (- fc base) interval)
       (let [state' (transition-to state fc (random-target))]
-        (.log js/console (dissoc state' :brushes))
+        (.log js/console (update state' :brushes count))
         state')
       (assoc state :tween (var-rate (/ (- fc base) interval))))))
 
