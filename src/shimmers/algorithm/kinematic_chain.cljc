@@ -13,14 +13,14 @@
   (follow [_ target])
   (propagate [_ base]))
 
-(defrecord KinematicSegment [base angle length])
-
-(defn- segment-follow [{:keys [base length]} target]
-  (let [direction (tm/- target base)
-        heading (geom/heading direction)]
-    (->KinematicSegment (tm/- target (project heading length))
-                        heading
-                        length)))
+(defrecord KinematicSegment [base angle length]
+  IKinematicChain
+  (follow [_ target]
+    (let [direction (tm/- target base)
+          heading (geom/heading direction)]
+      (KinematicSegment. (tm/- target (project heading length))
+                         heading
+                         length))))
 
 (defrecord KinematicChain [segments]
   IKinematicChain
@@ -28,7 +28,7 @@
     (loop [segments (reverse segments) target target new-chain []]
       (if (empty? segments)
         (assoc chain :segments (reverse new-chain))
-        (let [segment (segment-follow (first segments) target)]
+        (let [segment (follow (first segments) target)]
           (recur (rest segments) (:base segment) (conj new-chain segment))))))
 
   (propagate [chain base]
