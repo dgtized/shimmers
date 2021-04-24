@@ -87,7 +87,9 @@
 (defn transition-to [state fc target]
   (assoc state :current (:target state)
          :target target
-         :brushes (map (fn [b] [(second b) (geom/random-point-inside target)])
+         :brushes (map (fn [brush]
+                         [(brush-at brush (second (:orbit state)) 1.0)
+                          (geom/random-point-inside target)])
                        (:brushes state))
          :base fc
          :interval (q/floor (q/random 120 600))
