@@ -22,15 +22,18 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
+(defn brush-at [[p1 p2] [radius freq] t]
+  (tm/+ (gv/vec2)
+        (gv/vec2 radius (* t freq)) ;; rotate around origin/path
+        (tm/mix p1 p2 t)))
+
 (defn random-shape-at [[p1 p2] t spin [radius freq] scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
       (geom/scale-size scale)
       (geom/rotate (if spin
                      (* spin t)
                      (* 2 Math/PI (rand))))
-      (geom/translate (gv/vec2 radius 0))
-      (geom/rotate (* t freq))
-      (geom/translate (tm/mix p1 p2 t))))
+      (geom/translate (brush-at [p1 p2] [radius freq] t))))
 
 (defn random-triangle []
   (let [s (q/random 0.1 0.2)]
