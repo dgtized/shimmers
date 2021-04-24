@@ -85,17 +85,18 @@
   (tm/mix (first orbit) (second orbit) (tm/smoothstep* 0 0.2 tween)))
 
 (defn transition-to
-  [{previous :target :as state} fc target]
+  [{brushes :brushes [_ last-orbit] :orbit previous :target :as state}
+   fc target]
   (assoc state :current previous
          :target target
          :brushes (map (fn [brush]
-                         [(brush-at brush (second (:orbit state)) 1.0)
+                         [(brush-at brush last-orbit 1.0)
                           (geom/random-point-inside target)])
-                       (:brushes state))
+                       brushes)
          :base fc
          :interval (q/floor (q/random 120 600))
          :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
-         :orbit [(second (:orbit state))
+         :orbit [last-orbit
                  (if (p/chance 0.35)
                    (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
                    (gv/vec2))]
