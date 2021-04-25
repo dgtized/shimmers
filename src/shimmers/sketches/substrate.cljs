@@ -61,10 +61,10 @@
                                     []))]
     ;; (println [(count inactive) (count active)])
     [(empty? fresh-cracks)
-     (assoc state :cracks
-            (concat inactive
-                    (map (partial update-crack cracks)
-                         fresh-cracks)))]))
+     (->> fresh-cracks
+          (map (partial update-crack cracks))
+          (concat inactive)
+          (assoc state :cracks))]))
 
 (defn update-state [state]
   (cq/if-steady-state state 5
