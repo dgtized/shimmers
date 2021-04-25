@@ -4,16 +4,17 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.particle-system :as particles]
+            [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.core :as sm]
-            [shimmers.math.vector :as v]
-            [shimmers.common.particle-system :as particles]))
+            [shimmers.math.vector :as v]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
 
 (defn make-particle []
-  (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
+  (let [initial-pos (v/vec2 (cq/rel-pos (rand) (rand)))]
     {:last-pos initial-pos
      :position initial-pos
      :velocity (v/vec2 0 0)

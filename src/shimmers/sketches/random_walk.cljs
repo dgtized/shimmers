@@ -1,13 +1,14 @@
 (ns shimmers.sketches.random-walk
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.math.vector :as v]
-            [shimmers.math.color :as color]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.particle-system :as particles]))
+            [shimmers.common.particle-system :as particles]
+            [shimmers.common.quil :as cq]
+            [shimmers.math.color :as color]
+            [shimmers.math.vector :as v]))
 
 (defn make-particle []
-  (let [initial-pos (v/vec2 (q/random (q/width)) (q/random (q/height)))]
+  (let [initial-pos (v/vec2 (cq/rel-pos (rand) (rand)))]
     {:last-pos initial-pos
      :position initial-pos
      :velocity (v/vec2 (q/random-2d))

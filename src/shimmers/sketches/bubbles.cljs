@@ -2,13 +2,14 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]))
 
 (defn make-bubble []
-  (tc/circle (v/vec2 (q/random (q/width)) (q/height))
+  (tc/circle (v/vec2 (cq/rel-pos (rand) 1.0))
              (+ 1 (rand-int 4))))
 
 (defn setup []
