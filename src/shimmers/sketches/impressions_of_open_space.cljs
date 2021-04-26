@@ -10,7 +10,7 @@
   (q/curve-tightness t)
   (q/begin-shape)
   (doseq [p points]
-    (q/curve-vertex (cq/rel-w (:x p)) (cq/rel-h (:y p))))
+    (apply q/curve-vertex (cq/rel-pos p)))
   (q/end-shape))
 
 (defn random-vertex []
@@ -27,9 +27,6 @@
   (q/no-loop)
   (q/color-mode :hsl 1.0)
   {})
-
-(defn rel-v [[x y]]
-  (gv/vec2 (cq/rel-pos x y)))
 
 (defn draw [_]
   (q/background 1.0)
@@ -56,7 +53,8 @@
   (q/stroke 0.3 0.4 0.2 0.8)
   (q/stroke-weight 1)
   (doseq [point (repeatedly 128 random-vertex)]
-    (q/line (rel-v point) (rel-v (tm/+ point (gv/vec2 0 (- (* 0.015 (rand)))))))))
+    (q/line (cq/rel-pos point)
+            (cq/rel-pos (tm/+ point (gv/vec2 0 (- (* 0.015 (rand)))))))))
 
 (defn ^:export run-sketch []
   ;; 20210309
