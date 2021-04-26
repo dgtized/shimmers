@@ -39,8 +39,7 @@
            (geom/translate p (geom/as-cartesian (gv/vec2 radius theta))))))
 
 (defn all-lines [points]
-  (doseq [point points
-          :let [[x y] (cq/rel-pos point)]]
+  (doseq [[x y] (map cq/rel-pos points)]
     (q/line 0 y (q/width) y)
     (q/line x 0 x (q/height))))
 
@@ -68,8 +67,7 @@
   (q/stroke-weight 2)
   (q/ellipse-mode :radius)
   (q/stroke 0 0 0)
-  (doseq [point points
-          :let [[x y] (cq/rel-pos point)]]
+  (doseq [[x y] (map cq/rel-pos points)]
     (q/ellipse x y 0.2 0.2))
 
   (q/stroke-weight 0.5)

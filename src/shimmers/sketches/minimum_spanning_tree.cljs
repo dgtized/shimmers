@@ -96,8 +96,7 @@
   (q/stroke-weight 2)
   (q/ellipse-mode :radius)
   (q/stroke 0 0 0)
-  (doseq [point points
-          :let [[x y] (cq/rel-pos point)]]
+  (doseq [[x y] (map cq/rel-pos points)]
     (q/ellipse x y 0.2 0.2))
   (q/stroke-weight 0.5)
   (q/stroke 50 50 230)
