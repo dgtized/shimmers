@@ -9,7 +9,7 @@
             [thi.ng.geom.core :as geom]))
 
 (defn make-bubble []
-  (tc/circle (v/vec2 (cq/rel-pos (rand) 1.0))
+  (tc/circle (cq/rel-pos (rand) 1.0)
              (+ 1 (rand-int 4))))
 
 (defn setup []
