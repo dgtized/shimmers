@@ -1,5 +1,6 @@
 (ns shimmers.common.quil
-  (:require [quil.core :as q :include-macros true]))
+  (:require [quil.core :as q :include-macros true]
+            [thi.ng.geom.vector :as gv]))
 
 (defn rel-h [p]
   (* (q/height) p))
@@ -10,6 +11,10 @@
 (defn rel-pos
   ([[w h]] (rel-pos w h))
   ([w h] [(rel-w w) (rel-h h)]))
+
+(defn rel-vec
+  ([[w h]] (rel-vec w h))
+  ([w h] (gv/vec2 (rel-pos w h))))
 
 (defn draw-shape [vertices]
   (q/begin-shape)

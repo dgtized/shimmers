@@ -36,10 +36,10 @@
             (tm/mix-circular 0.5 0.8 t')
             (tm/random 0.5 0.7)
             0.02)
-    (let [pos (gv/vec2 (cq/rel-pos (+ -0.1
-                                      (/ (tm/smoothstep* 0.3 0.4 t') 30)
-                                      (/ (- (tm/step* 0.6 t')) 30))
-                                   (* 0.01 t)))
+    (let [pos (cq/rel-vec (+ -0.1
+                             (/ (tm/smoothstep* 0.3 0.4 t') 30)
+                             (/ (- (tm/step* 0.6 t')) 30))
+                          (* 0.01 t))
           slope (* (q/random 0.1) t')
           line (gl/line2 pos
                          (gv/vec2 (q/width) (+ (* slope (q/width)) (:y pos))))]

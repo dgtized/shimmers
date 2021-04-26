@@ -39,7 +39,7 @@
         y-start (/ horizontal-start 10)
         dx (/ 1 particle-count)]
     {:particles (for [i (range 0 1 dx)
-                      :let [pos (gv/vec2 (cq/rel-pos i y-start))]]
+                      :let [pos (cq/rel-vec i y-start)]]
                   (Particle. pos pos))}))
 
 (defn velocity [{:keys [pos prev]}]

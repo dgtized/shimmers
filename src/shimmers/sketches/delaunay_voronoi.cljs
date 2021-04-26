@@ -137,7 +137,7 @@
       (q/ellipse x y 2 2)
 
       (let [neighbors (map cq/rel-pos (neighboring-vertices neighborhood point))
-            centroid (gv/vec2 (cq/rel-pos point))
+            centroid (cq/rel-vec point)
             edges (->> neighbors
                        (map gv/vec2)
                        (geometry/radial-sort centroid)

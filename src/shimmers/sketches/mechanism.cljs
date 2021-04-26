@@ -145,7 +145,7 @@
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (doseq [{:keys [shape angle pos rotation]}
-          (gear-system (gv/vec2 (cq/rel-pos 0.5 0.5)))]
+          (gear-system (cq/rel-vec 0.5 0.5))]
     (q/stroke 0)
     (cq/draw-shape (poly-at shape pos (rotation t)))
     (q/stroke 0 0.6 0.6)

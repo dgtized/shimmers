@@ -7,9 +7,6 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
 
-(defn rel-v [w h]
-  (gv/vec2 (cq/rel-pos w h)))
-
 (defn circle-target [center r]
   (let [fc (/ (q/frame-count) 100)
         adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
@@ -18,11 +15,11 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:chains [(assoc (chain/make-chain (rel-v 0.5 0) 80 4)
+  {:chains [(assoc (chain/make-chain (cq/rel-vec 0.5 0) 80 4)
                    :color [0.35 0.5 0.5 0.025])
-            (assoc (chain/make-chain (rel-v 0.5 0.5) 80 4)
+            (assoc (chain/make-chain (cq/rel-vec 0.5 0.5) 80 4)
                    :color [0.65 0.5 0.5 0.025])
-            (assoc (chain/make-chain (rel-v 0.5 1.0) 80 4)
+            (assoc (chain/make-chain (cq/rel-vec 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
 (defn draw-chain [chain]
@@ -36,8 +33,8 @@
          (map-indexed (fn [idx chain]
                         (chain/chain-update
                          chain
-                         (rel-v (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
-                         (circle-target (rel-v (/ idx 2) 0.5)
+                         (cq/rel-vec (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
+                         (circle-target (cq/rel-vec (/ idx 2) 0.5)
                                         (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
                       chains)))
 

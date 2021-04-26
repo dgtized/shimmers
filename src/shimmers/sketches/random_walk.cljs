@@ -8,7 +8,7 @@
             [shimmers.math.vector :as v]))
 
 (defn make-particle []
-  (let [initial-pos (v/vec2 (cq/rel-pos (rand) (rand)))]
+  (let [initial-pos (cq/rel-vec (rand) (rand))]
     {:last-pos initial-pos
      :position initial-pos
      :velocity (v/vec2 (q/random-2d))

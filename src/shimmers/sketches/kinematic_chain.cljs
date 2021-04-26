@@ -12,21 +12,18 @@
 
 (defonce ui-state (ctrl/state {:mode :sin}))
 
-(defn rel-v [w h]
-  (gv/vec2 (cq/rel-pos w h)))
-
 (defn mouse-target []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
 (defn noise-target [rate bw bh]
   (let [t (q/millis)]
-    (rel-v (q/noise bw (/ t rate))
-           (q/noise bh (/ t rate)))))
+    (cq/rel-vec (q/noise bw (/ t rate))
+                (q/noise bh (/ t rate)))))
 
 (defn sin-target []
   (let [t (q/millis)]
-    (rel-v (tm/map-interval (q/cos (+ Math/PI (/ t 10000))) [-1 1] [0.05 0.95])
-           (tm/map-interval (q/sin (/ t 2000)) [-1 1] [0.1 0.9]))))
+    (cq/rel-vec (tm/map-interval (q/cos (+ Math/PI (/ t 10000))) [-1 1] [0.05 0.95])
+                (tm/map-interval (q/sin (/ t 2000)) [-1 1] [0.1 0.9]))))
 
 (def modes {:sin sin-target
             :mouse mouse-target

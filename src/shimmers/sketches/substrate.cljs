@@ -43,7 +43,7 @@
       (assoc crack :position new-pos))))
 
 (defn make-random-crack []
-  (make-crack (v/vec2 (cq/rel-pos (rand) (rand)))
+  (make-crack (cq/rel-vec (rand) (rand))
               (* (rand-nth [0 1 2 3]) (/ Math/PI 2))))
 
 (defn create-cracks []
