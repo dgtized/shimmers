@@ -124,18 +124,17 @@
 
   (q/ellipse-mode :radius)
   (q/fill 0 0 0)
-  (doseq [p points
-          :let [[x y] (cq/rel-pos p)]]
+  (doseq [[x y] (map cq/rel-pos points)]
     (q/ellipse x y 1 1))
 
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
     (doseq [point (take 1 (shuffle points))
-            :let [inside (if (get hull point) false true)]]
+            :let [inside (if (get hull point) false true)
+                  [x y] (cq/rel-pos point)]]
+      (println [x y :inside inside])
       (q/stroke 255 0 0)
-      (let [[x y] (cq/rel-pos point)]
-        (println [x y :inside inside])
-        (q/ellipse x y 2 2))
+      (q/ellipse x y 2 2)
 
       (let [neighbors (map cq/rel-pos (neighboring-vertices neighborhood point))
             centroid (gv/vec2 (cq/rel-pos point))
