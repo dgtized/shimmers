@@ -36,15 +36,16 @@
       (geom/translate position)))
 
 (defn random-triangle []
-  (let [s (q/random 0.1 0.2)]
+  (let [s (q/random 0.15 0.5)
+        r [0.2 0.8]]
     (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
         (geometry/rotate-around-centroid (* 2 Math/PI (rand)))
-        (geom/translate (cq/rel-pos (q/random 0.2 0.8)
-                                    (q/random 0.2 0.8))))))
+        (geom/translate (cq/rel-pos (apply q/random r)
+                                    (apply q/random r))))))
 
 (defn random-rect []
-  (let [w (q/random 0.1 0.3)
-        h (q/random 0.1 0.3)]
+  (let [w (q/random 0.15 0.5)
+        h (q/random 0.15 0.5)]
     (-> (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
                    (rel-w w) (rel-h h))
         (geometry/rotate-around-centroid (* 2 Math/PI (rand))))))
