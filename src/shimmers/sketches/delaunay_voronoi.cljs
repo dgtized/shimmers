@@ -136,9 +136,9 @@
       (q/stroke 255 0 0)
       (q/ellipse x y 2 2)
 
-      (let [neighbors (map cq/rel-vec (neighboring-vertices neighborhood point))
-            centroid (cq/rel-vec point)
-            edges (->> neighbors
+      (let [centroid (cq/rel-vec point)
+            edges (->> (neighboring-vertices neighborhood point)
+                       (map cq/rel-vec)
                        (geometry/radial-sort centroid)
                        (map (fn [p] [centroid p])))
             bisects (map bisect-line edges)
