@@ -62,11 +62,11 @@
   (Math/sin (* (/ Math/PI 2) n)))
 
 (defn setup []
-  (q/color-mode :hsl 1.0)
   (let [current (random-target)
         target (random-target)
         factor (/ (+ (q/width) (q/height)) 800)]
-    {:current current
+    {:image (q/create-graphics (q/width) (q/height))
+     :current current
      :target target
      :factor factor
      :brushes (repeatedly (int (* 64 factor))
@@ -114,31 +114,36 @@
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
 
 (defn draw
-  [{:keys [current target tween factor brushes spin] :as state}]
+  [{:keys [image current target tween factor brushes spin] :as state}]
+
+  ;; measure/beat
+  (let [fc (q/frame-count)
+        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)
+        orbit (orbit-transition state)]
+    (q/with-graphics image
+      (q/color-mode :hsl 1.0)
+      (q/stroke 0 0
+                (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
+                (map-noise fc 650 6000.0 [0.2 0.6]))
+      (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
+      (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
+              (map-noise fc 800 500.00 [0.4 1.0])
+              (map-noise fc 800 1000.0 [0.45 1.0])
+              (map-noise fc 500 2000.0 [0.001 0.040]))
+      (doseq [brush brushes
+              :let [position (brush-at brush orbit tween)]]
+        (draw-polygon (random-shape-at position tween spin (* factor scale))))))
+
+  (q/color-mode :hsl 1.0)
+  (q/background 1.0)
+  (q/image image 0 0)
   (when (:debug @ui-state)
     (q/no-fill)
     (q/stroke-weight 1)
     (q/stroke 0 1.0 1.0 1.0)
     (draw-polygon current)
     (q/stroke 0 0.0 0.0 1.0)
-    (draw-polygon target))
-
-  ;; (q/no-stroke)
-  ;; measure/beat
-  (let [fc (q/frame-count)
-        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)
-        orbit (orbit-transition state)]
-    (q/stroke 0 0
-              (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
-              (map-noise fc 650 6000.0 [0.2 0.6]))
-    (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
-    (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
-            (map-noise fc 800 500.00 [0.4 1.0])
-            (map-noise fc 800 1000.0 [0.45 1.0])
-            (map-noise fc 500 2000.0 [0.001 0.040]))
-    (doseq [brush brushes
-            :let [position (brush-at brush orbit tween)]]
-      (draw-polygon (random-shape-at position tween spin (* factor scale))))))
+    (draw-polygon target)))
 
 (defn ^:export run-sketch []
   ;; 20210308
