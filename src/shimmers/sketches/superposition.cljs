@@ -73,6 +73,7 @@
      :brushes (repeatedly (int (* 64 factor))
                           (fn [] [(geom/random-point-inside current)
                                  (geom/random-point-inside target)]))
+     :variance [1 0]
      :base 0
      :spin nil
      :orbit [(gv/vec2) (gv/vec2)]
@@ -94,6 +95,7 @@
                          [(brush-at brush last-orbit 1.0)
                           (geom/random-point-inside target)])
                        brushes)
+         :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
          :base fc
          :interval (q/floor (q/random 120 600))
          :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
@@ -115,24 +117,25 @@
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
 
 (defn draw
-  [{:keys [image current target tween factor brushes spin] :as state}]
+  [{:keys [image current target tween factor brushes variance spin] :as state}]
 
   ;; measure/beat
-  (let [fc (q/frame-count)
-        scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)
+  (let [frame-count (q/frame-count)
         orbit (orbit-transition state)]
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
-      (q/stroke 0 0
-                (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
-                (map-noise fc 650 6000.0 [0.2 0.6]))
-      (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
-      (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
-              (map-noise fc 800 500.00 [0.4 1.0])
-              (map-noise fc 800 1000.0 [0.45 1.0])
-              (map-noise fc 500 2000.0 [0.001 0.040]))
-      (doseq [brush brushes
-              :let [position (brush-at brush orbit tween)]]
+      (doseq [[idx brush] (map-indexed vector brushes)
+              :let [position (brush-at brush orbit tween)
+                    fc (+ frame-count (* (mod idx (first variance)) (second variance)))
+                    scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)]]
+        (q/stroke 0 0
+                  (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
+                  (map-noise fc 650 6000.0 [0.2 0.6]))
+        (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
+        (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
+                (map-noise fc 800 500.00 [0.4 1.0])
+                (map-noise fc 800 1000.0 [0.45 1.0])
+                (map-noise fc 500 2000.0 [0.001 0.040]))
         (draw-polygon (random-shape-at position tween spin (* factor scale))))))
 
   (q/color-mode :hsl 1.0)
