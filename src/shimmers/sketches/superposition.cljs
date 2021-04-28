@@ -13,6 +13,9 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; Represent a brush stroke from location p to q
+(defrecord Stroke [p q])
+
 (defonce ui-state (ctrl/state {:debug false}))
 
 (defn explanation []
@@ -22,10 +25,10 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn brush-at [[p1 p2] [radius freq] t]
+(defn brush-at [{:keys [p q]} [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
-        (tm/mix p1 p2 t)))
+        (tm/mix p q t)))
 
 (defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
@@ -71,8 +74,8 @@
      :target target
      :factor factor
      :brushes (repeatedly (int (* 64 factor))
-                          (fn [] [(geom/random-point-inside current)
-                                 (geom/random-point-inside target)]))
+                          (fn [] (Stroke. (geom/random-point-inside current)
+                                         (geom/random-point-inside target))))
      :variance [1 0]
      :base 0
      :spin nil
@@ -92,8 +95,8 @@
   (assoc state :current previous
          :target target
          :brushes (map (fn [brush]
-                         [(brush-at brush last-orbit 1.0)
-                          (geom/random-point-inside target)])
+                         (Stroke. (brush-at brush last-orbit 1.0)
+                                  (geom/random-point-inside target)))
                        brushes)
          :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
          :base fc
