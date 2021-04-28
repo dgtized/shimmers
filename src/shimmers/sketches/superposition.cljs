@@ -6,6 +6,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
+            [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -14,10 +15,15 @@
             [thi.ng.math.core :as tm]))
 
 ;; Represent a brush stroke from location p to q
-(defrecord Stroke [p q])
+(defrecord Stroke [p q curve])
 
-(defn make-stroke [p q]
-  (Stroke. p q))
+(defn make-stroke
+  ([p q] (make-stroke p q 0))
+  ([p q d]
+   (Stroke. p q
+            (->> d
+                 (p/confusion-disk (tm/mix p q (tm/random 0.33 0.66)))
+                 gv/vec2))))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
@@ -28,10 +34,13 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn brush-at [{:keys [p q]} [radius freq] t]
+(defn brush-at [{:keys [p q curve]} [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
-        (tm/mix p q t)))
+        (geom/point-at (bezier/auto-spline2 [p curve q]) t)))
+
+(comment
+  (bezier/auto-spline2 [(gv/vec2 0 0) (gv/vec2 1 0) (gv/vec2 2 4) (gv/vec2 3 0)]))
 
 (defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
@@ -97,10 +106,12 @@
    fc target]
   (assoc state :current previous
          :target target
-         :brushes (map (fn [brush]
-                         (make-stroke (brush-at brush last-orbit 1.0)
-                                      (geom/random-point-inside target)))
-                       brushes)
+         :brushes (let [curve (* 0.5 (p/happensity 0.2))]
+                    (map (fn [brush]
+                           (let [p (brush-at brush last-orbit 1.0)
+                                 q (geom/random-point-inside target)]
+                             (make-stroke p q (* curve (geom/dist p q)))))
+                         brushes))
          :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
          :base fc
          :interval (q/floor (q/random 120 600))
