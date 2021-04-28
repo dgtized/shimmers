@@ -16,6 +16,9 @@
 ;; Represent a brush stroke from location p to q
 (defrecord Stroke [p q])
 
+(defn make-stroke [p q]
+  (Stroke. p q))
+
 (defonce ui-state (ctrl/state {:debug false}))
 
 (defn explanation []
@@ -74,8 +77,8 @@
      :target target
      :factor factor
      :brushes (repeatedly (int (* 64 factor))
-                          (fn [] (Stroke. (geom/random-point-inside current)
-                                         (geom/random-point-inside target))))
+                          #(make-stroke (geom/random-point-inside current)
+                                        (geom/random-point-inside target)))
      :variance [1 0]
      :base 0
      :spin nil
@@ -95,8 +98,8 @@
   (assoc state :current previous
          :target target
          :brushes (map (fn [brush]
-                         (Stroke. (brush-at brush last-orbit 1.0)
-                                  (geom/random-point-inside target)))
+                         (make-stroke (brush-at brush last-orbit 1.0)
+                                      (geom/random-point-inside target)))
                        brushes)
          :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
          :base fc
