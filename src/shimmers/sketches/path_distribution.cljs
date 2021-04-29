@@ -13,7 +13,7 @@
   midpoint."
   [p q d]
   (let [curve (geometry/confused-midpoint p q d)]
-    (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 false)))
+    (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
 (def width 800)
 (def height 600)
@@ -25,7 +25,7 @@
             (concat [(svg/polyline [(r 0.1 0.1) (r 0.9 0.1)] {:stroke "black" :key "p0"})
                      (svg/polyline [(r 0.1 0.9) (r 0.9 0.9)] {:stroke "black" :key "p1"})]
                     (for [i (range 20)]
-                      (svg/polyline (displace-line (r 0.1 0.5) (r 0.9 0.5) 0.3)
+                      (svg/polyline (displace-line (r 0.1 0.5) (r 0.9 0.5) 0.6)
                                     {:stroke "black" :stroke-width 0.2 :key (str "line" i)})))))
 
 (defn page []
