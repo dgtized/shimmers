@@ -20,10 +20,7 @@
 (defn make-stroke
   ([p q] (make-stroke p q 0))
   ([p q d]
-   (Stroke. p q
-            (->> (* d 0.5 (geom/dist p q))
-                 (p/confusion-disk (tm/mix p q (tm/random 0.33 0.66)))
-                 gv/vec2))))
+   (Stroke. p q (geometry/confused-midpoint p q d))))
 
 (defonce ui-state (ctrl/state {:debug false}))
 

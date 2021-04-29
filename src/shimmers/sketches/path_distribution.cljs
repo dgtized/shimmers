@@ -2,21 +2,17 @@
   "Perturbations of displaced lines."
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.core :as geom]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.bezier :as bezier]
-            [shimmers.math.probability :as p]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.svg.core :as svg]
+            [thi.ng.geom.vector :as gv]))
 
 (defn displace-line
-  "For a given line p to q, find a random spot in the middle third, and pick a
-  random point c in the circle around that spot and return a bezier curve
-  running from p to q through c. "
+  "Generate a set of points on a curved line between p and q by picking a confused
+  midpoint."
   [p q d]
-  (let [curve (->> (* d 0.5 (geom/dist p q))
-                   (p/confusion-disk (tm/mix p q (tm/random 0.33 0.66)))
-                   gv/vec2)]
+  (let [curve (geometry/confused-midpoint p q d)]
     (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 false)))
 
 (def width 800)
