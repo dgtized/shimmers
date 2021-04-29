@@ -100,7 +100,7 @@
    fc target]
   (assoc state :current previous
          :target target
-         :brushes (let [curve (* 0.75 (p/happensity 0.3))]
+         :brushes (let [curve (* 0.8 (p/happensity 0.4))]
                     (map (fn [brush]
                            (let [p (brush-at brush last-orbit 1.0)
                                  q (geom/random-point-inside target)]
