@@ -42,4 +42,4 @@
   {:extra-paths ["test"]
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
                 lambdaisland/kaocha {:mvn/version "1.0.829"}
-                lambdaisland/kaocha-cljs {:mvn/version "0.0-71"}}}}}
+                com.lambdaisland/kaocha-cljs {:mvn/version "1.0.93"}}}}}
