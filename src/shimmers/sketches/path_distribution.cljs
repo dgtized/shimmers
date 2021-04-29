@@ -1,23 +1,14 @@
 (ns shimmers.sketches.path-distribution
-  (:require [shimmers.common.ui.controls :as ctrl]
-            [thi.ng.geom.svg.adapter :as adapt]
+  (:require [shimmers.common.svg :as csvg]
+            [shimmers.common.ui.controls :as ctrl]
             [thi.ng.geom.svg.core :as svg]))
 
-(defn svg
-  "Replaces svg/svg, and removes warnings about xlink & react keys"
-  [attribs & body]
-  (into [:svg
-         (svg/svg-attribs
-          attribs
-          {:xmlns "http://www.w3.org/2000/svg"})]
-        body))
-
 (defn scene []
-  (svg {:width 800 :height 600}
-       (svg/path [[:M [50 50]] [:L [250 50]]] {:stroke "black"})))
+  (csvg/svg {:width 800 :height 600}
+            (svg/path [[:M [50 50]] [:L [250 50]]] {:stroke "black"})))
 
 (defn page []
-  [:div (adapt/all-as-svg (scene))])
+  [:div (scene)])
 
 (defn ^:export run-sketch []
   ;; 20210429
