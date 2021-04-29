@@ -1,24 +1,15 @@
 (ns shimmers.sketches.uniform-distribution
-  (:require [shimmers.common.ui.controls :as ctrl]
+  (:require [shimmers.common.svg :refer [svg]]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
-
-(defn svg
-  "Replaces svg/svg, and removes warnings about xlink & react keys"
-  [attribs & body]
-  (into [:svg
-         (svg/svg-attribs
-          attribs
-          {:xmlns "http://www.w3.org/2000/svg"})]
-        body))
 
 (defn sample-points
   ([shape sample-method] (sample-points shape sample-method 400))
@@ -95,9 +86,6 @@
                   (geom/sample-uniform (geom/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(defn page []
-  (adapt/all-as-svg (scene)))
-
 (defn ^:export run-sketch []
   ;; 20210409
-  (ctrl/mount page "svg-host"))
+  (ctrl/mount scene "svg-host"))
