@@ -21,7 +21,7 @@
   ([p q] (make-stroke p q 0))
   ([p q d]
    (Stroke. p q
-            (->> d
+            (->> (* d 0.5 (geom/dist p q))
                  (p/confusion-disk (tm/mix p q (tm/random 0.33 0.66)))
                  gv/vec2))))
 
@@ -38,9 +38,6 @@
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
         (geom/point-at (bezier/auto-spline2 [p curve q]) t)))
-
-(comment
-  (bezier/auto-spline2 [(gv/vec2 0 0) (gv/vec2 1 0) (gv/vec2 2 4) (gv/vec2 3 0)]))
 
 (defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
@@ -106,11 +103,11 @@
    fc target]
   (assoc state :current previous
          :target target
-         :brushes (let [curve (* 0.5 (p/happensity 0.2))]
+         :brushes (let [curve (* 0.75 (p/happensity 0.3))]
                     (map (fn [brush]
                            (let [p (brush-at brush last-orbit 1.0)
                                  q (geom/random-point-inside target)]
-                             (make-stroke p q (* curve (geom/dist p q)))))
+                             (make-stroke p q curve)))
                          brushes))
          :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
          :base fc

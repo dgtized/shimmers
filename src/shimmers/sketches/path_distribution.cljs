@@ -29,7 +29,7 @@
             (concat [(svg/polyline [(r 0.1 0.1) (r 0.9 0.1)] {:stroke "black" :key "p0"})
                      (svg/polyline [(r 0.1 0.9) (r 0.9 0.9)] {:stroke "black" :key "p1"})]
                     (for [i (range 20)]
-                      (svg/polyline (displace-line (r 0.1 0.5) (r 0.9 0.5) 0.5)
+                      (svg/polyline (displace-line (r 0.1 0.5) (r 0.9 0.5) 0.3)
                                     {:stroke "black" :stroke-width 0.2 :key (str "line" i)})))))
 
 (defn page []
