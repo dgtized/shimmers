@@ -41,10 +41,10 @@
 (defn bisect-line
   [[p q]]
   (let [[mid-x mid-y] (tm/mix p q 0.5)
-        reciprocal-slope (let [d (tm/- q p)]
-                           (if (not= 0 (:x d))
-                             (/ -1 (geom/slope-xy d))
-                             0))
+        d (tm/- q p)
+        reciprocal-slope (if (not= 0 (:x d))
+                           (/ -1 (geom/slope-xy d))
+                           0)
         b (- mid-y (* reciprocal-slope mid-x))]
     [reciprocal-slope b]))
 
