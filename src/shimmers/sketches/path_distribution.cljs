@@ -4,6 +4,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.bezier :as bezier]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.svg.core :as svg]
@@ -38,18 +39,24 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn scene []
-  (let [d1 0.25
-        d2 0.25
-        line (gl/line2 (r 0.1 0.66) (r 0.9 0.66))
-        bisector (scaled-bisector line d2)]
+  (let [d 0.25
+        line1 (gl/line2 (r 0.1 0.33) (r 0.9 0.33))
+        line2 (gl/line2 (r 0.1 0.66) (r 0.9 0.66))
+        bisector1 (scaled-bisector line1 d)
+        bisector2 (scaled-bisector line2 d)]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
-              (concat (for [i (range 20)]
-                        (svg/polyline (displace-line (r 0.1 0.33) (r 0.9 0.33) d1)
-                                      {:key (str "line" i)}))
-                      [(with-meta line {:stroke "blue" :key "a"})
-                       (with-meta bisector {:stroke "blue" :key "b"})]
+              (concat [(with-meta line1 {:stroke "blue" :key "a1"})
+                       (with-meta bisector1 {:stroke "blue" :key "b1"})
+                       (with-meta (gc/circle (geom/point-at line1 0.5)
+                                             (* d 0.5 (apply geom/dist (geom/vertices line1))))
+                         {:stroke "blue" :fill "none" :key "c1"})]
                       (for [i (range 20)]
-                        (svg/polyline (displace-at-bisector (r 0.1 0.66) (r 0.9 0.66) d2)
+                        (svg/polyline (displace-line (r 0.1 0.33) (r 0.9 0.33) d)
+                                      {:key (str "line" i)}))
+                      [(with-meta line2 {:stroke "blue" :key "a2"})
+                       (with-meta bisector2 {:stroke "blue" :key "b2"})]
+                      (for [i (range 20)]
+                        (svg/polyline (displace-at-bisector (r 0.1 0.66) (r 0.9 0.66) d)
                                       {:key (str "bisector" i)}))))))
 
 (defn page []
