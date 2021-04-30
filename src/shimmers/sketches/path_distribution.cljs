@@ -60,9 +60,11 @@
 (defn page []
   (let [d 0.3]
     [:div (scene d)
-     [:h4 "Two approaches for adding random curvature to a line"]
-     [:p "The upper example is drawing a curved line through a random point in the circle."]
-     [:p "The lower example is picking a random point on the bisector."]]))
+     [:h4 "Two approaches for adding random curvature to a line between p and q"]
+     [:p "Both are using a displacement factor " d ", multiplied by
+     half the distance from " [:b "p"]  " to " [:b "q"]
+      ". The upper example is drawing a curved line through a random point in
+      the circle. The lower example picks a random point on the bisector."]]))
 
 (defn ^:export run-sketch []
   ;; 20210429
