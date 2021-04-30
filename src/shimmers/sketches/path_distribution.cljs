@@ -38,9 +38,8 @@
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn scene []
-  (let [d 0.25
-        line1 (gl/line2 (r 0.1 0.33) (r 0.9 0.33))
+(defn scene [d]
+  (let [line1 (gl/line2 (r 0.1 0.33) (r 0.9 0.33))
         line2 (gl/line2 (r 0.1 0.66) (r 0.9 0.66))
         bisector1 (scaled-bisector line1 d)
         bisector2 (scaled-bisector line2 d)]
@@ -60,7 +59,11 @@
                                       {:key (str "bisector" i)}))))))
 
 (defn page []
-  [:div (scene)])
+  (let [d 0.25]
+    [:div (scene d)
+     [:h4 "Two approaches for adding random curvature to a line"]
+     [:p "The upper example is drawing a curved line through a random point in the circle."]
+     [:p "The lower example is picking a random point on the bisector."]]))
 
 (defn ^:export run-sketch []
   ;; 20210429
