@@ -26,21 +26,31 @@
     (geom/translate (gl/line2 (- y1) x1 (- y2) x2)
                     midpoint)))
 
+(defn displace-at-bisector [p q d]
+  (let [line (gl/line2 p q)
+        bisector (scaled-bisector line d)
+        curve (geom/random-point bisector)]
+    (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
+
 (def width 800)
 (def height 600)
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
 (defn scene []
-  (let [line (gl/line2 (r 0.1 0.66) (r 0.9 0.66))
-        bisector (scaled-bisector line 0.1)]
-    (println bisector)
+  (let [d1 0.25
+        d2 0.25
+        line (gl/line2 (r 0.1 0.66) (r 0.9 0.66))
+        bisector (scaled-bisector line d2)]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
               (concat (for [i (range 20)]
-                        (svg/polyline (displace-line (r 0.1 0.33) (r 0.9 0.33) 0.3)
+                        (svg/polyline (displace-line (r 0.1 0.33) (r 0.9 0.33) d1)
                                       {:key (str "line" i)}))
-                      [(with-meta line {:key "a"})
-                       (with-meta bisector {:key "b"})]))))
+                      [(with-meta line {:stroke "blue" :key "a"})
+                       (with-meta bisector {:stroke "blue" :key "b"})]
+                      (for [i (range 20)]
+                        (svg/polyline (displace-at-bisector (r 0.1 0.66) (r 0.9 0.66) d2)
+                                      {:key (str "bisector" i)}))))))
 
 (defn page []
   [:div (scene)])
