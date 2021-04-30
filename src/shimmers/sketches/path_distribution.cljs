@@ -42,11 +42,9 @@
 (defn scene [d]
   (let [line1 (gl/line2 (r 0.1 0.25) (r 0.9 0.25))
         line2 (gl/line2 (r 0.1 0.75) (r 0.9 0.75))
-        bisector1 (scaled-bisector line1 d)
         bisector2 (scaled-bisector line2 d)]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
               (concat [(with-meta line1 {:stroke "blue" :key "a1"})
-                       (with-meta bisector1 {:stroke "blue" :key "b1"})
                        (with-meta (gc/circle (geom/point-at line1 0.5)
                                              (* d 0.5 (apply geom/dist (geom/vertices line1))))
                          {:stroke "blue" :fill "none" :key "c1"})]
