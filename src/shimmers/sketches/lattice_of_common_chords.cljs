@@ -12,6 +12,7 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -90,6 +91,9 @@
     (let [[x0 x1] (repeatedly 2 #(rand-nth [0.4 0.5 0.4]))
           line (gl/line2 x0 0.1 x1 0.9)]
       (fn [_] (geom/random-point line))) 1
+    (let [triangle (geom/center (geom/scale-size (gt/triangle2 [0 0] [-1 1] [1 1]) 0.3)
+                                (gv/vec2 0.5 0.5))]
+      (fn [_] (geom/random-point triangle))) 1
     (fn [r] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
     (fn [r] (repeatedly 2 #(q/random r (- 1 r)))) 1.5}))
 
