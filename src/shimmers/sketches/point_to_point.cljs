@@ -33,10 +33,13 @@
 
 (defn update-state [{:keys [circles] :as state}]
   (assoc state
-         :circles (map #(update % :theta sign+ 0.01) circles)
+         :circles
+         (map #(update % :theta sign+ 0.01) circles)
          :points
          (for [{:keys [p theta radius]} circles]
-           (geom/translate p (geom/as-cartesian (gv/vec2 radius theta))))))
+           (->> (gv/vec2 radius theta)
+                geom/as-cartesian
+                (geom/translate p)))))
 
 (defn all-lines [points]
   (doseq [[x y] (map cq/rel-pos points)]
