@@ -15,21 +15,25 @@
 
 (defn grow-clipped [bounds shapes factor polygon]
   (let [center (geom/centroid polygon)]
-    (gp/polygon2
-     (for [v (geom/vertices polygon)]
-       (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
-         (cond (inside-another? shapes v')
-               v
-               (not (inside-another? bounds v'))
-               v
-               :else v'))))))
+    (-> (for [v (geom/vertices polygon)]
+          (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
+            (cond (inside-another? shapes v')
+                  v
+                  (not (inside-another? bounds v'))
+                  v
+                  :else v')))
+        gp/polygon2
+        (with-meta (meta polygon)))))
+
+(defn as-polygon [shape]
+  (with-meta (geom/as-polygon shape) (meta shape)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 4)]
-   :shapes (map geom/as-polygon
-                [(gc/circle (cq/rel-pos 0.4 0.5) 40)
-                 (gc/circle (cq/rel-pos 0.2 0.3) 30)
+   :shapes (map as-polygon
+                [(with-meta (gc/circle (cq/rel-pos 0.4 0.5) 40) {:stroke [0.0 0.5 0.35 1.0]})
+                 (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30) {:stroke [0.5 0.5 0.35 1.0]})
                  (gt/triangle2 (cq/rel-pos 0.3 0.8)
                                (cq/rel-pos 0.4 0.9)
                                (cq/rel-pos 0.45 0.8))])})
@@ -45,6 +49,9 @@
   (doseq [shape shapes
           :let [vertices (geom/vertices shape)]]
     (q/no-fill)
+    (q/stroke 0)
+    (when-let [color (:stroke (meta shape))]
+      (apply q/stroke color))
     (cq/draw-shape vertices)
     (q/fill 0)
     (doseq [[x y] vertices]
