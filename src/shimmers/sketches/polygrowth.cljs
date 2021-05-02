@@ -28,7 +28,7 @@
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 4)]
    :shapes (map geom/as-polygon
-                [(gc/circle (cq/rel-pos 0.5 0.5) 30)
+                [(gc/circle (cq/rel-pos 0.5 0.5) 40)
                  (gc/circle (cq/rel-pos 0.2 0.3) 30)
                  (gt/triangle2 (cq/rel-pos 0.3 0.8)
                                (cq/rel-pos 0.4 0.9)
