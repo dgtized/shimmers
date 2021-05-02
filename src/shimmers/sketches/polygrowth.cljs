@@ -10,12 +10,6 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
 
-(defn grow [polygon]
-  (let [center (geom/centroid polygon)]
-    (gp/polygon2
-     (for [v (geom/vertices polygon)]
-       (tm/+ center (tm/* (tm/- v center) 1.015))))))
-
 (defn inside-another? [shapes point]
   (some (fn [s] (geom/contains-point? s point)) shapes))
 
