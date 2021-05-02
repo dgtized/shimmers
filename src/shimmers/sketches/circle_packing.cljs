@@ -37,9 +37,6 @@
           ;; interpolation by color of larger radius
           t (/ r2 (+ r1 r2))
           mixed (mixv (:color c1) (:color c2) t)]
-      #_(q/print-first-n 300 [:c1 (:color c1)
-                              :c2 (:color c2)
-                              [r1 r2 t] :-> mixed])
       mixed)
     (:color c1)))
 
