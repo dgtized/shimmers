@@ -127,7 +127,7 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
-  (doseq [{:keys [p r color done] :as circle} circles]
+  (doseq [{:keys [p r color done]} circles]
     (apply q/fill color)
     (if done
       (q/no-stroke)
