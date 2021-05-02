@@ -13,11 +13,11 @@
 (defn inside-another? [shapes point]
   (some (fn [s] (geom/contains-point? s point)) shapes))
 
-(defn grow-clipped [bounds shapes polygon]
+(defn grow-clipped [bounds shapes factor polygon]
   (let [center (geom/centroid polygon)]
     (gp/polygon2
      (for [v (geom/vertices polygon)]
-       (let [v' (tm/+ center (tm/* (tm/- v center) 1.015))]
+       (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
          (cond (inside-another? shapes v')
                v
                (not (inside-another? bounds v'))
@@ -37,7 +37,8 @@
 (defn update-state [state]
   (update state :shapes (partial map (partial grow-clipped
                                               (:bounds state)
-                                              (:shapes state)))))
+                                              (:shapes state)
+                                              1.02))))
 
 (defn draw [{:keys [shapes]}]
   (q/stroke-weight 0.8)
