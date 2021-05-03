@@ -58,10 +58,10 @@
                                               (:bounds state)
                                               (:shapes state)
                                               0.05
-                                              1.04))))
+                                              1.05))))
 
 (defn draw [{:keys [shapes]}]
-  (q/stroke-weight 0.1)
+  (q/stroke-weight 0.05)
   (doseq [shape shapes
           :let [vertices (geom/vertices shape)]]
     (q/no-fill)
