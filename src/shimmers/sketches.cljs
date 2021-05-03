@@ -38,6 +38,7 @@
             [shimmers.sketches.permutations-of-transfiguration :as permutations-of-transfiguration]
             [shimmers.sketches.point-to-point :as point-to-point]
             [shimmers.sketches.polygrowth :as polygrowth]
+            [shimmers.sketches.polygrowth2 :as polygrowth2]
             [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.radar :as radar]
@@ -104,6 +105,7 @@
     permutations-of-transfiguration/run-sketch
     point-to-point/run-sketch
     polygrowth/run-sketch
+    polygrowth2/run-sketch
     precipitation/run-sketch
     probabilistic-automata/run-sketch
     radar/run-sketch
