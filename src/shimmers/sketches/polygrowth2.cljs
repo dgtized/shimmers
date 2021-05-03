@@ -3,8 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.color :as color]
             [shimmers.math.probability :as p]
-            [thi.ng.color.core :as col]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
@@ -30,26 +30,16 @@
       (gp/polygon2 it)
       (with-meta it (meta polygon)))))
 
-(defn hex->hsla
-  ([hex] (hex->hsla hex 0))
-  ([hex theta]
-   (-> hex
-       col/hex->int
-       col/as-hsla
-       (col/rotate-hue theta)
-       vals
-       vec)))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 1.2)]
    :shapes (map as-polygon
                 [(with-meta (gc/circle (cq/rel-pos 0.35 0.65) 40)
-                   {:stroke (hex->hsla "#3b4d61")})
+                   {:stroke (color/hex->hsla "#3b4d61")})
                  (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30)
-                   {:stroke (hex->hsla "#ef9d10")})
+                   {:stroke (color/hex->hsla "#ef9d10")})
                  (with-meta (gc/circle (cq/rel-pos 0.75 0.4) 20)
-                   {:stroke (hex->hsla "#3b4d61" 2.0)})])})
+                   {:stroke (color/hex->hsla "#3b4d61" 2.0)})])})
 
 (defn update-state [state]
   (update state :shapes (partial map (partial grow-vertices

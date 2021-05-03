@@ -29,3 +29,13 @@
                    (grad/cosine-gradient 32)
                    rand-nth)]
     (as-vector (col/adjust-alpha color -0.95))))
+
+(defn hex->hsla
+  ([hex] (hex->hsla hex 0))
+  ([hex theta]
+   (-> hex
+       col/hex->int
+       col/as-hsla
+       (col/rotate-hue theta)
+       vals
+       vec)))
