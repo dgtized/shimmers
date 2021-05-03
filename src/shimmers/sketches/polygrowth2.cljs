@@ -30,12 +30,15 @@
       (gp/polygon2 it)
       (with-meta it (meta polygon)))))
 
-(defn hex->hsla [s]
-  (-> s
-      col/hex->int
-      col/as-hsla
-      vals
-      vec))
+(defn hex->hsla
+  ([hex] (hex->hsla hex 0))
+  ([hex theta]
+   (-> hex
+       col/hex->int
+       col/as-hsla
+       (col/rotate-hue theta)
+       vals
+       vec)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -46,12 +49,7 @@
                  (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30)
                    {:stroke (hex->hsla "#ef9d10")})
                  (with-meta (gc/circle (cq/rel-pos 0.75 0.4) 20)
-                   {:stroke (-> "#3b4d61"
-                                col/hex->int
-                                col/as-hsla
-                                (col/rotate-hue 2.0)
-                                vals
-                                vec)})])})
+                   {:stroke (hex->hsla "#3b4d61" 2.0)})])})
 
 (defn update-state [state]
   (update state :shapes (partial map (partial grow-vertices
