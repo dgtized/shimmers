@@ -70,7 +70,7 @@
   ;; 20210502
   (q/defsketch polygrowth
     :host "quil-host"
-    :size [800 600]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
