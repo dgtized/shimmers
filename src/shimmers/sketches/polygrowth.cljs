@@ -28,15 +28,18 @@
 (defn as-polygon [shape]
   (with-meta (geom/as-polygon shape) (meta shape)))
 
+;; Palette Red (#F65058FF), Yellow (#FBDE44FF) and Navy (#28334AFF)
+;; https://www.designwizard.com/blog/design-trends/colour-combination
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 4)]
    :shapes (map as-polygon
-                [(with-meta (gc/circle (cq/rel-pos 0.4 0.5) 40) {:stroke [0.0 0.5 0.35 1.0]})
-                 (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30) {:stroke [0.5 0.5 0.35 1.0]})
-                 (gt/triangle2 (cq/rel-pos 0.3 0.8)
-                               (cq/rel-pos 0.4 0.9)
-                               (cq/rel-pos 0.45 0.8))])})
+                [(with-meta (gc/circle (cq/rel-pos 0.4 0.5) 40) {:stroke [0.992 0.902 0.639 1.0]})
+                 (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30) {:stroke [0.142 0.959 0.618 1.0]})
+                 (with-meta (gt/triangle2 (cq/rel-pos 0.3 0.8)
+                                          (cq/rel-pos 0.4 0.9)
+                                          (cq/rel-pos 0.45 0.8))
+                   {:stroke [0.614 0.298 0.224 1.0]})])})
 
 (defn update-state [state]
   (update state :shapes (partial map (partial grow-clipped
