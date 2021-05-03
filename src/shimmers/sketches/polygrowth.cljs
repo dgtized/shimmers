@@ -54,7 +54,8 @@
                                               1.02))))
 
 (defn draw [{:keys [shapes]}]
-  (q/stroke-weight 0.8)
+  (q/ellipse-mode :radius)
+  (q/stroke-weight 0.75)
   (doseq [shape shapes
           :let [vertices (geom/vertices shape)]]
     (q/no-fill)
@@ -64,7 +65,7 @@
     (cq/draw-shape vertices)
     (q/fill 0)
     (doseq [[x y] vertices]
-      (q/ellipse x y 1.0 1.0))))
+      (q/ellipse x y 0.5 0.5))))
 
 (defn ^:export run-sketch []
   ;; 20210502
