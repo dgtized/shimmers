@@ -26,13 +26,13 @@
         gp/polygon2
         (with-meta (meta polygon)))))
 
-(defn as-polygon [shape color]
+(defn as-polygon [[shape color]]
   (with-meta (geom/as-polygon shape) {:stroke color}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 4)]
-   :shapes (map (fn [[s c]] (as-polygon s c))
+   :shapes (map as-polygon
                 {(gc/circle (cq/rel-pos 0.4 0.5) 40) (color/hex->hsla "#3b4d61")
                  (gc/circle (cq/rel-pos 0.2 0.3) 30) (color/hex->hsla "#ef9d10")
                  (gt/triangle2 (cq/rel-pos 0.3 0.8)

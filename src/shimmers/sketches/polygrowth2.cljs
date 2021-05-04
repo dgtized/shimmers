@@ -14,8 +14,8 @@
 (defn inside-another? [shapes point]
   (some (fn [s] (geom/contains-point? s point)) shapes))
 
-(defn as-polygon [shape]
-  (with-meta (geom/as-polygon shape) (meta shape)))
+(defn as-polygon [[shape color]]
+  (with-meta (geom/as-polygon shape) {:stroke color}))
 
 (defn grow-vertices [bounds shapes p factor polygon]
   (let [center (geom/centroid polygon)]
@@ -34,12 +34,9 @@
   (q/color-mode :hsl 1.0)
   {:bounds [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 1.2)]
    :shapes (map as-polygon
-                [(with-meta (gc/circle (cq/rel-pos 0.35 0.65) 40)
-                   {:stroke (color/hex->hsla "#3b4d61")})
-                 (with-meta (gc/circle (cq/rel-pos 0.2 0.3) 30)
-                   {:stroke (color/hex->hsla "#ef9d10")})
-                 (with-meta (gc/circle (cq/rel-pos 0.75 0.4) 20)
-                   {:stroke (color/hex->hsla "#3b4d61" 2.0)})])})
+                {(gc/circle (cq/rel-pos 0.35 0.65) 40) (color/hex->hsla "#3b4d61")
+                 (gc/circle (cq/rel-pos 0.2 0.3) 30) (color/hex->hsla "#ef9d10")
+                 (gc/circle (cq/rel-pos 0.75 0.4) 20) (color/hex->hsla "#3b4d61" 2.0)})})
 
 (defn update-state [state]
   (update state :shapes (partial map (partial grow-vertices
