@@ -10,17 +10,15 @@
   (q/no-loop)
   {})
 
-(defn update-state [state]
-  state)
+(defn discrete-curve [slices offset]
+  (for [x (range 0 1 (/ 1 slices))]
+    [x (q/noise (* x 2) offset)]))
 
 (defn draw [state]
-  (let [slice-width 0.006]
-    (q/background 1.0)
-    (q/no-fill)
-    (doseq [x (range 0 1 slice-width)]
-      (let [y (+ (q/noise (* x 1.5) 1000))]
-        (q/line (cq/rel-pos x y)
-                (cq/rel-pos (+ x slice-width) y))))))
+  (q/background 1.0)
+  (q/no-fill)
+  (doseq [[[x1 y1] [x2 _]] (partition 2 1 (discrete-curve 200 1000))]
+    (q/line (cq/rel-pos x1 y1) (cq/rel-pos x2 y1))))
 
 (defn ^:export run-sketch []
   ;; 20210504
@@ -28,6 +26,5 @@
     :host "quil-host"
     :size [800 600]
     :setup setup
-    :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode]))
