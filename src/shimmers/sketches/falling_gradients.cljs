@@ -10,15 +10,19 @@
   (q/no-loop)
   {})
 
-(defn discrete-curve [slices offset]
+(defn discrete-curve [slices phase scale offset]
   (for [x (range 0 1 (/ 1 slices))]
-    [x (q/noise (* x 2) offset)]))
+    [x (* scale (q/noise (* x phase) offset))]))
 
 (defn draw [state]
   (q/background 1.0)
   (q/no-fill)
-  (doseq [[[x1 y1] [x2 _]] (partition 2 1 (discrete-curve 200 1000))]
-    (q/line (cq/rel-pos x1 y1) (cq/rel-pos x2 y1))))
+  (let [slices 200
+        curve (discrete-curve slices 2 1.0 1000)
+        depth-curve (map second (discrete-curve slices 5 0.4 50000))]
+    (doseq [[[[x1 y1] [x2 _]] depth] (map vector (partition 2 1 curve) depth-curve)]
+      (q/line (cq/rel-pos x1 y1) (cq/rel-pos x2 y1))
+      (q/line (cq/rel-pos x1 y1) (cq/rel-pos x1 (+ y1 depth))))))
 
 (defn ^:export run-sketch []
   ;; 20210504
