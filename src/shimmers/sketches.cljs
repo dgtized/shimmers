@@ -14,6 +14,7 @@
             [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
+            [shimmers.sketches.falling-gradients :as falling-gradients]
             [shimmers.sketches.fire :as fire]
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.folding-triangles :as folding-triangles]
@@ -81,6 +82,7 @@
     dispersion/run-sketch
     dithering/run-sketch
     emitters/run-sketch
+    falling-gradients/run-sketch
     fire/run-sketch
     folding-triangles/run-sketch
     ;; fluid/run-sketch
