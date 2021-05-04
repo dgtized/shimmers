@@ -35,11 +35,13 @@
       (q/no-stroke)
       (let [f (q/random -0.0075 -0.0125)]
         (doseq [s (range 400)
-                :let [d (* 0.9 depth (Math/pow Math/E (* f s)))
-                      [x y] (cq/rel-pos x1 (+ y1 d))]]
+                :let [d (* 0.9 depth (Math/pow Math/E (* f s)))]]
           (q/fill 0.2 0.008)
-          (cq/draw-shape (geom/vertices (random-triangle-at [x y] (+ initial d)
-                                                            (* 2 slice-width)))))))))
+          (-> (cq/rel-pos x1 (+ y1 d))
+              (random-triangle-at (+ initial d)
+                                  (* 2 slice-width))
+              geom/vertices
+              cq/draw-shape))))))
 
 (defn ^:export run-sketch []
   ;; 20210504
