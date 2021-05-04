@@ -2,7 +2,9 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
   (q/noise-seed (rand-int 100000))
@@ -14,23 +16,30 @@
   (for [x (range 0 1 (/ 1 slices))]
     [x (* scale (q/noise (* x phase) offset))]))
 
+(defn random-triangle-at [pos rotation scale]
+  (-> (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
+      (geom/rotate rotation)
+      (geom/scale-size scale)
+      (geom/translate pos)))
+
 (defn draw [state]
   (q/background 1.0)
   (q/no-fill)
   (let [slices 100
         curve (discrete-curve slices 2 0.5 1000)
         depth-curve (map second (discrete-curve slices 5 1.0 50000))
-        slice-width (cq/rel-w (/ 1 slices))
-        slice-height (cq/rel-h 0.01)]
+        slice-width (cq/rel-w (/ 1 slices))]
     (q/stroke-weight (/ 50 slices))
-    (doseq [[[[x1 y1] _] depth] (map vector (partition 2 1 curve) depth-curve)]
+    (doseq [[[[x1 y1] _] depth] (map vector (partition 2 1 curve) depth-curve)
+            :let [initial (* 2 Math/PI (rand))]]
       (q/no-stroke)
       (let [f (q/random -0.0075 -0.0125)]
         (doseq [s (range 400)
                 :let [d (* 0.9 depth (Math/pow Math/E (* f s)))
                       [x y] (cq/rel-pos x1 (+ y1 d))]]
           (q/fill 0 0.01)
-          (q/rect x y slice-width slice-height))))))
+          (cq/draw-shape (geom/vertices (random-triangle-at [x y] (+ initial d)
+                                                            (* 2 slice-width)))))))))
 
 (defn ^:export run-sketch []
   ;; 20210504
