@@ -17,12 +17,17 @@
 (defn draw [state]
   (q/background 1.0)
   (q/no-fill)
-  (let [slices 200
+  (let [slices 50
         curve (discrete-curve slices 2 1.0 1000)
-        depth-curve (map second (discrete-curve slices 5 0.4 50000))]
+        depth-curve (map second (discrete-curve slices 5 1.0 50000))]
+    (q/stroke-weight (/ 50 slices))
     (doseq [[[[x1 y1] [x2 _]] depth] (map vector (partition 2 1 curve) depth-curve)]
-      (q/line (cq/rel-pos x1 y1) (cq/rel-pos x2 y1))
-      (q/line (cq/rel-pos x1 y1) (cq/rel-pos x1 (+ y1 depth))))))
+      (q/stroke 0 1.0)
+      ;; (q/line (cq/rel-pos x1 y1) (cq/rel-pos x2 y1))
+      ;; (q/line (cq/rel-pos x1 y1) (cq/rel-pos x1 (+ y1 depth)))
+      (doseq [d (range 0.001 depth 0.001)]
+        (q/stroke 0 (/ 1 (q/pow 2 (* d 64))))
+        (q/line (cq/rel-pos x1 (+ y1 d)) (cq/rel-pos x2 (+ y1 d)))))))
 
 (defn ^:export run-sketch []
   ;; 20210504
