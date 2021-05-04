@@ -25,9 +25,9 @@
     (q/stroke-weight (/ 50 slices))
     (doseq [[[[x1 y1] _] depth] (map vector (partition 2 1 curve) depth-curve)]
       (q/no-stroke)
-      (let [f (q/random -0.008 -0.012)]
+      (let [f (q/random -0.0075 -0.0125)]
         (doseq [s (range 400)
-                :let [d (* depth (Math/pow Math/E (* f s)))
+                :let [d (* 0.9 depth (Math/pow Math/E (* f s)))
                       [x y] (cq/rel-pos x1 (+ y1 d))]]
           (q/fill 0 0.01)
           (q/rect x y slice-width slice-height))))))
