@@ -26,8 +26,8 @@
   (q/background 1.0)
   (q/no-fill)
   (let [slices 100
-        curve (discrete-curve slices 2 0.5 1000)
-        depth-curve (map second (discrete-curve slices 5 1.0 50000))
+        curve (discrete-curve slices 2 0.4 1000)
+        depth-curve (map second (discrete-curve slices 5 0.9 50000))
         slice-width (cq/rel-w (/ 1 slices))]
     (q/stroke-weight (/ 50 slices))
     (doseq [[[[x1 y1] _] depth] (map vector (partition 2 1 curve) depth-curve)
@@ -37,7 +37,7 @@
         (doseq [s (range 400)
                 :let [d (* 0.9 depth (Math/pow Math/E (* f s)))
                       [x y] (cq/rel-pos x1 (+ y1 d))]]
-          (q/fill 0 0.01)
+          (q/fill 0.2 0.008)
           (cq/draw-shape (geom/vertices (random-triangle-at [x y] (+ initial d)
                                                             (* 2 slice-width)))))))))
 
