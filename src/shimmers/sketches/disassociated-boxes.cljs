@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.color :as color]
             [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -15,7 +16,15 @@
 (defn displace [scale shape]
   (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
 
-(comment (displace 0.01 (rect/rect 5 5 10 10)))
+;; https://artsexperiments.withgoogle.com/artpalette/colors/3a3737-a25547-a19382-c9b9a5-ece7e1
+(def palette1 ["#3a3737" "#a25547" "#a19382" "#c9b9a5" "#ece7e1"])
+;; https://artsexperiments.withgoogle.com/artpalette/colors/7085ad-d0d2c8-556895-969796-8fa4c3
+(def palette2 ["#7085ad" "#d0d2c8" "#556895" "#969796" "#8fa4c3"])
+
+(defn colorize [palette shape]
+  (assoc shape :color (color/hex->hsla (rand-nth palette))))
+
+(comment (colorize palette1 (displace 0.01 (rect/rect 5 5 10 10))))
 
 (def divisions
   {[2 1] 3 [1 2] 3
@@ -27,7 +36,7 @@
    [2 3] 1 [3 2] 1
    [2 2] 1 [3 3] 1})
 
-(defn disassociate [shape]
+(defn disassociate [palette shape]
   (let [[hdivs vdivs] (p/weighted divisions)
         w (geom/width shape)
         hstride (/ w hdivs)
@@ -38,21 +47,26 @@
                ov (range 0 h vstride)]
            (rect/rect (+ x ow) (+ y ov) hstride vstride))
          (p/map-random-sample 0.05 (partial shrink (rand-nth [0.8 0.9 0.95])))
-         (p/map-random-sample 0.05 (partial displace 0.001)))))
+         (p/map-random-sample 0.05 (partial displace 0.002))
+         (p/map-random-sample 0.10 (partial colorize palette)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
+  {:palette (rand-nth [palette1 palette2])
+   :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1000)
-    (update state :shapes (partial p/mapcat-random-sample 0.2 disassociate))
+    (update state :shapes (partial p/mapcat-random-sample 0.2 (partial disassociate (:palette state))))
     state))
 
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/stroke-weight 0.2)
   (doseq [shape shapes]
+    (if-let [c (:color shape)]
+      (apply q/fill c)
+      (q/no-fill))
     (cq/draw-shape (geom/vertices shape))))
 
 (defn ^:export run-sketch []
