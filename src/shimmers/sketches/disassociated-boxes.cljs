@@ -43,7 +43,7 @@
   {:shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
 (defn update-state [state]
-  (if (< (count (:shapes state)) 1200)
+  (if (< (count (:shapes state)) 1000)
     (update state :shapes (partial p/mapcat-random-sample 0.2 disassociate))
     state))
 
