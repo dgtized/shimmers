@@ -11,6 +11,7 @@
             [shimmers.sketches.cube :as cube]
             [shimmers.sketches.delaunay-voronoi :as delaunay-voronoi]
             [shimmers.sketches.decaying-foundations :as decaying-foundations]
+            [shimmers.sketches.disassociated-boxes :as disassociated-boxes]
             [shimmers.sketches.dispersion :as dispersion]
             [shimmers.sketches.dithering :as dithering]
             [shimmers.sketches.emitters :as emitters]
@@ -51,7 +52,6 @@
             [shimmers.sketches.sand-strokes :as sand-strokes]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.sediment :as sediment]
-            [shimmers.sketches.shattered-boxes :as shattered-boxes]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
@@ -80,6 +80,7 @@
     cube/run-sketch
     delaunay-voronoi/run-sketch
     decaying-foundations/run-sketch
+    disassociated-boxes/run-sketch
     dispersion/run-sketch
     dithering/run-sketch
     emitters/run-sketch
@@ -120,7 +121,6 @@
     sand-strokes/run-sketch
     scintillation/run-sketch
     sediment/run-sketch
-    shattered-boxes/run-sketch
     space-colonization/run-sketch
     sphere/run-sketch
     substrate/run-sketch

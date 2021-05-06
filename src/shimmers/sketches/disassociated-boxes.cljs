@@ -1,4 +1,4 @@
-(ns shimmers.sketches.shattered-boxes
+(ns shimmers.sketches.disassociated-boxes
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -17,7 +17,7 @@
 
 (comment (displace 0.01 (rect/rect 5 5 10 10)))
 
-(defn shatter [shape]
+(defn disassociate [shape]
   (let [divs (+ 2 (rand-int 4))
         w (geom/width shape)
         h (geom/height shape)
@@ -39,7 +39,7 @@
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)
-    (update state :shapes (partial p/mapcat-random-sample 0.2 shatter))
+    (update state :shapes (partial p/mapcat-random-sample 0.2 disassociate))
     state))
 
 (defn draw [{:keys [shapes]}]
@@ -50,7 +50,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210505
-  (q/defsketch shattered-boxes
+  (q/defsketch disassociated-boxes
     :host "quil-host"
     :size [800 600]
     :setup setup
