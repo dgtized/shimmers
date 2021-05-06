@@ -17,19 +17,24 @@
 
 (comment (displace 0.01 (rect/rect 5 5 10 10)))
 
+(def divisions
+  {[2 1] 3 [1 2] 3
+   [3 1] 2 [1 3] 2
+   [4 1] 2 [1 4] 2
+   [5 1] 1 [1 5] 1
+   [2 3] 1 [3 2] 1
+   [2 2] 1 [3 3] 1})
+
 (defn disassociate [shape]
-  (let [divs (+ 2 (rand-int 4))
+  (let [[hdivs vdivs] (p/weighted divisions)
         w (geom/width shape)
+        hstride (/ w hdivs)
         h (geom/height shape)
-        [x y] (:p shape)
-        boxes (if (p/chance 0.5)
-                (let [stride (/ w divs)]
-                  (for [o (range 0 w stride)]
-                    (rect/rect (+ x o) y stride h)))
-                (let [stride (/ h divs)]
-                  (for [o (range 0 h stride)]
-                    (rect/rect x (+ y o) w stride))))]
-    (->> boxes
+        vstride (/ h vdivs)
+        [x y] (:p shape)]
+    (->> (for [ow (range 0 w hstride)
+               ov (range 0 h vstride)]
+           (rect/rect (+ x ow) (+ y ov) hstride vstride))
          (p/map-random-sample 0.05 (partial shrink (rand-nth [0.8 0.9 0.95])))
          (p/map-random-sample 0.05 (partial displace 0.001)))))
 
