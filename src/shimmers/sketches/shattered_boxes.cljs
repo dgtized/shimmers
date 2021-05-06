@@ -9,13 +9,13 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn shrink [shape]
-  (geom/scale-size shape (rand-nth [0.8 0.9 0.95])))
+(defn shrink [scale shape]
+  (geom/scale-size shape scale))
 
-(defn displace [shape]
-  (geom/translate shape (tm/* (gv/randvec2) (* 0.05 (geom/width shape)))))
+(defn displace [scale shape]
+  (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
 
-(comment (displace (rect/rect 5 5 10 10)))
+(comment (displace 0.01 (rect/rect 5 5 10 10)))
 
 (defn shatter [shape]
   (let [divs (+ 2 (rand-int 4))
@@ -30,8 +30,8 @@
                   (for [o (range 0 h stride)]
                     (rect/rect x (+ y o) w stride))))]
     (->> boxes
-         (p/map-random-sample 0.05 shrink)
-         (p/map-random-sample 0.05 displace))))
+         (p/map-random-sample 0.05 (partial shrink (rand-nth [0.8 0.9 0.95])))
+         (p/map-random-sample 0.05 (partial displace 0.001)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
