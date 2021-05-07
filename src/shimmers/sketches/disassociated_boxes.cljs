@@ -52,7 +52,7 @@
         h (geom/height shape)
         ;; bias towards column or row centric splits based on a weighted ratio
         ;; of current shapes width / height
-        [hdivs vdivs] (->> (* 0.5 (+ 1.0 (/ w h)))
+        [hdivs vdivs] (->> (/ (+ 2.0 (/ w h)) 3)
                            split-bias
                            p/weighted)
         hstride (/ w hdivs)
