@@ -33,20 +33,35 @@
    [5 1] 3 [1 5] 3
    [6 1] 1 [1 6] 1
    [7 1] 2 [1 7] 2
-   [2 3] 1 [3 2] 1
+   [3 2] 1 [2 3] 1
    [2 2] 1 [3 3] 1})
 
+(defn split-bias
+  "Generates divisions and biases the weights towards row splits or column splits."
+  [row-bias]
+  (reduce-kv (fn [m [r c] v]
+               (let [bias (cond (> r c) row-bias
+                                (< r c) (/ 1.0 row-bias)
+                                :else 1.0)]
+                 (assoc m [r c] (* bias v))))
+             {}
+             divisions))
+
 (defn disassociate [palette shape]
-  (let [[hdivs vdivs] (p/weighted divisions)
-        w (geom/width shape)
-        hstride (/ w hdivs)
+  (let [w (geom/width shape)
         h (geom/height shape)
+        ;; bias towards column or row centric splits based on a weighted ratio
+        ;; of current shapes width / height
+        [hdivs vdivs] (->> (* 0.5 (+ 1.0 (/ w h)))
+                           split-bias
+                           p/weighted)
+        hstride (/ w hdivs)
         vstride (/ h vdivs)
         [x y] (:p shape)]
     (->> (for [ow (range 0 w hstride)
                ov (range 0 h vstride)]
            (rect/rect (+ x ow) (+ y ov) hstride vstride))
-         (p/map-random-sample 0.05 (partial shrink (rand-nth [0.8 0.9 0.95])))
+         (p/map-random-sample 0.05 (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
          (p/map-random-sample 0.05 (partial displace 0.002))
          (p/map-random-sample 0.10 (partial colorize palette)))))
 
