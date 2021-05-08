@@ -43,8 +43,9 @@
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
 (defn restart-sketch []
-  (stop-sketch)
-  (run-current))
+  (rfe/push-state ::sketch-by-name
+                  {:name (:id (current-sketch))}
+                  {:seed (rand-int (Math/pow 2 32))}))
 
 (defn cycle-sketch []
   (let [{:keys [sketches current]} @app-state
