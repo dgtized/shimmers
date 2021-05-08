@@ -17,8 +17,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defonce match (r/atom nil))
-
 (defn known-sketches []
   (sort (map (comp name :id) (sketches/all))))
 
@@ -88,6 +86,8 @@
        :stop (fn [{:keys [path]}]
                (println "stop" "sketch" (:name path))
                (stop-sketch))}]}]])
+
+(defonce match (r/atom nil))
 
 (defn on-navigate [new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
