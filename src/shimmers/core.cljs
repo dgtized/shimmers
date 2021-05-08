@@ -73,7 +73,7 @@
      [:span {:id "framerate"}]]))
 
 (defn known-sketches []
-  (map (comp name :id) (get @app-state :sketches)))
+  (map (comp name :id) (sketches/all)))
 
 ;; FIXME: handle invalid paths, re-route to sketch-list
 (def routes
