@@ -1,6 +1,5 @@
 (ns shimmers.sketches.disassociated-boxes
-  (:require [clojure.string :as str]
-            [quil.core :as q :include-macros true]
+  (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
@@ -17,15 +16,8 @@
 (defn displace [scale shape]
   (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
 
-(defn url->palette [url]
-  (map color/hex->hsla
-       (-> url
-           (str/split #"/")
-           last
-           (str/split #"-"))))
-
 (def palettes
-  (map url->palette
+  (map color/url->palette
        ["https://artsexperiments.withgoogle.com/artpalette/colors/3a3737-a25547-a19382-c9b9a5-ece7e1"
         "https://artsexperiments.withgoogle.com/artpalette/colors/7085ad-d0d2c8-556895-969796-8fa4c3"
         "https://artsexperiments.withgoogle.com/artpalette/colors/7f2e14-5d503f-e4c111-806d4e"

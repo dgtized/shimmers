@@ -2,7 +2,8 @@
   "Useful tools for generating or working with colors
 
   Gradients borrowed from https://github.com/thi-ng/color/blob/master/src/gradients.org"
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.string :as str]
+            [quil.core :as q :include-macros true]
             [thi.ng.color.core :as col]
             [thi.ng.color.gradients :as grad]))
 
@@ -39,3 +40,14 @@
        (col/rotate-hue theta)
        vals
        vec)))
+
+(defn url->palette
+  "Converts a palette url from like
+  https://artsexperiments.withgoogle.com/artpalette/colors/7f2e14-5d503f-e4c111-806d4e
+  to hsla color vectors."
+  [url]
+  (map hex->hsla
+       (-> url
+           (str/split #"/")
+           last
+           (str/split #"-"))))
