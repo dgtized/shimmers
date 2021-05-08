@@ -1,5 +1,6 @@
 (ns shimmers.sketches.disassociated-boxes
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.string :as str]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
@@ -16,15 +17,24 @@
 (defn displace [scale shape]
   (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
 
-;; https://artsexperiments.withgoogle.com/artpalette/colors/3a3737-a25547-a19382-c9b9a5-ece7e1
-(def palette1 ["#3a3737" "#a25547" "#a19382" "#c9b9a5" "#ece7e1"])
-;; https://artsexperiments.withgoogle.com/artpalette/colors/7085ad-d0d2c8-556895-969796-8fa4c3
-(def palette2 ["#7085ad" "#d0d2c8" "#556895" "#969796" "#8fa4c3"])
+(defn url->palette [url]
+  (map color/hex->hsla
+       (-> url
+           (str/split #"/")
+           last
+           (str/split #"-"))))
+
+(def palettes
+  (map url->palette
+       ["https://artsexperiments.withgoogle.com/artpalette/colors/3a3737-a25547-a19382-c9b9a5-ece7e1"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/7085ad-d0d2c8-556895-969796-8fa4c3"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/7f2e14-5d503f-e4c111-806d4e"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/e9e4dd-9f9f8c-dfd8c8-576945-363f27"]))
 
 (defn colorize [palette shape]
-  (assoc shape :color (color/hex->hsla (rand-nth palette))))
+  (assoc shape :color (rand-nth palette)))
 
-(comment (colorize palette1 (displace 0.01 (rect/rect 5 5 10 10))))
+(comment (colorize (first palettes) (displace 0.01 (rect/rect 5 5 10 10))))
 
 (def divisions
   {[2 1] 3 [1 2] 3
@@ -70,7 +80,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:palette (rand-nth [palette1 palette2])
+  {:palette (rand-nth palettes)
    :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
 (defn update-state [state]
