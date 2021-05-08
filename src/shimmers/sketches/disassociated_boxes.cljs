@@ -75,9 +75,11 @@
   {:palette (rand-nth palettes)
    :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
-(defn update-state [state]
-  (if (< (count (:shapes state)) 1000)
-    (update state :shapes (partial p/mapcat-random-sample 0.2 (partial disassociate (:palette state))))
+(defn update-state [{:keys [shapes palette] :as state}]
+  (if (< (count shapes) 1000)
+    (update state :shapes
+            (partial p/mapcat-random-sample 0.2
+                     (partial disassociate palette)))
     state))
 
 (defn draw [{:keys [shapes]}]
