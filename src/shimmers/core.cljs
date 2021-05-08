@@ -25,7 +25,7 @@
 (defonce match (r/atom nil))
 
 (defn known-sketches []
-  (map (comp name :id) (sketches/all)))
+  (sort (map (comp name :id) (sketches/all))))
 
 (defn current-sketch []
   (let [{:keys [sketches current]} @app-state]
