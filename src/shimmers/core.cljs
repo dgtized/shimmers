@@ -21,6 +21,13 @@
   (sort (map (comp name :id) (sketches/all))))
 
 (defn start-sketch [sketch]
+  ;; TODO wire up :seed to pass to run-sketch
+
+  ;; unfortunately neither Clojurescript or Javascript have an interface for
+  ;; setting a seed. For quil based sketches, a seed can be specified as that is
+  ;; encoded into the p5js applet state. However that will not inform
+  ;; rand-nth/rand-int/rand or thi.ng/math/random calls. So need to handle that
+  ;; on a sketch by sketch basis and find or implement a library to help.
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
@@ -34,6 +41,9 @@
   (rdom/unmount-component-at-node (dom/getElement "svg-host"))
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
+;; Note that seed is required so that the path "changes", even though sketches
+;; are not using seed. Related to this, cycle and links from the sketch-list are
+;; *not* including a seed, so that will need to be included by default somehow?
 (defn restart-sketch [sketch]
   (rfe/push-state ::sketch-by-name
                   {:name (:id sketch)}
@@ -117,5 +127,3 @@
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
-
-
