@@ -9,7 +9,8 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
-            [shimmers.sketches :as sketches]))
+            [shimmers.sketches :as sketches]
+            [spec-tools.data-spec :as ds]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -82,14 +83,17 @@
     {:name ::sketch-by-name
      :view sketch-by-name
      :parameters
-     {:path {:name (every-pred string? (set (known-sketches)))}}
+     {:path {:name (every-pred string? (set (known-sketches)))}
+      :query {(ds/opt :seed) int?}}
      :controllers
-     [{:parameters {:path [:name]}
-       :start (fn [{:keys [path]}]
+     [{:parameters {:path [:name] :query [:seed]}
+       :start (fn [{:keys [path query]}]
                 (let [sketch-name (:name path)]
                   (println "start" "sketch" sketch-name)
                   (ui/screen-view (name sketch-name))
-                  (swap! app-state assoc :current (keyword sketch-name))
+                  (swap! app-state assoc
+                         :current (keyword sketch-name)
+                         :seed (:seed query))
                   (run-current)))
        :stop (fn [{:keys [path]}]
                (println "stop" "sketch" (:name path))
