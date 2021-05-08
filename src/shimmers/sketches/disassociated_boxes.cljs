@@ -40,27 +40,30 @@
   "Generates divisions and biases the weights towards row splits or column splits."
   [row-bias]
   (reduce-kv (fn [m [r c] v]
-               (let [bias (cond (> r c) row-bias
-                                (< r c) (/ 1.0 row-bias)
+               (let [bias (cond (> c r) row-bias
+                                (< c r) (/ 1.0 row-bias)
                                 :else 1.0)]
                  (assoc m [r c] (* bias v))))
              {}
              divisions))
 
+(defn subdivide [rect [rows cols]]
+  (let [width (geom/width rect)
+        height (geom/height rect)
+        hstride (/ width cols)
+        vstride (/ height rows)
+        [x y] (:p rect)]
+    (for [i (range 0 width hstride)
+          j (range 0 height vstride)]
+      (rect/rect (+ x i) (+ y j) hstride vstride))))
+
 (defn disassociate [palette shape]
-  (let [w (geom/width shape)
-        h (geom/height shape)
-        ;; bias towards column or row centric splits based on a weighted ratio
-        ;; of current shapes width / height
-        [hdivs vdivs] (->> (/ (+ 2.0 (/ w h)) 3)
-                           split-bias
-                           p/weighted)
-        hstride (/ w hdivs)
-        vstride (/ h vdivs)
-        [x y] (:p shape)]
-    (->> (for [ow (range 0 w hstride)
-               ov (range 0 h vstride)]
-           (rect/rect (+ x ow) (+ y ov) hstride vstride))
+  ;; bias towards column or row centric splits based on a weighted ratio
+  ;; of current shapes width / height
+  (let [[rows cols] (->> (/ (+ 2.0 (/ (geom/width shape) (geom/height shape))) 3)
+                         split-bias
+                         p/weighted)]
+    (->> (subdivide shape [rows cols])
          (p/map-random-sample 0.05 (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
          (p/map-random-sample 0.05 (partial displace 0.002))
          (p/map-random-sample 0.10 (partial colorize palette)))))
