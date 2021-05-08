@@ -24,6 +24,9 @@
 (defonce app-state (init-sketches (sketches/all)))
 (defonce match (r/atom nil))
 
+(defn known-sketches []
+  (map (comp name :id) (sketches/all)))
+
 (defn current-sketch []
   (let [{:keys [sketches current]} @app-state]
     (first (filter #(= current (:id %)) sketches))))
@@ -48,8 +51,7 @@
                   {:seed (rand-int (Math/pow 2 32))}))
 
 (defn cycle-sketch [sketch]
-  (let [{:keys [sketches]} @app-state
-        next-sketch (cs/cycle-next (map :id sketches) (:id sketch))]
+  (let [next-sketch (cs/cycle-next (known-sketches) (name (:id sketch)))]
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defn sketch-list []
@@ -71,9 +73,6 @@
      [:span
       [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
      [:span {:id "framerate"}]]))
-
-(defn known-sketches []
-  (map (comp name :id) (sketches/all)))
 
 ;; FIXME: handle invalid paths, re-route to sketch-list
 (def routes
