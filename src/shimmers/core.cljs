@@ -47,9 +47,9 @@
                   {:name (:id sketch)}
                   {:seed (rand-int (Math/pow 2 32))}))
 
-(defn cycle-sketch []
-  (let [{:keys [sketches current]} @app-state
-        next-sketch (cs/cycle-next (map :id sketches) current)]
+(defn cycle-sketch [sketch]
+  (let [{:keys [sketches]} @app-state
+        next-sketch (cs/cycle-next (map :id sketches) (:id sketch))]
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defn sketch-list []
@@ -65,7 +65,7 @@
   (let [sketch (current-sketch)]
     [:section {:class "controls"}
      [:span
-      [:button {:on-click cycle-sketch} "Next"]
+      [:button {:on-click #(cycle-sketch sketch)} "Next"]
       [:button {:on-click #(restart-sketch sketch)} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
