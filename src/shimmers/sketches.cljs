@@ -135,4 +135,8 @@
     zigzag/run-sketch
     zoetropic/run-sketch]))
 
+(defn by-name [sketch-name]
+  (let [sketch-id (keyword sketch-name)]
+    (first (filter #(= sketch-id (:id %)) (all)))))
+
 (comment (loader/all-sketches))

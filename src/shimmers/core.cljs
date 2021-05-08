@@ -61,8 +61,8 @@
              [:li [:a {:href (rfe/href ::sketch-by-name {:name (:id sketch)})}
                    (:id sketch)]]))]))
 
-(defn sketch-by-name []
-  (let [sketch (current-sketch)]
+(defn sketch-by-name [{:keys [path]}]
+  (let [sketch (sketches/by-name (:name path))]
     [:section {:class "controls"}
      [:span
       [:button {:on-click #(cycle-sketch sketch)} "Next"]
