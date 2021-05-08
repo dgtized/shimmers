@@ -27,13 +27,9 @@
 (defn known-sketches []
   (sort (map (comp name :id) (sketches/all))))
 
-(defn current-sketch []
-  (let [{:keys [sketches current]} @app-state]
-    (first (filter #(= current (:id %)) sketches))))
-
-(defn run-current []
-  (when-let [sketch (current-sketch)]
-    (apply (:fn sketch) [])))
+(defn start-sketch [sketch]
+  (when-let [run-sketch (:fn sketch)]
+    (apply run-sketch [])))
 
 (defn stop-sketch []
   ;; force active video capture to stop
@@ -88,13 +84,12 @@
      :controllers
      [{:parameters {:path [:name] :query [:seed]}
        :start (fn [{:keys [path query]}]
-                (let [sketch-name (:name path)]
+                (let [sketch-name (:name path)
+                      sketch (assoc (sketches/by-name sketch-name)
+                                    :seed (:seed query))]
                   (println "start" "sketch" sketch-name)
                   (ui/screen-view (name sketch-name))
-                  (swap! app-state assoc
-                         :current (keyword sketch-name)
-                         :seed (:seed query))
-                  (run-current)))
+                  (start-sketch sketch)))
        :stop (fn [{:keys [path]}]
                (println "stop" "sketch" (:name path))
                (stop-sketch))}]}]])
