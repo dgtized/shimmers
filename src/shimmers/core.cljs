@@ -42,9 +42,9 @@
   (rdom/unmount-component-at-node (dom/getElement "svg-host"))
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
-(defn restart-sketch []
+(defn restart-sketch [sketch]
   (rfe/push-state ::sketch-by-name
-                  {:name (:id (current-sketch))}
+                  {:name (:id sketch)}
                   {:seed (rand-int (Math/pow 2 32))}))
 
 (defn cycle-sketch []
@@ -66,7 +66,7 @@
     [:section {:class "controls"}
      [:span
       [:button {:on-click cycle-sketch} "Next"]
-      [:button {:on-click restart-sketch} "Restart"]
+      [:button {:on-click #(restart-sketch sketch)} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
       [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
