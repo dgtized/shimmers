@@ -17,11 +17,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn init-sketches [sketches]
-  (atom {:sketches (sort-by (comp name :id) sketches)
-         :current nil}))
-
-(defonce app-state (init-sketches (sketches/all)))
 (defonce match (r/atom nil))
 
 (defn known-sketches []
@@ -51,7 +46,7 @@
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defn sketch-list []
-  (let [{:keys [sketches]} @app-state]
+  (let [sketches (sort-by (comp name :id) (sketches/all))]
     [:section
      [:h1 (str "All Sketches (" (count sketches) ")")]
      (into [:ul]
