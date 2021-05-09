@@ -42,12 +42,16 @@
   (map (fn [x] (if (chance prob) (f x) x)) coll))
 
 (defn mapcat-random-sample
-  "Apply `f` to the subset of `coll` selected with probability `prob` with the
-  unsampled elements intermingled as before. `f` must return a sequence."
-  [prob f coll]
-  (mapcat (fn [x] (if (chance prob) (f x) [x])) coll))
+  "Apply `xf` to the subset of `coll` selected with probability function `pf` for
+  each element, with the unsampled elements intermingled as before. `xf` must
+  return a sequence."
+  [pf xf coll]
+  (mapcat (fn [x]
+            (if (chance (pf x)) (xf x) [x]))
+          coll))
 
-(comment (map-random-sample 0.1 inc (range 10)))
+(comment (map-random-sample 0.1 inc (range 10))
+         (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
 
 (defn gaussian-clamped [mean sd]
   (let [dist (ksd/normal {:mu mean :sd sd})]

@@ -78,7 +78,8 @@
 (defn update-state [{:keys [shapes palette] :as state}]
   (if (< (count shapes) 1000)
     (update state :shapes
-            (partial p/mapcat-random-sample 0.2
+            (partial p/mapcat-random-sample
+                     (constantly 0.2)
                      (partial disassociate palette)))
     state))
 
