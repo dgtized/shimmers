@@ -28,6 +28,11 @@
     (apply q/curve-vertex v))
   (q/end-shape :close))
 
+(defn color-if
+  "Apply color function `f` with `color` if color is a sequence."
+  [color f]
+  (when (seq color) (apply f color)))
+
 (defn draw-triangle [[ax ay] [bx by] [cx cy]]
   (q/triangle ax ay bx by cx cy))
 
