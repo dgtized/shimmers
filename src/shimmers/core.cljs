@@ -18,7 +18,7 @@
    (/ (.-innerHeight js/window) 2)])
 
 (defn known-sketches []
-  (sort (map (comp name :id) (sketches/all))))
+  (map (comp name :id) (sketches/all)))
 
 (defn start-sketch [sketch]
   ;; TODO wire up :seed to pass to run-sketch
@@ -54,7 +54,7 @@
     (rfe/push-state ::sketch-by-name {:name next-sketch})))
 
 (defn sketch-list []
-  (let [sketches (sort-by (comp name :id) (sketches/all))]
+  (let [sketches (sketches/all)]
     [:section
      [:h1 (str "All Sketches (" (count sketches) ")")]
      (into [:ul]

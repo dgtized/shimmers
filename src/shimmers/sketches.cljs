@@ -66,7 +66,7 @@
             [shimmers.sketches.zigzag :as zigzag]
             [shimmers.sketches.zoetropic :as zoetropic]))
 
-(defn all
+(defn- db
   []
   (loader/sketches-with-meta
    [ascendance/run-sketch
@@ -135,8 +135,11 @@
     zigzag/run-sketch
     zoetropic/run-sketch]))
 
+(defn all []
+  (sort-by (comp name :id) (db)))
+
 (defn by-name [sketch-name]
   (let [sketch-id (keyword sketch-name)]
-    (first (filter #(= sketch-id (:id %)) (all)))))
+    (first (filter #(= sketch-id (:id %)) (db)))))
 
 (comment (loader/all-sketches))
