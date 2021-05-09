@@ -39,7 +39,7 @@
                   (q/random 0 Math/PI))))
 
 (defn random-displace [shapes prob offset]
-  (p/map-random-sample prob
+  (p/map-random-sample (constantly prob)
                        (fn [shape] (geom/translate shape (tm/* offset (rand))))
                        shapes))
 

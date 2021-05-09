@@ -66,9 +66,12 @@
                          split-bias
                          p/weighted)]
     (->> (subdivide shape [rows cols])
-         (p/map-random-sample 0.05 (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
-         (p/map-random-sample 0.05 (partial displace 0.002))
-         (p/map-random-sample 0.10 (partial colorize palette)))))
+         (p/map-random-sample (constantly 0.05)
+                              (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
+         (p/map-random-sample (constantly 0.05)
+                              (partial displace 0.002))
+         (p/map-random-sample (constantly 0.10)
+                              (partial colorize palette)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

@@ -36,13 +36,13 @@
   (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn map-random-sample
-  "Apply `f` to the subset of `coll` selected with probability `prob` with the
-  unsampled elements intermingled as before."
-  [prob f coll]
-  (map (fn [x] (if (chance prob) (f x) x)) coll))
+  "Apply `xf` to the subset of `coll` selected with probability density `pf` for
+  each element, with the unsampled elements intermingled as before."
+  [pf xf coll]
+  (map (fn [x] (if (chance (pf x)) (xf x) x)) coll))
 
 (defn mapcat-random-sample
-  "Apply `xf` to the subset of `coll` selected with probability function `pf` for
+  "Apply `xf` to the subset of `coll` selected with probability density `pf` for
   each element, with the unsampled elements intermingled as before. `xf` must
   return a sequence."
   [pf xf coll]
@@ -50,7 +50,7 @@
             (if (chance (pf x)) (xf x) [x]))
           coll))
 
-(comment (map-random-sample 0.1 inc (range 10))
+(comment (map-random-sample (constantly 0.1) inc (range 10))
          (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
 
 (defn gaussian-clamped [mean sd]

@@ -21,12 +21,14 @@
   (let [center (geom/centroid polygon)]
     (as-> polygon it
       (geom/vertices it)
-      (p/map-random-sample p (fn [v] (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
-                                      (cond (inside-another? shapes v')
-                                            v
-                                            (not (inside-another? bounds v'))
-                                            v
-                                            :else v'))) it)
+      (p/map-random-sample
+       (constantly p)
+       (fn [v] (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
+                (cond (inside-another? shapes v')
+                      v
+                      (not (inside-another? bounds v'))
+                      v
+                      :else v'))) it)
       (gp/polygon2 it)
       (with-meta it (meta polygon)))))
 
