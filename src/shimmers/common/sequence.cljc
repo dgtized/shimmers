@@ -6,6 +6,10 @@
   (some (fn [[idx item]] (when (= value item) idx))
         (map-indexed vector coll)))
 
+(defn find-first
+  [pred coll]
+  (reduce (fn [_ x] (when (pred x) (reduced x))) nil coll))
+
 (defn map-kv
   "Apply f to every value in coll."
   [f coll]

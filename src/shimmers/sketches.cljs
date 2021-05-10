@@ -1,5 +1,6 @@
 (ns shimmers.sketches
-  (:require [shimmers.macros.loader :as loader :include-macros true]
+  (:require [shimmers.common.sequence :as cs]
+            [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.sketches.ascendance :as ascendance]
             [shimmers.sketches.braid :as braid]
             [shimmers.sketches.brush-sweep :as brush-sweep]
@@ -140,6 +141,6 @@
 
 (defn by-name [sketch-name]
   (let [sketch-id (keyword sketch-name)]
-    (first (filter #(= sketch-id (:id %)) (db)))))
+    (cs/find-first #(= sketch-id (:id %)) (db))))
 
 (comment (loader/all-sketches))
