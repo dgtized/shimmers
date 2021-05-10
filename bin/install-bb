@@ -1,0 +1,4 @@
+#!/bin/bash
+
+wget https://github.com/babashka/babashka/releases/download/v0.4.0/babashka-0.4.0-linux-amd64.tar.gz -O babashka.tgz &&
+    tar -zxf babashka.tgz && mv -vf bb bin && rm -vf babashka.tgz

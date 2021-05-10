@@ -14,3 +14,4 @@ resources/public/js/
 resources/public/shimmers.html
 .cljs_node_repl/
 /out/
+/bin/bb

@@ -1,0 +1,6 @@
+{:tasks {:requires ([babashka.fs :as fs])
+         clean {:task (do (println "Remove target directory")
+                          (fs/delete-tree "target")
+                          (fs/delete-tree "resources/public/.git"))}
+         publish {:depends [clean]
+                  :task (shell "bin/publish.sh")}}}
