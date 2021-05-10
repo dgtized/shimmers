@@ -54,7 +54,7 @@
           :let [vertices (geom/vertices shape)]]
     (q/no-fill)
     (q/stroke 0)
-    (cq/color-if (:stroke (meta shape)) q/stroke)
+    (cq/color-if q/stroke (:stroke (meta shape)))
     (cq/draw-shape vertices)
     (q/fill 0)
     (doseq [[x y] vertices]

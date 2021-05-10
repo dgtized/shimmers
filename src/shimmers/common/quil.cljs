@@ -29,9 +29,9 @@
   (q/end-shape :close))
 
 (defn color-if
-  "Apply color function `f` with `color` if color is a sequence."
-  [color f]
-  (when (seq color) (apply f color)))
+  "Apply `set-color-fn` with `color` if color is a sequence."
+  [set-color-fn color]
+  (when (seq color) (apply set-color-fn color)))
 
 (defn draw-triangle [[ax ay] [bx by] [cx cy]]
   (q/triangle ax ay bx by cx cy))

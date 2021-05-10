@@ -53,8 +53,7 @@
           :let [vertices (geom/vertices shape)]]
     (q/no-fill)
     (q/stroke 0)
-    (when-let [color (:stroke (meta shape))]
-      (apply q/stroke color))
+    (cq/color-if q/stroke (:stroke (meta shape)))
     (cq/draw-shape vertices)
     (q/fill 0)
     (doseq [[x y] vertices]
