@@ -166,8 +166,7 @@
   (q/stroke-weight 0.1)
   (doseq [{[a b c] :points color :color} to-draw]
     (q/fill 0 1 1 1.0)
-    (when color
-      (apply q/fill color))
+    (cq/color-if q/fill color)
     (cq/draw-triangle a b c)))
 
 (defn ^:export run-sketch []
