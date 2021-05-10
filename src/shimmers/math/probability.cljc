@@ -53,6 +53,21 @@
 (comment (map-random-sample (constantly 0.1) inc (range 10))
          (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
 
+;; alternatively named cond-if?
+;; however this does not address mapping n collections together?
+(defn prob-if
+  ([prob-fn transform-fn] (prob-if prob-fn transform-fn identity))
+  ([prob-fn transform-fn identity-fn]
+   (fn [x]
+     (if (chance (prob-fn x))
+       (transform-fn x)
+       (identity-fn x)))))
+
+(comment (map (prob-if (constantly 0.1) inc) (range 10))
+         (mapcat (prob-if (constantly 0.1) (fn [x] [(inc x) x]) vector) (range 10))
+         ;; This part doesn't error but is not working as expected.
+         (map (prob-if (constantly 0.2) (fn [x y] [:v x y]) vector) (range 5) (reverse (range 5))))
+
 (defn gaussian-clamped [mean sd]
   (let [dist (ksd/normal {:mu mean :sd sd})]
     (fn []
