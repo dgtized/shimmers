@@ -2,12 +2,18 @@
   (:require [kixi.stats.distribution :as ksd]
             [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
+            [thi.ng.geom.bezier :as bezier]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
+            [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]))
+
+(defn randnorm [mu sd]
+  (ksd/draw (ksd/normal {:mu mu :sd sd})))
 
 (defn random-offsets-spaced [lower upper spacing]
   (for [o (range lower upper spacing)]
-    (+ o (* spacing (ksd/draw (ksd/normal {:mu 0 :sd 0.1}))))))
+    (+ o (* spacing (randnorm 0 0.1)))))
 
 (def width 800)
 (def height 800)
@@ -19,9 +25,13 @@
 ;; Break up the field rows occasionally and sometimes match the rows above and below
 ;; Add varying green levels per row
 (defn scene []
-  (let [road (gl/line2 (r 0.5 0.0) (r 0.5 1.0))]
+  (let [road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) -0.05)
+                                   (r (randnorm 0.5 0.01) 0.3)
+                                   (r (randnorm 0.5 0.01) 0.7)
+                                   (r (randnorm 0.5 0.1) 1.05)])]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
-              (with-meta road {:stroke-width 10})
+              (svg/polyline (geom/sample-uniform road 10 true)
+                            {:stroke-width 10})
               (for [y (random-offsets-spaced 0 1 0.05)]
                 (gl/line2 (r 0.5 y) (r 0 y)))
               (for [y (range 0 1 0.05)]
