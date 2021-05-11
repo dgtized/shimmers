@@ -35,12 +35,13 @@
         rows (for [y (random-offsets-spaced 0 1 spacing)
                    :let [mid (geom/point-at road y)]
                    :when mid]
-               (bezier/auto-spline2 [(r 0 y) mid (r 1 y)]))]
+               [y (bezier/auto-spline2 [(r 0 y) mid (r 1 y)])])]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
               (svg/polyline (geom/sample-uniform road 10 true)
                             {:stroke-width 5})
-              (for [row rows]
-                (svg/polyline (geom/sample-uniform row 10 true))))))
+              (for [[y row] rows]
+                (svg/polyline (geom/sample-uniform row 10 true)
+                              {:key (str "r" y)})))))
 
 (defn page []
   [:div (scene)])
