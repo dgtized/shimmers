@@ -26,18 +26,19 @@
 ;; Add varying green levels per row
 (defn scene []
   (let [spacing 0.05
-        road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) (- spacing))
+        road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) (- (* 2 spacing)))
                                    (r (randnorm 0.5 0.01) 0.3)
                                    (r (randnorm 0.5 0.01) 0.7)
-                                   (r (randnorm 0.5 0.1) (+ 1 spacing))])]
-    (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
+                                   (r (randnorm 0.5 0.1) (+ 1 (* 2 spacing)))])]
+    (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
               (svg/polyline (geom/sample-uniform road 10 true)
-                            {:stroke-width 10})
+                            {:stroke-width 5})
+              ;; sometimes the horizontals don't quite intersect inside the road?
               (for [y (random-offsets-spaced 0 1 spacing)
                     :let [mid (geom/point-at road y)]
                     :when mid]
                 (gl/line2 mid (r 0 y)))
-              (for [y (range 0 1 spacing)
+              (for [y (random-offsets-spaced 0 1 spacing)
                     :let [mid (geom/point-at road y)]
                     :when mid]
                 (gl/line2 mid (r 1.0 y))))))
