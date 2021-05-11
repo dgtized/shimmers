@@ -33,10 +33,14 @@
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
               (svg/polyline (geom/sample-uniform road 10 true)
                             {:stroke-width 10})
-              (for [y (random-offsets-spaced 0 1 spacing)]
-                (gl/line2 (r 0.5 y) (r 0 y)))
-              (for [y (range 0 1 spacing)]
-                (gl/line2 (r 0.5 y) (r 1.0 y))))))
+              (for [y (random-offsets-spaced 0 1 spacing)
+                    :let [mid (geom/point-at road y)]
+                    :when mid]
+                (gl/line2 mid (r 0 y)))
+              (for [y (range 0 1 spacing)
+                    :let [mid (geom/point-at road y)]
+                    :when mid]
+                (gl/line2 mid (r 1.0 y))))))
 
 (defn page []
   [:div (scene)])
