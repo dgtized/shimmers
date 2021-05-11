@@ -7,6 +7,7 @@
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.circle-packing :as circle-packing]
+            [shimmers.sketches.clustered-farmlands :as clustered-farmlands]
             [shimmers.sketches.colors :as colors]
             [shimmers.sketches.convex-spiral :as convex-spiral]
             [shimmers.sketches.cube :as cube]
@@ -76,6 +77,7 @@
     bubbles/run-sketch
     butterfly/run-sketch
     circle-packing/run-sketch
+    clustered-farmlands/run-sketch
     colors/run-sketch
     convex-spiral/run-sketch
     cube/run-sketch
