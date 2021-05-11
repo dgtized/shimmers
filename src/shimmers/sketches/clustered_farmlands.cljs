@@ -29,19 +29,18 @@
         road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) (- (* 2 spacing)))
                                    (r (randnorm 0.5 0.01) 0.3)
                                    (r (randnorm 0.5 0.01) 0.7)
-                                   (r (randnorm 0.5 0.1) (+ 1 (* 2 spacing)))])]
+                                   (r (randnorm 0.5 0.1) (+ 1 (* 2 spacing)))])
+        ;; Trying to make them line up, but to be fields I think they have to be
+        ;; separate to fill later
+        rows (for [y (random-offsets-spaced 0 1 spacing)
+                   :let [mid (geom/point-at road y)]
+                   :when mid]
+               (bezier/auto-spline2 [(r 0 y) mid (r 1 y)]))]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
               (svg/polyline (geom/sample-uniform road 10 true)
                             {:stroke-width 5})
-              ;; sometimes the horizontals don't quite intersect inside the road?
-              (for [y (random-offsets-spaced 0 1 spacing)
-                    :let [mid (geom/point-at road y)]
-                    :when mid]
-                (gl/line2 mid (r 0 y)))
-              (for [y (random-offsets-spaced 0 1 spacing)
-                    :let [mid (geom/point-at road y)]
-                    :when mid]
-                (gl/line2 mid (r 1.0 y))))))
+              (for [row rows]
+                (svg/polyline (geom/sample-uniform row 10 true))))))
 
 (defn page []
   [:div (scene)])
