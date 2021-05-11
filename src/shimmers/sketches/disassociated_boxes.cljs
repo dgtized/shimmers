@@ -55,9 +55,11 @@
         hstride (/ width cols)
         vstride (/ height rows)
         [x y] (:p rect)]
-    (for [i (range 0 width hstride)
-          j (range 0 height vstride)]
-      (rect/rect (+ x i) (+ y j) hstride vstride))))
+    (for [i (range cols)
+          j (range rows)]
+      (rect/rect (+ x (* i hstride))
+                 (+ y (* j vstride))
+                 hstride vstride))))
 
 (defn disassociate [palette shape]
   ;; bias towards column or row centric splits based on a weighted ratio
