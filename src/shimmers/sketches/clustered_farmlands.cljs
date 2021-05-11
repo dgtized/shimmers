@@ -25,16 +25,17 @@
 ;; Break up the field rows occasionally and sometimes match the rows above and below
 ;; Add varying green levels per row
 (defn scene []
-  (let [road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) -0.05)
+  (let [spacing 0.05
+        road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) (- spacing))
                                    (r (randnorm 0.5 0.01) 0.3)
                                    (r (randnorm 0.5 0.01) 0.7)
-                                   (r (randnorm 0.5 0.1) 1.05)])]
+                                   (r (randnorm 0.5 0.1) (+ 1 spacing))])]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
               (svg/polyline (geom/sample-uniform road 10 true)
                             {:stroke-width 10})
-              (for [y (random-offsets-spaced 0 1 0.05)]
+              (for [y (random-offsets-spaced 0 1 spacing)]
                 (gl/line2 (r 0.5 y) (r 0 y)))
-              (for [y (range 0 1 0.05)]
+              (for [y (range 0 1 spacing)]
                 (gl/line2 (r 0.5 y) (r 1.0 y))))))
 
 (defn page []
