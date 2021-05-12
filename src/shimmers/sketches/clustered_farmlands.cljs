@@ -15,6 +15,14 @@
   (for [o (range lower upper spacing)]
     (+ o (* spacing (randnorm 0 0.1)))))
 
+(defn generate-houses
+  [road]
+  (fn [[y1 y2]]
+    (let [mid1 (geom/point-at road y1)
+          mid2 (geom/point-at road y2)]
+      [(tm/+ (tm/* (tm/+ mid1 mid2) 0.5)
+             (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))])))
+
 (def width 800)
 (def height 800)
 (defn r [x y]
@@ -37,11 +45,7 @@
                    :when mid]
                [y (bezier/auto-spline2 [(r 0 y) mid (r 1 y)])])
         ;; TODO: stay out of the road, vary shapes or multiple buildings, and build on both sides
-        houses (mapcat (fn [[y1 y2]]
-                         (let [mid1 (geom/point-at road y1)
-                               mid2 (geom/point-at road y2)]
-                           [(tm/+ (tm/* (tm/+ mid1 mid2) 0.5) (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))]))
-                       (partition 2 1 (map first rows)))]
+        houses (mapcat (generate-houses road) (partition 2 1 (map first rows)))]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
               (svg/polyline (geom/sample-uniform road 10 true)
                             {:stroke-width 5})
