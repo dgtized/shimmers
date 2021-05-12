@@ -20,7 +20,7 @@
   (fn [[y1 y2]]
     (let [mid1 (geom/point-at road y1)
           mid2 (geom/point-at road y2)]
-      [(tm/+ (tm/* (tm/+ mid1 mid2) 0.5)
+      [(tm/+ (tm/mix mid1 mid2 0.5)
              (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))])))
 
 (def width 800)
