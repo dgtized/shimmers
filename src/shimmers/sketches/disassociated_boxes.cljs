@@ -49,6 +49,27 @@
              {}
              divisions))
 
+(defn fib [n]
+  (take n (map first (iterate (fn [[a b]] [b (+ a b)]) [0 1]))))
+
+(defn fib-splits [n]
+  (let [fibs (drop 2 (fib (+ 2 n)))
+        sum (reduce + fibs)]
+    (mapv #(/ % sum) (reverse fibs))))
+
+(comment (fib-splits 2)
+         (fib-splits 3)
+         (reduce + (fib-splits 5)))
+
+(def phi (/ (+ 1 (Math/sqrt 5)) 2))
+
+(defn golden [n]
+  (drop 1 (map (fn [i] (/ 1.0 (Math/pow phi i))) (range (inc n)))))
+
+(comment
+  (golden 2)
+  (golden 3))
+
 (defn subdivide [rect [rows cols]]
   (let [width (geom/width rect)
         height (geom/height rect)
