@@ -61,6 +61,17 @@
          (fib-splits 3)
          (reduce + (fib-splits 5)))
 
+(defn sum-offsets
+  "Takes a set of split offsets, returns a collection of tuples containing the sum
+  up to that offset and that offset, ie relative x, x width."
+  [coll]
+  (reduce (fn [a x] (conj a [(reduce + (map second a)) x]))
+          [] coll))
+
+(comment (sum-offsets (fib-splits 2))
+         (sum-offsets (fib-splits 3))
+         (sum-offsets (fib-splits 4)))
+
 (def phi (/ (+ 1 (Math/sqrt 5)) 2))
 
 (defn golden [n]
@@ -81,6 +92,19 @@
       (rect/rect (+ x (* i hstride))
                  (+ y (* j vstride))
                  hstride vstride))))
+
+(defn fib-subdivide [rect [rows cols]]
+  (let [width (geom/width rect)
+        height (geom/height rect)
+        [hsplits vsplits] (->> [(fib-splits cols) (fib-splits rows)]
+                               (p/map-random-sample (constantly 0.5) reverse))
+        [x y] (:p rect)]
+    (for [[i-pct i-width] (sum-offsets hsplits)
+          [j-pct j-height] (sum-offsets vsplits)]
+      (rect/rect (+ x (* i-pct width))
+                 (+ y (* j-pct height))
+                 (* i-width width)
+                 (* j-height height)))))
 
 (defn disassociate [palette shape]
   ;; bias towards column or row centric splits based on a weighted ratio
