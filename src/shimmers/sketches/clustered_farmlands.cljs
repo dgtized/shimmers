@@ -19,9 +19,12 @@
   [road]
   (fn [[y1 y2]]
     (let [mid1 (geom/point-at road y1)
-          mid2 (geom/point-at road y2)]
-      [(tm/+ (tm/mix mid1 mid2 0.5)
-             (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))])))
+          mid2 (geom/point-at road y2)
+          normal (geom/normal (tm/- mid2 mid1))]
+      [{:pos (tm/+ (tm/mix mid1 mid2 0.5)
+                   normal
+                   (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))
+        :heading (geom/heading-xy normal)}])))
 
 (def width 800)
 (def height 800)
@@ -52,8 +55,9 @@
               (for [[y row] rows]
                 (svg/polyline (geom/sample-uniform row 10 true)
                               {:key (str "r" y)}))
-              (for [[i house] (map-indexed vector houses)]
-                (svg/rect house 5 5 {:key (str "house" i)})))))
+              (for [[i {:keys [pos heading]}] (map-indexed vector houses)]
+                (svg/group {:transform (str "rotate(-" heading ")")}
+                           (svg/rect pos 5 5 {:key (str "house" i)}))))))
 
 (defn page []
   [:div (scene)])
