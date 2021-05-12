@@ -111,8 +111,10 @@
   ;; of current shapes width / height
   (let [[rows cols] (->> (/ (+ 2.0 (/ (geom/width shape) (geom/height shape))) 3)
                          split-bias
-                         p/weighted)]
-    (->> (subdivide shape [rows cols])
+                         p/weighted)
+        divide-shape (p/weighted {fib-subdivide 1
+                                  subdivide 1})]
+    (->> (divide-shape shape [rows cols])
          (p/map-random-sample (constantly 0.05)
                               (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
          (p/map-random-sample (constantly 0.05)
