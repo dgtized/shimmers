@@ -24,6 +24,10 @@
       [{:pos (tm/+ (tm/mix mid1 mid2 0.5)
                    normal
                    (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))
+        :heading (geom/heading-xy normal)}
+       {:pos (tm/+ (tm/mix mid1 mid2 0.5)
+                   (tm/- normal)
+                   (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))
         :heading (geom/heading-xy normal)}])))
 
 (def width 800)
