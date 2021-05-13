@@ -51,10 +51,19 @@
                                    (r (randnorm 0.5 0.1) (+ 1 (* 2 spacing)))])
         ;; Trying to make them line up, but to be fields I think they have to be
         ;; separate to fill later
-        rows (for [y (random-offsets-spaced 0 1 spacing)
+        road-start (geom/point-at road 0.0)
+        rows (for [y (random-offsets-spaced 0.01 0.99 spacing)
                    :let [mid (geom/point-at road y)]
                    :when mid]
-               [y (bezier/auto-spline2 [(r 0 y) mid (r 1 y)])])
+               (let [normal (-> (tm/- road-start mid)
+                                geom/normal
+                                tm/normalize
+                                (tm/* (* width 0.15)))
+                     path [(r 0 y)
+                           (tm/- mid normal)
+                           (tm/+ mid normal)
+                           (r 1 y)]]
+                 [y (bezier/auto-spline2 path)]))
         ;; TODO: stay out of the road, vary shapes or multiple buildings, and build on both sides
         houses (mapcat (generate-houses road) (partition 2 1 (map first rows)))]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
