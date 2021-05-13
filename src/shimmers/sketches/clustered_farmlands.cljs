@@ -64,8 +64,9 @@
                 (svg/polyline (geom/sample-uniform row 10 true)
                               {:key (str "r" y)}))
               (for [[i {:keys [pos heading]}] (map-indexed vector houses)]
-                (svg/group {:transform (csvg/rotate heading pos)}
-                           (svg/rect pos 5 5 {:key (str "house" i)}))))))
+                (svg/group {:transform (csvg/rotate heading pos)
+                            :key (str "house" i)}
+                           (svg/rect pos 5 5))))))
 
 (defn page []
   [:div (scene)])
