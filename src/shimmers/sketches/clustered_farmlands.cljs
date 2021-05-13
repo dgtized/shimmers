@@ -11,6 +11,11 @@
 (defn randnorm [mu sd]
   (ksd/draw (ksd/normal {:mu mu :sd sd})))
 
+(def width 800)
+(def height 800)
+(defn r [x y]
+  (gv/vec2 (* width x) (* height y)))
+
 (defn random-offsets-spaced [lower upper spacing]
   (for [o (range lower upper spacing)]
     (+ o (* spacing (randnorm 0 0.1)))))
@@ -20,20 +25,19 @@
   (fn [[y1 y2]]
     (let [mid1 (geom/point-at road y1)
           mid2 (geom/point-at road y2)
-          normal (geom/normal (tm/- mid2 mid1))]
+          units (* width 0.02)
+          normal (-> (tm/- mid2 mid1)
+                     geom/normal
+                     tm/normalize
+                     (tm/* (* units 1)))]
       [{:pos (tm/+ (tm/mix mid1 mid2 0.5)
                    normal
-                   (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))
+                   (gv/vec2 (randnorm 0 (* 0.1 units)) (randnorm 0 (* 0.2 units))))
         :heading (geom/heading-xy normal)}
        {:pos (tm/+ (tm/mix mid1 mid2 0.5)
                    (tm/- normal)
-                   (gv/vec2 (randnorm 0 0.05) (randnorm 0 0.1)))
+                   (gv/vec2 (randnorm 0 (* 0.1 units)) (randnorm 0 (* 0.2 units))))
         :heading (geom/heading-xy normal)}])))
-
-(def width 800)
-(def height 800)
-(defn r [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 ;; TODO curve the "road" and add houses + lots along it, spaced at some interval
 ;; curve the field rows with dampened displacement along the path?
