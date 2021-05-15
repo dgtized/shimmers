@@ -46,8 +46,9 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(assoc (gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-w 0.05))
-                   :color [(rand-nth [0.0 0.4 0.5 0.6]) 0.35 0.4 1.0])]})
+  {:shapes [(assoc (gc/circle (cq/rel-pos (tm/random 0.2 0.8) (tm/random 0.2 0.8))
+                              (cq/rel-w 0.05))
+                   :color [(rand-nth [0.0 0.4 0.5 0.6 0.85]) 0.35 0.4 1.0])]})
 
 (defn update-state [{:keys [shapes] :as state}]
   (if-let [new-circle (->> #(border-circle shapes)
