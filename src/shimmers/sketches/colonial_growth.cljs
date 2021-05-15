@@ -22,9 +22,8 @@
   (geom/contains-point? (rect/rect 0 0 (q/width) (q/height))
                         (:p circle)))
 
-;; Sometimes generating inside of another circle?
 (defn intersects [c1 c2]
-  (when (or (geom/contains-point? c1 (:p c2))
+  (when (or (geom/contains-point? c2 (:p c1))
             (geom/intersect-shape c1 c2))
     c2))
 
