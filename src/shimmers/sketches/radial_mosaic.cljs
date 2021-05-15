@@ -69,8 +69,8 @@
                       (for [[t0 t1] (radial-range dt)]
                         (segment origin (+ st t0) (+ st t1) r0 r1)))
                     (map vector
-                         (partition-segments (repeatedly #(int (tm/random 6 28)))
-                                             (repeatedly #(int (tm/random 1 4)))
+                         (partition-segments (repeatedly #(int (tm/random 10 30)))
+                                             (repeatedly #(int (tm/random 1 3)))
                                              (range 11 (int (* 0.5 height))))
                          (repeatedly #(tm/random 0.1 0.7))
                          (repeatedly #(tm/random 0.0 0.2))))))
