@@ -62,6 +62,9 @@
   (f/format [(f/float 2)] 0.21)
   (segment (gv/vec2) 0.5 1 1 2))
 
+
+;; Add grout padding between radial segments?
+;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 (defn scene [origin]
   (csvg/svg {:width width :height height}
             (gc/circle origin 10)
