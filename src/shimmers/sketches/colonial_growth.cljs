@@ -21,13 +21,13 @@
     c2))
 
 (defn border-circle [shapes]
-  (let [{:keys [p r]} (rand-nth shapes)
+  (let [{:keys [p r] :as parent} (rand-nth shapes)
         angle (tm/random 0 tm/TWO_PI)
         radius (tm/random (max (* 0.66 r) 2) (* 1.1 r))
         center (->> (gv/vec2 (+ r radius 0.1) angle)
                     geom/as-cartesian
                     (tm/+ p))
-        circle (gc/circle center radius)]
+        circle (assoc (gc/circle center radius) :parent parent)]
     (when (and (in-bounds? circle)
                (not (some (partial intersects circle) shapes)))
       circle)))
@@ -44,9 +44,11 @@
 (defn draw [{:keys [shapes]}]
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r]} shapes
+  (doseq [{:keys [p r parent]} shapes
           :let [[x y] p]]
-    (q/ellipse x y r r)))
+    (q/ellipse x y r r)
+    (when parent
+      (q/line p (:p parent)))))
 
 (defn ^:export run-sketch []
   ;; 2021
