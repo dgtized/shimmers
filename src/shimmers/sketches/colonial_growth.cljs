@@ -50,7 +50,10 @@
                    :color [(rand-nth [0.0 0.4 0.5 0.6]) 0.35 0.4 1.0])]})
 
 (defn update-state [{:keys [shapes] :as state}]
-  (if-let [new-circle (border-circle shapes)]
+  (if-let [new-circle (->> #(border-circle shapes)
+                           (repeatedly 8)
+                           (drop-while nil?)
+                           first)]
     (update state :shapes conj new-circle)
     state))
 
