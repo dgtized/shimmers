@@ -23,20 +23,23 @@
 (defn first-last [coll]
   [(first coll) (last coll)])
 
-(defn randomized-segments [rand-chunk rand-pad coll]
+(defn partition-segments [chunks pads coll]
   (lazy-seq
    (when-let [s (seq coll)]
-     (let [n (rand-chunk)
+     (let [n (first chunks)
            p (take n s)]
        (if (== n (count p))
          (cons (first-last p)
-               (randomized-segments rand-chunk rand-pad
-                                    (drop (+ n (rand-pad)) s)))
+               (partition-segments (rest chunks) (rest pads)
+                                   (drop (+ n (first pads)) s)))
          (list (first-last (take n p))))))))
 
-(comment (randomized-segments #(int (tm/random 4 24))
-                              #(int (tm/random 0 4))
-                              (range 100)))
+(comment (partition-segments #(int (tm/random 4 24))
+                             #(int (tm/random 0 4))
+                             (range 100))
+         (partition-segments (cycle [4 8 16])
+                             (cycle [1 2])
+                             (range 100)))
 
 (defn segment [origin t0 t1 r0 r1]
   (let [rot (tm/degrees (- t1 t0))]
@@ -60,9 +63,9 @@
                       (for [[t0 t1] (radial-range dt)]
                         (segment origin (+ st t0) (+ st t1) r0 r1)))
                     (map vector
-                         (randomized-segments #(int (tm/random 6 28))
-                                              #(int (tm/random 1 4))
-                                              (range 11 (int (* 0.5 height))))
+                         (partition-segments (repeatedly #(int (tm/random 6 28)))
+                                             (repeatedly #(int (tm/random 1 4)))
+                                             (range 11 (int (* 0.5 height))))
                          (repeatedly #(tm/random 0.1 0.7))
                          (repeatedly #(tm/random 0.0 0.2))))))
 
