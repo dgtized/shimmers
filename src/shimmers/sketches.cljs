@@ -47,6 +47,7 @@
             [shimmers.sketches.precipitation :as precipitation]
             [shimmers.sketches.probabilistic-automata :as probabilistic-automata]
             [shimmers.sketches.radar :as radar]
+            [shimmers.sketches.radial-mosaic :as radial-mosaic]
             [shimmers.sketches.random-walk :as random-walk]
             [shimmers.sketches.ray-marching :as ray-marching]
             [shimmers.sketches.ring :as ring]
@@ -118,6 +119,7 @@
     precipitation/run-sketch
     probabilistic-automata/run-sketch
     radar/run-sketch
+    radial-mosaic/run-sketch
     random-walk/run-sketch
     ray-marching/run-sketch
     ring/run-sketch
