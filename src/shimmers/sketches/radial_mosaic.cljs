@@ -41,15 +41,15 @@
                              (cycle [1 2])
                              (range 100)))
 
-(defn segment [origin t0 t1 r0 r1]
-  (let [[x0 y0] (tm/+ origin (polar r0 t0))
-        [x1 y1] (tm/+ origin (polar r1 t1))]
-    (svg/path [[:M (tm/+ origin (polar r0 t0))]
-               [:L (tm/+ origin (polar r1 t0))]
-               #_[:L (tm/+ origin (polar r1 t1))]
+(defn segment [t0 t1 r0 r1]
+  (let [[x0 y0] (polar r0 t0)
+        [x1 y1] (polar r1 t1)]
+    (svg/path [[:M (polar r0 t0)]
+               [:L (polar r1 t0)]
+               #_[:L (polar r1 t1)]
                [:A [r1 r1] 0.0 0 1 [x1 y1]]
-               [:L (tm/+ origin (polar r0 t1))]
-               #_[:L (tm/+ origin (polar r0 t0))]
+               [:L (polar r0 t1)]
+               #_[:L (polar r0 t0)]
                [:A [r0 r0] 0.0 0 0 [x0 y0]]
                [:Z]]
               {:fill "none"
@@ -60,24 +60,28 @@
 (comment
   (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
   (f/format [(f/float 2)] 0.21)
-  (segment (gv/vec2) 0.5 1 1 2))
+  (segment 0.5 1 1 2))
 
+(defn svg-translate [p]
+  (apply f/format ["translate(" (f/float 2) "," (f/float 2) ")"]
+         p))
 
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 (defn scene [origin]
   (csvg/svg {:width width :height height}
-            (gc/circle origin 10)
-            (mapcat (fn [[[r0 r1] segments st]]
-                      (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
-                        (for [[t0 t1] (radial-range dt)]
-                          (segment origin (+ st t0) (+ st t1) r0 r1))))
-                    (map vector
-                         (partition-segments (repeatedly #(int (tm/random 10 30)))
-                                             (repeatedly #(int (tm/random 1 3)))
-                                             (range 11 (int (* 0.5 height))))
-                         (repeatedly #(int (tm/random 16 48)))
-                         (repeatedly #(tm/random 0.0 0.2))))))
+            (svg/group {:transform (svg-translate origin)}
+                       (gc/circle (gv/vec2) 10)
+                       (mapcat (fn [[[r0 r1] segments st]]
+                                 (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
+                                   (for [[t0 t1] (radial-range dt)]
+                                     (segment (+ st t0) (+ st t1) r0 r1))))
+                               (map vector
+                                    (partition-segments (repeatedly #(int (tm/random 10 30)))
+                                                        (repeatedly #(int (tm/random 1 3)))
+                                                        (range 11 (int (* 0.5 height))))
+                                    (repeatedly #(int (tm/random 16 48)))
+                                    (repeatedly #(tm/random 0.0 0.2)))))))
 
 (defn page []
   [:div (scene (r 0.5 0.5))])
