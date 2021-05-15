@@ -48,7 +48,10 @@
                [:L (tm/+ origin (polar r0 t0))]
                #_[:A [r0 r0 rot "1" "1" x1 y1]]
                [:Z]]
-              {:fill "none" :stroke "black"})))
+              {:fill "none"
+               :stroke-width 0.6
+               :stroke "black"
+               :key (str "s:" t0 "-" t1 "-" r0)})))
 
 (defn scene [origin]
   (csvg/svg {:width width :height height}
