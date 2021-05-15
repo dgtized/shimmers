@@ -8,6 +8,7 @@
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.circle-packing :as circle-packing]
             [shimmers.sketches.clustered-farmlands :as clustered-farmlands]
+            [shimmers.sketches.colonial-growth :as colonial-growth]
             [shimmers.sketches.colors :as colors]
             [shimmers.sketches.convex-spiral :as convex-spiral]
             [shimmers.sketches.cube :as cube]
@@ -78,6 +79,7 @@
     butterfly/run-sketch
     circle-packing/run-sketch
     clustered-farmlands/run-sketch
+    colonial-growth/run-sketch
     colors/run-sketch
     convex-spiral/run-sketch
     cube/run-sketch
