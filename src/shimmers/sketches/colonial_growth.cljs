@@ -43,11 +43,12 @@
         circle (assoc (gc/circle center radius) :parent parent)]
     (when (and (in-bounds? circle)
                (not (some (partial intersects circle) shapes)))
-      circle)))
+      (assoc circle :color (update (:color parent) 2 * 1.07)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-w 0.05))]})
+  {:shapes [(assoc (gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-w 0.05))
+                   :color [(rand-nth [0.0 0.4 0.5 0.6]) 0.35 0.4 1.0])]})
 
 (defn update-state [{:keys [shapes] :as state}]
   (if-let [new-circle (border-circle shapes)]
@@ -59,8 +60,9 @@
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r parent]} shapes
+  (doseq [{:keys [p r parent color]} shapes
           :let [[x y] p]]
+    (cq/color-if q/fill color)
     (q/ellipse x y r r)
     #_(when parent (q/line p (:p parent)))))
 
