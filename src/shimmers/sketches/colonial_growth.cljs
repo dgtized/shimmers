@@ -4,12 +4,12 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]))
+            [thi.ng.math.core :as tm]))
 
 (defn child-tree [shapes]
   (reduce-kv (fn [t s]
