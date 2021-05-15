@@ -53,14 +53,15 @@
 (defn scene [origin]
   (csvg/svg {:width width :height height}
             (gc/circle origin 10)
-            (mapcat (fn [[[r0 r1] dt]]
+            (mapcat (fn [[[r0 r1] dt st]]
                       (for [[t0 t1] (radial-range dt)]
-                        (segment origin t0 t1 r0 r1)))
+                        (segment origin (+ st t0) (+ st t1) r0 r1)))
                     (map vector
                          (randomized-segments #(int (tm/random 6 28))
-                                              #(int (tm/random 0 4))
+                                              #(int (tm/random 1 4))
                                               (range 11 (int (* 0.5 height))))
-                         (repeatedly #(tm/random 0.1 0.8))))))
+                         (repeatedly #(tm/random 0.1 0.7))
+                         (repeatedly #(tm/random 0.0 0.2))))))
 
 (defn page []
   [:div (scene (r 0.5 0.5))])
