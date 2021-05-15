@@ -69,19 +69,19 @@
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 (defn scene [origin]
-  (csvg/svg {:width width :height height}
-            (svg/group {:transform (svg-translate origin)}
-                       (gc/circle (gv/vec2) 10)
-                       (mapcat (fn [[[r0 r1] segments st]]
-                                 (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
-                                   (for [[t0 t1] (radial-range dt)]
-                                     (segment (+ st t0) (+ st t1) r0 r1))))
-                               (map vector
-                                    (partition-segments (repeatedly #(int (tm/random 10 30)))
-                                                        (repeatedly #(int (tm/random 1 3)))
-                                                        (range 11 (int (* 0.5 height))))
-                                    (repeatedly #(int (tm/random 16 48)))
-                                    (repeatedly #(tm/random 0.0 0.2)))))))
+  (->> (map vector
+            (partition-segments (repeatedly #(int (tm/random 10 30)))
+                                (repeatedly #(int (tm/random 1 3)))
+                                (range 11 (int (* 0.5 height))))
+            (repeatedly #(int (tm/random 16 48)))
+            (repeatedly #(tm/random 0.0 0.2)))
+       (mapcat (fn [[[r0 r1] segments st]]
+                 (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
+                   (for [[t0 t1] (radial-range dt)]
+                     (segment (+ st t0) (+ st t1) r0 r1)))))
+       (svg/group {:transform (svg-translate origin)}
+                  (gc/circle (gv/vec2) 10))
+       (csvg/svg {:width width :height height})))
 
 (defn page []
   [:div (scene (r 0.5 0.5))])
