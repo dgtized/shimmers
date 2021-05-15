@@ -1,12 +1,12 @@
 (ns shimmers.sketches.radial-mosaic
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.svg.core :as svg]))
+            [thi.ng.strf.core :as f]))
 
 (def width 900)
 (def height 600)
@@ -42,19 +42,25 @@
                              (range 100)))
 
 (defn segment [origin t0 t1 r0 r1]
-  (let [rot (tm/degrees (- t1 t0))]
+  (let [[x0 y0] (tm/+ origin (polar r0 t0))
+        [x1 y1] (tm/+ origin (polar r1 t1))]
     (svg/path [[:M (tm/+ origin (polar r0 t0))]
                [:L (tm/+ origin (polar r1 t0))]
-               [:L (tm/+ origin (polar r1 t1))]
-               #_[:A [r0 r0 rot "1" "1" x1 y1]]
+               #_[:L (tm/+ origin (polar r1 t1))]
+               [:A [r1 r1] 0.0 0 1 [x1 y1]]
                [:L (tm/+ origin (polar r0 t1))]
-               [:L (tm/+ origin (polar r0 t0))]
-               #_[:A [r0 r0 rot "1" "1" x1 y1]]
+               #_[:L (tm/+ origin (polar r0 t0))]
+               [:A [r0 r0] 0.0 0 0 [x0 y0]]
                [:Z]]
               {:fill "none"
                :stroke-width 0.6
                :stroke "black"
                :key (str "s:" t0 "-" t1 "-" r0)})))
+
+(comment
+  (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
+  (f/format [(f/float 2)] 0.21)
+  (segment (gv/vec2) 0.5 1 1 2))
 
 (defn scene [origin]
   (csvg/svg {:width width :height height}
