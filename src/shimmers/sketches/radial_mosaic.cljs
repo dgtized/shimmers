@@ -20,21 +20,29 @@
   (let [r (range 0 tm/TWO_PI dt)]
     (conj (vec (map vec (partition 2 1 r))) [(last r) (first r)])))
 
+(defn segment [origin t0 t1 r0 r1]
+  (let [rot (tm/degrees (- t1 t0))]
+    (svg/path [[:M (tm/+ origin (polar r0 t0))]
+               [:L (tm/+ origin (polar r1 t0))]
+               [:L (tm/+ origin (polar r1 t1))]
+               #_[:A [r0 r0 rot "1" "1" x1 y1]]
+               [:L (tm/+ origin (polar r0 t1))]
+               [:L (tm/+ origin (polar r0 t0))]
+               #_[:A [r0 r0 rot "1" "1" x1 y1]]
+               [:Z]]
+              {:fill "none" :stroke "black"})))
+
 (defn scene [origin]
   (csvg/svg {:width width :height height}
             (gc/circle origin 10)
-            (for [[t0 t1] (radial-range 0.5)
-                  :let [rot (tm/degrees (- t1 t0))
-                        [x1 y1] (tm/+ origin (polar 11 t1))]]
-              (svg/path [[:M (tm/+ origin (polar 11 t0))]
-                         [:L (tm/+ origin (polar 16 t0))]
-                         [:L (tm/+ origin (polar 16 t1))]
-                         #_[:A [11 11 rot "1" "1" x1 y1]]
-                         [:L (tm/+ origin (polar 11 t1))]
-                         [:L (tm/+ origin (polar 11 t0))]
-                         #_[:A [11 11 rot "1" "1" x1 y1]]
-                         [:Z]]
-                        {:fill "none" :stroke "black"}))))
+            (mapcat (fn [[dt r0 r1]]
+                      (for [[t0 t1] (radial-range dt)]
+                        (segment origin t0 t1 r0 r1)))
+                    [[0.5 11 16]
+                     [0.8 19 27]
+                     [0.3 28 36]
+                     [0.4 37 52]
+                     [0.6 54 64]])))
 
 (defn page []
   [:div (scene (r 0.5 0.5))])
