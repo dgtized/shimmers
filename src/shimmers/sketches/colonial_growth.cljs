@@ -22,8 +22,8 @@
 (defn border-circle [shapes]
   (let [{:keys [p r]} (rand-nth shapes)
         angle (tm/random 0 tm/TWO_PI)
-        radius (tm/random (max (* 0.5 r) 2) (* 1.1 r))
-        center (->> (gv/vec2 (+ r radius 0.05) angle)
+        radius (tm/random (max (* 0.66 r) 2) (* 1.1 r))
+        center (->> (gv/vec2 (+ r radius 0.1) angle)
                     geom/as-cartesian
                     (tm/+ p))
         circle (gc/circle center radius)]
@@ -33,7 +33,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-w 0.066))]})
+  {:shapes [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-w 0.05))]})
 
 (defn update-state [{:keys [shapes] :as state}]
   (if-let [new-circle (border-circle shapes)]
@@ -41,6 +41,7 @@
     state))
 
 (defn draw [{:keys [shapes]}]
+  (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (doseq [{:keys [p r]} shapes
           :let [[x y] p]]
