@@ -8,7 +8,15 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
+
+(defn child-tree [shapes]
+  (reduce-kv (fn [t s]
+               (if-let [parent (:parent s)]
+                 (update t parent (fnil conj []) s)
+                 t))
+             {} shapes))
 
 (defn in-bounds? [circle]
   (geom/contains-point? (rect/rect 0 0 (q/width) (q/height))
@@ -21,9 +29,13 @@
     c2))
 
 (defn border-circle [shapes]
-  (let [{:keys [p r] :as parent} (rand-nth shapes)
+  (let [inverted-tree (child-tree shapes)
+        {:keys [p r] :as parent}
+        (p/weighted-by (fn [s] (/ (:r s) (inc (count (get inverted-tree s)))))
+                       shapes)
+
         angle (tm/random 0 tm/TWO_PI)
-        radius (tm/random (max (* 0.66 r) 2) (* 1.1 r))
+        radius (tm/random (max (* 0.6 r) 2) (* 1.1 r))
         center (->> (gv/vec2 (+ r radius 0.1) angle)
                     geom/as-cartesian
                     (tm/+ p))
