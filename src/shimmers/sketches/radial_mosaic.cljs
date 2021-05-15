@@ -20,6 +20,24 @@
   (let [r (range 0 tm/TWO_PI dt)]
     (conj (vec (map vec (partition 2 1 r))) [(last r) (first r)])))
 
+(defn first-last [coll]
+  [(first coll) (last coll)])
+
+(defn randomized-segments [rand-chunk rand-pad coll]
+  (lazy-seq
+   (when-let [s (seq coll)]
+     (let [n (rand-chunk)
+           p (take n s)]
+       (if (== n (count p))
+         (cons (first-last p)
+               (randomized-segments rand-chunk rand-pad
+                                    (drop (+ n (rand-pad)) s)))
+         (list (first-last (take n p))))))))
+
+(comment (randomized-segments #(int (tm/random 4 24))
+                              #(int (tm/random 0 4))
+                              (range 100)))
+
 (defn segment [origin t0 t1 r0 r1]
   (let [rot (tm/degrees (- t1 t0))]
     (svg/path [[:M (tm/+ origin (polar r0 t0))]
@@ -35,16 +53,14 @@
 (defn scene [origin]
   (csvg/svg {:width width :height height}
             (gc/circle origin 10)
-            (mapcat (fn [[dt r0 r1]]
+            (mapcat (fn [[[r0 r1] dt]]
                       (for [[t0 t1] (radial-range dt)]
                         (segment origin t0 t1 r0 r1)))
-                    [[0.5 11 16]
-                     [0.8 19 27]
-                     [0.3 28 36]
-                     [0.4 37 52]
-                     [0.6 54 64]
-                     [0.15 66 78]
-                     [0.25 80 100]])))
+                    (map vector
+                         (randomized-segments #(int (tm/random 6 28))
+                                              #(int (tm/random 0 4))
+                                              (range 11 (int (* 0.5 height))))
+                         (repeatedly #(tm/random 0.1 0.8))))))
 
 (defn page []
   [:div (scene (r 0.5 0.5))])
