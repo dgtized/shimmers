@@ -55,13 +55,14 @@
     state))
 
 (defn draw [{:keys [shapes]}]
+  (q/background 1.0)
+  (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (doseq [{:keys [p r parent]} shapes
           :let [[x y] p]]
     (q/ellipse x y r r)
-    (when parent
-      (q/line p (:p parent)))))
+    #_(when parent (q/line p (:p parent)))))
 
 (defn ^:export run-sketch []
   ;; 2021
