@@ -35,7 +35,8 @@
                        shapes)
 
         angle (tm/random 0 tm/TWO_PI)
-        radius (tm/random (max (* 0.6 r) 2) (* 1.1 r))
+        radius (tm/random (max (* 0.6 r) 2)
+                          (min (* 1.15 r) (cq/rel-w 0.04)))
         center (->> (gv/vec2 (+ r radius 0.1) angle)
                     geom/as-cartesian
                     (tm/+ p))
