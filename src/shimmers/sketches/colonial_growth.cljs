@@ -44,14 +44,25 @@
                (not (some (partial intersects circle) shapes)))
       (assoc circle :color (update (:color parent) 2 * 1.07)))))
 
-(defn init-source []
+;; Improve palette selection?
+(defn make-source []
   (assoc (gc/circle (cq/rel-pos (tm/random 0.2 0.8) (tm/random 0.2 0.8))
                     (cq/rel-w 0.05))
          :color [(rand-nth [0.0 0.4 0.5 0.6 0.85]) 0.35 0.4 1.0]))
 
+(defn add-non-intersecting [shapes]
+  (let [c (make-source)]
+    (if (some (partial intersects c) shapes)
+      shapes
+      (conj shapes c))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(init-source)]})
+  {:shapes (->> [(make-source)]
+                (iterate add-non-intersecting)
+                (take (int (tm/random 1 4)))
+                flatten
+                vec)})
 
 (defn update-state [{:keys [shapes] :as state}]
   (if-let [new-circle (->> #(border-circle shapes)
