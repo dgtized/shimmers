@@ -106,9 +106,22 @@
                     {:fill (rand-nth palette)}))
        (csvg/svg {:width width :height height})))
 
+(defn scenes []
+  (let [palette (rand-nth palettes)]
+    (->> [[(r 0.5 0.5 )
+           palette
+           (range 6 (int (* 0.5 height)))]
+          [(r 0.66 0.5 )
+           palette
+           (range 6 (int (* 0.6 width)))]
+          [(r 0.2 0.33 )
+           palette
+           (range 6 (int (* 0.8 width)))]]
+         rand-nth
+         (apply scene))))
+
 (defn page []
-  [:div (scene (r 0.5 0.5) (rand-nth palettes)
-               (range 6 (int (* 0.5 height))))])
+  [:div (scenes)])
 
 (defn ^:export run-sketch []
   ;; 20210409
