@@ -44,15 +44,13 @@
                              (range 100)))
 
 (defn segment [t0 t1 r0 r1 attribs]
-  (let [[x0 y0] (polar r0 t0)
-        [x1 y1] (polar r1 t1)]
-    (svg/path [[:M (polar r0 t0)]
+  (let [lower (polar r0 t0)
+        upper (polar r1 t1)]
+    (svg/path [[:M lower]
                [:L (polar r1 t0)]
-               #_[:L (polar r1 t1)]
-               [:A [r1 r1] 0.0 0 1 [x1 y1]]
+               [:A [r1 r1] 0.0 0 1 upper]
                [:L (polar r0 t1)]
-               #_[:L (polar r0 t0)]
-               [:A [r0 r0] 0.0 0 0 [x0 y0]]
+               [:A [r0 r0] 0.0 0 0 lower]
                [:Z]]
               (merge
                {:fill "none"
