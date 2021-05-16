@@ -96,9 +96,10 @@
             (repeatedly #(int (tm/random 16 24)))
             (repeatedly #(tm/random 0.0 0.2)))
        (mapcat (fn [[[r0 r1] segments st]]
-                 (let [dt (/ tm/TWO_PI (* segments (inc (int (/ r1 50)))))]
+                 (let [dt (/ tm/TWO_PI (* segments (inc (int (/ r1 50)))))
+                       row-palette (palette-sequence palette)]
                    (for [[[t0 t1] color]
-                         (map vector (radial-range dt) (cycle (palette-sequence palette)))]
+                         (map vector (radial-range dt) (cycle row-palette))]
                      (segment (+ st t0) (+ st t1) r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
