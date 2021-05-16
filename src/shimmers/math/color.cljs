@@ -41,13 +41,17 @@
        vals
        vec)))
 
+(defn url->colors [url]
+  (-> url
+      (str/split #"/")
+      last
+      (str/split #"-")))
+
 (defn url->palette
   "Converts a palette url from like
   https://artsexperiments.withgoogle.com/artpalette/colors/7f2e14-5d503f-e4c111-806d4e
   to hsla color vectors."
   [url]
-  (map hex->hsla
-       (-> url
-           (str/split #"/")
-           last
-           (str/split #"-"))))
+  (->> url
+       url->colors
+       (map hex->hsla)))

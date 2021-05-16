@@ -1,6 +1,8 @@
 (ns shimmers.sketches.radial-mosaic
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.color :as color]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.svg.core :as svg]
@@ -41,7 +43,7 @@
                              (cycle [1 2])
                              (range 100)))
 
-(defn segment [t0 t1 r0 r1]
+(defn segment [t0 t1 r0 r1 attribs]
   (let [[x0 y0] (polar r0 t0)
         [x1 y1] (polar r1 t1)]
     (svg/path [[:M (polar r0 t0)]
@@ -52,39 +54,55 @@
                #_[:L (polar r0 t0)]
                [:A [r0 r0] 0.0 0 0 [x0 y0]]
                [:Z]]
-              {:fill "none"
-               :stroke-width 0.6
-               :stroke "black"
-               :key (str "s:" t0 "-" t1 "-" r0)})))
+              (merge
+               {:fill "none"
+                :stroke-width 0.6
+                :stroke "black"
+                :key (str "s:" t0 "-" t1 "-" r0)}
+               attribs))))
 
 (comment
   (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
   (f/format [(f/float 2)] 0.21)
-  (segment 0.5 1 1 2))
+  (segment 0.5 1 1 2 {}))
 
 (defn svg-translate [p]
   (apply f/format ["translate(" (f/float 2) "," (f/float 2) ")"]
          p))
 
+(def palettes
+  (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/c8cccc-7c9aa8-ede4da-a5b6c0-e0c1a2"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/51467c-dccfbe-d4ba90-aa8c60-726665"]
+       (map color/url->colors)
+       (map (partial map (partial str "#")))))
+
+(defn palette-sequence [palette]
+  (let [colors (assoc (zipmap palette (repeat 1))
+                      "none" 4)]
+    (take (int (tm/random 3 6)) (repeatedly #(p/weighted colors)))))
+
+(comment (palette-sequence (first palettes)))
+
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
-(defn scene [origin]
+(defn scene [origin palette]
   (->> (map vector
             (partition-segments (repeatedly #(int (tm/random 10 30)))
                                 (repeatedly #(int (tm/random 1 3)))
-                                (range 11 (int (* 0.5 height))))
+                                (range 8 (int (* 0.5 height))))
             (repeatedly #(int (tm/random 16 48)))
             (repeatedly #(tm/random 0.0 0.2)))
        (mapcat (fn [[[r0 r1] segments st]]
                  (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
-                   (for [[t0 t1] (radial-range dt)]
-                     (segment (+ st t0) (+ st t1) r0 r1)))))
+                   (for [[[t0 t1] color]
+                         (map vector (radial-range dt) (cycle (palette-sequence palette)))]
+                     (segment (+ st t0) (+ st t1) r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
-                  (gc/circle (gv/vec2) 10))
+                  (with-meta (gc/circle (gv/vec2) 8) {:fill (rand-nth palette)}))
        (csvg/svg {:width width :height height})))
 
 (defn page []
-  [:div (scene (r 0.5 0.5))])
+  [:div (scene (r 0.5 0.5) (rand-nth palettes))])
 
 (defn ^:export run-sketch []
   ;; 20210409
