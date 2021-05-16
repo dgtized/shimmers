@@ -90,8 +90,8 @@
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 (defn scene [origin palette]
   (->> (map vector
-            (partition-segments (repeatedly #(int (tm/random 10 30)))
-                                (repeatedly #(int (tm/random 1 3)))
+            (partition-segments (cycle [5 13 8 21 5 8 13])
+                                (cycle [1 1 2])
                                 (range 8 (int (* 0.5 height))))
             (repeatedly #(int (tm/random 16 24)))
             (repeatedly #(tm/random 0.0 0.2)))
