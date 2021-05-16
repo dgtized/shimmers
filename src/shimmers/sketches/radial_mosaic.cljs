@@ -112,10 +112,10 @@
   (let [palette (rand-nth palettes)]
     (->> [{:origin (r (rand-nth [0.4 0.5 0.6]) 0.5)
            :radius (range 6 (int (* 0.5 height)))}
-          {:origin (r 0.66 0.5 )
+          {:origin (r (rand-nth [0.33 0.66]) 0.5)
            :radius (range 6 (int (* 0.6 width)))}
-          {:origin (r 0.2 0.33 )
-           :radius (range 6 (int (* 0.8 width)))}]
+          {:origin (r (rand-nth [0.2 0.3 0.7 0.8]) (rand-nth [0.33 0.66]) )
+           :radius (range 6 (int (* (rand-nth [0.6 0.7 0.8 0.9]) width)))}]
          rand-nth
          (merge {:palette palette})
          scene)))
