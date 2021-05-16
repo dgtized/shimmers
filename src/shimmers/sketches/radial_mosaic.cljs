@@ -93,10 +93,10 @@
             (partition-segments (repeatedly #(int (tm/random 10 30)))
                                 (repeatedly #(int (tm/random 1 3)))
                                 (range 8 (int (* 0.5 height))))
-            (repeatedly #(int (tm/random 16 48)))
+            (repeatedly #(int (tm/random 16 24)))
             (repeatedly #(tm/random 0.0 0.2)))
        (mapcat (fn [[[r0 r1] segments st]]
-                 (let [dt (/ tm/TWO_PI (/ segments (if (> r1 50) 1 2)))]
+                 (let [dt (/ tm/TWO_PI (* segments (inc (int (/ r1 50)))))]
                    (for [[[t0 t1] color]
                          (map vector (radial-range dt) (cycle (palette-sequence palette)))]
                      (segment (+ st t0) (+ st t1) r0 r1 {:fill color})))))
