@@ -110,7 +110,7 @@
 
 (defn scenes []
   (let [palette (rand-nth palettes)]
-    (->> [[(r 0.5 0.5 )
+    (->> [[(r (rand-nth [0.4 0.5 0.6]) 0.5)
            palette
            (range 6 (int (* 0.5 height)))]
           [(r 0.66 0.5 )
