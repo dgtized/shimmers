@@ -88,11 +88,11 @@
 
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
-(defn scene [origin palette]
+(defn scene [origin palette min-radius]
   (->> (map vector
             (partition-segments (cycle [5 13 8 21 5 8 13])
                                 (cycle [1 1 2])
-                                (range 8 (int (* 0.5 height))))
+                                (range min-radius (int (* 0.5 height))))
             (repeatedly #(int (tm/random 16 24)))
             (repeatedly #(tm/random 0.0 0.2)))
        (mapcat (fn [[[r0 r1] segments st]]
@@ -101,11 +101,12 @@
                          (map vector (radial-range dt) (cycle (palette-sequence palette)))]
                      (segment (+ st t0) (+ st t1) r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
-                  (with-meta (gc/circle (gv/vec2) 8) {:fill (rand-nth palette)}))
+                  (with-meta (gc/circle (gv/vec2) min-radius)
+                    {:fill (rand-nth palette)}))
        (csvg/svg {:width width :height height})))
 
 (defn page []
-  [:div (scene (r 0.5 0.5) (rand-nth palettes))])
+  [:div (scene (r 0.5 0.5) (rand-nth palettes) 6)])
 
 (defn ^:export run-sketch []
   ;; 20210409
