@@ -94,7 +94,7 @@
                                 (cycle [1 1 2])
                                 radius)
             (repeatedly #(int (tm/random 16 24)))
-            (repeatedly #(tm/random 0.0 0.2)))
+            (repeatedly #(tm/random 0.0 0.05)))
        (mapcat (fn [[[r0 r1] segments st]]
                  (let [dt (/ tm/TWO_PI (* segments (inc (int (/ r1 50)))))
                        row-palette (palette-sequence palette)]
