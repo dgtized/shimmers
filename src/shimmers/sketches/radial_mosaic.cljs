@@ -90,7 +90,7 @@
 
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
-(defn scene [origin palette radius]
+(defn scene [{:keys [origin palette radius]}]
   (->> (map vector
             (partition-segments (cycle [5 13 8 21 5 8 13])
                                 (cycle [1 1 2])
@@ -110,17 +110,15 @@
 
 (defn scenes []
   (let [palette (rand-nth palettes)]
-    (->> [[(r (rand-nth [0.4 0.5 0.6]) 0.5)
-           palette
-           (range 6 (int (* 0.5 height)))]
-          [(r 0.66 0.5 )
-           palette
-           (range 6 (int (* 0.6 width)))]
-          [(r 0.2 0.33 )
-           palette
-           (range 6 (int (* 0.8 width)))]]
+    (->> [{:origin (r (rand-nth [0.4 0.5 0.6]) 0.5)
+           :radius (range 6 (int (* 0.5 height)))}
+          {:origin (r 0.66 0.5 )
+           :radius (range 6 (int (* 0.6 width)))}
+          {:origin (r 0.2 0.33 )
+           :radius (range 6 (int (* 0.8 width)))}]
          rand-nth
-         (apply scene))))
+         (merge {:palette palette})
+         scene)))
 
 (defn page []
   [:div (scenes)])
