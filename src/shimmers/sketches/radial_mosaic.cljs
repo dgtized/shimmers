@@ -70,9 +70,12 @@
   (apply f/format ["translate(" (f/float 2) "," (f/float 2) ")"]
          p))
 
+;; First palette is more in pastel range, seems like that fits this better?
+;; Maybe just because it's also ensuring "none" is used a lot?
 (def palettes
   (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/c8cccc-7c9aa8-ede4da-a5b6c0-e0c1a2"
-        "https://artsexperiments.withgoogle.com/artpalette/colors/51467c-dccfbe-d4ba90-aa8c60-726665"]
+        "https://artsexperiments.withgoogle.com/artpalette/colors/51467c-dccfbe-d4ba90-aa8c60-726665"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/e7eef0-759acd-81a4d1-9f9a98-454d7d"]
        (map color/url->colors)
        (map (partial map (partial str "#")))))
 
