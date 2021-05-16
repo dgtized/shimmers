@@ -88,6 +88,9 @@
 
 ;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
+;; Consider adding a "dispersion" line that displaces all tiles it touches outwards slightly?
+;; Alternatively, consider giving it more "wear" by ensuring radial spacing and
+;; rotating every shape slightly around it's own centroid?
 (defn scene [{:keys [origin palette radius]}]
   (->> (map vector
             (partition-segments (cycle [5 13 8 21 5 8 13])
