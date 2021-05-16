@@ -101,12 +101,13 @@
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))
                        dt (/ tm/TWO_PI segments)
-                       row-palette (palette-sequence palette)]
+                       row-palette (palette-sequence palette)
+                       spacing (/ 1.5 r1)]
                    (for [[[t0 t1] color]
                          (map vector
                               (radial-range dt)
                               (cycle row-palette))]
-                     (segment (+ st t0) (+ st t1) r0 r1 {:fill color})))))
+                     (segment (+ st t0 spacing) (+ st t1) r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
                     {:fill (rand-nth palette)}))
