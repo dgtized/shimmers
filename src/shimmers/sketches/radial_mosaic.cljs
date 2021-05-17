@@ -95,7 +95,7 @@
                      1
                      (rand-nth m)))
         colors (assoc (zipmap palette (repeat 1))
-                      "none" 4)]
+                      "none" 2)]
     (take multiple (repeatedly #(p/weighted colors)))))
 
 (comment (palette-sequence (first palettes) 19))
