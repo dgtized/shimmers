@@ -18,9 +18,11 @@
 (defn polar [r theta]
   (geom/as-cartesian (gv/vec2 r theta)))
 
-(defn radial-range [dt]
-  (let [r (range 0 tm/TWO_PI dt)]
+(defn radial-range [n st]
+  (let [r (range st (+ st tm/TWO_PI) (/ tm/TWO_PI n))]
     (conj (vec (map vec (partition 2 1 r))) [(last r) (first r)])))
+
+(comment (radial-range 14 0.05))
 
 (defn first-last [coll]
   [(first coll) (last coll)])
@@ -86,7 +88,6 @@
 
 (comment (palette-sequence (first palettes)))
 
-;; Add grout padding between radial segments?
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 ;; Consider adding a "dispersion" line that displaces all tiles it touches outwards slightly?
 ;; Alternatively, consider giving it more "wear" by ensuring radial spacing and
@@ -100,14 +101,13 @@
             (repeatedly #(tm/random 0.0 0.05)))
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))
-                       dt (/ tm/TWO_PI segments)
                        row-palette (palette-sequence palette)
                        spacing (/ 1.5 r1)]
                    (for [[[t0 t1] color]
                          (map vector
-                              (radial-range dt)
+                              (radial-range segments st)
                               (cycle row-palette))]
-                     (segment (+ st t0 spacing) (+ st t1) r0 r1 {:fill color})))))
+                     (segment (+ t0 spacing) t1 r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
                     {:fill (rand-nth palette)}))
