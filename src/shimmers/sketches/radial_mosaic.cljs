@@ -19,8 +19,11 @@
   (geom/as-cartesian (gv/vec2 r theta)))
 
 (defn radial-range [n st]
-  (let [r (range st (+ st tm/TWO_PI) (/ tm/TWO_PI n))]
-    (conj (vec (map vec (partition 2 1 r))) [(last r) (first r)])))
+  (let [r (range st (+ tm/TWO_PI st) (/ tm/TWO_PI n))
+        segments (vec (map vec (partition 2 1 r)))]
+    (if (tm/delta= (last r) (+ tm/TWO_PI st))
+      segments
+      (conj segments [(last r) (first r)]))))
 
 (comment (radial-range 14 0.05))
 
