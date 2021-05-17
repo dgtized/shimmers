@@ -48,6 +48,11 @@
                              (cycle [1 2])
                              (range 100)))
 
+(defn factors [n k]
+  (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
+
+(comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
+
 (defn segment [t0 t1 r0 r1 attribs]
   (let [lower (polar r0 t0)
         upper (polar r1 t1)]
@@ -84,12 +89,16 @@
        (map color/url->colors)
        (map (partial map (partial str "#")))))
 
-(defn palette-sequence [palette]
-  (let [colors (assoc (zipmap palette (repeat 1))
+(defn palette-sequence [palette segments]
+  (let [multiple (let [m (factors segments 10)]
+                   (if (empty? m)
+                     1
+                     (rand-nth m)))
+        colors (assoc (zipmap palette (repeat 1))
                       "none" 4)]
-    (take (int (tm/random 3 6)) (repeatedly #(p/weighted colors)))))
+    (take multiple (repeatedly #(p/weighted colors)))))
 
-(comment (palette-sequence (first palettes)))
+(comment (palette-sequence (first palettes) 19))
 
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 ;; Consider adding a "dispersion" line that displaces all tiles it touches outwards slightly?
@@ -104,7 +113,7 @@
             (repeatedly #(tm/random 0.0 0.05)))
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))
-                       row-palette (palette-sequence palette)
+                       row-palette (palette-sequence palette segments)
                        spacing (/ 1.5 r1)]
                    (for [[[t0 t1] color]
                          (map vector
