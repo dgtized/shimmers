@@ -56,6 +56,7 @@
             [shimmers.sketches.sand-strokes :as sand-strokes]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.sediment :as sediment]
+            [shimmers.sketches.six-of-one-half-dozen-of-the-other :as six-of-one-half-dozen-of-the-other]
             [shimmers.sketches.space-colonization :as space-colonization]
             [shimmers.sketches.sphere :as sphere]
             [shimmers.sketches.substrate :as substrate]
@@ -128,6 +129,7 @@
     sand-strokes/run-sketch
     scintillation/run-sketch
     sediment/run-sketch
+    six-of-one-half-dozen-of-the-other/run-sketch
     space-colonization/run-sketch
     sphere/run-sketch
     substrate/run-sketch
