@@ -11,6 +11,12 @@
 (defn polar [r theta]
   (geom/as-cartesian (gv/vec2 r theta)))
 
+(defn hex-range [n t0]
+  (let [r (range (* tm/TWO_PI t0) tm/TWO_PI (/ tm/TWO_PI n))]
+    (if (tm/delta= (last r) tm/TWO_PI)
+      (butlast r)
+      r)))
+
 (defn hexagon [r]
   (gp/polygon2
    (for [theta (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6)))]
@@ -21,42 +27,42 @@
         pos (- r r')
         hex (hexagon r')]
     (into [hex]
-          (for [p (geom/vertices (hexagon pos))]
-            (geom/translate hex p)))))
+          (for [theta (hex-range 6 0)]
+            (geom/translate hex (polar pos theta))))))
 
 (defn subdivide-hexagon4 [r]
   (let [r' (/ r 4)
         pos (- r r')
         hex (hexagon r')]
     (concat [hex]
-            (for [p (geom/vertices (hexagon pos))]
-              (geom/translate hex p))
-            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 0)]
+              (geom/translate hex (polar pos theta)))
+            (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 4) theta))))))
 
 (defn subdivide-hexagon5 [r]
   (let [r' (/ r 5)
         hex (hexagon r')]
     (concat [hex]
-            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 0)]
               (geom/translate hex (polar (/ (* 3 r) 5) theta)))
-            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 5) theta)))
-            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 5) theta))))))
 
 (defn subdivide-hexagon6 [r]
   (let [r' (/ r 6)
         hex (hexagon r')]
     (concat [hex]
-            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 0)]
               (geom/translate hex (polar (/ r 2) theta)))
-            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 6) theta)))
-            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+            (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 6) theta)))
             ;; wrong offsets to fill
-            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 12))]
+            (for [theta (hex-range 12 (/ 1 18))]
               (geom/translate hex (polar (/ (* 4 r) 5) (+ (/ tm/TWO_PI 6) theta)))))))
 
 (defn setup []
