@@ -34,11 +34,22 @@
             (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
               (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 4) theta))))))
 
+(defn subdivide-hexagon5 [r]
+  (let [r' (/ r 5)
+        hex (hexagon r')]
+    (concat [hex]
+            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ (* 3 r) 5) theta)))
+            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 5) theta)))
+            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 5) theta))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [base (* 0.5 (q/height))]
     {:shapes (concat [(hexagon base)]
-                     (subdivide-hexagon4 base))}))
+                     (subdivide-hexagon5 base))}))
 
 (defn update-state [state]
   state)
@@ -49,7 +60,7 @@
       (cq/draw-shape (geom/vertices shape)))))
 
 (defn ^:export run-sketch []
-  ;; 2021
+  ;; 20210517
   (q/defsketch six-of-one-half-dozen-of-the-other
     :host "quil-host"
     :size [800 600]
