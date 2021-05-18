@@ -45,11 +45,25 @@
             (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
               (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 5) theta))))))
 
+(defn subdivide-hexagon6 [r]
+  (let [r' (/ r 6)
+        hex (hexagon r')]
+    (concat [hex]
+            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ r 2) theta)))
+            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 6) theta)))
+            (for [theta (range (/ tm/TWO_PI 12) tm/TWO_PI (/ tm/TWO_PI 6))]
+              (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 6) theta)))
+            ;; wrong offsets to fill
+            (for [theta (range 0 tm/TWO_PI (/ tm/TWO_PI 12))]
+              (geom/translate hex (polar (/ (* 4 r) 5) (+ (/ tm/TWO_PI 6) theta)))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [base (* 0.5 (q/height))]
     {:shapes (concat [(hexagon base)]
-                     (subdivide-hexagon5 base))}))
+                     (subdivide-hexagon6 base))}))
 
 (defn update-state [state]
   state)
