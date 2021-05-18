@@ -16,13 +16,19 @@
    (for [theta (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6)))]
      (polar r theta))))
 
+(defn subdivide-hexagon [r]
+  (let [pos (/ (* 2 r) 3)
+        r' (/ r 3)
+        hex (hexagon r')]
+    (into [hex]
+          (for [p (geom/vertices (hexagon pos))]
+            (geom/translate hex p)))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [base (* 0.5 (q/height))
-        qhex (hexagon (/ base 4))]
-    {:shapes [(hexagon base)
-              (geom/translate qhex (polar (* 0.75 base) 0))
-              (geom/translate qhex (polar (* -0.75 base) 0))]}))
+  (let [base (* 0.5 (q/height))]
+    {:shapes (concat [(hexagon base)]
+                     (subdivide-hexagon base))}))
 
 (defn update-state [state]
   state)
