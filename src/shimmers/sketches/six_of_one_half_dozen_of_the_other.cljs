@@ -34,35 +34,33 @@
 
 (defn subdivide-hexagon3 [p r]
   (let [r' (/ r 3)
-        pos (- r r')
         hex (hexagon p r')]
     (into [hex]
-          (surrounding-hexes hex 0 pos))))
+          (surrounding-hexes hex 0 (* 2 r')))))
 
 (defn subdivide-hexagon4 [p r]
   (let [r' (/ r 4)
-        pos (- r r')
         hex (hexagon p r')]
     (concat [hex]
-            (surrounding-hexes hex 0 pos)
-            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 4)))))
+            (surrounding-hexes hex 0 (* 3 r'))
+            (surrounding-hexes hex (/ 1 12) (* (Math/sqrt 3) r')))))
 
 (defn subdivide-hexagon5 [p r]
   (let [r' (/ r 5)
         hex (hexagon p r')]
     (concat [hex]
-            (surrounding-hexes hex 0 (/ (* 3 r) 5))
-            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 5))
-            (surrounding-hexes hex (/ 1 12) (/ (* 2 (Math/sqrt 3) r) 5)))))
+            (surrounding-hexes hex 0 (* 3 r'))
+            (surrounding-hexes hex (/ 1 12) (* (Math/sqrt 3) r'))
+            (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r')))))
 
 ;; FIXME: incorrect outer edges
 (defn subdivide-hexagon6 [p r]
   (let [r' (/ r 6)
         hex (hexagon p r')]
     (concat [hex]
-            (surrounding-hexes hex 0 (/ r 2))
-            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 6))
-            (surrounding-hexes hex (/ 1 12) (/ (* 2 (Math/sqrt 3) r) 6))
+            (surrounding-hexes hex 0 (* 3 r'))
+            (surrounding-hexes hex (/ 1 12) (* (Math/sqrt 3) r'))
+            (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r'))
             ;; wrong offsets to fill
             (surrounding-hexes hex (/ 5 36) (/ (* 28 r) 36))
             (surrounding-hexes hex (/ 7 36) (/ (* 28 r) 36)))))
