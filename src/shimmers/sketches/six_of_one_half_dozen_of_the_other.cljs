@@ -86,8 +86,12 @@
   (q/color-mode :hsl 1.0)
   (let [p (gv/vec2)
         r (* 0.5 (q/height))]
-    {:shapes (concat [(hexagon p r)]
-                     (subdivide-hexagon5 p r))}))
+    ;; Chance of *two* root hexagons, so patterns can fill in from underneath
+    {:shapes (into [(hexagon p r)]
+                   (p/weighted {[] 3
+                                (subdivide-hexagon3 p r) 1
+                                (subdivide-hexagon4 p r) 1
+                                (subdivide-hexagon5 p r) 1}))}))
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)
