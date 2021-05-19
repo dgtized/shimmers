@@ -105,7 +105,10 @@
   (q/stroke-weight 0.66)
   (q/with-translation (cq/rel-pos 0.5 0.5)
     (doseq [shape shapes]
-      (cq/draw-shape (geom/vertices (hexagon->polygon shape))))))
+      (->> shape
+           hexagon->polygon
+           geom/vertices
+           cq/draw-shape))))
 
 (defn ^:export run-sketch []
   ;; 20210517
