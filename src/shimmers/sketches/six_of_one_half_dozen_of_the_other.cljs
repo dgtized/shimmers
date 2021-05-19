@@ -28,34 +28,32 @@
 (defn hexagon [p r]
   (gc/circle p r))
 
+(defn surrounding-hexes [hex phase radius]
+  (for [theta (hex-range 6 phase)]
+    (geom/translate hex (polar radius theta))))
+
 (defn subdivide-hexagon3 [p r]
   (let [r' (/ r 3)
         pos (- r r')
         hex (hexagon p r')]
     (into [hex]
-          (for [theta (hex-range 6 0)]
-            (geom/translate hex (polar pos theta))))))
+          (surrounding-hexes hex 0 pos))))
 
 (defn subdivide-hexagon4 [p r]
   (let [r' (/ r 4)
         pos (- r r')
         hex (hexagon p r')]
     (concat [hex]
-            (for [theta (hex-range 6 0)]
-              (geom/translate hex (polar pos theta)))
-            (for [theta (hex-range 6 (/ 1 12))]
-              (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 4) theta))))))
+            (surrounding-hexes hex 0 pos)
+            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 4)))))
 
 (defn subdivide-hexagon5 [p r]
   (let [r' (/ r 5)
         hex (hexagon p r')]
     (concat [hex]
-            (for [theta (hex-range 6 0)]
-              (geom/translate hex (polar (/ (* 3 r) 5) theta)))
-            (for [theta (hex-range 6 (/ 1 12))]
-              (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 5) theta)))
-            (for [theta (hex-range 6 (/ 1 12))]
-              (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 5) theta))))))
+            (surrounding-hexes hex 0 (/ (* 3 r) 5))
+            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 5))
+            (surrounding-hexes hex (/ 1 12) (/ (* 2 (Math/sqrt 3) r) 5)))))
 
 ;; FIXME: incorrect outer edges
 (defn subdivide-hexagon6 [p r]
