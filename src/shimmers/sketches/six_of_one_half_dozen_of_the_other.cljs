@@ -38,6 +38,12 @@
     (into [hex]
           (surrounding-hexes hex 0 (* 2 r')))))
 
+(defn subdivide-hexagon3-outside [p r]
+  (let [r' (/ r 3)
+        hex (hexagon p r')]
+    (into [hex]
+          (surrounding-hexes hex 0 (* 3 r')))))
+
 (defn subdivide-hexagon4 [p r]
   (let [r' (/ r 4)
         hex (hexagon p r')]
@@ -66,9 +72,10 @@
             (surrounding-hexes hex (/ 7 36) (/ (* 28 r) 36)))))
 
 (defn maybe-subdivide [shape]
-  (let [subdiv (p/weighted {subdivide-hexagon3 2
-                            subdivide-hexagon4 1
-                            subdivide-hexagon5 1})]
+  (let [subdiv (p/weighted {subdivide-hexagon3 32
+                            subdivide-hexagon3-outside 1
+                            subdivide-hexagon4 16
+                            subdivide-hexagon5 16})]
     (if-not (:divided shape)
       (into [(assoc shape :divided true)] (subdiv (:p shape) (:r shape)))
       [shape])))
