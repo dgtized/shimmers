@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
@@ -73,6 +74,14 @@
             (for [theta (hex-range 6 (/ 7 36))]
               (geom/translate hex (polar (/ (* 28 r) 36) theta))))))
 
+(defn maybe-subdivide [shape]
+  (let [subdiv (p/weighted {subdivide-hexagon3 2
+                            subdivide-hexagon4 1
+                            subdivide-hexagon5 1})]
+    (if-not (:divided shape)
+      (into [(assoc shape :divided true)] (subdiv (:p shape) (:r shape)))
+      [shape])))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [p (gv/vec2)
@@ -81,7 +90,11 @@
                      (subdivide-hexagon5 p r))}))
 
 (defn update-state [state]
-  state)
+  (if (< (count (:shapes state)) 1200)
+    (update state :shapes (partial p/mapcat-random-sample
+                                   (fn [s] (/ (:r s) (q/height)))
+                                   maybe-subdivide))
+    state))
 
 (defn draw [{:keys [shapes]}]
   (q/with-translation (cq/rel-pos 0.5 0.5)
