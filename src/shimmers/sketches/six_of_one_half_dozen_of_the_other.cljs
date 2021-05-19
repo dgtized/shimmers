@@ -60,17 +60,12 @@
   (let [r' (/ r 6)
         hex (hexagon p r')]
     (concat [hex]
-            (for [theta (hex-range 6 0)]
-              (geom/translate hex (polar (/ r 2) theta)))
-            (for [theta (hex-range 6 (/ 1 12))]
-              (geom/translate hex (polar (/ (* (Math/sqrt 3) r) 6) theta)))
-            (for [theta (hex-range 6 (/ 1 12))]
-              (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 6) theta)))
+            (surrounding-hexes hex 0 (/ r 2))
+            (surrounding-hexes hex (/ 1 12) (/ (* (Math/sqrt 3) r) 6))
+            (surrounding-hexes hex (/ 1 12) (/ (* 2 (Math/sqrt 3) r) 6))
             ;; wrong offsets to fill
-            (for [theta (hex-range 6 (/ 5 36))]
-              (geom/translate hex (polar (/ (* 28 r) 36) theta)))
-            (for [theta (hex-range 6 (/ 7 36))]
-              (geom/translate hex (polar (/ (* 28 r) 36) theta))))))
+            (surrounding-hexes hex (/ 5 36) (/ (* 28 r) 36))
+            (surrounding-hexes hex (/ 7 36) (/ (* 28 r) 36)))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (p/weighted {subdivide-hexagon3 2
