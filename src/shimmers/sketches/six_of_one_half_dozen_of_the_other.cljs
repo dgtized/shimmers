@@ -62,8 +62,10 @@
             (for [theta (hex-range 6 (/ 1 12))]
               (geom/translate hex (polar (/ (* 2 (Math/sqrt 3) r) 6) theta)))
             ;; wrong offsets to fill
-            (for [theta (hex-range 12 (/ 1 18))]
-              (geom/translate hex (polar (/ (* 4 r) 5) (+ (/ tm/TWO_PI 6) theta)))))))
+            (for [theta (hex-range 6 (/ 5 36))]
+              (geom/translate hex (polar (/ (* 28 r) 36) theta)))
+            (for [theta (hex-range 6 (/ 7 36))]
+              (geom/translate hex (polar (/ (* 28 r) 36) theta))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
