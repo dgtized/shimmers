@@ -85,7 +85,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [p (gv/vec2)
-        r (* 0.5 (q/height))]
+        ;; height is 1/sqrt(3) to fit exactly, so scale it down by a hair
+        r (* (/ 0.999 (Math/sqrt 3)) (q/height))]
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     {:shapes (into [(hexagon p r)]
                    (p/weighted {[] 3
