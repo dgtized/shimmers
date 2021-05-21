@@ -46,11 +46,23 @@
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
 
+(defn hex-neighbors [n]
+  (for [x (range (- n) (inc n))
+        y (range (max (- n) (- (- x) n))
+                 (inc (min n (+ (- x) n))))
+        :let [z (- (- x) y)]]
+    [x y z]))
+
+(comment (hex-neighbors 1)
+         (hex-neighbors 2))
+
 (defn subdivide-hexagon3 [p r]
   (let [r' (/ r 3)
         hex (hexagon p r')]
-    (into [hex]
-          (surrounding-hexes hex 0 (* 2 r')))))
+    (into [hex] (map (comp (partial geom/translate hex)
+                           (partial axial->hex r')
+                           cube->axial)
+                     (hex-neighbors 1)))))
 
 (defn subdivide-hexagon3-outside [p r]
   (let [r' (/ r 3)
