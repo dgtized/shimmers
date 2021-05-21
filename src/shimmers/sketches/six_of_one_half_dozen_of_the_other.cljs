@@ -33,7 +33,15 @@
     (geom/translate hex (polar radius theta))))
 
 ;; https://www.redblobgames.com/grids/hexagons/
-(defn coord->hex [size [q r]]
+(defn cube->axial [[x _ z]]
+  [x z])
+
+(defn axial->cube [[q r]]
+  [q (- (- q) r) r])
+
+(defn axial->hex
+  "Converts axial coordinates to a center point of that hex"
+  [size [q r]]
   (tm/* (gv/vec2 (* q (/ 3 2))
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
@@ -65,6 +73,7 @@
             (surrounding-hexes hex (/ 1 12) (* (Math/sqrt 3) r'))
             (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r')))))
 
+;; TODO: build up the coordinate surroundings instead of using surrounding-hexes
 (defn subdivide-hexagon6 [p r]
   (let [r' (/ r 6)
         hex (hexagon p r')]
@@ -74,7 +83,7 @@
             (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r'))
             (for [coord [[2 1] [1 2] [-1 3] [-2 3] [-3 2] [-3 1]
                          [-2 -1] [-1 -2] [1 -3] [2 -3] [3 -2] [3 -1]]]
-              (geom/translate hex (coord->hex r' coord))))))
+              (geom/translate hex (axial->hex r' coord))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (p/weighted {subdivide-hexagon3 32
