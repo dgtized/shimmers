@@ -3,8 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.hexagon :as hex :refer [hexagon]]
             [shimmers.math.probability :as p]
-            [shimmers.math.hexagon :refer [hexagon]]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -29,37 +29,13 @@
   (for [theta (hex-range 6 phase)]
     (geom/translate hex (polar radius theta))))
 
-;; https://www.redblobgames.com/grids/hexagons/
-(defn cube->axial [[x _ z]]
-  [x z])
-
-(defn axial->cube [[q r]]
-  [q (- (- q) r) r])
-
-(defn axial->hex
-  "Converts axial coordinates to a center point of that hex"
-  [size [q r]]
-  (tm/* (gv/vec2 (* q (/ 3 2))
-                 (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
-        size))
-
-(defn hex-neighbors [n]
-  (for [x (range (- n) (inc n))
-        y (range (max (- n) (- (- x) n))
-                 (inc (min n (+ (- x) n))))
-        :let [z (- (- x) y)]]
-    [x y z]))
-
-(comment (hex-neighbors 1)
-         (hex-neighbors 2))
-
 (defn subdivide-hexagon3 [p r]
   (let [r' (/ r 3)
         hex (hexagon p r')]
     (into [hex] (map (comp (partial geom/translate hex)
-                           (partial axial->hex r')
-                           cube->axial)
-                     (hex-neighbors 1)))))
+                           (partial hex/axial->hex r')
+                           hex/cube->axial)
+                     (hex/neighbors 1)))))
 
 (defn subdivide-hexagon3-outside [p r]
   (let [r' (/ r 3)
@@ -92,7 +68,7 @@
             (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r'))
             (for [coord [[2 1] [1 2] [-1 3] [-2 3] [-3 2] [-3 1]
                          [-2 -1] [-1 -2] [1 -3] [2 -3] [3 -2] [3 -1]]]
-              (geom/translate hex (axial->hex r' coord))))))
+              (geom/translate hex (hex/axial->hex r' coord))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (p/weighted {subdivide-hexagon3 32
