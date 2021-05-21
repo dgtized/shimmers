@@ -30,12 +30,11 @@
     (geom/translate hex (polar radius theta))))
 
 (defn subdivide-hexagon3 [p r]
-  (let [r' (/ r 3)
-        hex (hexagon p r')]
-    (into [hex] (map (comp (partial geom/translate hex)
-                           (partial hex/axial->hex r')
-                           hex/cube->axial)
-                     (hex/neighbors 1)))))
+  (let [r' (/ r 3)]
+    (map (comp (partial geom/translate (hex/hexagon p r'))
+               (partial hex/axial->hex r')
+               hex/cube->axial)
+         (hex/neighbors 1))))
 
 (defn subdivide-hexagon3-outside [p r]
   (let [r' (/ r 3)
