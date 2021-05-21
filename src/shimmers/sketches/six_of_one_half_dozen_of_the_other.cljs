@@ -80,8 +80,8 @@
   (let [subdiv (p/weighted {subdivide-hexagon3 32
                             subdivide-hexagon3-outside 1
                             subdivide-hexagon4 16
-                            subdivide-hexagon5 16
-                            subdivide-hexagon6 8})]
+                            subdivide-hexagon5 8
+                            subdivide-hexagon6 4})]
     (if-not (:divided shape)
       (into [(assoc shape :divided true)] (subdiv (:p shape) (:r shape)))
       [shape])))
