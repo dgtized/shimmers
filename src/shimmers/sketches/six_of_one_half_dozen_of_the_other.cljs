@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
-            [thi.ng.geom.circle :as gc]
+            [shimmers.math.hexagon :refer [hexagon]]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -24,9 +24,6 @@
         (polar r theta))
       gp/polygon2
       (geom/translate p)))
-
-(defn hexagon [p r]
-  (gc/circle p r))
 
 (defn surrounding-hexes [hex phase radius]
   (for [theta (hex-range 6 phase)]
