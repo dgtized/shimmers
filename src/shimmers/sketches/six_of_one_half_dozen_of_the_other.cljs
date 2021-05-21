@@ -106,7 +106,7 @@
     state))
 
 (defn draw [{:keys [shapes]}]
-  (q/stroke-weight 0.66)
+  (q/stroke-weight 0.5)
   (q/with-translation (cq/rel-pos 0.5 0.5)
     (doseq [shape shapes]
       (->> shape
