@@ -114,10 +114,11 @@
         r (* (/ 0.99 (Math/sqrt 3)) (q/height))]
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     {:shapes (into [(hexagon p r)]
-                   (p/weighted {[] 3
+                   (p/weighted {[] 5
                                 (subdivide-hexagon3 p r) 1
                                 (subdivide-hexagon4 p r) 1
-                                (subdivide-hexagon5 p r) 1}))}))
+                                (subdivide-hexagon5 p r) 1
+                                (subdivide-hexagon6 p r) 1}))}))
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)
