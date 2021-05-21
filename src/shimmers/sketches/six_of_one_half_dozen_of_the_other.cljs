@@ -104,7 +104,8 @@
                             subdivide-hexagon5 8
                             subdivide-hexagon6 4})]
     (if-not (:divided shape)
-      (into [(assoc shape :divided true)] (subdiv (:p shape) (:r shape)))
+      (into [(assoc shape :divided true)]
+            (random-sample (/ 35 36) (subdiv (:p shape) (:r shape))))
       [shape])))
 
 (defn setup []
