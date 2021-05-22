@@ -20,12 +20,16 @@
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
 
-(defn neighbors [n]
+(defn cube-neighbors [n]
   (for [x (range (- n) (inc n))
         y (range (max (- n) (- (- x) n))
                  (inc (min n (+ (- x) n))))
         :let [z (- (- x) y)]]
     [x y z]))
 
-(comment (neighbors 1)
-         (neighbors 2))
+(defn axial-neighbors [n]
+  (map cube->axial (cube-neighbors n)))
+
+(comment (cube-neighbors 1)
+         (cube-neighbors 2)
+         (axial-neighbors 1))
