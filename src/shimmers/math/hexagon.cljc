@@ -92,8 +92,20 @@
 
 (comment (cube-ring (gv/vec3) 1)
          (cube-ring (gv/vec3) 2)
-         (cube-ring (gv/vec3) 3)
-         )
+         (cube-ring (gv/vec3) 3))
+
+(defn cube-spiral
+  "Generate all cube coordinates spiraling out counter-clockwise from `center` to up to `radius`"
+  [center radius]
+  (apply concat
+         (cons [center]
+               (for [i (range 1 (inc radius))]
+                 (cube-ring center i)))))
+
+(comment (cube-spiral (gv/vec3) 0)
+         (cube-spiral (gv/vec3) 1)
+         (cube-spiral (gv/vec3) 2)
+         (cube-spiral (gv/vec3) 3))
 
 (defn cube-range
   "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
