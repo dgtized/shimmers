@@ -55,6 +55,31 @@
 (comment (cube-rotate-cw (gv/vec3) (gv/vec3 2 -3 1))
          (cube-rotate-ccw (gv/vec3) (gv/vec3 2 -3 1)))
 
+(defn cube-reflect-x
+  "Reflect cube `pos` over the x-axis through `center`."
+  ([pos] (cube-reflect-x (gv/vec3) pos))
+  ([center pos]
+   (let [[x y z] (tm/- pos center)]
+     (gv/vec3 x z y))))
+
+(defn cube-reflect-y
+  "Reflect cube `pos` over the y-axis through `center`."
+  ([pos] (cube-reflect-y (gv/vec3) pos))
+  ([center pos]
+   (let [[x y z] (tm/- pos center)]
+     (gv/vec3 z y x))))
+
+(defn cube-reflect-z
+  "Reflect cube `pos` over the z-axis through `center`."
+  ([pos] (cube-reflect-z (gv/vec3) pos))
+  ([center pos]
+   (let [[x y z] (tm/- pos center)]
+     (gv/vec3 y x z))))
+
+(comment (cube-reflect-x (gv/vec3 1 2 -3))
+         (cube-reflect-y (gv/vec3 1 2 -3))
+         (cube-reflect-z (gv/vec3 1 2 -3)))
+
 (defn cube-range
   "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
   [n]
