@@ -8,10 +8,10 @@
 
 ;; https://www.redblobgames.com/grids/hexagons/
 (defn cube->axial [[x _ z]]
-  [x z])
+  (gv/vec2 x z))
 
 (defn axial->cube [[q r]]
-  [q (- (- q) r) r])
+  (gv/vec3 q (- (- q) r) r))
 
 (defn axial->hex
   "Converts axial coordinates to a center point of that hex"
@@ -20,6 +20,24 @@
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
 
+(defn cube-direction [dir]
+  (-> [(gv/vec3  1 -1  0)
+       (gv/vec3  1  0 -1)
+       (gv/vec3  0  1 -1)
+       (gv/vec3 -1  1  0)
+       (gv/vec3 -1  0  1)
+       (gv/vec3  0 -1  1)]
+      (nth dir)))
+
+(defn cube-neighbor [cube dir]
+  (tm/+ cube (cube-direction dir)))
+
+(defn cube-neighbors [cube]
+  (mapv (partial cube-neighbor cube) (range 6)))
+
+(comment (cube-neighbor (gv/vec3 0 1 0) 4)
+         (cube-neighbors (gv/vec3 1 1 1)))
+
 (defn cube-range
   "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
   [n]
@@ -27,7 +45,7 @@
         y (range (max (- n) (- (- x) n))
                  (inc (min n (+ (- x) n))))
         :let [z (- (- x) y)]]
-    [x y z]))
+    (gv/vec3 x y z)))
 
 (defn axial-range
   "Axial coordinates for all hexes within distance `n` of 0,0 inclusive."
