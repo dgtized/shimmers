@@ -33,7 +33,7 @@
   (let [r' (/ r 3)]
     (map (comp (partial geom/translate (hex/hexagon p r'))
                (partial hex/axial->hex r'))
-         (hex/axial-neighbors 1))))
+         (hex/axial-range 1))))
 
 (defn subdivide-hexagon3-outside [p r]
   (let [r' (/ r 3)

@@ -20,16 +20,20 @@
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
 
-(defn cube-neighbors [n]
+(defn cube-range
+  "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
+  [n]
   (for [x (range (- n) (inc n))
         y (range (max (- n) (- (- x) n))
                  (inc (min n (+ (- x) n))))
         :let [z (- (- x) y)]]
     [x y z]))
 
-(defn axial-neighbors [n]
-  (map cube->axial (cube-neighbors n)))
+(defn axial-range
+  "Axial coordinates for all hexes within distance `n` of 0,0 inclusive."
+  [n]
+  (map cube->axial (cube-range n)))
 
-(comment (cube-neighbors 1)
-         (cube-neighbors 2)
-         (axial-neighbors 1))
+(comment (cube-range 1)
+         (cube-range 2)
+         (axial-range 1))
