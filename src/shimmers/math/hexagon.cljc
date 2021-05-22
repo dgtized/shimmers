@@ -38,22 +38,20 @@
 (comment (cube-neighbor (gv/vec3 0 1 0) 4)
          (cube-neighbors (gv/vec3 1 1 1)))
 
-;; note these are reversed from description in
-;; https://www.redblobgames.com/grids/hexagons/#rotation?
 (defn cube-rotate-cw
   "Rotate cube `pos` around `center` 60 degrees clockwise."
   [center pos]
   (let [[x y z] (tm/- pos center)]
-    (tm/+ center (gv/vec3 (- y) (- z) (- x)))))
+    (tm/+ center (gv/vec3 (- z) (- x) (- y)))))
 
 (defn cube-rotate-ccw
   "Rotate cube `pos` around `center` 60 degrees counter-clockwise."
   [center pos]
   (let [[x y z] (tm/- pos center)]
-    (tm/+ center (gv/vec3 (- z) (- x) (- y)))))
+    (tm/+ center (gv/vec3 (- y) (- z) (- x)))))
 
-(comment (cube-rotate-cw (gv/vec3) (gv/vec3 2 -3 1))
-         (cube-rotate-ccw (gv/vec3) (gv/vec3 2 -3 1)))
+(comment (cube-rotate-cw (gv/vec3) (gv/vec3 2 1 -3))
+         (cube-rotate-ccw (gv/vec3) (gv/vec3 2 1 -3)))
 
 (defn cube-reflect-x
   "Reflect cube `pos` over the x-axis through `center`."
