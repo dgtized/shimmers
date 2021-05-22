@@ -78,6 +78,23 @@
          (cube-reflect-y (gv/vec3 1 2 -3))
          (cube-reflect-z (gv/vec3 1 2 -3)))
 
+;; TODO test better?
+;; TODO try converting to initial direction 0 and possibly clockwise rings?
+(defn cube-ring
+  "Generate all cube coordinates in a counter-clockwise ring of `radius` around
+  `center`. Radius is represented as an integer."
+  [center radius]
+  (->> [(tm/+ center (tm/* (cube-direction 4) radius)) 0]
+       (iterate (fn [[c i]]
+                  [(cube-neighbor c (mod (quot i radius) 6)) (inc i)]))
+       (take (* 6 radius))
+       (map first)))
+
+(comment (cube-ring (gv/vec3) 1)
+         (cube-ring (gv/vec3) 2)
+         (cube-ring (gv/vec3) 3)
+         )
+
 (defn cube-range
   "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
   [n]
