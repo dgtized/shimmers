@@ -50,9 +50,6 @@
   (let [[x y z] (tm/- pos center)]
     (tm/+ center (gv/vec3 (- y) (- z) (- x)))))
 
-(comment (cube-rotate-cw (gv/vec3) (gv/vec3 2 1 -3))
-         (cube-rotate-ccw (gv/vec3) (gv/vec3 2 1 -3)))
-
 (defn cube-reflect-x
   "Reflect cube `pos` over the x-axis through `center`."
   ([pos] (cube-reflect-x (gv/vec3) pos))
@@ -74,10 +71,6 @@
    (let [[x y z] (tm/- pos center)]
      (gv/vec3 y x z))))
 
-(comment (cube-reflect-x (gv/vec3 1 2 -3))
-         (cube-reflect-y (gv/vec3 1 2 -3))
-         (cube-reflect-z (gv/vec3 1 2 -3)))
-
 ;; TODO test better?
 ;; TODO try converting to initial direction 0 and possibly clockwise rings?
 (defn cube-ring
@@ -90,10 +83,6 @@
        (take (* 6 radius))
        (map first)))
 
-(comment (cube-ring (gv/vec3) 1)
-         (cube-ring (gv/vec3) 2)
-         (cube-ring (gv/vec3) 3))
-
 (defn cube-spiral
   "Generate all cube coordinates spiraling out counter-clockwise from `center` to up to `radius`"
   [center radius]
@@ -101,11 +90,6 @@
          (cons [center]
                (for [i (range 1 (inc radius))]
                  (cube-ring center i)))))
-
-(comment (cube-spiral (gv/vec3) 0)
-         (cube-spiral (gv/vec3) 1)
-         (cube-spiral (gv/vec3) 2)
-         (cube-spiral (gv/vec3) 3))
 
 (defn cube-range
   "Cube coordinates for all hexes within distance `n` of 0,0,0 inclusive."
