@@ -15,6 +15,9 @@
 (defn update-state [state]
   state)
 
+;; Is there a way to make this smoother and stutter less? Also, the transition
+;; from a single cell to multiple is a little jarring, maybe someway to smooth
+;; that?
 (defn draw [_]
   (q/background 1.0 0.025)
   (q/stroke-weight 0.5)
