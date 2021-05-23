@@ -29,11 +29,12 @@
   (q/stroke-weight 0.5)
   (q/stroke 0.0 1.0)
   (q/fill 1.0 0.1)
-  (let [t (/ (q/millis) 1000)
-        divisions (int (tm/map-interval (q/sin t) [-1 1] [0 20]))
-        r (/ (* (/ (Math/sqrt 2) 5) (q/height)) (inc divisions))]
+  (let [t (q/millis)
+        divisions (int (tm/map-interval (triangle-wave 4000 t) [-1 1] [0 20]))
+        r (/ (* 0.4 (q/height))
+             (+ 10 divisions))]
     (q/with-translation (cq/rel-pos 0.5 0.5)
-      (q/with-rotation [(/ t 12)]
+      (q/with-rotation [(/ t 12000)]
         (doseq [pos (hex/cube-spiral (gv/vec3) divisions)
                 :let [hex (hex/hexagon (hex/axial->hex r (hex/cube->axial pos)) r)]]
           (cq/draw-shape (geom/vertices hex 6)))))))
