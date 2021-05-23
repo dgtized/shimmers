@@ -104,7 +104,3 @@
   "Axial coordinates for all hexes within distance `n` of 0,0 inclusive."
   [n]
   (map cube->axial (cube-range n)))
-
-(comment (cube-range 1)
-         (cube-range 2)
-         (axial-range 1))
