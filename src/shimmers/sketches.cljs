@@ -4,6 +4,7 @@
             [shimmers.sketches.ascendance :as ascendance]
             [shimmers.sketches.braid :as braid]
             [shimmers.sketches.brush-sweep :as brush-sweep]
+            [shimmers.sketches.breathing-hexes :as breathing-hexes]
             [shimmers.sketches.bubbles :as bubbles]
             [shimmers.sketches.butterfly :as butterfly]
             [shimmers.sketches.circle-packing :as circle-packing]
@@ -26,7 +27,6 @@
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.harsh-lines :as harsh-lines]
             [shimmers.sketches.hexaclock :as hexaclock]
-            [shimmers.sketches.hex-divisions :as hex-divisions]
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
@@ -78,6 +78,7 @@
    [ascendance/run-sketch
     braid/run-sketch
     brush-sweep/run-sketch
+    breathing-hexes/run-sketch
     bubbles/run-sketch
     butterfly/run-sketch
     circle-packing/run-sketch
@@ -99,7 +100,6 @@
     gossamer-coils/run-sketch
     gravity-well/run-sketch
     hexaclock/run-sketch
-    hex-divisions/run-sketch
     harsh-lines/run-sketch
     impressions-of-open-space/run-sketch
     k-means/run-sketch

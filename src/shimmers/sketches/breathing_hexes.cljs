@@ -1,4 +1,4 @@
-(ns shimmers.sketches.hex-divisions
+(ns shimmers.sketches.breathing-hexes
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -31,7 +31,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210523
-  (q/defsketch hex-divisions
+  (q/defsketch breathing-hexes
     :host "quil-host"
     :size [800 600]
     :setup setup
