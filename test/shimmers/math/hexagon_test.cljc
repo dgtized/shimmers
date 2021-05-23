@@ -5,6 +5,11 @@
             [shimmers.math.hexagon :as hex]
             [thi.ng.geom.vector :as gv]))
 
+(deftest neighborhood
+  (is (= [-1 1 1] (hex/cube-neighbor (gv/vec3 0 1 0) 4)))
+  (is (= [[2 0 1] [2 1 0] [1 2 0] [0 2 1] [0 1 2] [1 0 2]]
+         (hex/cube-neighbors (gv/vec3 1 1 1)))))
+
 (deftest rotation
   (is (= (gv/vec3 3 -2 -1)
          (hex/cube-rotate-cw (gv/vec3) (gv/vec3 2 1 -3))))

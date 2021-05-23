@@ -35,9 +35,6 @@
 (defn cube-neighbors [cube]
   (mapv (partial cube-neighbor cube) (range 6)))
 
-(comment (cube-neighbor (gv/vec3 0 1 0) 4)
-         (cube-neighbors (gv/vec3 1 1 1)))
-
 (defn cube-rotate-cw
   "Rotate cube `pos` around `center` 60 degrees clockwise."
   [center pos]
