@@ -15,6 +15,12 @@
 (defn update-state [state]
   state)
 
+(defn triangle-wave
+  "Linear wave function from -1 to 1 over period `p`."
+  [p t]
+  (let [f (Math/floor (+ (/ (* 2 t) p) 0.5))]
+    (* (/ 4 p) (- t (* (/ p 2) f)) (Math/pow -1 f))))
+
 ;; Is there a way to make this smoother and stutter less? Also, the transition
 ;; from a single cell to multiple is a little jarring, maybe someway to smooth
 ;; that?
