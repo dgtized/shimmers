@@ -14,6 +14,8 @@
          (hex/cube-neighbors (gv/vec3 1 1 1)))))
 
 (deftest rotation
+  (is (= [1 -1 0] (hex/cube-rotate-cw (gv/vec3) (gv/vec3 1 0 -1))))
+  (is (= [0 1 -1] (hex/cube-rotate-ccw (gv/vec3) (gv/vec3 1 0 -1))))
   (is (= (gv/vec3 3 -2 -1)
          (hex/cube-rotate-cw (gv/vec3) (gv/vec3 2 1 -3))))
   (is (= (gv/vec3 -1 3 -2)
