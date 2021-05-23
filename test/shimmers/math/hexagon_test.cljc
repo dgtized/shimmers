@@ -6,7 +6,10 @@
             [thi.ng.geom.vector :as gv]))
 
 (deftest neighborhood
+  (is (= [-1 0 1] (hex/cube-neighbor (gv/vec3) 4)))
   (is (= [-1 1 1] (hex/cube-neighbor (gv/vec3 0 1 0) 4)))
+  (is (= [[1 -1 0] [1 0 -1] [0 1 -1] [-1 1 0] [-1 0 1] [0 -1 1]]
+         (hex/cube-neighbors (gv/vec3 0 0 0))))
   (is (= [[2 0 1] [2 1 0] [1 2 0] [0 2 1] [0 1 2] [1 0 2]]
          (hex/cube-neighbors (gv/vec3 1 1 1)))))
 
