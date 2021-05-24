@@ -15,6 +15,18 @@
 (defn update-state [state]
   state)
 
+(defn square-wave
+  "Square wave function from -1 to 1 with frequency `f`"
+  [f t]
+  (+ (* 2 (- (* 2 (Math/floor (* f t)))
+             (Math/floor (* 2 f t)))) 1))
+
+(defn sawtooth-wave
+  "Sawtooth wave function from -1 to 1 over period `p`."
+  [p t]
+  (let [f (/ t p)]
+    (* 2 (- f (Math/floor (+ 0.5 f))))))
+
 (defn triangle-wave
   "Linear wave function from -1 to 1 over period `p`."
   [p t]
