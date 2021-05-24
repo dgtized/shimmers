@@ -13,12 +13,31 @@
 (defn axial->cube [[q r]]
   (gv/vec3 q (- (- q) r) r))
 
-(defn axial->hex
-  "Converts axial coordinates to a center point of that hex"
+(defn axial-flat->pixel
+  "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]
   (tm/* (gv/vec2 (* q (/ 3 2))
                  (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
         size))
+
+(defn axial-pointy->pixel
+  "Converts axial coordinates of flat topped hex to a center point of that hex."
+  [size [q r]]
+  (tm/* (gv/vec2 (+ (* q (Math/sqrt 3)) (* r 0.5 (Math/sqrt 3)))
+                 (* r (/ 3 2)))
+        size))
+
+(defn cube-flat->pixel
+  [size cube]
+  (axial-flat->pixel size (cube->axial cube)))
+
+(defn cube-pointy->pixel
+  [size cube]
+  (axial-pointy->pixel size (cube->axial cube)))
+
+;; TODO: Option for flat/pointy?
+(defn cube-hexagon [cube r]
+  (hexagon (cube-flat->pixel r cube) r))
 
 (defn cube-direction [dir]
   (-> [(gv/vec3  1 -1  0)

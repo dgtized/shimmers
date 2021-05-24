@@ -32,7 +32,7 @@
 (defn subdivide-hexagon3 [p r]
   (let [r' (/ r 3)]
     (map (comp (partial geom/translate (hex/hexagon p r'))
-               (partial hex/axial->hex r'))
+               (partial hex/axial-flat->pixel r'))
          (hex/axial-range 1))))
 
 (defn subdivide-hexagon3-outside [p r]
@@ -66,7 +66,7 @@
             (surrounding-hexes hex (/ 1 12) (* 2 (Math/sqrt 3) r'))
             (for [coord [[2 1] [1 2] [-1 3] [-2 3] [-3 2] [-3 1]
                          [-2 -1] [-1 -2] [1 -3] [2 -3] [3 -2] [3 -1]]]
-              (geom/translate hex (hex/axial->hex r' coord))))))
+              (geom/translate hex (hex/axial-flat->pixel r' coord))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (p/weighted {subdivide-hexagon3 32

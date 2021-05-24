@@ -31,7 +31,7 @@
     (q/with-translation (cq/rel-pos 0.5 0.5)
       (q/with-rotation [(/ t 12000)]
         (doseq [pos (hex/cube-spiral (gv/vec3) divisions)
-                :let [hex (hex/hexagon (hex/axial->hex r (hex/cube->axial pos)) r)]]
+                :let [hex (hex/cube-hexagon pos r)]]
           (cq/draw-shape (geom/vertices hex 6)))))))
 
 (defn ^:export run-sketch []
