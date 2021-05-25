@@ -15,12 +15,14 @@
             [thi.ng.math.core :as tm]))
 
 ;; Represent a brush stroke from location p to q
-(defrecord Stroke [p q curve])
+(defrecord Stroke [p q curve spline])
 
 (defn make-stroke
   ([p q] (make-stroke p q 0))
   ([p q d]
-   (Stroke. p q (geometry/confused-midpoint p q d))))
+   (let [curve (geometry/confused-midpoint p q d)]
+     (Stroke. p q curve
+              (bezier/auto-spline2 [p curve q])))))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
@@ -31,10 +33,11 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn brush-at [{:keys [p q curve]} [radius freq] t]
+(defn brush-at [{:keys [spline]} [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
-        (geom/point-at (bezier/auto-spline2 [p curve q]) t)))
+        ;; point-at is expensive on splines, can this be precomputed?
+        (geom/point-at spline t)))
 
 (defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
