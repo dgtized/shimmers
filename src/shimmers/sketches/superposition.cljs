@@ -30,6 +30,9 @@
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
+(defn draw-triangle [{[a b c] :points}]
+  (cq/draw-triangle a b c))
+
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
@@ -150,7 +153,7 @@
                 (map-noise fc 800 500.00 [0.4 1.0])
                 (map-noise fc 800 1000.0 [0.45 1.0])
                 (map-noise fc 500 2000.0 [0.001 0.040]))
-        (draw-polygon (random-shape-at position tween spin (* factor scale))))))
+        (draw-triangle (random-shape-at position tween spin (* factor scale))))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
