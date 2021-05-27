@@ -11,21 +11,24 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.utils :as gu]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 ;; Represent a brush stroke from location p to q
-(defrecord Stroke [p q curve spline]
+;; caches the resulting spline and index of positions
+(defrecord Stroke [p q curve spline arc-length-idx]
   geom/ISample
   (point-at
-    [_ t] (geom/point-at spline t)))
+    [_ t] (gu/point-at t (get spline :points) arc-length-idx)))
 
 (defn make-stroke
   ([p q] (make-stroke p q 0))
   ([p q d]
-   (let [curve (geometry/confused-midpoint p q d)]
-     (Stroke. p q curve
-              (bezier/auto-spline2 [p curve q])))))
+   (let [curve (geometry/confused-midpoint p q d)
+         spline (bezier/auto-spline2 [p curve q])]
+     (Stroke. p q curve spline
+              (gu/arc-length-index (:points spline))))))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
