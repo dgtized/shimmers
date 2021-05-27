@@ -114,7 +114,7 @@
      :current current
      :target target
      :factor factor
-     :brushes (repeatedly (int (* 64 factor))
+     :brushes (repeatedly (int (* 48 factor))
                           #(make-stroke (geom/random-point-inside current)
                                         (geom/random-point-inside target)))
      :variance [1 0]
