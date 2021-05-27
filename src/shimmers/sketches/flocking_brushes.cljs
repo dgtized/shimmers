@@ -31,11 +31,22 @@
           force (geom/as-cartesian (gv/vec2 0.5 theta))]
       (physics/add-force p (tm/* force delta)))))
 
+(defn wrap-around []
+  (fn [p _]
+    (let [[x y] (physics/position p)
+          wx (tm/wrap-range x (q/width))
+          wy (tm/wrap-range y (q/height))]
+      (when-not (and (tm/delta= x wx) (tm/delta= y wy))
+        (let [pos (gv/vec2 wx wy)]
+          (set! (.-prev p) (tm/- pos (physics/velocity p)))
+          (physics/set-position p pos))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:physics (physics/physics {:particles (repeatedly 32 make-particle)
                               :drag 0.01
-                              :behaviors {:force-field (force-field)}})})
+                              :behaviors {:force-field (force-field)
+                                          :wrap-around (wrap-around)}})})
 
 (defn update-state [state]
   (update state :physics physics/timestep 10))
