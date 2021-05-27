@@ -133,23 +133,30 @@
 (defn transition-to
   [{brushes :brushes [_ last-orbit] :orbit previous :target :as state}
    fc target]
-  (assoc state :current previous
-         :target target
-         :brushes (let [curve (* 0.8 (p/happensity 0.4))]
-                    (map (fn [brush]
-                           (let [p (brush-at brush last-orbit 1.0)
-                                 q (geom/random-point-inside target)]
-                             (make-stroke p q curve)))
-                         brushes))
-         :variance [(inc (rand-int 8)) (* 25 (q/random-gaussian))]
-         :base fc
-         :interval (q/floor (q/random 120 600))
-         :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
-         :orbit [last-orbit
-                 (if (p/chance 0.35)
-                   (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
-                   (gv/vec2))]
-         :tween 0.0))
+  (let [curve (* 0.8 (p/happensity 0.4))
+        cohorts 12]
+    (assoc state :current previous
+           :target target
+           :brushes
+           (->> brushes
+                (map-indexed
+                 (fn [idx brush]
+                   (let [p (brush-at brush last-orbit 1.0)
+                         q (geom/random-point-inside target)]
+                     (assoc (make-stroke p q curve)
+                            :cohort (mod idx cohorts)))))
+                (sort-by :cohort))
+
+           :variance [cohorts (* 20 (q/random-gaussian))]
+           :base fc
+           :tween 0.0
+           :interval (q/floor (q/random 120 600))
+           :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
+           :orbit
+           [last-orbit
+            (if (p/chance 0.35)
+              (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
+              (gv/vec2))])))
 
 (defn update-state [{:keys [base interval] :as state}]
   (let [fc (q/frame-count)]
@@ -165,18 +172,16 @@
 (defn draw
   [{:keys [image current target tween factor brushes variance spin] :as state}]
 
-  ;; Idea: adjust amount of relative brush variance over time?
-  ;; Optimization: group brushes by variance to reduce calls to stroke/weight/fill.
-  ;; Ie generate a group of varying brushes as a cohort?
   ;; measure/beat
   (let [frame-count (q/frame-count)
         orbit (orbit-transition state)]
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
-      (doseq [[idx brush] (map-indexed vector brushes)
-              :let [position (brush-at brush orbit tween)
-                    fc (+ frame-count (* (mod idx (first variance)) (second variance)))
-                    scale (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12)]]
+      ;; Calculate stroke, stroke-weight, and fill for all brushes in a cohort
+      (doseq [cohort (partition-by :cohort brushes)
+              :let [fc (+ frame-count (* (:cohort (first cohort))
+                                         (second variance)))
+                    scale (* factor (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12))]]
         (q/stroke 0 0
                   (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
                   (map-noise fc 650 6000.0 [0.2 0.6]))
@@ -185,7 +190,10 @@
                 (map-noise fc 800 500.00 [0.4 1.0])
                 (map-noise fc 800 1000.0 [0.45 1.0])
                 (map-noise fc 500 2000.0 [0.001 0.040]))
-        (draw-triangle (random-shape-at position tween spin (* factor scale))))))
+        ;; Draw each brush in the cohort
+        (doseq [brush cohort
+                :let [position (brush-at brush orbit tween)]]
+          (draw-triangle (random-shape-at position tween spin scale))))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
