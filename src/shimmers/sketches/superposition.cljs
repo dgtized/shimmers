@@ -15,7 +15,10 @@
             [thi.ng.math.core :as tm]))
 
 ;; Represent a brush stroke from location p to q
-(defrecord Stroke [p q curve spline])
+(defrecord Stroke [p q curve spline]
+  geom/ISample
+  (point-at
+    [_ t] (geom/point-at spline t)))
 
 (defn make-stroke
   ([p q] (make-stroke p q 0))
@@ -36,11 +39,11 @@
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
 
-(defn brush-at [{:keys [spline]} [radius freq] t]
+(defn brush-at [stroke [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
         ;; point-at is expensive on splines, can this be precomputed?
-        (geom/point-at spline t)))
+        (geom/point-at stroke t)))
 
 (defn random-shape-at [position t spin scale]
   (-> (gt/triangle2 [0 0] [0 13] [17 0])
