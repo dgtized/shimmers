@@ -48,6 +48,10 @@
                               :behaviors {:force-field (force-field 0.8)
                                           :wrap-around (wrap-around)}})})
 
+;; Coherence/attraction - limited by some sight range?
+;; Separation - how much to avoid other in flock
+;; Alignment - how much to match speed/direction of flock
+
 (defn update-state [state]
   (update state :physics physics/timestep 10))
 
