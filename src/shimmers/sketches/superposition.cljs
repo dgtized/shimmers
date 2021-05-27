@@ -30,8 +30,8 @@
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
-(defn draw-triangle [{[a b c] :points}]
-  (cq/draw-triangle a b c))
+(defn draw-triangle [{[[ax ay] [bx by] [cx cy]] :points}]
+  (q/triangle ax ay bx by cx cy))
 
 (defn draw-polygon [poly]
   (cq/draw-shape (geom/vertices poly)))
