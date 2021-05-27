@@ -24,11 +24,11 @@
         n (q/noise (/ rx factor) (/ ry factor) (/ (q/frame-count) 1000))]
     (* 2 tm/TWO_PI n)))
 
-(defn force-field []
+(defn force-field [strength]
   (fn [p delta]
     (let [[x y] (physics/position p)
           theta (direction-at-point x y)
-          force (geom/as-cartesian (gv/vec2 0.5 theta))]
+          force (geom/as-cartesian (gv/vec2 strength theta))]
       (physics/add-force p (tm/* force delta)))))
 
 (defn wrap-around []
@@ -45,7 +45,7 @@
   (q/color-mode :hsl 1.0)
   {:physics (physics/physics {:particles (repeatedly 32 make-particle)
                               :drag 0.01
-                              :behaviors {:force-field (force-field)
+                              :behaviors {:force-field (force-field 0.8)
                                           :wrap-around (wrap-around)}})})
 
 (defn update-state [state]
