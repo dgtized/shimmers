@@ -165,6 +165,9 @@
 (defn draw
   [{:keys [image current target tween factor brushes variance spin] :as state}]
 
+  ;; Idea: adjust amount of relative brush variance over time?
+  ;; Optimization: group brushes by variance to reduce calls to stroke/weight/fill.
+  ;; Ie generate a group of varying brushes as a cohort?
   ;; measure/beat
   (let [frame-count (q/frame-count)
         orbit (orbit-transition state)]
