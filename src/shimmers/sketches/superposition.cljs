@@ -81,6 +81,10 @@
   (Math/sin (* (/ Math/PI 2) n)))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (let [current (random-target)
         target (random-target)
         factor (/ (+ (q/width) (q/height)) 800)]
