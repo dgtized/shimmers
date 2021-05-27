@@ -43,8 +43,7 @@
 (defn brush [particle]
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
-        (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
-            (geom/scale-size 2)
+        (-> (gt/triangle2 [0 0] [0 3] [5 0])
             (geom/rotate (rand))
             (geom/translate (gv/vec2 x y))
             :points)]
