@@ -21,8 +21,9 @@
             [shimmers.sketches.emitters :as emitters]
             [shimmers.sketches.falling-gradients :as falling-gradients]
             [shimmers.sketches.fire :as fire]
-            ;; [shimmers.sketches.fluid :as fluid]
+            [shimmers.sketches.flocking-brushes :as flocking-brushes]
             [shimmers.sketches.folding-triangles :as folding-triangles]
+            ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gossamer-coils :as gossamer-coils]
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.harsh-lines :as harsh-lines]
@@ -95,6 +96,7 @@
     emitters/run-sketch
     falling-gradients/run-sketch
     fire/run-sketch
+    flocking-brushes/run-sketch
     folding-triangles/run-sketch
     ;; fluid/run-sketch
     gossamer-coils/run-sketch
