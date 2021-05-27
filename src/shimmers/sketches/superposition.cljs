@@ -48,13 +48,32 @@
         ;; point-at is expensive on splines, can this be precomputed?
         (geom/point-at stroke t)))
 
+(def triangle-instance
+  (let [t (gt/triangle2 [0 0] [0 13] [17 0])]
+    (assoc t :centroid (gu/centroid (:points t)))))
+
+;; optimized version with cached centroid, also trying to reduce consing?
 (defn random-shape-at [position t spin scale]
-  (-> (gt/triangle2 [0 0] [0 13] [17 0])
-      (geom/scale-size scale)
-      (geom/rotate (if spin
-                     (* spin t)
-                     (* 2 Math/PI (rand))))
-      (geom/translate position)))
+  (let [{:keys [points centroid]} triangle-instance
+        theta (if spin
+                (* spin t)
+                (* 2 Math/PI (rand)))]
+    (apply gt/triangle2
+           (mapv (fn [p] (-> p
+                            (tm/- centroid)
+                            (tm/madd scale centroid)
+                            (geom/rotate theta)
+                            (tm/+ position)))
+                 points))))
+(comment
+  ;; un-optimized version of random-shape-at?
+  (defn random-shape-at [position t spin scale]
+    (-> (gt/triangle2 [0 0] [0 13] [17 0])
+        (geom/scale-size scale)
+        (geom/rotate (if spin
+                       (* spin t)
+                       (* 2 Math/PI (rand))))
+        (geom/translate position))))
 
 (defn random-triangle []
   (let [s (q/random 0.15 0.5)
