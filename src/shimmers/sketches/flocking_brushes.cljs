@@ -75,7 +75,7 @@
   ;; 20210527
   (q/defsketch flocking-brushes
     :host "quil-host"
-    :size [800 600]
+    :size [900 600]
     :setup setup
     :update update-state
     :draw draw
