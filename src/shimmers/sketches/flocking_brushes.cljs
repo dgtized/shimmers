@@ -17,6 +17,15 @@
                          radius)))
           particles))
 
+(defn flock-alignment [verlet-physics radius strength]
+  (fn [p delta]
+    (let [neighborhood (neighborhood p (:particles verlet-physics) radius)]
+      (when (seq neighborhood)
+        (let [velocity (tm/div (reduce tm/+ (map physics/velocity neighborhood))
+                               (count neighborhood))
+              f (tm/- velocity (physics/velocity p))]
+          (physics/add-force p (tm/* f (* strength delta))))))))
+
 (defn flock-cohesion [verlet-physics radius strength]
   (fn [p delta]
     (let [neighborhood (neighborhood p (:particles verlet-physics) radius)]
@@ -73,11 +82,12 @@
   (q/color-mode :hsl 1.0)
   (let [engine (physics/physics {:particles (repeatedly 32 make-particle)
                                  :drag 0.001
-                                 ;; :behaviors {:force-field (force-field 0.8)}
+                                 :behaviors {:force-field (force-field 0.1)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
-               {:cohesion (flock-cohesion engine 100 1.0)
+               {:alignment (flock-alignment engine 100 1.5)
+                :cohesion (flock-cohesion engine 100 1.0)
                 :separation (flock-separation engine 100 1.1)})}))
 
 ;; Coherence/attraction - limited by some sight range?
