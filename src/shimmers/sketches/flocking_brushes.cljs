@@ -108,8 +108,10 @@
     (q/triangle ax ay bx by cx cy)))
 
 (defn draw [{:keys [physics]}]
-  (q/background 1.0 0.2)
-  (q/stroke 0.0 0.5)
+  (q/stroke 0.0 0.1)
+  (when false ;; clear screen
+    (q/stroke 0.0 0.5)
+    (q/background 1.0 0.2))
   (q/stroke-weight 0.5)
   (q/no-fill)
   (doseq [particle (:particles physics)]
