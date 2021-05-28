@@ -100,14 +100,16 @@
 (defn brush [particle]
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
-        (-> (gt/triangle2 [0 0] [0 3] [5 0])
-            ;; (geom/rotate (/ (q/frame-count) 20))
+        (-> (gt/triangle2 [1.5 0] [-0.5 -0.5] [-0.5 0.5])
+            (geom/scale-size 5)
+            (geom/rotate (geom/heading (physics/velocity particle)))
             (geom/translate (gv/vec2 x y))
             :points)]
     (q/triangle ax ay bx by cx cy)))
 
 (defn draw [{:keys [physics]}]
-  (q/stroke 0.0 0.1)
+  (q/background 1.0 0.5)
+  (q/stroke 0.0 0.5)
   (q/stroke-weight 0.5)
   (q/no-fill)
   (doseq [particle (:particles physics)]
