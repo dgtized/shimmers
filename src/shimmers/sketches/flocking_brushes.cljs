@@ -97,25 +97,40 @@
 (defn update-state [state]
   (update state :physics physics/timestep 3))
 
-(defn brush [particle]
+(defn brush [particle scale]
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
         (-> (gt/triangle2 [1.5 0] [-0.5 -0.5] [-0.5 0.5])
-            (geom/scale-size 5)
+            (geom/scale-size scale)
             (geom/rotate (geom/heading (physics/velocity particle)))
             (geom/translate (gv/vec2 x y))
             :points)]
     (q/triangle ax ay bx by cx cy)))
 
+(defn map-noise [t rate offset interval]
+  (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
+
+(defn superposition-coloration []
+  (let [fc (q/frame-count)
+        scale (tm/mix-exp 10.0 48 (q/noise (/ fc 500) 4000.0) 12)]
+    (q/stroke 0 0
+              (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
+              (map-noise fc 650 6000.0 [0.2 0.6]))
+    (q/stroke-weight (* 0.6 (tm/smoothstep* 0.35 1.0 (q/noise (/ fc 600) 0.0))))
+    (q/fill (mod (* 3 (q/noise (/ fc 3000) 200.0)) 1.0)
+            (map-noise fc 800 500.00 [0.4 1.0])
+            (map-noise fc 800 1000.0 [0.45 1.0])
+            (map-noise fc 500 2000.0 [0.001 0.040]))
+    scale))
+
 (defn draw [{:keys [physics]}]
-  (q/stroke 0.0 0.1)
   (when false ;; clear screen
     (q/stroke 0.0 0.5)
     (q/background 1.0 0.2))
-  (q/stroke-weight 0.5)
-  (q/no-fill)
-  (doseq [particle (:particles physics)]
-    (brush particle)))
+
+  (let [scale (superposition-coloration)]
+    (doseq [particle (:particles physics)]
+      (brush particle scale))))
 
 (defn ^:export run-sketch []
   ;; 20210527
