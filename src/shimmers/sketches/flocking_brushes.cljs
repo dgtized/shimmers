@@ -44,7 +44,7 @@
                                        at-q (physics/position q)]
                                    (tm/div (tm/- at-p at-q) (geom/dist at-p at-q))))
                                neighborhood)
-              rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
+              rel-diff (tm/normalize (tm/div (reduce tm/+ differences) (count neighborhood)))]
           (physics/add-force p (tm/* rel-diff (* strength delta))))))))
 
 (defn make-particle []
@@ -80,15 +80,15 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [engine (physics/physics {:particles (repeatedly 32 make-particle)
-                                 :drag 0.001
+  (let [engine (physics/physics {:particles (repeatedly 64 make-particle)
+                                 :drag 0.01
                                  :behaviors {:force-field (force-field 0.1)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
-               {:alignment (flock-alignment engine 100 1.5)
-                :cohesion (flock-cohesion engine 100 1.0)
-                :separation (flock-separation engine 100 1.1)})}))
+               {:alignment (flock-alignment engine 100 2.0)
+                :cohesion (flock-cohesion engine 100 1.2)
+                :separation (flock-separation engine 50 1.5)})}))
 
 ;; Coherence/attraction - limited by some sight range?
 ;; Separation - how much to avoid other in flock
@@ -108,7 +108,7 @@
     (q/triangle ax ay bx by cx cy)))
 
 (defn draw [{:keys [physics]}]
-  (q/background 1.0 0.5)
+  (q/background 1.0 0.2)
   (q/stroke 0.0 0.5)
   (q/stroke-weight 0.5)
   (q/no-fill)
