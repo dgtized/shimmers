@@ -82,7 +82,7 @@
   (q/color-mode :hsl 1.0)
   (let [engine (physics/physics {:particles (repeatedly 48 make-particle)
                                  :drag 0.01
-                                 :behaviors {:force-field (force-field 0.3)}
+                                 :behaviors {:force-field (force-field 1.0)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
@@ -95,7 +95,7 @@
 ;; Alignment - how much to match speed/direction of flock
 
 (defn update-state [state]
-  (update state :physics physics/timestep 3))
+  (update state :physics physics/timestep 4))
 
 (defn brush [particle scale]
   (let [[x y] (physics/position particle)
@@ -112,7 +112,7 @@
 
 (defn superposition-coloration []
   (let [fc (q/frame-count)
-        scale (tm/mix-exp 10.0 48 (q/noise (/ fc 500) 4000.0) 12)]
+        scale (tm/mix-exp 10.0 64 (q/noise (/ fc 500) 4000.0) 12)]
     (q/stroke 0 0
               (tm/smoothstep* 0.45 0.7 (q/noise (/ fc 550) 5000.0))
               (map-noise fc 650 6000.0 [0.2 0.6]))
