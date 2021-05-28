@@ -10,6 +10,22 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+(defn neighborhood [p particles radius]
+  (filter (fn [q] (and (not= p q)
+                      (< (geom/dist (physics/position p)
+                                    (physics/position q))
+                         radius)))
+          particles))
+
+(defn flock-cohesion [verlet-physics radius strength]
+  (fn [p delta]
+    (let [neighborhood (neighborhood p (:particles verlet-physics) radius)]
+      (when (seq neighborhood)
+        (let [centroid (tm/div (reduce tm/+ (map physics/position neighborhood))
+                               (count neighborhood))
+              f (tm/normalize (tm/- centroid (physics/position p)))]
+          (physics/add-force p (tm/* f (* strength delta))))))))
+
 (defn make-particle []
   (let [pos (cq/rel-vec (rand) (rand))]
     (physics/VerletParticle. pos pos (geom/clear* pos)
@@ -43,10 +59,13 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:physics (physics/physics {:particles (repeatedly 32 make-particle)
-                              :drag 0.01
-                              :behaviors {:force-field (force-field 0.8)}
-                              :constraints {:wrap-around (wrap-around)}})})
+  (let [engine (physics/physics {:particles (repeatedly 32 make-particle)
+                                 :drag 0.01
+                                 :behaviors {:force-field (force-field 0.8)}
+                                 :constraints {:wrap-around (wrap-around)}})]
+    {:physics (physics/add-behaviors
+               engine
+               {:cohesion (flock-cohesion engine 50 0.1)})}))
 
 ;; Coherence/attraction - limited by some sight range?
 ;; Separation - how much to avoid other in flock
@@ -59,7 +78,7 @@
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
         (-> (gt/triangle2 [0 0] [0 3] [5 0])
-            (geom/rotate (/ (q/frame-count) 20))
+            ;; (geom/rotate (/ (q/frame-count) 20))
             (geom/translate (gv/vec2 x y))
             :points)]
     (q/triangle ax ay bx by cx cy)))
