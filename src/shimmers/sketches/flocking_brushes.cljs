@@ -80,15 +80,15 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [engine (physics/physics {:particles (repeatedly 64 make-particle)
+  (let [engine (physics/physics {:particles (repeatedly 48 make-particle)
                                  :drag 0.01
                                  :behaviors {:force-field (force-field 0.2)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
-               {:alignment (flock-alignment engine 60 1.0)
-                :cohesion (flock-cohesion engine 80 0.05)
-                :separation (flock-separation engine 60 2.5)})}))
+               {:alignment (flock-alignment engine 48 1.0)
+                :cohesion (flock-cohesion engine 64 0.05)
+                :separation (flock-separation engine 32 2.5)})}))
 
 ;; Coherence/attraction - limited by some sight range?
 ;; Separation - how much to avoid other in flock
