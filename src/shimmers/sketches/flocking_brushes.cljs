@@ -45,8 +45,8 @@
   (q/color-mode :hsl 1.0)
   {:physics (physics/physics {:particles (repeatedly 32 make-particle)
                               :drag 0.01
-                              :behaviors {:force-field (force-field 0.8)
-                                          :wrap-around (wrap-around)}})})
+                              :behaviors {:force-field (force-field 0.8)}
+                              :constraints {:wrap-around (wrap-around)}})})
 
 ;; Coherence/attraction - limited by some sight range?
 ;; Separation - how much to avoid other in flock
