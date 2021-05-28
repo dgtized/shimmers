@@ -26,6 +26,18 @@
               f (tm/normalize (tm/- centroid (physics/position p)))]
           (physics/add-force p (tm/* f (* strength delta))))))))
 
+(defn flock-separation [verlet-physics radius strength]
+  (fn [p delta]
+    (let [neighborhood (neighborhood p (:particles verlet-physics) radius)]
+      (when (seq neighborhood)
+        (let [differences (map (fn [q]
+                                 (let [at-p (physics/position p)
+                                       at-q (physics/position q)]
+                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q))))
+                               neighborhood)
+              rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
+          (physics/add-force p (tm/* rel-diff (* strength delta))))))))
+
 (defn make-particle []
   (let [pos (cq/rel-vec (rand) (rand))]
     (physics/VerletParticle. pos pos (geom/clear* pos)
@@ -60,12 +72,13 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [engine (physics/physics {:particles (repeatedly 32 make-particle)
-                                 :drag 0.01
-                                 :behaviors {:force-field (force-field 0.8)}
+                                 :drag 0.001
+                                 ;; :behaviors {:force-field (force-field 0.8)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
-               {:cohesion (flock-cohesion engine 50 0.1)})}))
+               {:cohesion (flock-cohesion engine 100 1.0)
+                :separation (flock-separation engine 100 1.1)})}))
 
 ;; Coherence/attraction - limited by some sight range?
 ;; Separation - how much to avoid other in flock
