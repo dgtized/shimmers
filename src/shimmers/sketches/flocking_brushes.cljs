@@ -82,7 +82,7 @@
   (q/color-mode :hsl 1.0)
   (let [engine (physics/physics {:particles (repeatedly 48 make-particle)
                                  :drag 0.01
-                                 :behaviors {:force-field (force-field 0.2)}
+                                 :behaviors {:force-field (force-field 0.3)}
                                  :constraints {:wrap-around (wrap-around)}})]
     {:physics (physics/add-behaviors
                engine
