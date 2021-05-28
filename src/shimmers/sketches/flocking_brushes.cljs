@@ -18,7 +18,7 @@
 
 (defn direction-at-point
   [x y]
-  (let [factor 100
+  (let [factor 500
         rx (sm/reflect-into x (q/width))
         ry (sm/reflect-into y (q/height))
         n (q/noise (/ rx factor) (/ ry factor) (/ (q/frame-count) 1000))]
@@ -53,13 +53,13 @@
 ;; Alignment - how much to match speed/direction of flock
 
 (defn update-state [state]
-  (update state :physics physics/timestep 10))
+  (update state :physics physics/timestep 4))
 
 (defn brush [particle]
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
         (-> (gt/triangle2 [0 0] [0 3] [5 0])
-            (geom/rotate (rand))
+            (geom/rotate (/ (q/frame-count) 20))
             (geom/translate (gv/vec2 x y))
             :points)]
     (q/triangle ax ay bx by cx cy)))
