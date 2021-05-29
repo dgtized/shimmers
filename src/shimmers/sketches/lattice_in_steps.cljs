@@ -13,17 +13,18 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [[a b c] (map #(tm/+ % (cq/rel-pos 0.5 0.5))
-                     [(gv/vec2 10 0) (gv/vec2 -10 -10) (gv/vec2 -10 10)])]
+                     [(gv/vec2 15 0) (gv/vec2 -15 -15) (gv/vec2 -15 15)])]
     {:nodes [a b c]
      :edges [[a b] [b c] [c a]]}))
 
 ;; Not quite working, idea was to keep adding triangles on each outside face,
 ;; but somehow this is also generating polygons. Maybe from the discontinuity at
 ;; the wrap-around for the hull?
+;; Never mind, discontunity is from convex hull skipping "outer" points. Need a "shrink" operation?
 (defn update-state [{:keys [nodes] :as state}]
   (let [hull (gp/convex-hull* nodes)
         [p q] (rand-nth (partition 2 1 hull))
-        m (->> #(geometry/confused-midpoint p q 1.1)
+        m (->> #(geometry/confused-midpoint p q 0.9)
                (repeatedly 20)
                (remove (fn [c] (geom/contains-point? (gp/polygon2 hull) c)))
                (filter (fn [c] (geom/contains-point? (rect/rect 0 0 (q/width) (q/height)) c)))
