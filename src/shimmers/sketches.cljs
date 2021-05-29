@@ -33,6 +33,7 @@
             [shimmers.sketches.kd-tree :as kd-tree]
             [shimmers.sketches.kinematic-chain :as kinematic-chain]
             [shimmers.sketches.langton-ant :as langton-ant]
+            [shimmers.sketches.lattice-in-steps :as lattice-in-steps]
             [shimmers.sketches.lattice-of-common-chords :as lattice-of-common-chords]
             [shimmers.sketches.mechanism :as mechanism]
             [shimmers.sketches.minimum-spanning-tree :as minimum-spanning-tree]
@@ -108,6 +109,7 @@
     kd-tree/run-sketch
     kinematic-chain/run-sketch
     langton-ant/run-sketch
+    lattice-in-steps/run-sketch
     lattice-of-common-chords/run-sketch
     mechanism/run-sketch
     minimum-spanning-tree/run-sketch
