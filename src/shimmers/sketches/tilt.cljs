@@ -3,8 +3,14 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.geometry :as geometry]
+            [shimmers.math.hexagon :as hex]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.line :as gl]
+            [thi.ng.geom.polygon :as gp]
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn stalactite []
   (let [x1 (- (* 1.1 (rand)) 0.1)
@@ -15,9 +21,25 @@
                   (cq/rel-pos x2 1.0)
                   (cq/rel-pos x3 y3))))
 
+(defn bokeh [d]
+  (let [p (cq/rel-pos 0.0 0.15)
+        q (cq/rel-pos 1.0 0.30)]
+    (-> (geom/point-at (gl/line2 p q) d)
+        (geom/translate (gv/vec2 (* 2 (q/random-gaussian))
+                                 (* 10 (q/random-gaussian))))
+        (hex/hexagon (+ 20 (q/random-gaussian)))
+        (geom/vertices 6)
+        gp/polygon2
+        (geometry/rotate-around-centroid (rand)))))
+
+(defn pow-range [n p]
+  (map #(Math/pow % p) (tm/norm-range n)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes (repeatedly 96 stalactite)})
+  {:shapes (concat (repeatedly 96 stalactite)
+                   (map (comp bokeh #(- 1.0 %))
+                        (pow-range 24 1.5)))})
 
 (defn update-state [state]
   state)
