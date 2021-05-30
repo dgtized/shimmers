@@ -3,12 +3,15 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.physics.core :as physics]
-            [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.physics.core :as physics]
+            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:trails true}))
 
 (defn neighborhood [p particles radius]
   (filter (fn [q] (and (not= p q)
@@ -124,16 +127,23 @@
     scale))
 
 (defn draw [{:keys [physics]}]
-  (when false ;; clear screen
-    (q/stroke 0.0 0.5)
-    (q/background 1.0 0.2))
-
-  (let [scale (superposition-coloration)]
+  (let [scale (if (:trails @ui-state)
+                (superposition-coloration)
+                (do (q/no-fill)
+                    (q/stroke-weight 0.5)
+                    (q/stroke 0.0 0.5)
+                    (q/background 1.0 0.2)
+                    10.0))]
     (doseq [particle (:particles physics)]
       (brush particle scale))))
 
+(defn explanation []
+  [:div
+   (ctrl/checkbox ui-state "Draw Trails" [:trails])])
+
 (defn ^:export run-sketch []
   ;; 20210527
+  (ctrl/mount explanation)
   (q/defsketch flocking-brushes
     :host "quil-host"
     :size [900 600]
