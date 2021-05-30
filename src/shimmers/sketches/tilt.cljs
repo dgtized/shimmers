@@ -23,10 +23,10 @@
 
 (defn bokeh [d]
   (let [p (cq/rel-pos 0.0 0.15)
-        q (cq/rel-pos 1.0 0.30)]
+        q (cq/rel-pos 1.0 0.28)]
     (-> (geom/point-at (gl/line2 p q) d)
         (geom/translate (gv/vec2 (* 2 (q/random-gaussian))
-                                 (* 10 (q/random-gaussian))))
+                                 (* 8 (q/random-gaussian))))
         (hex/hexagon (+ 20 (q/random-gaussian)))
         (geom/vertices 6)
         gp/polygon2
