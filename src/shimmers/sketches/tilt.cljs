@@ -22,10 +22,13 @@
 (defn update-state [state]
   state)
 
+;; Overlay a downward slope of limiting the height of each stalactite and then
+;; blocking out the base.
+;; Also consider adding spheres of confusion somehow, ie circles or hexagon bokeh?
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/no-stroke)
-  (q/fill 0.0 0.3)
+  (q/fill 0.0 0.4)
   (doseq [shape shapes]
     (cq/draw-shape (geom/vertices shape))))
 
