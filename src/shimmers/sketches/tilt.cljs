@@ -14,7 +14,7 @@
 
 (defn stalactite []
   (let [x1 (- (* 1.1 (rand)) 0.1)
-        x2 (+ x1 (* 0.09 (q/random-gaussian)))
+        x2 (+ x1 (* 0.1 (rand)))
         x3 (+ x1 (* 0.3 (rand)))
         y3 (+ (* 0.4 x3) 0.2 (* 0.03 (q/random-gaussian)))]
     (gt/triangle2 (cq/rel-pos x1 1.0)
@@ -37,7 +37,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes (concat (repeatedly 96 stalactite)
+  {:shapes (concat (repeatedly 64 stalactite)
                    (map (comp bokeh #(- 1.0 %))
                         (pow-range 24 1.5)))})
 
