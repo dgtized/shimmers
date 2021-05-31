@@ -1,6 +1,7 @@
 (ns shimmers.sketches.mosaic-tiling
   (:require [shimmers.common.svg :refer [svg]]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.deterministic-random :as dr]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -34,7 +35,7 @@
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
         j (range cols)]
-    {:pos (gv/vec2 i j) :fill (rand-nth palette)}))
+    {:pos (gv/vec2 i j) :fill (dr/drand-nth palette)}))
 
 (defn translate [cells pos]
   (map #(update % :pos geom/translate pos) cells))
@@ -128,7 +129,7 @@
    :mirror-yx mirror-yx-group})
 
 (defn random-operations [depth]
-  (repeatedly depth #(rand-nth (keys transformations))))
+  (repeatedly depth #(dr/drand-nth (keys transformations))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
@@ -147,8 +148,8 @@
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
-  (let [n (rand-nth [2 3 4 5 6])
-        palette (rand-nth palettes)
+  (let [n (dr/drand-nth [2 3 4 5 6])
+        palette (dr/drand-nth palettes)
         seed (seed-rect n n palette)]
     [:div
      [:div (scene n seed palette)]
