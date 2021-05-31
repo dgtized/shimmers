@@ -9,6 +9,7 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
+            [shimmers.math.deterministic-random :as dr]
             [shimmers.sketches :as sketches]
             [spec-tools.data-spec :as ds]))
 
@@ -28,6 +29,12 @@
   ;; encoded into the p5js applet state. However that will not inform
   ;; rand-nth/rand-int/rand or thi.ng/math/random calls. So need to handle that
   ;; on a sketch by sketch basis and find or implement a library to help.
+  (when-let [seed (:seed sketch)]
+    ;; add a push-state or the like if seed is not specified so *always* deterministic?
+    ;; migrates set random-seed to sketches that use it?
+    ;; performance optimizations?
+    (dr/random-seed seed))
+
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 

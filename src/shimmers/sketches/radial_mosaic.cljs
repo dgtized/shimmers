@@ -2,7 +2,7 @@
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
-            [shimmers.math.probability :as p]
+            [shimmers.math.deterministic-random :as dr]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.svg.core :as svg]
@@ -93,10 +93,9 @@
   (let [multiple (let [m (factors segments 10)]
                    (if (empty? m)
                      1
-                     (rand-nth m)))
-        colors (assoc (zipmap palette (repeat 1))
-                      "none" 2)]
-    (take multiple (repeatedly #(p/weighted colors)))))
+                     (dr/drand-nth m)))
+        colors (into palette ["none" "none"])]
+    (repeatedly multiple #(dr/drand-nth colors))))
 
 (comment (palette-sequence (first palettes) 19))
 
@@ -109,8 +108,8 @@
             (partition-segments (cycle [5 13 8 21 5 8 13])
                                 (cycle [1 1 2])
                                 radius)
-            (repeatedly #(int (tm/random 16 24)))
-            (repeatedly #(tm/random 0.0 0.05)))
+            (repeatedly #(dr/drand-int 16 24))
+            (repeatedly #(dr/drandom 0.0 0.05)))
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))
                        row-palette (palette-sequence palette segments)
@@ -122,18 +121,18 @@
                      (segment (+ t0 spacing) t1 r0 r1 {:fill color})))))
        (svg/group {:transform (svg-translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
-                    {:fill (rand-nth palette)}))
+                    {:fill (dr/drand-nth palette)}))
        (csvg/svg {:width width :height height})))
 
 (defn scenes []
-  (->> [{:origin (r (rand-nth [0.4 0.5 0.6]) 0.5)
+  (->> [{:origin (r (dr/drand-nth [0.4 0.5 0.6]) 0.5)
          :radius (range 6 (int (* 0.5 height)))}
-        {:origin (r (rand-nth [0.33 0.66]) 0.5)
+        {:origin (r (dr/drand-nth [0.33 0.66]) 0.5)
          :radius (range 6 (int (* 0.6 width)))}
-        {:origin (r (rand-nth [0.2 0.3 0.7 0.8]) (rand-nth [0.33 0.4 0.6 0.66]) )
-         :radius (range 6 (int (* (rand-nth [0.6 0.7 0.8 0.9]) width)))}]
-       rand-nth
-       (merge {:palette (rand-nth palettes)})
+        {:origin (r (dr/drand-nth [0.2 0.3 0.7 0.8]) (dr/drand-nth [0.33 0.4 0.6 0.66]) )
+         :radius (range 6 (int (* (dr/drand-nth [0.6 0.7 0.8 0.9]) width)))}]
+       dr/drand-nth
+       (merge {:palette (dr/drand-nth palettes)})
        scene))
 
 (defn page []

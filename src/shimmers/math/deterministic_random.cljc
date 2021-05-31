@@ -1,7 +1,7 @@
 (ns shimmers.math.deterministic-random
   (:require [clojure.test.check.random :as tcr]))
 
-(def *rng* (atom (tcr/make-random)))
+(defonce *rng* (atom (tcr/make-random)))
 
 (defn random-seed [n]
   (reset! *rng* (tcr/make-random n)))
@@ -11,11 +11,11 @@
     (reset! *rng* r2)
     (tcr/rand-double r1)))
 
+(defn drandom [a b]
+  (+ (* (- b a) (drand-double)) a))
+
 (defn drand-int [a b]
-  (let [[r1 r2] (tcr/split (deref *rng*))
-        n (- b a)]
-    (reset! *rng* r2)
-    (int (+ (* n (tcr/rand-double r1)) a))))
+  (int (drandom a b)))
 
 (defn drand-nth [coll]
   (nth coll (drand-int 0 (count coll))))
