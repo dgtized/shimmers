@@ -19,10 +19,6 @@
       gp/polygon2
       (geom/translate p)))
 
-(defn surrounding-hexes [hex radius]
-  (for [theta (map (partial * tm/TWO_PI) (butlast (tm/norm-range 6)))]
-    (geom/translate hex (polar radius theta))))
-
 (defn subdivide-hexagon-inset
   "Returns a list of hexagons contained in or just touching the border of
   containing hexagon subdivided by `n`, where `n` >= 3."
@@ -34,11 +30,13 @@
                     (partial hex/axial-flat->pixel r')))
          (filter (fn [s] (geom/contains-point? hex (:p s)))))))
 
-(defn subdivide-hexagon3-outside [{:keys [p r]}]
+(defn subdivide-hexagon3-outside
+  [{:keys [p r]}]
   (let [r' (/ r 3)
         hex (hexagon p r')]
     (into [hex]
-          (surrounding-hexes hex (* 3 r')))))
+          (for [theta (map (partial * tm/TWO_PI) (butlast (tm/norm-range 6)))]
+            (geom/translate hex (polar (* 3 r') theta))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
