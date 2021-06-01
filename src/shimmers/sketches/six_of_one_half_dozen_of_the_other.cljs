@@ -13,20 +13,14 @@
 (defn polar [r theta]
   (geom/as-cartesian (gv/vec2 r theta)))
 
-(defn hex-range [n t0]
-  (let [r (range (* tm/TWO_PI t0) tm/TWO_PI (/ tm/TWO_PI n))]
-    (if (tm/delta= (last r) tm/TWO_PI)
-      (butlast r)
-      r)))
-
 (defn hexagon->polygon [{:keys [p r]}]
   (-> (for [theta (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6)))]
         (polar r theta))
       gp/polygon2
       (geom/translate p)))
 
-(defn surrounding-hexes [hex phase radius]
-  (for [theta (hex-range 6 phase)]
+(defn surrounding-hexes [hex radius]
+  (for [theta (map (partial * tm/TWO_PI) (butlast (tm/norm-range 6)))]
     (geom/translate hex (polar radius theta))))
 
 (defn subdivide-hexagon-inset
@@ -44,7 +38,7 @@
   (let [r' (/ r 3)
         hex (hexagon p r')]
     (into [hex]
-          (surrounding-hexes hex 0 (* 3 r')))))
+          (surrounding-hexes hex (* 3 r')))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
