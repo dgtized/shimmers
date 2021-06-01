@@ -32,11 +32,10 @@
 
 (defn subdivide-hexagon3-outside
   [{:keys [p r]}]
-  (let [r' (/ r 3)
-        hex (hexagon p r')]
+  (let [hex (hexagon p (/ r 3))]
     (into [hex]
           (for [theta (map (partial * tm/TWO_PI) (butlast (tm/norm-range 6)))]
-            (geom/translate hex (polar (* 3 r') theta))))))
+            (geom/translate hex (polar r theta))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
