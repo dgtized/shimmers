@@ -10,11 +10,13 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+(def flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
+
 (defn polar [r theta]
   (geom/as-cartesian (gv/vec2 r theta)))
 
 (defn hexagon->polygon [{:keys [p r]}]
-  (-> (for [theta (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6)))]
+  (-> (for [theta flat-hex-angles]
         (polar r theta))
       gp/polygon2
       (geom/translate p)))
@@ -34,7 +36,7 @@
   [{:keys [p r]}]
   (let [hex (hexagon p (/ r 3))]
     (into [hex]
-          (for [theta (map (partial * tm/TWO_PI) (butlast (tm/norm-range 6)))]
+          (for [theta flat-hex-angles]
             (geom/translate hex (polar r theta))))))
 
 (defn maybe-subdivide [shape]
