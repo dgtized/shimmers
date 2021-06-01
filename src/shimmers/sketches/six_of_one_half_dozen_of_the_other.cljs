@@ -63,12 +63,12 @@
   (q/color-mode :hsl 1.0)
   (let [p (gv/vec2)
         ;; height is 1/sqrt(3) to fit exactly, so scale it down by a hair
-        r (* (/ 0.99 (Math/sqrt 3)) (q/height))]
+        r (* (/ 0.99 (Math/sqrt 3)) (q/height))
+        start (hexagon p r)]
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
-    (let [start (hexagon p r)]
-      {:shapes (into [start]
-                     (dr/weighted {[] 5
-                                   (subdivide-hexagon-inset start (+ 3 (dr/drand-int 0 4))) 4}))})))
+    {:shapes (into [start]
+                   (dr/weighted {[] 5
+                                 (subdivide-hexagon-inset start (+ 3 (dr/drand-int 0 4))) 4}))}))
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)
