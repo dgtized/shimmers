@@ -18,6 +18,9 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
+(defn generate-seed []
+  (rand-int (Math/pow 2 32)))
+
 (defn known-sketches []
   (map (comp name :id) (sketches/all)))
 
@@ -30,7 +33,6 @@
   ;; rand-nth/rand-int/rand or thi.ng/math/random calls. So need to handle that
   ;; on a sketch by sketch basis and find or implement a library to help.
   (when-let [seed (:seed sketch)]
-    ;; add a push-state or the like if seed is not specified so *always* deterministic?
     ;; migrates set random-seed to sketches that use it?
     ;; performance optimizations?
     (dr/random-seed seed))
@@ -54,19 +56,24 @@
 (defn restart-sketch [sketch]
   (rfe/push-state ::sketch-by-name
                   {:name (:id sketch)}
-                  {:seed (rand-int (Math/pow 2 32))}))
+                  {:seed (generate-seed)}))
 
 (defn cycle-sketch [sketch]
   (let [next-sketch (cs/cycle-next (known-sketches) (name (:id sketch)))]
-    (rfe/push-state ::sketch-by-name {:name next-sketch})))
+    (rfe/push-state ::sketch-by-name
+                    {:name next-sketch}
+                    {:seed (generate-seed)})))
 
+;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
   (let [sketches (sketches/all)]
     [:section
      [:h1 (str "All Sketches (" (count sketches) ")")]
      (into [:ul]
            (for [sketch sketches]
-             [:li [:a {:href (rfe/href ::sketch-by-name {:name (:id sketch)})}
+             [:li [:a {:href (rfe/href ::sketch-by-name
+                                       {:name (:id sketch)}
+                                       {:seed (generate-seed)})}
                    (:id sketch)]]))]))
 
 (defn sketch-by-name [{:keys [path]}]
