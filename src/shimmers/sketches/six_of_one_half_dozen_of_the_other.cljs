@@ -3,8 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.deterministic-random :as dr]
             [shimmers.math.hexagon :as hex :refer [hexagon]]
-            [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -47,14 +47,16 @@
           (surrounding-hexes hex 0 (* 3 r')))))
 
 (defn maybe-subdivide [shape]
-  (let [subdiv (p/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
-                            subdivide-hexagon3-outside 1
-                            (fn [s] (subdivide-hexagon-inset s 4)) 16
-                            (fn [s] (subdivide-hexagon-inset s 5)) 8
-                            (fn [s] (subdivide-hexagon-inset s 6)) 4})]
+  (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
+                             subdivide-hexagon3-outside 1
+                             (fn [s] (subdivide-hexagon-inset s 4)) 16
+                             (fn [s] (subdivide-hexagon-inset s 5)) 8
+                             (fn [s] (subdivide-hexagon-inset s 6)) 4})]
     (if-not (:divided shape)
       (into [(assoc shape :divided true)]
-            (random-sample (/ 35 36) (subdiv shape)))
+            (dr/map-random-sample (constantly (/ 1 36))
+                                  (fn [_] nil)
+                                  (subdiv shape)))
       [shape])))
 
 (defn setup []
@@ -65,12 +67,12 @@
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     (let [start (hexagon p r)]
       {:shapes (into [start]
-                     (p/weighted {[] 5
-                                  (subdivide-hexagon-inset start (+ 3 (rand-int 4))) 4}))})))
+                     (dr/weighted {[] 5
+                                   (subdivide-hexagon-inset start (+ 3 (dr/drand-int 0 4))) 4}))})))
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)
-    (update state :shapes (partial p/mapcat-random-sample
+    (update state :shapes (partial dr/mapcat-random-sample
                                    (fn [s] (/ (:r s) (q/height)))
                                    maybe-subdivide))
     state))

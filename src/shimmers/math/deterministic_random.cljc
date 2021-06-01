@@ -27,3 +27,35 @@
 
          (do (random-seed 6)
              (repeatedly 6 #(drand-double))))
+
+;; TODO: some sort of protocol to swap in seeded random?
+;; Or optimize such that cost is negligable?
+(defn chance [prob]
+  (< (drand-double) prob))
+
+(defn weighted
+  "Given a mapping of values to weights, randomly choose a value biased by weight"
+  [weights]
+  (let [sample (drandom 0 (apply + (vals weights)))]
+    (loop [cumulative 0.0
+           [[choice weight] & remaining] weights]
+      (when weight
+        (let [sum (+ cumulative weight)]
+          (if (< sample sum)
+            choice
+            (recur sum remaining)))))))
+
+(defn map-random-sample
+  "Apply `xf` to the subset of `coll` selected with probability density `pf` for
+  each element, with the unsampled elements intermingled as before."
+  [pf xf coll]
+  (map (fn [x] (if (chance (pf x)) (xf x) x)) coll))
+
+(defn mapcat-random-sample
+  "Apply `xf` to the subset of `coll` selected with probability density `pf` for
+  each element, with the unsampled elements intermingled as before. `xf` must
+  return a sequence."
+  [pf xf coll]
+  (mapcat (fn [x]
+            (if (chance (pf x)) (xf x) [x]))
+          coll))
