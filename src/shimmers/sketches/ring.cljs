@@ -21,8 +21,7 @@
     (q/stroke-weight (+ 0.8 radial-noise))
     (q/line [x y]
             (v/add (v/vec2 x y)
-                   (v/scale (v/unit2-from-angle (+ theta radial-noise))
-                            (* radial-noise 32))))))
+                   (v/polar (* radial-noise 32) (+ theta radial-noise))))))
 
 (defn ^:export run-sketch []
   (q/defsketch ring

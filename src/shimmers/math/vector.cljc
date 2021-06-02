@@ -41,7 +41,7 @@
 (defn jitter
   "Create a random unit vector and then scale it by `amount` to use as noise."
   [amount]
-  (scale (unit2-from-angle (rand (* 2 Math/PI))) amount))
+  (polar amount (rand tm/TWO_PI)))
 
 (defn snap-to
   "Snap an input angle `dir` to the closest multiple of `radians`."

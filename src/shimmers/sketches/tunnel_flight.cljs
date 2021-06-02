@@ -39,8 +39,7 @@
 
 (defn scale-shape [{:keys [shape base]} z]
   (map (fn [[theta r]]
-         (v/scale (v/unit2-from-angle theta)
-                  (* r (q/pow 2 (/ (- z base) 3.0)))))
+         (v/polar (* r (q/pow 2 (/ (- z base) 3.0))) theta))
        shape))
 
 (defn draw [{:keys [z rings]}]

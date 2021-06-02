@@ -36,7 +36,7 @@
       (< (Math/abs (- dseg dstart dend)) 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
-  (let [new-pos (v/add position (v/scale (v/unit2-from-angle angle) 0.33))]
+  (let [new-pos (v/add position (v/polar 0.33 angle))]
     (if (or (not (in-bounds? position))
             (some (partial intersects crack new-pos) cracks))
       (update crack :active not)
