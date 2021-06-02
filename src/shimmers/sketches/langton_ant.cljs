@@ -23,7 +23,9 @@
 (defn move-ant [grid {:keys [position direction] :as ant}]
   (let [pixel (get grid (:position ant) default-grid-cell)
         new-dir ((if pixel turn-right turn-left) direction)
-        new-pos (v/add position (v/unit2-from-angle new-dir))]
+        ;; FIXME: possible propagating floating point error?
+        new-pos (v/add position (v/vec2 (Math/cos new-dir)
+                                        (Math/sin new-dir)))]
     [(assoc grid position (not pixel))
      (assoc ant :position new-pos :direction new-dir)]))
 

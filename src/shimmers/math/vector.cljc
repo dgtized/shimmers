@@ -35,7 +35,7 @@
 (defn polar [r theta]
   (geom/as-cartesian (tv/vec2 r theta)))
 
-(defn unit2-from-angle [theta]
+(defn- unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
 
 (defn jitter
