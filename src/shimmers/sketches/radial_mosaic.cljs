@@ -54,10 +54,6 @@
   (f/format [(f/float 2)] 0.21)
   (segment 0.5 1 1 2 {}))
 
-(defn svg-translate [p]
-  (apply f/format ["translate(" (f/float 2) "," (f/float 2) ")"]
-         p))
-
 ;; First palette is more in pastel range, seems like that fits this better?
 ;; Maybe just because it's also ensuring "none" is used a lot?
 (def palettes
@@ -104,7 +100,7 @@
                               (radial-range segments st)
                               (cycle row-palette))]
                      (segment (+ t0 spacing) t1 r0 r1 {:fill color})))))
-       (svg/group {:transform (svg-translate origin)}
+       (svg/group {:transform (csvg/translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
                     {:fill (dr/drand-nth palette)}))
        (csvg/svg {:width width :height height})))

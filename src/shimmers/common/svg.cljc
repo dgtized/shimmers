@@ -2,7 +2,8 @@
   (:require [clojure.string :as str]
             [thi.ng.geom.svg.adapter :as adapt]
             [thi.ng.geom.svg.core :as svg]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.strf.core :as f]))
 
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"
@@ -20,3 +21,6 @@
   (as-> [(tm/degrees heading) x y] o
     (str/join "," o)
     (str "rotate(" o ")")))
+
+(defn translate [[x y]]
+  (f/format ["translate(" (f/float 2) "," (f/float 2) ")"] x y))
