@@ -63,4 +63,12 @@
          (sut/map-with-window 4 (fn [x w] [(inc x) w]) (range 3)))
       "Allows window sizes > than the number of elements in coll"))
 
+(deftest partition-segments
+  (is (= [[0 0] [2 4] [7 7] [9 11] [14 14]]
+         (sut/partition-segments (cycle [1 3]) (cycle [1 2]) (range 15))))
+  (is (= [[0 0] [1 2] [4 6] [7 7] [9 9]]
+         (sut/partition-segments (cycle [1 2 3]) (cycle [0 1]) (range 10))))
+  (is (= [[nil nil] [0 0] [nil nil] [2 2]]
+         (sut/partition-segments (cycle [0 1]) (cycle [0 1]) (range 4)))))
+
 (comment (t/run-tests))

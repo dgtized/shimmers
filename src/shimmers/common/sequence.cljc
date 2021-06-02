@@ -97,8 +97,4 @@
 
 (comment (partition-segments (repeatedly #(+ 4 (rand-int 20)))
                              (repeatedly #(rand-int 4))
-                             (range 100))
-         (partition-segments (cycle [1 3]) (cycle [1 2]) (range 15))
-         (partition-segments (cycle [3 5 8])
-                             (cycle [1 2])
-                             (range 20)))
+                             (range 100)))
