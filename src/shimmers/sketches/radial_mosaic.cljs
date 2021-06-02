@@ -1,5 +1,6 @@
 (ns shimmers.sketches.radial-mosaic
-  (:require [shimmers.common.svg :as csvg]
+  (:require [shimmers.common.sequence :as cs]
+            [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
@@ -26,27 +27,6 @@
       (conj segments [(last r) (first r)]))))
 
 (comment (radial-range 14 0.05))
-
-(defn first-last [coll]
-  [(first coll) (last coll)])
-
-(defn partition-segments [chunks pads coll]
-  (lazy-seq
-   (when-let [s (seq coll)]
-     (let [n (first chunks)
-           p (take n s)]
-       (if (== n (count p))
-         (cons (first-last p)
-               (partition-segments (rest chunks) (rest pads)
-                                   (drop (+ n (first pads)) s)))
-         (list (first-last (take n p))))))))
-
-(comment (partition-segments #(int (tm/random 4 24))
-                             #(int (tm/random 0 4))
-                             (range 100))
-         (partition-segments (cycle [4 8 16])
-                             (cycle [1 2])
-                             (range 100)))
 
 (defn factors [n k]
   (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
@@ -105,9 +85,9 @@
 ;; rotating every shape slightly around it's own centroid?
 (defn scene [{:keys [origin palette radius]}]
   (->> (map vector
-            (partition-segments (cycle [5 13 8 21 5 8 13])
-                                (cycle [1 1 2])
-                                radius)
+            (cs/partition-segments (cycle [5 13 8 21 5 8 13])
+                                   (cycle [1 1 2])
+                                   radius)
             (repeatedly #(dr/drand-int 16 24))
             (repeatedly #(dr/drandom 0.0 0.05)))
        (mapcat (fn [[[r0 r1] n st]]

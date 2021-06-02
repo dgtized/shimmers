@@ -75,3 +75,30 @@
   (when-let [s (next coll)]
     (lazy-cat (for [y s] [(first coll) y])
               (all-pairs s))))
+
+(defn first-last [coll]
+  [(first coll) (last coll)])
+
+(defn partition-segments
+  "Separate `coll` into ranges the length of each `chunks`, padded by `pads`.
+
+  (partition-segments (cycle [1 3]) (cycle [1 2]) (range 12)) =>
+  ([0 0] [2 4] [7 7] [9 11])"
+  [chunks pads coll]
+  (lazy-seq
+   (when-let [s (seq coll)]
+     (let [n (first chunks)
+           p (take n s)]
+       (if (== n (count p))
+         (cons (first-last p)
+               (partition-segments (rest chunks) (rest pads)
+                                   (drop (+ n (first pads)) s)))
+         (list (first-last (take n p))))))))
+
+(comment (partition-segments (repeatedly #(+ 4 (rand-int 20)))
+                             (repeatedly #(rand-int 4))
+                             (range 100))
+         (partition-segments (cycle [1 3]) (cycle [1 2]) (range 15))
+         (partition-segments (cycle [3 5 8])
+                             (cycle [1 2])
+                             (range 20)))
