@@ -1,14 +1,14 @@
 (ns shimmers.math.deterministic-random
   (:require [clojure.test.check.random :as tcr]))
 
-(defonce *rng* (atom (tcr/make-random)))
+(defonce shared-rng (atom (tcr/make-random)))
 
 (defn random-seed [n]
-  (reset! *rng* (tcr/make-random n)))
+  (reset! shared-rng (tcr/make-random n)))
 
 (defn drand-double []
-  (let [[r1 r2] (tcr/split (deref *rng*))]
-    (reset! *rng* r2)
+  (let [[r1 r2] (tcr/split @shared-rng)]
+    (reset! shared-rng r2)
     (tcr/rand-double r1)))
 
 (defn drandom [a b]
