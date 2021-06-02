@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.hexagon :as hex :refer [hexagon]]
+            [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -12,12 +13,9 @@
 
 (def flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
 
-(defn polar [r theta]
-  (geom/as-cartesian (gv/vec2 r theta)))
-
 (defn hexagon->polygon [{:keys [p r]}]
   (-> (for [theta flat-hex-angles]
-        (polar r theta))
+        (v/polar r theta))
       gp/polygon2
       (geom/translate p)))
 
@@ -37,7 +35,7 @@
   (let [hex (hexagon p (/ r 3))]
     (into [hex]
           (for [theta flat-hex-angles]
-            (geom/translate hex (polar r theta))))))
+            (geom/translate hex (v/polar r theta))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32

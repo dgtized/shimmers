@@ -4,8 +4,8 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.vector :as v]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
@@ -15,9 +15,6 @@
 (def height 600)
 (defn r [x y]
   (gv/vec2 (* x width) (* y height)))
-
-(defn polar [r theta]
-  (geom/as-cartesian (gv/vec2 r theta)))
 
 (defn radial-range [n st]
   (let [r (range st (+ tm/TWO_PI st) (/ tm/TWO_PI n))
@@ -34,12 +31,12 @@
 (comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
 
 (defn segment [t0 t1 r0 r1 attribs]
-  (let [lower (polar r0 t0)
-        upper (polar r1 t1)]
+  (let [lower (v/polar r0 t0)
+        upper (v/polar r1 t1)]
     (svg/path [[:M lower]
-               [:L (polar r1 t0)]
+               [:L (v/polar r1 t0)]
                [:A [r1 r1] 0.0 0 1 upper]
-               [:L (polar r0 t1)]
+               [:L (v/polar r0 t1)]
                [:A [r0 r0] 0.0 0 0 lower]
                [:Z]]
               (merge
