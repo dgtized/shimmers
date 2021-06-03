@@ -180,7 +180,7 @@
                            cell-size (/ size (* n (Math/pow 2 idx)))
                            ops (take idx operations)
                            tile ((apply comp (map transformations ops)) seed)]]
-                 [:li op (svg-tile size cell-size tile)])])]))
+                 [:li {:key i} op (svg-tile size cell-size tile)])])]))
 
 (defn ^:export run-sketch []
   ;; 20210409
