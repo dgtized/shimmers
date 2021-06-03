@@ -7,6 +7,17 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]))
 
+(comment
+  ;; Would like to use non-floating point coords but it appears to break
+  ;; the "unzipping" event, not sure how to find that otherwise.
+  (def north (v/vec2 0 1))
+  (def south (v/vec2 0 -1))
+  (def east (v/vec2 1 0))
+  (def west (v/vec2 -1 0))
+
+  (defn turn-right [[x y]] (v/vec2 y (- x)))
+  (defn turn-left [[x y]] (v/vec2 (- y) x)))
+
 (defn turn-right [dir] (+ dir (/ Math/PI 2)))
 (defn turn-left [dir] (- dir (/ Math/PI 2)))
 
