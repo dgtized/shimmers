@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
-            [shimmers.math.probability :as p]
+            [shimmers.math.deterministic-random :as dr]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -24,7 +24,7 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/e9e4dd-9f9f8c-dfd8c8-576945-363f27"]))
 
 (defn colorize [palette shape]
-  (assoc shape :color (rand-nth palette)))
+  (assoc shape :color (dr/drand-nth palette)))
 
 (comment (colorize (first palettes) (displace 0.01 (rect/rect 5 5 10 10))))
 
@@ -97,7 +97,7 @@
   (let [width (geom/width rect)
         height (geom/height rect)
         [hsplits vsplits] (->> [(fib-splits cols) (fib-splits rows)]
-                               (p/map-random-sample (constantly 0.5) reverse))
+                               (dr/map-random-sample (constantly 0.5) reverse))
         [x y] (:p rect)]
     (for [[i-pct i-width] (sum-offsets hsplits)
           [j-pct j-height] (sum-offsets vsplits)]
@@ -111,26 +111,26 @@
   ;; of current shapes width / height
   (let [[rows cols] (->> (/ (+ 2.0 (/ (geom/width shape) (geom/height shape))) 3)
                          split-bias
-                         p/weighted)
-        divide-shape (p/weighted {fib-subdivide 1
-                                  subdivide 1})]
+                         dr/weighted)
+        divide-shape (dr/weighted {fib-subdivide 1
+                                   subdivide 1})]
     (->> (divide-shape shape [rows cols])
-         (p/map-random-sample (constantly 0.05)
-                              (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
-         (p/map-random-sample (constantly 0.05)
-                              (partial displace 0.002))
-         (p/map-random-sample (constantly 0.10)
-                              (partial colorize palette)))))
+         (dr/map-random-sample (constantly 0.05)
+                               (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
+         (dr/map-random-sample (constantly 0.05)
+                               (partial displace 0.002))
+         (dr/map-random-sample (constantly 0.10)
+                               (partial colorize palette)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:palette (rand-nth palettes)
+  {:palette (dr/drand-nth palettes)
    :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
 (defn update-state [{:keys [shapes palette] :as state}]
   (if (< (count shapes) 1000)
     (update state :shapes
-            (partial p/mapcat-random-sample
+            (partial dr/mapcat-random-sample
                      (constantly 0.2)
                      (partial disassociate palette)))
     state))
