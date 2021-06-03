@@ -159,9 +159,12 @@
                     (/ screen-size (* n (Math/pow 2 depth)))
                     ((apply comp (map transformations operations)) seed)))))
 
+(defn details [summary & body]
+  (into [:details [:summary summary]] body))
+
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
-  (let [{:keys [seed n] :as config} (scene-options)]
+  (let [{:keys [seed n operations] :as config} (scene-options)]
     [:div
      [:div (scene config)]
      [:h4 "Restart the sketch for a different pattern."]
@@ -170,9 +173,13 @@
    operations on an initial seed pattern. For the pattern above the seed was"]
      [:div (svg-tile 128 (/ 128 n) seed)]
      [:div [:p "The operations applied in sequence were"]
-      [:ul
-       (for [op (:operations config)]
-         [:li op])]]]))
+      (for [[i op] (map-indexed vector operations)
+            :let [size 256
+                  idx (inc i)
+                  cell-size (/ size (* n (Math/pow 2 idx)))
+                  ops (take idx operations)
+                  tile ((apply comp (map transformations ops)) seed)]]
+        (details op (svg-tile size cell-size tile)))]]))
 
 (defn ^:export run-sketch []
   ;; 20210409
