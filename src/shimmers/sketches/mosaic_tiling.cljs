@@ -64,14 +64,6 @@
                (column cells row)))
             (reverse (range (max-width cells))))))
 
-(defn cells->svg-rect [cells size]
-  (let [rect (rect/rect 0 0 size size)]
-    (for [{:keys [pos fill]} cells
-          :let [[i j] pos]]
-      (-> rect
-          (geom/translate (tm/* pos (gv/vec2 size size)))
-          (with-meta {:fill fill :key (str "cell-" i "-" j)})))))
-
 (defn clockwise [w h]
   [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])
 
@@ -146,9 +138,14 @@
      :operations operations}))
 
 (defn svg-tile [size cell-size cells]
-  (csvg/svg {:width size :height size :stroke "black"
-             :style {:display "block" :margin "auto"}}
-            (cells->svg-rect cells cell-size)))
+  (let [rect (rect/rect 0 0 cell-size cell-size)]
+    (csvg/svg {:width size :height size :stroke "black"
+               :style {:display "block" :margin "auto"}}
+              (for [{:keys [pos fill]} cells
+                    :let [[i j] pos]]
+                (-> rect
+                    (geom/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+                    (with-meta {:fill fill :key (str "cell-" i "-" j)}))))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
