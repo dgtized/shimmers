@@ -148,10 +148,9 @@
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
-(defn scene [{:keys [n depth palette seed operations]}]
+(defn scene [{:keys [n depth seed operations]}]
   (let [screen-size 900
         cell-size (/ screen-size (* n (Math/pow 2 depth)))]
-    (println {:n n :ops operations :colors palette})
     (time (svg {:width screen-size :height screen-size :stroke "black"}
                (cells->svg-rect ((apply comp (map transformations operations)) seed)
                                 cell-size)))))
@@ -167,7 +166,11 @@
    operations on an initial seed pattern. For the pattern above the seed was"]
      [:div (svg {:width 128 :height 128 :stroke "black"
                  :style {:display "block" :margin "auto"}}
-                (cells->svg-rect seed (/ 128 n)))]]))
+                (cells->svg-rect seed (/ 128 n)))]
+     [:div [:p "The operations applied in sequence were"]
+      [:ul
+       (for [op (:operations config)]
+         [:li op])]]]))
 
 (defn ^:export run-sketch []
   ;; 20210409
