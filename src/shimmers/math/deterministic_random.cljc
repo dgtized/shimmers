@@ -1,4 +1,6 @@
 (ns shimmers.math.deterministic-random
+  "Provides a shared, seeded random number generator for deterministic procedural
+  generation."
   (:refer-clojure :exclude [rand-nth])
   (:require [clojure.test.check.random :as tcr]))
 
