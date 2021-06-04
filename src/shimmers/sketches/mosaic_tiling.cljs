@@ -35,7 +35,7 @@
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
         j (range cols)]
-    {:pos (gv/vec2 i j) :fill (dr/drand-nth palette)}))
+    {:pos (gv/vec2 i j) :fill (dr/rand-nth palette)}))
 
 (defn translate [cells pos]
   (map #(update % :pos geom/translate pos) cells))
@@ -121,11 +121,11 @@
    :mirror-yx mirror-yx-group})
 
 (defn random-operations [depth]
-  (repeatedly depth #(dr/drand-nth (keys transformations))))
+  (repeatedly depth #(dr/rand-nth (keys transformations))))
 
 (defn scene-options []
-  (let [n (dr/drand-nth [2 3 4 5 6])
-        palette (dr/drand-nth palettes)
+  (let [n (dr/rand-nth [2 3 4 5 6])
+        palette (dr/rand-nth palettes)
         seed (seed-rect n n palette)
         depth (cond (< n 3) 5
                     (< n 6) 4

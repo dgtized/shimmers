@@ -1,4 +1,5 @@
 (ns shimmers.math.deterministic-random
+  (:refer-clojure :exclude [rand-nth])
   (:require [clojure.test.check.random :as tcr]))
 
 (defonce shared-rng (atom (tcr/make-random)))
@@ -17,13 +18,13 @@
 (defn drand-int [a b]
   (int (drandom a b)))
 
-(defn drand-nth [coll]
+(defn rand-nth [coll]
   (nth coll (drand-int 0 (count coll))))
 
 (comment (do (random-seed 1000)
              (repeatedly 10 #(drand-int 0 8)))
          (do (random-seed 10)
-             (repeatedly 10 #(drand-nth (range 8))))
+             (repeatedly 10 #(rand-nth (range 8))))
 
          (do (random-seed 6)
              (repeatedly 6 #(drand-double))))

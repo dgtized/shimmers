@@ -24,7 +24,7 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/e9e4dd-9f9f8c-dfd8c8-576945-363f27"]))
 
 (defn colorize [palette shape]
-  (assoc shape :color (dr/drand-nth palette)))
+  (assoc shape :color (dr/rand-nth palette)))
 
 (comment (colorize (first palettes) (displace 0.01 (rect/rect 5 5 10 10))))
 
@@ -124,7 +124,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:palette (dr/drand-nth palettes)
+  {:palette (dr/rand-nth palettes)
    :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
 
 (defn update-state [{:keys [shapes palette] :as state}]

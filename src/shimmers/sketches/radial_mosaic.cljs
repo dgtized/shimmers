@@ -71,9 +71,9 @@
   (let [multiple (let [m (factors segments 10)]
                    (if (empty? m)
                      1
-                     (dr/drand-nth m)))
+                     (dr/rand-nth m)))
         colors (into palette ["none" "none"])]
-    (repeatedly multiple #(dr/drand-nth colors))))
+    (repeatedly multiple #(dr/rand-nth colors))))
 
 (comment (palette-sequence (first palettes) 19))
 
@@ -99,18 +99,18 @@
                      (segment (+ t0 spacing) t1 r0 r1 {:fill color})))))
        (svg/group {:transform (csvg/translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
-                    {:fill (dr/drand-nth palette)}))
+                    {:fill (dr/rand-nth palette)}))
        (csvg/svg {:width width :height height})))
 
 (defn scenes []
-  (->> [{:origin (r (dr/drand-nth [0.4 0.5 0.6]) 0.5)
+  (->> [{:origin (r (dr/rand-nth [0.4 0.5 0.6]) 0.5)
          :radius (range 6 (int (* 0.5 height)))}
-        {:origin (r (dr/drand-nth [0.33 0.66]) 0.5)
+        {:origin (r (dr/rand-nth [0.33 0.66]) 0.5)
          :radius (range 6 (int (* 0.6 width)))}
-        {:origin (r (dr/drand-nth [0.2 0.3 0.7 0.8]) (dr/drand-nth [0.33 0.4 0.6 0.66]) )
-         :radius (range 6 (int (* (dr/drand-nth [0.6 0.7 0.8 0.9]) width)))}]
-       dr/drand-nth
-       (merge {:palette (dr/drand-nth palettes)})
+        {:origin (r (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]) )
+         :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
+       dr/rand-nth
+       (merge {:palette (dr/rand-nth palettes)})
        scene))
 
 (defn page []
