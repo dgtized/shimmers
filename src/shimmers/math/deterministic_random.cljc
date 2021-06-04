@@ -7,16 +7,16 @@
 (defn random-seed [n]
   (reset! shared-rng (tcr/make-random n)))
 
-(defn drand-double []
+(defn random-double []
   (let [[r1 r2] (tcr/split @shared-rng)]
     (reset! shared-rng r2)
     (tcr/rand-double r1)))
 
 (defn random
   "Deterministic random with signature of `thi.ng.math/random`."
-  ([] (drand-double))
-  ([n] (* n (drand-double)))
-  ([a b] (+ (* (- b a) (drand-double)) a)))
+  ([] (random-double))
+  ([n] (* n (random-double)))
+  ([a b] (+ (* (- b a) (random-double)) a)))
 
 (defn random-int
   ([n] (Math/floor (random n)))
@@ -31,12 +31,12 @@
              (repeatedly 10 #(rand-nth (range 8))))
 
          (do (random-seed 6)
-             (repeatedly 6 #(drand-double))))
+             (repeatedly 6 #(random-double))))
 
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?
 (defn chance [prob]
-  (< (drand-double) prob))
+  (< (random-double) prob))
 
 (defn weighted
   "Given a mapping of values to weights, randomly choose a value biased by weight"
