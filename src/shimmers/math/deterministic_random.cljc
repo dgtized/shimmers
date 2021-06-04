@@ -2,7 +2,8 @@
   "Provides a shared, seeded random number generator for deterministic procedural
   generation."
   (:refer-clojure :exclude [rand-nth])
-  (:require [clojure.test.check.random :as tcr]))
+  (:require [clojure.test.check.random :as tcr]
+            [shimmers.common.sequence :as cs]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
@@ -51,6 +52,12 @@
           (if (< sample sum)
             choice
             (recur sum remaining)))))))
+
+(defn weighted-by
+  "Given a sequence of values `xs`, weight each value by a function `f` and return
+  a weighted random selection."
+  [f xs]
+  (weighted (cs/mapping f xs)))
 
 (defn map-random-sample
   "Apply `xf` to the subset of `coll` selected with probability density `pf` for

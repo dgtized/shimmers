@@ -4,7 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
+            [shimmers.math.deterministic-random :as dr]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -30,11 +30,11 @@
 (defn border-circle [shapes]
   (let [inverted-tree (child-tree shapes)
         {:keys [p r] :as parent}
-        (p/weighted-by (fn [s] (/ (:r s) (inc (count (get inverted-tree s)))))
-                       shapes)
+        (dr/weighted-by (fn [s] (/ (:r s) (inc (count (get inverted-tree s)))))
+                        shapes)
 
-        angle (tm/random 0 tm/TWO_PI)
-        radius (tm/random (max (* 0.6 r) 2)
+        angle (dr/random tm/TWO_PI)
+        radius (dr/random (max (* 0.6 r) 2)
                           (min (* 1.15 r) (cq/rel-w 0.04)))
         center (->> (gv/vec2 (+ r radius 0.1) angle)
                     geom/as-cartesian
@@ -46,9 +46,9 @@
 
 ;; Improve palette selection?
 (defn make-source []
-  (assoc (gc/circle (cq/rel-pos (tm/random 0.2 0.8) (tm/random 0.2 0.8))
+  (assoc (gc/circle (cq/rel-pos (dr/random 0.2 0.8) (dr/random 0.2 0.8))
                     (cq/rel-w 0.05))
-         :color [(rand-nth [0.0 0.4 0.5 0.6 0.85]) 0.35 0.4 1.0]))
+         :color [(dr/rand-nth [0.0 0.4 0.5 0.6 0.85]) 0.35 0.4 1.0]))
 
 (defn add-non-intersecting [shapes]
   (let [c (make-source)]
@@ -60,7 +60,7 @@
   (q/color-mode :hsl 1.0)
   {:shapes (->> [(make-source)]
                 (iterate add-non-intersecting)
-                (take (int (tm/random 1 4)))
+                (take (dr/random-int 1 4))
                 flatten
                 vec)})
 
