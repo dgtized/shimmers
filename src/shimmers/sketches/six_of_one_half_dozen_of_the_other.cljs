@@ -59,7 +59,7 @@
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     {:shapes (into [start]
                    (dr/weighted {[] 5
-                                 (subdivide-hexagon-inset start (dr/drand-int 3 7)) 4}))}))
+                                 (subdivide-hexagon-inset start (dr/random-int 3 7)) 4}))}))
 
 (defn update-state [state]
   (if (< (count (:shapes state)) 1200)

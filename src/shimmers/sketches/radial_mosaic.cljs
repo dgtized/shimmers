@@ -86,7 +86,7 @@
             (cs/partition-segments (cycle [5 13 8 21 5 8 13])
                                    (cycle [1 1 2])
                                    radius)
-            (repeatedly #(dr/drand-int 16 24))
+            (repeatedly #(dr/random-int 16 24))
             (repeatedly #(dr/random 0.05)))
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))

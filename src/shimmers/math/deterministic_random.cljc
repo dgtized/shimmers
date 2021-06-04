@@ -18,14 +18,15 @@
   ([n] (* n (drand-double)))
   ([a b] (+ (* (- b a) (drand-double)) a)))
 
-(defn drand-int [a b]
-  (int (random a b)))
+(defn random-int
+  ([n] (Math/floor (random n)))
+  ([a b] (Math/floor (random a b))))
 
 (defn rand-nth [coll]
-  (nth coll (drand-int 0 (count coll))))
+  (nth coll (random-int (count coll))))
 
 (comment (do (random-seed 1000)
-             (repeatedly 10 #(drand-int 0 8)))
+             (repeatedly 10 #(random-int 8)))
          (do (random-seed 10)
              (repeatedly 10 #(rand-nth (range 8))))
 
