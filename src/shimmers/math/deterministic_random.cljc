@@ -12,11 +12,14 @@
     (reset! shared-rng r2)
     (tcr/rand-double r1)))
 
-(defn drandom [a b]
-  (+ (* (- b a) (drand-double)) a))
+(defn random
+  "Deterministic random with signature of `thi.ng.math/random`."
+  ([] (drand-double))
+  ([n] (* n (drand-double)))
+  ([a b] (+ (* (- b a) (drand-double)) a)))
 
 (defn drand-int [a b]
-  (int (drandom a b)))
+  (int (random a b)))
 
 (defn rand-nth [coll]
   (nth coll (drand-int 0 (count coll))))
@@ -37,7 +40,7 @@
 (defn weighted
   "Given a mapping of values to weights, randomly choose a value biased by weight"
   [weights]
-  (let [sample (drandom 0 (apply + (vals weights)))]
+  (let [sample (random (apply + (vals weights)))]
     (loop [cumulative 0.0
            [[choice weight] & remaining] weights]
       (when weight

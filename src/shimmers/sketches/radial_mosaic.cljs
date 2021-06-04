@@ -87,7 +87,7 @@
                                    (cycle [1 1 2])
                                    radius)
             (repeatedly #(dr/drand-int 16 24))
-            (repeatedly #(dr/drandom 0.0 0.05)))
+            (repeatedly #(dr/random 0.05)))
        (mapcat (fn [[[r0 r1] n st]]
                  (let [segments (* n (inc (int (/ r1 50))))
                        row-palette (palette-sequence palette segments)
