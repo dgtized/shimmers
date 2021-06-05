@@ -28,6 +28,7 @@
             [shimmers.sketches.gravity-well :as gravity-well]
             [shimmers.sketches.harsh-lines :as harsh-lines]
             [shimmers.sketches.hexaclock :as hexaclock]
+            [shimmers.sketches.hexcursive :as hexcursive]
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
@@ -104,6 +105,7 @@
     gossamer-coils/run-sketch
     gravity-well/run-sketch
     hexaclock/run-sketch
+    hexcursive/run-sketch
     harsh-lines/run-sketch
     impressions-of-open-space/run-sketch
     k-means/run-sketch
