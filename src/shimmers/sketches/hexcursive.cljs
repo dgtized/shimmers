@@ -51,7 +51,7 @@
   ;; 2021
   (q/defsketch hexcursive
     :host "quil-host"
-    :size [800 600]
+    :size [1200 1000]
     :setup setup
     :draw draw
     :middleware [m/fun-mode]))
