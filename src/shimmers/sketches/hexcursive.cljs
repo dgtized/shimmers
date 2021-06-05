@@ -2,7 +2,6 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
             [shimmers.math.hexagon :as hex]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
@@ -18,22 +17,21 @@
   (if (> depth 8)
     [h]
     (let [children
-          (->> (hex/cube-spiral (gv/vec3) 1)
-               (cs/rotate 1)
-               (map-indexed (fn [i x] (-> x
-                                         (hex/cube-hexagon (/ r 3))
-                                         (geom/translate p)
-                                         (assoc :color (colors (mod (+ i depth) 7)))))))]
+          (map-indexed (fn [i x] (-> x
+                                    (hex/cube-hexagon (/ r 3))
+                                    (geom/translate p)
+                                    (assoc :color (colors (mod (+ i depth) 7)))))
+                       (hex/cube-spiral (gv/vec3) 1))]
       (concat [h]
               (take depth children)
-              (mapcat subdivide (map #(+ depth 1 %) (range 0 7))
+              (mapcat subdivide (map #(+ depth %) (range 1 8))
                       (drop depth children))))))
 
 (defn setup []
   (q/no-loop)
   (q/color-mode :hsl 1.0)
   (let [r (* (/ 0.99 (Math/sqrt 3)) (q/height))]
-    {:shapes (subdivide 0
+    {:shapes (subdivide -1
                         (assoc (hex/hexagon (gv/vec2) r)
                                :color (colors 6)))}))
 
