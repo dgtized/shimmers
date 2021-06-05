@@ -10,11 +10,12 @@
 (defn subdivide [depth {:keys [p r] :as h}]
   (if (> depth 8)
     [h]
-    (let [r' (/ r 3)
-          children (mapv (fn [x] (-> (hex/axial->cube x)
-                                    (hex/cube-hexagon r')
-                                    (geom/translate p)))
-                         (cs/rotate 1 (hex/cube-spiral (gv/vec2) 1)))]
+    (let [children
+          (->> (hex/cube-spiral (gv/vec3) 1)
+               (cs/rotate 1)
+               (mapv (fn [x] (-> x
+                                (hex/cube-hexagon (/ r 3))
+                                (geom/translate p)))))]
       (concat [h]
               (take depth children)
               (mapcat subdivide (map #(+ depth 1 %) (range 0 8))
