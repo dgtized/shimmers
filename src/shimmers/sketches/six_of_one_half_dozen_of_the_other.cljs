@@ -81,7 +81,7 @@
   ;; 20210517
   (q/defsketch six-of-one-half-dozen-of-the-other
     :host "quil-host"
-    :size [800 600]
+    :size [1200 900]
     :setup setup
     :update update-state
     :draw draw
