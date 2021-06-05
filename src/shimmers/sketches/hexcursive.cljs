@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.math.hexagon :as hex]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
@@ -13,7 +14,7 @@
           children (mapv (fn [x] (-> (hex/axial->cube x)
                                     (hex/cube-hexagon r')
                                     (geom/translate p)))
-                         (hex/cube-spiral (gv/vec2) 1))]
+                         (cs/rotate 1 (hex/cube-spiral (gv/vec2) 1)))]
       (concat [h]
               (take depth children)
               (mapcat subdivide (map #(+ depth 1 %) (range 0 8))
