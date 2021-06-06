@@ -47,9 +47,14 @@ input[type=range] {
   padding-top: 1em;
 }
 
+.sketch-list p {
+  padding-left: 2em;
+  width: 50em;
+}
+
 .sketch-list h1 {
   text-align: left;
-  margin-left: 3em;
+  padding-left: 3em;
   margin-bottom: 0em;
 }
 
