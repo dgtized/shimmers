@@ -28,7 +28,7 @@
               b (max mb (rand))
               thickness (* 0.01 (rand))
               padding (* 0.01 (rand))]
-          (q/stroke 0 0.5 0.5 1.0)
+          (q/stroke 0.95 0.5 0.5 1.0)
           (q/rect (cq/rel-w (- 0.9 (* 0.4
                                       (q/noise (/ (q/frame-count) 200) y))))
                   (cq/rel-h y)
