@@ -19,15 +19,15 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/no-fill)
-  (let [[ma mb] [(q/noise (/ (q/frame-count) 100) 50 50)
-                 (q/noise (/ (q/frame-count) 120) 90 100)]
+  (let [[ma mb] [(q/noise (/ (q/frame-count) 160) 50 50)
+                 (q/noise (/ (q/frame-count) 220) 90 100)]
         [ma mb] (if (<= ma mb) [ma mb] [mb ma])]
     (loop [y 0]
       (when (<= y 1.0)
         (let [a (max ma (rand))
               b (max mb (rand))
               thickness (* 0.01 (rand))
-              padding (* 0.01 (rand))]
+              padding (* 0.015 (rand))]
           (q/stroke 0.95 0.5 0.5 1.0)
           (q/rect (cq/rel-w (- 0.9 (* 0.4
                                       (q/noise (/ (q/frame-count) 200) y))))
@@ -46,7 +46,7 @@
   ;; 20210605
   (q/defsketch undulating-figures
     :host "quil-host"
-    :size [800 600]
+    :size [1024 768]
     :setup setup
     :update update-state
     :draw draw
