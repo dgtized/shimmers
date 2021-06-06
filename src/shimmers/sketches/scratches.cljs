@@ -2,7 +2,6 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.math.core :as tm]
             [shimmers.common.quil :as cq]))
 
 (defn setup []
@@ -18,21 +17,24 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0 1.0)
-  (loop [y 0]
-    (when (<= y 1.0)
-      (let [a (rand)
-            b (rand)
-            thickness (* 0.01 (rand))
-            padding (* 0.01 (rand))]
-        (q/rect (cq/rel-w a) (cq/rel-h y)
-                (cq/rel-w (* 0.8
-                             (q/noise (/ (q/frame-count) 100) y)))
-                (cq/rel-h thickness))
-        (q/rect (cq/rel-w b) (cq/rel-h y)
-                (cq/rel-w (* 0.4
-                             (q/noise (/ (q/frame-count) 100) y)))
-                (cq/rel-h (* 0.5 thickness)))
-        (recur (+ y thickness padding))))))
+  (let [[ma mb] (sort [(q/noise (/ (q/frame-count)) 50 50)
+                       (q/noise (/ (q/frame-count)) 50 100)])
+        [ma mb] (if (<= ma mb) [ma mb] [mb ma])]
+    (loop [y 0]
+      (when (<= y 1.0)
+        (let [a (min ma (rand))
+              b (max mb (rand))
+              thickness (* 0.01 (rand))
+              padding (* 0.01 (rand))]
+          (q/rect (cq/rel-w a) (cq/rel-h y)
+                  (cq/rel-w (* 0.8
+                               (q/noise (/ (q/frame-count) 100) y)))
+                  (cq/rel-h thickness))
+          (q/rect (cq/rel-w b) (cq/rel-h y)
+                  (cq/rel-w (* 0.6
+                               (q/noise (/ (q/frame-count) 90) y)))
+                  (cq/rel-h (* 0.5 thickness)))
+          (recur (+ y thickness padding)))))))
 
 (defn ^:export run-sketch []
   ;; 20210605
