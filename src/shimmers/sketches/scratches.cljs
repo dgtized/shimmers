@@ -17,8 +17,8 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0 1.0)
-  (let [[ma mb] (sort [(q/noise (/ (q/frame-count)) 50 50)
-                       (q/noise (/ (q/frame-count)) 50 100)])
+  (let [[ma mb] (sort [(q/noise (/ (q/frame-count) 100) 50 50)
+                       (q/noise (/ (q/frame-count) 100) 90 100)])
         [ma mb] (if (<= ma mb) [ma mb] [mb ma])]
     (loop [y 0]
       (when (<= y 1.0)
@@ -26,13 +26,15 @@
               b (max mb (rand))
               thickness (* 0.01 (rand))
               padding (* 0.01 (rand))]
-          (q/rect (cq/rel-w a) (cq/rel-h y)
-                  (cq/rel-w (* 0.8
-                               (q/noise (/ (q/frame-count) 100) y)))
+          (q/rect (cq/rel-w (+ 0.2 (* 0.8
+                                      (q/noise (/ (q/frame-count) 200) y))))
+                  (cq/rel-h y)
+                  (cq/rel-w (- a))
                   (cq/rel-h thickness))
-          (q/rect (cq/rel-w b) (cq/rel-h y)
-                  (cq/rel-w (* 0.6
-                               (q/noise (/ (q/frame-count) 90) y)))
+          (q/rect (cq/rel-w (* 0.5
+                               (q/noise (/ (q/frame-count) 180) y)))
+                  (cq/rel-h y)
+                  (cq/rel-w b)
                   (cq/rel-h (* 0.5 thickness)))
           (recur (+ y thickness padding)))))))
 
