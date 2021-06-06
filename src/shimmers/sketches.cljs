@@ -58,7 +58,6 @@
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.rose :as rose]
             [shimmers.sketches.sand-strokes :as sand-strokes]
-            [shimmers.sketches.scratches :as scratches]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.sediment :as sediment]
             [shimmers.sketches.six-of-one-half-dozen-of-the-other :as six-of-one-half-dozen-of-the-other]
@@ -70,6 +69,7 @@
             [shimmers.sketches.triangulating-subdivisions :as triangulating-subdivisions]
             [shimmers.sketches.tunnel-flight :as tunnel-flight]
             [shimmers.sketches.typography :as typography]
+            [shimmers.sketches.undulating-figures :as undulating-figures]
             [shimmers.sketches.uniform-distribution :as uniform-distribution]
             [shimmers.sketches.verlet-brushes :as verlet-brushes]
             [shimmers.sketches.video-shader :as video-shader]
@@ -137,7 +137,6 @@
     ripples/run-sketch
     rose/run-sketch
     sand-strokes/run-sketch
-    scratches/run-sketch
     scintillation/run-sketch
     sediment/run-sketch
     six-of-one-half-dozen-of-the-other/run-sketch
@@ -149,6 +148,7 @@
     triangulating-subdivisions/run-sketch
     tunnel-flight/run-sketch
     typography/run-sketch
+    undulating-figures/run-sketch
     uniform-distribution/run-sketch
     verlet-brushes/run-sketch
     video-shader/run-sketch

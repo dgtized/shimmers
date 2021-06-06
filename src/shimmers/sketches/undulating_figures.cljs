@@ -1,4 +1,4 @@
-(ns shimmers.sketches.scratches
+(ns shimmers.sketches.undulating-figures
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -40,7 +40,7 @@
 
 (defn ^:export run-sketch []
   ;; 20210605
-  (q/defsketch scratches
+  (q/defsketch undulating-figures
     :host "quil-host"
     :size [800 600]
     :setup setup
