@@ -58,6 +58,7 @@
             [shimmers.sketches.ripples :as ripples]
             [shimmers.sketches.rose :as rose]
             [shimmers.sketches.sand-strokes :as sand-strokes]
+            [shimmers.sketches.scratches :as scratches]
             [shimmers.sketches.scintillation :as scintillation]
             [shimmers.sketches.sediment :as sediment]
             [shimmers.sketches.six-of-one-half-dozen-of-the-other :as six-of-one-half-dozen-of-the-other]
@@ -136,6 +137,7 @@
     ripples/run-sketch
     rose/run-sketch
     sand-strokes/run-sketch
+    scratches/run-sketch
     scintillation/run-sketch
     sediment/run-sketch
     six-of-one-half-dozen-of-the-other/run-sketch
