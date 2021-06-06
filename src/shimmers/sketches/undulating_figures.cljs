@@ -13,6 +13,8 @@
 (defn update-state [state]
   state)
 
+;; How to make interlace overlap so one figure is drawn with over draw from the
+;; left, and the other from the right, so all the figures are in the overlap?
 (defn draw [state]
   (q/background 1.0)
   (q/no-stroke)
