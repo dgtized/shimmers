@@ -64,17 +64,25 @@
                     {:name next-sketch}
                     {:seed (generate-seed)})))
 
+(defn list-sketches [sketches]
+  (into [:ul]
+        (for [sketch sketches]
+          [:li [:a {:href (rfe/href ::sketch-by-name
+                                    {:name (:id sketch)}
+                                    {:seed (generate-seed)})}
+                (:id sketch)]])))
+
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
-  (let [sketches (sketches/all)]
-    [:section
+  (let [sketches (sketches/all)
+        [sketches-an sketches-mz]
+        (split-with (fn [{:keys [id]}] (re-find #"^[a-nA-N]" (name id)))
+                    sketches)]
+    [:section {:class "sketch-list"}
      [:h1 (str "All Sketches (" (count sketches) ")")]
-     (into [:ul]
-           (for [sketch sketches]
-             [:li [:a {:href (rfe/href ::sketch-by-name
-                                       {:name (:id sketch)}
-                                       {:seed (generate-seed)})}
-                   (:id sketch)]]))]))
+     [:div {:class "sketch-columns"}
+      [:div [:h3 "A-N"] (list-sketches sketches-an)]
+      [:div [:h3 "M-Z"] (list-sketches sketches-mz)]]]))
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
