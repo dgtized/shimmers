@@ -68,6 +68,10 @@
     (when (> lifespan delta)
       p)))
 
+(defn above-ground []
+  (fn [{:keys [pos]} _delta]
+    (< (:y pos) (q/height))))
+
 (defn make-particle [pos prev lifespan weight]
   (Particle. pos prev lifespan (/ 1.0 weight)))
 
@@ -79,7 +83,7 @@
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
   {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))]
-                         :constraints [(max-lifespan)]
+                         :constraints [(max-lifespan) (above-ground)]
                          :drag 0.05})})
 
 (defn update-state [{:keys [system] :as state}]
