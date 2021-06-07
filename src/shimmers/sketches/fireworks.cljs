@@ -84,14 +84,15 @@
   (q/color-mode :hsl 1.0)
   {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))]
                          :constraints [(max-lifespan) (above-ground)]
-                         :drag 0.05})})
+                         :drag 0.02})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (< (count (:particles system)) 100)
+  (when (< (count (:particles system)) 256)
     (add-particles system
-                   (repeatedly (rand-int 8)
+                   (repeatedly (rand-int 4)
                                #(let [emitter (apply gv/vec2 (cq/rel-pos 0.5 1.0))
-                                      velocity (tm/+ emitter (gv/vec2 (* 0.5 (tm/randnorm)) 25.0))]
+                                      velocity (tm/+ emitter (gv/vec2 (* 1.5 (q/random-gaussian))
+                                                                      (+ 18 (* 2 (q/random-gaussian)))))]
                                   (make-particle emitter velocity 360 1.0)))))
   (timestep system 1)
   state)
