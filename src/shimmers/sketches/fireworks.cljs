@@ -14,6 +14,7 @@
 (defprotocol ISystem
   (add-particles [_ new-particles])
   (update-particles [_ delta])
+  (apply-constraints [_ delta])
   (timestep [_ iter]))
 
 (defrecord Particle [^:mutable pos
@@ -22,13 +23,13 @@
                      inv-weight]
   IParticle
   (pstep [_ drag force delta]
-    (when (> lifespan 0)
-      (let [pos' (tm/madd! force
-                           (* inv-weight (* delta delta))
-                           (tm/msub pos 2.0 prev))]
-        (set! prev (tm/mix pos pos' drag))
-        (set! pos pos')
-        (set! lifespan (- lifespan delta))))))
+    (let [pos' (tm/madd! force
+                         (* inv-weight (* delta delta))
+                         (tm/msub pos 2.0 prev))]
+      (set! prev (tm/mix pos pos' drag))
+      (set! pos pos')
+      (set! lifespan (- lifespan delta)))
+    _))
 
 (defrecord System [^:mutable particles
                    behaviors
@@ -40,24 +41,32 @@
     _)
   (update-particles [_ delta]
     (let [drag' (* delta drag)]
-      (set! particles
-            (filter (fn [particle]
-                      (let [force (reduce (fn [force behavior]
-                                            (tm/+ force (behavior particle delta)))
-                                          (gv/vec2) ;; 2d/3d switch?
-                                          behaviors)]
-                        (pstep drag' particle force delta)))
-                    (seq particles))))
+      (doseq [particle (seq particles)]
+        (let [force (reduce (fn [force behavior]
+                              (tm/+ force (behavior particle delta)))
+                            (gv/vec2) ;; 2d/3d switch?
+                            behaviors)]
+          (pstep particle drag' force delta))))
     _)
+  (apply-constraints [_ delta]
+    (set! particles
+          (filter (fn [particle] (every? #(% particle delta) constraints))
+                  (seq particles))))
   (timestep [_ iter]
     (let [delta (/ 1.0 iter)]
       (dotimes [_i iter]
-        (update-particles _ delta)))
+        (update-particles _ delta)
+        (apply-constraints _ delta)))
     _))
 
 (defn gravity [force]
   (fn [_ delta]
     (tm/* force delta)))
+
+(defn max-lifespan []
+  (fn [{:keys [lifespan] :as p} delta]
+    (when (> lifespan delta)
+      p)))
 
 (defn make-particle [pos prev lifespan weight]
   (Particle. pos prev lifespan (/ 1.0 weight)))
@@ -69,7 +78,9 @@
 (defn setup []
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
-  {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))] :drag 0.05})})
+  {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))]
+                         :constraints [(max-lifespan)]
+                         :drag 0.05})})
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 100)
