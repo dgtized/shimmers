@@ -32,6 +32,7 @@
 
 (defrecord System [^:mutable particles
                    behaviors
+                   constraints
                    drag]
   ISystem
   (add-particles [_ new-particles]
@@ -45,7 +46,7 @@
                                             (tm/+ force (behavior particle delta)))
                                           (gv/vec2) ;; 2d/3d switch?
                                           behaviors)]
-                        (pstep particle drag' force delta)))
+                        (pstep drag' particle force delta)))
                     (seq particles))))
     _)
   (timestep [_ iter]
@@ -61,9 +62,9 @@
 (defn make-particle [pos prev lifespan weight]
   (Particle. pos prev lifespan (/ 1.0 weight)))
 
-(defn make-system [{:keys [particles drag behaviors]
-                    :or {particles [] behaviors [] drag 0.0}}]
-  (System. (vec particles) behaviors drag))
+(defn make-system [{:keys [particles drag behaviors constraints]
+                    :or {particles [] behaviors [] constraints [] drag 0.0}}]
+  (System. (vec particles) behaviors constraints drag))
 
 (defn setup []
   ;; (q/frame-rate 2.0)
