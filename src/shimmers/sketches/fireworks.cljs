@@ -74,6 +74,14 @@
   (fn [_ delta]
     (tm/* force delta)))
 
+(defn solid-fuel-thruster [burn-time mass-loss thrust]
+  (fn [particle delta]
+    (if (< (:age particle) burn-time)
+      (let [velocity (tm/- (:pos particle) (:prev particle))]
+        (set! (.-mass particle) (- (:mass particle) (* mass-loss delta)))
+        (tm/* (tm/normalize velocity) (* thrust delta)))
+      (gv/vec2))))
+
 (defn max-age [lifespan]
   (fn [{:keys [age] :as p} _delta]
     (when (< age lifespan)
@@ -85,8 +93,7 @@
 
 (defn make-rocket []
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
-        velocity (gv/vec2 (* 1.5 (q/random-gaussian))
-                          (+ 18 (* 2 (q/random-gaussian))))]
+        velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
     (make-particle emitter (tm/+ emitter velocity) 1.0)))
 
 ;; How to encode particles changing state/exploding and adding new particles at
@@ -94,9 +101,11 @@
 (defn setup []
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
-  {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 100)))]
-                         :constraints [(max-age 120) (above-ground)]
-                         :drag 0.02})})
+  (let [fps 60]
+    {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
+                                       (solid-fuel-thruster (* fps 0.6) 0.01 (/ 30 fps))]
+                           :constraints [(max-age (* fps 8)) (above-ground)]
+                           :drag 0.02})}))
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
