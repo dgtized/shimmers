@@ -21,11 +21,11 @@
 (defrecord Particle [^:mutable pos
                      ^:mutable prev
                      ^:mutable age
-                     inv-weight]
+                     ^:mutable mass]
   IParticle
   (pstep [_ drag force delta]
     (let [pos' (tm/madd force
-                        (* inv-weight (* delta delta))
+                        (* (/ 1.0 mass) (* delta delta))
                         (tm/msub pos 2.0 prev))]
       (set! prev (tm/mix pos pos' drag))
       (set! pos pos')
@@ -61,8 +61,8 @@
             (apply-constraints delta))))
     _))
 
-(defn make-particle [pos prev weight]
-  (Particle. pos prev 0 (/ 1.0 weight)))
+(defn make-particle [pos prev mass]
+  (Particle. pos prev 0 mass))
 
 (defn make-system [{:keys [particles drag mechanics constraints]
                     :or {particles [] mechanics [] constraints [] drag 0.0}}]
