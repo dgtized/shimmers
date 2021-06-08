@@ -51,12 +51,13 @@
   (apply-constraints [_ delta]
     (set! particles
           (filter (fn [particle] (every? #(% particle delta) constraints))
-                  (seq particles))))
+                  (seq particles)))
+    _)
   (timestep [_ iter]
     (let [delta (/ 1.0 iter)]
       (dotimes [_i iter]
-        (update-particles _ delta)
-        (apply-constraints _ delta)))
+        (-> (update-particles _ delta)
+            (apply-constraints delta))))
     _))
 
 (defn make-particle [pos prev lifespan weight]
