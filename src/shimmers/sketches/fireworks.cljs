@@ -20,7 +20,7 @@
 
 (defrecord Particle [^:mutable pos
                      ^:mutable prev
-                     ^:mutable lifespan
+                     ^:mutable age
                      inv-weight]
   IParticle
   (pstep [_ drag force delta]
@@ -29,7 +29,7 @@
                          (tm/msub pos 2.0 prev))]
       (set! prev (tm/mix pos pos' drag))
       (set! pos pos')
-      (set! lifespan (- lifespan delta)))
+      (set! age (+ age delta)))
     _))
 
 (defrecord System [^:mutable particles
@@ -61,8 +61,8 @@
             (apply-constraints delta))))
     _))
 
-(defn make-particle [pos prev lifespan weight]
-  (Particle. pos prev lifespan (/ 1.0 weight)))
+(defn make-particle [pos prev weight]
+  (Particle. pos prev 0 (/ 1.0 weight)))
 
 (defn make-system [{:keys [particles drag behaviors constraints]
                     :or {particles [] behaviors [] constraints [] drag 0.0}}]
@@ -74,9 +74,9 @@
   (fn [_ delta]
     (tm/* force delta)))
 
-(defn max-lifespan []
-  (fn [{:keys [lifespan] :as p} delta]
-    (when (> lifespan delta)
+(defn max-age [lifespan]
+  (fn [{:keys [age] :as p} _delta]
+    (when (< age lifespan)
       p)))
 
 (defn above-ground []
@@ -87,7 +87,7 @@
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 1.5 (q/random-gaussian))
                           (+ 18 (* 2 (q/random-gaussian))))]
-    (make-particle emitter (tm/+ emitter velocity) 200 1.0)))
+    (make-particle emitter (tm/+ emitter velocity) 1.0)))
 
 ;; How to encode particles changing state/exploding and adding new particles at
 ;; apogee that have different effects?
@@ -95,7 +95,7 @@
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
   {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))]
-                         :constraints [(max-lifespan) (above-ground)]
+                         :constraints [(max-age 120) (above-ground)]
                          :drag 0.02})})
 
 (defn update-state [{:keys [system] :as state}]
@@ -107,9 +107,9 @@
 (defn draw [{:keys [system]}]
   (q/background 1.0 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos lifespan]} (:particles system)
+  (doseq [{:keys [pos age]} (:particles system)
           :let [[x y] pos
-                scale (tm/map-interval (tm/smoothstep* 120 80 lifespan) 0 1 1 4)]]
+                scale (tm/map-interval (tm/smoothstep* 80 120 age) 0 1 1 4)]]
     (q/ellipse x y scale scale)))
 
 (defn ^:export run-sketch []
