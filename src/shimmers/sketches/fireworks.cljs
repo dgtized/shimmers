@@ -126,7 +126,7 @@
               (p/chance 0.5)
               (repeatedly (int (tm/random 8 16)) #(make-mirv p))
               :else
-              [(make-thumper p)])
+              (repeatedly (int (tm/random 1 4)) #(make-thumper p)))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
@@ -162,8 +162,8 @@
              (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
              (q/ellipse x y scale scale))
            :thumper
-           (let [scale (* 40.0 (tm/smoothstep* 38 48 age))]
-             (q/fill 0.1 0.7 0.6 0.1)
+           (let [scale (* 42.0 (tm/smoothstep* 38 48 age))]
+             (q/fill 0.1 0.5 0.8 0.5)
              (q/ellipse x y scale scale))
            :mirv
            (q/ellipse x y 1.0 1.0)
