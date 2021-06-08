@@ -110,8 +110,8 @@
 (defn exploder [a b]
   (fn [{:keys [age] :as p}]
     (if (p/chance (tm/smoothstep* a b age))
-      (if (p/chance 0.9)
-        (repeatedly (rand-int 8) #(make-popper p))
+      (if (p/chance 0.8)
+        (repeatedly (rand-int 32) #(make-popper p))
         [(make-thumper p)])
       [p])))
 
@@ -140,8 +140,8 @@
              (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
              (q/ellipse x y scale scale))
            :thumper
-           (let [scale (* 16.0 (tm/smoothstep* 38 48 age))]
-             (q/fill [0.3 0.6 0.5 0.1])
+           (let [scale (* 40.0 (tm/smoothstep* 38 48 age))]
+             (q/fill [0.1 0.7 0.6 0.1])
              (q/ellipse x y scale scale))
            :rocket
            (q/ellipse x y 0.8 0.8))))}))
