@@ -74,13 +74,14 @@
   (fn [_ delta]
     (tm/* force delta)))
 
-(defn solid-fuel-thruster [burn-time mass-loss thrust]
-  (fn [particle delta]
-    (if (< (:age particle) burn-time)
-      (let [velocity (tm/- (:pos particle) (:prev particle))]
-        (set! (.-mass particle) (- (:mass particle) (* mass-loss delta)))
-        (tm/* (tm/normalize velocity) (* thrust delta)))
-      (gv/vec2))))
+(defn solid-fuel-thruster [burn-time fuel-mass thrust]
+  (let [mass-loss (/ fuel-mass burn-time)]
+    (fn [particle delta]
+      (if (< (:age particle) burn-time)
+        (let [velocity (tm/- (:pos particle) (:prev particle))]
+          (set! (.-mass particle) (- (:mass particle) (* mass-loss delta)))
+          (tm/* (tm/normalize velocity) (* thrust delta)))
+        (gv/vec2)))))
 
 (defn max-age [lifespan]
   (fn [{:keys [age] :as p} _delta]
@@ -103,7 +104,7 @@
   (q/color-mode :hsl 1.0)
   (let [fps 60]
     {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                                       (solid-fuel-thruster (* fps 0.6) 0.01 (/ 30 fps))]
+                                       (solid-fuel-thruster (* fps 1.0) 0.30 (/ 22 fps))]
                            :constraints [(max-age (* fps 8)) (above-ground)]
                            :drag 0.02})}))
 
