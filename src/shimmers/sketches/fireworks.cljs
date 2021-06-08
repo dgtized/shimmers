@@ -85,11 +85,9 @@
           (tm/* (tm/normalize velocity) (* thrust delta)))
         (gv/vec2)))))
 
-(defn max-age [rocket popper]
+(defn max-age [ages]
   (fn [{:keys [type age]} _delta]
-    (case type
-      :rocket (< age rocket)
-      :popper (< age popper))))
+    (< age (get ages type))))
 
 (defn above-ground []
   (fn [{:keys [pos]} _delta]
@@ -120,7 +118,8 @@
     {:system
      (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
-                   :constraints [(max-age (* fps 20) (* fps 1))
+                   :constraints [(max-age {:rocket (* fps 20)
+                                           :popper (* fps 1)})
                                  (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
