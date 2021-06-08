@@ -104,22 +104,24 @@
   (q/color-mode :hsl 1.0)
   (let [fps 60]
     {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                                       (solid-fuel-thruster (* 1.0 fps) 3.0 (/ 30 fps))]
+                                       (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 20.0 fps))]
                            :constraints [(max-age (* fps 20)) (above-ground)]
-                           :drag 0.005})}))
+                           :drag (/ 0.1 fps)})
+     :sizer (fn [age] (tm/map-interval (tm/smoothstep* (* 2 fps) (* 3 fps) age)
+                                      0 1 1 4))}))
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
     (add-particles system (repeatedly (rand-int 6) make-rocket)))
-  (timestep system 4)
+  (timestep system 2)
   state)
 
-(defn draw [{:keys [system]}]
+(defn draw [{:keys [system sizer]}]
   (q/background 1.0 0.5)
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos age]} (:particles system)
           :let [[x y] pos
-                scale (tm/map-interval (tm/smoothstep* 80 120 age) 0 1 1 4)]]
+                scale (sizer age)]]
     (q/ellipse x y scale scale)))
 
 (defn ^:export run-sketch []
