@@ -93,24 +93,26 @@
   (fn [{:keys [pos]} _delta]
     (< (:y pos) (q/height))))
 
+(defn popper-colors []
+  (rand-nth [0.0 0.35 0.6 0.9]))
+
 (defn make-rocket []
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
     (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
-           :type :rocket)))
+           :type :rocket
+           :hue (popper-colors))))
 
-(defn make-mirv [{:keys [pos prev]}]
+(defn make-mirv [{:keys [pos prev hue]}]
   (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
-         :type :mirv))
+         :type :mirv
+         :hue hue))
 
-(defn make-poppers [{:keys [pos prev]} quantity hue]
+(defn make-poppers [{:keys [pos prev hue]} quantity]
   (repeatedly quantity
               #(assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
                       :type :popper
                       :hue hue)))
-
-(defn popper-colors []
-  (rand-nth [0.0 0.35 0.6 0.9]))
 
 (defn make-thumper [{:keys [pos prev]}]
   (assoc (make-particle (tm/+ pos (tm/* (gv/randvec2) 0.1)) prev 4.0)
@@ -122,7 +124,7 @@
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
         (cond (p/chance 0.5)
-              (make-poppers p (rand-int 32) (popper-colors))
+              (make-poppers p (rand-int 32))
               (p/chance 0.5)
               (repeatedly (int (tm/random 8 16)) #(make-mirv p))
               :else
@@ -132,7 +134,7 @@
       (if (p/chance (tm/smoothstep* 10 50 age))
         (if (p/chance 0.05)
           (repeatedly 4 #(make-mirv p))
-          (make-poppers p (int (tm/random 12 32)) (popper-colors)))
+          (make-poppers p (int (tm/random 12 32))))
         [p])
       [p])))
 
