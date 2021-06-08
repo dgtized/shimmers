@@ -24,9 +24,9 @@
                      inv-weight]
   IParticle
   (pstep [_ drag force delta]
-    (let [pos' (tm/madd! force
-                         (* inv-weight (* delta delta))
-                         (tm/msub pos 2.0 prev))]
+    (let [pos' (tm/madd force
+                        (* inv-weight (* delta delta))
+                        (tm/msub pos 2.0 prev))]
       (set! prev (tm/mix pos pos' drag))
       (set! pos pos')
       (set! age (+ age delta)))
