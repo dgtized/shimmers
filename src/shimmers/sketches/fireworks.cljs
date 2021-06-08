@@ -95,7 +95,7 @@
 (defn make-rocket []
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
-    (make-particle emitter (tm/+ emitter velocity) 1.0)))
+    (make-particle emitter (tm/+ emitter velocity) 8.0)))
 
 ;; How to encode particles changing state/exploding and adding new particles at
 ;; apogee that have different effects?
@@ -104,14 +104,14 @@
   (q/color-mode :hsl 1.0)
   (let [fps 60]
     {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                                       (solid-fuel-thruster (* fps 1.0) 0.30 (/ 22 fps))]
-                           :constraints [(max-age (* fps 8)) (above-ground)]
-                           :drag 0.02})}))
+                                       (solid-fuel-thruster (* 1.0 fps) 3.0 (/ 30 fps))]
+                           :constraints [(max-age (* fps 20)) (above-ground)]
+                           :drag 0.005})}))
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
     (add-particles system (repeatedly (rand-int 6) make-rocket)))
-  (timestep system 1)
+  (timestep system 4)
   state)
 
 (defn draw [{:keys [system]}]
