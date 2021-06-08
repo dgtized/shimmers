@@ -103,26 +103,31 @@
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
   (let [fps 60]
-    {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                                       (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 20.0 fps))]
-                           :constraints [(max-age (* fps 20)) (above-ground)]
-                           :drag (/ 0.1 fps)})
-     :sizer (fn [age] (tm/map-interval (tm/smoothstep* (* 2 fps) (* 3 fps) age)
-                                      0 1 1 4))}))
+    {:system
+     (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
+                               (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 20.0 fps))]
+                   :constraints [(max-age (* fps 20)) (above-ground)]
+                   :drag (/ 0.1 fps)})
+
+     :draw-particle
+     (fn [{:keys [pos age]}]
+       (let [[x y] pos
+             scale (tm/map-interval (tm/smoothstep* (* 4 fps) (* 4.5 fps) age)
+                                    0 1 1 4)]
+         (q/ellipse x y scale scale)))}))
 
 (defn update-state [{:keys [system] :as state}]
-  (when (< (count (:particles system)) 256)
+  (when (< (count (:particles system)) 512)
     (add-particles system (repeatedly (rand-int 6) make-rocket)))
   (timestep system 2)
   state)
 
-(defn draw [{:keys [system sizer]}]
+(defn draw [{:keys [system draw-particle]}]
   (q/background 1.0 0.5)
+  (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos age]} (:particles system)
-          :let [[x y] pos
-                scale (sizer age)]]
-    (q/ellipse x y scale scale)))
+  (doseq [particle (:particles system)]
+    (draw-particle particle)))
 
 (defn ^:export run-sketch []
   ;; 20210607
