@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -111,10 +112,14 @@
 
      :draw-particle
      (fn [{:keys [pos age]}]
-       (let [[x y] pos
-             scale (tm/map-interval (tm/smoothstep* (* 4 fps) (* 4.5 fps) age)
-                                    0 1 1 4)]
-         (q/ellipse x y scale scale)))}))
+       (let [[x y] pos]
+         (q/no-fill)
+         (cond (p/chance (tm/smoothstep* (* 4 fps) (* 7 fps) age))
+               (let [scale (tm/random 2.0 12.0)]
+                 (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
+                 (q/ellipse x y scale scale))
+               :else
+               (q/ellipse x y 0.8 0.8))))}))
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 128)
