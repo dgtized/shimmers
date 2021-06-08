@@ -99,6 +99,10 @@
     (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
            :type :rocket)))
 
+(defn make-mirv [{:keys [pos prev]}]
+  (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
+         :type :mirv))
+
 (defn make-popper [{:keys [pos prev]}]
   (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
          :type :popper))
@@ -108,11 +112,21 @@
          :type :thumper))
 
 (defn exploder [a b]
-  (fn [{:keys [age] :as p}]
-    (if (p/chance (tm/smoothstep* a b age))
-      (if (p/chance 0.8)
+  (fn [{:keys [age type] :as p}]
+    (case type
+      :rocket
+      (if (p/chance (tm/smoothstep* a b age))
+        (cond (p/chance 0.5)
+              (repeatedly (rand-int 32) #(make-popper p))
+              (p/chance 0.5)
+              (repeatedly (int (tm/random 8 16)) #(make-mirv p))
+              :else
+              [(make-thumper p)])
+        [p])
+      :mirv
+      (if (p/chance (tm/smoothstep* 15 30 age))
         (repeatedly (rand-int 32) #(make-popper p))
-        [(make-thumper p)])
+        [p])
       [p])))
 
 ;; How to encode particles changing state/exploding and adding new particles at
@@ -126,7 +140,8 @@
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
                    :constraints [(max-age {:rocket (* fps 20)
                                            :popper (* fps 1)
-                                           :thumper (* fps 0.9)})
+                                           :thumper (* fps 0.9)
+                                           :mirv (* fps 0.9)})
                                  (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
@@ -143,6 +158,8 @@
            (let [scale (* 40.0 (tm/smoothstep* 38 48 age))]
              (q/fill [0.1 0.7 0.6 0.1])
              (q/ellipse x y scale scale))
+           :mirv
+           (q/ellipse x y 4.0 2.0)
            :rocket
            (q/ellipse x y 0.8 0.8))))}))
 
