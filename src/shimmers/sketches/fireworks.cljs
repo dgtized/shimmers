@@ -124,8 +124,10 @@
               [(make-thumper p)])
         [p])
       :mirv
-      (if (p/chance (tm/smoothstep* 15 30 age))
-        (repeatedly (rand-int 32) #(make-popper p))
+      (if (p/chance (tm/smoothstep* 10 50 age))
+        (if (p/chance 0.1)
+          (repeatedly 6 #(make-mirv p))
+          (repeatedly (int (tm/random 12 32)) #(make-popper p)))
         [p])
       [p])))
 
@@ -141,25 +143,25 @@
                    :constraints [(max-age {:rocket (* fps 20)
                                            :popper (* fps 1)
                                            :thumper (* fps 0.9)
-                                           :mirv (* fps 0.9)})
+                                           :mirv (* fps 1)})
                                  (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
      :draw-particle
      (fn [{:keys [age pos type]}]
        (let [[x y] pos]
-         (q/no-fill)
+         (q/fill 0 0 0 0.5)
          (case type
            :popper
            (let [scale (tm/random 2.0 12.0)]
-             (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
+             (q/fill 0 (tm/random 0.3 0.9) 0.5 0.1)
              (q/ellipse x y scale scale))
            :thumper
            (let [scale (* 40.0 (tm/smoothstep* 38 48 age))]
-             (q/fill [0.1 0.7 0.6 0.1])
+             (q/fill 0.1 0.7 0.6 0.1)
              (q/ellipse x y scale scale))
            :mirv
-           (q/ellipse x y 4.0 2.0)
+           (q/ellipse x y 1.0 1.0)
            :rocket
            (q/ellipse x y 0.8 0.8))))}))
 
@@ -172,7 +174,7 @@
 
 (defn draw [{:keys [system draw-particle]}]
   (q/background 1.0 0.5)
-  (q/stroke-weight 0.5)
+  (q/no-stroke)
   (q/ellipse-mode :radius)
   (doseq [particle (:particles system)]
     (draw-particle particle)))
