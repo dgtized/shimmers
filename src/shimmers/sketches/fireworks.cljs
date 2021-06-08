@@ -117,8 +117,8 @@
          (q/ellipse x y scale scale)))}))
 
 (defn update-state [{:keys [system] :as state}]
-  (when (< (count (:particles system)) 512)
-    (add-particles system (repeatedly (rand-int 6) make-rocket)))
+  (when (< (count (:particles system)) 128)
+    (add-particles system (repeatedly (rand-int 2) make-rocket)))
   (timestep system 2)
   state)
 
