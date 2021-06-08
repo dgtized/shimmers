@@ -103,9 +103,14 @@
   (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
          :type :mirv))
 
-(defn make-popper [{:keys [pos prev]}]
-  (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
-         :type :popper))
+(defn make-poppers [{:keys [pos prev]} quantity hue]
+  (repeatedly quantity
+              #(assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
+                      :type :popper
+                      :hue hue)))
+
+(defn popper-colors []
+  (rand-nth [0.0 0.35 0.6 0.9]))
 
 (defn make-thumper [{:keys [pos prev]}]
   (assoc (make-particle (tm/+ pos (tm/* (gv/randvec2) 0.1)) prev 4.0)
@@ -117,7 +122,7 @@
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
         (cond (p/chance 0.5)
-              (repeatedly (rand-int 32) #(make-popper p))
+              (make-poppers p (rand-int 32) (popper-colors))
               (p/chance 0.5)
               (repeatedly (int (tm/random 8 16)) #(make-mirv p))
               :else
@@ -125,9 +130,9 @@
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
-        (if (p/chance 0.1)
-          (repeatedly 6 #(make-mirv p))
-          (repeatedly (int (tm/random 12 32)) #(make-popper p)))
+        (if (p/chance 0.05)
+          (repeatedly 4 #(make-mirv p))
+          (make-poppers p (int (tm/random 12 32)) (popper-colors)))
         [p])
       [p])))
 
@@ -148,13 +153,13 @@
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
      :draw-particle
-     (fn [{:keys [age pos type]}]
+     (fn [{:keys [age pos hue type]}]
        (let [[x y] pos]
          (q/fill 0 0 0 0.5)
          (case type
            :popper
            (let [scale (tm/random 2.0 12.0)]
-             (q/fill 0 (tm/random 0.3 0.9) 0.5 0.1)
+             (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
              (q/ellipse x y scale scale))
            :thumper
            (let [scale (* 40.0 (tm/smoothstep* 38 48 age))]
