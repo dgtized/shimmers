@@ -59,6 +59,15 @@
         (apply-constraints _ delta)))
     _))
 
+(defn make-particle [pos prev lifespan weight]
+  (Particle. pos prev lifespan (/ 1.0 weight)))
+
+(defn make-system [{:keys [particles drag behaviors constraints]
+                    :or {particles [] behaviors [] constraints [] drag 0.0}}]
+  (System. (vec particles) behaviors constraints drag))
+
+;; Mechanics specific for this sketch
+
 (defn gravity [force]
   (fn [_ delta]
     (tm/* force delta)))
@@ -71,13 +80,6 @@
 (defn above-ground []
   (fn [{:keys [pos]} _delta]
     (< (:y pos) (q/height))))
-
-(defn make-particle [pos prev lifespan weight]
-  (Particle. pos prev lifespan (/ 1.0 weight)))
-
-(defn make-system [{:keys [particles drag behaviors constraints]
-                    :or {particles [] behaviors [] constraints [] drag 0.0}}]
-  (System. (vec particles) behaviors constraints drag))
 
 ;; How to encode particles changing state/exploding and adding new particles at
 ;; apogee that have different effects?
