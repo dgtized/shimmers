@@ -2,9 +2,10 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.quil :as cq]))
+            [thi.ng.math.core :as tm]))
 
 ;; Simplified version of thi.ng.geom.physics.core.VerletPhysics with slightly
 ;; more functional approach
@@ -44,7 +45,7 @@
       (doseq [particle (seq particles)]
         (let [force (reduce (fn [force behavior]
                               (tm/+ force (behavior particle delta)))
-                            (gv/vec2) ;; 2d/3d switch?
+                            (geom/clear* (:pos particle)) ;; 2d or 3d
                             behaviors)]
           (pstep particle drag' force delta))))
     _)
