@@ -138,8 +138,6 @@
         [p])
       [p])))
 
-;; How to encode particles changing state/exploding and adding new particles at
-;; apogee that have different effects?
 (defn setup []
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
