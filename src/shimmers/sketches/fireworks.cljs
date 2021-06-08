@@ -83,7 +83,7 @@
   (fn [{:keys [pos]} _delta]
     (< (:y pos) (q/height))))
 
-(defn launch-fireworks []
+(defn make-rocket []
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 1.5 (q/random-gaussian))
                           (+ 18 (* 2 (q/random-gaussian))))]
@@ -100,7 +100,7 @@
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
-    (add-particles system (repeatedly (rand-int 6) launch-fireworks)))
+    (add-particles system (repeatedly (rand-int 6) make-rocket)))
   (timestep system 1)
   state)
 
