@@ -103,10 +103,16 @@
   (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
          :type :popper))
 
+(defn make-thumper [{:keys [pos prev]}]
+  (assoc (make-particle (tm/+ pos (tm/* (gv/randvec2) 0.1)) prev 4.0)
+         :type :thumper))
+
 (defn exploder [a b]
   (fn [{:keys [age] :as p}]
     (if (p/chance (tm/smoothstep* a b age))
-      (repeatedly (rand-int 8) #(make-popper p))
+      (if (p/chance 0.9)
+        (repeatedly (rand-int 8) #(make-popper p))
+        [(make-thumper p)])
       [p])))
 
 ;; How to encode particles changing state/exploding and adding new particles at
@@ -119,20 +125,26 @@
      (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
                    :constraints [(max-age {:rocket (* fps 20)
-                                           :popper (* fps 1)})
+                                           :popper (* fps 1)
+                                           :thumper (* fps 0.9)})
                                  (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
      :draw-particle
-     (fn [{:keys [pos type]}]
+     (fn [{:keys [age pos type]}]
        (let [[x y] pos]
          (q/no-fill)
-         (cond (= type :popper)
-               (let [scale (tm/random 2.0 12.0)]
-                 (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
-                 (q/ellipse x y scale scale))
-               :else
-               (q/ellipse x y 0.8 0.8))))}))
+         (case type
+           :popper
+           (let [scale (tm/random 2.0 12.0)]
+             (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
+             (q/ellipse x y scale scale))
+           :thumper
+           (let [scale (* 16.0 (tm/smoothstep* 38 48 age))]
+             (q/fill [0.3 0.6 0.5 0.1])
+             (q/ellipse x y scale scale))
+           :rocket
+           (q/ellipse x y 0.8 0.8))))}))
 
 (defn update-state [{:keys [system explode] :as state}]
   (when (and (< (count (:particles system)) 64) (p/chance 0.05))
