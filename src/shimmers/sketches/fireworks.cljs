@@ -91,20 +91,21 @@
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
     (add-particles system
-                   (repeatedly (rand-int 4)
+                   (repeatedly (rand-int 6)
                                #(let [emitter (apply gv/vec2 (cq/rel-pos 0.5 1.0))
                                       velocity (tm/+ emitter (gv/vec2 (* 1.5 (q/random-gaussian))
                                                                       (+ 18 (* 2 (q/random-gaussian)))))]
-                                  (make-particle emitter velocity 360 1.0)))))
+                                  (make-particle emitter velocity 200 1.0)))))
   (timestep system 1)
   state)
 
 (defn draw [{:keys [system]}]
   (q/background 1.0 0.5)
   (q/ellipse-mode :radius)
-  (doseq [particle (:particles system)
-          :let [[x y] (:pos particle)]]
-    (q/ellipse x y 1.0 1.0)))
+  (doseq [{:keys [pos lifespan]} (:particles system)
+          :let [[x y] pos
+                scale (tm/map-interval (tm/smoothstep* 120 80 lifespan) 0 1 1 4)]]
+    (q/ellipse x y scale scale)))
 
 (defn ^:export run-sketch []
   ;; 20210607
