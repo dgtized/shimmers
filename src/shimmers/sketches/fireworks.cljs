@@ -33,7 +33,7 @@
     _))
 
 (defrecord System [^:mutable particles
-                   behaviors
+                   mechanics
                    constraints
                    drag]
   ISystem
@@ -43,10 +43,10 @@
   (update-particles [_ delta]
     (let [drag' (* delta drag)]
       (doseq [particle (seq particles)]
-        (let [force (reduce (fn [force behavior]
-                              (tm/+ force (behavior particle delta)))
+        (let [force (reduce (fn [force mechanic]
+                              (tm/+ force (mechanic particle delta)))
                             (geom/clear* (:pos particle)) ;; 2d or 3d
-                            behaviors)]
+                            mechanics)]
           (pstep particle drag' force delta))))
     _)
   (apply-constraints [_ delta]
@@ -64,9 +64,9 @@
 (defn make-particle [pos prev weight]
   (Particle. pos prev 0 (/ 1.0 weight)))
 
-(defn make-system [{:keys [particles drag behaviors constraints]
-                    :or {particles [] behaviors [] constraints [] drag 0.0}}]
-  (System. (vec particles) behaviors constraints drag))
+(defn make-system [{:keys [particles drag mechanics constraints]
+                    :or {particles [] mechanics [] constraints [] drag 0.0}}]
+  (System. (vec particles) mechanics constraints drag))
 
 ;; Mechanics specific for this sketch
 
@@ -94,7 +94,7 @@
 (defn setup []
   ;; (q/frame-rate 2.0)
   (q/color-mode :hsl 1.0)
-  {:system (make-system {:behaviors [(gravity (gv/vec2 0 (/ 9.8 60)))]
+  {:system (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 100)))]
                          :constraints [(max-age 120) (above-ground)]
                          :drag 0.02})})
 
