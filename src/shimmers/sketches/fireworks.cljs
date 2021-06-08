@@ -96,8 +96,8 @@
 (defn popper-colors []
   (rand-nth [0.0 0.35 0.6 0.9]))
 
-(defn make-rocket []
-  (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
+(defn make-rocket [loc]
+  (let [emitter (gv/vec2 loc)
         velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
     (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
            :type :rocket
@@ -174,7 +174,8 @@
 
 (defn update-state [{:keys [system explode] :as state}]
   (when (and (< (count (:particles system)) 64) (p/chance 0.05))
-    (add-particles system (repeatedly (rand-int 3) make-rocket)))
+    (let [loc (cq/rel-pos (rand-nth [0.25 0.4 0.5 0.6 0.75]) 1.0)]
+      (add-particles system (repeatedly (rand-int 3) (partial make-rocket loc)))))
   (set! (.-particles system) (mapcat explode (:particles system)))
   (timestep system 2)
   state)
