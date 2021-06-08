@@ -108,7 +108,7 @@
 (defn exploder [a b]
   (fn [{:keys [age] :as p}]
     (if (p/chance (tm/smoothstep* a b age))
-      (repeatedly (rand-int 6) #(make-popper p))
+      (repeatedly (rand-int 8) #(make-popper p))
       [p])))
 
 ;; How to encode particles changing state/exploding and adding new particles at
@@ -136,7 +136,7 @@
                (q/ellipse x y 0.8 0.8))))}))
 
 (defn update-state [{:keys [system explode] :as state}]
-  (when (and (< (count (:particles system)) 64) (p/chance 0.2))
+  (when (and (< (count (:particles system)) 64) (p/chance 0.05))
     (add-particles system (repeatedly (rand-int 3) make-rocket)))
   (set! (.-particles system) (mapcat explode (:particles system)))
   (timestep system 2)
