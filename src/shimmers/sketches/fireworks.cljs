@@ -84,7 +84,7 @@
     (< (:y pos) (q/height))))
 
 (defn launch-fireworks []
-  (let [emitter (apply gv/vec2 (cq/rel-pos 0.5 1.0))
+  (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 1.5 (q/random-gaussian))
                           (+ 18 (* 2 (q/random-gaussian))))]
     (make-particle emitter (tm/+ emitter velocity) 200 1.0)))
