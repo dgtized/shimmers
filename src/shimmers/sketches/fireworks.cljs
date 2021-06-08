@@ -78,16 +78,18 @@
 (defn solid-fuel-thruster [burn-time fuel-mass thrust]
   (let [mass-loss (/ fuel-mass burn-time)]
     (fn [particle delta]
-      (if (< (:age particle) burn-time)
+      (if (and (= (:type particle) :rocket)
+               (< (:age particle) burn-time))
         (let [velocity (tm/- (:pos particle) (:prev particle))]
           (set! (.-mass particle) (- (:mass particle) (* mass-loss delta)))
           (tm/* (tm/normalize velocity) (* thrust delta)))
         (gv/vec2)))))
 
-(defn max-age [lifespan]
-  (fn [{:keys [age] :as p} _delta]
-    (when (< age lifespan)
-      p)))
+(defn max-age [rocket popper]
+  (fn [{:keys [type age]} _delta]
+    (case type
+      :rocket (< age rocket)
+      :popper (< age popper))))
 
 (defn above-ground []
   (fn [{:keys [pos]} _delta]
@@ -96,7 +98,18 @@
 (defn make-rocket []
   (let [emitter (gv/vec2 (cq/rel-pos 0.5 1.0))
         velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
-    (make-particle emitter (tm/+ emitter velocity) 8.0)))
+    (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
+           :type :rocket)))
+
+(defn make-popper [{:keys [pos prev]}]
+  (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
+         :type :popper))
+
+(defn exploder [a b]
+  (fn [{:keys [age] :as p}]
+    (if (p/chance (tm/smoothstep* a b age))
+      (repeatedly (rand-int 6) #(make-popper p))
+      [p])))
 
 ;; How to encode particles changing state/exploding and adding new particles at
 ;; apogee that have different effects?
@@ -106,24 +119,26 @@
   (let [fps 60]
     {:system
      (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                               (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 20.0 fps))]
-                   :constraints [(max-age (* fps 20)) (above-ground)]
+                               (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
+                   :constraints [(max-age (* fps 20) (* fps 1))
+                                 (above-ground)]
                    :drag (/ 0.1 fps)})
-
+     :explode (exploder (* 3.5 fps) (* 7 fps))
      :draw-particle
-     (fn [{:keys [pos age]}]
+     (fn [{:keys [pos type]}]
        (let [[x y] pos]
          (q/no-fill)
-         (cond (p/chance (tm/smoothstep* (* 4 fps) (* 7 fps) age))
+         (cond (= type :popper)
                (let [scale (tm/random 2.0 12.0)]
                  (q/fill [0 (tm/random 0.3 0.9) 0.5 0.1])
                  (q/ellipse x y scale scale))
                :else
                (q/ellipse x y 0.8 0.8))))}))
 
-(defn update-state [{:keys [system] :as state}]
-  (when (< (count (:particles system)) 128)
-    (add-particles system (repeatedly (rand-int 2) make-rocket)))
+(defn update-state [{:keys [system explode] :as state}]
+  (when (and (< (count (:particles system)) 64) (p/chance 0.2))
+    (add-particles system (repeatedly (rand-int 3) make-rocket)))
+  (set! (.-particles system) (mapcat explode (:particles system)))
   (timestep system 2)
   state)
 
