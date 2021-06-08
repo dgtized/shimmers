@@ -81,6 +81,12 @@
   (fn [{:keys [pos]} _delta]
     (< (:y pos) (q/height))))
 
+(defn launch-fireworks []
+  (let [emitter (apply gv/vec2 (cq/rel-pos 0.5 1.0))
+        velocity (gv/vec2 (* 1.5 (q/random-gaussian))
+                          (+ 18 (* 2 (q/random-gaussian))))]
+    (make-particle emitter (tm/+ emitter velocity) 200 1.0)))
+
 ;; How to encode particles changing state/exploding and adding new particles at
 ;; apogee that have different effects?
 (defn setup []
@@ -92,12 +98,7 @@
 
 (defn update-state [{:keys [system] :as state}]
   (when (< (count (:particles system)) 256)
-    (add-particles system
-                   (repeatedly (rand-int 6)
-                               #(let [emitter (apply gv/vec2 (cq/rel-pos 0.5 1.0))
-                                      velocity (tm/+ emitter (gv/vec2 (* 1.5 (q/random-gaussian))
-                                                                      (+ 18 (* 2 (q/random-gaussian)))))]
-                                  (make-particle emitter velocity 200 1.0)))))
+    (add-particles system (repeatedly (rand-int 6) launch-fireworks)))
   (timestep system 1)
   state)
 
