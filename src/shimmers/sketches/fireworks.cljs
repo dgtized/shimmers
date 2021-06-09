@@ -95,7 +95,7 @@
 
 ;; Improve colors somehow?
 (defn popper-colors []
-  (rand-nth [0.0 0.16 0.35 0.6 0.8 0.9]))
+  (rand-nth [0.0 0.05 0.35 0.6 0.8 0.9]))
 
 (defn make-rocket [loc]
   (let [emitter (gv/vec2 loc)
