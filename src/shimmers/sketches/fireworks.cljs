@@ -94,7 +94,7 @@
     (< (:y pos) (q/height))))
 
 (defn popper-colors []
-  (rand-nth [0.0 0.35 0.6 0.9]))
+  (rand-nth [0.0 0.16 0.35 0.6 0.8 0.9]))
 
 (defn make-rocket [loc]
   (let [emitter (gv/vec2 loc)
@@ -163,7 +163,7 @@
              (q/ellipse x y scale scale))
            :thumper
            (let [scale (* 42.0 (tm/smoothstep* 38 48 age))]
-             (q/fill 0.1 0.5 0.8 0.5)
+             (q/fill 0.165 0.8 0.5 0.2)
              (q/ellipse x y scale scale))
            :mirv
            (q/ellipse x y 1.0 1.0)
