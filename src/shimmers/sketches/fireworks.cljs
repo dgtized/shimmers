@@ -98,7 +98,7 @@
 
 (defn make-rocket [loc]
   (let [emitter (gv/vec2 loc)
-        velocity (gv/vec2 (* 0.01 (q/random-gaussian)) 1)]
+        velocity (gv/vec2 (* 0.015 (q/random-gaussian)) 1)]
     (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
            :type :rocket
            :hue (popper-colors))))
