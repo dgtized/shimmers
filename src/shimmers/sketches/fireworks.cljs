@@ -118,6 +118,7 @@
   (assoc (make-particle (tm/+ pos (tm/* (gv/randvec2) 0.1)) prev 4.0)
          :type :thumper))
 
+;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
   (fn [{:keys [age type] :as p}]
     (case type
