@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
+            [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -105,19 +106,18 @@
            :hue (popper-colors))))
 
 (defn make-mirv [{:keys [pos prev hue]}]
-  (assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
+  (assoc (make-particle (tm/+ pos (v/jitter 1.1)) prev 4.0)
          :type :mirv
          :hue hue))
 
-;; Consider using something better than randvec2 for displacement
 (defn make-poppers [{:keys [pos prev hue]} quantity]
   (repeatedly quantity
-              #(assoc (make-particle (tm/+ pos (gv/randvec2)) prev 4.0)
+              #(assoc (make-particle (tm/+ pos (v/jitter 0.6)) prev 4.0)
                       :type :popper
                       :hue hue)))
 
 (defn make-thumper [{:keys [pos prev]}]
-  (assoc (make-particle (tm/+ pos (tm/* (gv/randvec2) 0.1)) prev 4.0)
+  (assoc (make-particle (tm/+ pos (v/jitter 0.1)) prev 4.0)
          :type :thumper))
 
 ;; Is there a nicer way to control this state machine per type?
