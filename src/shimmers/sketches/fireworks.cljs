@@ -147,7 +147,7 @@
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
                    :constraints [(max-age {:rocket (* fps 20)
                                            :popper (* fps 1)
-                                           :thumper (* fps 0.9)
+                                           :thumper 42
                                            :mirv (* fps 1)})
                                  (above-ground)]
                    :drag (/ 0.1 fps)})
@@ -162,7 +162,7 @@
              (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
              (q/ellipse x y scale scale))
            :thumper
-           (let [scale (* 42.0 (tm/smoothstep* 38 48 age))]
+           (let [scale (* 42.0 (tm/smoothstep* 28 40 age))]
              (q/fill 0.165 0.8 0.5 0.2)
              (q/ellipse x y scale scale))
            :mirv
