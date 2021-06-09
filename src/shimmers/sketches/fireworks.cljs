@@ -171,7 +171,8 @@
            (q/ellipse x y 0.8 0.8))))}))
 
 (defn update-state [{:keys [system explode] :as state}]
-  (when (and (< (count (:particles system)) 64) (p/chance 0.05))
+  (when (and (< (count (:particles system)) 64)
+             (p/chance 0.035))
     (let [loc (cq/rel-pos (rand-nth [0.25 0.4 0.5 0.6 0.75]) 1.0)]
       (add-particles system (repeatedly (rand-int 3) (partial make-rocket loc)))))
   (set! (.-particles system) (mapcat explode (:particles system)))
