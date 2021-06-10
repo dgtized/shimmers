@@ -52,13 +52,22 @@
 (defn fib [n]
   (take n (map first (iterate (fn [[a b]] [b (+ a b)]) [0 1]))))
 
-(defn fib-splits [n]
+(defn fib-splits
+  "Subdivide range 0..1 into `n` groups with sizes proportional to
+  successive ratios from the fibonnaci sequence.
+
+  (fib-splits 2) => [2/3,1/3]
+  (fib-splits 3) => [3/6,2/3,1/6]
+  (fib-splits 4) => [5/11,3/11,2/11,1/11]
+  "
+  [n]
   (let [fibs (drop 2 (fib (+ 2 n)))
         sum (reduce + fibs)]
     (mapv #(/ % sum) (reverse fibs))))
 
 (comment (fib-splits 2)
          (fib-splits 3)
+         (fib-splits 4)
          (reduce + (fib-splits 5)))
 
 (defn sum-offsets
