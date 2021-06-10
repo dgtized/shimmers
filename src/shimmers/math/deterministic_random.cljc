@@ -3,7 +3,9 @@
   generation."
   (:refer-clojure :exclude [rand-nth])
   (:require [clojure.test.check.random :as tcr]
-            [shimmers.common.sequence :as cs]))
+            [shimmers.common.sequence :as cs]
+            [shimmers.math.vector :as v]
+            [thi.ng.math.core :as tm]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
@@ -73,3 +75,8 @@
   (mapcat (fn [x]
             (if (chance (pf x)) (xf x) [x]))
           coll))
+
+(defn jitter
+  "Create a random unit vector and then scale it by `amount` to use as noise."
+  [amount]
+  (v/polar amount (random tm/TWO_PI)))

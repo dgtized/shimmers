@@ -14,7 +14,7 @@
   (geom/scale-size shape (dr/rand-nth scales)))
 
 (defn displace [scale shape]
-  (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
+  (geom/translate shape (dr/jitter (* scale (geom/area shape)))))
 
 (def palettes
   (map color/url->palette
