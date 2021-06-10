@@ -10,8 +10,8 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn shrink [scale shape]
-  (geom/scale-size shape scale))
+(defn shrink [scales shape]
+  (geom/scale-size shape (dr/rand-nth scales)))
 
 (defn displace [scale shape]
   (geom/translate shape (tm/* (gv/randvec2) (* scale (geom/area shape)))))
@@ -116,7 +116,7 @@
                                    subdivide 1})]
     (->> (divide-shape shape [rows cols])
          (dr/map-random-sample (constantly 0.05)
-                               (partial shrink (rand-nth [0.7 0.8 0.9 0.95])))
+                               (partial shrink [0.7 0.8 0.9 0.95]))
          (dr/map-random-sample (constantly 0.05)
                                (partial displace 0.002))
          (dr/map-random-sample (constantly 0.10)
