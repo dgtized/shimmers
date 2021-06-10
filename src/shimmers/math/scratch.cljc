@@ -1,6 +1,17 @@
 (ns shimmers.math.scratch
   (:require [thi.ng.math.core :as tm]))
 
+;; Playing with golden ratio splits
+(def phi (/ (+ 1 (Math/sqrt 5)) 2))
+
+(defn golden [n]
+  (drop 1 (map (fn [i] (/ 1.0 (Math/pow phi i))) (range (inc n)))))
+
+(comment
+  (golden 2)
+  (golden 3)
+  (golden 4))
+
 (comment
   (map #(tm/mix-exp 1.0 32 % 12) (range 0 1 0.05))
   (map #(tm/mix-circular-flipped 0.98 16 %) (range 0 1 0.05))

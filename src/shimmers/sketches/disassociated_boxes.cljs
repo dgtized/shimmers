@@ -72,15 +72,6 @@
          (sum-offsets (fib-splits 3))
          (sum-offsets (fib-splits 4)))
 
-(def phi (/ (+ 1 (Math/sqrt 5)) 2))
-
-(defn golden [n]
-  (drop 1 (map (fn [i] (/ 1.0 (Math/pow phi i))) (range (inc n)))))
-
-(comment
-  (golden 2)
-  (golden 3))
-
 (defn subdivide [rect [rows cols]]
   (let [width (geom/width rect)
         height (geom/height rect)
