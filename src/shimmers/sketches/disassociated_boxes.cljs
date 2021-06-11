@@ -129,7 +129,9 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [rules {:even [(constantly 0.25) 1]
+  (let [source (geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)
+        rules {:even [(constantly 0.25) 3]
+               :by-area [(descent 0.05 geom/area (geom/area source)) 6]
                :left [(descent 0.1 rect/left (q/width)) 1]
                :right [(descent 0.1 rect/right (q/width)) 1]
                :top [(descent 0.1 rect/top (q/height)) 1]
@@ -138,7 +140,7 @@
     (println rule-name)
     {:palette (dr/rand-nth palettes)
      :prob-descent (first (get rules rule-name))
-     :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]}))
+     :shapes [source]}))
 
 (defn update-state [{:keys [shapes prob-descent palette] :as state}]
   (if (< (count shapes) 1000)
