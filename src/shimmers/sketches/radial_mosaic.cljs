@@ -3,6 +3,7 @@
             [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
+            [shimmers.math.core :as sm]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
             [thi.ng.geom.circle :as gc]
@@ -30,7 +31,7 @@
 
 (comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
 
-(defn segment [t0 t1 r0 r1 attribs]
+(defn draw-segment [t0 t1 r0 r1 attribs]
   (let [lower (v/polar r0 t0)
         upper (v/polar r1 t1)]
     (svg/path [[:M lower]
@@ -49,7 +50,19 @@
 (comment
   (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
   (f/format [(f/float 2)] 0.21)
-  (segment 0.5 1 1 2 {}))
+  (draw-segment 0.5 1 1 2 {}))
+
+(defn segment [t0 t1 r0 r1 attribs displacement]
+  (let [{:keys [arc0 arc1 percent force]} displacement]
+    (if (and (or (sm/radians-between? arc0 arc1 t0)
+                 (sm/radians-between? arc0 arc1 t1))
+             false ;; disabled for now
+             (dr/chance percent))
+      ;; TODO use svg-group to rotate and translate?
+      ;; FIXME: how to deal with overlapping tiles?
+      (let [f (* force (dr/random (/ (+ r0 r1) 2)))]
+        (draw-segment t0 t1 (+ r0 f) (+ r1 f) attribs))
+      (draw-segment t0 t1 r0 r1 attribs))))
 
 ;; First palette is more in pastel range, seems like that fits this better?
 ;; Maybe just because it's also ensuring "none" is used a lot?
@@ -81,7 +94,7 @@
 ;; Consider adding a "dispersion" line that displaces all tiles it touches outwards slightly?
 ;; Alternatively, consider giving it more "wear" by ensuring radial spacing and
 ;; rotating every shape slightly around it's own centroid?
-(defn scene [{:keys [origin palette radius]}]
+(defn scene [{:keys [origin palette radius displacement]}]
   (->> (map vector
             (cs/partition-segments (cycle [5 13 8 21 5 8 13])
                                    (cycle [1 1 2])
@@ -96,7 +109,8 @@
                          (map vector
                               (radial-range segments st)
                               (cycle row-palette))]
-                     (segment (+ t0 spacing) t1 r0 r1 {:fill color})))))
+                     (segment (+ t0 spacing) t1 r0 r1 {:fill color}
+                              displacement)))))
        (svg/group {:transform (csvg/translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
                     {:fill (dr/rand-nth palette)}))
@@ -110,7 +124,11 @@
         {:origin (r (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]) )
          :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
        dr/rand-nth
-       (merge {:palette (dr/rand-nth palettes)})
+       (merge {:palette (dr/rand-nth palettes)
+               ;; TODO: set arc0 to arc1 to be close to a far corner from
+               ;; center? Also, Consider setting a single theta with a radial
+               ;; width and displace more the closer the piece is to theta?
+               :displacement {:arc0 0 :arc1 0.5 :percent 0.6 :force 0.2}})
        scene))
 
 (defn page []
