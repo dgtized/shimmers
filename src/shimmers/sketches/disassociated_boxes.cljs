@@ -119,7 +119,7 @@
                                (partial shrink [0.7 0.8 0.9 0.95]))
          (dr/map-random-sample (constantly 0.05)
                                (partial displace 0.002))
-         (dr/map-random-sample (constantly 0.10)
+         (dr/map-random-sample (constantly 0.18)
                                (partial colorize palette)))))
 
 (defn setup []
@@ -131,7 +131,7 @@
   (if (< (count shapes) 1000)
     (update state :shapes
             (partial dr/mapcat-random-sample
-                     (constantly 0.2)
+                     (constantly 0.25)
                      (partial disassociate palette)))
     state))
 
