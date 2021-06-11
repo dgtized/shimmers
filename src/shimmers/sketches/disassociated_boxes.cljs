@@ -124,18 +124,21 @@
          (dr/map-random-sample (constantly 0.18)
                                (partial colorize palette)))))
 
-(defn descent [minimum value-fn scale]
-  (fn [s] (max minimum (/ (value-fn s) scale))))
+(defn descent [minimum value-fn scale total-area]
+  (fn [s] (if (< (/ (geom/area s) total-area) 0.0001)
+           0.0001
+           (max minimum (/ (value-fn s) scale)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [source (geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)
-        rules {:even [(constantly 0.25) 3]
-               :by-area [(descent 0.05 geom/area (geom/area source)) 6]
-               :left [(descent 0.1 rect/left (q/width)) 1]
-               :right [(descent 0.1 rect/right (q/width)) 1]
-               :top [(descent 0.1 rect/top (q/height)) 1]
-               :bottom [(descent 0.1 rect/bottom (q/height)) 1]}
+        area-source (geom/area source)
+        rules {:constant [(constantly 0.25) 5]
+               :by-area [(descent 0.05 geom/area area-source area-source) 10]
+               :left [(descent 0.1 rect/left (q/width) area-source) 1]
+               :right [(descent 0.1 rect/right (q/width) area-source) 1]
+               :top [(descent 0.1 rect/top (q/height) area-source) 1]
+               :bottom [(descent 0.1 rect/bottom (q/height) area-source) 1]}
         rule-name (dr/weighted (zipmap (keys rules) (map second (vals rules))))]
     (println rule-name)
     {:palette (dr/rand-nth palettes)
