@@ -122,11 +122,16 @@
          (dr/map-random-sample (constantly 0.18)
                                (partial colorize palette)))))
 
+(defn descent [minimum value-fn scale]
+  (fn [s] (max minimum (/ (value-fn s) scale))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [rules {:even [(constantly 0.25) 1]
-               :left [(fn [s] (max 0.1 (/ (rect/left s) (q/width)))) 1]
-               :right [(fn [s] (max 0.1 (/ (rect/right s) (q/width)))) 1] }
+               :left [(descent 0.1 rect/left (q/width)) 1]
+               :right [(descent 0.1 rect/right (q/width)) 1]
+               :top [(descent 0.1 rect/top (q/height)) 1]
+               :bottom [(descent 0.1 rect/bottom (q/height)) 1]}
         rule-name (dr/weighted (zipmap (keys rules) (map second (vals rules))))]
     (println rule-name)
     {:palette (dr/rand-nth palettes)
