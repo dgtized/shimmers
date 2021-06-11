@@ -35,6 +35,23 @@
          (mod (tm/mix* (+ m a) b t) m)
          (mod (tm/mix* a (+ m b) t) m))))))
 
+(defn mod-between?
+  "Check if `a` < `t` < `b` in a modular space `m`."
+  ([a b t] (mod-between? 1.0 a b t))
+  ([m a b t]
+   (let [a' (mod a m)
+         b' (mod b m)
+         t' (mod t m)]
+     (if (< a' b')
+       (< a' t' b')
+       (or (< a' t') (< t' b'))))))
+
+(defn radians-between?
+  "Check if `a` < `t` < `b` in a modular space 2π. Used to see if angle `t` is
+  between `a` and `b` as ordered."
+  [a b t]
+  (mod-between? tm/TWO_PI a b t))
+
 (defn relative-diff
   "Calculate relative difference between two positive values `a` and `b`"
   [a b]

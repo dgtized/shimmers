@@ -41,4 +41,14 @@
     (is (tm/delta= 359.5 (sut/mix-mod 0 359 0.5 360)))
     (is (tm/delta= 90 (sut/mix-mod 0 180 0.5 360)))))
 
+(deftest radians-between
+  (is (sut/radians-between? 0 1.0 0.5))
+  (is (not (sut/radians-between? 0 0.4 0.5)))
+  (is (sut/radians-between? -0.4 0.4 6))
+  (is (not (sut/radians-between? -0.4 0.4 0.5)))
+  (is (sut/radians-between? 5.5 0.5 0.2))
+  (is (not (sut/radians-between? 5.5 0.5 0.6)))
+  (is (sut/radians-between? Math/PI 1 0))
+  (is (not (sut/radians-between? 1 Math/PI 0))))
+
 (comment (run-tests))
