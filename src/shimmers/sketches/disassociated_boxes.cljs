@@ -124,14 +124,19 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:palette (dr/rand-nth palettes)
-   :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]})
+  (let [rules {:even [(constantly 0.25) 1]
+               :left [(fn [s] (max 0.1 (/ (rect/left s) (q/width)))) 1]
+               :right [(fn [s] (max 0.1 (/ (rect/right s) (q/width)))) 1] }
+        rule-name (dr/weighted (zipmap (keys rules) (map second (vals rules))))]
+    (println rule-name)
+    {:palette (dr/rand-nth palettes)
+     :prob-descent (first (get rules rule-name))
+     :shapes [(geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)]}))
 
-(defn update-state [{:keys [shapes palette] :as state}]
+(defn update-state [{:keys [shapes prob-descent palette] :as state}]
   (if (< (count shapes) 1000)
     (update state :shapes
-            (partial dr/mapcat-random-sample
-                     (constantly 0.25)
+            (partial dr/mapcat-random-sample prob-descent
                      (partial disassociate palette)))
     state))
 
