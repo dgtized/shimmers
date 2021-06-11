@@ -146,7 +146,7 @@
      :shapes [source]}))
 
 (defn update-state [{:keys [shapes prob-descent palette] :as state}]
-  (if (< (count shapes) 1000)
+  (if (< (count shapes) 1200)
     (update state :shapes
             (partial dr/mapcat-random-sample prob-descent
                      (partial disassociate palette)))
