@@ -41,7 +41,7 @@
                [:A [r0 r0] 0.0 0 0 lower]
                [:Z]]
               (merge
-               {:fill "none"
+               {:fill "white"
                 :stroke-width 0.6
                 :stroke "black"
                 :key (str "s:" t0 "-" t1 "-" r0)}
@@ -53,16 +53,20 @@
   (draw-segment 0.5 1 1 2 {}))
 
 (defn segment [t0 t1 r0 r1 attribs displacement]
-  (let [{:keys [arc0 arc1 percent force]} displacement]
-    (if (and (or (sm/radians-between? arc0 arc1 t0)
-                 (sm/radians-between? arc0 arc1 t1))
-             false ;; disabled for now
-             (dr/chance percent))
-      ;; TODO use svg-group to rotate and translate?
-      ;; FIXME: how to deal with overlapping tiles?
-      (let [f (* force (dr/random (/ (+ r0 r1) 2)))]
-        (draw-segment t0 t1 (+ r0 f) (+ r1 f) attribs))
-      (draw-segment t0 t1 r0 r1 attribs))))
+  (let [{:keys [arc0 arc1 percent force]} displacement
+        maybe-transformed
+        (if (and (or (sm/radians-between? arc0 arc1 t0)
+                     (sm/radians-between? arc0 arc1 t1))
+                 false ;; disabled for now
+                 (dr/chance percent))
+          (let [center-r (/ (+ r0 r1) 2)
+                center-theta (/ (+ t0 t1) 2)
+                f (* force (dr/random center-r))
+                transforms [(csvg/rotate (dr/random tm/TWO_PI) (v/polar center-r center-theta))
+                            (csvg/translate (v/polar f center-theta))]]
+            (merge attribs {:transform (apply str (interpose " " transforms))}))
+          attribs)]
+    (draw-segment t0 t1 r0 r1 maybe-transformed)))
 
 ;; First palette is more in pastel range, seems like that fits this better?
 ;; Maybe just because it's also ensuring "none" is used a lot?
@@ -85,7 +89,7 @@
                    (if (empty? m)
                      1
                      (dr/rand-nth m)))
-        colors (into palette ["none" "none"])]
+        colors (into palette ["white" "white"])]
     (repeatedly multiple #(dr/rand-nth colors))))
 
 (comment (palette-sequence (first palettes) 19))
