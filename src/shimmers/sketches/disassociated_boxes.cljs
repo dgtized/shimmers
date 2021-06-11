@@ -36,7 +36,9 @@
    [6 1] 1 [1 6] 1
    [7 1] 2 [1 7] 2
    [3 2] 1 [2 3] 1
-   [2 2] 1 [3 3] 1})
+   [2 2] 1 [3 3] 1
+   [2 5] 1 [5 2] 1
+   [3 5] 1 [5 3] 1})
 
 (defn split-bias
   "Generates divisions and biases the weights towards row splits or column splits."
