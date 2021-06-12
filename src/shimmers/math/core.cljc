@@ -35,6 +35,11 @@
          (mod (tm/mix* (+ m a) b t) m)
          (mod (tm/mix* a (+ m b) t) m))))))
 
+(defn radial-mix
+  "Linear mix between angles `a` and `b` by `t` in modular space around a circle."
+  [a b t]
+  (mix-mod a b t tm/TWO_PI))
+
 (defn mod-between?
   "Check if `a` < `t` < `b` in a modular space `m`."
   ([a b t] (mod-between? 1.0 a b t))
