@@ -175,7 +175,7 @@
 
 (defn update-state [{:keys [system explode] :as state}]
   (when (and (< (count (:particles system)) 64)
-             (p/chance 0.035))
+             (p/chance (+ 0.01 (* 0.05 (q/noise 50 (q/frame-count))))))
     (let [loc (cq/rel-pos (rand-nth [0.25 0.4 0.5 0.6 0.75]) 1.0)]
       (add-particles system (repeatedly (rand-int 3) (partial make-rocket loc)))))
   (set! (.-particles system) (mapcat explode (:particles system)))
