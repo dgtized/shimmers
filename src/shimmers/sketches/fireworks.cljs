@@ -149,7 +149,7 @@
                       #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
-      (if (p/chance (tm/smoothstep* 10 50 age))
+      (if (p/chance (tm/smoothstep* 0.16 0.9 (/ age max-age)))
         (if (p/chance 0.05)
           (make-mirv p 4 (tm/random 0.5 1.1))
           (make-poppers p (int (tm/random 12 32))))
