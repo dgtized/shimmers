@@ -180,7 +180,7 @@
              (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
              (q/ellipse x y scale scale))
            :thumper
-           (let [scale (* 42.0 (tm/smoothstep* 28 40 age))]
+           (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
              (q/fill 0.165 0.8 0.5 0.2)
              (q/ellipse x y scale scale))
            :mirv
