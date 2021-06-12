@@ -106,6 +106,7 @@
            :hue (popper-colors)
            :max-age 600)))
 
+;; TODO: add cracklers, and spinners
 (defn make-payload [{:keys [pos prev hue]} type {:keys [quantity force max-age]}]
   (repeatedly quantity
               #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
@@ -204,6 +205,8 @@
   (doseq [particle (:particles system)]
     (draw-particle particle)))
 
+;; Future: Add audio for launch shreak and crackle/explosion
+;; Add fountains?
 (defn ^:export run-sketch []
   ;; 20210607
   (q/defsketch fireworks
