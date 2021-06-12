@@ -165,28 +165,7 @@
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
                    :constraints [(max-age) (above-ground)]
                    :drag (/ 0.1 fps)})
-     :explode (exploder 0.30 0.80)
-     :draw-particle
-     (fn [{:keys [age pos hue type]}]
-       (let [[x y] pos]
-         (q/fill 0 0 0 0.5)
-         (case type
-           :bottle
-           (let [scale (tm/random 2.0 18.0)]
-             (q/fill hue (tm/random 0.3 0.9) 0.5 0.2)
-             (q/ellipse x y scale scale))
-           :popper
-           (let [scale (tm/random 2.0 12.0)]
-             (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
-             (q/ellipse x y scale scale))
-           :thumper
-           (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
-             (q/fill 0.165 0.8 0.5 0.2)
-             (q/ellipse x y scale scale))
-           :mirv
-           (q/ellipse x y 1.0 1.0)
-           :rocket
-           (q/ellipse x y 1.1 1.1))))}))
+     :explode (exploder 0.30 0.80)}))
 
 (defn update-state [{:keys [system explode] :as state}]
   (when (and (< (count (:particles system)) 64)
@@ -197,7 +176,28 @@
   (timestep system 2)
   state)
 
-(defn draw [{:keys [system draw-particle]}]
+(defn draw-particle [{:keys [age pos hue type]}]
+  (let [[x y] pos]
+    (q/fill 0 0 0 0.5)
+    (case type
+      :bottle
+      (let [scale (tm/random 2.0 18.0)]
+        (q/fill hue (tm/random 0.3 0.9) 0.5 0.2)
+        (q/ellipse x y scale scale))
+      :popper
+      (let [scale (tm/random 2.0 12.0)]
+        (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
+        (q/ellipse x y scale scale))
+      :thumper
+      (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
+        (q/fill 0.165 0.8 0.5 0.2)
+        (q/ellipse x y scale scale))
+      :mirv
+      (q/ellipse x y 1.0 1.0)
+      :rocket
+      (q/ellipse x y 1.1 1.1))))
+
+(defn draw [{:keys [system]}]
   (q/background 1.0 0.5)
   (q/no-stroke)
   (q/ellipse-mode :radius)
