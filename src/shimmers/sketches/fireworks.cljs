@@ -86,9 +86,9 @@
           (tm/* (tm/normalize velocity) (* thrust delta)))
         (gv/vec2)))))
 
-(defn max-age [ages]
-  (fn [{:keys [type age]} _delta]
-    (< age (get ages type))))
+(defn max-age []
+  (fn [{:keys [max-age age]} _delta]
+    (< age max-age)))
 
 (defn above-ground []
   (fn [{:keys [pos]} _delta]
@@ -103,22 +103,26 @@
         velocity (gv/vec2 (* 0.015 (q/random-gaussian)) (tm/random 0.9 1.2))]
     (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
            :type :rocket
-           :hue (popper-colors))))
+           :hue (popper-colors)
+           :max-age 600)))
 
 (defn make-mirv [{:keys [pos prev hue]}]
   (assoc (make-particle (tm/+ pos (v/jitter 1.1)) prev 4.0)
          :type :mirv
-         :hue hue))
+         :hue hue
+         :max-age 60))
 
 (defn make-poppers [{:keys [pos prev hue]} quantity]
   (repeatedly quantity
               #(assoc (make-particle (tm/+ pos (v/jitter 0.6)) prev 4.0)
                       :type :popper
-                      :hue hue)))
+                      :hue hue
+                      :max-age 60)))
 
 (defn make-thumper [{:keys [pos prev]}]
   (assoc (make-particle (tm/+ pos (v/jitter 0.1)) prev 4.0)
-         :type :thumper))
+         :type :thumper
+         :max-age 42))
 
 ;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
@@ -148,11 +152,7 @@
     {:system
      (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
-                   :constraints [(max-age {:rocket (* fps 20)
-                                           :popper (* fps 1)
-                                           :thumper 42
-                                           :mirv (* fps 1)})
-                                 (above-ground)]
+                   :constraints [(max-age) (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder (* 3.5 fps) (* 7 fps))
      :draw-particle
