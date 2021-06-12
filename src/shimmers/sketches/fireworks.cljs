@@ -106,11 +106,12 @@
            :hue (popper-colors)
            :max-age 600)))
 
-(defn make-mirv [{:keys [pos prev hue]}]
-  (assoc (make-particle (tm/+ pos (v/jitter 1.1)) prev 4.0)
-         :type :mirv
-         :hue hue
-         :max-age 60))
+(defn make-mirv [{:keys [pos prev hue]} quantity force]
+  (repeatedly quantity
+              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
+                      :type :mirv
+                      :hue hue
+                      :max-age 60)))
 
 (defn make-poppers [{:keys [pos prev hue]} quantity force]
   (repeatedly quantity
@@ -134,14 +135,14 @@
         (cond (p/chance 0.5)
               (make-poppers p (rand-int 32) (tm/random 0.3 0.8))
               (p/chance 0.5)
-              (repeatedly (int (tm/random 8 16)) #(make-mirv p))
+              (make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1))
               :else
               (make-thumpers p (int (tm/random 1 4)) 0.1))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
         (if (p/chance 0.05)
-          (repeatedly 4 #(make-mirv p))
+          (make-mirv p 4 (tm/random 0.5 1.1))
           (make-poppers p (int (tm/random 12 32)) (tm/random 0.3 0.8)))
         [p])
       [p])))
