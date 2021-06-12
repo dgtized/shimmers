@@ -119,6 +119,12 @@
                  :force force
                  :max-age 60}))
 
+(defn make-bottle [rocket]
+  (make-payload rocket :bottle
+                {:quantity 1
+                 :force (tm/random 0.1)
+                 :max-age 20}))
+
 (defn make-poppers [rocket quantity]
   (make-payload rocket :popper
                 {:quantity quantity
@@ -137,7 +143,9 @@
     (case type
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
-        (cond (p/chance 0.5)
+        (cond (p/chance 0.1)
+              (make-bottle p)
+              (p/chance 0.5)
               (make-poppers p (rand-int 32))
               (p/chance 0.5)
               (make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1))
@@ -167,6 +175,10 @@
        (let [[x y] pos]
          (q/fill 0 0 0 0.5)
          (case type
+           :bottle
+           (let [scale (tm/random 2.0 18.0)]
+             (q/fill hue (tm/random 0.3 0.9) 0.5 0.2)
+             (q/ellipse x y scale scale))
            :popper
            (let [scale (tm/random 2.0 12.0)]
              (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
@@ -178,7 +190,7 @@
            :mirv
            (q/ellipse x y 1.0 1.0)
            :rocket
-           (q/ellipse x y 0.8 0.8))))}))
+           (q/ellipse x y 1.1 1.1))))}))
 
 (defn update-state [{:keys [system explode] :as state}]
   (when (and (< (count (:particles system)) 64)
