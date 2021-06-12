@@ -119,10 +119,11 @@
                       :hue hue
                       :max-age 60)))
 
-(defn make-thumper [{:keys [pos prev]}]
-  (assoc (make-particle (tm/+ pos (v/jitter 0.1)) prev 4.0)
-         :type :thumper
-         :max-age 42))
+(defn make-thumpers [{:keys [pos prev]} quantity force]
+  (repeatedly quantity
+              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
+                      :type :thumper
+                      :max-age 42)))
 
 ;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
@@ -135,7 +136,7 @@
               (p/chance 0.5)
               (repeatedly (int (tm/random 8 16)) #(make-mirv p))
               :else
-              (repeatedly (int (tm/random 1 4)) #(make-thumper p)))
+              (make-thumpers p (int (tm/random 1 4)) 0.1))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
