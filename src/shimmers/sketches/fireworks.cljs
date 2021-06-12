@@ -139,10 +139,10 @@
 
 ;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
-  (fn [{:keys [age type] :as p}]
+  (fn [{:keys [age max-age type] :as p}]
     (case type
       :rocket
-      (if (p/chance (tm/smoothstep* a b age))
+      (if (p/chance (tm/smoothstep* (* a max-age) (* b max-age) age))
         ((p/weighted {#(make-bottle p) 2
                       #(make-poppers p (rand-int 32)) 8
                       #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
@@ -165,7 +165,7 @@
                                (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
                    :constraints [(max-age) (above-ground)]
                    :drag (/ 0.1 fps)})
-     :explode (exploder (* 3.5 fps) (* 7 fps))
+     :explode (exploder 0.30 0.80)
      :draw-particle
      (fn [{:keys [age pos hue type]}]
        (let [[x y] pos]
