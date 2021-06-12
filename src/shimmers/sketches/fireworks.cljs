@@ -106,25 +106,24 @@
            :hue (popper-colors)
            :max-age 600)))
 
-(defn make-mirv [{:keys [pos prev hue]} quantity force]
+(defn make-payload [{:keys [pos prev hue]} type {:keys [quantity force max-age]}]
   (repeatedly quantity
               #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
-                      :type :mirv
+                      :type type
                       :hue hue
-                      :max-age 60)))
+                      :max-age max-age)))
 
-(defn make-poppers [{:keys [pos prev hue]} quantity force]
-  (repeatedly quantity
-              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
-                      :type :popper
-                      :hue hue
-                      :max-age 60)))
+(defn make-mirv [rocket quantity force]
+  (make-payload rocket :mirv
+                {:quantity quantity :force force :max-age 60}))
 
-(defn make-thumpers [{:keys [pos prev]} quantity force]
-  (repeatedly quantity
-              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
-                      :type :thumper
-                      :max-age 42)))
+(defn make-poppers [rocket quantity force]
+  (make-payload rocket :popper
+                {:quantity quantity :force force :max-age 60}))
+
+(defn make-thumpers [rocket quantity force]
+  (make-payload rocket :thumper
+                {:quantity quantity :force force :max-age 42}))
 
 ;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
