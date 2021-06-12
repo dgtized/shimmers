@@ -51,4 +51,15 @@
   (is (sut/radians-between? Math/PI 1 0))
   (is (not (sut/radians-between? 1 Math/PI 0))))
 
+(deftest radial-distance
+  (is (tm/delta= 1 (sut/radial-distance 0 -1)))
+  (is (tm/delta= 1 (sut/radial-distance 0 1)))
+  (is (tm/delta= 1 (sut/radial-distance 1 0)))
+  (is (tm/delta= 1 (sut/radial-distance -1 0)))
+  (is (tm/delta= Math/PI (sut/radial-distance 0 Math/PI)))
+  (is (tm/delta= 0.5 (sut/radial-distance Math/PI (+ Math/PI 0.5))))
+  (is (tm/delta= 0.5 (sut/radial-distance Math/PI (- Math/PI 0.5))))
+  (is (tm/delta= 1 (sut/radial-distance 0 (- tm/TWO_PI 1))))
+  (is (tm/delta= 1 (sut/radial-distance 0 (+ tm/TWO_PI 1)))))
+
 (comment (run-tests))

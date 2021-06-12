@@ -52,6 +52,26 @@
   [a b t]
   (mod-between? tm/TWO_PI a b t))
 
+(defn mod-distance
+  "Calculate the distance between `a` and `b` in modular space `m`.
+  Note that distance is always positive in this space."
+  ([a b] (mod-distance 1.0 a b))
+  ([m a b]
+   (min (mod (- a b) m)
+        (mod (- b a) m))))
+
+(comment (mod-distance 0.4 1.0)
+         (mod-distance 0.6 1.0))
+
+(defn radial-distance
+  "Calculate the shortest rotational distance between `a` and `b`.
+  Distances are always positive."
+  [a b]
+  (mod-distance tm/TWO_PI a b))
+
+(comment (radial-distance 0 -1)
+         (radial-distance -1 -5))
+
 (defn relative-diff
   "Calculate relative difference between two positive values `a` and `b`"
   [a b]
