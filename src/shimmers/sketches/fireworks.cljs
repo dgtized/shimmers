@@ -142,7 +142,7 @@
   (fn [{:keys [age max-age type] :as p}]
     (case type
       :rocket
-      (if (p/chance (tm/smoothstep* (* a max-age) (* b max-age) age))
+      (if (p/chance (tm/smoothstep* a b (/ age max-age)))
         ((p/weighted {#(make-bottle p) 2
                       #(make-poppers p (rand-int 32)) 8
                       #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
