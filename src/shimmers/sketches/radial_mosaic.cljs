@@ -60,9 +60,9 @@
                  false ;; disabled for now
                  (dr/chance percent))
           (let [center-r (/ (+ r0 r1) 2)
-                center-theta (sm/mix-mod t0 t1 0.5 tm/TWO_PI)
+                center-theta (sm/radial-mix t0 t1 0.5)
                 center (v/polar center-r center-theta)
-                rotation (* 1.5 (- center-theta (/ (+ arc0 arc1) 2)))
+                rotation (* 1.0 (- center-theta (/ (+ arc0 arc1) 2)))
                 f (* force center-r)
                 transforms [(csvg/translate (v/polar f center-theta))
                             (csvg/rotate rotation center)]]
@@ -134,7 +134,7 @@
                ;; TODO: set arc0 to arc1 to be close to a far corner from
                ;; center? Also, Consider setting a single theta with a radial
                ;; width and displace more the closer the piece is to theta?
-               :displacement {:arc0 5.95 :arc1 6.25 :percent 1.0 :force 0.3}})
+               :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})
        scene))
 
 (defn page []
