@@ -115,15 +115,21 @@
 
 (defn make-mirv [rocket quantity force]
   (make-payload rocket :mirv
-                {:quantity quantity :force force :max-age 60}))
+                {:quantity quantity
+                 :force force
+                 :max-age 60}))
 
-(defn make-poppers [rocket quantity force]
+(defn make-poppers [rocket quantity]
   (make-payload rocket :popper
-                {:quantity quantity :force force :max-age 60}))
+                {:quantity quantity
+                 :force (tm/random 0.3 0.8)
+                 :max-age 60}))
 
-(defn make-thumpers [rocket quantity force]
+(defn make-thumpers [rocket quantity]
   (make-payload rocket :thumper
-                {:quantity quantity :force force :max-age 42}))
+                {:quantity quantity
+                 :force (tm/random 0.05 0.15)
+                 :max-age 42}))
 
 ;; Is there a nicer way to control this state machine per type?
 (defn exploder [a b]
@@ -132,17 +138,17 @@
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
         (cond (p/chance 0.5)
-              (make-poppers p (rand-int 32) (tm/random 0.3 0.8))
+              (make-poppers p (rand-int 32))
               (p/chance 0.5)
               (make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1))
               :else
-              (make-thumpers p (int (tm/random 1 4)) 0.1))
+              (make-thumpers p (int (tm/random 1 4))))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
         (if (p/chance 0.05)
           (make-mirv p 4 (tm/random 0.5 1.1))
-          (make-poppers p (int (tm/random 12 32)) (tm/random 0.3 0.8)))
+          (make-poppers p (int (tm/random 12 32))))
         [p])
       [p])))
 
