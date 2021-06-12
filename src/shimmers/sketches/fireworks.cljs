@@ -112,9 +112,9 @@
          :hue hue
          :max-age 60))
 
-(defn make-poppers [{:keys [pos prev hue]} quantity]
+(defn make-poppers [{:keys [pos prev hue]} quantity force]
   (repeatedly quantity
-              #(assoc (make-particle (tm/+ pos (v/jitter 0.6)) prev 4.0)
+              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
                       :type :popper
                       :hue hue
                       :max-age 60)))
@@ -131,7 +131,7 @@
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
         (cond (p/chance 0.5)
-              (make-poppers p (rand-int 32))
+              (make-poppers p (rand-int 32) (tm/random 0.3 0.8))
               (p/chance 0.5)
               (repeatedly (int (tm/random 8 16)) #(make-mirv p))
               :else
@@ -141,7 +141,7 @@
       (if (p/chance (tm/smoothstep* 10 50 age))
         (if (p/chance 0.05)
           (repeatedly 4 #(make-mirv p))
-          (make-poppers p (int (tm/random 12 32))))
+          (make-poppers p (int (tm/random 12 32)) (tm/random 0.3 0.8)))
         [p])
       [p])))
 
