@@ -143,14 +143,10 @@
     (case type
       :rocket
       (if (p/chance (tm/smoothstep* a b age))
-        (cond (p/chance 0.1)
-              (make-bottle p)
-              (p/chance 0.5)
-              (make-poppers p (rand-int 32))
-              (p/chance 0.5)
-              (make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1))
-              :else
-              (make-thumpers p (int (tm/random 1 4))))
+        ((p/weighted {#(make-bottle p) 2
+                      #(make-poppers p (rand-int 32)) 8
+                      #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
+                      #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 10 50 age))
