@@ -10,8 +10,8 @@
   (for [x (range size)
         y (range size)]
     {:pos (gv/vec2 x y)
-     :width (tm/random 9 15)
-     :height (tm/random 9 15)}))
+     :width (tm/random 0.5 0.9)
+     :height (tm/random 0.5 0.9)}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -26,11 +26,11 @@
 (defn draw [{:keys [size grid]}]
   (q/background 1.0 0.5)
   (q/ellipse-mode :radius)
-  (let [hwidth (/ 1.0 size 2)
-        base (gv/vec2 (cq/rel-pos hwidth hwidth))]
+  (let [scale (/ (q/width) size)
+        base (gv/vec2 (/ scale 2) (/ scale 2))]
     (doseq [{:keys [pos width height]} grid
-            :let [[x y] (tm/+ base (tm/* pos (/ (q/width) size)))]]
-      (q/ellipse x y width height))))
+            :let [[x y] (tm/+ base (tm/* pos scale))]]
+      (q/ellipse x y (* width scale 0.5) (* height scale 0.5)))))
 
 (defn ^:export run-sketch []
   ;; 2021
