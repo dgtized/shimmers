@@ -12,7 +12,7 @@
     (let [pxy (/ (* x y) (* size size))
           px (/ x size)
           py (/ y size)]
-      {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.3 pxy))))
+      {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.2 pxy))))
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
        :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
 
