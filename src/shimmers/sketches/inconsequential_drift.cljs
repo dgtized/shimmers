@@ -2,16 +2,16 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.math.vector :as v]
             [thi.ng.geom.vector :as gv]
-            [shimmers.common.quil :as cq]
             [thi.ng.math.core :as tm]))
 
 (defn square-grid [size]
   (for [x (range size)
         y (range size)]
-    {:pos (gv/vec2 x y)
-     :width (tm/random 0.5 0.9)
-     :height (tm/random 0.5 0.9)}))
+    {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.3 (/ (* x y) (* size size))))))
+     :width (tm/random 0.3 (max 0.5 (* 0.9 (/ x size))))
+     :height (tm/random 0.3 (max 0.5 (* 0.9 (/ y size))))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -25,6 +25,7 @@
 
 (defn draw [{:keys [size grid]}]
   (q/background 1.0 0.5)
+  (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (let [scale (/ (q/width) size)
         base (gv/vec2 (/ scale 2) (/ scale 2))]
