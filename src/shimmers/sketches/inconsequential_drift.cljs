@@ -9,9 +9,12 @@
 (defn square-grid [size]
   (for [x (range size)
         y (range size)]
-    {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.3 (/ (* x y) (* size size))))))
-     :width (tm/random 0.3 (max 0.5 (* 0.9 (/ x size))))
-     :height (tm/random 0.3 (max 0.5 (* 0.9 (/ y size))))}))
+    (let [pxy (/ (* x y) (* size size))
+          px (/ x size)
+          py (/ y size)]
+      {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.3 pxy))))
+       :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
+       :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
