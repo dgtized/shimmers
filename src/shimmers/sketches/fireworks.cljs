@@ -178,26 +178,25 @@
   state)
 
 (defn draw-particle [{:keys [age pos hue type]}]
-  (let [[x y] pos]
-    (case type
-      :bottle
-      (let [scale (tm/random 2.0 18.0)]
-        (q/fill hue (tm/random 0.3 0.9) 0.5 0.2)
-        (q/ellipse x y scale scale))
-      :popper
-      (let [scale (tm/random 2.0 12.0)]
-        (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
-        (q/ellipse x y scale scale))
-      :thumper
-      (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
-        (q/fill 0.165 0.8 0.5 0.2)
-        (q/ellipse x y scale scale))
-      :mirv
-      (do (q/fill 0 0 0 0.5)
-          (q/ellipse x y 1.0 1.0))
-      :rocket
-      (do (q/fill 0 0 0 0.5)
-          (q/ellipse x y 1.1 1.1)))))
+  (case type
+    :bottle
+    (let [scale (tm/random 2.0 18.0)]
+      (q/fill hue (tm/random 0.3 0.9) 0.5 0.2)
+      (cq/circle pos scale))
+    :popper
+    (let [scale (tm/random 2.0 12.0)]
+      (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
+      (cq/circle pos scale))
+    :thumper
+    (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
+      (q/fill 0.165 0.8 0.5 0.2)
+      (cq/circle pos scale))
+    :mirv
+    (do (q/fill 0 0 0 0.5)
+        (cq/circle pos 1.0))
+    :rocket
+    (do (q/fill 0 0 0 0.5)
+        (cq/circle pos 1.1))))
 
 (defn draw [{:keys [system]}]
   (q/background 1.0 0.5)

@@ -56,3 +56,7 @@
 
 (defn normal-material []
   (.normalMaterial (q/current-graphics)))
+
+(defn circle
+  ([[x y] radius] (q/ellipse x y radius radius))
+  ([x y radius] (q/ellipse x y radius radius)))
