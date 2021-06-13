@@ -77,10 +77,9 @@
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r parent color]} shapes
-          :let [[x y] p]]
+  (doseq [{:keys [p r parent color]} shapes]
     (cq/color-if q/fill color)
-    (q/ellipse x y r r)
+    (cq/circle p r)
     #_(when parent (q/line p (:p parent)))))
 
 (defn ^:export run-sketch []
