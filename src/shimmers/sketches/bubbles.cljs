@@ -62,9 +62,8 @@
   (q/stroke-weight 0.05)
   (q/stroke 40 40 240 96)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r]} bubbles
-          :let [[x y] p]]
-    (q/ellipse x y r r)))
+  (doseq [{:keys [p r]} bubbles]
+    (cq/circle p r)))
 
 (defn ^:export run-sketch []
   (q/defsketch bubbles

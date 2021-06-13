@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
@@ -132,7 +133,7 @@
     (if done
       (q/no-stroke)
       (q/stroke 0 0 0 1.0))
-    (q/ellipse (:x p) (:y p) r r)))
+    (cq/circle p r)))
 
 (defn ^:export run-sketch []
   ;; 20210310

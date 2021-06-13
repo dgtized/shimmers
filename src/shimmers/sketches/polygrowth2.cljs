@@ -57,8 +57,8 @@
     (cq/color-if q/stroke (:stroke (meta shape)))
     (cq/draw-shape vertices)
     (q/fill 0)
-    (doseq [[x y] vertices]
-      (q/ellipse x y 0.3 0.3))))
+    (doseq [v vertices]
+      (cq/circle v 0.3))))
 
 (defn ^:export run-sketch []
   ;; 20210502

@@ -33,8 +33,8 @@
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (q/fill 0 0 0)
-  (doseq [[x y] (map cq/rel-pos points)]
-    (q/ellipse x y 1 1))
+  (doseq [p (map cq/rel-pos points)]
+    (cq/circle p 1))
 
   (doseq [[p q] (partition 2 1 (convex-spiral (map cq/rel-pos points)))]
     (q/line p q)))

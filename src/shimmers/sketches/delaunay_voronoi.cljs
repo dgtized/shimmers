@@ -124,8 +124,8 @@
 
   (q/ellipse-mode :radius)
   (q/fill 0 0 0)
-  (doseq [[x y] (map cq/rel-pos points)]
-    (q/ellipse x y 1 1))
+  (doseq [v (map cq/rel-pos points)]
+    (cq/circle v 1))
 
   (q/no-fill)
   (let [neighborhood (neighboring-triangles triangles)]
@@ -134,7 +134,7 @@
                   [x y] (cq/rel-pos point)]]
       (println [x y :inside inside])
       (q/stroke 255 0 0)
-      (q/ellipse x y 2 2)
+      (cq/circle x y 2)
 
       (let [centroid (cq/rel-vec point)
             edges (->> (neighboring-vertices neighborhood point)
@@ -149,14 +149,14 @@
                 :let [[x y] (second edge)]]
           (println {:edge [x y] :heading (geom/heading (tm/- (gv/vec2 x y) centroid))})
           (q/stroke 0 255 0)
-          (q/ellipse x y 2 2)
+          (cq/circle x y 2)
           (q/stroke 0 0 0)
           (plot (bisect-line edge)))
 
         (q/stroke 0 0 255)
         (doseq [[x y] intersections]
           (println [x y :heading (geom/heading (tm/- (gv/vec2 x y) centroid))])
-          (q/ellipse x y 2 2))
+          (cq/circle x y 2))
 
         (q/no-fill)
         (q/begin-shape)

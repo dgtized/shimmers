@@ -37,9 +37,9 @@
 (defn draw-attractor [[x y] influence prune]
   (q/stroke-weight 0.2)
   (q/stroke "lightblue")
-  (q/ellipse x y influence influence)
+  (cq/circle x y influence)
   (q/stroke "red")
-  (q/ellipse x y prune prune))
+  (cq/circle x y prune))
 
 (defn draw-debug
   [{:keys [attractors influence-distance prune-distance quadtree]} debug]
