@@ -39,8 +39,8 @@
   (q/background 1.0)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [[x y] nodes]
-    (q/ellipse x y 0.5 0.5))
+  (doseq [node nodes]
+    (cq/circle node 0.5))
   (doseq [[p q] edges]
     (q/line p q)))
 
