@@ -6,23 +6,29 @@
             [shimmers.common.quil :as cq]
             [thi.ng.math.core :as tm]))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {})
-
 (defn square-grid [size]
   (for [x (range size)
         y (range size)]
-    {:pos (gv/vec2 x y) :width 10 :height 10}))
+    {:pos (gv/vec2 x y)
+     :width (tm/random 9 15)
+     :height (tm/random 9 15)}))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  (q/frame-rate 30)
+  (let [size 25]
+    {:size size
+     :grid (square-grid size)}))
 
 (defn update-state [state]
   state)
 
-(defn draw [_]
-  (q/background 1.0)
-  (let [size 25
-        base (gv/vec2 (cq/rel-pos (/ 1.0 size 2) (/ 1.0 size 2)))]
-    (doseq [{:keys [pos width height]} (square-grid size)
+(defn draw [{:keys [size grid]}]
+  (q/background 1.0 0.5)
+  (q/ellipse-mode :radius)
+  (let [hwidth (/ 1.0 size 2)
+        base (gv/vec2 (cq/rel-pos hwidth hwidth))]
+    (doseq [{:keys [pos width height]} grid
             :let [[x y] (tm/+ base (tm/* pos (/ (q/width) size)))]]
       (q/ellipse x y width height))))
 
