@@ -30,6 +30,7 @@
             [shimmers.sketches.harsh-lines :as harsh-lines]
             [shimmers.sketches.hexaclock :as hexaclock]
             [shimmers.sketches.hexcursive :as hexcursive]
+            [shimmers.sketches.inconsequential-drift :as inconsequential-drift]
             [shimmers.sketches.impressions-of-open-space :as impressions-of-open-space]
             [shimmers.sketches.k-means :as k-means]
             [shimmers.sketches.kd-tree :as kd-tree]
@@ -110,6 +111,7 @@
     hexaclock/run-sketch
     hexcursive/run-sketch
     harsh-lines/run-sketch
+    inconsequential-drift/run-sketch
     impressions-of-open-space/run-sketch
     k-means/run-sketch
     kd-tree/run-sketch
