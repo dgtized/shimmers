@@ -179,7 +179,6 @@
 
 (defn draw-particle [{:keys [age pos hue type]}]
   (let [[x y] pos]
-    (q/fill 0 0 0 0.5)
     (case type
       :bottle
       (let [scale (tm/random 2.0 18.0)]
@@ -194,9 +193,11 @@
         (q/fill 0.165 0.8 0.5 0.2)
         (q/ellipse x y scale scale))
       :mirv
-      (q/ellipse x y 1.0 1.0)
+      (do (q/fill 0 0 0 0.5)
+          (q/ellipse x y 1.0 1.0))
       :rocket
-      (q/ellipse x y 1.1 1.1))))
+      (do (q/fill 0 0 0 0.5)
+          (q/ellipse x y 1.1 1.1)))))
 
 (defn draw [{:keys [system]}]
   (q/background 1.0 0.5)
