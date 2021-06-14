@@ -155,3 +155,7 @@
   (->> (* d 0.5 (geom/dist p q))
        (p/confusion-disk (tm/mix p q 0.5))
        gv/vec2))
+
+(defn circles-overlap? [a b]
+  (let [distance (+ (:r a) (:r b))]
+    (< (geom/dist (:p a) (:p b)) distance)))

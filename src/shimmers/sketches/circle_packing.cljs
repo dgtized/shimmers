@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -60,8 +61,8 @@
 (defn intersects [c1 c2]
   ;; inside or intersecting from growth
   ;; TODO: add checkbox for allowing containment or not
-  (when (or (geom/contains-point? c2 (:p c1))
-            (geom/intersect-shape c1 c2)) c2))
+  (when (geometry/circles-overlap? c1 c2)
+    c2))
 
 (defn add-circle [quadtree boundary search-radius radius]
   (let [r radius
