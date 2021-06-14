@@ -5,6 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -22,11 +23,6 @@
   (geom/contains-point? (rect/rect 0 0 (q/width) (q/height))
                         (:p circle)))
 
-(defn intersects [c1 c2]
-  (when (or (geom/contains-point? c2 (:p c1))
-            (geom/intersect-shape c1 c2))
-    c2))
-
 (defn border-circle [shapes]
   (let [inverted-tree (child-tree shapes)
         {:keys [p r] :as parent}
@@ -41,7 +37,7 @@
                     (tm/+ p))
         circle (assoc (gc/circle center radius) :parent parent)]
     (when (and (in-bounds? circle)
-               (not (some (partial intersects circle) shapes)))
+               (not (some (partial geometry/circles-overlap? circle) shapes)))
       (assoc circle :color (update (:color parent) 2 * 1.07)))))
 
 ;; Improve palette selection?
@@ -52,7 +48,7 @@
 
 (defn add-non-intersecting [shapes]
   (let [c (make-source)]
-    (if (some (partial intersects c) shapes)
+    (if (some (partial geometry/circles-overlap? c) shapes)
       shapes
       (conj shapes c))))
 
