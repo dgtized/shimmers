@@ -41,7 +41,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-loop)
-  (let [size 32]
+  (let [size 64]
     {:size size
      :grid (square-grid size)}))
 
