@@ -22,7 +22,7 @@
           px (/ x size)
           py (/ y size)]
       {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.2 pxy))))
-       :shape (p/weighted {:ellipse 3 :triangle 1})
+       :shape (p/weighted {:ellipse 10 :triangle (/ x 10)})
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
        :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
 
