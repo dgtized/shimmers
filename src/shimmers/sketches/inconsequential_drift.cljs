@@ -36,13 +36,10 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 30)
+  (q/no-loop)
   (let [size 32]
     {:size size
      :grid (square-grid size)}))
-
-(defn update-state [state]
-  state)
 
 (defn draw [{:keys [size grid]}]
   (q/background 1.0 0.5)
@@ -70,6 +67,5 @@
     :host "quil-host"
     :size [800 800]
     :setup setup
-    :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode]))
