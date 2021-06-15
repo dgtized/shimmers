@@ -47,6 +47,7 @@
 (defn draw [{:keys [size grid]}]
   (q/background 1.0 0.5)
   (q/stroke-weight 0.5)
+  (q/no-fill)
   (q/ellipse-mode :radius)
   (let [scale (/ (q/width) size)
         base (gv/vec2 (/ scale 2) (/ scale 2))]
