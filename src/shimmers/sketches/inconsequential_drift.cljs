@@ -49,8 +49,8 @@
   (q/stroke-weight 0.5)
   (q/no-fill)
   (q/ellipse-mode :radius)
-  (let [scale (/ (q/width) size)
-        base (gv/vec2 (/ scale 2) (/ scale 2))]
+  (let [scale (/ (q/width) (+ size 1))
+        base (gv/vec2 (* scale 1) (* scale 1))]
     (doseq [{:keys [shape pos width height]} grid
             :let [p (tm/+ base (tm/* pos scale))
                   [x y] p
