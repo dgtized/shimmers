@@ -8,12 +8,20 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.core :as geom]
             [shimmers.math.probability :as p]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [thi.ng.geom.rect :as rect]))
 
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
       (geom/center p)
-      (geom/vertices)))
+      (geom/scale-size (Math/sqrt 2))
+      geom/vertices))
+
+(defn rectangle [p w h]
+  (-> (rect/rect 0 0 w h)
+      (geom/center p)
+      (geom/scale-size (Math/sqrt 2))
+      geom/vertices))
 
 (defn square-grid [size]
   (for [x (range size)
@@ -22,7 +30,7 @@
           px (/ x size)
           py (/ y size)]
       {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.2 pxy))))
-       :shape (p/weighted {:ellipse 10 :triangle (/ x 10)})
+       :shape (p/weighted {:ellipse 10 :triangle (/ x 10) :rectangle (/ y 5)})
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
        :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
 
@@ -51,7 +59,9 @@
         :ellipse
         (q/ellipse x y w h)
         :triangle
-        (apply cq/draw-triangle (triangle p w h))))))
+        (apply cq/draw-triangle (triangle p w h))
+        :rectangle
+        (cq/draw-shape (rectangle p w h))))))
 
 (defn ^:export run-sketch []
   ;; 2021
