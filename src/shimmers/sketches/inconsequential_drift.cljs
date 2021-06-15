@@ -4,7 +4,16 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.core :as geom]
+            [shimmers.math.probability :as p]
+            [shimmers.common.quil :as cq]))
+
+(defn triangle [p w h]
+  (-> (gt/equilateral2 0 0 w h)
+      (geom/center p)
+      (geom/vertices)))
 
 (defn square-grid [size]
   (for [x (range size)
@@ -13,6 +22,7 @@
           px (/ x size)
           py (/ y size)]
       {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.2 pxy))))
+       :shape (p/weighted {:ellipse 3 :triangle 1})
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
        :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
 
@@ -32,9 +42,16 @@
   (q/ellipse-mode :radius)
   (let [scale (/ (q/width) size)
         base (gv/vec2 (/ scale 2) (/ scale 2))]
-    (doseq [{:keys [pos width height]} grid
-            :let [[x y] (tm/+ base (tm/* pos scale))]]
-      (q/ellipse x y (* width scale 0.5) (* height scale 0.5)))))
+    (doseq [{:keys [shape pos width height]} grid
+            :let [p (tm/+ base (tm/* pos scale))
+                  [x y] p
+                  w (* width scale 0.5)
+                  h (* height scale 0.5)]]
+      (case shape
+        :ellipse
+        (q/ellipse x y w h)
+        :triangle
+        (apply cq/draw-triangle (triangle p w h))))))
 
 (defn ^:export run-sketch []
   ;; 2021
