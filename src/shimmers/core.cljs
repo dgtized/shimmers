@@ -76,7 +76,7 @@
 (defn sketch-list []
   (let [sketches (sketches/all)
         [sketches-an sketches-mz]
-        (split-with (fn [{:keys [id]}] (re-find #"^[a-nA-N]" (name id)))
+        (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
                     sketches)]
     [:section {:class "sketch-list"}
      [:h1 (str "All Sketches (" (count sketches) ")")]
@@ -84,8 +84,8 @@
      algorithms, and whatever else struck my fancy to implement or explore. Many
      are complete, and some I periodically revisit and tweak."]
      [:div {:class "sketch-columns"}
-      [:div [:h3 "A-N"] (list-sketches sketches-an)]
-      [:div [:h3 "M-Z"] (list-sketches sketches-mz)]]]))
+      [:div [:h3 "A-M"] (list-sketches sketches-an)]
+      [:div [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
