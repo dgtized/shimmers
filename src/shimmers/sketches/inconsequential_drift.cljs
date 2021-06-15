@@ -14,13 +14,13 @@
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
       (geom/center p)
-      (geom/scale-size (Math/sqrt 2))
+      (geom/scale-size 1.3)
       geom/vertices))
 
 (defn rectangle [p w h]
   (-> (rect/rect 0 0 w h)
       (geom/center p)
-      (geom/scale-size (Math/sqrt 2))
+      (geom/scale-size 1.3)
       geom/vertices))
 
 (defn square-grid [size]
@@ -37,7 +37,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/frame-rate 30)
-  (let [size 25]
+  (let [size 32]
     {:size size
      :grid (square-grid size)}))
 
@@ -53,8 +53,8 @@
     (doseq [{:keys [shape pos width height]} grid
             :let [p (tm/+ base (tm/* pos scale))
                   [x y] p
-                  w (* width scale 0.5)
-                  h (* height scale 0.5)]]
+                  w (* width scale 0.66)
+                  h (* height scale 0.66)]]
       (case shape
         :ellipse
         (q/ellipse x y w h)
