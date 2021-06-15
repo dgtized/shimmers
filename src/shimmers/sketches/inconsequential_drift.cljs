@@ -26,10 +26,11 @@
 (defn square-grid [size]
   (for [x (range size)
         y (range size)]
-    (let [pxy (/ (* x y) (* size size))
-          px (/ x size)
-          py (/ y size)]
-      {:pos (tm/+ (gv/vec2 x y) (v/jitter (+ 0.01 (* 0.2 pxy))))
+    (let [px (/ x size)
+          py (/ y size)
+          noise-xy (q/noise (/ x 4) (/ y 4))]
+      {:pos (tm/+ (gv/vec2 x y) (v/jitter (* 0.1 noise-xy)))
+       :rotate noise-xy
        :shape (p/weighted {:ellipse 8 :triangle (* 2 px) :rectangle py})
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
        :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
@@ -46,20 +47,21 @@
   (q/stroke-weight 0.5)
   (q/no-fill)
   (q/ellipse-mode :radius)
-  (let [scale (/ (q/width) (+ size 1))
-        base (gv/vec2 (* scale 1) (* scale 1))]
-    (doseq [{:keys [shape pos width height]} grid
+  (let [scale (/ (q/width) (+ size 2))
+        base (gv/vec2 (* scale 1.5) (* scale 1))]
+    (doseq [{:keys [shape pos rotate width height]} grid
             :let [p (tm/+ base (tm/* pos scale))
                   [x y] p
                   w (* width scale 0.66)
                   h (* height scale 0.66)]]
-      (case shape
-        :ellipse
-        (q/ellipse x y w h)
-        :triangle
-        (apply cq/draw-triangle (triangle p w h))
-        :rectangle
-        (cq/draw-shape (rectangle p w h))))))
+      (q/with-rotation [(/ rotate 20)]
+        (case shape
+          :ellipse
+          (q/ellipse x y w h)
+          :triangle
+          (apply cq/draw-triangle (triangle p w h))
+          :rectangle
+          (cq/draw-shape (rectangle p w h)))))))
 
 (defn ^:export run-sketch []
   ;; 2021
