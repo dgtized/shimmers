@@ -2,14 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.core :as geom]
-            [shimmers.math.probability :as p]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.rect :as rect]))
+            [shimmers.math.deterministic-random :as dr]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
@@ -29,17 +28,18 @@
     (let [px (/ x size)
           py (/ y size)
           noise-xy (q/noise (/ x 4) (/ y 4))]
-      {:pos (tm/+ (gv/vec2 x y) (v/jitter (* 0.1 noise-xy)))
-       :color (p/weighted {[0.0 0.7 0.45 0.45] (- 1.0 (* px py))
-                           [0.30 0.7 0.45 0.45] (- 1.0 px)
-                           [0.60 0.7 0.45 0.45] (- 1.0 py)})
+      {:pos (tm/+ (gv/vec2 x y) (dr/jitter (* 0.1 noise-xy)))
+       :color (dr/weighted {[0.0 0.7 0.45 0.45] (- 1.0 (* px py))
+                            [0.30 0.7 0.45 0.45] (- 1.0 px)
+                            [0.60 0.7 0.45 0.45] (- 1.0 py)})
        :rotate noise-xy
-       :shape (p/weighted {:ellipse 8 :triangle (* 2 px) :rectangle py})
-       :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
-       :height (tm/random 0.3 (max 0.5 (* 0.9 py)))})))
+       :shape (dr/weighted {:ellipse 8 :triangle (* 2 px) :rectangle py})
+       :width (dr/random 0.3 (max 0.5 (* 0.9 px)))
+       :height (dr/random 0.3 (max 0.5 (* 0.9 py)))})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/noise-seed (dr/random tm/MAX))
   (q/no-loop)
   (let [size 64]
     {:size size
