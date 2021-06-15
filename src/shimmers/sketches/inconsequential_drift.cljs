@@ -30,6 +30,9 @@
           py (/ y size)
           noise-xy (q/noise (/ x 4) (/ y 4))]
       {:pos (tm/+ (gv/vec2 x y) (v/jitter (* 0.1 noise-xy)))
+       :color (p/weighted {[0.0 0.7 0.45 0.45] (- 1.0 (* px py))
+                           [0.30 0.7 0.45 0.45] (- 1.0 px)
+                           [0.60 0.7 0.45 0.45] (- 1.0 py)})
        :rotate noise-xy
        :shape (p/weighted {:ellipse 8 :triangle (* 2 px) :rectangle py})
        :width (tm/random 0.3 (max 0.5 (* 0.9 px)))
@@ -44,17 +47,17 @@
 
 (defn draw [{:keys [size grid]}]
   (q/background 1.0 0.5)
-  (q/stroke-weight 0.5)
-  (q/no-fill)
+  (q/no-stroke)
   (q/ellipse-mode :radius)
   (let [scale (/ (q/width) (+ size 2))
         base (gv/vec2 (* scale 1.5) (* scale 1))]
-    (doseq [{:keys [shape pos rotate width height]} grid
+    (doseq [{:keys [shape pos rotate color width height]} grid
             :let [p (tm/+ base (tm/* pos scale))
                   [x y] p
-                  w (* width scale 0.66)
-                  h (* height scale 0.66)]]
+                  w (* width scale 0.75)
+                  h (* height scale 0.75)]]
       (q/with-rotation [(/ rotate 20)]
+        (apply q/fill color)
         (case shape
           :ellipse
           (q/ellipse x y w h)
