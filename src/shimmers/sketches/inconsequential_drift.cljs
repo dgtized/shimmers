@@ -54,8 +54,8 @@
     (doseq [{:keys [shape pos rotate color width height]} grid
             :let [p (tm/+ base (tm/* pos scale))
                   [x y] p
-                  w (* width scale 0.75)
-                  h (* height scale 0.75)]]
+                  w (* width scale 0.85)
+                  h (* height scale 0.85)]]
       (q/with-rotation [(/ rotate 20)]
         (apply q/fill color)
         (case shape
