@@ -34,8 +34,8 @@
                             [0.60 0.7 0.45 0.45] (- 1.0 py)})
        :rotate noise-xy
        :shape (dr/weighted {:ellipse 8 :triangle (* 2 px) :rectangle py})
-       :width (dr/random 0.3 (max 0.5 (* 0.9 px)))
-       :height (dr/random 0.3 (max 0.5 (* 0.9 py)))})))
+       :width (dr/random 0.3 (max 0.45 (* 0.9 px)))
+       :height (dr/random 0.3 (max 0.45 (* 0.9 py)))})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
