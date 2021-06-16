@@ -13,13 +13,13 @@
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
       (geom/center p)
-      (geom/scale-size 1.3)
+      (geom/scale-size 1.5)
       geom/vertices))
 
 (defn rectangle [p w h]
   (-> (rect/rect 0 0 w h)
       (geom/center p)
-      (geom/scale-size 1.3)
+      (geom/scale-size 1.5)
       geom/vertices))
 
 (defn square-grid [size]
