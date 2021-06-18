@@ -9,9 +9,8 @@
             [shimmers.math.deterministic-random :as dr]))
 
 (defn dir-at
-  ([[x y]] (dir-at x y))
-  ([x y]
-   (* tm/TWO_PI (q/noise (/ x 60) (/ y 60)))))
+  [[x y]]
+  (* tm/TWO_PI (q/noise (/ x 100) (/ y 100))))
 
 (defn draw-grid [size]
   (let [w (/ (q/width) size)
@@ -19,7 +18,7 @@
     (doseq [[p dir]
             (for [x (range (* -2 size) (* (+ 3 w) size) size)
                   y (range (* -2 size) (* (+ 3 h) size) size)]
-              [(gv/vec2 x y) (dir-at x y)])]
+              [(gv/vec2 x y) (dir-at [x y])])]
       (q/line p (v/add p (v/polar (* 0.5 size) dir))))))
 
 (defn next-flow-point [p r]
@@ -31,24 +30,26 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-loop)
-  {})
+  {:step-size 3
+   :length 64})
 
 (defn update-state [state]
   state)
 
-(defn draw [_]
+(defn draw [{:keys [step-size length]}]
   (q/noise-seed (dr/random 1000000))
   (q/background 1.0)
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10)
-  (q/stroke-weight 0.5)
+  (q/stroke-weight 0.2)
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
   (time
    (dotimes [_ 3000]
      (q/begin-shape)
-     (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random))) 2 30)]
+     (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+                                step-size length)]
        (q/curve-vertex x y))
      (q/end-shape))))
 
