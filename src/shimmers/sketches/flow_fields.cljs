@@ -33,36 +33,36 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/no-loop)
+  (q/background 1.0)
+  (q/noise-seed (dr/random 1000000))
   (let [{:keys [iterations]} @settings]
-    {:iterations (* 1000 iterations)
+    {:iter 0
+     :iterations iterations
      :step-size 3
      :length 32}))
 
 (defn update-state [state]
-  state)
+  (update state :iter inc))
 
-(defn draw [{:keys [step-size length iterations]}]
-  (q/noise-seed (dr/random 1000000))
-  (q/background 1.0)
+(defn draw [{:keys [step-size length iter iterations]}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10)
   (q/stroke-weight 0.2)
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
-  (time
-   (dotimes [_ iterations]
-     (q/begin-shape)
-     (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-                                step-size length)]
-       (q/curve-vertex x y))
-     (q/end-shape))))
+  (when (< iter iterations)
+    (dotimes [_ 1000]
+      (q/begin-shape)
+      (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+                                 step-size length)]
+        (q/curve-vertex x y))
+      (q/end-shape))))
 
 (defn explanation []
   [:div
    [:section
-    (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 16])]])
+    (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 32])]])
 
 (defn ^:export run-sketch []
   ;; 2021
