@@ -23,6 +23,7 @@
             [shimmers.sketches.fire :as fire]
             [shimmers.sketches.fireworks :as fireworks]
             [shimmers.sketches.flocking-brushes :as flocking-brushes]
+            [shimmers.sketches.flow-fields :as flow-fields]
             [shimmers.sketches.folding-triangles :as folding-triangles]
             ;; [shimmers.sketches.fluid :as fluid]
             [shimmers.sketches.gossamer-coils :as gossamer-coils]
@@ -104,6 +105,7 @@
     fire/run-sketch
     fireworks/run-sketch
     flocking-brushes/run-sketch
+    flow-fields/run-sketch
     folding-triangles/run-sketch
     ;; fluid/run-sketch
     gossamer-coils/run-sketch
