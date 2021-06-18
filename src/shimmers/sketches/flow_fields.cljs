@@ -13,44 +13,47 @@
 (def settings
   (ctrl/state {:iterations 3
                :step-size 3
-               :length 32}))
+               :length 32
+               :noise-div 6}))
 
 (defn dir-at
-  [[x y]]
-  (* tm/TWO_PI (q/noise (/ x 100) (/ y 100))))
+  [[x y] noise-div]
+  (* tm/TWO_PI (q/noise (/ x noise-div) (/ y noise-div))))
 
-(defn draw-grid [size]
+(defn draw-grid [size noise-div]
   (let [w (/ (q/width) size)
         h (/ (q/height) size)]
     (doseq [[p dir]
             (for [x (range (* -2 size) (* (+ 3 w) size) size)
                   y (range (* -2 size) (* (+ 3 h) size) size)]
-              [(gv/vec2 x y) (dir-at [x y])])]
+              [(gv/vec2 x y) (dir-at [x y] noise-div)])]
       (q/line p (v/add p (v/polar (* 0.5 size) dir))))))
 
-(defn next-flow-point [p r]
-  (tm/+ p (v/polar r (dir-at p))))
+(defn next-flow-point [p r noise-div]
+  (tm/+ p (v/polar r (dir-at p noise-div))))
 
-(defn flow-points [p r n]
-  (reductions (fn [p] (next-flow-point p r)) p (range n)))
+(defn flow-points [p r n noise-div]
+  (reductions (fn [p] (next-flow-point p r noise-div)) p (range n)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations length step-size]} @settings]
+  (let [{:keys [iterations length step-size noise-div]} @settings]
     {:iter 0
      :iterations iterations
      :step-size step-size
+     :noise-div (Math/pow 2 noise-div)
      :length length}))
 
 (defn update-state [state]
   (update state :iter inc))
 
-(defn draw [{:keys [step-size length iter iterations]}]
+(defn draw [{:keys [step-size length noise-div
+                    iter iterations]}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
-  ;; (draw-grid 10)
+  ;; (draw-grid 10 noise-div)
   (q/stroke-weight 0.2)
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
@@ -58,7 +61,7 @@
     (dotimes [_ 1000]
       (q/begin-shape)
       (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-                                 step-size length)]
+                                 step-size length noise-div)]
         (q/curve-vertex x y))
       (q/end-shape))))
 
@@ -67,7 +70,8 @@
    [:section
     (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 32])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
-    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])]])
+    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
+    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 10])]])
 
 (defn ^:export run-sketch []
   ;; 2021
