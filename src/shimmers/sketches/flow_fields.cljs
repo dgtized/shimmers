@@ -3,11 +3,14 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.vector :as gv]
-            [shimmers.math.vector :as v]
-            [thi.ng.math.core :as tm]
             [shimmers.common.quil :as cq]
-            [shimmers.math.deterministic-random :as dr]))
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.vector :as v]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
+
+(def settings (ctrl/state {:iterations 3}))
 
 (defn dir-at
   [[x y]]
@@ -31,13 +34,15 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/no-loop)
-  {:step-size 3
-   :length 64})
+  (let [{:keys [iterations]} @settings]
+    {:iterations (* 1000 iterations)
+     :step-size 3
+     :length 32}))
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [step-size length]}]
+(defn draw [{:keys [step-size length iterations]}]
   (q/noise-seed (dr/random 1000000))
   (q/background 1.0)
   ;; (q/stroke-weight 0.1)
@@ -47,15 +52,21 @@
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
   (time
-   (dotimes [_ 3000]
+   (dotimes [_ iterations]
      (q/begin-shape)
      (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
                                 step-size length)]
        (q/curve-vertex x y))
      (q/end-shape))))
 
+(defn explanation []
+  [:div
+   [:section
+    (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 16])]])
+
 (defn ^:export run-sketch []
   ;; 2021
+  (ctrl/mount explanation)
   (q/defsketch flow-fields
     :host "quil-host"
     :size [800 600]
