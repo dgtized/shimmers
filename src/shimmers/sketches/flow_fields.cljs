@@ -13,6 +13,7 @@
 (def settings
   (ctrl/state {:iterations 3
                :step-size 3
+               :stroke-weight 8
                :length 32
                :noise-div 6}))
 
@@ -39,22 +40,23 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations length step-size noise-div]} @settings]
+  (let [{:keys [iterations length step-size stroke-weight noise-div]} @settings]
     {:iter 0
      :iterations iterations
      :step-size step-size
+     :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
      :length length}))
 
 (defn update-state [state]
   (update state :iter inc))
 
-(defn draw [{:keys [step-size length noise-div
+(defn draw [{:keys [stroke-weight step-size length noise-div
                     iter iterations]}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
-  (q/stroke-weight 0.2)
+  (q/stroke-weight stroke-weight)
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
   (when (< iter iterations)
@@ -69,6 +71,7 @@
   [:div
    [:section
     (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 32])
+    (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
     (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 10])]])
