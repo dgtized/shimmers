@@ -12,7 +12,7 @@
     (doseq [[p dir]
             (for [x (range (* -2 size) (* (+ 3 w) size) size)
                   y (range (* -2 size) (* (+ 3 h) size) size)]
-              [(gv/vec2 x y) (q/noise (/ x 20) (/ y 20))])]
+              [(gv/vec2 x y) (* tm/TWO_PI (q/noise (/ x 60) (/ y 60)))])]
       (q/line p (v/add p (v/polar (* 0.5 size) dir))))))
 
 (defn setup []
