@@ -1,4 +1,5 @@
 (ns shimmers.sketches.flow-fields
+  "https://tylerxhobbs.com/essays/2020/flow-fields"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
