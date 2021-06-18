@@ -10,8 +10,10 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def settings (ctrl/state {:iterations 3
-                           :step-size 3}))
+(def settings
+  (ctrl/state {:iterations 3
+               :step-size 3
+               :length 32}))
 
 (defn dir-at
   [[x y]]
@@ -36,11 +38,11 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations step-size]} @settings]
+  (let [{:keys [iterations length step-size]} @settings]
     {:iter 0
      :iterations iterations
      :step-size step-size
-     :length 32}))
+     :length length}))
 
 (defn update-state [state]
   (update state :iter inc))
@@ -64,7 +66,8 @@
   [:div
    [:section
     (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 32])
-    (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])]])
+    (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
+    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])]])
 
 (defn ^:export run-sketch []
   ;; 2021
