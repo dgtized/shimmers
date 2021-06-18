@@ -42,9 +42,9 @@
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10)
-  (q/stroke-weight 0.8)
+  (q/stroke-weight 0.5)
   (q/no-fill)
-  (q/stroke 0.0 0.5 0.8 1.0)
+  (q/stroke 0.0 0.0 0.0 1.0)
   (time
    (dotimes [_ 3000]
      (q/begin-shape)
