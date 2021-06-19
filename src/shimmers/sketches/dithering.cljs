@@ -129,13 +129,15 @@
   (q/no-fill)
   (q/stroke-weight 0.3)
   (let [pixels (q/pixels capture)
+        sample-size 8
         box-size 2]
-    (dotimes [_ 768]
-      (let [starting-point (gv/vec2 (* (rand) width) (* (rand) height))]
-        (q/begin-shape)
-        (doseq [[x y] (flow-points pixels width starting-point 4 16)]
-          (q/vertex (* box-size (- width x)) (* box-size y)))
-        (q/end-shape)))))
+    (dotimes [y (/ height sample-size)]
+      (dotimes [x (/ width sample-size)]
+        (let [starting-point (tm/* (gv/vec2 x y) sample-size)]
+          (q/begin-shape)
+          (doseq [[x y] (flow-points pixels width starting-point 6 10)]
+            (q/curve-vertex (* box-size (- width x)) (* box-size y)))
+          (q/end-shape))))))
 
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
