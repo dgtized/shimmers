@@ -126,6 +126,7 @@
 
 
 (defn flow-field [capture width height]
+  (q/stroke 0)
   (q/no-fill)
   (q/stroke-weight 0.3)
   (let [pixels (q/pixels capture)
@@ -135,7 +136,7 @@
       (dotimes [x (/ width sample-size)]
         (let [starting-point (tm/* (gv/vec2 x y) sample-size)]
           (q/begin-shape)
-          (doseq [[x y] (flow-points pixels width starting-point 6 10)]
+          (doseq [[x y] (flow-points pixels width starting-point sample-size 8)]
             (q/curve-vertex (* box-size (- width x)) (* box-size y)))
           (q/end-shape))))))
 
