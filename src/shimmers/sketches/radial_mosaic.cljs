@@ -12,6 +12,7 @@
             [thi.ng.math.core :as tm]
             [thi.ng.strf.core :as f]))
 
+(def settings (ctrl/state {:dispersion false}))
 (def width 900)
 (def height 600)
 (defn r [x y]
@@ -57,7 +58,7 @@
         maybe-transformed
         (if (and (or (sm/radians-between? arc0 arc1 t0)
                      (sm/radians-between? arc0 arc1 t1))
-                 false ;; disabled for now
+                 (:dispersion @settings)
                  (dr/chance percent))
           (let [center-r (/ (+ r0 r1) 2)
                 center-theta (sm/radial-mix t0 t1 0.5)
@@ -138,7 +139,8 @@
        scene))
 
 (defn page []
-  [:div (scenes)])
+  [:div (scenes)
+   #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
 (defn ^:export run-sketch []
   ;; 20210515
