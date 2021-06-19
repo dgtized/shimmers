@@ -3,9 +3,12 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.video :as video]))
+            [shimmers.common.video :as video]
+            [shimmers.math.vector :as v]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :color-displace])
+(def modes [:dither :boxes :circles :color-displace :flow-field])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
 
@@ -106,6 +109,34 @@
           (q/fill 0 0 v 48)
           (q/ellipse (+ (* x 2 box-size) 0) (+ (* y 2 box-size) (- displace)) bsize bsize))))))
 
+(defn grayscale-at [pixels width p]
+  (let [x (int (:x p))
+        y (int (:y p))
+        r (aget pixels (idx x y width))
+        g (aget pixels (+ (idx x y width) 1))
+        b (aget pixels (+ (idx x y width) 2))]
+    (/ (+ r g b) 768.0)))
+
+(defn flow-points [pixels width p r n]
+  (reductions (fn [p] (->> (grayscale-at pixels width p)
+                          (* tm/TWO_PI)
+                          (v/polar r)
+                          (tm/+ p)))
+              p (range n)))
+
+
+(defn flow-field [capture width height]
+  (q/no-fill)
+  (q/stroke-weight 0.3)
+  (let [pixels (q/pixels capture)
+        box-size 2]
+    (dotimes [_ 768]
+      (let [starting-point (gv/vec2 (* (rand) width) (* (rand) height))]
+        (q/begin-shape)
+        (doseq [[x y] (flow-points pixels width starting-point 4 16)]
+          (q/vertex (* box-size (- width x)) (* box-size y)))
+        (q/end-shape)))))
+
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
   (let [ui-mode (:mode (deref ui-state))]
@@ -113,7 +144,8 @@
       :dither (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
       :boxes (boxes capture width height)
       :circles (circles capture width height)
-      :color-displace (color-displace capture width height)))
+      :color-displace (color-displace capture width height)
+      :flow-field (flow-field capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   )
 
