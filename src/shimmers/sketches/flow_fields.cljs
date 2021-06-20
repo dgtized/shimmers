@@ -30,11 +30,9 @@
               [(gv/vec2 x y) (dir-at [x y] noise-div)])]
       (q/line p (v/add p (v/polar (* 0.5 size) dir))))))
 
-(defn next-flow-point [p r noise-div]
-  (tm/+ p (v/polar r (dir-at p noise-div))))
-
 (defn flow-points [p r n noise-div]
-  (reductions (fn [p] (next-flow-point p r noise-div)) p (range n)))
+  (reductions (fn [p] (tm/+ p (v/polar r (dir-at p noise-div))))
+              p (range n)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
