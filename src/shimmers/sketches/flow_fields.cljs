@@ -13,6 +13,7 @@
 (def flows-per-iter 100)
 (def settings
   (ctrl/state {:iterations 60
+               :calc-points "flow-points"
                :step-size 3
                :stroke-weight 8
                :length 32
@@ -35,13 +36,38 @@
   (reductions (fn [p] (tm/+ p (v/polar r (dir-at p noise-div))))
               p (range n)))
 
+(defn angles [r n]
+  (map (fn [theta] (v/polar r theta))
+       (range 0 tm/TWO_PI (/ tm/TWO_PI n))))
+
+(defn downhill [[x y] r noise-div]
+  (let [surroundings
+        (for [[dx dy] (angles r 60)]
+          [[dx dy]
+           (q/noise (/ (+ x dx) noise-div)
+                    (/ (+ y dy) noise-div))])
+        [[px py] minimum] (apply min-key second surroundings)]
+    (when (> (q/noise (/ x noise-div) (/ y noise-div)) minimum)
+      (gv/vec2 px py))))
+
+(defn downhill-points [p r n noise-div]
+  (reductions (fn [p] (if-let [next-point (downhill p r noise-div)]
+                       (tm/+ p next-point)
+                       (reduced p)))
+              p (range n)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations length step-size stroke-weight noise-div]} @settings]
+  (let [{:keys [iterations calc-points
+                length step-size stroke-weight noise-div]} @settings]
+    (pr calc-points)
     {:iter 0
      :iterations iterations
+     :calc-points (get {"flow-points" flow-points
+                        "downhill-points" downhill-points}
+                       calc-points)
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
@@ -51,7 +77,7 @@
   (update state :iter inc))
 
 (defn draw [{:keys [stroke-weight step-size length noise-div
-                    iter iterations]}]
+                    iter iterations calc-points]}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
@@ -61,7 +87,7 @@
   (when (< iter iterations)
     (dotimes [_ flows-per-iter]
       (q/begin-shape)
-      (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+      (doseq [[x y] (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
                                  step-size length noise-div)]
         (q/curve-vertex x y))
       (q/end-shape))))
@@ -70,6 +96,9 @@
   [:div
    [:section
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
+    (ctrl/dropdown settings "Point Calculation" [:calc-points] =
+                   {"Angle from Noise" "flow-points"
+                    "Downhill" "downhill-points"})
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
