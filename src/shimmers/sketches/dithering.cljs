@@ -148,7 +148,6 @@
 
 (defn ascii [ascii capture width height]
   (q/fill 0)
-  (q/stroke 0)
   (let [resolution (count ascii)
         pixels (q/pixels capture)
         sample-size 4
@@ -156,9 +155,10 @@
     (q/text-size box-size)
     (dotimes [y (/ height sample-size)]
       (dotimes [x (/ width sample-size)]
-        (let [v (grayscale-at pixels width (tm/* (gv/vec2 x y) sample-size))
-              char (nth ascii (int (* v resolution)))]
-          (q/text char (* (- (/ width sample-size) x) box-size) (* y box-size)))))))
+        (let [v (grayscale-at pixels width (tm/* (gv/vec2 x y) sample-size))]
+          (q/text-char (nth ascii (int (* v resolution)))
+                       (* (- (/ width sample-size) x) box-size)
+                       (* (inc y) box-size)))))))
 
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
