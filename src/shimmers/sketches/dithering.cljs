@@ -8,7 +8,8 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :color-displace :flow-field :ascii-70 :ascii-10])
+(def modes [:dither :boxes :circles :color-displace :flow-field
+            :ascii-70 :ascii-10 :ascii-n])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
 
@@ -145,6 +146,7 @@
 
 (def ascii-70 (vec " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"))
 (def ascii-10 (vec " .:-=+*#%@"))
+(def ascii-n (map str (range 10)))
 
 (defn ascii [ascii capture width height]
   (q/fill 0)
@@ -170,7 +172,8 @@
       :color-displace (color-displace capture width height)
       :flow-field (flow-field capture width height)
       :ascii-70 (ascii ascii-70 capture width height)
-      :ascii-10 (ascii ascii-10 capture width height)))
+      :ascii-10 (ascii ascii-10 capture width height)
+      :ascii-n (ascii ascii-n capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   )
 
