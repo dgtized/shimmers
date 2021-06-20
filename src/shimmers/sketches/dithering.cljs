@@ -63,51 +63,55 @@
   (q/no-stroke)
   (q/fill 0)
   (let [box-size 3
+        max-x (/ width box-size)
         pixels (q/pixels capture)]
     (dotimes [y (/ height box-size)]
-      (dotimes [x (/ width box-size)]
+      (dotimes [x max-x]
         (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.75) 0.5)]
-          (q/rect (* x 2 box-size) (* y 2 box-size) size size))))))
+          (q/rect (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
 
 (defn circles [capture width height]
   (q/rect-mode :corner)
   (q/no-stroke)
   (q/fill 0)
   (let [box-size 3
+        max-x (/ width box-size)
         pixels (q/pixels capture)]
     (dotimes [y (/ height box-size)]
-      (dotimes [x (/ width box-size)]
+      (dotimes [x max-x]
         (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
-          (q/ellipse (* x 2 box-size) (* y 2 box-size) size size))))))
+          (q/ellipse (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
 
 (defn color-displace [capture width height]
   (q/rect-mode :corner)
   (q/no-stroke)
   (let [box-size 4
+        max-x (/ width box-size)
         pixels (q/pixels capture)
         displace (/ box-size 4)
-        v 200
-        a 128]
+        v 200]
     (dotimes [y (/ height box-size)]
-      (dotimes [x (/ width box-size)]
+      (dotimes [x max-x]
         (let [r (aget pixels (idx (* x box-size) (* y box-size) width))
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               rsize (q/map-range r 0 255 (* box-size 1.2) 0.2)
               gsize (q/map-range g 0 255 (* box-size 1.2) 0.2)
-              bsize (q/map-range b 0 255 (* box-size 1.2) 0.2)]
+              bsize (q/map-range b 0 255 (* box-size 1.2) 0.2)
+              cx (* (- max-x x) 2 box-size)
+              cy (* y 2 box-size)]
           (q/fill v 0 0 255)
-          (q/ellipse (+ (* x 2 box-size) displace) (+ (* y 2 box-size) displace) rsize rsize)
+          (q/ellipse (+ cx displace) (+ cy displace) rsize rsize)
           (q/fill 0 v 0 255)
-          (q/ellipse (+ (* x 2 box-size) (- displace)) (+ (* y 2 box-size) displace) gsize gsize)
+          (q/ellipse (- cx displace) (+ cy displace) gsize gsize)
           (q/fill 0 0 v 48)
-          (q/ellipse (+ (* x 2 box-size) 0) (+ (* y 2 box-size) (- displace)) bsize bsize))))))
+          (q/ellipse cx (- cy displace) bsize bsize))))))
 
 (defn grayscale-at [pixels width p]
   (let [x (int (:x p))
