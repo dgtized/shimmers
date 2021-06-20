@@ -95,10 +95,10 @@
 (defn explanation []
   [:div
    [:section
-    (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
-    (ctrl/dropdown settings "Point Calculation" [:calc-points] =
+    (ctrl/dropdown settings "Algorithm" [:calc-points] =
                    {"Angle from Noise" "flow-points"
-                    "Downhill" "downhill-points"})
+                    "Flow Downhill" "downhill-points"})
+    (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
