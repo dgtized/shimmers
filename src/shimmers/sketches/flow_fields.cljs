@@ -12,9 +12,9 @@
 
 (def flows-per-iter 100)
 (def settings
-  (ctrl/state {:iterations 60
+  (ctrl/state {:iterations 90
                :calc-points "flow-points"
-               :step-size 3
+               :step-size 4
                :stroke-weight 8
                :length 32
                :noise-div 6}))
@@ -102,7 +102,7 @@
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
-    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 10])]])
+    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])]])
 
 (defn ^:export run-sketch []
   ;; 2021
