@@ -46,7 +46,7 @@
               old (aget source i)
               new (closest-color old)
               error (- old new)]
-          (write target i new)
+          (write target (idx (- width x) y width) new)
           (propagate source (idx (inc x) y width)
                      (* error (/ 7 16)))
           (propagate source (idx (dec x) (inc y) width)
