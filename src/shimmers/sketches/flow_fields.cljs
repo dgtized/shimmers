@@ -10,8 +10,9 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+(def flows-per-iter 100)
 (def settings
-  (ctrl/state {:iterations 3
+  (ctrl/state {:iterations 60
                :step-size 3
                :stroke-weight 8
                :length 32
@@ -58,7 +59,7 @@
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
   (when (< iter iterations)
-    (dotimes [_ 1000]
+    (dotimes [_ flows-per-iter]
       (q/begin-shape)
       (doseq [[x y] (flow-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
                                  step-size length noise-div)]
@@ -68,7 +69,7 @@
 (defn explanation []
   [:div
    [:section
-    (ctrl/slider settings (fn [v] (str "Iterations " (* 1000 v))) [:iterations] [1 32])
+    (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
