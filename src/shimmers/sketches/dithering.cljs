@@ -8,7 +8,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :color-displace :flow-field])
+(def modes [:dither :boxes :circles :color-displace :flow-field :ascii-70 :ascii-10])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
 
@@ -124,7 +124,6 @@
                           (tm/+ p)))
               p (range n)))
 
-
 (defn flow-field [capture width height]
   (q/stroke 0)
   (q/no-fill)
@@ -140,6 +139,23 @@
             (q/curve-vertex (* box-size (- width x)) (* box-size y)))
           (q/end-shape))))))
 
+(def ascii-70 (vec " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"))
+(def ascii-10 (vec " .:-=+*#%@"))
+
+(defn ascii [ascii capture width height]
+  (q/fill 0)
+  (q/stroke 0)
+  (let [resolution (count ascii)
+        pixels (q/pixels capture)
+        sample-size 4
+        box-size 8]
+    (q/text-size box-size)
+    (dotimes [y (/ height sample-size)]
+      (dotimes [x (/ width sample-size)]
+        (let [v (grayscale-at pixels width (tm/* (gv/vec2 x y) sample-size))
+              char (nth ascii (int (* v resolution)))]
+          (q/text char (* (- (/ width sample-size) x) box-size) (* y box-size)))))))
+
 (defn draw [{:keys [capture width height]}]
   (q/background 255)
   (let [ui-mode (:mode (deref ui-state))]
@@ -148,7 +164,9 @@
       :boxes (boxes capture width height)
       :circles (circles capture width height)
       :color-displace (color-displace capture width height)
-      :flow-field (flow-field capture width height)))
+      :flow-field (flow-field capture width height)
+      :ascii-70 (ascii ascii-70 capture width height)
+      :ascii-10 (ascii ascii-10 capture width height)))
   ;; (q/image capture (+ 10 width) 0)
   )
 
