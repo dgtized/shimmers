@@ -144,6 +144,7 @@
             (q/curve-vertex (* box-size (- width x)) (* box-size y)))
           (q/end-shape))))))
 
+;; http://paulbourke.net/dataformats/asciiart/
 (def ascii-70 (vec " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"))
 (def ascii-10 (vec " .:-=+*#%@"))
 (def ascii-n (map str (range 10)))
