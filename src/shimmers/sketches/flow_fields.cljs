@@ -150,7 +150,7 @@
           (dotimes [_ (/ flows-per-iter 4)]
             (let [points (points settings)]
               (if align-triangles
-                (doseq [[p q] (map vector (rest points) (butlast points))]
+                (doseq [[p q] (partition 2 1 points)]
                   (apply cq/draw-triangle
                          (-> triangle
                              (geom/rotate (geom/heading (tm/- q p)))
