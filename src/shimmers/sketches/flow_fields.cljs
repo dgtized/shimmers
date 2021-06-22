@@ -13,6 +13,7 @@
 (def flows-per-iter 100)
 (def settings
   (ctrl/state {:calc-points "flow-points"
+               :draw "curves"
                :snap-resolution 0
                :iterations 90
                :step-size 4
@@ -74,7 +75,7 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations calc-points snap-resolution
+  (let [{:keys [iterations draw calc-points snap-resolution
                 length step-size stroke-weight noise-div]} @settings]
     {:iter 0
      :iterations iterations
@@ -85,13 +86,14 @@
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
+     :draw draw
      :length length}))
 
 (defn update-state [state]
   (update state :iter inc))
 
 (defn draw [{:keys [stroke-weight step-size length noise-div
-                    iter iterations calc-points snap-resolution]}]
+                    iter iterations draw calc-points snap-resolution]}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
@@ -99,12 +101,19 @@
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
   (when (< iter iterations)
-    (dotimes [_ flows-per-iter]
-      (q/begin-shape)
-      (doseq [[x y] (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-                                 step-size length noise-div snap-resolution)]
-        (q/curve-vertex x y))
-      (q/end-shape))))
+    (case draw
+      "curves"
+      (dotimes [_ flows-per-iter]
+        (q/begin-shape)
+        (doseq [[x y] (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+                                   step-size length noise-div snap-resolution)]
+          (q/curve-vertex x y))
+        (q/end-shape))
+      "circles"
+      (dotimes [_ (/ flows-per-iter 2)]
+        (doseq [p (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+                               step-size length noise-div snap-resolution)]
+          (cq/circle p step-size))))))
 
 (defn explanation []
   [:div
@@ -112,6 +121,9 @@
     (ctrl/dropdown settings "Algorithm" [:calc-points] =
                    {"Angle from Noise" "flow-points"
                     "Flow Downhill" "downhill-points"})
+    (ctrl/dropdown settings "Draw" [:draw] =
+                   {"Curved Lines" "curves"
+                    "Circles" "circles"})
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-resolution]
                    (fn [s v] (< (Math/abs (- s v)) 0.01))
