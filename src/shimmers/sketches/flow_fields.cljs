@@ -26,19 +26,22 @@
   [[x y] noise-div]
   (* tm/TWO_PI (q/noise (/ x noise-div) (/ y noise-div))))
 
-(defn draw-grid [size noise-div]
+(defn snap-to [theta resolution]
+  (if (> resolution 0)
+    (* (Math/round (/ theta resolution)) resolution)
+    theta))
+
+(defn draw-grid [size {:keys [noise-div snap-resolution jitter]}]
   (let [w (/ (q/width) size)
         h (/ (q/height) size)]
     (doseq [[p dir]
             (for [x (range (* -2 size) (* (+ 3 w) size) size)
                   y (range (* -2 size) (* (+ 3 h) size) size)]
               [(gv/vec2 x y) (dir-at [x y] noise-div)])]
-      (q/line p (v/add p (v/polar (* 0.5 size) dir))))))
-
-(defn snap-to [theta resolution]
-  (if (> resolution 0)
-    (* (Math/round (/ theta resolution)) resolution)
-    theta))
+      (q/line p
+              (-> p
+                  (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
+                  (v/add (v/jitter (tm/random jitter))))))))
 
 (defn flow-points
   [p {:keys [step-size length noise-div snap-resolution jitter]}]
@@ -129,6 +132,8 @@
           (doseq [[x y] (points settings)]
             (q/curve-vertex x y))
           (q/end-shape))
+        "grid"
+        (draw-grid (:step-size settings) settings)
         "circles"
         ;; alternative, do circle packing, no-overlap?
         (dotimes [_ (/ flows-per-iter 4)]
@@ -152,7 +157,8 @@
                    {"Curved Lines" "curves"
                     "Segmented Lines" "segments"
                     "Circles" "circles"
-                    "Triangles" "triangles"})
+                    "Triangles" "triangles"
+                    "Debug Grid" "grid"})
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-resolution]
                    (fn [s v] (< (Math/abs (- s v)) 0.01))
