@@ -146,20 +146,21 @@
           (doseq [p (points settings)]
             (cq/circle p hstep)))
         "triangles"
-        (dotimes [_ (/ flows-per-iter 4)]
-          (let [points (points settings)]
-            (if align-triangles
-              (doseq [[p q] (map vector (rest points) (butlast points))]
-                (apply cq/draw-triangle
-                       (-> (gt/triangle2 [hstep 0] [(- hstep) hstep] [(- hstep) (- hstep)])
-                           (geom/rotate (geom/heading (tm/- q p)))
-                           (geom/center p)
-                           :points)))
-              (doseq [p points]
-                (apply cq/draw-triangle
-                       (-> (gt/triangle2 [hstep 0] [(- hstep) hstep] [(- hstep) (- hstep)])
-                           (geom/center p)
-                           :points))))))))))
+        (let [triangle (gt/triangle2 [hstep 0] [(- hstep) hstep] [(- hstep) (- hstep)])]
+          (dotimes [_ (/ flows-per-iter 4)]
+            (let [points (points settings)]
+              (if align-triangles
+                (doseq [[p q] (map vector (rest points) (butlast points))]
+                  (apply cq/draw-triangle
+                         (-> triangle
+                             (geom/rotate (geom/heading (tm/- q p)))
+                             (geom/center p)
+                             :points)))
+                (doseq [p points]
+                  (apply cq/draw-triangle
+                         (-> triangle
+                             (geom/center p)
+                             :points)))))))))))
 
 (defn explanation []
   [:div
