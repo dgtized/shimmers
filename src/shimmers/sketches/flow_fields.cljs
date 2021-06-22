@@ -40,13 +40,15 @@
     (* (Math/round (/ theta resolution)) resolution)
     theta))
 
-(defn flow-points [p r n noise-div snap-resolution jitter]
-  (reductions (fn [p]
-                (let [dir (-> (dir-at p noise-div)
-                              (snap-to snap-resolution))]
-                  (tm/+ (tm/+ p (v/polar r dir))
-                        (v/jitter (tm/random jitter)))))
-              p (range n)))
+(defn flow-points
+  [p {:keys [step-size length noise-div snap-resolution jitter]}]
+  (reductions
+   (fn [p]
+     (let [dir (-> (dir-at p noise-div)
+                   (snap-to snap-resolution))]
+       (tm/+ (tm/+ p (v/polar step-size dir))
+             (v/jitter (tm/random jitter)))))
+   p (range length)))
 
 (defn angles [r resolution]
   (map (fn [theta] (v/polar r theta))
@@ -66,12 +68,14 @@
     (when (> (q/noise (/ x noise-div) (/ y noise-div)) minimum)
       (gv/vec2 px py))))
 
-(defn downhill-points [p r n noise-div snap-resolution jitter]
-  (reductions (fn [p]
-                (if-let [next-point (downhill p r noise-div snap-resolution)]
-                  (tm/+ (tm/+ (tm/+ p next-point)) (v/jitter (tm/random jitter)))
-                  (reduced p)))
-              p (range n)))
+(defn downhill-points
+  [p {:keys [step-size length noise-div snap-resolution jitter]}]
+  (reductions
+   (fn [p]
+     (if-let [next-point (downhill p step-size noise-div snap-resolution)]
+       (tm/+ (tm/+ (tm/+ p next-point)) (v/jitter (tm/random jitter)))
+       (reduced p)))
+   p (range length)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -97,9 +101,9 @@
   (update state :iter inc))
 
 (defn points
-  [{:keys [step-size length noise-div calc-points snap-resolution jitter]}]
+  [{:keys [calc-points] :as settings}]
   (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-               step-size length noise-div snap-resolution jitter))
+               settings))
 
 (defn draw
   [{:keys [stroke-weight step-size iter iterations draw] :as settings}]
