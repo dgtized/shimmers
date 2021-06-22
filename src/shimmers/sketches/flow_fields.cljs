@@ -121,9 +121,10 @@
             (cq/circle p hstep)))
         "triangles"
         (dotimes [_ (/ flows-per-iter 4)]
+          ;; TODO: orient triangle towards flow?
           (doseq [p (points settings)]
-            (cq/draw-triangle (tm/+ p (gv/vec2 hstep 0))
-                              (tm/+ p (gv/vec2 (- hstep) 0))
+            (cq/draw-triangle (tm/+ p (gv/vec2 hstep (- hstep)))
+                              (tm/+ p (gv/vec2 (- hstep) (- hstep)))
                               (tm/+ p (gv/vec2 0 hstep)))))))))
 
 (defn explanation []
