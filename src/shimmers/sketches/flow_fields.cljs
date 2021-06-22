@@ -7,6 +7,8 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -14,6 +16,7 @@
 (def settings
   (ctrl/state {:calc-points "flow-points"
                :draw "curves"
+               :align-triangles true
                :snap-resolution 0
                :iterations 90
                :step-size 4
@@ -84,7 +87,8 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations draw calc-points snap-resolution stroke-weight
+  (let [{:keys [iterations draw align-triangles calc-points
+                snap-resolution stroke-weight
                 length step-size noise-div jitter]}
         @settings]
     {:iter 0
@@ -97,6 +101,7 @@
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
      :draw draw
+     :align-triangles align-triangles
      :length length
      :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))}))
 
@@ -109,7 +114,8 @@
                settings))
 
 (defn draw
-  [{:keys [stroke-weight step-size iter iterations draw] :as settings}]
+  [{:keys [stroke-weight step-size iter iterations draw align-triangles]
+    :as settings}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
@@ -141,11 +147,19 @@
             (cq/circle p hstep)))
         "triangles"
         (dotimes [_ (/ flows-per-iter 4)]
-          ;; TODO: orient triangle towards flow?
-          (doseq [p (points settings)]
-            (cq/draw-triangle (tm/+ p (gv/vec2 hstep (- hstep)))
-                              (tm/+ p (gv/vec2 (- hstep) (- hstep)))
-                              (tm/+ p (gv/vec2 0 hstep)))))))))
+          (if align-triangles
+            (let [points (points settings)]
+              (doseq [[p q] (map vector (rest points) (butlast points))]
+                (let [[[ax ay] [bx by] [cx cy]]
+                      (-> (gt/triangle2 [hstep 0] [(- hstep) hstep] [(- hstep) (- hstep)])
+                          (geom/rotate (geom/heading (tm/- q p)))
+                          (geom/center p)
+                          :points)]
+                  (q/triangle ax ay bx by cx cy))))
+            (doseq [p (points settings)]
+              (cq/draw-triangle (tm/+ p (gv/vec2 hstep (- hstep)))
+                                (tm/+ p (gv/vec2 (- hstep) (- hstep)))
+                                (tm/+ p (gv/vec2 0 hstep))))))))))
 
 (defn explanation []
   [:div
@@ -159,6 +173,8 @@
                     "Circles" "circles"
                     "Triangles" "triangles"
                     "Debug Grid" "grid"})
+    (when (= (:draw @settings) "triangles")
+      (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-resolution]
                    (fn [s v] (< (Math/abs (- s v)) 0.01))
