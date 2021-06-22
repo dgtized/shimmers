@@ -116,11 +116,11 @@
             (q/curve-vertex x y))
           (q/end-shape))
         "circles"
-        (dotimes [_ (/ flows-per-iter 2)]
+        (dotimes [_ (/ flows-per-iter 4)]
           (doseq [p (points settings)]
             (cq/circle p hstep)))
         "triangles"
-        (dotimes [_ (/ flows-per-iter 2)]
+        (dotimes [_ (/ flows-per-iter 4)]
           (doseq [p (points settings)]
             (cq/draw-triangle (tm/+ p (gv/vec2 hstep 0))
                               (tm/+ p (gv/vec2 (- hstep) 0))
