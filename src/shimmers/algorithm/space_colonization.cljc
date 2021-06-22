@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.space-colonization
-  (:require [clojure.set :as set]
+  (:require [clojure.edn :as edn]
+            [clojure.set :as set]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -181,7 +182,7 @@
      :prune-distance prune-distance
      :segment-distance segment-distance
      :attractor-count attractor-count
-     :snap-theta snap-theta
+     :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
      :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
      :branches branches
      :weights (update-weights {} branches branches)
