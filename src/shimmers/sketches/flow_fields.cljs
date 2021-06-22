@@ -105,18 +105,26 @@
   (q/stroke-weight stroke-weight)
   (q/no-fill)
   (q/stroke 0.0 0.0 0.0 1.0)
+  (q/ellipse-mode :radius)
   (when (< iter iterations)
-    (case draw
-      "curves"
-      (dotimes [_ flows-per-iter]
-        (q/begin-shape)
-        (doseq [[x y] (points settings)]
-          (q/curve-vertex x y))
-        (q/end-shape))
-      "circles"
-      (dotimes [_ (/ flows-per-iter 2)]
-        (doseq [p (points settings)]
-          (cq/circle p step-size))))))
+    (let [hstep (* step-size 0.5)]
+      (case draw
+        "curves"
+        (dotimes [_ flows-per-iter]
+          (q/begin-shape)
+          (doseq [[x y] (points settings)]
+            (q/curve-vertex x y))
+          (q/end-shape))
+        "circles"
+        (dotimes [_ (/ flows-per-iter 2)]
+          (doseq [p (points settings)]
+            (cq/circle p hstep)))
+        "triangles"
+        (dotimes [_ (/ flows-per-iter 2)]
+          (doseq [p (points settings)]
+            (cq/draw-triangle (tm/+ p (gv/vec2 hstep 0))
+                              (tm/+ p (gv/vec2 (- hstep) 0))
+                              (tm/+ p (gv/vec2 0 hstep)))))))))
 
 (defn explanation []
   [:div
@@ -126,7 +134,8 @@
                     "Flow Downhill" "downhill-points"})
     (ctrl/dropdown settings "Draw" [:draw] =
                    {"Curved Lines" "curves"
-                    "Circles" "circles"})
+                    "Circles" "circles"
+                    "Triangles" "triangles"})
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-resolution]
                    (fn [s v] (< (Math/abs (- s v)) 0.01))
