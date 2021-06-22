@@ -122,6 +122,7 @@
             (q/curve-vertex x y))
           (q/end-shape))
         "circles"
+        ;; alternative, do circle packing, no-overlap?
         (dotimes [_ (/ flows-per-iter 4)]
           (doseq [p (points settings)]
             (cq/circle p hstep)))
