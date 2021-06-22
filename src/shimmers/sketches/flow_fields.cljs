@@ -19,7 +19,8 @@
                :step-size 4
                :stroke-weight 8
                :length 32
-               :noise-div 6}))
+               :noise-div 6
+               :jitter 0}))
 
 (defn dir-at
   [[x y] noise-div]
@@ -39,11 +40,12 @@
     (* (Math/round (/ theta resolution)) resolution)
     theta))
 
-(defn flow-points [p r n noise-div snap-resolution]
+(defn flow-points [p r n noise-div snap-resolution jitter]
   (reductions (fn [p]
                 (let [dir (-> (dir-at p noise-div)
                               (snap-to snap-resolution))]
-                  (tm/+ p (v/polar r dir))))
+                  (tm/+ (tm/+ p (v/polar r dir))
+                        (v/jitter (tm/random jitter)))))
               p (range n)))
 
 (defn angles [r resolution]
@@ -64,10 +66,10 @@
     (when (> (q/noise (/ x noise-div) (/ y noise-div)) minimum)
       (gv/vec2 px py))))
 
-(defn downhill-points [p r n noise-div snap-resolution]
+(defn downhill-points [p r n noise-div snap-resolution jitter]
   (reductions (fn [p]
                 (if-let [next-point (downhill p r noise-div snap-resolution)]
-                  (tm/+ p next-point)
+                  (tm/+ (tm/+ (tm/+ p next-point)) (v/jitter (tm/random jitter)))
                   (reduced p)))
               p (range n)))
 
@@ -75,8 +77,9 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations draw calc-points snap-resolution
-                length step-size stroke-weight noise-div]} @settings]
+  (let [{:keys [iterations draw calc-points snap-resolution stroke-weight
+                length step-size noise-div jitter]}
+        @settings]
     {:iter 0
      :iterations iterations
      :calc-points (get {"flow-points" flow-points
@@ -87,15 +90,16 @@
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
      :draw draw
-     :length length}))
+     :length length
+     :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))}))
 
 (defn update-state [state]
   (update state :iter inc))
 
 (defn points
-  [{:keys [step-size length noise-div calc-points snap-resolution]}]
+  [{:keys [step-size length noise-div calc-points snap-resolution jitter]}]
   (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-               step-size length noise-div snap-resolution))
+               step-size length noise-div snap-resolution jitter))
 
 (defn draw
   [{:keys [stroke-weight step-size iter iterations draw] :as settings}]
@@ -160,10 +164,12 @@
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
-    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])]])
+    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
+    (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v "* step-size")
+                                     "No Jitter")) [:jitter] [0 32])]])
 
 (defn ^:export run-sketch []
-  ;; 2021
+  ;; 20210617
   (ctrl/mount explanation)
   (q/defsketch flow-fields
     :host "quil-host"
