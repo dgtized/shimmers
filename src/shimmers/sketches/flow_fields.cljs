@@ -165,10 +165,10 @@
 (defn explanation []
   [:div
    [:section
-    (ctrl/dropdown settings "Algorithm" [:calc-points] =
+    (ctrl/dropdown settings "Algorithm" [:calc-points]
                    {"Angle from Noise" "flow-points"
                     "Flow Downhill" "downhill-points"})
-    (ctrl/dropdown settings "Draw" [:draw] =
+    (ctrl/dropdown settings "Draw" [:draw]
                    {"Curved Lines" "curves"
                     "Segmented Lines" "segments"
                     "Circles" "circles"
@@ -178,7 +178,6 @@
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-resolution]
-                   (fn [s v] (< (Math/abs (- s v)) 0.01))
                    {"Disabled" 0
                     "90 degrees" (/ Math/PI 2)
                     "60 degrees" (/ Math/PI 3)

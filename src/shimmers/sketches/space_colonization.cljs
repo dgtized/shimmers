@@ -98,7 +98,6 @@
                  [:segment-distance] [1 30])
     (ctrl/dropdown settings
                    "Snap Angles To " [:snap-theta]
-                   (fn [s v] (< (Math/abs (- s v)) 0.01))
                    {"Disabled" 0
                     "90 degrees" (/ Math/PI 2)
                     "60 degrees" (/ Math/PI 3)
