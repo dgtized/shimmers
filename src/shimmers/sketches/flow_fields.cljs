@@ -2,6 +2,7 @@
   "https://tylerxhobbs.com/essays/2020/flow-fields"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [clojure.edn :as edn]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
@@ -17,7 +18,7 @@
   (ctrl/state {:calc-points "flow-points"
                :draw "curves"
                :align-triangles true
-               :snap-resolution 0
+               :snap-resolution "0"
                :iterations 90
                :step-size 4
                :stroke-weight 8
@@ -65,7 +66,7 @@
 (defn downhill [[x y] r noise-div snap-resolution]
   (let [surroundings
         (for [[dx dy] (angles r (if (> snap-resolution 0)
-                                  (/ snap-resolution 2)
+                                  snap-resolution
                                   (/ tm/TWO_PI 60)))]
           [[dx dy]
            (q/noise (/ (+ x dx) noise-div)
@@ -96,7 +97,7 @@
      :calc-points (get {"flow-points" flow-points
                         "downhill-points" downhill-points}
                        calc-points)
-     :snap-resolution snap-resolution
+     :snap-resolution (edn/read-string snap-resolution)
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
