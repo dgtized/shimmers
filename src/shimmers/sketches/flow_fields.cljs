@@ -183,7 +183,7 @@
   (ctrl/mount explanation)
   (q/defsketch flow-fields
     :host "quil-host"
-    :size [800 600]
+    :size [1200 900]
     :setup setup
     :update update-state
     :draw draw
