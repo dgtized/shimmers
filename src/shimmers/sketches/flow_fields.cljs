@@ -92,11 +92,13 @@
 (defn update-state [state]
   (update state :iter inc))
 
-(defn starting-point []
-  (gv/vec2 (cq/rel-pos (dr/random) (dr/random))))
+(defn points
+  [{:keys [step-size length noise-div calc-points snap-resolution]}]
+  (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+               step-size length noise-div snap-resolution))
 
-(defn draw [{:keys [stroke-weight step-size length noise-div
-                    iter iterations draw calc-points snap-resolution]}]
+(defn draw
+  [{:keys [stroke-weight step-size iter iterations draw] :as settings}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
@@ -108,14 +110,12 @@
       "curves"
       (dotimes [_ flows-per-iter]
         (q/begin-shape)
-        (doseq [[x y] (calc-points (starting-point)
-                                   step-size length noise-div snap-resolution)]
+        (doseq [[x y] (points settings)]
           (q/curve-vertex x y))
         (q/end-shape))
       "circles"
       (dotimes [_ (/ flows-per-iter 2)]
-        (doseq [p (calc-points (starting-point)
-                               step-size length noise-div snap-resolution)]
+        (doseq [p (points settings)]
           (cq/circle p step-size))))))
 
 (defn explanation []
