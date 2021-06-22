@@ -109,6 +109,12 @@
   (when (< iter iterations)
     (let [hstep (* step-size 0.5)]
       (case draw
+        "segments"
+        (dotimes [_ flows-per-iter]
+          (q/begin-shape)
+          (doseq [[x y] (points settings)]
+            (q/vertex x y))
+          (q/end-shape))
         "curves"
         (dotimes [_ flows-per-iter]
           (q/begin-shape)
@@ -135,6 +141,7 @@
                     "Flow Downhill" "downhill-points"})
     (ctrl/dropdown settings "Draw" [:draw] =
                    {"Curved Lines" "curves"
+                    "Segmented Lines" "segments"
                     "Circles" "circles"
                     "Triangles" "triangles"})
     (ctrl/dropdown settings
