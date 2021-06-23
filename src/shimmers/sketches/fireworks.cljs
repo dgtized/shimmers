@@ -101,18 +101,19 @@
 (defn make-rocket [loc]
   (let [emitter (gv/vec2 loc)
         velocity (gv/vec2 (* 0.015 (q/random-gaussian)) (tm/random 0.9 1.2))]
-    (assoc (make-particle emitter (tm/+ emitter velocity) 8.0)
+    (assoc (make-particle emitter (tm/+ emitter velocity) 100.0)
            :type :rocket
            :hue (popper-colors)
            :max-age 600)))
 
 ;; TODO: add cracklers, and spinners
 (defn make-payload [{:keys [pos prev hue]} type {:keys [quantity force max-age]}]
-  (repeatedly quantity
-              #(assoc (make-particle (tm/+ pos (v/jitter force)) prev 4.0)
-                      :type type
-                      :hue hue
-                      :max-age max-age)))
+  (let [mass (/ 50 quantity)]
+    (repeatedly quantity
+                #(assoc (make-particle (tm/+ pos (v/jitter force)) prev mass)
+                        :type type
+                        :hue hue
+                        :max-age max-age))))
 
 (defn make-mirv [rocket quantity force]
   (make-payload rocket :mirv
@@ -121,14 +122,14 @@
                  :max-age 60}))
 
 (defn make-rain [{:keys [pos prev hue]} quantity force]
-  (let [weight (/ 30 quantity)]
+  (let [weight (/ 50 quantity)]
     (repeatedly quantity
                 #(let [f (apply tm/random force)
                        theta (tm/random (- Math/PI tm/QUARTER_PI) (+ tm/TWO_PI tm/QUARTER_PI))]
                    (assoc (make-particle (tm/+ pos (v/polar f theta)) prev weight)
                           :type :rain
                           :hue hue
-                          :max-age 60)))))
+                          :max-age (int (tm/random 55 90)))))))
 
 (defn make-bottle [rocket]
   (make-payload rocket :bottle
@@ -157,14 +158,14 @@
         ((p/weighted {#(make-bottle p) 2
                       #(make-poppers p (rand-int 32)) 8
                       #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
-                      #(make-rain p (int (tm/random 64 96)) [0.5 1.5]) 3
+                      #(make-rain p (int (tm/random 64 96)) [0.4 1.2]) 3
                       #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 0.16 0.9 (/ age max-age)))
         ((p/weighted {#(make-mirv p 4 (tm/random 0.5 1.1)) 1
                       #(make-poppers p (int (tm/random 12 32))) 4
-                      #(make-rain p (int (tm/random 24 32)) [0.1 1.0]) 5}))
+                      #(make-rain p (int (tm/random 24 32)) [0.1 0.9]) 5}))
         [p])
       [p])))
 
@@ -174,7 +175,7 @@
   (let [fps 60]
     {:system
      (make-system {:mechanics [(gravity (gv/vec2 0 (/ 9.8 fps)))
-                               (solid-fuel-thruster (* 2.0 fps) 3.0 (/ 16.0 fps))]
+                               (solid-fuel-thruster (* 2 fps) 30.0 (/ 24.0 fps))]
                    :constraints [(max-age) (above-ground)]
                    :drag (/ 0.1 fps)})
      :explode (exploder 0.30 0.80)}))
