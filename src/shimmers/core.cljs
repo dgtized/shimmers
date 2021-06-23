@@ -80,9 +80,11 @@
                     sketches)]
     [:section {:class "sketch-list"}
      [:h1 (str "All Sketches (" (count sketches) ")")]
-     [:p "A sketch-book of generative art, visual effects, animations,
-     algorithms, and whatever else struck my fancy to implement or explore. Many
-     are complete, and some I periodically revisit and tweak."]
+     [:p "A digital sketch-book of generative art, visual effects, computer
+     animation, visualizations of algorithms, and whatever else struck my fancy to
+     implement or explore. Many are complete, and some I periodically revisit
+     and tweak. For those inspired by other's works or tutorials, I do my best
+     to give attribution in the source code."]
      [:div {:class "sketch-columns"}
       [:div [:h3 "A-M"] (list-sketches sketches-an)]
       [:div [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
