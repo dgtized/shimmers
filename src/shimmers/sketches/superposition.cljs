@@ -6,6 +6,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
@@ -209,8 +210,7 @@
 (defn ^:export run-sketch []
   ;; 20210308
   (ctrl/mount explanation)
-  (q/defsketch superposition
-    :host "quil-host"
+  (sketch/defquil superposition
     :size [1200 900]
     :setup setup
     :update update-state
