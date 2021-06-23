@@ -120,6 +120,16 @@
                  :force force
                  :max-age 60}))
 
+(defn make-rain [{:keys [pos prev hue]} quantity force]
+  (let [weight (/ 30 quantity)]
+    (repeatedly quantity
+                #(let [f (apply tm/random force)
+                       theta (tm/random (- Math/PI tm/QUARTER_PI) (+ tm/TWO_PI tm/QUARTER_PI))]
+                   (assoc (make-particle (tm/+ pos (v/polar f theta)) prev weight)
+                          :type :rain
+                          :hue hue
+                          :max-age 60)))))
+
 (defn make-bottle [rocket]
   (make-payload rocket :bottle
                 {:quantity 1
@@ -147,13 +157,14 @@
         ((p/weighted {#(make-bottle p) 2
                       #(make-poppers p (rand-int 32)) 8
                       #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
+                      #(make-rain p (int (tm/random 64 96)) [0.5 1.5]) 3
                       #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 0.16 0.9 (/ age max-age)))
-        (if (p/chance 0.05)
-          (make-mirv p 4 (tm/random 0.5 1.1))
-          (make-poppers p (int (tm/random 12 32))))
+        ((p/weighted {#(make-mirv p 4 (tm/random 0.5 1.1)) 1
+                      #(make-poppers p (int (tm/random 12 32))) 4
+                      #(make-rain p (int (tm/random 24 32)) [0.1 1.0]) 5}))
         [p])
       [p])))
 
@@ -187,6 +198,9 @@
     (let [scale (tm/random 2.0 12.0)]
       (q/fill hue (tm/random 0.3 0.9) 0.5 0.1)
       (cq/circle pos scale))
+    :rain
+    (do (q/fill hue (tm/random 0.3 0.9) 0.5 0.5)
+        (cq/circle pos 1.5))
     :thumper
     (let [scale (* 42.0 (tm/smoothstep* 0.66 0.95 (/ age max-age)))]
       (q/fill 0.165 0.8 0.5 0.2)
