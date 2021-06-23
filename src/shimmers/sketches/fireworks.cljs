@@ -110,7 +110,7 @@
 (defn make-payload [{:keys [pos prev hue]} type {:keys [quantity force max-age]}]
   (let [mass (/ 50 quantity)]
     (repeatedly quantity
-                #(assoc (make-particle (tm/+ pos (v/jitter force)) prev mass)
+                #(assoc (make-particle (tm/+ pos (v/jitter (force))) prev mass)
                         :type type
                         :hue hue
                         :max-age max-age))))
@@ -134,19 +134,21 @@
 (defn make-bottle [rocket]
   (make-payload rocket :bottle
                 {:quantity 1
-                 :force (tm/random 0.1)
+                 :force #(tm/random 0.1)
                  :max-age 20}))
 
 (defn make-poppers [rocket quantity]
   (make-payload rocket :popper
                 {:quantity quantity
-                 :force (tm/random 0.3 0.8)
+                 :force (if (p/chance 0.5)
+                          #(tm/random 0.3 0.8)
+                          (constantly (tm/random 0.3 0.8)))
                  :max-age 60}))
 
 (defn make-thumpers [rocket quantity]
   (make-payload rocket :thumper
                 {:quantity quantity
-                 :force (tm/random 0.05 0.15)
+                 :force #(tm/random 0.05 0.15)
                  :max-age 42}))
 
 ;; Is there a nicer way to control this state machine per type?
@@ -157,13 +159,13 @@
       (if (p/chance (tm/smoothstep* a b (/ age max-age)))
         ((p/weighted {#(make-bottle p) 2
                       #(make-poppers p (rand-int 32)) 8
-                      #(make-mirv p (int (tm/random 8 16)) (tm/random 0.5 1.1)) 3
+                      #(make-mirv p (int (tm/random 8 16)) (partial tm/random 0.5 1.1)) 3
                       #(make-rain p (int (tm/random 64 96)) [0.4 1.2]) 3
                       #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 0.16 0.9 (/ age max-age)))
-        ((p/weighted {#(make-mirv p 4 (tm/random 0.5 1.1)) 1
+        ((p/weighted {#(make-mirv p 4 (partial tm/random 0.5 1.1)) 1
                       #(make-poppers p (int (tm/random 12 32))) 4
                       #(make-rain p (int (tm/random 24 32)) [0.1 0.9]) 5}))
         [p])
