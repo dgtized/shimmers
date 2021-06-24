@@ -209,7 +209,7 @@
 
 (sketch/defquil superposition
   :created #inst "2021-03-08"
-  :mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount explanation))
   :size [1200 900]
   :setup setup
   :update update-state
