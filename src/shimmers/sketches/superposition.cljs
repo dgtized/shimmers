@@ -207,12 +207,11 @@
     (q/stroke 0 0.0 0.0 1.0)
     (draw-polygon target)))
 
-(defn ^:export run-sketch []
-  ;; 20210308
-  (ctrl/mount explanation)
-  (sketch/defquil superposition
-    :size [1200 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil superposition
+  :created #inst "2021-03-08"
+  :mount (fn [] (ctrl/mount explanation))
+  :size [1200 900]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
