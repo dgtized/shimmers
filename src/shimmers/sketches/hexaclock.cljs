@@ -1,7 +1,8 @@
 (ns shimmers.sketches.hexaclock
   (:require [quil.core :as q :include-macros true]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch]))
 
 (defn spur-angles []
   (for [spur (range 0 6)]
@@ -46,11 +47,10 @@
     (q/stroke-weight 16)
     (hexagon rH hour)))
 
-(defn ^:export run-sketch []
-  (q/defsketch hexaclock
-    :host "quil-host"
-    :size [600 400]
-    :draw draw
-    :middleware [framerate/mode]))
+(sketch/defquil hexaclock
+  :created-at "2020-12-04"
+  :size [600 400]
+  :draw draw
+  :middleware [framerate/mode])
 
 
