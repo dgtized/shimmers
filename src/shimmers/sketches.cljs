@@ -88,7 +88,7 @@
     breathing-hexes/breathing-hexes
     brush-sweep/brush-sweep
     bubbles/bubbles
-    butterfly/run-sketch
+    butterfly/butterfly
     circle-packing/run-sketch
     clustered-farmlands/run-sketch
     colonial-growth/run-sketch

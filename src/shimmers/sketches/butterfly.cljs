@@ -1,7 +1,8 @@
 (ns shimmers.sketches.butterfly
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch]))
 
 ;; TODO: Perturb parameters a little to generate random wings? Similarly is it
 ;; possible to flex the leading/trailing edges a little as a function of angle
@@ -74,10 +75,9 @@
         (q/rotate-x noise))
       (butterfly theta))))
 
-(defn ^:export run-sketch []
-  (q/defsketch butterfly-sketch
-    :host "quil-host"
-    :renderer :p3d
-    :size [600 400]
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil butterfly
+  :created-at "2021-01-25"
+  :renderer :p3d
+  :size [600 400]
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
