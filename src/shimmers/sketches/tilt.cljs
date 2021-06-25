@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.hexagon :as hex]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
@@ -52,12 +53,10 @@
   (doseq [shape shapes]
     (cq/draw-shape (geom/vertices shape))))
 
-(defn ^:export run-sketch []
-  ;; 20210530
-  (q/defsketch tilt
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil tilt
+  :created-at "2021-05-30"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

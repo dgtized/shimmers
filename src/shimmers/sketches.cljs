@@ -150,7 +150,7 @@
     sphere/sphere
     substrate/substrate
     superposition/superposition
-    tilt/run-sketch
+    tilt/tilt
     triangulating-subdivisions/run-sketch
     tunnel-flight/run-sketch
     typography/run-sketch
