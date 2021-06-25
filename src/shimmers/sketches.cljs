@@ -160,7 +160,7 @@
     video-shader/video-shader
     yin-yang/yin-yang
     zigzag/zigzag
-    zoetropic/run-sketch]))
+    zoetropic/zoetropic]))
 
 (defn all []
   (sort-by (comp name :id) (db)))

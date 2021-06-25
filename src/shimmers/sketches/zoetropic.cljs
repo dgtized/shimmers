@@ -5,7 +5,8 @@
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]
-            [shimmers.math.probability :as p]))
+            [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes [:modular :delayed :rewind :chance-rewind :random])
 (defonce ui-state (ctrl/state {:mode :modular}))
@@ -54,13 +55,11 @@
              (* height (int (/ i 6)))
              width height)))
 
-(defn ^:export run-sketch []
-  ;; 20210417
-  (ctrl/mount (partial ctrl/change-mode ui-state modes))
-  (q/defsketch zoetropic
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil zoetropic
+  :created-at "2021-04-17"
+  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state modes)))
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
