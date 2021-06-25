@@ -118,7 +118,7 @@
     k-means/k-means
     kd-tree/kd-tree-sketch
     kinematic-chain/kinematic-chain
-    langton-ant/run-sketch
+    langton-ant/langton-ant
     lattice-in-steps/run-sketch
     lattice-of-common-chords/run-sketch
     mechanism/run-sketch

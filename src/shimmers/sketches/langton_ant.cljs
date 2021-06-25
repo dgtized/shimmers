@@ -5,7 +5,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]))
 
 (comment
   ;; Would like to use non-floating point coords but it appears to break
@@ -67,11 +68,10 @@
         (let [[x y] (v/add center (v/scale position r))]
           (q/rect x y r r))))))
 
-(defn ^:export run-sketch []
-  (q/defsketch langton-ant
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [framerate/mode m/fun-mode]))
+(sketch/defquil langton-ant
+  :created-at "2020-12-23"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [framerate/mode m/fun-mode])
