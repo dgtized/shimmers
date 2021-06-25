@@ -6,18 +6,6 @@
 (defn namespace-to-id [namespace]
   (keyword (last (str/split (str namespace) #"\."))))
 
-(defmacro sketches-with-meta
-  "Attaches :meta information for each sketch during compile time."
-  [sketches]
-  (into []
-        (for [sketch sketches]
-          `(let [m# (meta (var ~sketch))]
-             {:id (namespace-to-id (:ns m#))
-              :fn ~sketch
-              :created-at (:created-at m#)
-              :file (:file m#)
-              :line (:line m#)}))))
-
 (defmacro all-sketches
   "Create sketch definitions from every namespace under shimmers.sketches.*"
   []
