@@ -4,6 +4,7 @@
             [shimmers.algorithm.kinematic-chain :as chain]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]))
 
@@ -45,12 +46,10 @@
     (apply q/stroke (:color chain))
     (draw-chain chain)))
 
-(defn ^:export run-sketch []
-  ;; 20210315
-  (q/defsketch gossamer-coils
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil gossamer-coils
+  :created-at "2021-03-15"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
