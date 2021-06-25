@@ -116,7 +116,7 @@
     inconsequential-drift/inconsequential-drift
     impressions-of-open-space/impressions-of-open-space
     k-means/k-means
-    kd-tree/run-sketch
+    kd-tree/kd-tree-sketch
     kinematic-chain/run-sketch
     langton-ant/run-sketch
     lattice-in-steps/run-sketch

@@ -1,7 +1,8 @@
 (ns shimmers.sketches.kd-tree
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch]))
 
 (defrecord Node [location axis lesser greater])
 
@@ -81,13 +82,12 @@
     (q/stroke-weight 0.5)
     (draw-tree tree [[0 (q/width)] [0 (q/height)]])))
 
-(defn ^:export run-sketch []
-  (q/defsketch show-kd-tree
-    :host "quil-host"
-    :size [400 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil kd-tree-sketch
+  :created-at "2020-11-28"
+  :size [400 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
 
