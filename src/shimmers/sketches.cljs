@@ -83,7 +83,7 @@
 (defn- db
   []
   (loader/sketches-with-meta
-   [ascendance/run-sketch
+   [ascendance/ascendance
     braid/run-sketch
     brush-sweep/run-sketch
     breathing-hexes/run-sketch

@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.probability :as p]))
+            [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]))
 
 (defrecord Particle [t0 fuel delta-v velocity radius mass])
 
@@ -75,12 +76,11 @@
       (doseq [[p0 p1] point-pairs]
         (q/line p0 p1)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch template
-    :host "quil-host"
-    :size [600 400]
-    :renderer :p3d
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil ascendance
+  :created-at "2021-02-17"
+  :size [600 400]
+  :renderer :p3d
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
