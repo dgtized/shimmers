@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]))
@@ -45,13 +46,11 @@
       (q/fill (:color t) 0.8 0.5 0.1)
       (cq/draw-shape (geom/vertices t)))))
 
-(defn ^:export run-sketch []
-  ;; 20210228
-  (q/defsketch folding-triangles
-    :host "quil-host"
-    :size [900 600]
-    :renderer :p3d
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil folding-triangles
+  :created-at "2021-02-28"
+  :size [900 600]
+  :renderer :p3d
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

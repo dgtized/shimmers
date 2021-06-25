@@ -106,7 +106,7 @@
     fireworks/fireworks
     flocking-brushes/flocking-brushes
     flow-fields/flow-fields
-    folding-triangles/run-sketch
+    folding-triangles/folding-triangles
     ;; fluid/run-sketch
     gossamer-coils/run-sketch
     gravity-well/run-sketch
