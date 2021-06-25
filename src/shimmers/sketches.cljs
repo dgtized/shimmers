@@ -130,7 +130,7 @@
     particles/particles
     path-distribution/run-sketch
     permutations-of-transfiguration/permutations-of-transfiguration
-    point-to-point/run-sketch
+    point-to-point/point-to-point
     polygrowth/polygrowth
     polygrowth2/polygrowth2
     precipitation/run-sketch

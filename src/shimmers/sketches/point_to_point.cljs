@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -88,11 +89,10 @@
           :let [q (closest-edge-point p)]]
     (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
-(defn ^:export run-sketch []
-  (q/defsketch point-to-point
-    :host "quil-host"
-    :size [600 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil point-to-point
+  :created-at "2021-04-02"
+  :size [600 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
