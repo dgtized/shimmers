@@ -1,5 +1,5 @@
 (ns shimmers.sketch
-  (:require [quil.sketch :refer [wrap-fns]]))
+  (:require [quil.sketch :include-macros true]))
 
 ;; Problem:
 ;;
