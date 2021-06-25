@@ -80,6 +80,7 @@
 (defn page []
   [:div (scene)])
 
-(defn ^:export run-sketch []
-  ;; 20210510
+(defn ^{:export true
+        :created-at "2021-05-10"}
+  run-sketch []
   (ctrl/mount page "svg-host"))
