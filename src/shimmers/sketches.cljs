@@ -113,7 +113,7 @@
     harsh-lines/harsh-lines
     hexaclock/hexaclock
     hexcursive/hexcursive
-    inconsequential-drift/run-sketch
+    inconsequential-drift/inconsequential-drift
     impressions-of-open-space/run-sketch
     k-means/run-sketch
     kd-tree/run-sketch

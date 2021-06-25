@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
@@ -66,11 +67,9 @@
           :rectangle
           (cq/draw-shape (rectangle p w h)))))))
 
-(defn ^:export run-sketch []
-  ;; 2021
-  (q/defsketch inconsequential-drift
-    :host "quil-host"
-    :size [800 800]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil inconsequential-drift
+  :created-at "2021-06-13"
+  :size [800 800]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
