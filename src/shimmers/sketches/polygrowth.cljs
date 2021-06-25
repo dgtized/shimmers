@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
@@ -59,12 +60,11 @@
     (doseq [v vertices]
       (cq/circle v 0.5))))
 
-(defn ^:export run-sketch []
-  ;; 20210502
-  (q/defsketch polygrowth
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil polygrowth
+  :created-at "2021-05-02"
+  :host "quil-host"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

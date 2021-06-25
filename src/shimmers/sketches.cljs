@@ -131,8 +131,8 @@
     path-distribution/run-sketch
     permutations-of-transfiguration/run-sketch
     point-to-point/run-sketch
-    polygrowth/run-sketch
-    polygrowth2/run-sketch
+    polygrowth/polygrowth
+    polygrowth2/polygrowth2
     precipitation/run-sketch
     probabilistic-automata/run-sketch
     radar/run-sketch
