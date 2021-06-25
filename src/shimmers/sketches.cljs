@@ -129,7 +129,7 @@
     object-permanence/object-permanence
     particles/particles
     path-distribution/run-sketch
-    permutations-of-transfiguration/run-sketch
+    permutations-of-transfiguration/permutations-of-transfiguration
     point-to-point/run-sketch
     polygrowth/polygrowth
     polygrowth2/polygrowth2

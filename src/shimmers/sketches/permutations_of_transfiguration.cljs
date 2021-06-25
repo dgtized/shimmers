@@ -4,7 +4,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :as cs]
-            [shimmers.math.probability :as p]))
+            [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn sample-color [x y cols rows]
   [(/ (+ x y) (+ cols rows))
@@ -243,11 +244,10 @@
       ((:draw effect) effect grid w h)
       (q/pop-matrix))))
 
-(defn ^:export run-sketch []
-  (q/defsketch permutations-of-transfiguration
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil permutations-of-transfiguration
+  :created-at "2021-02-07"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
