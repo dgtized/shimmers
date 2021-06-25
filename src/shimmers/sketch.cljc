@@ -41,9 +41,7 @@
         opts     (->> raw-opts
                       (merge {:host "quil-host"})
                       quil.sketch/wrap-fns)
-        runner (vary-meta app-name merge
-                          {:export true
-                           :created-at (:created-at opts)})
+        runner (vary-meta app-name assoc :export true)
         sketch-start (vary-meta (symbol (str app-name '-start))
                                 assoc :export true)]
     `(do
