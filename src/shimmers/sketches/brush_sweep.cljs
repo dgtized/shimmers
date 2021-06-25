@@ -2,12 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [thi.ng.geom.line :as gl]
             [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -46,12 +47,10 @@
       (doseq [hair (shuffle (hairs line))]
         (cq/draw-shape (geom/vertices hair))))))
 
-(defn ^:export run-sketch []
-  ;; 20210412
-  (q/defsketch brush-sweep
-    :host "quil-host"
-    :size [1200 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil brush-sweep
+  :created-at "2021-04-12"
+  :size [1200 900]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
