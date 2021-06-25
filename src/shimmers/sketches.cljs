@@ -141,7 +141,7 @@
     ray-marching/ray-marching
     ring/ring
     ripples/ripples
-    rose/run-sketch
+    rose/rose
     sand-strokes/run-sketch
     scintillation/run-sketch
     sediment/run-sketch
