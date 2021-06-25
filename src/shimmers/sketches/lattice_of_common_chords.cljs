@@ -8,6 +8,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
@@ -19,6 +20,11 @@
 ;; Trying out the technique Casey Reas described in
 ;; https://www.youtube.com/watch?v=_8DMEHxOLQE, ie move circles through space,
 ;; and draw a line between centers if circle intersects.
+;;
+;; The sand effect is described in
+;; https://inconvergent.net/generative/sand-spline/, as well as Tarbell's works
+;; like
+;; Sandstroke (http://www.complexification.net/gallery/machines/sandstroke/).
 
 (defn color-mix [a b]
   (let [r (:r b)
@@ -148,13 +154,11 @@
         (sand-line pa pb)
         (q/line pa pb)))))
 
-(defn ^:export run-sketch []
-  ;; 20210329
-  (ctrl/mount explanation)
-  (q/defsketch lattice-of-common-chords
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil lattice-of-common-chords
+  :created-at "2021-03-29"
+  :on-mount (fn [] (ctrl/mount explanation))
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

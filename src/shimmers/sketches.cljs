@@ -120,7 +120,7 @@
     kinematic-chain/kinematic-chain
     langton-ant/langton-ant
     lattice-in-steps/lattice-in-steps
-    lattice-of-common-chords/run-sketch
+    lattice-of-common-chords/lattice-of-common-chords
     mechanism/run-sketch
     minimum-spanning-tree/run-sketch
     mosaic-tiling/run-sketch
