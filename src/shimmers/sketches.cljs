@@ -159,7 +159,7 @@
     verlet-brushes/verlet-brushes
     video-shader/video-shader
     yin-yang/yin-yang
-    zigzag/run-sketch
+    zigzag/zigzag
     zoetropic/run-sketch]))
 
 (defn all []

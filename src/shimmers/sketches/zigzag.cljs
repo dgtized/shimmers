@@ -1,7 +1,7 @@
 (ns shimmers.sketches.zigzag
   (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch]))
 
 (defn seconds-since-epoch []
   (/ (.getTime (js/Date.)) 1000.0))
@@ -33,10 +33,9 @@
     (dotimes [i m]
       (zig gap [(* i gap) 0] (/ t 256)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch zigzag
-    :host "quil-host"
+(sketch/defquil zigzag
+    :created-at "2020-12-04"
     :size [600 600]
     :draw draw
-    :middleware [framerate/mode]))
+    :middleware [framerate/mode])
 
