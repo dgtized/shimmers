@@ -3,7 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :refer [index-of]]))
+            [shimmers.common.sequence :refer [index-of]]
+            [shimmers.sketch :as sketch]))
 
 (defn color [value]
   (let [low 64 high 192]
@@ -60,10 +61,9 @@
           (apply q/stroke color)
           (cq/lerp-line [(* from cw) 0] [(* to cw) rh] percent))))))
 
-(defn ^:export run-sketch []
-  (q/defsketch braid
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil braid
+  :created-at "2021-01-23"
+  :size [600 400]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

@@ -84,7 +84,7 @@
   []
   (loader/sketches-with-meta
    [ascendance/ascendance
-    braid/run-sketch
+    braid/braid
     brush-sweep/run-sketch
     breathing-hexes/run-sketch
     bubbles/run-sketch
