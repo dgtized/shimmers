@@ -3,12 +3,13 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
-  (q/noise-seed (rand-int 100000))
+  (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
   (q/no-loop)
   {})
@@ -23,7 +24,7 @@
       (geom/scale-size scale)
       (geom/translate pos)))
 
-(defn draw [state]
+(defn draw []
   (q/background 1.0)
   (q/no-fill)
   (let [slices 100
@@ -32,9 +33,9 @@
         slice-width (cq/rel-w (/ 1 slices))]
     (q/stroke-weight (/ 50 slices))
     (doseq [[[x1 y1] depth] (map vector curve depth-curve)
-            :let [theta (* 2 Math/PI (rand))]]
+            :let [theta (* 2 Math/PI (dr/random-double))]]
       (q/no-stroke)
-      (let [f (q/random -0.0075 -0.0125)]
+      (let [f (dr/random -0.0075 -0.0125)]
         (doseq [s (range 400)
                 :let [d (* depth (Math/pow Math/E (* f s)))]]
           (q/fill 0.2 0.008)
