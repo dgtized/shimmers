@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.macros.loop :as loop :include-macros true]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.ndarray.core :as nd]))
 
 (defn make-buffer [width height]
@@ -63,13 +64,12 @@
         (q/fill 96 96 (+ (* amount 64) 128) 16)
         (q/rect (* factor i) (* factor j) factor factor)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch waves
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil ripples
+  :created-at "2020-12-31"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
 

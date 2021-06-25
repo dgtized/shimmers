@@ -140,7 +140,7 @@
     random-walk/random-walk
     ray-marching/ray-marching
     ring/ring
-    ripples/run-sketch
+    ripples/ripples
     rose/run-sketch
     sand-strokes/run-sketch
     scintillation/run-sketch
