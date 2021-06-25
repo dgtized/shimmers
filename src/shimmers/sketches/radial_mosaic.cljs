@@ -142,6 +142,7 @@
   [:div (scenes)
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
-(defn ^:export run-sketch []
-  ;; 20210515
+(defn ^{:export true
+        :created-at "2021-05-15"}
+  run-sketch []
   (ctrl/mount page "svg-host"))
