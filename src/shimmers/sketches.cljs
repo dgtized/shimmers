@@ -102,7 +102,7 @@
     dithering/dithering
     emitters/emitters
     falling-gradients/falling-gradients
-    fire/run-sketch
+    fire/fire
     fireworks/run-sketch
     flocking-brushes/run-sketch
     flow-fields/run-sketch

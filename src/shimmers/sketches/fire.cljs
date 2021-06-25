@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.macros.loop :as loop :include-macros true]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [thi.ng.ndarray.core :as nd]))
 
 (defn fire-prob []
@@ -80,11 +81,10 @@
   (paint fuel size [0 255 0 20])
   (paint fire size [255 0 0 20]))
 
-(defn ^:export run-sketch []
-  (q/defsketch fire
-    :host "quil-host"
-    :size [400 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil fire
+  :created-at "2020-11-08"
+  :size [400 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
