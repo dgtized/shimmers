@@ -11,6 +11,7 @@
             [shimmers.common.ui :as ui]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketches :as sketches]
+            [cljc.java-time.local-date :as ld]
             [spec-tools.data-spec :as ds]))
 
 ;; detect window size for initial setup?
@@ -71,7 +72,7 @@
                                     {:name (:id sketch)}
                                     {:seed (generate-seed)})
                     :title (if-let [created-at (:created-at sketch)]
-                             (str created-at)
+                             (str (ld/parse created-at))
                              "")}
                 (:id sketch)]])))
 
