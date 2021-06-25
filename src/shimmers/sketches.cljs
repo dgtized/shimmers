@@ -119,7 +119,7 @@
     kd-tree/kd-tree-sketch
     kinematic-chain/kinematic-chain
     langton-ant/langton-ant
-    lattice-in-steps/run-sketch
+    lattice-in-steps/lattice-in-steps
     lattice-of-common-chords/run-sketch
     mechanism/run-sketch
     minimum-spanning-tree/run-sketch

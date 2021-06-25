@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
@@ -44,12 +45,10 @@
   (doseq [[p q] edges]
     (q/line p q)))
 
-(defn ^:export run-sketch []
-  ;; 2021
-  (q/defsketch lattice-in-steps
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil lattice-in-steps
+  :created-at "2021-05-29"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
