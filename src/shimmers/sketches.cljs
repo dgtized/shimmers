@@ -133,7 +133,7 @@
     point-to-point/point-to-point
     polygrowth/polygrowth
     polygrowth2/polygrowth2
-    precipitation/run-sketch
+    precipitation/precipitation
     probabilistic-automata/run-sketch
     radar/run-sketch
     radial-mosaic/run-sketch
