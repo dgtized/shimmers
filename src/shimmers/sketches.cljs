@@ -87,7 +87,7 @@
     braid/braid
     breathing-hexes/breathing-hexes
     brush-sweep/brush-sweep
-    bubbles/run-sketch
+    bubbles/bubbles
     butterfly/run-sketch
     circle-packing/run-sketch
     clustered-farmlands/run-sketch

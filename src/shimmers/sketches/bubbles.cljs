@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]))
 
@@ -65,11 +66,10 @@
   (doseq [{:keys [p r]} bubbles]
     (cq/circle p r)))
 
-(defn ^:export run-sketch []
-  (q/defsketch bubbles
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil bubbles
+  :created-at "2021-02-02"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
