@@ -1,5 +1,7 @@
 (ns shimmers.sketch
-  (:require [quil.sketch :include-macros true]))
+  (:require [quil.sketch :include-macros true]
+            [shimmers.macros.loader :as loader :include-macros true]
+            [shimmers.registry :as registry]))
 
 ;; Problem:
 ;;
@@ -27,7 +29,7 @@
 ;; * Propagate metadata like creation time, tags, or a display name to index view for sorting?
 ;; * Is it possible to wrap defsketch and reduces the overlap?
 ;; * Assist in passing parameters like RNG seed into the sketch at invoke?
-;; * add sketches to a registry automatically ala
+;; - [x] add sketches to a registry automatically ala
 ;;   https://github.com/quil/quil/blob/master/src/clj/quil/snippets/macro.clj#L52
 ;;
 ;; Modified from defsketch in
@@ -56,4 +58,12 @@
          (when-not (some #(= :no-start %) ~(:features opts))
            (quil.sketch/add-sketch-to-init-list
             {:fn ~sketch-start
-             :host-id ~(:host opts)}))))))
+             :host-id ~(:host opts)})))
+
+       (let [m# (meta (var ~app-name))]
+         (swap! registry/sketches assoc (str ~app-name)
+                {:id (loader/namespace-to-id (:ns m#))
+                 :fn ~runner
+                 :created-at ~(:created-at opts)
+                 :file (:file m#)
+                 :line (:line m#)})))))
