@@ -139,7 +139,7 @@
     radial-mosaic/run-sketch
     random-walk/random-walk
     ray-marching/ray-marching
-    ring/run-sketch
+    ring/ring
     ripples/run-sketch
     rose/run-sketch
     sand-strokes/run-sketch

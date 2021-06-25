@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   {:theta 0.0})
@@ -23,11 +24,10 @@
             (v/add (v/vec2 x y)
                    (v/polar (* radial-noise 32) (+ theta radial-noise))))))
 
-(defn ^:export run-sketch []
-  (q/defsketch ring
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil ring
+  :created-at "2020-12-27"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
