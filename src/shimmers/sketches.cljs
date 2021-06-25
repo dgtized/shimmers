@@ -103,7 +103,7 @@
     emitters/emitters
     falling-gradients/falling-gradients
     fire/fire
-    fireworks/run-sketch
+    fireworks/fireworks
     flocking-brushes/run-sketch
     flow-fields/run-sketch
     folding-triangles/run-sketch

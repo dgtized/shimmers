@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -224,12 +225,10 @@
 
 ;; Future: Add audio for launch shreak and crackle/explosion
 ;; Add fountains?
-(defn ^:export run-sketch []
-  ;; 20210607
-  (q/defsketch fireworks
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil fireworks
+  :created-at "2021-06-07"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
