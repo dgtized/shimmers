@@ -97,7 +97,7 @@
     cube/cube-sketch
     decaying-foundations/decaying-foundations
     delaunay-voronoi/delaunay-voronoi
-    disassociated-boxes/run-sketch
+    disassociated-boxes/disassociated-boxes
     dispersion/run-sketch
     dithering/run-sketch
     emitters/run-sketch

@@ -5,10 +5,9 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.geom.rect :as rect]))
 
 (defn shrink [scales shape]
   (geom/scale-size shape (dr/rand-nth scales)))
@@ -161,12 +160,10 @@
       (q/no-fill))
     (cq/draw-shape (geom/vertices shape))))
 
-(defn ^:export run-sketch []
-  ;; 20210505
-  (q/defsketch disassociated-boxes
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil disassociated-boxes
+  :created-at "2021-05-05"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
