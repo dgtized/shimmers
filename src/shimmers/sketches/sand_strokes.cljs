@@ -8,6 +8,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
@@ -86,12 +87,10 @@
                 :let [[x y] (geom/point-at line p)]]
           (q/ellipse x y 0.05 0.05))))))
 
-(defn ^:export run-sketch []
-  ;; 20210405
-  (q/defsketch sand-strokes
-    :host "quil-host"
-    :size [800 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil sand-strokes
+  :created-at "2021-04-05"
+  :size [800 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

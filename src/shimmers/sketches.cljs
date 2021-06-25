@@ -142,7 +142,7 @@
     ring/ring
     ripples/ripples
     rose/rose
-    sand-strokes/run-sketch
+    sand-strokes/sand-strokes
     scintillation/run-sketch
     sediment/run-sketch
     six-of-one-half-dozen-of-the-other/run-sketch
