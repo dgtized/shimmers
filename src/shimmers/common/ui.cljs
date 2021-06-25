@@ -27,4 +27,4 @@
   (require '[shimmers.macros.loader :as loader :include-macros true]
            '[shimmers.sketches.particles :as particles]
            '[shimmers.sketches.object-permanence :as object-permanence])
-  (map code-link (loader/sketches-with-meta [particles/run-sketch object-permanence/run-sketch])))
+  (map code-link (loader/sketches-with-meta [particles/particles object-permanence/object-permanence])))
