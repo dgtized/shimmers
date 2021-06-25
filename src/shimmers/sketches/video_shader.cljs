@@ -7,7 +7,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.video :as video]))
+            [shimmers.common.video :as video]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes {:specular-mouse 0
             :edge-detection 1})
@@ -40,12 +41,11 @@
       (q/set-uniform shader "u_mode" (get modes (:mode @ui-state)))
       (q/rect 0 0 w h))))
 
-(defn ^:export run-sketch []
-  (ctrl/mount (partial ctrl/change-mode ui-state (keys modes)))
-  (q/defsketch video-shader
-    :host "quil-host"
-    :size [640 480]
-    :renderer :p3d
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil video-shader
+  :created-at "2021-02-14"
+  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
+  :size [640 480]
+  :renderer :p3d
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

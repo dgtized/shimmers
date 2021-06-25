@@ -157,7 +157,7 @@
     undulating-figures/undulating-figures
     uniform-distribution/run-sketch
     verlet-brushes/verlet-brushes
-    video-shader/run-sketch
+    video-shader/video-shader
     yin-yang/run-sketch
     zigzag/run-sketch
     zoetropic/run-sketch]))
