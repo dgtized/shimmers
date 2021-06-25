@@ -104,7 +104,7 @@
     falling-gradients/falling-gradients
     fire/fire
     fireworks/fireworks
-    flocking-brushes/run-sketch
+    flocking-brushes/flocking-brushes
     flow-fields/run-sketch
     folding-triangles/run-sketch
     ;; fluid/run-sketch

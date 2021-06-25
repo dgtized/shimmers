@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.physics.core :as physics]
             [thi.ng.geom.triangle :as gt]
@@ -141,13 +142,11 @@
   [:div
    (ctrl/checkbox ui-state "Draw Trails" [:trails])])
 
-(defn ^:export run-sketch []
-  ;; 20210527
-  (ctrl/mount explanation)
-  (q/defsketch flocking-brushes
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil flocking-brushes
+  :created-at "2021-05-27"
+  :on-mount (fn [] (ctrl/mount explanation))
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
