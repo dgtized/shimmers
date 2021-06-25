@@ -8,7 +8,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :refer [weighted]]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.color :as color]))
+            [shimmers.math.color :as color]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))
@@ -155,11 +156,10 @@
   (doseq [bot (filter #(= (:state %) :running) automata)]
     (draw-bot bot)))
 
-(defn ^:export run-sketch []
-  (q/defsketch probabilistic-automata
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil probabilistic-automata
+  :created-at "2020-11-18"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
