@@ -94,7 +94,7 @@
     colonial-growth/colonial-growth
     colors/colors
     convex-spiral/convex-spiral-sketch
-    cube/run-sketch
+    cube/cube-sketch
     delaunay-voronoi/run-sketch
     decaying-foundations/run-sketch
     disassociated-boxes/run-sketch

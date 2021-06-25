@@ -1,8 +1,9 @@
 (ns shimmers.sketches.cube
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.sketch :as sketch]))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
@@ -66,13 +67,12 @@
           [a b] lines]
     (q/line (project (nth vertices a)) (project (nth vertices b)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch cube-sketch
-    :host "quil-host"
-    :size [400 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil cube-sketch
+  :created-at "2020-11-02"
+  :size [400 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
 
