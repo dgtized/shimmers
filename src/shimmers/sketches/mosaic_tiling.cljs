@@ -173,6 +173,7 @@
                (for [[i op] (map-indexed vector operations)]
                  [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
 
-(defn ^:export run-sketch []
-  ;; 20210409
+(defn ^{:export true
+        :created-at "2021-04-09"}
+  run-sketch []
   (ctrl/mount page "svg-host"))
