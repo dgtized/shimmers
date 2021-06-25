@@ -152,7 +152,7 @@
     superposition/superposition
     tilt/tilt
     triangulating-subdivisions/triangulating-subdivisions
-    tunnel-flight/run-sketch
+    tunnel-flight/tunnel-flight
     typography/run-sketch
     undulating-figures/run-sketch
     uniform-distribution/run-sketch

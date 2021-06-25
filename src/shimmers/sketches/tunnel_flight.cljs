@@ -4,7 +4,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.core :refer [angles]]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn blob [base r0 r1]
   (let [seed (* base 0.05)]
@@ -56,11 +57,10 @@
     (cq/draw-shape (scale-shape ring z))
     (q/pop-matrix)))
 
-(defn ^:export run-sketch []
-  (q/defsketch tunnel-flight
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil tunnel-flight
+  :created-at "2021-02-10"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
