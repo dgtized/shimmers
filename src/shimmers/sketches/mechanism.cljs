@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
@@ -151,12 +152,10 @@
     (q/stroke 0 0.6 0.6)
     (apply q/line (poly-at angle pos (rotation t)))))
 
-(defn ^:export run-sketch []
-  ;; 20210419
-  (q/defsketch mechanism
-    :host "quil-host"
-    :size [800 800]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil mechanism
+  :created-at "2021-04-19"
+  :size [800 800]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

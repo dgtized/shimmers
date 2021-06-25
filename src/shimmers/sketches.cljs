@@ -121,7 +121,7 @@
     langton-ant/langton-ant
     lattice-in-steps/lattice-in-steps
     lattice-of-common-chords/lattice-of-common-chords
-    mechanism/run-sketch
+    mechanism/mechanism
     minimum-spanning-tree/run-sketch
     mosaic-tiling/run-sketch
     noise-grid/run-sketch
