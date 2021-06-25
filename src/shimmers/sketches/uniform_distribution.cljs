@@ -86,6 +86,7 @@
                   (geom/sample-uniform (geom/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(defn ^:export run-sketch []
-  ;; 20210409
+(defn ^{:export true
+        :created-at "2021-04-09"}
+  run-sketch []
   (ctrl/mount scene "svg-host"))
