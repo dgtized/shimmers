@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
@@ -72,12 +73,10 @@
                           (geom/scale-size (tm/random 0.88 0.96))
                           geom/vertices))))))
 
-(defn ^:export run-sketch []
-  ;; 20210414
-  (q/defsketch decaying-foundations
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil decaying-foundations
+  :created-at "2021-04-14"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
