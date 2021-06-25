@@ -122,7 +122,7 @@
     lattice-in-steps/lattice-in-steps
     lattice-of-common-chords/lattice-of-common-chords
     mechanism/mechanism
-    minimum-spanning-tree/run-sketch
+    minimum-spanning-tree/minimum-spanning-tree
     mosaic-tiling/run-sketch
     noise-grid/run-sketch
     noisy-shapes/run-sketch

@@ -7,6 +7,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [tailrecursion.priority-map :refer [priority-map]]
             [thi.ng.geom.core :as geom]))
 
@@ -103,12 +104,10 @@
   (doseq [[p q] (take step edges)]
     (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
-(defn ^:export run-sketch []
-  ;; 20210320
-  (q/defsketch minimum-spanning-tree
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil minimum-spanning-tree
+  :created-at "2021-03-20"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
