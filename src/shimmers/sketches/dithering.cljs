@@ -5,6 +5,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -178,10 +179,9 @@
   ;; (q/image capture (+ 10 width) 0)
   )
 
-(defn ^:export run-sketch []
-  (q/defsketch shimmers
-    :host "quil-host"
-    :size [640 480]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil dithering
+  :created-at "2020-11-21"
+  :size [640 480]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

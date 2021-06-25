@@ -99,7 +99,7 @@
     delaunay-voronoi/delaunay-voronoi
     disassociated-boxes/disassociated-boxes
     dispersion/dispersion
-    dithering/run-sketch
+    dithering/dithering
     emitters/run-sketch
     falling-gradients/run-sketch
     fire/run-sketch
