@@ -96,7 +96,7 @@
     convex-spiral/convex-spiral-sketch
     cube/cube-sketch
     decaying-foundations/decaying-foundations
-    delaunay-voronoi/run-sketch
+    delaunay-voronoi/delaunay-voronoi
     disassociated-boxes/run-sketch
     dispersion/run-sketch
     dithering/run-sketch

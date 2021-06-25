@@ -5,6 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
@@ -166,12 +167,10 @@
           (q/end-shape :close)
           (q/end-shape))))))
 
-(defn ^:export run-sketch []
-  ;; 20210321
-  (q/defsketch delaunay-voronoi
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil delaunay-voronoi
+  :created-at "2021-03-21"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
