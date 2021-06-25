@@ -66,6 +66,7 @@
       ". The upper example is drawing a curved line through a random point in
       the circle. The lower example picks a random point on the bisector."]]))
 
-(defn ^:export run-sketch []
-  ;; 20210429
+(defn ^{:export true
+        :created-at "2021-04-29"}
+  run-sketch []
   (ctrl/mount page "svg-host"))
