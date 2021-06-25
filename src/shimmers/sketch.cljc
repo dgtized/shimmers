@@ -71,8 +71,7 @@
 
 (defmacro defsvg
   [app-name options & body]
-  (let [opts (quil.sketch/wrap-fns options)
-        runner (vary-meta app-name merge {:export true})]
+  (let [runner (vary-meta app-name merge {:export true})]
     `(do (defn ~runner []
            ~@body)
 
@@ -81,6 +80,6 @@
                   {:id (loader/namespace-to-id (:ns m#))
                    :type :svg
                    :fn ~runner
-                   :created-at ~(:created-at opts)
+                   :created-at ~(:created-at options)
                    :file (:file m#)
                    :line (:line m#)})))))
