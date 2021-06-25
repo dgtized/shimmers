@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
+            [shimmers.sketch :as sketch]
             [thi.ng.math.core :as tm]))
 
 (defn random-hues []
@@ -90,11 +91,10 @@
     :hsla (draw-hsla ui)
     :mix-mod (draw-mix-mod ui)))
 
-(defn ^:export run-sketch []
-  (q/defsketch colors
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil colors
+  :created-at "2021-03-11"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

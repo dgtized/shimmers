@@ -92,7 +92,7 @@
     circle-packing/circle-packing
     clustered-farmlands/run-sketch
     colonial-growth/colonial-growth
-    colors/run-sketch
+    colors/colors
     convex-spiral/run-sketch
     cube/run-sketch
     delaunay-voronoi/run-sketch
