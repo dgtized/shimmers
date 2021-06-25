@@ -148,7 +148,7 @@
     six-of-one-half-dozen-of-the-other/six-of-one-half-dozen-of-the-other
     space-colonization/space-colonization
     sphere/sphere
-    substrate/run-sketch
+    substrate/substrate
     superposition/superposition
     tilt/run-sketch
     triangulating-subdivisions/run-sketch

@@ -8,7 +8,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y]]
   (and (>= x 0) (< x (q/width))
@@ -78,11 +79,10 @@
   (doseq [{:keys [start position]} cracks]
     (q/line start position)))
 
-(defn ^:export run-sketch []
-  (q/defsketch substrate
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil substrate
+  :created-at "2021-01-21"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
