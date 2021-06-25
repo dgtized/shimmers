@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.hexagon :as hex]
             [shimmers.math.wave :as wave]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -34,12 +35,11 @@
                 :let [hex (hex/cube-hexagon pos r)]]
           (cq/draw-shape (geom/vertices hex 6)))))))
 
-(defn ^:export run-sketch []
-  ;; 20210523
-  (q/defsketch breathing-hexes
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil breathing-hexes
+  :created-at "2021-05-23"
+  :host "quil-host"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

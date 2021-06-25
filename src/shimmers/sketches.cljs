@@ -85,8 +85,8 @@
   (loader/sketches-with-meta
    [ascendance/ascendance
     braid/braid
+    breathing-hexes/breathing-hexes
     brush-sweep/brush-sweep
-    breathing-hexes/run-sketch
     bubbles/run-sketch
     butterfly/run-sketch
     circle-packing/run-sketch
