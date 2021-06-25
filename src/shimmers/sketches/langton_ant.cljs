@@ -6,7 +6,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch]))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (comment
   ;; Would like to use non-floating point coords but it appears to break

@@ -4,7 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry] ;; for IFlip extensions
-            [shimmers.sketch :as sketch]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]))
 

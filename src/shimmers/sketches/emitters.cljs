@@ -6,7 +6,7 @@
             [shimmers.common.sequence :refer [map-kv]]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch]))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 

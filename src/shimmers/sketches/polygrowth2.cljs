@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]

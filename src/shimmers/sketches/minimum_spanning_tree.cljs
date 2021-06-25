@@ -7,7 +7,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch]
+            [shimmers.sketch :as sketch :include-macros true]
             [tailrecursion.priority-map :refer [priority-map]]
             [thi.ng.geom.core :as geom]))
 

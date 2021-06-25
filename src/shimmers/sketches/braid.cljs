@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :refer [index-of]]
-            [shimmers.sketch :as sketch]))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn color [value]
   (let [low 64 high 192]

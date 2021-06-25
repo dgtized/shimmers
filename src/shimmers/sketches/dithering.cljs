@@ -5,7 +5,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 

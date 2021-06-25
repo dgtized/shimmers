@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.macros.loop :as loop :include-macros true]
             [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.ndarray.core :as nd]))
 
 (defn fire-prob []
