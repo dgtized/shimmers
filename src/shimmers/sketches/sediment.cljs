@@ -7,6 +7,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -76,14 +77,12 @@
       (doseq [segment (partition 4 1 particles)]
         (apply q/curve (mapcat :pos segment))))))
 
-(defn ^:export run-sketch []
-  ;; 20210408
-  (ctrl/mount explanation)
-  (q/defsketch sediment
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    ;; :mouse-clicked (fn [state] (q/redraw) state)
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil sediment
+  :created-at "2021-04-08"
+  :on-mount (fn [] (ctrl/mount explanation))
+  :size [900 600]
+  :setup setup
+  :update update-state
+  ;; :mouse-clicked (fn [state] (q/redraw) state)
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

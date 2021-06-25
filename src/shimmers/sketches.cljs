@@ -144,7 +144,7 @@
     rose/rose
     sand-strokes/sand-strokes
     scintillation/scintillation
-    sediment/run-sketch
+    sediment/sediment
     six-of-one-half-dozen-of-the-other/run-sketch
     space-colonization/run-sketch
     sphere/run-sketch
