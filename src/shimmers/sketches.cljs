@@ -115,7 +115,7 @@
     hexcursive/hexcursive
     inconsequential-drift/inconsequential-drift
     impressions-of-open-space/impressions-of-open-space
-    k-means/run-sketch
+    k-means/k-means
     kd-tree/run-sketch
     kinematic-chain/run-sketch
     langton-ant/run-sketch

@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -124,12 +125,10 @@
   (doseq [shape shapes]
     (draw-shape (assoc shape :theta (* 2 Math/PI (rand))))))
 
-(defn ^:export run-sketch []
-  ;; 20210309
-  (q/defsketch k-means
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil k-means
+  :created-at "2021-03-09"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
