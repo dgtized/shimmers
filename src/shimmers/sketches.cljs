@@ -117,7 +117,7 @@
     impressions-of-open-space/impressions-of-open-space
     k-means/k-means
     kd-tree/kd-tree-sketch
-    kinematic-chain/run-sketch
+    kinematic-chain/kinematic-chain
     langton-ant/run-sketch
     lattice-in-steps/run-sketch
     lattice-of-common-chords/run-sketch
