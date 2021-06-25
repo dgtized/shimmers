@@ -1,13 +1,14 @@
 (ns shimmers.sketches.flow-fields
   "https://tylerxhobbs.com/essays/2020/flow-fields"
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.edn :as edn]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [clojure.edn :as edn]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -195,13 +196,11 @@
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])]])
 
-(defn ^:export run-sketch []
-  ;; 20210617
-  (ctrl/mount explanation)
-  (q/defsketch flow-fields
-    :host "quil-host"
-    :size [1200 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil flow-fields
+  :created-at "2021-06-17"
+  :on-mount (fn [] (ctrl/mount explanation))
+  :size [1200 900]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
