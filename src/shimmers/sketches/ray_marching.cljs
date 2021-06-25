@@ -3,7 +3,8 @@
             [quil.middleware :as m]
             [shimmers.math.core :refer [angles]]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]))
+            [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn line-intersect
   "Return intersection point between two point segment pairs.
@@ -87,11 +88,10 @@
     (doseq [shape shapes]
       (cq/draw-shape shape))))
 
-(defn ^:export run-sketch []
-  (q/defsketch shimmers
-    :host "quil-host"
-    :size [500 500]
-    :setup setup
-    :update update-state
-    :draw draw-state
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil ray-marching
+  :created-at "2020-08-24"
+  :size [500 500]
+  :setup setup
+  :update update-state
+  :draw draw-state
+  :middleware [m/fun-mode framerate/mode])

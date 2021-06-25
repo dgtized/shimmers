@@ -138,7 +138,7 @@
     radar/radar
     radial-mosaic/run-sketch
     random-walk/random-walk
-    ray-marching/run-sketch
+    ray-marching/ray-marching
     ring/run-sketch
     ripples/run-sketch
     rose/run-sketch
