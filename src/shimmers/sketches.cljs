@@ -135,7 +135,7 @@
     polygrowth2/polygrowth2
     precipitation/precipitation
     probabilistic-automata/probabilistic-automata
-    radar/run-sketch
+    radar/radar
     radial-mosaic/run-sketch
     random-walk/run-sketch
     ray-marching/run-sketch

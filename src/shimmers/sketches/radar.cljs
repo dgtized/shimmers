@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]))
 
@@ -68,11 +69,10 @@
     (apply q/stroke (green lifespan))
     (apply q/point position)))
 
-(defn ^:export run-sketch []
-  (q/defsketch radar
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil radar
+  :created-at "2021-01-16"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
