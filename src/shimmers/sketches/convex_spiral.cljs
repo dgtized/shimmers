@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.polygon :as gp]))
 
 ;; Concept:
@@ -39,12 +40,10 @@
   (doseq [[p q] (partition 2 1 (convex-spiral (map cq/rel-pos points)))]
     (q/line p q)))
 
-(defn ^:export run-sketch []
-  ;; 20210322
-  (q/defsketch convex-spiral-sketch
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil convex-spiral-sketch
+  :created-at "2021-03-22"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

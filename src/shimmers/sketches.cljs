@@ -93,7 +93,7 @@
     clustered-farmlands/run-sketch
     colonial-growth/colonial-growth
     colors/colors
-    convex-spiral/run-sketch
+    convex-spiral/convex-spiral-sketch
     cube/run-sketch
     delaunay-voronoi/run-sketch
     decaying-foundations/run-sketch
