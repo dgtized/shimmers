@@ -137,7 +137,7 @@
     probabilistic-automata/probabilistic-automata
     radar/radar
     radial-mosaic/run-sketch
-    random-walk/run-sketch
+    random-walk/random-walk
     ray-marching/run-sketch
     ring/run-sketch
     ripples/run-sketch

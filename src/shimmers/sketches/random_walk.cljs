@@ -5,7 +5,8 @@
             [shimmers.common.particle-system :as particles]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn make-particle []
   (let [initial-pos (cq/rel-vec (rand) (rand))]
@@ -37,13 +38,12 @@
   ;; (q/background 256 16)
   (particles/draw particles))
 
-(defn ^:export run-sketch []
-  (q/defsketch particles
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil random-walk
+  :created-at "2020-10-21"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
 
