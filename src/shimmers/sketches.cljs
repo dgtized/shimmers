@@ -101,7 +101,7 @@
     dispersion/dispersion
     dithering/dithering
     emitters/emitters
-    falling-gradients/run-sketch
+    falling-gradients/falling-gradients
     fire/run-sketch
     fireworks/run-sketch
     flocking-brushes/run-sketch

@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]))
 
@@ -43,11 +44,9 @@
               geom/vertices
               cq/draw-shape))))))
 
-(defn ^:export run-sketch []
-  ;; 20210504
-  (q/defsketch falling-gradients
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil falling-gradients
+  :created-at "2021-05-04"
+  :size [800 600]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
