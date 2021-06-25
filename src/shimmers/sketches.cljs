@@ -158,7 +158,7 @@
     uniform-distribution/run-sketch
     verlet-brushes/verlet-brushes
     video-shader/video-shader
-    yin-yang/run-sketch
+    yin-yang/yin-yang
     zigzag/run-sketch
     zoetropic/run-sketch]))
 
