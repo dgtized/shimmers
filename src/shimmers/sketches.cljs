@@ -127,7 +127,7 @@
     noise-grid/noise-grid-sketch
     noisy-shapes/noisy-shapes
     object-permanence/object-permanence
-    particles/run-sketch
+    particles/particles
     path-distribution/run-sketch
     permutations-of-transfiguration/run-sketch
     point-to-point/run-sketch

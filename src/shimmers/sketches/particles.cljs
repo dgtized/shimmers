@@ -8,7 +8,8 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.core :as sm]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
@@ -113,12 +114,11 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
   (when (:draw-forces @ui)
     (draw-forces)))
 
-(defn ^:export run-sketch []
-  (q/defsketch particles
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil particles
+  :created-at "2020-10-20"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
