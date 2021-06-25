@@ -6,6 +6,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.hexagon :as hex :refer [hexagon]]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -77,12 +78,10 @@
            geom/vertices
            cq/draw-shape))))
 
-(defn ^:export run-sketch []
-  ;; 20210517
-  (q/defsketch six-of-one-half-dozen-of-the-other
-    :host "quil-host"
-    :size [1200 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil six-of-one-half-dozen-of-the-other
+  :created-at "2021-05-17"
+  :size [1200 900]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

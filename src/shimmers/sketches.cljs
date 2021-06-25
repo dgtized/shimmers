@@ -145,7 +145,7 @@
     sand-strokes/sand-strokes
     scintillation/scintillation
     sediment/sediment
-    six-of-one-half-dozen-of-the-other/run-sketch
+    six-of-one-half-dozen-of-the-other/six-of-one-half-dozen-of-the-other
     space-colonization/run-sketch
     sphere/run-sketch
     substrate/run-sketch
