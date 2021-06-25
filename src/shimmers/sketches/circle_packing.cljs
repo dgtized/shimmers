@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -136,12 +137,10 @@
       (q/stroke 0 0 0 1.0))
     (cq/circle p r)))
 
-(defn ^:export run-sketch []
-  ;; 20210310
-  (q/defsketch circle-packing
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil circle-packing
+  :created-at "2021-03-10"
+  :size [900 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

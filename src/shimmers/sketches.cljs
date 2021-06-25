@@ -89,7 +89,7 @@
     brush-sweep/brush-sweep
     bubbles/bubbles
     butterfly/butterfly
-    circle-packing/run-sketch
+    circle-packing/circle-packing
     clustered-farmlands/run-sketch
     colonial-growth/run-sketch
     colors/run-sketch
