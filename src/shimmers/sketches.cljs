@@ -143,7 +143,7 @@
     ripples/ripples
     rose/rose
     sand-strokes/sand-strokes
-    scintillation/run-sketch
+    scintillation/scintillation
     sediment/run-sketch
     six-of-one-half-dozen-of-the-other/run-sketch
     space-colonization/run-sketch

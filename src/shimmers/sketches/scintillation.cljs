@@ -1,7 +1,8 @@
 (ns shimmers.sketches.scintillation
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]))
+            [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   {:theta 0})
@@ -27,11 +28,10 @@
         (q/line 0 y0 (q/width) y1)
         (q/line 0 y1 (q/width) y0)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch scintillation
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil scintillation
+  :created-at "2021-01-16"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
