@@ -125,7 +125,7 @@
     minimum-spanning-tree/minimum-spanning-tree
     mosaic-tiling/run-sketch
     noise-grid/noise-grid-sketch
-    noisy-shapes/run-sketch
+    noisy-shapes/noisy-shapes
     object-permanence/run-sketch
     particles/run-sketch
     path-distribution/run-sketch

@@ -4,13 +4,14 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as tc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]))
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/frame-rate 1)
@@ -80,10 +81,9 @@
     (doseq [args (shuffle shapes)]
       (fuzzy-shape args))))
 
-(defn ^:export run-sketch []
-  (q/defsketch noisy-shapes
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil noisy-shapes
+  :created-at "2021-03-03"
+  :size [600 400]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
