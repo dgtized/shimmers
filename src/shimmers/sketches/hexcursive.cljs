@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
             [shimmers.math.hexagon :as hex]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -45,11 +46,9 @@
         (geom/vertices 6)
         cq/draw-shape)))
 
-(defn ^:export run-sketch []
-  ;; 2021
-  (q/defsketch hexcursive
-    :host "quil-host"
-    :size [1200 1000]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode]))
+(sketch/defquil hexcursive
+  :created-at "2021-06-04"
+  :size [1200 1000]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode])

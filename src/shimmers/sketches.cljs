@@ -111,7 +111,7 @@
     gossamer-coils/gossamer-coils
     gravity-well/gravity-well
     hexaclock/hexaclock
-    hexcursive/run-sketch
+    hexcursive/hexcursive
     harsh-lines/run-sketch
     inconsequential-drift/run-sketch
     impressions-of-open-space/run-sketch
