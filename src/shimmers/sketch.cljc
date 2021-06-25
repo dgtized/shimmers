@@ -27,6 +27,8 @@
 ;; * Propagate metadata like creation time, tags, or a display name to index view for sorting?
 ;; * Is it possible to wrap defsketch and reduces the overlap?
 ;; * Assist in passing parameters like RNG seed into the sketch at invoke?
+;; * add sketches to a registry automatically ala
+;;   https://github.com/quil/quil/blob/master/src/clj/quil/snippets/macro.clj#L52
 ;;
 ;; Modified from defsketch in
 ;; https://github.com/quil/quil/blob/master/src/cljs/quil/sketch.clj#L22
