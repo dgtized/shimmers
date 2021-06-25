@@ -109,7 +109,7 @@
     folding-triangles/folding-triangles
     ;; fluid/run-sketch
     gossamer-coils/gossamer-coils
-    gravity-well/run-sketch
+    gravity-well/gravity-well
     hexaclock/run-sketch
     hexcursive/run-sketch
     harsh-lines/run-sketch

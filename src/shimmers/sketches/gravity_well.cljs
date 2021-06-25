@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.particle-system :as particles]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]))
 
@@ -79,12 +80,11 @@
         weight-fn (fn [{:keys [mass]}] (q/map-range mass 1 max-mass 1 6))]
     (particles/draw bodies :weight weight-fn)))
 
-(defn ^:export run-sketch []
-  (q/defsketch gravity-well
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil gravity-well
+  :created-at "2021-01-06"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
