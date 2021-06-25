@@ -100,7 +100,7 @@
     disassociated-boxes/disassociated-boxes
     dispersion/dispersion
     dithering/dithering
-    emitters/run-sketch
+    emitters/emitters
     falling-gradients/run-sketch
     fire/run-sketch
     fireworks/run-sketch

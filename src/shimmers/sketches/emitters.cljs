@@ -5,7 +5,8 @@
             [shimmers.common.particle-system :as particles]
             [shimmers.common.sequence :refer [map-kv]]
             [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 
@@ -62,11 +63,10 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (particles/draw particles :weight #(q/random 0.3 1.0)))
 
-(defn ^:export run-sketch []
-  (q/defsketch emitters
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil emitters
+  :created-at "2021-01-13"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
