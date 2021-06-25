@@ -2,7 +2,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   {:looking-at (v/vec2 0 0)})
@@ -40,11 +41,10 @@
     (let [clip 0.2]
       (q/arc 0 (/ H 8) (/ W 6) (/ H 10) clip (- Math/PI clip)))))
 
-(defn ^:export run-sketch []
-  (q/defsketch object-permanence
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil object-permanence
+  :created-at "2021-01-23"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

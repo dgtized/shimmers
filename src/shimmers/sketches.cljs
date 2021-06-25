@@ -126,7 +126,7 @@
     mosaic-tiling/run-sketch
     noise-grid/noise-grid-sketch
     noisy-shapes/noisy-shapes
-    object-permanence/run-sketch
+    object-permanence/object-permanence
     particles/run-sketch
     path-distribution/run-sketch
     permutations-of-transfiguration/run-sketch
