@@ -6,6 +6,7 @@
             [shimmers.math.core :as sm]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
@@ -142,7 +143,6 @@
   [:div (scenes)
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
-(defn ^{:export true
-        :created-at "2021-05-15"}
-  run-sketch []
+(sketch/defsvg radial-mosaic
+  {:created-at "2021-05-15"}
   (ctrl/mount page "svg-host"))

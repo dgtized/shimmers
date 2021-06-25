@@ -3,6 +3,7 @@
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
@@ -66,7 +67,6 @@
       ". The upper example is drawing a curved line through a random point in
       the circle. The lower example picks a random point on the bisector."]]))
 
-(defn ^{:export true
-        :created-at "2021-04-29"}
-  run-sketch []
+(sketch/defsvg path-distribution
+  {:created-at "2021-04-29"}
   (ctrl/mount page "svg-host"))

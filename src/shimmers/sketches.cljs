@@ -10,7 +10,7 @@
             shimmers.sketches.bubbles
             shimmers.sketches.butterfly
             shimmers.sketches.circle-packing
-            [shimmers.sketches.clustered-farmlands :as clustered-farmlands]
+            shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
             shimmers.sketches.colors
             shimmers.sketches.convex-spiral
@@ -43,12 +43,12 @@
             shimmers.sketches.lattice-of-common-chords
             shimmers.sketches.mechanism
             shimmers.sketches.minimum-spanning-tree
-            [shimmers.sketches.mosaic-tiling :as mosaic-tiling]
+            shimmers.sketches.mosaic-tiling
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
-            [shimmers.sketches.path-distribution :as path-distribution]
+            shimmers.sketches.path-distribution
             shimmers.sketches.permutations-of-transfiguration
             shimmers.sketches.point-to-point
             shimmers.sketches.polygrowth
@@ -56,7 +56,7 @@
             shimmers.sketches.precipitation
             shimmers.sketches.probabilistic-automata
             shimmers.sketches.radar
-            [shimmers.sketches.radial-mosaic :as radial-mosaic]
+            shimmers.sketches.radial-mosaic
             shimmers.sketches.random-walk
             shimmers.sketches.ray-marching
             shimmers.sketches.ring
@@ -75,25 +75,15 @@
             shimmers.sketches.tunnel-flight
             shimmers.sketches.typography
             shimmers.sketches.undulating-figures
-            [shimmers.sketches.uniform-distribution :as uniform-distribution]
+            shimmers.sketches.uniform-distribution
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
             shimmers.sketches.zigzag
             shimmers.sketches.zoetropic ))
 
-(defn- svg-db
-  []
-  (loader/sketches-with-meta
-   [clustered-farmlands/run-sketch
-    ;; fluid/run-sketch
-    mosaic-tiling/run-sketch
-    path-distribution/run-sketch
-    radial-mosaic/run-sketch
-    uniform-distribution/run-sketch]))
-
 (defn- db []
-  (concat (vals @registry/sketches) (svg-db)))
+  (vals @registry/sketches))
 
 (defn all []
   (sort-by (comp name :id) (db)))

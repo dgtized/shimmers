@@ -2,6 +2,7 @@
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -173,7 +174,6 @@
                (for [[i op] (map-indexed vector operations)]
                  [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
 
-(defn ^{:export true
-        :created-at "2021-04-09"}
-  run-sketch []
+(sketch/defsvg mosaic-tiling
+  {:created-at "2021-04-09"}
   (ctrl/mount page "svg-host"))

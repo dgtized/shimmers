@@ -2,6 +2,7 @@
   (:require [shimmers.common.svg :refer [svg]]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
@@ -86,7 +87,6 @@
                   (geom/sample-uniform (geom/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(defn ^{:export true
-        :created-at "2021-04-09"}
-  run-sketch []
+(sketch/defsvg uniform-distribution
+  {:created-at "2021-04-09"}
   (ctrl/mount scene "svg-host"))

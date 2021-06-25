@@ -2,6 +2,7 @@
   (:require [kixi.stats.distribution :as ksd]
             [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.svg.core :as svg]
@@ -80,7 +81,6 @@
 (defn page []
   [:div (scene)])
 
-(defn ^{:export true
-        :created-at "2021-05-10"}
-  run-sketch []
+(sketch/defsvg clustered-farmlands
+  {:created-at "2021-05-10"}
   (ctrl/mount page "svg-host"))
