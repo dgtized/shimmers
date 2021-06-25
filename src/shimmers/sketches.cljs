@@ -154,7 +154,7 @@
     triangulating-subdivisions/triangulating-subdivisions
     tunnel-flight/tunnel-flight
     typography/typography
-    undulating-figures/run-sketch
+    undulating-figures/undulating-figures
     uniform-distribution/run-sketch
     verlet-brushes/run-sketch
     video-shader/run-sketch
