@@ -8,7 +8,8 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.vector :as v]))
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defonce settings
   (ctrl/state
@@ -112,15 +113,14 @@
     (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
     (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]])
 
-(defn ^:export run-sketch []
-  (ctrl/mount explanation)
-  (q/defsketch space-colonization
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil space-colonization
+  :created-at "2020-11-27"
+  :on-mount (fn [] (ctrl/mount explanation))
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
 
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save
