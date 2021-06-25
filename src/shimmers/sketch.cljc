@@ -37,19 +37,21 @@
         opts     (->> raw-opts
                       (merge {:host "quil-host"})
                       quil.sketch/wrap-fns)
-        runner (vary-meta 'run-sketch merge
-                          {:export true :created-at (:created-at opts)})
-        mount (gensym "mount")]
+        runner (vary-meta app-name merge
+                          {:export true
+                           :created-at (:created-at opts)})
+        sketch-start (vary-meta (symbol (str app-name '-start))
+                                assoc :export true)]
     `(do
-       (defn ~(vary-meta app-name assoc :export true) []
+       (defn ~sketch-start []
          (quil.sketch/sketch
           ~@(apply concat (seq opts))))
 
        (defn ~runner []
-         (when-let [~mount ~(:on-mount opts)]
-           (~mount))
+         (when-let [mount# ~(:on-mount opts)]
+           (mount#))
 
          (when-not (some #(= :no-start %) ~(:features opts))
            (quil.sketch/add-sketch-to-init-list
-            {:fn ~app-name
+            {:fn ~sketch-start
              :host-id ~(:host opts)}))))))

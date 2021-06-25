@@ -149,7 +149,7 @@
     space-colonization/run-sketch
     sphere/run-sketch
     substrate/run-sketch
-    superposition/run-sketch
+    superposition/superposition
     tilt/run-sketch
     triangulating-subdivisions/run-sketch
     tunnel-flight/run-sketch
