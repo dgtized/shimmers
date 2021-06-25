@@ -110,9 +110,9 @@
     ;; fluid/run-sketch
     gossamer-coils/gossamer-coils
     gravity-well/gravity-well
+    harsh-lines/harsh-lines
     hexaclock/hexaclock
     hexcursive/hexcursive
-    harsh-lines/run-sketch
     inconsequential-drift/run-sketch
     impressions-of-open-space/run-sketch
     k-means/run-sketch

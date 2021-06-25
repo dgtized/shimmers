@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry] ;; for IFlip extensions
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]))
 
@@ -41,11 +42,9 @@
                              (* 0.03 (* t (inc i))))]
           (q/line p q))))))
 
-(defn ^:export run-sketch []
-  ;; 20210407
-  (q/defsketch harsh-lines
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode]))
+(sketch/defquil harsh-lines
+  :created-at "2021-04-07"
+  :size [900 600]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode])
