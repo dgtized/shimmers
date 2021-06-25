@@ -9,6 +9,7 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
@@ -169,11 +170,10 @@
     (cq/color-if q/fill color)
     (cq/draw-triangle a b c)))
 
-(defn ^:export run-sketch []
-  (q/defsketch triangulating-subdivisions
-    :host "quil-host"
-    :size [900 900]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil triangulating-subdivisions
+  :created-at "2021-02-22"
+  :size [900 900]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

@@ -151,7 +151,7 @@
     substrate/substrate
     superposition/superposition
     tilt/tilt
-    triangulating-subdivisions/run-sketch
+    triangulating-subdivisions/triangulating-subdivisions
     tunnel-flight/run-sketch
     typography/run-sketch
     undulating-figures/run-sketch
