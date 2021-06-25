@@ -69,7 +69,10 @@
         (for [sketch sketches]
           [:li [:a {:href (rfe/href ::sketch-by-name
                                     {:name (:id sketch)}
-                                    {:seed (generate-seed)})}
+                                    {:seed (generate-seed)})
+                    :title (if-let [created-at (:created-at sketch)]
+                             (str created-at)
+                             "")}
                 (:id sketch)]])))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in

@@ -37,14 +37,15 @@
         opts     (->> raw-opts
                       (merge {:host "quil-host"})
                       quil.sketch/wrap-fns)
-        runner 'run-sketch
+        runner (vary-meta 'run-sketch merge
+                          {:export true :created-at (:created-at opts)})
         mount (gensym "mount")]
     `(do
        (defn ~(vary-meta app-name assoc :export true) []
          (quil.sketch/sketch
           ~@(apply concat (seq opts))))
 
-       (defn ~(vary-meta runner assoc :export true) []
+       (defn ~runner []
          (when-let [~mount ~(:on-mount opts)]
            (~mount))
 

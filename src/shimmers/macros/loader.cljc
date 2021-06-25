@@ -14,6 +14,7 @@
           `(let [m# (meta (var ~sketch))]
              {:id (namespace-to-id (:ns m#))
               :fn ~sketch
+              :created-at (:created-at m#)
               :file (:file m#)
               :line (:line m#)}))))
 
