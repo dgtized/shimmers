@@ -153,7 +153,7 @@
     tilt/tilt
     triangulating-subdivisions/triangulating-subdivisions
     tunnel-flight/tunnel-flight
-    typography/run-sketch
+    typography/typography
     undulating-figures/run-sketch
     uniform-distribution/run-sketch
     verlet-brushes/run-sketch

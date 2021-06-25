@@ -1,8 +1,9 @@
 (ns shimmers.sketches.typography
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.string :as str]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [clojure.string :as str]))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/frame-rate 5)
@@ -45,11 +46,10 @@
             (swap! x + (rand-nth [-10 50 text-width text-width 100])))
           (swap! y + yset))))))
 
-(defn ^:export run-sketch []
-  (q/defsketch typography
-    :host "quil-host"
-    :size [600 400]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil typography
+  :created-at "2021-01-11"
+  :size [600 400]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
