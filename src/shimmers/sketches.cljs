@@ -114,7 +114,7 @@
     hexaclock/hexaclock
     hexcursive/hexcursive
     inconsequential-drift/inconsequential-drift
-    impressions-of-open-space/run-sketch
+    impressions-of-open-space/impressions-of-open-space
     k-means/run-sketch
     kd-tree/run-sketch
     kinematic-chain/run-sketch

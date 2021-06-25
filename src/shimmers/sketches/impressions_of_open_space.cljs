@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -56,11 +57,9 @@
     (q/line (cq/rel-pos point)
             (cq/rel-pos (tm/+ point (gv/vec2 0 (- (* 0.015 (rand)))))))))
 
-(defn ^:export run-sketch []
-  ;; 20210309
-  (q/defsketch impressions-of-open-space
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode]))
+(sketch/defquil impressions-of-open-space
+  :created-at "2021-03-09"
+  :size [900 600]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode])
