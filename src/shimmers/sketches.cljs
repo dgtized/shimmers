@@ -147,7 +147,7 @@
     sediment/sediment
     six-of-one-half-dozen-of-the-other/six-of-one-half-dozen-of-the-other
     space-colonization/space-colonization
-    sphere/run-sketch
+    sphere/sphere
     substrate/run-sketch
     superposition/superposition
     tilt/run-sketch

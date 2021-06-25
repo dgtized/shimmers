@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
 (defn sphere-points [vertice-count]
@@ -57,12 +58,11 @@
   (doseq [position (take active-count vertices)]
     (apply q/point (map (partial * radius) position))))
 
-(defn ^:export run-sketch []
-  (q/defsketch sphere-sketch
-    :host "quil-host"
-    :size [600 400]
-    :renderer :p3d
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil sphere
+  :created-at "2021-01-30"
+  :size [600 400]
+  :renderer :p3d
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
