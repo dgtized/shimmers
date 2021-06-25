@@ -91,7 +91,7 @@
     butterfly/butterfly
     circle-packing/circle-packing
     clustered-farmlands/run-sketch
-    colonial-growth/run-sketch
+    colonial-growth/colonial-growth
     colors/run-sketch
     convex-spiral/run-sketch
     cube/run-sketch

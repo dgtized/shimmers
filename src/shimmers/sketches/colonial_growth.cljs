@@ -6,6 +6,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -78,12 +79,10 @@
     (cq/circle p r)
     #_(when parent (q/line p (:p parent)))))
 
-(defn ^:export run-sketch []
-  ;; 20210514
-  (q/defsketch colonial-growth
-    :host "quil-host"
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil colonial-growth
+  :created-at "2021-05-14"
+  :size [800 600]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
