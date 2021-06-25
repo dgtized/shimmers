@@ -3,7 +3,8 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.core :as sm]))
+            [shimmers.math.core :as sm]
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn noise-grid [x y _ factor]
   (q/noise (/ x factor) (/ y factor)
@@ -47,10 +48,9 @@
       (dotimes [gx 3]
         (q/image tile (* gx size) (* gy size))))))
 
-(defn ^:export run-sketch []
-  (q/defsketch particles
-    :host "quil-host"
-    :size [300 300]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil noise-grid-sketch
+  :created-at "2020-11-01"
+  :size [300 300]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])

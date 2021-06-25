@@ -124,7 +124,7 @@
     mechanism/mechanism
     minimum-spanning-tree/minimum-spanning-tree
     mosaic-tiling/run-sketch
-    noise-grid/run-sketch
+    noise-grid/noise-grid-sketch
     noisy-shapes/run-sketch
     object-permanence/run-sketch
     particles/run-sketch
