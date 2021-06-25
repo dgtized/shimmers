@@ -98,7 +98,7 @@
     decaying-foundations/decaying-foundations
     delaunay-voronoi/delaunay-voronoi
     disassociated-boxes/disassociated-boxes
-    dispersion/run-sketch
+    dispersion/dispersion
     dithering/run-sketch
     emitters/run-sketch
     falling-gradients/run-sketch

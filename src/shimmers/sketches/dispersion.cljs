@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
+            [shimmers.sketch :as sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -61,11 +62,9 @@
               0.9)
       (draw-polygon shape))))
 
-(defn ^:export run-sketch []
-  ;; 20210310
-  (q/defsketch dispersion
-    :host "quil-host"
-    :size [900 600]
-    :setup setup
-    :draw draw
-    :middleware [m/fun-mode]))
+(sketch/defquil dispersion
+  :created-at "2021-03-10"
+  :size [900 600]
+  :setup setup
+  :draw draw
+  :middleware [m/fun-mode])
