@@ -156,7 +156,7 @@
     typography/typography
     undulating-figures/undulating-figures
     uniform-distribution/run-sketch
-    verlet-brushes/run-sketch
+    verlet-brushes/verlet-brushes
     video-shader/run-sketch
     yin-yang/run-sketch
     zigzag/run-sketch
