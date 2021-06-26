@@ -13,6 +13,11 @@
 (defn update-state [state]
   state)
 
+(defn noise-at [x y]
+  (let [res 128]
+    (q/noise (/ x res) (/ y res)
+             (/ (q/frame-count) 800))))
+
 (defn grid [x y width divisions]
   (let [dwidth (/ width divisions)
         percent (/ width (q/width))]
@@ -20,7 +25,7 @@
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
-              noise (q/noise (/ sx 128) (/ sy 128) (/ (q/frame-count) 800))]
+              noise (noise-at sx sy)]
           (if (> (* percent noise) 0.1)
             (grid sx sy dwidth (cond (< noise 0.2) 8
                                      (< noise 0.4) 5
