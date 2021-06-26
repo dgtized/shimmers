@@ -54,8 +54,9 @@
 
 (defn draw [state]
   (q/no-fill)
-  (q/background 1.0)
-  (q/stroke-weight 0.75)
+  (q/background 1.0 0.1)
+  (q/stroke-weight 1.0)
+  (q/stroke 0 0.2)
   (grid 0 0 (q/width) 5))
 
 (sketch/defquil interstitial
