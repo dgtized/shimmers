@@ -20,13 +20,22 @@
 (defn update-state [state]
   state)
 
-(def divisions 10)
-
-(defn draw [state]
-  (let [dwidth (/ (q/width) divisions)]
+(defn grid [x y width divisions]
+  (let [dwidth (/ width divisions)]
     (dotimes [i divisions]
       (dotimes [j divisions]
-        (q/rect (* i dwidth) (* j dwidth) dwidth dwidth)))))
+        (q/rect (+ x (* i dwidth)) (+ y (* j dwidth)) dwidth dwidth)))))
+
+(defn draw [state]
+  (q/no-fill)
+  (q/background 1.0)
+  (let [divisions 8
+        dwidth (/ (q/width) divisions)]
+    (dotimes [i divisions]
+      (dotimes [j divisions]
+        (let [x (* i dwidth)
+              y (* j dwidth)]
+          (grid x y dwidth (Math/pow 2 (q/floor (* 6 (q/noise x y))))))))))
 
 (sketch/defquil interstitial
   :created-at "2021-06-26"
