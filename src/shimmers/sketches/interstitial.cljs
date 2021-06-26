@@ -27,9 +27,13 @@
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
-              noise (q/noise (/ sx 128) (/ sy 128) (/ (q/frame-count) 500))]
-          (if (> (* percent noise) 0.15)
-            (grid sx sy dwidth (cond (< noise 0.3) 4 (< noise 0.6) 3 :else 2))
+              noise (q/noise (/ sx 128) (/ sy 128) (/ (q/frame-count) 800))]
+          (if (> (* percent noise) 0.1)
+            (grid sx sy dwidth (cond (< noise 0.2) 8
+                                     (< noise 0.4) 5
+                                     (< noise 0.6) 4
+                                     (< noise 0.9) 3
+                                     :else 2))
             (cond (< noise 0.25)
                   (q/triangle sx sy (+ sx dwidth) sy sx (+ sy dwidth))
                   (< noise 0.50)
@@ -40,7 +44,7 @@
 (defn draw [state]
   (q/no-fill)
   (q/background 1.0)
-  (grid 0 0 (q/width) 2))
+  (grid 0 0 (q/width) 5))
 
 (sketch/defquil interstitial
   :created-at "2021-06-26"
