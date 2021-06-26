@@ -58,6 +58,7 @@
             {:fn ~sketch-start
              :host-id ~(:host opts)})))
 
+       ;; FIXME: why is occasionally adding duplicates?
        (let [m# (meta (var ~app-name))]
          (swap! registry/sketches assoc (str ~app-name)
                 {:id (loader/namespace-to-id (:ns m#))

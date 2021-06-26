@@ -35,7 +35,7 @@
             shimmers.sketches.hexcursive
             shimmers.sketches.inconsequential-drift
             shimmers.sketches.impressions-of-open-space
-            shimmers.sketches.interstitial
+            shimmers.sketches.interstitial-transitions
             shimmers.sketches.k-means
             shimmers.sketches.kd-tree
             shimmers.sketches.kinematic-chain

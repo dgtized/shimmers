@@ -1,4 +1,4 @@
-(ns shimmers.sketches.interstitial
+(ns shimmers.sketches.interstitial-transitions
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -57,7 +57,7 @@
   (q/stroke 0 0.2)
   (grid 0 0 (q/width) 5))
 
-(sketch/defquil interstitial
+(sketch/defquil interstitial-transitions
   :created-at "2021-06-26"
   :size [800 800]
   :setup setup
