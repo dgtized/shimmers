@@ -16,7 +16,7 @@
 (defn noise-at [x y]
   (let [res 128]
     (q/noise (/ x res) (/ y res)
-             (/ (q/frame-count) 800))))
+             (/ (q/frame-count) 750))))
 
 (defn grid [x y width divisions]
   (let [dwidth (/ width divisions)
