@@ -24,7 +24,11 @@
   (let [dwidth (/ width divisions)]
     (dotimes [i divisions]
       (dotimes [j divisions]
-        (q/rect (+ x (* i dwidth)) (+ y (* j dwidth)) dwidth dwidth)))))
+        (let [sx (+ x (* i dwidth))
+              sy (+ y (* j dwidth))]
+          (if (< 0.33 (q/noise sx sy))
+            (q/rect sx sy dwidth dwidth)
+            (q/ellipse sx sy dwidth dwidth)))))))
 
 (defn draw [state]
   (q/no-fill)
