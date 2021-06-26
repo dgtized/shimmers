@@ -14,6 +14,7 @@
 
 (defn setup []
   (q/noise-seed (rand-int 1000000))
+  (q/frame-rate 30)
   (q/color-mode :hsl 1.0)
   {})
 
