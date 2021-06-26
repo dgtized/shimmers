@@ -2,15 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
-
-(defn square [center radius]
-  (let [half (* radius 0.49)
-        extent (gv/vec2 half half)]
-    (rect/rect (tm/- center extent) (tm/+ center extent))))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/noise-seed (rand-int 1000000))
