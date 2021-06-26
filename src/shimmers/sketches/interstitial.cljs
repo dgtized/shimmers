@@ -21,29 +21,26 @@
   state)
 
 (defn grid [x y width divisions]
-  (let [dwidth (/ width divisions)]
+  (let [dwidth (/ width divisions)
+        percent (/ dwidth (q/width))]
     (dotimes [i divisions]
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
-              noise (q/noise sx sy)]
-          (cond (< noise 0.33)
+              noise (+ percent (* 0.85 (q/noise sx sy (/ (q/frame-count) 500))))]
+          (cond (< noise 0.3)
                 (q/ellipse sx sy dwidth dwidth)
-                (< noise 0.66)
+                (< noise 0.55)
                 (q/rect sx sy dwidth dwidth)
+                (< noise 0.8)
+                (q/triangle sx sy (+ sx dwidth) sy sx (+ sy dwidth))
                 :else
-                (q/triangle sx sy (+ sx dwidth) sy sx (+ sy dwidth))))))))
+                (grid sx sy dwidth 2)))))))
 
 (defn draw [state]
   (q/no-fill)
   (q/background 1.0)
-  (let [divisions 8
-        dwidth (/ (q/width) divisions)]
-    (dotimes [i divisions]
-      (dotimes [j divisions]
-        (let [x (* i dwidth)
-              y (* j dwidth)]
-          (grid x y dwidth (Math/pow 2 (q/floor (* 6 (q/noise x y))))))))))
+  (grid 0 0 (q/width) 8))
 
 (sketch/defquil interstitial
   :created-at "2021-06-26"
