@@ -34,16 +34,28 @@
                                      (< noise 0.6) 4
                                      (< noise 0.9) 3
                                      :else 2))
-            (cond (< noise 0.25)
-                  (q/triangle sx sy (+ sx dwidth) sy sx (+ sy dwidth))
-                  (< noise 0.50)
+            (cond (< noise 0.2)
+                  (q/triangle sx sy
+                              sx (+ sy dwidth)
+                              (+ sx dwidth) (+ sy dwidth))
+                  (< noise 0.47)
+                  (q/rect sx sy dwidth dwidth)
+                  (< noise 0.53)
+                  (q/triangle sx sy
+                              (+ sx dwidth) sy
+                              sx (+ sy dwidth))
+                  (< noise 0.85)
                   (q/ellipse sx sy dwidth dwidth)
                   :else
-                  (q/rect sx sy dwidth dwidth))))))))
+                  (q/triangle sx sy
+                              (+ sx dwidth) sy
+                              (+ sx dwidth) (+ sy dwidth))
+                  )))))))
 
 (defn draw [state]
   (q/no-fill)
   (q/background 1.0)
+  (q/stroke-weight 0.75)
   (grid 0 0 (q/width) 5))
 
 (sketch/defquil interstitial
