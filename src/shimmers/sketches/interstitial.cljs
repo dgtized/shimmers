@@ -25,10 +25,14 @@
     (dotimes [i divisions]
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
-              sy (+ y (* j dwidth))]
-          (if (< 0.33 (q/noise sx sy))
-            (q/rect sx sy dwidth dwidth)
-            (q/ellipse sx sy dwidth dwidth)))))))
+              sy (+ y (* j dwidth))
+              noise (q/noise sx sy)]
+          (cond (< noise 0.33)
+                (q/ellipse sx sy dwidth dwidth)
+                (< noise 0.66)
+                (q/rect sx sy dwidth dwidth)
+                :else
+                (q/triangle sx sy (+ sx dwidth) sy sx (+ sy dwidth))))))))
 
 (defn draw [state]
   (q/no-fill)
