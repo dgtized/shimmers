@@ -18,6 +18,25 @@
     (q/noise (/ x res) (/ y res)
              (/ (q/frame-count) 500))))
 
+(defn shape [type x y width]
+  (let [xw (+ x width)
+        yw (+ y width)]
+    (case type
+      :triangle-left
+      (q/triangle x y x yw xw yw)
+      :triangle-top
+      (q/triangle x y xw y x yw)
+      :triangle-right
+      (q/triangle x y xw y xw yw)
+      :rectangle
+      (q/rect x y width width)
+      :hatch
+      (do
+        (q/line x y xw yw)
+        (q/line x yw xw y))
+      :circle
+      (q/ellipse x y width width))))
+
 (defn grid [x y width divisions]
   (let [dwidth (/ width divisions)
         percent (/ width (q/width))]
@@ -33,27 +52,13 @@
                                      (< noise 0.9) 3
                                      :else 2))
             ;; adding recursive with-rotation from noise makes it appear to rotate in 3d?
-            (cond (< noise 0.2)
-                  (q/triangle sx sy
-                              sx (+ sy dwidth)
-                              (+ sx dwidth) (+ sy dwidth))
-                  (< noise 0.45)
-                  (q/rect sx sy dwidth dwidth)
-                  (< noise 0.50)
-                  (q/triangle sx sy
-                              (+ sx dwidth) sy
-                              sx (+ sy dwidth))
-                  (< noise 0.55)
-                  (do
-                    (q/line sx sy (+ sx dwidth) (+ sy dwidth))
-                    (q/line sx (+ sy dwidth) (+ sx dwidth) sy))
-                  (< noise 0.85)
-                  (q/ellipse sx sy dwidth dwidth)
+            (cond (< noise 0.2) (shape :triangle-left sx sy dwidth)
+                  (< noise 0.45) (shape :rectangle sx sy dwidth)
+                  (< noise 0.50) (shape :triangle-top sx sy dwidth)
+                  (< noise 0.55) (shape :hatch sx sy dwidth)
+                  (< noise 0.85) (shape :circle sx sy dwidth)
                   :else
-                  (q/triangle sx sy
-                              (+ sx dwidth) sy
-                              (+ sx dwidth) (+ sy dwidth))
-                  )))))))
+                  (shape :triangle-right sx sy dwidth))))))))
 
 (defn draw [state]
   (q/no-fill)
