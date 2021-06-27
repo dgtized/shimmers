@@ -9,7 +9,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :ring-density :color-displace :flow-field
+(def modes [:dither :boxes :circles :ring-density :sampled-ring-density :color-displace :flow-field
             :ascii-70 :ascii-10 :ascii-n])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
@@ -109,6 +109,27 @@
               size (tm/map-interval (+ r g b) 768 0 0.5 12)]
           (q/ellipse (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
 
+(defn sampling [width height]
+  (repeatedly 3000 #(int (tm/random (* width height)))))
+
+(def sample-map (memoize sampling))
+
+(defn sampled-ring-density [capture width height]
+  (q/ellipse-mode :radius)
+  (q/no-fill)
+  (q/stroke-weight 0.5)
+  (q/stroke 0)
+  (let [pixels (q/pixels capture)]
+    (doseq [is (sample-map width height)]
+      (let [ix (* 4 is)
+            x (mod is width)
+            y (/ is width)
+            r (aget pixels ix)
+            g (aget pixels (+ ix 1))
+            b (aget pixels (+ ix 2))
+            size (tm/map-interval (+ r g b) 0 768 4 24)]
+        (q/ellipse (* (- width x) 2) (* y 2) size size)))))
+
 (defn color-displace [capture width height]
   (q/rect-mode :corner)
   (q/no-stroke)
@@ -191,6 +212,7 @@
       :boxes (boxes capture width height)
       :circles (circles capture width height)
       :ring-density (ring-density capture width height)
+      :sampled-ring-density (sampled-ring-density capture width height)
       :color-displace (color-displace capture width height)
       :flow-field (flow-field capture width height)
       :ascii-70 (ascii ascii-70 capture width height)
