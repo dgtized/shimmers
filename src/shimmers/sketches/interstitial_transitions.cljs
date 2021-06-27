@@ -6,7 +6,7 @@
 
 (defn setup []
   (q/noise-seed (rand-int 1000000))
-  (q/frame-rate 30)
+  (q/frame-rate 10)
   (q/color-mode :hsl 1.0)
   {})
 
@@ -14,9 +14,9 @@
   state)
 
 (defn noise-at [x y]
-  (let [res 128]
+  (let [res 192]
     (q/noise (/ x res) (/ y res)
-             (/ (q/frame-count) 750))))
+             (/ (q/frame-count) 500))))
 
 (defn grid [x y width divisions]
   (let [dwidth (/ width divisions)
@@ -52,9 +52,9 @@
 
 (defn draw [state]
   (q/no-fill)
-  (q/background 1.0 0.1)
-  (q/stroke-weight 1.0)
-  (q/stroke 0 0.2)
+  (q/background 1.0 0.2)
+  (q/stroke-weight 0.9)
+  (q/stroke 0 0.3)
   (grid 0 0 (q/width) 5))
 
 (sketch/defquil interstitial-transitions
