@@ -37,12 +37,16 @@
                   (q/triangle sx sy
                               sx (+ sy dwidth)
                               (+ sx dwidth) (+ sy dwidth))
-                  (< noise 0.47)
+                  (< noise 0.45)
                   (q/rect sx sy dwidth dwidth)
-                  (< noise 0.53)
+                  (< noise 0.50)
                   (q/triangle sx sy
                               (+ sx dwidth) sy
                               sx (+ sy dwidth))
+                  (< noise 0.55)
+                  (do
+                    (q/line sx sy (+ sx dwidth) (+ sy dwidth))
+                    (q/line sx (+ sy dwidth) (+ sx dwidth) sy))
                   (< noise 0.85)
                   (q/ellipse sx sy dwidth dwidth)
                   :else
