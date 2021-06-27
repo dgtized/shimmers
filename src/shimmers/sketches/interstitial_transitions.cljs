@@ -32,6 +32,7 @@
                                      (< noise 0.6) 4
                                      (< noise 0.9) 3
                                      :else 2))
+            ;; adding recursive with-rotation from noise makes it appear to rotate in 3d?
             (cond (< noise 0.2)
                   (q/triangle sx sy
                               sx (+ sy dwidth)
