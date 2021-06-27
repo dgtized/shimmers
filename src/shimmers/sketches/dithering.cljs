@@ -9,7 +9,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :color-displace :flow-field
+(def modes [:dither :boxes :circles :ring-density :color-displace :flow-field
             :ascii-70 :ascii-10 :ascii-n])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
@@ -76,7 +76,7 @@
           (q/rect (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
 
 (defn circles [capture width height]
-  (q/rect-mode :corner)
+  (q/ellipse-mode :radius)
   (q/no-stroke)
   (q/fill 0)
   (let [box-size 3
@@ -88,6 +88,25 @@
               g (aget pixels (+ (idx (* x box-size) (* y box-size) width) 1))
               b (aget pixels (+ (idx (* x box-size) (* y box-size) width) 2))
               size (q/map-range (/ (+ r g b) 3) 0 255 (* box-size 1.8) 0.2)]
+          (q/ellipse (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
+
+;; This would be more interesting with a particular sequence of sample locations
+;; instead of a grid.
+(defn ring-density [capture width height]
+  (q/ellipse-mode :radius)
+  (q/no-fill)
+  (q/stroke-weight 1.0)
+  (q/stroke 0)
+  (let [box-size 6
+        max-x (/ width box-size)
+        pixels (q/pixels capture)]
+    (dotimes [y (/ height box-size)]
+      (dotimes [x max-x]
+        (let [ix (idx (* x box-size) (* y box-size) width)
+              r (aget pixels ix)
+              g (aget pixels (+ ix 1))
+              b (aget pixels (+ ix 2))
+              size (tm/map-interval (+ r g b) 768 0 0.5 12)]
           (q/ellipse (* (- max-x x) 2 box-size) (* y 2 box-size) size size))))))
 
 (defn color-displace [capture width height]
@@ -171,6 +190,7 @@
       :dither (q/image (dither capture width height) 0 0 (* width 2) (* height 2))
       :boxes (boxes capture width height)
       :circles (circles capture width height)
+      :ring-density (ring-density capture width height)
       :color-displace (color-displace capture width height)
       :flow-field (flow-field capture width height)
       :ascii-70 (ascii ascii-70 capture width height)
