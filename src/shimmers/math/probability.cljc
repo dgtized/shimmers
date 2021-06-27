@@ -14,16 +14,18 @@
     0))
 
 (defn weighted
-  "Given a mapping of values to weights, randomly choose a value biased by weight"
-  [weights]
-  (let [sample (tm/random (apply + (vals weights)))]
-    (loop [cumulative 0.0
-           [[choice weight] & remaining] weights]
-      (when weight
-        (let [sum (+ cumulative weight)]
-          (if (< sample sum)
-            choice
-            (recur sum remaining)))))))
+  "Given a mapping of values to weights, choose a value biased by weight from a
+  RNG source generating values from 0 to 1."
+  ([weights] (weighted weights (tm/random)))
+  ([weights random-value]
+   (let [sample (* random-value (apply + (vals weights)))]
+     (loop [cumulative 0.0
+            [[choice weight] & remaining] weights]
+       (when weight
+         (let [sum (+ cumulative weight)]
+           (if (< sample sum)
+             choice
+             (recur sum remaining))))))))
 
 (defn weighted-by
   "Given a sequence of values `xs`, weight each value by a function `f` and return
