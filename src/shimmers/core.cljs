@@ -72,7 +72,7 @@
                                     {:name (:id sketch)}
                                     {:seed (generate-seed)})
                     :title (if-let [created-at (:created-at sketch)]
-                             (str (ld/parse created-at))
+                             (str created-at)
                              "")}
                 (:id sketch)]])))
 

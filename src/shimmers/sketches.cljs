@@ -1,5 +1,6 @@
 (ns shimmers.sketches
-  (:require [shimmers.common.sequence :as cs]
+  (:require [cljc.java-time.local-date :as ld]
+            [shimmers.common.sequence :as cs]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]
 
@@ -81,10 +82,12 @@
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
             shimmers.sketches.zigzag
-            shimmers.sketches.zoetropic ))
+            shimmers.sketches.zoetropic))
 
 (defn- db []
-  (vals @registry/sketches))
+  (->> @registry/sketches
+       vals
+       (map (fn [s] (update s :created-at ld/parse)))))
 
 (defn all []
   (sort-by (comp name :id) (db)))
