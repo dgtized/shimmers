@@ -52,6 +52,10 @@ input[type=range] {
   width: 50em;
 }
 
+.sketch-list .selector {
+  padding-left: 2em;
+}
+
 .sketch-list h1 {
   text-align: left;
   padding-left: 3em;

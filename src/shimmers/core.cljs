@@ -78,7 +78,7 @@
                 (:id sketch)]])))
 
 (defn selector [page]
-  [:p
+  [:div.selector
    "Listing: "
    [:a {:href (when-not (= page ::sketch-list) (rfe/href ::sketch-list))}
     "Alphabetically"]
