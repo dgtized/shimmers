@@ -77,12 +77,14 @@
                              "")}
                 (:id sketch)]])))
 
-(defn selector []
+(defn selector [page]
   [:p
    "Listing: "
-   [:a {:href (rfe/href ::sketch-list)} "Alphabetically"]
+   [:a {:href (when-not (= page ::sketch-list) (rfe/href ::sketch-list))}
+    "Alphabetically"]
    [:span " "]
-   [:a {:href (rfe/href ::sketches-by-date)} "By Date"]])
+   [:a {:href (when-not (= page ::sketches-by-date) (rfe/href ::sketches-by-date))}
+    "By Date"]])
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
@@ -97,7 +99,7 @@
      implement or explore. Many are complete, and some I periodically revisit
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
-     (selector)
+     (selector ::sketch-list)
      [:div {:class "sketch-columns"}
       [:div [:h3 "A-M"] (list-sketches sketches-an)]
       [:div [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
@@ -110,7 +112,7 @@
   (let [sketches-by-date (sort-by :created-at (sketches/all))
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section {:class "sketch-list"}
-     (selector)
+     (selector ::sketches-by-date)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
