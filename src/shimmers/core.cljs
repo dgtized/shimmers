@@ -92,7 +92,7 @@
         [sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
                     sketches)]
-    [:section {:class "sketch-list"}
+    [:section.sketch-list
      [:h1 (str "All Sketches (" (count sketches) ")")]
      [:p "A digital sketch-book of generative art, visual effects, computer
      animation, visualizations of algorithms, and whatever else struck my fancy to
@@ -100,7 +100,7 @@
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
      (selector ::sketch-list)
-     [:div {:class "sketch-columns"}
+     [:div.sketch-columns
       [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
       [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
 
@@ -111,7 +111,7 @@
 (defn sketches-by-date []
   (let [sketches-by-date (sort-by :created-at (sketches/all))
         grouped-by-month (partition-by year-month sketches-by-date)]
-    [:section {:class "sketch-list"}
+    [:section.sketch-list
      (selector ::sketches-by-date)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
@@ -121,14 +121,14 @@
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
-    [:section {:class "controls"}
+    [:section.controls
      [:span
       [:button {:on-click #(cycle-sketch sketch)} "Next"]
       [:button {:on-click #(restart-sketch sketch)} "Restart"]
       [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
      [:span
       [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
-     [:span {:id "framerate"}]]))
+     [:span#framerate]]))
 
 ;; FIXME: handle invalid paths, re-route to sketch-list
 (def routes
