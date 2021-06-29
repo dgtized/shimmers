@@ -1,5 +1,7 @@
 (ns shimmers.core
-  (:require [goog.dom :as dom]
+  (:require [cljc.java-time.local-date :as ld]
+            [clojure.string :as str]
+            [goog.dom :as dom]
             [quil.core :as q :include-macros true]
             [reagent.core :as r]
             [reagent.dom :as rdom]
@@ -11,7 +13,6 @@
             [shimmers.common.ui :as ui]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketches :as sketches]
-            [cljc.java-time.local-date :as ld]
             [spec-tools.data-spec :as ds]))
 
 ;; detect window size for initial setup?
@@ -76,6 +77,13 @@
                              "")}
                 (:id sketch)]])))
 
+(defn selector []
+  [:p
+   "Listing: "
+   [:a {:href (rfe/href ::sketch-list)} "Alphabetically"]
+   [:span " "]
+   [:a {:href (rfe/href ::sketches-by-date)} "By Date"]])
+
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
   (let [sketches (sketches/all)
@@ -89,9 +97,25 @@
      implement or explore. Many are complete, and some I periodically revisit
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
+     (selector)
      [:div {:class "sketch-columns"}
       [:div [:h3 "A-M"] (list-sketches sketches-an)]
       [:div [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
+
+(defn year-month [{:keys [created-at]}]
+  [(ld/get-year created-at)
+   (str/capitalize (str (ld/get-month created-at)))])
+
+(defn sketches-by-date []
+  (let [sketches-by-date (sort-by :created-at (sketches/all))
+        grouped-by-month (partition-by year-month sketches-by-date)]
+    [:section {:class "sketch-list"}
+     (selector)
+     (for [sketches grouped-by-month
+           :let [[year month] (year-month (first sketches))]]
+       [:div {:key (str year month)}
+        [:h3 (str month " " year " (" (count sketches) ")")]
+        (list-sketches sketches)])]))
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
@@ -109,6 +133,7 @@
   [;; "/shimmers"
    ["/" ::root]
    ["/sketches" {:name ::sketch-list :view sketch-list}]
+   ["/sketches-by-date" {:name ::sketches-by-date :view sketches-by-date}]
    ["/sketches/:name"
     {:name ::sketch-by-name
      :view sketch-by-name
