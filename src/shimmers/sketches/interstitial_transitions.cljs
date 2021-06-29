@@ -13,10 +13,12 @@
 (defn update-state [state]
   state)
 
-(defn noise-at [x y]
-  (let [res 192]
-    (q/noise (/ x res) (/ y res)
-             (/ (q/frame-count) 500))))
+(defn noise-at
+  ([x y offset]
+   (let [res 192]
+     (q/noise (/ x res) (/ y res)
+              (+ offset (/ (q/frame-count) 500)))))
+  ([x y] (noise-at x y 0)))
 
 (defn shape [type x y width]
   (let [xw (+ x width)
@@ -45,8 +47,8 @@
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
               noise (noise-at sx sy)]
-          (if (> (* percent noise) 0.1)
-            (grid sx sy dwidth (cond (< noise 0.2) 8
+          (if (> (* percent (noise-at sx sy 1000)) 0.1)
+            (grid sx sy dwidth (cond (< noise 0.25) 8
                                      (< noise 0.4) 5
                                      (< noise 0.6) 4
                                      (< noise 0.9) 3
