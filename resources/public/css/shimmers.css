@@ -59,13 +59,13 @@ input[type=range] {
 }
 
 .sketch-columns {
-  width: 800px;
   display: flex;
 }
 
-.sketch-columns > div {
+.sketch-columns > .column {
   width: 50%;
   padding: 1em;
+  padding-top: 0em;
 }
 
 .sketch-columns h3 {

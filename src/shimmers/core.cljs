@@ -101,8 +101,8 @@
      to give attribution in the source code."]
      (selector ::sketch-list)
      [:div {:class "sketch-columns"}
-      [:div [:h3 "A-M"] (list-sketches sketches-an)]
-      [:div [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
+      [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+      [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
