@@ -60,7 +60,7 @@
 
        ;; FIXME: why is occasionally adding duplicates?
        (let [m# (meta (var ~app-name))]
-         (swap! registry/sketches assoc (str ~app-name)
+         (swap! registry/sketches assoc ~(keyword app-name)
                 {:id (loader/namespace-to-id (:ns m#))
                  :type :quil
                  :fn ~runner
@@ -75,7 +75,7 @@
            ~@body)
 
          (let [m# (meta (var ~app-name))]
-           (swap! registry/sketches assoc (str ~app-name)
+           (swap! registry/sketches assoc ~(keyword app-name)
                   {:id (loader/namespace-to-id (:ns m#))
                    :type :svg
                    :fn ~runner
