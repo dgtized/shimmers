@@ -46,13 +46,15 @@
              :grid (assoc grid [row col] sample))
       state)))
 
+(defn iterate-cycles
+  "Iterate on `x` using `f` for `n` cycles, returning the final `x`."
+  [n f x]
+  (last (take n (iterate f x))))
+
 (defn poisson-disc-fill [{:keys [k n active] :as state}]
   (if (> (count active) 0)
     (let [considering (rand-nth active)
-          state' (->> state
-                      (iterate (partial maybe-add-sample considering))
-                      (take k)
-                      last)]
+          state' (iterate-cycles k (partial maybe-add-sample considering) state)]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
         state'))
