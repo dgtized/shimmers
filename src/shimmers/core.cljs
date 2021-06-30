@@ -13,7 +13,8 @@
             [shimmers.common.ui :as ui]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketches :as sketches]
-            [spec-tools.data-spec :as ds]))
+            [spec-tools.data-spec :as ds]
+            [clojure.set :as set]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -84,7 +85,10 @@
     "Alphabetically"]
    [:span " "]
    [:a {:href (when-not (= page ::sketches-by-date) (rfe/href ::sketches-by-date))}
-    "By Date"]])
+    "By Date"]
+   [:span " "]
+   [:a {:href (when-not (= page ::sketches-by-tag) (rfe/href ::sketches-by-tag))}
+    "By Tag"]])
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
@@ -119,6 +123,19 @@
         [:h3 (str month " " year " (" (count sketches) ")")]
         (list-sketches sketches)])]))
 
+(defn sketches-by-tag []
+  (let [sketches (remove (fn [s] (empty? (:tags s)))
+                         (sketches/all))
+        tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
+                     #{}
+                     sketches)]
+    [:section.sketch-list
+     (selector ::sketches-by-tag)
+     (for [tag (sort-by name tags)]
+       [:div {:key (str tag)}
+        [:h3 (str/capitalize (name tag))]
+        (list-sketches (filter #(tag (:tags %)) sketches))])]))
+
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
     [:section.controls
@@ -136,6 +153,7 @@
    ["/" ::root]
    ["/sketches" {:name ::sketch-list :view sketch-list}]
    ["/sketches-by-date" {:name ::sketches-by-date :view sketches-by-date}]
+   ["/sketches-by-tag" {:name ::sketches-by-tag :view sketches-by-tag}]
    ["/sketches/:name"
     {:name ::sketch-by-name
      :view sketch-by-name
