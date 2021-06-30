@@ -51,6 +51,15 @@
   [n f x]
   (last (take (inc n) (iterate f x))))
 
+(defn iterate-fixed-point
+  "Iterate on `x` using `f` until `f` does not change the value of `x`."
+  [f x]
+  (->> (iterate f x)
+       (partition 2 1)
+       (take-while (fn [[s s']] (not= s s')))
+       last
+       first))
+
 (defn poisson-disc-fill [{:keys [n] :as state0}]
   (iterate-cycles n
                   (fn [{:keys [k active] :as state}]
