@@ -3,20 +3,21 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.vector :as gv]
             [shimmers.math.vector :as v]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.core :as geom]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.math.core :as tm]))
 
-(defn poisson-disc-init [r k n]
+(defn poisson-disc-init [bounds r k n]
   (let [w (/ r (Math/sqrt 2))
-        p (gv/vec2 (cq/rel-pos (rand) (rand)))
+        p (geom/random-point-inside bounds)
         [x y] p
         row (Math/floor (/ x w))
         col (Math/floor (/ y w))]
-    {:r r
+    {:bounds bounds
+     :r r
      :k k
      :n n
      :w w
@@ -30,15 +31,16 @@
         :when neighbor]
     neighbor))
 
-(defn generate-sample [considering {:keys [r w grid]}]
+(defn generate-sample [considering {:keys [r w grid bounds]}]
   (let [sample (v/add considering
                       (v/polar (tm/random r (* 2 r))
                                (tm/random tm/TWO_PI)))
         [sx sy] sample
         row (Math/floor (/ sx w))
         col (Math/floor (/ sy w))]
-    (when (every? (fn [neighbor] (>= (geom/dist sample neighbor) r))
-                  (neighbors grid row col))
+    (when (and (geom/contains-point? bounds sample)
+               (every? (fn [neighbor] (>= (geom/dist sample neighbor) r))
+                       (neighbors grid row col)))
       [sample row col])))
 
 (defn poisson-disc-fill [{:keys [k n grid active] :as state}]
@@ -62,7 +64,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (poisson-disc-init 10 30 1))
+  (poisson-disc-init (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
+                     10 30 1))
 
 (defn update-state [state]
   (poisson-disc-fill state))
