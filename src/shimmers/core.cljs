@@ -131,10 +131,12 @@
                      sketches)]
     [:section.sketch-list
      (selector ::sketches-by-tag)
-     (for [tag (sort-by name tags)]
+     (for [tag (sort-by name tags)
+           :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
        [:div {:key (str tag)}
-        [:h3 (str/capitalize (name tag))]
-        (list-sketches (filter #(tag (:tags %)) sketches))])]))
+        [:h3 (str (str/capitalize (name tag))
+                  " (" (count tagged-sketches) ")")]
+        (list-sketches tagged-sketches)])]))
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
