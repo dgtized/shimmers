@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
@@ -46,31 +47,17 @@
              :grid (assoc grid [row col] sample))
       state)))
 
-(defn iterate-cycles
-  "Iterate on `x` using `f` for `n` cycles, returning the final `x`."
-  [n f x]
-  (last (take (inc n) (iterate f x))))
-
-(defn iterate-fixed-point
-  "Iterate on `x` using `f` until `f` does not change the value of `x`."
-  [f x]
-  (->> (iterate f x)
-       (partition 2 1)
-       (take-while (fn [[s s']] (not= s s')))
-       last
-       first))
-
 (defn poisson-disc-fill [{:keys [n] :as state0}]
-  (iterate-cycles n
-                  (fn [{:keys [k active] :as state}]
-                    (if (> (count active) 0)
-                      (let [considering (rand-nth active)
-                            state' (iterate-cycles k (partial maybe-add-sample considering) state)]
-                        (if (= state state')
-                          (update state' :active (partial remove #(= considering %)))
-                          state'))
-                      state))
-                  state0))
+  (cs/iterate-cycles n
+                     (fn [{:keys [k active] :as state}]
+                       (if (> (count active) 0)
+                         (let [considering (rand-nth active)
+                               state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
+                           (if (= state state')
+                             (update state' :active (partial remove #(= considering %)))
+                             state'))
+                         state))
+                     state0))
 
 
 (defn setup []
