@@ -51,20 +51,23 @@
   [n f x]
   (last (take (inc n) (iterate f x))))
 
-(defn poisson-disc-fill [{:keys [k n active] :as state}]
-  (if (> (count active) 0)
-    (let [considering (rand-nth active)
-          state' (iterate-cycles k (partial maybe-add-sample considering) state)]
-      (if (= state state')
-        (update state' :active (partial remove #(= considering %)))
-        state'))
-    state))
+(defn poisson-disc-fill [{:keys [n] :as state0}]
+  (iterate-cycles n
+                  (fn [{:keys [k active] :as state}]
+                    (if (> (count active) 0)
+                      (let [considering (rand-nth active)
+                            state' (iterate-cycles k (partial maybe-add-sample considering) state)]
+                        (if (= state state')
+                          (update state' :active (partial remove #(= considering %)))
+                          state'))
+                      state))
+                  state0))
 
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (poisson-disc-init (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
-                     10 30 1))
+                     8 30 30))
 
 (defn update-state [state]
   (poisson-disc-fill state))
@@ -72,7 +75,7 @@
 (defn draw [{:keys [grid]}]
   (q/background 255)
   (q/stroke 0)
-  (q/stroke-weight 4)
+  (q/stroke-weight 2)
   (doseq [[x y] (vals grid)]
     (q/point x y)))
 
