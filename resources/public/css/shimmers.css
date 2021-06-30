@@ -75,3 +75,11 @@ input[type=range] {
 .sketch-columns h3 {
   text-align: center;
 }
+
+h3.tag {
+  padding-left: 1em;
+}
+
+h3.date {
+  padding-left: 1em;
+}

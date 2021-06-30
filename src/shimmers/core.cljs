@@ -120,7 +120,7 @@
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
-        [:h3 (str month " " year " (" (count sketches) ")")]
+        [:h3.date (str month " " year " (" (count sketches) ")")]
         (list-sketches sketches)])]))
 
 (defn sketches-by-tag []
@@ -134,8 +134,8 @@
      (for [tag (sort-by name tags)
            :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
        [:div {:key (str tag)}
-        [:h3 (str (str/capitalize (name tag))
-                  " (" (count tagged-sketches) ")")]
+        [:h3.tag (str (str/capitalize (name tag))
+                      " (" (count tagged-sketches) ")")]
         (list-sketches tagged-sketches)])]))
 
 (defn sketch-by-name [{:keys [path]}]
