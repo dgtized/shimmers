@@ -57,6 +57,7 @@
 
 (sketch/defquil zoetropic
   :created-at "2021-04-17"
+  :tags #{:camera}
   :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state modes)))
   :size [900 600]
   :setup setup

@@ -81,6 +81,7 @@
 
 (sketch/defquil colonial-growth
   :created-at "2021-05-14"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state

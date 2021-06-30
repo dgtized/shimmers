@@ -69,6 +69,7 @@
 
 (sketch/defquil inconsequential-drift
   :created-at "2021-06-13"
+  :tags #{:static :deterministic}
   :size [800 800]
   :setup setup
   :draw draw

@@ -75,6 +75,7 @@
 
 (sketch/defquil decaying-foundations
   :created-at "2021-04-14"
+  :tags #{:static}
   :size [900 600]
   :setup setup
   :update update-state

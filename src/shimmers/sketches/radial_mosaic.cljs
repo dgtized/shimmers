@@ -144,5 +144,6 @@
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
 (sketch/defsvg radial-mosaic
-  {:created-at "2021-05-15"}
+  {:created-at "2021-05-15"
+   :tags #{:static :deterministic}}
   (ctrl/mount page "svg-host"))

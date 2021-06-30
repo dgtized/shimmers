@@ -162,6 +162,7 @@
 
 (sketch/defquil disassociated-boxes
   :created-at "2021-05-05"
+  :tags #{:static :deterministic}
   :size [800 600]
   :setup setup
   :update update-state

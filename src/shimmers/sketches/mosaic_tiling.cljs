@@ -175,5 +175,6 @@
                  [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
 
 (sketch/defsvg mosaic-tiling
-  {:created-at "2021-04-09"}
+  {:created-at "2021-04-09"
+   :tags #{:static :deterministic}}
   (ctrl/mount page "svg-host"))

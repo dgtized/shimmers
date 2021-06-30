@@ -82,5 +82,6 @@
   [:div (scene)])
 
 (sketch/defsvg clustered-farmlands
-  {:created-at "2021-05-10"}
+  {:created-at "2021-05-10"
+   :tags #{:static}}
   (ctrl/mount page "svg-host"))

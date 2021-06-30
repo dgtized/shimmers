@@ -47,6 +47,7 @@
 
 (sketch/defquil falling-gradients
   :created-at "2021-05-04"
+  :tags #{:static :deterministic}
   :size [800 600]
   :setup setup
   :draw draw

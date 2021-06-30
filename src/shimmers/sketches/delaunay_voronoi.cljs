@@ -169,6 +169,7 @@
 
 (sketch/defquil delaunay-voronoi
   :created-at "2021-03-21"
+  :tags #{:static}
   :size [600 400]
   :setup setup
   :update update-state

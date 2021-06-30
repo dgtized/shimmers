@@ -64,6 +64,7 @@
 
 (sketch/defquil dispersion
   :created-at "2021-03-10"
+  :tags #{:static}
   :size [900 600]
   :setup setup
   :draw draw

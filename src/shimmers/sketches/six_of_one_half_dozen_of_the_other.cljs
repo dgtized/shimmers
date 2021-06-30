@@ -80,6 +80,7 @@
 
 (sketch/defquil six-of-one-half-dozen-of-the-other
   :created-at "2021-05-17"
+  :tags #{:static :deterministic}
   :size [1200 900]
   :setup setup
   :update update-state

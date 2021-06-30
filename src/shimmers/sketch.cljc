@@ -65,6 +65,7 @@
                  :type :quil
                  :fn ~runner
                  :created-at ~(:created-at opts)
+                 :tags ~(:tags opts #{})
                  :file (:file m#)
                  :line (:line m#)})))))
 
@@ -80,5 +81,6 @@
                    :type :svg
                    :fn ~runner
                    :created-at ~(:created-at options)
+                   :tags ~(:tags options #{})
                    :file (:file m#)
                    :line (:line m#)})))))

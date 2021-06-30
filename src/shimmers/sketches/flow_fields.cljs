@@ -198,6 +198,7 @@
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"
+  :tags #{:static :deterministic}
   :on-mount (fn [] (ctrl/mount explanation))
   :size [1200 900]
   :setup setup

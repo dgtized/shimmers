@@ -223,6 +223,7 @@
 
 (sketch/defquil dithering
   :created-at "2020-11-21"
+  :tags #{:camera}
   :size [640 480]
   :setup setup
   :draw draw

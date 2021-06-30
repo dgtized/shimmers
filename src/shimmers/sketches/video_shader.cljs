@@ -43,6 +43,7 @@
 
 (sketch/defquil video-shader
   :created-at "2021-02-14"
+  :tags #{:camera}
   :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
   :size [640 480]
   :renderer :p3d
