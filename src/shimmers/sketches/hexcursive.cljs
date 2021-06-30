@@ -48,6 +48,7 @@
 
 (sketch/defquil hexcursive
   :created-at "2021-06-04"
+  :tags #{:static}
   :size [1200 1000]
   :setup setup
   :draw draw

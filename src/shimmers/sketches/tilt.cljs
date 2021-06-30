@@ -55,6 +55,7 @@
 
 (sketch/defquil tilt
   :created-at "2021-05-30"
+  :tags #{:static}
   :size [800 600]
   :setup setup
   :update update-state

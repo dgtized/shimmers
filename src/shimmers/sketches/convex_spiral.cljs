@@ -42,6 +42,7 @@
 
 (sketch/defquil convex-spiral-sketch
   :created-at "2021-03-22"
+  :tags #{:static}
   :size [600 400]
   :setup setup
   :update update-state

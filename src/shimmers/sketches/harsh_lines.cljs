@@ -44,6 +44,7 @@
 
 (sketch/defquil harsh-lines
   :created-at "2021-04-07"
+  :tags #{:static}
   :size [900 600]
   :setup setup
   :draw draw

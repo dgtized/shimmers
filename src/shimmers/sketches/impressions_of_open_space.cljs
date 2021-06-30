@@ -59,6 +59,7 @@
 
 (sketch/defquil impressions-of-open-space
   :created-at "2021-03-09"
+  :tags #{:static}
   :size [900 600]
   :setup setup
   :draw draw

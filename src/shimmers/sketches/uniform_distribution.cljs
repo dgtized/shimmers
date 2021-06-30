@@ -88,5 +88,6 @@
                   "g/sample-uniform"))))
 
 (sketch/defsvg uniform-distribution
-  {:created-at "2021-04-09"}
+  {:created-at "2021-04-09"
+   :tags #{:static}}
   (ctrl/mount scene "svg-host"))
