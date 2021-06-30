@@ -69,13 +69,17 @@
 
 (defn list-sketches [sketches]
   (into [:ul]
-        (for [sketch sketches]
+        (for [sketch sketches
+              :let [title (->> [(when-let [created-at (:created-at sketch)]
+                                  (str created-at))
+                                (when-let [tags (seq (:tags sketch))]
+                                  (str "tags:" (str/join "," (map name tags))))]
+                               (filter some?)
+                               (str/join " "))]]
           [:li [:a {:href (rfe/href ::sketch-by-name
                                     {:name (:id sketch)}
                                     {:seed (generate-seed)})
-                    :title (if-let [created-at (:created-at sketch)]
-                             (str created-at)
-                             "")}
+                    :title title}
                 (:id sketch)]])))
 
 (defn selector [page]
