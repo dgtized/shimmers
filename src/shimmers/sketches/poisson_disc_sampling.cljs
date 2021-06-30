@@ -49,12 +49,10 @@
 (defn poisson-disc-fill [{:keys [k n active] :as state}]
   (if (> (count active) 0)
     (let [considering (rand-nth active)
-          state'
-          (loop [state state attempt 0]
-            (if (>= attempt k)
-              state
-              (recur (maybe-add-sample considering state)
-                     (inc attempt))))]
+          state' (->> state
+                      (iterate (partial maybe-add-sample considering))
+                      (take k)
+                      last)]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
         state'))
