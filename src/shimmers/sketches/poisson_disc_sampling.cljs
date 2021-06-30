@@ -31,30 +31,29 @@
         :when neighbor]
     neighbor))
 
-(defn generate-sample [considering {:keys [r w grid bounds]}]
+(defn maybe-add-sample [considering {:keys [r w grid active bounds] :as state}]
   (let [sample (v/add considering
                       (v/polar (tm/random r (* 2 r))
                                (tm/random tm/TWO_PI)))
         [sx sy] sample
         row (Math/floor (/ sx w))
         col (Math/floor (/ sy w))]
-    (when (and (geom/contains-point? bounds sample)
-               (every? (fn [neighbor] (>= (geom/dist sample neighbor) r))
-                       (neighbors grid row col)))
-      [sample row col])))
+    (if (and (geom/contains-point? bounds sample)
+             (every? (fn [neighbor] (>= (geom/dist sample neighbor) r))
+                     (neighbors grid row col)))
+      (assoc state
+             :active (conj active sample)
+             :grid (assoc grid [row col] sample))
+      state)))
 
-(defn poisson-disc-fill [{:keys [k n grid active] :as state}]
+(defn poisson-disc-fill [{:keys [k n active] :as state}]
   (if (> (count active) 0)
     (let [considering (rand-nth active)
           state'
           (loop [state state attempt 0]
             (if (>= attempt k)
               state
-              (recur (if-let [[sample row col] (generate-sample considering state)]
-                       (assoc state
-                              :active (conj active sample)
-                              :grid (assoc grid [row col] sample))
-                       state)
+              (recur (maybe-add-sample considering state)
                      (inc attempt))))]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
