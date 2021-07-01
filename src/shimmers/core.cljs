@@ -1,5 +1,6 @@
 (ns shimmers.core
   (:require [cljc.java-time.local-date :as ld]
+            [clojure.set :as set]
             [clojure.string :as str]
             [goog.dom :as dom]
             [quil.core :as q :include-macros true]
@@ -13,8 +14,8 @@
             [shimmers.common.ui :as ui]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketches :as sketches]
-            [spec-tools.data-spec :as ds]
-            [clojure.set :as set]))
+            [shimmers.view :as view]
+            [spec-tools.data-spec :as ds]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -50,33 +51,13 @@
   (rdom/unmount-component-at-node (dom/getElement "svg-host"))
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
-;; Note that seed is required so that the path "changes", even though some
-;; sketches are not using seed.
-(defn sketch-link [method sketch-name]
-  (method ::sketch-by-name
-          {:name sketch-name}
-          {:seed (dr/fresh-seed-value)}))
-
 (defn restart-sketch [sketch]
-  (sketch-link rfe/push-state (:id sketch)))
+  (view/sketch-link rfe/push-state (:id sketch)))
 
 (defn cycle-sketch [sketch]
   (->> (name (:id sketch))
        (cs/cycle-next (known-sketches))
-       (sketch-link rfe/push-state)))
-
-(defn list-sketches [sketches]
-  (into [:ul]
-        (for [sketch sketches
-              :let [title (->> [(when-let [created-at (:created-at sketch)]
-                                  (str created-at))
-                                (when-let [tags (seq (:tags sketch))]
-                                  (str "tags:" (str/join "," (map name tags))))]
-                               (filter some?)
-                               (str/join " "))]]
-          [:li [:a {:href (sketch-link rfe/href (:id sketch))
-                    :title title}
-                (:id sketch)]])))
+       (view/sketch-link rfe/push-state)))
 
 (defn selector [active]
   (let [pages {::sketch-list "Alphabetically"
@@ -104,8 +85,8 @@
      to give attribution in the source code."]
      (selector ::sketch-list)
      [:div.sketch-columns
-      [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-      [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
+      [:div.column [:h3 "A-M"] (view/list-sketches sketches-an)]
+      [:div.column [:h3 "N-Z"] (view/list-sketches sketches-mz)]]]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
@@ -120,7 +101,7 @@
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
         [:h3.date (str month " " year " (" (count sketches) ")")]
-        (list-sketches sketches)])]))
+        (view/list-sketches sketches)])]))
 
 (defn sketches-by-tag []
   (let [sketches (remove (fn [s] (empty? (:tags s)))
@@ -135,7 +116,7 @@
        [:div {:key (str tag)}
         [:h3.tag (str (str/capitalize (name tag))
                       " (" (count tagged-sketches) ")")]
-        (list-sketches tagged-sketches)])]))
+        (view/list-sketches tagged-sketches)])]))
 
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
