@@ -78,17 +78,16 @@
                     :title title}
                 (:id sketch)]])))
 
-(defn selector [page]
-  [:div.selector
-   "Listing: "
-   [:a {:href (when-not (= page ::sketch-list) (rfe/href ::sketch-list))}
-    "Alphabetically"]
-   [:span " "]
-   [:a {:href (when-not (= page ::sketches-by-date) (rfe/href ::sketches-by-date))}
-    "By Date"]
-   [:span " "]
-   [:a {:href (when-not (= page ::sketches-by-tag) (rfe/href ::sketches-by-tag))}
-    "By Tag"]])
+(defn selector [active]
+  (let [pages {::sketch-list "Alphabetically"
+               ::sketches-by-date "By Date"
+               ::sketches-by-tag "By Tag"}]
+    (->> (for [[page link-name] pages]
+           [:a {:href (when-not (= page active) (rfe/href page))}
+            link-name])
+         (interpose [:span " | "])
+         (into [:div.selector
+                "Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list []
