@@ -50,19 +50,20 @@
   (rdom/unmount-component-at-node (dom/getElement "svg-host"))
   (rdom/unmount-component-at-node (dom/getElement "explanation")))
 
-;; Note that seed is required so that the path "changes", even though sketches
-;; are not using seed. Related to this, cycle and links from the sketch-list are
-;; *not* including a seed, so that will need to be included by default somehow?
+;; Note that seed is required so that the path "changes", even though some
+;; sketches are not using seed.
+(defn sketch-link [method sketch-name]
+  (method ::sketch-by-name
+          {:name sketch-name}
+          {:seed (dr/fresh-seed-value)}))
+
 (defn restart-sketch [sketch]
-  (rfe/push-state ::sketch-by-name
-                  {:name (:id sketch)}
-                  {:seed (dr/fresh-seed-value)}))
+  (sketch-link rfe/push-state (:id sketch)))
 
 (defn cycle-sketch [sketch]
-  (let [next-sketch (cs/cycle-next (known-sketches) (name (:id sketch)))]
-    (rfe/push-state ::sketch-by-name
-                    {:name next-sketch}
-                    {:seed (dr/fresh-seed-value)})))
+  (->> (name (:id sketch))
+       (cs/cycle-next (known-sketches))
+       (sketch-link rfe/push-state)))
 
 (defn list-sketches [sketches]
   (into [:ul]
@@ -73,9 +74,7 @@
                                   (str "tags:" (str/join "," (map name tags))))]
                                (filter some?)
                                (str/join " "))]]
-          [:li [:a {:href (rfe/href ::sketch-by-name
-                                    {:name (:id sketch)}
-                                    {:seed (dr/fresh-seed-value)})
+          [:li [:a {:href (sketch-link rfe/href (:id sketch))
                     :title title}
                 (:id sketch)]])))
 
