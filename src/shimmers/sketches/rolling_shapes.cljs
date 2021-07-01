@@ -9,21 +9,26 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; Concept here is to "roll" a particle polygon along a line
+;; Related to https://en.wikipedia.org/wiki/Cyclogon
+;; Currently only playing with rolling a single line
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/frame-rate 30)
   {:t 0
    :shapes [(gl/line2 (cq/rel-pos 0.1 0.2) (cq/rel-pos 0.2 0.2))]})
 
+;; FIXME: Works for a line on the first pass, but goes below for second
 (defn rotate [t shape]
   (let [vertices (geom/vertices shape)
-        cycle (mod (q/floor (/ t Math/PI)) 8)
-        idx (mod cycle (count vertices))
+        cycle (mod (q/floor (/ t Math/PI)) 9)
+        idx (mod (inc cycle) (count vertices))
         vertex (nth vertices idx)
-        offset (gv/vec2 (* cycle (geom/width shape)) 0)]
+        offset (gv/vec2 (* (- cycle idx) (geom/width shape)) 0)]
     (-> shape
         (geom/translate (tm/- vertex))
-        (geom/rotate (+ Math/PI t))
+        (geom/rotate t)
         (geom/translate vertex)
         (geom/translate offset))))
 
