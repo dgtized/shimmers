@@ -12,6 +12,9 @@
 (defn random-seed [n]
   (reset! shared-rng (tcr/make-random n)))
 
+(defn fresh-seed-value []
+  (rand-int (Math/pow 2 32)))
+
 (defn random-double []
   (let [[r1 r2] (tcr/split @shared-rng)]
     (reset! shared-rng r2)

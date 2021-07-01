@@ -21,9 +21,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn generate-seed []
-  (rand-int (Math/pow 2 32)))
-
 (defn known-sketches []
   (map (comp name :id) (sketches/all)))
 
@@ -59,13 +56,13 @@
 (defn restart-sketch [sketch]
   (rfe/push-state ::sketch-by-name
                   {:name (:id sketch)}
-                  {:seed (generate-seed)}))
+                  {:seed (dr/fresh-seed-value)}))
 
 (defn cycle-sketch [sketch]
   (let [next-sketch (cs/cycle-next (known-sketches) (name (:id sketch)))]
     (rfe/push-state ::sketch-by-name
                     {:name next-sketch}
-                    {:seed (generate-seed)})))
+                    {:seed (dr/fresh-seed-value)})))
 
 (defn list-sketches [sketches]
   (into [:ul]
@@ -78,7 +75,7 @@
                                (str/join " "))]]
           [:li [:a {:href (rfe/href ::sketch-by-name
                                     {:name (:id sketch)}
-                                    {:seed (generate-seed)})
+                                    {:seed (dr/fresh-seed-value)})
                     :title title}
                 (:id sketch)]])))
 
