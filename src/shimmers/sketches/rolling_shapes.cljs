@@ -11,28 +11,27 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 4)
+  (q/frame-rate 30)
   {:t 0
    :shapes [(gl/line2 (cq/rel-pos 0.1 0.2) (cq/rel-pos 0.2 0.2))]})
 
 (defn rotate [t shape]
   (let [vertices (geom/vertices shape)
         cycle (mod (q/floor (/ t Math/PI)) 8)
-        idx (Math/floor (mod (inc (/ cycle 2)) (count vertices)))
+        idx (mod cycle (count vertices))
         vertex (nth vertices idx)
         offset (gv/vec2 (* cycle (geom/width shape)) 0)]
-    (println [t :cycle cycle :idx idx :vertex vertex])
     (-> shape
-        ;; (geom/center vertex)
         (geom/translate (tm/- vertex))
-        (geom/rotate t)
+        (geom/rotate (+ Math/PI t))
         (geom/translate vertex)
         (geom/translate offset))))
 
 (defn update-state [{:keys [t] :as state}]
-  (-> state (update :t + 0.2)))
+  (-> state (update :t + 0.05)))
 
 (defn draw [{:keys [shapes t]}]
+  (q/stroke-weight 0.25)
   (q/no-fill)
   (doseq [s (map (partial rotate t) shapes)]
     (q/begin-shape)
