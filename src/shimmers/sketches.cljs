@@ -64,6 +64,7 @@
             shimmers.sketches.ray-marching
             shimmers.sketches.ring
             shimmers.sketches.ripples
+            shimmers.sketches.rolling-shapes
             shimmers.sketches.rose
             shimmers.sketches.sand-strokes
             shimmers.sketches.scintillation
