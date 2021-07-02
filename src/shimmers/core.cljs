@@ -22,9 +22,6 @@
   [(/ (.-innerWidth js/window) 2)
    (/ (.-innerHeight js/window) 2)])
 
-(defn known-sketches []
-  (map (comp name :id) (sketches/all)))
-
 (defn start-sketch [sketch]
   ;; TODO wire up :seed to pass to run-sketch
 
@@ -56,7 +53,7 @@
 
 (defn cycle-sketch [sketch]
   (->> (name (:id sketch))
-       (cs/cycle-next (known-sketches))
+       (cs/cycle-next (sketches/known-names))
        (view/sketch-link rfe/push-state)))
 
 (defn selector [active]
@@ -140,7 +137,7 @@
     {:name ::sketch-by-name
      :view sketch-by-name
      :parameters
-     {:path {:name (every-pred string? (set (known-sketches)))}
+     {:path {:name (every-pred string? (set (sketches/known-names)))}
       :query {(ds/opt :seed) int?}}
      :controllers
      [{:parameters {:path [:name] :query [:seed]}

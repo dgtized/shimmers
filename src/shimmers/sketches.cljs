@@ -98,4 +98,7 @@
   (let [sketch-id (keyword sketch-name)]
     (cs/find-first #(= sketch-id (:id %)) (db))))
 
+(defn known-names []
+  (map (comp name :id) (all)))
+
 (comment (loader/all-sketches))
