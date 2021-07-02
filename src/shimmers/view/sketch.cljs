@@ -60,7 +60,7 @@
      [:span
       [:button {:on-click #(cycle-sketch sketch)} "Next"]
       [:button {:on-click #(restart-sketch sketch)} "Restart"]
-      [:button {:on-click #(rfe/push-state :shimmers.view.index/index-alphabetical)} "All"]]
+      [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
      [:span
       [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
      [:span#framerate]]))

@@ -12,16 +12,16 @@
             [shimmers.view.sketch :as view-sketch]
             [spec-tools.data-spec :as ds]))
 
-;; FIXME: handle invalid paths, re-route to index-alphabetical
+;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [;; "/shimmers"
    ["/" ::root]
-   ["/sketches" {:name :shimmers.view.index/index-alphabetical
-                 :view #(view-index/index-alphabetical (sketches/all))}]
-   ["/sketches-by-date" {:name :shimmers.view.index/index-by-date
-                         :view #(view-index/index-by-date (sketches/all))}]
-   ["/sketches-by-tag" {:name :shimmers.view.index/index-by-tag
-                        :view #(view-index/index-by-tag (sketches/all))}]
+   ["/sketches" {:name :shimmers.view.index/by-alphabetical
+                 :view #(view-index/by-alphabetical (sketches/all))}]
+   ["/sketches-by-date" {:name :shimmers.view.index/by-date
+                         :view #(view-index/by-date (sketches/all))}]
+   ["/sketches-by-tag" {:name :shimmers.view.index/by-tag
+                        :view #(view-index/by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
      :view view-sketch/sketch-by-name

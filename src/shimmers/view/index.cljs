@@ -21,9 +21,9 @@
                 (:id sketch)]])))
 
 (defn selector [active]
-  (let [pages {::index-alphabetical "Alphabetically"
-               ::index-by-date "By Date"
-               ::index-by-tag "By Tag"}]
+  (let [pages {::by-alphabetical "Alphabetically"
+               ::by-date "By Date"
+               ::by-tag "By Tag"}]
     (->> (for [[page link-name] pages]
            [:a {:href (when-not (= page active) (rfe/href page))}
             link-name])
@@ -32,7 +32,7 @@
                 "Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
-(defn index-alphabetical [sketches]
+(defn by-alphabetical [sketches]
   (let [[sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
                     sketches)]
@@ -43,7 +43,7 @@
      implement or explore. Many are complete, and some I periodically revisit
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
-     (selector ::index-alphabetical)
+     (selector ::by-alphabetical)
      [:div.sketch-columns
       [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
       [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
@@ -52,24 +52,24 @@
   [(ld/get-year created-at)
    (str/capitalize (str (ld/get-month created-at)))])
 
-(defn index-by-date [sketches]
+(defn by-date [sketches]
   (let [sketches-by-date (sort-by :created-at sketches)
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section.sketch-list
-     (selector ::index-by-date)
+     (selector ::by-date)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
         [:h3.date (str month " " year " (" (count sketches) ")")]
         (list-sketches sketches)])]))
 
-(defn index-by-tag [sketches]
+(defn by-tag [sketches]
   (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
         tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
                      #{}
                      sketches)]
     [:section.sketch-list
-     (selector ::index-by-tag)
+     (selector ::by-tag)
      (for [tag (sort-by name tags)
            :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
        [:div {:key (str tag)}
