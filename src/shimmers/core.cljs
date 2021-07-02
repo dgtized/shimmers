@@ -68,9 +68,8 @@
                 "Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
-(defn sketch-list []
-  (let [sketches (sketches/all)
-        [sketches-an sketches-mz]
+(defn sketch-list [sketches]
+  (let [[sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
                     sketches)]
     [:section.sketch-list
@@ -89,8 +88,8 @@
   [(ld/get-year created-at)
    (str/capitalize (str (ld/get-month created-at)))])
 
-(defn sketches-by-date []
-  (let [sketches-by-date (sort-by :created-at (sketches/all))
+(defn sketches-by-date [sketches]
+  (let [sketches-by-date (sort-by :created-at sketches)
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section.sketch-list
      (selector ::sketches-by-date)
@@ -100,9 +99,8 @@
         [:h3.date (str month " " year " (" (count sketches) ")")]
         (view/list-sketches sketches)])]))
 
-(defn sketches-by-tag []
-  (let [sketches (remove (fn [s] (empty? (:tags s)))
-                         (sketches/all))
+(defn sketches-by-tag [sketches]
+  (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
         tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
                      #{}
                      sketches)]
@@ -130,9 +128,9 @@
 (def routes
   [;; "/shimmers"
    ["/" ::root]
-   ["/sketches" {:name ::sketch-list :view sketch-list}]
-   ["/sketches-by-date" {:name ::sketches-by-date :view sketches-by-date}]
-   ["/sketches-by-tag" {:name ::sketches-by-tag :view sketches-by-tag}]
+   ["/sketches" {:name ::sketch-list :view #(sketch-list (sketches/all))}]
+   ["/sketches-by-date" {:name ::sketches-by-date :view #(sketches-by-date (sketches/all))}]
+   ["/sketches-by-tag" {:name ::sketches-by-tag :view #(sketches-by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name ::sketch-by-name
      :view sketch-by-name
