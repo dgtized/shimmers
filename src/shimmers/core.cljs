@@ -56,17 +56,6 @@
        (cs/cycle-next (sketches/known-names))
        (view/sketch-link rfe/push-state)))
 
-(defn selector [active]
-  (let [pages {::sketch-list "Alphabetically"
-               ::sketches-by-date "By Date"
-               ::sketches-by-tag "By Tag"}]
-    (->> (for [[page link-name] pages]
-           [:a {:href (when-not (= page active) (rfe/href page))}
-            link-name])
-         (interpose [:span " | "])
-         (into [:div.selector
-                "Listing: "]))))
-
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn sketch-list [sketches]
   (let [[sketches-an sketches-mz]
@@ -79,7 +68,7 @@
      implement or explore. Many are complete, and some I periodically revisit
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
-     (selector ::sketch-list)
+     (view/selector :shimmers.view/sketch-list)
      [:div.sketch-columns
       [:div.column [:h3 "A-M"] (view/list-sketches sketches-an)]
       [:div.column [:h3 "N-Z"] (view/list-sketches sketches-mz)]]]))
@@ -92,7 +81,7 @@
   (let [sketches-by-date (sort-by :created-at sketches)
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section.sketch-list
-     (selector ::sketches-by-date)
+     (view/selector :shimmers.view/sketches-by-date)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
@@ -105,7 +94,7 @@
                      #{}
                      sketches)]
     [:section.sketch-list
-     (selector ::sketches-by-tag)
+     (view/selector :shimmers.view/sketches-by-tag)
      (for [tag (sort-by name tags)
            :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
        [:div {:key (str tag)}
@@ -119,7 +108,7 @@
      [:span
       [:button {:on-click #(cycle-sketch sketch)} "Next"]
       [:button {:on-click #(restart-sketch sketch)} "Restart"]
-      [:button {:on-click #(rfe/push-state ::sketch-list)} "All"]]
+      [:button {:on-click #(rfe/push-state :shimmers.view/sketch-list)} "All"]]
      [:span
       [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
      [:span#framerate]]))
@@ -128,9 +117,9 @@
 (def routes
   [;; "/shimmers"
    ["/" ::root]
-   ["/sketches" {:name ::sketch-list :view #(sketch-list (sketches/all))}]
-   ["/sketches-by-date" {:name ::sketches-by-date :view #(sketches-by-date (sketches/all))}]
-   ["/sketches-by-tag" {:name ::sketches-by-tag :view #(sketches-by-tag (sketches/all))}]
+   ["/sketches" {:name :shimmers.view/sketch-list :view #(sketch-list (sketches/all))}]
+   ["/sketches-by-date" {:name :shimmers.view/sketches-by-date :view #(sketches-by-date (sketches/all))}]
+   ["/sketches-by-tag" {:name :shimmers.view/sketches-by-tag :view #(sketches-by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name ::sketch-by-name
      :view sketch-by-name

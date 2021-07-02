@@ -25,3 +25,14 @@
           [:li [:a {:href (sketch-link rfe/href (:id sketch))
                     :title (sketch-title sketch)}
                 (:id sketch)]])))
+
+(defn selector [active]
+  (let [pages {::sketch-list "Alphabetically"
+               ::sketches-by-date "By Date"
+               ::sketches-by-tag "By Tag"}]
+    (->> (for [[page link-name] pages]
+           [:a {:href (when-not (= page active) (rfe/href page))}
+            link-name])
+         (interpose [:span " | "])
+         (into [:div.selector
+                "Listing: "]))))
