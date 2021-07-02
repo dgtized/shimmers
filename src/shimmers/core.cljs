@@ -18,10 +18,10 @@
    ["/" ::root]
    ["/sketches" {:name :shimmers.view/index-alphabetical
                  :view #(view/index-alphabetical (sketches/all))}]
-   ["/sketches-by-date" {:name :shimmers.view/sketches-by-date
-                         :view #(view/sketches-by-date (sketches/all))}]
-   ["/sketches-by-tag" {:name :shimmers.view/sketches-by-tag
-                        :view #(view/sketches-by-tag (sketches/all))}]
+   ["/sketches-by-date" {:name :shimmers.view/index-by-date
+                         :view #(view/index-by-date (sketches/all))}]
+   ["/sketches-by-tag" {:name :shimmers.view/index-by-tag
+                        :view #(view/index-by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
      :view view-sketch/sketch-by-name

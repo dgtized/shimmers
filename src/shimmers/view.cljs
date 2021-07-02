@@ -22,8 +22,8 @@
 
 (defn selector [active]
   (let [pages {::index-alphabetical "Alphabetically"
-               ::sketches-by-date "By Date"
-               ::sketches-by-tag "By Tag"}]
+               ::index-by-date "By Date"
+               ::index-by-tag "By Tag"}]
     (->> (for [[page link-name] pages]
            [:a {:href (when-not (= page active) (rfe/href page))}
             link-name])
@@ -52,24 +52,24 @@
   [(ld/get-year created-at)
    (str/capitalize (str (ld/get-month created-at)))])
 
-(defn sketches-by-date [sketches]
+(defn index-by-date [sketches]
   (let [sketches-by-date (sort-by :created-at sketches)
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section.sketch-list
-     (selector ::sketches-by-date)
+     (selector ::index-by-date)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
         [:h3.date (str month " " year " (" (count sketches) ")")]
         (list-sketches sketches)])]))
 
-(defn sketches-by-tag [sketches]
+(defn index-by-tag [sketches]
   (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
         tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
                      #{}
                      sketches)]
     [:section.sketch-list
-     (selector ::sketches-by-tag)
+     (selector ::index-by-tag)
      (for [tag (sort-by name tags)
            :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
        [:div {:key (str tag)}
