@@ -54,14 +54,13 @@
        (cs/cycle-next (sketches/known-names))
        (sketch-link rfe/push-state)))
 
-(defn sketch-by-name [{:keys [path]}]
-  (let [sketch (sketches/by-name (:name path))]
-    [:section.controls
-     [:span
-      [:button {:on-click #(cycle-sketch sketch)} "Next"]
-      [:button {:on-click #(restart-sketch sketch)} "Restart"]
-      [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
-     [:span
-      [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
-     [:span#framerate]]))
+(defn sketch-by-name [sketch]
+  [:section.controls
+   [:span
+    [:button {:on-click #(cycle-sketch sketch)} "Next"]
+    [:button {:on-click #(restart-sketch sketch)} "Restart"]
+    [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
+   [:span
+    [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
+   [:span#framerate]])
 

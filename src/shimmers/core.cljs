@@ -26,7 +26,8 @@
      :view #(view-index/by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
-     :view view-sketch/sketch-by-name
+     :view (fn [{:keys [path]}]
+             (-> path :name sketches/by-name view-sketch/sketch-by-name))
      :parameters
      {:path {:name (every-pred string? (set (sketches/known-names)))}
       :query {(ds/opt :seed) int?}}
