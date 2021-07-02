@@ -3,14 +3,7 @@
             [clojure.set :as set]
             [clojure.string :as str]
             [reitit.frontend.easy :as rfe]
-            [shimmers.math.deterministic-random :as dr]))
-
-;; Note that seed is required so that the path "changes", even though some
-;; sketches are not using seed.
-(defn sketch-link [method sketch-name]
-  (method :shimmers.core/sketch-by-name
-          {:name sketch-name}
-          {:seed (dr/fresh-seed-value)}))
+            [shimmers.view.sketch :as view-sketch]))
 
 (defn sketch-title [sketch]
   (->> [(when-let [created-at (:created-at sketch)]
@@ -23,7 +16,7 @@
 (defn list-sketches [sketches]
   (into [:ul]
         (for [sketch sketches]
-          [:li [:a {:href (sketch-link rfe/href (:id sketch))
+          [:li [:a {:href (view-sketch/sketch-link rfe/href (:id sketch))
                     :title (sketch-title sketch)}
                 (:id sketch)]])))
 
