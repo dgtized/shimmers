@@ -1,8 +1,5 @@
 (ns shimmers.core
-  (:require [cljc.java-time.local-date :as ld]
-            [clojure.set :as set]
-            [clojure.string :as str]
-            [goog.dom :as dom]
+  (:require [goog.dom :as dom]
             [quil.core :as q :include-macros true]
             [reagent.core :as r]
             [reagent.dom :as rdom]
@@ -56,52 +53,6 @@
        (cs/cycle-next (sketches/known-names))
        (view/sketch-link rfe/push-state)))
 
-;; FIXME: links are *always* fresh now since the seed is baked in
-(defn sketch-list [sketches]
-  (let [[sketches-an sketches-mz]
-        (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
-                    sketches)]
-    [:section.sketch-list
-     [:h1 (str "All Sketches (" (count sketches) ")")]
-     [:p "A digital sketch-book of generative art, visual effects, computer
-     animation, visualizations of algorithms, and whatever else struck my fancy to
-     implement or explore. Many are complete, and some I periodically revisit
-     and tweak. For those inspired by other's works or tutorials, I do my best
-     to give attribution in the source code."]
-     (view/selector :shimmers.view/sketch-list)
-     [:div.sketch-columns
-      [:div.column [:h3 "A-M"] (view/list-sketches sketches-an)]
-      [:div.column [:h3 "N-Z"] (view/list-sketches sketches-mz)]]]))
-
-(defn year-month [{:keys [created-at]}]
-  [(ld/get-year created-at)
-   (str/capitalize (str (ld/get-month created-at)))])
-
-(defn sketches-by-date [sketches]
-  (let [sketches-by-date (sort-by :created-at sketches)
-        grouped-by-month (partition-by year-month sketches-by-date)]
-    [:section.sketch-list
-     (view/selector :shimmers.view/sketches-by-date)
-     (for [sketches grouped-by-month
-           :let [[year month] (year-month (first sketches))]]
-       [:div {:key (str year month)}
-        [:h3.date (str month " " year " (" (count sketches) ")")]
-        (view/list-sketches sketches)])]))
-
-(defn sketches-by-tag [sketches]
-  (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
-        tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
-                     #{}
-                     sketches)]
-    [:section.sketch-list
-     (view/selector :shimmers.view/sketches-by-tag)
-     (for [tag (sort-by name tags)
-           :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
-       [:div {:key (str tag)}
-        [:h3.tag (str (str/capitalize (name tag))
-                      " (" (count tagged-sketches) ")")]
-        (view/list-sketches tagged-sketches)])]))
-
 (defn sketch-by-name [{:keys [path]}]
   (let [sketch (sketches/by-name (:name path))]
     [:section.controls
@@ -117,9 +68,12 @@
 (def routes
   [;; "/shimmers"
    ["/" ::root]
-   ["/sketches" {:name :shimmers.view/sketch-list :view #(sketch-list (sketches/all))}]
-   ["/sketches-by-date" {:name :shimmers.view/sketches-by-date :view #(sketches-by-date (sketches/all))}]
-   ["/sketches-by-tag" {:name :shimmers.view/sketches-by-tag :view #(sketches-by-tag (sketches/all))}]
+   ["/sketches" {:name :shimmers.view/sketch-list
+                 :view #(view/sketch-list (sketches/all))}]
+   ["/sketches-by-date" {:name :shimmers.view/sketches-by-date
+                         :view #(view/sketches-by-date (sketches/all))}]
+   ["/sketches-by-tag" {:name :shimmers.view/sketches-by-tag
+                        :view #(view/sketches-by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name ::sketch-by-name
      :view sketch-by-name

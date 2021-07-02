@@ -1,8 +1,9 @@
 (ns shimmers.view
-  (:require [clojure.string :as str]
+  (:require [cljc.java-time.local-date :as ld]
+            [clojure.set :as set]
+            [clojure.string :as str]
             [reitit.frontend.easy :as rfe]
             [shimmers.math.deterministic-random :as dr]))
-
 
 ;; Note that seed is required so that the path "changes", even though some
 ;; sketches are not using seed.
@@ -36,3 +37,49 @@
          (interpose [:span " | "])
          (into [:div.selector
                 "Listing: "]))))
+
+;; FIXME: links are *always* fresh now since the seed is baked in
+(defn sketch-list [sketches]
+  (let [[sketches-an sketches-mz]
+        (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
+                    sketches)]
+    [:section.sketch-list
+     [:h1 (str "All Sketches (" (count sketches) ")")]
+     [:p "A digital sketch-book of generative art, visual effects, computer
+     animation, visualizations of algorithms, and whatever else struck my fancy to
+     implement or explore. Many are complete, and some I periodically revisit
+     and tweak. For those inspired by other's works or tutorials, I do my best
+     to give attribution in the source code."]
+     (selector ::sketch-list)
+     [:div.sketch-columns
+      [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+      [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
+
+(defn year-month [{:keys [created-at]}]
+  [(ld/get-year created-at)
+   (str/capitalize (str (ld/get-month created-at)))])
+
+(defn sketches-by-date [sketches]
+  (let [sketches-by-date (sort-by :created-at sketches)
+        grouped-by-month (partition-by year-month sketches-by-date)]
+    [:section.sketch-list
+     (selector ::sketches-by-date)
+     (for [sketches grouped-by-month
+           :let [[year month] (year-month (first sketches))]]
+       [:div {:key (str year month)}
+        [:h3.date (str month " " year " (" (count sketches) ")")]
+        (list-sketches sketches)])]))
+
+(defn sketches-by-tag [sketches]
+  (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
+        tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
+                     #{}
+                     sketches)]
+    [:section.sketch-list
+     (selector ::sketches-by-tag)
+     (for [tag (sort-by name tags)
+           :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
+       [:div {:key (str tag)}
+        [:h3.tag (str (str/capitalize (name tag))
+                      " (" (count tagged-sketches) ")")]
+        (list-sketches tagged-sketches)])]))
