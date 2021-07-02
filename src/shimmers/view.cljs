@@ -11,15 +11,17 @@
           {:name sketch-name}
           {:seed (dr/fresh-seed-value)}))
 
+(defn sketch-title [sketch]
+  (->> [(when-let [created-at (:created-at sketch)]
+          (str created-at))
+        (when-let [tags (seq (:tags sketch))]
+          (str "tags:" (str/join "," (map name tags))))]
+       (filter some?)
+       (str/join " ")))
+
 (defn list-sketches [sketches]
   (into [:ul]
-        (for [sketch sketches
-              :let [title (->> [(when-let [created-at (:created-at sketch)]
-                                  (str created-at))
-                                (when-let [tags (seq (:tags sketch))]
-                                  (str "tags:" (str/join "," (map name tags))))]
-                               (filter some?)
-                               (str/join " "))]]
+        (for [sketch sketches]
           [:li [:a {:href (sketch-link rfe/href (:id sketch))
-                    :title title}
+                    :title (sketch-title sketch)}
                 (:id sketch)]])))
