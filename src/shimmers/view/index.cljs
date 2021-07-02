@@ -1,4 +1,4 @@
-(ns shimmers.view
+(ns shimmers.view.index
   (:require [cljc.java-time.local-date :as ld]
             [clojure.set :as set]
             [clojure.string :as str]
