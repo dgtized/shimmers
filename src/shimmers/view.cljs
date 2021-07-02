@@ -21,7 +21,7 @@
                 (:id sketch)]])))
 
 (defn selector [active]
-  (let [pages {::sketch-list "Alphabetically"
+  (let [pages {::index-alphabetical "Alphabetically"
                ::sketches-by-date "By Date"
                ::sketches-by-tag "By Tag"}]
     (->> (for [[page link-name] pages]
@@ -32,7 +32,7 @@
                 "Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
-(defn sketch-list [sketches]
+(defn index-alphabetical [sketches]
   (let [[sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
                     sketches)]
@@ -43,7 +43,7 @@
      implement or explore. Many are complete, and some I periodically revisit
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
-     (selector ::sketch-list)
+     (selector ::index-alphabetical)
      [:div.sketch-columns
       [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
       [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
