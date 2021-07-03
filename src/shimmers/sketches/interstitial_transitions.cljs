@@ -10,9 +10,6 @@
   (q/color-mode :hsl 1.0)
   {})
 
-(defn update-state [state]
-  state)
-
 (defn noise-at
   ([x y offset]
    (let [res 192]
@@ -62,7 +59,7 @@
                   :else
                   (shape :triangle-right sx sy dwidth))))))))
 
-(defn draw [state]
+(defn draw []
   (q/no-fill)
   (q/background 1.0 0.2)
   (q/stroke-weight 0.9)
@@ -73,6 +70,5 @@
   :created-at "2021-06-26"
   :size [800 800]
   :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
