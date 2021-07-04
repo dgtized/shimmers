@@ -62,7 +62,7 @@
 (defn deposit [trail particles]
   (reduce (fn [trail particle]
             (let [[x y] (:pos particle)]
-              (update trail [x y] + (:deposit particle))))
+              (update trail [x y] (fn [v] (min (+ v (:deposit particle)) 1.0)))))
           trail
           particles))
 
@@ -113,7 +113,11 @@
 (defn update-state [{:keys [particles trail bounds] :as state}]
   (doseq [p particles]
     (move! p trail bounds))
-  (assoc state :trail (decay (diffuse (deposit trail particles)) 0.85)))
+  (assoc state :trail
+         (as-> trail trail
+           (deposit trail particles)
+           (diffuse trail)
+           (decay trail 0.8))))
 
 (defn draw [{:keys [particles trail width height]}]
   (q/no-stroke)
