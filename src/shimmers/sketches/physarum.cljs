@@ -100,6 +100,10 @@
                    :else y))))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (q/color-mode :hsl 1.0)
   (let [width 64 height 64]
     {:width width
