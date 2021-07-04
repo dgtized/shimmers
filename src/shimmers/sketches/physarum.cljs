@@ -116,6 +116,7 @@
   (assoc state :trail (decay (diffuse (deposit trail particles)) 0.85)))
 
 (defn draw [{:keys [particles trail width height]}]
+  (q/no-stroke)
   (let [dx (/ (q/width) width)
         dy (/ (q/height) height)]
     (doseq [x (range width)
@@ -129,7 +130,7 @@
 
 (sketch/defquil physarum
   :created-at "2021-07-04"
-  :size [800 600]
+  :size [800 800]
   :setup setup
   :update update-state
   :draw draw
