@@ -93,8 +93,7 @@
     (dotimes [x width]
       (dotimes [y height]
         (let [total (reduce (fn [sum [i j]]
-                              (let [[x' y'] (bounded [(+ x i) (+ y i)])]
-                                (+ (nd/get-at trail x' y') sum)))
+                              (+ (apply nd/get-at trail (bounded [(+ x i) (+ y i)])) sum))
                             0
                             neighbors)]
           (nd/update-at trail x y
