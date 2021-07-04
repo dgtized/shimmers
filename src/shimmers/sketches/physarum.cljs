@@ -42,7 +42,7 @@
       (cond (and (> center left) (> center right)) 0
             (> left right) (- rotation)
             (< left right) rotation
-            :else (rand-nth [(- rotation) 0 rotation]))))
+            :else (* 2 (rand-nth [(- rotation) rotation])))))
   (move! [_ trail bounded]
     (let [sensors (sense _ trail bounded)
           delta-heading (rotate _ sensors)
