@@ -109,13 +109,11 @@
 
   (q/color-mode :hsl 1.0)
   (let [width 64 height 64]
-    {:width width
-     :height height
-     :bounds (wrap-edges width height)
+    {:trail (make-trail width height)
      :particles (repeatedly 1024
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                            (rand-nth (range 0 tm/TWO_PI (/ Math/PI 2)))))
-     :trail (make-trail width height)}))
+                                            (rand-nth (range 0 tm/TWO_PI (/ Math/PI 4)))))
+     :bounds (wrap-edges width height)}))
 
 (defn update-state [{:keys [particles trail bounds] :as state}]
   (doseq [p particles]
@@ -125,9 +123,10 @@
            (deposit trail particles)
            (diffuse trail 0.8 bounds))))
 
-(defn draw [{:keys [particles trail width height]}]
+(defn draw [{:keys [particles trail]}]
   (q/no-stroke)
-  (let [dx (/ (q/width) width)
+  (let [[width height] (nd/shape trail)
+        dx (/ (q/width) width)
         dy (/ (q/height) height)]
     (doseq [x (range width)
             y (range height)]
