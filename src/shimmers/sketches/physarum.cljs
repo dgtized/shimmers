@@ -3,10 +3,11 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
-            [shimmers.math.vector :as v]))
+            [thi.ng.ndarray.core :as nd]))
 
 (defprotocol IPhysarumParticle
   (sense [_ trail])
@@ -20,11 +21,18 @@
   IPhysarumParticle
   (sense [_ trail]
     (for [sensor-offset [(- sensor-angle) 0 sensor-angle]]
-      (->> (+ heading sensor-offset)
-           (v/polar sensor-distance)
-           (tm/+ pos)
-           (map int)
-           (get trail))))
+      (let [[x y] (->> (+ heading sensor-offset)
+                       (v/polar sensor-distance)
+                       (tm/+ pos)
+                       (map int))
+            [width height] (nd/shape trail)]
+        (nd/get-at trail
+                   (cond (< x 0) width
+                         (>= x width) 0
+                         :else x)
+                   (cond (< y 0) height
+                         (>= y height) 0
+                         :else y)))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
       (cond (and (> center left) (> center right)) 0
@@ -48,47 +56,58 @@
     :sensor-distance 3.0
     :rotation (/ Math/PI 8)
     :step-size 1.5
-    :deposit 256}))
+    :deposit 192}))
 
 (defn make-trail [width height]
-  (reduce (fn [trail pos] (assoc trail pos 0))
-          {}
-          (for [i (range width)
-                j (range height)]
-            [i j])))
+  (nd/ndarray :uint8 (repeatedly (* width height) (constantly 0)) [width height]))
 
-(comment (make-trail 3 3))
+(comment (nd/shape (make-trail 3 3)))
 
 (defn deposit [trail particles]
-  (reduce (fn [trail particle]
-            (let [[x y] (:pos particle)]
-              (update trail [x y] (fn [v] (min (+ v (:deposit particle)) 256)))))
-          trail
-          particles))
+  (doseq [{:keys [pos deposit]} particles
+          :let [[x y] pos]]
+    (nd/update-at trail x y
+                  (fn [v] (max (+ v deposit) 255))))
+  trail)
 
-(comment (deposit (make-trail 3 3) [(make-particle (gv/vec2 1 1) 0)]))
+(defn trail->map [trail]
+  (let [[width height] (nd/shape trail)]
+    (reduce (fn [m [i j]] (assoc m [i j] (nd/get-at trail i j)))
+            {}
+            (for [i (range width)
+                  j (range height)]
+              [i j]))))
+
+(comment (trail->map (deposit (make-trail 3 3) [(make-particle (gv/vec2 1 1) 0)])))
+
 
 (def neighbors (for [i [-1 0 1]
                      j [-1 0 1]]
-                 (gv/vec2 i j)))
+                 [i j]))
 
 (defn diffuse [trail decay]
-  (reduce-kv (fn [trail' pos value]
-               (let [total (reduce (fn [sum neighbor]
-                                     (+ sum (get trail (tm/+ (gv/vec2 pos) neighbor) 0)))
-                                   0.0
-                                   neighbors)]
-                 (assoc trail' pos (int (* decay (/ (+ value total) 9))))))
-             {} trail))
+  (let [[width height] (nd/shape trail)]
+    (dotimes [x width]
+      (dotimes [y height]
+        (let [total (reduce (fn [sum [i j]]
+                              (let [x' (+ x i)
+                                    y' (+ y j)]
+                                (-> trail
+                                    (nd/get-at
+                                     (cond (< x' 0) width
+                                           (>= x' width) 0
+                                           :else x')
+                                     (cond (< y' 0) height
+                                           (>= y' height) 0
+                                           :else y'))
+                                    (+ sum))))
+                            0
+                            neighbors)]
+          (nd/update-at trail x y
+                        (fn [value] (max 0 (int (* decay (/ (+ value total) 9)))))))))
+    trail))
 
-(comment (diffuse (assoc (make-trail 3 3) [0 0] 1.0)))
-
-(defn decay [trail factor]
-  (reduce-kv (fn [trail' pos value] (assoc trail' pos (int (* value factor))))
-             {}
-             trail))
-
-(comment (decay (diffuse (assoc (make-trail 3 3) [0 0] 256)) 0.9))
+(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8)))
 
 (defn wrap-edges [width height]
   (fn [[x y]]
@@ -128,7 +147,7 @@
         dy (/ (q/height) height)]
     (doseq [x (range width)
             y (range height)]
-      (q/fill (/ (get trail [x y]) 256))
+      (q/fill (/ (nd/get-at trail x y) 128))
       (q/rect (* dx x) (* dy y) dx dy))
     #_(doseq [{:keys [pos]} particles
               :let [[x y] pos]]
