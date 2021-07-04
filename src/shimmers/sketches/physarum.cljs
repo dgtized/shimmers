@@ -12,12 +12,12 @@
 
 (defn wrap-edges [width height]
   (fn [[x y]]
-    (gv/vec2 (cond (< x 0) width
-                   (>= x width) 0
-                   :else x)
-             (cond (< y 0) height
-                   (>= y height) 0
-                   :else y))))
+    [(cond (< x 0) width
+           (>= x width) 0
+           :else (int x))
+     (cond (< y 0) height
+           (>= y height) 0
+           :else (int y))]))
 
 (defprotocol IPhysarumParticle
   (sense [_ trail bounded])
@@ -33,8 +33,7 @@
     (for [sensor-offset [(- sensor-angle) 0 sensor-angle]]
       (let [[x y] (bounded (->> (+ heading sensor-offset)
                                 (v/polar sensor-distance)
-                                (tm/+ pos)
-                                (map int)))]
+                                (tm/+ pos)))]
         (nd/get-at trail x y))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
@@ -46,9 +45,9 @@
     (let [sensors (sense _ trail bounded)
           delta-heading (rotate _ sensors)
           heading' (+ heading delta-heading)
-          pos' (tm/+ pos (map int (v/polar step-size heading')))]
+          pos' (tm/+ pos (v/polar step-size heading'))]
       (set! heading heading')
-      (set! pos (bounded pos'))
+      (set! pos (gv/vec2 (bounded pos')))
       _)))
 
 (defn make-particle [pos heading]
