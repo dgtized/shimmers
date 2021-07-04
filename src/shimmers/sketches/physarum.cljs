@@ -45,9 +45,9 @@
    {:pos pos
     :heading heading
     :sensor-angle (/ Math/PI 4)
-    :sensor-distance 2.0
-    :rotation (/ Math/PI 4)
-    :step-size 2.0
+    :sensor-distance 3.0
+    :rotation (/ Math/PI 6)
+    :step-size 1.5
     :deposit 1.0}))
 
 (defn make-trail [width height]
@@ -105,8 +105,9 @@
     {:width width
      :height height
      :bounds (wrap-edges width height)
-     :particles (repeatedly 10 #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                               (rand-nth (range 0 tm/TWO_PI (/ Math/PI 4)))))
+     :particles (repeatedly 1024
+                            #(make-particle (gv/vec2 (rand-int width) (rand-int height))
+                                            (rand-nth (range 0 tm/TWO_PI (/ Math/PI 6)))))
      :trail (make-trail width height)}))
 
 (defn update-state [{:keys [particles trail bounds] :as state}]
