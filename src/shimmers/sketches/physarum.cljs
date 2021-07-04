@@ -72,13 +72,13 @@
                      j [-1 0 1]]
                  (gv/vec2 i j)))
 
-(defn diffuse [trail]
+(defn diffuse [trail decay]
   (reduce-kv (fn [trail' pos value]
                (let [total (reduce (fn [sum neighbor]
                                      (+ sum (get trail (tm/+ (gv/vec2 pos) neighbor) 0.0)))
                                    0.0
                                    neighbors)]
-                 (assoc trail' pos (/ (+ value total) 9.0))))
+                 (assoc trail' pos (* decay (/ (+ value total) 9.0)))))
              {} trail))
 
 (comment (diffuse (assoc (make-trail 3 3) [0 0] 1.0)))
@@ -116,8 +116,7 @@
   (assoc state :trail
          (as-> trail trail
            (deposit trail particles)
-           (diffuse trail)
-           (decay trail 0.8))))
+           (diffuse trail 0.8))))
 
 (defn draw [{:keys [particles trail width height]}]
   (q/no-stroke)
