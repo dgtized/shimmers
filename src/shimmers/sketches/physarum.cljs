@@ -48,7 +48,7 @@
     :sensor-distance 3.0
     :rotation (/ Math/PI 8)
     :step-size 1.5
-    :deposit 1.0}))
+    :deposit 256}))
 
 (defn make-trail [width height]
   (reduce (fn [trail pos] (assoc trail pos 0))
@@ -62,7 +62,7 @@
 (defn deposit [trail particles]
   (reduce (fn [trail particle]
             (let [[x y] (:pos particle)]
-              (update trail [x y] (fn [v] (min (+ v (:deposit particle)) 1.0)))))
+              (update trail [x y] (fn [v] (min (+ v (:deposit particle)) 256)))))
           trail
           particles))
 
@@ -75,20 +75,20 @@
 (defn diffuse [trail decay]
   (reduce-kv (fn [trail' pos value]
                (let [total (reduce (fn [sum neighbor]
-                                     (+ sum (get trail (tm/+ (gv/vec2 pos) neighbor) 0.0)))
+                                     (+ sum (get trail (tm/+ (gv/vec2 pos) neighbor) 0)))
                                    0.0
                                    neighbors)]
-                 (assoc trail' pos (* decay (/ (+ value total) 9.0)))))
+                 (assoc trail' pos (int (* decay (/ (+ value total) 9))))))
              {} trail))
 
 (comment (diffuse (assoc (make-trail 3 3) [0 0] 1.0)))
 
 (defn decay [trail factor]
-  (reduce-kv (fn [trail' pos value] (assoc trail' pos (* value factor)))
+  (reduce-kv (fn [trail' pos value] (assoc trail' pos (int (* value factor))))
              {}
              trail))
 
-(comment (decay (diffuse (assoc (make-trail 3 3) [0 0] 1.0)) 0.9))
+(comment (decay (diffuse (assoc (make-trail 3 3) [0 0] 256)) 0.9))
 
 (defn wrap-edges [width height]
   (fn [[x y]]
@@ -124,7 +124,7 @@
         dy (/ (q/height) height)]
     (doseq [x (range width)
             y (range height)]
-      (q/fill (get trail [x y]))
+      (q/fill (/ (get trail [x y]) 256))
       (q/rect (* dx x) (* dy y) dx dy))
     #_(doseq [{:keys [pos]} particles
               :let [[x y] pos]]
