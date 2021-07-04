@@ -59,8 +59,8 @@
     :sensor-angle (/ Math/PI 3)
     :sensor-distance 6.0
     :rotation (/ Math/PI 6)
-    :step-size 2.0
-    :deposit 192}))
+    :step-size 1.8
+    :deposit 96}))
 
 (defn make-trail [width height]
   (nd/ndarray :uint8-clamped
@@ -112,7 +112,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :hsl 1.0)
-  (let [width 64 height 64]
+  (let [width 100 height 100]
     {:trail (make-trail width height)
      :particles (repeatedly 2048
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
