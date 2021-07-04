@@ -5,6 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
@@ -59,11 +60,14 @@
                          state))
                      state0))
 
+(def ui-state
+  (ctrl/state {:radius 8 :samples 30}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (poisson-disc-init (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
-                     8 30 30))
+  (let [{:keys [radius samples]} @ui-state]
+    (poisson-disc-init (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
+                       radius samples 10)))
 
 (defn update-state [state]
   (poisson-disc-fill state))
@@ -75,8 +79,17 @@
   (doseq [[x y] (vals grid)]
     (q/point x y)))
 
+(defn explanation []
+  [:div
+   (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
+                [:radius] [2 16 1])
+   ;; Is this parameter even worth tuning?
+   (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
+                [:samples] [20 50 1])])
+
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
+  :on-mount #(ctrl/mount explanation)
   :size [600 600]
   :setup setup
   :update update-state
