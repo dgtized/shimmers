@@ -61,7 +61,9 @@
     :deposit 192}))
 
 (defn make-trail [width height]
-  (nd/ndarray :uint8 (repeatedly (* width height) (constantly 0)) [width height]))
+  (nd/ndarray :uint8-clamped
+              (repeatedly (* width height) (constantly 0))
+              [width height]))
 
 (comment (nd/shape (make-trail 3 3)))
 
@@ -69,7 +71,7 @@
   (doseq [{:keys [pos deposit]} particles
           :let [[x y] pos]]
     (nd/update-at trail x y
-                  (fn [v] (max (+ v deposit) 255))))
+                  (fn [v] (+ v deposit))))
   trail)
 
 (defn trail->map [trail]
@@ -97,7 +99,7 @@
                             0
                             neighbors)]
           (nd/update-at trail x y
-                        (fn [value] (max 0 (int (* decay (/ (+ value total) 9)))))))))
+                        (fn [value] (int (* decay (/ (+ value total) 9))))))))
     trail))
 
 (comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8 (wrap-edges 3 3))))
