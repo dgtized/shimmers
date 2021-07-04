@@ -52,6 +52,7 @@
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
             shimmers.sketches.permutations-of-transfiguration
+            shimmers.sketches.physarum
             shimmers.sketches.point-to-point
             shimmers.sketches.poisson-disc-sampling
             shimmers.sketches.polygrowth
