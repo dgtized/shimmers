@@ -132,7 +132,7 @@
         dy (/ (q/height) height)]
     (doseq [x (range width)
             y (range height)]
-      (q/fill (/ (nd/get-at trail x y) 128))
+      (q/fill (/ (nd/get-at trail x y) 200))
       (q/rect (* dx x) (* dy y) dx dy))
     #_(doseq [{:keys [pos]} particles
               :let [[x y] pos]]
