@@ -84,7 +84,8 @@
 
 
 (def neighbors (for [i [-1 0 1]
-                     j [-1 0 1]]
+                     j [-1 0 1]
+                     :when (not= i j 0)]
                  [i j]))
 
 (defn diffuse [trail decay bounded]
