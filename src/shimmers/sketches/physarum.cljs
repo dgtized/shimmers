@@ -9,8 +9,18 @@
             [thi.ng.math.core :as tm]
             [thi.ng.ndarray.core :as nd]))
 
+
+(defn wrap-edges [width height]
+  (fn [[x y]]
+    (gv/vec2 (cond (< x 0) width
+                   (>= x width) 0
+                   :else x)
+             (cond (< y 0) height
+                   (>= y height) 0
+                   :else y))))
+
 (defprotocol IPhysarumParticle
-  (sense [_ trail])
+  (sense [_ trail bounded])
   (rotate [_ sensors])
   (move! [_ trail bounds]))
 
@@ -19,20 +29,13 @@
      ^:mutable heading
      sensor-angle sensor-distance rotation step-size deposit]
   IPhysarumParticle
-  (sense [_ trail]
+  (sense [_ trail bounded]
     (for [sensor-offset [(- sensor-angle) 0 sensor-angle]]
-      (let [[x y] (->> (+ heading sensor-offset)
-                       (v/polar sensor-distance)
-                       (tm/+ pos)
-                       (map int))
-            [width height] (nd/shape trail)]
-        (nd/get-at trail
-                   (cond (< x 0) width
-                         (>= x width) 0
-                         :else x)
-                   (cond (< y 0) height
-                         (>= y height) 0
-                         :else y)))))
+      (let [[x y] (bounded (->> (+ heading sensor-offset)
+                                (v/polar sensor-distance)
+                                (tm/+ pos)
+                                (map int)))]
+        (nd/get-at trail x y))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
       (cond (and (> center left) (> center right)) 0
@@ -40,7 +43,7 @@
             (< left right) rotation
             :else (rand-nth [(- rotation) 0 rotation]))))
   (move! [_ trail bounded]
-    (let [sensors (sense _ trail)
+    (let [sensors (sense _ trail bounded)
           delta-heading (rotate _ sensors)
           heading' (+ heading delta-heading)
           pos' (tm/+ pos (map int (v/polar step-size heading')))]
@@ -85,38 +88,20 @@
                      j [-1 0 1]]
                  [i j]))
 
-(defn diffuse [trail decay]
+(defn diffuse [trail decay bounded]
   (let [[width height] (nd/shape trail)]
     (dotimes [x width]
       (dotimes [y height]
         (let [total (reduce (fn [sum [i j]]
-                              (let [x' (+ x i)
-                                    y' (+ y j)]
-                                (-> trail
-                                    (nd/get-at
-                                     (cond (< x' 0) width
-                                           (>= x' width) 0
-                                           :else x')
-                                     (cond (< y' 0) height
-                                           (>= y' height) 0
-                                           :else y'))
-                                    (+ sum))))
+                              (let [[x' y'] (bounded [(+ x i) (+ y i)])]
+                                (+ (nd/get-at trail x' y') sum)))
                             0
                             neighbors)]
           (nd/update-at trail x y
                         (fn [value] (max 0 (int (* decay (/ (+ value total) 9)))))))))
     trail))
 
-(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8)))
-
-(defn wrap-edges [width height]
-  (fn [[x y]]
-    (gv/vec2 (cond (< x 0) width
-                   (>= x width) 0
-                   :else x)
-             (cond (< y 0) height
-                   (>= y height) 0
-                   :else y))))
+(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8 (wrap-edges 3 3))))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
@@ -139,7 +124,7 @@
   (assoc state :trail
          (as-> trail trail
            (deposit trail particles)
-           (diffuse trail 0.8))))
+           (diffuse trail 0.8 bounds))))
 
 (defn draw [{:keys [particles trail width height]}]
   (q/no-stroke)
