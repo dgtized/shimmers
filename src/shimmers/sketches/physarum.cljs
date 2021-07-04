@@ -56,10 +56,10 @@
   (map->PhysarumParticle
    {:pos pos
     :heading heading
-    :sensor-angle (/ Math/PI 4)
-    :sensor-distance 3.0
-    :rotation (/ Math/PI 8)
-    :step-size 1.5
+    :sensor-angle (/ Math/PI 3)
+    :sensor-distance 6.0
+    :rotation (/ Math/PI 6)
+    :step-size 2.0
     :deposit 192}))
 
 (defn make-trail [width height]
@@ -114,9 +114,9 @@
   (q/color-mode :hsl 1.0)
   (let [width 64 height 64]
     {:trail (make-trail width height)
-     :particles (repeatedly 1024
+     :particles (repeatedly 2048
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                            (rand-nth (range 0 tm/TWO_PI (/ Math/PI 4)))))
+                                            (rand-nth (range 0 tm/TWO_PI 0.1))))
      :bounds (wrap-edges width height)}))
 
 (defn update-state [{:keys [particles trail bounds] :as state}]
