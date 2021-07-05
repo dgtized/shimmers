@@ -112,7 +112,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :hsl 1.0)
-  (let [width 128 height 128]
+  (let [width 200 height 200]
     {:trail (make-trail width height)
      :particles (repeatedly 2048
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
