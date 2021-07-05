@@ -103,7 +103,7 @@
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (q/color-mode :hsl 1.0)
+  (q/color-mode :hsl 255)
   (let [width 128 height 128]
     {:trail (make-trail width height)
      :particles (repeatedly 4096
@@ -125,7 +125,7 @@
         dy (/ (q/height) height)]
     (doseq [x (range width)
             y (range height)]
-      (q/fill (/ (nd/get-at trail x y) 200))
+      (q/fill (nd/get-at trail x y))
       (q/rect (* dx x) (* dy y) dx dy))
     #_(doseq [{:keys [pos]} particles
               :let [[x y] pos]]
