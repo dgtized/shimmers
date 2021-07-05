@@ -92,19 +92,22 @@
                      :when (not= i j 0)]
                  [i j]))
 
-(defn diffuse [trail decay bounded]
+(defn diffuse [trail decay]
   (let [[width height] (nd/shape trail)]
     (dotimes [x width]
       (dotimes [y height]
         (let [total (reduce (fn [sum [i j]]
-                              (+ (apply nd/get-at trail (bounded [(+ x i) (+ y i)])) sum))
+                              (+ (nd/get-at trail
+                                            (tm/wrap-range (+ x i) width)
+                                            (tm/wrap-range (+ y j) height))
+                                 sum))
                             0
                             neighbors)]
           (nd/update-at trail x y
                         (fn [value] (int (* decay (/ (+ value total) 9))))))))
     trail))
 
-(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8 (wrap-edges 3 3))))
+(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8)))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
@@ -123,7 +126,7 @@
   (doseq [p particles]
     (move! p trail bounds))
   (deposit trail particles)
-  (diffuse trail 0.8 bounds)
+  (diffuse trail 0.8)
   state)
 
 (defn draw [{:keys [particles trail]}]
