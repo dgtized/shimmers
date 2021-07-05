@@ -57,7 +57,7 @@
     :sensor-distance 9.0
     :rotation (/ Math/PI 4) ;; 45 degrees
     :step-size 1.0
-    :deposit 96}))
+    :deposit 128}))
 
 (defn make-trail [width height]
   (nd/ndarray :uint8-clamped
