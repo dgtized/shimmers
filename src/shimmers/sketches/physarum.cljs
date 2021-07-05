@@ -36,10 +36,11 @@
                    (tm/wrap-range y height)))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
+      ;; Paper uses center < left & right as random case?
       (cond (and (> center left) (> center right)) 0
             (> left right) (- rotation)
             (< left right) rotation
-            :else (* 2 (rand-nth [(- rotation) rotation])))))
+            :else (rand-nth [(- rotation) rotation]))))
   (move! [_ trail bounded]
     (let [sensors (sense _ trail)
           delta-heading (rotate _ sensors)
