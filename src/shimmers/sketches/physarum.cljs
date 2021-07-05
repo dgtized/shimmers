@@ -83,28 +83,20 @@
 
 (comment (trail->map (deposit (make-trail 3 3) [(make-particle (gv/vec2 1 1) 0)])))
 
-
-(def neighbors (for [i [-1 0 1]
-                     j [-1 0 1]
-                     :when (not= i j 0)]
-                 [i j]))
-
 (defn diffuse [trail decay]
   (let [[width height] (nd/shape trail)]
     (dotimes [x width]
       (dotimes [y height]
-        (let [total (reduce (fn [sum [i j]]
-                              (+ (nd/get-at trail
-                                            (tm/wrap-range (+ x i) width)
-                                            (tm/wrap-range (+ y j) height))
-                                 sum))
-                            0
-                            neighbors)]
-          (nd/update-at trail x y
-                        (fn [value] (int (* decay (/ (+ value total) 9))))))))
+        (let [values
+              (for [i [-1 0 1]
+                    j [-1 0 1]]
+                (nd/get-at trail
+                           (tm/wrap-range (+ x i) width)
+                           (tm/wrap-range (+ y j) height)))]
+          (nd/set-at trail x y (int (* decay (/ (reduce + values) 9)))))))
     trail))
 
-(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 256) 0.8)))
+(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 255) 0.9)))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
