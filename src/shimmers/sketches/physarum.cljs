@@ -46,14 +46,17 @@
       (set! pos (gv/vec2 (bounded pos')))
       _)))
 
+;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
+;; and evolution in approximations of physarum transport networks.
+;; ref:https://uwe-repository.worktribe.com/output/980579.
 (defn make-particle [pos heading]
   (map->PhysarumParticle
    {:pos pos
     :heading heading
-    :sensor-angle (/ Math/PI 3)
-    :sensor-distance 6.0
-    :rotation (/ Math/PI 6)
-    :step-size 1.8
+    :sensor-angle (/ Math/PI 8) ;; 22.5 degrees
+    :sensor-distance 9.0
+    :rotation (/ Math/PI 4) ;; 45 degrees
+    :step-size 1.0
     :deposit 96}))
 
 (defn make-trail [width height]
