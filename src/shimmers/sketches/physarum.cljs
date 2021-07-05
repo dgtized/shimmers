@@ -16,7 +16,7 @@
      (int (tm/roundto (tm/wrap-range y height) 1.0))]))
 
 (defprotocol IPhysarumParticle
-  (sense [_ trail bounded])
+  (sense [_ trail])
   (rotate [_ sensors])
   (move! [_ trail bounds]))
 
@@ -25,12 +25,15 @@
      ^:mutable heading
      sensor-angle sensor-distance rotation step-size deposit]
   IPhysarumParticle
-  (sense [_ trail bounded]
+  (sense [_ trail]
     (for [sensor-offset [(- sensor-angle) 0 sensor-angle]]
-      (let [[x y] (bounded (->> (+ heading sensor-offset)
-                                (v/polar sensor-distance)
-                                (tm/+ pos)))]
-        (nd/get-at trail x y))))
+      (let [[x y] (->> (+ heading sensor-offset)
+                       (v/polar sensor-distance)
+                       (tm/+ pos))
+            [width height] (nd/shape trail)]
+        (nd/get-at trail
+                   (tm/wrap-range x width)
+                   (tm/wrap-range y height)))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
       (cond (and (> center left) (> center right)) 0
@@ -38,7 +41,7 @@
             (< left right) rotation
             :else (* 2 (rand-nth [(- rotation) rotation])))))
   (move! [_ trail bounded]
-    (let [sensors (sense _ trail bounded)
+    (let [sensors (sense _ trail)
           delta-heading (rotate _ sensors)
           heading' (+ heading delta-heading)
           pos' (tm/+ pos (v/polar step-size heading'))]
