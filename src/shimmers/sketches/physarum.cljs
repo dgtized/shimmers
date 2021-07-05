@@ -12,14 +12,8 @@
 
 (defn wrap-edges [width height]
   (fn [[x y]]
-    [(int (tm/roundto (cond (< x 0) (+ x width)
-                            (>= x width) (- x width)
-                            :else (int x))
-                      1.0))
-     (int (tm/roundto (cond (< y 0) (+ y height)
-                            (>= y height) (- y height)
-                            :else y)
-                      1.0))]))
+    [(int (tm/roundto (tm/wrap-range x width) 1.0))
+     (int (tm/roundto (tm/wrap-range y height) 1.0))]))
 
 (defprotocol IPhysarumParticle
   (sense [_ trail bounded])
