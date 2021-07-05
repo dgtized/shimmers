@@ -112,7 +112,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :hsl 1.0)
-  (let [width 100 height 100]
+  (let [width 128 height 128]
     {:trail (make-trail width height)
      :particles (repeatedly 2048
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
@@ -122,10 +122,9 @@
 (defn update-state [{:keys [particles trail bounds] :as state}]
   (doseq [p particles]
     (move! p trail bounds))
-  (assoc state :trail
-         (as-> trail trail
-           (deposit trail particles)
-           (diffuse trail 0.8 bounds))))
+  (deposit trail particles)
+  (diffuse trail 0.8 bounds)
+  state)
 
 (defn draw [{:keys [particles trail]}]
   (q/no-stroke)
