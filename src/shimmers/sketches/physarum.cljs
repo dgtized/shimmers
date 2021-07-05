@@ -108,7 +108,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :hsl 255)
-  (let [width 128 height 128]
+  (let [width 100 height 100]
     {:trail (make-trail width height)
      :particles (repeatedly 4096
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
