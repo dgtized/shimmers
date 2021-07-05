@@ -116,7 +116,7 @@
     {:trail (make-trail width height)
      :particles (repeatedly 2048
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                            (rand-nth (range 0 tm/TWO_PI 0.1))))
+                                            (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))
      :bounds (wrap-edges width height)}))
 
 (defn update-state [{:keys [particles trail bounds] :as state}]
