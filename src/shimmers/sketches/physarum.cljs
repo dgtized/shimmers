@@ -91,13 +91,16 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :rgb)
-  (let [width 128 height 128]
+  (let [width 128
+        height 128
+        n-particles 4096]
     {:trail (make-trail width height)
      :width width
      :height height
-     :particles (repeatedly 4096
-                            #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                            (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))}))
+     :particles
+     (repeatedly n-particles
+                 #(make-particle (gv/vec2 (rand-int width) (rand-int height))
+                                 (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))}))
 
 (defn update-state [{:keys [particles trail width height] :as state}]
   (doseq [p particles]
