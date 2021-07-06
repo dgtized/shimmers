@@ -5,10 +5,12 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
+            [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defn random-triangle-at [pos rotation scale]
@@ -30,16 +32,24 @@
   (q/ellipse-mode :radius)
   (q/fill (+ 0.6 (* 0.04 (q/random-gaussian))) (tm/random 0.4 0.6) (tm/random 0.4 0.75) 0.05)
   (let [sea' (geometry/rotate-around-centroid sea (* 0.05 (q/random-gaussian)))]
-    (dotimes [i 128]
-      (let [p (geom/random-point-inside sea')]
-        (-> p
+    (dotimes [i 96]
+      (let [pos (geom/random-point-inside sea')]
+        (-> pos
             (random-triangle-at (tm/random tm/TWO_PI) (tm/random 6 32))
             geom/vertices
             cq/draw-shape))))
-  (q/fill (+ 0.02 (* 0.05 (q/random-gaussian))) (tm/random 0.4 0.6) (tm/random 0.4 0.75) 0.05)
-  (dotimes [i 128]
-    (let [p (geom/random-point-inside sky)]
-      (cq/circle p (tm/random 1.0 10.0)))))
+  (q/fill (+ 0.02 (* 0.05 (q/random-gaussian)))
+          (tm/random 0.4 0.6)
+          (tm/random 0.4 0.75)
+          0.05)
+  (dotimes [i 32]
+    (let [pos (geom/random-point-inside sky)]
+      (if (p/chance 0.1)
+        (let [r (tm/random 1.0 10.0)
+              d (rand-nth [-0.5 0.5])]
+          (dotimes [j (int (tm/random 8 24))]
+            (cq/circle (tm/+ pos (gv/vec2 (* d r j) 0)) r)))
+        (cq/circle pos (tm/random 1.0 10.0))))))
 
 (sketch/defquil sea-and-sky
   :created-at "2021-07-06"
