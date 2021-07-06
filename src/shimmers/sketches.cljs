@@ -51,6 +51,7 @@
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
+            shimmers.sketches.periapsis
             shimmers.sketches.permutations-of-transfiguration
             shimmers.sketches.physarum
             shimmers.sketches.point-to-point
