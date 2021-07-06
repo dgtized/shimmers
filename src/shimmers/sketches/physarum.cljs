@@ -9,31 +9,28 @@
             [thi.ng.math.core :as tm]
             [thi.ng.ndarray.core :as nd]))
 
-
-(defn wrap-edges [width height]
-  (fn [[x y]]
-    [(int (tm/roundto (tm/wrap-range x width) 1.0))
-     (int (tm/roundto (tm/wrap-range y height) 1.0))]))
+(defn wrap-edges [[x y] width height]
+  (gv/vec2 (int (tm/roundto (tm/wrap-range x width) 1.0))
+           (int (tm/roundto (tm/wrap-range y height) 1.0))))
 
 (defprotocol IPhysarumParticle
-  (sense [_ trail])
+  (sense [_ trail width height])
   (rotate [_ sensors])
-  (move! [_ trail bounds]))
+  (move! [_ trail width height]))
 
 (defrecord PhysarumParticle
     [^:mutable pos
      ^:mutable heading
      sensor-angle sensor-distance rotation step-size deposit]
   IPhysarumParticle
-  (sense [_ trail]
+  (sense [_ trail width height]
     (for [sensor-offset [(- sensor-angle) 0 sensor-angle]]
       (let [[x y] (->> (+ heading sensor-offset)
                        (v/polar sensor-distance)
-                       (tm/+ pos))
-            [width height] (nd/shape trail)]
-        (nd/get-at trail
-                   (tm/wrap-range x width)
-                   (tm/wrap-range y height)))))
+                       (tm/+ pos))]
+        (first (q/get-pixel trail
+                            (tm/wrap-range x width)
+                            (tm/wrap-range y height))))))
   (rotate [_ sensors]
     (let [[left center right] sensors]
       ;; Paper uses center < left & right as random case?
@@ -41,13 +38,13 @@
             (> left right) (- rotation)
             (< left right) rotation
             :else (rand-nth [(- rotation) rotation]))))
-  (move! [_ trail bounded]
-    (let [sensors (sense _ trail)
+  (move! [_ trail width height]
+    (let [sensors (sense _ trail width height)
           delta-heading (rotate _ sensors)
           heading' (+ heading delta-heading)
           pos' (tm/+ pos (v/polar step-size heading'))]
       (set! heading heading')
-      (set! pos (gv/vec2 (bounded pos')))
+      (set! pos (wrap-edges pos' width height))
       _)))
 
 ;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
@@ -64,77 +61,55 @@
     :deposit 128}))
 
 (defn make-trail [width height]
-  (nd/ndarray :uint8-clamped
-              (repeatedly (* width height) (constantly 0))
-              [width height]))
-
-(comment (nd/shape (make-trail 3 3)))
+  (let [img (q/create-image width height)]
+    (dotimes [i width]
+      (dotimes [j height]
+        (q/set-pixel img i j 0)))
+    (q/update-pixels img)
+    img))
 
 (defn deposit [trail particles]
   (doseq [{:keys [pos deposit]} particles
-          :let [[x y] pos]]
-    (nd/update-at trail x y
-                  (fn [v] (+ v deposit))))
+          :let [[x y] pos
+                v (first (q/get-pixel trail x y))
+                v' (+ v deposit)]]
+    (q/set-pixel trail x y v'))
   trail)
 
-(defn trail->map [trail]
-  (let [[width height] (nd/shape trail)]
-    (reduce (fn [m [i j]] (assoc m [i j] (nd/get-at trail i j)))
-            {}
-            (for [i (range width)
-                  j (range height)]
-              [i j]))))
+(defn diffuse [trail amount]
+  (q/image-filter trail :blur amount))
 
-(comment (trail->map (deposit (make-trail 3 3) [(make-particle (gv/vec2 1 1) 0)])))
-
-(defn diffuse [trail decay]
-  (let [[width height] (nd/shape trail)]
-    (dotimes [x width]
-      (dotimes [y height]
-        (let [values
-              (for [i [-1 0 1]
-                    j [-1 0 1]]
-                (nd/get-at trail
-                           (tm/wrap-range (+ x i) width)
-                           (tm/wrap-range (+ y j) height)))]
-          (nd/set-at trail x y (int (* decay (/ (reduce + values) 9)))))))
-    trail))
-
-(comment (trail->map (diffuse (nd/set-at (make-trail 3 3) 0 0 255) 0.9)))
+(defn decay [trail width height factor]
+  (dotimes [i width]
+    (dotimes [j height]
+      (q/set-pixel trail i j (* factor (first (q/get-pixel trail i j))))))
+  (q/update-pixels trail))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (q/color-mode :hsl 255)
-  (let [width 100 height 100]
+  (q/color-mode :rgb)
+  (let [width 128 height 128]
     {:trail (make-trail width height)
+     :width width
+     :height height
      :particles (repeatedly 4096
                             #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                            (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))
-     :bounds (wrap-edges width height)}))
+                                            (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))}))
 
-(defn update-state [{:keys [particles trail bounds] :as state}]
+(defn update-state [{:keys [particles trail width height] :as state}]
   (doseq [p particles]
-    (move! p trail bounds))
+    (move! p trail width height))
   (deposit trail particles)
-  (diffuse trail 0.9)
+  (q/update-pixels trail)
+  (diffuse trail 1)
+  (decay trail width height 0.9)
   state)
 
-(defn draw [{:keys [particles trail]}]
-  (q/no-stroke)
-  (let [[width height] (nd/shape trail)
-        dx (/ (q/width) width)
-        dy (/ (q/height) height)]
-    (doseq [x (range width)
-            y (range height)]
-      (q/fill (nd/get-at trail x y))
-      (q/rect (* dx x) (* dy y) dx dy))
-    #_(doseq [{:keys [pos]} particles
-              :let [[x y] pos]]
-        (q/fill 0 1.0 0.5)
-        (q/rect (* dx x) (* dy y) dx dy))))
+(defn draw [{:keys [trail]}]
+  (q/image trail 0 0 (q/width) (q/height)))
 
 (sketch/defquil physarum
   :created-at "2021-07-04"
