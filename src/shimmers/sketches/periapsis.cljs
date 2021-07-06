@@ -41,7 +41,7 @@
 
 (defn draw [{:keys [bodies t]}]
   (q/ellipse-mode :radius)
-  (q/background 1.0 0.25)
+  (q/background 1.0 0.2)
   (q/no-stroke)
   (q/fill 0.0 0.7)
   (q/with-translation (cq/rel-pos 0.5 0.5)
