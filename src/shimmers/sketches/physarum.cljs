@@ -6,8 +6,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [thi.ng.ndarray.core :as nd]))
+            [thi.ng.math.core :as tm]))
 
 (defn wrap-edges [[x y] width height]
   (gv/vec2 (int (tm/roundto (tm/wrap-range x width) 1.0))
