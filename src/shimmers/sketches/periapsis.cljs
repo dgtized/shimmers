@@ -8,23 +8,32 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
-(defrecord Body [mass radius dtheta theta0])
+(defrecord Body [mass radius dtheta theta0 moons])
 
 (defn make-bodies [n]
   (cons
-   (Body. 64 0 0 0)
+   (Body. 64 0 0 0 [])
    (for [i (range n)]
-     (Body. (tm/random 8 16)
+     (Body. (tm/random 8 12)
             (+ (* 0.5 (q/random-gaussian))
                (tm/map-interval i 0 n 48 (/ (q/width) 2)))
             (if (p/chance 0.1)
               (tm/random -0.05)
               (tm/random 0.1))
-            (tm/random tm/TWO_PI)))))
+            (tm/random tm/TWO_PI)
+            (if (p/chance 0.3)
+              (repeatedly (rand-int 4) #(Body. (tm/random 1 4)
+                                               (tm/random 8 24)
+                                               (if (p/chance 0.1)
+                                                 (tm/random -0.4)
+                                                 (tm/random 0.8))
+                                               (tm/random tm/TWO_PI)
+                                               []))
+              [])))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:bodies (make-bodies 200)
+  {:bodies (make-bodies 256)
    :t 0.0})
 
 (defn update-state [state]
@@ -36,8 +45,13 @@
   (q/no-stroke)
   (q/fill 0.0 0.7)
   (q/with-translation (cq/rel-pos 0.5 0.5)
-    (doseq [{:keys [mass radius dtheta theta0]} bodies]
-      (cq/circle (v/polar radius (+ theta0 (* dtheta t))) (/ mass 4)))))
+    (doseq [{:keys [mass radius dtheta theta0 moons]} bodies
+            :let [position (v/polar radius (+ theta0 (* dtheta t)))]]
+      (cq/circle position (/ mass 4))
+      (q/with-translation position
+        (doseq [{:keys [mass radius dtheta theta0]} moons
+                :let [moon-pos (v/polar radius (+ theta0 (* dtheta t)))]]
+          (cq/circle moon-pos (/ mass 4)))))))
 
 (sketch/defquil periapsis
   :created-at "2021-07-06"
