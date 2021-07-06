@@ -7,11 +7,13 @@
           ;; :cljs/repl-env cljs.repl.browser/repl-env
 
           :cljs/compiler-options
-          {:externs ["p5-externs.js"]
+          {:externs ["p5-externs.js" "sparkles-externs.js"]
            :foreign-libs [{:file "node_modules/p5/lib/p5.js"
                            :file-min "node_modules/p5/lib/p5.min.js"
                            :provides ["cljsjs.p5"]
-                           :global-exports {p5 P5}}]}
+                           :global-exports {p5 P5}}
+                          {:file "node_modules/sparkles/src/sparkles.js"
+                           :provides ["sparkles"]}]}
           }]
  ;; :capture-output? false
  ;; :bindings {kaocha.type.cljs/*debug* true}

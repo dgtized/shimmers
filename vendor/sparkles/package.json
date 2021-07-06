@@ -1,0 +1,12 @@
+{
+  "name": "sparkles",
+  "version": "0.0.1",
+  "description": "fast js routines for shimmers",
+  "_x_main": "./src/sparkles.js",
+  "files": ["src/sparkles.js"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Charles L.G. Comstock",
+  "license": "AGPL-3.0"
+}
