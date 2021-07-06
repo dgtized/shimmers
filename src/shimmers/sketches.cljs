@@ -70,6 +70,7 @@
             shimmers.sketches.rose
             shimmers.sketches.sand-strokes
             shimmers.sketches.scintillation
+            shimmers.sketches.sea-and-sky
             shimmers.sketches.sediment
             shimmers.sketches.six-of-one-half-dozen-of-the-other
             shimmers.sketches.space-colonization
