@@ -28,6 +28,10 @@
 (defn update-state [state]
   state)
 
+(defn streak [pos length step-size angle draw]
+  (dotimes [j length]
+    (draw (tm/+ pos (v/polar (* j step-size) angle)))))
+
 (defn draw [{:keys [sea sky]}]
   (q/no-stroke)
   (q/ellipse-mode :radius)
@@ -40,11 +44,11 @@
           (let [theta (tm/random tm/TWO_PI)
                 size (tm/random 6 16)
                 d (rand-nth [-0.2 0.2])]
-            (dotimes [j (int (tm/random 8 32))]
-              (-> (tm/+ pos (v/polar (* j d size) angle))
-                  (random-triangle-at theta size)
-                  geom/vertices
-                  cq/draw-shape)))
+            (streak pos (int (tm/random 8 32)) (* d size) angle
+                    #(-> %
+                         (random-triangle-at theta size)
+                         geom/vertices
+                         cq/draw-shape)))
           (-> pos
               (random-triangle-at (tm/random tm/TWO_PI) (tm/random 6 32))
               geom/vertices
@@ -59,8 +63,7 @@
       (if (p/chance 0.1)
         (let [r (tm/random 1.0 10.0)
               d (rand-nth [-0.5 0.5])]
-          (dotimes [j (int (tm/random 8 32))]
-            (cq/circle (tm/+ pos (gv/vec2 (* d r j) 0)) r)))
+          (streak pos (int (tm/random 8 32)) (* d r) 0 #(cq/circle % r)))
         (cq/circle pos (tm/random 1.0 10.0))))))
 
 (sketch/defquil sea-and-sky
