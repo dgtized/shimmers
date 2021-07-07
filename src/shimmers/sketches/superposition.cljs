@@ -58,11 +58,10 @@
                 (* spin t)
                 (* 2 Math/PI (rand)))]
     (->> points
-         (mapv (fn [p] (-> p
-                          (tm/madd scale centroid)
-                          (geom/rotate theta)
-                          (tm/+ position))))
-         flatten
+         (mapcat (fn [p] (-> p
+                            (tm/madd scale centroid)
+                            (geom/rotate theta)
+                            (tm/+ position))))
          (apply q/triangle))))
 
 (defn random-triangle []
