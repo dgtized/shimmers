@@ -48,7 +48,8 @@
 
 (def triangle-instance
   (let [t (gt/triangle2 [0 0] [0 13] [17 0])]
-    (assoc t :centroid (gu/centroid (:points t)))))
+    (assoc (geom/center t)
+           :centroid (gu/centroid (:points t)))))
 
 ;; optimized version with cached centroid, also trying to reduce consing?
 (defn draw-triangle-at [position t spin scale]
@@ -58,7 +59,6 @@
                 (* 2 Math/PI (rand)))]
     (->> points
          (mapv (fn [p] (-> p
-                          (tm/- centroid)
                           (tm/madd scale centroid)
                           (geom/rotate theta)
                           (tm/+ position))))
