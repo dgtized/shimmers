@@ -11,7 +11,6 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defn random-triangle-at [pos rotation scale]
