@@ -28,6 +28,12 @@
 (defn update-state [state]
   state)
 
+(defn wave [rotation size pos]
+  (-> pos
+      (random-triangle-at rotation size)
+      geom/vertices
+      cq/draw-shape))
+
 (defn streak [pos length step-size angle draw]
   (dotimes [j length]
     (draw (tm/+ pos (v/polar (* j step-size) angle)))))
@@ -45,14 +51,8 @@
                 size (tm/random 6 16)
                 d (rand-nth [-0.2 0.2])]
             (streak pos (int (tm/random 8 32)) (* d size) angle
-                    #(-> %
-                         (random-triangle-at theta size)
-                         geom/vertices
-                         cq/draw-shape)))
-          (-> pos
-              (random-triangle-at (tm/random tm/TWO_PI) (tm/random 6 32))
-              geom/vertices
-              cq/draw-shape)))))
+                    #(wave theta size %)))
+          (wave (tm/random tm/TWO_PI) (tm/random 6 32) pos)))))
   (q/fill (+ 0.02 (* 0.05 (q/random-gaussian)))
           (tm/random 0.4 0.6)
           (tm/random 0.4 0.75)
