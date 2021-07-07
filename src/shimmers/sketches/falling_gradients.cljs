@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]))
@@ -19,10 +20,8 @@
     [x (* scale (q/noise (* x phase) offset))]))
 
 (defn random-triangle-at [pos rotation scale]
-  (-> (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
-      (geom/rotate rotation)
-      (geom/scale-size scale)
-      (geom/translate pos)))
+  (geometry/shape-at (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
+                     rotation scale pos))
 
 (defn draw []
   (q/background 1.0)

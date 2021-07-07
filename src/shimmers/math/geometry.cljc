@@ -90,6 +90,12 @@
   [origin points]
   (sort-by (fn [p] (geom/heading (tm/- p origin))) points))
 
+(defn shape-at [shape rotation scale pos]
+  (-> shape
+      (geom/rotate rotation)
+      (geom/scale-size scale)
+      (geom/translate pos)))
+
 ;; Longest edge is aesthetically more pleasing per:
 ;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
 (defn longest-edge
