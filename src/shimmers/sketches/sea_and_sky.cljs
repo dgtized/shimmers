@@ -22,9 +22,6 @@
   {:sea (rect/rect (cq/rel-pos 0.02 0.4) (cq/rel-pos 0.98 0.98))
    :sky (rect/rect (cq/rel-pos 0.02 0.02) (cq/rel-pos 0.98 0.35))})
 
-(defn update-state [state]
-  state)
-
 (defn wave [rotation size pos]
   (-> pos
       (random-triangle-at rotation size)
@@ -79,6 +76,5 @@
   :created-at "2021-07-06"
   :size [800 600]
   :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
