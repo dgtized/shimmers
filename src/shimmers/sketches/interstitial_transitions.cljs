@@ -27,6 +27,8 @@
       (q/triangle x y xw y x yw)
       :triangle-right
       (q/triangle x y xw y xw yw)
+      :triangle-bottom
+      (q/triangle xw y xw yw x yw)
       :rectangle
       (q/rect x y width width)
       :hatch
@@ -51,11 +53,12 @@
                                      (< noise 0.9) 3
                                      :else 2))
             ;; adding recursive with-rotation from noise makes it appear to rotate in 3d?
-            (cond (< noise 0.2) (shape :triangle-left sx sy dwidth)
+            (cond (< noise 0.15) (shape :triangle-left sx sy dwidth)
                   (< noise 0.45) (shape :rectangle sx sy dwidth)
                   (< noise 0.50) (shape :triangle-top sx sy dwidth)
                   (< noise 0.55) (shape :hatch sx sy dwidth)
-                  (< noise 0.85) (shape :circle sx sy dwidth)
+                  (< noise 0.60) (shape :triangle-bottom sx sy dwidth)
+                  (< noise 0.90) (shape :circle sx sy dwidth)
                   :else
                   (shape :triangle-right sx sy dwidth))))))))
 
