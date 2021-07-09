@@ -47,10 +47,10 @@
               sy (+ y (* j dwidth))
               noise (noise-at sx sy)]
           (if (> (* percent (noise-at sx sy 1000)) 0.1)
-            (grid sx sy dwidth (cond (< noise 0.25) 8
-                                     (< noise 0.4) 5
+            (grid sx sy dwidth (cond (< noise 0.15) 8
+                                     (< noise 0.35) 5
                                      (< noise 0.6) 4
-                                     (< noise 0.9) 3
+                                     (< noise 0.8) 3
                                      :else 2))
             ;; adding recursive with-rotation from noise makes it appear to rotate in 3d?
             (cond (< noise 0.15) (shape :triangle-left sx sy dwidth)
