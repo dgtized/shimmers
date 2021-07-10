@@ -44,8 +44,8 @@
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
-              noise (noise-at sx sy 0 300)]
-          (if (> (* percent (noise-at sx sy 2000 600)) 0.09)
+              noise (noise-at sx sy 0 500)]
+          (if (> (* percent (noise-at sx sy 2000 800)) 0.09)
             (grid sx sy dwidth (cond (< noise 0.15) 8
                                      (< noise 0.35) 5
                                      (< noise 0.6) 4
