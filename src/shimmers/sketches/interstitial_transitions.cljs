@@ -37,7 +37,7 @@
       :circle
       (q/ellipse x y width width))))
 
-(defn grid [x y width divisions]
+(defn grid [x y width divisions depth]
   (let [dwidth (/ width divisions)
         percent (/ width (q/width))]
     (dotimes [i divisions]
@@ -45,12 +45,15 @@
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
               noise (noise-at sx sy 0 500)]
-          (if (> (* percent (noise-at sx sy 2000 800)) 0.09)
-            (grid sx sy dwidth (cond (< noise 0.15) 8
-                                     (< noise 0.35) 5
-                                     (< noise 0.6) 4
-                                     (< noise 0.8) 3
-                                     :else 2))
+          (if (and (> (* percent (noise-at sx sy 10000 800)) 0.075)
+                   (< depth 4))
+            (grid sx sy dwidth
+                  (cond (< noise 0.15) 8
+                        (< noise 0.35) 5
+                        (< noise 0.6) 4
+                        (< noise 0.8) 3
+                        :else 2)
+                  (inc depth))
             ;; adding recursive with-rotation from noise makes it appear to rotate in 3d?
             (cond (< noise 0.15) (shape :triangle-left sx sy dwidth)
                   (< noise 0.45) (shape :rectangle sx sy dwidth)
@@ -66,7 +69,7 @@
   (q/background 1.0 0.2)
   (q/stroke-weight 0.9)
   (q/stroke 0 0.3)
-  (grid 0 0 (q/width) 5))
+  (grid 0 0 (q/width) 5 0))
 
 (sketch/defquil interstitial-transitions
   :created-at "2021-06-26"
