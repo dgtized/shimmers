@@ -40,7 +40,7 @@
 (defn setup []
   {:active-count 10
    :vertices (sphere-points 32)
-   :radius 150})
+   :radius (* 0.4 (q/height))})
 
 (defn update-state [{:keys [vertices] :as state}]
   (-> state
@@ -51,7 +51,7 @@
   (q/orbit-control)
   (q/background 255)
   (q/stroke 0)
-  (q/stroke-weight 1.25)
+  (q/stroke-weight 1.75)
   (q/rotate-x 0.6)
   (q/rotate-y -0.2)
   (q/rotate-z (/ (q/frame-count) 1000))
@@ -60,7 +60,7 @@
 
 (sketch/defquil sphere
   :created-at "2021-01-30"
-  :size [600 400]
+  :size [800 600]
   :renderer :p3d
   :setup setup
   :update update-state
