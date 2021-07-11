@@ -106,7 +106,7 @@
 
 (sketch/defquil minimum-spanning-tree
   :created-at "2021-03-20"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
