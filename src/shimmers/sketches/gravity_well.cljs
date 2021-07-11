@@ -24,7 +24,7 @@
   (make-body pos 1e9 [200 200 0 96]))
 
 (defn make-random-body []
-  (let [r 150]
+  (let [r (* 0.4 (q/height))]
     (make-body (v/vec2 (q/random (- r) r)
                        (q/random (- r) r))
                (q/random 1e3 1e4)
@@ -51,7 +51,7 @@
       particles/step))
 
 (defn visible? [body]
-  (< (geom/dist (:position body) (v/vec2 0 0)) 400))
+  (< (geom/dist (:position body) (v/vec2 0 0)) (q/height)))
 
 (defn restart-sim? [{:keys [start-frame bodies]} frame-count]
   (let [age (- frame-count start-frame)
@@ -60,13 +60,14 @@
 
 (defn setup []
   (q/background 255)
-  {:start-frame (q/frame-count)
-   :bodies (into (repeatedly 100 make-random-body)
-                 (rand-nth
-                  [[]
-                   [(make-sun (v/vec2 0 0))]
-                   [(make-sun (v/vec2 -200 0))
-                    (make-sun (v/vec2 200 0))]]))})
+  (let [w (* 0.3 (q/width))]
+    {:start-frame (q/frame-count)
+     :bodies (into (repeatedly 100 make-random-body)
+                   (rand-nth
+                    [[]
+                     [(make-sun (v/vec2 0 0))]
+                     [(make-sun (v/vec2 (- w) 0))
+                      (make-sun (v/vec2 w 0))]]))}))
 
 (defn update-state [state]
   (if (restart-sim? state (q/frame-count))
@@ -77,12 +78,12 @@
   (q/background 255 24)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (let [max-mass (apply max (map :mass bodies))
-        weight-fn (fn [{:keys [mass]}] (q/map-range mass 1 max-mass 1 6))]
+        weight-fn (fn [{:keys [mass]}] (q/map-range mass 1 max-mass 1.5 9))]
     (particles/draw bodies :weight weight-fn)))
 
 (sketch/defquil gravity-well
   :created-at "2021-01-06"
-  :size [600 400]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
