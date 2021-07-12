@@ -1,0 +1,85 @@
+.sketch {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+.controls {
+  display: flex;
+  padding: 0.3em;
+  background: lightblue;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.canvas {
+  padding: 2em;
+}
+
+canvas {
+  border: 1px dotted #eee;
+  padding: 1em;
+}
+
+#explanation {
+  padding-left: 2em;
+}
+
+.slider {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+input[type=checkbox] {
+  height: 1em;
+}
+
+input[type=range] {
+  height: 1em;
+  width: 200px
+}
+
+.footer {
+  font-size: 0.8em;
+  padding: 0.3em;
+  padding-top: 1em;
+}
+
+.sketch-list p {
+  padding-left: 2em;
+  width: 50em;
+}
+
+.sketch-list .selector {
+  padding-left: 2em;
+}
+
+.sketch-list h1 {
+  text-align: left;
+  padding-left: 3em;
+  margin-bottom: 0em;
+}
+
+.sketch-columns {
+  display: flex;
+}
+
+.sketch-columns > .column {
+  width: 50%;
+  padding: 1em;
+  padding-top: 0em;
+}
+
+.sketch-columns h3 {
+  text-align: center;
+}
+
+h3.tag {
+  padding-left: 1em;
+}
+
+h3.date {
+  padding-left: 1em;
+}
