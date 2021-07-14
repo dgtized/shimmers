@@ -52,7 +52,9 @@
             link-name])
          (interpose [:span " | "])
          (into [:div.selector
-                [:input {:type :text :placeholder "search"
+                [:input {:type :text
+                         :placeholder "search"
+                         :value @text-filter
                          :on-input update-terms}]
                 " Listing: "]))))
 
