@@ -59,7 +59,7 @@
 
 (sketch/defquil tunnel-flight
   :created-at "2021-02-10"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
