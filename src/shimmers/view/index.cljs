@@ -30,6 +30,13 @@
       [(filter (fn [{:keys [id]}] (re-find (re-pattern terms) (name id))) sketches)
        terms])))
 
+(defn update-terms [event]
+  (let [term (-> event .-target .-value)]
+    (when (or (empty? term)
+              (try (re-pattern term)
+                   (catch js/Object _ false)))
+      (reset! text-filter term))))
+
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
                ::by-date "By Date"
@@ -40,7 +47,7 @@
          (interpose [:span " | "])
          (into [:div.selector
                 [:input {:type :text :placeholder "search"
-                         :on-input (fn [v] (reset! text-filter (-> v .-target .-value)))}]
+                         :on-input update-terms}]
                 " Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
