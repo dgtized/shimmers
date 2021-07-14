@@ -6,7 +6,7 @@
 }
 
 .controls {
-  font-size: 64dp;
+  font-size: 18px;
   padding: 0.5em;
   background: lightblue;
   display: flex;
@@ -15,7 +15,7 @@
 }
 
 .controls button {
-  font-size: 64dp;
+  font-size: 18px;
   margin-left: 1em;
 }
 
