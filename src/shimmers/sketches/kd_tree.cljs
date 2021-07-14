@@ -84,7 +84,7 @@
 
 (sketch/defquil kd-tree-sketch
   :created-at "2020-11-28"
-  :size [400 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw

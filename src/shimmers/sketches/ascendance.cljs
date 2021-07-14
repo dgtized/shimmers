@@ -78,7 +78,7 @@
 
 (sketch/defquil ascendance
   :created-at "2021-02-17"
-  :size [600 400]
+  :size [800 600]
   :renderer :p3d
   :setup setup
   :update update-state
