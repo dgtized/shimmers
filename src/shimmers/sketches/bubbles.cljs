@@ -11,7 +11,7 @@
 
 (defn make-bubble []
   (tc/circle (cq/rel-pos (rand) 1.0)
-             (+ 1 (rand-int 4))))
+             (+ 1 (rand-int 6))))
 
 (defn setup []
   {:bubbles []})
@@ -22,7 +22,7 @@
 (defn update-bubble [bubble]
   ;; consider adding acc/vel and horizontal motion from wind?
   (when (in-bounds? bubble)
-    (geom/translate bubble (v/vec2 0 (- (/ 0.25 (:r bubble)))))))
+    (geom/translate bubble (v/vec2 0 (- (/ 0.33 (:r bubble)))))))
 
 (defn combine-bubble [a b]
   (tc/circle (if (> (:r a) (:r b))
@@ -68,7 +68,7 @@
 
 (sketch/defquil bubbles
   :created-at "2021-02-02"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
