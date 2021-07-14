@@ -116,7 +116,7 @@
 (sketch/defquil space-colonization
   :created-at "2020-11-27"
   :on-mount (fn [] (ctrl/mount explanation))
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
