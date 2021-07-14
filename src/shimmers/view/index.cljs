@@ -39,9 +39,9 @@
 
 (defn filtered-terms [sketches filtered terms]
   (when (seq terms)
-    [:p "Filtering out " (- (count sketches) (count filtered))
-     " sketches with term \""
-     terms "\""]))
+    [:p "Found " (count filtered)
+     " of " (count sketches)
+     " sketches matching term \"" terms "\""]))
 
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
@@ -73,15 +73,12 @@
      to give attribution in the source code."]
      (selector ::by-alphabetical)
      (filtered-terms sketches filtered terms)
-     (cond (empty? filtered)
-           [:div.sketch-columns>p "No matches"]
-           (< (count filtered) 20)
-           [:div.sketch-columns
-            [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
-           :else
-           [:div.sketch-columns
-            [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-            [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
+     (if (< (count filtered) 20)
+       [:div.sketch-columns
+        [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
+       [:div.sketch-columns
+        [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+        [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
