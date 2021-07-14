@@ -26,8 +26,9 @@
 (defn filter-sketches [sketches]
   (let [terms @text-filter]
     (if (empty? terms)
-      sketches
-      (filter (fn [{:keys [id]}] (re-find (re-pattern terms) (name id))) sketches))))
+      [sketches ""]
+      [(filter (fn [{:keys [id]}] (re-find (re-pattern terms) (name id))) sketches)
+       terms])))
 
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
@@ -44,9 +45,10 @@
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn by-alphabetical [sketches]
-  (let [[sketches-an sketches-mz]
+  (let [[filtered terms] (filter-sketches sketches)
+        [sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
-                    (filter-sketches sketches))]
+                    filtered)]
     [:section.sketch-list
      [:h1 (str "All Sketches (" (count sketches) ")")]
      [:p "A digital sketch-book of generative art, visual effects, computer
@@ -55,9 +57,11 @@
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
      (selector ::by-alphabetical)
-     [:div.sketch-columns
-      [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-      [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]]))
+     (if (empty? filtered)
+       [:div.sketch-columns>p "Nothing matches search term \"" terms "\""]
+       [:div.sketch-columns
+        [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+        [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
