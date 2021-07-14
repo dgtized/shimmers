@@ -53,7 +53,7 @@
          (interpose [:span " | "])
          (into [:div.selector
                 [:input {:type :text
-                         :placeholder "search"
+                         :placeholder "search by name"
                          :value @text-filter
                          :on-input update-terms}]
                 " Listing: "]))))
