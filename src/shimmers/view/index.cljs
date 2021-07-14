@@ -2,6 +2,7 @@
   (:require [cljc.java-time.local-date :as ld]
             [clojure.set :as set]
             [clojure.string :as str]
+            [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
             [shimmers.view.sketch :as view-sketch]))
 
@@ -20,6 +21,14 @@
                     :title (sketch-title sketch)}
                 (:id sketch)]])))
 
+(defonce text-filter (r/atom ""))
+
+(defn filter-sketches [sketches]
+  (let [terms @text-filter]
+    (if (empty? terms)
+      sketches
+      (filter (fn [{:keys [id]}] (re-find (re-pattern terms) (name id))) sketches))))
+
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
                ::by-date "By Date"
@@ -29,13 +38,15 @@
             link-name])
          (interpose [:span " | "])
          (into [:div.selector
-                "Listing: "]))))
+                [:input {:type :text :placeholder "search"
+                         :on-input (fn [v] (reset! text-filter (-> v .-target .-value)))}]
+                " Listing: "]))))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn by-alphabetical [sketches]
   (let [[sketches-an sketches-mz]
         (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
-                    sketches)]
+                    (filter-sketches sketches))]
     [:section.sketch-list
      [:h1 (str "All Sketches (" (count sketches) ")")]
      [:p "A digital sketch-book of generative art, visual effects, computer
