@@ -57,11 +57,15 @@
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
      (selector ::by-alphabetical)
-     (if (empty? filtered)
-       [:div.sketch-columns>p "Nothing matches search term \"" terms "\""]
-       [:div.sketch-columns
-        [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-        [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
+     (cond (empty? filtered)
+           [:div.sketch-columns>p "Nothing matches search term \"" terms "\""]
+           (< (count filtered) 20)
+           [:div.sketch-columns
+            [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
+           :else
+           [:div.sketch-columns
+            [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+            [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
