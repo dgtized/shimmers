@@ -32,4 +32,4 @@
           (-> contents
               (str/replace-first #"<base href=\"\">$" (str "<base href=\"" base-href "\">"))
               (str/replace-first #"dev-main\.js" "release-main.js")
-              (str/replace-first "<span id=\"revision\"></span>" revision)))))
+              (str/replace-first "<span id=\"revision\"><code>abcdef12<code></span>" revision)))))
