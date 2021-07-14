@@ -86,10 +86,12 @@
    (str/capitalize (str (ld/get-month created-at)))])
 
 (defn by-date [sketches]
-  (let [sketches-by-date (sort-by :created-at sketches)
+  (let [[filtered terms] (filter-sketches sketches)
+        sketches-by-date (sort-by :created-at filtered)
         grouped-by-month (partition-by year-month sketches-by-date)]
     [:section.sketch-list
      (selector ::by-date)
+     (filtered-terms sketches filtered terms)
      (for [sketches grouped-by-month
            :let [[year month] (year-month (first sketches))]]
        [:div {:key (str year month)}
@@ -97,14 +99,16 @@
         (list-sketches sketches)])]))
 
 (defn by-tag [sketches]
-  (let [sketches (remove (fn [s] (empty? (:tags s))) sketches)
+  (let [tagged (remove (fn [s] (empty? (:tags s))) sketches)
+        [filtered terms] (filter-sketches tagged)
         tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
                      #{}
-                     sketches)]
+                     filtered)]
     [:section.sketch-list
      (selector ::by-tag)
+     (filtered-terms tagged filtered terms)
      (for [tag (sort-by name tags)
-           :let [tagged-sketches (filter #(tag (:tags %)) sketches)]]
+           :let [tagged-sketches (filter #(tag (:tags %)) filtered)]]
        [:div {:key (str tag)}
         [:h3.tag (str (str/capitalize (name tag))
                       " (" (count tagged-sketches) ")")]
