@@ -37,6 +37,12 @@
                    (catch js/Object _ false)))
       (reset! text-filter term))))
 
+(defn filtered-terms [sketches filtered terms]
+  (when (seq terms)
+    [:p "Filtering out " (- (count sketches) (count filtered))
+     " sketches with term \""
+     terms "\""]))
+
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
                ::by-date "By Date"
@@ -64,8 +70,9 @@
      and tweak. For those inspired by other's works or tutorials, I do my best
      to give attribution in the source code."]
      (selector ::by-alphabetical)
+     (filtered-terms sketches filtered terms)
      (cond (empty? filtered)
-           [:div.sketch-columns>p "Nothing matches search term \"" terms "\""]
+           [:div.sketch-columns>p "No matches"]
            (< (count filtered) 20)
            [:div.sketch-columns
             [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
