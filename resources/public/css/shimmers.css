@@ -6,11 +6,17 @@
 }
 
 .controls {
-  display: flex;
-  padding: 0.3em;
+  font-size: 64dp;
+  padding: 0.5em;
   background: lightblue;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.controls button {
+  font-size: 64dp;
+  margin-left: 1em;
 }
 
 .canvas {
