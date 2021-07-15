@@ -11,10 +11,9 @@
   {})
 
 (defn noise-at
-  ([x y offset rate]
-   (let [res 192]
-     (q/noise (/ x res) (/ y res)
-              (+ offset (/ (q/frame-count) rate))))))
+  ([[x y] resolution offset rate]
+   (q/noise (/ x resolution) (/ y resolution)
+            (+ offset (/ (q/frame-count) rate)))))
 
 (defn shape [type x y width]
   (let [xw (+ x width)
@@ -44,8 +43,8 @@
       (dotimes [j divisions]
         (let [sx (+ x (* i dwidth))
               sy (+ y (* j dwidth))
-              noise (noise-at sx sy 0 500)]
-          (if (and (> (* percent (noise-at sx sy 10000 800)) 0.075)
+              noise (noise-at [sx sy] 192 0 500)]
+          (if (and (> (* percent (noise-at [sx sy] 192 10000 800)) 0.075)
                    (< depth 4))
             (grid sx sy dwidth
                   (cond (< noise 0.15) 8
