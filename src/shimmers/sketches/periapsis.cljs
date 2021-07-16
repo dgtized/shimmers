@@ -12,7 +12,7 @@
 
 (defn make-moon []
   (map->Body
-   {:mass (tm/random 1 4)
+   {:mass (/ (tm/random 1 4) 4)
     :radius (tm/random 8 24)
     :dtheta (if (p/chance 0.1)
               (tm/random -0.4)
@@ -22,10 +22,10 @@
 
 (defn make-bodies [n]
   (cons
-   (Body. 64 0 0 0 [])
+   (Body. 16 0 0 0 [])
    (for [i (range n)]
      (map->Body
-      {:mass (tm/random 8 12)
+      {:mass (/ (tm/random 8 12) 4)
        :radius (+ (* 0.5 (q/random-gaussian))
                   (tm/map-interval i 0 n 48 (/ (q/width) 2)))
        :dtheta (if (p/chance 0.1)
@@ -55,10 +55,10 @@
   (q/with-translation (cq/rel-pos 0.5 0.5)
     (doseq [{:keys [mass moons] :as body} bodies
             :let [pos (position body t)]]
-      (cq/circle pos (/ mass 4))
+      (cq/circle pos mass)
       (q/with-translation pos
         (doseq [{:keys [mass] :as moon} moons]
-          (cq/circle (position moon t) (/ mass 4)))))))
+          (cq/circle (position moon t) mass))))))
 
 (sketch/defquil periapsis
   :created-at "2021-07-06"
