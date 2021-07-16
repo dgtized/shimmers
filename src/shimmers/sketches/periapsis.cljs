@@ -11,7 +11,7 @@
 (defn semi-minor [eccentricity semi-major]
   (* semi-major (Math/sqrt (- 1.0 (Math/pow eccentricity 2)))))
 
-(defrecord Body [mass semi-major semi-minor focal-distance rotation dtheta theta0 moons])
+(defrecord Body [mass semi-major semi-minor focal-distance rotation speed theta0 moons])
 
 (defn make-body [{:keys [semi-major eccentricity] :as params
                   :or {semi-major 0
@@ -19,7 +19,7 @@
   (map->Body (merge {:semi-major semi-major
                      :semi-minor (semi-minor eccentricity semi-major)
                      :focal-distance (* eccentricity semi-major)
-                     :dtheta 0
+                     :speed 0
                      :theta0 (tm/random tm/TWO_PI)
                      :rotation (tm/random tm/TWO_PI)
                      :moons []}
@@ -29,9 +29,9 @@
   (make-body {:semi-major (tm/random 8 24)
               :eccentricity (* 1.5 (p/happensity 0.3))
               :mass (/ (tm/random 1 4) 4)
-              :dtheta (if (p/chance 0.1)
-                        (tm/random -0.4)
-                        (tm/random 0.8))}))
+              :speed (if (p/chance 0.1)
+                       (tm/random -0.4)
+                       (tm/random 0.8))}))
 
 (defn make-bodies [n]
   (cons
@@ -43,16 +43,16 @@
        ;; eccentricty likelyhood is proportional to to size of orbit for aesthetics
        :eccentricity (* 0.75 (p/happensity (* 0.8 (tm/smoothstep* (/ n 16) (/ n 4) i))))
        :mass (/ (tm/random 8 12) 4)
-       :dtheta (if (p/chance 0.1)
-                 (tm/random -0.05)
-                 (tm/random 0.1))
+       :speed (if (p/chance 0.1)
+                (tm/random -0.05)
+                (tm/random 0.1))
        :moons (if (p/chance 0.3)
                 (repeatedly (rand-int 4) make-moon)
                 [])}))))
 
 (defn position [{:keys [semi-major semi-minor focal-distance
-                        dtheta theta0]} t]
-  (let [theta (+ theta0 (* dtheta t))]
+                        speed theta0]} t]
+  (let [theta (+ theta0 (* speed t))]
     (v/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
             (* semi-minor (Math/sin theta)))))
 
