@@ -1,5 +1,6 @@
 (ns shimmers.sketches.periapsis
-  (:require [quil.core :as q :include-macros true]
+  (:require [kixi.stats.distribution :as ksd]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
@@ -59,9 +60,7 @@
        :speed (if (p/chance 0.1)
                 (tm/random -0.05)
                 (tm/random 0.1))
-       :moons (if (p/chance 0.3)
-                (repeatedly (rand-int 4) make-moon)
-                [])}))))
+       :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
