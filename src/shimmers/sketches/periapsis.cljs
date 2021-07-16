@@ -39,7 +39,8 @@
      (make-body
       {:semi-major (+ (* 0.5 (q/random-gaussian))
                       (tm/map-interval i 0 n 48 (/ (q/width) 2)))
-       :eccentricity (* 0.7 (p/happensity 0.6))
+       ;; eccentricty likelyhood is proportional to to size of orbit for aesthetics
+       :eccentricity (* 0.8 (p/happensity (* 0.8 (tm/smoothstep* (/ n 16) (/ n 4) i))))
        :mass (/ (tm/random 8 12) 4)
        :dtheta (if (p/chance 0.1)
                  (tm/random -0.05)
