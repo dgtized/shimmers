@@ -36,6 +36,9 @@
                 (repeatedly (rand-int 4) make-moon)
                 [])}))))
 
+(defn position [{:keys [radius dtheta theta0]} t]
+  (v/polar radius (+ theta0 (* dtheta t))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bodies (make-bodies 256)
@@ -50,13 +53,12 @@
   (q/no-stroke)
   (q/fill 0.0 0.7)
   (q/with-translation (cq/rel-pos 0.5 0.5)
-    (doseq [{:keys [mass radius dtheta theta0 moons]} bodies
-            :let [position (v/polar radius (+ theta0 (* dtheta t)))]]
-      (cq/circle position (/ mass 4))
-      (q/with-translation position
-        (doseq [{:keys [mass radius dtheta theta0]} moons
-                :let [moon-pos (v/polar radius (+ theta0 (* dtheta t)))]]
-          (cq/circle moon-pos (/ mass 4)))))))
+    (doseq [{:keys [mass moons] :as body} bodies
+            :let [pos (position body t)]]
+      (cq/circle pos (/ mass 4))
+      (q/with-translation pos
+        (doseq [{:keys [mass] :as moon} moons]
+          (cq/circle (position moon t) (/ mass 4)))))))
 
 (sketch/defquil periapsis
   :created-at "2021-07-06"
