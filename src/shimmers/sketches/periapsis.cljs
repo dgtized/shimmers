@@ -19,6 +19,7 @@
 ;; escape velocities correctly?
 (defrecord Body [mass semi-major semi-minor focal-distance rotation speed theta0 moons])
 
+;; TODO: Fix offsets somehow so children cannot clip parents they orbit?
 (defn position [{:keys [semi-major semi-minor focal-distance
                         speed theta0]} t]
   (let [theta (+ theta0 (* speed t))]
@@ -39,7 +40,7 @@
 
 (defn make-moon []
   (make-body {:semi-major (tm/random 8 24)
-              :eccentricity (* 1.5 (p/happensity 0.3))
+              :eccentricity (p/happensity 0.3)
               :mass (/ (tm/random 1 4) 4)
               :speed (if (p/chance 0.1)
                        (tm/random -0.4)
@@ -52,8 +53,8 @@
      (make-body
       {:semi-major (+ (* 0.5 (q/random-gaussian))
                       (tm/map-interval i 0 n 52 (/ (q/width) 2)))
-       ;; eccentricty likelyhood is proportional to to size of orbit for aesthetics
-       :eccentricity (* 0.75 (p/happensity (* 0.8 (tm/smoothstep* (/ n 16) (/ n 4) i))))
+       ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
+       :eccentricity (p/happensity (* 0.75 (tm/smoothstep* (/ n 16) (/ n 1.3) i)))
        :mass (/ (tm/random 8 12) 4)
        :speed (if (p/chance 0.1)
                 (tm/random -0.05)
