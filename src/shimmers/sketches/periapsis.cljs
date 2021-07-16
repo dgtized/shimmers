@@ -10,26 +10,31 @@
 
 (defrecord Body [mass radius dtheta theta0 moons])
 
+(defn make-moon []
+  (map->Body
+   {:mass (tm/random 1 4)
+    :radius (tm/random 8 24)
+    :dtheta (if (p/chance 0.1)
+              (tm/random -0.4)
+              (tm/random 0.8))
+    :theta0 (tm/random tm/TWO_PI)
+    :moons []}))
+
 (defn make-bodies [n]
   (cons
    (Body. 64 0 0 0 [])
    (for [i (range n)]
-     (Body. (tm/random 8 12)
-            (+ (* 0.5 (q/random-gaussian))
-               (tm/map-interval i 0 n 48 (/ (q/width) 2)))
-            (if (p/chance 0.1)
-              (tm/random -0.05)
-              (tm/random 0.1))
-            (tm/random tm/TWO_PI)
-            (if (p/chance 0.3)
-              (repeatedly (rand-int 4) #(Body. (tm/random 1 4)
-                                               (tm/random 8 24)
-                                               (if (p/chance 0.1)
-                                                 (tm/random -0.4)
-                                                 (tm/random 0.8))
-                                               (tm/random tm/TWO_PI)
-                                               []))
-              [])))))
+     (map->Body
+      {:mass (tm/random 8 12)
+       :radius (+ (* 0.5 (q/random-gaussian))
+                  (tm/map-interval i 0 n 48 (/ (q/width) 2)))
+       :dtheta (if (p/chance 0.1)
+                 (tm/random -0.05)
+                 (tm/random 0.1))
+       :theta0 (tm/random tm/TWO_PI)
+       :moons (if (p/chance 0.3)
+                (repeatedly (rand-int 4) make-moon)
+                [])}))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
