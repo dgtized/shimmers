@@ -9,11 +9,12 @@
             [thi.ng.math.core :as tm]))
 
 (defrecord Body [mass radius dtheta theta0 moons])
+(defrecord Body [mass semi-major dtheta theta0 moons])
 
 (defn make-moon []
   (map->Body
    {:mass (/ (tm/random 1 4) 4)
-    :radius (tm/random 8 24)
+    :semi-major (tm/random 8 24)
     :dtheta (if (p/chance 0.1)
               (tm/random -0.4)
               (tm/random 0.8))
@@ -26,8 +27,8 @@
    (for [i (range n)]
      (map->Body
       {:mass (/ (tm/random 8 12) 4)
-       :radius (+ (* 0.5 (q/random-gaussian))
-                  (tm/map-interval i 0 n 48 (/ (q/width) 2)))
+       :semi-major (+ (* 0.5 (q/random-gaussian))
+                      (tm/map-interval i 0 n 48 (/ (q/width) 2)))
        :dtheta (if (p/chance 0.1)
                  (tm/random -0.05)
                  (tm/random 0.1))
@@ -36,8 +37,8 @@
                 (repeatedly (rand-int 4) make-moon)
                 [])}))))
 
-(defn position [{:keys [radius dtheta theta0]} t]
-  (v/polar radius (+ theta0 (* dtheta t))))
+(defn position [{:keys [semi-major dtheta theta0]} t]
+  (v/polar semi-major (+ theta0 (* dtheta t))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
