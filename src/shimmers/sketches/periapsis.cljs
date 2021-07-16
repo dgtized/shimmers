@@ -11,6 +11,8 @@
 (defn semi-minor [eccentricity semi-major]
   (* semi-major (Math/sqrt (- 1.0 (Math/pow eccentricity 2)))))
 
+;; TODO: Consider making speed proportional to mass and semi-major to match
+;; escape velocities correctly?
 (defrecord Body [mass semi-major semi-minor focal-distance rotation speed theta0 moons])
 
 (defn make-body [{:keys [semi-major eccentricity] :as params
