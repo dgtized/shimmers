@@ -13,7 +13,9 @@
 
 (defrecord Body [mass semi-major semi-minor focal-distance dtheta theta0 moons])
 
-(defn make-body [semi-major eccentricity params]
+(defn make-body [{:keys [semi-major eccentricity] :as params
+                  :or {semi-major 0
+                       eccentricity 0}}]
   (map->Body (merge {:semi-major semi-major
                      :semi-minor (semi-minor eccentricity semi-major)
                      :focal-distance (* eccentricity semi-major)
@@ -23,27 +25,28 @@
                     params)))
 
 (defn make-moon []
-  (make-body (tm/random 8 24)
-             (* 1.5 (p/happensity 0.3))
-             {:mass (/ (tm/random 1 4) 4)
+  (make-body {:semi-major (tm/random 8 24)
+              :eccentricity (* 1.5 (p/happensity 0.3))
+              :mass (/ (tm/random 1 4) 4)
               :dtheta (if (p/chance 0.1)
                         (tm/random -0.4)
                         (tm/random 0.8))}))
 
 (defn make-bodies [n]
   (cons
-   (make-body 0 0 {:mass 16})
+   (make-body {:mass 16})
    (for [i (range n)]
-     (make-body (+ (* 0.5 (q/random-gaussian))
-                   (tm/map-interval i 0 n 48 (/ (q/width) 2)))
-                (* 0.7 (p/happensity 0.6))
-                {:mass (/ (tm/random 8 12) 4)
-                 :dtheta (if (p/chance 0.1)
-                           (tm/random -0.05)
-                           (tm/random 0.1))
-                 :moons (if (p/chance 0.3)
-                          (repeatedly (rand-int 4) make-moon)
-                          [])}))))
+     (make-body
+      {:semi-major (+ (* 0.5 (q/random-gaussian))
+                      (tm/map-interval i 0 n 48 (/ (q/width) 2)))
+       :eccentricity (* 0.7 (p/happensity 0.6))
+       :mass (/ (tm/random 8 12) 4)
+       :dtheta (if (p/chance 0.1)
+                 (tm/random -0.05)
+                 (tm/random 0.1))
+       :moons (if (p/chance 0.3)
+                (repeatedly (rand-int 4) make-moon)
+                [])}))))
 
 (defn position [{:keys [semi-major semi-minor focal-distance
                         dtheta theta0]} t]
