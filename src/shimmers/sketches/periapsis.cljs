@@ -11,7 +11,7 @@
 (defn semi-minor [eccentricity semi-major]
   (* semi-major (Math/sqrt (- 1.0 (Math/pow eccentricity 2)))))
 
-(defrecord Body [mass semi-major semi-minor focal-distance dtheta theta0 moons])
+(defrecord Body [mass semi-major semi-minor focal-distance rotation dtheta theta0 moons])
 
 (defn make-body [{:keys [semi-major eccentricity] :as params
                   :or {semi-major 0
@@ -21,6 +21,7 @@
                      :focal-distance (* eccentricity semi-major)
                      :dtheta 0
                      :theta0 (tm/random tm/TWO_PI)
+                     :rotation (tm/random tm/TWO_PI)
                      :moons []}
                     params)))
 
@@ -69,12 +70,14 @@
   (q/no-stroke)
   (q/fill 0.0 0.7)
   (q/with-translation (cq/rel-pos 0.5 0.5)
-    (doseq [{:keys [mass moons] :as body} bodies
+    (doseq [{:keys [mass moons rotation] :as body} bodies
             :let [pos (position body t)]]
-      (cq/circle pos mass)
-      (q/with-translation pos
-        (doseq [{:keys [mass] :as moon} moons]
-          (cq/circle (position moon t) mass))))))
+      (q/with-rotation [rotation]
+        (cq/circle pos mass)
+        (q/with-translation pos
+          (doseq [{:keys [mass rotation] :as moon} moons]
+            (q/with-rotation [rotation]
+              (cq/circle (position moon t) mass))))))))
 
 (sketch/defquil periapsis
   :created-at "2021-07-06"
