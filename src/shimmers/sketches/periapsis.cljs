@@ -60,7 +60,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:bodies (make-bodies 256)
+  {:bodies (make-bodies 192)
    :t 0.0})
 
 (defn update-state [state]
