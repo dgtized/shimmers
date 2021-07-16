@@ -8,12 +8,22 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
+;; Math cobbled together from:
+;; https://en.wikipedia.org/wiki/Ellipse
+;; https://en.wikipedia.org/wiki/Orbit_equation
+;; https://en.wikipedia.org/wiki/Elliptic_orbit
 (defn semi-minor [eccentricity semi-major]
   (* semi-major (Math/sqrt (- 1.0 (Math/pow eccentricity 2)))))
 
 ;; TODO: Consider making speed proportional to mass and semi-major to match
 ;; escape velocities correctly?
 (defrecord Body [mass semi-major semi-minor focal-distance rotation speed theta0 moons])
+
+(defn position [{:keys [semi-major semi-minor focal-distance
+                        speed theta0]} t]
+  (let [theta (+ theta0 (* speed t))]
+    (v/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
+            (* semi-minor (Math/sin theta)))))
 
 (defn make-body [{:keys [semi-major eccentricity] :as params
                   :or {semi-major 0
@@ -51,12 +61,6 @@
        :moons (if (p/chance 0.3)
                 (repeatedly (rand-int 4) make-moon)
                 [])}))))
-
-(defn position [{:keys [semi-major semi-minor focal-distance
-                        speed theta0]} t]
-  (let [theta (+ theta0 (* speed t))]
-    (v/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
-            (* semi-minor (Math/sin theta)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
