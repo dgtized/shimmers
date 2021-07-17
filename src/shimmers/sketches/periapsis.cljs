@@ -55,17 +55,21 @@
               :direction (if (p/chance 0.1) -1 1)}))
 
 (defn make-bodies [n]
-  (cons
-   (make-body {:mass 16})
-   (for [i (range n)]
-     (make-body
-      {:semi-major (+ (* 0.5 (q/random-gaussian))
-                      (tm/map-interval i 0 n 52 (/ (q/width) 2)))
-       ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
-       :eccentricity (p/happensity (* 0.75 (tm/smoothstep* (/ n 16) (/ n 1.3) i)))
-       :mass (/ (tm/random 8 12) 4)
-       :direction (if (p/chance 0.1) -1 1)
-       :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))
+  (let [radius (/ (q/width) 2)
+        base 8
+        base-radius (* base 4)]
+    (cons
+     (make-body {:mass (* base 2)})
+     (repeatedly
+      n
+      #(let [semi-major (+ base-radius (* (- radius base-radius) (Math/sqrt (tm/random))))]
+         (make-body
+          {:semi-major semi-major
+           ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
+           :eccentricity (p/happensity (* 0.75 (tm/smoothstep* (/ radius 10) (/ radius 1.5) semi-major)))
+           :mass (/ (tm/random 8 12) 4)
+           :direction (if (p/chance 0.1) -1 1)
+           :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))))
 
 (comment
   (->> (ksd/poisson {:lambda 0.9})
