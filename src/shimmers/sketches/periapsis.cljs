@@ -82,7 +82,7 @@
    :t 0.0})
 
 (defn update-state [state]
-  (update state :t + 0.05))
+  (update state :t + 0.1))
 
 (defn draw [{:keys [bodies t]}]
   (q/ellipse-mode :radius)
