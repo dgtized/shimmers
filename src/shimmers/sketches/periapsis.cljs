@@ -21,6 +21,7 @@
 (defrecord Body [mass semi-major semi-minor focal-distance rotation speed theta0 moons])
 
 ;; TODO: Fix offsets somehow so children cannot clip parents they orbit?
+;; FIXME: velocity is fixed and not proportional to distance to parent?
 (defn position [{:keys [semi-major semi-minor focal-distance
                         speed theta0]} t]
   (let [dt (if (> (Math/abs speed) 0) speed 1)
