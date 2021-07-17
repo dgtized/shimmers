@@ -23,17 +23,26 @@
 ;; TODO: Fix offsets somehow so children cannot clip parents they orbit?
 (defn position [{:keys [semi-major semi-minor focal-distance
                         speed theta0]} t]
-  (let [theta (+ theta0 (* speed t))]
+  (let [dt (if (> (Math/abs speed) 0) speed 1)
+        theta (+ theta0 (/ t dt))]
     (v/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
             (* semi-minor (Math/sin theta)))))
 
-(defn make-body [{:keys [semi-major eccentricity] :as params
+(defn orbital-period [semi-major mass]
+  (let [G 30000.0]
+    (* (Math/sqrt (/ (Math/pow semi-major 3)
+                     (* G mass)))
+       tm/TWO_PI)))
+
+(defn make-body [{:keys [semi-major eccentricity direction mass] :as params
                   :or {semi-major 0
-                       eccentricity 0}}]
+                       eccentricity 0
+                       direction 1}}]
   (map->Body (merge {:semi-major semi-major
                      :semi-minor (semi-minor eccentricity semi-major)
+                     :eccentricity eccentricity
                      :focal-distance (* eccentricity semi-major)
-                     :speed 0
+                     :speed (* direction (orbital-period semi-major mass))
                      :theta0 (tm/random tm/TWO_PI)
                      :rotation (tm/random tm/TWO_PI)
                      :moons []}
@@ -43,9 +52,7 @@
   (make-body {:semi-major (tm/random 8 24)
               :eccentricity (p/happensity 0.3)
               :mass (/ (tm/random 1 4) 4)
-              :speed (if (p/chance 0.1)
-                       (tm/random -0.4)
-                       (tm/random 0.8))}))
+              :direction (if (p/chance 0.1) -1 1)}))
 
 (defn make-bodies [n]
   (cons
@@ -57,9 +64,7 @@
        ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
        :eccentricity (p/happensity (* 0.75 (tm/smoothstep* (/ n 16) (/ n 1.3) i)))
        :mass (/ (tm/random 8 12) 4)
-       :speed (if (p/chance 0.1)
-                (tm/random -0.05)
-                (tm/random 0.1))
+       :direction (if (p/chance 0.1) -1 1)
        :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))
 
 (comment
