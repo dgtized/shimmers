@@ -62,6 +62,11 @@
                 (tm/random 0.1))
        :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))
 
+(comment
+  (->> (ksd/poisson {:lambda 0.9})
+       (ksd/sample 192)
+       frequencies))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bodies (make-bodies 192)
