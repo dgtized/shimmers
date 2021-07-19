@@ -3,9 +3,10 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.core :refer [angles]]
+            [shimmers.math.core :as sm]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]))
 
 (defn blob [base r0 r1]
   (let [seed (* base 0.05)]
@@ -13,7 +14,7 @@
      (v/sub (v/vec2 (q/noise seed 5) (q/noise seed 10))
             (v/vec2 0.5 0.5))
      :shape
-     (for [theta (angles 10)
+     (for [theta (sm/range-subdivided tm/TWO_PI 10)
            :let [xoff (+ 1 (q/cos theta))
                  yoff (+ 1 (q/sin theta))
                  r (q/map-range (q/noise xoff yoff (* 3 seed)) 0 1

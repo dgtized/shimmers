@@ -3,13 +3,14 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.core :refer [angles]]
+            [shimmers.math.core :as sm]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]))
 
 (defn blob [base r0 r1]
   {:shape
-   (for [theta (angles (rand-nth [8 12 16 20]))
+   (for [theta (sm/range-subdivided tm/TWO_PI (rand-nth [8 12 16 20]))
          :let [xoff (+ 1 (q/cos theta))
                yoff (+ 1 (q/sin theta))
                r (q/map-range (q/noise xoff yoff base) 0 1

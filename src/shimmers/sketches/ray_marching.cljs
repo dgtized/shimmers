@@ -1,10 +1,11 @@
 (ns shimmers.sketches.ray-marching
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.math.core :refer [angles]]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.math.core :as sm]
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]))
 
 (defn line-intersect
   "Return intersection point between two point segment pairs.
@@ -33,7 +34,7 @@
   (update state :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI)))))
 
 (defn circle-blob [[cx cy] rmin rmax]
-  (for [angle (angles 10)]
+  (for [angle (sm/range-subdivided tm/TWO_PI 10)]
     (let [dt (/ (q/frame-count) 50)
           xoff (+ (q/cos angle) 1)
           yoff (+ (q/sin angle) 1)
@@ -78,7 +79,7 @@
                              25 50)]
         segments (mapcat shape-segments shapes)]
 
-    (doseq [angle (angles 200)
+    (doseq [angle (sm/range-subdivided tm/TWO_PI 200)
             segment segments]
       (let [origin (mouse-origin)
             [x y] origin
