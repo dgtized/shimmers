@@ -6,6 +6,7 @@
 
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
+        thi.ng/shadergraph {:mvn/version "0.3.0-SNAPSHOT"}
 
         ;; probability distributions
         kixi/stats {:mvn/version "0.5.4"}
