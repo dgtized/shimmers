@@ -1,3 +1,7 @@
+:root {
+  --slider-width: 60%;
+}
+
 .shimmer-container {
   /* https://stackoverflow.com/questions/7839164/is-there-a-css-cross-browser-value-for-width-moz-fit-content */
   width: intrinsic;           /* Safari/WebKit uses a non-standard name */
@@ -33,7 +37,7 @@ canvas {
 }
 
 .slider {
-  width: 60%;
+  width: var(--slider-width);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -94,5 +98,5 @@ h3.date {
 button.big {
   font-size: 1.5em;
   height: 2.5em;
-  width: 60%;
+  width: var(--slider-width);
 }
