@@ -3,10 +3,12 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.hexagon :as hex :refer [hexagon]]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -81,6 +83,7 @@
 (sketch/defquil six-of-one-half-dozen-of-the-other
   :created-at "2021-05-17"
   :tags #{:static :deterministic}
+  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]))
   :size [1200 900]
   :setup setup
   :update update-state

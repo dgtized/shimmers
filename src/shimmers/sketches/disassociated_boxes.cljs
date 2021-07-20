@@ -3,9 +3,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]))
 
@@ -163,7 +165,8 @@
 (sketch/defquil disassociated-boxes
   :created-at "2021-05-05"
   :tags #{:static :deterministic}
-  :size [800 600]
+  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :disassociated-boxes)]))
+  :size [1200 900]
   :setup setup
   :update update-state
   :draw draw
