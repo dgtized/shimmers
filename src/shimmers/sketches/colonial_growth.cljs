@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
@@ -69,18 +70,26 @@
     (update state :shapes conj new-circle)
     state))
 
+(defonce ui-state (ctrl/state {:show-parent false}))
+
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r parent color]} shapes]
-    (cq/color-if q/fill color)
-    (cq/circle p r)
-    #_(when parent (q/line p (:p parent)))))
+  (let [{:keys [show-parent]} @ui-state]
+    (doseq [{:keys [p r parent color]} shapes]
+      (cq/color-if q/fill color)
+      (cq/circle p r)
+      (when (and show-parent parent)
+        (q/line p (:p parent))))))
+
+(defn explanation []
+  [:div (ctrl/checkbox ui-state "Show Parent" [:show-parent])])
 
 (sketch/defquil colonial-growth
   :created-at "2021-05-14"
+  :on-mount (fn [] (ctrl/mount explanation))
   :tags #{:deterministic}
   :size [800 600]
   :setup setup
