@@ -32,7 +32,7 @@
     [:gradient value] (color/random-gradient value)
     :else arg))
 
-(defn interpret [{:keys [position heading velocity ip program] :as bot} instruction]
+(defn interpret [{:keys [position heading ip program] :as bot} instruction]
   (let [[op argument] instruction
         arg (interpret-argument argument)]
     (case op
