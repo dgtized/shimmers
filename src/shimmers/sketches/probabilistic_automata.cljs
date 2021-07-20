@@ -6,6 +6,7 @@
             [shimmers.automata.programs :as programs]
             [shimmers.automata.simplify :as simplify]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.common.sequence :refer [weighted]]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
@@ -73,7 +74,7 @@
 (defn generate-instruction []
   ((rand-nth
     (weighted
-     5 (fn [] [:forward (+ 1 (rand-int 50))])
+     5 (fn [] [:forward (+ 1 (rand-int 80))])
      2 (fn [] [:rotate (rand (* Math/PI 2))])
      1 (fn [] (programs/rotate 60))
      3 (fn [] [:rotate (- (rand (/ Math/PI 3)) (/ Math/PI 3))]) ;; small angles
@@ -133,10 +134,10 @@
 (defn setup
   []
   (q/background "white")
-  (let [automata [(make-automata [150 100] (generate-program))
-                  (make-automata [450 100] (generate-program))
-                  (make-automata [150 300] (generate-program))
-                  (make-automata [450 300] (generate-program))]]
+  (let [automata
+        (for [x [0.25 0.75]
+              y [0.25 0.75]]
+          (make-automata (cq/rel-pos x y) (generate-program)))]
     (ctrl/mount (partial render-explanation automata))
     {:automata automata}))
 
@@ -151,14 +152,13 @@
     (apply q/stroke color)
     (q/line last-position position)))
 
-(defn draw
-  [{:keys [automata]}]
+(defn draw [{:keys [automata]}]
   (doseq [bot (filter #(= (:state %) :running) automata)]
     (draw-bot bot)))
 
 (sketch/defquil probabilistic-automata
   :created-at "2020-11-18"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
