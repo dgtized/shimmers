@@ -5,8 +5,7 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.sketches :as sketches]))
+            [shimmers.math.deterministic-random :as dr]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -49,15 +48,15 @@
 (defn restart-sketch [sketch]
   (sketch-link rfe/push-state (:id sketch)))
 
-(defn cycle-sketch [sketch]
+(defn cycle-sketch [sketch known-names]
   (->> (name (:id sketch))
-       (cs/cycle-next (sketches/known-names))
+       (cs/cycle-next known-names)
        (sketch-link rfe/push-state)))
 
-(defn sketch-by-name [sketch]
+(defn sketch-by-name [sketch known-names]
   [:section.controls
    [:span
-    [:button {:on-click #(cycle-sketch sketch)} "Next"]
+    [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
     [:button {:on-click #(restart-sketch sketch)} "Restart"]
     [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
    [:span
