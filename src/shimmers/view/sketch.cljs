@@ -63,3 +63,6 @@
     [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
    [:span#framerate]])
 
+(defn generate [sketch-id]
+  [:button.generate {:on-click #(restart-sketch {:id sketch-id})} "Generate"])
+

@@ -197,7 +197,7 @@
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])]
 
-   [:p>button.generate {:on-click #(view-sketch/restart-sketch {:id :flow-fields})} "Generate"]])
+   [:p (view-sketch/generate :flow-fields)]])
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"
