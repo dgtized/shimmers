@@ -82,7 +82,7 @@
      2 (fn [] [:fork 0])
      1 (fn [] [:halt 0])
      3 (fn [] [:color [:gradient :rainbow1]])
-     2 (fn [] [:color [0 0 0 10]])
+     2 (fn [] [:color [0 0 0 32]])
      1 (fn [] [:color [255 255 255 255]])
      1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
 
