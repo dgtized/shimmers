@@ -9,6 +9,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -194,7 +195,9 @@
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
     (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
-                                     "No Jitter")) [:jitter] [0 32])]])
+                                     "No Jitter")) [:jitter] [0 32])]
+
+   [:p>button.big {:on-click #(view-sketch/restart-sketch {:id :flow-fields})} "Generate"]])
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"

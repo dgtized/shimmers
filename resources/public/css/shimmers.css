@@ -90,3 +90,9 @@ h3.tag {
 h3.date {
   padding-left: 1em;
 }
+
+button.big {
+  font-size: 1.5em;
+  height: 2.5em;
+  width: 60%;
+}
