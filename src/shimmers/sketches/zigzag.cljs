@@ -11,7 +11,7 @@
            (+ (q/sin angle) 1)))
 
 (defn zig [gap [x y] t]
-  (if (and (> x 0) (< y (q/height)))
+  (when (and (> x 0) (< y (q/height)))
     (let [step-size (* gap (/ 9 16))
           h (- gap step-size)
           a (+ (/ (+ x y) 32) t)
