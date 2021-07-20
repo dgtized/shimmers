@@ -7,6 +7,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
@@ -141,6 +142,7 @@
 
 (defn page []
   [:div (scenes)
+   [:p.center (view-sketch/generate :radial-mosaic)]
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
 (sketch/defsvg radial-mosaic

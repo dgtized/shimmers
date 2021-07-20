@@ -92,7 +92,11 @@ h3.date {
 }
 
 button.generate {
-  font-size: 1.5em;
+  font-size: 1.2em;
   height: 2.5em;
   width: 10em;
+}
+
+.center {
+  text-align: center;
 }
