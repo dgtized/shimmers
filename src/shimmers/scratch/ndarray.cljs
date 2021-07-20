@@ -1,4 +1,4 @@
-(ns shimmers.ndarray-scratch
+(ns shimmers.scratch.ndarray
   "From https://github.com/thi-ng/ndarray/blob/master/src/index.org and
   https://github.com/thi-ng/ndarray/blob/master/src/contours.org."
   (:require [thi.ng.ndarray.core :as nd]))
