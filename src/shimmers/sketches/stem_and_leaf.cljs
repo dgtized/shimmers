@@ -13,7 +13,9 @@
   (q/color-mode :hsl 1.0)
   {:circles [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-h 0.1))
              (assoc (gc/circle (cq/rel-pos 0.2 0.5) (cq/rel-h 0.15)) :parent 0)
-             (assoc (gc/circle (cq/rel-pos 0.8 0.5) (cq/rel-h 0.05)) :parent 0)]})
+             (assoc (gc/circle (cq/rel-pos 0.8 0.5) (cq/rel-h 0.05)) :parent 0)
+             (assoc (gc/circle (cq/rel-pos 0.5 0.2) (cq/rel-h 0.15)) :parent 0)
+             (assoc (gc/circle (cq/rel-pos 0.5 0.8) (cq/rel-h 0.05)) :parent 0)]})
 
 (defn update-state [state]
   state)
@@ -36,12 +38,13 @@
     (q/line (tm/+ p (gv/vec2 0 r)) (tm/+ p' (gv/vec2 0 r')))
     (q/line (tm/- p (gv/vec2 0 r)) (tm/- p' (gv/vec2 0 r')))
 
-    (curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
-               (tm/+ p (v/polar r (* 1.6 Math/PI)))
-               (tm/+ p (v/polar r (* 1.7 Math/PI)))
-               (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
-               (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
-               (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])))
+    #_(curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
+                 (tm/+ p (v/polar r (* 1.6 Math/PI)))
+                 (tm/+ p (v/polar r (* 1.7 Math/PI)))
+                 (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
+                 (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
+                 (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
+    ))
 
 (sketch/defquil stem-and-leaf
   :created-at "2021-07-21"
