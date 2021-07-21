@@ -75,6 +75,7 @@
             shimmers.sketches.six-of-one-half-dozen-of-the-other
             shimmers.sketches.space-colonization
             shimmers.sketches.sphere
+            shimmers.sketches.stem-and-leaf
             shimmers.sketches.substrate
             shimmers.sketches.superposition
             shimmers.sketches.tilt
