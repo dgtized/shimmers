@@ -11,8 +11,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:circles [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-h 0.1))
-             (assoc (gc/circle (cq/rel-pos 0.3 0.5) (cq/rel-h 0.1)) :parent 0)
-             (assoc (gc/circle (cq/rel-pos 0.7 0.5) (cq/rel-h 0.1)) :parent 0)]})
+             (assoc (gc/circle (cq/rel-pos 0.2 0.5) (cq/rel-h 0.15)) :parent 0)
+             (assoc (gc/circle (cq/rel-pos 0.8 0.5) (cq/rel-h 0.05)) :parent 0)]})
 
 (defn update-state [state]
   state)
