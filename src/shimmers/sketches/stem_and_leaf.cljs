@@ -6,7 +6,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.vector :as gv]
+            [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -34,9 +34,10 @@
     (cq/circle p r))
   (doseq [{:keys [p r parent]} circles
           :when parent
-          :let [{p' :p r' :r} (nth circles parent)]]
-    (q/line (tm/+ p (gv/vec2 0 r)) (tm/+ p' (gv/vec2 0 r')))
-    (q/line (tm/- p (gv/vec2 0 r)) (tm/- p' (gv/vec2 0 r')))
+          :let [{p' :p r' :r} (nth circles parent)
+                angle (+ (* 0.5 Math/PI) (geom/heading (tm/- p p')))]]
+    (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
+    (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))
 
     #_(curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
                  (tm/+ p (v/polar r (* 1.6 Math/PI)))
