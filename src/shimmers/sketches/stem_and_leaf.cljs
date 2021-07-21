@@ -26,18 +26,23 @@
     (q/curve-vertex x y))
   (q/end-shape))
 
+(defn tangent-lines [c1 c2]
+  (let [{:keys [p r]} c1
+        {p' :p r' :r} c2
+        angle (+ (* 0.5 Math/PI) (geom/heading (tm/- p p')))]
+    (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
+    (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
+
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
   (doseq [{:keys [p r]} circles]
     (cq/circle p r))
-  (doseq [{:keys [p r parent]} circles
+  (doseq [{:keys [parent] :as c1} circles
           :when parent
-          :let [{p' :p r' :r} (nth circles parent)
-                angle (+ (* 0.5 Math/PI) (geom/heading (tm/- p p')))]]
-    (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
-    (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))
+          :let [c2 (nth circles parent)]]
+    (tangent-lines c1 c2)
 
     #_(curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
                  (tm/+ p (v/polar r (* 1.6 Math/PI)))
