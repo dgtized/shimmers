@@ -12,6 +12,9 @@
             [shimmers.view.sketch :as view-sketch]
             [spec-tools.data-spec :as ds]))
 
+;; Uncomment to see javascript source of functions at repl
+;; (set! cljs.core/*print-fn-bodies* true)
+
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [["/" ::root]
