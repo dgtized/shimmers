@@ -37,6 +37,7 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
+  (q/stroke-weight 1.2)
   (doseq [{:keys [p r]} circles]
     (cq/circle p r))
   (doseq [{:keys [parent] :as c1} circles
@@ -50,7 +51,12 @@
                  (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
                  (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
                  (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
-    ))
+    )
+  ;; Draw all the sibling tangents?
+  (q/stroke-weight 0.5)
+  (doseq [a [1 2]
+          b [3 4]]
+    (tangent-lines (nth circles a) (nth circles b))))
 
 (sketch/defquil stem-and-leaf
   :created-at "2021-07-21"
