@@ -9,6 +9,19 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.math.core :as tm]))
 
+;; The intended concept is to plot out bezier curves from a source circle or
+;; stem, and then add circles that are tangent to the curve, and then randomly
+;; extend new bezier curves out from the circles generated before. Presumably
+;; those curves should not intersect, and neither should the circles so there is
+;; some circle packing as well. It's likely there is going to be a lot of S
+;; curves with tangents on one side mirrored on the "outside". Also, each circle
+;; may need to have a "direction" of rotation that curves emit from so they pair
+;; up.
+
+;; Right now it's just playing with straight lines from tangent points, but the
+;; circles are arranged somewhat analagous to perspective lines to focal points,
+;; so alternatively could make a different sketch around rotating perspectives.
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:circles [(gc/circle (cq/rel-pos 0.5 0.5) (cq/rel-h 0.1))
