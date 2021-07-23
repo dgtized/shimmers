@@ -52,7 +52,7 @@
             link-name])
          (interpose [:span " | "])
          (into [:div.selector
-                [:input {:type :text
+                [:input {:type :search
                          :placeholder "search by name"
                          :value @text-filter
                          :on-input update-terms}]
