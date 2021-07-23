@@ -53,7 +53,7 @@
        (cs/cycle-next known-names)
        (sketch-link rfe/push-state)))
 
-(defn sketch-by-name [sketch known-names]
+(defn sketch-controls [sketch known-names]
   [:section.controls
    [:span
     [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
@@ -62,6 +62,10 @@
    [:span
     [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
    [:span#framerate]])
+
+(defn sketch-by-name [sketch known-names]
+  [:div
+   [sketch-controls sketch known-names]])
 
 (defn generate [sketch-id]
   [:button.generate {:on-click #(restart-sketch {:id sketch-id})} "Generate"])
