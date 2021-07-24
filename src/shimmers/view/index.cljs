@@ -61,10 +61,7 @@
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn by-alphabetical [sketches]
-  (let [[filtered terms] (filter-sketches sketches)
-        [sketches-an sketches-mz]
-        (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
-                    filtered)]
+  (let [[filtered terms] (filter-sketches sketches)]
     [:section.sketch-list
      [:h1 (str "All Sketches (" (count sketches) ")")]
      [:p "A digital sketch-book of generative art, visual effects, computer
@@ -77,9 +74,12 @@
      (if (< (count filtered) 20)
        [:div.sketch-columns
         [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
-       [:div.sketch-columns
-        [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-        [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]])]))
+       (let [[sketches-an sketches-mz]
+             (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
+                         filtered)]
+         [:div.sketch-columns
+          [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
+          [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]))]))
 
 (defn year-month [{:keys [created-at]}]
   [(ld/get-year created-at)
