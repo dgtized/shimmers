@@ -16,6 +16,12 @@
 ;; (set! cljs.core/*print-fn-bodies* true)
 ;; Or just (str the-function)
 
+(defn request->sketch
+  "Lookup a sketch by name from request and annotate it with seed if available."
+  [{:keys [path query]}]
+  (assoc (sketches/by-name (:name path))
+         :seed (:seed query)))
+
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [["/" ::root]
@@ -30,18 +36,17 @@
      :view #(view-index/by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
-     :view (fn [{:keys [path]}]
-             (-> path :name sketches/by-name
-                 (view-sketch/sketch-by-name (sketches/known-names))))
+     :view (fn [request]
+             (view-sketch/sketch-by-name (request->sketch request)
+                                         (sketches/known-names)))
      :parameters
      {:path {:name (every-pred string? (set (sketches/known-names)))}
       :query {(ds/opt :seed) int?}}
      :controllers
      [{:parameters {:path [:name] :query [:seed]}
-       :start (fn [{:keys [path query]}]
-                (let [sketch-name (:name path)
-                      sketch (assoc (sketches/by-name sketch-name)
-                                    :seed (:seed query))]
+       :start (fn [request]
+                (let [sketch (request->sketch request)
+                      sketch-name (:id sketch)]
                   (println "start" "sketch" sketch-name)
                   (ui/screen-view (name sketch-name))
                   (view-sketch/start-sketch sketch)))
