@@ -182,8 +182,8 @@
                        (* (- y1 y2) (- x1 x3)))
                     denominator))]
         (when (and (> t 0.0) (< t 1.0) (> u 0.0))
-          [(+ x1 (* t (- x2 x1)))
-           (+ y1 (* t (- y2 y1)))])))))
+          (gv/vec2 (+ x1 (* t (- x2 x1)))
+                   (+ y1 (* t (- y2 y1)))))))))
 
 (defn line-intersect
   "Return intersection point between two gl/line2 instances"
