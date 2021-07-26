@@ -19,7 +19,6 @@
     (make-segment line a b)))
 
 (defn add-line [line segments]
-  (println line)
   (loop [base-pos (gv/vec2 (+ 0.01 (* line 0.05)) 0)
          addition []]
     (let [next-pos (tm/+ base-pos (* 0.01 (q/random-gaussian)) (* 0.1 (rand)))
@@ -34,20 +33,19 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:line 0
-   :segments (add-line 0 [])})
+  {:lines [(add-line 0 [])]})
 
-(defn update-state [{:keys [line segments] :as state}]
-  (if (< line 20)
-    (-> state
-        (update :line inc)
-        (update :segments into (add-line (inc line) segments)))
-    state))
+(defn update-state [{:keys [lines] :as state}]
+  (let [line-count (count lines)]
+    (if (< line-count 20)
+      (-> state
+          (update :lines conj (add-line line-count (last lines))))
+      state)))
 
-(defn draw [{:keys [segments]}]
+(defn draw [{:keys [lines]}]
   (q/background 1.0)
   (q/stroke-weight 1.5)
-  (doseq [{[a b] :points} segments]
+  (doseq [{[a b] :points} (flatten lines)]
     (q/line (cq/rel-pos a) (cq/rel-pos b))))
 
 (sketch/defquil additive-displacement
