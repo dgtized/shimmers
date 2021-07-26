@@ -36,9 +36,10 @@
   {:lines [(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))])]})
 
 (defn update-state [{:keys [lines] :as state}]
-  (if (< (count lines) 50)
-    (update state :lines conj (add-line (last lines)))
-    state))
+  (let [previous (last lines)]
+    (if (< (-> previous last :points first :x) 1.0)
+      (update state :lines conj (add-line previous))
+      state)))
 
 (defn draw [{:keys [lines]}]
   (q/background 1.0)
