@@ -165,3 +165,22 @@
 (defn circles-overlap? [a b]
   (let [distance (+ (:r a) (:r b))]
     (< (geom/dist (:p a) (:p b)) distance)))
+
+(defn line-intersect
+  "Return intersection point between two point segment pairs.
+
+  Equations from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line."
+  [[[x1 y1] [x2 y2]] [[x3 y3] [x4 y4]]]
+  (let [epsilon 0.000000001
+        denominator (- (* (- x1 x2) (- y3 y4))
+                       (* (- y1 y2) (- x3 x4)))]
+    (when (>= (Math/abs denominator) epsilon)
+      (let [t (/ (- (* (- x1 x3) (- y3 y4))
+                    (* (- y1 y3) (- x3 x4)))
+                 denominator)
+            u (- (/ (- (* (- x1 x2) (- y1 y3))
+                       (* (- y1 y2) (- x1 x3)))
+                    denominator))]
+        (when (and (> t 0.0) (< t 1.0) (> u 0.0))
+          [(+ x1 (* t (- x2 x1)))
+           (+ y1 (* t (- y2 y1)))])))))

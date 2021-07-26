@@ -4,27 +4,9 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
+            [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
-
-(defn line-intersect
-  "Return intersection point between two point segment pairs.
-
-  Equations from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line."
-  [[[x1 y1] [x2 y2]] [[x3 y3] [x4 y4]]]
-  (let [epsilon 0.000000001
-        denominator (- (* (- x1 x2) (- y3 y4))
-                       (* (- y1 y2) (- x3 x4)))]
-    (when (>= (Math/abs denominator) epsilon)
-      (let [t (/ (- (* (- x1 x3) (- y3 y4))
-                    (* (- y1 y3) (- x3 x4)))
-                 denominator)
-            u (- (/ (- (* (- x1 x2) (- y1 y3))
-                       (* (- y1 y2) (- x1 x3)))
-                    denominator))]
-        (when (and (> t 0.0) (< t 1.0) (> u 0.0))
-          [(+ x1 (* t (- x2 x1)))
-           (+ y1 (* t (- y2 y1)))])))))
 
 (defn setup []
   (q/frame-rate 30)
@@ -56,7 +38,7 @@
   ;; FIXME: slow, this is all pairs
   (->> segments
        ;; FIXME: why does line-intersect order matter?
-       (keep (fn [segment] (line-intersect segment ray)))
+       (keep (fn [segment] (geometry/line-intersect segment ray)))
        (sort-by (fn [[sx sy]]
                   (let [[x y] (first ray)]
                     (q/dist x y sx sy))))
