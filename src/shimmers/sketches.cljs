@@ -4,6 +4,7 @@
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]
 
+            shimmers.sketches.additive-displacement
             shimmers.sketches.ascendance
             shimmers.sketches.braid
             shimmers.sketches.brush-sweep
