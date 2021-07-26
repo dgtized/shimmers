@@ -24,7 +24,7 @@
          addition []]
     (let [next-pos (tm/+ base-pos (* 0.01 (q/random-gaussian)) (* 0.1 (rand)))
           prov-line (make-segment line base-pos next-pos)]
-      (cond (some (fn [s] (geometry/segment-intersect (:points s) (:points prov-line))) segments)
+      (cond (some (fn [s] (geometry/line-intersect s prov-line)) segments)
             (recur base-pos addition)
             (>= (:y next-pos) 1.0)
             (conj addition (make-segment line base-pos
