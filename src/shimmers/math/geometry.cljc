@@ -166,7 +166,7 @@
   (let [distance (+ (:r a) (:r b))]
     (< (geom/dist (:p a) (:p b)) distance)))
 
-(defn line-intersect
+(defn segment-intersect
   "Return intersection point between two point segment pairs.
 
   Equations from https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line."

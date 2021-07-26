@@ -37,8 +37,8 @@
 (defn closest-intersection [ray segments]
   ;; FIXME: slow, this is all pairs
   (->> segments
-       ;; FIXME: why does line-intersect order matter?
-       (keep (fn [segment] (geometry/line-intersect segment ray)))
+       ;; FIXME: why does segment-intersect order matter?
+       (keep (fn [segment] (geometry/segment-intersect segment ray)))
        (sort-by (fn [[sx sy]]
                   (let [[x y] (first ray)]
                     (q/dist x y sx sy))))
