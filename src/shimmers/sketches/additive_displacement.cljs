@@ -9,7 +9,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-;; Draw line vertical lines from segments, but ensure none of them overlap
+;; Draw consecutive vertical lines from segments, but ensure none of them overlap
 
 (defn make-segment [a b]
   (gl/line2 a b))
