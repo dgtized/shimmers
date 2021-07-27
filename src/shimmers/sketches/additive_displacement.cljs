@@ -11,8 +11,7 @@
 
 ;; Draw consecutive vertical lines from segments, but ensure none of them overlap
 
-(defn make-segment [a b]
-  (gl/line2 a b))
+(def make-segment gl/line2)
 
 (defn make-line [& points]
   (for [[a b] (partition 2 1 points)]
