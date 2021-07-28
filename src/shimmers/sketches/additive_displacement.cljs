@@ -17,11 +17,10 @@
   (for [[a b] (partition 2 1 points)]
     (make-segment a b)))
 
-(defn add-line [segments]
-  (loop [base-pos (tm/+ (-> segments first :points first) (gv/vec2 (* 0.01 (rand)) 0))
+(defn add-line [segments offset delta-fn]
+  (loop [base-pos (tm/+ (-> segments first :points first) offset)
          addition []]
-    (let [next-pos (tm/+ base-pos (gv/vec2 (* 0.005 (tm/random -4.0 (rand)))
-                                           (tm/random 0.02 0.2)))
+    (let [next-pos (tm/+ base-pos (delta-fn))
           prov-line (make-segment base-pos next-pos)]
       (cond (some (fn [s] (geometry/line-intersect s prov-line)) segments)
             (recur base-pos addition)
@@ -31,14 +30,19 @@
             :else
             (recur next-pos (conj addition prov-line))))))
 
+(defn delta []
+  (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 (rand))) (tm/random 0.02 0.2))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:lines [(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))])]})
+  {:lines [(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
+                     (gv/vec2 0.01 0) (delta))]})
 
 (defn update-state [{:keys [lines] :as state}]
   (let [previous (last lines)]
     (if (< (-> previous last :points first :x) 1.0)
-      (update state :lines conj (add-line previous))
+      (update state :lines conj
+              (add-line previous (gv/vec2 (* 0.01 (rand)) 0) (delta)))
       state)))
 
 (defn draw [{:keys [lines]}]
