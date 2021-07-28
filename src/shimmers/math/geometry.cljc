@@ -166,6 +166,7 @@
   (let [distance (+ (:r a) (:r b))]
     (< (geom/dist (:p a) (:p b)) distance)))
 
+;; Need tests, not sure this is always working?
 (defn segment-intersect
   "Return intersection point between two point segment pairs.
 

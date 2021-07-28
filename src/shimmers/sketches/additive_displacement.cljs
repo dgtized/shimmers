@@ -17,18 +17,21 @@
   (for [[a b] (partition 2 1 points)]
     (make-segment a b)))
 
+(defn find-next [base-pos delta-fn segments]
+  (let [next-pos (tm/+ base-pos (delta-fn))
+        prov-line (make-segment base-pos next-pos)]
+    (if (some (fn [s] (geometry/line-intersect s prov-line)) segments)
+      (recur base-pos delta-fn segments)
+      next-pos)))
+
 (defn add-line [segments offset delta-fn]
   (loop [base-pos (tm/+ (-> segments first :points first) offset)
          addition []]
-    (let [next-pos (tm/+ base-pos (delta-fn))
-          prov-line (make-segment base-pos next-pos)]
-      (cond (some (fn [s] (geometry/line-intersect s prov-line)) segments)
-            (recur base-pos addition)
-            (>= (:y next-pos) 1.0)
-            (conj addition (make-segment base-pos
-                                         (gv/vec2 (:x next-pos) (min (:y next-pos) 1.0))))
-            :else
-            (recur next-pos (conj addition prov-line))))))
+    (let [next-pos (find-next base-pos delta-fn segments)]
+      (if (>= (:y next-pos) 1.0)
+        (conj addition (make-segment base-pos
+                                     (gv/vec2 (:x next-pos) (min (:y next-pos) 1.0))))
+        (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
 
 (defn delta []
   (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 (rand))) (tm/random 0.02 0.2))))
