@@ -18,9 +18,9 @@
     (make-segment a b)))
 
 (defn add-line [segments]
-  (loop [base-pos (tm/+ (-> segments first :points first) (gv/vec2 (* 0.015 (rand)) 0))
+  (loop [base-pos (tm/+ (-> segments first :points first) (gv/vec2 (* 0.01 (rand)) 0))
          addition []]
-    (let [next-pos (tm/+ base-pos (* 0.003 (tm/random -1.0 0.5)) (* 0.05 (rand)))
+    (let [next-pos (tm/+ base-pos (* 0.005 (tm/random -4.0 0.5)) (* 0.1 (rand)))
           prov-line (make-segment base-pos next-pos)]
       (cond (some (fn [s] (geometry/line-intersect s prov-line)) segments)
             (recur base-pos addition)
@@ -42,7 +42,7 @@
 
 (defn draw [{:keys [lines]}]
   (q/background 1.0)
-  (q/stroke-weight 1.5)
+  (q/stroke-weight 1.0)
   (doseq [{[a b] :points} (flatten lines)]
     (q/line (cq/rel-pos a) (cq/rel-pos b))))
 
