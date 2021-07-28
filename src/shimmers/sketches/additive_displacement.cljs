@@ -20,7 +20,8 @@
 (defn add-line [segments]
   (loop [base-pos (tm/+ (-> segments first :points first) (gv/vec2 (* 0.01 (rand)) 0))
          addition []]
-    (let [next-pos (tm/+ base-pos (* 0.005 (tm/random -4.0 0.5)) (* 0.1 (rand)))
+    (let [next-pos (tm/+ base-pos (gv/vec2 (* 0.005 (tm/random -4.0 (rand)))
+                                           (tm/random 0.02 0.2)))
           prov-line (make-segment base-pos next-pos)]
       (cond (some (fn [s] (geometry/line-intersect s prov-line)) segments)
             (recur base-pos addition)
