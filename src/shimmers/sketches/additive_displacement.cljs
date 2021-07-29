@@ -21,16 +21,20 @@
   (geometry/line-intersect a b))
 
 (defn find-next [base-pos delta-fn segments]
-  (let [next-pos (tm/+ base-pos (delta-fn))
-        prov-line (make-segment base-pos next-pos)]
-    (if (some (partial intersects? prov-line) segments)
-      (recur base-pos delta-fn segments)
-      next-pos)))
+  (loop [c 0]
+    (let [next-pos (tm/+ base-pos (delta-fn))
+          prov-line (make-segment base-pos next-pos)]
+      (cond (> c 10)
+            nil
+            (some (partial intersects? prov-line) segments)
+            (recur (inc c))
+            :else
+            next-pos))))
 
 (defn add-line [segments offset delta-fn]
   (loop [base-pos (tm/+ (-> segments first :points first) offset)
          addition []]
-    (let [next-pos (find-next base-pos delta-fn segments)]
+    (when-let [next-pos (find-next base-pos delta-fn segments)]
       (if (>= (:y next-pos) 1.0)
         (conj addition (make-segment base-pos
                                      (gv/vec2 (:x next-pos) (min (:y next-pos) 1.0))))
@@ -47,8 +51,9 @@
 (defn update-state [{:keys [lines] :as state}]
   (let [previous (last lines)]
     (if (< (-> previous last :points first :x) 1.0)
-      (update state :lines conj
-              (add-line previous (gv/vec2 (* 0.01 (rand)) 0) (delta)))
+      (if-let [line (add-line previous (gv/vec2 (* 0.01 (rand)) 0) (delta))]
+        (update state :lines conj line)
+        state)
       state)))
 
 (defn draw [{:keys [lines]}]
