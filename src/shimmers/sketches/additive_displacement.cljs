@@ -58,7 +58,7 @@
 
 (defn draw [{:keys [lines]}]
   (q/background 1.0)
-  (q/stroke-weight 1.0)
+  (q/stroke-weight 0.5)
   (doseq [{[a b] :points} (flatten lines)]
     (q/line (cq/rel-pos a) (cq/rel-pos b))))
 
