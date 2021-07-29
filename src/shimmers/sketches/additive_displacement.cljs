@@ -37,7 +37,7 @@
     (when-let [next-pos (find-next base-pos delta-fn segments)]
       (if (>= (:y next-pos) 1.0)
         (conj addition (make-segment base-pos
-                                     (gv/vec2 (:x next-pos) (min (:y next-pos) 1.0))))
+                                     (gv/vec2 (:x next-pos) (min (:y next-pos) 1.05))))
         (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
 
 (defn delta []
