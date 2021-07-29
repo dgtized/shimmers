@@ -17,10 +17,13 @@
   (for [[a b] (partition 2 1 points)]
     (make-segment a b)))
 
+(defn intersects? [a b]
+  (geometry/line-intersect a b))
+
 (defn find-next [base-pos delta-fn segments]
   (let [next-pos (tm/+ base-pos (delta-fn))
         prov-line (make-segment base-pos next-pos)]
-    (if (some (fn [s] (geometry/line-intersect s prov-line)) segments)
+    (if (some (partial intersects? prov-line) segments)
       (recur base-pos delta-fn segments)
       next-pos)))
 
