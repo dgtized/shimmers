@@ -3,8 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -18,7 +18,7 @@
     (make-segment a b)))
 
 (defn intersects? [a b]
-  (geometry/line-intersect a b))
+  (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
 (defn find-next [base-pos delta-fn segments]
   (loop [c 0]
