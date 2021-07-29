@@ -43,10 +43,13 @@
 (defn delta []
   (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 (rand))) (tm/random 0.02 0.2))))
 
+(defn first-not-nil [xs]
+  (first (drop-while nil? xs)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:lines [(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
-                     (gv/vec2 0.01 0) (delta))]})
+  {:lines [(first-not-nil (repeatedly (fn [] (add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
+                                                      (gv/vec2 0.02 0) (delta)))))]})
 
 (defn update-state [{:keys [lines] :as state}]
   (let [previous (last lines)]
