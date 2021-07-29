@@ -21,13 +21,13 @@
   (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
 (defn find-next [base-pos delta-fn segments]
-  (loop [c 0]
+  (loop [try 0]
     (let [next-pos (tm/+ base-pos (delta-fn))
           prov-line (make-segment base-pos next-pos)]
-      (cond (> c 10)
+      (cond (> try 10)
             nil
             (some (partial intersects? prov-line) segments)
-            (recur (inc c))
+            (recur (inc try))
             :else
             next-pos))))
 
