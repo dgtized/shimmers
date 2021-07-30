@@ -37,7 +37,7 @@
         (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
 
 (defn delta []
-  (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 1.0)) (tm/random 0.02 0.2))))
+  (fn [] (gv/vec2 (* 0.01 (tm/random -4.0 1.0)) (tm/random 0.05 0.2))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -47,7 +47,7 @@
 (defn update-state [{:keys [lines] :as state}]
   (let [previous (last lines)]
     (if (< (-> previous last :points first :x) 1.0)
-      (if-let [line (add-line previous (gv/vec2 (* 0.01 (rand)) 0) (delta))]
+      (if-let [line (add-line previous (gv/vec2 (* 0.015 (rand)) 0) (delta))]
         (update state :lines conj line)
         state)
       state)))
