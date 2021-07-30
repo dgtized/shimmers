@@ -32,15 +32,15 @@
           (recur (dec tries) retry-fn))))
 
 (defn find-next [base-pos delta-fn segments]
-  (retry 10 #(let [next-pos (tm/+ base-pos (delta-fn))
-                   prov-line (make-segment base-pos next-pos)]
-               (when-not (some (partial intersects? prov-line) segments)
-                 next-pos))))
+  (let [next-pos (tm/+ base-pos (delta-fn))
+        prov-line (make-segment base-pos next-pos)]
+    (when-not (some (partial intersects? prov-line) segments)
+      next-pos)))
 
 (defn add-line [segments offset delta-fn]
   (loop [base-pos (tm/+ (-> segments first :points first) offset)
          addition []]
-    (when-let [next-pos (find-next base-pos delta-fn segments)]
+    (when-let [next-pos (retry 10 #(find-next base-pos delta-fn segments))]
       (if (>= (:y next-pos) 1.0)
         (conj addition (make-segment base-pos
                                      (gv/vec2 (:x next-pos) (min (:y next-pos) 1.05))))
