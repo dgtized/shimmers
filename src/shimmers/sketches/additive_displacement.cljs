@@ -20,6 +20,17 @@
 (defn intersects? [a b]
   (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
+(defn retry
+  "Retry `retry-fn` until it returns non-nil for up to `tries` attempts."
+  [tries retry-fn]
+  (let [result (retry-fn)]
+    (cond (some? result)
+          result
+          (= tries 0)
+          nil
+          :else
+          (recur (dec tries) retry-fn))))
+
 (defn find-next [base-pos delta-fn segments]
   (loop [try 0]
     (let [next-pos (tm/+ base-pos (delta-fn))
