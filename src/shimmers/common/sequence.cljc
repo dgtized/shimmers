@@ -112,3 +112,14 @@
        (take-while (fn [[s s']] (not= s s')))
        last
        first))
+
+(defn retry
+  "Retry `retry-fn` until it returns non-nil for up to `tries` attempts."
+  [tries retry-fn]
+  (let [result (retry-fn)]
+    (cond (some? result)
+          result
+          (= tries 0)
+          nil
+          :else
+          (recur (dec tries) retry-fn))))

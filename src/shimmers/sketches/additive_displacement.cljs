@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
@@ -20,17 +21,6 @@
 (defn intersects? [a b]
   (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
-(defn retry
-  "Retry `retry-fn` until it returns non-nil for up to `tries` attempts."
-  [tries retry-fn]
-  (let [result (retry-fn)]
-    (cond (some? result)
-          result
-          (= tries 0)
-          nil
-          :else
-          (recur (dec tries) retry-fn))))
-
 (defn find-next [base-pos delta-fn segments]
   (let [next-pos (tm/+ base-pos (delta-fn))
         prov-line (make-segment base-pos next-pos)]
@@ -40,7 +30,7 @@
 (defn add-line [segments offset delta-fn]
   (loop [base-pos (tm/+ (-> segments first :points first) offset)
          addition []]
-    (when-let [next-pos (retry 10 #(find-next base-pos delta-fn segments))]
+    (when-let [next-pos (cs/retry 10 #(find-next base-pos delta-fn segments))]
       (if (>= (:y next-pos) 1.0)
         (conj addition (make-segment base-pos
                                      (gv/vec2 (:x next-pos) (min (:y next-pos) 1.05))))
@@ -51,8 +41,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:lines [(retry 10 #(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
-                                (gv/vec2 0.02 0) (delta)))]})
+  {:lines [(cs/retry 10 #(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
+                                   (gv/vec2 0.02 0) (delta)))]})
 
 (defn update-state [{:keys [lines] :as state}]
   (let [previous (last lines)]
