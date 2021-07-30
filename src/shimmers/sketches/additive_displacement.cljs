@@ -32,15 +32,10 @@
           (recur (dec tries) retry-fn))))
 
 (defn find-next [base-pos delta-fn segments]
-  (loop [try 0]
-    (let [next-pos (tm/+ base-pos (delta-fn))
-          prov-line (make-segment base-pos next-pos)]
-      (cond (> try 10)
-            nil
-            (some (partial intersects? prov-line) segments)
-            (recur (inc try))
-            :else
-            next-pos))))
+  (retry 10 #(let [next-pos (tm/+ base-pos (delta-fn))
+                   prov-line (make-segment base-pos next-pos)]
+               (when-not (some (partial intersects? prov-line) segments)
+                 next-pos))))
 
 (defn add-line [segments offset delta-fn]
   (loop [base-pos (tm/+ (-> segments first :points first) offset)
