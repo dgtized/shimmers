@@ -37,7 +37,7 @@
         (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
 
 (defn delta []
-  (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 (rand))) (tm/random 0.02 0.2))))
+  (fn [] (gv/vec2 (* 0.005 (tm/random -4.0 1.0)) (tm/random 0.02 0.2))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
