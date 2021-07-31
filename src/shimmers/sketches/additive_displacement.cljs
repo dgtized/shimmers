@@ -15,10 +15,6 @@
 
 (def make-segment gl/line2)
 
-(defn make-line [& points]
-  (for [[a b] (partition 2 1 points)]
-    (make-segment a b)))
-
 (defn intersects? [a b]
   (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
