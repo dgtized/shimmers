@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
@@ -24,7 +25,7 @@
 (defn find-next [base-pos delta-fn segments avoid]
   (let [next-pos (tm/+ base-pos (delta-fn))
         prov-line (make-segment base-pos next-pos)]
-    (when-not (or (some (fn [[p d]] (< (geom/dist (cq/rel-vec next-pos) p) d)) avoid)
+    (when-not (or (some (fn [{:keys [p r]}] (< (geom/dist (cq/rel-vec next-pos) p) r)) avoid)
                   (some (partial intersects? prov-line) segments))
       next-pos)))
 
@@ -42,7 +43,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [avoid (into {} (for [_ (range 8)] [(cq/rel-pos (rand) (rand)) 10]))
+  (let [avoid (repeatedly 8 #(gc/circle (cq/rel-pos (rand) (rand)) (tm/random 5 10)))
         first-line (cs/retry 10 #(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
                                            (gv/vec2 0.02 0) (delta)
                                            avoid))]
@@ -61,7 +62,7 @@
   (q/background 1.0)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
-  (doseq [[p r] avoid]
+  (doseq [{:keys [p r]} avoid]
     (cq/circle p r))
   (doseq [{[a b] :points} (flatten lines)]
     (q/line (cq/rel-pos a) (cq/rel-pos b))))
