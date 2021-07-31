@@ -39,11 +39,11 @@
         (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
 
 (defn delta []
-  (fn [] (gv/vec2 (* 0.01 (tm/random -4.0 1.0)) (tm/random 0.05 0.2))))
+  (fn [] (gv/vec2 (* 0.01 (tm/random -4.0 1.0)) (tm/random 0.05 0.15))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [avoid (repeatedly 8 #(gc/circle (cq/rel-pos (rand) (rand)) (tm/random 5 10)))
+  (let [avoid (repeatedly 12 #(gc/circle (cq/rel-pos (rand) (rand)) (tm/random 5 10)))
         first-line (cs/retry 10 #(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
                                            (gv/vec2 0.02 0) (delta)
                                            avoid))]
