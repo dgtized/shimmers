@@ -15,6 +15,32 @@
 
 (def make-segment gl/line2)
 
+;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+;; https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+(defn circle-segment-intersection
+  [{:keys [c r]} {[p q] :points}]
+  (let [d (tm/- q p)
+        f (tm/- p c)
+        a (tm/dot d d)
+        b (* 2 (tm/dot f d))
+        c (- (tm/dot f f) (* r r))
+        discriminant (- (* b b) (* 4 a c))]
+    (when (>= discriminant 0)
+      (if (> discriminant 0)
+        (let [root-disc (Math/sqrt discriminant)
+              reciprocal (/ 1 (* 2 a))
+              t1 (* (- (- b) root-disc) reciprocal)
+              t2 (* (+ (- b) root-disc) reciprocal)]
+          [discriminant t1 t2 (tm/+ p (tm/* d t1)) (tm/+ p (tm/* d t2))])
+        [discriminant (/ (- b) (* 2 a))]))))
+
+(comment (circle-segment-intersection (gc/circle [1 1] 1) (gl/line2 [1 1] [2 2]))
+         (circle-segment-intersection (gc/circle [1 1] 1) (gl/line2 [1 1] [2 0]))
+         (circle-segment-intersection (gc/circle [2 0] 1) (gl/line2 [0 0] [5 0]))
+         (circle-segment-intersection (gc/circle [0 0] 1) (gl/line2 [1 0] [2 0]))
+         (circle-segment-intersection (gc/circle [0 0] 10) (gl/line2 [1 1] [2 1]))
+         )
+
 (defn intersects? [a b]
   (#{:intersect} (-> (geom/intersect-line a b) :type)))
 
