@@ -49,32 +49,32 @@
                   (some (partial intersects? prov-line) segments))
       next-pos)))
 
-(defn add-line [segments offset delta-fn avoid]
-  (loop [base-pos (tm/+ (-> segments first :points first) offset)
-         addition []]
-    (when-let [next-pos (cs/retry 10 #(find-next base-pos delta-fn segments avoid))]
-      (if (>= (:y next-pos) 1.0)
-        (conj addition (make-segment base-pos
-                                     (gv/vec2 (:x next-pos) (min (:y next-pos) 1.05))))
-        (recur next-pos (conj addition (make-segment base-pos next-pos)))))))
+(defn points->segments [points]
+  (map make-segment (partition 2 1 points)))
+
+(defn add-line [points offset delta-fn avoid]
+  (let [base-pos (tm/+ (first points) offset)
+        segments (points->segments points)]
+    (loop [prev-pos base-pos
+           addition [base-pos]]
+      (when-let [next-pos (cs/retry 10 #(find-next prev-pos delta-fn segments avoid))]
+        (if (>= (:y next-pos) 1.0)
+          (conj addition (gv/vec2 (:x next-pos) (min (:y next-pos) 1.05)))
+          (recur next-pos (conj addition next-pos)))))))
 
 (defn delta []
   (fn [] (gv/vec2 (* 0.01 (tm/random -4.0 1.0)) (tm/random 0.05 0.15))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [avoid (repeatedly 12 #(gc/circle (cq/rel-pos (rand) (rand)) (tm/random 5 10)))
-        first-line (cs/retry 10 #(add-line [(make-segment (gv/vec2 0 0) (gv/vec2 0 1))]
-                                           (gv/vec2 0.02 0) (delta)
-                                           avoid))]
-    {:avoid avoid
-     :lines [first-line]}))
+  {:avoid (repeatedly 12 #(gc/circle (cq/rel-pos (rand) (rand)) (tm/random 5 10)))
+   :lines [[(gv/vec2 0 0) (gv/vec2 0 1)]]})
 
 (defn update-state [{:keys [lines avoid] :as state}]
   (let [previous (last lines)]
-    (if (< (-> previous last :points first :x) 1.0)
-      (if-let [line (add-line previous (gv/vec2 (* 0.015 (rand)) 0) (delta) avoid)]
-        (update state :lines conj line)
+    (if (< (-> previous last :x) 1.0)
+      (if-let [points (add-line previous (gv/vec2 (* 0.015 (rand)) 0) (delta) avoid)]
+        (update state :lines conj points)
         state)
       state)))
 
@@ -82,10 +82,14 @@
   (q/background 1.0)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
+  (q/no-fill)
   (doseq [{:keys [p r]} avoid]
     (cq/circle p r))
-  (doseq [{[a b] :points} (flatten lines)]
-    (q/line (cq/rel-pos a) (cq/rel-pos b))))
+  (doseq [line lines]
+    (q/begin-shape)
+    (doseq [point line]
+      (apply q/vertex (cq/rel-pos point)))
+    (q/end-shape)))
 
 (sketch/defquil additive-displacement
   :created-at "2021-07-25"
