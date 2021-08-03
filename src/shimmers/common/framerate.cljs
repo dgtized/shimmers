@@ -7,19 +7,19 @@
             [goog.dom :as dom]
             [quil.core :as q]))
 
-(defn display [value]
-  (let [node (dom/getElement "framerate")
-        rate (cond (= value "") ""
+(defn display [node value]
+  (let [rate (cond (= value "") ""
                    (= value 0) ""
                    :else (goog.string/format "%04.1f fps" value))]
-    (when node
-      (dom/setTextContent node rate))))
+    (dom/setTextContent node rate)))
 
 (defn mode
   "Quil Middleware to update framerate"
   [options]
-  (let [draw (:draw options (fn [_]))
+  (let [node (dom/getElement "framerate")
+        draw (:draw options (fn [_]))
         timed-draw (fn [& args]
                      (apply draw args)
-                     (display (q/current-frame-rate)))]
-    (assoc options :draw timed-draw)))
+                     (display node (q/current-frame-rate)))]
+    (when node
+      (assoc options :draw timed-draw))))
