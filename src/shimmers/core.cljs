@@ -19,8 +19,10 @@
 (defn request->sketch
   "Lookup a sketch by name from request and annotate it with seed if available."
   [{:keys [path query]}]
-  (assoc (sketches/by-name (:name path))
-         :seed (:seed query)))
+  (-> path
+      :name
+      sketches/by-name
+      (assoc :seed (:seed query))))
 
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
