@@ -97,8 +97,8 @@
   (q/stroke-weight 2)
   (q/ellipse-mode :radius)
   (q/stroke 0 0 0)
-  (doseq [point (map cq/rel-pos points)]
-    (cq/circle point 0.2))
+  (doseq [pt points]
+    (cq/circle (cq/rel-pos pt) 0.2))
   (q/stroke-weight 0.5)
   (q/stroke 50 50 230)
   (doseq [[p q] (take step edges)]
