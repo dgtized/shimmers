@@ -170,9 +170,6 @@
             (/ size (* n (Math/pow 2 depth)))
             ((apply comp (map transformations (take depth operations))) seed)))
 
-(defn details [summary & body]
-  (into [:details [:summary summary]] body))
-
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
   (let [{:keys [seed n palette operations] :as config} (scene-options)]
@@ -185,10 +182,10 @@
      [:div (svg-tile 128 (/ 128 n) seed)]
      [:p "The pattern was generated randomly from the following palette:"]
      [:div.center (svg-palette palette)]
-     (details "Operations applied to seed in sequence"
-              [:ol
-               (for [[i op] (map-indexed vector operations)]
-                 [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
+     (ctrl/details "Operations applied to seed in sequence"
+                   [:ol
+                    (for [[i op] (map-indexed vector operations)]
+                      [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
 
 (sketch/defsvg mosaic-tiling
   {:created-at "2021-04-09"

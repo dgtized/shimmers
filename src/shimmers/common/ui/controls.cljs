@@ -49,3 +49,6 @@
      [:input {:type "range" :value value :min lower :max upper
               :step (or step 1)
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
+
+(defn details [summary & body]
+  (into [:details [:summary summary]] body))
