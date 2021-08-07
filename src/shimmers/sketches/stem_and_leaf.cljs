@@ -33,12 +33,6 @@
 (defn update-state [state]
   state)
 
-(defn curve-by [points]
-  (q/begin-shape)
-  (doseq [[x y] points]
-    (q/curve-vertex x y))
-  (q/end-shape))
-
 (defn tangent-lines [c1 c2]
   (let [{:keys [p r]} c1
         {p' :p r' :r} c2
@@ -58,12 +52,12 @@
           :let [c2 (nth circles parent)]]
     (tangent-lines c1 c2)
 
-    #_(curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
-                 (tm/+ p (v/polar r (* 1.6 Math/PI)))
-                 (tm/+ p (v/polar r (* 1.7 Math/PI)))
-                 (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
-                 (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
-                 (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
+    #_(cq/curve-by [(tm/+ p (v/polar r (* 1.5 Math/PI)))
+                    (tm/+ p (v/polar r (* 1.6 Math/PI)))
+                    (tm/+ p (v/polar r (* 1.7 Math/PI)))
+                    (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
+                    (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
+                    (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
     )
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)

@@ -28,6 +28,12 @@
     (apply q/curve-vertex v))
   (q/end-shape :close))
 
+(defn curve-by [points]
+  (q/begin-shape)
+  (doseq [[x y] points]
+    (q/curve-vertex x y))
+  (q/end-shape))
+
 (defn color-if
   "Apply `set-color-fn` with `color` if color is a sequence."
   [set-color-fn color]
