@@ -2,7 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
+            [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -15,13 +15,17 @@
   (q/end-shape))
 
 (defn random-vertex []
-  (gv/vec2 (rand) (rand)))
+  (gv/vec2 (dr/random-double) (dr/random-double)))
+
+(defn randvec2
+  ([] (tm/normalize (gv/vec2 (dr/random -1 1) (dr/random -1 1))))
+  ([n] (tm/normalize (gv/vec2 (dr/random -1 1) (dr/random -1 1)) n)))
 
 (defn curly-line [a b]
-  (for [t (remove #(p/chance 0.6) (range 0 1.0 0.03))
+  (for [t (remove #(dr/chance 0.6) (range 0 1.0 0.03))
         :let [point (tm/mix a b t)]]
-    (if (p/chance (* 0.08 t))
-      (tm/+ point (gv/randvec2 0.05))
+    (if (dr/chance (* 0.08 t))
+      (tm/+ point (randvec2 0.05))
       point)))
 
 (defn setup []
@@ -55,11 +59,11 @@
   (q/stroke-weight 1)
   (doseq [point (repeatedly 128 random-vertex)]
     (q/line (cq/rel-pos point)
-            (cq/rel-pos (tm/+ point (gv/vec2 0 (- (* 0.015 (rand)))))))))
+            (cq/rel-pos (tm/+ point (gv/vec2 0 (dr/random -0.015 0)))))))
 
 (sketch/defquil impressions-of-open-space
   :created-at "2021-03-09"
-  :tags #{:static}
+  :tags #{:static :deterministic}
   :size [900 600]
   :setup setup
   :draw draw
