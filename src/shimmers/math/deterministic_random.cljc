@@ -83,3 +83,10 @@
   "Create a random unit vector and then scale it by `amount` to use as noise."
   [amount]
   (v/polar amount (random tm/TWO_PI)))
+
+(defn random-vertex []
+  (v/vec2 (random-double) (random-double)))
+
+(defn randvec2
+  ([] (tm/normalize (v/vec2 (random -1 1) (random -1 1))))
+  ([n] (tm/normalize (v/vec2 (random -1 1) (random -1 1)) n)))

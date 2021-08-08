@@ -14,18 +14,11 @@
     (apply q/curve-vertex (cq/rel-pos p)))
   (q/end-shape))
 
-(defn random-vertex []
-  (gv/vec2 (dr/random-double) (dr/random-double)))
-
-(defn randvec2
-  ([] (tm/normalize (gv/vec2 (dr/random -1 1) (dr/random -1 1))))
-  ([n] (tm/normalize (gv/vec2 (dr/random -1 1) (dr/random -1 1)) n)))
-
 (defn curly-line [a b]
   (for [t (remove #(dr/chance 0.6) (range 0 1.0 0.03))
         :let [point (tm/mix a b t)]]
     (if (dr/chance (* 0.08 t))
-      (tm/+ point (randvec2 0.05))
+      (tm/+ point (dr/randvec2 0.05))
       point)))
 
 (defn setup []
@@ -57,7 +50,7 @@
   ;; "trees"
   (q/stroke 0.3 0.4 0.2 0.8)
   (q/stroke-weight 1)
-  (doseq [point (repeatedly 128 random-vertex)]
+  (doseq [point (repeatedly 128 dr/random-vertex)]
     (q/line (cq/rel-pos point)
             (cq/rel-pos (tm/+ point (gv/vec2 0 (dr/random -0.015 0)))))))
 
