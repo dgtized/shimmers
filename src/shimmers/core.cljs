@@ -6,7 +6,6 @@
             [reitit.frontend :as rf]
             [reitit.frontend.controllers :as rfc]
             [reitit.frontend.easy :as rfe]
-            [shimmers.common.ui :as ui]
             [shimmers.sketches :as sketches]
             [shimmers.view.index :as view-index]
             [shimmers.view.sketch :as view-sketch]
@@ -48,10 +47,8 @@
      [{:parameters {:path [:name] :query [:seed]}
        :start
        (fn [request]
-         (let [sketch (request->sketch request)
-               sketch-name (:id sketch)]
-           (println "start" "sketch" sketch-name)
-           (ui/screen-view (name sketch-name))
+         (let [sketch (request->sketch request)]
+           (println "start" "sketch" (:id sketch))
            (view-sketch/start-sketch sketch)))
 
        :stop

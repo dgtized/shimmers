@@ -32,6 +32,7 @@
     ;; performance optimizations?
     (dr/random-seed seed))
 
+  (ui/screen-view (name (:id sketch)))
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
