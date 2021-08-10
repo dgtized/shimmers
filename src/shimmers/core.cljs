@@ -46,15 +46,18 @@
       :query {(ds/opt :seed) int?}}
      :controllers
      [{:parameters {:path [:name] :query [:seed]}
-       :start (fn [request]
-                (let [sketch (request->sketch request)
-                      sketch-name (:id sketch)]
-                  (println "start" "sketch" sketch-name)
-                  (ui/screen-view (name sketch-name))
-                  (view-sketch/start-sketch sketch)))
-       :stop (fn [{:keys [path]}]
-               (println "stop" "sketch" (:name path))
-               (view-sketch/stop-sketch))}]}]])
+       :start
+       (fn [request]
+         (let [sketch (request->sketch request)
+               sketch-name (:id sketch)]
+           (println "start" "sketch" sketch-name)
+           (ui/screen-view (name sketch-name))
+           (view-sketch/start-sketch sketch)))
+
+       :stop
+       (fn [{:keys [path]}]
+         (println "stop" "sketch" (:name path))
+         (view-sketch/stop-sketch))}]}]])
 
 (defonce match (r/atom nil))
 
