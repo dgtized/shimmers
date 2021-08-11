@@ -1,5 +1,6 @@
 (ns shimmers.core
-  (:require [goog.dom :as dom]
+  (:require [fipp.edn :as fedn]
+            [goog.dom :as dom]
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [reitit.coercion.spec :as rss]
@@ -76,6 +77,9 @@
     (when view
       [view (:parameters page)])))
 
+(defn debug-root []
+  [:pre (with-out-str (fedn/pprint @match))])
+
 (defn init []
   (rfe/start!
    ;; coercion here will cause missing sketches to explode
@@ -83,6 +87,7 @@
    on-navigate
    {:use-fragment true})
 
+  ;; (rdom/render [debug-root] (dom/getElement "route-debug-mount"))
   (rdom/render [page-root] (dom/getElement "shimmer-mount")))
 
 ;; initialize sketch on first-load
