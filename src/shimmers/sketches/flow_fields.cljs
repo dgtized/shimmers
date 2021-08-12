@@ -27,7 +27,8 @@
                :length 32
                :noise-div 6
                :jitter 0
-               :obstacles {:n 0 :points [] :radius 12}}))
+               :obstacles {:n 0 :points [] :radius 24
+                           :voronoi false}}))
 
 (defn dir-at
   [[x y] noise-div]
@@ -50,9 +51,10 @@
                   (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
                   (v/add (v/jitter (tm/random jitter))))))))
 
-(defn avoid-obstacles [p {:keys [points radius]}]
+(defn avoid-obstacles [p {:keys [points radius voronoi]}]
   (if-let [closest (apply min-key #(geom/dist p %) points)]
-    (tm/normalize (tm/- p closest) (/ radius (geom/dist p closest)))
+    ((if voronoi tm/* tm/normalize)
+     (tm/- p closest) (/ radius (geom/dist p closest)))
     (gv/vec2)))
 
 (defn flow-points
@@ -213,7 +215,9 @@
     (ctrl/slider settings (fn [v] (if (pos? v) (str "Obstacles " v)
                                      "No Obstacles"))  [:obstacles :n] [0 64])
     (when (pos? (get-in @settings [:obstacles :n]))
-      (ctrl/slider settings (fn [v] (str "Obstacle Radius" v))  [:obstacles :radius] [2 128]))]
+      [:div
+       (ctrl/slider settings (fn [v] (str "Radius " v)) [:obstacles :radius] [2 128])
+       (ctrl/checkbox settings "Voronoi" [:obstacles :voronoi])])]
 
    [:p (view-sketch/generate :flow-fields)]])
 
