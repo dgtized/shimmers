@@ -43,8 +43,11 @@
   ;; kill existing sketch at quil-host if present
   (when-let [sketch (q/get-sketch-by-id "quil-host")]
     (q/with-sketch sketch (q/exit)))
-  (rdom/unmount-component-at-node (dom/getElement "svg-host"))
-  (rdom/unmount-component-at-node (dom/getElement "explanation")))
+  ;; TODO: only unmount components used by sketch?
+  (doseq [id ["svg-host" "explanation" "route-debug-mount" "debug-mount"]]
+    (-> id
+        dom/getElement
+        rdom/unmount-component-at-node)))
 
 (defn restart-sketch [sketch]
   (sketch-link rfe/push-state (:id sketch)))
