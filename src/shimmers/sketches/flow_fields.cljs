@@ -26,7 +26,8 @@
                :stroke-weight 8
                :length 32
                :noise-div 6
-               :jitter 0}))
+               :jitter 0
+               :obstacles 0}))
 
 (defn dir-at
   [[x y] noise-div]
@@ -49,14 +50,20 @@
                   (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
                   (v/add (v/jitter (tm/random jitter))))))))
 
+(defn avoid-obstacles [p step-size obstacles]
+  (if-let [closest (apply min-key #(geom/dist p %) obstacles)]
+    (tm/normalize (tm/- p closest) (/ (* step-size 16) (geom/dist p closest)))
+    (gv/vec2)))
+
 (defn flow-points
-  [p {:keys [step-size length noise-div snap-resolution jitter]}]
+  [p {:keys [step-size length noise-div snap-resolution jitter obstacles]}]
   (reductions
    (fn [p]
      (let [dir (-> (dir-at p noise-div)
-                   (snap-to snap-resolution))]
-       (tm/+ p
-             (v/polar step-size dir)
+                   (snap-to snap-resolution))
+           next-pos (tm/+ p (v/polar step-size dir))]
+       (tm/+ next-pos
+             (avoid-obstacles next-pos step-size obstacles)
              (v/jitter (dr/random jitter)))))
    p (range length)))
 
@@ -93,7 +100,7 @@
   (q/noise-seed (dr/random 1000000))
   (let [{:keys [iterations draw align-triangles calc-points
                 snap-resolution stroke-weight
-                length step-size noise-div jitter]}
+                length step-size noise-div jitter obstacles]}
         @settings]
     {:iter 0
      :iterations iterations
@@ -107,7 +114,8 @@
      :draw draw
      :align-triangles align-triangles
      :length length
-     :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))}))
+     :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))
+     :obstacles (repeatedly obstacles #(cq/rel-vec (dr/random-vertex)))}))
 
 (defn update-state [state]
   (update state :iter inc))
@@ -118,15 +126,19 @@
                settings))
 
 (defn draw
-  [{:keys [stroke-weight step-size iter iterations draw align-triangles]
+  [{:keys [stroke-weight step-size iter iterations draw align-triangles obstacles]
     :as settings}]
   ;; (q/stroke-weight 0.1)
   ;; (q/stroke 0.0 0.0 0.0 1.0)
   ;; (draw-grid 10 noise-div)
-  (q/stroke-weight stroke-weight)
-  (q/no-fill)
+  (q/stroke-weight (* 4 stroke-weight))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/ellipse-mode :radius)
+  (q/fill 1.0)
+  (doseq [p obstacles]
+    (cq/circle p 5))
+  (q/no-fill)
+  (q/stroke-weight stroke-weight)
   (when (< iter iterations)
     (let [hstep (* step-size 0.5)]
       (case draw
@@ -196,7 +208,9 @@
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
     (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
-                                     "No Jitter")) [:jitter] [0 32])]
+                                     "No Jitter")) [:jitter] [0 32])
+    (ctrl/slider settings (fn [v] (if (pos? v) (str "Obstacles " v)
+                                     "No Obstacles"))  [:obstacles] [0 64])]
 
    [:p (view-sketch/generate :flow-fields)]])
 
