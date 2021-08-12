@@ -27,7 +27,7 @@
                :length 32
                :noise-div 6
                :jitter 0
-               :obstacles 0}))
+               :obstacles {:n 0 :points [] :radius 12}}))
 
 (defn dir-at
   [[x y] noise-div]
@@ -50,9 +50,9 @@
                   (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
                   (v/add (v/jitter (tm/random jitter))))))))
 
-(defn avoid-obstacles [p step-size obstacles]
-  (if-let [closest (apply min-key #(geom/dist p %) obstacles)]
-    (tm/normalize (tm/- p closest) (/ (* step-size 16) (geom/dist p closest)))
+(defn avoid-obstacles [p {:keys [points radius]}]
+  (if-let [closest (apply min-key #(geom/dist p %) points)]
+    (tm/normalize (tm/- p closest) (/ radius (geom/dist p closest)))
     (gv/vec2)))
 
 (defn flow-points
@@ -63,7 +63,7 @@
                    (snap-to snap-resolution))
            next-pos (tm/+ p (v/polar step-size dir))]
        (tm/+ next-pos
-             (avoid-obstacles next-pos step-size obstacles)
+             (avoid-obstacles next-pos obstacles)
              (v/jitter (dr/random jitter)))))
    p (range length)))
 
@@ -115,7 +115,8 @@
      :align-triangles align-triangles
      :length length
      :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))
-     :obstacles (repeatedly obstacles #(cq/rel-vec (dr/random-vertex)))}))
+     :obstacles (assoc obstacles :points
+                       (repeatedly (:n obstacles) #(cq/rel-vec (dr/random-vertex))))}))
 
 (defn update-state [state]
   (update state :iter inc))
@@ -135,8 +136,8 @@
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/ellipse-mode :radius)
   (q/fill 1.0)
-  (doseq [p obstacles]
-    (cq/circle p 5))
+  (doseq [p (:points obstacles)]
+    (cq/circle p (/ (:radius obstacles) 4)))
   (q/no-fill)
   (q/stroke-weight stroke-weight)
   (when (< iter iterations)
@@ -210,7 +211,9 @@
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])
     (ctrl/slider settings (fn [v] (if (pos? v) (str "Obstacles " v)
-                                     "No Obstacles"))  [:obstacles] [0 64])]
+                                     "No Obstacles"))  [:obstacles :n] [0 64])
+    (when (pos? (get-in @settings [:obstacles :n]))
+      (ctrl/slider settings (fn [v] (str "Obstacle Radius" v))  [:obstacles :radius] [2 128]))]
 
    [:p (view-sketch/generate :flow-fields)]])
 
