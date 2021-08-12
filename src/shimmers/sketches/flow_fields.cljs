@@ -55,8 +55,9 @@
    (fn [p]
      (let [dir (-> (dir-at p noise-div)
                    (snap-to snap-resolution))]
-       (tm/+ (tm/+ p (v/polar step-size dir))
-             (v/jitter (tm/random jitter)))))
+       (tm/+ p
+             (v/polar step-size dir)
+             (v/jitter (dr/random jitter)))))
    p (range length)))
 
 (defn angles [r resolution]
