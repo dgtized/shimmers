@@ -28,6 +28,7 @@
                :noise-div 6
                :jitter 0
                :obstacles {:n 0 :points [] :radius 12
+                           :display true
                            :voronoi false}}))
 
 (defn dir-at
@@ -138,8 +139,9 @@
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/ellipse-mode :radius)
   (q/fill 1.0)
-  (doseq [p (:points obstacles)]
-    (cq/circle p (/ (:radius obstacles) 4)))
+  (when (:display obstacles)
+    (doseq [p (:points obstacles)]
+      (cq/circle p (/ (:radius obstacles) 4))))
   (q/no-fill)
   (q/stroke-weight stroke-weight)
   (when (< iter iterations)
@@ -219,6 +221,7 @@
        (when (pos? (get-in @settings [:obstacles :n]))
          [:div.indent
           (ctrl/slider settings (fn [v] (str "Radius " v)) [:obstacles :radius] [2 128])
+          (ctrl/checkbox-after settings "Display" [:obstacles :display])
           (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])])]
 
    [:p (view-sketch/generate :flow-fields)]])
