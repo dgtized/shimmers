@@ -27,7 +27,7 @@
                :length 32
                :noise-div 6
                :jitter 0
-               :obstacles {:n 0 :points [] :radius 24
+               :obstacles {:n 0 :points [] :radius 12
                            :voronoi false}}))
 
 (defn dir-at
