@@ -215,9 +215,9 @@
     (ctrl/slider settings (fn [v] (if (pos? v) (str "Obstacles " v)
                                      "No Obstacles"))  [:obstacles :n] [0 64])
     (when (pos? (get-in @settings [:obstacles :n]))
-      [:div
+      [:div.indent
        (ctrl/slider settings (fn [v] (str "Radius " v)) [:obstacles :radius] [2 128])
-       (ctrl/checkbox settings "Voronoi" [:obstacles :voronoi])])]
+       (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])]
 
    [:p (view-sketch/generate :flow-fields)]])
 

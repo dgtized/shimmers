@@ -33,6 +33,12 @@
             :on-change #(swap! settings update-in field-ref not)}]
    [:label label]])
 
+(defn checkbox-after [settings label field-ref]
+  [:div.label-set {:key label}
+   [:label label]
+   [:input {:type "checkbox" :checked (get-in @settings field-ref)
+            :on-change #(swap! settings update-in field-ref not)}]])
+
 (defn dropdown [settings label field-ref options]
   (let [selected (get-in @settings field-ref)]
     [:div.label-set {:key (str "dropdown-" field-ref)}

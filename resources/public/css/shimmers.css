@@ -32,6 +32,10 @@ canvas {
   padding-left: 2em;
 }
 
+.indent label {
+  margin-left: 1em;
+}
+
 .slider {
   width: 60%;
   display: flex;
