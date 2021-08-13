@@ -5,7 +5,8 @@
   (:require [clojure.string :as str]
             [quil.core :as q :include-macros true]
             [thi.ng.color.core :as col]
-            [thi.ng.color.gradients :as grad]))
+            [thi.ng.color.gradients :as grad]
+            [thi.ng.dstruct.streams :as streams]))
 
 (defn random []
   (let [colors [[128 192 128 32]
@@ -38,8 +39,7 @@
        col/hex->int
        col/as-hsla
        (col/rotate-hue theta)
-       vals
-       vec)))
+       streams/get-float-buffer)))
 
 (defn url->colors [url]
   (-> url
