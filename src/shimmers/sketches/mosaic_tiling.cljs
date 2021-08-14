@@ -7,7 +7,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [clojure.string :as str]))
 
 ;; palette from https://htmlcolors.com/palette/288/paleta-6
 (def paleta-6 ["rgb(7,31,65)" "rgb(0,75,90)" "rgb(246,199,111)", "rgb(237,69,52)" "rgb(188,52,44)"])
@@ -33,6 +34,14 @@
                 "#166e7a" "#254d70" "#252446" "#201533"])
 
 (def palettes [paleta-6 cherry-5 eae5e2-5 egg-5 sunflowers-5 eulbink-7 citrink-8])
+
+(comment (map (fn [palette]
+                (->> palette
+                     (map (fn [c] (str/replace-first c "#" "")))
+                     (str/join "-")
+                     str/lower-case
+                     (str "https://artsexperiments.withgoogle.com/artpalette/colors/")))
+              (rest palettes)))
 
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
