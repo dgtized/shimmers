@@ -1,29 +1,14 @@
 (ns shimmers.sketches.mosaic-tiling
   (:require [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [clojure.string :as str]))
-
-;; palette from https://htmlcolors.com/palette/288/paleta-6
-(def paleta-6 ["rgb(7,31,65)" "rgb(0,75,90)" "rgb(246,199,111)", "rgb(237,69,52)" "rgb(188,52,44)"])
-
-;; https://htmlcolors.com/palette/1345/cherry
-(def cherry-5 ["#FFE5D7" "#E78B89" "#D2271F" "#B21D39" "#820539"])
-
-;; https://htmlcolors.com/palette/1469/eae5e2
-(def eae5e2-5 ["#7AF8D4" "#01585B" "#9FC3BB" "#B8E7C2" "#19CF54"])
-
-;; https://htmlcolors.com/palette/1268/egg
-(def egg-5 ["#F1AF3A" "#0E0C0A" "#E2E1DD" "#7E4E06" "#64746C"])
-
-;; https://htmlcolors.com/palette/1111/sunflowers
-(def sunflowers-5 ["#D1AE68" "#2E363C" "#71493E" "#E7DFD5" "#B37A29"])
+            [thi.ng.math.core :as tm]))
 
 ;; https://lospec.com/palette-list/eulbink
 (def eulbink-7 ["#ffffff" "#0ce6f2" "#0098db" "#1e579c"
@@ -33,15 +18,20 @@
 (def citrink-8 ["#ffffff" "#fcf660" "#b2d942" "#52c33f"
                 "#166e7a" "#254d70" "#252446" "#201533"])
 
-(def palettes [paleta-6 cherry-5 eae5e2-5 egg-5 sunflowers-5 eulbink-7 citrink-8])
-
-(comment (map (fn [palette]
-                (->> palette
-                     (map (fn [c] (str/replace-first c "#" "")))
-                     (str/join "-")
-                     str/lower-case
-                     (str "https://artsexperiments.withgoogle.com/artpalette/colors/")))
-              (rest palettes)))
+(def palettes
+  (->> [;; originally https://htmlcolors.com/palette/288/paleta-6
+        "https://artsexperiments.withgoogle.com/artpalette/colors/071f41-004b5a-f6c76f-ed4534-bc342c"
+        ;; https://htmlcolors.com/palette/1345/cherry
+        "https://artsexperiments.withgoogle.com/artpalette/colors/ffe5d7-e78b89-d2271f-b21d39-820539"
+        ;; https://htmlcolors.com/palette/1469/eae5e2
+        "https://artsexperiments.withgoogle.com/artpalette/colors/7af8d4-01585b-9fc3bb-b8e7c2-19cf54"
+        ;; https://htmlcolors.com/palette/1268/egg
+        "https://artsexperiments.withgoogle.com/artpalette/colors/f1af3a-0e0c0a-e2e1dd-7e4e06-64746c"
+        ;; https://htmlcolors.com/palette/1111/sunflowers
+        "https://artsexperiments.withgoogle.com/artpalette/colors/d1ae68-2e363c-71493e-e7dfd5-b37a29"]
+       (map color/url->colors)
+       (map (partial map (partial str "#")))
+       (concat [eulbink-7 citrink-8])))
 
 (defn seed-rect [rows cols palette]
   (for [i (range rows)
