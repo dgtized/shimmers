@@ -48,9 +48,9 @@
                             :drag 0.001})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (and (< (count (:particles system)) 512) (p/chance 0.8))
+  (when (and (< (count (:particles system)) 768) (p/chance 0.66))
     (let [loc (cq/rel-pos 0 (rand))]
-      (vp/add-particles system (repeatedly (rand-int 4) (partial dust-mote loc)))))
+      (vp/add-particles system (repeatedly (rand-int 16) (partial dust-mote loc)))))
   (vp/timestep system 2)
   state)
 
