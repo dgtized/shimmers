@@ -17,7 +17,7 @@
 
 (defn dust-mote [loc]
   (let [start (gv/vec2 loc)
-        velocity (gv/vec2 (tm/random 8.0 10.0) 0)]
+        velocity (gv/vec2 (tm/random 6.0 8.0) 0)]
     (vp/make-particle start (tm/- start velocity) 1.0)))
 
 (defn in-bounds
@@ -41,7 +41,7 @@
                             :drag 0.001})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (and (< (count (:particles system)) 256) (p/chance 0.8))
+  (when (and (< (count (:particles system)) 512) (p/chance 0.8))
     (let [loc (cq/rel-pos 0 (rand))]
       (vp/add-particles system (repeatedly (rand-int 4) (partial dust-mote loc)))))
   (vp/timestep system 2)
