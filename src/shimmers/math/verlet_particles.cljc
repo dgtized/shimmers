@@ -9,6 +9,8 @@
 
 (defprotocol ISystem
   (add-particles [_ new-particles])
+  (transform-particles [_ transformer-fn]
+    "Transforms vector of particles to generate new particles or remove particles from the system.")
   (update-particles [_ delta])
   (apply-constraints [_ delta])
   (timestep [_ iter]))
@@ -35,6 +37,8 @@
   (add-particles [_ new-particles]
     (set! particles (into particles new-particles))
     _)
+  (transform-particles [_ transformer-fn]
+    (set! particles (mapcat transformer-fn particles)))
   (update-particles [_ delta]
     (let [drag' (* delta drag)]
       (doseq [particle (seq particles)]

@@ -127,8 +127,7 @@
              (p/chance (+ 0.01 (* 0.05 (q/noise 50 (q/frame-count))))))
     (let [loc (cq/rel-pos (rand-nth [0.25 0.4 0.5 0.6 0.75]) 1.0)]
       (vp/add-particles system (repeatedly (rand-int 3) (partial make-rocket loc)))))
-  ;; TODO: add this as a mechanics behavior to avoid touching internal state?
-  (set! (.-particles system) (mapcat explode (:particles system)))
+  (vp/transform-particles system explode)
   (vp/timestep system 2)
   state)
 
