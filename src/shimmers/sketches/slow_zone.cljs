@@ -30,28 +30,28 @@
     (if (geom/contains-point? zone pos)
       (let [change (tm/- prev pos)]
         (if (> (tm/mag-squared change) 2.0)
-          (tm/* change 0.3 delta)
+          (tm/* (gv/vec2 -0.2 0) delta)
           (gv/vec2)))
       (gv/vec2))))
 
 (defn acceleration-zone [zone]
   (fn [{:keys [pos]} delta]
     (if (geom/contains-point? zone pos)
-      (tm/* (gv/vec2 0.3 0) delta)
+      (tm/* (gv/vec2 0.2 0) delta)
       (gv/vec2))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.3 0.2) (cq/rel-pos 0.6 0.8)))
-                                        (acceleration-zone (rect/rect (cq/rel-pos 0.6 0.2) (cq/rel-pos 0.7 0.8)))]
+  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.2 0.2) (cq/rel-pos 0.6 0.8)))
+                                        (acceleration-zone (rect/rect (cq/rel-pos 0.6 0.2) (cq/rel-pos 0.8 0.8)))]
                             :constraints [in-bounds]
                             :drag 0.001})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (and (< (count (:particles system)) 768) (p/chance 0.66))
+  (when (and (< (count (:particles system)) 512) (p/chance 0.66))
     (let [loc (cq/rel-pos 0 (rand))]
       (vp/add-particles system (repeatedly (rand-int 16) (partial dust-mote loc)))))
-  (vp/timestep system 2)
+  (vp/timestep system 1)
   state)
 
 (defn draw [{:keys [system]}]
