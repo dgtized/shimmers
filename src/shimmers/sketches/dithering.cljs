@@ -38,6 +38,7 @@
   (aset source i (+ error (aget source i))))
 
 ;; https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
+;; TODO: atkinson dithering from https://beyondloom.com/blog/dither.html
 (defn dither [capture width height]
   (let [image (q/create-image width height)
         source (q/pixels capture)
