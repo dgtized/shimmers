@@ -30,7 +30,7 @@
     (if (geom/contains-point? zone pos)
       (let [change (tm/- prev pos)]
         (if (> (tm/mag-squared change) 2.0)
-          (tm/* change 0.2 delta)
+          (tm/* change 0.3 delta)
           (gv/vec2)))
       (gv/vec2))))
 
@@ -60,7 +60,7 @@
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (doseq [mote (:particles system)]
-    (cq/circle (:pos mote) 2)))
+    (cq/circle (:pos mote) 1)))
 
 (sketch/defquil slow-zone
   :created-at "2021-08-14"
