@@ -10,6 +10,8 @@
             [shimmers.math.probability :as p]
             [shimmers.math.verlet-particles :as vp]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -23,9 +25,18 @@
   (and (< 0 (:x pos) (q/width))
        (< 0 (:y pos) (q/height))))
 
+(defn slowing-zone [zone]
+  (fn [{:keys [pos prev]} delta]
+    (if (geom/contains-point? zone pos)
+      (let [change (tm/- prev pos)]
+        (if (> (tm/mag-squared change) 1.0)
+          (tm/* change 0.2 delta)
+          (gv/vec2)))
+      (gv/vec2))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:system (vp/make-system {:mechanics []
+  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.3 0.2) (cq/rel-pos 0.6 0.8)))]
                             :constraints [in-bounds]
                             :drag 0.001})})
 
@@ -37,7 +48,7 @@
   state)
 
 (defn draw [{:keys [system]}]
-  (q/background 1.0 0.01)
+  (q/background 1.0 0.05)
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
