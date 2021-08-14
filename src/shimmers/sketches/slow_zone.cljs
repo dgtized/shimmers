@@ -29,14 +29,21 @@
   (fn [{:keys [pos prev]} delta]
     (if (geom/contains-point? zone pos)
       (let [change (tm/- prev pos)]
-        (if (> (tm/mag-squared change) 1.0)
+        (if (> (tm/mag-squared change) 2.0)
           (tm/* change 0.2 delta)
           (gv/vec2)))
       (gv/vec2))))
 
+(defn acceleration-zone [zone]
+  (fn [{:keys [pos]} delta]
+    (if (geom/contains-point? zone pos)
+      (tm/* (gv/vec2 0.3 0) delta)
+      (gv/vec2))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.3 0.2) (cq/rel-pos 0.6 0.8)))]
+  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.3 0.2) (cq/rel-pos 0.6 0.8)))
+                                        (acceleration-zone (rect/rect (cq/rel-pos 0.6 0.2) (cq/rel-pos 0.7 0.8)))]
                             :constraints [in-bounds]
                             :drag 0.001})})
 
