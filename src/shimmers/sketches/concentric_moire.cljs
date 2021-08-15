@@ -8,13 +8,13 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:circles [{:pos (cq/rel-pos 0.2 0.5)
-              :spacing 12 :weight 1.2}
+              :spacing 20 :upper 48 :weight 1.0}
              {:pos (cq/rel-pos 0.8 0.5)
-              :spacing 12 :weight 1.2}
+              :spacing 20 :upper 48 :weight 1.0}
              {:pos (cq/rel-pos 0.5 0.25)
-              :spacing 4 :weight 0.5}
+              :spacing 10 :upper 64 :weight 0.5}
              {:pos (cq/rel-pos 0.5 0.75)
-              :spacing 4 :weight 0.5}]})
+              :spacing 10 :upper 64 :weight 0.5}]})
 
 (defn update-state [state]
   state)
@@ -23,10 +23,11 @@
   (q/background 1.0)
   (q/no-fill)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos spacing weight]} circles]
+  (doseq [{:keys [pos spacing upper weight]} circles]
     (q/stroke-weight weight)
-    (doseq [r (range 2 96)]
-      (cq/circle pos (* spacing r)))))
+    (doseq [r (range 2 upper)]
+      (cq/circle pos (* spacing (+ r
+                                   (Math/sin (/ (q/frame-count) 90))))))))
 
 (sketch/defquil concentric-moire
   :created-at "2021-08-14"
