@@ -25,9 +25,9 @@
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos spacing upper weight]} circles]
     (q/stroke-weight weight)
-    (doseq [r (range 2 upper)]
+    (doseq [r (range 0 upper)]
       (cq/circle pos (* spacing (+ r
-                                   (Math/sin (/ (q/frame-count) 90))))))))
+                                   (* 0.5 (+ 1 (Math/sin (/ (q/frame-count) 90))))))))))
 
 (sketch/defquil concentric-moire
   :created-at "2021-08-14"
