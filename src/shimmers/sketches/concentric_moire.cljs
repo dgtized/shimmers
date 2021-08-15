@@ -6,6 +6,7 @@
             [shimmers.common.quil :as cq]))
 
 (defn setup []
+  (q/frame-rate 20)
   (q/color-mode :hsl 1.0)
   {:circles [{:pos (cq/rel-pos 0.2 0.5)
               :spacing 20 :upper 48 :weight 1.0}
@@ -23,7 +24,7 @@
   (q/background 1.0)
   (q/no-fill)
   (q/ellipse-mode :radius)
-  (let [change (* 0.5 (+ 1 (Math/sin (/ (q/frame-count) 90))))]
+  (let [change (* 0.5 (+ 1 (Math/sin (/ (q/frame-count) 40))))]
     (doseq [{:keys [pos spacing upper weight]} circles]
       (q/stroke-weight weight)
       (doseq [r (range 0 upper)]
