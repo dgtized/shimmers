@@ -15,6 +15,7 @@
             shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
             shimmers.sketches.colors
+            shimmers.sketches.concentric-moire
             shimmers.sketches.convex-spiral
             shimmers.sketches.cube
             shimmers.sketches.delaunay-voronoi
