@@ -34,10 +34,14 @@
           (gv/vec2)))
       (gv/vec2))))
 
+(defn deflection [pos]
+  (* (if (> (:y pos) (* 0.5 (q/height))) 1 -1)
+     (* 0.15 (q/noise (/ (q/frame-count) 100)))))
+
 (defn acceleration-zone [zone]
   (fn [{:keys [pos]} delta]
     (if (geom/contains-point? zone pos)
-      (tm/* (gv/vec2 0.2 0) delta)
+      (tm/* (gv/vec2 0.2 (deflection pos)) delta)
       (gv/vec2))))
 
 (defn setup []
