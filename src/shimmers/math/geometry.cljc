@@ -121,7 +121,7 @@
   "Decompose triangle into a collection of smaller triangles"
   [t {:keys [mode inner-point sample sample-low sample-high]
       :or {mode :midpoint
-           inner-point geom/random-point-inside
+           inner-point random-point-in-triangle
            sample (p/gaussian-clamped 0.5 0.1)
            sample-low (p/gaussian-clamped 0.33 0.1)
            sample-high (p/gaussian-clamped 0.33 0.1)}}]

@@ -37,7 +37,7 @@
                                   2 :trisect
                                   1 :centroid)
         opts {:mode (rand-nth distribution)
-              :inner-point geom/random-point-inside
+              :inner-point geometry/random-point-in-triangle
               :sample (p/gaussian-clamped 0.5 0.1)
               :sample-low (p/gaussian-clamped 0.33 0.1)
               :sample-high (p/gaussian-clamped 0.66 0.1)}]
