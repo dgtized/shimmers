@@ -56,14 +56,14 @@
                             :drag 0.001})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (and (< (count (:particles system)) 512) (p/chance 0.66))
+  (when (and (< (count (:particles system)) 768) (p/chance 0.66))
     (let [loc (cq/rel-pos 0 (rand))]
       (vp/add-particles system (repeatedly (rand-int 16) (partial dust-mote loc)))))
   (vp/timestep system 1)
   state)
 
 (defn draw [{:keys [system]}]
-  (q/background 1.0 0.05)
+  (q/background 1.0 0.08)
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
