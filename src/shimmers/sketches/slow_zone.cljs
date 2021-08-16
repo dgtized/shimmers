@@ -35,10 +35,12 @@
       (gv/vec2))))
 
 (defn deflection [pos]
-  (->> (/ (q/frame-count) 200)
-       q/noise
-       (tm/smoothstep* 0.3 1.0)
-       (* 0.15 (if (> (:y pos) (* 0.5 (q/height))) 1 -1))))
+  (let [t (q/noise (/ (q/frame-count) 200))
+        direction (if (> (:y pos) (* 0.5 (q/height))) -1 1)
+        value (cond (< t 0.35) (- t 0.35)
+                    (> t 0.65) (- t 0.65)
+                    :else 0)]
+    (* 0.18 direction value)))
 
 (defn acceleration-zone [zone]
   (fn [{:keys [pos]} delta]
