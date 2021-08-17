@@ -17,7 +17,7 @@
           :high-y)})
 
 (defn project-y [[x0 y0] [x1 y1] x]
-  ;; TODO handle verticle line
+  ;; TODO handle vertical line
   (+ (* (/ (- y1 y0) (- x1 x0))
         (- x x0))
      y0))
@@ -26,8 +26,7 @@
   ;; TODO handle horizontal line
   (+ (* (/ (- x1 x0) (- y1 y0))
         (- y y0))
-     x0)
-  )
+     x0))
 
 (defn clip-point [code rect p q]
   (cond (contains? code :low-x)
@@ -50,7 +49,10 @@
           (gl/line2 p q)
           (= encode-p encode-q) ;; both points outside of rect
           nil
-          )))
+          (not-empty encode-p)
+          (recur rect (clip-point encode-p rect p q) q)
+          :else
+          (recur rect p (clip-point encode-q rect p q)))))
 
 (defprotocol IClipped
   (clipped-by [line rect]))
