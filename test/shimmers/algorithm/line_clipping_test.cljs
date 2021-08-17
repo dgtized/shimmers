@@ -28,4 +28,7 @@
   (is (= (gl/line2 2 1 2 3) (sut/clip-line r (gv/vec2 2 0) (gv/vec2 2 4)))
       "vertical line clipping"))
 
+(deftest hatching
+  (is (= 4 (count (sut/hatch-rectangle (rect/rect 2 2 4) 1.0 0.0)))))
+
 (comment (t/run-tests))
