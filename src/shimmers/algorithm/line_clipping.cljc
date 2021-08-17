@@ -1,20 +1,22 @@
 (ns shimmers.algorithm.line-clipping
   "Cohen-sutherland line clipping from https://sighack.com/post/cohen-sutherland-line-clipping-algorithm."
-  (:require #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Line2]])
-            [thi.ng.geom.line :as gl]
+  (:require [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
+            #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Line2]])
             [thi.ng.geom.vector :as gv])
   #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
 
 (defn encode-endpoint [[x y] r]
-  #{(cond (< x (rect/left r))
-          :low-x
-          (> x (rect/right r))
-          :high-x)
-    (cond (< y (rect/bottom r))
-          :low-y
-          (> y (rect/top r))
-          :high-y)})
+  (->> [(cond (< x (rect/left r))
+              :low-x
+              (> x (rect/right r))
+              :high-x)
+        (cond (< y (rect/bottom r))
+              :low-y
+              (> y (rect/top r))
+              :high-y)]
+       (remove nil?)
+       set))
 
 (defn project-y [[x0 y0] [x1 y1] x]
   ;; TODO handle vertical line
