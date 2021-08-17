@@ -34,6 +34,7 @@
             shimmers.sketches.gossamer-coils
             shimmers.sketches.gravity-well
             shimmers.sketches.harsh-lines
+            shimmers.sketches.hatched-rectangles
             shimmers.sketches.hexaclock
             shimmers.sketches.hexcursive
             shimmers.sketches.inconsequential-drift
