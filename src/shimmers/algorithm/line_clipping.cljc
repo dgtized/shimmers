@@ -4,7 +4,7 @@
             [thi.ng.geom.rect :as rect]
             #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Line2]])
             [thi.ng.geom.vector :as gv])
-  #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
+  #?(:clj (:import [thi.ng.geom.types Line2])))
 
 (defn encode-endpoint [[x y] r]
   (->> [(cond (< x (rect/left r))
@@ -18,14 +18,14 @@
        (remove nil?)
        set))
 
+;; not sure how horizontal/vertical lines are not triggering divide by zero, but
+;; appears to be working in tests.
 (defn project-y [[x0 y0] [x1 y1] x]
-  ;; TODO handle vertical line
   (+ (* (/ (- y1 y0) (- x1 x0))
         (- x x0))
      y0))
 
 (defn project-x [[x0 y0] [x1 y1] y]
-  ;; TODO handle horizontal line
   (+ (* (/ (- x1 x0) (- y1 y0))
         (- y y0))
      x0))
