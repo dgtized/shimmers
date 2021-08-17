@@ -2,8 +2,11 @@
   "Cohen-sutherland line clipping from https://sighack.com/post/cohen-sutherland-line-clipping-algorithm."
   (:require [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
-            #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Line2]])
-            [thi.ng.geom.vector :as gv])
+            #?(:clj [thi.ng.geom.types]
+               :cljs [thi.ng.geom.types :refer [Line2]])
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]
+            [clojure.set :as set])
   #?(:clj (:import [thi.ng.geom.types Line2])))
 
 (defn encode-endpoint [[x y] r]
@@ -49,7 +52,7 @@
         encode-q (encode-endpoint q rect)]
     (cond (and (empty? encode-p) (empty? encode-q)) ;; both inside rect
           (gl/line2 p q)
-          (= encode-p encode-q) ;; both points outside of rect
+          (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
           nil
           (not-empty encode-p)
           (recur rect (clip-point encode-p rect p q) q)
