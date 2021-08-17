@@ -29,12 +29,10 @@
              :lines (into lines hatches)
              :draw hatches))))
 
-(defn draw [{:keys [rectangles draw]}]
+(defn draw [{:keys [draw]}]
   ;; (q/background 1.0)
   (q/stroke-weight 0.5)
   (q/no-fill)
-  (doseq [{[x y] :p [w h] :size} rectangles]
-    (q/rect x y w h))
   (doseq [{[p q] :points} draw]
     (q/line p q)))
 
