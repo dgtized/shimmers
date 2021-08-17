@@ -17,6 +17,8 @@
 
 (deftest clip-line
   (is (nil? (sut/clip-line r (gv/vec2 4 4) (gv/vec2 5 4))))
+  ;; NaN problems?
+  #_(sut/clip-line r (gv/vec2 4 4) (gv/vec2 4 2))
   (is (= (gl/line2 1 1.5 2 2) (sut/clip-line r (gv/vec2 0 1) (gv/vec2 2 2))))
   (is (= (gl/line2 1 1 2 2) (sut/clip-line r (gv/vec2 0 0) (gv/vec2 2 2))))
   (is (= (gl/line2 1 1 3 3) (sut/clip-line r (gv/vec2 0 0) (gv/vec2 4 4))))
