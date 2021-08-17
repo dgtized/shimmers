@@ -14,21 +14,23 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:rectangles (geom/subdivide (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                               {:rows 10 :cols 8})
+                               {:num 16})
    :lines []})
 
 (defn update-state [{:keys [rectangles lines] :as state}]
   (if (empty? rectangles)
     state
     (let [rect (rand-nth rectangles)
-          hatches (clip/hatch-rectangle rect (tm/random 5.0 10.0)
-                                        (tm/random 0 tm/TWO_PI))]
+          spacing (* (+ 0.6 (- 1.0 (/ (rect/top rect) (q/height))))
+                     (tm/random 3.0 9.0))
+          hatches (clip/hatch-rectangle rect spacing (tm/random 0 tm/TWO_PI))]
       (assoc state
              :rectangles (remove #{rect} rectangles)
              :lines (into lines hatches)))))
 
 (defn draw [{:keys [rectangles lines]}]
   (q/background 1.0)
+  (q/stroke-weight 0.5)
   (q/no-fill)
   (doseq [{[x y] :p [w h] :size} rectangles]
     (q/rect x y w h))
