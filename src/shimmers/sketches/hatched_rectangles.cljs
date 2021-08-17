@@ -26,15 +26,16 @@
           hatches (clip/hatch-rectangle rect spacing (tm/random 0 tm/TWO_PI))]
       (assoc state
              :rectangles (remove #{rect} rectangles)
-             :lines (into lines hatches)))))
+             :lines (into lines hatches)
+             :draw hatches))))
 
-(defn draw [{:keys [rectangles lines]}]
-  (q/background 1.0)
+(defn draw [{:keys [rectangles draw]}]
+  ;; (q/background 1.0)
   (q/stroke-weight 0.5)
   (q/no-fill)
   (doseq [{[x y] :p [w h] :size} rectangles]
     (q/rect x y w h))
-  (doseq [{[p q] :points} lines]
+  (doseq [{[p q] :points} draw]
     (q/line p q)))
 
 (sketch/defquil hatched-rectangles
