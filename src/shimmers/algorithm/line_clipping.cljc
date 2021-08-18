@@ -58,8 +58,8 @@
             (> i 10)
             (do (println [:infinite
                           [(rect/left rect) (rect/right rect) (rect/bottom rect) (rect/top rect)]
-                          [p init-p encode-p]
-                          [q init-q encode-q]])
+                          [p encode-p]
+                          [q encode-q]])
                 (gl/line2 p q))
             (not-empty encode-p)
             (recur (inc i) (clip-point encode-p rect p q) q)
@@ -88,8 +88,6 @@
         y0 (+ (* m x0) c)
         x1 (+ x w (/ w 2))
         y1 (+ (* m x1) c)]
-    (println {:call [rect spacing theta] :start [xstart ystart]
-              :cm [cosa m] :p0 [x0 y0] :p1 [x1 y1]})
     (loop [i 1 hatches [(clip-line rect (gv/vec2 x0 y0) (gv/vec2 x1 y1))]]
       (let [step-term (/ (* i spacing) cosa)
             up (clip-line rect
@@ -103,6 +101,5 @@
           hatches
           (recur (inc i) (into hatches lines)))))))
 
-(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
-         (hatch-rectangle (rect/rect 133.3333 200 133.3333 100) 5.6408830810627935 0.7179892559563))
+(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1))
 
