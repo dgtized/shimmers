@@ -60,13 +60,10 @@
             (gl/line2 p q)
             (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
             nil
-            (> i 4) ;; I think after 4 iterations p and q should converge to the bounds
-            (do (println [:infinite
-                          [(rect/left rect) (rect/right rect) (rect/bottom rect) (rect/top rect)]
-                          [p encode-p]
-                          [q encode-q]
-                          (clip-point encode-q rect p q)])
-                (gl/line2 p q))
+            ;; after 4 iterations p and q should have converged to the bounds,
+            ;; so treat infinite recursion as a no-solution
+            (> i 4)
+            nil
             (not-empty encode-p)
             (recur (inc i) (clip-point encode-p rect p q) q)
             :else
