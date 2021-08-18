@@ -47,17 +47,24 @@
         (let [ymax (rect/top rect)]
           (gv/vec2 (project-x p q ymax) ymax))))
 
-(defn clip-line [rect p q]
-  (let [encode-p (encode-endpoint p rect)
-        encode-q (encode-endpoint q rect)]
-    (cond (and (empty? encode-p) (empty? encode-q)) ;; both inside rect
-          (gl/line2 p q)
-          (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
-          nil
-          (not-empty encode-p)
-          (recur rect (clip-point encode-p rect p q) q)
-          :else
-          (recur rect p (clip-point encode-q rect p q)))))
+(defn clip-line [rect init-p init-q]
+  (loop [i 0 p init-p q init-q]
+    (let [encode-p (encode-endpoint p rect)
+          encode-q (encode-endpoint q rect)]
+      (cond (and (empty? encode-p) (empty? encode-q)) ;; both inside rect
+            (gl/line2 p q)
+            (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
+            nil
+            (> i 10)
+            (do (println [:infinite
+                          [(rect/left rect) (rect/right rect) (rect/bottom rect) (rect/top rect)]
+                          [p init-p encode-p]
+                          [q init-q encode-q]])
+                (gl/line2 p q))
+            (not-empty encode-p)
+            (recur (inc i) (clip-point encode-p rect p q) q)
+            :else
+            (recur (inc i) p (clip-point encode-q rect p q))))))
 
 (defprotocol IClipped
   (clipped-by [line rect]))
