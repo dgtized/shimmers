@@ -90,8 +90,9 @@
         x0 (- x (/ w 2))
         y0 (+ (* m x0) c)
         x1 (+ x w (/ w 2))
-        y1 (+ (* m x1) c)]
-    (loop [i 1 hatches [(clip-line rect (gv/vec2 x0 y0) (gv/vec2 x1 y1))]]
+        y1 (+ (* m x1) c)
+        base-line (clip-line rect (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
+    (loop [i 1 hatches (if base-line [base-line] [])]
       (let [step-term (/ (* i spacing) cosa)
             up (clip-line rect
                           (gv/vec2 x0 (+ y0 step-term))
@@ -104,5 +105,5 @@
           hatches
           (recur (inc i) (into hatches lines)))))))
 
-(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1))
-
+(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
+         (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
