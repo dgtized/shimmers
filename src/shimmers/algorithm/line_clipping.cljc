@@ -81,6 +81,7 @@
         y0 (+ (* m x0) c)
         x1 (+ x w (/ w 2))
         y1 (+ (* m x1) c)]
+    (println [rect spacing theta xstart ystart cosa m [x0 y0] [x1 y1]])
     (loop [i 1 hatches [(clip-line rect (gv/vec2 x0 y0) (gv/vec2 x1 y1))]]
       (let [step-term (/ (* i spacing) cosa)
             up (clip-line rect
