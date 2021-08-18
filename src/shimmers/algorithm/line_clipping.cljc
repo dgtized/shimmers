@@ -94,4 +94,7 @@
           hatches
           (recur (inc i) (into hatches lines)))))))
 
-(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1))
+;; [#thi.ng.geom.types.Rect2{:p #vec2 [133.33334350585938 200], :size #vec2 [133.3333282470703 100]} 5.6408830810627935 0.7179892559856319]
+
+(comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
+         (hatch-rectangle (rect/rect 133.33 200 133.33 100) 5.64 0.71))
