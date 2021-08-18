@@ -33,18 +33,23 @@
         (- y y0))
      x0))
 
+;; Kinda gross but seems to handle floating point errors flip/flopping the
+;; bounds for solving for [xmax,y(xmax)] or [x(ymax),ymax]. Without this fix,
+;; clip-line can often loop indefinitely. Might be better with a dynamic tolerance?
+(def ^:dynamic *tolerance* 0.0001)
+
 (defn clip-point [code rect p q]
   (cond (contains? code :low-x)
         (let [xmin (rect/left rect)]
           (gv/vec2 xmin (project-y p q xmin)))
         (contains? code :high-x)
-        (let [xmax (rect/right rect)]
+        (let [xmax (- (rect/right rect) *tolerance*)]
           (gv/vec2 xmax (project-y p q xmax)))
         (contains? code :low-y)
         (let [ymin (rect/bottom rect)]
           (gv/vec2 (project-x p q ymin) ymin))
         (contains? code :high-y)
-        (let [ymax (rect/top rect)]
+        (let [ymax (- (rect/top rect) *tolerance*)]
           (gv/vec2 (project-x p q ymax) ymax))))
 
 (defn clip-line [rect init-p init-q]
@@ -55,11 +60,12 @@
             (gl/line2 p q)
             (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
             nil
-            (> i 10)
+            (> i 4) ;; I think after 4 iterations p and q should converge to the bounds
             (do (println [:infinite
                           [(rect/left rect) (rect/right rect) (rect/bottom rect) (rect/top rect)]
                           [p encode-p]
-                          [q encode-q]])
+                          [q encode-q]
+                          (clip-point encode-q rect p q)])
                 (gl/line2 p q))
             (not-empty encode-p)
             (recur (inc i) (clip-point encode-p rect p q) q)
