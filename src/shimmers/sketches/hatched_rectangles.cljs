@@ -9,7 +9,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
 
 ;; note this only connects edges that completely overlap, it won't form L or T
 ;; shaped polygons and will only extend an existing rectangle. However hatching
@@ -51,6 +52,10 @@
             (recur (rest growth) remaining (conj output source))))
         (into output remaining)))))
 
+(defn noise-angle [rect divisor]
+  (let [[x y] (geom/centroid rect)]
+    (* tm/TWO_PI (q/noise (/ x divisor) (/ y divisor)))))
+
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -61,19 +66,19 @@
                      (combine-with 0.4)
                      (combine-with 0.2)
                      (combine-with 0.2))
+     :angle (p/weighted {(fn [r] (noise-angle r 256)) 0.4
+                         (fn [r] (noise-angle r 128)) 0.4
+                         (fn [r] (noise-angle r 32)) 0.2
+                         #(tm/random 0 tm/TWO_PI) 0.4})
      :lines []}))
 
-(defn noise-angle [rect divisor]
-  (let [[x y] (geom/centroid rect)]
-    (* tm/TWO_PI (q/noise (/ x divisor) (/ y divisor)))))
-
-(defn update-state [{:keys [rectangles lines] :as state}]
+(defn update-state [{:keys [rectangles lines angle] :as state}]
   (if (empty? rectangles)
     state
     (let [rect (rand-nth rectangles)
           spacing (* (+ 0.5 (- 1.0 (/ (rect/top rect) (q/height))))
                      (tm/random 3.0 9.0))
-          theta (noise-angle rect 128) ;; (tm/random 0 tm/TWO_PI)
+          theta (angle rect)
           hatches (clip/hatch-rectangle rect spacing theta)]
       (assoc state
              :rectangles (remove #{rect} rectangles)
