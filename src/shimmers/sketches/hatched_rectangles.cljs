@@ -61,15 +61,23 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [depth (p/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})
-        combine-with (partial combine (rand-nth [neighboring-vertices overlapping-edges]))]
+        algorithm (rand-nth [:vertices :edges])
+        combine-with (partial combine ({:vertices neighboring-vertices
+                                        :edges overlapping-edges}
+                                       algorithm))
+        angle (p/weighted {256 0.4
+                           128 0.4
+                           64 0.1
+                           32 0.2
+                           :random 0.4})]
+    (println {:combine [algorithm depth] :angle angle})
     {:rectangles (cs/iterate-cycles depth
                                     (fn [rs] (combine-with rs 0.3))
                                     (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
                                         (geom/subdivide {:num 24})))
-     :angle (p/weighted {(fn [r] (noise-angle r 256)) 0.4
-                         (fn [r] (noise-angle r 128)) 0.4
-                         (fn [r] (noise-angle r 32)) 0.2
-                         #(tm/random 0 tm/TWO_PI) 0.4})
+     :angle (if (= angle :random)
+              #(tm/random 0 tm/TWO_PI)
+              (fn [r] (noise-angle r angle)))
      :lines []}))
 
 (defn update-state [{:keys [rectangles lines angle] :as state}]
