@@ -60,7 +60,8 @@
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [depth (p/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})
+  (let [sides (p/weighted {16 1 20 1 24 3 32 2 40 1})
+        depth (p/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})
         algorithm (rand-nth [:vertices :edges])
         combine-with (partial combine ({:vertices neighboring-vertices
                                         :edges overlapping-edges}
@@ -70,11 +71,11 @@
                            64 0.1
                            32 0.2
                            :random 0.4})]
-    (println {:combine [algorithm depth] :angle angle})
+    (println {:sides sides :combine [algorithm depth] :angle angle})
     {:rectangles (cs/iterate-cycles depth
                                     (fn [rs] (combine-with rs 0.3))
                                     (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                                        (geom/subdivide {:num 24})))
+                                        (geom/subdivide {:num sides})))
      :angle (if (= angle :random)
               #(tm/random 0 tm/TWO_PI)
               (fn [r] (noise-angle r angle)))
