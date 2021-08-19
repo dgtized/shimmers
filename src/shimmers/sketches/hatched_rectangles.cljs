@@ -2,19 +2,45 @@
   "Reconstruction of https://sighack.com/post/cohen-sutherland-line-clipping-algorithm examples"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.algorithm.line-clipping :as clip]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
+(defn neighboring [rect rectangles]
+  (let [edges (geom/edges rect)]
+    (filter (fn [t]
+              (some (fn [[p q]]
+                      (some (fn [[p' q']]
+                              (or (and (tm/delta= p p') (tm/delta= q q'))
+                                  (and (tm/delta= p q') (tm/delta= q p'))))
+                            (geom/edges t))) edges))
+            rectangles)))
+
+(comment
+  (let [rs (geom/subdivide (rect/rect 0 0 1 1) {:num 2})]
+    (neighboring (first rs) (rest rs))))
+
+(defn combine [rectangles percent]
+  (let [n (* percent (count rectangles))
+        [growth remaining] (split-at n (shuffle rectangles))]
+    (loop [growth growth remaining remaining output []]
+      (if-let [source (first growth)]
+        (let [neighbors (neighboring source remaining)]
+          (if-let [neighbor (and (seq neighbors) (rand-nth neighbors))]
+            (recur (rest growth) (remove #{neighbor} remaining) (conj output (rect/union source neighbor)))
+            (recur (rest growth) remaining (conj output source))))
+        (into output remaining)))))
+
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:rectangles (geom/subdivide (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                               {:num 16})
+  {:rectangles (combine (geom/subdivide (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
+                                        {:num 16})
+                        0.4)
    :lines []})
 
 (defn update-state [{:keys [rectangles lines] :as state}]
