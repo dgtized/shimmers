@@ -10,7 +10,8 @@
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]))
+            [shimmers.math.probability :as p]
+            [shimmers.common.sequence :as cs]))
 
 ;; note this only connects edges that completely overlap, it won't form L or T
 ;; shaped polygons and will only extend an existing rectangle. However hatching
@@ -59,13 +60,12 @@
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [combine-with (partial combine (rand-nth [neighboring-vertices overlapping-edges]))]
-    {:rectangles (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                     (geom/subdivide {:num 24})
-                     (combine-with 0.4)
-                     (combine-with 0.4)
-                     (combine-with 0.2)
-                     (combine-with 0.2))
+  (let [depth (p/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})
+        combine-with (partial combine (rand-nth [neighboring-vertices overlapping-edges]))]
+    {:rectangles (cs/iterate-cycles depth
+                                    (fn [rs] (combine-with rs 0.3))
+                                    (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
+                                        (geom/subdivide {:num 24})))
      :angle (p/weighted {(fn [r] (noise-angle r 256)) 0.4
                          (fn [r] (noise-angle r 128)) 0.4
                          (fn [r] (noise-angle r 32)) 0.2
