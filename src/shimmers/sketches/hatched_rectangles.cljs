@@ -60,7 +60,7 @@
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [sides (p/weighted {16 1 20 1 24 3 32 2 40 1})
+  (let [sides (p/weighted {16 1 20 1 24 3 32 2 48 1 64 1})
         depth (p/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})
         algorithm (rand-nth [:vertices :edges])
         combine-with (partial combine ({:vertices neighboring-vertices
@@ -72,7 +72,8 @@
                            32 0.2
                            :random 0.4})]
     (println {:sides sides :combine [algorithm depth] :angle angle})
-    {:rectangles (cs/iterate-cycles depth
+    {:cycles (inc (int (/ (* sides sides) 100)))
+     :rectangles (cs/iterate-cycles depth
                                     (fn [rs] (combine-with rs 0.3))
                                     (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
                                         (geom/subdivide {:num sides})))
@@ -81,18 +82,22 @@
               (fn [r] (noise-angle r angle)))
      :lines []}))
 
-(defn update-state [{:keys [rectangles lines angle] :as state}]
-  (if (empty? rectangles)
-    state
-    (let [rect (rand-nth rectangles)
-          spacing (* (+ 0.5 (- 1.0 (/ (rect/top rect) (q/height))))
-                     (tm/random 3.0 9.0))
-          theta (angle rect)
-          hatches (clip/hatch-rectangle rect spacing theta)]
-      (assoc state
-             :rectangles (remove #{rect} rectangles)
-             :lines (into lines hatches)
-             :draw hatches))))
+(defn update-state [{:keys [cycles] :as state}]
+  (cs/iterate-cycles
+   cycles
+   (fn [{:keys [rectangles lines angle draw] :as state}]
+     (if (empty? rectangles)
+       state
+       (let [rect (rand-nth rectangles)
+             spacing (* (+ 0.5 (- 1.0 (/ (rect/top rect) (q/height))))
+                        (tm/random 3.0 9.0))
+             theta (angle rect)
+             hatches (clip/hatch-rectangle rect spacing theta)]
+         (assoc state
+                :rectangles (remove #{rect} rectangles)
+                :lines (into lines hatches)
+                :draw (into draw hatches)))))
+   (assoc state :draw [])))
 
 (defn draw [{:keys [draw]}]
   ;; (q/background 1.0)
