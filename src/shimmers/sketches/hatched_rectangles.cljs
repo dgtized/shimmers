@@ -40,7 +40,10 @@
   (q/color-mode :hsl 1.0)
   {:rectangles (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
                    (geom/subdivide {:num 24})
-                   (combine 0.4))
+                   (combine 0.4)
+                   (combine 0.3)
+                   (combine 0.2)
+                   (combine 0.1))
    :lines []})
 
 (defn update-state [{:keys [rectangles lines] :as state}]
