@@ -42,6 +42,7 @@
   (let [rs (geom/subdivide (rect/rect 0 0 1 1) {:num 2})]
     (neighboring-vertices (first rs) (rest rs))))
 
+;; TODO: optimize combination steps, probably by more efficiently calculating neighbors
 (defn combine [neighboring rectangles percent]
   (let [n (* percent (count rectangles))
         [growth remaining] (split-at n (shuffle rectangles))]
