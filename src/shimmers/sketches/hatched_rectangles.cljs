@@ -13,6 +13,12 @@
             [shimmers.math.probability :as p]
             [shimmers.common.sequence :as cs]))
 
+(defn nearby [rect rectangles]
+  (let [center-x (:x (geom/centroid rect))
+        width (* 2 (geom/width rect))]
+    (filter (fn [t] (< (Math/abs (- center-x (:x (geom/centroid t)))) width))
+            rectangles)))
+
 ;; note this only connects edges that completely overlap, it won't form L or T
 ;; shaped polygons and will only extend an existing rectangle. However hatching
 ;; only works for rectangles so this works.
@@ -48,7 +54,7 @@
         [growth remaining] (split-at n (shuffle rectangles))]
     (loop [growth growth remaining remaining output []]
       (if-let [source (first growth)]
-        (let [neighbors (neighboring source remaining)]
+        (let [neighbors (neighboring source (nearby source remaining))]
           (if-let [neighbor (and (seq neighbors) (rand-nth neighbors))]
             (recur (rest growth) (remove #{neighbor} remaining) (conj output (rect/union source neighbor)))
             (recur (rest growth) remaining (conj output source))))
