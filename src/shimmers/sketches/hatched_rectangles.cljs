@@ -54,9 +54,9 @@
   (if (empty? rectangles)
     state
     (let [rect (rand-nth rectangles)
-          spacing (* (+ 0.6 (- 1.0 (/ (rect/top rect) (q/height))))
+          spacing (* (+ 0.5 (- 1.0 (/ (rect/top rect) (q/height))))
                      (tm/random 3.0 9.0))
-          theta (noise-angle rect 64) ;; (tm/random 0 tm/TWO_PI)
+          theta (noise-angle rect 128) ;; (tm/random 0 tm/TWO_PI)
           hatches (clip/hatch-rectangle rect spacing theta)]
       (assoc state
              :rectangles (remove #{rect} rectangles)
