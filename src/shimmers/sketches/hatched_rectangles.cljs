@@ -7,10 +7,14 @@
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
-(defn neighboring [rect rectangles]
+;; note this only connects edges that completely overlap, it won't form L or T
+;; shaped polygons and will only extend an existing rectangle. However hatching
+;; only works for rectangles so this works.
+(defn neighboring-vertices [rect rectangles]
   (let [edges (geom/edges rect)]
     (filter (fn [t]
               (some (fn [[p q]]
@@ -20,11 +24,23 @@
                             (geom/edges t))) edges))
             rectangles)))
 
+;; This may result in overlap as union is *always* a rectangle, doesn't upgrade
+;; to polygon.
+(defn overlapping-edges [rect rectangles]
+  (let [edges (map gl/line2 (geom/edges rect))]
+    (filter (fn [t]
+              (some (fn [line]
+                      (some (fn [[p q]]
+                              (and (tm/delta= p (geom/closest-point line p))
+                                   (tm/delta= q (geom/closest-point line q))))
+                            (geom/edges t))) edges))
+            rectangles)))
+
 (comment
   (let [rs (geom/subdivide (rect/rect 0 0 1 1) {:num 2})]
-    (neighboring (first rs) (rest rs))))
+    (neighboring-vertices (first rs) (rest rs))))
 
-(defn combine [rectangles percent]
+(defn combine [neighboring rectangles percent]
   (let [n (* percent (count rectangles))
         [growth remaining] (split-at n (shuffle rectangles))]
     (loop [growth growth remaining remaining output []]
@@ -38,13 +54,14 @@
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:rectangles (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                   (geom/subdivide {:num 24})
-                   (combine 0.4)
-                   (combine 0.4)
-                   (combine 0.2)
-                   (combine 0.2))
-   :lines []})
+  (let [combine-with (partial combine (rand-nth [neighboring-vertices overlapping-edges]))]
+    {:rectangles (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
+                     (geom/subdivide {:num 24})
+                     (combine-with 0.4)
+                     (combine-with 0.4)
+                     (combine-with 0.2)
+                     (combine-with 0.2))
+     :lines []}))
 
 (defn noise-angle [rect divisor]
   (let [[x y] (geom/centroid rect)]
