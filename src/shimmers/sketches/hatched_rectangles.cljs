@@ -39,7 +39,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:rectangles (combine (geom/subdivide (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                                        {:num 16})
+                                        {:num 24})
                         0.4)
    :lines []})
 
