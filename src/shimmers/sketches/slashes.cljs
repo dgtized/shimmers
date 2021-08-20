@@ -10,23 +10,27 @@
             [thi.ng.math.core :as tm]))
 
 (defn slash-region [bounds angle x0 n spacing]
-  (loop [x x0 n n slashes []]
-    (if (zero? n)
-      slashes
-      (let [{[bx by] :p [bw bh] :size} bounds
-            y0 (+ by bh)
-            x1 (+ bx bw)
-            m (Math/sin angle)
-            p (gv/vec2 x y0)
-            q (gv/vec2 x1 (+ (* m x1) y0))]
-        (if-let [line (clip/clip-line bounds p q)]
-          (recur (+ x spacing) (dec n) (conj slashes line))
-          slashes)))))
+  (let [{[bx by] :p [bw bh] :size} bounds
+        m (Math/tan angle)
+        c (- (+ by bh) (* m x0))
+        x0 (- x0 (/ bw 2))
+        y0 (+ (* m x0) c)
+        x1 (+ bx bw (/ bw 2))
+        y1 (+ (* m x1) c)]
+    (loop [i 0 slashes []]
+      (if (> i n)
+        slashes
+        (let [step (* i spacing)
+              p (gv/vec2 x0 (- y0 step))
+              q (gv/vec2 x1 (- y1 step))]
+          (if-let [line (clip/clip-line bounds p q)]
+            (recur (inc i) (conj slashes line))
+            slashes))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))]
-    {:slashes (slash-region bounds (tm/random 4.9 5.5) (cq/rel-w 0.6) 10 8)}))
+    {:slashes (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.6) 10 10)}))
 
 (defn update-state [state]
   state)
