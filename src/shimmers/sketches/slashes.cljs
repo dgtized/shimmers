@@ -25,8 +25,9 @@
               q (gv/vec2 x1 (- y1 step))
               s (spacing)
               w (width)]
-          (if-let [line (assoc (clip/clip-line bounds p q) :width w)]
-            (recur (inc i) (+ step (/ (+ s (/ w 2)) cosa)) (conj slashes line))
+          (if-let [line (clip/clip-line bounds p q)]
+            (recur (inc i) (+ step (/ (+ s (/ w 2)) cosa))
+                   (conj slashes (assoc line :width w)))
             slashes))
         slashes))))
 
