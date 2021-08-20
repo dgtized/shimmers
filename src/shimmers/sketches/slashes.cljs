@@ -9,6 +9,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; TODO: change x0 a percent of width + height of shape to find start of slashes
 (defn slash-region [bounds angle x0 n spacing width]
   (let [{[bx by] :p [bw bh] :size} bounds
         m (Math/tan angle)
