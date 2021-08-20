@@ -14,7 +14,7 @@
         m (Math/tan angle)
         cosa (Math/cos angle)
         c (- (+ by bh) (* m x0))
-        x0 (- x0 (/ bw 2))
+        x0 (- bx (/ bw 2))
         y0 (+ (* m x0) c)
         x1 (+ bx bw (/ bw 2))
         y1 (+ (* m x1) c)]
