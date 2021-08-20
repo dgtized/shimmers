@@ -35,7 +35,9 @@
   (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))]
     {:slashes
      (concat (slash-region bounds (tm/random 5.0 6.0) 0 (int (tm/random 6 16)) (constantly 10) (constantly 1))
-             (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15) #(tm/random 0.8 6)))}))
+             (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15) #(tm/random 0.8 6))
+             (slash-region bounds (tm/random 3.5 4.5) (cq/rel-w 0.4) 10 #(tm/random 5 15) #(tm/random 0.5 4))
+             (slash-region bounds (tm/random 3.5 4.5) (cq/rel-w 1.0) 8 #(tm/random 5 15) #(tm/random 0.5 2)))}))
 
 (defn update-state [state]
   state)
