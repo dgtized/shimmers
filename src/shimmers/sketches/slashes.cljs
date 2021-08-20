@@ -24,13 +24,13 @@
         (let [p (gv/vec2 x0 (- y0 step))
               q (gv/vec2 x1 (- y1 step))]
           (if-let [line (clip/clip-line bounds p q)]
-            (recur (inc i) (+ step (/ spacing cosa)) (conj slashes line))
+            (recur (inc i) (+ step (/ (spacing) cosa)) (conj slashes line))
             slashes))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))]
-    {:slashes (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.6) 10 10)}))
+    {:slashes (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15))}))
 
 (defn update-state [state]
   state)
