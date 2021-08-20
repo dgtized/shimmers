@@ -30,7 +30,9 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))]
-    {:slashes (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15))}))
+    {:slashes
+     (concat (slash-region bounds (tm/random 5.0 6.0) 0 (int (tm/random 6 16)) (constantly 10))
+             (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15)))}))
 
 (defn update-state [state]
   state)
