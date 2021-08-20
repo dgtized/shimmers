@@ -9,7 +9,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn slash-region [bounds angle x0 n spacing]
+(defn slash-region [bounds angle x0 n spacing width]
   (let [{[bx by] :p [bw bh] :size} bounds
         m (Math/tan angle)
         cosa (Math/cos angle)
@@ -19,27 +19,30 @@
         x1 (+ bx bw (/ bw 2))
         y1 (+ (* m x1) c)]
     (loop [i 0 step 0 slashes []]
-      (if (> i n)
-        slashes
+      (if (< i n)
         (let [p (gv/vec2 x0 (- y0 step))
-              q (gv/vec2 x1 (- y1 step))]
-          (if-let [line (clip/clip-line bounds p q)]
-            (recur (inc i) (+ step (/ (spacing) cosa)) (conj slashes line))
-            slashes))))))
+              q (gv/vec2 x1 (- y1 step))
+              s (spacing)
+              w (width)]
+          (if-let [line (assoc (clip/clip-line bounds p q) :width w)]
+            (recur (inc i) (+ step (/ (+ s (/ w 2)) cosa)) (conj slashes line))
+            slashes))
+        slashes))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))]
     {:slashes
-     (concat (slash-region bounds (tm/random 5.0 6.0) 0 (int (tm/random 6 16)) (constantly 10))
-             (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15)))}))
+     (concat (slash-region bounds (tm/random 5.0 6.0) 0 (int (tm/random 6 16)) (constantly 10) (constantly 1))
+             (slash-region bounds (tm/random 5.0 6.0) (cq/rel-w 0.8) 10 #(tm/random 5 15) #(tm/random 0.8 6)))}))
 
 (defn update-state [state]
   state)
 
 (defn draw [{:keys [slashes]}]
   (q/background 1.0)
-  (doseq [{[p q] :points} slashes]
+  (doseq [{[p q] :points width :width} slashes]
+    (q/stroke-weight width)
     (q/line p q)))
 
 (sketch/defquil slashes
