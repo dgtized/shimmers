@@ -12,19 +12,19 @@
 (defn slash-region [bounds angle x0 n spacing]
   (let [{[bx by] :p [bw bh] :size} bounds
         m (Math/tan angle)
+        cosa (Math/cos angle)
         c (- (+ by bh) (* m x0))
         x0 (- x0 (/ bw 2))
         y0 (+ (* m x0) c)
         x1 (+ bx bw (/ bw 2))
         y1 (+ (* m x1) c)]
-    (loop [i 0 slashes []]
+    (loop [i 0 step 0 slashes []]
       (if (> i n)
         slashes
-        (let [step (* i spacing)
-              p (gv/vec2 x0 (- y0 step))
+        (let [p (gv/vec2 x0 (- y0 step))
               q (gv/vec2 x1 (- y1 step))]
           (if-let [line (clip/clip-line bounds p q)]
-            (recur (inc i) (conj slashes line))
+            (recur (inc i) (+ step (/ spacing cosa)) (conj slashes line))
             slashes))))))
 
 (defn setup []
