@@ -76,6 +76,7 @@
             shimmers.sketches.sea-and-sky
             shimmers.sketches.sediment
             shimmers.sketches.six-of-one-half-dozen-of-the-other
+            shimmers.sketches.slashes
             shimmers.sketches.slow-zone
             shimmers.sketches.space-colonization
             shimmers.sketches.sphere
