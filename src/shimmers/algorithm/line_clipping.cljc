@@ -1,5 +1,8 @@
 (ns shimmers.algorithm.line-clipping
-  "Cohen-sutherland line clipping from https://sighack.com/post/cohen-sutherland-line-clipping-algorithm."
+  "Cohen-sutherland line clipping from https://sighack.com/post/cohen-sutherland-line-clipping-algorithm.
+
+  See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
+  polygon clipping."
   (:require [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             #?(:clj [thi.ng.geom.types]
