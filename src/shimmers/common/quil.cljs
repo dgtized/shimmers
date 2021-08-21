@@ -66,3 +66,7 @@
 (defn circle
   ([[x y] radius] (q/ellipse x y radius radius))
   ([x y radius] (q/ellipse x y radius radius)))
+
+(defn rectangle
+  "Adapter to convert geom/rect to quil/rect"
+  ([{[x y] :p [w h] :size}] (q/rect x y w h)))

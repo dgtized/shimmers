@@ -63,6 +63,7 @@
             shimmers.sketches.polygrowth2
             shimmers.sketches.precipitation
             shimmers.sketches.probabilistic-automata
+            shimmers.sketches.pulsing-grid
             shimmers.sketches.radar
             shimmers.sketches.radial-mosaic
             shimmers.sketches.random-walk
