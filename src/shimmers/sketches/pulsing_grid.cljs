@@ -12,7 +12,8 @@
   (let [r (rect/rect (cq/rel-w 0.05) (cq/rel-h 0.35)
                      (cq/rel-w 0.90) (cq/rel-h 0.30))
         cells (geom/subdivide r {:rows 6 :cols 24})]
-    {:cells cells}))
+    {:cells (for [cell cells]
+              (geom/scale-size cell 0.9))}))
 
 (defn update-state [state]
   state)
