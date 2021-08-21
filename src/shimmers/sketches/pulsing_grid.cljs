@@ -14,7 +14,7 @@
                      (cq/rel-w 0.90) (cq/rel-h 0.30))
         cells (geom/subdivide r {:rows 6 :cols 24})]
     {:cells (for [cell cells]
-              (assoc (geom/scale-size cell 0.9)
+              (assoc (geom/as-polygon (geom/scale-size cell 0.9))
                      :color [0 1.0]
                      :pulse [(tm/random 0.1 0.9) (tm/random 0 10)]))
      :t 0}))
@@ -32,7 +32,7 @@
   (q/no-stroke)
   (doseq [{:keys [color] :as cell} cells]
     (apply q/fill color)
-    (cq/rectangle cell)))
+    (cq/draw-shape (geom/vertices cell))))
 
 (sketch/defquil pulsing-grid
   :created-at "2021-08-21"
