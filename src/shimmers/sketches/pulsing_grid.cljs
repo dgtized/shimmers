@@ -21,8 +21,8 @@
 
 (defn update-state [{:keys [cells t] :as state}]
   (assoc state :cells
-         (for [{[r phase] :pulse :as cell} cells
-               :let [color (tm/map-interval (Math/cos (+ (* r t) phase))
+         (for [{[period phase] :pulse :as cell} cells
+               :let [color (tm/map-interval (Math/cos (* period (+ t phase)))
                                             [-1 1] [0 1])]]
            (assoc cell :color [color 1.0]))
          :t (+ t 0.03)))
