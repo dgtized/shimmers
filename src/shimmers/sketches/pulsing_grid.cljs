@@ -2,10 +2,11 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.rect :as rect]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.core :as geom]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -13,15 +14,24 @@
                      (cq/rel-w 0.90) (cq/rel-h 0.30))
         cells (geom/subdivide r {:rows 6 :cols 24})]
     {:cells (for [cell cells]
-              (geom/scale-size cell 0.9))}))
+              (assoc (geom/scale-size cell 0.9)
+                     :color [0 1.0]
+                     :pulse [(tm/random 0.1 0.9) (tm/random 0 10)]))
+     :t 0}))
 
-(defn update-state [state]
-  state)
+(defn update-state [{:keys [cells t] :as state}]
+  (assoc state :cells
+         (for [{[r phase] :pulse :as cell} cells
+               :let [color (tm/map-interval (Math/cos (+ (* r t) phase))
+                                            [-1 1] [0 1])]]
+           (assoc cell :color [color 1.0]))
+         :t (+ t 0.03)))
 
 (defn draw [{:keys [cells]}]
   (q/background 1.0)
-  (q/no-fill)
-  (doseq [cell cells]
+  (q/no-stroke)
+  (doseq [{:keys [color] :as cell} cells]
+    (apply q/fill color)
     (cq/rectangle cell)))
 
 (sketch/defquil pulsing-grid
