@@ -10,11 +10,13 @@
             [thi.ng.geom.utils.subdiv :as gsd]
             [thi.ng.math.core :as tm]))
 
-(defn rounding [polygon]
-  (->> polygon
-       geom/vertices
-       (gsd/subdivide-closed (:chaikin gsd/schemes))
-       gp/polygon2))
+(defn rounding [rect]
+  (as-> rect _
+    (geom/as-polygon _)
+    (geom/sample-uniform _ (/ (geom/circumference _) 8) false)
+    (gsd/subdivide-closed (:chaikin gsd/schemes) _)
+    (gsd/subdivide-closed (:chaikin gsd/schemes) _)
+    (gp/polygon2 _)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -22,7 +24,7 @@
                      (cq/rel-w 0.90) (cq/rel-h 0.30))
         cells (geom/subdivide r {:rows 6 :cols 24})]
     {:cells (for [cell cells]
-              (assoc (rounding (geom/as-polygon (geom/scale-size cell 0.9)))
+              (assoc (rounding (geom/scale-size cell 0.9))
                      :color [0 1.0]
                      :pulse [(tm/random 0.1 0.9) (tm/random 0 10)]))
      :t 0}))
