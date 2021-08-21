@@ -18,6 +18,11 @@
     (gsd/subdivide-closed (:chaikin gsd/schemes) _)
     (gp/polygon2 _)))
 
+(comment
+  ;; sample-uniform /6 or other multiples results in a teardrop not clear if
+  ;; subdivide-close is handling first/last point correctly or some other issue
+  (rounding (rect/rect 0 0 1 1)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [r (rect/rect (cq/rel-w 0.05) (cq/rel-h 0.35)
