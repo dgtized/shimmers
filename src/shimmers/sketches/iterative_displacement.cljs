@@ -52,6 +52,17 @@
             [(last points)])
     points))
 
+(defn simplify-line [points tolerance]
+  (concat
+   [(first points)]
+   (keep (fn [[a b c]]
+           (let [ab (geom/heading (tm/- b a))
+                 bc (geom/heading (tm/- c b))]
+             (when (> (Math/abs (- ab bc)) tolerance)
+               b)))
+         (partition 3 1 points))
+   [(last points)]))
+
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
         [before after] (split-at (inc i) line)
@@ -69,7 +80,7 @@
     (concat (take 1 lines)
             (map-indexed (fn [idx [lower line upper]]
                            (if (and (= idx k) (< (count line) 128))
-                             (smooth-line (displace-line line lower upper))
+                             (simplify-line (smooth-line (displace-line line lower upper)) 0.01)
                              line)) groups)
             (take-last 1 lines))))
 
