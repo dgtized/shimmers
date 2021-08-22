@@ -41,7 +41,7 @@
         point (tm/mix p q weight)
         low (closest-segment lower point)
         high (closest-segment upper point)]
-    (concat before [(tm/mix low high (rand))] after)))
+    (concat before [(tm/mix low high (tm/random 0.1 0.9))] after)))
 
 (defn update-random-line
   [lines]
@@ -55,9 +55,9 @@
             (take-last 1 lines))))
 
 (defn setup []
-  (q/frame-rate 1.0)
+  (q/frame-rate 10.0)
   (q/color-mode :hsl 1.0)
-  {:lines (init-lines 1)})
+  {:lines (init-lines 4)})
 
 (defn update-state [state]
   (update state :lines update-random-line))
