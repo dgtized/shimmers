@@ -63,6 +63,17 @@
          (partition 3 1 points))
    (take-last 1 points)))
 
+;; Needs to look in a larger window, triangle inequality forces things here
+(defn remove-bumps [points margin]
+  (concat
+   (take 1 points)
+   (keep (fn [[a b c]]
+           (when (> (+ (geom/dist a b) (geom/dist b c))
+                    (* (geom/dist a c) margin))
+             b))
+         (partition 3 1 points))
+   (take-last 1 points)))
+
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
         [before after] (split-at (inc i) line)
@@ -80,7 +91,11 @@
     (concat (take 1 lines)
             (map-indexed (fn [idx [lower line upper]]
                            (if (and (= idx k) (< (count line) 128))
-                             (simplify-line (smooth-line (displace-line line lower upper)) 0.01)
+                             (-> line
+                                 (displace-line lower upper)
+                                 smooth-line
+                                 ;; (remove-bumps 0.9)
+                                 (simplify-line 0.01))
                              line)) groups)
             (take-last 1 lines))))
 
