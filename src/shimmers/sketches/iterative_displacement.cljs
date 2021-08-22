@@ -12,8 +12,12 @@
             [thi.ng.math.core :as tm]))
 
 ;; Concept here is to displace segments on a line, but ensure they don't clip
-;; the line before or after. Currently results in a lot of snarls, so need to
-;; look into smoothing, but running chaikin converges too quickly.
+;; the line before or after. Trying to find something that generates something
+;; like wood-grain while ensuring no overlap between lines. This is too squiggly
+;; for now, but worth generalizing and exploring.
+
+;; Consider adding "eyes" ala knots in wood. Displacing points based on a global
+;; bias ala flow fields from noise might add some interesting results here.
 
 (defn vline [x]
   [(gv/vec2 x 0.1) (gv/vec2 x 0.9)])
