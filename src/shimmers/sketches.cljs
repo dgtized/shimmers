@@ -40,9 +40,9 @@
             shimmers.sketches.inconsequential-drift
             shimmers.sketches.impressions-of-open-space
             shimmers.sketches.interstitial-transitions
-            shimmers.sketches.k-means
             shimmers.sketches.kd-tree
             shimmers.sketches.kinematic-chain
+            shimmers.sketches.k-means
             shimmers.sketches.langton-ant
             shimmers.sketches.lattice-in-steps
             shimmers.sketches.lattice-of-common-chords
