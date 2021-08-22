@@ -13,12 +13,26 @@
 (defn init-lines [n]
   (map vline (tm/norm-range (inc n))))
 
+(defn displace-line [line lower upper]
+  line)
+
+(defn update-random-line
+  [lines]
+  (let [groups (partition 3 1 lines)
+        k (rand-int (count groups))]
+    (concat (take 1 lines)
+            (map-indexed (fn [idx [lower line upper]]
+                           (if (= idx k)
+                             (displace-line line lower upper)
+                             line)) groups)
+            (take-last 1 lines))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:lines (init-lines 1)})
+  {:lines (init-lines 2)})
 
 (defn update-state [state]
-  state)
+  (update state :lines update-random-line))
 
 (defn draw [{:keys [lines]}]
   (q/no-fill)
