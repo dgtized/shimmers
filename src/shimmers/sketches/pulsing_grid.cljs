@@ -60,14 +60,14 @@
             (+ phase)
             (* period)
             Math/cos
-            (+ (gaussian 1.0 (- (mod (* t 0.3) 2.0) 0.5) 0.3 x))
-            (tm/map-interval-clamped [-1 1] [0 1]))]
+            (tm/map-interval-clamped [-1 1] [1 0])
+            (* (- 1.0 (gaussian 0.4 (- (mod (* t 0.2) 2.0) 0.5) 0.18 x))))]
     (assoc cell :color [color 1.0])))
 
 (defn update-state [{:keys [cells t] :as state}]
   (assoc state
          :cells (map (partial color-cell t) cells)
-         :t (+ t (delta-time 0.025 0.02))))
+         :t (+ t (delta-time 0.03 0.02))))
 
 (defn draw [{:keys [cells]}]
   (q/background 1.0)
