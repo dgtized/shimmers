@@ -43,12 +43,18 @@
       (* scale)
       (+ offset)))
 
+(defn color-cell [t {[period phase] :pulse :as cell}]
+  (let [color
+        (-> t
+            (+ phase)
+            (* period)
+            Math/cos
+            (tm/map-interval [-1 1] [0 1]))]
+    (assoc cell :color [color 1.0])))
+
 (defn update-state [{:keys [cells t] :as state}]
-  (assoc state :cells
-         (for [{[period phase] :pulse :as cell} cells
-               :let [color (tm/map-interval (Math/cos (* period (+ t phase)))
-                                            [-1 1] [0 1])]]
-           (assoc cell :color [color 1.0]))
+  (assoc state
+         :cells (map (partial color-cell t) cells)
          :t (+ t (delta-time 0.03 0.01))))
 
 (defn draw [{:keys [cells]}]
