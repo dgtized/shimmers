@@ -6,6 +6,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -29,12 +30,18 @@
             [choice (/ (- sample cumulative) weight) i]
             (recur sum (inc i) remaining)))))))
 
+(defn closest-segment [barrier point]
+  (apply min-key (fn [p] (geom/dist p point))
+         (map (fn [[p q]] (geom/closest-point (gl/line2 p q) point))
+              (partition 2 1 barrier))))
+
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
+        [before after] (split-at (inc i) line)
         point (tm/mix p q weight)
-        [before after] (split-at (inc i) line)]
-    (println [line point])
-    (concat before [point] after)))
+        low (closest-segment lower point)
+        high (closest-segment upper point)]
+    (concat before [(tm/mix low high (rand))] after)))
 
 (defn update-random-line
   [lines]
@@ -56,6 +63,7 @@
   (update state :lines update-random-line))
 
 (defn draw [{:keys [lines]}]
+  (q/background 1.0)
   (q/no-fill)
   (doseq [points (butlast (rest lines))]
     (q/begin-shape)
