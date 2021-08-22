@@ -34,6 +34,8 @@
                      :pulse [(tm/random 0.1 0.9) (tm/random 0 10)]))
      :t 0}))
 
+;; TODO: use a step function to split between two sin functions with a smaller
+;; period for reversal and a longer period for positive motion.
 (defn delta-time
   "Make time flow like a sin-function, occasionally backwards"
   [rate scale offset]
