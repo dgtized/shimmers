@@ -3,7 +3,9 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -12,6 +14,20 @@
 
 (defn init-lines [n]
   (map vline (tm/norm-range (inc n))))
+
+(defn weighted-point
+  [points]
+  (let [segments (partition 2 1 points)
+        weights (cs/mapping (fn [[p q]] (geom/dist p q)) segments)
+        sample (tm/random (apply + (vals weights)))]
+    (loop [cumulative 0.0
+           [[choice weight] & remaining] weights]
+      (when weight
+        (let [sum (+ cumulative weight)]
+          (if (< sample sum)
+            (let [[p q] choice]
+              (tm/mix p q (/ (- sample cumulative) weight)))
+            (recur sum remaining)))))))
 
 (defn displace-line [line lower upper]
   line)
