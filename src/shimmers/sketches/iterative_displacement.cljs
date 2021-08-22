@@ -47,21 +47,21 @@
 ;; keeps the first and last point anchored, but smooths in-between
 (defn smooth-line [points]
   (if (> (count points) 16)
-    (concat [(first points)]
+    (concat (take 1 points)
             (rest (butlast (gsd/subdivide-closed (:chaikin gsd/schemes) points)))
-            [(last points)])
+            (take-last 1 points))
     points))
 
 (defn simplify-line [points tolerance]
   (concat
-   [(first points)]
+   (take 1 points)
    (keep (fn [[a b c]]
            (let [ab (geom/heading (tm/- b a))
                  bc (geom/heading (tm/- c b))]
              (when (> (Math/abs (- ab bc)) tolerance)
                b)))
          (partition 3 1 points))
-   [(last points)]))
+   (take-last 1 points)))
 
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
