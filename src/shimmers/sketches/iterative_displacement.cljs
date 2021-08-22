@@ -4,17 +4,18 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn vline [x]
   [(gv/vec2 x 0.1) (gv/vec2 x 0.9)])
 
+(defn init-lines [n]
+  (map vline (tm/norm-range (inc n))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:lines
-   (concat [(vline 0)]
-           (map vline (range 0.1 0.9 0.1))
-           [(vline 1.0)])})
+  {:lines (init-lines 1)})
 
 (defn update-state [state]
   state)
