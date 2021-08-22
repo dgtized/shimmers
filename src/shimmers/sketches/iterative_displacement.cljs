@@ -3,10 +3,11 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.vector :as gv]))
 
 (defn vline [x]
-  [(cq/rel-pos x 0.1) (cq/rel-pos x 0.9)])
+  [(gv/vec2 x 0.1) (gv/vec2 x 0.9)])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -22,7 +23,7 @@
   (q/no-fill)
   (doseq [points (butlast (rest lines))]
     (q/begin-shape)
-    (doseq [[x y] points]
+    (doseq [[x y] (map cq/rel-pos points)]
       (q/vertex x y))
     (q/end-shape)))
 
