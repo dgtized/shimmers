@@ -40,6 +40,7 @@
             shimmers.sketches.inconsequential-drift
             shimmers.sketches.impressions-of-open-space
             shimmers.sketches.interstitial-transitions
+            shimmers.sketches.iterative-displacement
             shimmers.sketches.kd-tree
             shimmers.sketches.kinematic-chain
             shimmers.sketches.k-means
