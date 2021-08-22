@@ -21,16 +21,20 @@
         weights (cs/mapping (fn [[p q]] (geom/dist p q)) segments)
         sample (tm/random (apply + (vals weights)))]
     (loop [cumulative 0.0
+           i 0
            [[choice weight] & remaining] weights]
       (when weight
         (let [sum (+ cumulative weight)]
           (if (< sample sum)
-            (let [[p q] choice]
-              (tm/mix p q (/ (- sample cumulative) weight)))
-            (recur sum remaining)))))))
+            [choice (/ (- sample cumulative) weight) i]
+            (recur sum (inc i) remaining)))))))
 
 (defn displace-line [line lower upper]
-  line)
+  (let [[[p q] weight i] (weighted-point line)
+        point (tm/mix p q weight)
+        [before after] (split-at (inc i) line)]
+    (println [line point])
+    (concat before [point] after)))
 
 (defn update-random-line
   [lines]
@@ -44,8 +48,9 @@
             (take-last 1 lines))))
 
 (defn setup []
+  (q/frame-rate 1.0)
   (q/color-mode :hsl 1.0)
-  {:lines (init-lines 2)})
+  {:lines (init-lines 1)})
 
 (defn update-state [state]
   (update state :lines update-random-line))
