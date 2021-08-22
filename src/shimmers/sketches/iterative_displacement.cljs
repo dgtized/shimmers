@@ -7,6 +7,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
+            [thi.ng.geom.utils.subdiv :as gsd]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -39,6 +40,14 @@
          (map (fn [[p q]] (geom/closest-point (gl/line2 p q) point))
               (partition 2 1 barrier))))
 
+;; keeps the first and last point anchored, but smooths in-between
+(defn smooth-line [points]
+  (if (> (count points) 16)
+    (concat [(first points)]
+            (rest (butlast (gsd/subdivide-closed (:chaikin gsd/schemes) points)))
+            [(last points)])
+    points))
+
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
         [before after] (split-at (inc i) line)
@@ -55,8 +64,8 @@
         k (rand-int (count groups))]
     (concat (take 1 lines)
             (map-indexed (fn [idx [lower line upper]]
-                           (if (= idx k)
-                             (displace-line line lower upper)
+                           (if (and (= idx k) (< (count line) 128))
+                             (smooth-line (displace-line line lower upper))
                              line)) groups)
             (take-last 1 lines))))
 
