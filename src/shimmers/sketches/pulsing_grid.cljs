@@ -43,13 +43,25 @@
       (* scale)
       (+ offset)))
 
+(defn gaussian
+  "Bell curve of magnitude `a`, centered at `b`, width `c`.
+  From https://en.wikipedia.org/wiki/Gaussian_function"
+  [a b c x]
+  (* a (Math/exp (- (/ (Math/pow (- x b) 2)
+                       (* 2 (* c c)))))))
+
+(comment
+  (map (fn [x] [x (gaussian 1.0 0.5 0.2 x)]) (range 0 1 0.05)))
+
 (defn color-cell [t {[period phase] :pulse :as cell}]
-  (let [color
+  (let [x (/ (-> cell :points first :x) (q/width))
+        color
         (-> t
             (+ phase)
             (* period)
             Math/cos
-            (tm/map-interval [-1 1] [0 1]))]
+            (+ (gaussian 1.0 (- (mod (* t 0.3) 2.0) 0.5) 0.3 x))
+            (tm/map-interval-clamped [-1 1] [0 1]))]
     (assoc cell :color [color 1.0])))
 
 (defn update-state [{:keys [cells t] :as state}]
