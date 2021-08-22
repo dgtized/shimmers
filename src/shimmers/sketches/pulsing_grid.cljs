@@ -36,9 +36,9 @@
 
 (defn delta-time
   "Make time flow like a sin-function, occasionally backwards"
-  [scale offset]
+  [rate scale offset]
   (-> (q/frame-count)
-      (/ 360)
+      (* rate)
       Math/sin
       (* scale)
       (+ offset)))
@@ -67,7 +67,7 @@
 (defn update-state [{:keys [cells t] :as state}]
   (assoc state
          :cells (map (partial color-cell t) cells)
-         :t (+ t (delta-time 0.03 0.02))))
+         :t (+ t (delta-time (/ 1 270) 0.03 0.02))))
 
 (defn draw [{:keys [cells]}]
   (q/background 1.0)
