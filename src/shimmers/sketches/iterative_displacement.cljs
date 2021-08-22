@@ -10,6 +10,10 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; Concept here is to displace segments on a line, but ensure they don't clip
+;; the line before or after. Currently results in a lot of snarls, so need to
+;; look into smoothing, but running chaikin converges too quickly.
+
 (defn vline [x]
   [(gv/vec2 x 0.1) (gv/vec2 x 0.9)])
 
@@ -41,7 +45,9 @@
         point (tm/mix p q weight)
         low (closest-segment lower point)
         high (closest-segment upper point)]
-    (concat before [(tm/mix low high (tm/random 0.1 0.9))] after)))
+    (concat before [(tm/mix (tm/mix low high (tm/random 0.1 0.9))
+                            (tm/mix p q (tm/random 0.1 0.9))
+                            0.5)] after)))
 
 (defn update-random-line
   [lines]
@@ -57,7 +63,7 @@
 (defn setup []
   (q/frame-rate 10.0)
   (q/color-mode :hsl 1.0)
-  {:lines (init-lines 4)})
+  {:lines (init-lines 12)})
 
 (defn update-state [state]
   (update state :lines update-random-line))
