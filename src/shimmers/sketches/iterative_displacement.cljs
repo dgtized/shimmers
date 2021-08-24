@@ -44,35 +44,37 @@
          (map (fn [[p q]] (geom/closest-point (gl/line2 p q) point))
               (partition 2 1 barrier))))
 
+(defn sandwich
+  ([xs replacement] (sandwich 1 xs replacement))
+  ([n xs replacement]
+   (concat (take n xs)
+           replacement
+           (take-last n xs))))
+
 ;; keeps the first and last point anchored, but smooths in-between
 (defn smooth-line [points]
   (if (> (count points) 16)
-    (concat (take 1 points)
-            (rest (butlast (gsd/subdivide-closed (:chaikin gsd/schemes) points)))
-            (take-last 1 points))
+    (sandwich points
+              (rest (butlast (gsd/subdivide-closed (:chaikin gsd/schemes) points))))
     points))
 
 (defn simplify-line [points tolerance]
-  (concat
-   (take 1 points)
-   (keep (fn [[a b c]]
-           (let [ab (geom/heading (tm/- b a))
-                 bc (geom/heading (tm/- c b))]
-             (when (> (Math/abs (- ab bc)) tolerance)
-               b)))
-         (partition 3 1 points))
-   (take-last 1 points)))
+  (sandwich points
+            (keep (fn [[a b c]]
+                    (let [ab (geom/heading (tm/- b a))
+                          bc (geom/heading (tm/- c b))]
+                      (when (> (Math/abs (- ab bc)) tolerance)
+                        b)))
+                  (partition 3 1 points))))
 
 ;; Needs to look in a larger window, triangle inequality forces things here
 (defn remove-bumps [points margin]
-  (concat
-   (take 1 points)
-   (keep (fn [[a b c]]
-           (when (> (+ (geom/dist a b) (geom/dist b c))
-                    (* (geom/dist a c) margin))
-             b))
-         (partition 3 1 points))
-   (take-last 1 points)))
+  (sandwich points
+            (keep (fn [[a b c]]
+                    (when (> (+ (geom/dist a b) (geom/dist b c))
+                             (* (geom/dist a c) margin))
+                      b))
+                  (partition 3 1 points))))
 
 (defn displace-line [line lower upper]
   (let [[[p q] weight i] (weighted-point line)
@@ -88,16 +90,15 @@
   [lines]
   (let [groups (partition 3 1 lines)
         k (rand-int (count groups))]
-    (concat (take 1 lines)
-            (map-indexed (fn [idx [lower line upper]]
-                           (if (and (= idx k) (< (count line) 128))
-                             (-> line
-                                 (displace-line lower upper)
-                                 smooth-line
-                                 ;; (remove-bumps 0.9)
-                                 (simplify-line 0.01))
-                             line)) groups)
-            (take-last 1 lines))))
+    (sandwich lines
+              (map-indexed (fn [idx [lower line upper]]
+                             (if (and (= idx k) (< (count line) 128))
+                               (-> line
+                                   (displace-line lower upper)
+                                   smooth-line
+                                   ;; (remove-bumps 0.9)
+                                   (simplify-line 0.01))
+                               line)) groups))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
