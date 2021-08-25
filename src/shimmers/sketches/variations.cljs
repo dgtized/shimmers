@@ -33,7 +33,7 @@
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
-        (draw-mark (tm/* (gv/vec2 i j) delta)
+        (draw-mark (tm/* (gv/vec2 (+ i 0.05) (+ j 0.05)) delta)
                    (* 0.9 (/ (q/width) I)))))))
 
 (sketch/defquil variations
