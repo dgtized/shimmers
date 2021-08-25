@@ -28,11 +28,17 @@
 (defn draw [state]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (draw-mark (gv/vec2) 400.0))
+  (let [I 5
+        J 6
+        delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
+    (doseq [i (range I)]
+      (doseq [j (range J)]
+        (draw-mark (tm/* (gv/vec2 i j) delta)
+                   (* 0.9 (/ (q/width) I)))))))
 
 (sketch/defquil variations
   :created-at "2021-08-25"
-  :size [400 400]
+  :size [600 600]
   :setup setup
   :update update-state
   :draw draw
