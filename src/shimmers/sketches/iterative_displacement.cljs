@@ -78,9 +78,11 @@
         point (tm/mix p q weight)
         low (closest-segment lower point)
         high (closest-segment upper point)]
-    (concat before [(tm/mix (tm/mix low high (tm/random 0.2 0.8))
-                            (tm/mix p q (tm/random 0.4 0.6))
-                            (tm/random 0.1 0.3))] after)))
+    (concat before
+            [(tm/mix (tm/mix low high (tm/random 0.2 0.8))
+                     (tm/mix p q (tm/random 0.4 0.6))
+                     (tm/random 0.1 0.3))]
+            after)))
 
 (defn update-random-line
   [lines]
