@@ -32,8 +32,9 @@
 (defn draw [state]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (let [I 5
-        J 6
+  (let [t (/ (q/frame-count) 100)
+        I (tm/map-interval (Math/sin t) [-1 1] [3 36])
+        J (tm/map-interval (Math/cos t) [-1 1] [4 24])
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
