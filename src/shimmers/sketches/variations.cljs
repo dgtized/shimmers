@@ -2,9 +2,10 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.line :as gl]))
+            [thi.ng.geom.line :as gl]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defn hashmark []
   [(gl/line2 0.4 0.1 0.4 0.9)
@@ -19,11 +20,15 @@
 (defn update-state [state]
   state)
 
+(defn draw-mark [pos scale]
+  (doseq [{[p q] :points} (hashmark)]
+    (q/line (tm/+ pos (tm/* p scale))
+            (tm/+ pos (tm/* q scale)))))
+
 (defn draw [state]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (doseq [{[p q] :points} (hashmark)]
-    (q/line (cq/rel-vec p) (cq/rel-vec q))))
+  (draw-mark (gv/vec2) 400.0))
 
 (sketch/defquil variations
   :created-at "2021-08-25"
