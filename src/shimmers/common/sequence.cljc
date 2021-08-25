@@ -37,6 +37,22 @@
             (map (fn [x] (f x (last chunks)))
                  (drop (inc middle) (last chunks))))))
 
+(defn sandwich
+  "Return a sequence with the `n` edge elements from the original sequence, and
+  the inner elements from `replacement`."
+  ([xs replacement] (sandwich 1 xs replacement))
+  ([n xs replacement]
+   (concat (take n xs)
+           replacement
+           (take-last n xs))))
+
+(defn midsection
+  "Return a sequence without the first `n` and last `n` elements."
+  ([xs] (midsection 1 xs))
+  ([n xs]
+   (drop n (drop-last n xs))))
+
+
 (defn rotate
   "Rotate sequence `xs`, `n` steps left if positive, or to the right if negative."
   [n xs]
