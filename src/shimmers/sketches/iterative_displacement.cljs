@@ -84,6 +84,8 @@
                      (tm/random 0.1 0.3))]
             after)))
 
+;; Consider randomly doing a "conform" pass where a line tries to conform to
+;; it's left or right bracketed pair or both?
 (defn update-random-line
   [lines]
   (let [groups (partition 3 1 lines)
