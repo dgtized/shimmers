@@ -91,6 +91,7 @@
             shimmers.sketches.typography
             shimmers.sketches.undulating-figures
             shimmers.sketches.uniform-distribution
+            shimmers.sketches.variations
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
