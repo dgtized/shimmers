@@ -8,8 +8,10 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn hashmark []
-  (map (fn [l] (geom/translate l (gv/vec2 -0.5 -0.5)))
+(defn hashmark [t]
+  (map (fn [l] (-> l
+                  (geom/translate (gv/vec2 -0.5 -0.5))
+                  (geom/rotate t)))
        [(gl/line2 0.4 0.1 0.4 0.9)
         (gl/line2 0.6 0.1 0.6 0.9)
         (gl/line2 0.1 0.4 0.9 0.4)
@@ -23,7 +25,7 @@
   state)
 
 (defn draw-mark [pos scale]
-  (doseq [{[p q] :points} (hashmark)]
+  (doseq [{[p q] :points} (hashmark (/ (tm/mag-squared pos)(* (q/width) (q/height))))]
     (q/line (tm/+ pos (tm/* p scale))
             (tm/+ pos (tm/* q scale)))))
 
