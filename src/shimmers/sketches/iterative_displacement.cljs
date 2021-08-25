@@ -51,11 +51,19 @@
            replacement
            (take-last n xs))))
 
+(defn midsection
+  "Return a sequence without the first `n` and last `n` elements."
+  ([xs] (midsection 1 xs))
+  ([n xs]
+   (drop n (drop-last n xs))))
+
 ;; keeps the first and last point anchored, but smooths in-between
 (defn smooth-line [points]
   (if (> (count points) 16)
-    (sandwich points
-              (rest (butlast (gsd/subdivide-closed (:chaikin gsd/schemes) points))))
+    (->> points
+         (gsd/subdivide-closed (:chaikin gsd/schemes))
+         midsection
+         (sandwich points))
     points))
 
 (defn simplify-line [points tolerance]
