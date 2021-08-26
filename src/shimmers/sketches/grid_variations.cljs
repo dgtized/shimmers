@@ -26,25 +26,23 @@
 (defn mag-proportional [area pos]
   (/ (tm/mag-squared pos) area))
 
-(defn gaussian [sd area pos]
-  (p/gaussian (mag-proportional area pos) (sd pos)))
-
-(defn sin-rate [rate area pos]
-  (tm/map-interval (Math/sin (* rate (q/frame-count))) [-1 1]
-                   [0 (* tm/TWO_PI (mag-proportional area pos))]))
+(defn sin-rate [rate]
+  (/ (inc (Math/sin (* rate (q/frame-count)))) 2))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:scalar
    (rand-nth [(constantly 1)
-              (fn [_] (p/gaussian 1 0.1))
-              (fn [_] (p/gaussian 1 0.2))
-              (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
-                                      [-1 1] [0.2 2.0]))])
+              mag-proportional
+              (fn [_ _] (p/gaussian 1 0.1))
+              (fn [_ _] (p/gaussian 1 0.2))
+              (fn [_ _] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                                        [-1 1] [0.2 2.0]))])
    :rotation
-   (rand-nth [mag-proportional
-              (partial gaussian (constantly 0.1))
-              (partial sin-rate 0.05)])})
+   (rand-nth [(constantly 1)
+              mag-proportional
+              (fn [_ _] (p/gaussian 1 0.1))
+              (fn [_ _] (sin-rate 0.05))])})
 
 (defn update-state [state]
   state)
@@ -68,9 +66,10 @@
         scale (/ (Math/sqrt area) (Math/sqrt (* I J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
-        (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
-              rotation (rotation area pos)]
-          (draw-mark pos (* scale (scalar pos)) rotation))))))
+        (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)]
+          (draw-mark pos
+                     (* scale (scalar area pos))
+                     (* tm/TWO_PI (rotation area pos))))))))
 
 (sketch/defquil grid-variations
   :created-at "2021-08-25"
