@@ -1,4 +1,4 @@
-(ns shimmers.sketches.variations
+(ns shimmers.sketches.grid-variations
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -49,7 +49,7 @@
               rotation (/ (tm/mag-squared pos) area)]
           (draw-mark pos scale rotation))))))
 
-(sketch/defquil variations
+(sketch/defquil grid-variations
   :created-at "2021-08-25"
   :size [600 600]
   :setup setup

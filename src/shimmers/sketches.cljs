@@ -33,6 +33,7 @@
             ;; shimmers.sketches.fluid
             shimmers.sketches.gossamer-coils
             shimmers.sketches.gravity-well
+            shimmers.sketches.grid-variations
             shimmers.sketches.harsh-lines
             shimmers.sketches.hatched-rectangles
             shimmers.sketches.hexaclock
@@ -91,7 +92,6 @@
             shimmers.sketches.typography
             shimmers.sketches.undulating-figures
             shimmers.sketches.uniform-distribution
-            shimmers.sketches.variations
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
