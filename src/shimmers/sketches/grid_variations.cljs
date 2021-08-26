@@ -42,24 +42,23 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [constants
-        [(constantly 1)
-         (constantly 1)
-         xy-proportional
-         x-proportional
-         y-proportional]]
+        {(constantly 1) 3
+         xy-proportional 1
+         x-proportional 1
+         y-proportional 1}]
     {:scalar
      (->> (rand-nth [(constantly 1.0)
                      (fn [_] (p/gaussian 1 0.1))
                      (fn [_] (p/gaussian 1 0.2))
                      (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
                                              [-1 1] [0.2 2.0]))])
-          (conj (take 1 (shuffle constants)))
+          (conj [(p/weighted constants)])
           chain-compose)
      :rotation
      (->> (rand-nth [(constantly 1.0)
                      (fn [_] (p/gaussian 1 0.1))
                      (fn [_] (sin-rate 0.05))])
-          (conj (take 1 (shuffle constants)))
+          (conj [(p/weighted constants)])
           chain-compose)}))
 
 (defn update-state [state]
