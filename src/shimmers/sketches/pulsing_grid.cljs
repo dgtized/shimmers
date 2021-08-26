@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.equations :as eq]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.polygon :as gp]
@@ -45,16 +46,6 @@
       (* scale)
       (+ offset)))
 
-(defn gaussian
-  "Bell curve of magnitude `a`, centered at `b`, width `c`.
-  From https://en.wikipedia.org/wiki/Gaussian_function"
-  [a b c x]
-  (* a (Math/exp (- (/ (Math/pow (- x b) 2)
-                       (* 2 (* c c)))))))
-
-(comment
-  (map (fn [x] [x (gaussian 1.0 0.5 0.2 x)]) (range 0 1 0.05)))
-
 (defn color-cell [t {[period phase] :pulse :as cell}]
   (let [x (/ (-> cell :points first :x) (q/width))
         color
@@ -63,7 +54,7 @@
             (* period)
             Math/cos
             (tm/map-interval-clamped [-1 1] [1 0])
-            (* (- 1.0 (gaussian 0.4 (- (mod (* t 0.2) 2.0) 0.5) 0.18 x))))]
+            (* (- 1.0 (eq/gaussian 0.4 (- (mod (* t 0.2) 2.0) 0.5) 0.18 x))))]
     (assoc cell :color [color 1.0])))
 
 (defn update-state [{:keys [cells t] :as state}]
