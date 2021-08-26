@@ -10,15 +10,14 @@
 
 (defn hashmark [t]
   (let [[l h] [0.2 0.8]
-        [a b] [0.4 0.6]]
+        offsets [0.4 0.6]]
     (map (fn [l]
            (-> l
                (geom/translate (gv/vec2 -0.5 -0.5))
                (geom/rotate t)))
-         [(gl/line2 a l a h)
-          (gl/line2 b l b h)
-          (gl/line2 l a h a)
-          (gl/line2 l b h b)])))
+         (apply concat (for [o offsets]
+                         [(gl/line2 o l o h)
+                          (gl/line2 l o h o)])))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
