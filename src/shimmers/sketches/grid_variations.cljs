@@ -35,13 +35,16 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:scalar (rand-nth [(constantly 1)
-                      (fn [_] (p/gaussian 1 0.1))
-                      (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
-                                              [-1 1] [0.2 2.0]))])
-   :rotation (rand-nth [mag-proportional
-                        (partial gaussian (constantly 0.1))
-                        (partial sin-rate 0.05)])})
+  {:scalar
+   (rand-nth [(constantly 1)
+              (fn [_] (p/gaussian 1 0.1))
+              (fn [_] (p/gaussian 1 0.2))
+              (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                                      [-1 1] [0.2 2.0]))])
+   :rotation
+   (rand-nth [mag-proportional
+              (partial gaussian (constantly 0.1))
+              (partial sin-rate 0.05)])})
 
 (defn update-state [state]
   state)
