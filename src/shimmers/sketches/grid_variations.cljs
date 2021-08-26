@@ -32,6 +32,9 @@
 (defn y-proportional [pos]
   (/ (:y pos) (q/height)))
 
+(defn invert [x]
+  (- 1.0 x))
+
 (defn sin-rate [rate]
   (/ (inc (Math/sin (* rate (q/frame-count)))) 2))
 
@@ -44,8 +47,11 @@
   (let [constants
         {(constantly 1) 3
          xy-proportional 1
+         (comp invert xy-proportional) 1
          x-proportional 1
-         y-proportional 1}]
+         (comp invert x-proportional) 1
+         y-proportional 1
+         (comp invert y-proportional) 1}]
     {:scalar
      (->> (rand-nth [(constantly 1.0)
                      (fn [_] (p/gaussian 1 0.1))
