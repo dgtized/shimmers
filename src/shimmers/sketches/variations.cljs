@@ -44,7 +44,7 @@
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
-              scale (/ (q/width) I)
+              scale (/ (Math/sqrt (* (q/height) (q/width))) (Math/sqrt (* I J)))
               rotation (/ (tm/mag-squared pos)(* (q/width) (q/height)))]
           (draw-mark pos scale rotation))))))
 
