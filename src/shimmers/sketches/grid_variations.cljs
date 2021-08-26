@@ -6,7 +6,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
 
 (defn hashmark [t]
   (let [[l h] [0.2 0.8]
@@ -19,9 +20,24 @@
                          [(gl/line2 o l o h)
                           (gl/line2 l o h o)])))))
 
+(defn perturb [pos radius]
+  (gv/vec2 (p/confusion-disk pos radius)))
+
+(defn mag-proportional [area pos]
+  (/ (tm/mag-squared pos) area))
+
+(defn gaussian [sd area pos]
+  (p/gaussian (mag-proportional area pos) (sd pos)))
+
+(defn sin-rate [rate area pos]
+  (tm/map-interval (Math/sin (* rate (q/frame-count))) [-1 1]
+                   [0 (* tm/TWO_PI (mag-proportional area pos))]))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  {:rotation (rand-nth [mag-proportional
+                        (partial gaussian (constantly 0.1))
+                        (partial sin-rate 0.05)])})
 
 (defn update-state [state]
   state)
@@ -36,7 +52,7 @@
     [(tm/map-interval (Math/sin t) [-1 1] [3 36])
      (tm/map-interval (Math/cos t) [-1 1] [4 24])]))
 
-(defn draw [state]
+(defn draw [{:keys [rotation]}]
   (q/background 1.0)
   (q/stroke-weight 1.0)
   (let [[I J] [11 13] ;; (animate-grid)
@@ -46,7 +62,7 @@
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
-              rotation (/ (tm/mag-squared pos) area)]
+              rotation (rotation area pos)]
           (draw-mark pos scale rotation))))))
 
 (sketch/defquil grid-variations
