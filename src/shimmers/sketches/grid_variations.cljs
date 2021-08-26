@@ -24,7 +24,8 @@
   (gv/vec2 (p/confusion-disk pos radius)))
 
 (defn xy-proportional [pos]
-  (/ (tm/mag-squared pos) (* (q/width) (q/height))))
+  (/ (* (:x pos) (:y pos))
+     (* (q/width) (q/height))))
 
 (defn x-proportional [pos]
   (/ (:x pos) (q/width)))
