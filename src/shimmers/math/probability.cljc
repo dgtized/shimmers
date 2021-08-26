@@ -70,6 +70,9 @@
          ;; This part doesn't error but is not working as expected.
          (map (prob-if (constantly 0.2) (fn [x y] [:v x y]) vector) (range 5) (reverse (range 5))))
 
+(defn gaussian [mu sd]
+  (ksd/draw (ksd/normal {:mu mu :sd sd})))
+
 (defn gaussian-clamped [mean sd]
   (let [dist (ksd/normal {:mu mean :sd sd})]
     (fn []
