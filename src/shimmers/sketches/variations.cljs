@@ -40,12 +40,13 @@
   (q/background 1.0)
   (q/stroke-weight 1.0)
   (let [[I J] [11 13] ;; (animate-grid)
-        delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
+        area (* (q/height) (q/width))
+        delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))
+        scale (/ (Math/sqrt area) (Math/sqrt (* I J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
-              scale (/ (Math/sqrt (* (q/height) (q/width))) (Math/sqrt (* I J)))
-              rotation (/ (tm/mag-squared pos)(* (q/width) (q/height)))]
+              rotation (/ (tm/mag-squared pos) area)]
           (draw-mark pos scale rotation))))))
 
 (sketch/defquil variations
