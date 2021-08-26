@@ -35,7 +35,11 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:rotation (rand-nth [mag-proportional
+  {:scalar (rand-nth [(constantly 1)
+                      (fn [_] (p/gaussian 1 0.1))
+                      (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                                              [-1 1] [0.2 2.0]))])
+   :rotation (rand-nth [mag-proportional
                         (partial gaussian (constantly 0.1))
                         (partial sin-rate 0.05)])})
 
@@ -52,7 +56,7 @@
     [(tm/map-interval (Math/sin t) [-1 1] [3 36])
      (tm/map-interval (Math/cos t) [-1 1] [4 24])]))
 
-(defn draw [{:keys [rotation]}]
+(defn draw [{:keys [rotation scalar]}]
   (q/background 1.0)
   (q/stroke-weight 1.0)
   (let [[I J] [11 13] ;; (animate-grid)
@@ -63,7 +67,7 @@
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
               rotation (rotation area pos)]
-          (draw-mark pos scale rotation))))))
+          (draw-mark pos (* scale (scalar pos)) rotation))))))
 
 (sketch/defquil grid-variations
   :created-at "2021-08-25"
