@@ -29,12 +29,15 @@
     (q/line (tm/+ pos (tm/* p scale))
             (tm/+ pos (tm/* q scale)))))
 
+(defn animate-grid []
+  (let [t (/ (q/frame-count) 100)]
+    [(tm/map-interval (Math/sin t) [-1 1] [3 36])
+     (tm/map-interval (Math/cos t) [-1 1] [4 24])]))
+
 (defn draw [state]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (let [t (/ (q/frame-count) 100)
-        I (tm/map-interval (Math/sin t) [-1 1] [3 36])
-        J (tm/map-interval (Math/cos t) [-1 1] [4 24])
+  (let [[I J] [11 13] ;; (animate-grid)
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
