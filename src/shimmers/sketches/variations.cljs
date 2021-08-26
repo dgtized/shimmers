@@ -24,8 +24,8 @@
 (defn update-state [state]
   state)
 
-(defn draw-mark [pos scale]
-  (doseq [{[p q] :points} (hashmark (/ (tm/mag-squared pos)(* (q/width) (q/height))))]
+(defn draw-mark [pos scale rotation]
+  (doseq [{[p q] :points} (hashmark rotation)]
     (q/line (tm/+ pos (tm/* p scale))
             (tm/+ pos (tm/* q scale)))))
 
@@ -41,8 +41,10 @@
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
-        (draw-mark (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
-                   (/ (q/width) I))))))
+        (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)
+              scale (/ (q/width) I)
+              rotation (/ (tm/mag-squared pos)(* (q/width) (q/height)))]
+          (draw-mark pos scale rotation))))))
 
 (sketch/defquil variations
   :created-at "2021-08-25"
