@@ -12,10 +12,10 @@
   (map (fn [l] (-> l
                   (geom/translate (gv/vec2 -0.5 -0.5))
                   (geom/rotate t)))
-       [(gl/line2 0.4 0.1 0.4 0.9)
-        (gl/line2 0.6 0.1 0.6 0.9)
-        (gl/line2 0.1 0.4 0.9 0.4)
-        (gl/line2 0.1 0.6 0.9 0.6)]))
+       [(gl/line2 0.4 0.2 0.4 0.8)
+        (gl/line2 0.6 0.2 0.6 0.8)
+        (gl/line2 0.2 0.4 0.8 0.4)
+        (gl/line2 0.2 0.6 0.8 0.6)]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
