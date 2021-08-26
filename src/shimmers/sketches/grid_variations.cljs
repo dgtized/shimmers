@@ -23,26 +23,46 @@
 (defn perturb [pos radius]
   (gv/vec2 (p/confusion-disk pos radius)))
 
-(defn mag-proportional [area pos]
-  (/ (tm/mag-squared pos) area))
+(defn xy-proportional [pos]
+  (/ (tm/mag-squared pos) (* (q/width) (q/height))))
+
+(defn x-proportional [pos]
+  (/ (:x pos) (q/width)))
+
+(defn y-proportional [pos]
+  (/ (:y pos) (q/height)))
 
 (defn sin-rate [rate]
   (/ (inc (Math/sin (* rate (q/frame-count)))) 2))
 
+(defn chain-compose [fns]
+  (fn [pos]
+    (apply * ((apply juxt fns) pos))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:scalar
-   (rand-nth [(constantly 1)
-              mag-proportional
-              (fn [_ _] (p/gaussian 1 0.1))
-              (fn [_ _] (p/gaussian 1 0.2))
-              (fn [_ _] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
-                                        [-1 1] [0.2 2.0]))])
+   (->> [(constantly 1)
+         xy-proportional
+         x-proportional
+         y-proportional
+         (fn [_] (p/gaussian 1 0.1))
+         (fn [_] (p/gaussian 1 0.2))
+         (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                                 [-1 1] [0.2 2.0]))]
+        shuffle
+        (take 2)
+        chain-compose)
    :rotation
-   (rand-nth [(constantly 1)
-              mag-proportional
-              (fn [_ _] (p/gaussian 1 0.1))
-              (fn [_ _] (sin-rate 0.05))])})
+   (->> [(constantly 1)
+         xy-proportional
+         x-proportional
+         y-proportional
+         (fn [_] (p/gaussian 1 0.1))
+         (fn [_] (sin-rate 0.05))]
+        shuffle
+        (take 2)
+        chain-compose)})
 
 (defn update-state [state]
   state)
@@ -68,8 +88,8 @@
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)]
           (draw-mark pos
-                     (* scale (scalar area pos))
-                     (* tm/TWO_PI (rotation area pos))))))))
+                     (* scale (scalar pos))
+                     (* tm/TWO_PI (rotation pos))))))))
 
 (sketch/defquil grid-variations
   :created-at "2021-08-25"
