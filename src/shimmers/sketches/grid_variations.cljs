@@ -43,6 +43,8 @@
   (fn [pos]
     (apply * ((apply juxt fns) pos))))
 
+;; TODO: tween between modes by mixing from 0 to 1 for current and next
+;; scalar/rotation functions.
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [constants
