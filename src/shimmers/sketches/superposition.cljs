@@ -146,14 +146,19 @@
               (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
               (gv/vec2))])))
 
+(defn debug [state]
+  (-> state
+      (update :brushes count)
+      (assoc :transition
+             (let [{:keys [base interval]} (:transition state)]
+               [base interval]))
+      (dissoc :image)))
+
 (defn update-state [{:keys [transition] :as state}]
   (let [fc (q/frame-count)]
     (if (transition/complete? transition fc)
       (let [state' (transition-to state fc (random-target))]
-        (.log js/console
-              (-> state'
-                  (update :brushes count)
-                  (dissoc :image)))
+        (.log js/console (debug state'))
         state')
       (assoc state :tween (var-rate (transition/percent transition fc))))))
 
