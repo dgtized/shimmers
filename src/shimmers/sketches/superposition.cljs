@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq :refer [rel-h rel-w]]
+            [shimmers.common.transition-interval :as transition]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
@@ -107,10 +108,9 @@
                           #(make-stroke (geom/random-point-inside current)
                                         (geom/random-point-inside target)))
      :variance [1 0]
-     :base 0
+     :transition (transition/after 0 500)
      :spin nil
-     :orbit [(gv/vec2) (gv/vec2)]
-     :interval 500}))
+     :orbit [(gv/vec2) (gv/vec2)]}))
 
 (defn orbit-transition
   "Transition from old orbit to new in the first 20% of the motion from A to B.
@@ -137,9 +137,8 @@
                 (sort-by :cohort))
 
            :variance [cohorts (* 20 (q/random-gaussian))]
-           :base fc
+           :transition (transition/after fc (q/floor (q/random 120 600)))
            :tween 0.0
-           :interval (q/floor (q/random 120 600))
            :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
            :orbit
            [last-orbit
@@ -147,16 +146,16 @@
               (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
               (gv/vec2))])))
 
-(defn update-state [{:keys [base interval] :as state}]
+(defn update-state [{:keys [transition] :as state}]
   (let [fc (q/frame-count)]
-    (if (= (- fc base) interval)
+    (if (transition/complete? transition fc)
       (let [state' (transition-to state fc (random-target))]
         (.log js/console
               (-> state'
                   (update :brushes count)
                   (dissoc :image)))
         state')
-      (assoc state :tween (var-rate (/ (- fc base) interval))))))
+      (assoc state :tween (var-rate (transition/percent transition fc))))))
 
 (defn map-noise [t rate offset interval]
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
