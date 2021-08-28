@@ -78,8 +78,7 @@
              (constantly (gv/vec2 17 23))
              animate-grid]))
 
-;; TODO: tween between modes by mixing from 0 to 1 for current and next
-;; scalar/rotation functions.
+;; TODO: extract base/interval/tweening transition logic for re-use somehow?
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:modes [(gen-mode) (gen-mode)]
