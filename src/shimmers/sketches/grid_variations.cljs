@@ -72,12 +72,19 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:modes [(gen-mode) (gen-mode)]
+   :base 0
+   :interval 400
    :tween 0.0})
 
-(defn update-state [state]
-  (assoc state :tween
-         (tm/map-interval (Math/sin (/ (q/frame-count) 400))
-                          [-1 1] [0 1])))
+(defn update-state [{:keys [base interval] :as state}]
+  (let [fc (q/frame-count)]
+    (if (>= fc (+ base interval))
+      (assoc state
+             :modes [(last (:modes state)) (gen-mode)]
+             :base fc
+             :interval (rand-nth [300 400 500 600 700 700 800 900 1000])
+             :tween 0.0)
+      (assoc state :tween (tm/smoothstep* 0.3 0.7 (/ (- fc base) interval))))))
 
 (defn draw-mark [pos scale rotation]
   (doseq [{[p q] :points} (hashmark rotation)]
