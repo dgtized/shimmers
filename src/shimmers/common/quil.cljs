@@ -45,6 +45,7 @@
 (defn lerp-line [[x y] [x' y'] amt]
   (q/line x y (q/lerp x x' amt) (q/lerp y y' amt)))
 
+;; TODO move/combine with transition-interval logic
 (defn if-steady-state
   "Sketch update helper for restarting after a sketch reaches steady state.
 
