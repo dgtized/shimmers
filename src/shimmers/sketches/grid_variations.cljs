@@ -2,6 +2,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.transition-interval :as transition]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
@@ -78,28 +79,25 @@
              (constantly (gv/vec2 17 23))
              animate-grid]))
 
-;; TODO: extract base/interval/tweening transition logic for re-use somehow?
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:modes [(gen-mode) (gen-mode)]
    :grid [(gen-grid) (gen-grid)]
-   :base 0
-   :interval 400
+   :transition (transition/after 0 400)
    :tween 0.0})
 
-(defn update-state [{:keys [base interval] :as state}]
+(defn update-state [{:keys [transition] :as state}]
   (let [fc (q/frame-count)]
-    (if (>= fc (+ base interval))
+    (if (transition/complete? transition fc)
       (assoc state
              :modes [(last (:modes state)) (gen-mode)]
              :grid (let [last-grid (last (:grid state))]
                      [last-grid (if (p/chance 0.3)
                                   (gen-grid)
                                   last-grid)])
-             :base fc
-             :interval (rand-nth [300 400 500 600 700 700 800 900 1000])
+             :transition (transition/after fc (* 100 (rand-nth [3 4 5 6 7 7 8 9 10])))
              :tween 0.0)
-      (assoc state :tween (tm/smoothstep* 0.3 0.7 (/ (- fc base) interval))))))
+      (assoc state :tween (tm/smoothstep* 0.3 0.7 (transition/percent transition fc))))))
 
 (defn draw-mark [pos scale rotation]
   (doseq [{[p q] :points} (hashmark rotation)]
