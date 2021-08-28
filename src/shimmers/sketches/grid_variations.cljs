@@ -67,11 +67,23 @@
           (conj [(p/weighted constants)])
           chain-compose)}))
 
+(defn animate-grid []
+  (let [t (/ (q/frame-count) 100)]
+    (gv/vec2 [(tm/map-interval (Math/sin t) [-1 1] [3 36])
+              (tm/map-interval (Math/cos t) [-1 1] [4 24])])))
+
+(defn gen-grid []
+  (rand-nth [(constantly (gv/vec2 11 13))
+             (constantly (gv/vec2 13 17))
+             (constantly (gv/vec2 17 23))
+             animate-grid]))
+
 ;; TODO: tween between modes by mixing from 0 to 1 for current and next
 ;; scalar/rotation functions.
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:modes [(gen-mode) (gen-mode)]
+   :grid [(gen-grid) (gen-grid)]
    :base 0
    :interval 400
    :tween 0.0})
@@ -81,6 +93,10 @@
     (if (>= fc (+ base interval))
       (assoc state
              :modes [(last (:modes state)) (gen-mode)]
+             :grid (let [last-grid (last (:grid state))]
+                     [last-grid (if (p/chance 0.3)
+                                  (gen-grid)
+                                  last-grid)])
              :base fc
              :interval (rand-nth [300 400 500 600 700 700 800 900 1000])
              :tween 0.0)
@@ -91,17 +107,13 @@
     (q/line (tm/+ pos (tm/* p scale))
             (tm/+ pos (tm/* q scale)))))
 
-(defn animate-grid []
-  (let [t (/ (q/frame-count) 100)]
-    [(tm/map-interval (Math/sin t) [-1 1] [3 36])
-     (tm/map-interval (Math/cos t) [-1 1] [4 24])]))
-
-(defn draw [{:keys [modes tween]}]
+(defn draw [{:keys [modes grid tween]}]
   (q/background 1.0)
   (q/stroke-weight 1.0)
   (let [[{rot-a :rotation scalar-a :scalar}
          {rot-b :rotation scalar-b :scalar}] modes
-        [I J] [11 13] ;; (animate-grid)
+        [g1 g2] grid
+        [I J] (tm/mix (g1) (g2) tween)
         area (* (q/height) (q/width))
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))
         scale (/ (Math/sqrt area) (Math/sqrt (* I J)))]
