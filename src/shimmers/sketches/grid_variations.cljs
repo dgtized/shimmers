@@ -65,8 +65,11 @@
                  (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
                                          [-1 1] [0.2 2.0])) 1})
    :rotation
-   (option-from {(constantly 1.0) 1
+   (option-from {(constantly 0.0) 1
                  (fn [_] (p/gaussian 1 0.1)) 1
+                 (let [mag (* (rand-nth [-1 1])
+                              (rand-nth [100 150 200 250]))]
+                   (fn [_] (/ (q/frame-count) mag))) 1
                  (fn [_] (sin-rate 0.05)) 1})})
 
 (defn animate-grid []
