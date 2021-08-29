@@ -86,10 +86,11 @@
               (tm/map-interval (Math/cos t) [-1 1] [4 24])])))
 
 (defn gen-grid []
-  (rand-nth [(constantly (gv/vec2 11 13))
-             (constantly (gv/vec2 13 17))
-             (constantly (gv/vec2 17 23))
-             animate-grid]))
+  (p/weighted {(constantly (gv/vec2 11 13)) 1
+               (constantly (gv/vec2 13 17)) 2
+               (constantly (gv/vec2 17 23)) 3
+               (constantly (gv/vec2 23 29)) 2
+               animate-grid 2}))
 
 ;; Add state for shape+deformations, stroke-weight, color, and opacity.
 (defn setup []
