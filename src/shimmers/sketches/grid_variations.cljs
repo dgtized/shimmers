@@ -83,6 +83,7 @@
              (constantly (gv/vec2 17 23))
              animate-grid]))
 
+;; Add state for shape+deformations, stroke-weight, color, and opacity.
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:modes [(gen-mode) (gen-mode)]
