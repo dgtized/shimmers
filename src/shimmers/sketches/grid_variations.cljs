@@ -60,12 +60,12 @@
 
 (defn gen-mode []
   {:position
-   (p/weighted {identity 3
+   (p/weighted {(constantly (gv/vec2)) 3
                 (let [radius (tm/random 1.0 4.0)]
-                  (fn [pos] (gv/vec2 (p/confusion-disk pos radius)))) 1
+                  (fn [_] (gv/vec2 (p/confusion-disk [0 0] radius)))) 1
                 (let [radius (tm/random 3.0 6.0)
                       speed (p/weighted {5 1 10 2 15 3 20 2})]
-                  (fn [pos] (tm/+ pos (v/polar radius (/ (q/frame-count) speed))))) 1})
+                  (fn [_] (v/polar radius (/ (q/frame-count) speed)))) 1})
    :scalar
    (option-from {(constantly 1.0) 1
                  (fn [_] (p/gaussian 1 0.1)) 1
@@ -130,7 +130,7 @@
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)]
-          (draw-mark (tm/mix (pos-a pos) (pos-b pos) tween)
+          (draw-mark (tm/+ pos (tm/mix (pos-a pos) (pos-b pos) tween))
                      (* scale (tm/mix* (scalar-a pos) (scalar-b pos) tween))
                      (* tm/TWO_PI (tm/mix* (rot-a pos) (rot-b pos) tween))))))))
 
