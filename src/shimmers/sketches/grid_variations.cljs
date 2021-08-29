@@ -58,7 +58,11 @@
                   (p/weighted constant-factors)]))
 
 (defn gen-mode []
-  {:scalar
+  {:position
+   (p/weighted {identity 5
+                (let [radius (tm/random 1.0 4.0)]
+                  (fn [pos] (gv/vec2 (p/confusion-disk pos radius)))) 1})
+   :scalar
    (option-from {(constantly 1.0) 1
                  (fn [_] (p/gaussian 1 0.1)) 1
                  (fn [_] (p/gaussian 1 0.2)) 1
@@ -112,8 +116,8 @@
 (defn draw [{:keys [modes grid tween]}]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (let [[{rot-a :rotation scalar-a :scalar}
-         {rot-b :rotation scalar-b :scalar}] modes
+  (let [[{rot-a :rotation scalar-a :scalar pos-a :position}
+         {rot-b :rotation scalar-b :scalar pos-b :position}] modes
         [g1 g2] grid
         [I J] (tm/mix (g1) (g2) tween)
         area (* (q/height) (q/width))
@@ -122,7 +126,7 @@
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)]
-          (draw-mark pos
+          (draw-mark (tm/mix (pos-a pos) (pos-b pos) tween)
                      (* scale (tm/mix* (scalar-a pos) (scalar-b pos) tween))
                      (* tm/TWO_PI (tm/mix* (rot-a pos) (rot-b pos) tween))))))))
 
