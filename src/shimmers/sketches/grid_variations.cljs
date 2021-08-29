@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.transition-interval :as transition]
             [shimmers.math.probability :as p]
+            [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
@@ -59,9 +60,12 @@
 
 (defn gen-mode []
   {:position
-   (p/weighted {identity 5
+   (p/weighted {identity 3
                 (let [radius (tm/random 1.0 4.0)]
-                  (fn [pos] (gv/vec2 (p/confusion-disk pos radius)))) 1})
+                  (fn [pos] (gv/vec2 (p/confusion-disk pos radius)))) 1
+                (let [radius (tm/random 3.0 6.0)
+                      speed (p/weighted {5 1 10 2 15 3 20 2})]
+                  (fn [pos] (tm/+ pos (v/polar radius (/ (q/frame-count) speed))))) 1})
    :scalar
    (option-from {(constantly 1.0) 1
                  (fn [_] (p/gaussian 1 0.1)) 1
