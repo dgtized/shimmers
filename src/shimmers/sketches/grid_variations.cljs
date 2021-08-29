@@ -44,29 +44,30 @@
   (fn [pos]
     (apply * ((apply juxt fns) pos))))
 
+(def constant-factors
+  {(constantly 1) 3
+   xy-proportional 1
+   (comp invert xy-proportional) 1
+   x-proportional 1
+   (comp invert x-proportional) 1
+   y-proportional 1
+   (comp invert y-proportional) 1})
+
+(defn option-from [options]
+  (chain-compose [(p/weighted options)
+                  (p/weighted constant-factors)]))
+
 (defn gen-mode []
-  (let [constants
-        {(constantly 1) 3
-         xy-proportional 1
-         (comp invert xy-proportional) 1
-         x-proportional 1
-         (comp invert x-proportional) 1
-         y-proportional 1
-         (comp invert y-proportional) 1}]
-    {:scalar
-     (->> (rand-nth [(constantly 1.0)
-                     (fn [_] (p/gaussian 1 0.1))
-                     (fn [_] (p/gaussian 1 0.2))
-                     (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
-                                             [-1 1] [0.2 2.0]))])
-          (conj [(p/weighted constants)])
-          chain-compose)
-     :rotation
-     (->> (rand-nth [(constantly 1.0)
-                     (fn [_] (p/gaussian 1 0.1))
-                     (fn [_] (sin-rate 0.05))])
-          (conj [(p/weighted constants)])
-          chain-compose)}))
+  {:scalar
+   (option-from {(constantly 1.0) 1
+                 (fn [_] (p/gaussian 1 0.1)) 1
+                 (fn [_] (p/gaussian 1 0.2)) 1
+                 (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                                         [-1 1] [0.2 2.0])) 1})
+   :rotation
+   (option-from {(constantly 1.0) 1
+                 (fn [_] (p/gaussian 1 0.1)) 1
+                 (fn [_] (sin-rate 0.05)) 1})})
 
 (defn animate-grid []
   (let [t (/ (q/frame-count) 100)]
