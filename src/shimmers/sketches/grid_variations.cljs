@@ -136,7 +136,7 @@
 
 (sketch/defquil grid-variations
   :created-at "2021-08-25"
-  :size [600 600]
+  :size [800 800]
   :setup setup
   :update update-state
   :draw draw
