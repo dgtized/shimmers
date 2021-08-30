@@ -131,7 +131,9 @@
                 (map-indexed
                  (fn [idx brush]
                    (let [p (brush-at brush last-orbit 1.0)
-                         q (geom/random-point-inside target)]
+                         q (if (p/chance 0.2)
+                             (geom/random-point target)
+                             (geom/random-point-inside target))]
                      (assoc (make-stroke p q curve)
                             :cohort (mod idx cohorts)))))
                 (sort-by :cohort))
