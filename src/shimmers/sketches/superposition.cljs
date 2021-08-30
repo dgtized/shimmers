@@ -123,6 +123,9 @@
   [{brushes :brushes [_ last-orbit] :orbit previous :target :as state}
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
+        random-point-from
+        (p/weighted {geom/random-point-inside 5
+                     geom/random-point 1})
         cohorts 12]
     (assoc state :current previous
            :target target
@@ -131,9 +134,7 @@
                 (map-indexed
                  (fn [idx brush]
                    (let [p (brush-at brush last-orbit 1.0)
-                         q (if (p/chance 0.2)
-                             (geom/random-point target)
-                             (geom/random-point-inside target))]
+                         q (random-point-from target)]
                      (assoc (make-stroke p q curve)
                             :cohort (mod idx cohorts)))))
                 (sort-by :cohort))
