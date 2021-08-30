@@ -141,7 +141,6 @@
 
            :variance [cohorts (* 20 (q/random-gaussian))]
            :transition (transition/after fc (q/floor (q/random 120 600)))
-           :tween 0.0
            :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
            :orbit
            [last-orbit
@@ -163,16 +162,17 @@
       (let [state' (transition-to state fc (random-target))]
         (.log js/console (debug state'))
         state')
-      (assoc state :tween (var-rate (transition/percent transition fc))))))
+      state)))
 
 (defn map-noise [t rate offset interval]
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
 
 (defn draw
-  [{:keys [image current target tween factor brushes variance spin] :as state}]
+  [{:keys [image current target transition factor brushes variance spin] :as state}]
 
   ;; measure/beat
   (let [frame-count (q/frame-count)
+        tween (var-rate (transition/percent transition frame-count))
         orbit (orbit-transition state)]
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
