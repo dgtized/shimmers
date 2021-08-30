@@ -124,7 +124,7 @@
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
         random-point-from
-        (p/weighted {geom/random-point-inside 5
+        (p/weighted {geom/random-point-inside 8
                      geom/random-point 1})
         cohorts 12]
     (assoc state :current previous
