@@ -68,6 +68,7 @@
 
 (sketch/defquil chaikin-demo
   :created-at "2021-08-31"
+  :tags #{:demo}
   :size [800 600]
   :setup setup
   :update update-state

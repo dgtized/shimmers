@@ -50,6 +50,7 @@
 
 (sketch/defquil noise-grid-sketch
   :created-at "2020-11-01"
+  :tags #{:demo}
   :size [300 300]
   :setup setup
   :draw draw

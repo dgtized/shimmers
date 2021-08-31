@@ -68,5 +68,6 @@
       the circle. The lower example picks a random point on the bisector."]]))
 
 (sketch/defsvg path-distribution
-  {:created-at "2021-04-29"}
+  {:created-at "2021-04-29"
+   :tags #{:demo}}
   (ctrl/mount page "svg-host"))
