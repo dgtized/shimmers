@@ -17,40 +17,50 @@
 (defn update-state [state]
   state)
 
-(defn draw-at [vertices pos]
-  (let [translated (map (fn [v] (geom/translate v pos)) vertices)]
-    (q/begin-shape)
-    (doseq [v translated]
-      (apply q/vertex v))
-    (q/end-shape)
-    (cq/circle (first translated) 3.0)))
+
+(defn text-at [s [x y]]
+  (q/push-style)
+  (q/fill 0)
+  (q/text s x y)
+  (q/pop-style))
+
+(defn draw-at
+  ([vertices pos] (draw-at nil vertices pos))
+  ([desc vertices pos]
+   (let [translated (map (fn [v] (geom/translate v pos)) vertices)]
+     (q/begin-shape)
+     (doseq [v translated]
+       (apply q/vertex v))
+     (q/end-shape)
+     (cq/circle (first translated) 3.0)
+     (when desc
+       (text-at desc (geom/translate pos (cq/rel-vec 0.05 0.2)))))))
 
 (def gsd-chaikin (partial gsd/subdivide-closed (:chaikin gsd/schemes)))
 (def gsd-bezier (partial gsd/subdivide-closed (:cubic-bezier gsd/schemes)))
 
 (defn draw [state]
   (q/background 1.0)
-  (let [shapes [(rect/rect (cq/rel-pos 0.05 0.05) (cq/rel-pos 0.15 0.15))]]
-    (doseq [shape shapes
-            :let [vertices (geom/vertices shape)]]
-      (draw-at vertices (gv/vec2))
-      (draw-at (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
-      (draw-at (chaikin/chaikin 0.25 true 2 vertices) (cq/rel-vec 0.4 0.0))
-      (draw-at (chaikin/chaikin 0.25 true 3 vertices) (cq/rel-vec 0.6 0.0))
-      (draw-at (chaikin/chaikin 0.25 true 4 vertices) (cq/rel-vec 0.8 0.0))
-      (draw-at (chaikin/chaikin-open vertices 0.25) (cq/rel-vec 0.2 0.2))
-      (draw-at (chaikin/chaikin 0.25 false 2 vertices) (cq/rel-vec 0.4 0.2))
-      (draw-at (chaikin/chaikin 0.25 false 3 vertices) (cq/rel-vec 0.6 0.2))
-      (draw-at (chaikin/chaikin 0.25 false 4 vertices) (cq/rel-vec 0.8 0.2))
-      (draw-at (gsd-chaikin vertices) (cq/rel-vec 0.2 0.4))
-      (draw-at (gsd-chaikin (gsd-chaikin vertices)) (cq/rel-vec 0.4 0.4))
-      (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices))) (cq/rel-vec 0.6 0.4))
-      (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices)))) (cq/rel-vec 0.8 0.4))
-      (draw-at (gsd-bezier vertices) (cq/rel-vec 0.2 0.6))
-      (draw-at (gsd-bezier (gsd-bezier vertices)) (cq/rel-vec 0.4 0.6))
-      (draw-at (gsd-bezier (gsd-bezier (gsd-bezier vertices))) (cq/rel-vec 0.6 0.6))
-      (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))
-      )))
+  (let [shape (rect/rect (cq/rel-pos 0.05 0.05) (cq/rel-pos 0.15 0.15))
+        vertices (geom/vertices shape)]
+    (draw-at "Original" vertices (gv/vec2))
+    (draw-at "Chaikin Closed" (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
+    (draw-at "2 iters" (chaikin/chaikin 0.25 true 2 vertices) (cq/rel-vec 0.4 0.0))
+    (draw-at "3 iters" (chaikin/chaikin 0.25 true 3 vertices) (cq/rel-vec 0.6 0.0))
+    (draw-at "4 iters" (chaikin/chaikin 0.25 true 4 vertices) (cq/rel-vec 0.8 0.0))
+    (draw-at "Chaikin Open" (chaikin/chaikin-open vertices 0.25) (cq/rel-vec 0.2 0.2))
+    (draw-at (chaikin/chaikin 0.25 false 2 vertices) (cq/rel-vec 0.4 0.2))
+    (draw-at (chaikin/chaikin 0.25 false 3 vertices) (cq/rel-vec 0.6 0.2))
+    (draw-at (chaikin/chaikin 0.25 false 4 vertices) (cq/rel-vec 0.8 0.2))
+    (draw-at "subdiv Chaikin" (gsd-chaikin vertices) (cq/rel-vec 0.2 0.4))
+    (draw-at (gsd-chaikin (gsd-chaikin vertices)) (cq/rel-vec 0.4 0.4))
+    (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices))) (cq/rel-vec 0.6 0.4))
+    (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices)))) (cq/rel-vec 0.8 0.4))
+    (draw-at "subdiv Cubic-Bezier" (gsd-bezier vertices) (cq/rel-vec 0.2 0.6))
+    (draw-at (gsd-bezier (gsd-bezier vertices)) (cq/rel-vec 0.4 0.6))
+    (draw-at (gsd-bezier (gsd-bezier (gsd-bezier vertices))) (cq/rel-vec 0.6 0.6))
+    (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))
+    ))
 
 (sketch/defquil chaikin
   :created-at "2021-08-31"
