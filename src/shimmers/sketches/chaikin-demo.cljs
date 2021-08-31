@@ -1,4 +1,4 @@
-(ns shimmers.sketches.chaikin
+(ns shimmers.sketches.chaikin-demo
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.chaikin :as chaikin]
@@ -66,7 +66,7 @@
     (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))
     ))
 
-(sketch/defquil chaikin
+(sketch/defquil chaikin-demo
   :created-at "2021-08-31"
   :size [800 600]
   :setup setup
