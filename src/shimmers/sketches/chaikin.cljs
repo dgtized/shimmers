@@ -27,13 +27,18 @@
 
 (defn draw [state]
   (q/background 1.0)
-  (let [shapes [(rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.2 0.2))]]
+  (let [shapes [(rect/rect (cq/rel-pos 0.05 0.05) (cq/rel-pos 0.15 0.15))]]
     (doseq [shape shapes
             :let [vertices (geom/vertices shape)]]
       (draw-at vertices (gv/vec2))
       (draw-at (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
+      (draw-at (chaikin/chaikin 0.25 true 2 vertices) (cq/rel-vec 0.6 0.0))
+      (draw-at (chaikin/chaikin 0.25 true 3 vertices) (cq/rel-vec 0.8 0.0))
       (draw-at (gsd/subdivide-closed (:chaikin gsd/schemes) vertices) (cq/rel-vec 0.4 0.0))
-      (draw-at (chaikin/chaikin-open vertices 0.25) (cq/rel-vec 0.2 0.2)))))
+      (draw-at (chaikin/chaikin-open vertices 0.25) (cq/rel-vec 0.2 0.2))
+      (draw-at (chaikin/chaikin 0.25 false 2 vertices) (cq/rel-vec 0.6 0.2))
+      (draw-at (chaikin/chaikin 0.25 false 3 vertices) (cq/rel-vec 0.8 0.2))
+      )))
 
 (sketch/defquil chaikin
   :created-at "2021-08-31"
