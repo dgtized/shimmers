@@ -8,15 +8,20 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.utils.subdiv :as gsd]
-            [thi.ng.geom.vector :as gv]))
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  (let [shapes (map (fn [v] (geom/translate v (cq/rel-vec 0.05 0.05)))
+                    [(rect/rect (cq/rel-pos 0.0 0.0) (cq/rel-pos 0.1 0.1))
+                     (gt/triangle2 (cq/rel-pos 0.0 0.0) (cq/rel-pos 0.0 0.1) (cq/rel-pos 0.1 0.0))])]
+    {:shapes shapes
+     :shape (first shapes)}))
 
-(defn update-state [state]
-  state)
-
+(defn update-state [{:keys [shapes] :as state}]
+  (let [fc (/ (q/frame-count) (* 10 60))]
+    (assoc state :shape (nth shapes (mod (int fc) (count shapes))))))
 
 (defn text-at [s [x y]]
   (q/push-style)
@@ -39,10 +44,9 @@
 (def gsd-chaikin (partial gsd/subdivide-closed (:chaikin gsd/schemes)))
 (def gsd-bezier (partial gsd/subdivide-closed (:cubic-bezier gsd/schemes)))
 
-(defn draw [state]
+(defn draw [{:keys [shape]}]
   (q/background 1.0)
-  (let [shape (rect/rect (cq/rel-pos 0.05 0.05) (cq/rel-pos 0.15 0.15))
-        vertices (geom/vertices shape)]
+  (let [vertices (geom/vertices shape)]
     (draw-at "Original" vertices (gv/vec2))
     (draw-at "Chaikin Closed" (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
     (draw-at "2 iters" (chaikin/chaikin 0.25 true 2 vertices) (cq/rel-vec 0.4 0.0))
