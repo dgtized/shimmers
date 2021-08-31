@@ -1,12 +1,13 @@
 (ns shimmers.sketches.chaikin
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
             [shimmers.algorithm.chaikin :as chaikin]
-            [thi.ng.geom.rect :as rect]
+            [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [thi.ng.geom.core :as geom]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -15,12 +16,18 @@
 (defn update-state [state]
   state)
 
+(defn draw-at [vertices pos]
+  (let [translated (map (fn [v] (geom/translate v pos)) vertices)]
+    (cq/draw-shape translated)
+    (cq/circle (first translated) 3.0)))
+
 (defn draw [state]
   (let [shapes [(rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.2 0.2))]]
-    (doseq [shape shapes]
-      (cq/draw-shape (geom/vertices shape))
-      (cq/draw-shape (chaikin/chaikin (geom/vertices (geom/translate shape (cq/rel-vec 0.2 0))) 0.25 true))
-      (cq/draw-shape (chaikin/chaikin (geom/vertices (geom/translate shape (cq/rel-vec 0.2 0.2))) 0.25 false)))))
+    (doseq [shape shapes
+            :let [vertices (geom/vertices shape)]]
+      (draw-at vertices (gv/vec2))
+      (draw-at (chaikin/chaikin vertices 0.25 true) (cq/rel-vec 0.2 0))
+      (draw-at (chaikin/chaikin vertices 0.25 false) (cq/rel-vec 0.2 0.2)))))
 
 (sketch/defquil chaikin
   :created-at "2021-08-31"
