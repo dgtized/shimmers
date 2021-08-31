@@ -26,6 +26,7 @@
     (cq/circle (first translated) 3.0)))
 
 (def gsd-chaikin (partial gsd/subdivide-closed (:chaikin gsd/schemes)))
+(def gsd-bezier (partial gsd/subdivide-closed (:cubic-bezier gsd/schemes)))
 
 (defn draw [state]
   (q/background 1.0)
@@ -45,6 +46,10 @@
       (draw-at (gsd-chaikin (gsd-chaikin vertices)) (cq/rel-vec 0.4 0.4))
       (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices))) (cq/rel-vec 0.6 0.4))
       (draw-at (gsd-chaikin (gsd-chaikin (gsd-chaikin (gsd-chaikin vertices)))) (cq/rel-vec 0.8 0.4))
+      (draw-at (gsd-bezier vertices) (cq/rel-vec 0.2 0.6))
+      (draw-at (gsd-bezier (gsd-bezier vertices)) (cq/rel-vec 0.4 0.6))
+      (draw-at (gsd-bezier (gsd-bezier (gsd-bezier vertices))) (cq/rel-vec 0.6 0.6))
+      (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))
       )))
 
 (sketch/defquil chaikin
