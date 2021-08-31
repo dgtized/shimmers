@@ -17,7 +17,7 @@
 
 (defn chaikin-closed [points ratio]
   (mapcat (fn [[a b]] (cut a b ratio))
-          (partition 2 1 (conj points (first points)))))
+          (partition 2 1 (concat points (take 1 points)))))
 
 (defn chaikin [ratio closed iterations points]
   (let [approach (if closed chaikin-closed chaikin-open)]
