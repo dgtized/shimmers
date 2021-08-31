@@ -11,6 +11,7 @@
             shimmers.sketches.breathing-hexes
             shimmers.sketches.bubbles
             shimmers.sketches.butterfly
+            shimmers.sketches.chaikin
             shimmers.sketches.circle-packing
             shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
