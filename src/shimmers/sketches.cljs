@@ -86,6 +86,7 @@
             shimmers.sketches.sphere
             shimmers.sketches.stem-and-leaf
             shimmers.sketches.substrate
+            shimmers.sketches.string-lights
             shimmers.sketches.superposition
             shimmers.sketches.tilt
             shimmers.sketches.triangulating-subdivisions
