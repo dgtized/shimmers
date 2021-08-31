@@ -8,6 +8,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
+;; modify fill/size opacity by y-pos or time to animate?
 (defn string-line [p q n r]
   (for [point (repeatedly n #(tm/mix p q (rand)))]
     {:point (p/confusion-disk point r)
