@@ -7,6 +7,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.utils.subdiv :as gsd]
             [thi.ng.geom.vector :as gv]))
 
 (defn setup []
@@ -31,6 +32,7 @@
             :let [vertices (geom/vertices shape)]]
       (draw-at vertices (gv/vec2))
       (draw-at (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
+      (draw-at (gsd/subdivide-closed (:chaikin gsd/schemes) vertices) (cq/rel-vec 0.4 0.0))
       (draw-at (chaikin/chaikin-open vertices 0.25) (cq/rel-vec 0.2 0.2)))))
 
 (sketch/defquil chaikin
