@@ -7,7 +7,13 @@
     [(tm/mix a b ratio)
      (tm/mix b a ratio)]))
 
-(defn chaikin [points ratio closed]
+(defn chaikin-open [points ratio]
+  (let [r (mapcat (fn [[a b]] (cut a b ratio))
+                  (partition 2 1 points))]
+    (concat (take 1 points)
+            (drop-last (rest r))
+            (take-last 1 points))))
+
+(defn chaikin-closed [points ratio]
   (mapcat (fn [[a b]] (cut a b ratio))
-          (partition 2 1 (if closed (conj points (first points))
-                             points))))
+          (partition 2 1 (conj points (first points)))))
