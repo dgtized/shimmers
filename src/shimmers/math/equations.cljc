@@ -2,6 +2,16 @@
   "Useful equations"
   (:require [thi.ng.math.core :as tm]))
 
+(defn unit-cos
+  "Cosine function remapped into unit interval [0,1]"
+  [t]
+  (* 0.5 (+ 1 (Math/cos t))))
+
+(defn unit-sin
+  "Sine function remapped into unit interval [0,1]"
+  [t]
+  (* 0.5 (+ 1 (Math/sin t))))
+
 (defn sq [x]
   (* x x))
 
