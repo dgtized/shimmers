@@ -40,8 +40,9 @@
     (* (Math/round (/ theta resolution)) resolution)
     theta))
 
-(defn draw-grid [size {:keys [noise-div snap-resolution jitter]}]
-  (let [w (/ (q/width) size)
+(defn draw-grid [{:keys [step-size noise-div snap-resolution jitter]}]
+  (let [size step-size
+        w (/ (q/width) size)
         h (/ (q/height) size)]
     (doseq [[p dir]
             (for [x (range (* -2 size) (* (+ 3 w) size) size)
@@ -157,7 +158,7 @@
             (q/curve-vertex x y))
           (q/end-shape))
         "grid"
-        (draw-grid (:step-size settings) settings)
+        (draw-grid settings)
         "circles"
         ;; alternative, do circle packing, no-overlap?
         (dotimes [_ (/ flows-per-iter 4)]
