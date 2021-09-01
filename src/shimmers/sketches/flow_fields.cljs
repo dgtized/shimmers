@@ -41,6 +41,20 @@
     (* (Math/round (/ theta resolution)) resolution)
     theta))
 
+(defn avoid-obstacles [p {:keys [points radius voronoi]}]
+  (if-let [closest (apply min-key #(geom/dist p %) points)]
+    ((if voronoi tm/* tm/normalize)
+     (tm/- p closest) (/ radius (geom/dist p closest)))
+    (gv/vec2)))
+
+(defn noise-point [{:keys [step-size noise-div snap-resolution jitter obstacles]} point]
+  (let [dir (dir-at point noise-div)]
+    (reduce tm/+
+            [point
+             (v/polar step-size (snap-to dir snap-resolution))
+             (avoid-obstacles point obstacles)
+             (v/jitter jitter)])))
+
 (defn draw-grid [{:keys [step-size noise-div snap-resolution jitter]}]
   (let [size step-size
         w (/ (q/width) size)
@@ -61,12 +75,6 @@
           hy (+ y (* r (Math/sin angle)))]
       (gv/vec2 hx hy))))
 
-(defn noise-point [{:keys [step-size noise-div snap-resolution jitter]} point]
-  (let [dir (dir-at point noise-div)]
-    (-> point
-        (v/add (v/polar step-size (snap-to dir snap-resolution)))
-        (v/add (v/jitter jitter)))))
-
 ;; Inspired by https://www.bit-101.com/blog/2019/01/perlinized-hexagons/
 (defn draw-hexagon-grid [{:keys [length] :as settings}]
   (let [width (int (/ (q/width) length))
@@ -80,12 +88,6 @@
                        (map (partial noise-point settings))))]
       (doseq [[p q] (partition 2 1 (cons (last hex) hex))]
         (q/line p q)))))
-
-(defn avoid-obstacles [p {:keys [points radius voronoi]}]
-  (if-let [closest (apply min-key #(geom/dist p %) points)]
-    ((if voronoi tm/* tm/normalize)
-     (tm/- p closest) (/ radius (geom/dist p closest)))
-    (gv/vec2)))
 
 (defn flow-points
   [p {:keys [step-size length noise-div snap-resolution jitter obstacles]}]
