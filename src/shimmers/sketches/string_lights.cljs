@@ -6,6 +6,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 ;; modify fill/size opacity by y-pos or time to animate?
@@ -19,8 +20,8 @@
   (q/color-mode :hsl 1.0)
   {:strings
    (for [x (range 0.15 0.95 0.1)]
-     (string-line (cq/rel-vec x 0.05) (cq/rel-vec (- x 0.05) 0.95)
-                  (* 150 x) (* 20 x)))})
+     (string-line (gv/vec2 x 0.05) (gv/vec2 (- x 0.05) 0.95)
+                  (* 150 x) (* 0.025 x)))})
 
 (defn update-state [state]
   state)
@@ -31,7 +32,7 @@
   (doseq [string strings]
     (doseq [{:keys [point fill size]} string]
       (apply q/fill fill)
-      (cq/circle point size))))
+      (cq/circle (cq/rel-vec point) size))))
 
 (sketch/defquil string-lights
   :created-at "2021-08-31"
