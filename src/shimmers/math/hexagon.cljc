@@ -13,6 +13,12 @@
 (defn axial->cube [[q r]]
   (gv/vec3 q (- (- q) r) r))
 
+(defn oddr->cube [[col row]]
+  (let [x (- col (/ (- row (bit-and row 1)) 2))
+        z row
+        y (- x (- z))]
+    (gv/vec3 x y z)))
+
 (defn axial-flat->pixel
   "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]

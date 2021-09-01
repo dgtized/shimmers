@@ -7,6 +7,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.hexagon :as hex]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
@@ -52,6 +53,33 @@
               (-> p
                   (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
                   (v/add (v/jitter (tm/random jitter))))))))
+
+(defn pointy-hexagon [r [x y]]
+  (for [i (range 0 6)]
+    (let [angle (+ (* i (/ Math/PI 3)) (/ Math/PI 6))
+          hx (+ x (* r (Math/cos angle)))
+          hy (+ y (* r (Math/sin angle)))]
+      (gv/vec2 hx hy))))
+
+(defn noise-point [{:keys [step-size noise-div snap-resolution jitter]} point]
+  (let [dir (dir-at point noise-div)]
+    (-> point
+        (v/add (v/polar step-size (snap-to dir snap-resolution)))
+        (v/add (v/jitter jitter)))))
+
+;; Inspired by https://www.bit-101.com/blog/2019/01/perlinized-hexagons/
+(defn draw-hexagon-grid [{:keys [length] :as settings}]
+  (let [width (int (/ (q/width) length))
+        height (int (/ (q/height) length))]
+    (doseq [hex (for [gx (range width)
+                      gy (range height)]
+                  (->> [gx gy]
+                       hex/oddr->cube
+                       (hex/cube-pointy->pixel length)
+                       (pointy-hexagon length)
+                       (map (partial noise-point settings))))]
+      (doseq [[p q] (partition 2 1 (cons (last hex) hex))]
+        (q/line p q)))))
 
 (defn avoid-obstacles [p {:keys [points radius voronoi]}]
   (if-let [closest (apply min-key #(geom/dist p %) points)]
@@ -159,6 +187,8 @@
           (q/end-shape))
         "grid"
         (draw-grid settings)
+        "hexagons"
+        (draw-hexagon-grid settings)
         "circles"
         ;; alternative, do circle packing, no-overlap?
         (dotimes [_ (/ flows-per-iter 4)]
@@ -192,6 +222,7 @@
                     "Segmented Lines" "segments"
                     "Circles" "circles"
                     "Triangles" "triangles"
+                    "Hexagon Grid" "hexagons"
                     "Debug Grid" "grid"})
     (when (= (:draw @settings) "triangles")
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
