@@ -4,6 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.equations :as eq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
@@ -23,8 +24,16 @@
      (string-line (gv/vec2 x 0.05) (gv/vec2 (- x 0.05) 0.95)
                   (* 150 x) (* 0.025 x)))})
 
-(defn update-state [state]
-  state)
+(defn update-state [{:keys [strings] :as state}]
+  (let [t (/ (q/frame-count) 60)
+        strings
+        (for [string strings]
+          (for [{:keys [point] :as light} string
+                :let [[x y] point
+                      center (* 0.5 (+ 1 (Math/cos (* t 0.5))))
+                      alpha (eq/gaussian 0.8 center 0.25 y)]]
+            (assoc light :fill [1.0 alpha])))]
+    (assoc state :strings strings)))
 
 (defn draw [{:keys [strings]}]
   (q/background 0.15)
