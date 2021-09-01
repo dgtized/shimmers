@@ -53,7 +53,7 @@
             [point
              (v/polar step-size (snap-to dir snap-resolution))
              (avoid-obstacles point obstacles)
-             (v/jitter jitter)])))
+             (v/jitter (tm/random jitter))])))
 
 (defn draw-grid [{:keys [step-size noise-div snap-resolution jitter]}]
   (let [size step-size
