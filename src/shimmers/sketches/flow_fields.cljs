@@ -117,7 +117,7 @@
   (reductions
    (fn [p]
      (if-let [next-point (downhill p step-size noise-div snap-resolution)]
-       (tm/+ (tm/+ (tm/+ p next-point)) (v/jitter (tm/random jitter)))
+       (tm/+ p next-point (v/jitter (tm/random jitter)))
        (reduced p)))
    p (range length)))
 
