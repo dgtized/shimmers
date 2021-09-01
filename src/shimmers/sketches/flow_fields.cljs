@@ -47,13 +47,14 @@
      (tm/- p closest) (/ radius (geom/dist p closest)))
     (gv/vec2)))
 
-(defn noise-point [{:keys [step-size noise-div snap-resolution jitter obstacles]} point]
-  (let [dir (dir-at point noise-div)]
-    (reduce tm/+
-            [point
-             (v/polar step-size (snap-to dir snap-resolution))
-             (avoid-obstacles point obstacles)
-             (v/jitter (tm/random jitter))])))
+(defn noise-point
+  [{:keys [step-size noise-div snap-resolution jitter obstacles]}
+   point]
+  (let [dir (snap-to (dir-at point noise-div) snap-resolution)
+        next-point (tm/+ point (v/polar step-size dir))]
+    (tm/+ next-point
+          (avoid-obstacles next-point obstacles)
+          (v/jitter (tm/random jitter)))))
 
 (defn draw-grid [{:keys [step-size noise-div snap-resolution jitter]}]
   (let [size step-size
@@ -90,16 +91,8 @@
         (q/line p q)))))
 
 (defn flow-points
-  [p {:keys [step-size length noise-div snap-resolution jitter obstacles]}]
-  (reductions
-   (fn [p]
-     (let [dir (-> (dir-at p noise-div)
-                   (snap-to snap-resolution))
-           next-pos (tm/+ p (v/polar step-size dir))]
-       (tm/+ next-pos
-             (avoid-obstacles next-pos obstacles)
-             (v/jitter (dr/random jitter)))))
-   p (range length)))
+  [p {:keys [length] :as settings}]
+  (reductions (partial noise-point settings) p (range length)))
 
 (defn angles [r resolution]
   (map (fn [theta] (v/polar r theta))
