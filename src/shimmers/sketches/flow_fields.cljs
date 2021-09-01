@@ -16,7 +16,7 @@
             [thi.ng.math.core :as tm]))
 
 (def flows-per-iter 100)
-(def settings
+(defonce settings
   (ctrl/state {:calc-points "flow-points"
                :draw "curves"
                :align-triangles true
