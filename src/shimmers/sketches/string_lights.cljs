@@ -30,7 +30,7 @@
         strings
         (for [string strings]
           (for [{:keys [point rate] :as light} string
-                :let [[x y] point
+                :let [[_ y] point
                       center (eq/unit-cos (* t rate))
                       alpha (eq/gaussian 0.8 center 0.25 y)]]
             (assoc light :fill [1.0 alpha])))]
