@@ -15,7 +15,8 @@
   (for [point (repeatedly n #(tm/mix p q (rand)))]
     {:point (p/confusion-disk point r)
      :fill [1.0 (tm/random 0.6 0.9)]
-     :size (rand-nth [8 9 10 11 12])}))
+     :size (rand-nth [8 9 10 11 12])
+     :rate (tm/random 0.2 0.9)}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -28,9 +29,9 @@
   (let [t (/ (q/frame-count) 60)
         strings
         (for [string strings]
-          (for [{:keys [point] :as light} string
+          (for [{:keys [point rate] :as light} string
                 :let [[x y] point
-                      center (* 0.5 (+ 1 (Math/cos (* t 0.5))))
+                      center (* 0.5 (+ 1 (Math/cos (* t rate))))
                       alpha (eq/gaussian 0.8 center 0.25 y)]]
             (assoc light :fill [1.0 alpha])))]
     (assoc state :strings strings)))
