@@ -14,7 +14,7 @@
 (defn string-line [p q n r]
   (for [point (repeatedly n #(tm/mix p q (rand)))]
     {:point (p/confusion-disk point r)
-     :fill [1.0 (tm/random 0.6 0.9)]
+     :fill [(p/gaussian 0.125 0.03) 0.6 0.75 1.0]
      :size (rand-nth [8 9 10 11 12])
      :rate (tm/random 0.2 0.9)}))
 
@@ -29,11 +29,11 @@
   (let [t (/ (q/frame-count) 60)
         strings
         (for [string strings]
-          (for [{:keys [point rate] :as light} string
+          (for [{:keys [point rate fill] :as light} string
                 :let [[_ y] point
                       center (eq/unit-cos (* t rate))
                       alpha (eq/gaussian 0.8 center 0.25 y)]]
-            (assoc light :fill [1.0 alpha])))]
+            (assoc light :fill (assoc fill 3 alpha))))]
     (assoc state :strings strings)))
 
 (defn draw [{:keys [strings]}]
