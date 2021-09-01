@@ -56,17 +56,16 @@
           (avoid-obstacles next-point obstacles)
           (v/jitter (tm/random jitter)))))
 
-(defn draw-grid [{:keys [step-size noise-div snap-resolution jitter]}]
-  (let [size step-size
-        w (/ (q/width) size)
-        h (/ (q/height) size)]
+(defn draw-grid [{:keys [length step-size noise-div snap-resolution jitter]}]
+  (let [w (/ (q/width) length)
+        h (/ (q/height) length)]
     (doseq [[p dir]
-            (for [x (range (* -2 size) (* (+ 3 w) size) size)
-                  y (range (* -2 size) (* (+ 3 h) size) size)]
+            (for [x (range (* -2 length) (* (+ 3 w) length) length)
+                  y (range (* -2 length) (* (+ 3 h) length) length)]
               [(gv/vec2 x y) (dir-at [x y] noise-div)])]
       (q/line p
               (-> p
-                  (v/add (v/polar (* 0.5 size) (snap-to dir snap-resolution)))
+                  (v/add (v/polar step-size (snap-to dir snap-resolution)))
                   (v/add (v/jitter (tm/random jitter))))))))
 
 (defn pointy-hexagon [r [x y]]
@@ -234,8 +233,7 @@
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
-    (when-not (= (:draw @settings) "grid")
-      (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128]))
+    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
     (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])
