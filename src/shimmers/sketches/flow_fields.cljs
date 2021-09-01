@@ -132,9 +132,6 @@
 (defn draw
   [{:keys [stroke-weight step-size iter iterations draw align-triangles obstacles]
     :as settings}]
-  ;; (q/stroke-weight 0.1)
-  ;; (q/stroke 0.0 0.0 0.0 1.0)
-  ;; (draw-grid 10 noise-div)
   (q/stroke-weight (* 4 stroke-weight))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/ellipse-mode :radius)
@@ -210,7 +207,8 @@
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
-    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
+    (when-not (= (:draw @settings) "grid")
+      (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128]))
     (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])
