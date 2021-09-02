@@ -6,10 +6,10 @@
             [shimmers.math.core :as sm]
             [shimmers.sketch :as sketch :include-macros true]))
 
-(defn noise-grid [x y _ factor fc]
+(defn noise-at [x y _ factor fc]
   (q/noise (/ x factor) (/ y factor) fc))
 
-(defn noise-tile [x y size factor fc]
+(defn reflect-noise-at [x y size factor fc]
   (let [qx (sm/reflect-into x size)
         qy (sm/reflect-into y size)]
     (q/noise (/ qx factor) (/ qy factor) fc)))
@@ -44,12 +44,12 @@
       (draw-square
        size
        factor
-       (if reflect noise-tile noise-grid)))
+       (if reflect reflect-noise-at noise-at)))
     (dotimes [gy 3]
       (dotimes [gx 3]
         (q/image tile (* gx size) (* gy size))))))
 
-(sketch/defquil noise-grid-sketch
+(sketch/defquil noise-grid
   :created-at "2020-11-01"
   :tags #{:demo}
   :size [300 300]
