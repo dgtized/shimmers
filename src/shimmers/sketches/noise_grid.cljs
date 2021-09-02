@@ -17,8 +17,8 @@
              (/ (q/frame-count) factor))))
 
 (defn draw-square [size factor noise-fn]
-  (dotimes [y size]
-    (dotimes [x size]
+  (dotimes [y (inc size)]
+    (dotimes [x (inc size)]
       (q/stroke (* 255 (noise-fn x y size factor)))
       (q/point x y))))
 
