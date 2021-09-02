@@ -22,22 +22,23 @@
       (q/stroke (* 255 (noise-fn x y size factor)))
       (q/point x y))))
 
+(defonce ui
+  (atom {:reflect false
+         :factor 10}))
+
 (defn setup []
   (q/frame-rate 10)
-  (let [ui (atom {:reflect false
-                  :factor 10})
-        size (int (/ (q/width) 3))
+  (let [size (int (/ (q/width) 3))
         applet (quil.sketch/current-applet)
         reflect (.createCheckbox applet "Reflect Tile" (:reflect @ui))
         factor (.createSlider applet 2 64 (:factor @ui) 2)
         _ (.createSpan applet "Factor")]
     (.changed reflect (fn [] (swap! ui assoc :reflect (.checked reflect))))
     (.changed factor (fn [] (swap! ui assoc :factor (.value factor))))
-    {:ui ui
-     :size size
+    {:size size
      :tile (q/create-graphics size size)}))
 
-(defn draw [{:keys [ui size tile]}]
+(defn draw [{:keys [size tile]}]
   (q/background "white")
   (let [{:keys [reflect factor]} @ui]
     (q/with-graphics tile
