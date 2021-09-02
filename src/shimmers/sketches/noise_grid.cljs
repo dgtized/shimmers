@@ -6,21 +6,20 @@
             [shimmers.math.core :as sm]
             [shimmers.sketch :as sketch :include-macros true]))
 
-(defn noise-grid [x y _ factor]
-  (q/noise (/ x factor) (/ y factor)
-           (/ (q/frame-count) factor)))
+(defn noise-grid [x y _ factor fc]
+  (q/noise (/ x factor) (/ y factor) fc))
 
-(defn noise-tile [x y size factor]
+(defn noise-tile [x y size factor fc]
   (let [qx (sm/reflect-into x size)
         qy (sm/reflect-into y size)]
-    (q/noise (/ qx factor) (/ qy factor)
-             (/ (q/frame-count) factor))))
+    (q/noise (/ qx factor) (/ qy factor) fc)))
 
 (defn draw-square [size factor noise-fn]
-  (dotimes [y (inc size)]
-    (dotimes [x (inc size)]
-      (q/stroke (* 255 (noise-fn x y size factor)))
-      (q/point x y))))
+  (let [fc (/ (q/frame-count) factor)]
+    (dotimes [y (inc size)]
+      (dotimes [x (inc size)]
+        (q/stroke (* 255 (noise-fn x y size factor fc)))
+        (q/point x y)))))
 
 (defonce ui
   (atom {:reflect false
