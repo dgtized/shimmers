@@ -26,19 +26,20 @@
   (q/frame-rate 10)
   (let [ui (atom {:reflect false
                   :factor 10})
+        size (int (/ (q/width) 3))
         applet (quil.sketch/current-applet)
         reflect (.createCheckbox applet "Reflect Tile" (:reflect @ui))
         factor (.createSlider applet 2 64 (:factor @ui) 2)
         _ (.createSpan applet "Factor")]
     (.changed reflect (fn [] (swap! ui assoc :reflect (.checked reflect))))
     (.changed factor (fn [] (swap! ui assoc :factor (.value factor))))
-    ui))
+    {:ui ui
+     :size size
+     :tile (q/create-graphics size size)}))
 
-(defn draw [ui]
+(defn draw [{:keys [ui size tile]}]
   (q/background "white")
-  (let [size 100
-        tile (q/create-graphics size size)
-        {:keys [reflect factor]} @ui]
+  (let [{:keys [reflect factor]} @ui]
     (q/with-graphics tile
       (draw-square
        size
