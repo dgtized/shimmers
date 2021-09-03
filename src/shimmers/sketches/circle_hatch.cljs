@@ -20,7 +20,7 @@
   (q/color-mode :hsl 1.0)
   (let [circles (for [x (centered-range 4)
                       y (centered-range 4)]
-                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-w 0.1))
+                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h 0.08))
                          :spacing (tm/random 2.5 10.0)
                          :theta (tm/random 0 tm/TWO_PI)))]
     {:circles circles}))
@@ -31,6 +31,7 @@
 
 (defn draw [{:keys [circles hatches]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/no-fill)
   (doseq [{:keys [p r]} circles]
     (cq/circle p r))
