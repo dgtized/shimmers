@@ -19,9 +19,9 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [circles (for [x (centered-range 5)
-                      y (centered-range 4)]
-                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h 0.08))
+  (let [circles (for [x (centered-range 8)
+                      y (centered-range 6)]
+                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h (p/gaussian 0.05 0.01)))
                          :spacing (tm/random 2.5 10.0)
                          :theta (tm/random 0 tm/TWO_PI)))]
     {:circles circles}))
