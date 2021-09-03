@@ -112,25 +112,29 @@
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
 
-(defn encode-origin-circle [radius p]
-  (->> [(cond (< (:x p) (- radius)) :low-x
-              (> (:x p) radius) :high-x)
-        (cond (< (:y p) (- radius)) :low-y
-              (> (:y p) radius) :high-y)]
-       (remove nil?)
-       set))
+(defn sqr [x] (* x x))
 
+;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
+;; Note this is probably broken if segment is entirely inside circle
 (defn clip-circle
-  [{center :p radius :r :as circle} p q]
-  (let [tp (tm/- p center)
-        encode-p (encode-origin-circle radius tp)
-        tq (tm/- q center)
-        encode-q (encode-origin-circle radius tq)]
-    (cond (and (empty? encode-p) (empty? encode-q)) ;; both inside rect
-          (gl/line2 p q)
-          (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
+  [{c :p radius :r} a b]
+  (let [length-ab (geom/dist a b)
+        Dx (/ (- (:x b) (:x a)) length-ab)
+        Dy (/ (- (:y b) (:y a)) length-ab)
+        t (+ (* Dx (- (:x c) (:x a))) (* Dy (- (:y c) (:y a))))
+        E (gv/vec2 (+ (* t Dx) (:x a))
+                   (+ (* t Dy) (:y a)))
+        length-ec (geom/dist E c)]
+    (cond (< length-ec radius) ;; intersects
+          (let [dt (Math/sqrt (- (sqr radius) (sqr length-ec)))]
+            (gl/line2 (gv/vec2 (+ (:x a) (* Dx (- t dt)))
+                               (+ (:y a) (* Dy (- t dt))))
+                      (gv/vec2 (+ (:x a) (* Dx (+ t dt)))
+                               (+ (:y a) (* Dy (+ t dt))))))
+          (tm/delta= length-ec radius) ;; tangent
           nil
-          :else (gl/line2 p q))))
+          :else ;; doesn't touch (outside or inside?)
+          nil)))
 
 (defn hatch-circle [circle spacing theta]
   (let [{[cx cy] :p radius :r} circle
@@ -144,7 +148,7 @@
         y0 (+ (* m x0) c)
         x1 (+ cx (* 1.2 radius))
         y1 (+ (* m x1) c)
-        base-line (gl/line2 (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
+        base-line (clip-circle circle (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
     (loop [i 1 hatches (if base-line [base-line] [])]
       (let [step-term (/ (* i spacing) cosa)
             up (clip-circle circle
