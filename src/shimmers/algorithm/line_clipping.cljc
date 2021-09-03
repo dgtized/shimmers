@@ -127,9 +127,9 @@
         m (Math/tan theta)
         c (- ystart (* m xstart))
 
-        x0 (- cx radius)
+        x0 (- cx (* 1.2 radius))
         y0 (+ (* m x0) c)
-        x1 (+ cx radius)
+        x1 (+ cx (* 1.2 radius))
         y1 (+ (* m x1) c)
         base-line (gl/line2 (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
     (loop [i 1 hatches (if base-line [base-line] [])]
