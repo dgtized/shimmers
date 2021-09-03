@@ -74,14 +74,6 @@
             :else
             (recur (inc i) p (clip-point encode-q rect p q))))))
 
-(defprotocol IClipped
-  (clipped-by [line rect]))
-
-(extend-type Line2
-  IClipped
-  (clipped-by [{[p q] :points} rect]
-    (clip-line rect p q)))
-
 (defn hatching-middle-out [clip-fn spacing cosa [x0 y0] [x1 y1]]
   (let [base-line (clip-fn (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
     (loop [i 1 hatches (if base-line [base-line] [])]
