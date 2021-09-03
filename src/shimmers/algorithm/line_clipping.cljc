@@ -110,3 +110,29 @@
 
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
+
+(defn hatch-circle [circle spacing theta]
+  (let [{[cx cy] :p radius :r} circle
+        xstart (+ cx (tm/random radius))
+        ystart (+ cy (tm/random radius))
+        cosa (Math/cos theta)
+        m (Math/tan theta)
+        c (- ystart (* m xstart))
+
+        x0 (- cx radius)
+        y0 (+ (* m x0) c)
+        x1 (+ cx radius)
+        y1 (+ (* m x1) c)
+        base-line (gl/line2 (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
+    (loop [i 1 hatches (if base-line [base-line] [])]
+      (let [step-term (/ (* i spacing) cosa)
+            up (gl/line2
+                (gv/vec2 x0 (+ y0 step-term))
+                (gv/vec2 x1 (+ y1 step-term)))
+            down (gl/line2
+                  (gv/vec2 x0 (- y0 step-term))
+                  (gv/vec2 x1 (- y1 step-term)))
+            lines (remove nil? [up down])]
+        (if (or (empty? lines) (> i 30))
+          hatches
+          (recur (inc i) (into hatches lines)))))))
