@@ -74,7 +74,11 @@
             :else
             (recur (inc i) p (clip-point encode-q rect p q))))))
 
-(defn hatching-middle-out [clip-fn spacing cosa [x0 y0] [x1 y1]]
+(defn hatching-middle-out
+  "Add hatching lines above and below the base-line to fill the shape.
+
+  `clip-fn` should return nil if the segment is outside of the shape."
+  [clip-fn spacing cosa [x0 y0] [x1 y1]]
   (let [base-line (clip-fn (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
     (loop [i 1 hatches (if base-line [base-line] [])]
       (let [step-term (/ (* i spacing) cosa)
@@ -113,6 +117,11 @@
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; Note this is probably broken if segment is entirely inside circle
 (defn clip-circle
+  "Clip segment `a` to `b` to fit boundary of circle.
+
+  Currently if `a` or `b` lie within the circle, the line returned will extend
+  to the boundary of the circle. For hatching this is fine, but it may not be
+  expected behavior."
   [{c :p radius :r} a b]
   (let [length-ab (geom/dist a b)
         Dx (/ (- (:x b) (:x a)) length-ab)
