@@ -3,7 +3,8 @@
 
   See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
   polygon clipping."
-  (:require [thi.ng.geom.core :as geom]
+  (:require [shimmers.math.geometry :as geometry]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             #?(:clj [thi.ng.geom.types]
@@ -137,9 +138,8 @@
           nil)))
 
 (defn hatch-circle [circle spacing theta]
-  (let [{[cx cy] :p radius :r} circle
-        xstart (+ cx (tm/random radius))
-        ystart (+ cy (tm/random radius))
+  (let [{[cx _] :p radius :r} circle
+        [xstart ystart] (geometry/random-point-in-circle circle)
         cosa (Math/cos theta)
         m (Math/tan theta)
         c (- ystart (* m xstart))
@@ -158,6 +158,6 @@
                               (gv/vec2 x0 (- y0 step-term))
                               (gv/vec2 x1 (- y1 step-term)))
             lines (remove nil? [up down])]
-        (if (or (empty? lines) (> i 30))
+        (if (or (empty? lines))
           hatches
           (recur (inc i) (into hatches lines)))))))
