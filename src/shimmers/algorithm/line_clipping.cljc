@@ -112,12 +112,25 @@
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
 
+(defn encode-origin-circle [radius p]
+  (->> [(cond (< (:x p) (- radius)) :low-x
+              (> (:x p) radius) :high-x)
+        (cond (< (:y p) (- radius)) :low-y
+              (> (:y p) radius) :high-y)]
+       (remove nil?)
+       set))
+
 (defn clip-circle
   [{center :p radius :r :as circle} p q]
   (let [tp (tm/- p center)
-        tq (tm/- q center)]
-    (geom/translate (gl/line2 tp tq)
-                    center)))
+        encode-p (encode-origin-circle radius tp)
+        tq (tm/- q center)
+        encode-q (encode-origin-circle radius tq)]
+    (cond (and (empty? encode-p) (empty? encode-q)) ;; both inside rect
+          (gl/line2 p q)
+          (not-empty (set/intersection encode-p encode-q)) ;; both points outside of rect
+          nil
+          :else (gl/line2 p q))))
 
 (defn hatch-circle [circle spacing theta]
   (let [{[cx cy] :p radius :r} circle
