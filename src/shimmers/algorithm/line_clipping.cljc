@@ -3,7 +3,8 @@
 
   See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
   polygon clipping."
-  (:require [thi.ng.geom.line :as gl]
+  (:require [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             #?(:clj [thi.ng.geom.types]
                :cljs [thi.ng.geom.types :refer [Line2]])
@@ -111,6 +112,13 @@
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
 
+(defn clip-circle
+  [{center :p radius :r :as circle} p q]
+  (let [tp (tm/- p center)
+        tq (tm/- q center)]
+    (geom/translate (gl/line2 tp tq)
+                    center)))
+
 (defn hatch-circle [circle spacing theta]
   (let [{[cx cy] :p radius :r} circle
         xstart (+ cx (tm/random radius))
@@ -126,12 +134,12 @@
         base-line (gl/line2 (gv/vec2 x0 y0) (gv/vec2 x1 y1))]
     (loop [i 1 hatches (if base-line [base-line] [])]
       (let [step-term (/ (* i spacing) cosa)
-            up (gl/line2
-                (gv/vec2 x0 (+ y0 step-term))
-                (gv/vec2 x1 (+ y1 step-term)))
-            down (gl/line2
-                  (gv/vec2 x0 (- y0 step-term))
-                  (gv/vec2 x1 (- y1 step-term)))
+            up (clip-circle circle
+                            (gv/vec2 x0 (+ y0 step-term))
+                            (gv/vec2 x1 (+ y1 step-term)))
+            down (clip-circle circle
+                              (gv/vec2 x0 (- y0 step-term))
+                              (gv/vec2 x1 (- y1 step-term)))
             lines (remove nil? [up down])]
         (if (or (empty? lines) (> i 30))
           hatches
