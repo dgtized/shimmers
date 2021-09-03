@@ -12,6 +12,7 @@
             shimmers.sketches.bubbles
             shimmers.sketches.butterfly
             shimmers.sketches.chaikin-demo
+            shimmers.sketches.circle-hatch
             shimmers.sketches.circle-packing
             shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
