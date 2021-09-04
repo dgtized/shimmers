@@ -7,9 +7,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.vector :as gv]
-            [shimmers.common.quil :as cq]))
+            [shimmers.sketch :as sketch :include-macros true]))
 
 (defn next-point [[x y]]
   (let [x' (int (+ x (bit-shift-right y 4)))]
@@ -38,6 +36,8 @@
       (q/shader shader)
       (q/set-uniform shader "u_resolution" (array w h))
       (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
+      (q/set-uniform shader "u_d" 1.0)
+      (q/set-uniform shader "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI 9.0)) 2)))
       (q/rect 0 0 w h))))
 
 (sketch/defquil integer-circles

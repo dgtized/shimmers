@@ -4,6 +4,8 @@ precision mediump float;
 
 uniform vec2 u_resolution;
 uniform float u_time;
+uniform float u_d;
+uniform float u_e;
 
 int max_iterations = 4096;
 
@@ -25,8 +27,8 @@ int circle_iterations(float x0, float y0, float d, float e) {
 
 void main() {
   vec2 st = floor(gl_FragCoord.xy - u_resolution);
-  float d=1.0;
-  float e=4.0*pow(sin(3.14159/9.0),2.0);
+  float d=u_d;
+  float e=u_e;
   float iterations = float(circle_iterations(st.x, st.y, d, e));
   float grey = log(iterations)/log(float(max_iterations));
   gl_FragColor = vec4(grey,grey,grey,1.0);
