@@ -9,6 +9,7 @@ cleanup
 npm install
 clojure -M -m figwheel.main -bo release
 
+# include git-sha in js filename to force update of CDN cache
 sha=$(git rev-parse HEAD | cut -c 1-8)
 
 mkdir -p resources/public/js
