@@ -31,13 +31,16 @@
                           "shaders/integer-circles.vert.c")})
 
 (defn draw [{:keys [shader]}]
-  (let [[w h] [(q/width) (q/height)]]
+  (let [[w h] [(q/width) (q/height)]
+        k (int (+ 5 (mod (/ (q/frame-count) 60) 15)))
+        ;; k == 6 is a blank screen so skip it
+        k (if (= k 6) 21 k)]
     (when (q/loaded? shader)
       (q/shader shader)
       (q/set-uniform shader "u_resolution" (array w h))
       (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
       (q/set-uniform shader "u_d" 1.0)
-      (q/set-uniform shader "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI 9.0)) 2)))
+      (q/set-uniform shader "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2)))
       (q/rect 0 0 w h))))
 
 (sketch/defquil integer-circles
