@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
 function cleanup() {
-    rm -rf resources/public/.git target
+    rm -rf resources/public/{.git,js} target
 }
 
 cleanup
@@ -29,7 +29,7 @@ git add index.html .gitignore js/* css/* shaders/*
 git commit -m "Deploy to Github Pages"
 git push --force --quiet "git@github.com:dgtized/shimmers.git" gh-pages:gh-pages
 
-ls -hs js/release-main.js
+ls -hs js/release-main*
 
 # xdg-open index.html
 
