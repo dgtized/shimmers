@@ -2,7 +2,8 @@
   "The Minsky Circle algorithm as discussed in:
   https://www.onirom.fr/ica.html
   https://nbickford.wordpress.com/2011/04/03/the-minsky-circle-algorithm/
-  https://blog.hrvoje.org/2020/05/drawing-circles/"
+  https://blog.hrvoje.org/2020/05/drawing-circles/
+  https://www.shadertoy.com/view/4lSGRG"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -28,21 +29,21 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  {:shader (q/load-shader "shaders/integer-circles.frag.c"
+                          "shaders/integer-circles.vert.c")})
 
-(defn update-state [state]
-  state)
-
-(defn draw [state]
-  (q/background 1.0)
-  (q/with-translation (cq/rel-pos 0.5 0.5)
-    (doseq [[x y] (iterate-until-looped next-point (gv/vec2 120 0))]
-      (q/point x y))))
+(defn draw [{:keys [shader]}]
+  (let [[w h] [(q/width) (q/height)]]
+    (when (q/loaded? shader)
+      (q/shader shader)
+      (q/set-uniform shader "u_resolution" (array w h))
+      (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
+      (q/rect 0 0 w h))))
 
 (sketch/defquil integer-circles
   :created-at "2021-09-04"
   :size [800 600]
+  :renderer :p3d
   :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
