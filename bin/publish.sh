@@ -9,12 +9,15 @@ cleanup
 npm install
 clojure -M -m figwheel.main -bo release
 
+sha=$(git rev-parse HEAD | cut -c 1-8)
+
 mkdir -p resources/public/js
-cp target/public/cljs-out/release-main* resources/public/js
+cp -v target/public/cljs-out/release-main.js "resources/public/js/release-main-${sha}.js"
+cp -v target/public/cljs-out/release-main.js.map "resources/public/js/release-main-${sha}.js.map"
 
 pushd resources/public
 
-sed -i -e 's/cljs-out\/release-main.js/js\/release-main.js/' index.html
+sed -i -e "s/cljs-out\/release-main.js/js\/release-main-${sha}.js/" index.html
 # For routing to page handler after not using fragments
 # ln -sf index.html 404.html
 
