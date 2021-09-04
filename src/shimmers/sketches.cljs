@@ -40,8 +40,9 @@
             shimmers.sketches.hatched-rectangles
             shimmers.sketches.hexaclock
             shimmers.sketches.hexcursive
-            shimmers.sketches.inconsequential-drift
             shimmers.sketches.impressions-of-open-space
+            shimmers.sketches.inconsequential-drift
+            shimmers.sketches.integer-circles
             shimmers.sketches.interstitial-transitions
             shimmers.sketches.iterative-displacement
             shimmers.sketches.kd-tree
