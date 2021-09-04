@@ -7,14 +7,14 @@ uniform float u_time;
 uniform float u_d;
 uniform float u_e;
 
-int max_iterations = 4096;
+int max_iterations = 2048;
 
 // derived from https://www.shadertoy.com/view/4lSGRG
 int circle_iterations(float x0, float y0, float d, float e) {
   float x = x0;
   float y = y0;
 
-  for(int iter = 0; iter < 4096; iter++) {
+  for(int iter = 0; iter < 2048; iter++) {
     x = x - floor(d*y);
     y = y + floor(e*x);
 
