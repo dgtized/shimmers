@@ -55,6 +55,26 @@
 (comment (map-random-sample (constantly 0.1) inc (range 10))
          (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
 
+(defn map-rand-nth
+  "Apply `xf` to update a random element in-place in `coll`."
+  [xf coll]
+  (let [k (rand-int (count coll))]
+    (map-indexed (fn [i el] (if (= i k) (xf el) el))
+                 coll)))
+
+(defn mapcat-rand-nth
+  "Apply `xf` to expand a random element in-place in `coll`.
+
+  `xf` must return a sequence."
+  [xf coll]
+  (let [k (rand-int (count coll))]
+    (->> coll
+         (map-indexed (fn [i el] (if (= i k) (xf el) [el])))
+         (apply concat))))
+
+(comment (map-rand-nth (partial * 10) (range 10))
+         (mapcat-rand-nth (fn [x] [(* x 10) (* x 100)]) (range 10)))
+
 ;; alternatively named cond-if?
 ;; however this does not address mapping n collections together?
 (defn prob-if
