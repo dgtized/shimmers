@@ -9,7 +9,8 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.rect :as rect]))
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.math.core :as tm]))
 
 (defn intersects
   [spacing
@@ -40,6 +41,20 @@
   {:bounds (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
    :circles []})
 
+(defn remove-middle [hatches n]
+  (let [c (count hatches)
+        sorted (sort-by (fn [{[[x y] _] :points}] [y x]) hatches)
+        edges (int (- (/ c 2) (/ n 2)))]
+    (into (take edges sorted)
+          (take-last edges sorted))))
+
+(defn reflect-hatching [c]
+  (-> c
+      (clip/hatch-circle
+       (tm/clamp (/ (:r c) 8.0) 3.0 8.0)
+       (p/gaussian 5.8 0.08))
+      (remove-middle (inc (rand-int 3)))))
+
 (defn update-state [{:keys [bounds circles] :as state}]
   (let [n (count circles)
         radius (cond (<= n 6) 48.0
@@ -53,7 +68,7 @@
       (-> state
           (update :circles circle-pack bounds radius radius 10)
           (update :circles (partial p/map-random-sample (constantly 0.02)
-                                    (fn [c] (assoc c :hatching (clip/hatch-circle c (/ (:r c) 3.0) 5.8)))))))))
+                                    (fn [c] (assoc c :hatching (reflect-hatching c)))))))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
