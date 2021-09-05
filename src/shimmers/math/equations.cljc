@@ -12,15 +12,15 @@
   [t]
   (* 0.5 (+ 1 (Math/sin t))))
 
-(defn sq [x]
+(defn sqr [x]
   (* x x))
 
 (defn gaussian
   "Bell curve of magnitude `a`, centered at `b`, width `c`.
   From https://en.wikipedia.org/wiki/Gaussian_function"
   [a b c x]
-  (* a (Math/exp (- (/ (sq (- x b))
-                       (* 2 (sq c)))))))
+  (* a (Math/exp (- (/ (sqr (- x b))
+                       (* 2 (sqr c)))))))
 
 (def SQRT_TWO_PI (Math/sqrt tm/TWO_PI))
 
@@ -28,8 +28,8 @@
   "Probability density function with expected value `mu`, variance `sigma`."
   [mu sigma x]
   (* (/ 1 (* sigma SQRT_TWO_PI))
-     (Math/exp (* -0.5 (/ (sq (- x mu))
-                          (sq sigma))))))
+     (Math/exp (* -0.5 (/ (sqr (- x mu))
+                          (sqr sigma))))))
 
 (comment
   (map (fn [x] [x

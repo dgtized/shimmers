@@ -16,7 +16,7 @@
   [spacing
    {p1 :p r1 :r}
    {p2 :p r2 :r :as c2}]
-  (let [dist-sqr (eq/sq (+ r1 r2 spacing))]
+  (let [dist-sqr (eq/sqr (+ r1 r2 spacing))]
     (when (< (geom/dist-squared p1 p2) dist-sqr)
       c2)))
 

@@ -3,7 +3,8 @@
 
   See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
   polygon clipping."
-  (:require [shimmers.math.geometry :as geometry]
+  (:require [shimmers.math.equations :as eq]
+            [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
@@ -112,8 +113,6 @@
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
 
-(defn sqr [x] (* x x))
-
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; Note this is probably broken if segment is entirely inside circle
 (defn clip-circle
@@ -131,7 +130,7 @@
                    (+ (* t Dy) (:y a)))
         length-ec (geom/dist E c)]
     (cond (< length-ec radius) ;; intersects
-          (let [dt (Math/sqrt (- (sqr radius) (sqr length-ec)))]
+          (let [dt (Math/sqrt (- (eq/sqr radius) (eq/sqr length-ec)))]
             (gl/line2 (gv/vec2 (+ (:x a) (* Dx (- t dt)))
                                (+ (:y a) (* Dy (- t dt))))
                       (gv/vec2 (+ (:x a) (* Dx (+ t dt)))
