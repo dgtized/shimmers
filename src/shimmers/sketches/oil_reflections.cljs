@@ -48,12 +48,12 @@
     (into (take edges sorted)
           (take-last edges sorted))))
 
-(defn reflect-hatching [c]
+(defn reflect-hatching [{[x _] :p r :r :as c}]
   (-> c
       (clip/hatch-circle
-       (tm/clamp (/ (:r c) 8.0) 3.0 8.0)
-       (p/gaussian 5.8 0.08))
-      (remove-middle (inc (rand-int 3)))))
+       (tm/clamp (/ r 8.0) 3.0 8.0)
+       (p/gaussian 5.8 (* 0.2 (/ x (q/width)))))
+      (remove-middle (inc (rand-int (int (/ r 6)))))))
 
 (defn update-state [{:keys [bounds circles] :as state}]
   (let [n (count circles)
@@ -63,15 +63,17 @@
                      (<= n 48) 12.0
                      (<= n 64) 8.0
                      :else 6.0)]
-    (if (>= n 128)
+    (if (>= n 160)
       state
       (-> state
           (update :circles circle-pack bounds radius radius 10)
-          (update :circles (partial p/map-random-sample (constantly 0.02)
+          (update :circles (partial p/map-random-sample
+                                    (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
                                     (fn [c] (assoc c :hatching (reflect-hatching c)))))))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
+  (q/stroke-weight 0.7)
   (q/ellipse-mode :radius)
   (doseq [{:keys [p r hatching]} circles]
     (cq/circle p r)
