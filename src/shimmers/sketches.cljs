@@ -56,6 +56,7 @@
             shimmers.sketches.mosaic-tiling
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
+            shimmers.sketches.oil-reflections
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
