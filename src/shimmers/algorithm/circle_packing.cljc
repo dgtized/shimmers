@@ -11,18 +11,18 @@
     (when (< (geom/dist-squared p1 p2) dist-sqr)
       c2)))
 
-(defn add-circle [circles bounds radius spacing]
+(defn add-circle [circles {:keys [bounds radius spacing]}]
   (let [p (geom/random-point-inside bounds)
         near circles ;; todo optimize
         candidate (gc/circle p radius)]
     (when-not (some (partial intersects spacing candidate) near)
       candidate)))
 
-(defn circle-pack [circles bounds radius spacing n-candidates]
+(defn circle-pack [circles {:keys [candidates] :as rules}]
   (loop [i 0 circles circles]
-    (if (>= i n-candidates)
+    (if (>= i candidates)
       circles
-      (if-let [circle (add-circle circles bounds radius spacing)]
+      (if-let [circle (add-circle circles rules)]
         (recur (inc i)
                (conj circles circle))
         (recur (inc i) circles)))))

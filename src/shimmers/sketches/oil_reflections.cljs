@@ -43,11 +43,12 @@
                      (<= n 24) 24.0
                      (<= n 48) 12.0
                      (<= n 64) 8.0
-                     :else 6.0)]
+                     :else 6.0)
+        pack-rules {:bounds bounds :radius radius :spacing radius :candidates 10}]
     (if (>= n 160)
       state
       (-> state
-          (update :circles pack/circle-pack bounds radius radius 10)
+          (update :circles pack/circle-pack pack-rules)
           (update :circles hatch-some-circles)))))
 
 (defn draw [{:keys [circles]}]
