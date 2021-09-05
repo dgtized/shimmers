@@ -1,9 +1,11 @@
 (ns shimmers.sketches.oil-reflections
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.equations :as eq]
+            [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
@@ -48,13 +50,19 @@
                      :else 6.0)]
     (if (>= n 128)
       state
-      (update state :circles circle-pack bounds radius radius 10))))
+      (-> state
+          (update :circles circle-pack bounds radius radius 10)
+          (update :circles (partial p/map-random-sample (constantly 0.02)
+                                    (fn [c] (assoc c :hatching (clip/hatch-circle c (/ (:r c) 3.0) 5.8)))))))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r]} circles]
-    (cq/circle p r)))
+  (doseq [{:keys [p r hatching]} circles]
+    (cq/circle p r)
+    (when (seq hatching)
+      (doseq [{[p q] :points} hatching]
+        (q/line p q)))))
 
 (sketch/defquil oil-reflections
   :created-at "2021-09-05"
