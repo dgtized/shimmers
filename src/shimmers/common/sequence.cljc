@@ -52,6 +52,12 @@
   ([n xs]
    (drop n (drop-last n xs))))
 
+(defn centered-range [n]
+  (let [elements (inc n)]
+    (->> (rest (range elements))
+         (mapv #(/ % (double elements))))))
+
+(comment (map (fn [x] [x (centered-range x)]) (range 6)))
 
 (defn rotate
   "Rotate sequence `xs`, `n` steps left if positive, or to the right if negative."

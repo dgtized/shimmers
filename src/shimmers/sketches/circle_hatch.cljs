@@ -5,22 +5,16 @@
             [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.math.core :as tm]))
 
-(defn centered-range [n]
-  (let [elements (inc n)]
-    (->> (rest (range elements))
-         (mapv #(/ % (double elements))))))
-
-(comment (map (fn [x] [x (centered-range x)]) (range 6)))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [circles (for [x (centered-range 8)
-                      y (centered-range 6)]
+  (let [circles (for [x (cs/centered-range 8)
+                      y (cs/centered-range 6)]
                   (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h (p/gaussian 0.05 0.01)))
                          :spacing (tm/random 2.5 10.0)
                          :theta (tm/random 0 tm/TWO_PI)))]
