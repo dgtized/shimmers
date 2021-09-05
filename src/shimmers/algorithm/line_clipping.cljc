@@ -3,17 +3,14 @@
 
   See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
   polygon clipping."
-  (:require [shimmers.math.equations :as eq]
+  (:require [clojure.set :as set]
+            [shimmers.math.equations :as eq]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
-            #?(:clj [thi.ng.geom.types]
-               :cljs [thi.ng.geom.types :refer [Line2]])
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [clojure.set :as set])
-  #?(:clj (:import [thi.ng.geom.types Line2])))
+            [thi.ng.math.core :as tm]))
 
 (defn encode-endpoint [[x y] r]
   (->> [(cond (< x (rect/left r))
