@@ -18,7 +18,14 @@
     (when-not (some (partial intersects spacing candidate) near)
       candidate)))
 
-(defn circle-pack [circles {:keys [candidates] :as rules}]
+(defn circle-pack
+  "Pack a `bounds` object with `candidate` circles that do not intersect any
+  circles in `circles`.
+
+  Circles can be of specified `radius` and `spacing` between. This function is
+  intentionally re-entrant, allowing up to `candidate` circles to be added on
+  each invocation."
+  [circles {:keys [candidates] :as rules}]
   (loop [i 0 circles circles]
     (if (>= i candidates)
       circles
