@@ -22,6 +22,7 @@
   (* a (Math/exp (- (/ (sqr (- x b))
                        (* 2 (sqr c)))))))
 
+(def TAU tm/TWO_PI)
 (def SQRT_TWO_PI (Math/sqrt tm/TWO_PI))
 
 (defn gaussian-density
