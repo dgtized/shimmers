@@ -5,9 +5,12 @@
             [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.math.equations :as eq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
@@ -23,6 +26,15 @@
     (into (take edges sorted)
           (take-last edges sorted))))
 
+(defn sketch-line [{[p q] :points}]
+  (let [edge-p 0.02
+        edge-q 0.02
+        chunks (inc (rand-int 8))
+        jitter (* 0.02 (/ (geom/dist p q) chunks))]
+    (for [[a b] (partition 2 1 (concat [(- edge-p)] (cs/centered-range chunks) [(+ 1 edge-q)]))]
+      (gl/line2 (p/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
+                (p/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
+
 (defn reflect-hatching [{[x _] :p r :r :as c}]
   (-> c
       (clip/hatch-circle
@@ -33,6 +45,7 @@
 (defn hatch-some-circles [circles]
   (p/map-random-sample
    (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
+   ;; (fn [c] (assoc c :hatching (mapcat sketch-line (reflect-hatching c))))
    (fn [c] (assoc c :hatching (reflect-hatching c)))
    circles))
 
