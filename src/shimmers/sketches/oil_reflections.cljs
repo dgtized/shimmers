@@ -30,6 +30,12 @@
        (p/gaussian 5.8 (* 0.2 (/ x (q/width)))))
       (remove-middle (inc (rand-int (int (/ r 6)))))))
 
+(defn hatch-some-circles [circles]
+  (p/map-random-sample
+   (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
+   (fn [c] (assoc c :hatching (reflect-hatching c)))
+   circles))
+
 (defn update-state [{:keys [bounds circles] :as state}]
   (let [n (count circles)
         radius (cond (<= n 6) 48.0
@@ -42,9 +48,7 @@
       state
       (-> state
           (update :circles pack/circle-pack bounds radius radius 10)
-          (update :circles (partial p/map-random-sample
-                                    (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
-                                    (fn [c] (assoc c :hatching (reflect-hatching c)))))))))
+          (update :circles hatch-some-circles)))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
