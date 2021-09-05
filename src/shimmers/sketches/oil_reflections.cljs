@@ -1,40 +1,15 @@
 (ns shimmers.sketches.oil-reflections
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.circle-packing :as pack]
             [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.equations :as eq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
-
-(defn intersects
-  [spacing
-   {p1 :p r1 :r}
-   {p2 :p r2 :r :as c2}]
-  (let [dist-sqr (eq/sqr (+ r1 r2 spacing))]
-    (when (< (geom/dist-squared p1 p2) dist-sqr)
-      c2)))
-
-(defn add-circle [circles bounds radius spacing]
-  (let [p (geom/random-point-inside bounds)
-        near circles ;; todo optimize
-        candidate (gc/circle p radius)]
-    (when-not (some (partial intersects spacing candidate) near)
-      candidate)))
-
-(defn circle-pack [circles bounds radius spacing n-candidates]
-  (loop [i 0 circles circles]
-    (if (>= i n-candidates)
-      circles
-      (if-let [circle (add-circle circles bounds radius spacing)]
-        (recur (inc i)
-               (conj circles circle))
-        (recur (inc i) circles)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -66,7 +41,7 @@
     (if (>= n 160)
       state
       (-> state
-          (update :circles circle-pack bounds radius radius 10)
+          (update :circles pack/circle-pack bounds radius radius 10)
           (update :circles (partial p/map-random-sample
                                     (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
                                     (fn [c] (assoc c :hatching (reflect-hatching c)))))))))
