@@ -20,10 +20,10 @@
     (when (< (geom/dist-squared p1 p2) dist-sqr)
       c2)))
 
-(defn add-circle [circles bounds r spacing]
+(defn add-circle [circles bounds radius spacing]
   (let [p (geom/random-point-inside bounds)
         near circles ;; todo optimize
-        candidate (gc/circle p r)]
+        candidate (gc/circle p radius)]
     (when-not (some (partial intersects spacing candidate) near)
       candidate)))
 
