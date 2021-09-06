@@ -57,7 +57,7 @@
                      (<= n 48) 12.0
                      (<= n 64) 8.0
                      :else 6.0)
-        pack-rules {:bounds bounds :radius radius :spacing radius :candidates 10}]
+        pack-rules {:bounds bounds :radius radius :spacing radius :candidates 20}]
     (if (>= n 160)
       state
       (-> state
