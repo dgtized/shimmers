@@ -1,7 +1,12 @@
 (ns shimmers.algorithm.circle-packing
   (:require [shimmers.math.equations :as eq]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.spatialtree :as spatialtree]))
+
+;; Considering implementing
+;; https://paytonturnage.com/writing/circle-packing-quad-trees/ for performance
+;; instead of the max-radius per packing iteration.
 
 (defn intersects
   [spacing
@@ -11,10 +16,11 @@
     (when (< (geom/dist-squared p1 p2) dist-sqr)
       c2)))
 
-(defn add-circle [circles {:keys [bounds radius spacing]}]
+(defn add-circle [quadtree {:keys [bounds radius spacing]} max-radius]
   (let [p (geom/random-point-inside bounds)
-        near circles ;; todo optimize
-        candidate (gc/circle p radius)]
+        candidate (gc/circle p radius)
+        search-radius (+ max-radius radius (* 2 spacing))
+        near (spatialtree/select-with-circle quadtree p search-radius)]
     (when-not (some (partial intersects spacing candidate) near)
       candidate)))
 
@@ -25,11 +31,18 @@
   Circles can be of specified `radius` and `spacing` between. This function is
   intentionally re-entrant, allowing up to `candidate` circles to be added on
   each invocation."
-  [circles {:keys [candidates] :as rules}]
-  (loop [i 0 circles circles]
-    (if (>= i candidates)
-      circles
-      (if-let [circle (add-circle circles rules)]
-        (recur (inc i)
-               (conj circles circle))
-        (recur (inc i) circles)))))
+  [circles {:keys [bounds radius candidates] :as rules}]
+  (let [quadtree (reduce (fn [t {p :p :as circle}]
+                           (geom/add-point t p circle))
+                         (spatialtree/quadtree (geom/bounds bounds))
+                         circles)
+        max-radius (or (:r (apply (partial max-key :r) circles))
+                       radius)]
+    (loop [i 0 circles circles tree quadtree]
+      (if (>= i candidates)
+        circles
+        (if-let [{p :p :as circle} (add-circle tree rules max-radius)]
+          (recur (inc i)
+                 (conj circles circle)
+                 (geom/add-point tree p circle))
+          (recur (inc i) circles tree))))))
