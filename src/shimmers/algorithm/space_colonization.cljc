@@ -147,18 +147,19 @@
               :attractors (remove prune attractors)
               :quadtree new-quadtree)])))
 
+(defn make-root [position direction]
+  [(->Branch nil position direction)])
+
 (defn create-tree
   [{:keys [bounds influence-distance prune-distance segment-distance
-           snap-theta attractors]}]
-  (let [{[width height] :size} bounds
-        branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
-    {:influence-distance influence-distance
-     :prune-distance prune-distance
-     :segment-distance segment-distance
-     :snap-theta snap-theta
-     :attractors attractors
-     :branches branches
-     :weights (update-weights {} branches branches)
-     :quadtree (add-branch-positions (spatialtree/quadtree bounds)
-                                     branches)}))
+           snap-theta attractors branches]}]
+  {:influence-distance influence-distance
+   :prune-distance prune-distance
+   :segment-distance segment-distance
+   :snap-theta snap-theta
+   :attractors attractors
+   :branches branches
+   :weights (update-weights {} branches branches)
+   :quadtree (add-branch-positions (spatialtree/quadtree bounds)
+                                   branches)})
 

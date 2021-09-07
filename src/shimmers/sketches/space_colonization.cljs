@@ -61,6 +61,7 @@
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds
+               :branches (colonize/make-root (v/vec2 (/ w 2) (- h 10)) (v/vec2 0 -1))
                :attractors attractors)
         colonize/create-tree)))
 
