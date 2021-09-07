@@ -148,7 +148,7 @@
               :quadtree new-quadtree)])))
 
 (defn make-root [position direction]
-  [(->Branch nil position direction)])
+  (->Branch nil position direction))
 
 (defn create-tree
   [{:keys [bounds influence-distance prune-distance segment-distance

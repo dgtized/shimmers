@@ -8,6 +8,7 @@
             [shimmers.algorithm.space-colonization :as colonize]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -50,6 +51,11 @@
          (partial geom/random-point-inside)
          (repeatedly n))))
 
+(defn gen-root [w h roots]
+  (mapv (fn [base]
+          (colonize/make-root (v/vec2 (* w base) (- h 10)) (v/vec2 0 -1)))
+        (cs/centered-range roots)))
+
 (defn generate-tree
   [{:keys [attractor-power snap-theta] :as settings}]
   (let [[w h] [(q/width) (q/height)]
@@ -61,7 +67,7 @@
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds
-               :branches (colonize/make-root (v/vec2 (/ w 2) (- h 10)) (v/vec2 0 -1))
+               :branches (gen-root w h (inc (rand-int 3)))
                :attractors attractors)
         colonize/create-tree)))
 
