@@ -25,18 +25,20 @@
             :influenced-by false
             :next-branch false}}))
 
-(defn canvas-bounds []
-  (rect/rect 0 0 (q/width) (q/height)))
+(defn generate-tree [settings]
+  (let [bounds (rect/rect 0 0 (q/width) (q/height))]
+    (-> settings
+        (assoc :bounds bounds)
+        colonize/create-tree)))
 
 (defn setup []
-  ;; (.clear js/console)
   (q/frame-rate 15)
-  (colonize/create-tree (assoc @settings :bounds (canvas-bounds))))
+  (generate-tree @settings))
 
 (defn update-state [state]
   (cq/if-steady-state
    state 5
-   (fn [] (colonize/create-tree (assoc @settings :bounds (canvas-bounds))))
+   (fn [] (generate-tree @settings))
    colonize/grow))
 
 (defn draw-attractor [[x y] influence prune]
