@@ -2,7 +2,8 @@
   "Inspired by https://thecodingtrain.com/CodingChallenges/017-spacecolonizer.html and
   https://medium.com/@jason.webb/space-colonization-algorithm-in-javascript-6f683b743dc5
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
-  (:require [quil.core :as q :include-macros true]
+  (:require [clojure.edn :as edn]
+            [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.space-colonization :as colonize]
             [shimmers.common.framerate :as framerate]
@@ -26,15 +27,16 @@
             :next-branch false}}))
 
 (defn generate-tree
-  [settings]
+  [{:keys [attractor-power snap-theta] :as settings}]
   (let [[w h] [(q/width) (q/height)]
         bounds (rect/rect 0 0 w h)
         attractors
         (colonize/generate-attractors [w h]
-                                      (Math/pow 2 (:attractor-power settings))
+                                      (Math/pow 2 attractor-power)
                                       (rand-nth [:triangle :square]))]
     (-> settings
-        (assoc :bounds bounds
+        (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
+               :bounds bounds
                :attractors attractors)
         colonize/create-tree)))
 
