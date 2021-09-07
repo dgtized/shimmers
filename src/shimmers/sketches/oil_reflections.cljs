@@ -35,6 +35,10 @@
       (gl/line2 (p/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
                 (p/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
 
+(defn stroke-line [outer inner {[p q] :points}]
+  [(gl/line2 (tm/mix p q (tm/random (- outer) inner))
+             (tm/mix p q (tm/random (- 1.0 inner) (+ 1.0 outer))))])
+
 (defn reflect-hatching [{[x _] :p r :r :as c}]
   (-> c
       (clip/hatch-circle
@@ -45,8 +49,10 @@
 (defn hatch-some-circles [circles]
   (p/map-random-sample
    (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
-   ;; (fn [c] (assoc c :hatching (mapcat sketch-line (reflect-hatching c))))
-   (fn [c] (assoc c :hatching (reflect-hatching c)))
+   (fn [c] (assoc c :hatching
+                 (p/mapcat-random-sample (constantly 0.05)
+                                         (partial stroke-line 0.0 0.2)
+                                         (reflect-hatching c))))
    circles))
 
 (defn update-state [{:keys [bounds circles] :as state}]
