@@ -11,7 +11,9 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.rect :as rect]))
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.triangle :as gt]))
 
 (defonce settings
   (ctrl/state
@@ -26,14 +28,36 @@
             :influenced-by false
             :next-branch false}}))
 
+(defn generate-attractors
+  [{[width height] :size} n mode]
+  (let [top 25
+        bottom 30]
+    (->> (condp = mode
+           :triangle
+           (let [base (- height bottom)
+                 left (/ width 5)
+                 right (- width left)]
+             (gt/triangle2
+              [left base]
+              [(/ width 2) 0]
+              [right base]))
+           :square
+           (let [left (/ width 6)]
+             (rect/rect left top
+                        (- width (* left 2))
+                        (- height top bottom))))
+
+         (partial geom/random-point-inside)
+         (repeatedly n))))
+
 (defn generate-tree
   [{:keys [attractor-power snap-theta] :as settings}]
   (let [[w h] [(q/width) (q/height)]
         bounds (rect/rect 0 0 w h)
         attractors
-        (colonize/generate-attractors [w h]
-                                      (Math/pow 2 attractor-power)
-                                      (rand-nth [:triangle :square]))]
+        (generate-attractors bounds
+                             (Math/pow 2 attractor-power)
+                             (rand-nth [:triangle :square]))]
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds

@@ -2,9 +2,7 @@
   (:require [clojure.set :as set]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.geom.triangle :as triangle]))
+            [thi.ng.geom.spatialtree :as spatialtree]))
 
 ;; Ideas:
 ;;  * attractors could have influence PER attractor instead of global, or a weight on their influence?
@@ -148,28 +146,6 @@
               :branches new-branches
               :attractors (remove prune attractors)
               :quadtree new-quadtree)])))
-
-(defn generate-attractors
-  [[width height] n mode]
-  (let [top 25
-        bottom 30]
-    (->> (condp = mode
-           :triangle
-           (let [base (- height bottom)
-                 left (/ width 5)
-                 right (- width left)]
-             (triangle/triangle2
-              [left base]
-              [(/ width 2) 0]
-              [right base]))
-           :square
-           (let [left (/ width 6)]
-             (rect/rect left top
-                        (- width (* left 2))
-                        (- height top bottom))))
-
-         (partial geom/random-point-inside)
-         (repeatedly n))))
 
 (defn create-tree
   [{:keys [bounds influence-distance prune-distance segment-distance
