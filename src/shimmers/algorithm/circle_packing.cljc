@@ -16,6 +16,10 @@
     (when (< (geom/dist-squared p1 p2) dist-sqr)
       c2)))
 
+(defn add-circle-to-tree
+  [tree {p :p :as circle}]
+  (geom/add-point tree p circle))
+
 (defn add-circle [quadtree {:keys [bounds radius spacing]} max-radius]
   (let [p (geom/random-point-inside bounds)
         candidate (gc/circle p radius)
@@ -32,8 +36,7 @@
   intentionally re-entrant, allowing up to `candidate` circles to be added on
   each invocation."
   [circles {:keys [bounds radius candidates] :as rules}]
-  (let [quadtree (reduce (fn [t {p :p :as circle}]
-                           (geom/add-point t p circle))
+  (let [quadtree (reduce add-circle-to-tree
                          (spatialtree/quadtree (geom/bounds bounds))
                          circles)
         max-radius (or (:r (apply (partial max-key :r) circles))
