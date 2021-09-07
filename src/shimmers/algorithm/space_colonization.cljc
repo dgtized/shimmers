@@ -151,8 +151,8 @@
   (->Branch nil position direction))
 
 (defn create-tree
-  [{:keys [bounds influence-distance prune-distance segment-distance
-           snap-theta attractors branches]}]
+  [{:keys [bounds attractors branches
+           influence-distance prune-distance segment-distance snap-theta]}]
   {:influence-distance influence-distance
    :prune-distance prune-distance
    :segment-distance segment-distance
@@ -160,6 +160,5 @@
    :attractors attractors
    :branches branches
    :weights (update-weights {} branches branches)
-   :quadtree (add-branch-positions (spatialtree/quadtree bounds)
-                                   branches)})
+   :quadtree (add-branch-positions (spatialtree/quadtree bounds) branches)})
 
