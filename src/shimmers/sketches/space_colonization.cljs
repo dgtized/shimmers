@@ -25,10 +25,17 @@
             :influenced-by false
             :next-branch false}}))
 
-(defn generate-tree [settings]
-  (let [bounds (rect/rect 0 0 (q/width) (q/height))]
+(defn generate-tree
+  [settings]
+  (let [[w h] [(q/width) (q/height)]
+        bounds (rect/rect 0 0 w h)
+        attractors
+        (colonize/generate-attractors [w h]
+                                      (Math/pow 2 (:attractor-power settings))
+                                      (rand-nth [:triangle :square]))]
     (-> settings
-        (assoc :bounds bounds)
+        (assoc :bounds bounds
+               :attractors attractors)
         colonize/create-tree)))
 
 (defn setup []

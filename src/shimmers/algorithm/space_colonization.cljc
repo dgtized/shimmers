@@ -174,16 +174,14 @@
 
 (defn create-tree
   [{:keys [bounds influence-distance prune-distance segment-distance
-           snap-theta attractor-power]}]
+           snap-theta attractors]}]
   (let [{[width height] :size} bounds
-        attractor-count (Math/pow 2 attractor-power)
         branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
      :segment-distance segment-distance
-     :attractor-count attractor-count
      :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
-     :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
+     :attractors attractors
      :branches branches
      :weights (update-weights {} branches branches)
      :quadtree (add-branch-positions (spatialtree/quadtree bounds)
