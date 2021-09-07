@@ -9,7 +9,8 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.rect :as rect]))
 
 (defonce settings
   (ctrl/state
@@ -24,15 +25,18 @@
             :influenced-by false
             :next-branch false}}))
 
+(defn canvas-bounds []
+  (rect/rect 0 0 (q/width) (q/height)))
+
 (defn setup []
   ;; (.clear js/console)
   (q/frame-rate 15)
-  (colonize/create-tree [(q/width) (q/height)] @settings))
+  (colonize/create-tree (assoc @settings :bounds (canvas-bounds))))
 
 (defn update-state [state]
   (cq/if-steady-state
    state 5
-   (fn [] (colonize/create-tree [(q/width) (q/height)] @settings))
+   (fn [] (colonize/create-tree (assoc @settings :bounds (canvas-bounds))))
    colonize/grow))
 
 (defn draw-attractor [[x y] influence prune]

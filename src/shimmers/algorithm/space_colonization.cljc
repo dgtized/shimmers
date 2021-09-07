@@ -173,10 +173,10 @@
          (repeatedly n))))
 
 (defn create-tree
-  [[width height]
-   {:keys [influence-distance prune-distance segment-distance
+  [{:keys [bounds influence-distance prune-distance segment-distance
            snap-theta attractor-power]}]
-  (let [attractor-count (Math/pow 2 attractor-power)
+  (let [{[width height] :size} bounds
+        attractor-count (Math/pow 2 attractor-power)
         branches [(->Branch nil (v/vec2 (/ width 2) (- height 10)) (v/vec2 0 -1))]]
     {:influence-distance influence-distance
      :prune-distance prune-distance
@@ -186,6 +186,6 @@
      :attractors (generate-attractors [width height] attractor-count (rand-nth [:triangle :square]))
      :branches branches
      :weights (update-weights {} branches branches)
-     :quadtree (add-branch-positions (spatialtree/quadtree 0 0 width height)
+     :quadtree (add-branch-positions (spatialtree/quadtree bounds)
                                      branches)}))
 
