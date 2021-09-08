@@ -51,15 +51,14 @@
          (partial geom/random-point-inside)
          (repeatedly n))))
 
-(defn gen-root [w h roots]
+(defn gen-root [{[w h] :size} roots]
   (mapv (fn [base]
           (colonize/make-root (v/vec2 (* w base) (- h 10)) (v/vec2 0 -1)))
         (cs/centered-range roots)))
 
 (defn generate-tree
   [{:keys [attractor-power snap-theta] :as settings}]
-  (let [[w h] [(q/width) (q/height)]
-        bounds (rect/rect 0 0 w h)
+  (let [bounds (rect/rect 0 0 (q/width) (q/height))
         attractors
         (generate-attractors bounds
                              (Math/pow 2 attractor-power)
@@ -67,7 +66,7 @@
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds
-               :branches (gen-root w h (inc (rand-int 3)))
+               :branches (gen-root bounds (inc (rand-int 3)))
                :attractors attractors)
         colonize/create-tree)))
 
