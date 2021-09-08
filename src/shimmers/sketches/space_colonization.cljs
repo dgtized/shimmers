@@ -14,7 +14,8 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [shimmers.math.probability :as p]))
 
 (defonce settings
   (ctrl/state
@@ -62,11 +63,14 @@
         attractors
         (generate-attractors bounds
                              (Math/pow 2 attractor-power)
-                             (rand-nth [:triangle :square]))]
+                             (rand-nth [:triangle :square]))
+        roots (p/weighted {1 4
+                           2 2
+                           3 1})]
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds
-               :branches (gen-root bounds (inc (rand-int 3)))
+               :branches (gen-root bounds roots)
                :attractors attractors)
         colonize/create-tree)))
 
