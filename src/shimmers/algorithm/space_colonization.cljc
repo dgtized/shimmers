@@ -139,13 +139,12 @@
                            influencers)
         new-branches (vec (concat branches growth))]
     (if (steady-state? growth prune attractors)
-      [true state]
-      [false
-       (assoc state
-              :weights (update-weights weights new-branches growth)
-              :branches new-branches
-              :attractors (remove prune attractors)
-              :quadtree new-quadtree)])))
+      (assoc state :steady-state true)
+      (assoc state
+             :weights (update-weights weights new-branches growth)
+             :branches new-branches
+             :attractors (remove prune attractors)
+             :quadtree new-quadtree))))
 
 (defn make-root [position direction]
   (->Branch nil position direction))

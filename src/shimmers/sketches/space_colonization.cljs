@@ -78,7 +78,10 @@
   (cq/if-steady-state
    state 5
    (fn [] (generate-tree @settings))
-   colonize/grow))
+   (fn [s]
+     (let [{:keys [steady-state] :as s'}
+           (colonize/grow s)]
+       [steady-state s']))))
 
 (defn draw-attractor [[x y] influence prune]
   (q/stroke-weight 0.2)
