@@ -40,7 +40,7 @@
               direction
               attractors)
       (v/add (v/jitter 1.0))
-      (v/scale (/ 1 (+ (count attractors) 2)))
+      (v/scale (/ 1 (inc (count attractors))))
       v/normalize))
 
 (comment
