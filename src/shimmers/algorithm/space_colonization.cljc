@@ -36,11 +36,10 @@
 (defn average-attraction
   [{:keys [position direction]} attractors]
   (-> (reduce (fn [acc attractor]
-                (->> position
-                     (v/sub attractor)
-                     (v/add acc)))
-              (v/add direction (v/jitter 0.33))
+                (v/add acc (v/sub attractor position)))
+              direction
               attractors)
+      (v/add (v/jitter 0.33))
       (v/scale (/ 1 (+ (count attractors) 2)))
       v/normalize))
 
