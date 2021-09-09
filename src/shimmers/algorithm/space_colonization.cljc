@@ -39,7 +39,7 @@
                 (v/add acc (v/sub attractor position)))
               direction
               attractors)
-      (v/add (v/jitter 0.33))
+      (v/add (v/jitter 1.0))
       (v/scale (/ 1 (+ (count attractors) 2)))
       v/normalize))
 
