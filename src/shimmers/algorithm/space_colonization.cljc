@@ -38,7 +38,6 @@
   (-> (reduce (fn [acc attractor]
                 (->> position
                      (v/sub attractor)
-                     v/normalize
                      (v/add acc)))
               (v/add direction (v/jitter 0.33))
               attractors)
