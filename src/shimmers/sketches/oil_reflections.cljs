@@ -87,6 +87,7 @@
 
 (sketch/defquil oil-reflections
   :created-at "2021-09-05"
+  :tags #{:static}
   :size [800 600]
   :setup setup
   :update update-state
