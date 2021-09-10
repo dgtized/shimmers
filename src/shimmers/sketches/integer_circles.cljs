@@ -51,6 +51,7 @@
 
 (sketch/defquil integer-circles
   :created-at "2021-09-04"
+  :tags #{:shader}
   :size [1024 768]
   :renderer :p2d
   :setup setup

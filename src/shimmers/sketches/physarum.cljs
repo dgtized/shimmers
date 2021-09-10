@@ -130,6 +130,7 @@
 
 (sketch/defquil physarum
   :created-at "2021-07-04"
+  ;; :tags #{:shader}
   :size [800 800]
   :setup setup
   :update update-state
