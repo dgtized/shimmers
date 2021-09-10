@@ -59,14 +59,14 @@
              :host-id ~(:host opts)})))
 
        (let [m# (meta (var ~app-name))]
-         (swap! registry/sketches assoc ~(keyword app-name)
-                {:id (loader/namespace-to-id (:ns m#))
-                 :type :quil
-                 :fn ~runner
-                 :created-at ~(:created-at opts)
-                 :tags ~(:tags opts #{})
-                 :file (:file m#)
-                 :line (:line m#)})))))
+         (registry/add! ~(keyword app-name)
+                        {:id (loader/namespace-to-id (:ns m#))
+                         :type :quil
+                         :fn ~runner
+                         :created-at ~(:created-at opts)
+                         :tags ~(:tags opts #{})
+                         :file (:file m#)
+                         :line (:line m#)})))))
 
 (defmacro defsvg
   [app-name options & body]
@@ -75,11 +75,11 @@
            ~@body)
 
          (let [m# (meta (var ~app-name))]
-           (swap! registry/sketches assoc ~(keyword app-name)
-                  {:id (loader/namespace-to-id (:ns m#))
-                   :type :svg
-                   :fn ~runner
-                   :created-at ~(:created-at options)
-                   :tags ~(:tags options #{})
-                   :file (:file m#)
-                   :line (:line m#)})))))
+           (registry/add! ~(keyword app-name)
+                          {:id (loader/namespace-to-id (:ns m#))
+                           :type :svg
+                           :fn ~runner
+                           :created-at ~(:created-at options)
+                           :tags ~(:tags options #{})
+                           :file (:file m#)
+                           :line (:line m#)})))))

@@ -3,3 +3,6 @@
   display.")
 
 (def sketches (atom {}))
+
+(defn add! [name sketch]
+  (swap! sketches assoc name sketch))
