@@ -1,6 +1,7 @@
 (ns shimmers.sketches.additive-displacement
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.lines :as lines]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
@@ -49,12 +50,9 @@
                   (some (partial intersects? prov-line) segments))
       next-pos)))
 
-(defn points->segments [points]
-  (map make-segment (partition 2 1 points)))
-
 (defn add-line [points offset delta-fn avoid]
   (let [base-pos (tm/+ (first points) offset)
-        segments (points->segments points)]
+        segments (lines/points->lines points)]
     (loop [prev-pos base-pos
            addition [base-pos]]
       (when-let [next-pos (cs/retry 10 #(find-next prev-pos delta-fn segments avoid))]
