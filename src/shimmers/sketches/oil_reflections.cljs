@@ -63,14 +63,16 @@
                          (reflect-hatching c))))
    circles))
 
+(defn radius-scale [n]
+  (cond (<= n 6) 48.0
+        (<= n 16.0) 32.0
+        (<= n 24) 24.0
+        (<= n 48) 12.0
+        (<= n 64) 8.0
+        :else 6.0))
+
 (defn update-state [{:keys [bounds circles] :as state}]
-  (let [n (count circles)
-        radius (cond (<= n 6) 48.0
-                     (<= n 16.0) 32.0
-                     (<= n 24) 24.0
-                     (<= n 48) 12.0
-                     (<= n 64) 8.0
-                     :else 6.0)
+  (let [radius (radius-scale (count circles))
         pack-rules {:bounds bounds :radius radius :spacing radius :candidates 20}]
     (if (>= n 160)
       state
