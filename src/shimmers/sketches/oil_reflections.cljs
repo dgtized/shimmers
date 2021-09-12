@@ -26,6 +26,8 @@
     (into (take edges sorted)
           (take-last edges sorted))))
 
+;; TODO: namespace for line segmentation tricks like this and stroke-line as
+;; well as for functions operating on a list of lines.
 (defn sketch-line [{[p q] :points}]
   (let [edge-p 0.02
         edge-q 0.02
