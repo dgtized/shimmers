@@ -35,6 +35,9 @@
       (gl/line2 (p/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
                 (p/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
 
+;; TODO: add recursive split line with declining likelyhood to recursion depth.
+;; not clear how to keep outer/inner parameters particularly as each segment can
+;; subdivide and start overlapping.
 (defn stroke-line [outer inner {[p q] :points}]
   (let [a (tm/random (- outer) inner)
         b (tm/random (- 1.0 inner) (+ 1.0 outer))
