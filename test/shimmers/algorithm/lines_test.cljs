@@ -24,4 +24,10 @@
           (gl/line2 0.5 0.5 4 4)]
          (sut/segment-at (gl/line2 0 0 4 4) 0.125))))
 
+(deftest segmented
+  (is (= [(gl/line2 0 0 0 5) (gl/line2 0 5 0 10)]
+         (sut/segmented (gl/line2 0 0 0 10) 2)))
+  (is (= [(gl/line2 0 0 1 3) (gl/line2 1 3 2 6) (gl/line2 2 6 3 9)]
+         (sut/segmented (gl/line2 0 0 3 9) 3))))
+
 (comment (t/run-tests))
