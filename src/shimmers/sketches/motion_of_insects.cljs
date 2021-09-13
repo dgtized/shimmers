@@ -33,13 +33,11 @@
           particles))
 
 (defn flock-separation [radius strength]
-  (fn [system p delta]
-    (let [neighborhood (neighborhood p (:particles system) radius)]
+  (fn [{:keys [particles]} {at-p :pos :as p} delta]
+    (let [neighborhood (neighborhood p particles radius)]
       (when (seq neighborhood)
-        (let [differences (map (fn [q]
-                                 (let [at-p (:pos p)
-                                       at-q (:pos q)]
-                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q))))
+        (let [differences (map (fn [{at-q :pos}]
+                                 (tm/div (tm/- at-p at-q) (geom/dist at-p at-q)))
                                neighborhood)
               rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
           (tm/* rel-diff (* strength delta)))))))
