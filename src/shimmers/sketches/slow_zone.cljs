@@ -26,7 +26,7 @@
        (< 0 (:y pos) (q/height))))
 
 (defn slowing-zone [zone]
-  (fn [{:keys [pos prev]} delta]
+  (fn [_ {:keys [pos prev]} delta]
     (if (geom/contains-point? zone pos)
       (let [change (tm/- prev pos)]
         (if (> (tm/mag-squared change) 2.0)
@@ -43,7 +43,7 @@
     (* 0.18 direction value)))
 
 (defn acceleration-zone [zone]
-  (fn [{:keys [pos]} delta]
+  (fn [_ {:keys [pos]} delta]
     (if (geom/contains-point? zone pos)
       (tm/* (gv/vec2 0.2 (deflection pos)) delta)
       (gv/vec2))))

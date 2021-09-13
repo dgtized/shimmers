@@ -13,12 +13,12 @@
 ;; Mechanics specific for this sketch
 
 (defn gravity [force]
-  (fn [_ delta]
+  (fn [_ _ delta]
     (tm/* force delta)))
 
 (defn solid-fuel-thruster [burn-time fuel-mass thrust]
   (let [mass-loss (/ fuel-mass burn-time)]
-    (fn [particle delta]
+    (fn [_ particle delta]
       (if (and (= (:type particle) :rocket)
                (< (:age particle) burn-time))
         (let [velocity (tm/- (:pos particle) (:prev particle))]

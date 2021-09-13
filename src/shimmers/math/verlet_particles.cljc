@@ -46,7 +46,7 @@
     (let [drag' (* delta drag)]
       (doseq [particle (seq particles)]
         (let [force (reduce (fn [force mechanic]
-                              (tm/+ force (mechanic particle delta)))
+                              (tm/+ force (mechanic _ particle delta)))
                             (geom/clear* (:pos particle)) ;; 2d or 3d
                             mechanics)]
           (pstep particle drag' force delta))))
