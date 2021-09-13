@@ -1,9 +1,16 @@
 (ns shimmers.algorithm.lines
-  (:require [thi.ng.geom.line :as gl]
+  (:require [thi.ng.geom.core :as geom]
+            [thi.ng.geom.line :as gl]
             [thi.ng.math.core :as tm]))
 
 (defn points->lines [points]
   (map gl/line2 (partition 2 1 points)))
+
+(defn lines->points [lines]
+  (->> lines
+       (mapcat geom/vertices)
+       (partition-by identity)
+       (map first)))
 
 (defn segment-at
   ([line] (segment-at line 0.5))
