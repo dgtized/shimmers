@@ -9,8 +9,7 @@
 (defn lines->points [lines]
   (->> lines
        (mapcat geom/vertices)
-       (partition-by identity)
-       (map first)))
+       dedupe))
 
 (defn segment-at
   ([line] (segment-at line 0.5))
