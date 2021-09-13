@@ -6,6 +6,7 @@
             [shimmers.math.vector :as v]
             [shimmers.math.verlet-particles :as vp]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -26,6 +27,23 @@
       (when (> (tm/mag velocity) maximum)
         (set! (.-prev p) (tm/- (:pos p) (tm/normalize velocity maximum)))))))
 
+(defn neighborhood [p particles radius]
+  (filter (fn [q] (and (not= p q)
+                      (< (geom/dist (:pos p) (:pos q)) radius)))
+          particles))
+
+(defn flock-separation [radius strength]
+  (fn [system p delta]
+    (let [neighborhood (neighborhood p (:particles system) radius)]
+      (when (seq neighborhood)
+        (let [differences (map (fn [q]
+                                 (let [at-p (:pos p)
+                                       at-q (:pos q)]
+                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q))))
+                               neighborhood)
+              rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
+          (tm/* rel-diff (* strength delta)))))))
+
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
     (vp/make-particle p (tm/+ p (v/jitter 1.0)) 1.0)))
@@ -34,7 +52,7 @@
   (q/color-mode :hsl 1.0)
   {:system
    (vp/make-system {:particles (repeatedly 64 make-insect)
-                    :mechanics [
+                    :mechanics [(flock-separation 64.0 2.0)
                                 ;; (max-velocity 1.0)
                                 ]
                     :constraints [(wrap-around (q/width) (q/height))]
