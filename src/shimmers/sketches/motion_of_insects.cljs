@@ -57,7 +57,7 @@
     (cq/circle pos (+ mass 4.0))))
 
 (sketch/defquil motion-of-insects
-  :created-at "2021-08-13"
+  :created-at "2021-09-13"
   :size [800 600]
   :setup setup
   :update update-state
