@@ -10,17 +10,6 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn wrap-around [width height]
-  (fn [p _]
-    (let [pos (:pos p)
-          [x y] pos
-          wrapped (gv/vec2 (tm/wrap-range x width)
-                           (tm/wrap-range y height))]
-      (when-not (tm/delta= pos wrapped)
-        (set! (.-prev p) (tm/- wrapped (vp/velocity p)))
-        (set! (.-pos p) wrapped))
-      true)))
-
 (defn neighborhood [{at-p :pos :as p} particles radius]
   (filter (fn [{at-q :pos :as q}]
             (and (not= p q) (< (geom/dist at-p at-q) radius)))
@@ -53,7 +42,7 @@
    (vp/make-system {:particles (repeatedly 100 make-insect)
                     :mechanics [(flock-separation 36.0 2.0)
                                 (jumping 16.0)]
-                    :constraints [(wrap-around (q/width) (q/height))]
+                    :constraints [(vp/wrap-around (q/width) (q/height))]
                     :drag 0.1})})
 
 (defn update-state [{:keys [system] :as state}]

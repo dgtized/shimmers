@@ -1,8 +1,9 @@
 (ns shimmers.math.verlet-particles
   "Simplified version of thi.ng.geom.physics.core.VerletPhysics with slightly
   more functional approach."
-  (:require [thi.ng.math.core :as tm]
-            [thi.ng.geom.core :as geom]))
+  (:require [thi.ng.geom.core :as geom]
+            [thi.ng.geom.vector :as gv]
+            [thi.ng.math.core :as tm]))
 
 (defprotocol IParticle
   (pstep [_ drag force delta])
@@ -71,6 +72,17 @@
   (System. (vec particles) mechanics constraints drag))
 
 ;; Constraints
+
+(defn wrap-around [width height]
+  (fn [p _]
+    (let [pos (:pos p)
+          [x y] pos
+          wrapped (gv/vec2 (tm/wrap-range x width)
+                           (tm/wrap-range y height))]
+      (when-not (tm/delta= pos wrapped)
+        (set! (.-prev p) (tm/- wrapped (velocity p)))
+        (set! (.-pos p) wrapped))
+      true)))
 
 (defn max-velocity [maximum]
   (fn [p _]
