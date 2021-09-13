@@ -16,8 +16,8 @@
           particles))
 
 (defn flock-separation [radius strength]
-  (fn [{:keys [particles]} {at-p :pos :as p} delta]
-    (let [neighborhood (neighborhood p particles radius)]
+  (fn [{:keys [particles]} {at-p :pos mass :mass :as p} delta]
+    (let [neighborhood (neighborhood p particles (+ mass radius))]
       (when (seq neighborhood)
         (let [differences (map (fn [{at-q :pos}]
                                  (tm/div (tm/- at-p at-q) (geom/dist at-p at-q)))
@@ -33,15 +33,15 @@
 
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
-    (assoc (vp/make-particle p (tm/+ p (v/jitter 1.0)) 1.0)
+    (assoc (vp/make-particle p (tm/+ p (v/jitter 1.0)) (tm/random 1.0 3.0))
            :timing (int (tm/random 270 720)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:system
-   (vp/make-system {:particles (repeatedly 100 make-insect)
-                    :mechanics [(flock-separation 36.0 2.0)
-                                (jumping 16.0)]
+   (vp/make-system {:particles (repeatedly 128 make-insect)
+                    :mechanics [(flock-separation 24.0 2.0)
+                                (jumping 36.0)]
                     :constraints [(vp/wrap-around (q/width) (q/height))]
                     :drag 0.1})})
 
@@ -53,8 +53,8 @@
   (when (= 0 (mod (q/frame-count) 3))
     (q/background 1.0 0.25))
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos]} (:particles system)]
-    (cq/circle pos 8.0)))
+  (doseq [{:keys [pos mass]} (:particles system)]
+    (cq/circle pos (+ mass 4.0))))
 
 (sketch/defquil motion-of-insects
   :created-at "2021-08-13"
