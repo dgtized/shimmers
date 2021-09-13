@@ -19,6 +19,12 @@
         (set! (.-prev p) (tm/- wrapped (vp/velocity p)))
         (set! (.-pos p) wrapped)))))
 
+(defn max-velocity [maximum]
+  (fn [p _]
+    (let [velocity (vp/velocity p)]
+      (when (> (tm/mag velocity) maximum)
+        (set! (.-prev p) (tm/- (:pos p) (tm/normalize velocity maximum)))))))
+
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
     (vp/make-particle p (tm/+ p (v/jitter 0.1)) 1.0)))
