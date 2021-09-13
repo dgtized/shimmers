@@ -21,12 +21,6 @@
         (set! (.-pos p) wrapped))
       true)))
 
-(defn max-velocity [maximum]
-  (fn [p _]
-    (let [velocity (vp/velocity p)]
-      (when (> (tm/mag velocity) maximum)
-        (set! (.-prev p) (tm/- (:pos p) (tm/normalize velocity maximum)))))))
-
 (defn neighborhood [{at-p :pos :as p} particles radius]
   (filter (fn [{at-q :pos :as q}]
             (and (not= p q) (< (geom/dist at-p at-q) radius)))
@@ -50,9 +44,7 @@
   (q/color-mode :hsl 1.0)
   {:system
    (vp/make-system {:particles (repeatedly 64 make-insect)
-                    :mechanics [(flock-separation 64.0 2.0)
-                                ;; (max-velocity 1.0)
-                                ]
+                    :mechanics [(flock-separation 64.0 2.0)]
                     :constraints [(wrap-around (q/width) (q/height))]
                     :drag 0.1})})
 

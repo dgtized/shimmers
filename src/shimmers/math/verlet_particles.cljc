@@ -69,3 +69,12 @@
 (defn make-system [{:keys [particles drag mechanics constraints]
                     :or {particles [] mechanics [] constraints [] drag 0.0}}]
   (System. (vec particles) mechanics constraints drag))
+
+;; Constraints
+
+(defn max-velocity [maximum]
+  (fn [p _]
+    (let [velocity (velocity p)]
+      (when (> (tm/mag velocity) maximum)
+        (set! (.-prev p) (tm/- (:pos p) (tm/normalize velocity maximum)))))
+    true))
