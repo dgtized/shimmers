@@ -17,7 +17,8 @@
                            (tm/wrap-range y height))]
       (when-not (tm/delta= pos wrapped)
         (set! (.-prev p) (tm/- wrapped (vp/velocity p)))
-        (set! (.-pos p) wrapped)))))
+        (set! (.-pos p) wrapped))
+      true)))
 
 (defn max-velocity [maximum]
   (fn [p _]
@@ -33,10 +34,10 @@
   (q/color-mode :hsl 1.0)
   {:system
    (vp/make-system {:particles (repeatedly 64 make-insect)
-                    :mechanics [(wrap-around (q/width) (q/height))
+                    :mechanics [
                                 ;; (max-velocity 1.0)
                                 ]
-                    :constraints []
+                    :constraints [(wrap-around (q/width) (q/height))]
                     :drag 0.1})})
 
 (defn update-state [{:keys [system] :as state}]
