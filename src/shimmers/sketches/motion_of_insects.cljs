@@ -14,10 +14,9 @@
     (let [pos (:pos p)
           [x y] pos
           wrapped (gv/vec2 (tm/wrap-range x width)
-                           (tm/wrap-range y height))
-          velocity (tm/- pos (:prev p))]
+                           (tm/wrap-range y height))]
       (when-not (tm/delta= pos wrapped)
-        (set! (.-prev p) (tm/- wrapped velocity))
+        (set! (.-prev p) (tm/- wrapped (vp/velocity p)))
         (set! (.-pos p) wrapped)))))
 
 (defn make-insect []

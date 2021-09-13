@@ -5,7 +5,8 @@
             [thi.ng.geom.core :as geom]))
 
 (defprotocol IParticle
-  (pstep [_ drag force delta]))
+  (pstep [_ drag force delta])
+  (velocity [_]))
 
 (defprotocol ISystem
   (add-particles [_ new-particles])
@@ -27,7 +28,9 @@
       (set! prev (tm/mix pos pos' drag))
       (set! pos pos')
       (set! age (+ age delta)))
-    _))
+    _)
+  (velocity [_]
+    (tm/- pos prev)))
 
 (defrecord System [^:mutable particles
                    mechanics
