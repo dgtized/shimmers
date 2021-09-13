@@ -27,9 +27,9 @@
       (when (> (tm/mag velocity) maximum)
         (set! (.-prev p) (tm/- (:pos p) (tm/normalize velocity maximum)))))))
 
-(defn neighborhood [p particles radius]
-  (filter (fn [q] (and (not= p q)
-                      (< (geom/dist (:pos p) (:pos q)) radius)))
+(defn neighborhood [{at-p :pos :as p} particles radius]
+  (filter (fn [{at-q :pos :as q}]
+            (and (not= p q) (< (geom/dist at-p at-q) radius)))
           particles))
 
 (defn flock-separation [radius strength]
