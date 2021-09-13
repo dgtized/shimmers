@@ -36,15 +36,23 @@
               rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
           (tm/* rel-diff (* strength delta)))))))
 
+(defn jumping [distance]
+  (fn [_ {:keys [age timing] :as p} _]
+    (if (tm/delta= 0.0 (mod age timing))
+      (v/jitter distance)
+      (gv/vec2))))
+
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
-    (vp/make-particle p (tm/+ p (v/jitter 1.0)) 1.0)))
+    (assoc (vp/make-particle p (tm/+ p (v/jitter 1.0)) 1.0)
+           :timing (int (tm/random 270 720)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:system
-   (vp/make-system {:particles (repeatedly 64 make-insect)
-                    :mechanics [(flock-separation 64.0 2.0)]
+   (vp/make-system {:particles (repeatedly 100 make-insect)
+                    :mechanics [(flock-separation 36.0 2.0)
+                                (jumping 16.0)]
                     :constraints [(wrap-around (q/width) (q/height))]
                     :drag 0.1})})
 
