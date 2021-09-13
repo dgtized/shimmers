@@ -19,10 +19,6 @@
 
 (defn segmented
   [{[p q] :points} n]
-  {:pre [(>= n 2)]}
+  {:pre [(pos-int? n)]}
   (for [[a b] (partition 2 1 (tm/norm-range n))]
     (gl/line2 (tm/mix p q a) (tm/mix p q b))))
-
-(comment
-  (segmented (gl/line2 [0 0] [0 10]) 2)
-  (segmented (gl/line2 [0 0] [1 10]) 3))

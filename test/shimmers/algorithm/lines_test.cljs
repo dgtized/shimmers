@@ -28,6 +28,8 @@
   (is (= [(gl/line2 0 0 0 5) (gl/line2 0 5 0 10)]
          (sut/segmented (gl/line2 0 0 0 10) 2)))
   (is (= [(gl/line2 0 0 1 3) (gl/line2 1 3 2 6) (gl/line2 2 6 3 9)]
-         (sut/segmented (gl/line2 0 0 3 9) 3))))
+         (sut/segmented (gl/line2 0 0 3 9) 3)))
+  (is (thrown-with-msg? js/Error #"pos-int"
+                        (sut/segmented (gl/line2 0 0 1 0) 1.1))))
 
 (comment (t/run-tests))
