@@ -74,7 +74,8 @@
         :else 6.0))
 
 (defn update-state [{:keys [bounds circles] :as state}]
-  (let [radius (radius-scale (count circles))
+  (let [n (count circles)
+        radius (radius-scale n)
         pack-rules {:bounds bounds :radius radius :spacing radius :candidates 20}]
     (if (>= n 160)
       state
