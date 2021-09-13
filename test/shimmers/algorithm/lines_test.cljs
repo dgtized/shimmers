@@ -16,4 +16,12 @@
 (deftest lines->points
   (is (= points (sut/lines->points lines))))
 
+(deftest segment-at
+  (is (= [(gl/line2 0 0 1 1)
+          (gl/line2 1 1 2 2)]
+         (sut/segment-at (gl/line2 0 0 2 2))))
+  (is (= [(gl/line2 0 0 0.5 0.5)
+          (gl/line2 0.5 0.5 4 4)]
+         (sut/segment-at (gl/line2 0 0 4 4) 0.125))))
+
 (comment (t/run-tests))
