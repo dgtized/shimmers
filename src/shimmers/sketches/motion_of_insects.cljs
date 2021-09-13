@@ -27,15 +27,17 @@
 
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
-    (vp/make-particle p (tm/+ p (v/jitter 0.1)) 1.0)))
+    (vp/make-particle p (tm/+ p (v/jitter 1.0)) 1.0)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:system
-   (vp/make-system {:particles (repeatedly 100 make-insect)
-                    :mechanics [(wrap-around (q/width) (q/height))]
+   (vp/make-system {:particles (repeatedly 64 make-insect)
+                    :mechanics [(wrap-around (q/width) (q/height))
+                                ;; (max-velocity 1.0)
+                                ]
                     :constraints []
-                    :drag 0.05})})
+                    :drag 0.1})})
 
 (defn update-state [{:keys [system] :as state}]
   (vp/timestep system 2)
