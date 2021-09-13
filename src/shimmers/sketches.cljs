@@ -54,6 +54,7 @@
             shimmers.sketches.mechanism
             shimmers.sketches.minimum-spanning-tree
             shimmers.sketches.mosaic-tiling
+            shimmers.sketches.motion-of-insects
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
             shimmers.sketches.oil-reflections
