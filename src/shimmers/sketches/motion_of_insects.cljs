@@ -50,7 +50,8 @@
   state)
 
 (defn draw [{:keys [system]}]
-  (q/background 1.0 0.5)
+  (when (= 0 (mod (q/frame-count) 3))
+    (q/background 1.0 0.25))
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos]} (:particles system)]
     (cq/circle pos 8.0)))
