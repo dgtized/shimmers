@@ -18,13 +18,15 @@
 
 (defn flock-separation [radius strength]
   (fn [{:keys [particles]} {at-p :pos mass :mass :as p} delta]
-    (let [neighborhood (neighborhood p particles (+ mass radius))]
-      (when (seq neighborhood)
-        (let [differences (map (fn [{at-q :pos}]
-                                 (tm/div (tm/- at-p at-q) (geom/dist at-p at-q)))
-                               neighborhood)
-              rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
-          (tm/* rel-diff (* strength delta)))))))
+    (if (p/chance 0.08)
+      (let [neighborhood (neighborhood p particles (+ mass radius))]
+        (when (seq neighborhood)
+          (let [differences (map (fn [{at-q :pos}]
+                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q)))
+                                 neighborhood)
+                rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
+            (tm/* rel-diff (* strength delta)))))
+      (gv/vec2))))
 
 (defn jumping [distance likelyhood]
   (fn [_ _ _]
