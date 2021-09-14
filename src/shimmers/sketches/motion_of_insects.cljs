@@ -16,9 +16,9 @@
             (and (not= p q) (< (geom/dist at-p at-q) radius)))
           particles))
 
-(defn flock-separation [radius strength]
+(defn flock-separation [radius strength likelyhood]
   (fn [{:keys [particles]} {at-p :pos mass :mass :as p} delta]
-    (if (p/chance 0.08)
+    (if (p/chance likelyhood)
       (let [neighborhood (neighborhood p particles (+ mass radius))]
         (when (seq neighborhood)
           (let [differences (map (fn [{at-q :pos}]
@@ -44,7 +44,7 @@
         n 128]
     {:system
      (vp/make-system {:particles (repeatedly n make-insect)
-                      :mechanics [(flock-separation 24.0 2.0)
+                      :mechanics [(flock-separation 24.0 2.0 (/ 4.0 fps))
                                   (jumping 36.0 (/ 2.0 (* fps n)))]
                       :constraints [(vp/wrap-around (q/width) (q/height))]
                       :drag 0.1})}))
