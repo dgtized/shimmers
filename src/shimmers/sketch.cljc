@@ -3,6 +3,25 @@
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]))
 
+;; Copied from
+;; https://github.com/quil/quil/blob/1f214e712d834ede311fdc652eafe9cc0232c96e/src/cljs/quil/sketch.clj#L21
+;; to make it available in cljc without a warning. *Somehow* it should be
+;; possible to load both versions, but this works for now.
+(defn wrap-fns
+  "[[wrap-fns]] allows dynamic redefinition of a function such as `draw` and
+  `update` in cljs. This is achieved by wrapping all provided functions to
+  anonymous functions such that `my-draw` function turns into
+  `(fn [& args] (apply my-draw args))`. This adds a level of indirection
+  so that when quil calls `draw`, it invokes anonymous function which in
+  turn always calls `my-draw` by name and if you redefine, the new version
+  will be used. Hence we need this cryptic macro."
+  [opts]
+  (into {}
+        (for [[k v] opts]
+          (if (symbol? v)
+            [k `(if (fn? ~v) (fn [& ~'args] (apply ~v ~'args)) ~v)]
+            [k v]))))
+
 ;; Problem:
 ;;
 ;; q/defsketch both defines and mounts the sketch. To delay sketch invocation
@@ -20,7 +39,6 @@
 ;;
 ;; Plan:
 ;;
-;; * Handle warning about undeclared `wrap-fns`
 ;; * Add an SVG equivalent `defsvg` or better yet add a dispatch parameter to `defsketch`?
 ;; * Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks?
 ;; * Allow more than one sketch per namespace
@@ -38,9 +56,9 @@
 (defmacro defquil
   [app-name & options]
   (let [raw-opts (apply hash-map options)
-        opts     (->> raw-opts
-                      (merge {:host "quil-host"})
-                      quil.sketch/wrap-fns)
+        opts (->> raw-opts
+                  (merge {:host "quil-host"})
+                  wrap-fns)
         runner (vary-meta app-name assoc :export true)
         sketch-start (vary-meta (symbol (str app-name '-start))
                                 assoc :export true)]
