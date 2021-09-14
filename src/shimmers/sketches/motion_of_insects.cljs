@@ -53,6 +53,7 @@
 
 (defn draw [{:keys [system]}]
   (q/background 1.0 (tm/random 0.01 0.2))
+  (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos mass]} (:particles system)]
     (cq/circle pos (+ mass 4.0))))
