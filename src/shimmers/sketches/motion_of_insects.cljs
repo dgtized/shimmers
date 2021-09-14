@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.math.verlet-particles :as vp]
             [shimmers.sketch :as sketch :include-macros true]
@@ -25,25 +26,26 @@
               rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
           (tm/* rel-diff (* strength delta)))))))
 
-(defn jumping [distance]
-  (fn [_ {:keys [age timing] :as p} _]
-    (if (tm/delta= 0.0 (mod age timing))
+(defn jumping [distance likelyhood]
+  (fn [_ _ _]
+    (if (p/chance likelyhood)
       (v/jitter distance)
       (gv/vec2))))
 
 (defn make-insect []
   (let [p (cq/rel-vec (tm/random) (tm/random))]
-    (assoc (vp/make-particle p (tm/+ p (v/jitter 1.0)) (tm/random 1.0 3.0))
-           :timing (int (tm/random 270 720)))))
+    (vp/make-particle p (tm/+ p (v/jitter 1.0)) (tm/random 1.0 3.0))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:system
-   (vp/make-system {:particles (repeatedly 128 make-insect)
-                    :mechanics [(flock-separation 24.0 2.0)
-                                (jumping 36.0)]
-                    :constraints [(vp/wrap-around (q/width) (q/height))]
-                    :drag 0.1})})
+  (let [fps 60
+        n 128]
+    {:system
+     (vp/make-system {:particles (repeatedly n make-insect)
+                      :mechanics [(flock-separation 24.0 2.0)
+                                  (jumping 36.0 (/ 2.0 (* fps n)))]
+                      :constraints [(vp/wrap-around (q/width) (q/height))]
+                      :drag 0.1})}))
 
 (defn update-state [{:keys [system] :as state}]
   (vp/timestep system 2)
