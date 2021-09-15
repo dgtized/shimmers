@@ -34,7 +34,7 @@
         (q/set-uniform shader "diffusionB" 0.2)
         (q/set-uniform shader "feed" 0.05)
         (q/set-uniform shader "kill" 0.02)
-        (q/set-uniform shader "deltaT" 0.1)
+        (q/set-uniform shader "deltaT" 1.0)
         (q/rect (* -0.5 w) (* -0.5 h) w h))
       (q/with-graphics in-buffer
         (q/image out-buffer 0 0 w h)))
