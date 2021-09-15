@@ -11,9 +11,10 @@
         initial-image (q/create-graphics width height :p2d)]
     (q/with-graphics initial-image
       (q/color-mode :rgb 1.0)
-      (q/background 0.0 1.0 0.0 1.0)
+      (q/background 1.0 0.0 0.0 1.0)
       (q/no-stroke)
-      (q/fill 1.0 1.0 0.0 1.0)
+      (q/fill 0.0 1.0 0.0 1.0)
+      (q/rect (* 0.2 width) (* 0.45 height) (* 0.6 width) (* 0.1 height))
       (q/ellipse (/ width 2) (/ height 2) 32 32))
     {:image-size [width height]
      :in-buffer initial-image
