@@ -4,16 +4,17 @@ precision mediump float;
 
 varying vec2 vTexCoord;
 
+uniform vec2 resolution;
+uniform sampler2D concentrations;
+
 uniform float diffusionA;
 uniform float diffusionB;
 uniform float feed;
 uniform float kill;
 uniform float deltaT;
-uniform sampler2D concentrations;
-uniform vec2 texelSize;
 
 // Translated from https://ciphrd.com/2019/08/24/reaction-diffusion-on-shader/
-vec3 laplacian(sampler2D tex, vec2 pos) {
+vec3 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
   vec3 ab = vec3(0,0,0);
 
   ab += texture2D(tex, pos + vec2(-1.0,-1.0)*texelSize).rgb * 0.05;
@@ -35,7 +36,7 @@ void main() {
   vec4 current = texture2D(concentrations, pos);
   float a = current.r;
   float b = current.g;
-  vec3 lp = laplacian(concentrations, pos);
+  vec3 lp = laplacian(concentrations, pos, vec2(1.0/resolution.x,1.0/resolution.y));
 
   float a2 = a + (diffusionA*lp.x - a*b*b + feed*(1.0-a)) * deltaT;
   float b2 = b + (diffusionB*lp.y - a*b*b - (kill + feed)*b) * deltaT;
