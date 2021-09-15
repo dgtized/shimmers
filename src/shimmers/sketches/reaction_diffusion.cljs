@@ -37,6 +37,7 @@
     state))
 
 (defn draw [{:keys [in-buffer]}]
+  (q/background 1.0)
   (q/image in-buffer 0 0 (q/width) (q/height)))
 
 (sketch/defquil reaction-diffusion
