@@ -19,7 +19,9 @@
      :in-buffer initial-image
      :out-buffer (q/create-graphics width height :p3d)
      :shader (q/load-shader "shaders/reaction-diffusion.frag.c"
-                            "shaders/reaction-diffusion.vert.c")}))
+                            "shaders/reaction-diffusion.vert.c")
+     :display-shader (q/load-shader "shaders/reaction-diffusion.display.frag.c"
+                                    "shaders/reaction-diffusion.vert.c")}))
 
 
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
@@ -40,12 +42,16 @@
         (q/image out-buffer 0 0 w h)))
     state))
 
-(defn draw [{:keys [in-buffer]}]
-  (q/image in-buffer 0 0 (q/width) (q/height)))
+(defn draw [{:keys [in-buffer display-shader]}]
+  (when (q/loaded? display-shader)
+    (q/shader display-shader)
+    (q/set-uniform display-shader "image" in-buffer)
+    (q/rect (* -0.5 (q/width)) (* -0.5 (q/width))  (q/width) (q/height))))
 
 (sketch/defquil reaction-diffusion
   :created-at "2021-09-15"
   :size [800 600]
+  :renderer :p3d
   :setup setup
   :update update-state
   :draw draw
