@@ -75,7 +75,7 @@
             shimmers.sketches.radial-mosaic
             shimmers.sketches.random-walk
             shimmers.sketches.ray-marching
-            ;; shimmers.sketches.reaction-diffusion
+            shimmers.sketches.reaction-diffusion
             shimmers.sketches.ring
             shimmers.sketches.ripples
             shimmers.sketches.rolling-shapes

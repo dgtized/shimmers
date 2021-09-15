@@ -33,13 +33,15 @@ vec3 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
 void main() {
   vec2 pos = vTexCoord.xy;
 
+  vec2 texelSize = vec2(1.0/resolution.x,1.0/resolution.y);
+
   vec4 current = texture2D(concentrations, pos);
   float a = current.r;
   float b = current.g;
-  vec3 lp = laplacian(concentrations, pos, vec2(1.0/resolution.x,1.0/resolution.y));
+  vec3 lp = laplacian(concentrations, pos, texelSize);
 
-  float a2 = a + (diffusionA*lp.x - a*b*b + feed*(1.0-a)) * deltaT;
-  float b2 = b + (diffusionB*lp.y - a*b*b - (kill + feed)*b) * deltaT;
+  float a2 = a + (diffusionA*lp.r - a*b*b + feed*(1.0-a)) * deltaT;
+  float b2 = b + (diffusionB*lp.g - a*b*b - (kill + feed)*b) * deltaT;
 
-  gl_FragColor = vec4(a2,b2,0.0,0.0);
+  gl_FragColor = vec4(a2,b2,0.0,1.0);
 }

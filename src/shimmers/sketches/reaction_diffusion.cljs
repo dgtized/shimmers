@@ -6,20 +6,23 @@
             [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
-  (q/color-mode :hsl 1.0)
-  (let [[width height] [128 128]
-        image (q/create-image width height)]
-    (q/background 1.0 0.0 0.0 0.0)
-    (q/no-stroke)
-    (q/fill 0.0 1.0 0.0 1.0)
-    (q/ellipse (/ (q/width) 2) (/ (q/width) 2) 32 32)
-    (q/copy (q/current-graphics) image [0 0 (q/width) (q/height)] [0 0 width height])
+  (q/color-mode :rgb 1.0)
+  (let [[width height] [256 256]
+        initial-image (q/create-graphics width height :p2d)]
+    (q/with-graphics initial-image
+      (q/color-mode :rgb 1.0)
+      (q/background 0.0 1.0 0.0 1.0)
+      (q/no-stroke)
+      (q/fill 1.0 1.0 0.0 1.0)
+      (q/ellipse (/ width 2) (/ height 2) 32 32))
     {:image-size [width height]
-     :in-buffer image
+     :in-buffer initial-image
      :out-buffer (q/create-graphics width height :p3d)
      :shader (q/load-shader "shaders/reaction-diffusion.frag.c"
                             "shaders/reaction-diffusion.vert.c")}))
 
+
+;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
   (let [[w h] image-size]
     (when (q/loaded? shader)
@@ -31,13 +34,13 @@
         (q/set-uniform shader "diffusionB" 0.2)
         (q/set-uniform shader "feed" 0.05)
         (q/set-uniform shader "kill" 0.02)
-        (q/set-uniform shader "deltaT" 1.0)
-        (q/rect 0 0 w h))
-      (q/copy out-buffer in-buffer [0 0 w h] [0 0 w h]))
+        (q/set-uniform shader "deltaT" 0.1)
+        (q/rect (* -0.5 w) (* -0.5 h) w h))
+      (q/with-graphics in-buffer
+        (q/image out-buffer 0 0 w h)))
     state))
 
 (defn draw [{:keys [in-buffer]}]
-  (q/background 1.0)
   (q/image in-buffer 0 0 (q/width) (q/height)))
 
 (sketch/defquil reaction-diffusion
