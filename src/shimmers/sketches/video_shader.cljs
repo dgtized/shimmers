@@ -6,6 +6,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.shader :as shader]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]
             [shimmers.sketch :as sketch :include-macros true]))
@@ -33,13 +34,12 @@
         ;; think?
         mouse (array (- (q/mouse-x) w) (- (* 0.5 h) (q/mouse-y)))]
     (when (q/loaded? shader)
-      (q/shader shader)
-      (q/set-uniform shader "u_resolution" (array w h))
-      (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
-      (q/set-uniform shader "u_mouse" mouse)
-      (q/set-uniform shader "videoTexture" camera)
-      (q/set-uniform shader "u_mode" (get modes (:mode @ui-state)))
-      (q/rect 0 0 w h))))
+      (shader/pass shader [w h]
+                   {"u_resolution" (array w h)
+                    "u_time" (/ (q/millis) 1000.0)
+                    "u_mouse" mouse
+                    "videoTexture" camera
+                    "u_mode" (get modes (:mode @ui-state))}))))
 
 (sketch/defquil video-shader
   :created-at "2021-02-14"
