@@ -75,9 +75,6 @@
     (q/set-pixel trail x y (q/color v' v' v' 1.0)))
   trail)
 
-(defn diffuse [trail amount]
-  (q/image-filter trail :blur amount))
-
 (defn decay [trail width height factor]
   (dotimes [i width]
     (dotimes [j height]
@@ -114,7 +111,6 @@
                     {"resolution" (array width height)
                      "trail" trail
                      "decay" 1.0})
-  ;; (diffuse trail 1)
   (decay trail width height 0.9)
   state)
 
