@@ -3,6 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.shader :as shader]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]))
 
@@ -60,15 +61,14 @@
         {:keys [diffusion-a diffusion-b feed kill delta-t]} @ui-state]
     (when (q/loaded? shader)
       (q/with-graphics out-buffer
-        (q/shader shader)
-        (q/set-uniform shader "resolution" (array w h))
-        (q/set-uniform shader "concentrations" in-buffer)
-        (q/set-uniform shader "diffusionA" diffusion-a)
-        (q/set-uniform shader "diffusionB" diffusion-b)
-        (q/set-uniform shader "feed" feed)
-        (q/set-uniform shader "kill" kill)
-        (q/set-uniform shader "deltaT" delta-t)
-        (q/rect (* -0.5 w) (* -0.5 h) w h))
+        (shader/pass shader [w h]
+                     {"resolution" (array w h)
+                      "concentrations" in-buffer
+                      "diffusionA" diffusion-a
+                      "diffusionB" diffusion-b
+                      "feed" feed
+                      "kill" kill
+                      "deltaT" delta-t}))
       (q/with-graphics in-buffer
         (q/image out-buffer 0 0 w h)))
     state))
@@ -76,11 +76,10 @@
 (defn draw [{:keys [in-buffer display-shader]}]
   (let [{:keys [mode invert]} @ui-state]
     (when (q/loaded? display-shader)
-      (q/shader display-shader)
-      (q/set-uniform display-shader "image" in-buffer)
-      (q/set-uniform display-shader "mode" (get modes mode))
-      (q/set-uniform display-shader "invert" invert)
-      (q/rect (* -0.5 (q/width)) (* -0.5 (q/width))  (q/width) (q/height)))))
+      (shader/pass display-shader [(q/width) (q/height)]
+                   {"image" in-buffer
+                    "mode" (get modes mode)
+                    "invert" invert}))))
 
 (sketch/defquil reaction-diffusion
   :created-at "2021-09-15"
