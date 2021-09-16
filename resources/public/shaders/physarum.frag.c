@@ -4,8 +4,7 @@ precision mediump float;
 
 varying vec2 vTexCoord;
 
-uniform vec2 u_resolution;
-uniform float decay;
+uniform vec2 resolution;
 uniform sampler2D trail;
 
 void kernel(inout vec4 n[9], sampler2D tex, vec2 pos, float w, float h) {
@@ -25,12 +24,12 @@ void main() {
 
   vec2 pos = vTexCoord.xy;
 
-  kernel(n, trail, pos, 1.0/u_resolution.x, 1.0/u_resolution.y);
-
-  vec4 color = vec4(0.0);
+  kernel(n, trail, pos, 1.0/resolution.x, 1.0/resolution.y);
+  float v = 0.0;
   for(int i = 0; i < 9; i++) {
-    color = color + n[i];
+    v += n[i].x;
   }
+  v = v/9.0;
 
-  gl_FragColor = vec4(color.xyz*decay/9.0,decay);
+  gl_FragColor = vec4(v,v,v,1.0);
 }

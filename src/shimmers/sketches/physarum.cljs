@@ -88,10 +88,10 @@
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (q/color-mode :rgb)
+  (q/color-mode :rgb 1.0)
   (let [width 128
         height 128
-        n-particles 4096]
+        n-particles 2048]
     {:size [width height]
      :trail (make-trail width height)
      :buffer (q/create-graphics width height :p3d)
@@ -111,16 +111,15 @@
   (deposit trail particles)
   (q/update-pixels trail)
   (let [[w h] size]
-    ;; (when (q/loaded? shader)
-    ;;   (q/texture-modes)
-    ;;   (q/with-graphics buffer
-    ;;     (q/shader shader)
-    ;;     (q/set-uniform shader "decay" 0.9)
-    ;;     (q/set-uniform shader "trail" trail)
-    ;;     (q/rect 0 0 w h))
-    ;;   (q/with-graphics trail
-    ;;     (q/image buffer 0 0 w h)))
-    (diffuse trail 1)
+    (when (q/loaded? shader)
+      (q/with-graphics buffer
+        (q/shader shader)
+        (q/set-uniform shader "resolution" (array w h))
+        (q/set-uniform shader "trail" trail)
+        (q/rect (* -0.5 w) (* -0.5 h) w h))
+      (q/with-graphics trail
+        (q/image buffer 0 0 w h)))
+    ;; (diffuse trail 1)
     (decay trail width height 0.9)
     state))
 
@@ -129,7 +128,7 @@
 
 (sketch/defquil physarum
   :created-at "2021-07-04"
-  ;; :tags #{:shader}
+  :tags #{:shader}
   :size [800 800]
   :setup setup
   :update update-state
