@@ -7,7 +7,7 @@
 
 (defn setup []
   (q/color-mode :rgb 1.0)
-  (let [scale 0.66
+  (let [scale 1.0
         [width height] [(* scale (q/width)) (* scale (q/height))]
         initial-image (q/create-graphics width height :p2d)]
     (q/with-graphics initial-image
