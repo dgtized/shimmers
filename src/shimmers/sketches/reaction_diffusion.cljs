@@ -20,7 +20,7 @@
     {:image-size [width height]
      :in-buffer initial-image
      :out-buffer (q/create-graphics width height :p3d)
-     :shader (q/load-shader "shaders/reaction-diffusion.frag.c"
+     :shader (q/load-shader "shaders/reaction-diffusion.main.frag.c"
                             "shaders/reaction-diffusion.vert.c")
      :display-shader (q/load-shader "shaders/reaction-diffusion.display.frag.c"
                                     "shaders/reaction-diffusion.vert.c")}))
