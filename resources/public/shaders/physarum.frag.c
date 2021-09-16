@@ -6,17 +6,21 @@ varying vec2 vTexCoord;
 
 uniform vec2 resolution;
 uniform sampler2D trail;
+uniform float decay;
 
-void kernel(inout vec4 n[9], sampler2D tex, vec2 pos, float w, float h) {
-  n[0] = texture2D(tex, pos + vec2(-w,-h));
-  n[1] = texture2D(tex, pos + vec2(0.0, -h));
-  n[2] = texture2D(tex, pos + vec2(w, -h));
-  n[3] = texture2D(tex, pos + vec2(-w, 0.0));
-  n[4] = texture2D(tex, pos);
-  n[5] = texture2D(tex, pos + vec2(w, 0.0));
-  n[6] = texture2D(tex, pos + vec2(-w, h));
-  n[7] = texture2D(tex, pos + vec2(0.0, h));
-  n[8] = texture2D(tex, pos + vec2(w, h));
+vec4 blur(inout vec4 n[9], sampler2D tex, vec2 pos, vec2 texel) {
+  vec4 color = vec4(0.0);
+  color += texture2D(tex, pos + vec2(-1.0,-1.0) * texel) * 1.0/16.0;
+  color += texture2D(tex, pos + vec2(0.0, -1.0) * texel) * 2.0/16.0;
+  color += texture2D(tex, pos + vec2(1.0, -1.0) * texel) * 1.0/16.0;
+  color += texture2D(tex, pos + vec2(-1.0, 0.0) * texel) * 2.0/16.0;
+  color += texture2D(tex, pos + vec2(0.0,0.0) * texel) * 4.0/16.0;
+  color += texture2D(tex, pos + vec2(1.0, 0.0) * texel) * 2.0/16.0;
+  color += texture2D(tex, pos + vec2(-1.0, 1.0) * texel) * 1.0/16.0;
+  color += texture2D(tex, pos + vec2(0.0, 1.0) * texel) * 2.0/16.0;
+  color += texture2D(tex, pos + vec2(1.0, 1.0) * texel) * 1.0/16.0;
+
+  return color;
 }
 
 void main() {
@@ -25,12 +29,10 @@ void main() {
   vec2 pos = vTexCoord.xy;
   pos.y = 1.0 - pos.y;
 
-  kernel(n, trail, pos, 1.0/resolution.x, 1.0/resolution.y);
-  float v = 0.0;
-  for(int i = 0; i < 9; i++) {
-    v += n[i].x;
-  }
-  v = v/9.0;
+  vec2 texelSize = vec2(1.0/resolution.x, 1.0/resolution.y);
+
+  vec4 blurred = blur(n, trail, pos, texelSize);
+  float v = blurred.x*decay;
 
   gl_FragColor = vec4(v,v,v,1.0);
 }

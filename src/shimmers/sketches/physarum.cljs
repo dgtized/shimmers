@@ -116,6 +116,7 @@
         (q/shader shader)
         (q/set-uniform shader "resolution" (array w h))
         (q/set-uniform shader "trail" trail)
+        (q/set-uniform shader "decay" 1.0)
         (q/rect (* -0.5 w) (* -0.5 h) w h))
       (q/with-graphics trail
         (q/image buffer 0 0 w h)))
