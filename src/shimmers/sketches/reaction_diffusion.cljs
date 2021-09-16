@@ -48,7 +48,8 @@
   (when (q/loaded? display-shader)
     (q/shader display-shader)
     (q/set-uniform display-shader "image" in-buffer)
-    (q/set-uniform display-shader "mode" 5)
+    (q/set-uniform display-shader "mode" 0)
+    (q/set-uniform display-shader "invert" false)
     (q/rect (* -0.5 (q/width)) (* -0.5 (q/width))  (q/width) (q/height))))
 
 (sketch/defquil reaction-diffusion
