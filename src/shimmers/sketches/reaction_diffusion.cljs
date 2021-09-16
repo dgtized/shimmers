@@ -12,6 +12,7 @@
     (q/with-graphics initial-image
       (q/color-mode :rgb 1.0)
       (q/background 1.0 0.0 0.0 1.0)
+      (q/no-fill)
       (q/stroke 0.0 1.0 0.0 1.0)
       (q/rect (* 0.3 width) (* 0.4 height) (* 0.4 width) (* 0.2 height))
       (q/ellipse (/ width 2) (/ height 2) 16 16))
@@ -36,7 +37,7 @@
         (q/set-uniform shader "diffusionB" 0.1)
         (q/set-uniform shader "feed" 0.065)
         (q/set-uniform shader "kill" 0.062)
-        (q/set-uniform shader "deltaT" 0.9)
+        (q/set-uniform shader "deltaT" 1.0)
         (q/rect (* -0.5 w) (* -0.5 h) w h))
       (q/with-graphics in-buffer
         (q/image out-buffer 0 0 w h)))
