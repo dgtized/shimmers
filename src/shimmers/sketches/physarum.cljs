@@ -61,10 +61,9 @@
 
 (defn make-trail [width height]
   (let [img (q/create-graphics width height :p2d)]
-    (dotimes [i width]
-      (dotimes [j height]
-        (q/set-pixel img i j 0)))
-    (q/update-pixels img)
+    (q/with-graphics img
+      (q/color-mode :rgb 1.0)
+      (q/background 0.0 1.0))
     img))
 
 (defn deposit [trail particles]
