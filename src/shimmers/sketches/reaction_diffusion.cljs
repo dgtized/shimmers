@@ -50,6 +50,7 @@
 
 (sketch/defquil reaction-diffusion
   :created-at "2021-09-15"
+  :tags #{:shader}
   :size [800 600]
   :renderer :p3d
   :setup setup
