@@ -93,8 +93,7 @@
   (let [width 100
         height 100
         n-particles 1024]
-    {:size [width height]
-     :trail (make-trail width height)
+    {:trail (make-trail width height)
      :buffer (q/create-graphics width height :p3d)
      :shader (q/load-shader "shaders/physarum.frag.c"
                             "shaders/physarum.vert.c")
@@ -106,23 +105,18 @@
                                  (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))}))
 
 (defn update-state
-  [{:keys [size particles trail buffer shader width height] :as state}]
+  [{:keys [particles trail buffer shader width height] :as state}]
   (doseq [p particles]
     (move! p trail width height))
   (deposit trail particles)
   (q/update-pixels trail)
-  (let [[w h] size]
-    (when (q/loaded? shader)
-      (q/with-graphics buffer
-        (shader/pass shader [w h]
-                     {"resolution" (array w h)
-                      "trail" trail
-                      "decay" 1.0}))
-      (q/with-graphics trail
-        (q/image buffer 0 0 w h)))
-    ;; (diffuse trail 1)
-    (decay trail width height 0.9)
-    state))
+  (shader/transform shader buffer trail [width height]
+                    {"resolution" (array width height)
+                     "trail" trail
+                     "decay" 1.0})
+  ;; (diffuse trail 1)
+  (decay trail width height 0.9)
+  state)
 
 (defn draw [{:keys [trail]}]
   (q/image trail 0 0 (q/width) (q/height)))
