@@ -6,20 +6,23 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]))
 
+(defn starting-conditions [image width height]
+  (q/with-graphics image
+    (q/color-mode :rgb 1.0)
+    (q/background 1.0 0.0 0.0 1.0)
+    (q/no-fill)
+    (q/stroke 0.0 1.0 0.0 1.0)
+    (q/rect (* 0.3 width) (* 0.4 height) (* 0.4 width) (* 0.2 height))
+    (q/ellipse (/ width 2) (/ height 2) 16 16))
+  image)
+
 (defn setup []
   (q/color-mode :rgb 1.0)
   (let [scale 1.0
-        [width height] [(* scale (q/width)) (* scale (q/height))]
-        initial-image (q/create-graphics width height :p2d)]
-    (q/with-graphics initial-image
-      (q/color-mode :rgb 1.0)
-      (q/background 1.0 0.0 0.0 1.0)
-      (q/no-fill)
-      (q/stroke 0.0 1.0 0.0 1.0)
-      (q/rect (* 0.3 width) (* 0.4 height) (* 0.4 width) (* 0.2 height))
-      (q/ellipse (/ width 2) (/ height 2) 16 16))
+        [width height] [(* scale (q/width)) (* scale (q/height))]]
     {:image-size [width height]
-     :in-buffer initial-image
+     :in-buffer (starting-conditions (q/create-graphics width height :p2d)
+                                     width height)
      :out-buffer (q/create-graphics width height :p3d)
      :shader (q/load-shader "shaders/reaction-diffusion.main.frag.c"
                             "shaders/reaction-diffusion.vert.c")
