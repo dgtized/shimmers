@@ -1,5 +1,6 @@
 (ns shimmers.common.ui.controls
-  (:require [goog.dom :as dom]
+  (:require [clojure.edn :as edn]
+            [goog.dom :as dom]
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [shimmers.common.sequence :as cs]))
@@ -55,6 +56,16 @@
      [:input {:type "range" :value value :min lower :max upper
               :step (or step 1)
               :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
+
+(defn numeric [settings label field-ref [lower upper step]]
+  (let [value (get-in @settings field-ref)]
+    [:div.label-set.numeric {:key (str "numeric-" field-ref)}
+     [:label label]
+     [:input {:type "number" :value value
+              :min lower :max upper :step step
+              :on-change (fn [e]
+                           (swap! settings assoc-in field-ref
+                                  (edn/read-string (.-target.value e))))}]]))
 
 (defn details [summary & body]
   (into [:details [:summary summary]] body))

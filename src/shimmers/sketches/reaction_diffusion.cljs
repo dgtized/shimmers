@@ -26,31 +26,45 @@
      :display-shader (q/load-shader "shaders/reaction-diffusion.display.frag.c"
                                     "shaders/reaction-diffusion.vert.c")}))
 
-
-(defonce ui-state (ctrl/state {:mode :abs-difference
-                               :invert false}))
 (def modes {:abs-difference 0
             :concentration-a 1
             :concentration-b 2})
 
+(defonce ui-state
+  (ctrl/state {:diffusion-a 1.0
+               :diffusion-b 0.1
+               :feed 0.065
+               :kill 0.062
+               :delta-t 1.0
+               :mode :abs-difference
+               :invert false}))
+
 (defn controls []
   [:div
-   (ctrl/change-mode ui-state (keys modes) :mode)
-   (ctrl/checkbox ui-state "Invert" [:invert])])
+   [:div [:h3 "Parameters"]
+    (ctrl/numeric ui-state "Diffusion A" [:diffusion-a] [0.0 1.0 0.001])
+    (ctrl/numeric ui-state "Diffusion B" [:diffusion-b] [0.0 1.0 0.001])
+    (ctrl/numeric ui-state "Feed Rate" [:feed] [0.0 1.0 0.001])
+    (ctrl/numeric ui-state "Kill Rate" [:kill] [0.0 1.0 0.001])
+    (ctrl/numeric ui-state "𝚫t" [:delta-t] [0.0 2.0 0.001])]
+   [:div [:h3 "Display Mode"]
+    (ctrl/change-mode ui-state (keys modes) :mode)
+    (ctrl/checkbox ui-state "Invert" [:invert])]])
 
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
-  (let [[w h] image-size]
+  (let [[w h] image-size
+        {:keys [diffusion-a diffusion-b feed kill delta-t]} @ui-state]
     (when (q/loaded? shader)
       (q/with-graphics out-buffer
         (q/shader shader)
         (q/set-uniform shader "resolution" (array w h))
         (q/set-uniform shader "concentrations" in-buffer)
-        (q/set-uniform shader "diffusionA" 1.0)
-        (q/set-uniform shader "diffusionB" 0.1)
-        (q/set-uniform shader "feed" 0.065)
-        (q/set-uniform shader "kill" 0.062)
-        (q/set-uniform shader "deltaT" 1.0)
+        (q/set-uniform shader "diffusionA" diffusion-a)
+        (q/set-uniform shader "diffusionB" diffusion-b)
+        (q/set-uniform shader "feed" feed)
+        (q/set-uniform shader "kill" kill)
+        (q/set-uniform shader "deltaT" delta-t)
         (q/rect (* -0.5 w) (* -0.5 h) w h))
       (q/with-graphics in-buffer
         (q/image out-buffer 0 0 w h)))

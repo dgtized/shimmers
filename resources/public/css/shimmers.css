@@ -43,6 +43,13 @@ canvas {
   justify-content: space-between;
 }
 
+.numeric {
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 input[type=checkbox] {
   height: 1em;
 }
