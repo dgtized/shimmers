@@ -89,8 +89,8 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :rgb 1.0)
-  (let [width 256
-        height 256
+  (let [width 100
+        height 100
         n-particles 1024]
     {:size [width height]
      :trail (make-trail width height)
