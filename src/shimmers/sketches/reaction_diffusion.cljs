@@ -3,6 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
@@ -26,6 +27,17 @@
                                     "shaders/reaction-diffusion.vert.c")}))
 
 
+(defonce ui-state (ctrl/state {:mode :abs-difference
+                               :invert false}))
+(def modes {:abs-difference 0
+            :concentration-a 1
+            :concentration-b 2})
+
+(defn controls []
+  [:div
+   (ctrl/change-mode ui-state (keys modes) :mode)
+   (ctrl/checkbox ui-state "Invert" [:invert])])
+
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
   (let [[w h] image-size]
@@ -45,16 +57,18 @@
     state))
 
 (defn draw [{:keys [in-buffer display-shader]}]
-  (when (q/loaded? display-shader)
-    (q/shader display-shader)
-    (q/set-uniform display-shader "image" in-buffer)
-    (q/set-uniform display-shader "mode" 0)
-    (q/set-uniform display-shader "invert" false)
-    (q/rect (* -0.5 (q/width)) (* -0.5 (q/width))  (q/width) (q/height))))
+  (let [{:keys [mode invert]} @ui-state]
+    (when (q/loaded? display-shader)
+      (q/shader display-shader)
+      (q/set-uniform display-shader "image" in-buffer)
+      (q/set-uniform display-shader "mode" (get modes mode))
+      (q/set-uniform display-shader "invert" invert)
+      (q/rect (* -0.5 (q/width)) (* -0.5 (q/width))  (q/width) (q/height)))))
 
 (sketch/defquil reaction-diffusion
   :created-at "2021-09-15"
   :tags #{:shader}
+  :on-mount (fn [] (ctrl/mount controls))
   :size [800 600]
   :renderer :p3d
   :setup setup
