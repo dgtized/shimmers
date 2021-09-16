@@ -57,7 +57,7 @@
     :sensor-distance 9.0
     :rotation (/ Math/PI 4) ;; 45 degrees
     :step-size 1.0
-    :deposit 128}))
+    :deposit 0.5}))
 
 (defn make-trail [width height]
   (let [img (q/create-graphics width height :p2d)]
@@ -70,8 +70,8 @@
   (doseq [{:keys [pos deposit]} particles
           :let [[x y] pos
                 v (first (q/get-pixel trail x y))
-                v' (+ v deposit)]]
-    (q/set-pixel trail x y v'))
+                v' (tm/clamp (+ v deposit) 0.0 1.0)]]
+    (q/set-pixel trail x y (q/color v' v' v' 1.0)))
   trail)
 
 (defn diffuse [trail amount]
@@ -89,9 +89,9 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :rgb 1.0)
-  (let [width 128
-        height 128
-        n-particles 2048]
+  (let [width 256
+        height 256
+        n-particles 1024]
     {:size [width height]
      :trail (make-trail width height)
      :buffer (q/create-graphics width height :p3d)
