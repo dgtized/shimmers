@@ -3,6 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.shader :as shader]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
@@ -113,11 +114,10 @@
   (let [[w h] size]
     (when (q/loaded? shader)
       (q/with-graphics buffer
-        (q/shader shader)
-        (q/set-uniform shader "resolution" (array w h))
-        (q/set-uniform shader "trail" trail)
-        (q/set-uniform shader "decay" 1.0)
-        (q/rect (* -0.5 w) (* -0.5 h) w h))
+        (shader/pass shader [w h]
+                     {"resolution" (array w h)
+                      "trail" trail
+                      "decay" 1.0}))
       (q/with-graphics trail
         (q/image buffer 0 0 w h)))
     ;; (diffuse trail 1)
