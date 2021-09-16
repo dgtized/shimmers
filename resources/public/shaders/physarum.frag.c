@@ -23,6 +23,7 @@ void main() {
   vec4 n[9];
 
   vec2 pos = vTexCoord.xy;
+  pos.y = 1.0 - pos.y;
 
   kernel(n, trail, pos, 1.0/resolution.x, 1.0/resolution.y);
   float v = 0.0;
