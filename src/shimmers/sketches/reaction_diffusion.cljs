@@ -59,18 +59,14 @@
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
   (let [[w h] image-size
         {:keys [diffusion-a diffusion-b feed kill delta-t]} @ui-state]
-    (when (q/loaded? shader)
-      (q/with-graphics out-buffer
-        (shader/pass shader [w h]
-                     {"resolution" (array w h)
-                      "concentrations" in-buffer
-                      "diffusionA" diffusion-a
-                      "diffusionB" diffusion-b
-                      "feed" feed
-                      "kill" kill
-                      "deltaT" delta-t}))
-      (q/with-graphics in-buffer
-        (q/image out-buffer 0 0 w h)))
+    (shader/transform shader out-buffer in-buffer [w h]
+                      {"resolution" (array w h)
+                       "concentrations" in-buffer
+                       "diffusionA" diffusion-a
+                       "diffusionB" diffusion-b
+                       "feed" feed
+                       "kill" kill
+                       "deltaT" delta-t})
     state))
 
 (defn draw [{:keys [in-buffer display-shader]}]
