@@ -27,7 +27,8 @@ void main() {
   vec2 pos = vTexCoord.xy;
   pos.y = 1.0 - pos.y;
 
-  vec2 texelSize = vec2(1.0/resolution.x, 1.0/resolution.y);
+  float scale = 1.0;
+  vec2 texelSize = vec2(scale/resolution.x, scale/resolution.y);
 
   float v = blur(trail, pos, texelSize).x * decay;
 
