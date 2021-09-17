@@ -65,11 +65,16 @@
         {:keys [droplets diffusion-a diffusion-b feed kill delta-t]} @ui-state]
 
     (when (and droplets (p/chance 0.01))
-      (let [r (rand)
-            [a b] (if (> r 0.5) [0.0 1.0] [1.0 0.0])]
+      (let [size (+ 4 (* 38 (rand)))]
         (q/with-graphics in-buffer
-          (q/stroke a b 0.0 1.0)
-          (cq/circle (* w (rand)) (* h (rand)) (+ 4 (* 28 (rand)))))))
+          (if (< (rand) 0.5)
+            (do
+              (q/no-fill)
+              (q/stroke 0.0 1.0 0.0 1.0))
+            (do
+              (q/no-stroke)
+              (q/fill 1.0 0.0 0.0 1.0)))
+          (cq/circle (* w (rand)) (* h (rand)) size))))
 
     (shader/transform shader out-buffer in-buffer [w h]
                       {"resolution" (array w h)
