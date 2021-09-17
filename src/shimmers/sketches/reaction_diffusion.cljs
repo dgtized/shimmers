@@ -3,8 +3,10 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.common.shader :as shader]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]))
 
 (defn starting-conditions [image width height]
@@ -35,7 +37,8 @@
             :concentration-b 2})
 
 (defonce ui-state
-  (ctrl/state {:diffusion-a 1.0
+  (ctrl/state {:droplets false
+               :diffusion-a 1.0
                :diffusion-b 0.1
                :feed 0.065
                :kill 0.062
@@ -45,6 +48,7 @@
 
 (defn controls []
   [:div
+   [:div (ctrl/checkbox ui-state "Add Droplets Randomly" [:droplets])]
    [:div [:h3 "Parameters"]
     (ctrl/numeric ui-state "Diffusion A" [:diffusion-a] [0.0 1.0 0.001])
     (ctrl/numeric ui-state "Diffusion B" [:diffusion-b] [0.0 1.0 0.001])
@@ -58,7 +62,15 @@
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
   (let [[w h] image-size
-        {:keys [diffusion-a diffusion-b feed kill delta-t]} @ui-state]
+        {:keys [droplets diffusion-a diffusion-b feed kill delta-t]} @ui-state]
+
+    (when (and droplets (p/chance 0.01))
+      (let [r (rand)
+            [a b] (if (> r 0.5) [0.0 1.0] [1.0 0.0])]
+        (q/with-graphics in-buffer
+          (q/stroke a b 0.0 1.0)
+          (cq/circle (* w (rand)) (* h (rand)) (+ 4 (* 28 (rand)))))))
+
     (shader/transform shader out-buffer in-buffer [w h]
                       {"resolution" (array w h)
                        "concentrations" in-buffer
