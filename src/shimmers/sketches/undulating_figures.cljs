@@ -11,12 +11,9 @@
   (q/color-mode :hsl 1.0)
   {})
 
-(defn update-state [state]
-  state)
-
 ;; How to make interlace overlap so one figure is drawn with over draw from the
 ;; left, and the other from the right, so all the figures are in the overlap?
-(defn draw [state]
+(defn draw [_]
   (q/background 1.0)
   (q/no-stroke)
   (q/no-fill)
@@ -47,6 +44,5 @@
   :created-at "2021-06-05"
   :size [1024 768]
   :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])

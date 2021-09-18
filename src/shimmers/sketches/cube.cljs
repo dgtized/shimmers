@@ -45,7 +45,7 @@
 (defn setup []
   [])
 
-(defn update-state [state]
+(defn update-state [_]
   (let [fc (q/frame-count)
         theta (/ fc 100)]
     [(cube [100 100 0] [theta 0 0] [50 50 50])

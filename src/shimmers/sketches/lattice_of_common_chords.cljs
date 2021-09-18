@@ -101,7 +101,7 @@
                        (geom/scale-size 0.3)
                        (geom/center (gv/vec2 0.5 0.5)))]
       (fn [_] (geom/random-point triangle))) 1
-    (fn [r] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
+    (fn [_] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
     (fn [r] (repeatedly 2 #(q/random r (- 1 r)))) 1.5}))
 
 (defn setup []

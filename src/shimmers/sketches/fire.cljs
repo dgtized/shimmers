@@ -37,7 +37,7 @@
         :when (not= 0 dx dy)]
     [(+ x dx) (+ y dy)]))
 
-(defn update-fire [{:keys [fire fuel size] :as state}]
+(defn update-fire [{:keys [fire fuel] :as state}]
   (let [[xdim ydim] (nd/shape fire)]
     (loop/c-for [x 0 (< x xdim) (inc x)
                  y 0 (< y ydim) (inc y)]

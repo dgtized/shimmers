@@ -55,7 +55,7 @@
     {:x [(reduce min xs) (reduce max xs)]
      :y [(reduce min xs) (reduce max xs)]}))
 
-(defn draw [{:keys [grid ants] :as state}]
+(defn draw [{:keys [grid]}]
   (q/background 255)
   (q/fill 0)
   (q/rect-mode :center)
