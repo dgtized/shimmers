@@ -114,7 +114,7 @@
 
 ;; Re-enable growth of nearby circles after cull?
 (defn cull-circles [{:keys [circles quadtree] :as state} p]
-  (let [culled (filter #(< (rand) p) circles)]
+  (let [culled (random-sample p circles)]
     (assoc state :circles (remove (set culled) circles)
            :quadtree (reduce geom/delete-point quadtree (map :p culled)))))
 
