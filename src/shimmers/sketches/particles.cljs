@@ -24,10 +24,10 @@
      ;; :color (color/random)
      :color (color/random-gradient :blue-cyan)}))
 
-(defn stokes-drag [velocity]
+(defn stokes-drag
   "Viscous resistance is a negative force proportional to velocity.
-From https://en.wikipedia.org/wiki/Drag_(physics)
-"
+  From https://en.wikipedia.org/wiki/Drag_(physics)"
+  [velocity]
   ;; (v/add velocity (v/scale velocity -0.1))
   (v/scale velocity 0.90))
 
@@ -56,7 +56,7 @@ From https://en.wikipedia.org/wiki/Drag_(physics)
     (v/add wind brownian)))
 
 (defn update-particle
-  [{:keys [position velocity acceleration mass] :as particle}]
+  [{:keys [position velocity acceleration] :as particle}]
   (let [new-velocity (stokes-drag (v/add velocity acceleration))
         new-position (v/add position new-velocity)
         wrapped-position (v/wrap2d new-position (q/width) (q/height))]
