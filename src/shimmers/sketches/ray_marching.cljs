@@ -61,12 +61,11 @@
                              25 50)]
         segments (mapcat shape-segments shapes)]
 
-    (doseq [angle (sm/range-subdivided tm/TWO_PI 200)
-            segment segments]
+    (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
       (let [origin (mouse-origin)
             [x y] origin
             ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
-        (if-let [intersection (closest-intersection ray segments)]
+        (when-let [intersection (closest-intersection ray segments)]
           (q/line origin intersection))))
     (doseq [shape shapes]
       (cq/draw-shape shape))))
