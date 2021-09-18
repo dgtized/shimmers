@@ -20,11 +20,11 @@
   (q/stroke 255 128)
   (let [noise (q/noise 0 (/ (q/frame-count) 1000))]
     ;; (q/print-every-n-millisec 500 noise)
-    (dotimes [i (q/round (q/random (* 8 noise)))]
+    (dotimes [_ (rand-int (* 8 noise))]
       (rain noise))))
 
 (sketch/defquil precipitation
   :created-at "2021-01-19"
-  :size [600 400]
+  :size [800 600]
   :draw draw
   :middleware [m/fun-mode framerate/mode])
