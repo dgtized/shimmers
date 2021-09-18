@@ -22,9 +22,9 @@
 
 ;; TODO: implement nearest neighbors of radius and show points from mouse press position
 ;; pausing for now as thi.ng/geom has a quadtree library I can use.
-(defn nearest-neighbor
-  [tree point radius]
-  )
+;; (defn nearest-neighbor
+;;   [tree point radius]
+;;   )
 
 (defn example []
   (map (fn [[x y]] [(* x 40) (- 400 (* y 40))])
@@ -66,7 +66,7 @@
       (draw-tree lesser (assoc bounds next-axis [nlower axis-bound]))
       (draw-tree greater (assoc bounds next-axis [axis-bound nupper])))))
 
-(defn draw [{:keys [points] :as state}]
+(defn draw [{:keys [points]}]
   (q/background "white")
   (q/stroke "black")
   ;; (q/fill "black")
