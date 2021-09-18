@@ -50,6 +50,11 @@
   {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
    :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
 
+  ;; clj -Mclj-kondo --lint src
+  :clj-kondo
+  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.09.15"}}
+   :main-opts ["-m" "clj-kondo.main"]}
+
   :test
   {:extra-paths ["test"]
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}

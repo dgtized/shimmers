@@ -51,3 +51,6 @@ jobs:
 
       - name: Test
         run: bin/kaocha
+
+      - name: Lint
+        run: bin/lint
