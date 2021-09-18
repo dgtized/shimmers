@@ -2,8 +2,9 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
             [shimmers.macros.loop :as loop :include-macros true]
+            [shimmers.math.vector :as v]
+            [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.ndarray.core :as nd]))
 
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
@@ -22,7 +23,7 @@
 
 (defn make-lattice [width height]
   (let [zeros (repeatedly (* width height) (fn [] (float 0)))]
-    (-> #(nd/ndarray :float32 zeros [width height])
+    (-> (fn [_] (nd/ndarray :float32 zeros [width height]))
         (map (range 9))
         array)))
 
@@ -73,6 +74,7 @@
         (/ (* (/ 9 2) (* eiu eiu)) c2)
         (- (/ (* (/ 3 2) (v/dot velocity velocity)) c2))))))
 
+#_:clj-kondo/ignore
 (defn equilibrium-distribution
   "Denoted as f_i^eq(x,t) = w_ip + p*s_i(u(x,t))"
   [lattice position direction density velocity]
@@ -116,14 +118,13 @@
 (defn update-state [state]
   state)
 
-(defn draw [state]
+(defn draw [_]
   )
 
-(defn ^:export run-sketch []
-  (q/defsketch fluid
-    :host "quil-host"
-    :size [100 100]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode]))
+(sketch/defquil fluid
+  :created-at "2020-10-29"
+  :size [100 100]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
