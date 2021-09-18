@@ -32,7 +32,7 @@
         (geom/translate vertex)
         (geom/translate offset))))
 
-(defn update-state [{:keys [t] :as state}]
+(defn update-state [state]
   (-> state (update :t + 0.05)))
 
 (defn draw [{:keys [shapes t]}]
