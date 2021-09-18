@@ -2,6 +2,7 @@
   "Loosely derived from Coding Challenge #24: Perlin Noise Flow Field
   https://www.youtube.com/watch?v=BjoM9oKOAKY"
   (:require [quil.core :as q :include-macros true]
+            [quil.sketch]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.particle-system :as particles]

@@ -10,7 +10,6 @@
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
 

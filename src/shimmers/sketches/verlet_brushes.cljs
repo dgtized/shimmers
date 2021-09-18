@@ -4,13 +4,12 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.physics.core :as physics]
-            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.math.core :as tm]))
 
 (defn make-particle []
   ;; physics/particle sets initial previous to 0,0
