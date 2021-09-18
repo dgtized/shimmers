@@ -1,0 +1,2 @@
+{:lint-as {shimmers.sketch/defquil clj-kondo.lint-as/def-catch-all
+           shimmers.sketch/defsvg clj-kondo.lint-as/def-catch-all}}
