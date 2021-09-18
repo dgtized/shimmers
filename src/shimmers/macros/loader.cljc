@@ -1,6 +1,6 @@
 (ns shimmers.macros.loader
   (:require [clojure.string :as str]
-            [cljs.analyzer :as ana]
+            ;; [cljs.analyzer :as ana]
             [cljs.analyzer.api :as ana-api]))
 
 (defn namespace-to-id [namespace]
