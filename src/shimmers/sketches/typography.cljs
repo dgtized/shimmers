@@ -40,7 +40,7 @@
           (cond
             (> (+ @x text-width) (+ 20 (q/width)))
             (do (swap! y + 20) (reset! x starty))
-            (or (and (> yset 0) (>= @x starty) (>= @x 150)))
+            (and (> yset 0) (>= @x starty) (>= @x 150))
             (swap! x - (rand-nth [0 30 50 50]))
             :else
             (swap! x + (rand-nth [-10 50 text-width text-width 100])))
