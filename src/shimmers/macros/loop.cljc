@@ -51,6 +51,7 @@
       `(c-for ~next-group ~(do-loop group body))
       (do-loop group body))))
 
+#_:clj-kondo/ignore
 (comment (require-macros '[shimmers.macros.loop :as loop])
          (loop/downto [y (dec 5) 0] (println y))
          (loop/upto [x 0 4] (println x))
