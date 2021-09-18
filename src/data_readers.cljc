@@ -5,5 +5,7 @@
 ;; TODO: investigate warnings about:
 ;; [Figwheel:SEVERE] java.lang.RuntimeException: Can't embed object in code, maybe print-dup not defined: [D@5b94c677
 ;; when used at runtime.
+
+#_:clj-kondo/ignore
 {vec2 thi.ng.geom.vector/vec2
  vec3 thi.ng.geom.vector/vec3}
