@@ -8,6 +8,9 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]))
 
+(defn turn-right [dir] (+ dir (/ Math/PI 2)))
+(defn turn-left [dir] (- dir (/ Math/PI 2)))
+
 (comment
   ;; Would like to use non-floating point coords but it appears to break
   ;; the "unzipping" event, not sure how to find that otherwise.
@@ -18,9 +21,6 @@
 
   (defn turn-right [[x y]] (v/vec2 y (- x)))
   (defn turn-left [[x y]] (v/vec2 (- y) x)))
-
-(defn turn-right [dir] (+ dir (/ Math/PI 2)))
-(defn turn-left [dir] (- dir (/ Math/PI 2)))
 
 (def default-grid-cell false)
 
