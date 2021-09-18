@@ -1,7 +1,7 @@
 (ns shimmers.math.deterministic-random
   "Provides a shared, seeded random number generator for deterministic procedural
   generation."
-  (:refer-clojure :exclude [rand-nth])
+  (:refer-clojure :exclude [rand-nth random-sample])
   (:require [clojure.test.check.random :as tcr]
             [shimmers.common.sequence :as cs]
             [shimmers.math.vector :as v]
@@ -63,6 +63,11 @@
   a weighted random selection."
   [f xs]
   (weighted (cs/mapping f xs)))
+
+(defn random-sample
+  "Returns items from coll with probability of prob (0.0 - 1.0)."
+  [prob coll]
+  (filter (fn [_] (< (random-double) prob)) coll))
 
 (defn map-random-sample
   "Apply `xf` to the subset of `coll` selected with probability density `pf` for

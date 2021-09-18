@@ -15,7 +15,7 @@
   (q/end-shape))
 
 (defn curly-line [a b]
-  (for [t (remove #(dr/chance 0.6) (range 0 1.0 0.03))
+  (for [t (dr/random-sample 0.4 (range 0 1.0 0.03))
         :let [point (tm/mix a b t)]]
     (if (dr/chance (* 0.08 t))
       (tm/+ point (dr/randvec2 0.05))
