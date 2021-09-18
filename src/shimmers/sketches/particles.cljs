@@ -70,7 +70,7 @@
 (defn make-user-interface [{:keys [ui] :as state}]
   (let [forces (-> (quil.sketch/current-applet)
                    (.createCheckbox "Draw Forces" (:draw-forces @ui)))
-        background-div (-> (quil.sketch/current-applet) (.createDiv "Background Opacity"))
+        _ (-> (quil.sketch/current-applet) (.createDiv "Background Opacity"))
         background (-> (quil.sketch/current-applet)
                        (.createSlider 0 256 (:opacity @ui) 1))]
     ;; Use https://p5js.org/reference/#/p5/changed to toggle :draw-forces
