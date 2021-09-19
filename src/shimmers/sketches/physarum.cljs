@@ -73,13 +73,15 @@
                 v (first (q/get-pixel trail x y))
                 v' (tm/clamp (+ v deposit) 0.0 1.0)]]
     (q/set-pixel trail x y (q/color v' v' v' 1.0)))
+  (q/update-pixels trail)
   trail)
 
 (defn decay [trail width height factor]
   (dotimes [i width]
     (dotimes [j height]
       (q/set-pixel trail i j (* factor (first (q/get-pixel trail i j))))))
-  (q/update-pixels trail))
+  (q/update-pixels trail)
+  trail)
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
@@ -106,7 +108,6 @@
   (doseq [p particles]
     (move! p trail width height))
   (deposit trail particles)
-  (q/update-pixels trail)
   (shader/transform shader buffer trail [width height]
                     {"resolution" (array width height)
                      "trail" trail
