@@ -26,34 +26,34 @@
         steps
         (recur v (conj steps v))))))
 
-(def scale 1.5)
-
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:pass1 (q/create-graphics (* scale (q/width)) (* scale (q/height)) :p3d)
-   :shader (q/load-shader "shaders/integer-circles.frag.c"
-                          "shaders/integer-circles.vert.c")})
+  (let [size [640 480]
+        [sx sy] size]
+    {:size size
+     :pass1 (q/create-graphics sx sy :p3d)
+     :shader (q/load-shader "shaders/integer-circles.frag.c"
+                            "shaders/integer-circles.vert.c")}))
 
 ;; Multi-pass https://github.com/aferriss/p5jsShaderExamples/blob/gh-pages/4_image-effects/4-10_two-pass-blur/sketch.js
-(defn draw [{:keys [pass1 shader]}]
-  (let [[w h] [(q/width) (q/height)]
-        scaled-resolution [(* scale w) (* scale h)]
+(defn draw [{:keys [size pass1 shader]}]
+  (let [[w h] size
         k (int (+ 5 (mod (/ (q/frame-count) 60) 15)))
         ;; k == 6 is a blank screen so skip it
         k (if (= k 6) 21 k)]
     (when (q/loaded? shader)
       (q/with-graphics pass1
-        (shader/pass shader scaled-resolution
-                     {"u_resolution" (apply array scaled-resolution)
+        (shader/pass shader size
+                     {"u_resolution" (array w h)
                       "u_time" (/ (q/millis) 1000.0)
                       "u_d" 1.0
                       "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2))})))
-    (q/image pass1 0 0 w h)))
+    (q/image pass1 0 0 (q/width) (q/height))))
 
 (sketch/defquil integer-circles
   :created-at "2021-09-04"
   :tags #{:shader}
-  :size [1024 768]
+  :size [1280 960]
   :renderer :p2d
   :setup setup
   :draw draw
