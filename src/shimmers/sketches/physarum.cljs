@@ -3,6 +3,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.common.shader :as shader]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -50,10 +51,10 @@
 ;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
 ;; and evolution in approximations of physarum transport networks.
 ;; ref:https://uwe-repository.worktribe.com/output/980579.
-(defn make-particle [pos heading]
+(defn make-particle [pos]
   (map->PhysarumParticle
    {:pos pos
-    :heading heading
+    :heading (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))
     :sensor-angle (/ Math/PI 8) ;; 22.5 degrees
     :sensor-distance 9.0
     :rotation (/ Math/PI 4) ;; 45 degrees
@@ -91,9 +92,7 @@
      :width width
      :height height
      :particles
-     (repeatedly n-particles
-                 #(make-particle (gv/vec2 (rand-int width) (rand-int height))
-                                 (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))))}))
+     (repeatedly n-particles #(make-particle (cq/rel-vec (rand) (rand))))}))
 
 (defn update-state
   [{:keys [particles trail buffer shader width height] :as state}]
