@@ -62,9 +62,7 @@
 
 (defn make-trail [width height]
   (let [img (q/create-graphics width height :p2d)]
-    (q/with-graphics img
-      (q/color-mode :rgb 1.0)
-      (q/background 0.0 1.0))
+    (q/with-graphics img (q/color-mode :rgb 1.0))
     img))
 
 (defn deposit [trail particles]
@@ -83,7 +81,6 @@
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (q/color-mode :rgb 1.0)
   (let [width 200
         height 200
         n-particles 1024]
