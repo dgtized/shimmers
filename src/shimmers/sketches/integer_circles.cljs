@@ -7,6 +7,7 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.shader :as shader]
             [shimmers.sketch :as sketch :include-macros true]))
 
 (defn next-point [[x y]]
@@ -35,18 +36,18 @@
 
 ;; Multi-pass https://github.com/aferriss/p5jsShaderExamples/blob/gh-pages/4_image-effects/4-10_two-pass-blur/sketch.js
 (defn draw [{:keys [pass1 shader]}]
-  (let [[w h] [(q/width) (q/height)]]
-    (q/with-graphics pass1
-      (let [k (int (+ 5 (mod (/ (q/frame-count) 60) 15)))
-            ;; k == 6 is a blank screen so skip it
-            k (if (= k 6) 21 k)]
-        (when (q/loaded? shader)
-          (q/shader shader)
-          (q/set-uniform shader "u_resolution" (array (* scale w) (* scale h)))
-          (q/set-uniform shader "u_time" (/ (q/millis) 1000.0))
-          (q/set-uniform shader "u_d" 1.0)
-          (q/set-uniform shader "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2)))
-          (q/rect 0 0 (* scale w) (* scale h)))))
+  (let [[w h] [(q/width) (q/height)]
+        scaled-resolution [(* scale w) (* scale h)]
+        k (int (+ 5 (mod (/ (q/frame-count) 60) 15)))
+        ;; k == 6 is a blank screen so skip it
+        k (if (= k 6) 21 k)]
+    (when (q/loaded? shader)
+      (q/with-graphics pass1
+        (shader/pass shader scaled-resolution
+                     {"u_resolution" (apply array scaled-resolution)
+                      "u_time" (/ (q/millis) 1000.0)
+                      "u_d" 1.0
+                      "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2))})))
     (q/image pass1 0 0 w h)))
 
 (sketch/defquil integer-circles
