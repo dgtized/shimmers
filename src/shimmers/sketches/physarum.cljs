@@ -68,19 +68,14 @@
     img))
 
 (defn deposit [trail particles]
-  (doseq [{:keys [pos deposit]} particles
-          :let [[x y] pos
-                v (first (q/get-pixel trail x y))
-                v' (tm/clamp (+ v deposit) 0.0 1.0)]]
-    (q/set-pixel trail x y (q/color v' v' v' 1.0)))
-  (q/update-pixels trail)
-  trail)
-
-(defn decay [trail width height factor]
-  (dotimes [i width]
-    (dotimes [j height]
-      (q/set-pixel trail i j (* factor (first (q/get-pixel trail i j))))))
-  (q/update-pixels trail)
+  (q/with-graphics trail
+    (q/stroke-weight 1.0)
+    (doseq [{:keys [pos deposit]} particles
+            :let [[x y] pos
+                  v (first (q/get-pixel trail x y))
+                  v' (tm/clamp (+ v deposit) 0.0 1.0)]]
+      (q/stroke v' v' v' 1.0)
+      (q/point x y)))
   trail)
 
 (defn setup []
@@ -89,8 +84,8 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :rgb 1.0)
-  (let [width 100
-        height 100
+  (let [width 200
+        height 200
         n-particles 1024]
     {:trail (make-trail width height)
      :buffer (q/create-graphics width height :p3d)
@@ -111,8 +106,7 @@
   (shader/transform shader buffer trail [width height]
                     {"resolution" (array width height)
                      "trail" trail
-                     "decay" 1.0})
-  (decay trail width height 0.9)
+                     "decay" 0.95})
   state)
 
 (defn draw [{:keys [trail]}]
