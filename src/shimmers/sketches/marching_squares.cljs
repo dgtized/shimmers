@@ -1,0 +1,43 @@
+(ns shimmers.sketches.marching-squares
+  (:require [quil.core :as q :include-macros true]
+            [quil.middleware :as m]
+            [shimmers.algorithm.marching-squares :as iso]
+            [shimmers.common.quil :as cq]
+            [thi.ng.math.core :as tm]
+            [shimmers.common.framerate :as framerate]
+            [shimmers.sketch :as sketch :include-macros true]))
+
+(defn noise [s t x y]
+  (q/noise (* x s) (* y s) t))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  {:t 0.0
+   :n 40})
+
+(defn update-state [state]
+  (update state :t + 0.002))
+
+(def m 0.01)
+
+(defn draw [{:keys [n t]}]
+  (let [sx (/ (q/width) n)
+        sy (/ (q/height) n)]
+    (doseq [px (tm/norm-range n)]
+      (doseq [py (tm/norm-range n)]
+        (let [[x y] (cq/rel-vec px py)]
+          (q/no-stroke)
+          (q/fill (noise m t x y))
+          (q/rect x y sx sy)
+          (q/no-fill)
+          (q/stroke 0.0 1.0)
+          (doseq [[p q] (iso/lines [x y] [sx sy] (partial noise m t) 0.5)]
+            (q/line p q)))))))
+
+(sketch/defquil marching-squares
+  :created-at "2021-09-20"
+  :size [800 800]
+  :setup setup
+  :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
