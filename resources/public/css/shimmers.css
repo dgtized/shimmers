@@ -44,10 +44,14 @@ canvas {
 }
 
 .numeric {
-  width: 30%;
+  width: 40%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+input[type=number] {
+  width: 5em;
 }
 
 input[type=checkbox] {

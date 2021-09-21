@@ -9,6 +9,22 @@
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]))
 
+(def modes {:abs-difference 0
+            :concentration-a 1
+            :concentration-b 2
+            :binary 3})
+
+(defonce ui-state
+  (ctrl/state {:texture-scale 1.0
+               :droplets false
+               :diffusion-a 1.0
+               :diffusion-b 0.1
+               :feed 0.065
+               :kill 0.062
+               :delta-t 1.0
+               :mode :abs-difference
+               :invert false}))
+
 (defn starting-conditions [image width height]
   (q/with-graphics image
     (q/color-mode :rgb 1.0)
@@ -21,7 +37,7 @@
 
 (defn setup []
   (q/color-mode :rgb 1.0)
-  (let [scale 1.0
+  (let [scale (:texture-scale @ui-state)
         [width height] [(* scale (q/width)) (* scale (q/height))]]
     {:image-size [width height]
      :in-buffer (starting-conditions (q/create-graphics width height :p2d)
@@ -32,24 +48,11 @@
      :display-shader (q/load-shader "shaders/reaction-diffusion.display.frag.c"
                                     "shaders/reaction-diffusion.vert.c")}))
 
-(def modes {:abs-difference 0
-            :concentration-a 1
-            :concentration-b 2
-            :binary 3})
-
-(defonce ui-state
-  (ctrl/state {:droplets false
-               :diffusion-a 1.0
-               :diffusion-b 0.1
-               :feed 0.065
-               :kill 0.062
-               :delta-t 1.0
-               :mode :abs-difference
-               :invert false}))
-
 (defn controls []
   [:div
-   [:div (ctrl/checkbox ui-state "Add Droplets Randomly" [:droplets])]
+   [:div
+    (ctrl/numeric ui-state "Texture Scale (requires restart)" [:texture-scale] [0.1 5.0 0.1])
+    (ctrl/checkbox ui-state "Add Droplets Randomly" [:droplets])]
    [:div [:h3 "Parameters"]
     (ctrl/numeric ui-state "Diffusion A" [:diffusion-a] [0.0 1.0 0.001])
     (ctrl/numeric ui-state "Diffusion B" [:diffusion-b] [0.0 1.0 0.001])
