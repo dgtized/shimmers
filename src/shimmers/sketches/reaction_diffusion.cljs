@@ -1,5 +1,5 @@
 (ns shimmers.sketches.reaction-diffusion
-  "From https://www.karlsims.com/rd.html and https://ciphrd.com/2019/08/24/reaction-diffusion-on-shader/."
+  "From https://www.karlsims.com/rd.html and https://ciphrd.com/2019/08/24/reaction-diffusion-on-shader/. Also some tricks from http://colordodge.com/ReactionDiffusion/."
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
@@ -22,6 +22,7 @@
                :feed 0.065
                :kill 0.062
                :delta-t 1.0
+               :iterations 16
                :mode :abs-difference
                :invert false}))
 
@@ -58,7 +59,8 @@
     (ctrl/numeric ui-state "Diffusion B" [:diffusion-b] [0.0 1.0 0.001])
     (ctrl/numeric ui-state "Feed Rate" [:feed] [0.0 1.0 0.001])
     (ctrl/numeric ui-state "Kill Rate" [:kill] [0.0 1.0 0.001])
-    (ctrl/numeric ui-state "𝚫t" [:delta-t] [0.0 2.0 0.001])]
+    (ctrl/numeric ui-state "𝚫t" [:delta-t] [0.0 2.0 0.001])
+    (ctrl/numeric ui-state "Iterations per frame" [:iterations] [1.0 64.0 1.0])]
    [:div [:h3 "Display Mode"]
     (ctrl/change-mode ui-state (keys modes) :mode)
     (ctrl/checkbox ui-state "Invert" [:invert])]])
@@ -66,7 +68,7 @@
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]
   (let [[w h] image-size
-        {:keys [droplets diffusion-a diffusion-b feed kill delta-t]} @ui-state]
+        {:keys [droplets diffusion-a diffusion-b feed kill delta-t iterations]} @ui-state]
 
     (when (and droplets (p/chance 0.01))
       (let [size (+ 4 (* 38 (rand)))]
@@ -80,14 +82,15 @@
               (q/fill 1.0 0.0 0.0 1.0)))
           (cq/circle (* w (rand)) (* h (rand)) size))))
 
-    (shader/transform shader out-buffer in-buffer [w h]
-                      {"resolution" (array w h)
-                       "concentrations" in-buffer
-                       "diffusionA" diffusion-a
-                       "diffusionB" diffusion-b
-                       "feed" feed
-                       "kill" kill
-                       "deltaT" delta-t})
+    (dotimes [_ iterations]
+      (shader/transform shader out-buffer in-buffer [w h]
+                        {"resolution" (array w h)
+                         "concentrations" in-buffer
+                         "diffusionA" diffusion-a
+                         "diffusionB" diffusion-b
+                         "feed" feed
+                         "kill" kill
+                         "deltaT" delta-t}))
     state))
 
 (defn draw [{:keys [in-buffer display-shader]}]
