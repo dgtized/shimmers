@@ -18,9 +18,9 @@
   (ctrl/state {:texture-scale 1.0
                :droplets false
                :diffusion-a 1.0
-               :diffusion-b 0.3
-               :feed 0.080
-               :kill 0.065
+               :diffusion-b 0.35
+               :feed 0.044
+               :kill 0.066
                :delta-t 1.0
                :iterations 16
                :mode :abs-difference
@@ -105,7 +105,7 @@
   :created-at "2021-09-15"
   :tags #{:shader}
   :on-mount (fn [] (ctrl/mount controls))
-  :size [800 600]
+  :size [900 600]
   :renderer :p3d
   :setup setup
   :update update-state
