@@ -34,7 +34,8 @@
 
 (def modes {:abs-difference 0
             :concentration-a 1
-            :concentration-b 2})
+            :concentration-b 2
+            :binary 3})
 
 (defonce ui-state
   (ctrl/state {:droplets false

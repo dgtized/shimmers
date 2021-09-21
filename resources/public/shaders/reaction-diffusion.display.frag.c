@@ -18,6 +18,12 @@ void main() {
     grey = col.x;
   } else if (mode == 2) {
     grey = col.y;
+  } else if (mode == 3) {
+    if(col.y >= col.x) {
+      grey = 1.0;
+    } else {
+      grey = 0.0;
+    }
   }
 
   if(invert) {
