@@ -18,9 +18,9 @@
   (ctrl/state {:texture-scale 1.0
                :droplets false
                :diffusion-a 1.0
-               :diffusion-b 0.1
-               :feed 0.065
-               :kill 0.062
+               :diffusion-b 0.3
+               :feed 0.080
+               :kill 0.065
                :delta-t 1.0
                :iterations 16
                :mode :abs-difference
