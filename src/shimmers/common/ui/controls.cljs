@@ -55,7 +55,8 @@
      [:label (label-fn value)]
      [:input {:type "range" :value value :min lower :max upper
               :step (or step 1)
-              :on-change (fn [e] (swap! settings assoc-in field-ref (int (.-target.value e))))}]]))
+              :on-change (fn [e] (swap! settings assoc-in field-ref
+                                       (edn/read-string (.-target.value e))))}]]))
 
 (defn numeric [settings label field-ref [lower upper step]]
   (let [value (get-in @settings field-ref)]
