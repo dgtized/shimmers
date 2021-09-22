@@ -18,7 +18,7 @@
                :average-window 16
                :acceleration 2}))
 
-(defn explanation []
+(defn ui-controls []
   [:div
    [:h5 "Applies at Restart"]
    (ctrl/slider ui-state (fn [v] (str "Particles: " v))
@@ -79,7 +79,7 @@
 
 (sketch/defquil sediment
   :created-at "2021-04-08"
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [900 600]
   :setup setup
   :update update-state

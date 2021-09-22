@@ -6,11 +6,11 @@
             [shimmers.common.sequence :as cs]))
 
 (defn mount
-  "Mounts reagent component to render in an element, defaults to explanation.
+  "Mounts reagent component to render in an element, defaults to interface.
 
   Helper method so it can be invoked on run-sketch OR on figwheel reload."
   ([view]
-   (mount view "explanation"))
+   (mount view "interface"))
   ([view host]
    (rdom/render [view] (dom/getElement host))))
 

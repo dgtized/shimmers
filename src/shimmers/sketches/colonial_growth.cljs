@@ -84,12 +84,12 @@
       (when (and show-parent parent)
         (q/line p (:p parent))))))
 
-(defn explanation []
+(defn ui-controls []
   [:div (ctrl/checkbox ui-state "Show Parent" [:show-parent])])
 
 (sketch/defquil colonial-growth
   :created-at "2021-05-14"
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :tags #{:deterministic}
   :size [800 600]
   :setup setup

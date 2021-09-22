@@ -14,7 +14,7 @@
 
 ;; TODO: add hover color info for hsl values?
 ;; Limit range to show spectrum / palette somehow?
-(defn controls [ui]
+(defn ui-controls [ui]
   (fn []
     [:div
      (ctrl/change-mode ui [:hsla :mix-mod])
@@ -55,7 +55,7 @@
          :lightness1 50
          :lightness2 50}
         ui (ctrl/state (merge defaults (random-hues)))]
-    (ctrl/mount (controls ui))
+    (ctrl/mount (ui-controls ui))
     {:ui ui}))
 
 (defn update-state [state]

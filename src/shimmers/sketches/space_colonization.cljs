@@ -137,7 +137,7 @@
 
     (draw-debug state debug)))
 
-(defn explanation []
+(defn ui-controls []
   [:div
    [:section
     [:b "Applies on next run:"]
@@ -167,7 +167,7 @@
 
 (sketch/defquil space-colonization
   :created-at "2020-11-27"
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
@@ -177,4 +177,4 @@
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save
 ;; (defn ^:after-load after-reload []
-;;   (ctrl/mount explanation))
+;;   (ctrl/mount ui-controls))

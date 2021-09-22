@@ -205,7 +205,7 @@
                              (geom/center p)
                              :points)))))))))))
 
-(defn explanation []
+(defn ui-controls []
   [:div
    [:section
     (ctrl/dropdown settings "Algorithm" [:calc-points]
@@ -252,7 +252,7 @@
 (sketch/defquil flow-fields
   :created-at "2021-06-17"
   :tags #{:static :deterministic}
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [1200 900]
   :setup setup
   :update update-state

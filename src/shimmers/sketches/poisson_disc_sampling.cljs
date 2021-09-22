@@ -79,7 +79,7 @@
   (doseq [[x y] (vals grid)]
     (q/point x y)))
 
-(defn explanation []
+(defn ui-controls []
   [:div
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
                 [:radius] [2 16 1])
@@ -89,7 +89,7 @@
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
-  :on-mount #(ctrl/mount explanation)
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [600 600]
   :setup setup
   :update update-state

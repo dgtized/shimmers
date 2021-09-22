@@ -34,7 +34,7 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn explanation []
+(defn ui-controls []
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
@@ -207,7 +207,7 @@
 
 (sketch/defquil superposition
   :created-at "2021-03-08"
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [1200 900]
   :setup setup
   :update update-state

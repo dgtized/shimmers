@@ -49,7 +49,7 @@
      :display-shader (q/load-shader "shaders/reaction-diffusion.display.frag.c"
                                     "shaders/reaction-diffusion.vert.c")}))
 
-(defn controls []
+(defn ui-controls []
   [:div
    [:div
     (ctrl/numeric ui-state "Texture Scale (requires restart)" [:texture-scale] [0.1 5.0 0.1])
@@ -104,7 +104,7 @@
 (sketch/defquil reaction-diffusion
   :created-at "2021-09-15"
   :tags #{:shader}
-  :on-mount (fn [] (ctrl/mount controls))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [900 600]
   :renderer :p3d
   :setup setup

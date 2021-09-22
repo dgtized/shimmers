@@ -120,7 +120,7 @@
            (interpose "\n")
            str-vec)]]))
 
-(defn render-explanation [automata]
+(defn explanation [automata]
   [:div
    [:p {:style {:width "45em"}}
     "Each of the four visualizations are generated from a corresponding program below.
@@ -138,7 +138,7 @@
         (for [x [0.25 0.75]
               y [0.25 0.75]]
           (make-automata (cq/rel-pos x y) (generate-program)))]
-    (ctrl/mount (partial render-explanation automata))
+    (ctrl/mount (partial explanation automata) "explanation")
     {:automata automata}))
 
 (defn update-state

@@ -121,7 +121,7 @@
                                   (update state :circles update-positions)])))
 
 (defonce ui-state (ctrl/state {:debug false :sand false}))
-(defn explanation []
+(defn ui-controls []
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])
    (ctrl/checkbox ui-state "Sand" [:sand])])
@@ -156,7 +156,7 @@
 
 (sketch/defquil lattice-of-common-chords
   :created-at "2021-03-29"
-  :on-mount (fn [] (ctrl/mount explanation))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [900 600]
   :setup setup
   :update update-state
