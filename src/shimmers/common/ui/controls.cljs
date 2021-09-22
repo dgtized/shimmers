@@ -17,6 +17,10 @@
 (defn state [m]
   (r/atom m))
 
+(defn assoc-value [settings field-ref]
+  (fn [e] (swap! settings assoc-in field-ref
+                (edn/read-string (.-target.value e)))))
+
 (defn change-mode
   ([ui-state modes] (change-mode ui-state modes :mode))
   ([ui-state modes key-name]
@@ -55,8 +59,7 @@
      [:label (label-fn value)]
      [:input {:type "range" :value value :min lower :max upper
               :step (or step 1)
-              :on-change (fn [e] (swap! settings assoc-in field-ref
-                                       (edn/read-string (.-target.value e))))}]]))
+              :on-change (assoc-value settings field-ref)}]]))
 
 (defn numeric [settings label field-ref [lower upper step]]
   (let [value (get-in @settings field-ref)]
@@ -64,9 +67,7 @@
      [:label label]
      [:input {:type "number" :value value
               :min lower :max upper :step step
-              :on-change (fn [e]
-                           (swap! settings assoc-in field-ref
-                                  (edn/read-string (.-target.value e))))}]]))
+              :on-change (assoc-value settings field-ref)}]]))
 
 (defn details [summary & body]
   (into [:details [:summary summary]] body))
