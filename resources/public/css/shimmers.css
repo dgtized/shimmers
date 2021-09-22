@@ -28,6 +28,10 @@ canvas {
   padding: 1em;
 }
 
+#interface {
+  padding-left: 2em;
+}
+
 #explanation {
   padding-left: 2em;
 }

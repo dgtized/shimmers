@@ -44,7 +44,8 @@
   (when-let [sketch (q/get-sketch-by-id "quil-host")]
     (q/with-sketch sketch (q/exit)))
   ;; TODO: only unmount components used by sketch?
-  (doseq [id ["svg-host" "explanation" "route-debug-mount" "debug-mount"]]
+  (doseq [id ["svg-host" "interface" "explanation"
+              "route-debug-mount" "debug-mount"]]
     (-> id
         dom/getElement
         rdom/unmount-component-at-node)))
