@@ -21,6 +21,10 @@
   (fn [e] (swap! settings assoc-in field-ref
                 (edn/read-string (.-target.value e)))))
 
+(defn toggle-value [settings field-ref]
+  (fn [_]
+    (swap! settings update-in field-ref not)))
+
 (defn change-mode
   ([ui-state modes] (change-mode ui-state modes :mode))
   ([ui-state modes key-name]
@@ -35,14 +39,14 @@
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
-            :on-change #(swap! settings update-in field-ref not)}]
+            :on-change (toggle-value settings field-ref)}]
    [:label label]])
 
 (defn checkbox-after [settings label field-ref]
   [:div.label-set {:key label}
    [:label label]
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
-            :on-change #(swap! settings update-in field-ref not)}]])
+            :on-change (toggle-value settings field-ref)}]])
 
 (defn dropdown [settings label field-ref options]
   (let [selected (get-in @settings field-ref)]
