@@ -17,9 +17,9 @@
 (defn state [m]
   (r/atom m))
 
-(defn assoc-value [settings field-ref]
+(defn assoc-value [settings field-ref reader]
   (fn [e] (swap! settings assoc-in field-ref
-                (edn/read-string (.-target.value e)))))
+                (reader (.-target.value e)))))
 
 (defn toggle-value [settings field-ref]
   (fn [_]
@@ -52,7 +52,7 @@
   (let [selected (get-in @settings field-ref)]
     [:div.label-set {:key (str "dropdown-" field-ref)}
      [:label label]
-     [:select {:on-change (fn [e] (swap! settings assoc-in field-ref (.-target.value e)))
+     [:select {:on-change (assoc-value settings field-ref identity)
                :value selected}
       (for [[name value] options]
         [:option {:key value :value value} name])]]))
@@ -63,7 +63,7 @@
      [:label (label-fn value)]
      [:input {:type "range" :value value :min lower :max upper
               :step (or step 1)
-              :on-change (assoc-value settings field-ref)}]]))
+              :on-change (assoc-value settings field-ref edn/read-string)}]]))
 
 (defn numeric [settings label field-ref [lower upper step]]
   (let [value (get-in @settings field-ref)]
@@ -71,7 +71,7 @@
      [:label label]
      [:input {:type "number" :value value
               :min lower :max upper :step step
-              :on-change (assoc-value settings field-ref)}]]))
+              :on-change (assoc-value settings field-ref edn/read-string)}]]))
 
 (defn details [summary & body]
   (into [:details [:summary summary]] body))
