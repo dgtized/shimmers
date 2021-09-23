@@ -62,7 +62,7 @@
   {:position
    (p/weighted {(constantly (gv/vec2)) 3
                 (let [radius (tm/random 1.0 4.0)]
-                  (fn [_] (gv/vec2 (p/confusion-disk [0 0] radius)))) 1
+                  (fn [_] (perturb [0 0] radius))) 1
                 (let [radius (tm/random 3.0 6.0)
                       speed (p/weighted {5 1 10 2 15 3 20 2})]
                   (fn [_] (v/polar radius (/ (q/frame-count) speed)))) 1})
