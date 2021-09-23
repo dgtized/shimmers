@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.transition-interval :as transition]
+            [shimmers.math.equations :as eq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -35,6 +36,15 @@
 (defn y-proportional [pos]
   (/ (:y pos) (q/height)))
 
+(defn centered-x [pos]
+  (eq/gaussian 1.0 0.5 0.25 (x-proportional pos)))
+
+(defn centered-y [pos]
+  (eq/gaussian 1.0 0.5 0.25 (y-proportional pos)))
+
+(defn centered-xy [pos]
+  (* (centered-x pos) (centered-y pos)))
+
 (defn invert [x]
   (- 1.0 x))
 
@@ -52,7 +62,13 @@
    x-proportional 1
    (comp invert x-proportional) 1
    y-proportional 1
-   (comp invert y-proportional) 1})
+   (comp invert y-proportional) 1
+   centered-xy 1
+   (comp invert centered-xy) 1
+   centered-x 1
+   (comp invert centered-x) 1
+   centered-y 1
+   (comp invert centered-y) 1})
 
 (defn option-from [options]
   (chain-compose [(p/weighted options)
