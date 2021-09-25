@@ -6,7 +6,7 @@
 (defn- project [angle length]
   (geom/as-cartesian (gv/vec2 length angle)))
 
-(defn- segment-endpoint [{:keys [base angle length]}]
+(defn segment-endpoint [{:keys [base angle length]}]
   (tm/+ base (project angle length)))
 
 (defprotocol IKinematicChain

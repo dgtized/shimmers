@@ -33,6 +33,7 @@
             shimmers.sketches.flow-fields
             shimmers.sketches.folding-triangles
             ;; shimmers.sketches.fluid
+            shimmers.sketches.garden-hose
             shimmers.sketches.gossamer-coils
             shimmers.sketches.gravity-well
             shimmers.sketches.grid-variations
