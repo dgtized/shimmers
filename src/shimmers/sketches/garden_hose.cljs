@@ -25,6 +25,16 @@
        (take n)
        chain/->KinematicChain))
 
+(defn hose-pressure [hose pressure]
+  (let [segments (:segments hose)]
+    (assoc hose :segments
+           (into (take 1 segments)
+                 (map (fn [[{a-theta :angle} {b-theta :angle :as b}]]
+                        (let [diff (- a-theta b-theta)
+                              change (* (/ (mod (Math/abs diff) tm/PI) tm/PI) pressure diff)]
+                          (assoc b :angle (+ b-theta change))))
+                      (partition 2 1 segments))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [base (cq/rel-vec 0.5 0.15)
@@ -36,10 +46,11 @@
 
 (defn update-state [{:keys [base] :as state}]
   (-> state
+      (update :hose hose-pressure 0.1)
       (update :hose chain/chain-update base nil)))
 
 (defn draw [{:keys [hose]}]
-  (q/background 1.0 0.05)
+  (q/background 1.0 0.1)
   (q/no-fill)
   (cq/draw-vertices (geom/vertices hose)))
 
