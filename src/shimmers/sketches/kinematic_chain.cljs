@@ -33,11 +33,7 @@
 (defn follow []
   ((get modes (:mode @ui-state))))
 
-(defn draw-chain [chain]
-  (q/begin-shape)
-  (doseq [[x y] (geom/vertices chain)]
-    (q/vertex x y))
-  (q/end-shape))
+(def draw-chain (comp cq/draw-vertices geom/vertices))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

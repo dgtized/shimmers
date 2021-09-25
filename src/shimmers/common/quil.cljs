@@ -28,6 +28,12 @@
     (apply q/curve-vertex v))
   (q/end-shape :close))
 
+(defn draw-vertices [vertices]
+  (q/begin-shape)
+  (doseq [p vertices]
+    (apply q/vertex p))
+  (q/end-shape))
+
 (defn curve-by [points]
   (q/begin-shape)
   (doseq [[x y] points]

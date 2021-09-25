@@ -23,11 +23,7 @@
             (assoc (chain/make-chain (cq/rel-vec 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
-(defn draw-chain [chain]
-  (q/begin-shape)
-  (doseq [[x y] (geom/vertices chain)]
-    (q/vertex x y))
-  (q/end-shape))
+(def draw-chain (comp cq/draw-vertices geom/vertices))
 
 (defn update-state [{:keys [chains] :as state}]
   (assoc state :chains
