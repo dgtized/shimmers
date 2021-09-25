@@ -56,7 +56,7 @@
   :tags #{:demo}
   :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
   :host "quil-host"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw

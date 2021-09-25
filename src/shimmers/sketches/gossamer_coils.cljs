@@ -44,7 +44,7 @@
 
 (sketch/defquil gossamer-coils
   :created-at "2021-03-15"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
