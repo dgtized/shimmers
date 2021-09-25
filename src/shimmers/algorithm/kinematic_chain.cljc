@@ -3,7 +3,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn- project [angle length]
+(defn project [angle length]
   (geom/as-cartesian (gv/vec2 length angle)))
 
 (defn segment-endpoint [{:keys [base angle length]}]
