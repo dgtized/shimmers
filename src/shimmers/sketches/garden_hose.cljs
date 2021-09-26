@@ -46,6 +46,27 @@
                   (partition 2 1 segments))
             (last segments)))))
 
+(defn hose-pressure-midpoint [hose clamped pressure]
+  (let [segments (:segments hose)
+        move-segment
+        (fn [[{a-base :base}
+             {b-base :base len :length :as b}
+             {c-base :base}]]
+          ;; this could be better, basically trying to keep a and c apart
+          ;; instead of folding them together into inflection points.
+          (let [dist-ac (geom/dist a-base c-base)
+                midpoint (tm/mix a-base c-base 0.5)
+                new-base (->> (if (> dist-ac len) (* 2 pressure) pressure)
+                              (tm/mix b-base midpoint)
+                              clamped)]
+            (assoc b
+                   :base new-base
+                   :angle (geom/angle-between new-base c-base))))]
+    (assoc hose :segments
+           (concat (take 1 segments)
+                   (mapv move-segment (partition 3 1 segments))
+                   (take-last 1 segments)))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
@@ -61,7 +82,7 @@
         first-pos (constrain bounds (tm/mix (:base (first segments)) start 0.0))
         last-pos (constrain bounds (tm/mix (chain/segment-endpoint (last segments)) target 0.01))]
     (-> state
-        (update :hose hose-pressure (partial constrain bounds) 0.02)
+        (update :hose hose-pressure-midpoint (partial constrain bounds) 0.02)
         (update :hose chain/chain-update first-pos last-pos))))
 
 (defn draw [{:keys [hose]}]
