@@ -37,7 +37,7 @@
             (mapv (fn [[{base :base a-theta :angle length :length :as a}
                        {b-theta :angle target :base}]]
                     (let [diff (- b-theta a-theta)
-                          change (* (/ (Math/abs diff) tm/TWO_PI) diff)
+                          change (* (/ (Math/abs diff) tm/PI) diff)
                           new-angle (+ a-theta change)
                           new-base (clamped (tm/mix base (tm/- target (chain/project new-angle length)) pressure))]
                       (assoc a
