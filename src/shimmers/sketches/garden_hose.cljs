@@ -52,7 +52,7 @@
     {:start (cq/rel-vec 0.5 0.15)
      :target (cq/rel-vec 0.5 0.85)
      :bounds bounds
-     :hose (make-hose 512 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
+     :hose (make-hose 1500 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
                       (partial next-point bounds 0.6))}))
 
 (defn update-state [{:keys [start target bounds hose] :as state}]
