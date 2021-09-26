@@ -61,11 +61,11 @@
         first-pos (constrain bounds (tm/mix (:base (first segments)) start 0.0))
         last-pos (constrain bounds (tm/mix (chain/segment-endpoint (last segments)) target 0.01))]
     (-> state
-        (update :hose hose-pressure (partial constrain bounds) 0.05)
+        (update :hose hose-pressure (partial constrain bounds) 0.02)
         (update :hose chain/chain-update first-pos last-pos))))
 
 (defn draw [{:keys [hose]}]
-  (q/background 1.0 0.1)
+  (q/background 1.0 0.15)
   (q/no-fill)
   (cq/draw-vertices (geom/vertices hose)))
 
