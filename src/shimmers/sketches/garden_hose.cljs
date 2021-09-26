@@ -73,11 +73,10 @@
     {:start (cq/rel-vec 0.5 0.15)
      :target (cq/rel-vec 0.5 0.85)
      :bounds bounds
-     :hose (make-hose 1500 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
+     :hose (make-hose 2048 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
                       (partial next-point bounds 0.6))}))
 
 (defn update-state [{:keys [start target bounds hose] :as state}]
-  ;; (println (:angle (first (:segments (:hose state)))))
   (let [segments (-> hose :segments)
         first-pos (constrain bounds (tm/mix (:base (first segments)) start 0.0))
         last-pos (constrain bounds (tm/mix (chain/segment-endpoint (last segments)) target 0.01))]
@@ -86,7 +85,7 @@
         (update :hose chain/chain-update first-pos last-pos))))
 
 (defn draw [{:keys [hose]}]
-  (q/background 1.0 0.15)
+  (q/background 1.0 0.2)
   (q/no-fill)
   (cq/draw-vertices (geom/vertices hose)))
 
