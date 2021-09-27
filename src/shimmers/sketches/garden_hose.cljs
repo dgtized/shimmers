@@ -6,6 +6,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
+            [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
@@ -67,19 +68,25 @@
                    (mapv move-segment (partition 3 1 segments))
                    (take-last 1 segments)))))
 
+(defn target-position []
+  (tm/+ (cq/rel-vec 0.5 0.5)
+        (v/polar (cq/rel-h 0.4)
+                 (/ (q/frame-count) 250))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
     {:start (cq/rel-vec 0.5 0.15)
-     :target (cq/rel-vec 0.5 0.85)
      :bounds bounds
      :hose (make-hose 2048 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
                       (partial next-point bounds 0.6))}))
 
-(defn update-state [{:keys [start target bounds hose] :as state}]
+(defn update-state [{:keys [start bounds hose] :as state}]
   (let [segments (-> hose :segments)
         first-pos (constrain bounds (tm/mix (:base (first segments)) start 0.0))
-        last-pos (constrain bounds (tm/mix (chain/segment-endpoint (last segments)) target 0.01))]
+        last-pos (->> (tm/mix (chain/segment-endpoint (last segments))
+                              (target-position) 0.01)
+                      (constrain bounds))]
     (-> state
         (update :hose hose-pressure-midpoint (partial constrain bounds) 0.02)
         (update :hose chain/chain-update first-pos last-pos))))
