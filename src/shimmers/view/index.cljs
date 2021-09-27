@@ -1,6 +1,5 @@
 (ns shimmers.view.index
-  (:require [cljc.java-time.local-date :as ld]
-            [clojure.set :as set]
+  (:require [clojure.set :as set]
             [clojure.string :as str]
             [reagent.core :as r]
             [reitit.frontend.easy :as rfe]
@@ -8,7 +7,7 @@
 
 (defn sketch-title [sketch]
   (->> [(when-let [created-at (:created-at sketch)]
-          (str created-at))
+          (subs (.toISOString (js/Date. created-at)) 0 10))
         (when-let [tags (seq (:tags sketch))]
           (str "tags:" (str/join "," (map name tags))))]
        (filter some?)
@@ -81,9 +80,11 @@
           [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
           [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]))]))
 
+;; https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
 (defn year-month [{:keys [created-at]}]
-  [(ld/get-year created-at)
-   (str/capitalize (str (ld/get-month created-at)))])
+  (let [date (js/Date. created-at)
+        intl (js/Intl.DateTimeFormat. "en-US" #js{:month "long" :timeZone "UTC"})]
+    [(.getFullYear date) (.format intl date)]))
 
 (defn by-date [sketches]
   (let [[filtered terms] (filter-sketches sketches)
