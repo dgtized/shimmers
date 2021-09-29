@@ -37,7 +37,6 @@
 
 (sketch/defquil breathing-hexes
   :created-at "2021-05-23"
-  :host "quil-host"
   :size [800 600]
   :setup setup
   :update update-state

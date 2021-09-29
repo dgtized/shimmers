@@ -40,8 +40,8 @@
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
-  ;; kill existing sketch at quil-host if present
-  (when-let [sketch (q/get-sketch-by-id "quil-host")]
+  ;; kill existing sketch at canvas-host if present
+  (when-let [sketch (q/get-sketch-by-id "canvas-host")]
     (q/with-sketch sketch (q/exit)))
   ;; TODO: only unmount components used by sketch?
   (doseq [id ["svg-host" "thing-host" "interface" "explanation"

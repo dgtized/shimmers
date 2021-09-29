@@ -58,7 +58,7 @@
   [app-name & options]
   (let [raw-opts (apply hash-map options)
         opts (->> raw-opts
-                  (merge {:host "quil-host"})
+                  (merge {:host "canvas-host"})
                   wrap-fns)
         runner (vary-meta app-name assoc :export true)
         sketch-start (vary-meta (symbol (str app-name '-start))

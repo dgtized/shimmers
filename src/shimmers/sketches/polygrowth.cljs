@@ -62,7 +62,6 @@
 
 (sketch/defquil polygrowth
   :created-at "2021-05-02"
-  :host "quil-host"
   :size [900 600]
   :setup setup
   :update update-state

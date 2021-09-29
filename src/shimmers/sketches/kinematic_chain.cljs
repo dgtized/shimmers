@@ -55,7 +55,6 @@
   :created-at "2021-03-19"
   :tags #{:demo}
   :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
-  :host "quil-host"
   :size [800 600]
   :setup setup
   :update update-state
