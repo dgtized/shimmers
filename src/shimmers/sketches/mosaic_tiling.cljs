@@ -187,4 +187,4 @@
 (sketch/defsvg mosaic-tiling
   {:created-at "2021-04-09"
    :tags #{:static :deterministic}}
-  (ctrl/mount page "svg-host"))
+  (ctrl/mount page "canvas-host"))

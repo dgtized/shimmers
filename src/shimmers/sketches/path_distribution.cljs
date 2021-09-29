@@ -70,4 +70,4 @@
 (sketch/defsvg path-distribution
   {:created-at "2021-04-29"
    :tags #{:demo}}
-  (ctrl/mount page "svg-host"))
+  (ctrl/mount page "canvas-host"))

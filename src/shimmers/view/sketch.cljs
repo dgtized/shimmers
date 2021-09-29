@@ -44,7 +44,7 @@
   (when-let [sketch (q/get-sketch-by-id "canvas-host")]
     (q/with-sketch sketch (q/exit)))
   ;; TODO: only unmount components used by sketch?
-  (doseq [id ["svg-host" "canvas-host" "interface" "explanation"
+  (doseq [id ["canvas-host" "interface" "explanation"
               "route-debug-mount" "debug-mount"]]
     (-> id
         dom/getElement
