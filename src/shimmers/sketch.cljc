@@ -40,6 +40,7 @@
 ;; Plan:
 ;;
 ;; * Add an SVG equivalent `defsvg` or better yet add a dispatch parameter to `defsketch`?
+;; ** Consolidate `defsvg` and `defthing`
 ;; * Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks?
 ;; * Allow more than one sketch per namespace
 ;; ** 2+ sketches in parallel (probably less useful except for long form explanation)
