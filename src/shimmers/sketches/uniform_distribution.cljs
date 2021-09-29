@@ -87,7 +87,7 @@
                   (geom/sample-uniform (geom/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(sketch/defsketch uniform-distribution
+(sketch/definition uniform-distribution
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :demo}}

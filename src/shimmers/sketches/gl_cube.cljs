@@ -64,7 +64,7 @@
        (anim/animate (fn [t] (when (:active (r/state this))
                               (draw-frame! gl-ctx frame t))))))])
 
-(sketch/defsketch gl-cube
+(sketch/definition gl-cube
   {:created-at "2021-09-29"
    :type :thing
    :tags #{:shader :demo}}
