@@ -40,7 +40,6 @@
 ;; Plan:
 ;;
 ;; * Add an SVG equivalent `defsvg` or better yet add a dispatch parameter to `defsketch`?
-;; ** Consolidate `defsvg` and `defthing`
 ;; * Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks?
 ;; * Allow more than one sketch per namespace
 ;; ** 2+ sketches in parallel (probably less useful except for long form explanation)
@@ -103,7 +102,7 @@
                            :file (:file m#)
                            :line (:line m#)})))))
 
-(defmacro defthing
+(defmacro defsketch
   [app-name options & body]
   (let [runner (vary-meta app-name merge {:export true})]
     `(do (defn ~runner []
@@ -112,7 +111,7 @@
          (let [m# (meta (var ~app-name))]
            (registry/add! ~(keyword app-name)
                           {:id (loader/namespace-to-id (:ns m#))
-                           :type :thing
+                           :type ~(:type options)
                            :fn ~runner
                            :created-at ~(:created-at options)
                            :tags ~(:tags options #{})

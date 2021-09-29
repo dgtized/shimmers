@@ -64,7 +64,8 @@
        (anim/animate (fn [t] (when (:active (r/state this))
                               (draw-frame! gl-ctx frame t))))))])
 
-(sketch/defthing gl-cube
+(sketch/defsketch gl-cube
   {:created-at "2021-09-29"
+   :type :thing
    :tags #{:shader :demo}}
   (ctrl/mount page "canvas-host"))
