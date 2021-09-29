@@ -8,6 +8,7 @@
             [reitit.frontend.controllers :as rfc]
             [reitit.frontend.easy :as rfe]
             [shimmers.sketches :as sketches]
+            [shimmers.view.favicon :as favicon]
             [shimmers.view.index :as view-index]
             [shimmers.view.sketch :as view-sketch]
             [spec-tools.data-spec :as ds]))
@@ -87,7 +88,8 @@
    {:use-fragment true})
 
   ;; (rdom/render [debug-root] (dom/getElement "route-debug-mount"))
-  (rdom/render [page-root] (dom/getElement "shimmer-mount")))
+  (rdom/render [page-root] (dom/getElement "shimmer-mount"))
+  (favicon/auto-update! 100))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
