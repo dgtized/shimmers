@@ -14,7 +14,7 @@ sha=$(git rev-parse HEAD | cut -c 1-8)
 
 mkdir -p resources/public/js
 cp target/public/cljs-out/release-main.js "resources/public/js/release-main-${sha}.js"
-cp target/public/cljs-out/release-main.js.map "resources/public/js/release-main-${sha}.js.map"
+cp target/public/cljs-out/release-main.js.map resources/public/js
 
 pushd resources/public
 
