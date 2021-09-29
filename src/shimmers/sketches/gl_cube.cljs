@@ -69,7 +69,6 @@
     (fn [_]
       [:canvas attributes])}))
 
-;; FIXME: anim/animate is not cancelled/disposed of on component-will-unmount
 (defn page []
   [canvas-thing {:width 800 :height 600}
    (fn [this]
@@ -77,7 +76,11 @@
            gl-ctx (gl/gl-context canvas)
            camera (cam/perspective-camera {})
            frame (combine-model-shader-and-camera gl-ctx cube shader-spec camera)]
-       (anim/animate (fn [t] (draw-frame! gl-ctx frame t)))))])
+       ;; Continuing animating until canvas is inactive
+       ;; UNKNOWN: Does the gl rendering context & shaders need to be disposed of?
+       ;; TODO: calculate & update framerate?
+       (anim/animate (fn [t] (when (:active (r/state this))
+                              (draw-frame! gl-ctx frame t))))))])
 
 (sketch/defthing gl-cube
   {:created-at "2021-09-29"
