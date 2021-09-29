@@ -67,4 +67,4 @@
 (sketch/defthing gl-cube
   {:created-at "2021-09-29"
    :tags #{:shader :demo}}
-  (ctrl/mount page "thing-host"))
+  (ctrl/mount page "canvas-host"))
