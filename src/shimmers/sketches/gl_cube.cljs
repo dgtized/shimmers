@@ -2,7 +2,6 @@
   "Proof of concept spike using thi.ng directly to animate with webgl shaders.
   Cribbed from a whole list of examples."
   (:require [reagent.core :as r]
-            [reagent.dom :as rdom]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.aabb :as aabb]
@@ -51,29 +50,12 @@
 (defn draw-frame! [gl-ctx frame t]
   (doto gl-ctx
     (gl/clear-color-and-depth-buffer 0 0 0 1 1)
-    (gl/draw-with-shader (assoc-in frame
-                                   [:uniforms :model] (spin t)))))
-
-;; Cribbed from https://gist.github.com/PlumpMath/66ad1d1654597056bbdde24b9808a883
-;; and http://timothypratley.blogspot.com/2017/01/reagent-deep-dive-part-2-lifecycle-of.html
-(defn canvas-thing [attributes mount]
-  (r/create-class
-   {:component-did-mount
-    (fn [this]
-      (r/set-state this {:active true})
-      (mount this))
-    :component-will-unmount
-    (fn [this]
-      (r/set-state this {:active false}))
-    :reagent-render
-    (fn [_]
-      [:canvas attributes])}))
+    (gl/draw-with-shader (assoc-in frame [:uniforms :model] (spin t)))))
 
 (defn page []
-  [canvas-thing {:width 800 :height 600}
-   (fn [this]
-     (let [canvas (rdom/dom-node this)
-           gl-ctx (gl/gl-context canvas)
+  [ctrl/canvas {:width 800 :height 600}
+   (fn [this canvas]
+     (let [gl-ctx (gl/gl-context canvas)
            camera (cam/perspective-camera {})
            frame (combine-model-shader-and-camera gl-ctx cube shader-spec camera)]
        ;; Continuing animating until canvas is inactive
