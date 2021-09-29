@@ -81,7 +81,8 @@
 (defn page []
   [:div (scene)])
 
-(sketch/defsvg clustered-farmlands
+(sketch/defsketch clustered-farmlands
   {:created-at "2021-05-10"
+   :type :svg
    :tags #{:static}}
   (ctrl/mount page "canvas-host"))

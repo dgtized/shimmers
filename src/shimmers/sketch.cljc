@@ -86,22 +86,6 @@
                          :file (:file m#)
                          :line (:line m#)})))))
 
-(defmacro defsvg
-  [app-name options & body]
-  (let [runner (vary-meta app-name merge {:export true})]
-    `(do (defn ~runner []
-           ~@body)
-
-         (let [m# (meta (var ~app-name))]
-           (registry/add! ~(keyword app-name)
-                          {:id (loader/namespace-to-id (:ns m#))
-                           :type :svg
-                           :fn ~runner
-                           :created-at ~(:created-at options)
-                           :tags ~(:tags options #{})
-                           :file (:file m#)
-                           :line (:line m#)})))))
-
 (defmacro defsketch
   [app-name options & body]
   (let [runner (vary-meta app-name merge {:export true})]

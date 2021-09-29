@@ -67,7 +67,8 @@
       ". The upper example is drawing a curved line through a random point in
       the circle. The lower example picks a random point on the bisector."]]))
 
-(sketch/defsvg path-distribution
+(sketch/defsketch path-distribution
   {:created-at "2021-04-29"
+   :type :svg
    :tags #{:demo}}
   (ctrl/mount page "canvas-host"))

@@ -87,7 +87,8 @@
                   (geom/sample-uniform (geom/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(sketch/defsvg uniform-distribution
+(sketch/defsketch uniform-distribution
   {:created-at "2021-04-09"
+   :type :svg
    :tags #{:static :demo}}
   (ctrl/mount scene "canvas-host"))

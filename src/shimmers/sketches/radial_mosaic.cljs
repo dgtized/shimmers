@@ -145,7 +145,8 @@
    [:p.center (view-sketch/generate :radial-mosaic)]
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
-(sketch/defsvg radial-mosaic
+(sketch/defsketch radial-mosaic
   {:created-at "2021-05-15"
+   :type :svg
    :tags #{:static :deterministic}}
   (ctrl/mount page "canvas-host"))

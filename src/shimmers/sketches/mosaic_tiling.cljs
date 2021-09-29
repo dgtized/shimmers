@@ -184,7 +184,8 @@
                     (for [[i op] (map-indexed vector operations)]
                       [:li {:key i} op (scene 256 (assoc config :depth (inc i)))])])]))
 
-(sketch/defsvg mosaic-tiling
+(sketch/defsketch mosaic-tiling
   {:created-at "2021-04-09"
+   :type :svg
    :tags #{:static :deterministic}}
   (ctrl/mount page "canvas-host"))
