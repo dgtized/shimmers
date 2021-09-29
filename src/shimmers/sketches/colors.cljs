@@ -93,6 +93,7 @@
 
 (sketch/defquil colors
   :created-at "2021-03-11"
+  :tags #{:demo}
   :size [600 400]
   :setup setup
   :update update-state
