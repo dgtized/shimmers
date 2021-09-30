@@ -1,5 +1,7 @@
 # shimmers
 
+[![CI](https://github.com/dgtized/shimmers/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/dgtized/shimmers/actions/workflows/test.yml)
+
 Shimmering quil sketches; a few particle simulations, video processing
 experiments, randomly generated L-systems, 3d transformations, and cellular
 automata.
