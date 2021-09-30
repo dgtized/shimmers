@@ -6,7 +6,7 @@
           ;; :cljs/repl-env cljs.repl.node/repl-env ; this is the default
           ;; :cljs/repl-env cljs.repl.browser/repl-env
 
-          :cljs/timeout 30000 ;; github ci needs more timeout?
+          :cljs/timeout 45000 ;; github ci needs more timeout?
           :cljs/compiler-options
           {:externs ["p5-externs.js" "sparkles-externs.js"]
            :foreign-libs [{:file "node_modules/p5/lib/p5.js"
