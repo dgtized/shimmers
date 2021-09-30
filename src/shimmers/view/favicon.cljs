@@ -4,29 +4,30 @@
 (defn circle [ctx [x y] r [hue brightness]]
   (.beginPath ctx)
   (.arc ctx x y r 0 (* 2 Math/PI))
-  (set! (.-fillStyle ctx) (str "hsl(" hue ", 80%, " brightness "%, 0.5)"))
+  (set! (.-fillStyle ctx) (str "hsl(" hue ", 80%, " brightness "%, 0.45)"))
   (.fill ctx))
 
 (defn mag [base scale f offset phase t]
-  (+ base (* scale (f (+ offset (* phase t))))))
+  (+ base (* 0.066 base scale (f (+ offset (* phase t))))))
 
 (defn pattern [ctx size]
   (let [m (/ size 2)
-        t (/ (.now js/Date.) 4500)
+        t (/ (.now js/Date.) 6000)
         r (/ size 3)
-        hue (+ (mod (int t) 30) 175)]
-    (circle ctx [(mag m 6 Math/cos 9 0.9 t)
-                 (mag m 4 Math/sin 10 0.9 t)]
+        hue (int (mag 180 30 Math/sin 0 0.85 t))
+        width (+ 80 (* 20 (Math/cos (+ 100 (* 0.66 t)))))]
+    (circle ctx [(mag m 6 Math/cos 9 0.95 t)
+                 (mag m 4 Math/sin 10 0.95 t)]
             r [hue
-               (int (mag 55 15 Math/sin 30 0.7 t))])
+               (int (mag 50 8 Math/sin 30 0.7 t))])
     (circle ctx [(mag m 2 Math/cos -10 1.0 t)
                  (mag m 5 Math/sin -10 1.0 t)]
-            r [(mod (- hue 100) 360)
-               (int (mag 65 10 Math/sin 20 0.8 t))])
-    (circle ctx [(mag m 3 Math/cos 2 1.1 t)
-                 (mag m 6 Math/sin 1 1.1 t)]
-            r [(mod (+ hue 140) 360)
-               (int (mag 60 20 Math/cos 10 0.9 t))])))
+            r [(mod (- hue width) 360)
+               (int (mag 55 6 Math/sin 10 0.8 t))])
+    (circle ctx [(mag m 3 Math/cos 2 1.05 t)
+                 (mag m 6 Math/sin 1 1.05 t)]
+            r [(mod (+ hue width) 360)
+               (int (mag 45 9 Math/cos -10 0.9 t))])))
 
 ;; Translated from https://medium.com/@alperen.talaslioglu/building-dynamic-favicon-with-javascript-223ad7999661
 (defn favicon []
