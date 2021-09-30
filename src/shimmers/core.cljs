@@ -25,10 +25,11 @@
       sketches/by-name
       (assoc :seed (:seed query))))
 
-(defn on-event [action f]
+(defn on-event [f action]
   (fn [request]
     (let [sketch (request->sketch request)]
-      (println action "sketch" (:id sketch))
+      (when action
+        (println action "sketch" (:id sketch)))
       (f sketch))))
 
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
@@ -45,16 +46,14 @@
      :view #(view-index/by-tag (sketches/all))}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
-     :view (fn [request]
-             (view-sketch/sketch-by-name (request->sketch request)
-                                         (sketches/known-names)))
+     :view (on-event #(view-sketch/sketch-by-name % (sketches/known-names)) nil)
      :parameters
      {:path {:name (every-pred string? (set (sketches/known-names)))}
       :query {(ds/opt :seed) int?}}
      :controllers
      [{:parameters {:path [:name] :query [:seed]}
-       :start (on-event "start" view-sketch/start-sketch)
-       :stop (on-event "stop" view-sketch/stop-sketch)}]}]])
+       :start (on-event view-sketch/start-sketch "start")
+       :stop (on-event view-sketch/stop-sketch "stop")}]}]])
 
 (defonce match (r/atom nil))
 
