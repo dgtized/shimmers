@@ -25,6 +25,12 @@
       sketches/by-name
       (assoc :seed (:seed query))))
 
+(defn on-event [action f]
+  (fn [request]
+    (let [sketch (request->sketch request)]
+      (println action "sketch" (:id sketch))
+      (f sketch))))
+
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [["/" ::root]
@@ -47,17 +53,8 @@
       :query {(ds/opt :seed) int?}}
      :controllers
      [{:parameters {:path [:name] :query [:seed]}
-       :start
-       (fn [request]
-         (let [sketch (request->sketch request)]
-           (println "start" "sketch" (:id sketch))
-           (view-sketch/start-sketch sketch)))
-
-       :stop
-       (fn [request]
-         (let [sketch (request->sketch request)]
-           (println "stop" "sketch" (:id sketch))
-           (view-sketch/stop-sketch sketch)))}]}]])
+       :start (on-event "start" view-sketch/start-sketch)
+       :stop (on-event "stop" view-sketch/stop-sketch)}]}]])
 
 (defonce match (r/atom nil))
 
