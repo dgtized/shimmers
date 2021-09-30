@@ -32,7 +32,7 @@
 (defn favicon []
   (let [icon (dom/getElement "favicon")
         size 24
-        canvas (dom/createElement "canvas")]
+        canvas (dom/getElement "favicon-canvas")]
     (set! (.-width canvas) size)
     (set! (.-height canvas) size)
     (pattern (dom/getCanvasContext2D canvas) size)
