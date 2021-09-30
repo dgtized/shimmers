@@ -54,9 +54,10 @@
            (view-sketch/start-sketch sketch)))
 
        :stop
-       (fn [{:keys [path]}]
-         (println "stop" "sketch" (:name path))
-         (view-sketch/stop-sketch))}]}]])
+       (fn [request]
+         (let [sketch (request->sketch request)]
+           (println "stop" "sketch" (:id sketch))
+           (view-sketch/stop-sketch sketch)))}]}]])
 
 (defonce match (r/atom nil))
 

@@ -36,13 +36,14 @@
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
-(defn stop-sketch []
+;; TODO: limit to dependencies used by sketch
+(defn stop-sketch [_]
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
   ;; kill existing sketch at canvas-host if present
-  (when-let [sketch (q/get-sketch-by-id "canvas-host")]
-    (q/with-sketch sketch (q/exit)))
+  (when-let [quil (q/get-sketch-by-id "canvas-host")]
+    (q/with-sketch quil (q/exit)))
   ;; TODO: only unmount components used by sketch?
   (doseq [id ["canvas-host" "interface" "explanation"
               "route-debug-mount" "debug-mount"]]
