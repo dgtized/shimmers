@@ -49,13 +49,12 @@
             :on-change (toggle-value settings field-ref)}]])
 
 (defn dropdown [settings label field-ref options]
-  (let [selected (get-in @settings field-ref)]
-    [:div.label-set {:key (str "dropdown-" field-ref)}
-     [:label label]
-     [:select {:on-change (assoc-value settings field-ref identity)
-               :value selected}
-      (for [[name value] options]
-        [:option {:key value :value value} name])]]))
+  [:div.label-set {:key (str "dropdown-" field-ref)}
+   [:label label]
+   [:select {:on-change (assoc-value settings field-ref identity)
+             :value (get-in @settings field-ref)}
+    (for [[name value] options]
+      [:option {:key value :value value} name])]])
 
 (defn slider [settings label-fn field-ref [lower upper step]]
   (let [value (get-in @settings field-ref)]
