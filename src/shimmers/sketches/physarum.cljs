@@ -5,10 +5,30 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.shader :as shader]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
+
+;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
+;; and evolution in approximations of physarum transport networks.
+;; ref:https://uwe-repository.worktribe.com/output/980579.
+(defonce ui-state
+  (ctrl/state {:sensor-angle 22.5
+               :sensor-distance 9.0
+               :rotation 45.0
+               :step-size 1.0
+               :deposit 0.5}))
+
+(defn ui-controls []
+  [:div
+   [:div [:h3 "Particle Parameters (after restart)"]
+    (ctrl/numeric ui-state "Sensor Angle" [:sensor-angle] [0.1 360.0 0.1])
+    (ctrl/numeric ui-state "Sensor Distance" [:sensor-distance] [0.1 32.0 0.1])
+    (ctrl/numeric ui-state "Rotation" [:rotation] [0.1 360.0 0.1])
+    (ctrl/numeric ui-state "Step Size" [:step-size] [0.1 32.0 0.1])
+    (ctrl/numeric ui-state "Deposit" [:deposit] [0.1 1.0 0.1])]])
 
 (defn wrap-edges [[x y] width height]
   (gv/vec2 (int (tm/roundto (tm/wrap-range x width) 1.0))
@@ -48,18 +68,13 @@
       (set! pos (wrap-edges pos' width height))
       _)))
 
-;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
-;; and evolution in approximations of physarum transport networks.
-;; ref:https://uwe-repository.worktribe.com/output/980579.
 (defn make-particle [pos]
   (map->PhysarumParticle
-   {:pos pos
-    :heading (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))
-    :sensor-angle (/ Math/PI 8) ;; 22.5 degrees
-    :sensor-distance 9.0
-    :rotation (/ Math/PI 4) ;; 45 degrees
-    :step-size 1.0
-    :deposit 0.5}))
+   (-> @ui-state
+       (update-in [:sensor-angle] tm/radians)
+       (update-in [:rotation] tm/radians)
+       (merge {:pos pos
+               :heading (rand-nth (range 0 tm/TWO_PI tm/QUARTER_PI))}))))
 
 (defn make-trail [width height]
   (let [img (q/create-graphics width height :p2d)]
@@ -112,6 +127,7 @@
   :created-at "2021-07-04"
   :tags #{:shader}
   :size [800 800]
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
   :update update-state
   :draw draw
