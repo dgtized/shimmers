@@ -2,10 +2,13 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.marching-squares :as iso]
-            [shimmers.common.quil :as cq]
-            [thi.ng.math.core :as tm]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:theshold 0.5}))
 
 (defn noise [s t x y]
   (q/noise (* x s) (* y s) t))
@@ -22,7 +25,8 @@
 
 (defn draw [{:keys [n t]}]
   (let [sx (/ (q/width) n)
-        sy (/ (q/height) n)]
+        sy (/ (q/height) n)
+        threshold (:theshold @ui-state)]
     (doseq [px (tm/norm-range n)]
       (doseq [py (tm/norm-range n)]
         (let [[x y] (cq/rel-vec px py)]
@@ -31,11 +35,16 @@
           (q/rect x y sx sy)
           (q/no-fill)
           (q/stroke 0.0 1.0)
-          (doseq [[p q] (iso/lines [x y] [sx sy] (partial noise m t) 0.5)]
+          (doseq [[p q] (iso/lines [x y] [sx sy] (partial noise m t) threshold)]
             (q/line p q)))))))
+
+(defn ui-controls []
+  [:div
+   (ctrl/numeric ui-state "Threshold" [:theshold] [0.0 1.0 0.01])])
 
 (sketch/defquil marching-squares
   :created-at "2021-09-20"
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 800]
   :setup setup
   :update update-state
