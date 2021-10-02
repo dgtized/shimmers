@@ -40,7 +40,7 @@
 
 (defn ui-controls []
   [:div
-   (ctrl/numeric ui-state "Threshold" [:theshold] [0.0 1.0 0.01])])
+   (ctrl/slider ui-state (fn [v] (str "Threshold " v)) [:theshold] [0.0 1.0 0.01])])
 
 (sketch/defquil marching-squares
   :created-at "2021-09-20"
