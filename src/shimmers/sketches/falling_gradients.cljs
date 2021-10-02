@@ -7,7 +7,8 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
@@ -16,7 +17,7 @@
   {})
 
 (defn discrete-curve [slices phase scale offset]
-  (for [x (range 0 1 (/ 1 slices))]
+  (for [x (tm/norm-range slices)]
     [x (* scale (q/noise (* x phase) offset))]))
 
 (defn random-triangle-at [pos rotation scale]
