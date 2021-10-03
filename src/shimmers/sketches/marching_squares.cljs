@@ -6,9 +6,12 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.strf.core :as f]))
 
-(defonce ui-state (ctrl/state {:threshold 0.5}))
+(defonce ui-state
+  (ctrl/state {:threshold 0.5
+               :divisor 7.0}))
 
 (defn noise [s t x y]
   (q/noise (* x s) (* y s) t))
@@ -21,12 +24,11 @@
 (defn update-state [state]
   (update state :t + 0.002))
 
-(def m 0.01)
-
 (defn draw [{:keys [n t]}]
   (let [sx (/ (q/width) n)
         sy (/ (q/height) n)
-        threshold (:threshold @ui-state)]
+        {:keys [threshold divisor]} @ui-state
+        m (/ 1 (Math/pow 2 divisor))]
     (doseq [px (tm/norm-range n)]
       (doseq [py (tm/norm-range n)]
         (let [[x y] (cq/rel-vec px py)]
@@ -40,6 +42,8 @@
 
 (defn ui-controls []
   [:div
+   (ctrl/slider ui-state (fn [v] (f/format ["Divisor 1 / 2 ^ " (f/float 1)] v))
+                [:divisor] [5.0 12.0 0.1])
    (ctrl/slider ui-state (fn [v] (str "Threshold " v)) [:threshold] [0.0 1.0 0.01])])
 
 (sketch/defquil marching-squares
