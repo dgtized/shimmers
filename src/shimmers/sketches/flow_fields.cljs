@@ -14,7 +14,8 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.strf.core :as f]))
 
 (def flows-per-iter 100)
 (defonce settings
@@ -234,7 +235,8 @@
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
-    (ctrl/slider settings (fn [v] (str "Noise Multiplier 1/" (Math/pow 2 v))) [:noise-div] [0 12])
+    (ctrl/slider settings (fn [v] (f/format ["Noise Multiplier 1/" (f/float 1)] (Math/pow 2 v)))
+                 [:noise-div] [0 12 0.1])
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
                                      "No Jitter")) [:jitter] [0 32])
     (when (= (:calc-points @settings) "flow-points")
