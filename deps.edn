@@ -55,7 +55,7 @@
   :test
   {:extra-paths ["test"]
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
-                lambdaisland/kaocha {:mvn/version "1.0.887"}
+                lambdaisland/kaocha {:mvn/version "1.0.902"}
                 com.lambdaisland/kaocha-cljs {:mvn/version "1.0.113"}}}}}
 
 ;; fastmath is clojure only, but worth taking a look at for certain impls
