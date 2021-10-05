@@ -10,20 +10,21 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defrecord Agent [position size velocity destination])
+(defrecord Agent [position size velocity max-velocity destination])
 
 (defn overlap? [agent {:keys [position size]}]
   (< (geom/dist (:position agent) position) (+ size (:size agent))))
 
 (defn add-agent [agents]
   (let [pos (tm/random 0.4 0.6)
+        tgt (tm/random 0.4 0.6)
         vel (tm/random 0.8 1.2)
         [position velocity destination]
-        (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0) (cq/rel-vec 1.0 pos)]
-                   [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0) (cq/rel-vec 0.0 pos)]
-                   [(cq/rel-vec pos 0.0) (gv/vec2 0 vel) (cq/rel-vec pos 1.0)]
-                   [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel)) (cq/rel-vec pos 0.0)]])
-        agent (->Agent position 5.0 velocity destination)]
+        (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0) (cq/rel-vec 1.0 tgt)]
+                   [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0) (cq/rel-vec 0.0 tgt)]
+                   [(cq/rel-vec pos 0.0) (gv/vec2 0 vel) (cq/rel-vec tgt 1.0)]
+                   [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel)) (cq/rel-vec tgt 0.0)]])
+        agent (->Agent position 5.0 velocity vel destination)]
     (when-not (some (partial overlap? agent) agents)
       agent)))
 
@@ -34,15 +35,34 @@
 
 ;; TODO: implement collision avoidance
 ;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
-(defn adjust [agent nearby]
-  agent)
+;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777
+;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
+(def max-force 3.0)
+(def mass 10)
+
+;; TODO add avoid for barriers
+(defn avoid [{:keys [position velocity]} nearby]
+  (if (empty? nearby)
+    (gv/vec2)
+    (let [closest (apply min-key
+                         (fn [{pos :position}] (geom/dist-squared position pos))
+                         nearby)
+          predicted (tm/+ position (tm/* velocity 3))]
+      (tm/normalize (tm/- predicted (:position closest)) max-force))))
+
+(defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby]
+  (let [seek (tm/normalize (tm/- destination position) max-velocity)
+        avoid (avoid agent nearby)
+        goal (tm/+ seek avoid)
+        steering (tm/div (tm/limit goal max-force) mass)]
+    (assoc agent :velocity (tm/limit (tm/+ velocity steering) max-velocity))))
 
 (defn predict [agents bounds]
   (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
                      (spatialtree/quadtree bounds) agents)]
     (for [{:keys [position size] :as agent} agents]
-      (let [nearby (spatialtree/select-with-circle tree position (* 6 size))]
-        (adjust agent nearby)))))
+      (let [nearby (spatialtree/select-with-circle tree position (* 2 size))]
+        (steering agent (remove #{agent} nearby))))))
 
 (defn outside? [bounds {:keys [position]}]
   (not (geom/contains-point? bounds position)))
@@ -64,7 +84,7 @@
 
 (defn update-state [{:keys [agents bounds] :as state}]
   (cond-> state
-    (< (count agents) 10)
+    (< (count agents) 20)
     (update :agents add-agents)
     :always
     (update :agents predict bounds)
@@ -86,7 +106,7 @@
     (cq/circle position size)
     (q/stroke 0.3 0.8 0.5 1.0)
     (q/stroke-weight 2.0)
-    (q/line position (tm/+ position (tm/* velocity 5.0)))))
+    (q/line position (tm/+ position (tm/* velocity size)))))
 
 (sketch/defquil traffic-intersection
   :created-at "2021-10-05"
