@@ -10,7 +10,7 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defrecord Agent [position size velocity])
+(defrecord Agent [position size velocity destination])
 
 (defn overlap? [agent {:keys [position size]}]
   (< (geom/dist (:position agent) position) (+ size (:size agent))))
@@ -18,11 +18,12 @@
 (defn add-agent [agents]
   (let [pos (tm/random 0.4 0.6)
         vel (tm/random 0.8 1.2)
-        [position velocity] (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0)]
-                                       [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0)]
-                                       [(cq/rel-vec pos 0.0) (gv/vec2 0 vel)]
-                                       [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel))]])
-        agent (->Agent position 5.0 velocity)]
+        [position velocity destination]
+        (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0) (cq/rel-vec 1.0 pos)]
+                   [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0) (cq/rel-vec 0.0 pos)]
+                   [(cq/rel-vec pos 0.0) (gv/vec2 0 vel) (cq/rel-vec pos 1.0)]
+                   [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel)) (cq/rel-vec pos 0.0)]])
+        agent (->Agent position 5.0 velocity destination)]
     (when-not (some (partial overlap? agent) agents)
       agent)))
 
