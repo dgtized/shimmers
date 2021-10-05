@@ -6,6 +6,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -30,19 +31,24 @@
     (conj agents agent)
     agents))
 
-(defn predict [agents]
-  agents)
+(defn adjust [agent nearby]
+  agent)
 
-(defn outside? [{:keys [position]}]
-  (-> (rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 1.0 1.0))
-      (geom/contains-point? position)
-      not))
+(defn predict [agents bounds]
+  (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
+                     (spatialtree/quadtree bounds) agents)]
+    (for [{:keys [position size] :as agent} agents]
+      (let [nearby (spatialtree/select-with-circle tree position (* 6 size))]
+        (adjust agent nearby)))))
 
-(defn move [agents]
+(defn outside? [bounds {:keys [position]}]
+  (not (geom/contains-point? bounds position)))
+
+(defn move [agents bounds]
   (->> agents
        (map (fn [{:keys [velocity] :as agent}]
               (update agent :position tm/+ velocity)))
-       (remove outside?)))
+       (remove (partial outside? bounds))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -50,16 +56,17 @@
                 (rect/rect (cq/rel-vec 0.66 0.0) (cq/rel-vec 1.0 0.33))
                 (rect/rect (cq/rel-vec 0.0 0.66) (cq/rel-vec 0.33 1.0))
                 (rect/rect (cq/rel-vec 0.66 0.66) (cq/rel-vec 1.0 1.0))]
+   :bounds (rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 1.0 1.0))
    :agents []})
 
-(defn update-state [{:keys [agents] :as state}]
+(defn update-state [{:keys [agents bounds] :as state}]
   (cond-> state
     (< (count agents) 10)
     (update :agents add-agents)
     :always
-    (update :agents predict)
+    (update :agents predict bounds)
     :always
-    (update :agents move)))
+    (update :agents move bounds)))
 
 (defn draw [{:keys [exclusions agents]}]
   (q/background 1.0 0.25)
