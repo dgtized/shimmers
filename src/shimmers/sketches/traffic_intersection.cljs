@@ -8,7 +8,8 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.probability :as p]))
 
 (defrecord Agent [position size velocity max-velocity destination])
 
@@ -18,7 +19,7 @@
 (defn add-agent [agents]
   (let [pos (tm/random 0.4 0.6)
         tgt (tm/random 0.4 0.6)
-        vel (tm/random 0.8 1.2)
+        vel (tm/random 0.9 1.5)
         [position velocity destination]
         (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0) (cq/rel-vec 1.0 tgt)]
                    [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0) (cq/rel-vec 0.0 tgt)]
@@ -84,7 +85,7 @@
 
 (defn update-state [{:keys [agents bounds] :as state}]
   (cond-> state
-    (< (count agents) 20)
+    (and (< (count agents) 50) (p/chance 0.15))
     (update :agents add-agents)
     :always
     (update :agents predict bounds)
