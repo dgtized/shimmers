@@ -32,6 +32,8 @@
     (conj agents agent)
     agents))
 
+;; TODO: implement collision avoidance
+;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
 (defn adjust [agent nearby]
   agent)
 
