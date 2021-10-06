@@ -53,3 +53,9 @@
         (* radians)
         unit2-from-angle)
     dir))
+
+(defn perp-clockwise [[x y]]
+  (vec2 y (- x)))
+
+(defn perp-counter-clockwise [[x y]]
+  (vec2 (- y) x))
