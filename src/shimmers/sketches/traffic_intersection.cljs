@@ -3,13 +3,14 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
+            [thi.ng.geom.utils :as gu]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]))
+            [thi.ng.math.core :as tm]))
 
 (defrecord Agent [position size velocity max-velocity destination])
 
@@ -42,28 +43,35 @@
 (def mass 10)
 
 ;; TODO add avoid for barriers
-(defn avoid [{:keys [position velocity]} nearby]
-  (if (empty? nearby)
-    (gv/vec2)
-    (let [ahead (tm/+ position (tm/* velocity 2))
-          closest (apply min-key
-                         (fn [{pos :position}] (geom/dist-squared ahead pos))
-                         nearby)]
-      (tm/normalize (tm/- ahead (:position closest)) max-force))))
+(defn avoid [{:keys [position velocity size]} nearby obstacles]
+  (let [ahead (tm/+ position (tm/* velocity 2))
+        [obstacle-pt _]
+        (gu/closest-point-on-segments ahead (mapcat geom/edges obstacles))
+        closest-agent
+        (apply min-key
+               (fn [{pos :position}] (geom/dist-squared ahead pos))
+               nearby)
+        closest (if closest-agent
+                  (min-key (partial geom/dist-squared ahead) obstacle-pt (:position closest-agent))
+                  obstacle-pt)
+        dist (geom/dist position closest)]
+    (if (> dist (* 4 size))
+      (gv/vec2)
+      (tm/normalize (tm/- ahead closest) (* max-force (/ size dist))))))
 
-(defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby]
+(defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby obstacles]
   (let [seek (tm/normalize (tm/- destination position) max-velocity)
-        avoid (avoid agent nearby)
+        avoid (avoid agent nearby obstacles)
         goal (tm/+ seek avoid)
         steering (tm/div (tm/limit goal max-force) mass)]
     (assoc agent :velocity (tm/limit (tm/+ velocity steering) max-velocity))))
 
-(defn predict [agents bounds]
+(defn predict [agents bounds obstacles]
   (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
                      (spatialtree/quadtree bounds) agents)]
     (for [{:keys [position size] :as agent} agents]
       (let [nearby (spatialtree/select-with-circle tree position (* 2 size))]
-        (steering agent (remove #{agent} nearby))))))
+        (steering agent (remove #{agent} nearby) obstacles)))))
 
 (defn outside? [bounds {:keys [position]}]
   (not (geom/contains-point? bounds position)))
@@ -83,12 +91,12 @@
    :bounds (rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 1.0 1.0))
    :agents []})
 
-(defn update-state [{:keys [agents bounds] :as state}]
+(defn update-state [{:keys [agents bounds obstacles] :as state}]
   (cond-> state
     (and (< (count agents) 50) (p/chance 0.15))
     (update :agents add-agents)
     :always
-    (update :agents predict bounds)
+    (update :agents predict bounds obstacles)
     :always
     (update :agents move bounds)))
 
