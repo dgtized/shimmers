@@ -54,10 +54,9 @@
         closest (if closest-agent
                   (min-key (partial geom/dist-squared ahead) obstacle-pt (:position closest-agent))
                   obstacle-pt)
-        dist (geom/dist position closest)]
-    (if (> dist (* 4 size))
-      (gv/vec2)
-      (tm/normalize (tm/- ahead closest) (* max-force (/ size dist))))))
+        min-dist-sqr (* size size)
+        dist-sqr (geom/dist-squared ahead closest)]
+    (tm/normalize (tm/- ahead closest) (* max-force (tm/clamp01 (/ min-dist-sqr dist-sqr))))))
 
 (defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby obstacles]
   (let [seek (tm/normalize (tm/- destination position) max-velocity)
