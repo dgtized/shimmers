@@ -112,7 +112,7 @@
     (update :agents move bounds)))
 
 (defn draw [{:keys [obstacles agents]}]
-  (q/background 1.0 0.25)
+  (q/background 1.0 0.4)
   (q/fill 0.8)
   (q/no-stroke)
   (doseq [obstacle obstacles]
