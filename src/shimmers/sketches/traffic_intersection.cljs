@@ -81,7 +81,7 @@
   (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
                      (spatialtree/quadtree bounds) agents)]
     (for [{:keys [position size] :as agent} agents]
-      (let [nearby (spatialtree/select-with-circle tree position (* 2 size))]
+      (let [nearby (spatialtree/select-with-circle tree position (* 4 size))]
         (steering agent (remove #{agent} nearby) obstacles)))))
 
 (defn outside? [bounds {:keys [position]}]
