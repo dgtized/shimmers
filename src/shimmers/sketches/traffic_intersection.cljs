@@ -66,7 +66,7 @@
         closest (if closest-agent
                   (min-key (partial geom/dist-squared ahead) obstacle-pt (:position closest-agent))
                   obstacle-pt)
-        min-dist-sqr (* size size)
+        min-dist-sqr (* 8 size size)
         dist-sqr (geom/dist-squared ahead closest)]
     (tm/normalize (tm/- ahead closest) (* max-force (tm/clamp01 (/ min-dist-sqr dist-sqr))))))
 
