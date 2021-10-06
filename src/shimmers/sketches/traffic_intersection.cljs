@@ -39,6 +39,7 @@
 ;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
 ;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777
 ;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
+(def max-agents 100)
 (def max-force 3.0)
 (def mass 10)
 
@@ -92,7 +93,7 @@
 
 (defn update-state [{:keys [agents bounds obstacles] :as state}]
   (cond-> state
-    (and (< (count agents) 50) (p/chance 0.15))
+    (and (< (count agents) max-agents) (p/chance 0.15))
     (update :agents add-agents)
     :always
     (update :agents predict bounds obstacles)
