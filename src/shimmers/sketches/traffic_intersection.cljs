@@ -12,6 +12,15 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
+;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777
+;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
+(def max-agents 128)
+(def max-force 3.0)
+(def mass 8)
+(def search-dist 24)
+(def min-force-dist (* 2 mass))
+
 (defrecord Agent [position size velocity max-velocity destination])
 
 (defn overlap? [agent {:keys [position size]}]
@@ -37,7 +46,7 @@
                    [(cq/rel-vec pos 0.0) (gv/vec2 0 vel)]
                    [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel))]])
         destination (random-exit bounds position tgt)
-        agent (->Agent position 5.0 velocity vel destination)]
+        agent (->Agent position mass velocity vel destination)]
     (when-not (some (partial overlap? agent) agents)
       agent)))
 
@@ -46,16 +55,8 @@
     (conj agents agent)
     agents))
 
-;; TODO: implement collision avoidance
-;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
-;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777
-;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
-(def max-agents 128)
-(def max-force 3.0)
-(def mass 10)
-
 ;; TODO add avoid for barriers
-(defn avoid [{:keys [position velocity size]} nearby obstacles]
+(defn avoid [{:keys [position velocity]} nearby obstacles]
   (let [ahead (tm/+ position (tm/* velocity 2))
         [obstacle-pt _]
         (gu/closest-point-on-segments ahead (mapcat geom/edges obstacles))
@@ -66,9 +67,9 @@
         closest (if closest-agent
                   (min-key (partial geom/dist-squared ahead) obstacle-pt (:position closest-agent))
                   obstacle-pt)
-        min-dist-sqr (* 8 size size)
-        dist-sqr (geom/dist-squared ahead closest)]
-    (tm/normalize (tm/- ahead closest) (* max-force (tm/clamp01 (/ min-dist-sqr dist-sqr))))))
+        dist-sqr (geom/dist-squared ahead closest)
+        dist-scale (tm/clamp01 (/ (* min-force-dist min-force-dist) dist-sqr))]
+    (tm/normalize (tm/- ahead closest) (* max-force dist-scale))))
 
 (defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby obstacles]
   (let [seek (tm/normalize (tm/- destination position) max-velocity)
@@ -80,8 +81,8 @@
 (defn predict [agents bounds obstacles]
   (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
                      (spatialtree/quadtree bounds) agents)]
-    (for [{:keys [position size] :as agent} agents]
-      (let [nearby (spatialtree/select-with-circle tree position (* 4 size))]
+    (for [{:keys [position] :as agent} agents]
+      (let [nearby (spatialtree/select-with-circle tree position search-dist)]
         (steering agent (remove #{agent} nearby) obstacles)))))
 
 (defn outside? [bounds {:keys [position]}]
