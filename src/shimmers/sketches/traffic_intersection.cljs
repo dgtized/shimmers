@@ -20,6 +20,7 @@
 (def mass 8)
 (def search-dist 24)
 (def min-force-dist (* 2 mass))
+(def look-ahead (* 2 mass))
 
 (defrecord Agent [position size velocity max-velocity destination])
 
@@ -57,7 +58,7 @@
 
 ;; TODO add avoid for barriers
 (defn avoid [{:keys [position velocity]} nearby obstacles]
-  (let [ahead (tm/+ position (tm/* velocity 2))
+  (let [ahead (tm/+ position (tm/normalize velocity look-ahead))
         [obstacle-pt _]
         (gu/closest-point-on-segments ahead (mapcat geom/edges obstacles))
         closest-agent
