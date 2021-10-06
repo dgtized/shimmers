@@ -45,11 +45,11 @@
 (defn avoid [{:keys [position velocity]} nearby]
   (if (empty? nearby)
     (gv/vec2)
-    (let [closest (apply min-key
-                         (fn [{pos :position}] (geom/dist-squared position pos))
-                         nearby)
-          predicted (tm/+ position (tm/* velocity 3))]
-      (tm/normalize (tm/- predicted (:position closest)) max-force))))
+    (let [ahead (tm/+ position (tm/* velocity 2))
+          closest (apply min-key
+                         (fn [{pos :position}] (geom/dist-squared ahead pos))
+                         nearby)]
+      (tm/normalize (tm/- ahead (:position closest)) max-force))))
 
 (defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby]
   (let [seek (tm/normalize (tm/- destination position) max-velocity)
