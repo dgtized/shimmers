@@ -76,10 +76,10 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:exclusions [(rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 0.33 0.33))
-                (rect/rect (cq/rel-vec 0.66 0.0) (cq/rel-vec 1.0 0.33))
-                (rect/rect (cq/rel-vec 0.0 0.66) (cq/rel-vec 0.33 1.0))
-                (rect/rect (cq/rel-vec 0.66 0.66) (cq/rel-vec 1.0 1.0))]
+  {:obstacles [(rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 0.33 0.33))
+               (rect/rect (cq/rel-vec 0.66 0.0) (cq/rel-vec 1.0 0.33))
+               (rect/rect (cq/rel-vec 0.0 0.66) (cq/rel-vec 0.33 1.0))
+               (rect/rect (cq/rel-vec 0.66 0.66) (cq/rel-vec 1.0 1.0))]
    :bounds (rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 1.0 1.0))
    :agents []})
 
@@ -92,12 +92,12 @@
     :always
     (update :agents move bounds)))
 
-(defn draw [{:keys [exclusions agents]}]
+(defn draw [{:keys [obstacles agents]}]
   (q/background 1.0 0.25)
   (q/fill 0.8)
   (q/no-stroke)
-  (doseq [boundary exclusions]
-    (cq/draw-shape (geom/vertices boundary)))
+  (doseq [obstacle obstacles]
+    (cq/draw-shape (geom/vertices obstacle)))
   (q/no-fill)
 
   (doseq [{:keys [position size velocity]} agents]
