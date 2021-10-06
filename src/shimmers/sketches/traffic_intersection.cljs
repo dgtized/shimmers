@@ -17,21 +17,32 @@
 (defn overlap? [agent {:keys [position size]}]
   (< (geom/dist (:position agent) position) (+ size (:size agent))))
 
-(defn add-agent [agents]
+(defn random-exit
+  "Pick a random exit edge not on the starting same edge as the start."
+  [bounds start target]
+  (let [[p q] (->> bounds
+                   geom/edges
+                   (remove (fn [[p q]] (tm/delta= (+ (geom/dist start p) (geom/dist start q))
+                                                 (geom/dist p q))))
+                   rand-nth)]
+    (tm/mix p q target)))
+
+(defn add-agent [agents bounds]
   (let [pos (tm/random 0.4 0.6)
         tgt (tm/random 0.4 0.6)
         vel (tm/random 0.9 1.5)
-        [position velocity destination]
-        (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0) (cq/rel-vec 1.0 tgt)]
-                   [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0) (cq/rel-vec 0.0 tgt)]
-                   [(cq/rel-vec pos 0.0) (gv/vec2 0 vel) (cq/rel-vec tgt 1.0)]
-                   [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel)) (cq/rel-vec tgt 0.0)]])
+        [position velocity]
+        (rand-nth [[(cq/rel-vec 0.0 pos) (gv/vec2 vel 0)]
+                   [(cq/rel-vec 1.0 pos) (gv/vec2 (- vel) 0)]
+                   [(cq/rel-vec pos 0.0) (gv/vec2 0 vel)]
+                   [(cq/rel-vec pos 1.0) (gv/vec2 0 (- vel))]])
+        destination (random-exit bounds position tgt)
         agent (->Agent position 5.0 velocity vel destination)]
     (when-not (some (partial overlap? agent) agents)
       agent)))
 
-(defn add-agents [agents]
-  (if-let [agent (add-agent agents)]
+(defn add-agents [agents bounds]
+  (if-let [agent (add-agent agents bounds)]
     (conj agents agent)
     agents))
 
@@ -94,7 +105,7 @@
 (defn update-state [{:keys [agents bounds obstacles] :as state}]
   (cond-> state
     (and (< (count agents) max-agents) (p/chance 0.15))
-    (update :agents add-agents)
+    (update :agents add-agents bounds)
     :always
     (update :agents predict bounds obstacles)
     :always
