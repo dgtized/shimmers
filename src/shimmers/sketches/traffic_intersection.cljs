@@ -20,7 +20,6 @@
 (def mass 8)
 (def search-dist 24)
 (def min-force-dist (* 2 mass))
-(def look-ahead (* 2 mass))
 
 (defrecord Agent [position size velocity max-velocity destination])
 
@@ -57,20 +56,19 @@
     agents))
 
 ;; TODO add avoid for barriers
-(defn avoid [{:keys [position velocity]} nearby obstacles]
-  (let [ahead (tm/+ position (tm/normalize velocity look-ahead))
-        [obstacle-pt _]
-        (gu/closest-point-on-segments ahead (mapcat geom/edges obstacles))
+(defn avoid [{:keys [position]} nearby obstacles]
+  (let [[obstacle-pt _]
+        (gu/closest-point-on-segments position (mapcat geom/edges obstacles))
         closest-agent
         (apply min-key
-               (fn [{pos :position}] (geom/dist-squared ahead pos))
+               (fn [{pos :position}] (geom/dist-squared position pos))
                nearby)
         closest (if closest-agent
-                  (min-key (partial geom/dist-squared ahead) obstacle-pt (:position closest-agent))
+                  (min-key (partial geom/dist-squared position) obstacle-pt (:position closest-agent))
                   obstacle-pt)
-        dist-sqr (geom/dist-squared ahead closest)
+        dist-sqr (geom/dist-squared position closest)
         dist-scale (tm/clamp01 (/ (* min-force-dist min-force-dist) dist-sqr))]
-    (tm/normalize (tm/- ahead closest) (* max-force dist-scale))))
+    (tm/normalize (tm/- position closest) (* max-force dist-scale))))
 
 (defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby obstacles]
   (let [seek (tm/normalize (tm/- destination position) max-velocity)
