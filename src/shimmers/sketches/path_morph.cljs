@@ -3,16 +3,40 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.utils :as gu]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as geom]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
-            [shimmers.common.quil :as cq]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.utils :as gu]
+            [thi.ng.math.core :as tm]))
 
 ;; TODO: define a path record from a set of points
 (defn zig-zag []
   (gp/polygon2 [[0.2 0.2] [0.8 0.2]
                 [0.2 0.8] [0.8 0.8]]))
+
+(def shape-sequence
+  [[0.0 (geom/rotate (gt/triangle2 [0.0 0.0] [1.0 1.0] [0.0 1.0]) 0.5)]
+   [0.5 (rect/rect 0.0 0.0 1.0 1.0)]
+   [1.0 (gc/circle 0.5)]])
+
+(defn morph [from to t]
+  (for [v (range 0.0 1.0 0.03)]
+    (tm/mix (geom/point-at from v) (geom/point-at to v) t)))
+
+(defn shape-at [shapes t]
+  (cond (<= t 0.0)
+        (let [s (last (first shapes))]
+          (morph s s 0.0))
+        (>= t 1.0)
+        (let [s (last (last shapes))]
+          (morph s s 0.0))
+        :else
+        (let [[before after] (split-with (fn [[time _]] (< time t)) shapes)
+              [t0 from] (last before)
+              [t1 to] (first after)]
+          (morph from to (/ (- t t0) (- t1 t0))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -20,13 +44,23 @@
    :t 0.0})
 
 (defn update-state [state]
-  (update state :t + 0.001))
+  (update state :t + 0.0025))
 
 (defn draw [{:keys [path t]}]
-  (q/background 1.0 0.1)
+  ;; (q/background 1.0 0.1)
+  (q/no-fill)
+  (q/stroke-weight 0.5)
+  (q/stroke 0.0 0.5)
   (let [bounds (rect/rect 0 0 (q/width) (q/height))
-        p (geom/unmap-point bounds (gu/point-at (mod t 1.0) (:points path)))]
-    (cq/circle p 20)))
+        t (mod t 1.0)
+        p (geom/unmap-point bounds (gu/point-at t (:points path)))
+        shape (gp/polygon2 (shape-at shape-sequence t))]
+    ;; (cq/circle p 1)
+    (q/begin-shape)
+    (doseq [v (geom/vertices (geom/translate (geom/scale-size shape 50.0) p))]
+      (apply q/vertex v))
+    (q/end-shape :close)
+    ))
 
 (sketch/defquil path-morph
   :created-at "2021-10-06"
