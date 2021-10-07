@@ -84,9 +84,11 @@
    on-navigate
    {:use-fragment true})
 
+  ;; kick off favicon animation
+  (favicon/start 100)
+
   ;; (rdom/render [debug-root] (dom/getElement "route-debug-mount"))
-  (rdom/render [page-root] (dom/getElement "shimmer-mount"))
-  (favicon/auto-update! 100))
+  (rdom/render [page-root] (dom/getElement "shimmer-mount")))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))

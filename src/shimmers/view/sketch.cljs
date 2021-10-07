@@ -5,7 +5,8 @@
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui :as ui]
-            [shimmers.math.deterministic-random :as dr]))
+            [shimmers.math.deterministic-random :as dr]
+            [shimmers.view.favicon :as favicon]))
 
 ;; detect window size for initial setup?
 (defn fit-window []
@@ -32,6 +33,9 @@
     ;; performance optimizations?
     (dr/random-seed seed))
 
+  ;; disable favicon animation during sketch
+  (favicon/stop)
+
   (ui/screen-view (name (:id sketch)))
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
@@ -49,7 +53,10 @@
               "route-debug-mount" "debug-mount"]]
     (-> id
         dom/getElement
-        rdom/unmount-component-at-node)))
+        rdom/unmount-component-at-node))
+
+  ;; enable favicon animation when viewing indices
+  (favicon/start 100))
 
 (defn restart-sketch [sketch]
   (sketch-link rfe/push-state (:id sketch)))

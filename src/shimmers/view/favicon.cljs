@@ -44,3 +44,10 @@
   (when @favicon-active
     (favicon)
     (.setTimeout js/window auto-update! interval)))
+
+(defn start [interval]
+  (reset! favicon-active true)
+  (auto-update! interval))
+
+(defn stop []
+  (reset! favicon-active false))
