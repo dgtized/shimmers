@@ -18,7 +18,7 @@
 (def max-agents 128)
 (def max-force 3.0)
 (def mass 8)
-(def search-dist 24)
+(def search-dist (* 3 mass))
 (def min-force-dist (* 2 mass))
 
 (defrecord Agent [position size velocity max-velocity destination])
