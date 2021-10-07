@@ -16,7 +16,7 @@
 ;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777
 ;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-seek--gamedev-849
 (def max-agents 128)
-(def max-force 3.0)
+(def max-force 4.0)
 (def mass 8)
 (def search-dist (* 3 mass))
 (def min-force-dist (* 2 mass))
