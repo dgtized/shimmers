@@ -10,7 +10,9 @@
         (apply nil (clj->js args)))))
 
 (defn screen-view [sketch-name]
-  (gtag "event" "screen_view" {"screen_name" sketch-name}))
+  (gtag "event" "screen_view"
+        {"app_name" "shimmers"
+         "screen_name" sketch-name}))
 
 (defn code-link [sketch]
   (if-let [{:keys [file line]} sketch]
