@@ -1,15 +1,24 @@
 (ns shimmers.algorithm.rtree-test
   (:require [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+            [clojure.set :as set]
             [shimmers.algorithm.rtree :as sut]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.utils :as gu]))
 
 (deftest creation
   (is (nil? (sut/create [])))
-  (let [circles (repeatedly 10 #(gc/circle (rand) (rand) (rand)))
-        bounds (sut/compute-bounds (map geom/bounds circles))
+  (let [circles (repeatedly 10 #(gc/circle (rand-int 100) (rand-int 100) (rand-int 10)))
+        bounds (gu/coll-bounds circles)
         tree (sut/create circles)
-        search (sut/search-intersection tree bounds)]
-    (is (= (set circles) (set search)))))
+        search (sut/search-intersection tree bounds)
+        example (first circles)]
+    (is (= (set circles) (set search)))
+    (is (= (set circles) (set (sut/search-intersection tree (rect/rect 0 0 100 100)))))
+    (is (set/subset? (set [example]) (set (sut/search-intersection tree (geom/bounds example)))))
+    (is (empty? (sut/search-intersection tree (rect/rect 2 2 3 3))))))
 
 (comment (t/run-tests))
+
+(comment (sut/create (repeatedly 30 #(gc/circle (rand-int 100) (rand-int 100) 1))))

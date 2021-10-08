@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.rtree
   (:require [thi.ng.geom.core :as geom]
-            [thi.ng.geom.rect :as rect]))
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.geom.utils :as gu]))
 
 ;; adapted from
 ;; https://medium.com/@wetter.j/rtrees-in-clojure-51aa164a6102
@@ -9,18 +10,11 @@
 
 (defrecord Node [bounds data children])
 
-(defn compute-bounds [boxes]
-  (let [x0 (apply min (map rect/left boxes))
-        y0 (apply min (map rect/bottom boxes))
-        x1 (apply max (map rect/right boxes))
-        y1 (apply max (map rect/top boxes))]
-    (rect/rect [x0 y0] [x1 y1])))
-
 (defn make-leaf [bounds data]
   (Node. bounds data nil))
 
 (defn make-branch [children]
-  (Node. (compute-bounds (map :bounds children)) nil children))
+  (Node. (gu/coll-bounds (map :bounds children)) nil children))
 
 (defn create
   ([xs] (create {} xs))
