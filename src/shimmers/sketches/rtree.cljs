@@ -27,10 +27,12 @@
             (assoc rtree :depth 0)))
 
 (defn draw [{:keys [rtree]}]
+  (q/background 1.0)
+  (q/no-fill)
   (let [tree (tree-walk-with-depth rtree)
         max-depth (apply max (map :depth tree))]
     (doseq [{:keys [bounds data depth]} tree]
-      (q/stroke (- 1.0 (/ depth (inc max-depth))))
+      (q/stroke (/ depth (inc max-depth)))
       (cq/rectangle bounds)
       (when-let [{p :p r :r} data]
         (q/stroke 0.0 0.6 0.6 1.0)
