@@ -83,6 +83,7 @@
             shimmers.sketches.ripples
             shimmers.sketches.rolling-shapes
             shimmers.sketches.rose
+            shimmers.sketches.rtree
             shimmers.sketches.sand-strokes
             shimmers.sketches.scintillation
             shimmers.sketches.sea-and-sky
