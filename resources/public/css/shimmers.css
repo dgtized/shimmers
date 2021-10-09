@@ -20,12 +20,9 @@
 }
 
 .canvas {
-  padding: 2em;
-}
-
-canvas {
-  border: 1px dotted #eee;
+  margin: 1em;
   padding: 1em;
+  border: 1.5px dotted #eee;
 }
 
 #interface {
