@@ -24,7 +24,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:circles (repeatedly (:shapes @ui-state) #(gc/circle (cq/rel-vec (rand) (rand)) 2.5))})
+  {:circles (repeatedly (:shapes @ui-state) #(gc/circle (map int (cq/rel-vec (rand) (rand))) 3.0))})
 
 (defn update-state [{:keys [circles] :as state}]
   (let [mp (mouse-position)
@@ -70,8 +70,8 @@
   thi.ng.geom.vector.Vec2
   (-edn [s]
     (let [[x y] s]
-      (tagged-literal 'vec2 [(tm/roundto x 0.001)
-                             (tm/roundto y 0.001)]))))
+      (tagged-literal 'vec2 [(tm/roundto x 0.01)
+                             (tm/roundto y 0.01)]))))
 
 (defn ui-controls []
   [:div
