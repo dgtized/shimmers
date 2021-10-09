@@ -20,16 +20,21 @@
 (defn update-state [{:keys [circles] :as state}]
   (assoc state :rtree (rtree/create (select-keys @ui-state [:max-children]) circles)))
 
+(defn tree-walk-with-depth [rtree]
+  (tree-seq (fn [x] (not-empty (:children x)))
+            (fn [{:keys [depth children]}]
+              (map #(assoc % :depth (inc depth)) children))
+            (assoc rtree :depth 0)))
+
 (defn draw [{:keys [rtree]}]
-  (doseq [{:keys [bounds data depth]}
-          (tree-seq (fn [x] (not-empty (:children x)))
-                    (fn [{:keys [depth children]}] (map #(assoc % :depth (inc depth)) children))
-                    (assoc rtree :depth 0))]
-    (q/stroke (- 1.0 (/ 1 (inc depth))))
-    (cq/rectangle bounds)
-    (when-let [{p :p r :r} data]
-      (q/stroke 0.0 0.6 0.6 1.0)
-      (cq/circle p r))))
+  (let [tree (tree-walk-with-depth rtree)
+        max-depth (apply max (map :depth tree))]
+    (doseq [{:keys [bounds data depth]} tree]
+      (q/stroke (- 1.0 (/ depth (inc max-depth))))
+      (cq/rectangle bounds)
+      (when-let [{p :p r :r} data]
+        (q/stroke 0.0 0.6 0.6 1.0)
+        (cq/circle p r)))))
 
 (defn ui-controls []
   [:div
