@@ -1,5 +1,7 @@
 (ns shimmers.sketches.rtree
   (:require
+   [fipp.edn :as fedn]
+   [fipp.ednize :refer [IEdn]]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.rtree :as rtree]
@@ -8,11 +10,14 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defonce ui-state
   (ctrl/state {:shapes 1000
                :max-children 10}))
+
+(defonce hit (ctrl/state {}))
 
 (defn mouse-position []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
@@ -22,10 +27,15 @@
   {:circles (repeatedly (:shapes @ui-state) #(gc/circle (cq/rel-vec (rand) (rand)) 2.5))})
 
 (defn update-state [{:keys [circles] :as state}]
-  (let [tree (rtree/create (select-keys @ui-state [:max-children]) circles)]
+  (let [mp (mouse-position)
+        tree (rtree/create (select-keys @ui-state [:max-children]) circles)
+        path (rtree/path-search tree mp)]
+    (reset! hit {:mouse mp
+                 :hit (:data (last path))
+                 :bounds (map :bounds path)})
     (assoc state
            :rtree tree
-           :path (rtree/path-search tree (mouse-position)))))
+           :path path)))
 
 (defn tree-walk-with-depth [rtree]
   (tree-seq (fn [x] (not-empty (:children x)))
@@ -51,13 +61,27 @@
     (doseq [{:keys [bounds]} path]
       (cq/rectangle bounds))))
 
+;; Simplify IEdn output for pretty printing
+(extend-protocol IEdn
+  thi.ng.geom.types.Rect2
+  (-edn [{:keys [p size]}]
+    (tagged-literal 'Rect2 {:p p :size size}))
+
+  thi.ng.geom.vector.Vec2
+  (-edn [s]
+    (let [[x y] s]
+      (tagged-literal 'vec2 [(tm/roundto x 0.001)
+                             (tm/roundto y 0.001)]))))
+
 (defn ui-controls []
   [:div
    [:em "Requires Restart"]
    (ctrl/slider ui-state (fn [v] (str "Seed Shapes " v)) [:shapes] [100 2000 100])
    [:p]
    [:em "On Demand"]
-   (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])])
+   (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])
+   ;; Debug output on hit path and mouse location
+   [:p [:pre (with-out-str (fedn/pprint @hit))]]])
 
 (sketch/defquil rtree
   :created-at "2021-10-09"
