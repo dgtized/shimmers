@@ -18,8 +18,11 @@
   state)
 
 (defn draw [{:keys [rtree]}]
-  (doseq [{:keys [bounds data]} (tree-seq (fn [x] (not-empty (:children x))) :children rtree)]
-    (q/stroke 0)
+  (doseq [{:keys [bounds data depth]}
+          (tree-seq (fn [x] (not-empty (:children x)))
+                    (fn [{:keys [depth children]}] (map #(assoc % :depth (inc depth)) children))
+                    (assoc rtree :depth 0))]
+    (q/stroke (- 1.0 (/ 1 (inc depth))))
     (cq/rectangle bounds)
     (when-let [{p :p r :r} data]
       (q/stroke 0.0 0.6 0.6 1.0)
