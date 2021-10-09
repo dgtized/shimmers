@@ -7,18 +7,25 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.circle :as gc]))
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.vector :as gv]))
 
 (defonce ui-state
   (ctrl/state {:shapes 1000
                :max-children 10}))
+
+(defn mouse-position []
+  (gv/vec2 (q/mouse-x) (q/mouse-y)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:circles (repeatedly (:shapes @ui-state) #(gc/circle (cq/rel-vec (rand) (rand)) 2.5))})
 
 (defn update-state [{:keys [circles] :as state}]
-  (assoc state :rtree (rtree/create (select-keys @ui-state [:max-children]) circles)))
+  (let [tree (rtree/create (select-keys @ui-state [:max-children]) circles)]
+    (assoc state
+           :rtree tree
+           :path (rtree/path-search tree (mouse-position)))))
 
 (defn tree-walk-with-depth [rtree]
   (tree-seq (fn [x] (not-empty (:children x)))
@@ -26,9 +33,10 @@
               (map #(assoc % :depth (inc depth)) children))
             (assoc rtree :depth 0)))
 
-(defn draw [{:keys [rtree]}]
+(defn draw [{:keys [rtree path]}]
   (q/background 1.0)
   (q/no-fill)
+  (q/stroke-weight 1.0)
   (let [tree (tree-walk-with-depth rtree)
         max-depth (apply max (map :depth tree))]
     (doseq [{:keys [bounds data depth]} tree]
@@ -36,7 +44,12 @@
       (cq/rectangle bounds)
       (when-let [{p :p r :r} data]
         (q/stroke 0.0 0.6 0.6 1.0)
-        (cq/circle p r)))))
+        (cq/circle p r)))
+
+    (q/stroke-weight 1.5)
+    (q/stroke 0.6 0.4 0.5)
+    (doseq [{:keys [bounds]} path]
+      (cq/rectangle bounds))))
 
 (defn ui-controls []
   [:div

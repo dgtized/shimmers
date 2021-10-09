@@ -48,3 +48,9 @@
             (when (intersects? box bounds)
               (lazy-seq (cons data (mapcat #(search % box) children)))))]
     (remove nil? (search tree box))))
+
+(defn path-search
+  [{:keys [bounds children] :as node} point]
+  (when (geom/contains-point? bounds point)
+    (lazy-seq (cons node
+                    (mapcat #(path-search % point) children)))))
