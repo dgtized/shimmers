@@ -9,12 +9,13 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]))
 
-(defonce ui-state (ctrl/state {:max-children 10}))
+(defonce ui-state
+  (ctrl/state {:shapes 1000
+               :max-children 10}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [circles (repeatedly 1000 #(gc/circle (cq/rel-vec (rand) (rand)) 2.5))]
-    {:circles circles}))
+  {:circles (repeatedly (:shapes @ui-state) #(gc/circle (cq/rel-vec (rand) (rand)) 2.5))})
 
 (defn update-state [{:keys [circles] :as state}]
   (assoc state :rtree (rtree/create (select-keys @ui-state [:max-children]) circles)))
@@ -31,7 +32,12 @@
       (cq/circle p r))))
 
 (defn ui-controls []
-  [:div (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])])
+  [:div
+   [:em "Requires Restart"]
+   (ctrl/slider ui-state (fn [v] (str "Seed Shapes " v)) [:shapes] [100 2000 100])
+   [:p]
+   [:em "On Demand"]
+   (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])])
 
 (sketch/defquil rtree
   :created-at "2021-10-09"
