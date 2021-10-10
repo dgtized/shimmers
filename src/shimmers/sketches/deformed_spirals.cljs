@@ -6,13 +6,17 @@
    [shimmers.common.quil :as cq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as geom]
    [thi.ng.math.core :as tm]))
 
-(defn spiral [center dr dtheta steps]
+;; Concept was to make nearby spirals deform eachother like a gravity well, but
+;; just doing a noise deformation was interesting on it's own.
+
+(defn spiral [center dr dtheta steps t]
   (for [theta (range 0 (* steps dtheta) dtheta)]
-    (geom/translate (v/polar (* dr (/ theta tm/TWO_PI)) theta)
-                    center)))
+    (let [pos (v/polar (* dr (/ theta tm/TWO_PI)) theta)
+          [nx ny] (tm/div pos 192)
+          n (q/noise nx ny t)]
+      (tm/+ center pos (v/polar 40 (* n tm/TWO_PI))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -21,11 +25,12 @@
 (defn update-state [state]
   state)
 
-(defn draw [state]
+(defn draw [_]
   (q/background 1.0)
   (q/no-fill)
   (q/begin-shape)
-  (doseq [v (spiral (cq/rel-vec 0.5 0.5) 8.0 0.9 200)]
+  (doseq [v (spiral (cq/rel-vec 0.5 0.5) 9.0 0.9 512
+                    (/ (q/frame-count) 800))]
     (apply q/curve-vertex v))
   (q/end-shape))
 
