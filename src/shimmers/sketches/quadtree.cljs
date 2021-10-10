@@ -21,14 +21,17 @@
 
 (defn draw [{:keys [tree]}]
   (q/background 1.0)
+  (q/stroke-weight 0.66)
   (q/no-fill)
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
                             (fn [t] (remove nil? (spatialtree/get-children t)))
                             tree)]
     (doseq [n traversal]
-      (q/stroke 0.0)
+      (q/stroke 0.5)
       (cq/rectangle (geom/bounds n))
       (when-let [{:keys [p r]} (geom/get-point-data n)]
+        (q/stroke 0.0)
+        (cq/rectangle (geom/bounds n))
         (q/stroke 0.0 0.5 0.5)
         (cq/circle p r)))))
 
