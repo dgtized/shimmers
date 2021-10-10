@@ -19,8 +19,9 @@
             shimmers.sketches.concentric-moire
             shimmers.sketches.convex-spiral
             shimmers.sketches.cube
-            shimmers.sketches.delaunay-voronoi
             shimmers.sketches.decaying-foundations
+            shimmers.sketches.deformed-spirals
+            shimmers.sketches.delaunay-voronoi
             shimmers.sketches.disassociated-boxes
             shimmers.sketches.dispersion
             shimmers.sketches.dithering
