@@ -37,6 +37,7 @@
 
 (sketch/defquil quadtree
   :created-at "2021-10-10"
+  :tags #{:datastructures}
   :size [800 600]
   :setup setup
   :update update-state

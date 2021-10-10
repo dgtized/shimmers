@@ -85,6 +85,7 @@
 
 (sketch/defquil rtree
   :created-at "2021-10-09"
+  :tags #{:datastructures}
   :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup

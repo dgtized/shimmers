@@ -84,6 +84,7 @@
 
 (sketch/defquil kd-tree-sketch
   :created-at "2020-11-28"
+  :tags #{:datastructures}
   :size [800 600]
   :setup setup
   :update update-state
