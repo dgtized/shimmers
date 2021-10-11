@@ -37,6 +37,31 @@
                  (map (fn [s] (make-leaf (geom/bounds s) s))
                       xs))))))
 
+(comment
+  ;; https://tildesites.bowdoin.edu/~ltoma/teaching/cs340/spring08/Papers/Rtree-chap1.pdf
+  ;; consider using clojure.zip zippers for tree edits?
+  (defn insert
+    ([tree o] (insert {} tree o))
+    ([opts tree o]
+     (let [max-children (get opts :max-children 25)
+           box (geom/bounds o)
+           entry (make-leaf box o)]
+       (letfn [(search [{:keys [children] :as node}]
+                 (when (seq children)
+                   (let [child (apply min-key
+                                      (fn [t] (geom/area (gu/coll-bounds [(:bounds t) box])))
+                                      children)]
+                     (lazy-seq (cons node (search child))))))]
+         (loop [path (reverse (search tree)) root entry]
+           (if (empty? path)
+             root
+             (let [[node & remaining] path]
+               (recur remaining ))))))))
+
+  (comment
+    (def tree (create {:max-children 2} (repeatedly 10 #(rect/rect (rand-int 100) (rand-int 100) (rand-int 10) (rand-int 10)))))
+    (map (fn [t] [(:bounds t) (count (:children t))]) (insert tree (rect/rect 5 5 1 1)))))
+
 (defn intersects? [a b]
   (if (or (nil? a) (nil? b))
     false
