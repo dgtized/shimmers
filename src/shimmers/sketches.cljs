@@ -71,6 +71,7 @@
             shimmers.sketches.physarum
             shimmers.sketches.point-to-point
             shimmers.sketches.poisson-disc-sampling
+            shimmers.sketches.polygon-recomposition
             shimmers.sketches.polygrowth
             shimmers.sketches.polygrowth2
             shimmers.sketches.precipitation
