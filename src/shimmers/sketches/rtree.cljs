@@ -1,13 +1,12 @@
 (ns shimmers.sketches.rtree
   (:require
-   [fipp.edn :as fedn]
-   [fipp.ednize :refer [IEdn]]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.rtree :as rtree]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.vector :as gv]
@@ -19,7 +18,7 @@
                :upper 3.0
                :max-children 10}))
 
-(defonce hit (ctrl/state {}))
+(defonce defo (debug/state))
 
 (defn mouse-position []
   (gv/vec2 (q/mouse-x) (q/mouse-y)))
@@ -36,9 +35,9 @@
   (let [mp (mouse-position)
         tree (rtree/create (select-keys @ui-state [:max-children]) circles)
         path (rtree/path-search tree mp)]
-    (reset! hit {:mouse mp
-                 :hit (:data (last path))
-                 :bounds (map :bounds path)})
+    (reset! defo {:mouse mp
+                  :hit (:data (last path))
+                  :bounds (map :bounds path)})
     (assoc state
            :rtree tree
            :path path)))
@@ -67,18 +66,6 @@
     (doseq [{:keys [bounds]} path]
       (cq/rectangle bounds))))
 
-;; Simplify IEdn output for pretty printing
-(extend-protocol IEdn
-  thi.ng.geom.types.Rect2
-  (-edn [{:keys [p size]}]
-    (tagged-literal 'Rect2 {:p p :size size}))
-
-  thi.ng.geom.vector.Vec2
-  (-edn [s]
-    (let [[x y] s]
-      (tagged-literal 'vec2 [(tm/roundto x 0.01)
-                             (tm/roundto y 0.01)]))))
-
 (defn ui-controls []
   (let [{:keys [lower upper]} @ui-state]
     [:div
@@ -93,7 +80,7 @@
       [:h4 "On Demand"]
       (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])]
      ;; Debug output on hit path and mouse location
-     [:p [:pre (with-out-str (fedn/pprint @hit))]]]))
+     [:p (debug/display defo)]]))
 
 (sketch/defquil rtree
   :created-at "2021-10-09"
