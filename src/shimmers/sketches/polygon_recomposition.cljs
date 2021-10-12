@@ -8,14 +8,16 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.delaunay :as delaunay]
+   [thi.ng.geom.vector :as gv]))
 
 (defn modify-points [points shape]
   (let [p (rand-nth points)
         p' (p/weighted {(geom/random-point-inside shape) 1
                         (p/confusion-disk p 1.0) 8
                         (p/confusion-disk p (rand)) 4})]
-    (replace {p p'} points)))
+    (replace {p (gv/vec2 p')} points)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -31,7 +33,7 @@
     (assoc state
            :points new-points
            :hull polygon
-           :triangles (gp/tessellate* polygon))))
+           :triangles (delaunay/triangulate new-points))))
 
 (defn draw [{:keys [points hull triangles]}]
   (q/background 1.0)
