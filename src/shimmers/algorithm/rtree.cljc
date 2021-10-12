@@ -37,6 +37,7 @@
                  (map (fn [s] (make-leaf (geom/bounds s) s))
                       xs))))))
 
+#_:clj-kondo/ignore
 (comment
   ;; https://tildesites.bowdoin.edu/~ltoma/teaching/cs340/spring08/Papers/Rtree-chap1.pdf
   ;; consider using clojure.zip zippers for tree edits?
