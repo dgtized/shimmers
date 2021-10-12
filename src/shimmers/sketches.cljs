@@ -25,6 +25,7 @@
             shimmers.sketches.disassociated-boxes
             shimmers.sketches.dispersion
             shimmers.sketches.dithering
+            ;; shimmers.sketches.dreamcatcher
             shimmers.sketches.emitters
             shimmers.sketches.falling-gradients
             shimmers.sketches.fire
