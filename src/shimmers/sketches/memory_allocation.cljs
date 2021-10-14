@@ -12,8 +12,10 @@
 
 (defrecord Allocation [id base size])
 
-(defn after [{:keys [base size]}]
-  (+ base size))
+(defn after [{:keys [base size] :as alloc}]
+  (if alloc
+    (+ base size)
+    0))
 
 (defn allocate [id pages allocations size]
   (let [base (after (last allocations))]
@@ -32,7 +34,14 @@
           (update :next-id inc)
           (update :allocations concat allocs)))))
 
-;; (defn free [s id])
+(defn allocs-by-id [identifier]
+  (fn [{:keys [id]}] (= id identifier)))
+
+(defn free [{:keys [allocations] :as state} free-id]
+  (let [to-free (filter (allocs-by-id free-id) allocations)]
+    (-> state
+        (update :free + (reduce + (map :size to-free)))
+        (update :allocations (partial remove (allocs-by-id free-id))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -42,10 +51,13 @@
      :next-id 1
      :allocations []}))
 
-(defn update-state [state]
-  (if (p/chance 0.9)
-    state
-    (malloc state (int (tm/random 1 64)))))
+(defn update-state [{:keys [allocations] :as state}]
+  (cond (p/chance 0.9)
+        state
+        (and (not-empty allocations) (p/chance 0.3))
+        (free state (rand-nth (dedupe (sort (map :id allocations)))))
+        :else
+        (malloc state (int (tm/random 1 64)))))
 
 (def phi (/ (+ 1 (Math/sqrt 5)) 2))
 (defn color [id]
