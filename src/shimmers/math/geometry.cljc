@@ -3,6 +3,7 @@
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.quaternion :as quat]
+            [thi.ng.geom.rect :as rect]
             thi.ng.geom.polygon
             [thi.ng.geom.triangle :as gt]
             #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
@@ -165,6 +166,13 @@
 (defn circles-overlap? [a b]
   (let [distance (+ (:r a) (:r b))]
     (< (geom/dist (:p a) (:p b)) distance)))
+
+(defn contains-circle? [boundary {:keys [p r]}]
+  (let [[x y] p]
+    (and (> (- x r) (rect/left boundary))
+         (< (+ x r) (rect/right boundary))
+         (< (+ y r) (rect/top boundary))
+         (> (- y r) (rect/bottom boundary)))))
 
 ;; Need tests, not sure this is always working?
 (defn segment-intersect

@@ -52,13 +52,6 @@
    :scale 1.05
    :circles []})
 
-(defn contains-entity? [boundary {:keys [p r]}]
-  (let [[x y] p]
-    (and (> (- x r) (rect/left boundary))
-         (< (+ x r) (rect/right boundary))
-         (< (+ y r) (rect/top boundary))
-         (> (- y r) (rect/bottom boundary)))))
-
 (defn intersects [c1 c2]
   ;; inside or intersecting from growth
   ;; TODO: add checkbox for allowing containment or not
@@ -71,7 +64,7 @@
                         (q/random  r (- (q/height) r)))
         circle (assoc (gc/circle center r) :color (random-color))
         near (spatialtree/select-with-circle quadtree center search-radius)]
-    (if (and (contains-entity? boundary circle)
+    (if (and (geometry/contains-circle? boundary circle)
              (not (some (partial intersects circle) near)))
       circle
       nil)))
@@ -84,7 +77,8 @@
     (let [growth (assoc (geom/scale-size circle scale) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
           intersecting-circle (some (partial intersects growth) near)]
-      (if (and (contains-entity? boundary growth) (not intersecting-circle))
+      (if (and (geometry/contains-circle? boundary growth)
+               (not intersecting-circle))
         growth
         (assoc circle :done true
                :color (color-mix circle intersecting-circle))))
