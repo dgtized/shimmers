@@ -6,7 +6,8 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]))
 
 (defn make-particle []
   (let [initial-pos (cq/rel-vec (rand) (rand))]
@@ -16,9 +17,13 @@
      :acceleration (v/vec2 (q/random-2d))
      :color (color/random)}))
 
+(defn constrain2d [[x y] lower upper]
+  (v/vec2 (tm/clamp x lower upper)
+          (tm/clamp y lower upper)))
+
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
-  (let [new-velocity (-> (v/add velocity acceleration) (v/constrain2d -1.5 1.5))
+  (let [new-velocity (-> (v/add velocity acceleration) (constrain2d -1.5 1.5))
         new-position (v/add position new-velocity)
         wrapped-position (v/wrap2d new-position (q/width) (q/height))]
     (assoc particle

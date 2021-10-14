@@ -22,10 +22,6 @@
   (vec2 (tm/wrap-range x xmax)
         (tm/wrap-range y ymax)))
 
-(defn constrain2d [[x y] lower upper]
-  (vec2 (tm/clamp x lower upper)
-        (tm/clamp y lower upper)))
-
 (defn distance [v1 v2]
   (geom/dist v1 v2))
 
