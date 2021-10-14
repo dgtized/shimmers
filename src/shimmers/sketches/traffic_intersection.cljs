@@ -3,6 +3,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.core :as sm]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
@@ -20,6 +22,8 @@
 (def mass 8)
 (def search-dist (* 3 mass))
 (def min-force-dist (* 2 mass))
+
+(defonce ui-state (ctrl/state {:align-width 0.8}))
 
 (defrecord Agent [position size velocity max-velocity destination])
 
@@ -70,10 +74,29 @@
         dist-scale (tm/clamp01 (/ (* min-force-dist min-force-dist) dist-sqr))]
     (tm/normalize (tm/- position closest) (* max-force dist-scale))))
 
+(defn align
+  "Try aligning with any agents with a similar heading."
+  [{:keys [velocity]} nearby align-width]
+  (let [heading (geom/heading velocity)
+
+        common-heading
+        (filter (fn [{:keys [velocity]}]
+                  (< (sm/radial-distance (geom/heading velocity) heading)
+                     align-width))
+                nearby)]
+    (if (empty? common-heading)
+      (gv/vec2)
+      (tm/div (reduce tm/+ velocity (map :velocity common-heading))
+              (inc (count common-heading))))))
+
 (defn steering [{:keys [position velocity destination max-velocity] :as agent} nearby obstacles]
-  (let [seek (tm/normalize (tm/- destination position) max-velocity)
+  (let [state @ui-state
+        width (:align-width state)
+
+        seek (tm/normalize (tm/- destination position) max-velocity)
         avoid (avoid agent nearby obstacles)
-        goal (tm/+ seek avoid)
+        align (align agent nearby width)
+        goal (tm/+ seek avoid align)
         steering (tm/div (tm/limit goal max-force) mass)]
     (assoc agent :velocity (tm/limit (tm/+ velocity steering) max-velocity))))
 
@@ -128,8 +151,13 @@
     (q/stroke-weight 2.0)
     (q/line position (tm/+ position (tm/* velocity size)))))
 
+(defn ui-controls []
+  [:div (ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
+                     [:align-width] [0.0 Math/PI 0.1])])
+
 (sketch/defquil traffic-intersection
   :created-at "2021-10-05"
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
