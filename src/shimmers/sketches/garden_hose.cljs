@@ -10,12 +10,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as geom]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
-
-(defn constrain [bounds [x y]]
-  (gv/vec2 (tm/clamp x (rect/left bounds) (rect/right bounds))
-           (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
 (defn next-point [bounds variance {:keys [angle length] :as segment}]
   (loop [variance variance]
@@ -83,12 +78,12 @@
 
 (defn update-state [{:keys [start bounds hose] :as state}]
   (let [segments (-> hose :segments)
-        first-pos (constrain bounds (tm/mix (:base (first segments)) start 0.0))
+        first-pos (v/clamp-bounds bounds (tm/mix (:base (first segments)) start 0.0))
         last-pos (->> (tm/mix (chain/segment-endpoint (last segments))
                               (target-position) 0.01)
-                      (constrain bounds))]
+                      (v/clamp-bounds bounds))]
     (-> state
-        (update :hose hose-pressure-midpoint (partial constrain bounds) 0.02)
+        (update :hose hose-pressure-midpoint (partial v/clamp-bounds bounds) 0.02)
         (update :hose chain/chain-update first-pos last-pos))))
 
 (defn draw [{:keys [hose]}]

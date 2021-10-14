@@ -1,5 +1,6 @@
 (ns shimmers.math.vector
   (:require [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as tv]
             [thi.ng.math.core :as tm]))
 
@@ -21,6 +22,10 @@
 (defn wrap2d [[x y] xmax ymax]
   (vec2 (tm/wrap-range x xmax)
         (tm/wrap-range y ymax)))
+
+(defn clamp-bounds [bounds [x y]]
+  (vec2 (tm/clamp x (rect/left bounds) (rect/right bounds))
+        (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
 (defn distance [v1 v2]
   (geom/dist v1 v2))
