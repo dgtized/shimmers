@@ -167,6 +167,7 @@
   (let [distance (+ (:r a) (:r b))]
     (< (geom/dist (:p a) (:p b)) distance)))
 
+;; TODO: extend IBoundary/contains-entity? for other shapes
 (defn contains-circle? [boundary {:keys [p r]}]
   (let [[x y] p]
     (and (> (- x r) (rect/left boundary))
