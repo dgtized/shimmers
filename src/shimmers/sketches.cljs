@@ -56,6 +56,7 @@
             shimmers.sketches.lattice-of-common-chords
             shimmers.sketches.marching-squares
             shimmers.sketches.mechanism
+            shimmers.sketches.memory-allocation
             shimmers.sketches.minimum-spanning-tree
             shimmers.sketches.mosaic-tiling
             shimmers.sketches.motion-of-insects
