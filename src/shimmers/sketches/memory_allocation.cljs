@@ -21,9 +21,10 @@
         :else
         (mem/malloc state (int (tm/random 4 128)))))
 
+;; https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 (def phi (/ (+ 1 (Math/sqrt 5)) 2))
 (defn color [id]
-  [(mod (* id phi) 1.0) 0.5 0.5 1.0])
+  [(mod (* id phi) 1.0) 0.75 0.55 1.0])
 
 (defn draw [{:keys [pages allocations]}]
   (q/background 1.0)
