@@ -35,11 +35,15 @@
 (defn draw [{:keys [free pages allocations]}]
   (q/background 1.0)
   (q/no-fill)
-  (reset! defo {:free [free pages (/ free pages)]})
   (let [aspect (/ (q/width) (q/height))
         cols (int (Math/sqrt pages))
         w (/ (/ (q/width) cols) aspect)
-        h (/ (q/height) (/ pages cols))]
+        h (/ (q/height) (/ pages cols))
+        allocs (count allocations)
+        alloc-ids (count (mem/allocation-ids allocations))]
+
+    (reset! defo {:free [free pages (tm/roundto (/ free pages) 0.01)]
+                  :allocations [allocs alloc-ids (tm/roundto (/ (float allocs) (inc alloc-ids)) 0.01)]})
     (doseq [y (range 0 (/ pages cols))]
       (doseq [x (range 0 cols 1)]
         (q/rect (* x w) (* y h) w h)))
