@@ -12,11 +12,6 @@
 
 (defrecord Allocation [id base size])
 
-(defn after [{:keys [base size] :as alloc}]
-  (if alloc
-    (+ base size)
-    0))
-
 (defn overlaps? [allocations position]
   (some (fn [{:keys [base size] :as alloc}]
           (when (and (<= base position)
@@ -80,7 +75,11 @@
 (defn malloc [{:keys [pages free next-id allocations] :as state} size]
   (if (> size free)
     state ;; allocation failed
-    (let [allocs (allocate next-id pages allocations size (mod (after (last allocations)) pages))]
+    (let [last-alloc (last allocations)
+          start (if-let [{:keys [base size]} last-alloc]
+                  (mod (+ base size) pages)
+                  0)
+          allocs (allocate next-id pages allocations size start)]
       (-> state
           (update :free - size)
           (update :next-id inc)
