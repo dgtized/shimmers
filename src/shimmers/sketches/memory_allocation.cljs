@@ -20,16 +20,23 @@
     (mem/initialize pages)))
 
 (defn update-state [{:keys [pages free allocations] :as state}]
-  (let [p-alloc (tm/smoothstep* 0.01 0.66 (/ (float free) (float pages)))
-        state' (assoc state :p-alloc p-alloc)]
+  (let [p-free (/ (float free) pages)
+        p-alloc (cond (> p-free 0.5) 0.66
+                      (> p-free 0.25) 0.4
+                      :else 0.2)
+        r-alloc (/ (count allocations) (inc (count (mem/allocation-ids allocations))))
+        state' (assoc state
+                      :p-free p-free
+                      :p-alloc p-alloc
+                      :r-alloc r-alloc)]
     (cond (p/chance p-alloc)
           (mem/malloc state' (int (tm/random 4 128)))
 
-          (and (not-empty allocations) (p/chance 0.3))
+          (and (not-empty allocations) (p/chance 0.25))
           (mem/free state' (rand-nth (mem/allocation-ids allocations)))
 
           (and (p/chance 0.5)
-               (> (/ (count allocations) (inc (count (mem/allocation-ids allocations)))) 5))
+               (> r-alloc 3))
           (mem/defrag state')
 
           :else state')))
@@ -39,7 +46,7 @@
 (defn color [id]
   [(mod (* id phi) 1.0) 0.75 0.55 1.0])
 
-(defn draw [{:keys [free pages p-alloc allocations]}]
+(defn draw [{:keys [free pages allocations] :as state}]
   (q/background 1.0)
   (q/no-fill)
   (let [aspect (/ (q/width) (q/height))
@@ -49,9 +56,12 @@
         allocs (count allocations)
         alloc-ids (count (mem/allocation-ids allocations))]
 
-    (reset! defo {:free [free pages (tm/roundto (/ free pages) 0.01)]
-                  :p-alloc p-alloc
-                  :allocations [allocs alloc-ids (tm/roundto (/ (float allocs) (inc alloc-ids)) 0.01)]})
+    (let [{:keys [p-free p-alloc r-alloc]} state]
+      (reset! defo {:free [free pages]
+                    :p-free (tm/roundto p-free 0.01)
+                    :p-alloc (tm/roundto p-alloc 0.01)
+                    :allocations [allocs alloc-ids]
+                    :r-alloc (tm/roundto r-alloc 0.01)}))
 
     (doseq [[id group] (group-by :id allocations)]
       (q/fill (color id))
