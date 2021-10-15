@@ -17,18 +17,67 @@
     (+ base size)
     0))
 
-(defn allocate [id pages allocations size]
-  (let [base (after (last allocations))]
-    (if (< (+ base size) pages)
-      [(->Allocation id base size)]
-      (let [extent (- pages base)]
-        [(->Allocation id base extent)
-         (->Allocation id 0 extent)]))))
+(defn overlaps? [allocations position]
+  (some (fn [{:keys [base size] :as alloc}]
+          (when (and (<= base position)
+                     (< position (+ base size)))
+            alloc))
+        allocations))
+
+(defn next-free [pages allocations position]
+  (if-let [{:keys [base size]} (overlaps? allocations position)]
+    (recur pages allocations (mod (+ base size) pages))
+    (mod position pages)))
+
+(defn next-bounds [pages allocations position]
+  (let [after (->> allocations
+                   (sort-by :base)
+                   (drop-while (fn [{:keys [base size]}]
+                                 (<= (+ base size) position))))]
+    (if (seq after)
+      (let [{:keys [base]} (first after)]
+        (if (< base position)
+          (next-bounds pages (rest after) position)
+          base))
+      pages)))
+
+
+(comment (next-free 8 [(->Allocation 0 2 2)] 0)
+         (next-free 8 [(->Allocation 0 2 2)] 2)
+         (next-free 8 [(->Allocation 0 2 2)] 4)
+         (next-free 8 [(->Allocation 0 2 2)] 5)
+         (next-free 8 [(->Allocation 0 2 2)] 8)
+         (next-bounds 8 [(->Allocation 0 2 2)] 0)
+         (next-bounds 8 [(->Allocation 0 2 2) (->Allocation 0 4 1)] 3)
+         (next-bounds 8 [(->Allocation 0 2 2)] 5)
+         )
+
+(defn allocate [id pages allocations size start]
+  (let [base (next-free pages allocations start)
+        bounds (next-bounds pages allocations base)
+        extent (- bounds base)]
+    (println ["allocate" {:start start :size size :base base :bounds bounds :extent extent}])
+    (cond (zero? size)
+          nil
+          (< size extent)
+          [(->Allocation id base size)]
+          (< extent 1)
+          (do (println "bailing")
+              nil)
+          :else
+          (let [alloc (->Allocation id base extent)]
+            (conj (allocate id pages (conj allocations alloc) (- size extent)
+                            (mod (+ base extent) pages))
+                  alloc)))))
+
+(comment (allocate 2 8 [(->Allocation 1 4 4)] 2 8))
 
 (defn malloc [{:keys [pages free next-id allocations] :as state} size]
   (if (> size free)
-    state ;; allocation failed
-    (let [allocs (allocate next-id pages allocations size)]
+    (do (println ["allocation failed " size free])
+        state) ;; allocation failed
+    (let [allocs (allocate next-id pages allocations size (mod (after (last allocations)) pages))]
+      (println allocs)
       (-> state
           (update :free - size)
           (update :next-id inc)
@@ -45,19 +94,19 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [pages (Math/pow 2 12)]
+  (let [pages (Math/pow 2 10)]
     {:pages pages
      :free pages
      :next-id 1
      :allocations []}))
 
 (defn update-state [{:keys [allocations] :as state}]
-  (cond (p/chance 0.9)
+  (cond (p/chance 0.5)
         state
-        (and (not-empty allocations) (p/chance 0.3))
+        (and (not-empty allocations) (p/chance 0.1))
         (free state (rand-nth (dedupe (sort (map :id allocations)))))
         :else
-        (malloc state (int (tm/random 1 64)))))
+        (malloc state (int (tm/random 16 128)))))
 
 (def phi (/ (+ 1 (Math/sqrt 5)) 2))
 (defn color [id]
