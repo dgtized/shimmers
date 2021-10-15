@@ -15,6 +15,10 @@
 (defonce defo (debug/state))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (q/color-mode :hsl 1.0)
   (let [pages (Math/pow 2 12)]
     (mem/initialize pages)))
