@@ -106,10 +106,10 @@
 (defn update-state [{:keys [allocations] :as state}]
   (cond (p/chance 0.5)
         state
-        (and (not-empty allocations) (p/chance 0.1))
+        (and (not-empty allocations) (p/chance 0.3))
         (free state (rand-nth (dedupe (sort (map :id allocations)))))
         :else
-        (malloc state (int (tm/random 16 128)))))
+        (malloc state (int (tm/random 4 128)))))
 
 (def phi (/ (+ 1 (Math/sqrt 5)) 2))
 (defn color [id]
