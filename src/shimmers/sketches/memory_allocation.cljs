@@ -19,11 +19,17 @@
   (let [pages (Math/pow 2 12)]
     (mem/initialize pages)))
 
-(defn update-state [{:keys [allocations] :as state}]
+(defn update-state [{:keys [allocations free] :as state}]
   (cond (p/chance 0.5)
         state
+
         (and (not-empty allocations) (p/chance 0.3))
         (mem/free state (rand-nth (mem/allocation-ids allocations)))
+
+        (and (p/chance 0.5)
+             (> (/ (count allocations) (inc (count (mem/allocation-ids allocations)))) 5))
+        (mem/defrag state)
+
         :else
         (mem/malloc state (int (tm/random 4 128)))))
 
