@@ -8,6 +8,9 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
+;; TODO: keep track of fragmentation and defrag once empty space is low
+;; use a tree for allocations or keep track of free space regions?
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [pages (Math/pow 2 12)]
