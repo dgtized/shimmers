@@ -43,6 +43,9 @@
 (defn allocs-by-id [identifier]
   (fn [{:keys [id]}] (= id identifier)))
 
+(defn allocation-ids [allocations]
+  (dedupe (sort (map :id allocations))))
+
 (defn malloc [{:keys [pages free next-id allocations] :as state} size]
   (if (> size free)
     state ;; allocation failed
