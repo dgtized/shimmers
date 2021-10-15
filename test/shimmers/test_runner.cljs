@@ -1,5 +1,8 @@
 (ns ^:figwheel-hooks shimmers.test-runner
-  (:require [shimmers.algorithm.space-colonization-test]
+  (:require [shimmers.algorithm.line-clipping-test]
+            [shimmers.algorithm.lines-test]
+            [shimmers.algorithm.rtree-test]
+            [shimmers.algorithm.space-colonization-test]
             [shimmers.automata.memory-test]
             [shimmers.automata.simplify-test]
             [shimmers.common.sequence-test]
@@ -15,6 +18,9 @@
 (defn test-run []
   (cljs.test/run-tests
    (cljs-test-display.core/init! "app-tests")
+   'shimmers.algorithm.line-clipping-test
+   'shimmers.algorithm.lines-test
+   'shimmers.algorithm.rtree-test
    'shimmers.algorithm.space-colonization-test
    'shimmers.automata.memory-test
    'shimmers.automata.simplify-test
