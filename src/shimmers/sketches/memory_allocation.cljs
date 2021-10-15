@@ -12,6 +12,8 @@
 ;; TODO: keep track of fragmentation and defrag once empty space is low
 ;; use a tree for allocations or keep track of free space regions?
 
+;; Consider tracking age of allocation and modeling nursery/long-term allocs
+
 (defonce defo (debug/state))
 
 (defn setup []
