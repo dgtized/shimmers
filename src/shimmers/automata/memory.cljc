@@ -46,13 +46,15 @@
 (defn allocation-ids [allocations]
   (dedupe (sort (map :id allocations))))
 
+(defn guess-start [pages allocations]
+  (if-let [{:keys [base size]} (last allocations)]
+    (mod (+ base size) pages)
+    0))
+
 (defn malloc [{:keys [pages free next-id allocations] :as state} size]
   (if (> size free)
     state ;; allocation failed
-    (let [last-alloc (last allocations)
-          start (if-let [{:keys [base size]} last-alloc]
-                  (mod (+ base size) pages)
-                  0)
+    (let [start (guess-start pages allocations)
           allocs (allocate next-id pages allocations size start)]
       (-> state
           (update :free - size)
