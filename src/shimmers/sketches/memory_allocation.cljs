@@ -50,10 +50,6 @@
 
     (reset! defo {:free [free pages (tm/roundto (/ free pages) 0.01)]
                   :allocations [allocs alloc-ids (tm/roundto (/ (float allocs) (inc alloc-ids)) 0.01)]})
-    (doseq [y (range 0 (/ pages cols))]
-      (doseq [x (range 0 cols 1)]
-        (q/rect (* x w) (* y h) w h)))
-
     (doseq [{:keys [id base size]} allocations]
       (q/fill (color id))
       (dotimes [i size]
