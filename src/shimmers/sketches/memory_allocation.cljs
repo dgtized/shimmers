@@ -50,13 +50,15 @@
 
     (reset! defo {:free [free pages (tm/roundto (/ free pages) 0.01)]
                   :allocations [allocs alloc-ids (tm/roundto (/ (float allocs) (inc alloc-ids)) 0.01)]})
-    (doseq [{:keys [id base size]} allocations]
+
+    (doseq [[id group] (group-by :id allocations)]
       (q/fill (color id))
-      (dotimes [i size]
-        (let [offset (+ base i)
-              x (rem offset cols)
-              y (quot offset cols)]
-          (q/rect (* x w) (* y h) w h))))))
+      (doseq [{:keys [base size]} group]
+        (dotimes [i size]
+          (let [offset (+ base i)
+                x (rem offset cols)
+                y (quot offset cols)]
+            (q/rect (* x w) (* y h) w h)))))))
 
 (sketch/defquil memory-allocation
   :created-at "2021-10-14"
