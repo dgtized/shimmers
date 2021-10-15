@@ -23,7 +23,7 @@
   (let [pages (Math/pow 2 12)]
     (mem/initialize pages)))
 
-(defn update-state [{:keys [pages free allocations] :as state}]
+(defn update-state [{:keys [pages free allocations defragment-cycles] :as state}]
   (let [p-free (/ (float free) pages)
         p-alloc (cond (> p-free 0.5) 0.66
                       (> p-free 0.25) 0.4
@@ -33,15 +33,17 @@
                       :p-free p-free
                       :p-alloc p-alloc
                       :r-alloc r-alloc)]
-    (cond (p/chance p-alloc)
+    (cond (pos? (or defragment-cycles 0))
+          (update (mem/defrag state') :defragment-cycles dec)
+
+          (p/chance p-alloc)
           (mem/malloc state' (int (tm/random 4 128)))
 
-          (and (not-empty allocations) (p/chance 0.25))
+          (and (not-empty allocations) (p/chance 0.3))
           (mem/free state' (rand-nth (mem/allocation-ids allocations)))
 
-          (and (p/chance 0.5)
-               (> r-alloc 3))
-          (mem/defrag state')
+          (and (p/chance (tm/smoothstep* 3 5 r-alloc)) (> p-free 0.1))
+          (assoc state' :defragment-cycles 64)
 
           :else state')))
 
@@ -60,12 +62,13 @@
         allocs (count allocations)
         alloc-ids (count (mem/allocation-ids allocations))]
 
-    (let [{:keys [p-free p-alloc r-alloc]} state]
+    (let [{:keys [p-free p-alloc r-alloc defragment-cycles]} state]
       (reset! defo {:free [free pages]
                     :p-free (tm/roundto p-free 0.01)
                     :p-alloc (tm/roundto p-alloc 0.01)
                     :allocations [allocs alloc-ids]
-                    :r-alloc (tm/roundto r-alloc 0.01)}))
+                    :r-alloc (tm/roundto r-alloc 0.01)
+                    :defragment-cycles defragment-cycles}))
 
     (doseq [[id group] (group-by :id allocations)]
       (q/fill (color id))
