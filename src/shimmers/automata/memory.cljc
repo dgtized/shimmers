@@ -40,17 +40,6 @@
                             (mod (+ base extent) pages))
                   alloc)))))
 
-(comment
-  (allocate 2 8 [(->Allocation 1 4 2)] 2 0)
-  (allocate 2 8 [(->Allocation 1 4 2)] 2 2)
-  (allocate 2 8 [(->Allocation 1 4 2)] 3 2)
-  (allocate 2 8 [(->Allocation 1 4 2)] 4 4)
-  (allocate 2 8 [(->Allocation 1 4 2)] 2 6)
-  (allocate 2 8 [(->Allocation 1 4 2)] 2 8)
-  (allocate 2 9 [(->Allocation 1 4 1) (->Allocation 1 6 1)] 6 0)
-  (allocate 2 8 [(->Allocation 1 4 1) (->Allocation 1 6 1)] 5 1)
-  )
-
 (defn allocs-by-id [identifier]
   (fn [{:keys [id]}] (= id identifier)))
 
