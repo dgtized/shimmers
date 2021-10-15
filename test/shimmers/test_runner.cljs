@@ -1,5 +1,6 @@
 (ns ^:figwheel-hooks shimmers.test-runner
   (:require [shimmers.algorithm.space-colonization-test]
+            [shimmers.automata.memory-test]
             [shimmers.automata.simplify-test]
             [shimmers.common.sequence-test]
             [shimmers.math.core-test]
@@ -15,6 +16,7 @@
   (cljs.test/run-tests
    (cljs-test-display.core/init! "app-tests")
    'shimmers.algorithm.space-colonization-test
+   'shimmers.automata.memory-test
    'shimmers.automata.simplify-test
    'shimmers.common.sequence-test
    'shimmers.math.core-test

@@ -26,17 +26,6 @@
           base))
       pages)))
 
-
-(comment (next-free 8 [(->Allocation 0 2 2)] 0)
-         (next-free 8 [(->Allocation 0 2 2)] 2)
-         (next-free 8 [(->Allocation 0 2 2)] 4)
-         (next-free 8 [(->Allocation 0 2 2)] 5)
-         (next-free 8 [(->Allocation 0 2 2)] 8)
-         (next-bounds 8 [(->Allocation 0 2 2)] 0)
-         (next-bounds 8 [(->Allocation 0 2 2) (->Allocation 0 4 1)] 3)
-         (next-bounds 8 [(->Allocation 0 2 2)] 5)
-         )
-
 (defn allocate [id pages allocations size start]
   (let [base (next-free pages allocations start)
         bounds (next-bounds pages allocations base)
