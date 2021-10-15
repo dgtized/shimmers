@@ -80,7 +80,7 @@
     (if (< (* 1.5 (reduce + (take 2 (map :size allocs))))
            free)
       (let [id (:id (first allocs))
-            start (guess-start pages allocations)
+            start (rand-int pages) ;; throw a dart and scan forward for next free
             ;; scan for largest free space?
             base (next-free pages allocations start)
             bounds (next-bounds pages allocations base)
