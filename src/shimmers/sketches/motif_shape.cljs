@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -19,6 +20,10 @@
 
 (defn square []
   [(rect/rect 0 0 1 1)])
+
+(defn rectangle []
+  (rand-nth [[(rect/rect 0 0 0.66 0.5)]
+             [(rect/rect 0 0 0.5 0.66)]]))
 
 (defn triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
@@ -42,7 +47,7 @@
           (geom/rotate theta)
           (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
 
-(def legal-shapes [circle square triangle])
+(def legal-shapes [circle square rectangle triangle])
 
 (defn rotated-shape []
   (group-rotation ((rand-nth legal-shapes))
@@ -54,7 +59,8 @@
                    (diagonal-direction)))
 
 (defn random-shape []
-  ((rand-nth (into legal-shapes [rotated-shape overlap-shape]))))
+  ((p/weighted {rotated-shape 1.0
+                overlap-shape 0.5})))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
