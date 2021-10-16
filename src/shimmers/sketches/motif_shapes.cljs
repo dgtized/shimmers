@@ -26,8 +26,11 @@
   (rand-nth [[(rect/rect 0 0 0.66 0.5)]
              [(rect/rect 0 0 0.5 0.66)]]))
 
-(defn triangle []
+(defn right-triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
+
+(defn triangle []
+  [(gt/triangle2 [0 0] [0 1] [0.5 0.5])])
 
 (defn cardinal-direction []
   (* 2 Math/PI (rand-nth (tm/norm-range 4))))
@@ -55,7 +58,7 @@
     (mapcat (fn [v] (group-translate group (tm/* (tm/* offset 1.1) v)))
             (range copies))))
 
-(def legal-shapes [circle square rectangle triangle])
+(def legal-shapes [circle square rectangle triangle right-triangle])
 
 (defn rotated-shape []
   (group-rotation ((rand-nth legal-shapes))
