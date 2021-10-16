@@ -18,11 +18,16 @@
 (defn triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
 
+(defn triangle-rotated []
+  [(-> (gt/triangle2 [0 0] [0 1] [1 0])
+       geom/center
+       (geom/rotate (* Math/PI (rand))))])
+
 (defn overlap []
   [(rect/rect 0 0 1 1) (rect/rect 0.1 0.1 1 1)])
 
 (defn random-shape []
-  ((rand-nth [square triangle overlap])))
+  ((rand-nth [square triangle triangle-rotated overlap])))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
