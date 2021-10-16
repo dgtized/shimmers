@@ -157,8 +157,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:shapes (->> (repeatedly 64 random-shape)
-                (tile-grid (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9)))
+  {:shapes (->> (repeatedly (dr/weighted {64 10 (* 12 11) 2 256 5}) random-shape)
+                (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95)))
                 (dr/random-sample 0.95))})
 
 (defn update-state [state]
