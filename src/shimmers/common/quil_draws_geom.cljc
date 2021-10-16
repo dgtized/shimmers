@@ -1,8 +1,8 @@
 (ns shimmers.common.quil-draws-geom
-  (:require #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Circle2 Rect2 Triangle2 Polygon2]])
-            [shimmers.common.quil :as cq]
+  (:require [shimmers.common.quil :as cq]
             [quil.core :as q]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as geom]
+            thi.ng.geom.types))
 
 (defprotocol QuilDrawGeom
   (draw [s]))
