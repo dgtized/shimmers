@@ -6,11 +6,15 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
+
+(defn circle []
+  [(gc/circle [0.5 0.5] 0.5)])
 
 (defn square []
   [(rect/rect 0 0 1 1)])
@@ -32,7 +36,7 @@
           (geom/rotate theta)
           (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
 
-(def legal-shapes [square triangle overlap])
+(def legal-shapes [circle square triangle overlap])
 
 (defn rotated-shape []
   (group-rotation ((rand-nth legal-shapes))
@@ -56,6 +60,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/ellipse-mode :radius)
   {:shape-groups (repeatedly 30 random-shape)})
 
 (defn update-state [state]
