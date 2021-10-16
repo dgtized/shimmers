@@ -66,8 +66,10 @@
                    (v/polar (rand-nth [0.1 0.2 0.5 1.0])
                             (diagonal-direction))))
 
+(declare random-shape)
+
 (defn duplicate-shape []
-  (group-duplicate (overlap-shape) (rand-nth [:x :y])))
+  (group-duplicate (random-shape) (rand-nth [:x :y])))
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
