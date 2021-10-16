@@ -36,9 +36,8 @@
   (+ (/ Math/PI 4) (cardinal-direction)))
 
 (defn group-translate [group offset]
-  (mapcat (fn [s]
-            [s (geom/translate s offset)])
-          group))
+  (map (fn [s] (geom/translate s offset))
+       group))
 
 (defn group-rotation [group theta]
   (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid group)) (count group))]
@@ -53,7 +52,7 @@
         offset (case direction
                  :x (gv/vec2 (geom/width bounds) 0)
                  :y (gv/vec2 0 (geom/height bounds)))]
-    (group-translate group (tm/* offset 1.1))))
+    (concat group (group-translate group (tm/* offset 1.1)))))
 
 (def legal-shapes [circle square rectangle triangle])
 
@@ -64,9 +63,10 @@
 (declare random-shape)
 
 (defn overlap-shape []
-  (group-translate (random-shape)
-                   (v/polar (rand-nth [0.1 0.2 0.5 1.0])
-                            (diagonal-direction))))
+  (let [s (random-shape)
+        dir (v/polar (rand-nth [0.1 0.2 0.5 1.0])
+                     (diagonal-direction))]
+    (concat s (group-translate s dir))))
 
 (defn duplicate-shape []
   (group-duplicate (random-shape) (rand-nth [:x :y])))
