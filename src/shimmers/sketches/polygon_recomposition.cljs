@@ -4,13 +4,16 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.delaunay :as delaunay]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn modify-points [points shape]
   (let [p (rand-nth points)
@@ -20,7 +23,7 @@
     (replace {p (gv/vec2 p')} points)))
 
 (defn setup []
-  (q/color-mode :hsl 1.0)
+  (q/color-mode :rgb 1.0)
   (let [shape (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
     {:shape shape
      :points (repeatedly 64 #(geom/random-point-inside shape))
@@ -35,13 +38,13 @@
            :hull polygon
            :triangles (delaunay/triangulate new-points))))
 
-(defn draw [{:keys [points hull triangles]}]
+(defn draw [{:keys [shape points hull triangles]}]
   (q/background 1.0)
-  (q/stroke 0.0 0.0 0.0)
+  (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (doseq [p points]
-    (cq/circle p 2.0))
+  ;; (doseq [p points]
+  ;;   (cq/circle p 2.0))
 
   (q/stroke-weight 0.5)
   (when hull
@@ -50,8 +53,16 @@
       (apply q/vertex segment))
     (q/end-shape :close))
 
-  (q/stroke 0.0 0.5 0.5)
-  (doseq [t triangles]
+  (q/no-stroke)
+  (doseq [t triangles
+          :let [time (* (q/frame-count) 0.005)
+                center (geom/centroid (gt/triangle2 t))
+                noise (apply q/noise (conj (tm/* center 0.005) time))
+                [u v] (geom/map-point shape center)]]
+    (q/fill 0.0
+            (tm/clamp01 (- 1.0 v))
+            (tm/clamp01 (+ u (eq/unit-sin (* 0.1 time))))
+            (+ 0.45 (* noise 0.35)))
     (apply cq/draw-triangle t)))
 
 (sketch/defquil polygon-recomposition
