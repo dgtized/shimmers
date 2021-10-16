@@ -18,16 +18,28 @@
 (defn triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
 
-(defn triangle-rotated []
-  [(-> (gt/triangle2 [0 0] [0 1] [1 0])
-       geom/center
-       (geom/rotate (* Math/PI (rand))))])
-
 (defn overlap []
   [(rect/rect 0 0 1 1) (rect/rect 0.1 0.1 1 1)])
 
+(defn cardinal-direction []
+  (* 2 Math/PI (rand-nth (tm/norm-range 4))))
+
+(defn group-rotation [group theta]
+  (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid group)) (count group))]
+    (for [shape group]
+      (-> shape
+          (geom/center group-centroid)
+          (geom/rotate theta)
+          (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
+
+(def legal-shapes [square triangle overlap])
+
+(defn rotated-shape []
+  (group-rotation ((rand-nth legal-shapes))
+                  (cardinal-direction)))
+
 (defn random-shape []
-  ((rand-nth [square triangle triangle-rotated overlap])))
+  ((rand-nth (into legal-shapes [rotated-shape]))))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
