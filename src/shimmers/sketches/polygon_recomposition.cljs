@@ -38,16 +38,16 @@
            :hull polygon
            :triangles (delaunay/triangulate new-points))))
 
-(defn draw [{:keys [shape points hull triangles]}]
+(defn draw [{:keys [shape triangles] :as state}]
   (q/background 1.0)
   (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  ;; (doseq [p points]
+  ;; (doseq [p (:points state)]
   ;;   (cq/circle p 2.0))
 
   (q/stroke-weight 0.5)
-  (when hull
+  (when-let [hull (:hull state)]
     (q/begin-shape)
     (doseq [segment (geom/vertices hull)]
       (apply q/vertex segment))
