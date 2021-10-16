@@ -12,7 +12,8 @@
 (def modes {:abs-difference 0
             :concentration-a 1
             :concentration-b 2
-            :binary 3})
+            :binary 3
+            :color-angle 4})
 
 (defonce ui-state
   (ctrl/state {:texture-scale 1.0
