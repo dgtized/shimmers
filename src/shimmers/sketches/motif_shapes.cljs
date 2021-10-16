@@ -47,12 +47,13 @@
           (geom/rotate theta)
           (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
 
-(defn group-duplicate [group direction]
+(defn group-copies [group direction copies]
   (let [bounds (gu/coll-bounds group)
         offset (case direction
                  :x (gv/vec2 (geom/width bounds) 0)
                  :y (gv/vec2 0 (geom/height bounds)))]
-    (concat group (group-translate group (tm/* offset 1.1)))))
+    (mapcat (fn [v] (group-translate group (tm/* (tm/* offset 1.1) v)))
+            (range copies))))
 
 (def legal-shapes [circle square rectangle triangle])
 
@@ -69,7 +70,12 @@
     (concat s (group-translate s dir))))
 
 (defn duplicate-shape []
-  (group-duplicate (random-shape) (rand-nth [:x :y])))
+  (group-copies (random-shape)
+                (rand-nth [:x :y])
+                (p/weighted {2 8
+                             3 4
+                             4 2
+                             5 1})))
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
