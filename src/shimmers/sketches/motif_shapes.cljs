@@ -76,6 +76,20 @@
   (group-rotation ((rand-nth legal-shapes))
                   (cardinal-direction)))
 
+(defn shape-sequence []
+  (let [dir (rand-nth [(gv/vec2 1.1 0) (gv/vec2 0 1.1)])]
+    (loop [shapes [] n (p/weighted {2 8 3 4 4 2})
+           base (gv/vec2)]
+      (if (zero? n)
+        shapes
+        (let [s (geom/center (first (rotated-shape)))
+              bounds (geom/bounds s)
+              size (gv/vec2 (geom/width bounds) (geom/height bounds))
+              space (tm/* size dir)]
+          (recur (conj shapes (geom/translate s base))
+                 (dec n)
+                 (tm/+ base space)))))))
+
 (declare random-shape)
 
 (defn overlap-shape []
@@ -97,6 +111,7 @@
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
+                shape-sequence 0.2
                 overlap-shape 0.1
                 duplicate-shape 0.2
                 mirror-shape 0.2})))
