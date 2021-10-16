@@ -11,6 +11,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.matrix :as mat]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
@@ -32,6 +33,9 @@
 
 (defn circle []
   [(gc/circle [0.5 0.5] 0.5)])
+
+(defn n-gon [n]
+  [(gp/polygon2 (geom/vertices (first (circle)) n))])
 
 (defn square []
   [(rect/rect 0 0 1 1)])
@@ -83,11 +87,19 @@
     (concat g
             (mapv (fn [s] (geom/transform s dir)) g))))
 
-(def legal-shapes [circle square rectangle triangle right-triangle])
+(def shape-distribution
+  {circle 5
+   (partial n-gon 5) 2
+   (partial n-gon 6) 3
+   (partial n-gon 8) 2
+   (partial n-gon 12) 1
+   square 6
+   rectangle 3
+   triangle 4
+   right-triangle 4})
 
 (defn rotated-shape []
-  (group-rotation ((rand-nth legal-shapes))
-                  (cardinal-direction)))
+  (group-rotation ((p/weighted shape-distribution)) (cardinal-direction)))
 
 (defn shape-sequence []
   (let [dir (rand-nth [(gv/vec2 1.1 0) (gv/vec2 0 1.1)])]
