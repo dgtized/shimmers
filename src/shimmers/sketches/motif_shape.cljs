@@ -49,8 +49,8 @@
                   (cardinal-direction)))
 
 (defn overlap-shape []
-  (group-translate ((rand-nth legal-shapes))
-                   (rand-nth [0.1 0.2 0.5])
+  (group-translate (rotated-shape)
+                   (rand-nth [0.1 0.2 0.5 1.0])
                    (diagonal-direction)))
 
 (defn random-shape []
@@ -72,7 +72,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:shape-groups (repeatedly 30 random-shape)})
+  {:shape-groups (repeatedly 64 random-shape)})
 
 (defn update-state [state]
   state)
