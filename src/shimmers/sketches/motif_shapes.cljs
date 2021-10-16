@@ -5,7 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -41,8 +41,8 @@
   [(rect/rect 0 0 1 1)])
 
 (defn rectangle []
-  (rand-nth [[(rect/rect 0 0 0.66 0.5)]
-             [(rect/rect 0 0 0.5 0.66)]]))
+  (dr/rand-nth [[(rect/rect 0 0 0.66 0.5)]
+                [(rect/rect 0 0 0.5 0.66)]]))
 
 (defn right-triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
@@ -51,7 +51,7 @@
   [(gt/triangle2 [0 0] [0 1] [0.5 0.5])])
 
 (defn cardinal-direction []
-  (* 2 Math/PI (rand-nth (tm/norm-range 4))))
+  (* 2 Math/PI (dr/rand-nth (tm/norm-range 4))))
 
 (defn diagonal-direction []
   (+ (/ Math/PI 4) (cardinal-direction)))
@@ -99,11 +99,11 @@
    right-triangle 6})
 
 (defn rotated-shape []
-  (group-rotation ((p/weighted shape-distribution)) (cardinal-direction)))
+  (group-rotation ((dr/weighted shape-distribution)) (cardinal-direction)))
 
 (defn shape-sequence []
-  (let [dir (rand-nth [(gv/vec2 1.1 0) (gv/vec2 0 1.1)])]
-    (loop [shapes [] n (p/weighted {2 8 3 4 4 2})
+  (let [dir (dr/rand-nth [(gv/vec2 1.1 0) (gv/vec2 0 1.1)])]
+    (loop [shapes [] n (dr/weighted {2 8 3 4 4 2})
            base (gv/vec2)]
       (if (zero? n)
         shapes
@@ -119,47 +119,47 @@
 
 (defn overlap-shape []
   (let [s (random-shape)
-        dir (v/polar (rand-nth [0.1 0.2 0.5 1.0])
+        dir (v/polar (dr/rand-nth [0.1 0.2 0.5 1.0])
                      (diagonal-direction))]
     (concat s (group-translate s dir))))
 
 (defn duplicate-shape []
   (group-copies (random-shape)
-                (rand-nth [:x :y])
-                (p/weighted {2 8
-                             3 4
-                             4 2
-                             5 1})))
+                (dr/rand-nth [:x :y])
+                (dr/weighted {2 8
+                              3 4
+                              4 2
+                              5 1})))
 
 (defn mirror-shape []
-  (group-mirror (random-shape) (rand-nth [:x :y])))
+  (group-mirror (random-shape) (dr/rand-nth [:x :y])))
 
 (defn grid-shape []
-  (let [n (p/weighted {3 2
-                       4 8
-                       8 2
-                       9 4
-                       14 1
-                       15 1
-                       16 2})]
+  (let [n (dr/weighted {3 2
+                        4 8
+                        8 2
+                        9 4
+                        14 1
+                        15 1
+                        16 2})]
     (group-rotation (tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
                                (repeatedly n rotated-shape))
                     (cardinal-direction))))
 
 (defn random-shape []
-  ((p/weighted {rotated-shape 1.0
-                grid-shape 0.1
-                shape-sequence 0.2
-                overlap-shape 0.1
-                duplicate-shape 0.2
-                mirror-shape 0.2})))
+  ((dr/weighted {rotated-shape 1.0
+                 grid-shape 0.1
+                 shape-sequence 0.2
+                 overlap-shape 0.1
+                 duplicate-shape 0.2
+                 mirror-shape 0.2})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:shapes (->> (repeatedly 64 random-shape)
                 (tile-grid (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9)))
-                (random-sample 0.95))})
+                (dr/random-sample 0.95))})
 
 (defn update-state [state]
   state)
@@ -171,6 +171,7 @@
 
 (sketch/defquil motif-shapes
   :created-at "2021-10-16"
+  :tags #{:static :deterministic}
   :size [800 600]
   :setup setup
   :update update-state
