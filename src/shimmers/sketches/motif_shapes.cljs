@@ -61,20 +61,20 @@
   (group-rotation ((rand-nth legal-shapes))
                   (cardinal-direction)))
 
+(declare random-shape)
+
 (defn overlap-shape []
-  (group-translate (rotated-shape)
+  (group-translate (random-shape)
                    (v/polar (rand-nth [0.1 0.2 0.5 1.0])
                             (diagonal-direction))))
-
-(declare random-shape)
 
 (defn duplicate-shape []
   (group-duplicate (random-shape) (rand-nth [:x :y])))
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
-                overlap-shape 0.5
-                duplicate-shape 0.25})))
+                overlap-shape 0.4
+                duplicate-shape 0.2})))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
