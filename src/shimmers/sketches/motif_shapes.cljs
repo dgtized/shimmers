@@ -10,6 +10,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as geom]
+   [thi.ng.geom.matrix :as mat]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
@@ -58,6 +59,17 @@
     (mapcat (fn [v] (group-translate group (tm/* (tm/* offset 1.1) v)))
             (range copies))))
 
+(defn group-mirror [group direction]
+  (let [bounds (gu/coll-bounds group)
+        offset (tm/abs (rect/bottom-left bounds))
+        ;; ensure entire group is inside of upper-right quadrant before mirroring
+        g (group-translate group (tm/* offset 1.1))
+        dir (case direction
+              :x (mat/matrix32 -1.0 0 0 0 1 0)
+              :y (mat/matrix32 1 0 0 0 -1.0 0))]
+    (concat g
+            (mapv (fn [s] (geom/transform s dir)) g))))
+
 (def legal-shapes [circle square rectangle triangle right-triangle])
 
 (defn rotated-shape []
@@ -80,10 +92,14 @@
                              4 2
                              5 1})))
 
+(defn mirror-shape []
+  (group-mirror (random-shape) (rand-nth [:x :y])))
+
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
-                overlap-shape 0.3
-                duplicate-shape 0.15})))
+                overlap-shape 0.1
+                duplicate-shape 0.2
+                mirror-shape 0.2})))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
