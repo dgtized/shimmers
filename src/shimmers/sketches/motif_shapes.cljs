@@ -5,9 +5,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.matrix :as mat]
@@ -166,12 +168,19 @@
 
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
+  (q/stroke-weight 0.66)
   (doseq [s shapes]
     (qdg/draw s)))
+
+;; Convert to SVG?
+
+(defn page []
+  [:p.center (view-sketch/generate :motif-shapes)])
 
 (sketch/defquil motif-shapes
   :created-at "2021-10-16"
   :tags #{:static :deterministic}
+  :on-mount #(ctrl/mount page)
   :size [800 600]
   :setup setup
   :update update-state
