@@ -88,15 +88,15 @@
             (mapv (fn [s] (geom/transform s dir)) g))))
 
 (def shape-distribution
-  {circle 5
+  {circle 8
    (partial n-gon 5) 2
    (partial n-gon 6) 3
    (partial n-gon 8) 2
    (partial n-gon 12) 1
-   square 6
-   rectangle 3
-   triangle 4
-   right-triangle 4})
+   square 12
+   rectangle 4
+   triangle 6
+   right-triangle 6})
 
 (defn rotated-shape []
   (group-rotation ((p/weighted shape-distribution)) (cardinal-direction)))
