@@ -16,8 +16,7 @@
         example (first circles)]
     (is (= (set circles) (set search)))
     (is (= (set circles) (set (sut/search-intersection tree (rect/rect 0 0 100 100)))))
-    (is (set/subset? (set [example]) (set (sut/search-intersection tree (geom/bounds example)))))
-    (is (empty? (sut/search-intersection tree (rect/rect 2 2 3 3))))))
+    (is (set/subset? (set [example]) (set (sut/search-intersection tree (geom/bounds example)))))))
 
 (comment (t/run-tests))
 
