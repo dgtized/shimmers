@@ -125,10 +125,14 @@
 (defn grid-shape []
   (let [n (p/weighted {3 2
                        4 8
+                       8 2
                        9 4
-                       16 1})]
-    (tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
-               (repeatedly n rotated-shape))))
+                       14 1
+                       15 1
+                       16 2})]
+    (group-rotation (tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
+                               (repeatedly n rotated-shape))
+                    (cardinal-direction))))
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
