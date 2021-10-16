@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as geom]
@@ -22,11 +23,16 @@
 (defn triangle []
   [(gt/triangle2 [0 0] [0 1] [1 0])])
 
-(defn overlap []
-  [(rect/rect 0 0 1 1) (rect/rect 0.1 0.1 1 1)])
-
 (defn cardinal-direction []
   (* 2 Math/PI (rand-nth (tm/norm-range 4))))
+
+(defn diagonal-direction []
+  (+ (/ Math/PI 4) (cardinal-direction)))
+
+(defn group-translate [group r theta]
+  (mapcat (fn [s]
+            [s (geom/translate s (v/polar r theta))])
+          group))
 
 (defn group-rotation [group theta]
   (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid group)) (count group))]
@@ -36,14 +42,19 @@
           (geom/rotate theta)
           (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
 
-(def legal-shapes [circle square triangle overlap])
+(def legal-shapes [circle square triangle])
 
 (defn rotated-shape []
   (group-rotation ((rand-nth legal-shapes))
                   (cardinal-direction)))
 
+(defn overlap-shape []
+  (group-translate ((rand-nth legal-shapes))
+                   (rand-nth [0.1 0.2 0.5])
+                   (diagonal-direction)))
+
 (defn random-shape []
-  ((rand-nth (into legal-shapes [rotated-shape]))))
+  ((rand-nth (into legal-shapes [rotated-shape overlap-shape]))))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
