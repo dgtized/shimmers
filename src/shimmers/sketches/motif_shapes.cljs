@@ -17,6 +17,19 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn tile-grid
+  ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
+  ([bounds shape-groups {:keys [scale]}]
+   (let [n (count shape-groups)
+         cols (tm/ceil (Math/sqrt n))
+         rows (tm/ceil (/ n cols))
+         tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
+     (mapcat (fn [group tile]
+               (-> tile
+                   (geom/scale-size scale)
+                   (gu/fit-all-into-bounds group)))
+             shape-groups tiles))))
+
 (defn circle []
   [(gc/circle [0.5 0.5] 0.5)])
 
@@ -109,25 +122,21 @@
 (defn mirror-shape []
   (group-mirror (random-shape) (rand-nth [:x :y])))
 
+(defn grid-shape []
+  (let [n (p/weighted {3 2
+                       4 8
+                       9 4
+                       16 1})]
+    (tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
+               (repeatedly n rotated-shape))))
+
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
+                grid-shape 0.1
                 shape-sequence 0.2
                 overlap-shape 0.1
                 duplicate-shape 0.2
                 mirror-shape 0.2})))
-
-(defn tile-grid
-  ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
-  ([bounds shape-groups {:keys [scale]}]
-   (let [n (count shape-groups)
-         cols (tm/ceil (Math/sqrt n))
-         rows (tm/ceil (/ n cols))
-         tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
-     (mapcat (fn [group tile]
-               (-> tile
-                   (geom/scale-size scale)
-                   (gu/fit-all-into-bounds group)))
-             shape-groups tiles))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
