@@ -13,6 +13,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn circle []
@@ -34,9 +35,9 @@
 (defn diagonal-direction []
   (+ (/ Math/PI 4) (cardinal-direction)))
 
-(defn group-translate [group r theta]
+(defn group-translate [group offset]
   (mapcat (fn [s]
-            [s (geom/translate s (v/polar r theta))])
+            [s (geom/translate s offset)])
           group))
 
 (defn group-rotation [group theta]
@@ -47,6 +48,13 @@
           (geom/rotate theta)
           (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
 
+(defn group-duplicate [group direction]
+  (let [bounds (gu/coll-bounds group)
+        offset (case direction
+                 :x (gv/vec2 (geom/width bounds) 0)
+                 :y (gv/vec2 0 (geom/height bounds)))]
+    (group-translate group (tm/* offset 1.1))))
+
 (def legal-shapes [circle square rectangle triangle])
 
 (defn rotated-shape []
@@ -55,12 +63,16 @@
 
 (defn overlap-shape []
   (group-translate (rotated-shape)
-                   (rand-nth [0.1 0.2 0.5 1.0])
-                   (diagonal-direction)))
+                   (v/polar (rand-nth [0.1 0.2 0.5 1.0])
+                            (diagonal-direction))))
+
+(defn duplicate-shape []
+  (group-duplicate (overlap-shape) (rand-nth [:x :y])))
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
-                overlap-shape 0.5})))
+                overlap-shape 0.5
+                duplicate-shape 0.25})))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
