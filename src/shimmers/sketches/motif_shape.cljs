@@ -1,17 +1,28 @@
 (ns shimmers.sketches.motif-shapes
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.common.quil-draws-geom :as qdg]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]
-            [thi.ng.geom.core :as geom]
-            [thi.ng.geom.utils :as gu]
-            [shimmers.common.quil :as cq]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as geom]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.math.core :as tm]))
 
 (defn square []
   [(rect/rect 0 0 1 1)])
+
+(defn triangle []
+  [(gt/triangle2 [0 0] [0 1] [1 0])])
+
+(defn overlap []
+  [(rect/rect 0 0 1 1) (rect/rect 0.1 0.1 1 1)])
+
+(defn random-shape []
+  ((rand-nth [square triangle overlap])))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
@@ -28,7 +39,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shape-groups (repeatedly 10 square)})
+  {:shape-groups (repeatedly 30 random-shape)})
 
 (defn update-state [state]
   state)
