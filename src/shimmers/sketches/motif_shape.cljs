@@ -13,13 +13,18 @@
 (defn square []
   [(rect/rect 0 0 1 1)])
 
-(defn tile-grid [bounds shape-groups]
-  (let [n (count shape-groups)
-        cols (tm/ceil (Math/sqrt n))
-        rows (tm/ceil (/ n cols))
-        targets (take n (geom/subdivide bounds {:cols cols :rows rows}))]
-    (mapcat (fn [group t] (gu/fit-all-into-bounds t group))
-            shape-groups targets)))
+(defn tile-grid
+  ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
+  ([bounds shape-groups {:keys [scale]}]
+   (let [n (count shape-groups)
+         cols (tm/ceil (Math/sqrt n))
+         rows (tm/ceil (/ n cols))
+         tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
+     (mapcat (fn [group tile]
+               (-> tile
+                   (geom/scale-size scale)
+                   (gu/fit-all-into-bounds group)))
+             shape-groups tiles))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -29,6 +34,7 @@
   state)
 
 (defn draw [{:keys [shape-groups]}]
+  (q/background 1.0)
   (doseq [s (tile-grid (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))
                        shape-groups)]
     (qdg/draw s)))
