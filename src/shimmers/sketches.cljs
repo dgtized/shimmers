@@ -59,6 +59,7 @@
             shimmers.sketches.memory-allocation
             shimmers.sketches.minimum-spanning-tree
             shimmers.sketches.mosaic-tiling
+            shimmers.sketches.motif-shapes
             shimmers.sketches.motion-of-insects
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
