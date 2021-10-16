@@ -145,15 +145,16 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:shape-groups (repeatedly 64 random-shape)})
+  {:shapes (->> (repeatedly 64 random-shape)
+                (tile-grid (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9)))
+                (random-sample 0.95))})
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [shape-groups]}]
+(defn draw [{:keys [shapes]}]
   (q/background 1.0)
-  (doseq [s (tile-grid (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))
-                       shape-groups)]
+  (doseq [s shapes]
     (qdg/draw s)))
 
 (sketch/defquil motif-shapes
