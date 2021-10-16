@@ -79,8 +79,8 @@
 
 (defn random-shape []
   ((p/weighted {rotated-shape 1.0
-                overlap-shape 0.4
-                duplicate-shape 0.2})))
+                overlap-shape 0.3
+                duplicate-shape 0.15})))
 
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
