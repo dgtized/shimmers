@@ -40,25 +40,24 @@
                        shape-groups tiles)))))
 
 (defn circle []
-  (gg/group (gc/circle [0.5 0.5] 0.5)))
+  (gc/circle [0.5 0.5] 0.5))
 
 (defn n-gon [n]
-  (gg/group (gp/polygon2 (geom/vertices (gc/circle [0.5 0.5] 0.5) n))))
+  (gp/polygon2 (geom/vertices (circle) n)))
 
 (defn square []
-  (gg/group (rect/rect 0 0 1 1)))
+  (rect/rect 0 0 1 1))
 
 (defn rectangle []
   (->> [(rect/rect 0 0 0.66 0.5)
         (rect/rect 0 0 0.5 0.66)]
-       dr/rand-nth
-       gg/group))
+       dr/rand-nth))
 
 (defn right-triangle []
-  (gg/group (gt/triangle2 [0 0] [0 1] [1 0])))
+  (gt/triangle2 [0 0] [0 1] [1 0]))
 
 (defn triangle []
-  (gg/group (gt/triangle2 [0 0] [0 1] [0.5 0.5])))
+  (gt/triangle2 [0 0] [0 1] [0.5 0.5]))
 
 (defn cardinal-direction []
   (* 2 Math/PI (dr/rand-nth (tm/norm-range 4))))
@@ -105,7 +104,8 @@
    right-triangle 6})
 
 (defn rotated-shape []
-  (group-rotation ((dr/weighted shape-distribution)) (cardinal-direction)))
+  (let [shape ((dr/weighted shape-distribution))]
+    (group-rotation (gg/group shape) (cardinal-direction))))
 
 (defn shape-sequence []
   (let [dir (dr/rand-nth [(gv/vec2 1.1 0) (gv/vec2 0 1.1)])]
