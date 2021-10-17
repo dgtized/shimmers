@@ -4,7 +4,14 @@
             [thi.ng.geom.utils :as gu]
             [thi.ng.math.core :as tm]))
 
+(defprotocol IGroup
+  (count-children [_]))
+
 (defrecord Group [children]
+  IGroup
+  (count-children [_]
+    (count children))
+
   geom/IBounds
   (bounds [_]
     (gu/coll-bounds children))

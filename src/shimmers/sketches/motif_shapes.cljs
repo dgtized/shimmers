@@ -126,13 +126,13 @@
   (let [group (random-shape)
         dir (v/polar (dr/rand-nth [0.1 0.2 0.5 1.0])
                      (diagonal-direction))]
-    (if (> (count group) shape-limit)
+    (if (> (gg/count-children group) shape-limit)
       group
       (gg/group (concat (:children group) (:children (geom/translate group dir)))))))
 
 (defn duplicate-shape []
   (let [group (random-shape)]
-    (if (> (count group) shape-limit)
+    (if (> (gg/count-children group) shape-limit)
       group
       (group-copies group
                     (dr/rand-nth [:x :y])
@@ -143,7 +143,7 @@
 
 (defn mirror-shape []
   (let [group (random-shape)]
-    (if (> (count group) shape-limit)
+    (if (> (gg/count-children group) shape-limit)
       group
       (group-mirror group (dr/rand-nth [:x :y])))))
 
