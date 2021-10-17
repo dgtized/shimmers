@@ -89,6 +89,7 @@
     (concat g
             (mapv (fn [s] (geom/transform s dir)) g))))
 
+(def shape-limit 48)
 (def shape-distribution
   {circle 8
    (partial n-gon 5) 2
@@ -120,21 +121,29 @@
 (declare random-shape)
 
 (defn overlap-shape []
-  (let [s (random-shape)
+  (let [group (random-shape)
         dir (v/polar (dr/rand-nth [0.1 0.2 0.5 1.0])
                      (diagonal-direction))]
-    (concat s (group-translate s dir))))
+    (if (> (count group) shape-limit)
+      group
+      (concat group (group-translate group dir)))))
 
 (defn duplicate-shape []
-  (group-copies (random-shape)
-                (dr/rand-nth [:x :y])
-                (dr/weighted {2 8
-                              3 4
-                              4 2
-                              5 1})))
+  (let [group (random-shape)]
+    (if (> (count group) shape-limit)
+      group
+      (group-copies group
+                    (dr/rand-nth [:x :y])
+                    (dr/weighted {2 8
+                                  3 4
+                                  4 2
+                                  5 1})))))
 
 (defn mirror-shape []
-  (group-mirror (random-shape) (dr/rand-nth [:x :y])))
+  (let [group (random-shape)]
+    (if (> (count group) shape-limit)
+      group
+      (group-mirror group (dr/rand-nth [:x :y])))))
 
 (defn grid-shape []
   (let [n (dr/weighted {3 2
@@ -149,12 +158,12 @@
                     (cardinal-direction))))
 
 (defn random-shape []
-  ((dr/weighted {rotated-shape 1.0
-                 grid-shape 0.1
-                 shape-sequence 0.2
-                 overlap-shape 0.1
-                 duplicate-shape 0.2
-                 mirror-shape 0.2})))
+  ((dr/weighted {rotated-shape 5
+                 grid-shape 2
+                 shape-sequence 2
+                 overlap-shape 1
+                 duplicate-shape 1
+                 mirror-shape 1})))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
