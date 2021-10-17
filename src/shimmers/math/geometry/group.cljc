@@ -1,7 +1,8 @@
 (ns shimmers.math.geometry.group
   "Container for a set of shapes."
   (:require [thi.ng.geom.core :as geom]
-            [thi.ng.geom.utils :as gu]))
+            [thi.ng.geom.utils :as gu]
+            [thi.ng.math.core :as tm]))
 
 (defrecord Group [children]
   geom/IBounds
@@ -11,6 +12,11 @@
     (geom/width (geom/bounds _)))
   (height [_]
     (geom/height (geom/bounds _)))
+
+  geom/ICenter
+  ;; Not sure if strictly correct centroid, averages centroids of children
+  (centroid [_]
+    (tm/div (reduce tm/+ (map geom/centroid children)) (count children)))
 
   geom/ITranslate
   (translate [_ t]

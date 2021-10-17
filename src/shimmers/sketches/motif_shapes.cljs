@@ -65,8 +65,8 @@
 (defn diagonal-direction []
   (+ (/ Math/PI 4) (cardinal-direction)))
 
-(defn group-rotation [{:keys [children]} theta]
-  (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid children)) (count children))]
+(defn group-rotation [{:keys [children] :as group} theta]
+  (let [group-centroid (geom/centroid group)]
     (gg/group (for [shape children]
                 (-> shape
                     (geom/center group-centroid)
