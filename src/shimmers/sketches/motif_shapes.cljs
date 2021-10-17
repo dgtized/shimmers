@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.geometry.group :as gg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
@@ -39,23 +40,25 @@
              shape-groups tiles))))
 
 (defn circle []
-  [(gc/circle [0.5 0.5] 0.5)])
+  (gg/group (gc/circle [0.5 0.5] 0.5)))
 
 (defn n-gon [n]
-  [(gp/polygon2 (geom/vertices (first (circle)) n))])
+  (gg/group (gp/polygon2 (geom/vertices (first (circle)) n))))
 
 (defn square []
-  [(rect/rect 0 0 1 1)])
+  (gg/group (rect/rect 0 0 1 1)))
 
 (defn rectangle []
-  (dr/rand-nth [[(rect/rect 0 0 0.66 0.5)]
-                [(rect/rect 0 0 0.5 0.66)]]))
+  (->> [(rect/rect 0 0 0.66 0.5)
+        (rect/rect 0 0 0.5 0.66)]
+       dr/rand-nth
+       gg/group))
 
 (defn right-triangle []
-  [(gt/triangle2 [0 0] [0 1] [1 0])])
+  (gg/group (gt/triangle2 [0 0] [0 1] [1 0])))
 
 (defn triangle []
-  [(gt/triangle2 [0 0] [0 1] [0.5 0.5])])
+  (gg/group (gt/triangle2 [0 0] [0 1] [0.5 0.5])))
 
 (defn cardinal-direction []
   (* 2 Math/PI (dr/rand-nth (tm/norm-range 4))))
