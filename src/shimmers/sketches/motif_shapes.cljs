@@ -115,8 +115,7 @@
         (gg/group shapes)
         (let [shape (first (:children (rotated-shape)))
               s (geom/center shape)
-              size (gv/vec2 (geom/width s) (geom/height s))
-              space (tm/* size dir)]
+              space (tm/* (:size (geom/bounds s)) dir)]
           (recur (conj shapes (geom/translate s base))
                  (dec n)
                  (tm/+ base space)))))))
