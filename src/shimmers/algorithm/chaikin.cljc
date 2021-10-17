@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.chaikin
-  "Translation of https://sighack.com/post/chaikin-curves"
+  "Translation of https://sighack.com/post/chaikin-curves.
+  See also https://www.bit-101.com/blog/2021/08/chaikins-algorithm-drawing-curves/."
   (:require [shimmers.common.sequence :as cs]
             [thi.ng.math.core :as tm]))
 
