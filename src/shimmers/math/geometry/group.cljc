@@ -7,6 +7,10 @@
   geom/IBounds
   (bounds [_]
     (gu/coll-bounds children))
+  (width [_]
+    (geom/width (geom/bounds _)))
+  (height [_]
+    (geom/height (geom/bounds _)))
 
   geom/ITranslate
   (translate [_ t]

@@ -75,10 +75,9 @@
                     (geom/translate (tm/- group-centroid (geom/centroid shape))))))))
 
 (defn group-copies [group direction copies]
-  (let [bounds (geom/bounds group)
-        offset (case direction
-                 :x (gv/vec2 (geom/width bounds) 0)
-                 :y (gv/vec2 0 (geom/height bounds)))]
+  (let [offset (case direction
+                 :x (gv/vec2 (geom/width group) 0)
+                 :y (gv/vec2 0 (geom/height group)))]
     (gg/group (mapcat (fn [v] (:children (geom/translate group (tm/* (tm/* offset 1.1) v))))
                       (range copies)))))
 
@@ -116,8 +115,7 @@
         (gg/group shapes)
         (let [shape (first (:children (rotated-shape)))
               s (geom/center shape)
-              bounds (geom/bounds s)
-              size (gv/vec2 (geom/width bounds) (geom/height bounds))
+              size (gv/vec2 (geom/width s) (geom/height s))
               space (tm/* size dir)]
           (recur (conj shapes (geom/translate s base))
                  (dec n)
