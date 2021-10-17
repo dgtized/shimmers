@@ -33,17 +33,17 @@
    (let [n (count shape-groups)
          [rows cols _] (fit-grid n)
          tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
-     (mapcat (fn [group tile]
-               (-> tile
-                   (geom/scale-size scale)
-                   (gu/fit-all-into-bounds group)))
-             shape-groups tiles))))
+     (gg/group (mapcat (fn [group tile]
+                         (-> tile
+                             (geom/scale-size scale)
+                             (gu/fit-all-into-bounds (:children group))))
+                       shape-groups tiles)))))
 
 (defn circle []
   (gg/group (gc/circle [0.5 0.5] 0.5)))
 
 (defn n-gon [n]
-  (gg/group (gp/polygon2 (geom/vertices (first (circle)) n))))
+  (gg/group (gp/polygon2 (geom/vertices (gc/circle [0.5 0.5] 0.5) n))))
 
 (defn square []
   (gg/group (rect/rect 0 0 1 1)))
@@ -66,36 +66,32 @@
 (defn diagonal-direction []
   (+ (/ Math/PI 4) (cardinal-direction)))
 
-(defn group-translate [group offset]
-  (map (fn [s] (geom/translate s offset))
-       group))
-
-(defn group-rotation [group theta]
-  (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid group)) (count group))]
-    (for [shape group]
-      (-> shape
-          (geom/center group-centroid)
-          (geom/rotate theta)
-          (geom/translate (tm/- group-centroid (geom/centroid shape)))))))
+(defn group-rotation [{:keys [children]} theta]
+  (let [group-centroid (tm/div (reduce tm/+ (map geom/centroid children)) (count children))]
+    (gg/group (for [shape children]
+                (-> shape
+                    (geom/center group-centroid)
+                    (geom/rotate theta)
+                    (geom/translate (tm/- group-centroid (geom/centroid shape))))))))
 
 (defn group-copies [group direction copies]
-  (let [bounds (gu/coll-bounds group)
+  (let [bounds (geom/bounds group)
         offset (case direction
                  :x (gv/vec2 (geom/width bounds) 0)
                  :y (gv/vec2 0 (geom/height bounds)))]
-    (mapcat (fn [v] (group-translate group (tm/* (tm/* offset 1.1) v)))
-            (range copies))))
+    (gg/group (mapcat (fn [v] (:children (geom/translate group (tm/* (tm/* offset 1.1) v))))
+                      (range copies)))))
 
 (defn group-mirror [group direction]
-  (let [bounds (gu/coll-bounds group)
+  (let [bounds (geom/bounds group)
         offset (tm/abs (rect/bottom-left bounds))
         ;; ensure entire group is inside of upper-right quadrant before mirroring
-        g (group-translate group (tm/* offset 1.1))
+        g (geom/translate group (tm/* offset 1.1))
         dir (case direction
               :x (mat/matrix32 -1.0 0 0 0 1 0)
               :y (mat/matrix32 1 0 0 0 -1.0 0))]
-    (concat g
-            (mapv (fn [s] (geom/transform s dir)) g))))
+    (gg/group (concat (:children g)
+                      (mapv (fn [s] (geom/transform s dir)) (:children g))))))
 
 (def shape-limit 48)
 (def shape-distribution
@@ -117,8 +113,9 @@
     (loop [shapes [] n (dr/weighted {2 8 3 4 4 2})
            base (gv/vec2)]
       (if (zero? n)
-        shapes
-        (let [s (geom/center (first (rotated-shape)))
+        (gg/group shapes)
+        (let [shape (first (:children (rotated-shape)))
+              s (geom/center shape)
               bounds (geom/bounds s)
               size (gv/vec2 (geom/width bounds) (geom/height bounds))
               space (tm/* size dir)]
@@ -134,7 +131,7 @@
                      (diagonal-direction))]
     (if (> (count group) shape-limit)
       group
-      (concat group (group-translate group dir)))))
+      (gg/group (concat (:children group) (:children (geom/translate group dir)))))))
 
 (defn duplicate-shape []
   (let [group (random-shape)]
@@ -186,8 +183,7 @@
                       156 2
                       256 1}]
     {:shapes (->> (repeatedly (dr/weighted screen-sizes) random-shape)
-                  (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95)))
-                  (dr/random-sample 0.95))}))
+                  (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95))))}))
 
 (defn update-state [state]
   state)
@@ -195,8 +191,7 @@
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/stroke-weight 0.66)
-  (doseq [s shapes]
-    (qdg/draw s)))
+  (qdg/draw shapes))
 
 ;; Convert to SVG?
 
