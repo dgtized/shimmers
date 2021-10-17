@@ -25,6 +25,7 @@
         rows (tm/ceil (/ n cols))]
     [cols rows (- (* cols rows) n)]))
 
+;; TODO: support odd grids like 4:3:4 and the like
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
   ([bounds shape-groups {:keys [scale]}]
@@ -154,6 +155,7 @@
                         4 8
                         8 2
                         9 4
+                        12 1
                         14 1
                         15 1
                         16 2})]
@@ -169,12 +171,20 @@
                  duplicate-shape 1
                  mirror-shape 1})))
 
+;; (keep (fn [x] (let [f (fit-grid x)] (when (zero? (nth f 2)) [x f]))) (range 10 400))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:shapes (->> (repeatedly (dr/weighted {64 10 (* 12 11) 2 256 5}) random-shape)
-                (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95)))
-                (dr/random-sample 0.95))})
+  (let [screen-sizes {64 1
+                      81 2
+                      110 3
+                      144 4
+                      156 2
+                      256 1}]
+    {:shapes (->> (repeatedly (dr/weighted screen-sizes) random-shape)
+                  (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95)))
+                  (dr/random-sample 0.95))}))
 
 (defn update-state [state]
   state)
