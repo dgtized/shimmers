@@ -20,12 +20,16 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn fit-grid [n]
+  (let [cols (tm/ceil (Math/sqrt n))
+        rows (tm/ceil (/ n cols))]
+    [cols rows (- (* cols rows) n)]))
+
 (defn tile-grid
   ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
   ([bounds shape-groups {:keys [scale]}]
    (let [n (count shape-groups)
-         cols (tm/ceil (Math/sqrt n))
-         rows (tm/ceil (/ n cols))
+         [rows cols _] (fit-grid n)
          tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
      (mapcat (fn [group tile]
                (-> tile
