@@ -1,5 +1,7 @@
 (ns shimmers.common.quil
   (:require [quil.core :as q :include-macros true]
+            [thi.ng.geom.core :as g]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]))
 
 (defn rel-h [p]
@@ -15,6 +17,12 @@
 (defn rel-vec
   ([[w h]] (rel-vec w h))
   ([w h] (gv/vec2 (rel-pos w h))))
+
+(defn screen-rect
+  "A rectangle proportional to the size of the current quil canvas."
+  ([] (screen-rect 1.0))
+  ([scale]
+   (g/scale-size (rect/rect 0 0 (q/width) (q/height)) scale)))
 
 (defn draw-shape [vertices]
   (q/begin-shape)

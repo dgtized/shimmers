@@ -8,7 +8,6 @@
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as geom]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
 ;; Further Experiments: pack resulting squares with patterns of their own?
@@ -24,7 +23,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:squares []
-   :remaining [(rect/rect [10 10] [790 590])]})
+   :remaining [(cq/screen-rect 0.98)]})
 
 (defn random-ratio []
   (p/weighted {(/ 1 tm/PHI) 4
