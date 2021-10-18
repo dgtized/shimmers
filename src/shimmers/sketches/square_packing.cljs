@@ -4,23 +4,32 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.probability :as p]))
+   [thi.ng.math.core :as tm]))
 
 (def PHI (/ (+ 1 (Math/sqrt 5)) 2))
 
 (defn split-x [{:keys [p size]} square pct]
   (let [[width height] size
-        offset-x (* pct (- width square))]
-    [(rect/rect (tm/+ p [offset-x 0]) square square)
-     (rect/rect p offset-x square) ;; before-x
-     (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) square) ;; after-x
-     (rect/rect (tm/+ p [0 square]) width (- height square)) ;; y sliver
-     ]))
+        offset-x (* pct (- width square))
+        sq (rect/rect (tm/+ p [offset-x 0]) square square)]
+    (if (> width height) ;; FIXME: tune heuristic?
+      ;; chunk below square between two full height rectangles
+      [sq
+       (rect/rect p offset-x height) ;; before-x
+       (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) height) ;; after-x
+       (rect/rect (tm/+ p [offset-x square]) square (- height square)) ;; y chunk
+       ]
+      ;; sliver below square across width
+      [sq
+       (rect/rect p offset-x square) ;; before-x
+       (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) square) ;; after-x
+       (rect/rect (tm/+ p [0 square]) width (- height square)) ;; y sliver
+       ])))
 
 (defn split-y [{:keys [p size]} square pct]
   (let [[width height] size
@@ -52,8 +61,8 @@
                0.5 2
                (/ 1 3) 2}))
 
-(defn update-state [{:keys [remaining] :as state}]
-  (if (and (not-empty remaining) (< (count remaining) 64))
+(defn update-state [{:keys [remaining squares] :as state}]
+  (if (and (not-empty remaining) (< (count squares) 32))
     (let [rect (p/weighted-by geom/area remaining)
           [s & r] (pack rect (/ 1 PHI))]
       (-> state
