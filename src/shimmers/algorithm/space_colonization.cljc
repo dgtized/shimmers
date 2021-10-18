@@ -37,7 +37,7 @@
 (defn average-attraction
   [{:keys [position direction]} attractors]
   (-> (reduce (fn [acc attractor]
-                (v/add acc (v/sub attractor position)))
+                (v/add acc (tm/- attractor position)))
               direction
               attractors)
       (v/add (v/jitter 1.0))
@@ -46,7 +46,7 @@
 
 (comment
   (tm/normalize (v/vec2 2 2))
-  (v/sub (v/vec2 2 2) (v/vec2 0 0))
+  (tm/- (v/vec2 2 2) (v/vec2 0 0))
   (reduce v/add (map tm/normalize [(v/vec2 2 2) (v/vec2 2 2)]))
   (g/scale (v/vec2 4 4) (/ 1 2))
   (average-attraction {:position (v/vec2 0 0) :direction (v/vec2 0 0)}

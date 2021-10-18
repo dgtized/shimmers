@@ -12,8 +12,8 @@
 (defn blob [base r0 r1]
   (let [seed (* base 0.05)]
     {:position
-     (v/sub (v/vec2 (q/noise seed 5) (q/noise seed 10))
-            (v/vec2 0.5 0.5))
+     (tm/- (v/vec2 (q/noise seed 5) (q/noise seed 10))
+           (v/vec2 0.5 0.5))
      :shape
      (for [theta (sm/range-subdivided tm/TWO_PI 10)
            :let [xoff (+ 1 (q/cos theta))
