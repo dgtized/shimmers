@@ -27,9 +27,6 @@
   (vec2 (tm/clamp x (rect/left bounds) (rect/right bounds))
         (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
-(defn normalize [v]
-  (tm/normalize v))
-
 (defn polar [r theta]
   (g/as-cartesian (tv/vec2 r theta)))
 

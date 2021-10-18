@@ -2,7 +2,8 @@
   (:require [clojure.set :as set]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.spatialtree :as spatialtree]))
+            [thi.ng.geom.spatialtree :as spatialtree]
+            [thi.ng.math.core :as tm]))
 
 ;; Ideas:
 ;;  * attractors could have influence PER attractor instead of global, or a weight on their influence?
@@ -41,12 +42,12 @@
               attractors)
       (v/add (v/jitter 1.0))
       (v/scale (/ 1 (inc (count attractors))))
-      v/normalize))
+      tm/normalize))
 
 (comment
-  (v/normalize (v/vec2 2 2))
+  (tm/normalize (v/vec2 2 2))
   (v/sub (v/vec2 2 2) (v/vec2 0 0))
-  (reduce v/add (map v/normalize [(v/vec2 2 2) (v/vec2 2 2)]))
+  (reduce v/add (map tm/normalize [(v/vec2 2 2) (v/vec2 2 2)]))
   (v/scale (v/vec2 4 4) (/ 1 2))
   (average-attraction {:position (v/vec2 0 0) :direction (v/vec2 0 0)}
                       [(v/vec2 2 2) (v/vec2 2 2)])
