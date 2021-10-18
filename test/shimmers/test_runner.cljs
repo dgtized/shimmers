@@ -3,6 +3,7 @@
             [shimmers.algorithm.lines-test]
             [shimmers.algorithm.rtree-test]
             [shimmers.algorithm.space-colonization-test]
+            [shimmers.algorithm.square-packing-test]
             [shimmers.automata.memory-test]
             [shimmers.automata.simplify-test]
             [shimmers.common.sequence-test]
@@ -22,6 +23,7 @@
    'shimmers.algorithm.lines-test
    'shimmers.algorithm.rtree-test
    'shimmers.algorithm.space-colonization-test
+   'shimmers.algorithm.square-packing-test
    'shimmers.automata.memory-test
    'shimmers.automata.simplify-test
    'shimmers.common.sequence-test
