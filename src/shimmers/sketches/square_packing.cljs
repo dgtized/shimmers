@@ -7,7 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as geom]
+   [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
 ;; Further Experiments: pack resulting squares with patterns of their own?
@@ -39,7 +39,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:square-limit 256
-   :pick-rectangle (partial p/weighted-by geom/area)
+   :pick-rectangle (partial p/weighted-by g/area)
    :position #(repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))
    :ratio (constantly (/ 1 tm/PHI))
 
@@ -55,11 +55,14 @@
   (q/stroke 0.35 0.5 0.5 0.5)
   (q/fill 1.0 1.0)
   (doseq [rects remaining]
-    (cq/draw-shape (geom/vertices rects)))
+    (cq/draw-shape (g/vertices rects)))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/fill 1.0 0.1)
   (doseq [square squares]
-    (cq/draw-shape (geom/vertices (geom/scale-size square (/ 1 tm/PHI))))))
+    (-> square
+        (g/scale-size (/ 1 tm/PHI))
+        g/vertices
+        cq/draw-shape)))
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"
