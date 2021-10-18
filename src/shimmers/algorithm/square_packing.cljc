@@ -2,14 +2,32 @@
   (:require [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
+;; Row Major
+;; 111
+;; 203
+;; 444
+
+;; Column Major
+;; 124
+;; 104
+;; 134
+
+;; TODO: support splits like?
+;; 123 112 122 122
+;; 405 302 103 103
+;; 678 344 443 144
+
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
 (defn split-panes
   "Split a rectangle into a square and the 4 surrounding rectangles. The square is
-  of `size`, with `px,py` indicating percent positioning within the
-  larger rectangle. row-major indicates if the panes should split by rows and
-  then fill in the gaps east and west of the square, or by columns and fill in
-  the gaps north or south of the square."
+  of `size`, with `px,py` indicating percent positioning within the larger
+  rectangle. row-major indicates if the panes should split by rows and then fill
+  in the gaps east and west of the square, or by columns and fill in the gaps
+  north or south of the square.
+
+  Depending on the placement and size of the square, some of the surrounding
+  rectangles may have length or width zero."
   ([{[w h] :size :as rectangle} size percent]
    (split-panes rectangle size percent (> h w)))
   ([{p :p [width height] :size} size [px py] row-major]
@@ -31,4 +49,3 @@
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
-
