@@ -40,13 +40,18 @@
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
 
+(defn middle-out
+  "Alternate distribution for px,py"
+  []
+  (p/weighted {0.0 1.0
+               0.5 1.0
+               1.0 1.0}))
+
 (defn pack [rectangle ratio]
   (let [{:keys [size]} rectangle
         [w h] size
         square (* (min w h) ratio)
-        [px py] (repeatedly 2 #(p/weighted {0.0 1.0
-                                            0.5 1.0
-                                            1.0 1.0}))]
+        [px py] (repeatedly 2 (fn [] (mod (* PHI (rand)) 1.0)))]
     (filter has-area? (split-panes rectangle square [px py]))))
 
 (defn setup []
@@ -60,7 +65,7 @@
                (/ 1 3) 2}))
 
 (defn update-state [{:keys [remaining squares] :as state}]
-  (if (and (not-empty remaining) (< (count squares) 32))
+  (if (and (not-empty remaining) (< (count squares) 256))
     (let [rect (p/weighted-by geom/area remaining)
           [s & r] (pack rect (/ 1 PHI))]
       (-> state
@@ -70,14 +75,15 @@
 
 (defn draw [{:keys [squares remaining]}]
   (q/background 1.0)
-  (q/stroke 0.35 0.5 0.5 1.0)
+  (q/stroke-weight 0.66)
+  (q/stroke 0.35 0.5 0.5 0.5)
   (q/fill 1.0 1.0)
   (doseq [rects remaining]
     (cq/draw-shape (geom/vertices rects)))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/fill 1.0 0.1)
   (doseq [square squares]
-    (cq/draw-shape (geom/vertices square))))
+    (cq/draw-shape (geom/vertices (geom/scale-size square (/ 1 PHI))))))
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"
