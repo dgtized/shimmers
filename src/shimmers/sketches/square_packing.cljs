@@ -23,11 +23,11 @@
     [(rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) square)
      (rect/rect (tm/+ p (gv/vec2 0 square)) width (- height square))]))
 
-(defn pack [rectangle]
+(defn pack [rectangle ratio]
   (let [{:keys [p size]} rectangle
         [w h] size
         min-side (min w h)
-        side (* min-side (/ 1 PHI))
+        side (* min-side ratio)
         split (p/weighted {split-x w
                            split-y h})]
     [(rect/rect p side side)
@@ -38,10 +38,15 @@
   {:squares []
    :remaining [(rect/rect [10 10] [790 590])]})
 
+(defn random-ratio []
+  (p/weighted {(/ 1 PHI) 4
+               0.5 2
+               (/ 1 3) 2}))
+
 (defn update-state [{:keys [remaining] :as state}]
   (if (< (count remaining) 64)
     (let [rect (p/weighted-by geom/area remaining)
-          [s r] (pack rect)]
+          [s r] (pack rect (/ 1 PHI))]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) r))
           (update :squares conj s)))
