@@ -20,25 +20,34 @@
                0.5 1.0
                1.0 1.0}))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {:squares []
-   :remaining [(cq/screen-rect 0.98)]})
-
 (defn random-ratio []
   (p/weighted {(/ 1 tm/PHI) 4
                0.5 2
                (/ 1 3) 2}))
 
-(defn update-state [{:keys [remaining squares] :as state}]
-  (if (and (not-empty remaining) (< (count squares) 256))
-    (let [rect (p/weighted-by geom/area remaining)
-          percent (repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))
-          [s & r] (square/proportional-split rect (/ 1 tm/PHI) percent)]
+(defn pack-step
+  [{:keys [remaining squares square-limit pick-rectangle ratio position] :as state}]
+  (if (and (not-empty remaining) (< (count squares) square-limit))
+    (let [rect (pick-rectangle remaining)
+          [square & panes]
+          (square/proportional-split rect (ratio rect) (position rect))]
       (-> state
-          (assoc :remaining (into (remove #{rect} remaining) r))
-          (update :squares conj s)))
+          (assoc :remaining (into (remove #{rect} remaining) panes))
+          (update :squares conj square)))
     state))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  {:square-limit 256
+   :pick-rectangle (partial p/weighted-by geom/area)
+   :position #(repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))
+   :ratio (constantly (/ 1 tm/PHI))
+
+   :squares []
+   :remaining [(cq/screen-rect 0.98)]})
+
+(defn update-state [state]
+  (pack-step state))
 
 (defn draw [{:keys [squares remaining]}]
   (q/background 1.0)
