@@ -27,9 +27,6 @@
   (vec2 (tm/clamp x (rect/left bounds) (rect/right bounds))
         (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
-(defn distance [v1 v2]
-  (g/dist v1 v2))
-
 (defn normalize [v]
   (tm/normalize v))
 

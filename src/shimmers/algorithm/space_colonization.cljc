@@ -22,7 +22,7 @@
             direction))
 
 (defn branch-distance [attractor branch]
-  (v/distance attractor (:position branch)))
+  (g/dist attractor (:position branch)))
 
 (defn influenced-branches [quadtree radius position]
   (spatialtree/select-with-circle quadtree position radius))

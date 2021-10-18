@@ -9,7 +9,8 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]))
 
 (defn in-bounds? [[x y]]
   (and (>= x 0) (< x (q/width))
@@ -31,9 +32,9 @@
   (if (#{self (:parent self)} crack)
     false
     (let [{:keys [start position]} crack
-          dseg (v/distance start position)
-          dstart (v/distance start point)
-          dend (v/distance point position)]
+          dseg (g/dist start position)
+          dstart (g/dist start point)
+          dend (g/dist point position)]
       (< (Math/abs (- dseg dstart dend)) 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
