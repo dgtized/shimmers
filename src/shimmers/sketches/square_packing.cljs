@@ -13,17 +13,23 @@
 
 (def PHI (/ (+ 1 (Math/sqrt 5)) 2))
 
-(defn split-x [{:keys [p size]} square]
-  (let [[width height] size]
-    [(rect/rect p square square)
-     (rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) height)
-     (rect/rect (tm/+ p (gv/vec2 0 square)) square (- height square))]))
+(defn split-x [{:keys [p size]} square pct]
+  (let [[width height] size
+        offset-x (* pct (- width square))]
+    [(rect/rect (tm/+ p [offset-x 0]) square square)
+     (rect/rect p offset-x square) ;; before-x
+     (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) square) ;; after-x
+     (rect/rect (tm/+ p [0 square]) width (- height square)) ;; y sliver
+     ]))
 
-(defn split-y [{:keys [p size]} square]
-  (let [[width height] size]
-    [(rect/rect p square square)
-     (rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) square)
-     (rect/rect (tm/+ p (gv/vec2 0 square)) width (- height square))]))
+(defn split-y [{:keys [p size]} square pct]
+  (let [[width height] size
+        offset-y (* pct (- height square))]
+    [(rect/rect (tm/+ p [0 offset-y]) square square)
+     (rect/rect p square offset-y) ;; before-y
+     (rect/rect (tm/+ p (gv/vec2 0 (+ square offset-y))) square (- height square offset-y)) ;; after-y
+     (rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) height) ;; x sliver
+     ]))
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
@@ -31,11 +37,10 @@
 (defn pack [rectangle ratio]
   (let [{:keys [size]} rectangle
         [w h] size
-        min-side (min w h)
-        side (* min-side ratio)
+        square (* (min w h) ratio)
         split (p/weighted {split-x w
                            split-y h})]
-    (filter has-area? (split rectangle side))))
+    (filter has-area? (split rectangle square (rand-nth [0.0 0.5 1.0])))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -50,7 +55,7 @@
 (defn update-state [{:keys [remaining] :as state}]
   (if (and (not-empty remaining) (< (count remaining) 64))
     (let [rect (p/weighted-by geom/area remaining)
-          [s & r] (pack rect 1.0)]
+          [s & r] (pack rect (/ 1 PHI))]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) r))
           (update :squares conj s)))
