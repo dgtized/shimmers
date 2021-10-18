@@ -10,6 +10,10 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; concept here was to play with log or golden spirals as a means for assigning
+;; color or depth to a region. Ie using distance to the closest point on the
+;; spiral to displace into theta to assign some meaning.
+
 (defn log-spiral [alpha k theta]
   (let [nat (* alpha (Math/exp (* k theta)))]
     (gv/vec2 (* nat (Math/cos theta))
