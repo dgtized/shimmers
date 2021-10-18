@@ -29,17 +29,19 @@
   Depending on the placement and size of the square, some of the surrounding
   rectangles may have length or width zero."
   ([{[w h] :size :as rectangle} size percent]
-   (split-panes rectangle size percent (> h w)))
+   (split-panes rectangle size percent (if (> h w) :row :column)))
   ([{p :p [width height] :size} size [px py] row-major]
    (let [offset-x (* px (- width size))
          offset-y (* py (- height size))
          sq (rect/rect (tm/+ p [offset-x offset-y]) size size)]
-     (->> (if row-major
+     (->> (case row-major
+            :row
             [(rect/rect p width offset-y) ;; south row
              (rect/rect (tm/+ p [0 (+ size offset-y)]) width (- height size offset-y)) ;; north row
              (rect/rect (tm/+ p [0 offset-y]) offset-x size) ;; east chunk
              (rect/rect (tm/+ p [(+ offset-x size) offset-y]) (- width size offset-x) size) ;; west chunk
              ]
+            :column
             [(rect/rect (tm/+ p [offset-x 0]) size offset-y) ;; south chunk
              (rect/rect (tm/+ p [offset-x (+ size offset-y)]) size (- height size offset-y)) ;; north chunk
              (rect/rect p offset-x height) ;; east column
