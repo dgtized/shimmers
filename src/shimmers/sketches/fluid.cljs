@@ -5,6 +5,7 @@
             [shimmers.macros.loop :as loop :include-macros true]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.math.core :as tm]
             [thi.ng.ndarray.core :as nd]))
 
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
@@ -67,12 +68,12 @@
   [velocity direction]
   (let [c lattice-speed
         c2 (* c c)
-        eiu (v/dot (directions direction) velocity)]
+        eiu (tm/dot (directions direction) velocity)]
     (* (weights direction)
        (+
         (/ (* 3 eiu) c)
         (/ (* (/ 9 2) (* eiu eiu)) c2)
-        (- (/ (* (/ 3 2) (v/dot velocity velocity)) c2))))))
+        (- (/ (* (/ 3 2) (tm/dot velocity velocity)) c2))))))
 
 #_:clj-kondo/ignore
 (defn equilibrium-distribution
