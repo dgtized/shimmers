@@ -13,8 +13,6 @@
 ;; Further Experiments: pack resulting squares with patterns of their own?
 ;; Colors and shapes, even tilted or "hand drawn" squares?
 
-(def PHI (/ (+ 1 (Math/sqrt 5)) 2))
-
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
 (defn split-panes
@@ -56,7 +54,7 @@
   (let [{:keys [size]} rectangle
         [w h] size
         square (* (min w h) ratio)
-        [px py] (repeatedly 2 (fn [] (mod (* PHI (rand)) 1.0)))]
+        [px py] (repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))]
     (filter has-area? (split-panes rectangle square [px py]))))
 
 (defn setup []
@@ -65,14 +63,14 @@
    :remaining [(rect/rect [10 10] [790 590])]})
 
 (defn random-ratio []
-  (p/weighted {(/ 1 PHI) 4
+  (p/weighted {(/ 1 tm/PHI) 4
                0.5 2
                (/ 1 3) 2}))
 
 (defn update-state [{:keys [remaining squares] :as state}]
   (if (and (not-empty remaining) (< (count squares) 256))
     (let [rect (p/weighted-by geom/area remaining)
-          [s & r] (pack rect (/ 1 PHI))]
+          [s & r] (pack rect (/ 1 tm/PHI))]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) r))
           (update :squares conj s)))
@@ -88,7 +86,7 @@
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/fill 1.0 0.1)
   (doseq [square squares]
-    (cq/draw-shape (geom/vertices (geom/scale-size square (/ 1 PHI))))))
+    (cq/draw-shape (geom/vertices (geom/scale-size square (/ 1 tm/PHI))))))
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"

@@ -50,9 +50,8 @@
           :else state')))
 
 ;; https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-(def phi (/ (+ 1 (Math/sqrt 5)) 2))
 (defn color [id]
-  [(mod (* id phi) 1.0) 0.75 0.55 1.0])
+  [(mod (* id tm/PHI) 1.0) 0.75 0.55 1.0])
 
 (defn draw [{:keys [free pages allocations] :as state}]
   (q/background 1.0)

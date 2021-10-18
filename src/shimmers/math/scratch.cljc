@@ -2,10 +2,8 @@
   (:require [thi.ng.math.core :as tm]))
 
 ;; Playing with golden ratio splits
-(def phi (/ (+ 1 (Math/sqrt 5)) 2))
-
 (defn golden [n]
-  (drop 1 (map (fn [i] (/ 1.0 (Math/pow phi i))) (range (inc n)))))
+  (drop 1 (map (fn [i] (/ 1.0 (Math/pow tm/PHI i))) (range (inc n)))))
 
 (comment
   (golden 2)
