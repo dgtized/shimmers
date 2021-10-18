@@ -99,6 +99,7 @@
             shimmers.sketches.slow-zone
             shimmers.sketches.space-colonization
             shimmers.sketches.sphere
+            shimmers.sketches.square-packing
             shimmers.sketches.stem-and-leaf
             shimmers.sketches.substrate
             shimmers.sketches.string-lights
