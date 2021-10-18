@@ -24,14 +24,8 @@
         n (q/noise x y t)]
     (tm/+ p (v/polar r (* tm/TWO_PI n)))))
 
-(defn setup []
+(defn draw [_]
   (q/color-mode :hsl 1.0)
-  {})
-
-(defn update-state [state]
-  state)
-
-(defn draw [state]
   (q/background 1.0)
   (q/no-fill)
   (q/stroke-weight 0.25)
@@ -52,7 +46,5 @@
 (sketch/defquil spiral-distance
   :created-at "2021-10-18"
   :size [800 600]
-  :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
