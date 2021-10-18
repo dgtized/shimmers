@@ -33,12 +33,19 @@
 
 (defn split-y [{:keys [p size]} square pct]
   (let [[width height] size
-        offset-y (* pct (- height square))]
-    [(rect/rect (tm/+ p [0 offset-y]) square square)
-     (rect/rect p square offset-y) ;; before-y
-     (rect/rect (tm/+ p (gv/vec2 0 (+ square offset-y))) square (- height square offset-y)) ;; after-y
-     (rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) height) ;; x sliver
-     ]))
+        offset-y (* pct (- height square))
+        sq (rect/rect (tm/+ p [0 offset-y]) square square)]
+    (if (> height width)
+      [sq
+       (rect/rect p width offset-y) ;; before-y
+       (rect/rect (tm/+ p [0 (+ square offset-y)]) width (- height square offset-y)) ;; after-y
+       (rect/rect (tm/+ p (gv/vec2 square offset-y)) (- width square) square) ;; x sliver
+       ]
+      [sq
+       (rect/rect p square offset-y) ;; before-y
+       (rect/rect (tm/+ p [0 (+ square offset-y)]) square (- height square offset-y)) ;; after-y
+       (rect/rect (tm/+ p [square 0]) (- width square) height) ;; x sliver
+       ])))
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
@@ -48,8 +55,11 @@
         [w h] size
         square (* (min w h) ratio)
         split (p/weighted {split-x w
-                           split-y h})]
-    (filter has-area? (split rectangle square (rand-nth [0.0 0.5 1.0])))))
+                           split-y h})
+        pct (p/weighted {0.0 1.0
+                         0.5 0.5
+                         1.0 1.0})]
+    (filter has-area? (split rectangle square pct))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
