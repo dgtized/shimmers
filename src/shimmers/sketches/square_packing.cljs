@@ -8,43 +8,30 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as geom]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (def PHI (/ (+ 1 (Math/sqrt 5)) 2))
 
-(defn split-x [{:keys [p size]} square pct]
+(defn split-panes
+  [{:keys [p size]} square [px py]]
   (let [[width height] size
-        offset-x (* pct (- width square))
-        sq (rect/rect (tm/+ p [offset-x 0]) square square)]
-    (if (> width height) ;; FIXME: tune heuristic?
-      ;; chunk below square between two full height rectangles
-      [sq
-       (rect/rect p offset-x height) ;; before-x
-       (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) height) ;; after-x
-       (rect/rect (tm/+ p [offset-x square]) square (- height square)) ;; y chunk
-       ]
-      ;; sliver below square across width
-      [sq
-       (rect/rect p offset-x square) ;; before-x
-       (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) square) ;; after-x
-       (rect/rect (tm/+ p [0 square]) width (- height square)) ;; y sliver
-       ])))
-
-(defn split-y [{:keys [p size]} square pct]
-  (let [[width height] size
-        offset-y (* pct (- height square))
-        sq (rect/rect (tm/+ p [0 offset-y]) square square)]
+        offset-x (* px (- width square))
+        offset-y (* py (- height square))
+        sq (rect/rect (tm/+ p [offset-x offset-y]) square square)]
     (if (> height width)
+      ;; row major
       [sq
-       (rect/rect p width offset-y) ;; before-y
-       (rect/rect (tm/+ p [0 (+ square offset-y)]) width (- height square offset-y)) ;; after-y
-       (rect/rect (tm/+ p (gv/vec2 square offset-y)) (- width square) square) ;; x sliver
+       (rect/rect p width offset-y) ;; south row
+       (rect/rect (tm/+ p [0 (+ square offset-y)]) width (- height square offset-y)) ;; north row
+       (rect/rect (tm/+ p [0 offset-y]) offset-x square) ;; east chunk
+       (rect/rect (tm/+ p [(+ offset-x square) offset-y]) (- width square offset-x) square) ;; west chunk
        ]
+      ;; column major
       [sq
-       (rect/rect p square offset-y) ;; before-y
-       (rect/rect (tm/+ p [0 (+ square offset-y)]) square (- height square offset-y)) ;; after-y
-       (rect/rect (tm/+ p [square 0]) (- width square) height) ;; x sliver
+       (rect/rect (tm/+ p [offset-x 0]) square offset-y) ;; south chunk
+       (rect/rect (tm/+ p [offset-x (+ square offset-y)]) square (- height square offset-y)) ;; north chunk
+       (rect/rect p offset-x height) ;; east column
+       (rect/rect (tm/+ p [(+ square offset-x) 0]) (- width square offset-x) height) ;; west column
        ])))
 
 (defn has-area? [{:keys [size]}]
@@ -54,12 +41,10 @@
   (let [{:keys [size]} rectangle
         [w h] size
         square (* (min w h) ratio)
-        split (p/weighted {split-x w
-                           split-y h})
-        pct (p/weighted {0.0 1.0
-                         0.5 0.5
-                         1.0 1.0})]
-    (filter has-area? (split rectangle square pct))))
+        [px py] (repeatedly 2 #(p/weighted {0.0 1.0
+                                            0.5 1.0
+                                            1.0 1.0}))]
+    (filter has-area? (split-panes rectangle square [px py]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
