@@ -13,9 +13,6 @@
 (defn sub [v1 v2]
   (tm/- v1 v2))
 
-(defn scale [v n]
-  (tm/* v n))
-
 (defn wrap2d [[x y] xmax ymax]
   (vec2 (tm/wrap-range x xmax)
         (tm/wrap-range y ymax)))

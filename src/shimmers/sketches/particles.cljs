@@ -2,15 +2,16 @@
   "Loosely derived from Coding Challenge #24: Perlin Noise Flow Field
   https://www.youtube.com/watch?v=BjoM9oKOAKY"
   (:require [quil.core :as q :include-macros true]
-            [quil.sketch]
             [quil.middleware :as m]
+            quil.sketch
             [shimmers.common.framerate :as framerate]
             [shimmers.common.particle-system :as particles]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
             [shimmers.math.core :as sm]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
@@ -29,8 +30,8 @@
   "Viscous resistance is a negative force proportional to velocity.
   From https://en.wikipedia.org/wiki/Drag_(physics)"
   [velocity]
-  ;; (v/add velocity (v/scale velocity -0.1))
-  (v/scale velocity 0.90))
+  ;; (v/add velocity (g/scale velocity -0.1))
+  (g/scale velocity 0.90))
 
 ;; Because of discontinuity when noise wraps around, there were often competing
 ;; forces at the borders. We fix this by reflecting x and y coordinates around
@@ -50,10 +51,10 @@
         ;; mass of object ie a = F/m. It's not particularly correct as a rule of
         ;; physics, but it looks nice if the larger objects have slower
         ;; acceleration.
-        wind (v/scale (force-at-position position) (/ 1 mass))
+        wind (g/scale (force-at-position position) (/ 1 mass))
         ;; Arbitrarily making additional random hops in some small direction
         ;; inversely proportional to mass.
-        brownian (v/scale (v/vec2 (q/random-2d)) (/ 0.1 mass))]
+        brownian (g/scale (v/vec2 (q/random-2d)) (/ 0.1 mass))]
     (v/add wind brownian)))
 
 (defn update-particle
@@ -99,7 +100,7 @@
             y (range 0 (q/height) cols)
             :let [force (force-at-position [x y])
                   from (v/add (v/vec2 x y) (v/vec2 hcols hcols))]]
-      (q/line from (v/add from (v/scale force len))))))
+      (q/line from (v/add from (g/scale force len))))))
 
 (defn draw [{:keys [particles ui particle-graphics]}]
   (let [opacity (:opacity @ui)]

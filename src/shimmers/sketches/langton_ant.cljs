@@ -6,7 +6,8 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]))
 
 (defn turn-right [dir] (+ dir (/ Math/PI 2)))
 (defn turn-left [dir] (- dir (/ Math/PI 2)))
@@ -65,7 +66,7 @@
              (+ 20 (* 2 (+ (- x1 x0) (- y1 y0)))))]
     (doseq [[position value] grid]
       (when value
-        (let [[x y] (v/add center (v/scale position r))]
+        (let [[x y] (v/add center (g/scale position r))]
           (q/rect x y r r))))))
 
 (sketch/defquil langton-ant

@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]
             [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -18,11 +19,11 @@
 (defn update-state [state]
   (let [mouse (mouse-position)]
     ;; (q/print-every-n-millisec 100 [state mouse])
-    (update state :looking-at #(tm/normalize (v/add % (v/scale mouse 0.15))))))
+    (update state :looking-at #(tm/normalize (v/add % (g/scale mouse 0.15))))))
 
 (defn draw-eye [x y looking-at]
   (q/ellipse x y 20 16)
-  (let [[lx ly] (v/scale looking-at 2)
+  (let [[lx ly] (g/scale looking-at 2)
         dx (+ x lx)
         dy (+ y ly)]
     (q/with-fill 0

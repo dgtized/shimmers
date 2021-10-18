@@ -7,6 +7,7 @@
             [shimmers.math.color :as color]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]
             [thi.ng.math.core :as tm]))
 
 (defn make-particle []
@@ -30,7 +31,7 @@
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
            :position wrapped-position
            :velocity new-velocity
-           :acceleration (v/scale (v/vec2 (q/random-2d)) 0.5))))
+           :acceleration (g/scale (v/vec2 (q/random-2d)) 0.5))))
 
 (defn setup []
   (q/background "white")

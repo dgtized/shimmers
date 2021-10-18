@@ -6,7 +6,8 @@
             [shimmers.common.sequence :refer [map-kv]]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 
@@ -46,7 +47,7 @@
   [particle]
   (-> particle
       (update :lifespan dec)
-      (assoc :acceleration (v/scale (v/vec2 (q/random-2d)) 0.01))
+      (assoc :acceleration (g/scale (v/vec2 (q/random-2d)) 0.01))
       particles/step))
 
 (defn update-state [{:keys [particles emitters] :as state}]
@@ -55,7 +56,7 @@
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
                                    (p/chance probability))]
-                    (make-particle emitter position (v/scale (v/vec2 (q/random-2d)) 0.001)))]
+                    (make-particle emitter position (g/scale (v/vec2 (q/random-2d)) 0.001)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 
 (defn draw [{:keys [particles]}]

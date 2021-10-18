@@ -10,12 +10,12 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            [shimmers.math.probability :as p]))
+            [thi.ng.geom.triangle :as gt]))
 
 (defonce settings
   (ctrl/state
@@ -120,7 +120,7 @@
           (q/stroke 0 0 200 128)
           (q/line (:position branch)
                   (v/add (:position branch)
-                         (v/scale (colonize/average-attraction branch active-attractors) 5))))))))
+                         (g/scale (colonize/average-attraction branch active-attractors) 5))))))))
 
 (defn draw [{:keys [branches weights] :as state}]
   (let [debug (:debug @settings)]

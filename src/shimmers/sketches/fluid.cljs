@@ -5,6 +5,7 @@
             [shimmers.macros.loop :as loop :include-macros true]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]
             [thi.ng.math.core :as tm]
             [thi.ng.ndarray.core :as nd]))
 
@@ -52,7 +53,7 @@
 
 (defn velocity [lattice position density]
   (let [c lattice-speed]
-    (/ (* c (reduce + (map v/scale (flow-forces lattice position) directions)))
+    (/ (* c (reduce + (map g/scale (flow-forces lattice position) directions)))
        density)))
 
 (defn weights [direction]
