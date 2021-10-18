@@ -35,13 +35,14 @@
   (let [t (/ (q/frame-count) 200)
         points (for [theta (range 0 (* Math/PI 13) 0.2)]
                  (log-spiral 0.1 0.25 (+ theta (tm/fract t))))
-        tpoints (count points)
         points (mapv (partial noise-displace (/ 1 400) 10 t) points)]
     (doseq [[[ia pa] [ib pb]] (partition 2 1 (map-indexed vector points))]
       (when-let [qa (nth points (- ia 28) nil)]
         (when-let [qb (nth points (- ib 22) nil)]
-          (let [polygon (gp/polygon2 [pa qa qb pb])]
-            (q/fill 0.0 0.0 (/ ia tpoints) 1.0)
+          (let [polygon (gp/polygon2 [pa qa qb pb])
+                center (g/centroid polygon)
+                mag (tm/mag center)]
+            (q/fill (mod (* 0.001 mag tm/PHI) 1.0) 0.5 0.8 1.0)
             (cq/draw-curve-shape (g/vertices polygon))))))))
 
 (sketch/defquil spiral-distance
