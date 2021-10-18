@@ -49,3 +49,8 @@
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
+
+(defn proportional-split [rectangle ratio percent]
+  (let [{[w h] :size} rectangle
+        square (* (min w h) ratio)]
+    (filter has-area? (split-panes rectangle square percent))))

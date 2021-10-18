@@ -21,13 +21,6 @@
                0.5 1.0
                1.0 1.0}))
 
-(defn pack [rectangle ratio]
-  (let [{:keys [size]} rectangle
-        [w h] size
-        square (* (min w h) ratio)
-        [px py] (repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))]
-    (filter square/has-area? (square/split-panes rectangle square [px py]))))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:squares []
@@ -41,7 +34,8 @@
 (defn update-state [{:keys [remaining squares] :as state}]
   (if (and (not-empty remaining) (< (count squares) 256))
     (let [rect (p/weighted-by geom/area remaining)
-          [s & r] (pack rect (/ 1 tm/PHI))]
+          percent (repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))
+          [s & r] (square/proportional-split rect (/ 1 tm/PHI) percent)]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) r))
           (update :squares conj s)))
