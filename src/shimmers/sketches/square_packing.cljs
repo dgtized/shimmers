@@ -10,8 +10,13 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
+;; Further Experiments: pack resulting squares with patterns of their own?
+;; Colors and shapes, even tilted or "hand drawn" squares?
+
 (def PHI (/ (+ 1 (Math/sqrt 5)) 2))
 
+;; Note that px,py are not clamped to 0,1 so some funky but interesting results
+;; are possible if using values outside of the range.
 (defn split-panes
   "Split a rectangle into a square and the 4 surrounding rectangles. The square is
   of `size`, with `px,py` indicating percent positioning within the
