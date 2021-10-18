@@ -23,6 +23,9 @@
     [(rect/rect (tm/+ p (gv/vec2 square 0)) (- width square) square)
      (rect/rect (tm/+ p (gv/vec2 0 square)) width (- height square))]))
 
+(defn has-area? [{:keys [size]}]
+  (every? pos? size))
+
 (defn pack [rectangle ratio]
   (let [{:keys [p size]} rectangle
         [w h] size
@@ -31,7 +34,7 @@
         split (p/weighted {split-x w
                            split-y h})]
     [(rect/rect p side side)
-     (split rectangle side)]))
+     (filter has-area? (split rectangle side))]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -44,9 +47,9 @@
                (/ 1 3) 2}))
 
 (defn update-state [{:keys [remaining] :as state}]
-  (if (< (count remaining) 64)
+  (if (and (not-empty remaining) (< (count remaining) 64))
     (let [rect (p/weighted-by geom/area remaining)
-          [s r] (pack rect (/ 1 PHI))]
+          [s r] (pack rect 1.0)]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) r))
           (update :squares conj s)))
