@@ -5,6 +5,8 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -28,17 +30,19 @@
 (defn draw [state]
   (q/background 1.0)
   (q/no-fill)
+  (q/stroke-weight 0.25)
   (q/translate (cq/rel-vec 0.66 0.33))
   (let [t (/ (q/frame-count) 200)
         points (for [theta (range 0 (* Math/PI 13) 0.2)]
                  (log-spiral 0.1 0.25 (+ theta (tm/fract t))))
+        tpoints (count points)
         points (mapv (partial noise-displace (/ 1 400) 10 t) points)]
-    (q/begin-shape)
-    (doseq [[i p] (map-indexed vector points)]
-      (when-let [q (nth points (- i 28) nil)]
-        (q/line p q))
-      (apply q/vertex p))
-    (q/end-shape)))
+    (doseq [[[ia pa] [ib pb]] (partition 2 1 (map-indexed vector points))]
+      (when-let [qa (nth points (- ia 28) nil)]
+        (when-let [qb (nth points (- ib 22) nil)]
+          (let [polygon (gp/polygon2 [pa qa qb pb])]
+            (q/fill 0.0 0.0 (/ ia tpoints) 1.0)
+            (cq/draw-curve-shape (g/vertices polygon))))))))
 
 (sketch/defquil spiral-distance
   :created-at "2021-10-18"
