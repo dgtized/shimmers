@@ -14,6 +14,9 @@
 ;; color or depth to a region. Ie using distance to the closest point on the
 ;; spiral to displace into theta to assign some meaning.
 
+;; https://en.wikipedia.org/wiki/List_of_spirals
+;; https://en.wikipedia.org/wiki/Logarithmic_spiral
+;; https://en.wikipedia.org/wiki/Golden_spiral
 (defn log-spiral [alpha k theta]
   (let [nat (* alpha (Math/exp (* k theta)))]
     (gv/vec2 (* nat (Math/cos theta))
