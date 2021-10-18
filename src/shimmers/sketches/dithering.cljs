@@ -2,14 +2,19 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
+            [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.video :as video]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def modes [:dither :boxes :circles :ring-density :sampled-ring-density :color-displace :flow-field
+(def modes [:dither :boxes :circles
+            :ring-density :sampled-ring-density :color-displace
+            :flow-field :spiral-deformation
             :ascii-70 :ascii-10 :ascii-n])
 
 (defonce ui-state (ctrl/state {:mode :dither}))
@@ -186,6 +191,33 @@
             (q/curve-vertex (* box-size (- width x)) (* box-size y)))
           (q/end-shape))))))
 
+;; TODO: tune some more, it's too jittery from video noise?
+;; Re-purposed from deformed-spiral sketch
+(defn spiral [center dr dtheta steps noise-at t]
+  (for [theta (range 0 (* steps dtheta) dtheta)]
+    (let [pos (v/polar (* dr (/ theta tm/TWO_PI)) (+ theta t))
+          n (noise-at pos)]
+      (tm/+ center pos (v/polar 9.0 (* n tm/TWO_PI))))))
+
+(defn spiral-deformation [capture width height]
+  (q/stroke 0)
+  (q/stroke-weight 0.8)
+  (q/no-fill)
+  (let [pixels (q/pixels capture)
+        screen (rect/rect 0 0 width height)
+        center (cq/rel-vec 0.5 0.5)
+        t (/ (q/frame-count) 400)
+        noise-at (fn [[x y]] (let [[i j] (tm/* (tm/+ center (gv/vec2 x y)) 0.5)
+                                  p (gv/vec2 (- width i) j)]
+                              (if (geom/contains-point? screen p)
+                                (grayscale-at pixels width p)
+                                0)))
+        points (spiral center 10.0 0.3 720 noise-at t)]
+    (q/begin-shape)
+    (doseq [[x y] points]
+      (q/curve-vertex x y))
+    (q/end-shape)))
+
 ;; http://paulbourke.net/dataformats/asciiart/
 (def ascii-70 (vec " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"))
 (def ascii-10 (vec " .:-=+*#%@"))
@@ -216,6 +248,7 @@
       :sampled-ring-density (sampled-ring-density capture width height)
       :color-displace (color-displace capture width height)
       :flow-field (flow-field capture width height)
+      :spiral-deformation (spiral-deformation capture width height)
       :ascii-70 (ascii ascii-70 capture width height)
       :ascii-10 (ascii ascii-10 capture width height)
       :ascii-n (ascii ascii-n capture width height)))
