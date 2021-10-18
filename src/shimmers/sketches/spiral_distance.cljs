@@ -31,16 +31,19 @@
   (q/stroke-weight 0.25)
   (q/translate (cq/rel-vec 0.66 0.33))
   (let [t (/ (q/frame-count) 200)
+        offset (- (/ 1 tm/PHI))
+        dt (* Math/PI (tm/fract (/ t 3)))
         points (for [theta (range 0 (* Math/PI 13) 0.2)]
-                 (log-spiral 0.1 0.25 (+ theta (tm/fract t))))
-        points (mapv (partial noise-displace (/ 1 400) 10 t) points)]
+                 (log-spiral 0.1 0.25 (+ theta dt)))
+        points (mapv (partial noise-displace (/ 1 400) 12 t) points)]
     (doseq [[[ia pa] [ib pb]] (partition 2 1 (map-indexed vector points))]
       (when-let [qa (nth points (- ia 28) nil)]
         (when-let [qb (nth points (- ib 22) nil)]
           (let [polygon (gp/polygon2 [pa qa qb pb])
                 center (g/centroid polygon)
-                mag (tm/mag center)]
-            (q/fill (mod (* 0.001 mag tm/PHI) 1.0) 0.5 0.8 1.0)
+                mag (tm/mag center)
+                c (mod (+ offset (* 0.001 mag tm/PHI)) 1.0)]
+            (q/fill c 0.6 (/ 1.1 tm/PHI) 1.0)
             (cq/draw-curve-shape (g/vertices polygon))))))))
 
 (sketch/defquil spiral-distance
