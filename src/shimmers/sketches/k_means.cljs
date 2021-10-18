@@ -6,7 +6,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -25,9 +25,9 @@
 (defn draw-shape [{:keys [position color theta] :or {theta 0}}]
   (apply q/fill color)
   (-> (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
-      (geom/translate (cq/rel-pos position))
+      (g/translate (cq/rel-pos position))
       (geometry/rotate-around-centroid theta)
-      geom/vertices
+      g/vertices
       cq/draw-shape))
 
 (defn make-shape []
@@ -105,7 +105,7 @@
         (cs/map-kv (fn [cluster]
                      (let [centroid (get centroid-positions cluster)]
                        (->> cluster
-                            (map (fn [s] (geom/dist (:position s) centroid)))
+                            (map (fn [s] (g/dist (:position s) centroid)))
                             (reduce +))))
                    clusters)]
     ;;(println [:update (keys clusters) centroid-positions])
@@ -114,7 +114,7 @@
                 sum-dist (get sum-dist-to-centroid cluster)]]
       (assoc shape :position
              (tm/mix position centroid
-                     (max 0.001 (/ (geom/dist position centroid)
+                     (max 0.001 (/ (g/dist position centroid)
                                    sum-dist)))))))
 
 (defn update-state [state]

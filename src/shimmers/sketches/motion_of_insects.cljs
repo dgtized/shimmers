@@ -7,13 +7,13 @@
             [shimmers.math.vector :as v]
             [shimmers.math.verlet-particles :as vp]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defn neighborhood [{at-p :pos :as p} particles radius]
   (filter (fn [{at-q :pos :as q}]
-            (and (not= p q) (< (geom/dist at-p at-q) radius)))
+            (and (not= p q) (< (g/dist at-p at-q) radius)))
           particles))
 
 (defn flock-separation [radius strength likelyhood]
@@ -22,7 +22,7 @@
       (let [neighborhood (neighborhood p particles (+ mass radius))]
         (when (seq neighborhood)
           (let [differences (map (fn [{at-q :pos}]
-                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q)))
+                                   (tm/div (tm/- at-p at-q) (g/dist at-p at-q)))
                                  neighborhood)
                 rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
             (tm/* rel-diff (* strength delta)))))

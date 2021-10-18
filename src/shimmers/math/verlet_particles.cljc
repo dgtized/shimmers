@@ -1,7 +1,7 @@
 (ns shimmers.math.verlet-particles
   "Simplified version of thi.ng.geom.physics.core.VerletPhysics with slightly
   more functional approach."
-  (:require [thi.ng.geom.core :as geom]
+  (:require [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -48,7 +48,7 @@
       (doseq [particle (seq particles)]
         (let [force (reduce (fn [force mechanic]
                               (tm/+ force (mechanic _ particle delta)))
-                            (geom/clear* (:pos particle)) ;; 2d or 3d
+                            (g/clear* (:pos particle)) ;; 2d or 3d
                             mechanics)]
           (pstep particle drag' force delta))))
     _)

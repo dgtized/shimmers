@@ -7,7 +7,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as tc]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as g]))
 
 (defn make-bubble []
   (tc/circle (cq/rel-pos (rand) 1.0)
@@ -22,7 +22,7 @@
 (defn update-bubble [bubble]
   ;; consider adding acc/vel and horizontal motion from wind?
   (when (in-bounds? bubble)
-    (geom/translate bubble (v/vec2 0 (- (/ 0.33 (:r bubble)))))))
+    (g/translate bubble (v/vec2 0 (- (/ 0.33 (:r bubble)))))))
 
 (defn combine-bubble [a b]
   (tc/circle (if (> (:r a) (:r b))
@@ -37,7 +37,7 @@
     (if (empty? ordered)
       results
       (let [[a & xs] ordered
-            b (some (fn [b] (when (geom/intersect-shape a b) b)) xs)]
+            b (some (fn [b] (when (g/intersect-shape a b) b)) xs)]
         (if b
           (recur (conj (remove #{b} xs) (combine-bubble a b)) results)
           (recur xs (conj results a)))))))

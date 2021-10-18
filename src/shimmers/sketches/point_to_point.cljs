@@ -6,7 +6,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -14,7 +14,7 @@
 
 (defn short-pairs [points]
   (->> (for [[u v] (cs/all-pairs points)]
-         [(geom/dist u v) [u v]])
+         [(g/dist u v) [u v]])
        (sort-by first)
        (map second)))
 
@@ -39,8 +39,8 @@
          :points
          (for [{:keys [p theta radius]} circles]
            (->> (gv/vec2 radius theta)
-                geom/as-cartesian
-                (geom/translate p)))))
+                g/as-cartesian
+                (g/translate p)))))
 
 (defn all-lines [points]
   (doseq [[x y] (map cq/rel-pos points)]

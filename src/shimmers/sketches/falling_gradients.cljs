@@ -6,7 +6,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
 
@@ -42,7 +42,7 @@
           (-> (cq/rel-pos x1 (+ y1 d))
               (random-triangle-at (+ theta (* 2 Math/PI d))
                                   (* 2 slice-width))
-              geom/vertices
+              g/vertices
               cq/draw-shape))))))
 
 (sketch/defquil falling-gradients

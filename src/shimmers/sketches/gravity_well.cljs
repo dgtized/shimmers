@@ -5,7 +5,7 @@
             [shimmers.common.particle-system :as particles]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.math.core :as tm]))
 
 (defrecord Body
@@ -36,7 +36,7 @@
         (for [body bodies
               :when (not= body current)
               :let [gravity 9.8
-                    d2 (geom/dist-squared position (:position body))]]
+                    d2 (g/dist-squared position (:position body))]]
           (tm/normalize (tm/- (:position body) position)
                         (/ (* gravity (:mass body) mass)
                            (max d2 2))))]
@@ -51,7 +51,7 @@
       particles/step))
 
 (defn visible? [body]
-  (< (geom/dist (:position body) (v/vec2 0 0)) (q/height)))
+  (< (g/dist (:position body) (v/vec2 0 0)) (q/height)))
 
 (defn restart-sim? [{:keys [start-frame bodies]} frame-count]
   (let [age (- frame-count start-frame)

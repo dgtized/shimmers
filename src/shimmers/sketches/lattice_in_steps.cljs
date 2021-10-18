@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -27,8 +27,8 @@
         [p q] (rand-nth (partition 2 1 hull))
         m (->> #(geometry/confused-midpoint p q 0.9)
                (repeatedly 20)
-               (remove (fn [c] (geom/contains-point? (gp/polygon2 hull) c)))
-               (filter (fn [c] (geom/contains-point? (rect/rect 0 0 (q/width) (q/height)) c)))
+               (remove (fn [c] (g/contains-point? (gp/polygon2 hull) c)))
+               (filter (fn [c] (g/contains-point? (rect/rect 0 0 (q/width) (q/height)) c)))
                first)]
     (if m
       (-> state

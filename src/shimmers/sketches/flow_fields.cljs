@@ -11,7 +11,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]
@@ -43,9 +43,9 @@
     theta))
 
 (defn avoid-obstacles [p {:keys [points radius voronoi]}]
-  (if-let [closest (apply min-key #(geom/dist p %) points)]
+  (if-let [closest (apply min-key #(g/dist p %) points)]
     ((if voronoi tm/* tm/normalize)
-     (tm/- p closest) (/ radius (geom/dist p closest)))
+     (tm/- p closest) (/ radius (g/dist p closest)))
     (gv/vec2)))
 
 (defn noise-point
@@ -197,13 +197,13 @@
                 (doseq [[p q] (partition 2 1 points)]
                   (apply cq/draw-triangle
                          (-> triangle
-                             (geom/rotate (geom/heading (tm/- q p)))
-                             (geom/center p)
+                             (g/rotate (g/heading (tm/- q p)))
+                             (g/center p)
                              :points)))
                 (doseq [p points]
                   (apply cq/draw-triangle
                          (-> triangle
-                             (geom/center p)
+                             (g/center p)
                              :points)))))))))))
 
 (defn ui-controls []

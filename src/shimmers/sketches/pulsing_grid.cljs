@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.equations :as eq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.utils.subdiv :as gsd]
@@ -13,8 +13,8 @@
 
 (defn rounding [rect]
   (as-> rect _
-    (geom/as-polygon _)
-    (geom/sample-uniform _ (/ (geom/circumference _) 8) false)
+    (g/as-polygon _)
+    (g/sample-uniform _ (/ (g/circumference _) 8) false)
     (gsd/subdivide-closed (:chaikin gsd/schemes) _)
     (gsd/subdivide-closed (:chaikin gsd/schemes) _)
     (gp/polygon2 _)))
@@ -28,9 +28,9 @@
   (q/color-mode :hsl 1.0)
   (let [r (rect/rect (cq/rel-w 0.05) (cq/rel-h 0.35)
                      (cq/rel-w 0.90) (cq/rel-h 0.30))
-        cells (geom/subdivide r {:rows 6 :cols 24})]
+        cells (g/subdivide r {:rows 6 :cols 24})]
     {:cells (for [cell cells]
-              (assoc (rounding (geom/scale-size cell 0.9))
+              (assoc (rounding (g/scale-size cell 0.9))
                      :color [0 1.0]
                      :pulse [(tm/random 0.1 0.9) (tm/random 0 10)]))
      :t 0}))
@@ -67,7 +67,7 @@
   (q/no-stroke)
   (doseq [{:keys [color] :as cell} cells]
     (apply q/fill color)
-    (cq/draw-shape (geom/vertices cell))))
+    (cq/draw-shape (g/vertices cell))))
 
 (sketch/defquil pulsing-grid
   :created-at "2021-08-21"

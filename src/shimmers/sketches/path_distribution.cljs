@@ -6,7 +6,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.svg.core :as svg]
             [thi.ng.geom.vector :as gv]
@@ -16,24 +16,24 @@
   "Generate a set of points on a curved line between p and q by picking a confused
   midpoint."
   [line d]
-  (let [[p q] (geom/vertices line)
+  (let [[p q] (g/vertices line)
         curve (geometry/confused-midpoint p q d)]
-    (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
+    (g/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
 ;; https://stackoverflow.com/a/45701864/34450
 (defn scaled-bisector [line d]
-  (let [[p q] (geom/vertices line)
+  (let [[p q] (g/vertices line)
         midpoint (tm/mix p q 0.5)
         [x1 y1] (tm/* (tm/- p midpoint) d)
         [x2 y2] (tm/* (tm/- q midpoint) d)]
-    (geom/translate (gl/line2 (- y1) x1 (- y2) x2)
+    (g/translate (gl/line2 (- y1) x1 (- y2) x2)
                     midpoint)))
 
 (defn displace-at-bisector [line d]
-  (let [[p q] (geom/vertices line)
+  (let [[p q] (g/vertices line)
         bisector (scaled-bisector line d)
-        curve (geom/random-point bisector)]
-    (geom/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
+        curve (g/random-point bisector)]
+    (g/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
 (def width 800)
 (def height 600)
@@ -46,8 +46,8 @@
         bisector2 (scaled-bisector line2 d)]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
               (concat [(with-meta line1 {:stroke "blue" :key "a1"})
-                       (with-meta (gc/circle (geom/point-at line1 0.5)
-                                             (* d 0.5 (apply geom/dist (geom/vertices line1))))
+                       (with-meta (gc/circle (g/point-at line1 0.5)
+                                             (* d 0.5 (apply g/dist (g/vertices line1))))
                          {:stroke "blue" :fill "none" :key "c1"})]
                       (for [i (range 20)]
                         (svg/polyline (displace-line line1 d)

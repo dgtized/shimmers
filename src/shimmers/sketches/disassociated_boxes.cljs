@@ -8,14 +8,14 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]))
 
 (defn shrink [scales shape]
-  (geom/scale-size shape (dr/rand-nth scales)))
+  (g/scale-size shape (dr/rand-nth scales)))
 
 (defn displace [scale shape]
-  (geom/translate shape (dr/jitter (* scale (geom/area shape)))))
+  (g/translate shape (dr/jitter (* scale (g/area shape)))))
 
 (def palettes
   (map color/url->palette
@@ -85,8 +85,8 @@
          (sum-offsets (fib-splits 4)))
 
 (defn subdivide [rect [rows cols]]
-  (let [width (geom/width rect)
-        height (geom/height rect)
+  (let [width (g/width rect)
+        height (g/height rect)
         hstride (/ width cols)
         vstride (/ height rows)
         [x y] (:p rect)]
@@ -97,8 +97,8 @@
                  hstride vstride))))
 
 (defn fib-subdivide [rect [rows cols]]
-  (let [width (geom/width rect)
-        height (geom/height rect)
+  (let [width (g/width rect)
+        height (g/height rect)
         [hsplits vsplits] (->> [(fib-splits cols) (fib-splits rows)]
                                (dr/map-random-sample (constantly 0.5) reverse))
         [x y] (:p rect)]
@@ -112,7 +112,7 @@
 (defn disassociate [palette shape]
   ;; bias towards column or row centric splits based on a weighted ratio
   ;; of current shapes width / height
-  (let [[rows cols] (->> (/ (+ 2.0 (/ (geom/width shape) (geom/height shape))) 3)
+  (let [[rows cols] (->> (/ (+ 2.0 (/ (g/width shape) (g/height shape))) 3)
                          split-bias
                          dr/weighted)
         divide-shape (dr/weighted {fib-subdivide 1
@@ -126,16 +126,16 @@
                                (partial colorize palette)))))
 
 (defn descent [minimum value-fn scale total-area]
-  (fn [s] (if (< (/ (geom/area s) total-area) 0.0001)
+  (fn [s] (if (< (/ (g/area s) total-area) 0.0001)
            0.0001
            (max minimum (/ (value-fn s) scale)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [source (geom/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)
-        area-source (geom/area source)
+  (let [source (g/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)
+        area-source (g/area source)
         rules {:constant [(constantly 0.25) 5]
-               :by-area [(descent 0.05 geom/area area-source area-source) 10]
+               :by-area [(descent 0.05 g/area area-source area-source) 10]
                :left [(descent 0.1 rect/left (q/width) area-source) 1]
                :right [(descent 0.1 rect/right (q/width) area-source) 1]
                :top [(descent 0.1 rect/top (q/height) area-source) 1]
@@ -160,7 +160,7 @@
     (if-let [c (:color shape)]
       (apply q/fill c)
       (q/no-fill))
-    (cq/draw-shape (geom/vertices shape))))
+    (cq/draw-shape (g/vertices shape))))
 
 (sketch/defquil disassociated-boxes
   :created-at "2021-05-05"

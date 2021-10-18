@@ -9,7 +9,7 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -22,7 +22,7 @@
              {} shapes))
 
 (defn in-bounds? [circle]
-  (geom/contains-point? (rect/rect 0 0 (q/width) (q/height))
+  (g/contains-point? (rect/rect 0 0 (q/width) (q/height))
                         (:p circle)))
 
 (defn border-circle [shapes]
@@ -35,7 +35,7 @@
         radius (dr/random (max (* 0.6 r) 2)
                           (min (* 1.15 r) (cq/rel-w 0.04)))
         center (->> (gv/vec2 (+ r radius 0.1) angle)
-                    geom/as-cartesian
+                    g/as-cartesian
                     (tm/+ p))
         circle (assoc (gc/circle center radius) :parent parent)]
     (when (and (in-bounds? circle)

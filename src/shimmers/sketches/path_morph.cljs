@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
@@ -17,13 +17,13 @@
                 [0.2 0.8] [0.8 0.8]]))
 
 (def shape-sequence
-  [[0.0 (geom/rotate (gt/triangle2 [0.0 0.0] [1.0 1.0] [0.0 1.0]) 0.5)]
+  [[0.0 (g/rotate (gt/triangle2 [0.0 0.0] [1.0 1.0] [0.0 1.0]) 0.5)]
    [0.5 (rect/rect 0.0 0.0 1.0 1.0)]
    [1.0 (gc/circle 0.5)]])
 
 (defn morph [from to t]
   (for [v (range 0.0 1.0 0.03)]
-    (tm/mix (geom/point-at from v) (geom/point-at to v) t)))
+    (tm/mix (g/point-at from v) (g/point-at to v) t)))
 
 (defn shape-at [shapes t]
   (cond (<= t 0.0)
@@ -53,11 +53,11 @@
   (q/stroke 0.0 0.5)
   (let [bounds (rect/rect 0 0 (q/width) (q/height))
         t (mod t 1.0)
-        p (geom/unmap-point bounds (gu/point-at t (:points path)))
+        p (g/unmap-point bounds (gu/point-at t (:points path)))
         shape (gp/polygon2 (shape-at shape-sequence t))]
     ;; (cq/circle p 1)
     (q/begin-shape)
-    (doseq [v (geom/vertices (geom/translate (geom/scale-size shape 50.0) p))]
+    (doseq [v (g/vertices (g/translate (g/scale-size shape 50.0) p))]
       (apply q/vertex v))
     (q/end-shape :close)
     ))

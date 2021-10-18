@@ -6,7 +6,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.physics.core :as physics]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -16,7 +16,7 @@
 
 (defn neighborhood [p particles radius]
   (filter (fn [q] (and (not= p q)
-                      (< (geom/dist (physics/position p)
+                      (< (g/dist (physics/position p)
                                     (physics/position q))
                          radius)))
           particles))
@@ -46,14 +46,14 @@
         (let [differences (map (fn [q]
                                  (let [at-p (physics/position p)
                                        at-q (physics/position q)]
-                                   (tm/div (tm/- at-p at-q) (geom/dist at-p at-q))))
+                                   (tm/div (tm/- at-p at-q) (g/dist at-p at-q))))
                                neighborhood)
               rel-diff (tm/div (reduce tm/+ differences) (count neighborhood))]
           (physics/add-force p (tm/* rel-diff (* strength delta))))))))
 
 (defn make-particle []
   (let [pos (cq/rel-vec (rand) (rand))]
-    (physics/VerletParticle. pos pos (geom/clear* pos)
+    (physics/VerletParticle. pos pos (g/clear* pos)
                              false nil nil
                              (/ 1.0 10) nil)))
 
@@ -69,7 +69,7 @@
   (fn [p delta]
     (let [[x y] (physics/position p)
           theta (direction-at-point x y)
-          force (geom/as-cartesian (gv/vec2 strength theta))]
+          force (g/as-cartesian (gv/vec2 strength theta))]
       (physics/add-force p (tm/* force delta)))))
 
 (defn wrap-around []
@@ -105,9 +105,9 @@
   (let [[x y] (physics/position particle)
         [[ax ay] [bx by] [cx cy]]
         (-> (gt/triangle2 [1.5 0] [-0.5 -0.5] [-0.5 0.5])
-            (geom/scale-size scale)
-            (geom/rotate (geom/heading (physics/velocity particle)))
-            (geom/translate (gv/vec2 x y))
+            (g/scale-size scale)
+            (g/rotate (g/heading (physics/velocity particle)))
+            (g/translate (gv/vec2 x y))
             :points)]
     (q/triangle ax ay bx by cx cy)))
 

@@ -5,13 +5,13 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]))
 
 (defn circle-target [center r]
   (let [fc (/ (q/frame-count) 100)
         adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
-    (geom/translate (geom/as-cartesian (gv/vec2 adjusted-r fc))
+    (g/translate (g/as-cartesian (gv/vec2 adjusted-r fc))
                     center)))
 
 (defn setup []
@@ -23,7 +23,7 @@
             (assoc (chain/make-chain (cq/rel-vec 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
-(def draw-chain (comp cq/draw-vertices geom/vertices))
+(def draw-chain (comp cq/draw-vertices g/vertices))
 
 (defn update-state [{:keys [chains] :as state}]
   (assoc state :chains

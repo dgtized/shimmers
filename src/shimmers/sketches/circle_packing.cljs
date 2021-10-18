@@ -7,7 +7,7 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
@@ -70,11 +70,11 @@
       nil)))
 
 (defn spatial-replace [tree {:keys [p] :as circle}]
-  (geom/add-point (geom/delete-point tree p) p circle))
+  (g/add-point (g/delete-point tree p) p circle))
 
 (defn grow [quadtree boundary search-radius scale circle]
   (if-not (:done circle)
-    (let [growth (assoc (geom/scale-size circle scale) :color (:color circle))
+    (let [growth (assoc (g/scale-size circle scale) :color (:color circle))
           near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
           intersecting-circle (some (partial intersects growth) near)]
       (if (and (geometry/contains-circle? boundary growth)
@@ -103,14 +103,14 @@
         (recur (inc i)
                (-> state
                    (update :circles conj circle)
-                   (update :quadtree geom/add-point (:p circle) circle)))
+                   (update :quadtree g/add-point (:p circle) circle)))
         (recur i state)))))
 
 ;; Re-enable growth of nearby circles after cull?
 (defn cull-circles [{:keys [circles quadtree] :as state} p]
   (let [culled (random-sample p circles)]
     (assoc state :circles (remove (set culled) circles)
-           :quadtree (reduce geom/delete-point quadtree (map :p culled)))))
+           :quadtree (reduce g/delete-point quadtree (map :p culled)))))
 
 (defn update-state [state]
   (let [c (count (:circles state))

@@ -7,7 +7,7 @@
             [shimmers.math.core :as sm]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.utils :as gu]
@@ -28,15 +28,15 @@
 (defrecord Agent [position size velocity max-velocity destination])
 
 (defn overlap? [agent {:keys [position size]}]
-  (< (geom/dist (:position agent) position) (+ size (:size agent))))
+  (< (g/dist (:position agent) position) (+ size (:size agent))))
 
 (defn random-exit
   "Pick a random exit edge not on the starting same edge as the start."
   [bounds start target]
   (let [[p q] (->> bounds
-                   geom/edges
-                   (remove (fn [[p q]] (tm/delta= (+ (geom/dist start p) (geom/dist start q))
-                                                 (geom/dist p q))))
+                   g/edges
+                   (remove (fn [[p q]] (tm/delta= (+ (g/dist start p) (g/dist start q))
+                                                 (g/dist p q))))
                    rand-nth)]
     (tm/mix p q target)))
 
@@ -62,26 +62,26 @@
 ;; TODO add avoid for barriers
 (defn avoid [{:keys [position]} nearby obstacles]
   (let [[obstacle-pt _]
-        (gu/closest-point-on-segments position (mapcat geom/edges obstacles))
+        (gu/closest-point-on-segments position (mapcat g/edges obstacles))
         closest-agent
         (apply min-key
-               (fn [{pos :position}] (geom/dist-squared position pos))
+               (fn [{pos :position}] (g/dist-squared position pos))
                nearby)
         closest (if closest-agent
-                  (min-key (partial geom/dist-squared position) obstacle-pt (:position closest-agent))
+                  (min-key (partial g/dist-squared position) obstacle-pt (:position closest-agent))
                   obstacle-pt)
-        dist-sqr (geom/dist-squared position closest)
+        dist-sqr (g/dist-squared position closest)
         dist-scale (tm/clamp01 (/ (* min-force-dist min-force-dist) dist-sqr))]
     (tm/normalize (tm/- position closest) (* max-force dist-scale))))
 
 (defn align
   "Try aligning with any agents with a similar heading."
   [{:keys [velocity]} nearby align-width]
-  (let [heading (geom/heading velocity)
+  (let [heading (g/heading velocity)
 
         common-heading
         (filter (fn [{:keys [velocity]}]
-                  (< (sm/radial-distance (geom/heading velocity) heading)
+                  (< (sm/radial-distance (g/heading velocity) heading)
                      align-width))
                 nearby)]
     (if (empty? common-heading)
@@ -101,14 +101,14 @@
     (assoc agent :velocity (tm/limit (tm/+ velocity steering) max-velocity))))
 
 (defn predict [agents bounds obstacles]
-  (let [tree (reduce (fn [q agent] (geom/add-point q (:position agent) agent))
+  (let [tree (reduce (fn [q agent] (g/add-point q (:position agent) agent))
                      (spatialtree/quadtree bounds) agents)]
     (for [{:keys [position] :as agent} agents]
       (let [nearby (spatialtree/select-with-circle tree position search-dist)]
         (steering agent (remove #{agent} nearby) obstacles)))))
 
 (defn outside? [bounds {:keys [position]}]
-  (not (geom/contains-point? bounds position)))
+  (not (g/contains-point? bounds position)))
 
 (defn move [agents bounds]
   (->> agents
@@ -139,7 +139,7 @@
   (q/fill 0.8)
   (q/no-stroke)
   (doseq [obstacle obstacles]
-    (cq/draw-shape (geom/vertices obstacle)))
+    (cq/draw-shape (g/vertices obstacle)))
   (q/no-fill)
 
   (doseq [{:keys [position size velocity]} agents]

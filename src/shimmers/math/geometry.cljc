@@ -1,6 +1,6 @@
 (ns shimmers.math.geometry
   (:require [shimmers.math.probability :as p]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.quaternion :as quat]
             [thi.ng.geom.rect :as rect]
@@ -30,36 +30,36 @@
   (-> (gv/vec2
        (* (get _ :r) (Math/sqrt (tm/random)))
        (* tm/TWO_PI (tm/random)))
-      geom/as-cartesian
+      g/as-cartesian
       (tm/+ (get _ :p))))
 
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
 ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
 (extend-type Polygon2
-  geom/ISample
+  g/ISample
   (random-point-inside
-    [_] (->> (geom/tessellate _)
+    [_] (->> (g/tessellate _)
              (map gt/triangle2)
-             (p/weighted-by geom/area)
+             (p/weighted-by g/area)
              random-point-in-triangle)))
 
 ;; TODO: remove once https://github.com/thi-ng/geom/pull/82 is published
 (extend-type Line2
-  geom/IFlip
+  g/IFlip
   (flip [_]
     (Line2. (vec (rseq (:points _))))))
 
 (extend-type Line3
-  geom/IFlip
+  g/IFlip
   (flip [_]
     (Line3. (vec (rseq (:points _))))))
 
 (defn rotate-around-centroid [polygon t]
   (-> polygon
-      geom/center
-      (geom/rotate t)
-      (geom/translate (geom/centroid polygon))))
+      g/center
+      (g/rotate t)
+      (g/translate (g/centroid polygon))))
 
 ;; Quaternion
 ;; https://www.weizmann.ac.il/sci-tea/benari/sites/sci-tea.benari/files/uploads/softwareAndLearningMaterials/quaternion-tutorial-2-0-1.pdf
@@ -71,40 +71,40 @@
   (let [axis (tm/- b a)
         rotation (quat/quat-from-axis-angle axis theta)]
     (-> poly
-        (geom/translate (tm/- a))
-        (geom/transform rotation)
-        (geom/translate a))))
+        (g/translate (tm/- a))
+        (g/transform rotation)
+        (g/translate a))))
 
 (defn reflect-over-edge [c [a b]]
   (let [edge (gl/line3 a b)
-        close (gl/line3 c (geom/closest-point edge c))]
-    (first (:points (geom/reflect close edge)))))
+        close (gl/line3 c (g/closest-point edge c))]
+    (first (:points (g/reflect close edge)))))
 
 (defn displace [polygon theta dir]
   (-> polygon
-      geom/center
-      (geom/rotate theta)
-      (geom/translate (tm/+ (geom/centroid polygon) dir))))
+      g/center
+      (g/rotate theta)
+      (g/translate (tm/+ (g/centroid polygon) dir))))
 
 (defn radial-sort
   "Counter-clockwise sort of all points around an origin point"
   [origin points]
-  (sort-by (fn [p] (geom/heading (tm/- p origin))) points))
+  (sort-by (fn [p] (g/heading (tm/- p origin))) points))
 
 (defn shape-at [shape rotation scale pos]
   (-> shape
-      (geom/rotate rotation)
-      (geom/scale-size scale)
-      (geom/translate pos)))
+      (g/rotate rotation)
+      (g/scale-size scale)
+      (g/translate pos)))
 
 ;; Longest edge is aesthetically more pleasing per:
 ;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
 (defn longest-edge
   "Returns points of a triangle ordered from longest to shortest edge"
   [{[a b c] :points}]
-  (let [dist-ab (geom/dist a b)
-        dist-bc (geom/dist b c)
-        dist-ca (geom/dist c a)]
+  (let [dist-ab (g/dist a b)
+        dist-bc (g/dist b c)
+        dist-ca (g/dist c a)]
     (cond (and (>= dist-ab dist-bc) (>= dist-ab dist-ca))
           [a b c]
           (and (>= dist-ca dist-bc) (>= dist-ca dist-ab))
@@ -113,8 +113,8 @@
 
 (comment ;; TODO generalize for polygon points?
   (->> (gt/triangle2 [0 10] [0 3] [1 0])
-       geom/edges
-       (sort-by (partial apply geom/dist) #(compare %2 %1)))
+       g/edges
+       (sort-by (partial apply g/dist) #(compare %2 %1)))
   ;; Ranks edges, but need to extract unique points
   )
 
@@ -159,13 +159,13 @@
   midpoint. d is a sizing factor for the radius, d of 1 yields a circle that clips
   p and q, d of 0.5 would only allow points in the middle half."
   [p q d]
-  (->> (* d 0.5 (geom/dist p q))
+  (->> (* d 0.5 (g/dist p q))
        (p/confusion-disk (tm/mix p q 0.5))
        gv/vec2))
 
 (defn circles-overlap? [a b]
   (let [distance (+ (:r a) (:r b))]
-    (< (geom/dist (:p a) (:p b)) distance)))
+    (< (g/dist (:p a) (:p b)) distance)))
 
 ;; TODO: extend IBoundary/contains-entity? for other shapes
 (defn contains-circle? [boundary {:keys [p r]}]

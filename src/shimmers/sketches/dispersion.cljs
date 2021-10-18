@@ -6,13 +6,13 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defn draw-polygon [poly]
-  (cq/draw-shape (geom/vertices poly)))
+  (cq/draw-shape (g/vertices poly)))
 
 (defn setup []
   (q/no-loop)
@@ -25,12 +25,12 @@
         (cq/rel-w 0.09)))
 
 (defn epicenter-distance [epicenter max-dist s]
-  (/ (geom/dist epicenter (geom/centroid s)) max-dist))
+  (/ (g/dist epicenter (g/centroid s)) max-dist))
 
 (defn possibly-subdivide [p-fn shapes]
   (mapcat (fn [s]
             (if (p/chance (p-fn s))
-              (geom/subdivide s)
+              (g/subdivide s)
               [s]))
           shapes))
 
@@ -45,9 +45,9 @@
   (q/background 1.0)
   (q/stroke-weight 0.2)
   (let [building (rect/rect (cq/rel-pos 0.1 0.4) (cq/rel-w 0.3) (cq/rel-h 0.6))
-        [_ ne _ sw] (geom/vertices building)
-        max-dist (geom/dist ne sw)
-        tessellated (geom/tessellate building {:num 48})
+        [_ ne _ sw] (g/vertices building)
+        max-dist (g/dist ne sw)
+        tessellated (g/tessellate building {:num 48})
         distribution (ksd/normal {:sd 3.5})
         divided (possibly-subdivide (fn [s] (- 0.8 (epicenter-distance ne max-dist s))) tessellated)
         shapes (possibly-disperse (fn [s] (- 2.0 (epicenter-distance ne (/ max-dist 2.8) s)))

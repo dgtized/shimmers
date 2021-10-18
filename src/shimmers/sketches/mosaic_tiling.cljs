@@ -5,7 +5,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -39,7 +39,7 @@
     {:pos (gv/vec2 i j) :fill (dr/rand-nth palette)}))
 
 (defn translate [cells pos]
-  (map #(update % :pos geom/translate pos) cells))
+  (map #(update % :pos g/translate pos) cells))
 
 (defn column [cells col]
   (filter (fn [cell] (= col (get-in cell [:pos 0]))) cells))
@@ -146,7 +146,7 @@
     (csvg/svg {:width width :height height}
               (for [[idx color] (map-indexed vector palette)]
                 (-> rect
-                    (geom/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
+                    (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
                     (with-meta {:fill (str color)
                                 :key (str "palette-cell-" idx)}))))))
 
@@ -156,7 +156,7 @@
               (for [{:keys [pos fill]} cells
                     :let [[i j] pos]]
                 (-> rect
-                    (geom/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+                    (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
                     (with-meta {:fill fill :key (str "cell-" i "-" j)}))))))
 
 ;; FIXME: something is still off sometimes about the initial square

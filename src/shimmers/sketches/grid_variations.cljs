@@ -7,7 +7,7 @@
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -17,8 +17,8 @@
         offsets [0.4 0.6]]
     (map (fn [l]
            (-> l
-               (geom/translate (gv/vec2 -0.5 -0.5))
-               (geom/rotate t)))
+               (g/translate (gv/vec2 -0.5 -0.5))
+               (g/rotate t)))
          (apply concat (for [o offsets]
                          [(gl/line2 o l o h)
                           (gl/line2 l o h o)])))))

@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -13,15 +13,15 @@
 
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
-      (geom/center p)
-      (geom/scale-size 1.5)
-      geom/vertices))
+      (g/center p)
+      (g/scale-size 1.5)
+      g/vertices))
 
 (defn rectangle [p w h]
   (-> (rect/rect 0 0 w h)
-      (geom/center p)
-      (geom/scale-size 1.5)
-      geom/vertices))
+      (g/center p)
+      (g/scale-size 1.5)
+      g/vertices))
 
 (defn square-grid [size]
   (for [x (range size)

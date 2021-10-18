@@ -6,7 +6,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]
@@ -14,38 +14,38 @@
             [shimmers.common.sequence :as cs]))
 
 (defn nearby [rect rectangles]
-  (let [center-x (:x (geom/centroid rect))
-        width (* 2 (geom/width rect))]
-    (filter (fn [t] (< (Math/abs (- center-x (:x (geom/centroid t)))) width))
+  (let [center-x (:x (g/centroid rect))
+        width (* 2 (g/width rect))]
+    (filter (fn [t] (< (Math/abs (- center-x (:x (g/centroid t)))) width))
             rectangles)))
 
 ;; note this only connects edges that completely overlap, it won't form L or T
 ;; shaped polygons and will only extend an existing rectangle. However hatching
 ;; only works for rectangles so this works.
 (defn neighboring-vertices [rect rectangles]
-  (let [edges (geom/edges rect)]
+  (let [edges (g/edges rect)]
     (filter (fn [t]
               (some (fn [[p q]]
                       (some (fn [[p' q']]
                               (or (and (tm/delta= p p') (tm/delta= q q'))
                                   (and (tm/delta= p q') (tm/delta= q p'))))
-                            (geom/edges t))) edges))
+                            (g/edges t))) edges))
             rectangles)))
 
 ;; This may result in overlap as union is *always* a rectangle, doesn't upgrade
 ;; to polygon.
 (defn overlapping-edges [rect rectangles]
-  (let [edges (map gl/line2 (geom/edges rect))]
+  (let [edges (map gl/line2 (g/edges rect))]
     (filter (fn [t]
               (some (fn [line]
                       (some (fn [[p q]]
-                              (and (tm/delta= p (geom/closest-point line p))
-                                   (tm/delta= q (geom/closest-point line q))))
-                            (geom/edges t))) edges))
+                              (and (tm/delta= p (g/closest-point line p))
+                                   (tm/delta= q (g/closest-point line q))))
+                            (g/edges t))) edges))
             rectangles)))
 
 (comment
-  (let [rs (geom/subdivide (rect/rect 0 0 1 1) {:num 2})]
+  (let [rs (g/subdivide (rect/rect 0 0 1 1) {:num 2})]
     (neighboring-vertices (first rs) (rest rs))))
 
 ;; TODO: optimize combination steps, probably by more efficiently calculating neighbors
@@ -61,7 +61,7 @@
         (into output remaining)))))
 
 (defn noise-angle [rect divisor]
-  (let [[x y] (geom/centroid rect)]
+  (let [[x y] (g/centroid rect)]
     (* tm/TWO_PI (q/noise (/ x divisor) (/ y divisor)))))
 
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
@@ -83,7 +83,7 @@
      :rectangles (cs/iterate-cycles depth
                                     (fn [rs] (combine-with rs 0.3))
                                     (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                                        (geom/subdivide {:num sides})))
+                                        (g/subdivide {:num sides})))
      :angle (if (= angle :random)
               #(tm/random 0 tm/TWO_PI)
               (fn [r] (noise-angle r angle)))

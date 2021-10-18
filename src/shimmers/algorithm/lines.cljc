@@ -1,5 +1,5 @@
 (ns shimmers.algorithm.lines
-  (:require [thi.ng.geom.core :as geom]
+  (:require [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.math.core :as tm]))
 
@@ -8,7 +8,7 @@
 
 (defn lines->points [lines]
   (->> lines
-       (mapcat geom/vertices)
+       (mapcat g/vertices)
        dedupe))
 
 (defn segment-at

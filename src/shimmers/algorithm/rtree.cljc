@@ -1,5 +1,5 @@
 (ns shimmers.algorithm.rtree
-  (:require [thi.ng.geom.core :as geom]
+  (:require [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.utils :as gu]))
 
@@ -34,7 +34,7 @@
                     make-branch)))]
      (when (not-empty xs)
        (top-down 0 (get opts :max-children 25)
-                 (map (fn [s] (make-leaf (geom/bounds s) s))
+                 (map (fn [s] (make-leaf (g/bounds s) s))
                       xs))))))
 
 #_:clj-kondo/ignore
@@ -45,12 +45,12 @@
     ([tree o] (insert {} tree o))
     ([opts tree o]
      (let [max-children (get opts :max-children 25)
-           box (geom/bounds o)
+           box (g/bounds o)
            entry (make-leaf box o)]
        (letfn [(search [{:keys [children] :as node}]
                  (when (seq children)
                    (let [child (apply min-key
-                                      (fn [t] (geom/area (gu/coll-bounds [(:bounds t) box])))
+                                      (fn [t] (g/area (gu/coll-bounds [(:bounds t) box])))
                                       children)]
                      (lazy-seq (cons node (search child))))))]
          (loop [path (reverse (search tree)) root entry]
@@ -66,7 +66,7 @@
 (defn intersects? [a b]
   (if (or (nil? a) (nil? b))
     false
-    (geom/intersect-shape a b)))
+    (g/intersect-shape a b)))
 
 (defn search-intersection
   [tree box]
@@ -77,6 +77,6 @@
 
 (defn path-search
   [{:keys [bounds children] :as node} point]
-  (when (geom/contains-point? bounds point)
+  (when (g/contains-point? bounds point)
     (lazy-seq (cons node
                     (mapcat #(path-search % point) children)))))

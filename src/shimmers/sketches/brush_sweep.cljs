@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -19,14 +19,14 @@
 
 (defn hairs [line]
   (let [hair (-> (gt/triangle2 [0 0] [3 7] [7 5])
-                 geom/center
-                 (geom/scale-size 5))]
+                 g/center
+                 (g/scale-size 5))]
     (->> (if true
-           (geom/sample-uniform line 20 true)
-           (repeatedly 64 #(geom/random-point line)))
+           (g/sample-uniform line 20 true)
+           (repeatedly 64 #(g/random-point line)))
          (map (fn [p] (-> hair
-                         (geom/rotate (* tm/TWO_PI (tm/random)))
-                         (geom/translate p)))))))
+                         (g/rotate (* tm/TWO_PI (tm/random)))
+                         (g/translate p)))))))
 
 (defn draw [{:keys [t]}]
   (q/stroke-weight 0.5)
@@ -45,7 +45,7 @@
           line (gl/line2 pos
                          (gv/vec2 (q/width) (+ (* slope (q/width)) (:y pos))))]
       (doseq [hair (shuffle (hairs line))]
-        (cq/draw-shape (geom/vertices hair))))))
+        (cq/draw-shape (g/vertices hair))))))
 
 (sketch/defquil brush-sweep
   :created-at "2021-04-12"

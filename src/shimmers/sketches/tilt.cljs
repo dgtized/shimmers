@@ -6,7 +6,7 @@
             [shimmers.math.geometry :as geometry]
             [shimmers.math.hexagon :as hex]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.triangle :as gt]
@@ -25,11 +25,11 @@
 (defn bokeh [d]
   (let [p (cq/rel-pos 0.0 0.15)
         q (cq/rel-pos 1.0 0.28)]
-    (-> (geom/point-at (gl/line2 p q) d)
-        (geom/translate (gv/vec2 (* 2 (q/random-gaussian))
+    (-> (g/point-at (gl/line2 p q) d)
+        (g/translate (gv/vec2 (* 2 (q/random-gaussian))
                                  (* 8 (q/random-gaussian))))
         (hex/hexagon (+ 20 (q/random-gaussian)))
-        (geom/vertices 6)
+        (g/vertices 6)
         gp/polygon2
         (geometry/rotate-around-centroid (rand)))))
 
@@ -51,7 +51,7 @@
   (q/no-stroke)
   (q/fill 0.0 0.3)
   (doseq [shape shapes]
-    (cq/draw-shape (geom/vertices shape))))
+    (cq/draw-shape (g/vertices shape))))
 
 (sketch/defquil tilt
   :created-at "2021-05-30"

@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -22,7 +22,7 @@
 (defn layer [y x-off width height]
   (let [x-gap (tm/random (/ width 24) (/ width 12))]
     (for [x (range (* -0.33 width x-off) (q/width) width)]
-      (geom/translate (brick (- width x-gap) height)
+      (g/translate (brick (- width x-gap) height)
                       (gv/vec2 x y)))))
 
 (defn wall [brick-height]
@@ -46,8 +46,8 @@
   state)
 
 (defn hatches [rect skip n]
-  (let [spacing (/ (geom/circumference rect) n)
-        points (geom/sample-uniform rect spacing false)]
+  (let [spacing (/ (g/circumference rect) n)
+        points (g/sample-uniform rect spacing false)]
     (loop [points (drop skip points)
            lines []]
       (if (<= (count points) skip)
@@ -70,8 +70,8 @@
       (doseq [[p q] (hatches rect 0 (rand-nth [42 48 64 84]))]
         (q/stroke-weight (tm/random 0.5 0.8))
         (apply q/line (-> (gl/line2 (p/jitter-x p 0.66) (p/jitter-x q 0.66))
-                          (geom/scale-size (tm/random 0.88 0.96))
-                          geom/vertices))))))
+                          (g/scale-size (tm/random 0.88 0.96))
+                          g/vertices))))))
 
 (sketch/defquil decaying-foundations
   :created-at "2021-04-14"

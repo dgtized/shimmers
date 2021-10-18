@@ -10,7 +10,7 @@
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.math.core :as tm]))
 
@@ -62,15 +62,15 @@
   (cq/if-steady-state state 5 setup shade-shape))
 
 (defn perpindicular-line-at [shape t scale angle]
-  (let [p (geom/point-at shape t)
-        grad (geom/point-at shape (+ t 0.01))
+  (let [p (g/point-at shape t)
+        grad (g/point-at shape (+ t 0.01))
         lv (tm/normalize (tm/- grad p))
-        a (geom/rotate lv (- (/ Math/PI 2)))
-        b (geom/rotate lv (/ Math/PI 2))]
+        a (g/rotate lv (- (/ Math/PI 2)))
+        b (g/rotate lv (/ Math/PI 2))]
     (-> (gl/line2 a b)
-        (geom/rotate angle)
-        (geom/scale-size scale)
-        (geom/translate p))))
+        (g/rotate angle)
+        (g/scale-size scale)
+        (g/translate p))))
 
 (defn draw [{:keys [t v density shape angle color]}]
   (q/stroke-weight 0.3)
@@ -84,7 +84,7 @@
             s-disp (displacement-noise t v)
             line (perpindicular-line-at shape t s-disp angle)]
         (doseq [p (ksd/sample density uniform)
-                :let [[x y] (geom/point-at line p)]]
+                :let [[x y] (g/point-at line p)]]
           (q/ellipse x y 0.05 0.05))))))
 
 (sketch/defquil sand-strokes

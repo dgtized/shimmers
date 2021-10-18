@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
@@ -57,12 +57,12 @@
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
 (defn tooth [gear p]
-  (let [polar (geom/as-polar p)
+  (let [polar (g/as-polar p)
         thickness (tooth-thickness gear)
         pitch (/ thickness 2.5)
         addendum (addendum gear)
         dedendum (dedendum gear)]
-    (mapv (fn [t] (geom/as-cartesian (tm/+ polar (gv/vec2 t))))
+    (mapv (fn [t] (g/as-cartesian (tm/+ polar (gv/vec2 t))))
           [[(- dedendum) (- thickness)]
            [0 (- thickness)]
            [addendum (- pitch)]
@@ -72,14 +72,14 @@
 
 (defn poly-at [polygon pos t]
   (-> polygon
-      (geom/rotate t)
-      (geom/translate pos)
-      geom/vertices))
+      (g/rotate t)
+      (g/translate pos)
+      g/vertices))
 
 (defn gear [diametral-pitch teeth]
   (let [gear {:diametral-pitch diametral-pitch :teeth teeth}
         radius (pitch-radius gear)
-        points (geom/vertices (gc/circle (gv/vec2) radius) teeth)]
+        points (g/vertices (gc/circle (gv/vec2) radius) teeth)]
     (merge gear
            {:shape (gp/polygon2 (mapcat (partial tooth gear) points))
             :angle (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))})))
@@ -109,7 +109,7 @@
                           :else 0)]
     (assoc gear
            :pos (->> (gv/vec2 (center-distance driver gear) angle)
-                     geom/as-cartesian
+                     g/as-cartesian
                      (tm/+ pos))
            :dir direction
            :ratio speed

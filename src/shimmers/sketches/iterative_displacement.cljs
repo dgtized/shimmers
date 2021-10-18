@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.utils.subdiv :as gsd]
             [thi.ng.geom.vector :as gv]
@@ -28,7 +28,7 @@
 (defn weighted-point
   [points]
   (let [segments (partition 2 1 points)
-        weights (cs/mapping (fn [[p q]] (geom/dist p q)) segments)
+        weights (cs/mapping (fn [[p q]] (g/dist p q)) segments)
         sample (tm/random (apply + (vals weights)))]
     (loop [cumulative 0.0
            i 0
@@ -40,8 +40,8 @@
             (recur sum (inc i) remaining)))))))
 
 (defn closest-segment [barrier point]
-  (apply min-key (fn [p] (geom/dist p point))
-         (map (fn [[p q]] (geom/closest-point (gl/line2 p q) point))
+  (apply min-key (fn [p] (g/dist p point))
+         (map (fn [[p q]] (g/closest-point (gl/line2 p q) point))
               (partition 2 1 barrier))))
 
 ;; keeps the first and last point anchored, but smooths in-between
@@ -57,8 +57,8 @@
   (->> points
        (partition 3 1)
        (keep (fn [[a b c]]
-               (let [ab (geom/heading (tm/- b a))
-                     bc (geom/heading (tm/- c b))]
+               (let [ab (g/heading (tm/- b a))
+                     bc (g/heading (tm/- c b))]
                  (when (> (Math/abs (- ab bc)) tolerance)
                    b))))
        (cs/sandwich points)))
@@ -67,8 +67,8 @@
 (defn remove-bumps [points margin]
   (->> (partition 3 1 points)
        (keep (fn [[a b c]]
-               (when (> (+ (geom/dist a b) (geom/dist b c))
-                        (* (geom/dist a c) margin))
+               (when (> (+ (g/dist a b) (g/dist b c))
+                        (* (g/dist a c) margin))
                  b)))
        (cs/sandwich points)))
 

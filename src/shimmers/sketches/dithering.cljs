@@ -7,7 +7,7 @@
             [shimmers.common.video :as video]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -209,7 +209,7 @@
         t (/ (q/frame-count) 400)
         noise-at (fn [[x y]] (let [[i j] (tm/* (tm/+ center (gv/vec2 x y)) 0.5)
                                   p (gv/vec2 (- width i) j)]
-                              (if (geom/contains-point? screen p)
+                              (if (g/contains-point? screen p)
                                 (grayscale-at pixels width p)
                                 0)))
         points (spiral center 10.0 0.3 720 noise-at t)]

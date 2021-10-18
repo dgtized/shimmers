@@ -12,7 +12,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.core :as geom]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.matrix :as mat]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
@@ -32,10 +32,10 @@
   ([bounds shape-groups {:keys [scale]}]
    (let [n (count shape-groups)
          [rows cols _] (fit-grid n)
-         tiles (take n (geom/subdivide bounds {:cols cols :rows rows}))]
+         tiles (take n (g/subdivide bounds {:cols cols :rows rows}))]
      (gg/group (mapcat (fn [group tile]
                          (-> tile
-                             (geom/scale-size scale)
+                             (g/scale-size scale)
                              (gu/fit-all-into-bounds (:children group))))
                        shape-groups tiles)))))
 
@@ -43,7 +43,7 @@
   (gc/circle [0.5 0.5] 0.5))
 
 (defn n-gon [n]
-  (gp/polygon2 (geom/vertices (circle) n)))
+  (gp/polygon2 (g/vertices (circle) n)))
 
 (defn square []
   (rect/rect 0 0 1 1))
@@ -66,30 +66,30 @@
   (+ (/ Math/PI 4) (cardinal-direction)))
 
 (defn group-rotation [{:keys [children] :as group} theta]
-  (let [group-centroid (geom/centroid group)]
+  (let [group-centroid (g/centroid group)]
     (gg/group (for [shape children]
                 (-> shape
-                    (geom/center group-centroid)
-                    (geom/rotate theta)
-                    (geom/translate (tm/- group-centroid (geom/centroid shape))))))))
+                    (g/center group-centroid)
+                    (g/rotate theta)
+                    (g/translate (tm/- group-centroid (g/centroid shape))))))))
 
 (defn group-copies [group direction copies]
   (let [offset (case direction
-                 :x (gv/vec2 (geom/width group) 0)
-                 :y (gv/vec2 0 (geom/height group)))]
-    (gg/group (mapcat (fn [v] (:children (geom/translate group (tm/* (tm/* offset 1.1) v))))
+                 :x (gv/vec2 (g/width group) 0)
+                 :y (gv/vec2 0 (g/height group)))]
+    (gg/group (mapcat (fn [v] (:children (g/translate group (tm/* (tm/* offset 1.1) v))))
                       (range copies)))))
 
 (defn group-mirror [group direction]
-  (let [bounds (geom/bounds group)
+  (let [bounds (g/bounds group)
         offset (tm/abs (rect/bottom-left bounds))
         ;; ensure entire group is inside of upper-right quadrant before mirroring
-        g (geom/translate group (tm/* offset 1.1))
+        g (g/translate group (tm/* offset 1.1))
         dir (case direction
               :x (mat/matrix32 -1.0 0 0 0 1 0)
               :y (mat/matrix32 1 0 0 0 -1.0 0))]
     (gg/group (concat (:children g)
-                      (mapv (fn [s] (geom/transform s dir)) (:children g))))))
+                      (mapv (fn [s] (g/transform s dir)) (:children g))))))
 
 (def shape-limit 48)
 (def shape-distribution
@@ -114,9 +114,9 @@
       (if (zero? n)
         (gg/group shapes)
         (let [shape (first (:children (rotated-shape)))
-              s (geom/center shape)
-              space (tm/* (:size (geom/bounds s)) dir)]
-          (recur (conj shapes (geom/translate s base))
+              s (g/center shape)
+              space (tm/* (:size (g/bounds s)) dir)]
+          (recur (conj shapes (g/translate s base))
                  (dec n)
                  (tm/+ base space)))))))
 
@@ -128,7 +128,7 @@
                      (diagonal-direction))]
     (if (> (gg/count-children group) shape-limit)
       group
-      (gg/group (concat (:children group) (:children (geom/translate group dir)))))))
+      (gg/group (concat (:children group) (:children (g/translate group dir)))))))
 
 (defn duplicate-shape []
   (let [group (random-shape)]

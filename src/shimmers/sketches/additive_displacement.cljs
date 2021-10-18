@@ -7,7 +7,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -41,12 +41,12 @@
          )
 
 (defn intersects? [a b]
-  (#{:intersect} (-> (geom/intersect-line a b) :type)))
+  (#{:intersect} (-> (g/intersect-line a b) :type)))
 
 (defn find-next [base-pos delta-fn segments avoid]
   (let [next-pos (tm/+ base-pos (delta-fn))
         prov-line (make-segment base-pos next-pos)]
-    (when-not (or (some (fn [{:keys [p r]}] (< (geom/dist (cq/rel-vec next-pos) p) r)) avoid)
+    (when-not (or (some (fn [{:keys [p r]}] (< (g/dist (cq/rel-vec next-pos) p) r)) avoid)
                   (some (partial intersects? prov-line) segments))
       next-pos)))
 

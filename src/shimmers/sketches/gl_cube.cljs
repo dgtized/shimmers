@@ -6,7 +6,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.aabb :as aabb]
             [thi.ng.geom.attribs :as attr]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.gl.camera :as cam]
             [thi.ng.geom.gl.core :as gl]
             [thi.ng.geom.gl.glmesh :as glmesh]
@@ -28,10 +28,10 @@
    :varying  {:vUV :vec2}})
 
 (def cube (-> (aabb/aabb 1)
-              (geom/center)
-              (geom/scale-size 0.8)
-              (geom/as-mesh {:mesh (glmesh/indexed-gl-mesh 12 #{:uv})
-                             :attribs {:uv (attr/face-attribs (attr/uv-cube-map-v 256 false))}})))
+              (g/center)
+              (g/scale-size 0.8)
+              (g/as-mesh {:mesh (glmesh/indexed-gl-mesh 12 #{:uv})
+                          :attribs {:uv (attr/face-attribs (attr/uv-cube-map-v 256 false))}})))
 
 (defn combine-model-shader-and-camera
   [gl-ctx model shader-spec camera]
@@ -43,9 +43,9 @@
 
 (defn spin [t]
   (-> mat/M44
-      (geom/rotate-x (/ t 10))
-      (geom/rotate-y (/ t 20))
-      (geom/rotate-z (/ t 5))))
+      (g/rotate-x (/ t 10))
+      (g/rotate-y (/ t 20))
+      (g/rotate-z (/ t 5))))
 
 (defn draw-frame! [gl-ctx frame t]
   (doto gl-ctx

@@ -12,7 +12,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [shimmers.math.probability :as p]))
@@ -49,7 +49,7 @@
                         (- width (* left 2))
                         (- height top bottom))))
 
-         (partial geom/random-point-inside)
+         (partial g/random-point-inside)
          (repeatedly n))))
 
 (defn gen-root [{[w h] :size} roots]

@@ -7,7 +7,7 @@
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as tc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -18,7 +18,7 @@
   (q/color-mode :hsl 360 1.0 1.0 1.0))
 
 (defn draw-polygon [poly]
-  (cq/draw-shape (geom/vertices poly)))
+  (cq/draw-shape (g/vertices poly)))
 
 (defn right-angle [s]
   (gt/triangle2 (gv/vec2 0 0)
@@ -36,17 +36,17 @@
 
 (defn generate-strokes [brush random-position n]
   (repeatedly n #(geometry/rotate-around-centroid
-                  (geom/translate brush (random-position))
+                  (g/translate brush (random-position))
                   (q/random 0 Math/PI))))
 
 (defn random-displace [shapes prob offset]
   (p/map-random-sample (constantly prob)
-                       (fn [shape] (geom/translate shape (tm/* offset (rand))))
+                       (fn [shape] (g/translate shape (tm/* offset (rand))))
                        shapes))
 
 (defn sample-shape [shape brush fill-density edge-density]
-  (concat (generate-strokes brush #(geom/random-point shape) edge-density)
-          (generate-strokes brush #(geom/random-point-inside shape) fill-density)))
+  (concat (generate-strokes brush #(g/random-point shape) edge-density)
+          (generate-strokes brush #(g/random-point-inside shape) fill-density)))
 
 (defn fuzzy-shape
   [{:keys [shape fill

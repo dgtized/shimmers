@@ -6,7 +6,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.math.core :as tm]))
 
 ;; The intended concept is to plot out bezier curves from a source circle or
@@ -36,7 +36,7 @@
 (defn tangent-lines [c1 c2]
   (let [{:keys [p r]} c1
         {p' :p r' :r} c2
-        angle (+ (* 0.5 Math/PI) (geom/heading (tm/- p p')))]
+        angle (+ (* 0.5 Math/PI) (g/heading (tm/- p p')))]
     (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
     (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
 

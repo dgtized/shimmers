@@ -9,7 +9,7 @@
             [shimmers.math.equations :as eq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
@@ -32,7 +32,7 @@
   (let [edge-p 0.02
         edge-q 0.02
         chunks (inc (rand-int 8))
-        jitter (* 0.02 (/ (geom/dist p q) chunks))]
+        jitter (* 0.02 (/ (g/dist p q) chunks))]
     (for [[a b] (partition 2 1 (concat [(- edge-p)] (cs/centered-range chunks) [(+ 1 edge-q)]))]
       (gl/line2 (p/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
                 (p/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))

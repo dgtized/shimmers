@@ -6,7 +6,7 @@
   (:require [clojure.set :as set]
             [shimmers.math.equations :as eq]
             [shimmers.math.geometry :as geometry]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -119,13 +119,13 @@
   to the boundary of the circle. For hatching this is fine, but it may not be
   expected behavior."
   [{c :p radius :r} a b]
-  (let [length-ab (geom/dist a b)
+  (let [length-ab (g/dist a b)
         Dx (/ (- (:x b) (:x a)) length-ab)
         Dy (/ (- (:y b) (:y a)) length-ab)
         t (+ (* Dx (- (:x c) (:x a))) (* Dy (- (:y c) (:y a))))
         E (gv/vec2 (+ (* t Dx) (:x a))
                    (+ (* t Dy) (:y a)))
-        length-ec (geom/dist E c)]
+        length-ec (g/dist E c)]
     (cond (< length-ec radius) ;; intersects
           (let [dt (Math/sqrt (- (eq/sqr radius) (eq/sqr length-ec)))]
             (gl/line2 (gv/vec2 (+ (:x a) (* Dx (- t dt)))

@@ -9,7 +9,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -20,7 +20,7 @@
   (-> (for [theta flat-hex-angles]
         (v/polar r theta))
       gp/polygon2
-      (geom/translate p)))
+      (g/translate p)))
 
 (defn subdivide-hexagon-inset
   "Returns a list of hexagons contained in or just touching the border of
@@ -29,16 +29,16 @@
   (let [r' (/ r n)
         hex (hexagon->polygon (hex/hexagon p (* r 0.999)))]
     (->> (hex/axial-range (- n 2))
-         (map (comp (partial geom/translate (hex/hexagon p r'))
+         (map (comp (partial g/translate (hex/hexagon p r'))
                     (partial hex/axial-flat->pixel r')))
-         (filter (fn [s] (geom/contains-point? hex (:p s)))))))
+         (filter (fn [s] (g/contains-point? hex (:p s)))))))
 
 (defn subdivide-hexagon3-outside
   [{:keys [p r]}]
   (let [hex (hexagon p (/ r 3))]
     (into [hex]
           (for [theta flat-hex-angles]
-            (geom/translate hex (v/polar r theta))))))
+            (g/translate hex (v/polar r theta))))))
 
 (defn maybe-subdivide [shape]
   (let [subdiv (dr/weighted {(fn [s] (subdivide-hexagon-inset s 3)) 32
@@ -77,7 +77,7 @@
     (doseq [shape shapes]
       (->> shape
            hexagon->polygon
-           geom/vertices
+           g/vertices
            cq/draw-shape))))
 
 (sketch/defquil six-of-one-half-dozen-of-the-other

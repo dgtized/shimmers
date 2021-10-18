@@ -6,7 +6,7 @@
             [shimmers.math.hexagon :as hex]
             [shimmers.math.wave :as wave]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -33,7 +33,7 @@
       (q/with-rotation [(/ t 12000)]
         (doseq [pos (hex/cube-spiral (gv/vec3) divisions)
                 :let [hex (hex/cube-hexagon pos r)]]
-          (cq/draw-shape (geom/vertices hex 6)))))))
+          (cq/draw-shape (g/vertices hex 6)))))))
 
 (sketch/defquil breathing-hexes
   :created-at "2021-05-23"

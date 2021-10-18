@@ -8,7 +8,7 @@
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
@@ -25,7 +25,7 @@
 (defn wave [rotation size pos]
   (-> pos
       (random-triangle-at rotation size)
-      geom/vertices
+      g/vertices
       cq/draw-shape))
 
 (defn streak [pos length step-size angle draw]
@@ -39,7 +39,7 @@
   (let [angle (* 0.05 (q/random-gaussian))
         sea' (geometry/rotate-around-centroid sea angle)]
     (dotimes [_ 64]
-      (let [pos (geom/random-point-inside sea')]
+      (let [pos (g/random-point-inside sea')]
         (if (p/chance 0.2)
           (let [theta (tm/random tm/TWO_PI)
                 size (tm/random 6 12)
@@ -51,7 +51,7 @@
     ;; Add whitecaps
     (q/fill 0.5 (tm/random 0.9 1.0) (tm/random 0.9 1.0) 0.11)
     (dotimes [_ 2]
-      (let [pos (geom/random-point-inside sea')]
+      (let [pos (g/random-point-inside sea')]
         (if (p/chance 0.4)
           (let [theta (tm/random tm/TWO_PI)
                 size (tm/random 4 10)
@@ -65,7 +65,7 @@
           (tm/random 0.4 0.75)
           0.05)
   (dotimes [_ 32]
-    (let [pos (geom/random-point-inside sky)]
+    (let [pos (g/random-point-inside sky)]
       (if (p/chance 0.1)
         (let [r (tm/random 1.0 10.0)
               d (rand-nth [-0.5 0.5])]

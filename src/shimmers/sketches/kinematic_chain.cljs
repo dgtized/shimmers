@@ -7,7 +7,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -33,7 +33,7 @@
 (defn follow []
   ((get modes (:mode @ui-state))))
 
-(def draw-chain (comp cq/draw-vertices geom/vertices))
+(def draw-chain (comp cq/draw-vertices g/vertices))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

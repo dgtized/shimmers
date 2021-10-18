@@ -5,7 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -42,7 +42,7 @@
                            10 #(tm/random 5 15) #(tm/random 0.8 6))
              (slash-region bounds (tm/random 3.5 4.5) (cq/rel-w 0.4)
                            (int (tm/random 4 16)) #(tm/random 5 15) #(tm/random 0.5 4))
-             (slash-region bounds (tm/random 3.5 4.5) (* (geom/width bounds) 1.3)
+             (slash-region bounds (tm/random 3.5 4.5) (* (g/width bounds) 1.3)
                            8 #(tm/random 5 15) #(tm/random 0.5 2)))}))
 
 (defn update-state [state]

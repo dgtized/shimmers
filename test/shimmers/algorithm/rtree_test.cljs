@@ -3,7 +3,7 @@
             [clojure.set :as set]
             [shimmers.algorithm.rtree :as sut]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.utils :as gu]))
 
@@ -16,7 +16,7 @@
         example (first circles)]
     (is (= (set circles) (set search)))
     (is (= (set circles) (set (sut/search-intersection tree (rect/rect 0 0 100 100)))))
-    (is (set/subset? (set [example]) (set (sut/search-intersection tree (geom/bounds example)))))))
+    (is (set/subset? (set [example]) (set (sut/search-intersection tree (g/bounds example)))))))
 
 (comment (t/run-tests))
 

@@ -10,7 +10,7 @@
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
@@ -43,7 +43,7 @@
 ;; optimization?
 (defn intersecting [circles]
   (for [[a b] (cs/all-pairs circles)
-        :when (geom/intersect-shape a b)]
+        :when (g/intersect-shape a b)]
     [a b]))
 
 ;; TODO: set initial positions with matching velocities?
@@ -59,9 +59,9 @@
                    0.02])))
 
 (defn reflect-boundary [{:keys [p velocity] :as circle} bounds]
-  (if (geom/contains-point? bounds p)
+  (if (g/contains-point? bounds p)
     circle
-    (let [close (geom/closest-point bounds p)
+    (let [close (g/closest-point bounds p)
           hit-y-axis (#{0 1} (:x close))
           reflected (update velocity (if hit-y-axis :x :y) -)]
       (assoc circle :velocity reflected
@@ -80,7 +80,7 @@
   (rand-nth [(gv/vec2 0.5 0.5) (gv/vec2 -0.5 0.5) (gv/vec2 0.5 -0.5) (gv/vec2 -0.5 -0.5)]))
 
 (defn random-hexagon []
-  (rand-nth (for [theta (range 0 (* 2 Math/PI) (/ Math/PI 3))] (geom/as-cartesian (gv/vec2 1 theta)))))
+  (rand-nth (for [theta (range 0 (* 2 Math/PI) (/ Math/PI 3))] (g/as-cartesian (gv/vec2 1 theta)))))
 
 (defn velocity-seed
   "Generates starting velocities according to some common randomized approach"
@@ -90,17 +90,17 @@
 (defn position-seed
   []
   (p/weighted
-   {(fn [_] (geom/random-point (gc/circle 0.5 0.5 0.2))) 1
+   {(fn [_] (g/random-point (gc/circle 0.5 0.5 0.2))) 1
     (let [[y0 y1] (repeatedly 2 #(rand-nth [0.35 0.5 0.65]))
           line (gl/line2 0.1 y0 0.9 y1)]
-      (fn [_] (geom/random-point line))) 2
+      (fn [_] (g/random-point line))) 2
     (let [[x0 x1] (repeatedly 2 #(rand-nth [0.4 0.5 0.4]))
           line (gl/line2 x0 0.1 x1 0.9)]
-      (fn [_] (geom/random-point line))) 1
+      (fn [_] (g/random-point line))) 1
     (let [triangle (-> (gt/triangle2 [0 0] [-1 1] [1 1])
-                       (geom/scale-size 0.3)
-                       (geom/center (gv/vec2 0.5 0.5)))]
-      (fn [_] (geom/random-point triangle))) 1
+                       (g/scale-size 0.3)
+                       (g/center (gv/vec2 0.5 0.5)))]
+      (fn [_] (g/random-point triangle))) 1
     (fn [_] (repeatedly 2 #(+ 0.25 (* 0.5 (rand))))) 1
     (fn [r] (repeatedly 2 #(q/random r (- 1 r)))) 1.5}))
 
@@ -131,7 +131,7 @@
   (let [line (gl/line2 pa pb)
         r 0.1]
     (doseq [p (ksd/sample 10 (ksd/uniform {:b 1}))
-            :let [[x y] (geom/point-at line p)]]
+            :let [[x y] (g/point-at line p)]]
       (q/ellipse x y r r))))
 
 (defn draw [{:keys [color circles]}]

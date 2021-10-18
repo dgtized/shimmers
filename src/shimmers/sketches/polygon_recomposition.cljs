@@ -7,7 +7,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as geom]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
@@ -17,7 +17,7 @@
 
 (defn modify-points [points shape]
   (let [p (rand-nth points)
-        p' (p/weighted {(geom/random-point-inside shape) 1
+        p' (p/weighted {(g/random-point-inside shape) 1
                         (p/confusion-disk p 1.0) 8
                         (p/confusion-disk p (rand)) 4})]
     (replace {p (gv/vec2 p')} points)))
@@ -26,7 +26,7 @@
   (q/color-mode :rgb 1.0)
   (let [shape (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
     {:shape shape
-     :points (repeatedly 64 #(geom/random-point-inside shape))
+     :points (repeatedly 64 #(g/random-point-inside shape))
      :hull nil
      :triangles []}))
 
@@ -49,16 +49,16 @@
   (q/stroke-weight 0.5)
   (when-let [hull (:hull state)]
     (q/begin-shape)
-    (doseq [segment (geom/vertices hull)]
+    (doseq [segment (g/vertices hull)]
       (apply q/vertex segment))
     (q/end-shape :close))
 
   (q/no-stroke)
   (doseq [t triangles
           :let [time (* (q/frame-count) 0.005)
-                center (geom/centroid (gt/triangle2 t))
+                center (g/centroid (gt/triangle2 t))
                 noise (apply q/noise (conj (tm/* center 0.005) time))
-                [u v] (geom/map-point shape center)]]
+                [u v] (g/map-point shape center)]]
     (q/fill 0.0
             (tm/clamp01 (- 1.0 v))
             (tm/clamp01 (+ u (eq/unit-sin (* 0.1 time))))

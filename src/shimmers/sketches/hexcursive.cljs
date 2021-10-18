@@ -4,7 +4,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.hexagon :as hex]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -21,7 +21,7 @@
     (let [children
           (map-indexed (fn [i x] (-> x
                                     (hex/cube-hexagon (/ r 3))
-                                    (geom/translate p)
+                                    (g/translate p)
                                     (color (mod (+ i depth) 7))))
                        (hex/cube-spiral (gv/vec3) 1))]
       (concat [h]
@@ -43,7 +43,7 @@
   (doseq [a-hex shapes]
     (apply q/fill (:color a-hex))
     (-> a-hex
-        (geom/vertices 6)
+        (g/vertices 6)
         cq/draw-shape)))
 
 (sketch/defquil hexcursive

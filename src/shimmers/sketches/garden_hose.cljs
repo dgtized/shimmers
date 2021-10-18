@@ -8,7 +8,7 @@
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
@@ -16,7 +16,7 @@
   (loop [variance variance]
     (let [theta (mod (p/gaussian angle variance) tm/TWO_PI)
           endpoint (chain/segment-endpoint (assoc segment :angle theta))]
-      (if (geom/contains-point? bounds endpoint)
+      (if (g/contains-point? bounds endpoint)
         (chain/->KinematicSegment endpoint theta length)
         (recur (+ variance 0.01))))))
 
@@ -38,7 +38,7 @@
                           new-base (clamped (tm/mix base (tm/- target (chain/project new-angle length)) pressure))]
                       (assoc a
                              :base new-base
-                             :angle (geom/angle-between new-base target))))
+                             :angle (g/angle-between new-base target))))
                   (partition 2 1 segments))
             (last segments)))))
 
@@ -50,14 +50,14 @@
              {c-base :base}]]
           ;; this could be better, basically trying to keep a and c apart
           ;; instead of folding them together into inflection points.
-          (let [dist-ac (geom/dist a-base c-base)
+          (let [dist-ac (g/dist a-base c-base)
                 midpoint (tm/mix a-base c-base 0.5)
                 new-base (->> (if (> dist-ac len) (* 2 pressure) pressure)
                               (tm/mix b-base midpoint)
                               clamped)]
             (assoc b
                    :base new-base
-                   :angle (geom/angle-between new-base c-base))))]
+                   :angle (g/angle-between new-base c-base))))]
     (assoc hose :segments
            (concat (take 1 segments)
                    (mapv move-segment (partition 3 1 segments))
@@ -89,7 +89,7 @@
 (defn draw [{:keys [hose]}]
   (q/background 1.0 0.2)
   (q/no-fill)
-  (cq/draw-vertices (geom/vertices hose)))
+  (cq/draw-vertices (g/vertices hose)))
 
 (sketch/defquil garden-hose
   :created-at "2021-09-25"

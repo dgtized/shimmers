@@ -8,13 +8,13 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn poisson-disc-init [bounds r k n]
   (let [w (/ r (Math/sqrt 2))
-        p (geom/random-point-inside bounds)
+        p (g/random-point-inside bounds)
         [x y] p
         row (Math/floor (/ x w))
         col (Math/floor (/ y w))]
@@ -40,8 +40,8 @@
         [sx sy] sample
         row (Math/floor (/ sx w))
         col (Math/floor (/ sy w))]
-    (if (and (geom/contains-point? bounds sample)
-             (every? (fn [neighbor] (>= (geom/dist sample neighbor) r))
+    (if (and (g/contains-point? bounds sample)
+             (every? (fn [neighbor] (>= (g/dist sample neighbor) r))
                      (neighbors grid row col)))
       (assoc state
              :active (conj active sample)

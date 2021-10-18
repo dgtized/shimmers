@@ -5,7 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.utils.subdiv :as gsd]
             [thi.ng.geom.vector :as gv]
@@ -13,7 +13,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [shapes (map (fn [v] (geom/translate v (cq/rel-vec 0.05 0.05)))
+  (let [shapes (map (fn [v] (g/translate v (cq/rel-vec 0.05 0.05)))
                     [(rect/rect (cq/rel-pos 0.0 0.0) (cq/rel-pos 0.1 0.1))
                      (gt/triangle2 (cq/rel-pos 0.0 0.0) (cq/rel-pos 0.0 0.1) (cq/rel-pos 0.1 0.0))])]
     {:shapes shapes
@@ -32,21 +32,21 @@
 (defn draw-at
   ([vertices pos] (draw-at nil vertices pos))
   ([desc vertices pos]
-   (let [translated (map (fn [v] (geom/translate v pos)) vertices)]
+   (let [translated (map (fn [v] (g/translate v pos)) vertices)]
      (q/begin-shape)
      (doseq [v translated]
        (apply q/vertex v))
      (q/end-shape)
      (cq/circle (first translated) 3.0)
      (when desc
-       (text-at desc (geom/translate pos (cq/rel-vec 0.05 0.2)))))))
+       (text-at desc (g/translate pos (cq/rel-vec 0.05 0.2)))))))
 
 (def gsd-chaikin (partial gsd/subdivide-closed (:chaikin gsd/schemes)))
 (def gsd-bezier (partial gsd/subdivide-closed (:cubic-bezier gsd/schemes)))
 
 (defn draw [{:keys [shape]}]
   (q/background 1.0)
-  (let [vertices (geom/vertices shape)]
+  (let [vertices (g/vertices shape)]
     (draw-at "Original" vertices (gv/vec2))
     (draw-at "Chaikin Closed" (chaikin/chaikin-closed vertices 0.25) (cq/rel-vec 0.2 0.0))
     (draw-at "2 iters" (chaikin/chaikin 0.25 true 2 vertices) (cq/rel-vec 0.4 0.0))

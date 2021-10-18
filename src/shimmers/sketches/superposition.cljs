@@ -10,7 +10,7 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.utils :as gu]
@@ -20,7 +20,7 @@
 ;; Represent a brush stroke from location p to q
 ;; caches the resulting spline and index of positions
 (defrecord Stroke [p q curve spline arc-length-idx]
-  geom/ISample
+  g/ISample
   (point-at
     [_ t] (gu/point-at t (get spline :points) arc-length-idx)))
 
@@ -39,17 +39,17 @@
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
 (defn draw-polygon [poly]
-  (cq/draw-shape (geom/vertices poly)))
+  (cq/draw-shape (g/vertices poly)))
 
 (defn brush-at [stroke [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
         ;; point-at is expensive on splines, can this be precomputed?
-        (geom/point-at stroke t)))
+        (g/point-at stroke t)))
 
 (def triangle-instance
   (let [t (gt/triangle2 [0 0] [0 13] [17 0])]
-    (assoc (geom/center t)
+    (assoc (g/center t)
            :centroid (gu/centroid (:points t)))))
 
 ;; optimized version with cached centroid, also trying to reduce consing?
@@ -61,7 +61,7 @@
     (->> points
          (mapcat (fn [p] (-> p
                             (tm/madd scale centroid)
-                            (geom/rotate theta)
+                            (g/rotate theta)
                             (tm/+ position))))
          (apply q/triangle))))
 
@@ -70,7 +70,7 @@
         r [0.2 0.8]]
     (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
         (geometry/rotate-around-centroid (* 2 Math/PI (rand)))
-        (geom/translate (cq/rel-pos (apply q/random r)
+        (g/translate (cq/rel-pos (apply q/random r)
                                     (apply q/random r))))))
 
 (defn random-rect []
@@ -105,8 +105,8 @@
      :target target
      :factor factor
      :brushes (repeatedly (int (* 48 factor))
-                          #(make-stroke (geom/random-point-inside current)
-                                        (geom/random-point-inside target)))
+                          #(make-stroke (g/random-point-inside current)
+                                        (g/random-point-inside target)))
      :variance [1 0]
      :transition (transition/after 0 500)
      :spin nil
@@ -124,8 +124,8 @@
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
         random-point-from
-        (p/weighted {geom/random-point-inside 8
-                     geom/random-point 1})
+        (p/weighted {g/random-point-inside 8
+                     g/random-point 1})
         cohorts 12]
     (assoc state :current previous
            :target target

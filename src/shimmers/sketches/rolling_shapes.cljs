@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -21,16 +21,16 @@
 
 ;; FIXME: Works for a line on the first pass, but goes below for second
 (defn rotate [t shape]
-  (let [vertices (geom/vertices shape)
+  (let [vertices (g/vertices shape)
         cycle (mod (q/floor (/ t Math/PI)) 9)
         idx (mod (inc cycle) (count vertices))
         vertex (nth vertices idx)
-        offset (gv/vec2 (* (- cycle idx) (geom/width shape)) 0)]
+        offset (gv/vec2 (* (- cycle idx) (g/width shape)) 0)]
     (-> shape
-        (geom/translate (tm/- vertex))
-        (geom/rotate t)
-        (geom/translate vertex)
-        (geom/translate offset))))
+        (g/translate (tm/- vertex))
+        (g/rotate t)
+        (g/translate vertex)
+        (g/translate offset))))
 
 (defn update-state [state]
   (-> state (update :t + 0.05)))
@@ -40,7 +40,7 @@
   (q/no-fill)
   (doseq [s (map (partial rotate t) shapes)]
     (q/begin-shape)
-    (doseq [[x y] (geom/vertices s)]
+    (doseq [[x y] (g/vertices s)]
       (q/vertex x y))
     (q/end-shape)))
 

@@ -4,7 +4,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]))
 
 (defn setup []
@@ -15,24 +15,24 @@
                       (cq/rel-pos (q/random 0.65 0.95) (p/gaussian y (/ y 45)))))})
 
 (defn verticle-line [line t height-sd angle-sd]
-  (let [p (geom/point-at line t)]
+  (let [p (g/point-at line t)]
     (-> (gl/line2 [0 -1] [0 1])
-        (geom/rotate (p/gaussian 0 angle-sd))
-        (geom/scale-size (p/gaussian (cq/rel-h 0.025) height-sd))
-        (geom/translate p))))
+        (g/rotate (p/gaussian 0 angle-sd))
+        (g/scale-size (p/gaussian (cq/rel-h 0.025) height-sd))
+        (g/translate p))))
 
 (defn draw [{:keys [lines]}]
   (doseq [[i line] (map-indexed vector lines)]
     (let [dx 0.003
           flip-row (rand-nth [2 4 5])
-          {[a b] :points} (geom/scale-size line 1.03)]
+          {[a b] :points} (g/scale-size line 1.03)]
       (q/stroke-weight 1.0)
       (q/line a b)
       (q/stroke-weight 0.3)
       (doseq [x (range 0 1 dx)]
         (let [t (p/gaussian x (* x dx))
               {[p q] :points}
-              (verticle-line (if (= i flip-row) (geom/flip line) line)
+              (verticle-line (if (= i flip-row) (g/flip line) line)
                              t
                              (* x (* 0.2 (inc i)) (cq/rel-h 0.01))
                              (* 0.03 (* t (inc i))))]

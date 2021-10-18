@@ -8,7 +8,7 @@
    [shimmers.math.core :as sm]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.core :as geom]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -18,23 +18,23 @@
   (q/frame-rate 1.0)
   (q/color-mode :hsl 1.0)
   (let [shape (gc/circle (cq/rel-h 0.4))
-        points (geom/vertices shape 12)]
+        points (g/vertices shape 12)]
     {:shape shape
      :points (conj points (first points))}))
 
 (defn between-pair? [last-angle]
   (fn [[a b]]
-    (sm/radians-between? (geom/heading b) (geom/heading a) last-angle)))
+    (sm/radians-between? (g/heading b) (g/heading a) last-angle)))
 
 (defn next-point [points]
   (let [[last-point & preceding] (reverse points)
-        angle (geom/heading last-point)
+        angle (g/heading last-point)
         pairs (drop 1 (partition 2 1 preceding))
         pair (first (filter (between-pair? angle) pairs))
         [a b] (or (seq pair) (last pairs))
         point (tm/mix (tm/mix a b 0.5) (gv/vec2) 0.2)]
     (reset! defo {:angle angle
-                  :pairs (map (fn [p] [((between-pair? angle) p) (map geom/heading p)]) pairs)
+                  :pairs (map (fn [p] [((between-pair? angle) p) (map g/heading p)]) pairs)
                   :pair (seq pair)
                   :last (last pairs)})
     (if (tm/delta= point last-point)

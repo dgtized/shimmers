@@ -10,7 +10,7 @@
             [shimmers.math.probability :as p]
             [shimmers.math.verlet-particles :as vp]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -27,7 +27,7 @@
 
 (defn slowing-zone [zone]
   (fn [_ {:keys [pos prev]} delta]
-    (if (geom/contains-point? zone pos)
+    (if (g/contains-point? zone pos)
       (let [change (tm/- prev pos)]
         (if (> (tm/mag-squared change) 2.0)
           (tm/* (gv/vec2 -0.2 0) delta)
@@ -44,7 +44,7 @@
 
 (defn acceleration-zone [zone]
   (fn [_ {:keys [pos]} delta]
-    (if (geom/contains-point? zone pos)
+    (if (g/contains-point? zone pos)
       (tm/* (gv/vec2 0.2 (deflection pos)) delta)
       (gv/vec2))))
 

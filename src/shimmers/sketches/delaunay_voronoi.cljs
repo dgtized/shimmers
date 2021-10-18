@@ -6,7 +6,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.triangle :as gt]
@@ -44,7 +44,7 @@
   (let [[mid-x mid-y] (tm/mix p q 0.5)
         d (tm/- q p)
         reciprocal-slope (if (not= 0 (:x d))
-                           (/ -1 (geom/slope-xy d))
+                           (/ -1 (g/slope-xy d))
                            0)
         b (- mid-y (* reciprocal-slope mid-x))]
     [reciprocal-slope b]))
@@ -79,7 +79,7 @@
   "Calculate intersection points for circles of radius (p - q) centered at p and q."
   [[p q]]
   (let [d (tm/- q p)]
-    (mapv (fn [θ] (tm/+ p (geom/rotate d θ)))
+    (mapv (fn [θ] (tm/+ p (g/rotate d θ)))
           [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
 
 (defn plot [[m b]]
@@ -104,11 +104,11 @@
 
 (defn draw-bisect [edge]
   (let [line (gl/line2 (bisect edge))
-        [a b] (:points (geom/scale-size line 0.02))]
+        [a b] (:points (g/scale-size line 0.02))]
     (q/line a b)))
 
 (defn relative-heading [centroid point]
-  (geom/heading (tm/- (gv/vec2 point) centroid)))
+  (g/heading (tm/- (gv/vec2 point) centroid)))
 
 (defn draw [{:keys [points triangles hull]}]
   (println "draw")
@@ -119,7 +119,7 @@
   (doseq [triangle triangles
           :let [view-pts (map cq/rel-pos triangle)]]
     (apply q/triangle (flatten view-pts))
-    (doseq [edge (geom/edges (apply gt/triangle2 view-pts))]
+    (doseq [edge (g/edges (apply gt/triangle2 view-pts))]
       #_(plot (bisect-line edge))
       (draw-bisect edge)))
 
@@ -148,7 +148,7 @@
                                (rest (if inside (cycle bisects) bisects)))]
         (doseq [edge edges
                 :let [[x y] (second edge)]]
-          (println {:edge [x y] :heading (geom/heading (tm/- (gv/vec2 x y) centroid))})
+          (println {:edge [x y] :heading (g/heading (tm/- (gv/vec2 x y) centroid))})
           (q/stroke 0 255 0)
           (cq/circle x y 2)
           (q/stroke 0 0 0)
@@ -156,7 +156,7 @@
 
         (q/stroke 0 0 255)
         (doseq [[x y] intersections]
-          (println [x y :heading (geom/heading (tm/- (gv/vec2 x y) centroid))])
+          (println [x y :heading (g/heading (tm/- (gv/vec2 x y) centroid))])
           (cq/circle x y 2))
 
         (q/no-fill)

@@ -9,15 +9,15 @@
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [tailrecursion.priority-map :refer [priority-map]]
-            [thi.ng.geom.core :as geom]))
+            [thi.ng.geom.core :as g]))
 
 (defn distances [v points]
-  (reduce (fn [m p] (assoc m p (geom/dist v p)))
+  (reduce (fn [m p] (assoc m p (g/dist v p)))
           {} points))
 
 (defn ranked-edges [points]
   (->> (for [[u v] (cs/all-pairs points)]
-         [(geom/dist u v) [u v]])
+         [(g/dist u v) [u v]])
        (sort-by first)
        (map second)))
 
@@ -43,7 +43,7 @@
             (if (empty? vertices)
               [weights best-edges]
               (let [vertex (first vertices)
-                    dist (geom/dist vertex added)
+                    dist (g/dist vertex added)
                     prior (get weights vertex)
                     better (and prior (< dist prior))]
                 (if better

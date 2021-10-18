@@ -5,7 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as geom]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.physics.core :as physics]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -15,7 +15,7 @@
   ;; physics/particle sets initial previous to 0,0
   ;; https://github.com/thi-ng/geom/pull/81
   (let [pos (cq/rel-vec (rand) (rand))]
-    (physics/VerletParticle. pos pos (geom/clear* pos)
+    (physics/VerletParticle. pos pos (g/clear* pos)
                              false nil nil
                              (/ 1.0 (+ 1 (* 4 (rand)))) nil)))
 
@@ -23,7 +23,7 @@
   (let [rsq (* r r)]
     (fn [particle delta]
       (let [pos (physics/position particle)
-            closest (geom/closest-point boundary pos)
+            closest (g/closest-point boundary pos)
             d (tm/- pos closest)
             b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 strength))
             l (+ (tm/mag-squared d) 1e-6)]
@@ -55,10 +55,10 @@
 (defn brush [particle]
   (let [[x y] (physics/position particle)]
     (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
-        (geom/scale-size 5)
-        (geom/rotate (rand))
-        (geom/translate (gv/vec2 x y))
-        geom/vertices
+        (g/scale-size 5)
+        (g/rotate (rand))
+        (g/translate (gv/vec2 x y))
+        g/vertices
         cq/draw-shape)))
 
 (defn draw [{:keys [physics base-color]}]

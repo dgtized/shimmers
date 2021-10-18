@@ -1,5 +1,5 @@
 (ns shimmers.math.vector
-  (:require [thi.ng.geom.core :as geom]
+  (:require [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as tv]
             [thi.ng.math.core :as tm]))
@@ -28,13 +28,13 @@
         (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
 (defn distance [v1 v2]
-  (geom/dist v1 v2))
+  (g/dist v1 v2))
 
 (defn normalize [v]
   (tm/normalize v))
 
 (defn polar [r theta]
-  (geom/as-cartesian (tv/vec2 r theta)))
+  (g/as-cartesian (tv/vec2 r theta)))
 
 (defn- unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
@@ -48,7 +48,7 @@
   "Snap an input angle `dir` to the closest multiple of `radians`."
   [dir radians]
   (if (> radians 0)
-    (-> (geom/heading dir)
+    (-> (g/heading dir)
         (/ radians)
         Math/round
         (* radians)
