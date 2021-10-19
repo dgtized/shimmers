@@ -9,6 +9,7 @@
             [shimmers.common.sequence-test]
             [shimmers.math.core-test]
             [shimmers.math.geometry-test]
+            [shimmers.math.geometry.group-test]
             [shimmers.math.hexagon-test]
             [cljs.test]
             [cljs-test-display.core]))
@@ -29,6 +30,7 @@
    'shimmers.common.sequence-test
    'shimmers.math.core-test
    'shimmers.math.geometry-test
+   'shimmers.math.geometry.group-test
    'shimmers.math.hexagon-test))
 
 (defn ^:after-load render-on-reload []
