@@ -35,3 +35,21 @@
    (if (sequential? children)
      children
      [children])))
+
+(defn fit-grid [n]
+  (let [cols (tm/ceil (Math/sqrt n))
+        rows (tm/ceil (/ n cols))]
+    [cols rows (- (* cols rows) n)]))
+
+;; TODO: support odd grids like 4:3:4 and the like
+(defn tile-grid
+  ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
+  ([bounds shape-groups {:keys [scale]}]
+   (let [n (count shape-groups)
+         [rows cols _] (fit-grid n)
+         tiles (take n (g/subdivide bounds {:cols cols :rows rows}))]
+     (group (mapcat (fn [group tile]
+                      (-> tile
+                          (g/scale-size scale)
+                          (gu/fit-all-into-bounds (:children group))))
+                    shape-groups tiles)))))

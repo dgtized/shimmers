@@ -5,9 +5,9 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
-   [shimmers.math.geometry.group :as gg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.group :as gg]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -17,27 +17,8 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
-   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
-(defn fit-grid [n]
-  (let [cols (tm/ceil (Math/sqrt n))
-        rows (tm/ceil (/ n cols))]
-    [cols rows (- (* cols rows) n)]))
-
-;; TODO: support odd grids like 4:3:4 and the like
-(defn tile-grid
-  ([bounds shape-groups] (tile-grid bounds shape-groups {:scale 0.9}))
-  ([bounds shape-groups {:keys [scale]}]
-   (let [n (count shape-groups)
-         [rows cols _] (fit-grid n)
-         tiles (take n (g/subdivide bounds {:cols cols :rows rows}))]
-     (gg/group (mapcat (fn [group tile]
-                         (-> tile
-                             (g/scale-size scale)
-                             (gu/fit-all-into-bounds (:children group))))
-                       shape-groups tiles)))))
 
 (defn circle []
   (gc/circle [0.5 0.5] 0.5))
@@ -156,8 +137,8 @@
                         14 1
                         15 1
                         16 2})]
-    (group-rotation (tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
-                               (repeatedly n rotated-shape))
+    (group-rotation (gg/tile-grid (rect/rect [0.0 0.0] [1.0 1.0])
+                                  (repeatedly n rotated-shape))
                     (cardinal-direction))))
 
 (defn random-shape []
@@ -180,7 +161,7 @@
                       156 2
                       256 1}]
     {:shapes (->> (repeatedly (dr/weighted screen-sizes) random-shape)
-                  (tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95))))}))
+                  (gg/tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95))))}))
 
 (defn update-state [state]
   state)
