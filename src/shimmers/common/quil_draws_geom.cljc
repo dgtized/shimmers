@@ -1,6 +1,8 @@
 (ns shimmers.common.quil-draws-geom
   (:require [shimmers.common.quil :as cq]
-            [thi.ng.geom.core :as g]))
+            shimmers.math.geometry.group
+            [thi.ng.geom.core :as g]
+            thi.ng.geom.types))
 
 (defprotocol QuilDrawGeom
   (draw [s]))
