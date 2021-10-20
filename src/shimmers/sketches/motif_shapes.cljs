@@ -180,7 +180,7 @@
   :created-at "2021-10-16"
   :tags #{:static :deterministic}
   :on-mount #(ctrl/mount page)
-  :size [800 600]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
