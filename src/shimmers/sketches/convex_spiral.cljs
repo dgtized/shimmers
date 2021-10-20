@@ -15,7 +15,9 @@
     "Draw a clockwise spiral through a set of random points in a plane."
     [:ol
      [:li "Generate a set of random points in a plane, and an empty path."]
-     [:li "Draw a convex hull around those points."]
+     [:li "Draw a "
+      [:a {:href "https://en.wikipedia.org/wiki/Convex_hull"} "convex hull"]
+      " around those points."]
      [:li "Remove the points on the hull from the set in the plane and add them to the path in clockwise order."]
      [:li "Repeat from step 2 on the remaining points until only 2 points remain."]
      [:li "Display the path through each of the convex hulls connected end to end."]]]])
