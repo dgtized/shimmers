@@ -5,7 +5,7 @@
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
@@ -16,14 +16,14 @@
 (defn middle-out
   "Alternate distribution for px,py"
   []
-  (p/weighted {0.0 1.0
-               0.5 1.0
-               1.0 1.0}))
+  (dr/weighted {0.0 1.0
+                0.5 1.0
+                1.0 1.0}))
 
 (defn random-ratio []
-  (p/weighted {(/ 1 tm/PHI) 4
-               0.5 2
-               (/ 1 3) 2}))
+  (dr/weighted {(/ 1 tm/PHI) 4
+                0.5 2
+                (/ 1 3) 2}))
 
 (defn pack-step
   [{:keys [remaining squares square-limit pick-rectangle ratio position] :as state}]
@@ -39,8 +39,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:square-limit 256
-   :pick-rectangle (partial p/weighted-by g/area)
-   :position #(repeatedly 2 (fn [] (mod (* tm/PHI (rand)) 1.0)))
+   :pick-rectangle (partial dr/weighted-by g/area)
+   :position #(repeatedly 2 (fn [] (mod (* tm/PHI (dr/random)) 1.0)))
    :ratio (constantly (/ 1 tm/PHI))
 
    :squares []
@@ -66,6 +66,7 @@
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state
