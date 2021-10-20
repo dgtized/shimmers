@@ -42,7 +42,7 @@
     (apply q/vertex p))
   (q/end-shape))
 
-(defn curve-by [points]
+(defn draw-curve [points]
   (q/begin-shape)
   (doseq [[x y] points]
     (q/curve-vertex x y))

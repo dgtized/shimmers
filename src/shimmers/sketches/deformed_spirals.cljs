@@ -29,11 +29,9 @@
   (q/background 1.0)
   (q/stroke-weight 0.8)
   (q/no-fill)
-  (q/begin-shape)
-  (doseq [v (spiral (cq/rel-vec 0.5 0.5) 9.0 0.9 512
-                    (/ (q/frame-count) 800))]
-    (apply q/curve-vertex v))
-  (q/end-shape))
+  (-> (cq/rel-vec 0.5 0.5)
+      (spiral 9.0 0.9 512 (/ (q/frame-count) 800))
+      cq/draw-curve))
 
 (sketch/defquil deformed-spirals
   :created-at "2021-10-10"
