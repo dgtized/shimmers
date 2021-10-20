@@ -3,15 +3,17 @@
    [fipp.edn :as fedn]
    [fipp.ednize :refer [IEdn]]
    [shimmers.common.ui.controls :as ctrl]
+   [thi.ng.geom.types :refer [Rect2]]
+   [thi.ng.geom.vector :refer [Vec2]]
    [thi.ng.math.core :as tm]))
 
 ;; Simplify IEdn output for pretty printing
 (extend-protocol IEdn
-  thi.ng.geom.types.Rect2
+  Rect2
   (-edn [{:keys [p size]}]
     (tagged-literal 'Rect2 {:p p :size size}))
 
-  thi.ng.geom.vector.Vec2
+  Vec2
   (-edn [s]
     (let [[x y] s]
       (tagged-literal 'vec2 [(tm/roundto x 0.01)
