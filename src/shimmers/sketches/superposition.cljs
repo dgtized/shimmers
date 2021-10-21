@@ -38,9 +38,6 @@
   [:div
    (ctrl/checkbox ui-state "Debug" [:debug])])
 
-(defn draw-polygon [poly]
-  (cq/draw-shape (g/vertices poly)))
-
 (defn brush-at [stroke [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
@@ -201,9 +198,9 @@
     (q/no-fill)
     (q/stroke-weight 1)
     (q/stroke 0 1.0 1.0 1.0)
-    (draw-polygon current)
+    (cq/draw-polygon current)
     (q/stroke 0 0.0 0.0 1.0)
-    (draw-polygon target)))
+    (cq/draw-polygon target)))
 
 (sketch/defquil superposition
   :created-at "2021-03-08"

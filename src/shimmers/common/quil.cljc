@@ -36,6 +36,9 @@
     (apply q/curve-vertex v))
   (q/end-shape :close))
 
+(defn draw-polygon [poly]
+  (draw-shape (g/vertices poly)))
+
 (defn draw-vertices [vertices]
   (q/begin-shape)
   (doseq [p vertices]
