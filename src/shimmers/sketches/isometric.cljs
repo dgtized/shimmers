@@ -29,16 +29,22 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0.0})
+  {:t 0.0
+   :grid (g/subdivide (cq/screen-rect 0.8) {:rows 6 :cols 6})})
 
 (defn update-state [state]
-  (update state :t + 0.01))
+  (update state :t + 0.005))
 
-(defn draw [{:keys [t]}]
+(defn draw [{:keys [grid t]}]
   (q/background 1.0)
-  (let [cube (g/translate (aabb/aabb 100) (gv/vec3 400 (* 100 (Math/sin t)) 100))]
-    (doseq [face-pts (isofaces cube)]
-      (cq/draw-shape (map isometric3 face-pts)))))
+  (let [shapes (for [{[x y] :p [w h] :size} grid]
+                 (g/translate (aabb/aabb w)
+                              (gv/vec3 (+ x (cq/rel-w 0.2))
+                                       (* 0.5 h (Math/sin (* tm/TWO_PI (q/noise (* x 0.005) (* y 0.005) t))))
+                                       (- y (cq/rel-h 0.55)))))]
+    (doseq [shape shapes]
+      (doseq [face-pts (isofaces shape)]
+        (cq/draw-shape (map isometric3 face-pts))))))
 
 (sketch/defquil isometric-sketch
   :created-at "2021-10-21"
