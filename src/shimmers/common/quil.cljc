@@ -39,10 +39,10 @@
 (defn draw-polygon [poly]
   (draw-shape (g/vertices poly)))
 
-(defn draw-vertices [vertices]
+(defn draw-path [vertices]
   (q/begin-shape)
-  (doseq [p vertices]
-    (apply q/vertex p))
+  (doseq [[x y] vertices]
+    (q/vertex x y))
   (q/end-shape))
 
 (defn draw-curve [points]

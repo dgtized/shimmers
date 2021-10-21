@@ -33,7 +33,7 @@
 (defn follow []
   ((get modes (:mode @ui-state))))
 
-(def draw-chain (comp cq/draw-vertices g/vertices))
+(def draw-chain (comp cq/draw-path g/vertices))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

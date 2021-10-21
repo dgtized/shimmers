@@ -23,7 +23,7 @@
             (assoc (chain/make-chain (cq/rel-vec 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
-(def draw-chain (comp cq/draw-vertices g/vertices))
+(def draw-chain (comp cq/draw-path g/vertices))
 
 (defn update-state [{:keys [chains] :as state}]
   (assoc state :chains

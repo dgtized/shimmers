@@ -169,7 +169,7 @@
       (case draw
         "segments"
         (dotimes [_ flows-per-iter]
-          (cq/draw-vertices (points settings)))
+          (cq/draw-path (points settings)))
         "curves"
         (dotimes [_ flows-per-iter]
           (cq/draw-curve (points settings)))

@@ -51,7 +51,7 @@
   (q/background 1.0)
   (q/no-fill)
   (q/with-translation (cq/rel-vec 0.5 0.5)
-    (cq/draw-vertices points)))
+    (cq/draw-path points)))
 
 (sketch/defquil dreamcatcher
   :created-at "2021-10-11"

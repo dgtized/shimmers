@@ -89,7 +89,7 @@
 (defn draw [{:keys [hose]}]
   (q/background 1.0 0.2)
   (q/no-fill)
-  (cq/draw-vertices (g/vertices hose)))
+  (cq/draw-path (g/vertices hose)))
 
 (sketch/defquil garden-hose
   :created-at "2021-09-25"
