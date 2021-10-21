@@ -48,7 +48,7 @@
 
   (q/stroke-weight 0.5)
   (when-let [hull (:hull state)]
-    (cq/draw-shape (g/vertices hull)))
+    (cq/draw-polygon hull))
 
   (q/no-stroke)
   (doseq [t triangles

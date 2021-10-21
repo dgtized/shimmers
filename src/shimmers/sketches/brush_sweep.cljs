@@ -45,7 +45,7 @@
           line (gl/line2 pos
                          (gv/vec2 (q/width) (+ (* slope (q/width)) (:y pos))))]
       (doseq [hair (shuffle (hairs line))]
-        (cq/draw-shape (g/vertices hair))))))
+        (cq/draw-polygon hair)))))
 
 (sketch/defquil brush-sweep
   :created-at "2021-04-12"

@@ -42,8 +42,7 @@
           (-> (cq/rel-pos x1 (+ y1 d))
               (random-triangle-at (+ theta (* 2 Math/PI d))
                                   (* 2 slice-width))
-              g/vertices
-              cq/draw-shape))))))
+              cq/draw-polygon))))))
 
 (sketch/defquil falling-gradients
   :created-at "2021-05-04"

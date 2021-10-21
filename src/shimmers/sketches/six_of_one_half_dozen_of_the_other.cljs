@@ -77,8 +77,7 @@
     (doseq [shape shapes]
       (->> shape
            hexagon->polygon
-           g/vertices
-           cq/draw-shape))))
+           cq/draw-polygon))))
 
 (sketch/defquil six-of-one-half-dozen-of-the-other
   :created-at "2021-05-17"

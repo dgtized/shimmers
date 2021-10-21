@@ -67,7 +67,7 @@
   (q/no-stroke)
   (doseq [{:keys [color] :as cell} cells]
     (apply q/fill color)
-    (cq/draw-shape (g/vertices cell))))
+    (cq/draw-polygon cell)))
 
 (sketch/defquil pulsing-grid
   :created-at "2021-08-21"

@@ -51,7 +51,7 @@
   (q/no-stroke)
   (q/fill 0.0 0.3)
   (doseq [shape shapes]
-    (cq/draw-shape (g/vertices shape))))
+    (cq/draw-polygon shape)))
 
 (sketch/defquil tilt
   :created-at "2021-05-30"

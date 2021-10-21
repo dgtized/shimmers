@@ -139,7 +139,7 @@
   (q/fill 0.8)
   (q/no-stroke)
   (doseq [obstacle obstacles]
-    (cq/draw-shape (g/vertices obstacle)))
+    (cq/draw-polygon obstacle))
   (q/no-fill)
 
   (doseq [{:keys [position size velocity]} agents]

@@ -14,14 +14,12 @@
 (defn triangle [p w h]
   (-> (gt/equilateral2 0 0 w h)
       (g/center p)
-      (g/scale-size 1.5)
-      g/vertices))
+      (g/scale-size 1.5)))
 
 (defn rectangle [p w h]
   (-> (rect/rect 0 0 w h)
       (g/center p)
-      (g/scale-size 1.5)
-      g/vertices))
+      (g/scale-size 1.5)))
 
 (defn square-grid [size]
   (for [x (range size)
@@ -63,9 +61,9 @@
           :ellipse
           (q/ellipse x y w h)
           :triangle
-          (apply cq/draw-triangle (triangle p w h))
+          (cq/draw-polygon (triangle p w h))
           :rectangle
-          (cq/draw-shape (rectangle p w h)))))))
+          (cq/draw-polygon (rectangle p w h)))))))
 
 (sketch/defquil inconsequential-drift
   :created-at "2021-06-13"

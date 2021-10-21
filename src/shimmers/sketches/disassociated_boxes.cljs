@@ -160,7 +160,7 @@
     (if-let [c (:color shape)]
       (apply q/fill c)
       (q/no-fill))
-    (cq/draw-shape (g/vertices shape))))
+    (cq/draw-polygon shape)))
 
 (sketch/defquil disassociated-boxes
   :created-at "2021-05-05"

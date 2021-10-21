@@ -17,9 +17,6 @@
   (q/frame-rate 1)
   (q/color-mode :hsl 360 1.0 1.0 1.0))
 
-(defn draw-polygon [poly]
-  (cq/draw-shape (g/vertices poly)))
-
 (defn right-angle [s]
   (gt/triangle2 (gv/vec2 0 0)
                 (gv/vec2 (* s 19) 0)
@@ -61,7 +58,7 @@
   (apply q/fill fill)
   (doseq [poly (-> (sample-shape shape brush fill-density edge-density)
                    (random-displace displacement direction))]
-    (draw-polygon poly)))
+    (cq/draw-polygon poly)))
 
 (defn draw []
   (q/background 255)

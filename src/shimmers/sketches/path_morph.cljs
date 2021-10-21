@@ -57,7 +57,7 @@
         p (g/unmap-point bounds (gu/point-at t (:points path)))
         shape (gp/polygon2 (shape-at shape-sequence t))]
     ;; (cq/circle p 1)
-    (cq/draw-shape (g/vertices (g/translate (g/scale-size shape 50.0) p)))))
+    (cq/draw-polygon (g/translate (g/scale-size shape 50.0) p))))
 
 (sketch/defquil path-morph
   :created-at "2021-10-06"

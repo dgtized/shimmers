@@ -44,7 +44,7 @@
     (q/scale 3)
     (doseq [t all]
       (q/fill (:color t) 0.8 0.5 0.1)
-      (cq/draw-shape (g/vertices t)))))
+      (cq/draw-polygon t))))
 
 (sketch/defquil folding-triangles
   :created-at "2021-02-28"

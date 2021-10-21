@@ -25,8 +25,7 @@
 (defn wave [rotation size pos]
   (-> pos
       (random-triangle-at rotation size)
-      g/vertices
-      cq/draw-shape))
+      cq/draw-polygon))
 
 (defn streak [pos length step-size angle draw]
   (dotimes [j length]

@@ -58,8 +58,7 @@
         (g/scale-size 5)
         (g/rotate (rand))
         (g/translate (gv/vec2 x y))
-        g/vertices
-        cq/draw-shape)))
+        cq/draw-polygon)))
 
 (defn draw [{:keys [physics base-color]}]
   ;; (q/background 1.0 0.1)

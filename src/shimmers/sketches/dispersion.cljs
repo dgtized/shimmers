@@ -11,9 +11,6 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(defn draw-polygon [poly]
-  (cq/draw-shape (g/vertices poly)))
-
 (defn setup []
   (q/no-loop)
   (q/color-mode :hsl 1.0)
@@ -60,7 +57,7 @@
               (-> (epicenter-distance sw (q/width) shape)
                   (tm/clamp 0.25 0.75))
               0.9)
-      (draw-polygon shape))))
+      (cq/draw-polygon shape))))
 
 (sketch/defquil dispersion
   :created-at "2021-03-10"

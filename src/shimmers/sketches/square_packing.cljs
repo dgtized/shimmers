@@ -55,14 +55,13 @@
   (q/stroke 0.35 0.5 0.5 0.5)
   (q/fill 1.0 1.0)
   (doseq [rects remaining]
-    (cq/draw-shape (g/vertices rects)))
+    (cq/draw-polygon rects))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/fill 1.0 0.1)
   (doseq [square squares]
     (-> square
         (g/scale-size (/ 1 tm/PHI))
-        g/vertices
-        cq/draw-shape)))
+        cq/draw-polygon)))
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"

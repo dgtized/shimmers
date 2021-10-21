@@ -27,8 +27,7 @@
   (-> (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
       (g/translate (cq/rel-pos position))
       (geometry/rotate-around-centroid theta)
-      g/vertices
-      cq/draw-shape))
+      cq/draw-polygon))
 
 (defn make-shape []
   {:position (gv/vec2 (rand) (rand))
