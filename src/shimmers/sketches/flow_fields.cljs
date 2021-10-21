@@ -43,9 +43,9 @@
     theta))
 
 (defn avoid-obstacles [p {:keys [points radius voronoi]}]
-  (if-let [closest (apply min-key #(g/dist p %) points)]
+  (if-let [closest (apply min-key #(g/dist-squared p %) points)]
     ((if voronoi tm/* tm/normalize)
-     (tm/- p closest) (/ radius (g/dist p closest)))
+     (tm/- p closest) (/ (* radius radius) (g/dist-squared p closest)))
     (gv/vec2)))
 
 (defn noise-point
