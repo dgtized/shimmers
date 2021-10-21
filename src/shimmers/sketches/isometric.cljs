@@ -30,20 +30,20 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0.0
-   :grid (g/subdivide (cq/screen-rect 0.8) {:rows 10 :cols 10})})
+   :grid (g/subdivide (cq/screen-rect iso-angle) {:rows 16 :cols 16})})
 
 (defn update-state [state]
-  (update state :t + 0.005))
+  (update state :t + 0.002))
 
 (defn draw [{:keys [grid t]}]
   (q/background 1.0)
-  (let [m 0.005
+  (let [m 0.002
         shapes (for [{[x y] :p [w h] :size} grid
                      :let [n (q/noise (* x m) (* y m) t)]]
                  (g/translate (aabb/aabb w)
-                              (gv/vec3 (+ x (cq/rel-w 0.2))
-                                       (* 0.66 h (Math/sin (* tm/TWO_PI n)))
-                                       (- y (cq/rel-h 0.5)))))]
+                              (gv/vec3 (+ x (cq/rel-w 0.35))
+                                       (- (* (/ h iso-angle) (Math/sin (* tm/TWO_PI n))) (cq/rel-h 0.17))
+                                       (- (/ y iso-angle) (cq/rel-h 0.5)))))]
     (doseq [shape shapes]
       (doseq [face-pts (isofaces shape)]
         (cq/draw-shape (map isometric3 face-pts))))))
