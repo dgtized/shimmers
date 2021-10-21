@@ -26,14 +26,14 @@
 
 (defn draw-shape [vertices]
   (q/begin-shape)
-  (doseq [v vertices]
-    (apply q/vertex v))
+  (doseq [[x y] vertices]
+    (q/vertex x y))
   (q/end-shape :close))
 
 (defn draw-curve-shape [vertices]
   (q/begin-shape)
-  (doseq [v vertices]
-    (apply q/curve-vertex v))
+  (doseq [[x y] vertices]
+    (q/curve-vertex x y))
   (q/end-shape :close))
 
 (defn draw-polygon [poly]
