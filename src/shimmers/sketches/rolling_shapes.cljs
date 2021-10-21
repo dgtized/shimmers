@@ -39,10 +39,7 @@
   (q/stroke-weight 0.25)
   (q/no-fill)
   (doseq [s (map (partial rotate t) shapes)]
-    (q/begin-shape)
-    (doseq [[x y] (g/vertices s)]
-      (q/vertex x y))
-    (q/end-shape)))
+    (cq/draw-vertices (g/vertices s))))
 
 (sketch/defquil rolling-shapes
   :created-at "2021-06-30"

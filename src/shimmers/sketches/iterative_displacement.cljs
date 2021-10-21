@@ -113,10 +113,7 @@
   (q/background 1.0)
   (q/no-fill)
   (doseq [points (butlast (rest lines))]
-    (q/begin-shape)
-    (doseq [[x y] (map cq/rel-pos points)]
-      (q/vertex x y))
-    (q/end-shape)))
+    (cq/draw-vertices (map cq/rel-pos points))))
 
 (sketch/defquil iterative-displacement
   :created-at "2021-08-22"

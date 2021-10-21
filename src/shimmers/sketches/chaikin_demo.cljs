@@ -33,10 +33,7 @@
   ([vertices pos] (draw-at nil vertices pos))
   ([desc vertices pos]
    (let [translated (map (fn [v] (g/translate v pos)) vertices)]
-     (q/begin-shape)
-     (doseq [v translated]
-       (apply q/vertex v))
-     (q/end-shape)
+     (cq/draw-vertices translated)
      (cq/circle (first translated) 3.0)
      (when desc
        (text-at desc (g/translate pos (cq/rel-vec 0.05 0.2)))))))

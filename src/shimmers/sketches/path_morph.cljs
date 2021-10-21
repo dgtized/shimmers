@@ -9,7 +9,8 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.utils :as gu]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.common.quil :as cq]))
 
 ;; TODO: define a path record from a set of points
 (defn zig-zag []
@@ -56,11 +57,7 @@
         p (g/unmap-point bounds (gu/point-at t (:points path)))
         shape (gp/polygon2 (shape-at shape-sequence t))]
     ;; (cq/circle p 1)
-    (q/begin-shape)
-    (doseq [v (g/vertices (g/translate (g/scale-size shape 50.0) p))]
-      (apply q/vertex v))
-    (q/end-shape :close)
-    ))
+    (cq/draw-shape (g/vertices (g/translate (g/scale-size shape 50.0) p)))))
 
 (sketch/defquil path-morph
   :created-at "2021-10-06"

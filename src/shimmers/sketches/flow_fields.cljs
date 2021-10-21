@@ -170,16 +170,10 @@
       (case draw
         "segments"
         (dotimes [_ flows-per-iter]
-          (q/begin-shape)
-          (doseq [[x y] (points settings)]
-            (q/vertex x y))
-          (q/end-shape))
+          (cq/draw-vertices (points settings)))
         "curves"
         (dotimes [_ flows-per-iter]
-          (q/begin-shape)
-          (doseq [[x y] (points settings)]
-            (q/curve-vertex x y))
-          (q/end-shape))
+          (cq/draw-curve (points settings)))
         "grid"
         (draw-grid settings)
         "hexagons"

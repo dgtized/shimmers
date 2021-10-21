@@ -84,10 +84,7 @@
   (doseq [{:keys [p r]} avoid]
     (cq/circle p r))
   (doseq [line lines]
-    (q/begin-shape)
-    (doseq [point line]
-      (apply q/vertex (cq/rel-pos point)))
-    (q/end-shape)))
+    (cq/draw-vertices (map cq/rel-pos line))))
 
 (sketch/defquil additive-displacement
   :created-at "2021-07-25"

@@ -48,10 +48,7 @@
 
   (q/stroke-weight 0.5)
   (when-let [hull (:hull state)]
-    (q/begin-shape)
-    (doseq [segment (g/vertices hull)]
-      (apply q/vertex segment))
-    (q/end-shape :close))
+    (cq/draw-shape (g/vertices hull)))
 
   (q/no-stroke)
   (doseq [t triangles

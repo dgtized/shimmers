@@ -213,10 +213,7 @@
                                 (grayscale-at pixels width p)
                                 0)))
         points (spiral center 10.0 0.3 720 noise-at t)]
-    (q/begin-shape)
-    (doseq [[x y] points]
-      (q/curve-vertex x y))
-    (q/end-shape)))
+    (cq/draw-curve points)))
 
 ;; http://paulbourke.net/dataformats/asciiart/
 (def ascii-70 (vec " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"))

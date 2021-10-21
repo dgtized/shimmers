@@ -9,10 +9,7 @@
 
 (defn scribble [points t]
   (q/curve-tightness t)
-  (q/begin-shape)
-  (doseq [p points]
-    (apply q/curve-vertex (cq/rel-pos p)))
-  (q/end-shape))
+  (cq/draw-curve (map cq/rel-pos points)))
 
 (defn curly-line [a b]
   (for [t (dr/random-sample 0.4 (range 0 1.0 0.03))

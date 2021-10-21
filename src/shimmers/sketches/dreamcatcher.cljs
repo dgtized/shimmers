@@ -51,10 +51,7 @@
   (q/background 1.0)
   (q/no-fill)
   (q/with-translation (cq/rel-vec 0.5 0.5)
-    (q/begin-shape)
-    (doseq [p points]
-      (apply q/vertex p))
-    (q/end-shape)))
+    (cq/draw-vertices points)))
 
 (sketch/defquil dreamcatcher
   :created-at "2021-10-11"
