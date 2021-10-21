@@ -87,8 +87,7 @@
                        (hex/cube-pointy->pixel length)
                        (pointy-hexagon length)
                        (map (partial noise-point settings))))]
-      (doseq [[p q] (partition 2 1 (cons (last hex) hex))]
-        (q/line p q)))))
+      (cq/draw-shape hex))))
 
 (defn flow-points
   [p {:keys [length] :as settings}]
