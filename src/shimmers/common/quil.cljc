@@ -45,7 +45,7 @@
     (q/vertex x y))
   (q/end-shape))
 
-(defn draw-curve [points]
+(defn draw-curve-path [points]
   (q/begin-shape)
   (doseq [[x y] points]
     (q/curve-vertex x y))

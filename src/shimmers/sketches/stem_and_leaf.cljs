@@ -52,12 +52,12 @@
           :let [c2 (nth circles parent)]]
     (tangent-lines c1 c2)
 
-    #_(cq/draw-curve [(tm/+ p (v/polar r (* 1.5 Math/PI)))
-                      (tm/+ p (v/polar r (* 1.6 Math/PI)))
-                      (tm/+ p (v/polar r (* 1.7 Math/PI)))
-                      (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
-                      (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
-                      (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
+    #_(cq/draw-curve-path [(tm/+ p (v/polar r (* 1.5 Math/PI)))
+                           (tm/+ p (v/polar r (* 1.6 Math/PI)))
+                           (tm/+ p (v/polar r (* 1.7 Math/PI)))
+                           (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
+                           (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
+                           (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
     )
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)

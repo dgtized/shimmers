@@ -172,7 +172,7 @@
           (cq/draw-path (points settings)))
         "curves"
         (dotimes [_ flows-per-iter]
-          (cq/draw-curve (points settings)))
+          (cq/draw-curve-path (points settings)))
         "grid"
         (draw-grid settings)
         "hexagons"

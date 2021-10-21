@@ -31,7 +31,7 @@
   (q/no-fill)
   (-> (cq/rel-vec 0.5 0.5)
       (spiral 9.0 0.9 512 (/ (q/frame-count) 800))
-      cq/draw-curve))
+      cq/draw-curve-path))
 
 (sketch/defquil deformed-spirals
   :created-at "2021-10-10"

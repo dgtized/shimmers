@@ -9,7 +9,7 @@
 
 (defn scribble [points t]
   (q/curve-tightness t)
-  (cq/draw-curve (map cq/rel-pos points)))
+  (cq/draw-curve-path (map cq/rel-pos points)))
 
 (defn curly-line [a b]
   (for [t (dr/random-sample 0.4 (range 0 1.0 0.03))
