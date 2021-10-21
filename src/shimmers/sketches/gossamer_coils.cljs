@@ -23,8 +23,6 @@
             (assoc (chain/make-chain (cq/rel-vec 0.5 1.0) 80 4)
                    :color [0.95 0.5 0.5 0.025])]})
 
-(def draw-chain (comp cq/draw-path g/vertices))
-
 (defn update-state [{:keys [chains] :as state}]
   (assoc state :chains
          (map-indexed (fn [idx chain]
@@ -40,7 +38,7 @@
   ;; (q/background 255)
   (doseq [chain chains]
     (apply q/stroke (:color chain))
-    (draw-chain chain)))
+    (cq/draw-path (g/vertices chain))))
 
 (sketch/defquil gossamer-coils
   :created-at "2021-03-15"

@@ -33,8 +33,6 @@
 (defn follow []
   ((get modes (:mode @ui-state))))
 
-(def draw-chain (comp cq/draw-path g/vertices))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:chain (assoc (chain/make-chain (follow) 96 16)
@@ -49,7 +47,7 @@
   (q/no-fill)
   ;; (q/background 255)
   (apply q/stroke (:color chain))
-  (draw-chain chain))
+  (cq/draw-path (g/vertices chain)))
 
 (sketch/defquil kinematic-chain
   :created-at "2021-03-19"
