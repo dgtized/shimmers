@@ -6,7 +6,6 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
 
