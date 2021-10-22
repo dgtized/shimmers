@@ -10,7 +10,6 @@
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn as-polygon [[shape color]]
@@ -31,7 +30,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:bounds [(g/scale-size (rect/rect 0 0 (q/width) (q/height)) 1.2)]
+  {:bounds [(cq/screen-rect 1.2)]
    :shapes (map as-polygon
                 {(gc/circle (cq/rel-pos 0.35 0.65) 40) (color/hex->hsla "#3b4d61")
                  (gc/circle (cq/rel-pos 0.2 0.3) 30) (color/hex->hsla "#ef9d10")
