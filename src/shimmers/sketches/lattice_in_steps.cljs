@@ -7,7 +7,6 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -28,7 +27,7 @@
         m (->> #(geometry/confused-midpoint p q 0.9)
                (repeatedly 20)
                (remove (fn [c] (g/contains-point? (gp/polygon2 hull) c)))
-               (filter (fn [c] (g/contains-point? (rect/rect 0 0 (q/width) (q/height)) c)))
+               (filter (fn [c] (g/contains-point? (cq/screen-rect) c)))
                first)]
     (if m
       (-> state

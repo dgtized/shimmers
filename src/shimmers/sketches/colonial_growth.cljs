@@ -10,7 +10,6 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -22,8 +21,7 @@
              {} shapes))
 
 (defn in-bounds? [circle]
-  (g/contains-point? (rect/rect 0 0 (q/width) (q/height))
-                        (:p circle)))
+  (g/contains-point? (cq/screen-rect) (:p circle)))
 
 (defn border-circle [shapes]
   (let [inverted-tree (child-tree shapes)

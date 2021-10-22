@@ -59,7 +59,7 @@
 
 (defn generate-tree
   [{:keys [attractor-power snap-theta] :as settings}]
-  (let [bounds (rect/rect 0 0 (q/width) (q/height))
+  (let [bounds (cq/screen-rect)
         attractors
         (generate-attractors bounds
                              (Math/pow 2 attractor-power)

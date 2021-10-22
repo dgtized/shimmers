@@ -52,7 +52,7 @@
   (q/no-fill)
   (q/stroke-weight 0.5)
   (q/stroke 0.0 0.5)
-  (let [bounds (rect/rect 0 0 (q/width) (q/height))
+  (let [bounds (cq/screen-rect)
         t (mod t 1.0)
         p (g/unmap-point bounds (gu/point-at t (:points path)))
         shape (gp/polygon2 (shape-at shape-sequence t))]

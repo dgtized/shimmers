@@ -132,7 +132,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [source (g/scale-size (rect/rect 0 0 (q/width) (q/height)) 0.95)
+  (let [source (cq/screen-rect 0.95)
         area-source (g/area source)
         rules {:constant [(constantly 0.25) 5]
                :by-area [(descent 0.05 g/area area-source area-source) 10]

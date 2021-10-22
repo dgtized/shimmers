@@ -8,7 +8,6 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
@@ -47,7 +46,7 @@
   (q/frame-rate 20)
   (q/color-mode :hsl 1.0)
   {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
-   :boundary (rect/rect 0 0 (q/width) (q/height))
+   :boundary (cq/screen-rect)
    :radius 2
    :scale 1.05
    :circles []})
