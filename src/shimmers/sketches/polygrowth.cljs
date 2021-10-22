@@ -37,11 +37,9 @@
                                (cq/rel-pos 0.45 0.8))
                  (color/hex->hsla "#6b7b8c")})})
 
-(defn update-state [state]
-  (update state :shapes (partial map (partial grow-clipped
-                                              (:bounds state)
-                                              (:shapes state)
-                                              1.02))))
+(defn update-state [{:keys [shapes bounds] :as state}]
+  (let [grow-by (partial grow-clipped bounds shapes 1.02)]
+    (update state :shapes (partial map grow-by))))
 
 (defn draw [{:keys [shapes]}]
   (q/ellipse-mode :radius)
