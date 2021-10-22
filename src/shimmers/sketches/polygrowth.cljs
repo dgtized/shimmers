@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
+            [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
@@ -12,18 +13,13 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.math.core :as tm]))
 
-(defn inside-another? [shapes point]
-  (some (fn [s] (g/contains-point? s point)) shapes))
-
 (defn grow-clipped [bounds shapes factor polygon]
   (let [center (g/centroid polygon)]
     (-> (for [v (g/vertices polygon)]
           (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
-            (cond (inside-another? shapes v')
-                  v
-                  (not (inside-another? bounds v'))
-                  v
-                  :else v')))
+            (if (or (geometry/point-within? shapes v')
+                    (not (geometry/point-within? bounds v')))
+              v v')))
         gp/polygon2
         (with-meta (meta polygon)))))
 

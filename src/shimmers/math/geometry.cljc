@@ -175,6 +175,9 @@
          (< (+ y r) (rect/top boundary))
          (> (- y r) (rect/bottom boundary)))))
 
+(defn point-within? [shapes point]
+  (some (fn [s] (g/contains-point? s point)) shapes))
+
 ;; Need tests, not sure this is always working?
 (defn segment-intersect
   "Return intersection point between two point segment pairs.

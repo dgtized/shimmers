@@ -4,6 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.color :as color]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
@@ -11,9 +12,6 @@
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
-
-(defn inside-another? [shapes point]
-  (some (fn [s] (g/contains-point? s point)) shapes))
 
 (defn as-polygon [[shape color]]
   (with-meta (g/as-polygon shape) {:stroke color}))
@@ -25,11 +23,9 @@
       (p/map-random-sample
        (constantly p)
        (fn [v] (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
-                (cond (inside-another? shapes v')
-                      v
-                      (not (inside-another? bounds v'))
-                      v
-                      :else v'))) it)
+                (if (or (geometry/point-within? shapes v')
+                        (not (geometry/point-within? bounds v')))
+                  v v'))) it)
       (gp/polygon2 it)
       (with-meta it (meta polygon)))))
 
