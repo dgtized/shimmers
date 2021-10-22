@@ -13,7 +13,7 @@
 (def iso-angle (/ (Math/sqrt 2) 2))
 
 ;; https://www.redblobgames.com/articles/coordinate-transforms/_2015/
-(defn isometric [[x y]]
+(defn isometric2 [[x y]]
   (gv/vec2 (+ (* x iso-angle) (* y iso-angle))
            (* iso-angle (- (* y iso-angle) (* x iso-angle)))))
 
@@ -35,6 +35,7 @@
 (defn update-state [state]
   (update state :t + 0.002))
 
+;; video projection of greyscale?
 (defn draw [{:keys [grid t]}]
   (q/background 1.0)
   (let [m 0.002
@@ -48,7 +49,7 @@
       (doseq [face-pts (isofaces shape)]
         (cq/draw-shape (map isometric3 face-pts))))))
 
-(sketch/defquil isometric-sketch
+(sketch/defquil isometric
   :created-at "2021-10-21"
   :size [900 600]
   :setup setup
