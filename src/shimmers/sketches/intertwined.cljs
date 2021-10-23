@@ -35,10 +35,11 @@
   (q/stroke-weight 0.5)
   (q/no-fill)
   (cq/draw-path path)
-  (q/fill 0)
-  (let [intersects (intersections path)]
-    (doseq [p intersects]
-      (cq/circle p 5.0))))
+  (let [intersects (intersections path)
+        isecs (count intersects)]
+    (doseq [[idx p] (map-indexed vector intersects)]
+      (q/fill (/ idx isecs) 0.75 0.6)
+      (cq/circle p 10.0))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
