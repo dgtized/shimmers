@@ -10,6 +10,8 @@
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
+;; Also is it useful/interesting to augment path to include each intersection point?
+;; Adding dashes or varying the segment width?
 
 (defn intersect-point
   "Return point of intersection between two lines or nil."
