@@ -1,12 +1,14 @@
 (ns shimmers.sketches.intertwined
   (:require
+   [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]))
+   [thi.ng.geom.line :as gl]
+   [thi.ng.math.core :as tm]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -37,9 +39,13 @@
               {[a b] :points} current
               ;; order points as distance along path
               ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)
+              ;; split intersections between on-path and same as final joint of segment
+              ;; might be better to just collapse path into unique segments here?
+              [isecs endpoints] (split-with (fn [{:keys [p]}] (not (tm/delta= p b)))
+                                            ordered-hits)
               ;; should joints track current and next segment?
-              joint (path-point b [current] true)]
-          (recur (into intersections (conj ordered-hits joint)) xs))))))
+              joint (path-point b (apply set/union (map :segments endpoints)) true)]
+          (recur (into intersections (conj isecs joint)) xs))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
