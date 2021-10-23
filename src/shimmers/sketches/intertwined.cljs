@@ -17,15 +17,17 @@
     (when (= type :intersect)
       (:p hit))))
 
-;; Points of intersection are not sorted in order of hits
 (defn intersections [path]
   (loop [intersections []
          segments (map gl/line2 (partition 2 1 path))]
     (if (empty? segments)
       intersections
       (let [[current & xs] segments
-            hits (keep (partial intersect-point current) (rest xs))]
-        (recur (into intersections hits) xs)))))
+            hits (keep (partial intersect-point current) (rest xs))
+            {[p _] :points} current
+            ;; order points as distance along path
+            ordered-hits (sort-by (fn [c] (g/dist p c)) hits)]
+        (recur (into intersections ordered-hits) xs)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -47,7 +49,7 @@
         isecs (count intersects)]
     (doseq [[idx p] (map-indexed vector intersects)]
       (q/fill (/ idx isecs) 0.75 0.6)
-      (cq/circle p 10.0))))
+      (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs))))))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
