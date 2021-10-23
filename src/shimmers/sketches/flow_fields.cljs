@@ -120,6 +120,26 @@
        (reduced p)))
    p (range length)))
 
+(defn points
+  [{:keys [calc-points] :as settings}]
+  (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+               settings))
+
+(defn draw-triangles [triangle {:keys [align-triangles] :as settings}]
+  (let [points (points settings)]
+    (if align-triangles
+      (doseq [[p q] (partition 2 1 points)]
+        (apply cq/draw-triangle
+               (-> triangle
+                   (g/rotate (g/heading (tm/- q p)))
+                   (g/center p)
+                   :points)))
+      (doseq [p points]
+        (apply cq/draw-triangle
+               (-> triangle
+                   (g/center p)
+                   :points))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
@@ -147,13 +167,8 @@
 (defn update-state [state]
   (update state :iter inc))
 
-(defn points
-  [{:keys [calc-points] :as settings}]
-  (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
-               settings))
-
 (defn draw
-  [{:keys [stroke-weight step-size iter iterations draw align-triangles obstacles]
+  [{:keys [stroke-weight step-size iter iterations draw obstacles]
     :as settings}]
   (q/stroke-weight (* 4 stroke-weight))
   (q/stroke 0.0 0.0 0.0 1.0)
@@ -185,19 +200,7 @@
         "triangles"
         (let [triangle (gt/triangle2 [hstep 0] [(- hstep) hstep] [(- hstep) (- hstep)])]
           (dotimes [_ (/ flows-per-iter 4)]
-            (let [points (points settings)]
-              (if align-triangles
-                (doseq [[p q] (partition 2 1 points)]
-                  (apply cq/draw-triangle
-                         (-> triangle
-                             (g/rotate (g/heading (tm/- q p)))
-                             (g/center p)
-                             :points)))
-                (doseq [p points]
-                  (apply cq/draw-triangle
-                         (-> triangle
-                             (g/center p)
-                             :points)))))))))))
+            (draw-triangles triangle settings)))))))
 
 (defn ui-controls []
   [:div
