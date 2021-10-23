@@ -32,8 +32,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.95)
-        zones (g/subdivide b {:rows 5 :cols 5})
-        k (* 0.2 (count zones))
+        zones (g/subdivide b {:rows 4 :cols 5})
+        k (* 0.1 (count zones))
         zones (cons (first zones) (drop k (shuffle (rest zones))))]
     {:path (map g/centroid zones)}))
 
