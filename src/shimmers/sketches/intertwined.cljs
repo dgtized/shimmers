@@ -54,6 +54,7 @@
 
 (defn draw [{:keys [path]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
   (q/no-fill)
   (cq/draw-path path)
@@ -62,9 +63,9 @@
     (doseq [[idx {:keys [p segments]}] (map-indexed vector intersects)]
       (if (= 1 (count segments))
         (do (q/fill 0)
-            (cq/circle p 3))
+            (cq/circle p 2))
         (do (q/fill (/ idx isecs) 0.75 0.6)
-            (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs))))))))))
+            (cq/circle p (+ 3 (* 9 (- 1.0 (/ idx isecs))))))))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
