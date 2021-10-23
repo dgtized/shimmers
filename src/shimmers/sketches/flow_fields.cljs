@@ -228,6 +228,15 @@
    :noise-div [0 12 0.1]
    :jitter [0 32]})
 
+;; TODO: could controls auto-populate ranges into a ui-mappings object?
+;; That would help with shuffling on other sketches and could assist in encoding settings in the URL?
+(defn shuffle-settings []
+  (-> (into {}
+            (for [[k v] ui-mappings]
+              (cond (map? v) [k (dr/rand-nth (vals v))]
+                    (vector? v) [k (dr/rand-nth (apply range v))])))
+      (update-in [:snap-resolution] str)))
+
 (defn ui-controls []
   [:div
    [:section
@@ -258,7 +267,13 @@
           (ctrl/checkbox-after settings "Display" [:obstacles :display])
           (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])])]
 
-   [:p (view-sketch/generate :flow-fields)]])
+   [:p
+    (view-sketch/generate :flow-fields)
+    [:button.generate
+     {:style {:margin-left "1em"}
+      :on-click #(do (swap! settings merge (shuffle-settings))
+                     (view-sketch/restart-sketch {:id :flow-fields}))}
+     "Shuffle Settings"]]])
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"
