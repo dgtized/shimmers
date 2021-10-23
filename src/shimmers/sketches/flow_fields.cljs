@@ -200,6 +200,7 @@
           (dotimes [_ (/ flows-per-iter 4)]
             (draw-triangles triangle settings)))))))
 
+;; TODO handle align-triangles and obstacles
 (def ui-mappings
   {:calc-points
    {"Angle from Noise" "flow-points"
@@ -219,7 +220,13 @@
     "30 degrees" (/ Math/PI 6)
     "20 degrees" (/ Math/PI 9)
     "15 degrees" (/ Math/PI 12)
-    "10 degrees" (/ Math/PI 18)}})
+    "10 degrees" (/ Math/PI 18)}
+   :iterations [1 500]
+   :stroke-weight [1 64]
+   :step-size [1 64]
+   :length [8 128]
+   :noise-div [0 12 0.1]
+   :jitter [0 32]})
 
 (defn ui-controls []
   [:div
@@ -228,15 +235,19 @@
     (ctrl/dropdown settings "Draw" [:draw] (:draw ui-mappings))
     (when (= (:draw @settings) "triangles")
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
-    (ctrl/dropdown settings "Snap Angles To " [:snap-resolution] (:snap-resolution ui-mappings))
-    (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
-    (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
-    (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
-    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] [8 128])
+    (ctrl/dropdown settings "Snap Angles To "
+                   [:snap-resolution] (:snap-resolution ui-mappings))
+    (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
+                 [:iterations] (:iterations ui-mappings))
+    (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v)))
+                 [:stroke-weight] (:stroke-weight ui-mappings))
+    (ctrl/slider settings (fn [v] (str "Step Size " v))
+                 [:step-size] (:step-size ui-mappings))
+    (ctrl/slider settings (fn [v] (str "Length " v)) [:length] (:length ui-mappings))
     (ctrl/slider settings (fn [v] (f/format ["Noise Multiplier 1/" (f/float 1)] (Math/pow 2 v)))
-                 [:noise-div] [0 12 0.1])
-    (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size")
-                                     "No Jitter")) [:jitter] [0 32])
+                 [:noise-div] (:noise-div ui-mappings))
+    (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size") "No Jitter"))
+                 [:jitter] (:jitter ui-mappings))
     (when (= (:calc-points @settings) "flow-points")
       [:div
        (ctrl/slider settings (fn [v] (if (pos? v) (str "Obstacles " v)
