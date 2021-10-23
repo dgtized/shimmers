@@ -19,12 +19,28 @@
 (defn path-point [p segments joint]
   {:p p :segments (set segments) :joint joint})
 
+(defn path-merge [prior curr]
+  (assoc prior
+         :segments (set/union (:segments prior) (:segments curr))
+         :joint (or (:joint prior) (:joint curr))))
+
 (defn intersect-point
   "Return point of intersection between two lines or nil."
   [l1 l2]
   (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
     (when (= type :intersect)
       (path-point (:p hit) [l1 l2] false))))
+
+(defn collapse
+  "Collapse consecutive points on the path, unioning associated segments together."
+  [path]
+  (loop [path path result [] prior (first path)]
+    (if (empty? path)
+      (conj result prior)
+      (let [[curr & remains] path]
+        (if (tm/delta= (:p prior) (:p curr))
+          (recur remains result (path-merge prior curr))
+          (recur remains (conj result prior) curr))))))
 
 ;; Might need path simplification, ie if a,b,c are all collinear just need a-c
 ;; However, path can double back onitself so requires some extra care
@@ -33,27 +49,23 @@
     (loop [intersections [(path-point (first path) (take 1 segments) true)]
            segments segments]
       (if (empty? segments)
-        intersections
+        (collapse intersections)
         (let [[current & xs] segments
               hits (keep (partial intersect-point current) (rest xs))
               {[a b] :points} current
               ;; order points as distance along path
               ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)
-              ;; split intersections between on-path and same as final joint of segment
-              ;; might be better to just collapse path into unique segments here?
-              [isecs endpoints] (split-with (fn [{:keys [p]}] (not (tm/delta= p b)))
-                                            ordered-hits)
-              ;; should joints track current and next segment?
-              joint (path-point b (apply set/union (map :segments endpoints)) true)]
-          (recur (into intersections (conj isecs joint)) xs))))))
+              joint (path-point b [current] true)]
+          (recur (into intersections (conj ordered-hits joint)) xs))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
         zones (g/subdivide b {:rows 4 :cols 4})
         k (* 0.1 (count zones))
-        zones (cons (first zones) (drop k (shuffle (rest zones))))]
-    {:path (map g/centroid zones)}))
+        path (map g/centroid (cons (first zones) (drop k (shuffle (rest zones)))))]
+    (println (intersections path))
+    {:path path}))
 
 (defn update-state [state]
   state)
