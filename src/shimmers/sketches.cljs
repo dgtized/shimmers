@@ -47,6 +47,7 @@
             shimmers.sketches.inconsequential-drift
             shimmers.sketches.integer-circles
             shimmers.sketches.interstitial-transitions
+            shimmers.sketches.intertwined
             shimmers.sketches.isometric
             shimmers.sketches.iterative-displacement
             shimmers.sketches.kd-tree
