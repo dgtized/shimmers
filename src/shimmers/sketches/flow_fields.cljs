@@ -7,6 +7,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.equations :as eq]
             [shimmers.math.hexagon :as hex]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -127,18 +128,15 @@
 
 (defn draw-triangles [triangle {:keys [align-triangles] :as settings}]
   (let [points (points settings)]
-    (if align-triangles
-      (doseq [[p q] (partition 2 1 points)]
-        (apply cq/draw-triangle
-               (-> triangle
-                   (g/rotate (g/heading (tm/- q p)))
-                   (g/center p)
-                   :points)))
-      (doseq [p points]
-        (apply cq/draw-triangle
-               (-> triangle
-                   (g/center p)
-                   :points))))))
+    (doseq [[p q] (partition 2 1 points)
+            :let [theta (if align-triangles
+                          (g/heading (tm/- q p))
+                          (dr/random eq/TAU))]]
+      (apply cq/draw-triangle
+             (-> triangle
+                 (g/rotate theta)
+                 (g/center p)
+                 :points)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
