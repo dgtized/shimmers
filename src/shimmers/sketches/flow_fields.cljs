@@ -122,7 +122,7 @@
 
 (defn points
   [{:keys [calc-points] :as settings}]
-  (calc-points (gv/vec2 (cq/rel-pos (dr/random) (dr/random)))
+  (calc-points (cq/rel-vec (dr/random) (dr/random))
                settings))
 
 (defn draw-triangles [triangle {:keys [align-triangles] :as settings}]
