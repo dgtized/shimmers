@@ -58,13 +58,19 @@
               joint (path-point b [current] true)]
           (recur (into intersections (conj ordered-hits joint)) xs))))))
 
+(defn debug-isecs [path]
+  (for [{:keys [p joint segments]} (intersections path)]
+    {:p p
+     :j joint
+     :conns (disj (set (apply set/union (map :points segments))) p)}))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
         zones (g/subdivide b {:rows 4 :cols 4})
         k (* 0.1 (count zones))
         path (map g/centroid (cons (first zones) (drop k (shuffle (rest zones)))))]
-    (println (intersections path))
+    #_(println (debug-isecs path))
     {:path path}))
 
 (defn update-state [state]
