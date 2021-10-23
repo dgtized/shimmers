@@ -9,6 +9,7 @@
    [thi.ng.geom.line :as gl]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
+;; TODO: find polygons
 
 (defn intersect-point
   "Return point of intersection between two lines or nil."
@@ -31,8 +32,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [b (cq/screen-rect 0.95)
-        zones (g/subdivide b {:rows 4 :cols 5})
+  (let [b (cq/screen-rect 0.99)
+        zones (g/subdivide b {:rows 4 :cols 4})
         k (* 0.1 (count zones))
         zones (cons (first zones) (drop k (shuffle (rest zones))))]
     {:path (map g/centroid zones)}))
