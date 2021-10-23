@@ -4,8 +4,20 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]))
+
+;; Random path through a space, then subdivide into polygons where the path crosses itself
+
+;; this is *almost* working but sometimes shows intersects outside of segment
+(defn intersections [path]
+  (loop [intersections [] segments (partition 2 1 path)]
+    (if (empty? segments)
+      intersections
+      (let [[current & xs] segments
+            hits (keep (partial geometry/segment-intersect current) (rest xs))]
+        (recur (into intersections hits) xs)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -21,7 +33,12 @@
 (defn draw [{:keys [path]}]
   (q/background 1.0)
   (q/stroke-weight 0.5)
-  (cq/draw-curve-path path))
+  (q/no-fill)
+  (cq/draw-path path)
+  (q/fill 0)
+  (let [intersects (intersections path)]
+    (doseq [p intersects]
+      (cq/circle p 5.0))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
