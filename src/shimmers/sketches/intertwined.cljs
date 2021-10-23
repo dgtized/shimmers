@@ -14,21 +14,21 @@
 ;; Adding dashes or varying the segment width?
 
 
-(defn path-point [p segments]
-  {:p p :segments (set segments)})
+(defn path-point [p segments joint]
+  {:p p :segments (set segments) :joint joint})
 
 (defn intersect-point
   "Return point of intersection between two lines or nil."
   [l1 l2]
   (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
     (when (= type :intersect)
-      (path-point (:p hit) [l1 l2]))))
+      (path-point (:p hit) [l1 l2] false))))
 
 ;; Might need path simplification, ie if a,b,c are all collinear just need a-c
 ;; However, path can double back onitself so requires some extra care
 (defn intersections [path]
   (let [segments (map gl/line2 (partition 2 1 path))]
-    (loop [intersections [(path-point (first path) (take 1 segments))]
+    (loop [intersections [(path-point (first path) (take 1 segments) true)]
            segments segments]
       (if (empty? segments)
         intersections
@@ -38,7 +38,7 @@
               ;; order points as distance along path
               ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)
               ;; should joints track current and next segment?
-              joint (path-point b [current])]
+              joint (path-point b [current] true)]
           (recur (into intersections (conj ordered-hits joint)) xs))))))
 
 (defn setup []
@@ -60,8 +60,8 @@
   (cq/draw-path path)
   (let [intersects (intersections path)
         isecs (count intersects)]
-    (doseq [[idx {:keys [p segments]}] (map-indexed vector intersects)]
-      (if (= 1 (count segments))
+    (doseq [[idx {:keys [p joint]}] (map-indexed vector intersects)]
+      (if joint
         (do (q/fill 0)
             (cq/circle p 2))
         (do (q/fill (/ idx isecs) 0.75 0.6)
