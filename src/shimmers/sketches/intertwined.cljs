@@ -15,7 +15,7 @@
 
 
 (defn path-point [p segments]
-  {:p p :segments segments})
+  {:p p :segments (set segments)})
 
 (defn intersect-point
   "Return point of intersection between two lines or nil."
@@ -36,9 +36,10 @@
               hits (keep (partial intersect-point current) (rest xs))
               {[a b] :points} current
               ;; order points as distance along path
-              ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)]
-          ;; should joints track current and next segment?
-          (recur (into intersections (conj ordered-hits (path-point b [current]))) xs))))))
+              ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)
+              ;; should joints track current and next segment?
+              joint (path-point b [current])]
+          (recur (into intersections (conj ordered-hits joint)) xs))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
