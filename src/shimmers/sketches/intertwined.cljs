@@ -13,24 +13,32 @@
 ;; Also is it useful/interesting to augment path to include each intersection point?
 ;; Adding dashes or varying the segment width?
 
+
+(defn path-point [p segments]
+  {:p p :segments segments})
+
 (defn intersect-point
   "Return point of intersection between two lines or nil."
   [l1 l2]
   (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
     (when (= type :intersect)
-      (:p hit))))
+      (path-point (:p hit) [l1 l2]))))
 
+;; Might need path simplification, ie if a,b,c are all collinear just need a-c
+;; However, path can double back onitself so requires some extra care
 (defn intersections [path]
-  (loop [intersections []
-         segments (map gl/line2 (partition 2 1 path))]
-    (if (empty? segments)
-      intersections
-      (let [[current & xs] segments
-            hits (keep (partial intersect-point current) (rest xs))
-            {[p _] :points} current
-            ;; order points as distance along path
-            ordered-hits (sort-by (fn [c] (g/dist p c)) hits)]
-        (recur (into intersections ordered-hits) xs)))))
+  (let [segments (map gl/line2 (partition 2 1 path))]
+    (loop [intersections [(path-point (first path) (take 1 segments))]
+           segments segments]
+      (if (empty? segments)
+        intersections
+        (let [[current & xs] segments
+              hits (keep (partial intersect-point current) (rest xs))
+              {[a b] :points} current
+              ;; order points as distance along path
+              ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)]
+          ;; should joints track current and next segment?
+          (recur (into intersections (conj ordered-hits (path-point b [current]))) xs))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -50,14 +58,12 @@
   (cq/draw-path path)
   (let [intersects (intersections path)
         isecs (count intersects)]
-    (doseq [[idx p] (map-indexed vector intersects)]
-      (q/fill (/ idx isecs) 0.75 0.6)
-      (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs)))))))
-  (q/fill 0)
-  ;; Need path simplification, ie if a,b,c are all collinear just need a-c
-  ;; However, path can double back onitself so requires some extra care
-  (doseq [p path]
-    (cq/circle p 3.0)))
+    (doseq [[idx {:keys [p segments]}] (map-indexed vector intersects)]
+      (if (= 1 (count segments))
+        (do (q/fill 0)
+            (cq/circle p 3))
+        (do (q/fill (/ idx isecs) 0.75 0.6)
+            (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs))))))))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
