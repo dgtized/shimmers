@@ -4,19 +4,27 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 
-;; this is *almost* working but sometimes shows intersects outside of segment
+(defn intersect-point
+  "Return point of intersection between two lines or nil."
+  [l1 l2]
+  (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
+    (when (= type :intersect)
+      (:p hit))))
+
+;; Points of intersection are not sorted in order of hits
 (defn intersections [path]
-  (loop [intersections [] segments (partition 2 1 path)]
+  (loop [intersections []
+         segments (map gl/line2 (partition 2 1 path))]
     (if (empty? segments)
       intersections
       (let [[current & xs] segments
-            hits (keep (partial geometry/segment-intersect current) (rest xs))]
+            hits (keep (partial intersect-point current) (rest xs))]
         (recur (into intersections hits) xs)))))
 
 (defn setup []
