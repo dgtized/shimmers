@@ -49,7 +49,12 @@
         isecs (count intersects)]
     (doseq [[idx p] (map-indexed vector intersects)]
       (q/fill (/ idx isecs) 0.75 0.6)
-      (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs))))))))
+      (cq/circle p (+ 6 (* 14 (- 1.0 (/ idx isecs)))))))
+  (q/fill 0)
+  ;; Need path simplification, ie if a,b,c are all collinear just need a-c
+  ;; However, path can double back onitself so requires some extra care
+  (doseq [p path]
+    (cq/circle p 3.0)))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
