@@ -200,31 +200,35 @@
           (dotimes [_ (/ flows-per-iter 4)]
             (draw-triangles triangle settings)))))))
 
+(def ui-mappings
+  {:calc-points
+   {"Angle from Noise" "flow-points"
+    "Flow Downhill" "downhill-points"}
+   :draw
+   {"Curved Lines" "curves"
+    "Segmented Lines" "segments"
+    "Circles" "circles"
+    "Triangles" "triangles"
+    "Hexagon Grid" "hexagons"
+    "Debug Grid" "grid"}
+   :snap-resolution
+   {"Disabled" 0
+    "90 degrees" (/ Math/PI 2)
+    "60 degrees" (/ Math/PI 3)
+    "45 degrees" (/ Math/PI 4)
+    "30 degrees" (/ Math/PI 6)
+    "20 degrees" (/ Math/PI 9)
+    "15 degrees" (/ Math/PI 12)
+    "10 degrees" (/ Math/PI 18)}})
+
 (defn ui-controls []
   [:div
    [:section
-    (ctrl/dropdown settings "Algorithm" [:calc-points]
-                   {"Angle from Noise" "flow-points"
-                    "Flow Downhill" "downhill-points"})
-    (ctrl/dropdown settings "Draw" [:draw]
-                   {"Curved Lines" "curves"
-                    "Segmented Lines" "segments"
-                    "Circles" "circles"
-                    "Triangles" "triangles"
-                    "Hexagon Grid" "hexagons"
-                    "Debug Grid" "grid"})
+    (ctrl/dropdown settings "Algorithm" [:calc-points] (:calc-points ui-mappings))
+    (ctrl/dropdown settings "Draw" [:draw] (:draw ui-mappings))
     (when (= (:draw @settings) "triangles")
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
-    (ctrl/dropdown settings
-                   "Snap Angles To " [:snap-resolution]
-                   {"Disabled" 0
-                    "90 degrees" (/ Math/PI 2)
-                    "60 degrees" (/ Math/PI 3)
-                    "45 degrees" (/ Math/PI 4)
-                    "30 degrees" (/ Math/PI 6)
-                    "20 degrees" (/ Math/PI 9)
-                    "15 degrees" (/ Math/PI 12)
-                    "10 degrees" (/ Math/PI 18)})
+    (ctrl/dropdown settings "Snap Angles To " [:snap-resolution] (:snap-resolution ui-mappings))
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v))) [:iterations] [1 500])
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v))) [:stroke-weight] [1 64])
     (ctrl/slider settings (fn [v] (str "Step Size " v)) [:step-size] [1 64])
