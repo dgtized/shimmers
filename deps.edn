@@ -18,6 +18,7 @@
         org.clojure/math.combinatorics {:mvn/version "0.1.6"}
         instaparse/instaparse {:mvn/version "1.4.10"}
         tailrecursion/cljs-priority-map {:mvn/version "1.2.1"}
+        org.clojure/data.avl {:mvn/version "0.1.0"}
         huahaiy/nifty {:mvn/version "0.1.0"} ;; disjoint-set + priority-map
 
         ;; clientside view rendering, routing, and HTML5 pushState support
