@@ -7,8 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.line :as gl]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -31,16 +30,21 @@
     (when (= type :intersect)
       (path-point (:p hit) [l1 l2] false))))
 
+;; TODO: consider generalizing this for any consecutive sequence, parameterized
+;; by same? and a merge function? Possibly handling chunkedseq?
 (defn collapse
-  "Collapse consecutive points on the path, unioning associated segments together."
-  [path]
-  (loop [path path result [] prior (first path)]
+  "Collapse consecutive points on the path, unioning associated segments together.
+
+  same? is parameterized as identical? to ease substitution with tm/delta= if
+  point sets are not from the same dataset."
+  [path & {:keys [same?] :or {same? identical?}}]
+  (loop [path (rest path) prior (first path) result []]
     (if (empty? path)
       (conj result prior)
       (let [[curr & remains] path]
-        (if (tm/delta= (:p prior) (:p curr))
-          (recur remains result (path-merge prior curr))
-          (recur remains (conj result prior) curr))))))
+        (if (same? (:p prior) (:p curr))
+          (recur remains (path-merge prior curr) result)
+          (recur remains curr (conj result prior)))))))
 
 ;; Might need path simplification, ie if a,b,c are all collinear just need a-c
 ;; However, path can double back onitself so requires some extra care
