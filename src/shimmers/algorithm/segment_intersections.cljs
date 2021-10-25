@@ -6,6 +6,8 @@
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]))
 
+;; tailrecursion.priority-map is cljs only, hence why this is cljs and not cljc
+
 ;; focusing on integer coordinates for now
 (defn segment-generator [rect]
   (fn []
@@ -22,8 +24,11 @@
                 (update q (fnil conj #{}) s)))
           {} segments))
 
-(comment (segment-map (repeatedly 20 (segment-generator (rect/rect 20)))))
-
+(comment
+  (def segments (repeatedly 20 (segment-generator (rect/rect 20))))
+  (def segmap (segment-map segments))
+  (seq (apply priority/priority-map
+              (interleave (range (count segmap)) (keys segmap)))))
 ;; Sort by :x and then sort by :y, and something about removing left side segments?
 
 ;; (defn event-queue [segments]
