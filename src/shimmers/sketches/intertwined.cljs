@@ -89,11 +89,11 @@
   (let [intersects (intersections path)
         isecs (count intersects)]
     (doseq [[idx {:keys [p joint]}] (map-indexed vector intersects)]
-      (if joint
-        (do (q/fill 0)
-            (cq/circle p 2))
-        (do (q/fill (/ idx isecs) 0.75 0.6)
-            (cq/circle p (+ 3 (* 9 (- 1.0 (/ idx isecs))))))))))
+      (q/fill (/ idx isecs) 0.75 0.6)
+      (cq/circle p (+ 3 (* 9 (- 1.0 (/ idx isecs)))))
+      (when joint
+        (q/fill 0)
+        (cq/circle p 2)))))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
