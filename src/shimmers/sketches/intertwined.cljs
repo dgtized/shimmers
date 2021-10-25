@@ -37,7 +37,7 @@
   same? is parameterized as identical? to ease substitution with tm/delta= if
   point sets are not from the same dataset."
   [path & {:keys [same?] :or {same? identical?}}]
-  (loop [path (rest path) prior (first path) result []]
+  (loop [path path prior (first path) result []]
     (if (empty? path)
       (conj result prior)
       (let [[curr & remains] path]
@@ -72,7 +72,7 @@
   (let [b (cq/screen-rect 0.99)
         zones (g/subdivide b {:rows 4 :cols 4})
         k (* 0.1 (count zones))
-        path (map g/centroid (cons (first zones) (drop k (shuffle (rest zones)))))]
+        path (map g/centroid (drop k (shuffle zones)))]
     #_(println (debug-isecs path))
     {:path path}))
 
