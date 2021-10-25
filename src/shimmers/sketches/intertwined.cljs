@@ -14,7 +14,6 @@
 ;; Also is it useful/interesting to augment path to include each intersection point?
 ;; Adding dashes or varying the segment width?
 
-
 (defn path-point [p segments joint]
   {:p p :segments (set segments) :joint joint})
 
@@ -83,9 +82,14 @@
 (defn draw [{:keys [path]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  (q/stroke-weight 0.5)
   (q/no-fill)
-  (cq/draw-path path)
+  (let [segments (partition 2 1 path)
+        segs (count segments)]
+    (doseq [[idx [p q]] (map-indexed vector segments)]
+      (q/stroke-weight (+ 0.5 (* 1.0 (/ idx segs))))
+      (q/line p q)))
+
+  (q/stroke-weight 0.5)
   (let [intersects (intersections path)
         isecs (count intersects)]
     (doseq [[idx {:keys [p joint]}] (map-indexed vector intersects)]
