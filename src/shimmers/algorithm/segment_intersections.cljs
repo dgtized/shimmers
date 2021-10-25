@@ -28,7 +28,7 @@
   (def segments (repeatedly 20 (segment-generator (rect/rect 20))))
   (def segmap (segment-map segments))
   (seq (apply priority/priority-map
-              (interleave (range (count segmap)) (keys segmap)))))
+              (interleave (keys segmap) (keys segmap)))))
 ;; Sort by :x and then sort by :y, and something about removing left side segments?
 
 ;; (defn event-queue [segments]
@@ -36,9 +36,40 @@
 
 ;; (conj (priority/priority-map) [1 2])
 
-;; (defn segment-intersections [segments]
-;;   (let [events (apply priority/priority-map-keyfn-by
-;;                       )]))
+(defn left-endpoint? [point]
+  (fn [{:keys [points]}]
+    (identical? point (first (sort points)))))
+
+(defn right-endpoint? [point]
+  (fn [{:keys [points]}]
+    (identical? point (second (sort points)))))
+
+;; WIP
+#_(defn crossing-point [seg-a seg-b]
+    (when-let [p nil]
+      p))
+
+#_(defn segment-intersections [segments]
+    (let [segmap (segment-map segments)]
+      (loop [events (apply priority/priority-map
+                           (interleave (keys segmap) (keys segmap)))
+             T (avl/sorted-map)
+             intersections []]
+        (if (empty? events)
+          intersections
+          (let [[_ point] (peek events)
+                events (pop events)
+                segs (get segmap point)]
+            (if-let [{[p q] :points :as s} (some (left-endpoint? point) segments)]
+              (let [T' (assoc T (:y p) s)
+                    above (avl/nearest T' > (:y p))
+                    below (avl/nearest T' < (:y p))
+                    events (if-let [crossing-ab (crossing-point above below)]
+                             (disj events crossing-ab)
+                             events)
+                    ]
+                ))
+            (recur events T intersections))))))
 
 ;; Some AVL tree tests
 (comment (def t (apply avl/sorted-map (interleave (map (partial * 10) (range 10)) (reverse (range 10)))))
