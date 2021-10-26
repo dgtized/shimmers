@@ -16,7 +16,9 @@
 ;; Also is it useful/interesting to augment path to include each intersection point?
 ;; Adding dashes or varying the segment width?
 
-(defonce ui-state (ctrl/state {:edges {:weighted-by-order true}}))
+(def modes [:intersections :graph])
+(defonce ui-state (ctrl/state {:mode :intersections
+                               :edges {:weighted-by-order true}}))
 
 (defn path-point [p segments joint]
   {:p p :segments (set segments) :joint joint})
@@ -65,6 +67,11 @@
               joint (path-point b [current] true)]
           (recur (into intersections (conj ordered-hits joint)) xs))))))
 
+;; WIP just trying to get basic output here
+(defn intersections->edges [intersections]
+  (for [[{a :p} {b :p}] (partition 2 1 intersections)]
+    [a b]))
+
 (defn debug-isecs [path]
   (for [{:keys [p joint segments]} (intersections path)]
     {:p p
@@ -84,10 +91,7 @@
 (defn update-state [state]
   (assoc state :mouse (cq/mouse-position)))
 
-(defn draw [{:keys [path mouse]}]
-  (q/background 1.0)
-  (q/ellipse-mode :radius)
-  (q/no-fill)
+(defn draw-segments [path]
   (let [weighted-by-order (get-in @ui-state [:edges :weighted-by-order])]
     (when-not weighted-by-order
       (q/stroke-weight 0.5))
@@ -96,9 +100,12 @@
       (doseq [[idx [p q]] (map-indexed vector segments)]
         (when weighted-by-order
           (q/stroke-weight (+ 0.5 (* 1.0 (/ idx segs)))))
-        (q/line p q))))
+        (q/line p q)))))
 
+(defn draw-intersections [path mouse]
+  (draw-segments path)
   (q/stroke-weight 0.5)
+
   (let [intersects (intersections path)
         isecs (count intersects)]
     (doseq [[idx {:keys [p segments joint]}] (map-indexed vector intersects)]
@@ -114,8 +121,32 @@
           (q/line a b))
         (q/pop-style)))))
 
+(defn draw-graph [path _]
+  (q/fill 0)
+  (let [intersects (intersections path)
+        edges (intersections->edges intersects)
+        edge-count (count edges)]
+    (doseq [{:keys [p]} intersects]
+      (cq/circle p 3.0))
+    (q/stroke-weight 0.5)
+    (doseq [[idx [p q]] (map-indexed vector edges)]
+      (q/stroke-weight (+ 0.2 (/ idx edge-count)))
+      (q/line p q))))
+
+(defn draw [{:keys [path mouse]}]
+  (q/background 1.0)
+  (q/ellipse-mode :radius)
+  (q/no-fill)
+  (case (:mode @ui-state)
+    :intersections (draw-intersections path mouse)
+    :graph (draw-graph path mouse)))
+
 (defn ui-controls []
-  (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))
+  (let [{:keys [mode]} @ui-state]
+    [:div
+     (ctrl/change-mode ui-state modes)
+     (when (= mode :intersections)
+       (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))]))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
