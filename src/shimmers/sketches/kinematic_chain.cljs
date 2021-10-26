@@ -13,9 +13,6 @@
 
 (defonce ui-state (ctrl/state {:mode :sin}))
 
-(defn mouse-target []
-  (gv/vec2 (q/mouse-x) (q/mouse-y)))
-
 (defn noise-target [rate bw bh]
   (let [t (q/millis)]
     (cq/rel-vec (q/noise bw (/ t rate))
@@ -27,7 +24,7 @@
                 (tm/map-interval (q/sin (/ t 2000)) [-1 1] [0.1 0.9]))))
 
 (def modes {:sin sin-target
-            :mouse mouse-target
+            :mouse cq/mouse-position
             :noise (partial noise-target 4500 100 200)})
 
 (defn follow []

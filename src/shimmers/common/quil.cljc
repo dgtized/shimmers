@@ -4,6 +4,9 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]))
 
+(defn mouse-position []
+  (gv/vec2 (q/mouse-x) (q/mouse-y)))
+
 (defn rel-h [p]
   (* (q/height) p))
 

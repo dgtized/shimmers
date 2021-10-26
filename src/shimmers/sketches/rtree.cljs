@@ -20,9 +20,6 @@
 
 (defonce defo (debug/state))
 
-(defn mouse-position []
-  (gv/vec2 (q/mouse-x) (q/mouse-y)))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [shapes lower upper]} @ui-state
@@ -32,7 +29,7 @@
     {:circles (repeatedly shapes random-circle)}))
 
 (defn update-state [{:keys [circles] :as state}]
-  (let [mp (mouse-position)
+  (let [mp (cq/mouse-position)
         tree (rtree/create (select-keys @ui-state [:max-children]) circles)
         path (rtree/path-search tree mp)]
     (reset! defo {:mouse mp

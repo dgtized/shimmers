@@ -48,9 +48,6 @@
   [(/ (q/width) 2)
    (/ (q/height) 2)])
 
-(defn mouse-origin []
-  [(q/mouse-x) (q/mouse-y)])
-
 (defn draw-state [{:keys [theta]}]
   (q/background 0)
   (q/stroke 255)
@@ -62,7 +59,7 @@
         segments (mapcat shape-segments shapes)]
 
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
-      (let [origin (mouse-origin)
+      (let [origin (cq/mouse-position)
             [x y] origin
             ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
         (when-let [intersection (closest-intersection ray segments)]
