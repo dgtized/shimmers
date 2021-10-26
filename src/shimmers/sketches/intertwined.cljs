@@ -69,8 +69,11 @@
 
 ;; WIP just trying to get basic output here
 (defn intersections->edges [intersections]
-  (for [[{a :p} {b :p}] (partition 2 1 intersections)]
-    [a b]))
+  (for [{:keys [p segments]} intersections
+        segment segments
+        b (:points segment)
+        :when (not (identical? p b))]
+    [p b]))
 
 (defn debug-isecs [path]
   (for [{:keys [p joint segments]} (intersections path)]
