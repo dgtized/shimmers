@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]))
@@ -13,6 +14,8 @@
 ;; TODO: find polygons
 ;; Also is it useful/interesting to augment path to include each intersection point?
 ;; Adding dashes or varying the segment width?
+
+(defonce ui-state (ctrl/state {:edges {:weighted-by-order true}}))
 
 (defn path-point [p segments joint]
   {:p p :segments (set segments) :joint joint})
@@ -83,11 +86,15 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (let [segments (partition 2 1 path)
-        segs (count segments)]
-    (doseq [[idx [p q]] (map-indexed vector segments)]
-      (q/stroke-weight (+ 0.5 (* 1.0 (/ idx segs))))
-      (q/line p q)))
+  (let [weighted-by-order (get-in @ui-state [:edges :weighted-by-order])]
+    (when-not weighted-by-order
+      (q/stroke-weight 0.5))
+    (let [segments (partition 2 1 path)
+          segs (count segments)]
+      (doseq [[idx [p q]] (map-indexed vector segments)]
+        (when weighted-by-order
+          (q/stroke-weight (+ 0.5 (* 1.0 (/ idx segs)))))
+        (q/line p q))))
 
   (q/stroke-weight 0.5)
   (let [intersects (intersections path)
@@ -99,8 +106,12 @@
         (q/fill 0)
         (cq/circle p 2)))))
 
+(defn ui-controls []
+  (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))
+
 (sketch/defquil intertwined
   :created-at "2021-10-23"
+  :on-mount #(ctrl/mount ui-controls)
   :size [800 600]
   :setup setup
   :update update-state
