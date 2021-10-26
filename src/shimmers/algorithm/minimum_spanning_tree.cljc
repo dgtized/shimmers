@@ -22,7 +22,13 @@
 ;; Something off about performance here. Points to edges is <N^2, but pretty
 ;; close, so maybe sort x/y and find close somehow? On top of that though,
 ;; kruskal-step is not performing as quickly as prim's.
-(defn kruskal [points]
+(defn kruskal
+  "Returns list of connecting edges in minimum spanning tree.
+  `edges` is a vector of vertex pairs, sorted by edge weight.
+
+  (kruskal [:a :b :c :d] [[:a :b] [:b :c] [:c :d] [:b :d]])
+  "
+  [vertices edges]
   (letfn [(kruskal-step [forest edges union-set]
             (if (empty? edges)
               forest
@@ -33,8 +39,15 @@
                          remaining
                          (djs/union union-set u v))
                   (recur forest remaining union-set)))))]
-    (kruskal-step [] (ranked-edges points)
-                  (apply djs/disjoint-set points))))
+    (kruskal-step []
+                  edges
+                  (apply djs/disjoint-set vertices))))
+
+(comment (kruskal [:a :b :c :d] [[:a :b] [:b :c] [:c :d] [:b :d]]))
+
+(defn kruskal-points
+  [points]
+  (kruskal points (ranked-edges points)))
 
 (defn distances [v points]
   (reduce (fn [m p] (assoc m p (g/dist v p)))
