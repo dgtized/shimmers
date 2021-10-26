@@ -67,13 +67,21 @@
               joint (path-point b [current] true)]
           (recur (into intersections (conj ordered-hits joint)) xs))))))
 
-;; WIP just trying to get basic output here
-(defn intersections->edges [intersections]
-  (for [{:keys [p segments]} intersections
-        segment segments
-        b (:points segment)
-        :when (not (identical? p b))]
-    [p b]))
+(defn vertices-per-isec [intersections]
+  (merge-with set/union
+              (for [{:keys [p segments]} intersections
+                    seg segments]
+                {seg #{p}})))
+
+;; WIP just trying to get basic output here. I think problems with directed vs undirected graph?
+(defn intersections->edges [isecs]
+  (apply set/union
+         (for [seg-isec (vertices-per-isec isecs)]
+           (let [[segment] (keys seg-isec)
+                 [points] (vals seg-isec)
+                 [a b] (:points segment)
+                 ordered (sort-by (fn [p] (g/dist a p)) (concat [a] points [b]))]
+             (set (partition 2 1 ordered))))))
 
 (defn debug-isecs [path]
   (for [{:keys [p joint segments]} (intersections path)]
