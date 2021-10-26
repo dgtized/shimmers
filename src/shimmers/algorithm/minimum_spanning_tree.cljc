@@ -43,8 +43,6 @@
                   edges
                   (apply djs/disjoint-set vertices))))
 
-(comment (kruskal [:a :b :c :d] [[:a :b] [:b :c] [:c :d] [:b :d]]))
-
 (defn kruskal-points
   [points]
   (kruskal points (ranked-edges points)))
