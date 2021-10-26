@@ -121,16 +121,18 @@
           (q/line a b))
         (q/pop-style)))))
 
-(defn draw-graph [path _]
+(defn draw-graph [path mouse]
   (q/fill 0)
   (let [intersects (intersections path)
         edges (intersections->edges intersects)
         edge-count (count edges)]
+    (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
-    (q/stroke-weight 0.5)
     (doseq [[idx [p q]] (map-indexed vector edges)]
-      (q/stroke-weight (+ 0.2 (/ idx edge-count)))
+      (if (< (g/dist-squared p mouse) 32)
+        (q/stroke-weight 3.0)
+        (q/stroke-weight (+ 0.2 (/ idx edge-count))))
       (q/line p q))))
 
 (defn draw [{:keys [path mouse]}]
