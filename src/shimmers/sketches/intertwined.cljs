@@ -8,7 +8,8 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]))
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -77,12 +78,13 @@
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (shuffle zones)))]
     #_(println (debug-isecs path))
-    {:path path}))
+    {:mouse (gv/vec2)
+     :path path}))
 
 (defn update-state [state]
-  state)
+  (assoc state :mouse (cq/mouse-position)))
 
-(defn draw [{:keys [path]}]
+(defn draw [{:keys [path mouse]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
@@ -99,12 +101,18 @@
   (q/stroke-weight 0.5)
   (let [intersects (intersections path)
         isecs (count intersects)]
-    (doseq [[idx {:keys [p joint]}] (map-indexed vector intersects)]
+    (doseq [[idx {:keys [p segments joint]}] (map-indexed vector intersects)]
       (q/fill (/ idx isecs) 0.75 0.6)
       (cq/circle p (+ 3 (* 9 (- 1.0 (/ idx isecs)))))
       (when joint
         (q/fill 0)
-        (cq/circle p 2)))))
+        (cq/circle p 2))
+      (when (< (g/dist-squared p mouse) 32)
+        (q/push-style)
+        (q/stroke-weight 3.0)
+        (doseq [{[a b] :points} segments]
+          (q/line a b))
+        (q/pop-style)))))
 
 (defn ui-controls []
   (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))
