@@ -81,13 +81,5 @@
                          remaining)
                  (into {} (for [p remaining] {p [vertex p]}))))))
 
-(comment
-  (let [dists {[:a :b] 1
-               [:a :c] 3
-               [:c :b] 2
-               [:c :d] 3}]
-    (prim (fn [a b] (or (get dists [a b]) (get dists [b a]) 1000))
-          [:a :b :c :d])))
-
 (defn prim-points [points]
   (prim g/dist points))

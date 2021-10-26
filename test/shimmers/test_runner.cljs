@@ -1,6 +1,7 @@
 (ns ^:figwheel-hooks shimmers.test-runner
   (:require [shimmers.algorithm.line-clipping-test]
             [shimmers.algorithm.lines-test]
+            [shimmers.algorithm.minimum-spanning-tree-test]
             [shimmers.algorithm.rtree-test]
             [shimmers.algorithm.space-colonization-test]
             [shimmers.algorithm.square-packing-test]
@@ -22,6 +23,7 @@
    (cljs-test-display.core/init! "app-tests")
    'shimmers.algorithm.line-clipping-test
    'shimmers.algorithm.lines-test
+   'shimmers.algorithm.minimum-spanning-tree-test
    'shimmers.algorithm.rtree-test
    'shimmers.algorithm.space-colonization-test
    'shimmers.algorithm.square-packing-test
