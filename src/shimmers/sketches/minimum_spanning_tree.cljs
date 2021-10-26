@@ -12,7 +12,8 @@
   (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
                              (p/gaussian-clamped 0.5 0.15)])
         points (geometry/generate-points 256 point-gen)
-        edges ((rand-nth [mst/prim mst/kruskal-points]) points)]
+        calculate-tree (rand-nth [mst/prim-points mst/kruskal-points])
+        edges (calculate-tree points)]
     {:points points
      :edges edges
      :step 0}))

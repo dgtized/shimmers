@@ -49,19 +49,14 @@
   [points]
   (kruskal points (ranked-edges points)))
 
-(defn distances [v points]
-  (reduce (fn [m p] (assoc m p (g/dist v p)))
-          {} points))
-
-(defn prim [points]
+(defn prim [distance points]
   (letfn [(prim-update [added vertices weights best-edges]
             (if (empty? vertices)
               [weights best-edges]
               (let [vertex (first vertices)
-                    dist (g/dist vertex added)
-                    prior (get weights vertex)
-                    better (and prior (< dist prior))]
-                (if better
+                    dist (distance vertex added)
+                    prior (get weights vertex)]
+                (if (and dist prior (< dist prior))
                   (recur added (rest vertices)
                          (assoc weights vertex dist)
                          (assoc best-edges vertex [added vertex]))
@@ -81,5 +76,18 @@
     (let [[vertex & remaining] points]
       (prim-step []
                  (set remaining)
-                 (apply priority/priority-map (mapcat identity (distances vertex remaining)))
+                 (reduce (fn [m p] (assoc m p (distance vertex p)))
+                         (priority/priority-map)
+                         remaining)
                  (into {} (for [p remaining] {p [vertex p]}))))))
+
+(comment
+  (let [dists {[:a :b] 1
+               [:a :c] 3
+               [:c :b] 2
+               [:c :d] 3}]
+    (prim (fn [a b] (or (get dists [a b]) (get dists [b a]) 1000))
+          [:a :b :c :d])))
+
+(defn prim-points [points]
+  (prim g/dist points))
