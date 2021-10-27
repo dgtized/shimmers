@@ -21,8 +21,7 @@
 
 (extend-type Rect2
   QuilDrawGeom
-  (draw [s]
-    (cq/rectangle s)))
+  (draw [s] (cq/rectangle s)))
 
 (extend-type Triangle2
   QuilDrawGeom
@@ -31,8 +30,7 @@
 
 (extend-type Polygon2
   QuilDrawGeom
-  (draw [s]
-    (cq/draw-polygon s)))
+  (draw [s] (cq/draw-polygon s)))
 
 (extend-type Group
   QuilDrawGeom
