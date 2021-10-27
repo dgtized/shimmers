@@ -82,8 +82,11 @@
            (let [[segment] (keys seg-isec)
                  [points] (vals seg-isec)
                  [a b] (:points segment)
-                 ordered (sort-by (fn [p] (g/dist a p)) (concat [a] points [b]))]
-             (set (partition 2 1 ordered))))))
+                 ordered (sort-by (fn [p] (g/dist a p)) (conj points a b))]
+             (->> ordered
+                  dedupe ;; sometimes a or b is already in points
+                  (partition 2 1)
+                  set)))))
 
 (defn debug-isecs [state path]
   (assoc state
