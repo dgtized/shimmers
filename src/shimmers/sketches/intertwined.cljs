@@ -144,7 +144,8 @@
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
     (doseq [[idx [p q]] (map-indexed vector edges)
-            :let [mouse-hit (< (g/dist-squared p mouse) 32)]]
+            :let [mouse-hit (or (< (g/dist-squared p mouse) 32)
+                                (< (g/dist-squared q mouse) 32))]]
       (q/stroke-weight (if mouse-hit 3.0 (+ 0.2 (/ idx edge-count))))
       (q/line p q))))
 
