@@ -143,10 +143,9 @@
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
-    (doseq [[idx [p q]] (map-indexed vector edges)]
-      (if (< (g/dist-squared p mouse) 32)
-        (q/stroke-weight 3.0)
-        (q/stroke-weight (+ 0.2 (/ idx edge-count))))
+    (doseq [[idx [p q]] (map-indexed vector edges)
+            :let [mouse-hit (< (g/dist-squared p mouse) 32)]]
+      (q/stroke-weight (if mouse-hit 3.0 (+ 0.2 (/ idx edge-count))))
       (q/line p q))))
 
 (defn draw [{:keys [path mouse]}]
