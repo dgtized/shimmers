@@ -53,9 +53,9 @@
     (doseq [{:keys [bounds data depth]} tree]
       (q/stroke (/ depth (inc max-depth)))
       (cq/rectangle bounds)
-      (when-let [{p :p r :r} data]
+      (when-let [circle data]
         (q/stroke 0.0 0.6 0.6 1.0)
-        (cq/circle p r)))
+        (cq/circle circle)))
 
     (q/stroke-weight 1.5)
     (q/stroke 0.6 0.4 0.5)

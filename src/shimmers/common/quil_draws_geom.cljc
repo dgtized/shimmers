@@ -17,8 +17,7 @@
 ;; Requires (q/ellipse-mode :radius) to render as expected
 (extend-type Circle2
   QuilDrawGeom
-  (draw [{:keys [p r]}]
-    (cq/circle p r)))
+  (draw [s] (cq/circle s)))
 
 (extend-type Rect2
   QuilDrawGeom

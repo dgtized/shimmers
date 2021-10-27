@@ -45,8 +45,8 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/stroke-weight 1.2)
-  (doseq [{:keys [p r]} circles]
-    (cq/circle p r))
+  (doseq [c circles]
+    (cq/circle c))
   (doseq [{:keys [parent] :as c1} circles
           :when parent
           :let [c2 (nth circles parent)]]

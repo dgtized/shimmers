@@ -29,11 +29,11 @@
     (doseq [n traversal]
       (q/stroke 0.5)
       (cq/rectangle (g/bounds n))
-      (when-let [{:keys [p r]} (g/get-point-data n)]
+      (when-let [circle (g/get-point-data n)]
         (q/stroke 0.0)
         (cq/rectangle (g/bounds n))
         (q/stroke 0.0 0.5 0.5)
-        (cq/circle p r)))))
+        (cq/circle circle)))))
 
 (sketch/defquil quadtree
   :created-at "2021-10-10"

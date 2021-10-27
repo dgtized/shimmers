@@ -36,8 +36,8 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (doseq [{:keys [p r]} circles]
-    (cq/circle p r))
+  (doseq [c circles]
+    (cq/circle c))
   (doseq [hatching (vals hatches)]
     (doseq [{[p q] :points} hatching]
       (q/line p q))))

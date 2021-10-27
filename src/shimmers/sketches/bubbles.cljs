@@ -63,8 +63,8 @@
   (q/stroke-weight 0.05)
   (q/stroke 40 40 240 96)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r]} bubbles]
-    (cq/circle p r)))
+  (doseq [bubble bubbles]
+    (cq/circle bubble)))
 
 (sketch/defquil bubbles
   :created-at "2021-02-02"

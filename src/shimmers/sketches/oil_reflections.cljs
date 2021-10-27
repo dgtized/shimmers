@@ -87,8 +87,8 @@
   (q/background 1.0)
   (q/stroke-weight 0.7)
   (q/ellipse-mode :radius)
-  (doseq [{:keys [p r hatching]} circles]
-    (cq/circle p r)
+  (doseq [{:keys [hatching] :as c} circles]
+    (cq/circle c)
     (when (seq hatching)
       (doseq [{[p q] :points} hatching]
         (q/line p q)))))

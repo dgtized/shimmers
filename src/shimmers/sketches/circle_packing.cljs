@@ -123,12 +123,12 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
-  (doseq [{:keys [p r color done]} circles]
+  (doseq [{:keys [color done] :as c} circles]
     (apply q/fill color)
     (if done
       (q/no-stroke)
       (q/stroke 0 0 0 1.0))
-    (cq/circle p r)))
+    (cq/circle c)))
 
 (sketch/defquil circle-packing
   :created-at "2021-03-10"

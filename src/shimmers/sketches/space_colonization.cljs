@@ -87,12 +87,12 @@
            (colonize/grow s)]
        [steady-state s']))))
 
-(defn draw-attractor [[x y] influence prune]
+(defn draw-attractor [pos influence prune]
   (q/stroke-weight 0.2)
   (q/stroke "lightblue")
-  (cq/circle x y influence)
+  (cq/circle pos influence)
   (q/stroke "red")
-  (cq/circle x y prune))
+  (cq/circle pos prune))
 
 (defn draw-debug
   [{:keys [attractors influence-distance prune-distance quadtree]} debug]

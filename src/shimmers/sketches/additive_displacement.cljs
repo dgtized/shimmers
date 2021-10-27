@@ -81,8 +81,8 @@
   (q/stroke-weight 0.5)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (doseq [{:keys [p r]} avoid]
-    (cq/circle p r))
+  (doseq [c avoid]
+    (cq/circle c))
   (doseq [line lines]
     (cq/draw-path (map cq/rel-pos line))))
 
