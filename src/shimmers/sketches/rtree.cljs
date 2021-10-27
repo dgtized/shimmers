@@ -9,7 +9,6 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state

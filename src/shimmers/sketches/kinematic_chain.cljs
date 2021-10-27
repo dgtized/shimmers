@@ -8,7 +8,6 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:mode :sin}))
