@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -19,6 +20,7 @@
 (def modes [:intersections :graph])
 (defonce ui-state (ctrl/state {:mode :intersections
                                :edges {:weighted-by-order true}}))
+(defonce defo (debug/state))
 
 (defn path-point [p segments joint]
   {:p p :segments (set segments) :joint joint})
@@ -83,11 +85,12 @@
                  ordered (sort-by (fn [p] (g/dist a p)) (concat [a] points [b]))]
              (set (partition 2 1 ordered))))))
 
-(defn debug-isecs [path]
-  (for [{:keys [p joint segments]} (intersections path)]
-    {:p p
-     :j joint
-     :conns (disj (set (apply set/union (map :points segments))) p)}))
+(defn debug-isecs [state path]
+  (assoc state
+         :path
+         (for [{:keys [p joint segments]} (intersections path)]
+           [(if joint :j :p) p
+            :c (disj (set (apply set/union (map :points segments))) p)])))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -95,7 +98,7 @@
         zones (g/subdivide b {:rows 4 :cols 4})
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (shuffle zones)))]
-    #_(println (debug-isecs path))
+    #_(swap! defo debug-isecs path)
     {:mouse (gv/vec2)
      :path path}))
 
@@ -163,7 +166,9 @@
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
-  :on-mount #(ctrl/mount ui-controls)
+  :on-mount (fn []
+              (ctrl/mount ui-controls)
+              (debug/mount defo))
   :size [800 600]
   :setup setup
   :update update-state
