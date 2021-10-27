@@ -22,6 +22,7 @@
         tailrecursion/cljs-priority-map {:mvn/version "1.2.1"} ;; CLJS
         org.clojure/data.avl {:mvn/version "0.1.0"}
         huahaiy/nifty {:mvn/version "0.1.0"} ;; disjoint-set + priority-map
+        aysylu/loom {:mvn/version "1.0.2"} ;; graph representation
 
         ;; clientside view rendering, routing, and HTML5 pushState support
         cljsjs/react {:mvn/version "17.0.2-0"}
