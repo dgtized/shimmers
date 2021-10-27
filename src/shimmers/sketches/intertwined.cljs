@@ -105,6 +105,12 @@
 (defn update-state [state]
   (assoc state :mouse (cq/mouse-position)))
 
+(defn near-mouse
+  ([m p]
+   (< (g/dist-squared m p) 32))
+  ([m p q]
+   (or (near-mouse m p) (near-mouse m q))))
+
 (defn draw-segments [path]
   (let [weighted-by-order (get-in @ui-state [:edges :weighted-by-order])]
     (when-not weighted-by-order
@@ -128,7 +134,7 @@
       (when joint
         (q/fill 0)
         (cq/circle p 2))
-      (when (< (g/dist-squared p mouse) 32)
+      (when (near-mouse mouse p)
         (q/push-style)
         (q/stroke-weight 3.0)
         (doseq [{[a b] :points} segments]
@@ -144,8 +150,7 @@
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
     (doseq [[idx [p q]] (map-indexed vector edges)
-            :let [mouse-hit (or (< (g/dist-squared p mouse) 32)
-                                (< (g/dist-squared q mouse) 32))]]
+            :let [mouse-hit (near-mouse mouse p q)]]
       (q/stroke-weight (if mouse-hit 3.0 (+ 0.2 (/ idx edge-count))))
       (q/line p q))))
 
