@@ -149,6 +149,7 @@
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
+    (swap! defo assoc :edges (filter (fn [[a b]] (near-mouse mouse a b)) edges))
     (doseq [[idx [p q]] (map-indexed vector edges)
             :let [mouse-hit (near-mouse mouse p q)]]
       (q/stroke-weight (if mouse-hit 3.0 (+ 0.2 (/ idx edge-count))))
@@ -158,6 +159,7 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
+  (reset! defo {})
   (case (:mode @ui-state)
     :intersections (draw-intersections path mouse)
     :graph (draw-graph path mouse)))
