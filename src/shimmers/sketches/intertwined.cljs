@@ -107,6 +107,7 @@
         (recur (reduce lg/remove-nodes g tails))))))
 
 (defn cycle-clockwise [g start]
+  (swap! defo assoc :path [[:start start]])
   (loop [cycle [] vertex start]
     (cond (and (seq cycle) (identical? vertex start))
           cycle
@@ -114,11 +115,13 @@
           (let [candidates
                 (->> vertex
                      (lg/successors g)
-                     (remove (disj (set cycle) start))
-                     (sort-by (fn [p] (g/heading (tm/- p vertex)))))]
+                     (remove (conj (disj (set cycle) start) vertex))
+                     (map (fn [p] [p (tm/roundto (g/heading (tm/- vertex p)) 0.01)]))
+                     (sort-by second))]
+            (swap! defo update :path conj [[vertex :<- (last cycle)] candidates])
             (if (empty? candidates)
               []
-              (recur (conj cycle vertex) (last candidates)))))))
+              (recur (conj cycle vertex) (first (last candidates))))))))
 
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
@@ -154,7 +157,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
-        zones (g/subdivide b {:rows 4 :cols 4})
+        zones (g/subdivide b {:rows 3 :cols 4})
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (shuffle zones)))]
     #_(swap! defo debug-isecs path)
