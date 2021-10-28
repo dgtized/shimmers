@@ -12,7 +12,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -95,6 +96,7 @@
   (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
           (lg/weighted-graph) edges))
 
+;; FIXME: sometimes leader/trailing node has one connection despite being on an existing line segment?
 (defn remove-tails
   "Remove any single connection tails from the intersection edge graph."
   [g]
@@ -103,6 +105,22 @@
       (if (empty? tails)
         g
         (recur (reduce lg/remove-nodes g tails))))))
+
+(defn cycle-clockwise [g start]
+  (loop [cycle [] vertex start]
+    (cond (and (seq cycle) (identical? vertex start))
+          cycle
+          (and (seq cycle) (some (partial identical? vertex) cycle))
+          []
+          :else
+          (let [candidates (lg/successors g vertex)
+                candidates (if (empty? cycle) candidates
+                               (remove (partial identical? (last cycle)) candidates))]
+            (if (empty? candidates)
+              []
+              (recur (conj cycle vertex)
+                     (apply max-key (fn [p] (g/heading (tm/- p vertex)))
+                            candidates)))))))
 
 (comment
   (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
@@ -115,6 +133,17 @@
   (la/connected-components mg)
   (la/greedy-coloring mg)
   (remove-tails mg)
+  (lg/successors mg [0 10])
+  (let [prev (gv/vec2 0 10)
+        n (gv/vec2 4 12)
+        neighbors (lg/successors mg n)
+        angle (fn [p] (g/heading (tm/- p n)))]
+    [neighbors (g/heading (tm/- n prev)) (map angle neighbors)
+     (apply max-key (fn [p] (g/heading (tm/- p n)))
+            neighbors)])
+  (cycle-clockwise mg (gv/vec2 0 10))
+  (cycle-clockwise mg (gv/vec2 4 12))
+  (cycle-clockwise mg (gv/vec2 20 20))
   )
 
 (defn debug-isecs [state path]
@@ -190,7 +219,15 @@
       (q/line p q))
     (q/fill 0.0 1.0 1.0)
     (doseq [p (set/difference (lg/nodes original) (lg/nodes graph))]
-      (cq/circle p 4.0))))
+      (cq/circle p 4.0))
+
+    (q/fill 0.9)
+    (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
+          cycle (cycle-clockwise graph start)]
+      (cq/draw-shape cycle)
+      (cq/circle start 3.0)
+      (swap! defo assoc :cycle cycle))
+    ))
 
 (defn draw [{:keys [path mouse]}]
   (q/background 1.0)
