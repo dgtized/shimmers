@@ -110,15 +110,11 @@
   (loop [cycle [] vertex start]
     (cond (and (seq cycle) (identical? vertex start))
           cycle
-          (and (seq cycle) (some (partial identical? vertex) cycle))
-          #_(do (swap! defo assoc :bailing {:cycle cycle :vertex vertex})
-                cycle)
-          []
           :else
           (let [candidates
                 (->> vertex
                      (lg/successors g)
-                     (remove (partial identical? (last cycle)))
+                     (remove (disj (set cycle) start))
                      (sort-by (fn [p] (g/heading (tm/- p vertex)))))]
             (if (empty? candidates)
               []
