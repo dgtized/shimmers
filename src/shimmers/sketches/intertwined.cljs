@@ -106,13 +106,13 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(defn clockwise-candidates [g cycle vertex]
+(defn clockwise-candidates [g cycle start vertex]
   (let [path (conj (set cycle) vertex)
-        seen (if (>= (count cycle) 2) (disj path (first cycle)) path)]
+        seen (if (>= (count cycle) 2) (disj path start) path)]
     (->> vertex
          (lg/successors g)
          (remove seen)
-         (map (fn [p] [p (tm/roundto (g/heading (tm/- vertex p)) 0.01)]))
+         (map (fn [p] [p (tm/roundto (g/heading-xy (tm/- p start)) 0.01)]))
          (sort-by second))))
 
 (defn cycle-clockwise [g start]
@@ -121,7 +121,7 @@
     (cond (and (seq cycle) (identical? vertex start))
           cycle
           :else
-          (let [candidates (clockwise-candidates g cycle vertex)]
+          (let [candidates (clockwise-candidates g cycle start vertex)]
             (swap! defo update :path conj [[vertex :<- (last cycle)] candidates])
             (if (empty? candidates)
               []
