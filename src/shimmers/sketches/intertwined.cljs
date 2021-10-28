@@ -1,6 +1,8 @@
 (ns shimmers.sketches.intertwined
   (:require
    [clojure.set :as set]
+   [loom.alg :as la]
+   [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -88,6 +90,18 @@
                   ;; ensure edges are always low pt -> high pt
                   (map (fn [v] (sort v)))
                   set)))))
+
+(comment
+  (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
+  (def medges
+    (let [isecs (intersections mvp)]
+      (intersections->edges isecs)))
+  (def mg (apply (partial lg/add-edges (lg/weighted-graph)) (mapv (fn [[a b]] [a b (g/dist a b)]) (vec medges))))
+  ;; Contains three cycles, 2 triangles and a 5-gon plus removal of first and last point as tails
+  (la/all-pairs-shortest-paths mg)
+  (la/connected-components mg)
+  (la/greedy-coloring mg)
+  )
 
 (defn debug-isecs [state path]
   (assoc state
