@@ -148,15 +148,14 @@
 (defn draw-graph [path mouse]
   (q/fill 0)
   (let [intersects (intersections path)
-        edges (intersections->edges intersects)
-        edge-count (count edges)]
+        edges (intersections->edges intersects)]
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
     (swap! defo assoc :edges (filter (fn [[a b]] (near-mouse mouse a b)) edges))
-    (doseq [[idx [p q]] (map-indexed vector edges)
+    (doseq [[p q] edges
             :let [mouse-hit (near-mouse mouse p q)]]
-      (q/stroke-weight (if mouse-hit 3.0 (+ 0.2 (/ idx edge-count))))
+      (q/stroke-weight (if mouse-hit 3.0 0.5))
       (q/line p q))))
 
 (defn draw [{:keys [path mouse]}]
