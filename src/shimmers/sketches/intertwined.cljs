@@ -91,16 +91,30 @@
                   (map (fn [v] (sort v)))
                   set)))))
 
+(defn edges->graph [edges]
+  (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
+          (lg/weighted-graph) edges))
+
+(defn remove-tails
+  "Remove any single connection tails from the intersection edge graph."
+  [g]
+  (loop [g g]
+    (let [tails (filter (fn [v] (< (lg/out-degree g v) 2)) (lg/nodes g))]
+      (if (empty? tails)
+        g
+        (recur (reduce lg/remove-nodes g tails))))))
+
 (comment
   (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
   (def medges
     (let [isecs (intersections mvp)]
       (intersections->edges isecs)))
-  (def mg (apply (partial lg/add-edges (lg/weighted-graph)) (mapv (fn [[a b]] [a b (g/dist a b)]) (vec medges))))
+  (def mg (edges->graph medges))
   ;; Contains three cycles, 2 triangles and a 5-gon plus removal of first and last point as tails
   (la/all-pairs-shortest-paths mg)
   (la/connected-components mg)
   (la/greedy-coloring mg)
+  (remove-tails mg)
   )
 
 (defn debug-isecs [state path]
@@ -162,7 +176,10 @@
 (defn draw-graph [path mouse]
   (q/fill 0)
   (let [intersects (intersections path)
-        edges (intersections->edges intersects)]
+        edges (intersections->edges intersects)
+        original (edges->graph edges)
+        graph (remove-tails original)]
+    (q/stroke 0)
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
@@ -170,7 +187,10 @@
     (doseq [[p q] edges
             :let [mouse-hit (near-mouse mouse p q)]]
       (q/stroke-weight (if mouse-hit 3.0 0.5))
-      (q/line p q))))
+      (q/line p q))
+    (q/fill 0.0 1.0 1.0)
+    (doseq [p (set/difference (lg/nodes original) (lg/nodes graph))]
+      (cq/circle p 4.0))))
 
 (defn draw [{:keys [path mouse]}]
   (q/background 1.0)
