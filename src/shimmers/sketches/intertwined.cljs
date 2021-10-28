@@ -162,7 +162,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
-        zones (g/subdivide b {:rows 3 :cols 4})
+        zones (g/subdivide b {:rows 3 :cols 3})
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (shuffle zones)))]
     #_(swap! defo debug-isecs path)
@@ -233,8 +233,9 @@
     (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
           cycle (cycle-clockwise graph start)]
       (cq/draw-shape cycle)
-      (q/fill 0.0 0.5 0.5)
-      (cq/circle start 3.0)
+      (doseq [[i c] (map-indexed vector cycle)]
+        (q/fill (/ i (count cycle)) 0.75 0.5)
+        (cq/circle c 3.0))
       (swap! defo assoc :cycle cycle))
     ))
 
