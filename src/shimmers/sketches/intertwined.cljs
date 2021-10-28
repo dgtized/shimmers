@@ -123,16 +123,16 @@
                             candidates)))))))
 
 (comment
-  (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
-  (def medges
-    (let [isecs (intersections mvp)]
-      (intersections->edges isecs)))
-  (def mg (edges->graph medges))
+  (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
+      (def medges
+        (let [isecs (intersections mvp)]
+          (intersections->edges isecs)))
+      (def morig (edges->graph medges))
+      (def mg (remove-tails morig)))
   ;; Contains three cycles, 2 triangles and a 5-gon plus removal of first and last point as tails
   (la/all-pairs-shortest-paths mg)
   (la/connected-components mg)
   (la/greedy-coloring mg)
-  (remove-tails mg)
   (lg/successors mg [0 10])
   (let [prev (gv/vec2 0 10)
         n (gv/vec2 4 12)
