@@ -120,10 +120,11 @@
   (loop [cycle [start] vertex (ffirst (clockwise-candidates g [] start start))]
     (let [cycle' (conj cycle vertex)
           candidates (clockwise-candidates g cycle' start vertex)]
-      (swap! defo update :path conj [[vertex :<- (last cycle)] candidates])
+      (swap! defo update :path conj [vertex (mapv (fn [[p d]] (if (tm/delta= start p) [p d :start] [p d])) candidates)])
       (cond (empty? candidates)
             []
-            (and (> (count cycle') 2) (some (partial identical? start) (map first candidates)))
+            ;; FIXME: Why are points occasionally not identical?
+            (and (> (count cycle') 2) (some (partial tm/delta= start) (map first candidates)))
             cycle'
             :else
             (recur cycle' (first (last candidates)))))))
