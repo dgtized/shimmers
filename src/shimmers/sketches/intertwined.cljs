@@ -107,8 +107,8 @@
         (recur (reduce lg/remove-nodes g tails))))))
 
 (defn clockwise-candidates [g cycle start vertex]
-  (let [path (conj (set cycle) vertex)
-        seen (if (>= (count cycle) 2) (disj path start) path)]
+  (let [path (set cycle)
+        seen (if (> (count cycle) 2) (disj path start) path)]
     (->> vertex
          (lg/successors g)
          (remove seen)
@@ -116,16 +116,17 @@
          (sort-by second))))
 
 (defn cycle-clockwise [g start]
-  (swap! defo assoc :path [[:start start]])
-  (loop [cycle [] vertex start]
-    (cond (and (seq cycle) (identical? vertex start))
-          cycle
-          :else
-          (let [candidates (clockwise-candidates g cycle start vertex)]
-            (swap! defo update :path conj [[vertex :<- (last cycle)] candidates])
-            (if (empty? candidates)
-              []
-              (recur (conj cycle vertex) (first (last candidates))))))))
+  (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
+  (loop [cycle [start] vertex (ffirst (clockwise-candidates g [] start start))]
+    (let [cycle' (conj cycle vertex)
+          candidates (clockwise-candidates g cycle' start vertex)]
+      (swap! defo update :path conj [[vertex :<- (last cycle)] candidates])
+      (cond (empty? candidates)
+            []
+            (and (> (count cycle') 2) (some (partial identical? start) (map first candidates)))
+            cycle'
+            :else
+            (recur cycle' (first (last candidates)))))))
 
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
