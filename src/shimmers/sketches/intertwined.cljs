@@ -108,11 +108,11 @@
 
 (defn clockwise-candidates [g cycle start vertex]
   (let [path (set cycle)
-        seen (if (> (count cycle) 2) (disj path start) path)]
-    (->> vertex
-         (lg/successors g)
-         (remove seen)
-         (map (fn [p] [p (tm/roundto (g/heading-xy (tm/- p start)) 0.01)]))
+        seen (if (> (count cycle) 2) (disj path start) path)
+        candidates (remove seen (lg/successors g vertex))
+        max-dist (apply max (map (partial g/dist start) candidates))]
+    (->> candidates
+         (map (fn [p] [p (mapv #(tm/roundto % 0.01) [(g/heading-xy (tm/- p start)) (- max-dist (g/dist p start))])]))
          (sort-by second))))
 
 (defn cycle-clockwise [g start]
