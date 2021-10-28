@@ -111,16 +111,18 @@
     (cond (and (seq cycle) (identical? vertex start))
           cycle
           (and (seq cycle) (some (partial identical? vertex) cycle))
+          #_(do (swap! defo assoc :bailing {:cycle cycle :vertex vertex})
+                cycle)
           []
           :else
-          (let [candidates (lg/successors g vertex)
-                candidates (if (empty? cycle) candidates
-                               (remove (partial identical? (last cycle)) candidates))]
+          (let [candidates
+                (->> vertex
+                     (lg/successors g)
+                     (remove (partial identical? (last cycle)))
+                     (sort-by (fn [p] (g/heading (tm/- p vertex)))))]
             (if (empty? candidates)
               []
-              (recur (conj cycle vertex)
-                     (apply max-key (fn [p] (g/heading (tm/- p vertex)))
-                            candidates)))))))
+              (recur (conj cycle vertex) (last candidates)))))))
 
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
@@ -133,7 +135,7 @@
   (la/all-pairs-shortest-paths mg)
   (la/connected-components mg)
   (la/greedy-coloring mg)
-  (lg/successors mg [0 10])
+  (lg/successors mg (gv/vec2 0 10))
   (let [prev (gv/vec2 0 10)
         n (gv/vec2 4 12)
         neighbors (lg/successors mg n)
@@ -217,6 +219,8 @@
             :let [mouse-hit (near-mouse mouse p q)]]
       (q/stroke-weight (if mouse-hit 3.0 0.5))
       (q/line p q))
+    (q/stroke-weight 0.5)
+
     (q/fill 0.0 1.0 1.0)
     (doseq [p (set/difference (lg/nodes original) (lg/nodes graph))]
       (cq/circle p 4.0))
@@ -225,6 +229,7 @@
     (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
           cycle (cycle-clockwise graph start)]
       (cq/draw-shape cycle)
+      (q/fill 0.0 0.5 0.5)
       (cq/circle start 3.0)
       (swap! defo assoc :cycle cycle))
     ))
