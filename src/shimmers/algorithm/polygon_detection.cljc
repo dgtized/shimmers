@@ -8,15 +8,19 @@
   (Math/abs (- (g/heading a) (g/heading b))))
 
 ;; From a starting location with surrounding candidate nodes
-;; Return the "left" vector of the pair with the smallest angle between
+;; Return the counter-clockwise candidate of the pair with the smallest angle between
+;; Note: heuristic, doesn't guarentee path started from here is start of a clockwise polygon
 (defn clockwise-starts [start candidates]
-  (let [ordered (sort-by (fn [p] (g/heading (tm/- p start))) candidates)]
-    (->> (vec ordered)
-         (cons (last ordered))
-         (partition 2 1)
-         (sort-by (fn [[a b]] [(small-angle-between (tm/- a start) (tm/- b start)) a b]))
-         (map first)
-         first)))
+  (let [ordered (sort-by (fn [p] (g/heading (tm/- p start))) candidates)
+        [a b]
+        (->> (vec ordered)
+             (cons (last ordered))
+             (partition 2 1)
+             (sort-by (fn [[a b]] [(small-angle-between (tm/- a start) (tm/- b start)) a b]))
+             first)]
+    (if (> (g/angle-between (tm/- a start) (tm/- b start))
+           (g/angle-between (tm/- b start) (tm/- a start)))
+      b a)))
 
 (comment
   (g/heading (gv/vec2 -1 0))
