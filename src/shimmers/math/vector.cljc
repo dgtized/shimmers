@@ -45,3 +45,8 @@
 
 (defn perp-counter-clockwise [[x y]]
   (vec2 (- y) x))
+
+(defn orientation [[px py] [qx qy] [rx ry]]
+  (let [val (- (* (- qy py) (- rx qx))
+               (* (- qx px) (- ry qy)))]
+    (tm/sign val)))

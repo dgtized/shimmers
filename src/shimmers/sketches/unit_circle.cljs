@@ -76,8 +76,10 @@
                         :rθ (tm/roundto a 0.01)
                         :θ (tm/roundto (g/heading p) 0.01)
                         :d (int (g/dist (gv/vec2) p))
-                        })))]
-      (swap! defo assoc :chain pchain))))
+                        })))
+          turns (for [[a b c] (partition 3 1 pchain)]
+                  (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
+      (swap! defo assoc :chain (concat (take 1 pchain) turns (take-last 1 pchain))))))
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"

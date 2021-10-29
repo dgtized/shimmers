@@ -9,6 +9,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -106,11 +107,6 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(defn orientation [[px py] [qx qy] [rx ry]]
-  (let [val (- (* (- qy py) (- rx qx))
-               (* (- qx px) (- ry qy)))]
-    (tm/sign val)))
-
 (defn clockwise-candidates [g cycle start vertex]
   (let [path (set cycle)
         seen (if (> (count cycle) 2) (disj path start) path)
@@ -138,7 +134,7 @@
 (defn leftmost [start candidates]
   (let [f (first (first candidates))
         l (first (last candidates))
-        orient (orientation start f l)]
+        orient (v/orientation start f l)]
     (swap! defo assoc :orient [f l orient])
     (cond (zero? orient)
           f
