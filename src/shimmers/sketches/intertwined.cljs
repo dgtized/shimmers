@@ -113,17 +113,13 @@
   (let [path (set cycle)
         seen (if (> (count cycle) 2) (disj path start) path)
         candidates (remove seen (lg/successors g vertex))
-        max-dist (apply max (map (partial g/dist start) candidates))]
+        max-dist (apply max (map (partial g/dist vertex) candidates))]
     (->> candidates
-         (map (fn [p]
-                (let [t-start (g/heading (tm/- p start))
-                      t-vertex (g/heading (tm/- p vertex))]
-                  [p
-                   (->> [t-start
-                         (- max-dist (g/dist p start))
-                         t-vertex
-                         (- t-vertex t-start)]
-                        (mapv #(tm/roundto % 0.01)))])))
+         (map (fn [p] (let [angle (poly-detect/atan2 (tm/- p vertex))]
+                       [p
+                        (->> [angle
+                              (- max-dist (g/dist p vertex))]
+                             (mapv #(tm/roundto % 0.01)))])))
          (sort-by second))))
 
 (comment
@@ -131,6 +127,8 @@
   (g/heading (gv/vec2 0 1))
   (g/heading (gv/vec2 1 0))
   (g/heading (gv/vec2 -1 0))
+  (g/heading (tm/- (gv/vec2 301 300) (gv/vec2 367 366)))
+  (poly-detect/atan2 (tm/- (gv/vec2 301 300) (gv/vec2 367 366)))
   )
 
 (defn leftmost [start candidates]
