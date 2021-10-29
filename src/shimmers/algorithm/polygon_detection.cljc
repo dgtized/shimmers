@@ -7,6 +7,9 @@
 (defn atan2 [[x y]]
   (Math/atan2 y x))
 
+(defn norm-angle [theta]
+  (if (< theta 0) (+ theta tm/TWO_PI) theta))
+
 (defn small-angle-between [a b]
   (Math/abs (- (g/heading a) (g/heading b))))
 
