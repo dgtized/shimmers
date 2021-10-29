@@ -24,11 +24,14 @@
 (defn draw-bisector [{[p q] :points} weight]
   (q/stroke-weight weight)
   (q/line p q)
-  (q/text-size 20)
+  (q/text-size 16)
   (q/fill 0)
   (let [theta (g/heading q)
-        [x0 y0] (g/scale q (if (> (* 1.5 Math/PI) theta (* 0.5 Math/PI)) 1.2 1.1))]
-    (q/text (tm/roundto theta 0.01) x0 y0)))
+        num (tm/roundto theta 0.01)
+        [x0 y0] (-> q
+                    (g/scale 1.1)
+                    (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
+    (q/text-num num x0 y0)))
 
 (defn draw [{:keys [radius]}]
   (q/background 1.0)
