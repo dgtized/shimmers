@@ -4,6 +4,9 @@
    [thi.ng.math.core :as tm]
    [thi.ng.geom.vector :as gv]))
 
+(defn atan2 [[x y]]
+  (Math/atan2 y x))
+
 (defn small-angle-between [a b]
   (Math/abs (- (g/heading a) (g/heading b))))
 

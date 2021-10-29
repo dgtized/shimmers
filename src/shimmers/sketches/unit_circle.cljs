@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.kinematic-chain :as chain]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
@@ -63,7 +64,7 @@
 
     (let [[x y] (v/polar (* radius 1.5) 0.8)
           num (tm/roundto (g/heading mouse) 0.01)]
-      (q/text (str num " " (map #(tm/roundto % 0.1) mouse)) x y)
+      (q/text (str num " " (mapv #(tm/roundto % 0.1) mouse)) x y)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
       (q/no-fill)
@@ -79,7 +80,12 @@
                         })))
           turns (for [[a b c] (partition 3 1 pchain)]
                   (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
-      (swap! defo assoc :chain (concat (take 1 pchain) turns (take-last 1 pchain))))))
+      (swap! defo assoc
+             :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
+                     :heading (tm/roundto (g/heading mouse) 0.01)
+                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
+             :chain (concat (take 1 pchain) turns (take-last 1 pchain))
+             ))))
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
