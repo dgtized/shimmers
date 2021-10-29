@@ -7,14 +7,15 @@
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.vector :as gv]
             [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [shimmers.math.vector :as v]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:radius (cq/rel-h 0.40)})
 
 (defn update-state [state]
-  state)
+  (assoc state :mouse (cq/mouse-position)))
 
 (defn draw-unit [radius]
   (q/stroke-weight 1.0)
@@ -33,10 +34,11 @@
                     (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
     (q/text-num num x0 y0)))
 
-(defn draw [{:keys [radius]}]
+(defn draw [{:keys [radius mouse]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/translate (cq/rel-pos 0.5 0.5))
+  (q/stroke 0)
   (draw-unit radius)
   (let [axis [(gl/line2 (gv/vec2) [0 radius])
               (gl/line2 (gv/vec2) [0 (- radius)])
@@ -46,7 +48,15 @@
     (doseq [line axis]
       (draw-bisector line 0.5))
     (doseq [line quarter-axis]
-      (draw-bisector line 0.3)))
+      (draw-bisector line 0.3))
+
+    (let [mp (tm/- mouse (cq/rel-vec 0.5 0.5))
+          [x y] (v/polar (* radius 1.5) 0.8)
+          num (tm/roundto (g/heading mp) 0.01)]
+      (q/text num x y)
+      (q/stroke 0 0.5 0.5)
+      (q/stroke-weight 1.0)
+      (q/line [0 0] mp)))
   )
 
 (sketch/defquil unit-circle
