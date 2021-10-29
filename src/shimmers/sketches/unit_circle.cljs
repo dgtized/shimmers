@@ -5,12 +5,15 @@
    [shimmers.algorithm.kinematic-chain :as chain]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -64,11 +67,15 @@
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
       (q/no-fill)
-      (cq/draw-path (g/vertices chain))))
+      (cq/draw-path (g/vertices chain)))
+
+    (swap! defo assoc :chain (map (juxt :base :angle) (:segments chain))))
   )
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
+  :tags #{:demo}
+  :on-mount (fn [] (debug/mount defo))
   :size [800 600]
   :setup setup
   :update update-state
