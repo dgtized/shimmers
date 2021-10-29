@@ -1,7 +1,7 @@
 (ns shimmers.math.deterministic-random
   "Provides a shared, seeded random number generator for deterministic procedural
   generation."
-  (:refer-clojure :exclude [rand-nth random-sample])
+  (:refer-clojure :exclude [rand-nth shuffle random-sample])
   (:require [clojure.test.check.random :as tcr]
             [shimmers.common.sequence :as cs]
             [shimmers.math.vector :as v]
@@ -40,6 +40,12 @@
 
          (do (random-seed 6)
              (repeatedly 6 #(random-double))))
+
+(defn shuffle [coll]
+  (->> coll
+       (map (fn [x] [x (random-double)]))
+       (sort-by second)
+       (map first)))
 
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?

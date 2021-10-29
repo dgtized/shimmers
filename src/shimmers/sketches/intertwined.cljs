@@ -10,6 +10,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -194,7 +195,7 @@
   (let [b (cq/screen-rect 0.99)
         zones (g/subdivide b {:rows 3 :cols 4})
         k (* 0.1 (count zones))
-        path (map g/centroid (drop k (shuffle zones)))]
+        path (map g/centroid (drop k (dr/shuffle zones)))]
     #_(swap! defo debug-isecs path)
     {:mouse (gv/vec2)
      :path path}))
@@ -287,6 +288,7 @@
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
+  :tags #{:deterministic}
   :on-mount (fn []
               (ctrl/mount ui-controls)
               (debug/mount defo))
