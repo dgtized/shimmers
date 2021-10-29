@@ -5,6 +5,7 @@
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
@@ -137,15 +138,15 @@
         orient (v/orientation start f l)]
     (swap! defo assoc :orient [f l orient])
     (cond (zero? orient)
-          f
-          (< orient 0)
-          f
+          l
+          (> orient 0)
+          l
           :else
-          l)))
+          f)))
 
 (defn cycle-clockwise [g start]
   (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
-  (loop [cycle [start] vertex (leftmost start (clockwise-candidates g [] start start))]
+  (loop [cycle [start] vertex (poly-detect/clockwise-starts start (lg/successors g start))]
     (let [cycle' (conj cycle vertex)
           candidates (clockwise-candidates g cycle' start vertex)]
       (swap! defo update :path conj [vertex (mapv (fn [[p d]] (if (tm/delta= start p) [p d :start] [p d])) candidates)])
