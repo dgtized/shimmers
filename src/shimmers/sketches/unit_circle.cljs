@@ -1,21 +1,29 @@
 (ns shimmers.sketches.unit-circle
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.common.quil :as cq]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.vector :as v]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.kinematic-chain :as chain]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:radius (cq/rel-h 0.40)})
+  (let [radius (cq/rel-h 0.40)]
+    {:radius radius
+     :mouse (gv/vec2)
+     :chain (chain/make-chain (gv/vec2) 4 (/ radius 4))}))
 
 (defn update-state [state]
-  (assoc state :mouse (cq/mouse-position)))
+  (let [mouse (tm/- (cq/mouse-position) (cq/rel-vec 0.5 0.5))]
+    (-> state
+        (assoc :mouse mouse)
+        (update :chain chain/chain-update (gv/vec2) mouse))))
 
 (defn draw-unit [radius]
   (q/stroke-weight 1.0)
@@ -34,7 +42,7 @@
                     (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
     (q/text-num num x0 y0)))
 
-(defn draw [{:keys [radius mouse]}]
+(defn draw [{:keys [radius mouse chain]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/translate (cq/rel-pos 0.5 0.5))
@@ -50,13 +58,13 @@
     (doseq [line quarter-axis]
       (draw-bisector line 0.3))
 
-    (let [mp (tm/- mouse (cq/rel-vec 0.5 0.5))
-          [x y] (v/polar (* radius 1.5) 0.8)
-          num (tm/roundto (g/heading mp) 0.01)]
+    (let [[x y] (v/polar (* radius 1.5) 0.8)
+          num (tm/roundto (g/heading mouse) 0.01)]
       (q/text num x y)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
-      (q/line [0 0] mp)))
+      (q/no-fill)
+      (cq/draw-path (g/vertices chain))))
   )
 
 (sketch/defquil unit-circle
