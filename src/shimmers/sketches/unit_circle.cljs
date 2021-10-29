@@ -20,7 +20,7 @@
   (let [radius (cq/rel-h 0.40)]
     {:radius radius
      :mouse (gv/vec2)
-     :chain (chain/make-chain (gv/vec2) 4 (/ radius 4))}))
+     :chain (chain/make-chain (gv/vec2) 8 (/ radius 8))}))
 
 (defn update-state [state]
   (let [mouse (tm/- (cq/mouse-position) (cq/rel-vec 0.5 0.5))]
@@ -69,8 +69,15 @@
       (q/no-fill)
       (cq/draw-path (g/vertices chain)))
 
-    (swap! defo assoc :chain (map (juxt :base :angle) (:segments chain))))
-  )
+    (let [pchain
+          (->> chain :segments (map (juxt :base :angle))
+               (mapv (fn [[p a]]
+                       {:p (mapv int p)
+                        :rθ (tm/roundto a 0.01)
+                        :θ (tm/roundto (g/heading p) 0.01)
+                        :d (int (g/dist (gv/vec2) p))
+                        })))]
+      (swap! defo assoc :chain pchain))))
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
