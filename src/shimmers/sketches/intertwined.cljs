@@ -117,7 +117,15 @@
         candidates (remove seen (lg/successors g vertex))
         max-dist (apply max (map (partial g/dist start) candidates))]
     (->> candidates
-         (map (fn [p] [p (mapv #(tm/roundto % 0.01) [(g/heading-xy (tm/- p start)) (- max-dist (g/dist p start))])]))
+         (map (fn [p]
+                (let [t-start (g/heading (tm/- p start))
+                      t-vertex (g/heading (tm/- p vertex))]
+                  [p
+                   (->> [t-start
+                         (- max-dist (g/dist p start))
+                         t-vertex
+                         (- t-vertex t-start)]
+                        (mapv #(tm/roundto % 0.01)))])))
          (sort-by second))))
 
 (comment
@@ -187,7 +195,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
-        zones (g/subdivide b {:rows 3 :cols 3})
+        zones (g/subdivide b {:rows 3 :cols 4})
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (shuffle zones)))]
     #_(swap! defo debug-isecs path)
