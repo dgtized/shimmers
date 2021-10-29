@@ -63,7 +63,7 @@
 
     (let [[x y] (v/polar (* radius 1.5) 0.8)
           num (tm/roundto (g/heading mouse) 0.01)]
-      (q/text num x y)
+      (q/text (str num " " (map #(tm/roundto % 0.1) mouse)) x y)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
       (q/no-fill)
