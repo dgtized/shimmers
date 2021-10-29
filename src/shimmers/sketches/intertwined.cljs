@@ -106,6 +106,11 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
+(defn orientation [[px py] [qx qy] [rx ry]]
+  (let [val (- (* (- qy py) (- rx qx))
+               (* (- qx px) (- ry qy)))]
+    (tm/sign val)))
+
 (defn clockwise-candidates [g cycle start vertex]
   (let [path (set cycle)
         seen (if (> (count cycle) 2) (disj path start) path)
@@ -115,9 +120,28 @@
          (map (fn [p] [p (mapv #(tm/roundto % 0.01) [(g/heading-xy (tm/- p start)) (- max-dist (g/dist p start))])]))
          (sort-by second))))
 
+(comment
+  (g/heading (gv/vec2 0 -1))
+  (g/heading (gv/vec2 0 1))
+  (g/heading (gv/vec2 1 0))
+  (g/heading (gv/vec2 -1 0))
+  )
+
+(defn leftmost [start candidates]
+  (let [f (first (first candidates))
+        l (first (last candidates))
+        orient (orientation start f l)]
+    (swap! defo assoc :orient [f l orient])
+    (cond (zero? orient)
+          f
+          (< orient 0)
+          f
+          :else
+          l)))
+
 (defn cycle-clockwise [g start]
   (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
-  (loop [cycle [start] vertex (ffirst (clockwise-candidates g [] start start))]
+  (loop [cycle [start] vertex (leftmost start (clockwise-candidates g [] start start))]
     (let [cycle' (conj cycle vertex)
           candidates (clockwise-candidates g cycle' start vertex)]
       (swap! defo update :path conj [vertex (mapv (fn [[p d]] (if (tm/delta= start p) [p d :start] [p d])) candidates)])
