@@ -10,7 +10,6 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -34,9 +33,9 @@
   (q/no-fill)
   (cq/circle [0 0] radius))
 
-(defn draw-bisector [{[p q] :points} weight]
+(defn draw-bisector [q weight]
   (q/stroke-weight weight)
-  (q/line p q)
+  (q/line (gv/vec2) q)
   (q/text-size 16)
   (q/fill 0)
   (let [theta (g/heading q)
@@ -64,15 +63,15 @@
   (q/translate (cq/rel-pos 0.5 0.5))
   (q/stroke 0)
   (draw-unit radius)
-  (let [axis [(gl/line2 (gv/vec2) [0 radius])
-              (gl/line2 (gv/vec2) [0 (- radius)])
-              (gl/line2 (gv/vec2) [radius 0])
-              (gl/line2 (gv/vec2) [(- radius) 0])]
+  (let [axis [(gv/vec2 0 radius)
+              (gv/vec2 0 (- radius))
+              (gv/vec2 radius 0)
+              (gv/vec2 (- radius) 0)]
         quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)]
-    (doseq [line axis]
-      (draw-bisector line 0.5))
-    (doseq [line quarter-axis]
-      (draw-bisector line 0.3))
+    (doseq [p axis]
+      (draw-bisector p 0.5))
+    (doseq [p quarter-axis]
+      (draw-bisector p 0.3))
 
     (let [[x y] (v/polar (* radius 1.5) 0.8)
           num (tm/roundto (g/heading mouse) 0.01)]
