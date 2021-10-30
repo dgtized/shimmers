@@ -7,6 +7,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -57,6 +58,11 @@
                 (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
     (concat (take 1 segments) turns (take-last 1 segments))))
 
+(defn radial-points [points heading]
+  (let [pts (geometry/radial-sort (gv/vec2) points)
+        [b a] (split-with (fn [p] (<= (g/heading p) heading)) pts)]
+    (concat a b)))
+
 (defn draw [{:keys [radius mouse chain]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -83,11 +89,19 @@
       (q/no-fill)
       (cq/draw-path (g/vertices chain)))
 
-    (swap! defo assoc
-           :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
-                   :heading (tm/roundto (g/heading mouse) 0.01)
-                   :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
-           :chain (debug-chain chain))))
+    (let [axis-pts (radial-points (concat axis quarter-axis) mouse-heading)]
+      (q/no-stroke)
+      (doseq [[i [p q]] (map-indexed vector (partition 2 1 axis-pts))]
+        (q/fill 0.6 0.5 0.5 (* 0.4 (/ (inc i) (inc (count axis-pts)))))
+        (q/arc 0 0 radius radius (g/heading p) (g/heading q) :pie))
+      (q/no-fill)
+
+      (swap! defo assoc
+             :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
+                     :heading (tm/roundto (g/heading mouse) 0.01)
+                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
+             :axis {:cw (first axis-pts) :ccw (last axis-pts)}
+             :chain (debug-chain chain)))))
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
