@@ -46,6 +46,18 @@
                     (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
     (q/text-num num x0 y0)))
 
+(defn debug-chain [chain]
+  (let [segments
+        (->> chain :segments (map (juxt :base :angle))
+             (mapv (fn [[p a]]
+                     {:p (mapv int p)
+                      :rθ (tm/roundto a 0.01)
+                      :θ (tm/roundto (g/heading p) 0.01)
+                      :d (int (g/dist (gv/vec2) p))})))
+        turns (for [[a b c] (partition 3 1 segments)]
+                (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
+    (concat (take 1 segments) turns (take-last 1 segments))))
+
 (defn draw [{:keys [radius mouse chain]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -70,22 +82,11 @@
       (q/no-fill)
       (cq/draw-path (g/vertices chain)))
 
-    (let [pchain
-          (->> chain :segments (map (juxt :base :angle))
-               (mapv (fn [[p a]]
-                       {:p (mapv int p)
-                        :rθ (tm/roundto a 0.01)
-                        :θ (tm/roundto (g/heading p) 0.01)
-                        :d (int (g/dist (gv/vec2) p))
-                        })))
-          turns (for [[a b c] (partition 3 1 pchain)]
-                  (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
-      (swap! defo assoc
-             :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
-                     :heading (tm/roundto (g/heading mouse) 0.01)
-                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
-             :chain (concat (take 1 pchain) turns (take-last 1 pchain))
-             ))))
+    (swap! defo assoc
+           :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
+                   :heading (tm/roundto (g/heading mouse) 0.01)
+                   :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
+           :chain (debug-chain chain))))
 
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
