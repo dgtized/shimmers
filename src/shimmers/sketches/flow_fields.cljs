@@ -18,6 +18,10 @@
             [thi.ng.math.core :as tm]
             [thi.ng.strf.core :as f]))
 
+;; TODO: play with some of the modes in
+;; https://sighack.com/post/getting-creative-with-perlin-noise-fields
+;; https://sighack.com/post/procedural-color-algorithms-value-keys
+
 (def flows-per-iter 100)
 (defonce settings
   (ctrl/state {:calc-points "flow-points"

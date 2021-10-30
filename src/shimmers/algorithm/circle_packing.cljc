@@ -8,6 +8,9 @@
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/ for performance
 ;; instead of the max-radius per packing iteration.
 
+;; TODO: variations from
+;; https://sighack.com/post/circle-packing-using-stochastic-search
+
 (defn intersects
   [spacing
    {p1 :p r1 :r}

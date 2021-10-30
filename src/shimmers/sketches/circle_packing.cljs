@@ -1,4 +1,5 @@
 (ns shimmers.sketches.circle-packing
+  "Inspired by https://thecodingtrain.com/CodingChallenges/050.1-circlepackinganimated.html"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
