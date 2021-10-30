@@ -67,15 +67,17 @@
               (gv/vec2 0 (- radius))
               (gv/vec2 radius 0)
               (gv/vec2 (- radius) 0)]
-        quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)]
+        quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)
+        mouse-heading (tm/roundto (g/heading mouse) 0.01)]
     (doseq [p axis]
       (draw-bisector p 0.5))
     (doseq [p quarter-axis]
       (draw-bisector p 0.3))
 
-    (let [[x y] (v/polar (* radius 1.5) 0.8)
-          num (tm/roundto (g/heading mouse) 0.01)]
-      (q/text (str num " " (mapv #(tm/roundto % 0.1) mouse)) x y)
+    (let [[x y] (v/polar (* radius 1.5) 0.8)]
+      (q/text (str mouse-heading " "
+                   (mapv #(tm/roundto % 0.1) mouse))
+              x y)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
       (q/no-fill)
