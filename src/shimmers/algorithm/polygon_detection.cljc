@@ -28,6 +28,35 @@
            (g/angle-between (tm/- b start) (tm/- a start)))
       b a)))
 
+;; TODO: optimize these a bit?
+(defn clockwise-point
+  "Given a point `from` going to `vertex`, return the clockwise point in
+  `outbound`."
+  [from vertex outbound]
+  (let [pts (sort-by (fn [v]
+                       (let [p (tm/- v vertex)]
+                         [(g/heading p) (tm/mag p)]))
+                     outbound)
+        angle (g/heading (tm/- from vertex))
+        after (drop-while (fn [v] (>= angle (g/heading (tm/- v vertex)))) pts)]
+    (if (seq after)
+      (first after)
+      (first pts))))
+
+(defn counter-clockwise-point
+  "Given a point `from` going to `vertex`, return the counter-clockwise point in
+  `outbound`."
+  [from vertex outbound]
+  (let [pts (sort-by (fn [v]
+                       (let [p (tm/- v vertex)]
+                         [(g/heading p) (tm/mag p)]))
+                     outbound)
+        angle (g/heading (tm/- from vertex))
+        before (take-while (fn [v] (< (g/heading (tm/- v vertex)) angle)) pts)]
+    (if (seq before)
+      (last before)
+      (last pts))))
+
 (comment
   (g/heading (gv/vec2 -1 0))
   (g/heading (gv/vec2 -1 1))
