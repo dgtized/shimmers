@@ -43,4 +43,6 @@
   (g/angle-between (gv/vec2 1 0) (gv/vec2 0 1))
   (small-angle-between (gv/vec2 1 0) (gv/vec2 0 1))
   (small-angle-between (gv/vec2 0 1) (gv/vec2 1 0))
+
+  (tm/cross (gv/vec2 5 3) (gv/vec2 5 4))
   )

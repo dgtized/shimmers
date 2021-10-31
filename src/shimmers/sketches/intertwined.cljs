@@ -111,14 +111,18 @@
 
 (defn clockwise-candidates [g cycle start vertex]
   (let [path (set cycle)
-        seen (if (> (count cycle) 2) (disj path start) path)
+        seen (if (> (count cycle) 1) (disj path start) path)
         candidates (remove seen (lg/successors g vertex))
+        origin-angle (if-let [prev-vertex (last cycle)]
+                       (g/heading (tm/- vertex prev-vertex))
+                       0)
         max-dist (apply max (map (partial g/dist vertex) candidates))]
     (->> candidates
-         (map (fn [p] (let [angle (poly-detect/atan2 (tm/- p vertex))]
+         (map (fn [p] (let [angle (g/heading (tm/- p vertex))]
                        [p
-                        (->> [angle
-                              (- max-dist (g/dist p vertex))]
+                        (->> [(mod (- angle origin-angle) tm/TWO_PI)
+                              (- max-dist (g/dist p vertex))
+                              angle]
                              (mapv #(tm/roundto % 0.01)))])))
          (sort-by second))))
 
@@ -147,7 +151,7 @@
   (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
   (loop [cycle [start] vertex (poly-detect/clockwise-starts start (lg/successors g start))]
     (let [cycle' (conj cycle vertex)
-          candidates (clockwise-candidates g cycle' start vertex)]
+          candidates (clockwise-candidates g cycle start vertex)]
       (swap! defo update :path conj [vertex (mapv (fn [[p d]] (if (tm/delta= start p) [p d :start] [p d])) candidates)])
       (cond (empty? candidates)
             []
