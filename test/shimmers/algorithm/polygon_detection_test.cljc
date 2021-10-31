@@ -29,6 +29,13 @@
   (t/testing "chooses the remaining point if inbound is in the outbound set"
     (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)])))
     (is (= (gv/vec2 0 1) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)]))))
+  (t/testing "chooses the closest point if collinear"
+    (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
+    (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 0 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)]))
+        "fixme, if same point should probably pick next closest [0,2]?")
+    (is (= (gv/vec2 0 2) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)]))
+        "fixme, should be [0,1]")
+    (is (= (gv/vec2 0 2) (sut/counter-clockwise-point (gv/vec2 0 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)]))))
   (let [points (mapv (fn [t] (gv/vec2 (map int (v/polar 1.5 (* tm/TWO_PI t)))))
                      (butlast (tm/norm-range 8)))
         [a b c d e f g h] points]
