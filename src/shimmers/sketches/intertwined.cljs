@@ -11,7 +11,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -109,23 +108,6 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(defn clockwise-candidates [g cycle start vertex]
-  (let [path (set cycle)
-        seen (if (> (count cycle) 1) (disj path start) path)
-        candidates (remove seen (lg/successors g vertex))
-        origin-angle (if-let [prev-vertex (last cycle)]
-                       (g/heading (tm/- vertex prev-vertex))
-                       0)
-        max-dist (apply max (map (partial g/dist vertex) candidates))]
-    (->> candidates
-         (map (fn [p] (let [angle (g/heading (tm/- p vertex))]
-                       [p
-                        (->> [(mod (- angle origin-angle) tm/TWO_PI)
-                              (- max-dist (g/dist p vertex))
-                              angle]
-                             (mapv #(tm/roundto % 0.01)))])))
-         (sort-by second))))
-
 (comment
   (g/heading (gv/vec2 0 -1))
   (g/heading (gv/vec2 0 1))
@@ -136,18 +118,22 @@
   )
 
 (defn cycle-clockwise [g start]
-  (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
+  ;; FIXME change to starting edge in a clockwise direction. Currently if
+  ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
+  ;; internal edges.
   (loop [cycle [start] vertex (poly-detect/clockwise-starts start (lg/successors g start))]
-    (let [cycle' (conj cycle vertex)
-          candidates (clockwise-candidates g cycle start vertex)]
-      (swap! defo update :path conj [vertex (mapv (fn [[p d]] (if (tm/delta= start p) [p d :start] [p d])) candidates)])
+    (let [previous-pt (or (last cycle) start)
+          candidates (remove (disj (set cycle) start)
+                             (lg/successors g vertex))
+          next-pt (poly-detect/counter-clockwise-point previous-pt vertex candidates)
+          cycle' (conj cycle vertex)]
       (cond (empty? candidates)
             []
             ;; FIXME: Why are points occasionally not identical?
-            (and (> (count cycle') 2) (some (partial tm/delta= start) (map first candidates)))
+            (and (> (count cycle') 2) (tm/delta= next-pt start))
             cycle'
             :else
-            (recur cycle' (first (last candidates)))))))
+            (recur cycle' next-pt)))))
 
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
