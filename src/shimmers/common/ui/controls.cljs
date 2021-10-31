@@ -25,6 +25,7 @@
   (fn [_]
     (swap! settings update-in field-ref not)))
 
+;; TODO: add support for changing label/button somehow?
 (defn change-mode
   ([ui-state modes] (change-mode ui-state modes :mode))
   ([ui-state modes key-name]

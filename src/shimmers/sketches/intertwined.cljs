@@ -24,10 +24,11 @@
 ;; Adding dashes or varying the segment width?
 
 (def modes [:intersections :graph])
+(def edge-modes [:weighted-by-order :even-weight :hidden])
 (defonce ui-state (ctrl/state {:mode :intersections
                                :rows 3
                                :columns 4
-                               :edges {:weighted-by-order true}}))
+                               :edge-mode :weighted-by-order}))
 (defonce defo (debug/state))
 
 (defn path-point [p segments joint]
@@ -193,13 +194,16 @@
    (or (near-mouse m p) (near-mouse m q))))
 
 (defn draw-segments [path]
-  (let [weighted-by-order (get-in @ui-state [:edges :weighted-by-order])]
-    (when-not weighted-by-order
-      (q/stroke-weight 0.5))
+  (let [edge-mode (get-in @ui-state [:edge-mode])]
+    (q/stroke 0)
+    (case edge-mode
+      :weighted-by-order (q/stroke 0)
+      :even-weight (q/stroke-weight 0.5)
+      :hidden (q/no-stroke))
     (let [segments (partition 2 1 path)
           segs (count segments)]
       (doseq [[idx [p q]] (map-indexed vector segments)]
-        (when weighted-by-order
+        (when (= edge-mode :weighted-by-order)
           (q/stroke-weight (+ 0.5 (* 1.0 (/ idx segs)))))
         (q/line p q)))))
 
@@ -275,7 +279,7 @@
      [:div {:style {:clear :both}}]
      (ctrl/change-mode ui-state modes)
      (when (= mode :intersections)
-       (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))]))
+       (ctrl/change-mode ui-state edge-modes :edge-mode))]))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
