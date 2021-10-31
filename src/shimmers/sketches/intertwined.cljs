@@ -250,10 +250,13 @@
     (doseq [p (set/difference (lg/nodes original) (lg/nodes graph))]
       (cq/circle p 4.0))
 
-    (q/fill 0.9)
+    (q/fill 0.5 0.2)
     (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
           cycle (cycle-clockwise graph start)]
+      (q/stroke 0.6 0.5 0.5 1.0)
+      (q/stroke-weight 1.0)
       (cq/draw-shape cycle)
+      (q/no-stroke)
       (doseq [[i c] (map-indexed vector cycle)]
         (q/fill (/ i (count cycle)) 0.75 0.5)
         (cq/circle c 3.0))
