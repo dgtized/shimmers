@@ -12,6 +12,7 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -24,6 +25,8 @@
 
 (def modes [:intersections :graph])
 (defonce ui-state (ctrl/state {:mode :intersections
+                               :rows 3
+                               :columns 4
                                :edges {:weighted-by-order true}}))
 (defonce defo (debug/state))
 
@@ -172,7 +175,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [b (cq/screen-rect 0.99)
-        zones (g/subdivide b {:rows 3 :cols 4})
+        {:keys [rows columns]} @ui-state
+        zones (g/subdivide b {:rows rows :cols columns})
         k (* 0.1 (count zones))
         path (map g/centroid (drop k (dr/shuffle zones)))]
     #_(swap! defo debug-isecs path)
@@ -264,6 +268,11 @@
 (defn ui-controls []
   (let [{:keys [mode]} @ui-state]
     [:div
+     [:div {:style {:float :left :width "60%"}}
+      (ctrl/numeric ui-state "Rows" [:rows] [2 5 1])
+      (ctrl/numeric ui-state "Columns" [:columns] [2 5 1])]
+     [:div {:style {:float :right}} (view-sketch/generate :intertwined)]
+     [:div {:style {:clear :both}}]
      (ctrl/change-mode ui-state modes)
      (when (= mode :intersections)
        (ctrl/checkbox ui-state "Edges Weighted By Order" [:edges :weighted-by-order]))]))
