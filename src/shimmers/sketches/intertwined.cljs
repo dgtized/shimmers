@@ -228,7 +228,6 @@
         edges (intersections->edges intersects)
         original (edges->graph edges)
         graph (remove-tails original)]
-    (q/stroke 0)
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]
       (cq/circle p 3.0))
@@ -260,6 +259,7 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
+  (q/stroke 0)
   (reset! defo {})
   (case (:mode @ui-state)
     :intersections (draw-intersections path mouse)
