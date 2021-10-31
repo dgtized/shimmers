@@ -135,18 +135,6 @@
   (poly-detect/atan2 (tm/- (gv/vec2 301 300) (gv/vec2 367 366)))
   )
 
-(defn leftmost [start candidates]
-  (let [f (first (first candidates))
-        l (first (last candidates))
-        orient (v/orientation start f l)]
-    (swap! defo assoc :orient [f l orient])
-    (cond (zero? orient)
-          l
-          (> orient 0)
-          l
-          :else
-          f)))
-
 (defn cycle-clockwise [g start]
   (swap! defo assoc :path [[[:start start] (clockwise-candidates g [] start start)]])
   (loop [cycle [start] vertex (poly-detect/clockwise-starts start (lg/successors g start))]
