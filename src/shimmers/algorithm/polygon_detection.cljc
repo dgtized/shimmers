@@ -94,11 +94,11 @@
 (defn polygon-near-point
   "Given a graph of points in a plane and a point, find the closest polygon around that point."
   [g point]
-  (let [start (closest-in point (lg/nodes g))
-        vertex (closest-in point (lg/successors g start))]
-    (if (> (v/orientation start vertex point) 0)
-      (cycle-clockwise-from-edge g vertex start)
-      (cycle-clockwise-from-edge g start vertex))))
+  (when-let [start (closest-in point (lg/nodes g))]
+    (let [vertex (closest-in point (lg/successors g start))]
+      (if (> (v/orientation start vertex point) 0)
+        (cycle-clockwise-from-edge g vertex start)
+        (cycle-clockwise-from-edge g start vertex)))))
 
 (comment
   (g/heading (gv/vec2 -1 0))
