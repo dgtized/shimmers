@@ -64,7 +64,7 @@
   ;; internal edges.
   (loop [cycle [start] vertex to]
     (let [previous-pt (or (last cycle) start)
-          candidates (remove #{previous-pt} (lg/successors g vertex))
+          candidates (remove (disj (set cycle) start) (lg/successors g vertex))
           next-pt (counter-clockwise-point previous-pt vertex candidates)
           cycle' (conj cycle vertex)]
       (cond (empty? candidates)
