@@ -212,7 +212,7 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [cycle (poly-detect/polygon-from-point graph mouse)]
+    (let [cycle (poly-detect/polygon-near-point graph mouse)]
       (q/stroke 0.6 0.5 0.5 1.0)
       (q/stroke-weight 1.0)
       (cq/draw-shape cycle)
