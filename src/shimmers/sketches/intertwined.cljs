@@ -104,11 +104,11 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(defn cycle-clockwise [g start]
+(defn cycle-clockwise-from-edge [g start to]
   ;; FIXME change to starting edge in a clockwise direction. Currently if
   ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
   ;; internal edges.
-  (loop [cycle [start] vertex (poly-detect/clockwise-starts start (lg/successors g start))]
+  (loop [cycle [start] vertex to]
     (let [previous-pt (or (last cycle) start)
           candidates (remove #{previous-pt} (lg/successors g vertex))
           next-pt (poly-detect/counter-clockwise-point previous-pt vertex candidates)
@@ -120,6 +120,14 @@
             cycle'
             :else
             (recur cycle' next-pt)))))
+
+(defn cycle-clockwise [g start]
+  (let [point (poly-detect/clockwise-starts start (lg/successors g start))
+        a (cycle-clockwise-from-edge g start point)
+        b (cycle-clockwise-from-edge g point start)]
+    ;; return the smaller cycle
+    (if (< (count a) (count b))
+      a b)))
 
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
