@@ -71,4 +71,16 @@
   (is (= [[nil nil] [0 0] [nil nil] [2 2]]
          (sut/partition-segments (cycle [0 1]) (cycle [0 1]) (range 4)))))
 
+(deftest collapsable
+  (t/are [in out] (= out (sut/collapse = + in))
+    [] []
+    [1] [1]
+    [1 1] [2]
+    [1 1 2] [4] ;; 1+1 becomes 2, which is same as 2
+    [1 2 1 1] [1 2 2])
+  (is (= [{:v 1, :x 3} {:v 2, :x 2}]
+         (sut/collapse (fn [a b] (= (:v a) (:v b)))
+                       (fn [a b] (update a :x + (:x b)))
+                       [{:v 1 :x 1} {:v 1 :x 2} {:v 2 :x 2}]))))
+
 (comment (t/run-tests))
