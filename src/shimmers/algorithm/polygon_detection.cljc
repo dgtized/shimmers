@@ -79,8 +79,8 @@
   (let [point (clockwise-starts start (lg/successors g start))
         a (cycle-clockwise-from-edge g start point)
         b (cycle-clockwise-from-edge g point start)]
-    ;; return the smaller cycle
-    (if (< (count a) (count b))
+    ;; return the smallest non-empty cycle
+    (if (and (seq a) (< (count a) (count b)))
       a b)))
 
 (comment
