@@ -121,6 +121,29 @@
                              (repeatedly #(rand-int 4))
                              (range 100)))
 
+(defn collapse
+  "Combine consecutive values in `coll` if `collapse?` using `combine`.
+
+  Both `collapse?` and `combine` take the previous value, and the next value."
+  [collapse? combine coll]
+  (let [step (fn step [xs prev]
+               (lazy-seq
+                (if-let [s (seq xs)]
+                  (if (collapse? prev (first s))
+                    (step (rest s) (combine prev (first s)))
+                    (cons prev (step (rest s) (first s))))
+                  [prev])))]
+    (step (rest coll) (first coll))))
+
+(comment
+  (collapse = + [])
+  (collapse = + [1])
+  (collapse = + [1 1])
+  (collapse = + [1 1 2 2 3 3 2 1 1 0])
+  (collapse (fn [a b] (= (:v a) (:v b)))
+            (fn [a b] (update a :x + (:x b)))
+            [{:v 1 :x 1} {:v 1 :x 2} {:v 2 :x 2}]))
+
 (defn iterate-cycles
   "Iterate on `x` using `f` for `n` cycles, returning the final `x`."
   [n f x]
