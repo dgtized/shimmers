@@ -100,6 +100,11 @@
         (cycle-clockwise-from-edge g vertex start)
         (cycle-clockwise-from-edge g start vertex)))))
 
+;; TODO: detect all simple chordless polygons in plane
+;; polygon isomorphism?
+;; detect if hull polygon by orientation of edges?
+;; scale polygons towards center even if concave polygon without it looking weird?
+
 (comment
   (g/heading (gv/vec2 -1 0))
   (g/heading (gv/vec2 -1 1))
