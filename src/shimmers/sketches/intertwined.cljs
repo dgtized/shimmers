@@ -104,31 +104,6 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(defn cycle-clockwise-from-edge [g start to]
-  ;; FIXME change to starting edge in a clockwise direction. Currently if
-  ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
-  ;; internal edges.
-  (loop [cycle [start] vertex to]
-    (let [previous-pt (or (last cycle) start)
-          candidates (remove #{previous-pt} (lg/successors g vertex))
-          next-pt (poly-detect/counter-clockwise-point previous-pt vertex candidates)
-          cycle' (conj cycle vertex)]
-      (cond (empty? candidates)
-            []
-            ;; FIXME: Why are points occasionally not identical?
-            (and (> (count cycle') 2) (tm/delta= next-pt start))
-            cycle'
-            :else
-            (recur cycle' next-pt)))))
-
-(defn cycle-clockwise [g start]
-  (let [point (poly-detect/clockwise-starts start (lg/successors g start))
-        a (cycle-clockwise-from-edge g start point)
-        b (cycle-clockwise-from-edge g point start)]
-    ;; return the smaller cycle
-    (if (< (count a) (count b))
-      a b)))
-
 (comment
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
       (def medges
@@ -151,9 +126,9 @@
     [neighbors (g/heading (tm/- n prev)) (map angle neighbors)
      (apply max-key (fn [p] (g/heading (tm/- p n)))
             neighbors)])
-  (cycle-clockwise mg (gv/vec2 0 10))
-  (cycle-clockwise mg (gv/vec2 4 12))
-  (cycle-clockwise mg (gv/vec2 20 20))
+  (poly-detect/cycle-clockwise mg (gv/vec2 0 10))
+  (poly-detect/cycle-clockwise mg (gv/vec2 4 12))
+  (poly-detect/cycle-clockwise mg (gv/vec2 20 20))
   )
 
 (defn debug-isecs [state path]
@@ -238,7 +213,7 @@
 
     (q/fill 0.5 0.2)
     (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
-          cycle (cycle-clockwise graph start)]
+          cycle (poly-detect/cycle-clockwise graph start)]
       (q/stroke 0.6 0.5 0.5 1.0)
       (q/stroke-weight 1.0)
       (cq/draw-shape cycle)

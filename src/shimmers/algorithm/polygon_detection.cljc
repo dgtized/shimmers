@@ -1,8 +1,9 @@
 (ns shimmers.algorithm.polygon-detection
   (:require
+   [loom.graph :as lg]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn atan2 [[x y]]
   (Math/atan2 y x))
@@ -56,6 +57,31 @@
     (if (seq before)
       (last before)
       (last pts))))
+
+(defn cycle-clockwise-from-edge [g start to]
+  ;; FIXME change to starting edge in a clockwise direction. Currently if
+  ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
+  ;; internal edges.
+  (loop [cycle [start] vertex to]
+    (let [previous-pt (or (last cycle) start)
+          candidates (remove #{previous-pt} (lg/successors g vertex))
+          next-pt (counter-clockwise-point previous-pt vertex candidates)
+          cycle' (conj cycle vertex)]
+      (cond (empty? candidates)
+            []
+            ;; FIXME: Why are points occasionally not identical?
+            (and (> (count cycle') 2) (tm/delta= next-pt start))
+            cycle'
+            :else
+            (recur cycle' next-pt)))))
+
+(defn cycle-clockwise [g start]
+  (let [point (clockwise-starts start (lg/successors g start))
+        a (cycle-clockwise-from-edge g start point)
+        b (cycle-clockwise-from-edge g point start)]
+    ;; return the smaller cycle
+    (if (< (count a) (count b))
+      a b)))
 
 (comment
   (g/heading (gv/vec2 -1 0))
