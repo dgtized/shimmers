@@ -83,6 +83,24 @@
     (if (and (seq a) (< (count a) (count b)))
       a b)))
 
+(defn closest-in [point points]
+  (apply min-key (partial g/dist-squared point) points))
+
+(defn polygon-from-point
+  "Given a graph of points in a plane and a point, find the closest polygon around that point."
+  [g point]
+  (let [start (closest-in point (lg/nodes g))
+        ;; graph *should* always have at least 2 successors but might need to handle invariant
+        [p1 p2] (->> start
+                     (lg/successors g)
+                     (sort-by (partial g/dist-squared point))
+                     (take 2))
+        c1 (cycle-clockwise-from-edge g start p1)
+        c2 (cycle-clockwise-from-edge g start p2)]
+    ;; return the smallest non-empty cycle
+    (if (and (seq c1) (< (count c1) (count c2)))
+      c1 c2)))
+
 (comment
   (g/heading (gv/vec2 -1 0))
   (g/heading (gv/vec2 -1 1))

@@ -212,8 +212,7 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [start (apply min-key (fn [p] (g/dist-squared mouse p)) (lg/nodes graph))
-          cycle (poly-detect/cycle-clockwise graph start)]
+    (let [cycle (poly-detect/polygon-from-point graph mouse)]
       (q/stroke 0.6 0.5 0.5 1.0)
       (q/stroke-weight 1.0)
       (cq/draw-shape cycle)
