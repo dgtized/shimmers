@@ -104,15 +104,6 @@
         g
         (recur (reduce lg/remove-nodes g tails))))))
 
-(comment
-  (g/heading (gv/vec2 0 -1))
-  (g/heading (gv/vec2 0 1))
-  (g/heading (gv/vec2 1 0))
-  (g/heading (gv/vec2 -1 0))
-  (g/heading (tm/- (gv/vec2 301 300) (gv/vec2 367 366)))
-  (poly-detect/atan2 (tm/- (gv/vec2 301 300) (gv/vec2 367 366)))
-  )
-
 (defn cycle-clockwise [g start]
   ;; FIXME change to starting edge in a clockwise direction. Currently if
   ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
