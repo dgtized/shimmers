@@ -8,6 +8,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
@@ -46,21 +47,12 @@
     (when (= type :intersect)
       (path-point (:p hit) [l1 l2] false))))
 
-;; TODO: consider generalizing this for any consecutive sequence, parameterized
-;; by same? and a merge function? Possibly handling chunkedseq?
 (defn collapse
-  "Collapse consecutive points on the path, unioning associated segments together.
-
-  same? is parameterized as identical? to ease substitution with tm/delta= if
-  point sets are not from the same dataset."
-  [path & {:keys [same?] :or {same? identical?}}]
-  (loop [path path prior (first path) result []]
-    (if (empty? path)
-      (conj result prior)
-      (let [[curr & remains] path]
-        (if (same? (:p prior) (:p curr))
-          (recur remains (path-merge prior curr) result)
-          (recur remains curr (conj result prior)))))))
+  "Collapse consecutive points on the path, unioning associated segments together."
+  [coll]
+  (cs/collapse (fn [{a :p} {b :p}] (identical? a b))
+               path-merge
+               coll))
 
 ;; Might need path simplification, ie if a,b,c are all collinear just need a-c
 ;; However, path can double back onitself so requires some extra care
