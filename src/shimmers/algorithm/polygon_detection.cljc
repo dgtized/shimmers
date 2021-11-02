@@ -22,7 +22,7 @@
   `outbound`."
   [from vertex outbound]
   (when (seq outbound)
-    (if-let [points (seq (remove (hash-set from) outbound))]
+    (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
         (apply (partial max-key
                         (fn [v] (let [p (tm/- v vertex)]
@@ -36,12 +36,12 @@
   `outbound`."
   [from vertex outbound]
   (when (seq outbound)
-    (if-let [points (seq (remove (hash-set from) outbound))]
+    (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
         (apply (partial min-key
                         (fn [v] (let [p (tm/- v vertex)]
                                  [(- (g/angle-between p from-vertex))
-                                  (- (tm/mag p))])))
+                                  (tm/mag p)])))
                points))
       from)))
 
