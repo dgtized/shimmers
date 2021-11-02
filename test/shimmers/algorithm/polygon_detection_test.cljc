@@ -75,7 +75,11 @@
       (is (= [d a b c f e] (sut/polygon-near-point simple-loop (gv/vec2 1 2)))
           "clockwise cycle from d-a")
       (is (= [a d e f c b] (sut/polygon-near-point simple-loop (gv/vec2 -1 2)))
-          "counter-clockwise cycle from d-a"))
+          "counter-clockwise cycle from d-a")
+      (is (= [a b c f e d] (sut/polygon-near-point simple-loop (gv/vec2 0 0)))
+          "upper-left boundary (clockwise)")
+      (is (= [f c b a d e] (sut/polygon-near-point simple-loop (gv/vec2 20 10)))
+          "lower-right boundary (counter-clockwise)"))
 
     (t/testing "bisected loop at b-e"
       (is (= [a b e d] (sut/polygon-near-point bisect2 (gv/vec2 4 1)))
@@ -89,6 +93,14 @@
       (is (= [b a d e f c] (sut/polygon-near-point bisect2 (gv/vec2 4 -1)))
           "long counter-clockwise cycle from b-a")
       (is (= [a d e f c b] (sut/polygon-near-point bisect2 (gv/vec2 -1 4)))
-          "long counter-clockwise cycle from a-d"))))
+          "long counter-clockwise cycle from a-d")
+      (is (= [a b e d] (sut/polygon-near-point bisect2 (gv/vec2 0 0)))
+          "upper-left boundary (clockwise inner loop)")
+      (is (= [c f e b] (sut/polygon-near-point bisect2 (gv/vec2 20 0)))
+          "upper-right boundary (clockwise inner loop)")
+      (is (= [d e f c b a] (sut/polygon-near-point bisect2 (gv/vec2 0 10)))
+          "lower-left boundary (counter-clockwise outer loop)")
+      (is (= [f c b a d e] (sut/polygon-near-point bisect2 (gv/vec2 20 10)))
+          "lower-right boundary (counter-clockwise outer loop)"))))
 
 (comment (t/run-tests))
