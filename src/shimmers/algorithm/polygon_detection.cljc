@@ -34,12 +34,14 @@
   `outbound`."
   [from vertex outbound]
   (when (seq outbound)
-    (let [from-vertex (tm/- from vertex)]
-      (apply (partial min-key
-                      (fn [v] (let [p (tm/- v vertex)]
-                               [(- (g/angle-between p from-vertex))
-                                (/ 1.0 (tm/mag p))])))
-             outbound))))
+    (if-let [points (seq (remove (hash-set from) outbound))]
+      (let [from-vertex (tm/- from vertex)]
+        (apply (partial min-key
+                        (fn [v] (let [p (tm/- v vertex)]
+                                 [(- (g/angle-between p from-vertex))
+                                  (- (tm/mag p))])))
+               points))
+      from)))
 
 (defn cycle-clockwise-from-edge [g start to]
   ;; FIXME change to starting edge in a clockwise direction. Currently if
