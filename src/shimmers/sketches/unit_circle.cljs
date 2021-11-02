@@ -99,7 +99,8 @@
       (swap! defo assoc
              :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
                      :heading (tm/roundto (g/heading mouse) 0.01)
-                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)}
+                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)
+                     :small-angle (tm/roundto (poly-detect/small-angle-between mouse (gv/vec2 1 0)) 0.01)}
              :axis {:cw (first axis-pts) :ccw (last axis-pts)}
              :chain (debug-chain chain)))))
 
