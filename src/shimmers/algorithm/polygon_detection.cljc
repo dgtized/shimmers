@@ -27,7 +27,7 @@
         (apply (partial max-key
                         (fn [v] (let [p (tm/- v vertex)]
                                  [(g/angle-between p from-vertex)
-                                  (/ 1.0 (tm/mag p))])))
+                                  (/ 1.0 (tm/mag-squared p))])))
                points))
       from)))
 
@@ -41,7 +41,7 @@
         (apply (partial min-key
                         (fn [v] (let [p (tm/- v vertex)]
                                  [(- (g/angle-between p from-vertex))
-                                  (tm/mag p)])))
+                                  (tm/mag-squared p)])))
                points))
       from)))
 
