@@ -119,16 +119,10 @@
   (la/bf-traverse mg (gv/vec2 0 10) :f vector)
   (la/bf-span mg (gv/vec2 0 10))
   (la/dijkstra-span mg (gv/vec2 0 10))
-  (let [prev (gv/vec2 0 10)
-        n (gv/vec2 4 12)
-        neighbors (lg/successors mg n)
-        angle (fn [p] (g/heading (tm/- p n)))]
-    [neighbors (g/heading (tm/- n prev)) (map angle neighbors)
-     (apply max-key (fn [p] (g/heading (tm/- p n)))
-            neighbors)])
-  (poly-detect/cycle-clockwise mg (gv/vec2 0 10))
-  (poly-detect/cycle-clockwise mg (gv/vec2 4 12))
-  (poly-detect/cycle-clockwise mg (gv/vec2 20 20))
+  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 0 10) (gv/vec2 4 12))
+  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 0 10))
+  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 10 0))
+  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 10 0) (gv/vec2 4 12))
   )
 
 (defn debug-isecs [state path]
