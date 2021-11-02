@@ -16,8 +16,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -90,11 +89,8 @@
                   (map (fn [v] (sort v)))
                   set)))))
 
-(defn edges->graph [edges]
-  (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
-          (lg/weighted-graph) edges))
-
 ;; FIXME: sometimes leader/trailing node has one connection despite being on an existing line segment?
+;; This is not strictly necessary for polygon detection
 (defn remove-tails
   "Remove any single connection tails from the intersection edge graph."
   [g]
@@ -109,7 +105,7 @@
       (def medges
         (let [isecs (intersections mvp)]
           (intersections->edges isecs)))
-      (def morig (edges->graph medges))
+      (def morig (poly-detect/edges->graph medges))
       (def mg (remove-tails morig)))
   ;; Contains three cycles, 2 triangles and a 5-gon plus removal of first and last point as tails
   (la/all-pairs-shortest-paths mg)
@@ -189,7 +185,7 @@
   (q/fill 0)
   (let [intersects (intersections path)
         edges (intersections->edges intersects)
-        original (edges->graph edges)
+        original (poly-detect/edges->graph edges)
         graph (remove-tails original)]
     (q/stroke-weight 0.5)
     (doseq [{:keys [p]} intersects]

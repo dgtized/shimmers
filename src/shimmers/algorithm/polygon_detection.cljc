@@ -6,6 +6,10 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn edges->graph [edges]
+  (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
+          (lg/weighted-graph) edges))
+
 (defn atan2 [[x y]]
   (Math/atan2 y x))
 
