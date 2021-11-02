@@ -22,12 +22,14 @@
   `outbound`."
   [from vertex outbound]
   (when (seq outbound)
-    (let [from-vertex (tm/- from vertex)]
-      (apply (partial max-key
-                      (fn [v] (let [p (tm/- v vertex)]
-                               [(g/angle-between p from-vertex)
-                                (/ 1.0 (tm/mag p))])))
-             outbound))))
+    (if-let [points (seq (remove (hash-set from) outbound))]
+      (let [from-vertex (tm/- from vertex)]
+        (apply (partial max-key
+                        (fn [v] (let [p (tm/- v vertex)]
+                                 [(g/angle-between p from-vertex)
+                                  (/ 1.0 (tm/mag p))])))
+               points))
+      from)))
 
 (defn counter-clockwise-point
   "Given a point `from` going to `vertex`, return the counter-clockwise point in
