@@ -212,15 +212,20 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [cycle (poly-detect/polygon-near-point graph mouse)]
+    (let [[p q] (poly-detect/face-edge-near-point graph mouse)
+          cycle (poly-detect/polygon-near-point graph mouse)]
       (q/stroke 0.6 0.5 0.5 1.0)
       (q/stroke-weight 1.0)
       (cq/draw-shape cycle)
+      (q/stroke-weight 2.5)
+      (q/line p q)
       (q/no-stroke)
       (doseq [[i c] (map-indexed vector cycle)]
         (q/fill (/ i (count cycle)) 0.75 0.5)
         (cq/circle c 3.0))
-      (swap! defo assoc :cycle cycle))
+      (swap! defo assoc
+             :cycle cycle
+             :face [p q]))
     ))
 
 (defn draw [{:keys [path mouse]}]

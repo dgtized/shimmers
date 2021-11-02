@@ -92,14 +92,23 @@
   (apply min-key (fn [q] (small-angle-between (tm/- point vertex) (tm/- q vertex)))
          points))
 
+(defn face-edge-near-point
+  "Return the closest facing edge pair `p`, `q`
+
+  `p` and `q` are ordered to ensure that point is oriented clockwise from the
+  edge."
+  [g point]
+  (when-let [p (closest-in point (lg/nodes g))]
+    (when-let [q (closest-angle point p (lg/successors g p))]
+      (if (> (v/orientation p q point) 0)
+        [q p]
+        [p q]))))
+
 (defn polygon-near-point
   "Given a graph of points in a plane and a point, find the closest polygon around that point."
   [g point]
-  (when-let [start (closest-in point (lg/nodes g))]
-    (let [vertex (closest-angle point start (lg/successors g start))]
-      (if (> (v/orientation start vertex point) 0)
-        (cycle-clockwise-from-edge g vertex start)
-        (cycle-clockwise-from-edge g start vertex)))))
+  (when-let [[p q] (face-edge-near-point g point)]
+    (cycle-clockwise-from-edge g p q)))
 
 ;; TODO: detect all simple chordless polygons in plane
 ;; polygon isomorphism?
