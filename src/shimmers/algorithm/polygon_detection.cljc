@@ -16,21 +16,6 @@
   [p q]
   (Math/abs (- (atan2 p) (atan2 q))))
 
-;; From a starting location with surrounding candidate nodes
-;; Return the counter-clockwise candidate of the pair with the smallest angle between
-;; Note: heuristic, doesn't guarentee path started from here is start of a clockwise polygon
-(defn clockwise-starts [start candidates]
-  (let [ordered (sort-by (fn [p] (g/heading (tm/- p start))) candidates)
-        [a b]
-        (->> (vec ordered)
-             (cons (last ordered))
-             (partition 2 1)
-             (sort-by (fn [[a b]] [(small-angle-between (tm/- a start) (tm/- b start)) a b]))
-             first)]
-    (if (> (g/angle-between (tm/- a start) (tm/- b start))
-           (g/angle-between (tm/- b start) (tm/- a start)))
-      b a)))
-
 ;; TODO: optimize these a bit?
 (defn clockwise-point
   "Given a point `from` going to `vertex`, return the clockwise point in
@@ -76,14 +61,6 @@
             cycle'
             :else
             (recur cycle' next-pt)))))
-
-(defn cycle-clockwise [g start]
-  (let [point (clockwise-starts start (lg/successors g start))
-        a (cycle-clockwise-from-edge g start point)
-        b (cycle-clockwise-from-edge g point start)]
-    ;; return the smallest non-empty cycle
-    (if (and (seq a) (< (count a) (count b)))
-      a b)))
 
 (defn closest-in [point points]
   (apply min-key (partial g/dist-squared point) points))
