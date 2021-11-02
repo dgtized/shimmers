@@ -81,6 +81,10 @@
         [q p]
         [p q]))))
 
+;; Note that if initial point order is reversed, as if if point is outside of
+;; the polygon it can construct the hull over the outer edge. Put differently,
+;; following the counter-clockwise point on the outside gift wraps the polygon.
+;; This doesn't always happen though so something is weird.
 (defn polygon-near-point
   "Given a graph of points in a plane and a point, find the closest polygon around that point."
   [g point]
@@ -91,10 +95,6 @@
 ;; polygon isomorphism?
 ;; detect if hull polygon by orientation of edges?
 ;; scale polygons towards center even if concave polygon without it looking weird?
-
-;; Note that if initial point order is reversed, as if if point is outside of
-;; the polygon it can construct the hull over the outer edge. Put differently,
-;; following the counter-clockwise point on the outside gift wraps the polygon.
 
 (comment
   (g/heading (gv/vec2 -1 0))
