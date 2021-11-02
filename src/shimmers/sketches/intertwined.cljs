@@ -202,7 +202,7 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [[p q] (poly-detect/face-edge-near-point graph mouse)
+    (let [[p q] (poly-detect/edge-face-near-point graph mouse)
           cycle (poly-detect/polygon-near-point graph mouse)]
       (q/stroke 0.6 0.5 0.5 1.0)
       (q/stroke-weight 1.0)
@@ -215,7 +215,7 @@
         (cq/circle c 3.0))
       (swap! defo assoc
              :cycle cycle
-             :face [p q]))
+             :edge-face [p q]))
     ))
 
 (defn draw [{:keys [path mouse]}]

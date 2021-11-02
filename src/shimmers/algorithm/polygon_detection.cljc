@@ -73,7 +73,8 @@
   (apply min-key (fn [q] (small-angle-between (tm/- point vertex) (tm/- q vertex)))
          points))
 
-(defn face-edge-near-point
+;; FIXME: occasionally this is finding the far edge when outside on a sliver triangles
+(defn edge-face-near-point
   "Return the closest facing edge pair `p`, `q`
 
   `p` and `q` are ordered to ensure that point is oriented clockwise from the
@@ -92,7 +93,7 @@
 (defn polygon-near-point
   "Given a graph of points in a plane and a point, find the closest polygon around that point."
   [g point]
-  (when-let [[p q] (face-edge-near-point g point)]
+  (when-let [[p q] (edge-face-near-point g point)]
     (cycle-clockwise-from-edge g p q)))
 
 ;; TODO: detect all simple chordless polygons in plane

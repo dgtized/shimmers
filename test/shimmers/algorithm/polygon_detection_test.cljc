@@ -62,10 +62,10 @@
   (let [[a b c
          d e f] nodes]
     (t/testing "closest edge of face near point"
-      (is (= [a b] (sut/face-edge-near-point simple-loop (gv/vec2 2 1))))
-      (is (= [b a] (sut/face-edge-near-point simple-loop (gv/vec2 2 -1))))
-      (is (= [d a] (sut/face-edge-near-point simple-loop (gv/vec2 1 2))))
-      (is (= [a d] (sut/face-edge-near-point simple-loop (gv/vec2 -1 2)))))
+      (is (= [a b] (sut/edge-face-near-point simple-loop (gv/vec2 2 1))))
+      (is (= [b a] (sut/edge-face-near-point simple-loop (gv/vec2 2 -1))))
+      (is (= [d a] (sut/edge-face-near-point simple-loop (gv/vec2 1 2))))
+      (is (= [a d] (sut/edge-face-near-point simple-loop (gv/vec2 -1 2)))))
 
     (t/testing "simple loop"
       (is (= [a b c f e d] (sut/polygon-near-point simple-loop (gv/vec2 2 1)))
