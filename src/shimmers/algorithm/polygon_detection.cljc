@@ -21,29 +21,25 @@
   "Given a point `from` going to `vertex`, return the clockwise point in
   `outbound`."
   [from vertex outbound]
-  (let [pts (sort-by (fn [v]
-                       (let [p (tm/- v vertex)]
-                         [(g/heading p) (tm/mag p)]))
-                     outbound)
-        angle (g/heading (tm/- from vertex))
-        after (drop-while (fn [v] (>= angle (g/heading (tm/- v vertex)))) pts)]
-    (if (seq after)
-      (first after)
-      (first pts))))
+  (when (seq outbound)
+    (let [from-vertex (tm/- from vertex)]
+      (apply (partial max-key
+                      (fn [v] (let [p (tm/- v vertex)]
+                               [(g/angle-between p from-vertex)
+                                (/ 1.0 (tm/mag p))])))
+             outbound))))
 
 (defn counter-clockwise-point
   "Given a point `from` going to `vertex`, return the counter-clockwise point in
   `outbound`."
   [from vertex outbound]
-  (let [pts (sort-by (fn [v]
-                       (let [p (tm/- v vertex)]
-                         [(g/heading p) (tm/mag p)]))
-                     outbound)
-        angle (g/heading (tm/- from vertex))
-        before (take-while (fn [v] (< (g/heading (tm/- v vertex)) angle)) pts)]
-    (if (seq before)
-      (last before)
-      (last pts))))
+  (when (seq outbound)
+    (let [from-vertex (tm/- from vertex)]
+      (apply (partial min-key
+                      (fn [v] (let [p (tm/- v vertex)]
+                               [(- (g/angle-between p from-vertex))
+                                (/ 1.0 (tm/mag p))])))
+             outbound))))
 
 (defn cycle-clockwise-from-edge [g start to]
   ;; FIXME change to starting edge in a clockwise direction. Currently if

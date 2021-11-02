@@ -16,7 +16,7 @@
   (t/testing "chooses the remaining point if inbound is in the outbound set"
     (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)])))
     (is (= (gv/vec2 0 1) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)]))))
-  (t/testing "chooses the closest point if collinear"
+  (t/testing "chooses the next closest point if collinear"
     (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
     (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 0 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)]))
         "fixme, if same point should probably pick next closest [0,2]?")
