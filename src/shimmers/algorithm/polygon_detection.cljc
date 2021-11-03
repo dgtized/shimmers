@@ -99,6 +99,21 @@
 ;; https://web.ist.utl.pt/alfredo.ferreira/publications/12EPCG-PolygonDetection.pdf
 ;; (defn minimum-cycle-basis [g])
 
+(defn simple-polygons
+  "`graph` is a digraph of points"
+  [graph]
+  (let [g (lg/weighted-digraph graph)]
+    (loop [pending (set (lg/edges g)) polygons []]
+      (if (empty? pending)
+        polygons
+        (let [edge (first pending)
+              [p q] edge
+              cycle (cycle-clockwise-from-edge g p q)]
+          (if (seq cycle) ;; handle ccw cycle
+            (recur (reduce disj pending (conj (partition 2 1 cycle) [(last cycle) (first cycle)]))
+                   (conj polygons cycle))
+            polygons))))))
+
 ;; TODO: detect all simple chordless polygons in plane
 ;; polygon isomorphism?
 ;; detect if hull polygon by orientation of edges?

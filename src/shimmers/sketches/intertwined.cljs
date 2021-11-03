@@ -16,6 +16,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
@@ -25,10 +26,12 @@
 
 (def modes [:intersections :graph])
 (def edge-modes [:weighted-by-order :even-weight :hidden])
+(def graph-modes [:faces :polygons])
 (defonce ui-state (ctrl/state {:mode :intersections
                                :rows 3
                                :columns 4
-                               :edge-mode :weighted-by-order}))
+                               :edge-mode :weighted-by-order
+                               :graph-mode :faces}))
 (defonce defo (debug/state))
 
 (defn path-point [p segments joint]
@@ -115,6 +118,7 @@
   (la/bf-traverse mg (gv/vec2 0 10) :f vector)
   (la/bf-span mg (gv/vec2 0 10))
   (la/dijkstra-span mg (gv/vec2 0 10))
+  (lg/weighted-digraph mg)
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 0 10) (gv/vec2 4 12))
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 0 10))
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 10 0))
@@ -202,21 +206,32 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [[p q] (poly-detect/edge-face-near-point graph mouse)
-          cycle (poly-detect/polygon-near-point graph mouse)]
-      (q/stroke 0.6 0.5 0.5 1.0)
-      (q/stroke-weight 1.0)
-      (cq/draw-shape cycle)
-      (q/stroke-weight 2.5)
-      (q/line p q)
-      (q/no-stroke)
-      (doseq [[i c] (map-indexed vector cycle)]
-        (q/fill (/ i (count cycle)) 0.75 0.5)
-        (cq/circle c 3.0))
-      (swap! defo assoc
-             :cycle cycle
-             :edge-face [p q]))
-    ))
+    (let [graph-mode (get-in @ui-state [:graph-mode])]
+      (if (= graph-mode :faces)
+        (let [[p q] (poly-detect/edge-face-near-point graph mouse)
+              cycle (poly-detect/polygon-near-point graph mouse)]
+          (q/stroke 0.6 0.5 0.5 1.0)
+          (q/stroke-weight 1.0)
+          (cq/draw-shape cycle)
+          (q/stroke-weight 2.5)
+          (q/line p q)
+          (q/no-stroke)
+          (doseq [[i c] (map-indexed vector cycle)]
+            (q/fill (/ i (count cycle)) 0.75 0.5)
+            (cq/circle c 3.0))
+          (swap! defo assoc
+                 :cycle cycle
+                 :edge-face [p q]))
+        (let [polygons (poly-detect/simple-polygons graph)]
+          (q/stroke 0 0.5)
+          (q/stroke-weight 0.5)
+          (swap! defo assoc :polygons polygons)
+          (doseq [shape polygons]
+            (-> shape
+                gp/polygon2
+                (g/scale-size 0.90)
+                g/vertices
+                cq/draw-shape)))))))
 
 (defn draw [{:keys [path mouse]}]
   (q/background 1.0)
@@ -237,8 +252,9 @@
      [:div {:style {:float :right}} (view-sketch/generate :intertwined)]
      [:div {:style {:clear :both}}]
      (ctrl/change-mode ui-state modes)
-     (when (= mode :intersections)
-       (ctrl/change-mode ui-state edge-modes :edge-mode))]))
+     (if (= mode :intersections)
+       (ctrl/change-mode ui-state edge-modes :edge-mode)
+       (ctrl/change-mode ui-state graph-modes :graph-mode))]))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"
