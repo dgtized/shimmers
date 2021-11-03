@@ -96,6 +96,9 @@
   (when-let [[p q] (edge-face-near-point g point)]
     (cycle-clockwise-from-edge g p q)))
 
+;; https://web.ist.utl.pt/alfredo.ferreira/publications/12EPCG-PolygonDetection.pdf
+;; (defn minimum-cycle-basis [g])
+
 ;; TODO: detect all simple chordless polygons in plane
 ;; polygon isomorphism?
 ;; detect if hull polygon by orientation of edges?
