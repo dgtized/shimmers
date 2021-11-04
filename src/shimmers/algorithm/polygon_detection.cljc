@@ -99,8 +99,24 @@
 ;; https://web.ist.utl.pt/alfredo.ferreira/publications/12EPCG-PolygonDetection.pdf
 ;; (defn minimum-cycle-basis [g])
 
+;; https://stackoverflow.com/questions/14505565/detect-if-a-set-of-points-in-an-array-that-are-the-vertices-of-a-complex-polygon
+(defn shoelace-area [points]
+  (->> (concat (rest points) (take 1 points))
+       (map tm/cross points)
+       (reduce + 0)
+       (* 0.5)))
+
+(defn clockwise-polygon?
+  "return true if points in polygon are in a clockwise ordering."
+  [points]
+  (pos? (shoelace-area points)))
+
+;; TODO: inline cycle-clockwise-from-edge and keep track of a single list of
+;; seen edges
 (defn simple-polygons
-  "`graph` is a digraph of points"
+  "`graph` is a digraph of points, returns a set of cycles, where cycles are a list of points.
+
+  They should be simple cycles without any internal edges/chords."
   [graph]
   (let [g (lg/weighted-digraph graph)]
     (loop [pending (set (lg/edges g)) polygons []]
@@ -109,10 +125,10 @@
         (let [edge (first pending)
               [p q] edge
               cycle (cycle-clockwise-from-edge g p q)]
-          (if (seq cycle) ;; handle ccw cycle
+          (if (and (seq cycle) (clockwise-polygon? cycle))
             (recur (reduce disj pending (conj (partition 2 1 cycle) [(last cycle) (first cycle)]))
                    (conj polygons cycle))
-            polygons))))))
+            (recur (disj pending edge) polygons)))))))
 
 ;; TODO: detect all simple chordless polygons in plane
 ;; polygon isomorphism?
