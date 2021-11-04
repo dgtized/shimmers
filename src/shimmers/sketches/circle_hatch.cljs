@@ -20,16 +20,20 @@
                          :theta (tm/random 0 tm/TWO_PI)))]
     {:circles circles}))
 
+(defn update-circle [c theta]
+  (assoc c
+         :theta (+ theta (* 0.2 (p/happensity 0.1)))
+         :spacing (tm/random 2.5 10.0)))
+
 (defn update-state [{:keys [circles] :as state}]
   (let [k (rand-int (count circles))
         {:keys [spacing theta] :as circle} (nth circles k)
         hatches (clip/hatch-circle circle spacing theta)]
     (-> state
-        (assoc :circles (map-indexed (fn [i c] (if (= i k)
-                                                (assoc c
-                                                       :theta (+ theta (* 0.2 (p/happensity 0.1)))
-                                                       :spacing (tm/random 2.5 10.0))
-                                                c)) circles))
+        (assoc :circles (map-indexed (fn [i c]
+                                       (if (= i k)
+                                         (update-circle c theta)
+                                         c)) circles))
         (assoc-in [:hatches k] hatches))))
 
 (defn draw [{:keys [circles hatches]}]
