@@ -18,7 +18,7 @@
                   (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h (p/gaussian 0.05 0.01)))
                          :spacing (tm/random 2.5 10.0)
                          :theta (tm/random 0 tm/TWO_PI)))]
-    {:circles circles}))
+    {:circles (vec circles)}))
 
 (defn update-circle [c theta]
   (assoc c
@@ -30,10 +30,7 @@
         {:keys [spacing theta] :as circle} (nth circles k)
         hatches (clip/hatch-circle circle spacing theta)]
     (-> state
-        (assoc :circles (map-indexed (fn [i c]
-                                       (if (= i k)
-                                         (update-circle c theta)
-                                         c)) circles))
+        (update-in [:circles k] update-circle theta)
         (assoc-in [:hatches k] hatches))))
 
 (defn draw [{:keys [circles hatches]}]
