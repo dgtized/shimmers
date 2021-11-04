@@ -22,6 +22,8 @@
 
 (defn update-circle [c theta]
   (assoc c
+         :r (tm/clamp (+ (:r c) (p/gaussian 0.0 1.0))
+                      (cq/rel-h 0.01) (cq/rel-h 0.3))
          :theta (+ theta (* 0.2 (p/happensity 0.1)))
          :spacing (tm/random 2.5 10.0)))
 
