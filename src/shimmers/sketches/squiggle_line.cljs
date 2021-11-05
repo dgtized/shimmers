@@ -22,13 +22,13 @@
 ;; https://rmarcus.info/blog/assets/humanLines/Meraj08.pdf
 ;; https://github.com/RyanMarcus/humanLines/blob/master/index.js
 
-(defn squiggle-poly [[px py] [qx qy] t]
+
+(defn squiggle-poly [p q t]
   (let [tau (/ t 2.0)
         term (- (* 15 (Math/pow tau 4))
                 (* 6 (Math/pow tau 5))
                 (* 10 (Math/pow tau 3)))]
-    (gv/vec2 (+ px (* (- px qx) term))
-             (+ py (* (- py qy) term)))))
+    (tm/mix p q (- term))))
 
 (defn squiggle-points [p q]
   (let [dist (g/dist p q)
