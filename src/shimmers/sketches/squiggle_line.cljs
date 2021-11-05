@@ -22,13 +22,13 @@
 ;; https://rmarcus.info/blog/assets/humanLines/Meraj08.pdf
 ;; https://github.com/RyanMarcus/humanLines/blob/master/index.js
 
-
 (defn squiggle-poly [p q t]
   (let [tau (/ t 2.0)
         term (- (* 15 (Math/pow tau 4))
                 (* 6 (Math/pow tau 5))
                 (* 10 (Math/pow tau 3)))]
-    (tm/mix p q (- term))))
+    ;; Seems safer to use abs, but something weird is flipped with mix here?
+    (tm/mix p q (Math/abs term))))
 
 (defn squiggle-points [p q]
   (let [dist (g/dist p q)
@@ -42,14 +42,14 @@
         displacement (random-point-in-circle 5)] ;; this should be biased toward normal at point?
     (tm/+ midpoint displacement)))
 
+;; TODO: add controls for dt and displacement quantity
 (defn squiggle [p q]
   (q/begin-shape)
   (apply q/vertex p)
   (doseq [[prev current] (partition 2 1 (squiggle-points p q))
           :let [[x y] current
                 [cx cy] (squiggle-control prev current)]]
-    (q/quadratic-vertex cx cy x y)
-    )
+    (q/quadratic-vertex cx cy x y))
   (q/end-shape))
 
 (defn rel-line [{[p q] :points}]
@@ -57,6 +57,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/no-loop)
   {:lines (mapv rel-line [(gl/line2 0.2 0.2 0.8 0.2)
                           (gl/line2 0.3 0.3 0.6 0.3)
                           (gl/line2 0.7 0.25 0.7 0.6)
