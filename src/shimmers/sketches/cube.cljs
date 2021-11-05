@@ -48,11 +48,11 @@
 (comment (cube [0 0 0] [0 0 0] [10 10 10]))
 
 (defn setup []
+  (q/frame-rate 12)
   [])
 
 (defn update-state [_]
-  (let [fc (q/frame-count)
-        theta (/ fc 100)
+  (let [theta (* (q/millis) 0.0005)
         offsets (cs/centered-range 3)
         s (/ (q/height) 8)
         [x0 x1 x2] (map (fn [t] (* (- t 0.5) (q/width))) offsets)
