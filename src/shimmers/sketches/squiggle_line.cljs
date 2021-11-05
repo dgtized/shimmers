@@ -27,7 +27,7 @@
 (defn draw [{:keys [lines]}]
   (q/background 1.0)
   (doseq [{[p q] :points} lines]
-    (hand-drawn/squiggle p q)))
+    (hand-drawn/line p q)))
 
 (sketch/defquil squiggle-line
   :created-at "2021-11-05"

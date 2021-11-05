@@ -25,15 +25,15 @@
     ;; Seems safer to use abs, but something weird is flipped with mix here?
     (tm/mix p q (Math/abs term))))
 
-(defn squiggle-points [p q]
+(defn control-points [p q]
   (let [dist (g/dist p q)
         dt (cond (< dist 200) 0.5
                  (< dist 400) 0.3
                  :else 0.2)]
     (map (partial squiggle-poly p q) (range 0 2 dt))))
 
-(defn squiggle-control [p q]
-  (let [midpoint (tm/mix p q 0.5)
+(defn deviation [prev current]
+  (let [midpoint (tm/mix prev current 0.5)
         displacement (random-point-in-circle 5)] ;; this should be biased toward normal at point?
     (tm/+ midpoint displacement)))
 
@@ -41,10 +41,13 @@
 (defn squiggle [p q]
   (q/begin-shape)
   (apply q/vertex p)
-  (doseq [[prev current] (partition 2 1 (squiggle-points p q))
+  (doseq [[prev current] (partition 2 1 (control-points p q))
           :let [[x y] current
-                [cx cy] (squiggle-control prev current)]]
+                [cx cy] (deviation prev current)]]
     (q/quadratic-vertex cx cy x y))
   (q/end-shape))
+
+(defn line [p q]
+  (squiggle p q))
 
 
