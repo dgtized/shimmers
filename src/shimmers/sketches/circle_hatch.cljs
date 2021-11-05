@@ -22,9 +22,9 @@
 
 (defn update-circle [c theta]
   (assoc c
-         :r (tm/clamp (+ (:r c) (p/gaussian 0.0 1.0))
+         :r (tm/clamp (+ (:r c) (if (p/chance 0.33) (p/gaussian 0.0 2.0) 0))
                       (cq/rel-h 0.01) (cq/rel-h 0.3))
-         :theta (+ theta (* 0.2 (p/happensity 0.1)))
+         :theta (+ theta (* 0.2 (p/happensity 0.2)))
          :spacing (tm/random 2.5 10.0)))
 
 (defn update-state [{:keys [circles] :as state}]
