@@ -103,6 +103,7 @@
             shimmers.sketches.sphere
             shimmers.sketches.spiral-distance
             shimmers.sketches.square-packing
+            shimmers.sketches.squiggle-line
             shimmers.sketches.stem-and-leaf
             shimmers.sketches.substrate
             shimmers.sketches.string-lights
