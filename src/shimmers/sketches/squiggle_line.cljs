@@ -30,7 +30,8 @@
     (hand-drawn/squiggle p q)))
 
 (sketch/defquil squiggle-line
-  :created-at "2021-"
+  :created-at "2021-11-05"
+  :tags #{:demo}
   :size [800 600]
   :setup setup
   :update update-state
