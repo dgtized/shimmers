@@ -11,8 +11,8 @@
 (defn project [[x y z]]
   (let [perspective (* (q/width) 0.8)
         scale (/ perspective (+ perspective z))]
-    [(+ (* scale x) (* 0.5 (q/width)))
-     (+ (* scale y) (* 0.5 (q/height)))]))
+    (v/vec2 (+ (* scale x) (* 0.5 (q/width)))
+            (+ (* scale y) (* 0.5 (q/height))))))
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
@@ -44,6 +44,8 @@
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
+
+(comment (cube [0 0 0] [0 0 0] [10 10 10]))
 
 (defn setup []
   [])
