@@ -5,7 +5,9 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
@@ -22,16 +24,14 @@
         sy (Math/sin yaw)
         cz (Math/cos roll)
         sz (Math/sin roll)]
-    [(+ (* x cy cz) (* y (+ (- (* cx sz)) (* sx sy cz))) (* z (+ (* sx sz) (* cx sy cz))))
-     (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
-     (+ (* x (- sy)) (* y sx cy) (* z cx cy))]))
+    (v/vec3 (+ (* x cy cz) (* y (+ (- (* cx sz)) (* sx sy cz))) (* z (+ (* sx sz) (* cx sy cz))))
+            (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
+            (+ (* x (- sy)) (* y sx cy) (* z cx cy)))))
 
-;; something is wrong with the z coordinates
-;; I suspect the order of operations is wrong for applying translation/rotation?
-(defn rectangle [[x y z] angles [width height]]
+(defn rectangle [position [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    (map (fn [p] (v/add (v/vec3 x y z) (rotation p angles)))
+    (map (fn [p] (v/add position p))
          [(v/vec3 (- hw) (- hh) 0)
           (v/vec3 hw (- hh) 0)
           (v/vec3 hw hh 0)
@@ -39,8 +39,10 @@
 
 (defn cube [[x y z] angles [width height depth]]
   (let [hd (/ depth 2)]
-    {:vertices (concat (rectangle [x y (+ z hd)] angles [width height])
-                       (rectangle [x y (- z hd)] angles [width height]))
+    {:vertices (->> (concat (rectangle (gv/vec3 0 0 hd) [width height])
+                            (rectangle (gv/vec3 0 0 (- hd)) [width height]))
+                    (map (fn [p] (rotation p angles)))
+                    (map (fn [p] (tm/+ p (gv/vec3 x y z)))))
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
@@ -63,9 +65,10 @@
      (cube [x0 y1 0] [theta theta 0] [s s s])
      (cube [x1 y1 0] [0 theta theta] [s s s])
      (cube [x2 y1 0] [theta 0 theta] [s s s])
+     ;; FIXME: make these rotate along a common axis relative to this center cube
      (cube [x0 y2 0] [theta theta theta] [(* 0.6 s) (* 0.6 s)(* 0.6 s)])
-     (cube [x0 y2 (* 0.5 s)] [theta theta theta] [s s s])
-     (cube [x0 y2 (* -0.5 s)] [theta theta theta] [(* 0.4 s) (* 0.4 s) (* 0.4 s)])
+     (cube [x0 y2 (* 2 s)] [theta theta theta] [s s s])
+     (cube [x0 y2 (* -2 s)] [theta theta theta] [(* 0.4 s) (* 0.4 s) (* 0.4 s)])
      (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])]))
 
 (defn draw [shapes]
