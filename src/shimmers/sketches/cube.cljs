@@ -1,13 +1,16 @@
 (ns shimmers.sketches.cube
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
+;; TODO: change coordinates to center origin?
 (defn project [[x y z]]
-  (let [perspective (* 600 0.8)
+  (let [perspective (* (q/width) 0.8)
         scale (/ perspective (+ perspective z))]
     [(* scale x) (* scale y)]))
 
@@ -47,17 +50,20 @@
 
 (defn update-state [_]
   (let [fc (q/frame-count)
-        theta (/ fc 100)]
-    [(cube [100 100 0] [theta 0 0] [50 50 50])
-     (cube [200 100 0] [0 theta 0] [50 50 50])
-     (cube [300 100 0] [0 0 theta] [50 50 50])
-     (cube [100 200 0] [theta theta 0] [50 50 50])
-     (cube [200 200 0] [0 theta theta] [50 50 50])
-     (cube [300 200 0] [theta 0 theta] [50 50 50])
-     (cube [100 300 0] [theta theta theta] [30 30 30])
-     (cube [100 300 50] [theta theta theta] [50 50 50])
-     (cube [100 300 -50] [theta theta theta] [20 20 20])
-     (cube [300 300 (q/lerp -50 50 (q/cos theta))] [0 0 0] [50 50 50])]))
+        theta (/ fc 100)
+        s (/ (q/height) 8)
+        [x0 x1 x2] (map (partial * (q/width)) (cs/centered-range 3))
+        [y0 y1 y2] (map (partial * (q/height)) (cs/centered-range 3))]
+    [(cube [x0 y0 0] [theta 0 0] [s s s])
+     (cube [x1 y0 0] [0 theta 0] [s s s])
+     (cube [x2 y0 0] [0 0 theta] [s s s])
+     (cube [x0 y1 0] [theta theta 0] [s s s])
+     (cube [x1 y1 0] [0 theta theta] [s s s])
+     (cube [x2 y1 0] [theta 0 theta] [s s s])
+     (cube [x0 y2 0] [theta theta theta] [(* 0.6 s) (* 0.6 s)(* 0.6 s)])
+     (cube [x0 y2 (* 0.5 s)] [theta theta theta] [s s s])
+     (cube [x0 y2 (* -0.5 s)] [theta theta theta] [(* 0.4 s) (* 0.4 s) (* 0.4 s)])
+     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (q/cos theta))] [0 0 0] [s s s])]))
 
 (defn draw [shapes]
   (q/background "white")
@@ -69,7 +75,7 @@
 
 (sketch/defquil cube-sketch
   :created-at "2020-11-02"
-  :size [400 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
