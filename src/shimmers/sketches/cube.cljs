@@ -16,12 +16,12 @@
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
-  (let [cx (q/cos pitch)
-        sx (q/sin pitch)
-        cy (q/cos yaw)
-        sy (q/sin yaw)
-        cz (q/cos roll)
-        sz (q/sin roll)]
+  (let [cx (Math/cos pitch)
+        sx (Math/sin pitch)
+        cy (Math/cos yaw)
+        sy (Math/sin yaw)
+        cz (Math/cos roll)
+        sz (Math/sin roll)]
     [(+ (* x cy cz) (* y (+ (- (* cx sz)) (* sx sy cz))) (* z (+ (* sx sz) (* cx sy cz))))
      (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
      (+ (* x (- sy)) (* y sx cy) (* z cx cy))]))
@@ -64,7 +64,7 @@
      (cube [x0 y2 0] [theta theta theta] [(* 0.6 s) (* 0.6 s)(* 0.6 s)])
      (cube [x0 y2 (* 0.5 s)] [theta theta theta] [s s s])
      (cube [x0 y2 (* -0.5 s)] [theta theta theta] [(* 0.4 s) (* 0.4 s) (* 0.4 s)])
-     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (q/cos theta))] [0 0 0] [s s s])]))
+     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])]))
 
 (defn draw [shapes]
   (q/background "white")
