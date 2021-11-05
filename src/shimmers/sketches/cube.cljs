@@ -8,11 +8,11 @@
    [shimmers.sketch :as sketch :include-macros true]))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
-;; TODO: change coordinates to center origin?
 (defn project [[x y z]]
   (let [perspective (* (q/width) 0.8)
         scale (/ perspective (+ perspective z))]
-    [(* scale x) (* scale y)]))
+    [(+ (* scale x) (* 0.5 (q/width)))
+     (+ (* scale y) (* 0.5 (q/height)))]))
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
@@ -51,9 +51,10 @@
 (defn update-state [_]
   (let [fc (q/frame-count)
         theta (/ fc 100)
+        offsets (cs/centered-range 3)
         s (/ (q/height) 8)
-        [x0 x1 x2] (map (partial * (q/width)) (cs/centered-range 3))
-        [y0 y1 y2] (map (partial * (q/height)) (cs/centered-range 3))]
+        [x0 x1 x2] (map (fn [t] (* (- t 0.5) (q/width))) offsets)
+        [y0 y1 y2] (map (fn [t] (* (- t 0.5) (q/height))) offsets)]
     [(cube [x0 y0 0] [theta 0 0] [s s s])
      (cube [x1 y0 0] [0 theta 0] [s s s])
      (cube [x2 y0 0] [0 0 theta] [s s s])
