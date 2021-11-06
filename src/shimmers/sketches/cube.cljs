@@ -130,6 +130,7 @@
       (draw-line (projection (nth vertices a)) (projection (nth vertices b))))))
 
 ;; TODO: support edge occlusion if the view would be blocked by another face?
+;; Add other projections like orthographic or isometric https://en.wikipedia.org/wiki/3D_projection?
 (defn ui-controls []
   [:div.readable-width
    (ctrl/checkbox ui-state "Hand Drawn" [:hand-drawn])
