@@ -5,8 +5,10 @@
 (require 'cider-mode)
 
 ;; TODO: add function to force reload or reset atoms?
-;; also consider adding support for visiting with same seed
+;; also consider adding support for reloading with same seed
+;; and consider keeping track of last active ns so that binding works from library code?
 (defun shimmers-visit-sketch ()
+  "Direct browser to (re)load the associated sketch for the current namespace."
   (interactive)
   (let ((ns (cider-current-ns)))
     (if (and ns (string-match-p "shimmers\\.sketches\\..*" ns))
