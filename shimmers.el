@@ -4,6 +4,11 @@
 (require 'cider-eval)
 (require 'cider-mode)
 
+;; Is there a way to switch-to or open tab?
+(defun shimmers-visit-tests ()
+  (interactive)
+  (shell-command "xdg-open http://localhost:9500/figwheel-extra-main/tests"))
+
 ;; TODO: add function to force reload or reset atoms?
 ;; also consider adding support for reloading with same seed
 ;; and consider keeping track of last active ns so that binding works from library code?
