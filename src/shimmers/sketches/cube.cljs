@@ -53,7 +53,7 @@
   (let [hd (/ depth 2)]
     {:vertices (concat (rectangle (gv/vec3 0 0 hd) [width height])
                        (rectangle (gv/vec3 0 0 (- hd)) [width height]))
-     :lines [[0 1] [1 2] [2 3] [3 0]
+     :edges [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
 
@@ -125,8 +125,8 @@
   (let [{:keys [hand-drawn center-origin]} @ui-state
         draw-line (if hand-drawn hand-drawn/line q/line)
         projection (if center-origin project project-ul)]
-    (doseq [{:keys [lines vertices]} shapes
-            [a b] lines]
+    (doseq [{:keys [vertices edges]} shapes
+            [a b] edges]
       (draw-line (projection (nth vertices a)) (projection (nth vertices b))))))
 
 (defn ui-controls []
