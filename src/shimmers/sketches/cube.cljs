@@ -74,17 +74,25 @@
         offsets (cs/centered-range 3)
         s (/ (q/height) 8)
         [x0 x1 x2] (map (fn [t] (* (- t 0.5) (q/width))) offsets)
-        [y0 y1 y2] (map (fn [t] (* (- t 0.5) (q/height))) offsets)]
+        [y0 y1 y2] (map (fn [t] (* (- t 0.5) (q/height))) offsets)
+        lower-left (gv/vec3 x0 y2 0)]
     [(cube [x0 y0 0] [theta 0 0] [s s s])
      (cube [x1 y0 0] [0 theta 0] [s s s])
      (cube [x2 y0 0] [0 0 theta] [s s s])
      (cube [x0 y1 0] [theta theta 0] [s s s])
      (cube [x1 y1 0] [0 theta theta] [s s s])
      (cube [x2 y1 0] [theta 0 theta] [s s s])
-     ;; FIXME: make these rotate along a common axis relative to this center cube
-     (cube [x0 y2 0] [theta theta theta] [(* 0.6 s) (* 0.6 s)(* 0.6 s)])
-     (cube [x0 y2 (* 2 s)] [theta theta theta] [s s s])
-     (cube [x0 y2 (* -2 s)] [theta theta theta] [(* 0.4 s) (* 0.4 s) (* 0.4 s)])
+     (-> (box s s s)
+         (translate-box (gv/vec3 0 0 s))
+         (rotate-box [theta theta theta])
+         (translate-box lower-left))
+     (-> (box (* 0.6 s) (* 0.6 s) (* 0.6 s))
+         (rotate-box [theta theta theta])
+         (translate-box lower-left))
+     (-> (box (* 0.4 s) (* 0.4 s) (* 0.4 s))
+         (translate-box (gv/vec3 0 0 (* -0.6 s)))
+         (rotate-box [theta theta theta])
+         (translate-box lower-left))
      (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])]))
 
 (defn draw [shapes]
