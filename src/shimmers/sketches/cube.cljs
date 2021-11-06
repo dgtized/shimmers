@@ -11,7 +11,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:hand-drawn true}))
+(defonce ui-state
+  (ctrl/state {:hand-drawn true
+               :center-origin true}))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
@@ -19,6 +21,12 @@
         scale (/ perspective (+ perspective z))]
     (v/vec2 (+ (* scale x) (* 0.5 (q/width)))
             (+ (* scale y) (* 0.5 (q/height))))))
+
+(defn project-ul [[x y z]]
+  (let [perspective (* (q/width) 0.8)
+        scale (/ perspective (+ perspective z))]
+    (v/vec2 (+ (* scale x))
+            (+ (* scale y)))))
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
@@ -73,8 +81,10 @@
   (let [theta (* (q/millis) 0.0005)
         offsets (cs/centered-range 3)
         s (/ (q/height) 8)
-        [x0 x1 x2] (map (fn [t] (* (- t 0.5) (q/width))) offsets)
-        [y0 y1 y2] (map (fn [t] (* (- t 0.5) (q/height))) offsets)
+        {:keys [center-origin]} @ui-state
+        origin (if center-origin 0.5 0.0)
+        [x0 x1 x2] (map (fn [t] (* (- t origin) (q/width))) offsets)
+        [y0 y1 y2] (map (fn [t] (* (- t origin) (q/height))) offsets)
         lower-left (gv/vec3 x0 y2 0) ;; translate relative and rotate
         lower-right (gv/vec3 x2 y2 0)] ;; rotate and then translate relative
     [(cube [x0 y0 0] [theta 0 0] [s s s])
@@ -112,13 +122,17 @@
   (q/background "white")
   (q/stroke "black")
   (q/stroke-weight 1)
-  (let [draw-line (if (:hand-drawn @ui-state) hand-drawn/line q/line)]
+  (let [{:keys [hand-drawn center-origin]} @ui-state
+        draw-line (if hand-drawn hand-drawn/line q/line)
+        projection (if center-origin project project-ul)]
     (doseq [{:keys [lines vertices]} shapes
             [a b] lines]
-      (draw-line (project (nth vertices a)) (project (nth vertices b))))))
+      (draw-line (projection (nth vertices a)) (projection (nth vertices b))))))
 
 (defn ui-controls []
-  [:div (ctrl/checkbox ui-state "Hand Drawn" [:hand-drawn])])
+  [:div
+   (ctrl/checkbox ui-state "Hand Drawn" [:hand-drawn])
+   (ctrl/checkbox ui-state "Centered Origin" [:center-origin])])
 
 (sketch/defquil cube-sketch
   :created-at "2020-11-02"
