@@ -2,12 +2,16 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:hand-drawn false}))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
@@ -75,12 +79,17 @@
   (q/background "white")
   (q/stroke "black")
   (q/stroke-weight 1)
-  (doseq [{:keys [lines vertices]} shapes
-          [a b] lines]
-    (q/line (project (nth vertices a)) (project (nth vertices b)))))
+  (let [draw-line (if (:hand-drawn @ui-state) hand-drawn/line q/line)]
+    (doseq [{:keys [lines vertices]} shapes
+            [a b] lines]
+      (draw-line (project (nth vertices a)) (project (nth vertices b))))))
+
+(defn ui-controls []
+  [:div (ctrl/checkbox ui-state "Hand Drawn" [:hand-drawn])])
 
 (sketch/defquil cube-sketch
   :created-at "2020-11-02"
+  :on-mount #(ctrl/mount ui-controls)
   :size [800 600]
   :setup setup
   :update update-state
