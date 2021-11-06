@@ -16,21 +16,18 @@
 ;; https://rmarcus.info/blog/2017/10/23/humanlines.html
 ;; https://rmarcus.info/blog/assets/humanLines/Meraj08.pdf
 ;; https://github.com/RyanMarcus/humanLines/blob/master/index.js
-
-(defn squiggle-poly [p q t]
-  (let [tau (/ t 2.0)
-        term (- (* 15 (Math/pow tau 4))
-                (* 6 (Math/pow tau 5))
-                (* 10 (Math/pow tau 3)))]
-    ;; Seems safer to use abs, but something weird is flipped with mix here?
-    (tm/mix p q (Math/abs term))))
-
 (defn control-points [p q]
   (let [dist (g/dist p q)
         dt (cond (< dist 200) 0.5
                  (< dist 400) 0.3
                  :else 0.2)]
-    (map (partial squiggle-poly p q) (range 0 2 dt))))
+    ;; norm-range is inclusive of the last position
+    (for [t (tm/norm-range (/ 2.0 dt))]
+      (let [term (- (* 15 (Math/pow t 4))
+                    (* 6 (Math/pow t 5))
+                    (* 10 (Math/pow t 3)))]
+        ;; Seems safer to use abs, but something weird is flipped with mix here?
+        (tm/mix p q (Math/abs term))))))
 
 (defn deviation [prev current]
   (let [midpoint (tm/mix prev current 0.5)
