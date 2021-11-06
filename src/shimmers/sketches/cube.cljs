@@ -107,14 +107,14 @@
      (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])
      (-> (box (* 0.8 s) (* 0.8 s)(* 0.8 s))
          (rotate-box [theta theta theta])
-         (translate-box (gv/vec3 0 0 (* 2 s)))
+         (translate-box (gv/vec3 0 0 (* 0.8 s)))
          (translate-box lower-right))
      (-> (box (* 0.5 s) (* 0.5 s) (* 0.5 s))
          (rotate-box [theta theta theta])
          (translate-box lower-right))
      (-> (box (* 0.3 s) (* 0.3 s) (* 0.3 s))
          (rotate-box [theta theta theta])
-         (translate-box (gv/vec3 0 0 (* -1 s)))
+         (translate-box (gv/vec3 0 0 (* -0.6 s)))
          (translate-box lower-right))
      ]))
 
@@ -129,10 +129,24 @@
             [a b] edges]
       (draw-line (projection (nth vertices a)) (projection (nth vertices b))))))
 
+;; TODO: support edge occlusion if the view would be blocked by another face?
 (defn ui-controls []
-  [:div
+  [:div.readable-width
    (ctrl/checkbox ui-state "Hand Drawn" [:hand-drawn])
-   (ctrl/checkbox ui-state "Centered Origin" [:center-origin])])
+   (ctrl/checkbox ui-state "Centered Origin" [:center-origin])
+   [:p "Simple demonstration rendering 3D coordinates onto a 2D canvas using a
+   vertices/edges representation of shapes. Each row demonstrates different
+   kinds of rotation matrices and translations."]
+   [:ol
+    [:li "Single axis rotations around the x, y, and z axis."]
+    [:li "2-axis rotations around [x,y], [y,z], and [x,z] axes."]
+    [:li
+     [:ol {:type "a" :style {:padding-left "1em"}}
+      [:li "Relative translation for each cube and then simultaneous rotation around [x,y,z] axes."]
+      [:li "Translation on the z axis."]
+      [:li "Simultaneous rotation around [x,y,z] and then relative translation for each cube."]]]]
+   [:p "\"Hand drawn\" determines if the lines should be drawn using a sketch
+   like effect or with precision. \"Centered Origin\" determines if origin is in the center or upper left."]])
 
 (sketch/defquil cube-sketch
   :created-at "2020-11-02"

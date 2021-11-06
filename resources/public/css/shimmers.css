@@ -120,3 +120,8 @@ button.generate {
 .center {
   text-align: center;
 }
+
+.readable-width {
+  min-width: 25em;
+  max-width: 40em;
+}
