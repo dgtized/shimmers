@@ -11,7 +11,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:hand-drawn false}))
+(defonce ui-state (ctrl/state {:hand-drawn true}))
 
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
