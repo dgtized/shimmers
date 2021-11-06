@@ -92,3 +92,18 @@
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
+
+;; TODO: support string for filename lookup but registry contains both relative
+;; and absolute filenames.
+(defn visit!
+  "Force router to view a specific sketch in browser by keyword or namespace"
+  [id]
+  (when-let [sketch (cond (keyword? id)
+                          (sketches/by-name id)
+                          (symbol? id)
+                          (sketches/by-ns id))]
+    (view-sketch/sketch-link rfe/push-state (:id sketch))))
+
+(comment (visit! 'shimmers.sketches.cube)
+         (visit! :superposition)
+         (visit! 'shimmers.sketches.unit-circle))

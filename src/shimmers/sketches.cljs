@@ -137,6 +137,11 @@
   (let [sketch-id (keyword sketch-name)]
     (cs/find-first #(= sketch-id (:id %)) (db))))
 
+;; Only allows one sketch per namespace
+(defn by-ns [ns-name]
+  (let [sketch-ns (symbol ns-name)]
+    (cs/find-first #(= sketch-ns (:ns %)) (db))))
+
 (defn known-names []
   (map (comp name :id) (all)))
 
