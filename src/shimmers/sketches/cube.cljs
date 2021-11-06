@@ -41,15 +41,21 @@
           (v/vec3 hw hh 0)
           (v/vec3 (- hw) hh 0)])))
 
-(defn cube [[x y z] angles [width height depth]]
+(defn box [width height depth]
   (let [hd (/ depth 2)]
-    {:vertices (->> (concat (rectangle (gv/vec3 0 0 hd) [width height])
-                            (rectangle (gv/vec3 0 0 (- hd)) [width height]))
-                    (map (fn [p] (rotation p angles)))
-                    (map (fn [p] (tm/+ p (gv/vec3 x y z)))))
+    {:vertices (concat (rectangle (gv/vec3 0 0 hd) [width height])
+                       (rectangle (gv/vec3 0 0 (- hd)) [width height]))
      :lines [[0 1] [1 2] [2 3] [3 0]
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
+
+(defn cube [[x y z] angles [width height depth]]
+  (let [aabb (box width height depth)]
+    (update aabb :vertices
+            (fn [vertices]
+              (->> vertices
+                   (map (fn [p] (rotation p angles)))
+                   (map (fn [p] (tm/+ p (gv/vec3 x y z)))))))))
 
 (comment (cube [0 0 0] [0 0 0] [10 10 10]))
 
