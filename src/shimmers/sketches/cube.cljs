@@ -156,5 +156,3 @@
   :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
-
-
