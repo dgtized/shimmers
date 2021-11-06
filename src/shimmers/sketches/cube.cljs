@@ -75,7 +75,8 @@
         s (/ (q/height) 8)
         [x0 x1 x2] (map (fn [t] (* (- t 0.5) (q/width))) offsets)
         [y0 y1 y2] (map (fn [t] (* (- t 0.5) (q/height))) offsets)
-        lower-left (gv/vec3 x0 y2 0)]
+        lower-left (gv/vec3 x0 y2 0) ;; translate relative and rotate
+        lower-right (gv/vec3 x2 y2 0)] ;; rotate and then translate relative
     [(cube [x0 y0 0] [theta 0 0] [s s s])
      (cube [x1 y0 0] [0 theta 0] [s s s])
      (cube [x2 y0 0] [0 0 theta] [s s s])
@@ -93,7 +94,19 @@
          (translate-box (gv/vec3 0 0 (* -0.6 s)))
          (rotate-box [theta theta theta])
          (translate-box lower-left))
-     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])]))
+     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])
+     (-> (box (* 0.8 s) (* 0.8 s)(* 0.8 s))
+         (rotate-box [theta theta theta])
+         (translate-box (gv/vec3 0 0 (* 2 s)))
+         (translate-box lower-right))
+     (-> (box (* 0.5 s) (* 0.5 s) (* 0.5 s))
+         (rotate-box [theta theta theta])
+         (translate-box lower-right))
+     (-> (box (* 0.3 s) (* 0.3 s) (* 0.3 s))
+         (rotate-box [theta theta theta])
+         (translate-box (gv/vec3 0 0 (* -1 s)))
+         (translate-box lower-right))
+     ]))
 
 (defn draw [shapes]
   (q/background "white")
