@@ -36,9 +36,15 @@
         sy (Math/sin yaw)
         cz (Math/cos roll)
         sz (Math/sin roll)]
-    (v/vec3 (+ (* x cy cz) (* y (+ (- (* cx sz)) (* sx sy cz))) (* z (+ (* sx sz) (* cx sy cz))))
-            (+ (* x cy sz) (* y (+ (* cx cz) (* sx sy sz))) (* z (+ (- (* sy cz)) (* cx sy sz))))
-            (+ (* x (- sy)) (* y sx cy) (* z cx cy)))))
+    (v/vec3 (+ (* x cy cz)
+               (* y (+ (- (* cx sz)) (* sx sy cz)))
+               (* z (+ (* sx sz) (* cx sy cz))))
+            (+ (* x cy sx)
+               (* y (+ (* cx cz) (* sx sy sz)))
+               (* z (+ (- (* sy cz)) (* cx sy sz))))
+            (+ (* x (- sy))
+               (* y sx cy)
+               (* z cx cy)))))
 
 (defn rectangle [position [width height]]
   (let [hw (/ width 2)
