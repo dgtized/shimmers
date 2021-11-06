@@ -49,13 +49,19 @@
              [4 5] [5 6] [6 7] [7 4]
              [0 4] [1 5] [2 6] [3 7]]}))
 
+(defn translate-box [b offset]
+  (update b :vertices
+          (fn [vertices] (map (fn [p] (tm/+ p offset)) vertices))))
+
+(defn rotate-box [b angles]
+  (update b :vertices
+          (fn [vertices] (map (fn [p] (rotation p angles)) vertices))))
+
 (defn cube [[x y z] angles [width height depth]]
   (let [aabb (box width height depth)]
-    (update aabb :vertices
-            (fn [vertices]
-              (->> vertices
-                   (map (fn [p] (rotation p angles)))
-                   (map (fn [p] (tm/+ p (gv/vec3 x y z)))))))))
+    (-> aabb
+        (rotate-box angles)
+        (translate-box (gv/vec3 x y z)))))
 
 (comment (cube [0 0 0] [0 0 0] [10 10 10]))
 
