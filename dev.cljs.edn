@@ -2,6 +2,7 @@
   :watch-dirs ["src" "test"]
   :extra-main-files {:tests {:main shimmers.test-runner}}
 
+  :open-file-command "emacsclient"
   ;; Define handler to enable clientside SPA routing
   :ring-handler shimmers.ring-server/handler}
 {:preloads [shimmers.dev]
