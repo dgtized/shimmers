@@ -9,23 +9,26 @@
             [thi.ng.math.core :as tm]))
 
 (deftest ordered-points
-  (t/testing "outbound set is empty"
-    (is (not (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [])))
-    (is (not (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) []))))
-  (t/testing "vector inbound is in outbound set"
-    (is (= (gv/vec2 1 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 1 1)])))
-    (is (= (gv/vec2 1 1) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 1 1)]))))
-  (t/testing "chooses the remaining point if inbound is in the outbound set"
-    (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)])))
-    (is (= (gv/vec2 0 1) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 1 1)]))))
-  (t/testing "chooses the next closest point if collinear"
-    (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
-    (is (= (gv/vec2 0 2) (sut/clockwise-point (gv/vec2 0 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
-    (is (= (gv/vec2 0 1) (sut/clockwise-point (gv/vec2 0 2) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
+  (let [[origin v01 v02 v11]
+        (map gv/vec2 [[0 0] [0 1] [0 2] [1 1]])]
+    (t/testing "outbound set is empty"
+      (is (not (sut/clockwise-point v11 origin [])))
+      (is (not (sut/counter-clockwise-point v11 origin []))))
+    (t/testing "vector inbound is in outbound set"
+      (is (= v11 (sut/clockwise-point v11 origin [v11])))
+      (is (= v11 (sut/counter-clockwise-point v11 origin [v11]))))
+    (t/testing "chooses the remaining point if inbound is in the outbound set"
+      (is (= v01 (sut/clockwise-point v11 origin [v01 v11])))
+      (is (= v01 (sut/counter-clockwise-point v11 origin [v01 v11]))))
+    (t/testing "chooses the next closest point if collinear"
+      (is (= v01 (sut/clockwise-point v11 origin [v01 v02])))
+      (is (= v02 (sut/clockwise-point v01 origin [v01 v02])))
+      (is (= v01 (sut/clockwise-point v02 origin [v01 v02])))
 
-    (is (= (gv/vec2 0 1) (sut/counter-clockwise-point (gv/vec2 1 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
-    (is (= (gv/vec2 0 2) (sut/counter-clockwise-point (gv/vec2 0 1) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)])))
-    (is (= (gv/vec2 0 1) (sut/counter-clockwise-point (gv/vec2 0 2) (gv/vec2) [(gv/vec2 0 1) (gv/vec2 0 2)]))))
+      (is (= v01 (sut/counter-clockwise-point v11 origin [v01 v02])))
+      (is (= v02 (sut/counter-clockwise-point v01 origin [v01 v02])))
+      (is (= v01 (sut/counter-clockwise-point v02 origin [v01 v02])))))
+
   (let [points (mapv (fn [t] (gv/vec2 (map int (v/polar 1.5 (* tm/TWO_PI t)))))
                      (butlast (tm/norm-range 8)))
         [a b c d e f g h] points]
