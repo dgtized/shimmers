@@ -39,6 +39,13 @@
       "vertical line clipping"))
 
 (deftest hatching
-  (is (= 4 (count (sut/hatch-rectangle (rect/rect 2 2 4) 1.0 0.0)))))
+  (is (= 4 (count (sut/hatch-rectangle (rect/rect 2 2 4) 1.0 0.0))))
+  (is (map line-delta=
+           [(gl/line2 [[2 24.6] [101.9 79.3]])
+            (gl/line2 [[2 53.1] [91.3 101.9]])
+            (gl/line2 [[12.6 2] [101.9 50.8]])
+            (gl/line2 [[2 81.6] [39.2 101.9]])
+            (gl/line2 [[64.7 2] [101.9 22.3]])]
+           (sut/hatch-rectangle (rect/rect 2 2 100) 25.0 0.5 [0.5 0.5]))))
 
 (comment (t/run-tests))
