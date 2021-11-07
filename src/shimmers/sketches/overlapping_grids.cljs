@@ -51,10 +51,10 @@
   (doseq [{:keys [grid noise-threshold noise-scale
                   stroke-weight cell-color
                   theta spacing]} grids]
-    (apply q/stroke cell-color)
-    (q/stroke-weight stroke-weight)
     (doseq [r grid
             :let [center-r (g/centroid r)]]
+      (apply q/stroke cell-color)
+      (q/stroke-weight stroke-weight)
       (cq/draw-polygon r)
       (q/stroke-weight (* 0.5 stroke-weight))
       (when (> (scaled-noise center-r noise-scale) noise-threshold)
