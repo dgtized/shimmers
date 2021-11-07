@@ -15,7 +15,9 @@
 
 (defonce ui-state
   (ctrl/state {:max-iterations 256
-               :square-padding true}))
+               :show-squares true
+               :square-padding true
+               :show-remaining true}))
 
 ;; Further Experiments: pack resulting squares with patterns of their own?
 ;; Colors and shapes, even tilted or "hand drawn" squares?
@@ -58,25 +60,30 @@
   (cs/iterate-cycles 12 pack-step state))
 
 (defn draw [{:keys [squares remaining]}]
-  (q/background 1.0)
-  (q/stroke-weight 0.66)
-  (q/stroke 0.35 0.5 0.5 0.5)
-  (q/fill 1.0 1.0)
-  (doseq [rects remaining]
-    (cq/draw-polygon rects))
-  (q/stroke 0.0 0.0 0.0 1.0)
-  (q/fill 1.0 0.1)
-  (let [{:keys [square-padding]} @ui-state
+  (let [{:keys [show-remaining show-squares square-padding]} @ui-state
         scale (if square-padding (/ 1 tm/PHI) 1.0)]
-    (doseq [square squares]
-      (-> square
-          (g/scale-size scale)
-          cq/draw-polygon))))
+    (q/background 1.0)
+    (q/stroke-weight 0.66)
+    (when show-remaining
+      (q/stroke 0.35 0.5 0.5 0.5)
+      (q/fill 1.0 1.0)
+      (doseq [rects remaining]
+        (cq/draw-polygon rects)))
+    (when show-squares
+      (q/stroke 0.0 0.0 0.0 1.0)
+      (q/fill 1.0 0.1)
+      (doseq [square squares]
+        (-> square
+            (g/scale-size scale)
+            cq/draw-polygon)))))
 
 (defn ui-controls []
   [:div
    (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
-   (ctrl/checkbox ui-state "Padding on Square" [:square-padding])
+   (ctrl/checkbox ui-state "Show Squares" [:show-squares])
+   (when (:show-squares @ui-state)
+     (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
+   (ctrl/checkbox ui-state "Show Remaining Rectangle" [:show-remaining])
    [:p (view-sketch/generate :square-packing)]])
 
 (sketch/defquil square-packing
