@@ -3,26 +3,29 @@
             [shimmers.algorithm.square-packing :as sut]
             [thi.ng.geom.rect :as rect]))
 
-(def rectangle (rect/rect 0 0 100 100))
+(def rectangle (rect/rect 0 0 100 120))
 
 (deftest splitting-panes
-  (is (= [(rect/rect 25 25 50 50)
-          (rect/rect 0 0 100 25)
-          (rect/rect 0 75 100 25)
-          (rect/rect 0 25 25 50)
-          (rect/rect 75 25 25 50)]
-         (sut/split-panes rectangle 50 [0.5 0.5] :row)))
-  (is (= [(rect/rect 25 25 50 50)
-          (rect/rect 25 0 50 25)
-          (rect/rect 25 75 50 25)
-          (rect/rect 0 0 25 100)
-          (rect/rect 75 0 25 100)]
-         (sut/split-panes rectangle 50 [0.5 0.5] :column)))
-  (is (= [(rect/rect 25 25 50 50)
-          (rect/rect 25 0 75 25)
-          (rect/rect 75 25 25 75)
-          (rect/rect 0 75 75 25)
-          (rect/rect 0 0 25 75)]
-         (sut/split-panes rectangle 50 [0.5 0.5] :clockwise))))
+  (is (= [(rect/rect 25 35 50 50)
+          (rect/rect 0 0 100 35)
+          (rect/rect 0 85 100 35)
+          (rect/rect 0 35 25 50)
+          (rect/rect 75 35 25 50)]
+         (sut/split-panes rectangle 50 [0.5 0.5] :row))
+      "row major")
+  (is (= [(rect/rect 25 35 50 50)
+          (rect/rect 25 0 50 35)
+          (rect/rect 25 85 50 35)
+          (rect/rect 0 0 25 120)
+          (rect/rect 75 0 25 120)]
+         (sut/split-panes rectangle 50 [0.5 0.5] :column))
+      "column major")
+  (is (= [(rect/rect 25 35 50 50)
+          (rect/rect 25 0 75 35)
+          (rect/rect 75 35 25 85)
+          (rect/rect 0 85 75 35)
+          (rect/rect 0 0 25 85)]
+         (sut/split-panes rectangle 50 [0.5 0.5] :clockwise))
+      "clockwise"))
 
 (comment (t/run-tests))
