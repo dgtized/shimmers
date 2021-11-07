@@ -12,20 +12,31 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [region (cq/screen-rect 0.95)]
-    {:grids [(g/subdivide region {:rows 10 :cols 13})]}))
+  (q/frame-rate 8)
+  {})
 
 (defn update-state [state]
-  state)
+  (let [region (cq/screen-rect 0.95)]
+    {:grids [{:grid (g/subdivide region {:rows 10 :cols 13})
+              :noise-threshold 0.2
+              :noise-scale 0.5
+              :theta 0.5
+              :spacing 8}
+             {:grid (g/subdivide region {:rows 6 :cols 7})
+              :noise-threshold 0.1
+              :noise-scale 0.2
+              :theta 1.0
+              :spacing 8}]}))
 
 (defn draw [{:keys [grids]}]
   (q/background 1.0)
-  (doseq [grid grids]
+  (q/no-fill)
+  (doseq [{:keys [grid noise-threshold noise-scale theta spacing]} grids]
     (doseq [r grid
             :let [center-r (g/centroid r)]]
       (cq/draw-polygon r)
-      (when (> (apply noise/noise2 (tm/* center-r 0.5)) 0.2)
-        (doseq [{[p q] :points} (clip/hatch-rectangle r 8 0.5)]
+      (when (> (apply noise/noise2 (tm/* center-r noise-scale)) noise-threshold)
+        (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta)]
           (q/line p q))))))
 
 (sketch/defquil overlapping-grids
