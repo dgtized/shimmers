@@ -3,12 +3,12 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
    [thi.ng.geom.aabb :as aabb]
    [thi.ng.geom.core :as g]
-   [shimmers.common.quil :as cq]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def iso-angle (/ (Math/sqrt 2) 2))
 

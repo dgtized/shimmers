@@ -47,4 +47,10 @@
 (defn line [p q]
   (squiggle p q))
 
+(defn strip [vertices]
+  (doseq [[p q] (partition 2 1 vertices)]
+    (line p q)))
 
+(defn closed-strip [vertices]
+  (strip vertices)
+  (line (last vertices) (first vertices)))
