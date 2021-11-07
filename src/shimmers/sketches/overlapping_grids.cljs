@@ -10,6 +10,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+;; TODO: extend grid generation to include grids from square-pack, ie not even subdivisions
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)

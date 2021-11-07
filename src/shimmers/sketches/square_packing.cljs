@@ -13,8 +13,11 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+(def modes [:row-major :row :column :clockwise :counter-clockwise :all])
+
 (defonce ui-state
   (ctrl/state {:max-iterations 256
+               :algorithm "row-major"
                :show-squares true
                :square-padding true
                :show-remaining true}))
@@ -35,11 +38,11 @@
                 (/ 1 3) 2}))
 
 (defn pack-step
-  [{:keys [remaining squares square-limit pick-rectangle ratio position] :as state}]
+  [{:keys [remaining squares square-limit pick-rectangle ratio position algorithm] :as state}]
   (if (and (not-empty remaining) (< (count squares) square-limit))
     (let [rect (pick-rectangle remaining)
           [square & panes]
-          (square/proportional-split rect (ratio rect) (position rect))]
+          (square/proportional-split rect (ratio rect) (position rect) (algorithm rect))]
       (-> state
           (assoc :remaining (into (remove #{rect} remaining) panes))
           (update :squares conj square)))
@@ -47,12 +50,15 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [max-iterations]} @ui-state]
+  (let [{:keys [max-iterations algorithm]} @ui-state]
     {:square-limit max-iterations
      :pick-rectangle (partial dr/weighted-by g/area)
      :position #(repeatedly 2 (fn [] (mod (* tm/PHI (dr/random)) 1.0)))
      :ratio (constantly (/ 1 tm/PHI))
-
+     :algorithm (let [mode (keyword algorithm)]
+                  (if (= mode :row-major)
+                    square/row-major
+                    (constantly mode)))
      :squares []
      :remaining [(cq/screen-rect 0.98)]}))
 
@@ -80,6 +86,8 @@
 (defn ui-controls []
   [:div
    (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
+   (ctrl/dropdown ui-state "Split Approach" [:algorithm]
+                  (zipmap (map name modes) modes))
    (ctrl/checkbox ui-state "Show Squares" [:show-squares])
    (when (:show-squares @ui-state)
      (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
