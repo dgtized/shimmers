@@ -54,7 +54,7 @@
      :remaining [(cq/screen-rect 0.98)]}))
 
 (defn update-state [state]
-  (cs/iterate-cycles 16 pack-step state))
+  (cs/iterate-cycles 12 pack-step state))
 
 (defn draw [{:keys [squares remaining]}]
   (q/background 1.0)
@@ -72,7 +72,7 @@
 
 (defn ui-controls []
   [:div
-   (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 512 1.0])
+   (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
    [:p (view-sketch/generate :square-packing)]])
 
 (sketch/defquil square-packing
