@@ -91,21 +91,24 @@
 
 ;; adapted from draw-square in
 ;; https://sighack.com/post/cohen-sutherland-line-clipping-algorithm
-(defn hatch-rectangle [rect spacing theta]
-  (let [{[x y] :p [w h] :size} rect
-        xstart (+ x (tm/random 0 w))
-        ystart (+ y (tm/random 0 h))
-        cosa (Math/cos theta)
-        m (Math/tan theta)
-        c (- ystart (* m xstart))
+(defn hatch-rectangle
+  ([rect spacing theta]
+   (hatch-rectangle rect spacing theta [(tm/random) (tm/random)]))
+  ([rect spacing theta [rx ry]]
+   (let [{[x y] :p [w h] :size} rect
+         xstart (+ x (* rx w))
+         ystart (+ y (* ry h))
+         cosa (Math/cos theta)
+         m (Math/tan theta)
+         c (- ystart (* m xstart))
 
-        x0 (- x (/ w 2))
-        y0 (+ (* m x0) c)
-        x1 (+ x w (/ w 2))
-        y1 (+ (* m x1) c)]
-    (hatching-middle-out (partial clip-line rect)
-                         spacing cosa
-                         [x0 y0] [x1 y1])))
+         x0 (- x (/ w 2))
+         y0 (+ (* m x0) c)
+         x1 (+ x w (/ w 2))
+         y1 (+ (* m x1) c)]
+     (hatching-middle-out (partial clip-line rect)
+                          spacing cosa
+                          [x0 y0] [x1 y1]))))
 
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))

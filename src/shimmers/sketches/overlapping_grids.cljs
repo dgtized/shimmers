@@ -12,7 +12,6 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 8)
   {})
 
 (defn update-state [state]
@@ -49,7 +48,7 @@
             :let [center-r (g/centroid r)]]
       (cq/draw-polygon r)
       (when (> (scaled-noise center-r noise-scale) noise-threshold)
-        (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta)]
+        (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta [0.5 0.5])]
           (q/line p q))))))
 
 (sketch/defquil overlapping-grids
