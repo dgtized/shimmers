@@ -37,29 +37,29 @@
 
   Depending on the placement and size of the square, some of the surrounding
   rectangles may have length or width zero."
-  [{p :p [width height] :size} size [px py] split]
-  (let [offset-x (* px (- width size))
-        offset-y (* py (- height size))
-        sq (rect/rect (tm/+ p [offset-x offset-y]) size size)]
+  [{p :p [width height] :size} size [percent-x percent-y] split]
+  (let [ix (* percent-x (- width size))
+        iy (* percent-y (- height size))
+        inner (rect/rect (tm/+ p [ix iy]) size size)]
     (->> (case split
            :row
-           [(rect/rect p width offset-y) ;; south row
-            (rect/rect (tm/+ p [0 (+ size offset-y)]) width (- height size offset-y)) ;; north row
-            (rect/rect (tm/+ p [0 offset-y]) offset-x size) ;; east chunk
-            (rect/rect (tm/+ p [(+ offset-x size) offset-y]) (- width size offset-x) size) ;; west chunk
+           [(rect/rect p width iy) ;; south row
+            (rect/rect (tm/+ p [0 (+ size iy)]) width (- height size iy)) ;; north row
+            (rect/rect (tm/+ p [0 iy]) ix size) ;; east chunk
+            (rect/rect (tm/+ p [(+ ix size) iy]) (- width size ix) size) ;; west chunk
             ]
            :column
-           [(rect/rect (tm/+ p [offset-x 0]) size offset-y) ;; south chunk
-            (rect/rect (tm/+ p [offset-x (+ size offset-y)]) size (- height size offset-y)) ;; north chunk
-            (rect/rect p offset-x height) ;; east column
-            (rect/rect (tm/+ p [(+ size offset-x) 0]) (- width size offset-x) height) ;; west column
+           [(rect/rect (tm/+ p [ix 0]) size iy) ;; south chunk
+            (rect/rect (tm/+ p [ix (+ size iy)]) size (- height size iy)) ;; north chunk
+            (rect/rect p ix height) ;; east column
+            (rect/rect (tm/+ p [(+ size ix) 0]) (- width size ix) height) ;; west column
             ]
            :clockwise
-           [(rect/rect (tm/+ p [offset-x 0]) (- width offset-x) offset-y) ; top
-            (rect/rect (tm/+ p [(+ size offset-x) offset-y]) (- width size offset-x) (- height offset-y)) ; right
-            (rect/rect (tm/+ p [0 (+ offset-y size)]) (+ offset-x size) (- height offset-y size)) ; bottom
-            (rect/rect p offset-x (+ offset-y size))]) ; left
-         (into [sq]))))
+           [(rect/rect (tm/+ p [ix 0]) (- width ix) iy) ; top
+            (rect/rect (tm/+ p [(+ size ix) iy]) (- width size ix) (- height iy)) ; right
+            (rect/rect (tm/+ p [0 (+ iy size)]) (+ ix size) (- height iy size)) ; bottom
+            (rect/rect p ix (+ iy size))]) ; left
+         (into [inner]))))
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
