@@ -13,26 +13,25 @@
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
-  (q/no-loop)
   (let [region (cq/screen-rect 0.95)
         theta (dr/random 0.6 1.2)]
     {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 10 :cols 13}))
-              :stroke-weight 1.0
-              :cell-color [0.99 0.5 0.5 0.5]
+              :stroke-weight 0.5
+              :cell-color [0.99 0.5 0.5 0.6]
               :noise-threshold 0.5
               :noise-scale 0.05
               :theta theta
               :spacing 8}
-             {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 6 :cols 7}))
+             {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 7 :cols 9}))
               :stroke-weight 0.7
-              :cell-color [0.6 0.8 0.5 1.0]
+              :cell-color [0.6 0.8 0.5 0.9]
               :noise-threshold 0.6
               :noise-scale 0.03
               :theta (+ theta (dr/random 0.5 1.0))
               :spacing 12}
              {:grid (dr/random-sample 0.95 (g/subdivide region {:rows 3 :cols 4}))
               :stroke-weight 3.0
-              :cell-color [0.05 0.6 0.5 0.5]
+              :cell-color [0.05 0.6 0.5 0.35]
               :noise-threshold 0.75
               :noise-scale 0.02
               :theta (+ theta (dr/random 1.0 2.0))
