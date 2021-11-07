@@ -18,24 +18,37 @@
 (defn update-state [state]
   (let [region (cq/screen-rect 0.95)]
     {:grids [{:grid (g/subdivide region {:rows 10 :cols 13})
-              :noise-threshold 0.2
-              :noise-scale 0.5
+              :stroke-weight 1.0
+              :noise-threshold 0.0
+              :noise-scale 0.05
               :theta 0.5
               :spacing 8}
              {:grid (g/subdivide region {:rows 6 :cols 7})
+              :stroke-weight 0.7
               :noise-threshold 0.1
-              :noise-scale 0.2
+              :noise-scale 0.02
               :theta 1.0
-              :spacing 8}]}))
+              :spacing 12}
+             {:grid (g/subdivide region {:rows 3 :cols 4})
+              :stroke-weight 3.0
+              :noise-threshold 0.2
+              :noise-scale 0.05
+              :theta 2.0
+              :spacing 12}]}))
+
+(defn scaled-noise [pos scale]
+  (apply noise/noise2 (tm/* pos scale)))
 
 (defn draw [{:keys [grids]}]
   (q/background 1.0)
   (q/no-fill)
-  (doseq [{:keys [grid noise-threshold noise-scale theta spacing]} grids]
+  (doseq [{:keys [grid noise-threshold noise-scale
+                  stroke-weight theta spacing]} grids]
+    (q/stroke-weight stroke-weight)
     (doseq [r grid
             :let [center-r (g/centroid r)]]
       (cq/draw-polygon r)
-      (when (> (apply noise/noise2 (tm/* center-r noise-scale)) noise-threshold)
+      (when (> (scaled-noise center-r noise-scale) noise-threshold)
         (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta)]
           (q/line p q))))))
 
