@@ -1,6 +1,9 @@
 (ns shimmers.algorithm.square-packing
-  (:require [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Row Major
 ;; 111
@@ -25,6 +28,30 @@
 (defn row-major [{[w h] :size}]
   (if (> h w) :row :column))
 
+(defn surrounding-panes
+  [{p :p [width height] :size}
+   {[x y] :p [w h] :size}
+   split]
+  (case split
+    :row
+    [(rect/rect p width y) ;; south row
+     (rect/rect (tm/+ p [0 (+ h y)]) width (- height h y)) ;; north row
+     (rect/rect (tm/+ p [0 y]) x h) ;; east chunk
+     (rect/rect (tm/+ p [(+ x w) y]) (- width w x) h) ;; west chunk
+     ]
+    :column
+    [(rect/rect (tm/+ p [x 0]) w y) ;; south chunk
+     (rect/rect (tm/+ p [x (+ h y)]) w (- height h y)) ;; north chunk
+     (rect/rect p x height) ;; east column
+     (rect/rect (tm/+ p [(+ w x) 0]) (- width w x) height) ;; west column
+     ]
+    :clockwise
+    [(rect/rect (tm/+ p [x 0]) (- width x) y) ; top
+     (rect/rect (tm/+ p [(+ w x) y]) (- width w x) (- height y)) ; right
+     (rect/rect (tm/+ p [0 (+ y h)]) (+ x w) (- height y h)) ; bottom
+     (rect/rect p x (+ y h))] ; left
+    ))
+
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
 ;; TODO: support splitting out arbitrary rectangles and not just squares
@@ -37,28 +64,10 @@
 
   Depending on the placement and size of the square, some of the surrounding
   rectangles may have length or width zero."
-  [{p :p [width height] :size} size [percent-x percent-y] split]
-  (let [pos [(* percent-x (- width size)) (* percent-y (- height size))]
-        {[x y] :p [w h] :size :as inner} (rect/rect (tm/+ p pos) size size)]
-    (->> (case split
-           :row
-           [(rect/rect p width y) ;; south row
-            (rect/rect (tm/+ p [0 (+ h y)]) width (- height h y)) ;; north row
-            (rect/rect (tm/+ p [0 y]) x h) ;; east chunk
-            (rect/rect (tm/+ p [(+ x w) y]) (- width w x) h) ;; west chunk
-            ]
-           :column
-           [(rect/rect (tm/+ p [x 0]) w y) ;; south chunk
-            (rect/rect (tm/+ p [x (+ h y)]) w (- height h y)) ;; north chunk
-            (rect/rect p x height) ;; east column
-            (rect/rect (tm/+ p [(+ w x) 0]) (- width w x) height) ;; west column
-            ]
-           :clockwise
-           [(rect/rect (tm/+ p [x 0]) (- width x) y) ; top
-            (rect/rect (tm/+ p [(+ w x) y]) (- width w x) (- height y)) ; right
-            (rect/rect (tm/+ p [0 (+ y h)]) (+ x w) (- height y h)) ; bottom
-            (rect/rect p x (+ y h))]) ; left
-         (into [inner]))))
+  [{p :p [width height] :size :as outer} size [percent-x percent-y] split]
+  (let [pos (gv/vec2 [(* percent-x (- width size)) (* percent-y (- height size))])
+        inner (rect/rect pos size size)]
+    (into [(g/translate inner p)] (surrounding-panes outer inner split))))
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
