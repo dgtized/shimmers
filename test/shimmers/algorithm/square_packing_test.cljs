@@ -17,6 +17,12 @@
           (rect/rect 25 75 50 25)
           (rect/rect 0 0 25 100)
           (rect/rect 75 0 25 100)]
-         (sut/split-panes rectangle 50 [0.5 0.5] :column))))
+         (sut/split-panes rectangle 50 [0.5 0.5] :column)))
+  (is (= [(rect/rect 25 25 50 50)
+          (rect/rect 25 0 75 25)
+          (rect/rect 75 25 25 75)
+          (rect/rect 0 75 75 25)
+          (rect/rect 0 0 25 75)]
+         (sut/split-panes rectangle 50 [0.5 0.5] :clockwise))))
 
 (comment (t/run-tests))

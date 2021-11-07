@@ -12,16 +12,22 @@
 ;; 104
 ;; 134
 
+;; Clockwise
+;; 4 1 1
+;; 4 0 2
+;; 3 3 2
+
 ;; TODO: support splits like?
-;; 123 112 122 122
-;; 405 302 103 103
-;; 678 344 443 144
+;; 123 112 122
+;; 405 302 103
+;; 678 344 144
 
 (defn row-major [{[w h] :size}]
   (if (> h w) :row :column))
 
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
+;; TODO: support splitting out arbitrary rectangles and not just squares
 (defn split-panes
   "Split a rectangle into a square and the 4 surrounding rectangles. The square is
   of `size`, with `px,py` indicating percent positioning within the larger
@@ -47,7 +53,12 @@
             (rect/rect (tm/+ p [offset-x (+ size offset-y)]) size (- height size offset-y)) ;; north chunk
             (rect/rect p offset-x height) ;; east column
             (rect/rect (tm/+ p [(+ size offset-x) 0]) (- width size offset-x) height) ;; west column
-            ])
+            ]
+           :clockwise
+           [(rect/rect (tm/+ p [offset-x 0]) (- width offset-x) offset-y) ; top
+            (rect/rect (tm/+ p [(+ size offset-x) offset-y]) (- width size offset-x) (- height offset-y)) ; right
+            (rect/rect (tm/+ p [0 (+ offset-y size)]) (+ offset-x size) (- height offset-y size)) ; bottom
+            (rect/rect p offset-x (+ offset-y size))]) ; left
          (into [sq]))))
 
 (defn has-area? [{:keys [size]}]
