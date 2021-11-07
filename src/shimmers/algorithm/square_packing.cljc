@@ -14,10 +14,15 @@
 ;; 3 0 1       3 0 1
 ;; 2 2 1       3 4 4
 
+;; All
+;; 1 2 3
+;; 4 0 5
+;; 6 7 8
+
 ;; TODO: support splits like?
-;; 123 122
-;; 405 103
-;; 678 144
+;; 122
+;; 103
+;; 144
 
 (defn row-major [{[w h] :size}]
   (if (> h w) :row :column))
@@ -53,7 +58,17 @@
      (rect/rect (gv/vec2) (+ x w) y)
      (rect/rect (gv/vec2 0 y) x (- height y))
      (rect/rect (gv/vec2 x (+ y h)) (- width x) (- height y h))]
-    ))
+    :all ;; top row
+    [(rect/rect (gv/vec2 0 0) x y)
+     (rect/rect (gv/vec2 x 0) w y)
+     (rect/rect (gv/vec2 (+ x w) 0) (- width w x) y)
+     ;; middle row without inner rectangle
+     (rect/rect (gv/vec2 0 y) x h)
+     (rect/rect (gv/vec2 (+ w x) y) (- width w x) h)
+     ;; bottom row
+     (rect/rect (gv/vec2 0 (+ y h)) x (- height h y))
+     (rect/rect (gv/vec2 x (+ y h)) w (- height h y))
+     (rect/rect (gv/vec2 (+ x w) (+ y h)) (- width w x) (- height h y))]))
 
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
