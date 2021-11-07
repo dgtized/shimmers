@@ -38,27 +38,26 @@
   Depending on the placement and size of the square, some of the surrounding
   rectangles may have length or width zero."
   [{p :p [width height] :size} size [percent-x percent-y] split]
-  (let [ix (* percent-x (- width size))
-        iy (* percent-y (- height size))
-        {[w h] :size :as inner} (rect/rect (tm/+ p [ix iy]) size size)]
+  (let [pos [(* percent-x (- width size)) (* percent-y (- height size))]
+        {[x y] :p [w h] :size :as inner} (rect/rect (tm/+ p pos) size size)]
     (->> (case split
            :row
-           [(rect/rect p width iy) ;; south row
-            (rect/rect (tm/+ p [0 (+ h iy)]) width (- height h iy)) ;; north row
-            (rect/rect (tm/+ p [0 iy]) ix h) ;; east chunk
-            (rect/rect (tm/+ p [(+ ix w) iy]) (- width w ix) h) ;; west chunk
+           [(rect/rect p width y) ;; south row
+            (rect/rect (tm/+ p [0 (+ h y)]) width (- height h y)) ;; north row
+            (rect/rect (tm/+ p [0 y]) x h) ;; east chunk
+            (rect/rect (tm/+ p [(+ x w) y]) (- width w x) h) ;; west chunk
             ]
            :column
-           [(rect/rect (tm/+ p [ix 0]) w iy) ;; south chunk
-            (rect/rect (tm/+ p [ix (+ h iy)]) w (- height h iy)) ;; north chunk
-            (rect/rect p ix height) ;; east column
-            (rect/rect (tm/+ p [(+ w ix) 0]) (- width w ix) height) ;; west column
+           [(rect/rect (tm/+ p [x 0]) w y) ;; south chunk
+            (rect/rect (tm/+ p [x (+ h y)]) w (- height h y)) ;; north chunk
+            (rect/rect p x height) ;; east column
+            (rect/rect (tm/+ p [(+ w x) 0]) (- width w x) height) ;; west column
             ]
            :clockwise
-           [(rect/rect (tm/+ p [ix 0]) (- width ix) iy) ; top
-            (rect/rect (tm/+ p [(+ w ix) iy]) (- width w ix) (- height iy)) ; right
-            (rect/rect (tm/+ p [0 (+ iy h)]) (+ ix w) (- height iy h)) ; bottom
-            (rect/rect p ix (+ iy h))]) ; left
+           [(rect/rect (tm/+ p [x 0]) (- width x) y) ; top
+            (rect/rect (tm/+ p [(+ w x) y]) (- width w x) (- height y)) ; right
+            (rect/rect (tm/+ p [0 (+ y h)]) (+ x w) (- height y h)) ; bottom
+            (rect/rect p x (+ y h))]) ; left
          (into [inner]))))
 
 (defn has-area? [{:keys [size]}]
