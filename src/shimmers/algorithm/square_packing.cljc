@@ -29,32 +29,35 @@
   (if (> h w) :row :column))
 
 (defn surrounding-panes
-  [{p :p [width height] :size}
+  "Given an outer rectangle and an inner rectangle with relative coordinates to
+  the outer rectangle, split out the surrounding panes that are remaining from
+  the outer rectangle. The panes returned will be in the relative coordinate
+  space."
+  [{[width height] :size}
    {[x y] :p [w h] :size}
    split]
   (case split
     :row
-    [(rect/rect p width y) ;; south row
-     (rect/rect (tm/+ p [0 (+ h y)]) width (- height h y)) ;; north row
-     (rect/rect (tm/+ p [0 y]) x h) ;; east chunk
-     (rect/rect (tm/+ p [(+ x w) y]) (- width w x) h) ;; west chunk
+    [(rect/rect (gv/vec2) width y) ;; south row
+     (rect/rect (gv/vec2 0 (+ h y)) width (- height h y)) ;; north row
+     (rect/rect (gv/vec2 0 y) x h) ;; east chunk
+     (rect/rect (gv/vec2 (+ x w) y) (- width w x) h) ;; west chunk
      ]
     :column
-    [(rect/rect (tm/+ p [x 0]) w y) ;; south chunk
-     (rect/rect (tm/+ p [x (+ h y)]) w (- height h y)) ;; north chunk
-     (rect/rect p x height) ;; east column
-     (rect/rect (tm/+ p [(+ w x) 0]) (- width w x) height) ;; west column
+    [(rect/rect (gv/vec2 x 0) w y) ;; south chunk
+     (rect/rect (gv/vec2 x (+ h y)) w (- height h y)) ;; north chunk
+     (rect/rect (gv/vec2) x height) ;; east column
+     (rect/rect (gv/vec2 (+ w x) 0) (- width w x) height) ;; west column
      ]
     :clockwise
-    [(rect/rect (tm/+ p [x 0]) (- width x) y) ; top
-     (rect/rect (tm/+ p [(+ w x) y]) (- width w x) (- height y)) ; right
-     (rect/rect (tm/+ p [0 (+ y h)]) (+ x w) (- height y h)) ; bottom
-     (rect/rect p x (+ y h))] ; left
+    [(rect/rect (gv/vec2 x 0) (- width x) y) ; top
+     (rect/rect (gv/vec2 (+ w x) y) (- width w x) (- height y)) ; right
+     (rect/rect (gv/vec2 0 (+ y h)) (+ x w) (- height y h)) ; bottom
+     (rect/rect (gv/vec2) x (+ y h))] ; left
     ))
 
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
 ;; are possible if using values outside of the range.
-;; TODO: support splitting out arbitrary rectangles and not just squares
 (defn split-panes
   "Split a rectangle into a square and the 4 surrounding rectangles. The square is
   of `size`, with `px,py` indicating percent positioning within the larger
@@ -67,7 +70,8 @@
   [{p :p [width height] :size :as outer} size [percent-x percent-y] split]
   (let [pos (gv/vec2 [(* percent-x (- width size)) (* percent-y (- height size))])
         inner (rect/rect pos size size)]
-    (into [(g/translate inner p)] (surrounding-panes outer inner split))))
+    (mapv (fn [s] (g/translate s p))
+          (into [inner] (surrounding-panes outer inner split)))))
 
 (defn has-area? [{:keys [size]}]
   (every? pos? size))
