@@ -14,7 +14,8 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:max-iterations 256}))
+  (ctrl/state {:max-iterations 256
+               :square-padding true}))
 
 ;; Further Experiments: pack resulting squares with patterns of their own?
 ;; Colors and shapes, even tilted or "hand drawn" squares?
@@ -65,14 +66,17 @@
     (cq/draw-polygon rects))
   (q/stroke 0.0 0.0 0.0 1.0)
   (q/fill 1.0 0.1)
-  (doseq [square squares]
-    (-> square
-        (g/scale-size (/ 1 tm/PHI))
-        cq/draw-polygon)))
+  (let [{:keys [square-padding]} @ui-state
+        scale (if square-padding (/ 1 tm/PHI) 1.0)]
+    (doseq [square squares]
+      (-> square
+          (g/scale-size scale)
+          cq/draw-polygon))))
 
 (defn ui-controls []
   [:div
    (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
+   (ctrl/checkbox ui-state "Padding on Square" [:square-padding])
    [:p (view-sketch/generate :square-packing)]])
 
 (sketch/defquil square-packing
