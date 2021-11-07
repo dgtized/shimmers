@@ -21,10 +21,10 @@
          (sut/split-panes rectangle 50 [0.5 0.5] :column))
       "column major")
   (is (= [(rect/rect 25 35 50 50)
-          (rect/rect 25 0 75 35)
           (rect/rect 75 35 25 85)
           (rect/rect 0 85 75 35)
-          (rect/rect 0 0 25 85)]
+          (rect/rect 0 0 25 85)
+          (rect/rect 25 0 75 35)]
          (sut/split-panes rectangle 50 [0.5 0.5] :clockwise))
       "clockwise"))
 

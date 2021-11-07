@@ -16,9 +16,9 @@
 ;; 134
 
 ;; Clockwise
-;; 4 1 1
-;; 4 0 2
-;; 3 3 2
+;; 3 4 4
+;; 3 0 1
+;; 2 2 1
 
 ;; TODO: support splits like?
 ;; 123 112 122
@@ -32,7 +32,7 @@
   "Given an outer rectangle and an inner rectangle with relative coordinates to
   the outer rectangle, split out the surrounding panes that are remaining from
   the outer rectangle. The panes returned will be in the relative coordinate
-  space."
+  space. "
   [{[width height] :size}
    {[x y] :p [w h] :size}
    split]
@@ -50,10 +50,10 @@
      (rect/rect (gv/vec2 (+ w x) 0) (- width w x) height) ;; west column
      ]
     :clockwise
-    [(rect/rect (gv/vec2 x 0) (- width x) y) ; top
-     (rect/rect (gv/vec2 (+ w x) y) (- width w x) (- height y)) ; right
+    [(rect/rect (gv/vec2 (+ w x) y) (- width w x) (- height y)) ; right
      (rect/rect (gv/vec2 0 (+ y h)) (+ x w) (- height y h)) ; bottom
-     (rect/rect (gv/vec2) x (+ y h))] ; left
+     (rect/rect (gv/vec2) x (+ y h)) ; left
+     (rect/rect (gv/vec2 x 0) (- width x) y)] ; top
     ))
 
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
