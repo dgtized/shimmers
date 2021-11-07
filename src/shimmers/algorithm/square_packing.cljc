@@ -2,28 +2,22 @@
   (:require
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
-;; Row Major
-;; 111
-;; 203
-;; 444
+;; Row Major & Column Major
+;; 111         124
+;; 203         104
+;; 444         134
 
-;; Column Major
-;; 124
-;; 104
-;; 134
-
-;; Clockwise
-;; 3 4 4
-;; 3 0 1
-;; 2 2 1
+;; Clockwise & Counter Clockwise
+;; 3 4 4       2 2 1
+;; 3 0 1       3 0 1
+;; 2 2 1       3 4 4
 
 ;; TODO: support splits like?
-;; 123 112 122
-;; 405 302 103
-;; 678 344 144
+;; 123 122
+;; 405 103
+;; 678 144
 
 (defn row-major [{[w h] :size}]
   (if (> h w) :row :column))
@@ -54,6 +48,11 @@
      (rect/rect (gv/vec2 0 (+ y h)) (+ x w) (- height y h)) ; bottom
      (rect/rect (gv/vec2) x (+ y h)) ; left
      (rect/rect (gv/vec2 x 0) (- width x) y)] ; top
+    :counter-clockwise
+    [(rect/rect (gv/vec2 (+ w x) 0) (- width w x) (+ y h))
+     (rect/rect (gv/vec2) (+ x w) y)
+     (rect/rect (gv/vec2 0 y) x (- height y))
+     (rect/rect (gv/vec2 x (+ y h)) (- width x) (- height y h))]
     ))
 
 ;; Note that px,py are not clamped to 0,1 so some funky but interesting results
