@@ -5,10 +5,16 @@
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state
+  (ctrl/state {:max-iterations 256}))
 
 ;; Further Experiments: pack resulting squares with patterns of their own?
 ;; Colors and shapes, even tilted or "hand drawn" squares?
@@ -38,16 +44,17 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:square-limit 256
-   :pick-rectangle (partial dr/weighted-by g/area)
-   :position #(repeatedly 2 (fn [] (mod (* tm/PHI (dr/random)) 1.0)))
-   :ratio (constantly (/ 1 tm/PHI))
+  (let [{:keys [max-iterations]} @ui-state]
+    {:square-limit max-iterations
+     :pick-rectangle (partial dr/weighted-by g/area)
+     :position #(repeatedly 2 (fn [] (mod (* tm/PHI (dr/random)) 1.0)))
+     :ratio (constantly (/ 1 tm/PHI))
 
-   :squares []
-   :remaining [(cq/screen-rect 0.98)]})
+     :squares []
+     :remaining [(cq/screen-rect 0.98)]}))
 
 (defn update-state [state]
-  (pack-step state))
+  (cs/iterate-cycles 16 pack-step state))
 
 (defn draw [{:keys [squares remaining]}]
   (q/background 1.0)
@@ -63,9 +70,15 @@
         (g/scale-size (/ 1 tm/PHI))
         cq/draw-polygon)))
 
+(defn ui-controls []
+  [:div
+   (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 512 1.0])
+   [:p (view-sketch/generate :square-packing)]])
+
 (sketch/defquil square-packing
   :created-at "2021-10-17"
   :tags #{:deterministic}
+  :on-mount #(ctrl/mount ui-controls)
   :size [800 600]
   :setup setup
   :update update-state
