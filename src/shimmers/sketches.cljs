@@ -13,6 +13,7 @@
             shimmers.sketches.chaikin-demo
             shimmers.sketches.circle-hatch
             shimmers.sketches.circle-packing
+            shimmers.sketches.circuit-intersections
             shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
             shimmers.sketches.colors
