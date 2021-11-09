@@ -66,7 +66,6 @@
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
             shimmers.sketches.oil-reflections
-            shimmers.sketches.overlapping-grids
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
@@ -74,6 +73,7 @@
             shimmers.sketches.periapsis
             shimmers.sketches.permutations-of-transfiguration
             shimmers.sketches.physarum
+            shimmers.sketches.plaid-arrangements
             shimmers.sketches.point-to-point
             shimmers.sketches.poisson-disc-sampling
             shimmers.sketches.polygon-recomposition

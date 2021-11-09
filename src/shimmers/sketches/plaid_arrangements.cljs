@@ -1,4 +1,4 @@
-(ns shimmers.sketches.overlapping-grids
+(ns shimmers.sketches.plaid-arrangements
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -96,10 +96,10 @@
         (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta [0.5 0.5])]
           (q/line p q))))))
 
-(sketch/defquil overlapping-grids
+(sketch/defquil plaid-arrangements
   :created-at "2021-11-07"
   :tags #{:deterministic :static}
-  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :overlapping-grids)]))
+  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :plaid-arrangements)]))
   :size [1000 1000]
   :setup setup
   :update update-state
