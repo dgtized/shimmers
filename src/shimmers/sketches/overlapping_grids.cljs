@@ -68,7 +68,7 @@
              {:grid (dr/random-sample 0.8 (pack-grid region 5))
               :stroke-weight 3.0
               :cell-color color-c
-              :noise-threshold 0.75
+              :noise-threshold 0.7
               :noise-scale 0.02
               :theta (+ theta (dr/random 1.0 2.0))
               :spacing 12}]}))
