@@ -25,6 +25,16 @@
     (vec (for [offset nrange]
            (+ (- (* offset width) half) center)))))
 
+(defn gen-connections [sources destinations n]
+  (let [n-sources (count sources)]
+    (loop [i n dests (range (count destinations)) conns []]
+      (if (zero? i)
+        conns
+        (let [d (dr/rand-nth dests)]
+          (recur (dec i)
+                 (remove #{d} dests)
+                 (conj conns [(dr/random-int n-sources) d])))))))
+
 ;; Playing with some ideas from https://dl.acm.org/doi/pdf/10.5555/1882723.1882731
 ;; for VLSI circuit wiring diagrams
 (defn scene []
@@ -34,9 +44,7 @@
         sources (mapv #(r % 0.9) (placement (range 12) 0.01 0.5))
         destinations (vec (concat dst-left dst-right-a dst-right-b))
         ;; TODO: remove duplicates
-        connections (->> (fn [] [(dr/random-int (count sources))
-                                (dr/random-int (count destinations))])
-                         (repeatedly 12))]
+        connections (gen-connections sources destinations 12)]
     (csvg/svg {:width width :height height :stroke "black"}
               (for [[i src] (map-indexed vector sources)]
                 (svg/line src (gv/vec2 (:x src) (* height 0.1))
