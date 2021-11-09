@@ -26,22 +26,27 @@
            (+ (- (* offset width) half) center)))))
 
 (defn scene []
-  (let [sources (range 8)
-        destinations (range 4)
-        src (mapv #(r % 0.9) (placement sources 0.01 0.5))
-        dst (mapv #(r 0.1 %) (placement destinations 0.01 0.5))
-        connections (->> (fn [] [(dr/rand-nth sources)
-                                (dr/rand-nth destinations)])
-                         (repeatedly 8))]
+  (let [dst-left (mapv #(r 0.1 %) (placement (range 12) 0.01 0.5))
+        dst-right-a (mapv #(r 0.9 %) (placement (range 6) 0.01 0.33))
+        dst-right-b (mapv #(r 0.9 %) (placement (range 8) 0.01 0.66))
+        sources (mapv #(r % 0.9) (placement (range 12) 0.01 0.5))
+        destinations (vec (concat dst-left dst-right-a dst-right-b))
+        ;; TODO: remove duplicates
+        connections (->> (fn [] [(dr/random-int (count sources))
+                                (dr/random-int (count destinations))])
+                         (repeatedly 12))]
     (csvg/svg {:width width :height height :stroke "black"}
+              (for [[i src] (map-indexed vector sources)]
+                (svg/line src (gv/vec2 (:x src) (* height 0.1))
+                          {:stroke (color i)
+                           :key (str "src" i)}))
               (for [[a b] connections
-                    :let [p (nth src a)
-                          q (nth dst b)
+                    :let [p (nth sources a)
+                          q (nth destinations b)
                           isec (gv/vec2 (:x p) (:y q))]]
-                (svg/group {}
-                           (svg/circle isec 4.0)
-                           (svg/line p isec)
-                           (svg/line isec q))))))
+                (svg/group {:key (str (interpose "," [a b]))}
+                           (svg/circle isec 4.0 {:key (str "c" isec)})
+                           (svg/line isec q {:key (str "l" isec "-" q)}))))))
 
 (defn page []
   [:div (scene)])
