@@ -32,6 +32,9 @@
 (def palettes
   (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/c64408-399768-d2ad31"
         "https://artsexperiments.withgoogle.com/artpalette/colors/421f13-bd7c47-7e3118"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/926548-364b44-667565"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/cbe4c5-3b7c4a-c1776c"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/f3d69b-573c28-c59d60"
         "https://artsexperiments.withgoogle.com/artpalette/colors/2a5e5e-2c2a39-86725e"]
        (map color/url->palette)
        (into [[[0.99 0.5 0.5 0.6]
@@ -49,14 +52,14 @@
               (map #(into [] %) (dr/rand-nth palettes))
               (vec (dr/shuffle [0.7 0.9 0.5])))]
     {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 17 :cols 19}))
-              :stroke-weight 0.5
+              :stroke-weight 0.6
               :cell-color color-a
               :noise-threshold 0.5
               :noise-scale 0.05
               :theta theta
               :spacing 8}
              {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 11 :cols 13}))
-              :stroke-weight 0.7
+              :stroke-weight 0.9
               :cell-color color-b
               :noise-threshold 0.6
               :noise-scale 0.03
