@@ -3,12 +3,28 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
+
+(defn pack-grid [region steps]
+  (let [pack
+        (fn pack [rects]
+          (let [divide (dr/weighted-by g/area rects)
+                split (dr/weighted {(square/row-major divide) 4
+                                    :clockwise 2
+                                    :all 1})
+                pos [(dr/random 0.3 0.7)
+                     (dr/random 0.3 0.7)]
+                ratio (/ 1 tm/PHI)
+                panes (square/proportional-split divide ratio pos split)]
+            (into (remove #{divide} rects) panes)))]
+    (cs/iterate-cycles steps pack [region])))
 
 ;; TODO: extend grid generation to include grids from square-pack, ie not even subdivisions
 (defn setup []
@@ -30,9 +46,9 @@
               :noise-scale 0.03
               :theta (+ theta (dr/random 0.5 1.0))
               :spacing 12}
-             {:grid (dr/random-sample 0.95 (g/subdivide region {:rows 3 :cols 4}))
+             {:grid (dr/random-sample 0.8 (pack-grid region 5))
               :stroke-weight 3.0
-              :cell-color [0.05 0.6 0.5 0.35]
+              :cell-color [0.0 0.8 0.25 0.35]
               :noise-threshold 0.75
               :noise-scale 0.02
               :theta (+ theta (dr/random 1.0 2.0))
