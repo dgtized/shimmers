@@ -25,6 +25,8 @@
     (vec (for [offset nrange]
            (+ (- (* offset width) half) center)))))
 
+;; Playing with some ideas from https://dl.acm.org/doi/pdf/10.5555/1882723.1882731
+;; for VLSI circuit wiring diagrams
 (defn scene []
   (let [dst-left (mapv #(r 0.1 %) (placement (range 12) 0.01 0.5))
         dst-right-a (mapv #(r 0.9 %) (placement (range 6) 0.01 0.33))
