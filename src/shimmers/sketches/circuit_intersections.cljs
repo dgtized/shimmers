@@ -15,7 +15,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn color [i]
-  (col/as-css (col/hsla (mod (* i tm/PHI) 1.0) 0.5 0.5 1.0)))
+  (col/as-css (col/hsla (mod (* i tm/PHI) 1.0) 0.5 0.45 1.0)))
 
 (defn placement [wires size center]
   (let [n (count wires)
@@ -39,6 +39,7 @@
 ;; for VLSI circuit wiring diagrams
 (defn scene []
   (let [offset 0.42
+        color-base (dr/random)
         dst-left (mapv #(r 0.1 %) (placement (range 12) 0.01 0.5))
         dst-right-a (mapv #(r 0.9 %) (placement (range 6) 0.01 0.33))
         dst-right-b (mapv #(r 0.9 %) (placement (range 8) 0.01 0.66))
@@ -52,7 +53,7 @@
     (csvg/svg {:width width :height height :stroke "black"}
               (for [[i src] (map-indexed vector sources)]
                 (svg/line src (gv/vec2 (:x src) (* height 0.1))
-                          {:stroke (color i)
+                          {:stroke (color (+ color-base i))
                            :stroke-width (dr/random 0.5 3.0)
                            :key (str "src" i)}))
               (for [[a b] connections
