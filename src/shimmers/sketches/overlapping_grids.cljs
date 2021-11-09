@@ -54,22 +54,22 @@
     {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 17 :cols 19}))
               :stroke-weight 0.6
               :cell-color color-a
-              :noise-threshold 0.5
-              :noise-scale 0.05
+              :noise-threshold 0.55
+              :noise-scale 0.02
               :theta theta
               :spacing 8}
              {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 11 :cols 13}))
               :stroke-weight 0.9
               :cell-color color-b
-              :noise-threshold 0.6
-              :noise-scale 0.03
+              :noise-threshold 0.65
+              :noise-scale 0.005
               :theta (+ theta (dr/random 0.5 1.0))
               :spacing 12}
              {:grid (dr/random-sample 0.8 (pack-grid region 5))
               :stroke-weight 3.0
               :cell-color color-c
               :noise-threshold 0.7
-              :noise-scale 0.02
+              :noise-scale 0.002
               :theta (+ theta (dr/random 1.0 2.0))
               :spacing 12}]}))
 
