@@ -49,7 +49,7 @@
         theta (dr/random 0.6 1.2)
         [color-a color-b color-c]
         (mapv (fn [c alpha] (assoc c 3 alpha))
-              (map #(into [] %) (dr/rand-nth palettes))
+              (dr/shuffle (map #(into [] %) (dr/rand-nth palettes)))
               (vec (dr/shuffle [0.7 0.9 0.5])))]
     {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 17 :cols 19}))
               :stroke-weight 0.6
