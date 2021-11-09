@@ -48,14 +48,14 @@
         (mapv (fn [c alpha] (assoc c 3 alpha))
               (map #(into [] %) (dr/rand-nth palettes))
               (vec (dr/shuffle [0.7 0.9 0.5])))]
-    {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 10 :cols 13}))
+    {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 17 :cols 19}))
               :stroke-weight 0.5
               :cell-color color-a
               :noise-threshold 0.5
               :noise-scale 0.05
               :theta theta
               :spacing 8}
-             {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 7 :cols 9}))
+             {:grid (dr/random-sample 0.90 (g/subdivide region {:rows 11 :cols 13}))
               :stroke-weight 0.7
               :cell-color color-b
               :noise-threshold 0.6
