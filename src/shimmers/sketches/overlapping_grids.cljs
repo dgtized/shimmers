@@ -7,9 +7,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
@@ -93,7 +95,9 @@
 
 (sketch/defquil overlapping-grids
   :created-at "2021-11-07"
-  :size [800 600]
+  :tags #{:deterministic :static}
+  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :overlapping-grids)]))
+  :size [1000 1000]
   :setup setup
   :update update-state
   :draw draw
