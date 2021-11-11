@@ -206,13 +206,11 @@
                 (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
-  (let [distribution (cs/weighted
-                      1 make-rotate-row
-                      1 make-rotate-column
-                      3 make-pinwheel
-                      1 make-flip-x
-                      1 make-flip-y)
-        effect ((rand-nth distribution) state)
+  (let [effect ((p/weighted {make-rotate-row 1
+                             make-rotate-column 1
+                             make-pinwheel 3
+                             make-flip-x 1
+                             make-flip-y 1}) state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
       (update state :effects conj effect)
