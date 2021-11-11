@@ -18,15 +18,16 @@
 ;; From https://www.basedesign.com/blog/how-to-render-3d-in-2d-canvas
 (defn project [[x y z]]
   (let [perspective (* (q/width) 0.8)
-        scale (/ perspective (+ perspective z))]
-    (v/vec2 (+ (* scale x) (* 0.5 (q/width)))
-            (+ (* scale y) (* 0.5 (q/height))))))
+        scale (/ perspective (+ perspective z))
+        origin (tm/* (gv/vec2 (q/width) (q/height)) 0.5)]
+    (-> (gv/vec2 x y)
+        (tm/* scale)
+        (tm/+ origin))))
 
 (defn project-ul [[x y z]]
   (let [perspective (* (q/width) 0.8)
         scale (/ perspective (+ perspective z))]
-    (v/vec2 (+ (* scale x))
-            (+ (* scale y)))))
+    (tm/* (gv/vec2 x y) scale)))
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
