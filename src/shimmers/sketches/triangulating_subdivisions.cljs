@@ -31,11 +31,10 @@
   (< depth max-depth))
 
 (defn subdivide-triangle [{:keys [color depth max-depth] :as t}]
-  (let [distribution (cs/weighted 8 :midpoint
-                                  2 :inset
-                                  2 :trisect
-                                  1 :centroid)
-        opts {:mode (rand-nth distribution)
+  (let [opts {:mode (p/weighted {:midpoint 8
+                                 :inset 2
+                                 :trisect 2
+                                 :centroid 1})
               :inner-point geometry/random-point-in-triangle
               :sample (p/gaussian-clamped 0.5 0.1)
               :sample-low (p/gaussian-clamped 0.33 0.1)
