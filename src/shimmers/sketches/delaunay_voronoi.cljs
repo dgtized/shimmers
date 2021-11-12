@@ -114,6 +114,9 @@
 (defn relative-heading [centroid point]
   (g/heading (tm/- (gv/vec2 point) centroid)))
 
+(defn dbg-head [centroid pt]
+  [(gv/vec2 pt) :ϴ (tm/roundto (relative-heading centroid pt) 0.01)])
+
 (defn draw [{:keys [points triangles hull]}]
   (q/background 255)
 
@@ -161,16 +164,8 @@
 
         (swap! defo conj
                {:point pos :inside inside
-                :edges
-                (mapv (fn [[_ to]]
-                        {:to to
-                         :ϴ (g/heading (tm/- (gv/vec2 to) centroid))})
-                      edges)
-                :intersections
-                (mapv (fn [at]
-                        {:at (gv/vec2 at)
-                         :ϴ (g/heading (tm/- (gv/vec2 at) centroid))})
-                      intersections)})
+                :edges (mapv (fn [[_ to]] (dbg-head centroid to)) edges)
+                :intersections (mapv (fn [at] (dbg-head centroid at)) intersections)})
 
         (q/no-fill)
         (q/begin-shape)
