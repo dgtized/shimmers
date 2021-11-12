@@ -9,15 +9,17 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.triangle :as gt]))
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:pairs [[(rect/rect) (rect/rect 0.1 0.1 1)]
            [(rect/rect) (gc/circle 0.1 0.1 0.5)]
-           [(rect/rect) (gt/triangle2 [0.1 0.1] [0.2 1.2] [0.9 0.8])]]})
+           [(rect/rect) (gt/triangle2 [0.1 0.1] [0.2 1.2] [0.9 0.8])]
+           [(rect/rect) (gp/polygon2 [[0.1 0.1] [0.5 0.1] [1.1 0.5] [0.8 1.1] [-0.2 0.5]])]]})
 
 (defn update-state [{:keys [pairs] :as state}]
   (->> pairs
