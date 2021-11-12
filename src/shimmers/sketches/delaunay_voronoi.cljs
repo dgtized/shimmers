@@ -1,18 +1,22 @@
 (ns shimmers.sketches.delaunay-voronoi
-  (:require [clojure.set :as set]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.utils.delaunay :as delaunay]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.set :as set]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.utils.delaunay :as delaunay]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn neighboring-triangles
   "Map every distinct vertex in triangles to the set of neighboring triangles that
@@ -111,7 +115,6 @@
   (g/heading (tm/- (gv/vec2 point) centroid)))
 
 (defn draw [{:keys [points triangles hull]}]
-  (println "draw")
   (q/background 255)
 
   (q/stroke-weight 0.5)
@@ -129,13 +132,13 @@
     (cq/circle v 1))
 
   (q/no-fill)
+  (reset! defo [])
   (let [neighborhood (neighboring-triangles triangles)]
     (doseq [point (take 1 (shuffle points))
             :let [inside (if (get hull point) false true)
-                  [x y] (cq/rel-pos point)]]
-      (println [x y :inside inside])
+                  pos (cq/rel-vec point)]]
       (q/stroke 255 0 0)
-      (cq/circle x y 2)
+      (cq/circle pos 2)
 
       (let [centroid (cq/rel-vec point)
             edges (->> (neighboring-vertices neighborhood point)
@@ -146,18 +149,28 @@
             intersections (map intercept-point
                                bisects
                                (rest (if inside (cycle bisects) bisects)))]
-        (doseq [edge edges
-                :let [[x y] (second edge)]]
-          (println {:edge [x y] :heading (g/heading (tm/- (gv/vec2 x y) centroid))})
+        (doseq [edge edges]
           (q/stroke 0 255 0)
-          (cq/circle x y 2)
+          (cq/circle (second edge) 2)
           (q/stroke 0 0 0)
           (plot (bisect-line edge)))
 
         (q/stroke 0 0 255)
-        (doseq [[x y] intersections]
-          (println [x y :heading (g/heading (tm/- (gv/vec2 x y) centroid))])
-          (cq/circle x y 2))
+        (doseq [isec intersections]
+          (cq/circle isec 2))
+
+        (swap! defo conj
+               {:point pos :inside inside
+                :edges
+                (mapv (fn [[_ to]]
+                        {:to to
+                         :ϴ (g/heading (tm/- (gv/vec2 to) centroid))})
+                      edges)
+                :intersections
+                (mapv (fn [at]
+                        {:at (gv/vec2 at)
+                         :ϴ (g/heading (tm/- (gv/vec2 at) centroid))})
+                      intersections)})
 
         (q/no-fill)
         (q/begin-shape)
@@ -171,6 +184,7 @@
   :created-at "2021-03-21"
   :tags #{:static}
   :size [800 600]
+  :on-mount (fn [] (debug/mount defo))
   :setup setup
   :update update-state
   :draw draw
