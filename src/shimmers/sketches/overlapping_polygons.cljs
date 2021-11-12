@@ -14,11 +14,22 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
 
+;; Interested in operations for calculating resulting polygons after punching
+;; out an overlap. So for two squares, return the clip intersection + the two
+;; bracketing polygons, or for the circle/square the intersection, and then
+;; pacman and remainder of the square.
+
+;; Possibly algorithms
+;; https://www.researchgate.net/publication/222450704_An_algorithm_for_computing_the_union_intersection_or_difference_of_two_polygons
+;; https://core.ac.uk/download/pdf/82372399.pdf
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:pairs [[(rect/rect) (rect/rect 0.1 0.1 1)]
+           ;; Can we detect the arc segment and keep that as an arc instead of using small lines
            [(rect/rect) (gc/circle 0.1 0.1 0.5)]
            [(rect/rect) (gt/triangle2 [0.1 0.1] [0.2 1.2] [0.9 0.8])]
+           ;; Note this *only* works for convex polygons, weird results otherwise
            [(rect/rect) (gp/polygon2 [[0.1 0.1] [0.5 0.1] [1.1 0.5] [0.8 1.1] [-0.2 0.5]])]]})
 
 (defn update-state [{:keys [pairs] :as state}]

@@ -154,3 +154,6 @@
     (hatching-middle-out (partial clip-circle circle)
                          spacing cosa
                          [x0 y0] [x1 y1])))
+
+;; Algorithm for arbitrary polygons?
+;; http://alienryderflex.com/polygon_hatchline_fill/
