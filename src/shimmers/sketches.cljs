@@ -67,6 +67,7 @@
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
             shimmers.sketches.oil-reflections
+            shimmers.sketches.overlapping-polygons
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
