@@ -7,8 +7,10 @@
             [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
+            thi.ng.geom.svg.core
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.math.core :as tm]
+            [thi.ng.strf.core :as f]))
 
 ;; https://lospec.com/palette-list/eulbink
 (def eulbink-7 ["#ffffff" "#0ce6f2" "#0098db" "#1e579c"
@@ -163,9 +165,10 @@
 ;; I think at least one operation is transposing or something instead of what it's supposed to do
 ;; and then the error compounds?
 (defn scene [size {:keys [n depth seed operations]}]
-  (svg-tile size
-            (/ size (* n (Math/pow 2 depth)))
-            ((apply comp (map transformations (take depth operations))) seed)))
+  (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
+    (svg-tile size
+              (/ size (* n (Math/pow 2 depth)))
+              ((apply comp (map transformations (take depth operations))) seed))))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
