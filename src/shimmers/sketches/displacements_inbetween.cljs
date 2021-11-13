@@ -104,7 +104,7 @@
   (csvg/svg {:width width
              :height height
              :stroke "black"
-             :stroke-width 1.0}
+             :stroke-width 0.8}
             (for [[i line] (map-indexed vector (fit-lines (lines)))]
               (svg/polyline (:points line)
                             (merge {:key (str "l" i)}
