@@ -36,11 +36,12 @@
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
 (defn lines []
-  (let [a (g/rotate (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.05 width))
-                    (dr/random -0.05 0.1))
-        b (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.1 width))
-        c (g/rotate (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.05 width))
-                    (dr/random 0.05 -0.1))]
+  (let [a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.05 width))
+              (g/rotate (dr/random -0.05 0.1)))
+        b (-> (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.1 width))
+              (g/rotate (dr/random -0.05 0.05)))
+        c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.05 width))
+              (g/rotate (dr/random 0.05 -0.1)))]
     (concat [(svg/polyline (:points a)
                            {:key "a"
                             :stroke "black"
