@@ -44,13 +44,13 @@
                                      {:key "a"
                                       :stroke "black"
                                       :stroke-width 2.0})]
-                      (for [t (tm/norm-range 7)]
+                      (for [t (tm/norm-range 11)]
                         (svg/polyline (:points (mix-line a b t))
                                       {:key (str "ab" t)}))
                       [(svg/polyline (:points b)
                                      {:key "b"
                                       :stroke-width 2.0})]
-                      (for [t (tm/norm-range 11)]
+                      (for [t (tm/norm-range 17)]
                         (svg/polyline (:points (mix-line b c t))
                                       {:key (str "bc" t)}))
                       [(svg/polyline (:points c)
@@ -62,5 +62,6 @@
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
-   :type :svg}
+   :type :svg
+   :tags #{:deterministic}}
   (ctrl/mount page "canvas-host"))
