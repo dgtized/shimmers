@@ -82,6 +82,7 @@
     (dr/random n)
     0))
 
+(def screen (g/scale (rect/rect 0 0 width height) 0.99))
 (defn lines []
   (let [lines (base-lines)
         pairs (dr/random-sample 0.5 (partition 2 1 lines))]
@@ -90,16 +91,21 @@
             (random-connections (int (p-if 0.3 100)) pairs))))
 
 (def copy-attribs [:stroke :fill :stroke-width])
-(def screen (g/scale (rect/rect 0 0 width height) 0.99))
+
+(defn fit-lines
+  "fit-all-into-bounds removes the attribs in copy, so this adds them back."
+  [lines]
+  (mapv (fn [line fit]
+          (merge fit (select-keys line copy-attribs)))
+        lines
+        (gu/fit-all-into-bounds screen lines)))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :stroke-width 1.0}
-            (for [[i line] (->> (lines)
-                                (gu/fit-all-into-bounds screen)
-                                (map-indexed vector))]
+            (for [[i line] (map-indexed vector (fit-lines (lines)))]
               (svg/polyline (:points line)
                             (merge {:key (str "l" i)}
                                    (select-keys line copy-attribs))))))
