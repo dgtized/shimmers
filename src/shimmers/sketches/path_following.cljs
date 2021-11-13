@@ -64,17 +64,24 @@
   (gl/linestrip2 (douglas-peucker (:points line) epsilon)))
 
 (defn scene []
-  (csvg/svg {:width width :height height :stroke "black" :stroke-width 5.0}
-            (concat [(svg/polyline (:points original) {:stroke "blue" :key "a1"})
-                     (for [[i eps] (map-indexed vector [1.0 2.0 4.0 8.0 12.0])]
-                       (svg/polyline (:points (g/translate (simplify-line original eps)
-                                                           (r 0.0 (- -0.07 (* 0.05 i)))))
-                                     {:stroke "red"
-                                      :key (str "s" i)}))
-                     (for [v (range 0.0 0.7 0.1)]
+  (csvg/svg {:width width :height height}
+            (concat [(svg/polyline (:points original)
+                                   {:stroke "#efc020"
+                                    :stroke-width 10.0
+                                    :key "original"})
+                     (let [factors [1.0 2.0 4.0 8.0 12.0 14.0]]
+                       (for [[i eps] (map-indexed vector factors)]
+                         (svg/polyline (:points (g/translate (simplify-line original eps)
+                                                             (r 0.0 (- -0.07 (* 0.05 i)))))
+                                       {:stroke "#da3b29"
+                                        :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))
+                                        :key (str "s" i)})))
+                     (for [v (range 0.0 1.0 0.1)]
                        (svg/polyline (:points (g/translate (dampened original v)
                                                            (r 0.0 (+ 0.07 (* 0.3 v)))))
-                                     {:key (str "a" v)}))])))
+                                     {:stroke "#3a3421"
+                                      :stroke-width (* 3.0 (- 1.0 v))
+                                      :key (str "a" v)}))])))
 
 (defn page []
   [:div (scene)])
