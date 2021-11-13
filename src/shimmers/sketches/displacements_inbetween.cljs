@@ -45,7 +45,9 @@
               (g/rotate (dr/random -0.05 0.05))
               (assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
-              (g/rotate (dr/random 0.05 -0.1))
+              (g/rotate (if (dr/chance 0.1)
+                          (dr/random -0.8 0.8)
+                          (dr/random 0.05 -0.1)))
               (assoc :stroke-width 2.0))]
     (concat [a]
             (for [t (tm/norm-range 11)]
