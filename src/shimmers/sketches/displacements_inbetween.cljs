@@ -9,6 +9,7 @@
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -87,6 +88,30 @@
     (dr/random n)
     0))
 
+(defn path-between [path t0 t1]
+  (let [p0 (g/point-at path t0)
+        p1 (g/point-at path t1)
+        eps 2.0]
+    (->> path
+         :points
+         (drop-while #(not (tm/delta= % p0 eps)))
+         (take-while #(not (tm/delta= % p1 eps))))))
+
+(defn color-box [[a b]]
+  (let [t0 (dr/random)
+        t1 (+ t0 (dr/random (max 0.2 (- 1.0 t0))))
+        a0 (g/point-at a t0)
+        b0 (g/point-at b t0)
+        a1 (g/point-at a t1)
+        b1 (g/point-at b t1)]
+    [(vary-meta (gp/polygon2 (concat [a0]
+                                     (path-between b t0 t1)
+                                     (reverse (path-between a t0 t1))))
+                assoc :fill "blue")]))
+
+(comment (path-between (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3)
+                       0.3 0.6))
+
 (def screen (g/scale (rect/rect 0 0 width height) 0.99))
 (defn lines []
   (let [lines (base-lines)
@@ -94,6 +119,7 @@
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
+            ;; (color-box (dr/rand-nth pairs))
             (dr/random-sample 0.85 (mapcat spaced pairs))
             (random-connections (int (p-if 0.3 100)) pairs))))
 
