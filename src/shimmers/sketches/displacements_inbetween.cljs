@@ -37,7 +37,7 @@
      (for [t (tm/norm-range (dec samples))]
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
-(defn lines []
+(defn base-lines []
   (let [a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
               (g/rotate (dr/random -0.05 0.1))
               (assoc :stroke-width 2.0))
@@ -56,6 +56,15 @@
             (for [t (tm/norm-range 17)]
               (mix-line b c t))
             [c])))
+
+(defn connect [[a b] t]
+  (gl/linestrip2 (g/point-at a t) (g/point-at b t)))
+
+(defn lines []
+  (let [lines (base-lines)
+        pairs (dr/random-sample 0.3 (partition 2 1 lines))]
+    (concat lines
+            (repeatedly 64 (fn [] (connect (dr/rand-nth pairs) (dr/random)))))))
 
 (def copy-attribs [:stroke :fill :stroke-width])
 (def screen (g/scale (rect/rect 0 0 width height) 0.99))
