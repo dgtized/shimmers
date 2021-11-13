@@ -228,9 +228,7 @@
           (swap! defo assoc :polygons polygons)
           (doseq [shape polygons]
             (-> shape
-                gp/polygon2
-                (g/scale-size 0.90)
-                g/vertices
+                (gp/inset-polygon -5.0)
                 cq/draw-shape)))))))
 
 (defn draw [{:keys [path mouse]}]
