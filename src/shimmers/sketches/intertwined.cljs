@@ -183,7 +183,12 @@
         (q/stroke-weight 3.0)
         (doseq [{[a b] :points} segments]
           (q/line a b))
-        (q/pop-style)))))
+        (q/pop-style)))
+
+    (swap! defo assoc :intersections
+           (->> intersects
+                (filter (fn [isec] (near-mouse mouse (:p isec))))
+                (map (fn [i] (update i :segments (partial mapv :points))))))))
 
 (defn draw-graph [path mouse]
   (q/fill 0)
