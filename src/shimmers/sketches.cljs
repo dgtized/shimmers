@@ -25,6 +25,7 @@
             shimmers.sketches.delaunay-voronoi
             shimmers.sketches.disassociated-boxes
             shimmers.sketches.dispersion
+            shimmers.sketches.displacements-inbetween
             shimmers.sketches.dithering
             ;; shimmers.sketches.dreamcatcher
             shimmers.sketches.emitters
