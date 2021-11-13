@@ -59,14 +59,16 @@
     (conj agents agent)
     agents))
 
+(defn closest-agent [position agents]
+  (apply min-key
+         (fn [{pos :position}] (g/dist-squared position pos))
+         agents))
+
 ;; TODO add avoid for barriers
 (defn avoid [{:keys [position]} nearby obstacles]
   (let [[obstacle-pt _]
         (gu/closest-point-on-segments position (mapcat g/edges obstacles))
-        closest-agent
-        (apply min-key
-               (fn [{pos :position}] (g/dist-squared position pos))
-               nearby)
+        closest-agent (closest-agent position nearby)
         closest (if closest-agent
                   (min-key (partial g/dist-squared position) obstacle-pt (:position closest-agent))
                   obstacle-pt)
