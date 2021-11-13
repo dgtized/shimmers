@@ -8,7 +8,9 @@
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -54,13 +56,16 @@
             [c])))
 
 (def copy-attribs [:stroke :fill :stroke-width])
+(def screen (g/scale (rect/rect 0 0 width height) 0.99))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :stroke-width 1.0}
-            (for [[i line] (map-indexed vector (lines))]
+            (for [[i line] (->> (lines)
+                                (gu/fit-all-into-bounds screen)
+                                (map-indexed vector))]
               (svg/polyline (:points line)
                             (merge {:key (str "l" i)}
                                    (select-keys line copy-attribs))))))
