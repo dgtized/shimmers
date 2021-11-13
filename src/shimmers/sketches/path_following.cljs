@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
@@ -17,13 +18,8 @@
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(def original
-  (-> [(r 0.1 0.5) (r 0.3 0.3) (r 0.6 0.6) (r 0.9 0.5)]
-      bezier/auto-spline2
-      (g/sample-uniform 10.0 true)
-      gl/linestrip2
-      (g/translate (r 0.0 0.05))))
-
+;; TODO: This should generalize to average between two paths by sampling at
+;; the same offset and mixing those points.
 (defn dampened [{path :points} factor]
   (gl/linestrip2
    (let [a (first path)
@@ -63,7 +59,7 @@
 (defn simplify-line [line epsilon]
   (gl/linestrip2 (douglas-peucker (:points line) epsilon)))
 
-(defn scene []
+(defn scene [original]
   (csvg/svg {:width width :height height}
             (concat [(svg/polyline (:points original)
                                    {:stroke "#efc020"
@@ -83,11 +79,21 @@
                                       :stroke-width (* 3.0 (- 1.0 v))
                                       :key (str "a" v)}))])))
 
+;; Experimenting with line simplification above, and dampening below.
 (defn page []
-  [:div (scene)])
+  [:div (scene (-> [(r 0.05 0.0)
+                    (r 0.33 (dr/random -0.15 0.15))
+                    (r 0.66 (dr/random -0.15 0.15))
+                    (r 0.95 0.0)]
+                   bezier/auto-spline2
+                   (g/sample-uniform 10.0 true)
+                   gl/linestrip2
+                   (g/translate (r 0.0 0.5))))])
 
+;; FIXME: mounting inside canvas-host means the frame box surrounds the
+;; description, need to recreate canvas box for react or something?
 (sketch/definition path-following
   {:created-at "2021-11-12"
    :type :svg
-   :tags #{:demo}}
+   :tags #{:demo :deterministic}}
   (ctrl/mount page "canvas-host"))
