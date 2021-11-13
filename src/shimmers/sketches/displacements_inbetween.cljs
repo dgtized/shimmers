@@ -37,34 +37,33 @@
 
 (defn lines []
   (let [a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
-              (g/rotate (dr/random -0.05 0.1)))
+              (g/rotate (dr/random -0.05 0.1))
+              (assoc :stroke-width 2.0))
         b (-> (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.12 width))
-              (g/rotate (dr/random -0.05 0.05)))
+              (g/rotate (dr/random -0.05 0.05))
+              (assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
-              (g/rotate (dr/random 0.05 -0.1)))]
-    (concat [(svg/polyline (:points a)
-                           {:key "a"
-                            :stroke "black"
-                            :stroke-width 2.0})]
+              (g/rotate (dr/random 0.05 -0.1))
+              (assoc :stroke-width 2.0))]
+    (concat [a]
             (for [t (tm/norm-range 11)]
-              (svg/polyline (:points (mix-line a b t))
-                            {:key (str "ab" t)}))
-            [(svg/polyline (:points b)
-                           {:key "b"
-                            :stroke-width 2.0})]
+              (mix-line a b t))
+            [b]
             (for [t (tm/norm-range 17)]
-              (svg/polyline (:points (mix-line b c t))
-                            {:key (str "bc" t)}))
-            [(svg/polyline (:points c)
-                           {:key "c"
-                            :stroke-width 2.0})])))
+              (mix-line b c t))
+            [c])))
+
+(def copy-attribs [:stroke :fill :stroke-width])
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :stroke-width 1.0}
-            (lines)))
+            (for [[i line] (map-indexed vector (lines))]
+              (svg/polyline (:points line)
+                            (merge {:key (str "l" i)}
+                                   (select-keys line copy-attribs))))))
 
 (defn page []
   [:div (scene)])
