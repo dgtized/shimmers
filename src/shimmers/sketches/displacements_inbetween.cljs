@@ -47,14 +47,19 @@
               (assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
               (g/rotate (if (dr/chance 0.1)
-                          (dr/random -0.8 0.8)
+                          (dr/random -0.6 0.6)
                           (dr/random 0.05 -0.1)))
-              (assoc :stroke-width 2.0))]
+              (assoc :stroke-width 2.0))
+        [n1 n2] (repeatedly 2 #(dr/weighted {11 2
+                                             13 2
+                                             17 2
+                                             23 1
+                                             27 1}))]
     (concat [a]
-            (for [t (tm/norm-range 11)]
+            (for [t (tm/norm-range n1)]
               (mix-line a b t))
             [b]
-            (for [t (tm/norm-range 17)]
+            (for [t (tm/norm-range n2)]
               (mix-line b c t))
             [c])))
 
