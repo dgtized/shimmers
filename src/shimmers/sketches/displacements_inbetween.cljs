@@ -60,11 +60,34 @@
 (defn connect [[a b] t]
   (gl/linestrip2 (g/point-at a t) (g/point-at b t)))
 
+(def spacing-divisions
+  {5 1
+   7 2
+   11 3
+   13 4
+   17 4
+   19 3
+   23 2
+   29 1})
+
+(defn spaced [pair]
+  (mapv (fn [t] (connect pair t))
+        (tm/norm-range (dr/weighted spacing-divisions))))
+
+(defn random-connections [n pairs]
+  (repeatedly n (fn [] (connect (dr/rand-nth pairs) (dr/random)))))
+
+(defn p-if [p n]
+  (if (< (dr/random-double) p)
+    (dr/random n)
+    0))
+
 (defn lines []
   (let [lines (base-lines)
-        pairs (dr/random-sample 0.3 (partition 2 1 lines))]
+        pairs (dr/random-sample 0.5 (partition 2 1 lines))]
     (concat lines
-            (repeatedly 64 (fn [] (connect (dr/rand-nth pairs) (dr/random)))))))
+            (dr/random-sample 0.85 (mapcat spaced pairs))
+            (random-connections (int (p-if 0.3 100)) pairs))))
 
 (def copy-attribs [:stroke :fill :stroke-width])
 (def screen (g/scale (rect/rect 0 0 width height) 0.99))
