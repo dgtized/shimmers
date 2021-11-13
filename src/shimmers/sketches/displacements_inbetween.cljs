@@ -86,7 +86,9 @@
 (defn lines []
   (let [lines (base-lines)
         pairs (dr/random-sample 0.5 (partition 2 1 lines))]
-    (concat lines
+    (concat (dr/map-random-sample (constantly 0.1)
+                                  (fn [line] (assoc line :stroke-width (dr/random 3 8)))
+                                  lines)
             (dr/random-sample 0.85 (mapcat spaced pairs))
             (random-connections (int (p-if 0.3 100)) pairs))))
 
