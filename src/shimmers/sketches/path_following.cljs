@@ -1,6 +1,5 @@
 (ns shimmers.sketches.path-following
   (:require
-   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
@@ -23,14 +22,15 @@
       bezier/auto-spline2
       (g/sample-uniform 10.0 true)
       gl/linestrip2
-      (g/translate (r 0.0 -0.1))))
+      (g/translate (r 0.0 0.05))))
 
 (defn dampened [{path :points} factor]
-  (gl/linestrip2 (if (> (count path) 2)
-                   (->> (for [[a b c d e] (partition 5 1 path)]
-                          (tm/mix c (tm/mix (tm/mix a b) (tm/mix d e)) factor))
-                        (cs/sandwich 2 path))
-                   path)))
+  (gl/linestrip2
+   (let [a (first path)
+         b (last path)]
+     (mapv (fn [pt t] (tm/mix pt (tm/mix a b t) factor))
+           path
+           (tm/norm-range (dec (count path)))))))
 
 ;; https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 (defn perpendicular-distance [[x1 y1] [x2 y2] [x0 y0]]
@@ -64,14 +64,17 @@
   (gl/linestrip2 (douglas-peucker (:points line) epsilon)))
 
 (defn scene []
-  (let [offset (g/translate original (r 0.0 -0.1))
-        dampened (g/translate (dampened original 1.0) (r 0.0 0.1))
-        simplified (g/translate (simplify-line original 5.0) (r 0.0 0.2))]
-    (csvg/svg {:width width :height height :stroke "black" :stroke-width 5.0}
-              (svg/polyline (:points original) {:stroke "blue" :key "a1"})
-              (svg/polyline (:points offset) {:key "a2"})
-              (svg/polyline (:points dampened) {:key "a3"})
-              (svg/polyline (:points simplified) {:stroke "red" :key "a4"}))))
+  (csvg/svg {:width width :height height :stroke "black" :stroke-width 5.0}
+            (concat [(svg/polyline (:points original) {:stroke "blue" :key "a1"})
+                     (for [[i eps] (map-indexed vector [1.0 2.0 4.0 8.0 12.0])]
+                       (svg/polyline (:points (g/translate (simplify-line original eps)
+                                                           (r 0.0 (- -0.07 (* 0.05 i)))))
+                                     {:stroke "red"
+                                      :key (str "s" i)}))
+                     (for [v (range 0.0 0.7 0.1)]
+                       (svg/polyline (:points (g/translate (dampened original v)
+                                                           (r 0.0 (+ 0.07 (* 0.3 v)))))
+                                     {:key (str "a" v)}))])))
 
 (defn page []
   [:div (scene)])
