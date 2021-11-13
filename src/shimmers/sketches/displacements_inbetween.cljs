@@ -88,38 +88,39 @@
     (dr/random n)
     0))
 
-(defn path-between [path t0 t1]
-  (let [p0 (g/point-at path t0)
-        p1 (g/point-at path t1)
-        eps 2.0]
-    (->> path
-         :points
-         (drop-while #(not (tm/delta= % p0 eps)))
-         (take-while #(not (tm/delta= % p1 eps))))))
+(defn points-between [points t0 t1]
+  (let [arc-index (gu/arc-length-index points)
+        arc-length (last arc-index)]
+    (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
+         (drop-while (fn [[_ t]] (< t t0)))
+         (take-while (fn [[_ t]] (< t t1)))
+         (map first))))
 
 (defn color-box [[a b]]
-  (let [t0 (dr/random)
-        t1 (+ t0 (dr/random (max 0.2 (- 1.0 t0))))
-        a0 (g/point-at a t0)
-        b0 (g/point-at b t0)
-        a1 (g/point-at a t1)
-        b1 (g/point-at b t1)]
-    [(vary-meta (gp/polygon2 (concat [a0]
-                                     (path-between b t0 t1)
-                                     (reverse (path-between a t0 t1))))
-                assoc :fill "blue")]))
+  (let [t0 (dr/random 0.75)
+        t1 (+ t0 (dr/random (- 1.0 t0)))
+        b0-b1 (points-between (:points b) t0 t1)
+        a0-a1 (points-between (:points a) t0 t1)]
+    (vary-meta (gp/polygon2 (concat [(g/point-at a t0)
+                                     (g/point-at b t0)]
+                                    b0-b1
+                                    [(g/point-at b t1)
+                                     (g/point-at a t1)]
+                                    (reverse a0-a1)))
+               assoc :fill (dr/rand-nth ["navy" "maroon"])
+               :fill-opacity 0.8)))
 
-(comment (path-between (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3)
-                       0.3 0.6))
+(comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
+                         0.2 0.4))
 
 (def screen (g/scale (rect/rect 0 0 width height) 0.99))
 (defn lines []
   (let [lines (base-lines)
         pairs (dr/random-sample 0.5 (partition 2 1 lines))]
-    (concat (dr/map-random-sample (constantly 0.1)
+    (concat (repeatedly 8 #(color-box (dr/rand-nth pairs)))
+            (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
-            ;; (color-box (dr/rand-nth pairs))
             (dr/random-sample 0.85 (mapcat spaced pairs))
             (random-connections (int (p-if 0.3 100)) pairs))))
 
