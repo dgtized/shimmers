@@ -35,27 +35,35 @@
      (for [t (tm/norm-range (dec samples))]
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
-(defn scene []
-  (let [a (g/rotate (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.05 width)) (dr/random -0.05 0.1))
+(defn lines []
+  (let [a (g/rotate (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.05 width))
+                    (dr/random -0.05 0.1))
         b (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.1 width))
-        c (g/rotate (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.05 width)) (dr/random 0.05 -0.1))]
-    (csvg/svg {:width width :height height :stroke "black" :stroke-width 1.0}
-              (concat [(svg/polyline (:points a)
-                                     {:key "a"
-                                      :stroke "black"
-                                      :stroke-width 2.0})]
-                      (for [t (tm/norm-range 11)]
-                        (svg/polyline (:points (mix-line a b t))
-                                      {:key (str "ab" t)}))
-                      [(svg/polyline (:points b)
-                                     {:key "b"
-                                      :stroke-width 2.0})]
-                      (for [t (tm/norm-range 17)]
-                        (svg/polyline (:points (mix-line b c t))
-                                      {:key (str "bc" t)}))
-                      [(svg/polyline (:points c)
-                                     {:key "c"
-                                      :stroke-width 2.0})]))))
+        c (g/rotate (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.05 width))
+                    (dr/random 0.05 -0.1))]
+    (concat [(svg/polyline (:points a)
+                           {:key "a"
+                            :stroke "black"
+                            :stroke-width 2.0})]
+            (for [t (tm/norm-range 11)]
+              (svg/polyline (:points (mix-line a b t))
+                            {:key (str "ab" t)}))
+            [(svg/polyline (:points b)
+                           {:key "b"
+                            :stroke-width 2.0})]
+            (for [t (tm/norm-range 17)]
+              (svg/polyline (:points (mix-line b c t))
+                            {:key (str "bc" t)}))
+            [(svg/polyline (:points c)
+                           {:key "c"
+                            :stroke-width 2.0})])))
+
+(defn scene []
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :stroke-width 1.0}
+            (lines)))
 
 (defn page []
   [:div (scene)])
