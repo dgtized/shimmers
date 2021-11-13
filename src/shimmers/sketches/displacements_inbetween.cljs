@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -115,8 +116,13 @@
 (defn page []
   [:div (scene)])
 
+(defn ui-controls []
+  [:div
+   [:p.center (view-sketch/generate :displacements-inbetween)]])
+
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "canvas-host"))
+  (ctrl/mount page "canvas-host")
+  (ctrl/mount ui-controls))
