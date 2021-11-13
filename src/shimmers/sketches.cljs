@@ -71,6 +71,7 @@
             shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
+            shimmers.sketches.path-following
             shimmers.sketches.path-morph
             shimmers.sketches.periapsis
             shimmers.sketches.permutations-of-transfiguration
