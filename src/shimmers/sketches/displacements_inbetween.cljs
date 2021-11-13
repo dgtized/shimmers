@@ -10,7 +10,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -41,15 +40,15 @@
 (defn base-lines []
   (let [a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
               (g/rotate (dr/random -0.05 0.1))
-              (assoc :stroke-width 2.0))
+              (vary-meta assoc :stroke-width 2.0))
         b (-> (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.12 width))
               (g/rotate (dr/random -0.05 0.05))
-              (assoc :stroke-width 2.0))
+              (vary-meta assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
               (g/rotate (if (dr/chance 0.1)
                           (dr/random -0.6 0.6)
                           (dr/random 0.05 -0.1)))
-              (assoc :stroke-width 2.0))
+              (vary-meta assoc :stroke-width 2.0))
         [n1 n2] (repeatedly 2 #(dr/weighted {11 2
                                              13 2
                                              17 2
@@ -93,18 +92,15 @@
   (let [lines (base-lines)
         pairs (dr/random-sample 0.5 (partition 2 1 lines))]
     (concat (dr/map-random-sample (constantly 0.1)
-                                  (fn [line] (assoc line :stroke-width (dr/random 3 8)))
+                                  (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
             (dr/random-sample 0.85 (mapcat spaced pairs))
             (random-connections (int (p-if 0.3 100)) pairs))))
 
-(def copy-attribs [:stroke :fill :stroke-width])
-
 (defn fit-lines
-  "fit-all-into-bounds removes the attribs in copy, so this adds them back."
+  "fit-all-into-bounds removes the meta attribs in copy, so add them back."
   [lines]
-  (mapv (fn [line fit]
-          (merge fit (select-keys line copy-attribs)))
+  (mapv (fn [line fit] (with-meta fit (meta line)))
         lines
         (gu/fit-all-into-bounds screen lines)))
 
@@ -114,9 +110,7 @@
              :stroke "black"
              :stroke-width 0.8}
             (for [[i line] (map-indexed vector (fit-lines (lines)))]
-              (svg/polyline (:points line)
-                            (merge {:key (str "l" i)}
-                                   (select-keys line copy-attribs))))))
+              (vary-meta line assoc :key (str "l" i)))))
 
 (defn page []
   [:div (scene)])
