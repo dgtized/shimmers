@@ -2,10 +2,12 @@
   "Provides a shared, seeded random number generator for deterministic procedural
   generation."
   (:refer-clojure :exclude [rand-nth shuffle random-sample])
-  (:require [clojure.test.check.random :as tcr]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.vector :as v]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.test.check.random :as tcr]
+   [kixi.stats.distribution :as ksd]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.vector :as v]
+   [thi.ng.math.core :as tm]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
@@ -101,3 +103,10 @@
 (defn randvec2
   ([] (tm/normalize (v/vec2 (random -1 1) (random -1 1))))
   ([n] (tm/normalize (v/vec2 (random -1 1) (random -1 1)) n)))
+
+
+(def ^:constant MAX-INT (Math/pow 2 32))
+(defn gaussian
+  [mu sd]
+  (ksd/draw (ksd/normal {:mu mu :sd sd})
+            {:seed (random-int MAX-INT)}))
