@@ -96,6 +96,8 @@
          (take-while (fn [[_ t]] (< t t1)))
          (map first))))
 
+;; TODO: either make a version doing an entire column or otherwise allow for
+;; shorter length boxes. Also improve palette selection
 (defn color-box [[a b]]
   (let [t0 (dr/random 0.75)
         t1 (+ t0 (dr/random (- 1.0 t0)))
