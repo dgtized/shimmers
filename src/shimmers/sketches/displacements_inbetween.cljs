@@ -116,13 +116,14 @@
 (def screen (g/scale (rect/rect 0 0 width height) 0.99))
 (defn lines []
   (let [lines (base-lines)
-        pairs (dr/random-sample 0.5 (partition 2 1 lines))]
+        pairs (partition 2 1 lines)
+        sampling (dr/random-sample 0.5 pairs)]
     (concat (repeatedly (int (p-if 0.5 24)) #(color-box (dr/rand-nth pairs)))
             (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
-            (dr/random-sample 0.85 (mapcat spaced pairs))
-            (random-connections (int (p-if 0.3 100)) pairs))))
+            (dr/random-sample 0.85 (mapcat spaced sampling))
+            (random-connections (int (p-if 0.3 100)) sampling))))
 
 (defn fit-lines
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
