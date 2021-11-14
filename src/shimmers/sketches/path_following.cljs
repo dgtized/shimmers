@@ -1,5 +1,6 @@
 (ns shimmers.sketches.path-following
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -28,37 +29,6 @@
            path
            (tm/norm-range (dec (count path)))))))
 
-;; https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-(defn perpendicular-distance [[x1 y1] [x2 y2] [x0 y0]]
-  (let [x21 (- x2 x1)
-        y21 (- y2 y1)]
-    (/ (Math/abs (- (* x21 (- y1 y0))
-                    (* (- x1 x0) y21)))
-       (Math/sqrt (+ (* x21 x21) (* y21 y21))))))
-
-(defn max-perpendicular-distance [points]
-  (let [a (first points)
-        b (last points)]
-    (loop [i 1 index 0 max-dist 0]
-      (if (>= i (dec (count points)))
-        [index max-dist]
-        (let [pt (nth points i)
-              d (perpendicular-distance a b pt)]
-          (if (> d max-dist)
-            (recur (inc i) i d)
-            (recur (inc i) index max-dist)))))))
-
-;; https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
-(defn douglas-peucker [points epsilon]
-  (let [[index max-dist] (max-perpendicular-distance points)]
-    (if (> max-dist epsilon)
-      (lazy-cat (douglas-peucker (take index points) epsilon)
-                (douglas-peucker (drop index points) epsilon))
-      [(first points) (last points)])))
-
-(defn simplify-line [line epsilon]
-  (gl/linestrip2 (douglas-peucker (:points line) epsilon)))
-
 (defn scene [original]
   (csvg/svg {:width width :height height}
             (concat [(svg/polyline (:points original)
@@ -67,7 +37,7 @@
                                     :key "original"})
                      (let [factors [1.0 2.0 4.0 8.0 12.0 14.0]]
                        (for [[i eps] (map-indexed vector factors)]
-                         (svg/polyline (:points (g/translate (simplify-line original eps)
+                         (svg/polyline (:points (g/translate (lines/simplify-line original eps)
                                                              (r 0.0 (- -0.07 (* 0.05 i)))))
                                        {:stroke "#da3b29"
                                         :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))
