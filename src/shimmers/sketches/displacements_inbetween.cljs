@@ -135,13 +135,14 @@
         (gu/fit-all-into-bounds bounds shapes)))
 
 (defn scene []
-  (let [screen (g/scale (rect/rect 0 0 width height) 0.95)]
+  (let [screen (g/scale (rect/rect 0 0 width height) 0.95)
+        shapes (fit-region screen (lines))]
     (csvg/svg {:width width
                :height height
                :stroke "black"
                :stroke-width 0.8}
-              (for [[i line] (map-indexed vector (fit-region screen (lines)))]
-                (vary-meta line assoc :key (str "l" i))))))
+              (for [[i shape] (map-indexed vector shapes)]
+                (vary-meta shape assoc :key (str "l" i))))))
 
 (defn page []
   [:div (scene)])
