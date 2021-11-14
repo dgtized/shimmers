@@ -41,6 +41,9 @@
 
 (defn base-lines []
   (let [simplify (fn [line] (lines/simplify-line line (* 0.0002 width)))
+        angle (if (dr/chance 0.1)
+                (dr/random -0.3 0.3)
+                (dr/random -0.15 0.15))
         a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
               (g/rotate (dr/random -0.05 0.1))
               simplify
@@ -50,9 +53,7 @@
               simplify
               (vary-meta assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
-              (g/rotate (if (dr/chance 0.1)
-                          (dr/random -0.6 0.6)
-                          (dr/random 0.05 -0.1)))
+              (g/rotate angle)
               simplify
               (vary-meta assoc :stroke-width 2.0))
         [n1 n2] (repeatedly 2 #(dr/weighted {11 2
@@ -60,6 +61,7 @@
                                              17 2
                                              23 1
                                              27 1}))]
+    (println [angle n1 n2])
     (concat [a]
             (for [t (tm/norm-range n1)]
               (simplify (mix-line a b t)))
