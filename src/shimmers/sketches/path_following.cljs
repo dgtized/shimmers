@@ -9,8 +9,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 ;; https://en.wikipedia.org/wiki/Visvalingam%E2%80%93Whyatt_algorithm
 
@@ -18,16 +17,6 @@
 (def height 600)
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
-
-;; TODO: This should generalize to average between two paths by sampling at
-;; the same offset and mixing those points.
-(defn dampened [{path :points} factor]
-  (gl/linestrip2
-   (let [a (first path)
-         b (last path)]
-     (mapv (fn [pt t] (tm/mix pt (tm/mix a b t) factor))
-           path
-           (tm/norm-range (dec (count path)))))))
 
 (defn scene [original]
   (csvg/svg {:width width :height height}
@@ -43,7 +32,7 @@
                                         :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))
                                         :key (str "s" i)})))
                      (for [v (range 0.0 1.0 0.1)]
-                       (svg/polyline (:points (g/translate (dampened original v)
+                       (svg/polyline (:points (g/translate (lines/dampen original v)
                                                            (r 0.0 (+ 0.07 (* 0.3 v)))))
                                      {:stroke "#3a3421"
                                       :stroke-width (* 3.0 (- 1.0 v))

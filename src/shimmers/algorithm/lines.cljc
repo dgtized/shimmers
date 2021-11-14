@@ -69,6 +69,17 @@
      (for [t (tm/norm-range (dec samples))]
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
+(defn dampen
+  "Mix each point in a `path` by `factor` with the linear path between the
+  beginning and end of `path`."
+  [{path :points} factor]
+  (gl/linestrip2
+   (let [a (first path)
+         b (last path)]
+     (mapv (fn [pt t] (tm/mix pt (tm/mix a b t) factor))
+           path
+           (tm/norm-range (dec (count path)))))))
+
 (defn points-between
   "Given a sequence of `points`, and relative offsets `t0` < `t1`, return all
   points that proportionally lie between `t0` and `t1`. The domain of `t0` and
