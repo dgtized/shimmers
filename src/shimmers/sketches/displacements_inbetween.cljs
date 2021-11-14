@@ -108,7 +108,7 @@
                                      (g/point-at a t1)]
                                     (reverse a0-a1)))
                assoc :fill (dr/rand-nth ["navy" "maroon"])
-               :fill-opacity 0.8)))
+               :fill-opacity 0.4)))
 
 (comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
                          0.2 0.4))
@@ -117,7 +117,7 @@
 (defn lines []
   (let [lines (base-lines)
         pairs (dr/random-sample 0.5 (partition 2 1 lines))]
-    (concat (repeatedly 8 #(color-box (dr/rand-nth pairs)))
+    (concat (repeatedly (int (p-if 0.5 24)) #(color-box (dr/rand-nth pairs)))
             (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
