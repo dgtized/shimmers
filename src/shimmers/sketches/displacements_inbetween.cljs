@@ -32,13 +32,6 @@
         (g/sample-uniform (* 0.01 height) true)
         gl/linestrip2)))
 
-(defn mix-line [path-a path-b factor]
-  (gl/linestrip2
-   (let [samples (max (count (:points path-a))
-                      (count (:points path-b)))]
-     (for [t (tm/norm-range (dec samples))]
-       (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
-
 (def spacing-divisions
   {5 1
    7 2
@@ -70,10 +63,10 @@
     (println [angle n1 n2])
     (concat [a]
             (for [t (tm/norm-range n1)]
-              (simplify (mix-line a b t)))
+              (simplify (lines/mix-line a b t)))
             [b]
             (for [t (tm/norm-range n2)]
-              (simplify (mix-line b c t)))
+              (simplify (lines/mix-line b c t)))
             [c])))
 
 (defn connect [[a b] t]

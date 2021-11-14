@@ -53,3 +53,10 @@
 
 (defn simplify-line [{:keys [points]} epsilon]
   (gl/linestrip2 (ramer-douglas-peucker points epsilon)))
+
+(defn mix-line [path-a path-b factor]
+  (gl/linestrip2
+   (let [samples (max (count (:points path-a))
+                      (count (:points path-b)))]
+     (for [t (tm/norm-range (dec samples))]
+       (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
