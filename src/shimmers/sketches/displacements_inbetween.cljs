@@ -99,8 +99,10 @@
 ;; TODO: either make a version doing an entire column or otherwise allow for
 ;; shorter length boxes. Also improve palette selection
 (defn color-box [[a b]]
-  (let [t0 (dr/random 0.75)
-        t1 (+ t0 (dr/random (- 1.0 t0)))
+  (let [t (dr/random 0.1 0.9)
+        w (dr/random 0.05 0.2)
+        t0 (- t (* 0.5 w))
+        t1 (+ t (* 0.5 w))
         b0-b1 (points-between (:points b) t0 t1)
         a0-a1 (points-between (:points a) t0 t1)]
     (vary-meta (gp/polygon2 (concat [(g/point-at a t0)
@@ -109,8 +111,8 @@
                                     [(g/point-at b t1)
                                      (g/point-at a t1)]
                                     (reverse a0-a1)))
-               assoc :fill (dr/rand-nth ["navy" "maroon"])
-               :fill-opacity 0.4)))
+               assoc :fill (dr/rand-nth ["maroon" "gold" "black"])
+               :fill-opacity 0.8)))
 
 (comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
                          0.2 0.4))
@@ -119,12 +121,12 @@
   (let [lines (base-lines)
         pairs (partition 2 1 lines)
         sampling (dr/random-sample 0.5 pairs)]
-    (concat (repeatedly (int (p-if 0.5 24)) #(color-box (dr/rand-nth pairs)))
-            (dr/map-random-sample (constantly 0.1)
+    (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
             (dr/random-sample 0.85 (mapcat spaced sampling))
-            (random-connections (int (p-if 0.3 100)) sampling))))
+            (random-connections (int (p-if 0.3 100)) sampling)
+            (mapv color-box (dr/random-sample 0.15 pairs)))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
