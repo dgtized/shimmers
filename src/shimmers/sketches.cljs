@@ -124,6 +124,7 @@
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
+            shimmers.sketches.wood-grain
             shimmers.sketches.zigzag
             shimmers.sketches.zoetropic))
 
