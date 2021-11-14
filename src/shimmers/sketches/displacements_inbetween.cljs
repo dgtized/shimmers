@@ -139,8 +139,9 @@
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
             (dr/random-sample 0.85 (mapcat spaced sampling))
-            (random-connections (int (p-if 0.3 100)) sampling)
-            (mapcat (partial color-strip palette) (dr/random-sample 0.05 pairs)))))
+            #_(random-connections (int (p-if 0.3 100)) sampling)
+            (mapcat (partial color-strip palette)
+                    (dr/random-sample 0.05 pairs)))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
