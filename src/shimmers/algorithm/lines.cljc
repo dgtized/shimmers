@@ -53,10 +53,16 @@
                 (ramer-douglas-peucker (drop index points) epsilon))
       [(first points) (last points)])))
 
-(defn simplify-line [{:keys [points]} epsilon]
+(defn simplify-line
+  "Remove any points that deviate further than `epsilon` distance from the
+  perpindicular of the subsection of the line."
+  [{:keys [points]} epsilon]
   (gl/linestrip2 (ramer-douglas-peucker points epsilon)))
 
-(defn mix-line [path-a path-b factor]
+(defn mix-line
+  "Sample two paths at even intervals and return a line-strip with a linear
+  interpolation of `factor` between each of the two corresponding points."
+  [path-a path-b factor]
   (gl/linestrip2
    (let [samples (max (count (:points path-a))
                       (count (:points path-b)))]
