@@ -106,6 +106,10 @@
                           (g/point-at a t1)]
                          (reverse a0-a1)))))
 
+(defn box-strip [pair offsets]
+  (for [[t0 t1] (partition 2 1 offsets)]
+    (box pair t0 t1)))
+
 ;; TODO: either make a version doing an entire column or otherwise allow for
 ;; shorter length boxes. Also improve palette selection
 (defn color-box [pair]
@@ -117,10 +121,17 @@
                assoc :fill (dr/rand-nth ["maroon" "gold" "black"])
                :fill-opacity 0.8)))
 
+(defn color-strip [palette pair]
+  (let [n (dr/weighted spacing-divisions)
+        boxes (box-strip pair (tm/norm-range n))
+        palette-seq (repeatedly (dr/rand-nth [2 3 4 5 7]) #(rand-nth palette))]
+    (for [[i cell] (map-indexed vector boxes)]
+      (vary-meta cell assoc :fill (nth palette-seq (mod i (count palette-seq)))))))
+
 (comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
                          0.2 0.4))
 
-(defn lines []
+(defn lines [palette]
   (let [lines (base-lines)
         pairs (partition 2 1 lines)
         sampling (dr/random-sample 0.5 pairs)]
@@ -129,7 +140,7 @@
                                   lines)
             (dr/random-sample 0.85 (mapcat spaced sampling))
             (random-connections (int (p-if 0.3 100)) sampling)
-            (mapv color-box (dr/random-sample 0.15 pairs)))))
+            (mapcat (partial color-strip palette) (dr/random-sample 0.05 pairs)))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
@@ -140,7 +151,8 @@
 
 (defn scene []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
-        shapes (fit-region screen (lines))]
+        palette (dr/shuffle ["maroon" "gold" "black" "white" "white"])
+        shapes (fit-region screen (lines palette))]
     (csvg/svg {:width width
                :height height
                :stroke "black"
