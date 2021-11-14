@@ -115,7 +115,6 @@
 (comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
                          0.2 0.4))
 
-(def screen (g/scale (rect/rect 0 0 width height) 0.99))
 (defn lines []
   (let [lines (base-lines)
         pairs (partition 2 1 lines)
@@ -127,20 +126,22 @@
             (dr/random-sample 0.85 (mapcat spaced sampling))
             (random-connections (int (p-if 0.3 100)) sampling))))
 
-(defn fit-lines
+;; Why is this not centering vertically?
+(defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
-  [lines]
-  (mapv (fn [line fit] (with-meta fit (meta line)))
-        lines
-        (gu/fit-all-into-bounds screen lines)))
+  [bounds shapes]
+  (mapv (fn [shape fit] (with-meta fit (meta shape)))
+        shapes
+        (gu/fit-all-into-bounds bounds shapes)))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :stroke-width 0.8}
-            (for [[i line] (map-indexed vector (fit-lines (lines)))]
-              (vary-meta line assoc :key (str "l" i)))))
+  (let [screen (g/scale (rect/rect 0 0 width height) 0.95)]
+    (csvg/svg {:width width
+               :height height
+               :stroke "black"
+               :stroke-width 0.8}
+              (for [[i line] (map-indexed vector (fit-region screen (lines)))]
+                (vary-meta line assoc :key (str "l" i))))))
 
 (defn page []
   [:div (scene)])
