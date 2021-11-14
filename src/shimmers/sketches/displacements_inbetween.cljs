@@ -1,5 +1,6 @@
 (ns shimmers.sketches.displacements-inbetween
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -39,16 +40,20 @@
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
 (defn base-lines []
-  (let [a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
+  (let [simplify (fn [line] (lines/simplify-line line (* 0.0002 width)))
+        a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
               (g/rotate (dr/random -0.05 0.1))
+              simplify
               (vary-meta assoc :stroke-width 2.0))
         b (-> (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.12 width))
               (g/rotate (dr/random -0.05 0.05))
+              simplify
               (vary-meta assoc :stroke-width 2.0))
         c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
               (g/rotate (if (dr/chance 0.1)
                           (dr/random -0.6 0.6)
                           (dr/random 0.05 -0.1)))
+              simplify
               (vary-meta assoc :stroke-width 2.0))
         [n1 n2] (repeatedly 2 #(dr/weighted {11 2
                                              13 2
@@ -57,10 +62,10 @@
                                              27 1}))]
     (concat [a]
             (for [t (tm/norm-range n1)]
-              (mix-line a b t))
+              (simplify (mix-line a b t)))
             [b]
             (for [t (tm/norm-range n2)]
-              (mix-line b c t))
+              (simplify (mix-line b c t)))
             [c])))
 
 (defn connect [[a b] t]
