@@ -126,7 +126,6 @@
             (dr/random-sample 0.85 (mapcat spaced sampling))
             (random-connections (int (p-if 0.3 100)) sampling))))
 
-;; Why is this not centering vertically?
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
   [bounds shapes]
@@ -135,7 +134,7 @@
         (gu/fit-all-into-bounds bounds shapes)))
 
 (defn scene []
-  (let [screen (g/scale (rect/rect 0 0 width height) 0.95)
+  (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
         shapes (fit-region screen (lines))]
     (csvg/svg {:width width
                :height height
