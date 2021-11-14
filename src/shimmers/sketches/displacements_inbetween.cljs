@@ -39,6 +39,16 @@
      (for [t (tm/norm-range (dec samples))]
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
 
+(def spacing-divisions
+  {5 1
+   7 2
+   11 3
+   13 4
+   17 4
+   19 3
+   23 2
+   29 1})
+
 (defn base-lines []
   (let [simplify (fn [line] (lines/simplify-line line (* 0.0002 width)))
         angle (if (dr/chance 0.1)
@@ -56,11 +66,7 @@
               (g/rotate angle)
               simplify
               (vary-meta assoc :stroke-width 2.0))
-        [n1 n2] (repeatedly 2 #(dr/weighted {11 2
-                                             13 2
-                                             17 2
-                                             23 1
-                                             27 1}))]
+        [n1 n2] (repeatedly 2 #(dr/weighted (dissoc spacing-divisions 5 7)))]
     (println [angle n1 n2])
     (concat [a]
             (for [t (tm/norm-range n1)]
@@ -72,16 +78,6 @@
 
 (defn connect [[a b] t]
   (gl/linestrip2 (g/point-at a t) (g/point-at b t)))
-
-(def spacing-divisions
-  {5 1
-   7 2
-   11 3
-   13 4
-   17 4
-   19 3
-   23 2
-   29 1})
 
 (defn spaced [pair]
   (mapv (fn [t] (connect pair t))
