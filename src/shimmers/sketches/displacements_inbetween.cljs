@@ -162,7 +162,8 @@
     (csvg/svg {:width width
                :height height
                :stroke "black"
-               :stroke-width 0.8}
+               :stroke-opacity 0.8
+               :stroke-width 1.0}
               (for [[i shape] (map-indexed vector shapes)]
                 (vary-meta shape assoc :key (str "l" i))))))
 
