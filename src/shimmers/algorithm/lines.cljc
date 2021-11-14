@@ -1,7 +1,9 @@
 (ns shimmers.algorithm.lines
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.math.core :as tm]))
 
 (defn points->lines [points]
   (map gl/line2 (partition 2 1 points)))
@@ -60,3 +62,17 @@
                       (count (:points path-b)))]
      (for [t (tm/norm-range (dec samples))]
        (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
+
+(defn points-between
+  "Given a sequence of `points`, and relative offsets `t0` < `t1`, return all
+  points that proportionally lie between `t0` and `t1`. The domain of `t0` and
+  `t1` is [0.0..1.0], represents the percentage distance along the total arc
+  length of the original points."
+  [points t0 t1]
+  {:pre [(<= t0 t1)]}
+  (let [arc-index (gu/arc-length-index points)
+        arc-length (last arc-index)]
+    (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
+         (drop-while (fn [[_ t]] (< t t0)))
+         (take-while (fn [[_ t]] (<= t t1)))
+         (map first))))

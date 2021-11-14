@@ -84,17 +84,9 @@
     (dr/random n)
     0))
 
-(defn points-between [points t0 t1]
-  (let [arc-index (gu/arc-length-index points)
-        arc-length (last arc-index)]
-    (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
-         (drop-while (fn [[_ t]] (< t t0)))
-         (take-while (fn [[_ t]] (< t t1)))
-         (map first))))
-
 (defn box [[a b] t0 t1]
-  (let [b0-b1 (points-between (:points b) t0 t1)
-        a0-a1 (points-between (:points a) t0 t1)]
+  (let [b0-b1 (lines/points-between (:points b) t0 t1)
+        a0-a1 (lines/points-between (:points a) t0 t1)]
     (gp/polygon2 (concat [(g/point-at a t0)
                           (g/point-at b t0)]
                          b0-b1
