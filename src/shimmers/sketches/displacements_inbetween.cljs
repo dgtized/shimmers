@@ -29,7 +29,7 @@
                         (tm/* perpendicular (dr/random -1 1))))
                 [b])
         bezier/auto-spline2
-        (g/sample-uniform 8.0 true)
+        (g/sample-uniform (* 0.01 height) true)
         gl/linestrip2)))
 
 (defn mix-line [path-a path-b factor]
