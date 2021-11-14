@@ -96,21 +96,24 @@
          (take-while (fn [[_ t]] (< t t1)))
          (map first))))
 
+(defn box [[a b] t0 t1]
+  (let [b0-b1 (points-between (:points b) t0 t1)
+        a0-a1 (points-between (:points a) t0 t1)]
+    (gp/polygon2 (concat [(g/point-at a t0)
+                          (g/point-at b t0)]
+                         b0-b1
+                         [(g/point-at b t1)
+                          (g/point-at a t1)]
+                         (reverse a0-a1)))))
+
 ;; TODO: either make a version doing an entire column or otherwise allow for
 ;; shorter length boxes. Also improve palette selection
-(defn color-box [[a b]]
+(defn color-box [pair]
   (let [t (dr/random 0.1 0.9)
         w (dr/random 0.05 0.2)
         t0 (- t (* 0.5 w))
-        t1 (+ t (* 0.5 w))
-        b0-b1 (points-between (:points b) t0 t1)
-        a0-a1 (points-between (:points a) t0 t1)]
-    (vary-meta (gp/polygon2 (concat [(g/point-at a t0)
-                                     (g/point-at b t0)]
-                                    b0-b1
-                                    [(g/point-at b t1)
-                                     (g/point-at a t1)]
-                                    (reverse a0-a1)))
+        t1 (+ t (* 0.5 w))]
+    (vary-meta (box pair t0 t1)
                assoc :fill (dr/rand-nth ["maroon" "gold" "black"])
                :fill-opacity 0.8)))
 
