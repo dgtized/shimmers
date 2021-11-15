@@ -15,7 +15,7 @@
 
 (def width 800)
 (def height 600)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
 (defn make-line [a b controls scale]
@@ -56,14 +56,14 @@
             (drop (inc i) lines))))
 
 (defn control-lines [n]
-  (concat [(gl/line2 (r -0.2 0.0) (r -0.2 1.0))]
+  (concat [(gl/line2 (rv -0.2 0.0) (rv -0.2 1.0))]
           (for [t (var-range n)]
             (lines/simplify-line
-             (make-line (r t 0.0) (r t 1.0)
+             (make-line (rv t 0.0) (rv t 1.0)
                         (dr/rand-nth [2 3 5 6])
                         (/ width (* 4 n)))
              (* 0.0002 width)))
-          [(gl/line2 (r 1.2 0.0) (r 1.2 1.0))]))
+          [(gl/line2 (rv 1.2 0.0) (rv 1.2 1.0))]))
 
 (defn lines [n divisions]
   (mapcat (fn [[a b]]
