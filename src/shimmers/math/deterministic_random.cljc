@@ -125,6 +125,20 @@
          (var-range 2)
          (var-range 5))
 
+
+(defn random-offsets
+  "Generate a range of offset values from [0..1] with minimum spacing
+  `min-offset`, and maximum spacing `max-offset`."
+  [min-offset max-offset]
+  (->> #(random min-offset max-offset)
+       repeatedly
+       (reductions +)
+       (take-while #(< % 1.0))
+       doall))
+
+(comment (count (random-offsets 0.1 0.3)))
+
+
 ;; (defn random-swap [xs]
 ;;   (let [n (count xs)
 ;;         i (random-int (dec n))]
