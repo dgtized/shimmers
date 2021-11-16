@@ -97,3 +97,24 @@
    (let [{[w h] :size} rectangle
          square (* (min w h) ratio)]
      (filter has-area? (split-panes rectangle square percent split)))))
+
+(defn place-by
+  "Place a `candidate` shape on a particular side of a `fixed` shape.
+
+  Uses g/bounds of both shapes to ensure they do not overlap."
+  [side fixed candidate]
+  (let [bounds-fixed (g/bounds fixed)
+        bounds-candidate (g/bounds candidate)
+        t (case side
+            :left
+            (gv/vec2 (- (rect/right bounds-fixed) (rect/left bounds-candidate)) 0)
+            :right
+            (gv/vec2 (- (rect/left bounds-fixed) (rect/right bounds-candidate)) 0))]
+    (g/translate candidate t)))
+
+(comment (place-by :left (rect/rect 10) (rect/rect 0 0 20))
+         (place-by :left (rect/rect 10) (rect/rect -10 0 20))
+         (place-by :left (rect/rect 10) (rect/rect 10 0 20))
+         (place-by :right (rect/rect 10) (rect/rect 0 0 20))
+         (place-by :right (rect/rect 10) (rect/rect -10 0 20))
+         (place-by :right (rect/rect 10) (rect/rect 10 0 20)))
