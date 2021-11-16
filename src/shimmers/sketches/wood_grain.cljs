@@ -70,7 +70,7 @@
 (defn grow [control target direction margin density]
   (let [aligned (square/align-to direction margin control target)]
     (lines-between [control aligned]
-                   (dr/random-offsets (* 0.33 density) density))))
+                   (dr/density-range (* 0.33 density) density))))
 
 (defn out-of-bounds? [spline]
   (let [bounds (g/bounds spline)]

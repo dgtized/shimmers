@@ -126,8 +126,9 @@
          (var-range 5))
 
 
-(defn random-offsets
-  "Generate a range of offset values from [0..1] with minimum spacing
+;; tm/norm-range but with random offsets and an uncertain number of samples
+(defn density-range
+  "Generate an ordered range of values from [0..1] with minimum spacing
   `min-offset`, and maximum spacing `max-offset`."
   [min-offset max-offset]
   (->> #(random min-offset max-offset)
@@ -136,7 +137,7 @@
        (take-while #(< % 1.0))
        doall))
 
-(comment (count (random-offsets 0.1 0.3)))
+(comment (count (density-range 0.1 0.2)))
 
 
 ;; (defn random-swap [xs]
