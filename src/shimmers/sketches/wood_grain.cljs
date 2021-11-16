@@ -29,6 +29,12 @@
         (g/sample-uniform (* 0.01 height) true)
         gl/linestrip2)))
 
+(comment (let [l (make-line (rv 0.5 0.0) (rv 0.5 1.0) 4 (* width 0.1))
+               s (lines/simplify-line l (* 0.0002 width))]
+           [(count (:points l)) (count (:points s))
+            (g/bounds s)
+            s]))
+
 (defn lines-between [[a b] offsets]
   (for [t offsets]
     (lines/mix-line a b t)))
