@@ -29,22 +29,8 @@
         (g/sample-uniform (* 0.01 height) true)
         gl/linestrip2)))
 
-(defn var-range
-  [n]
-  {:pre [(pos-int? n)]}
-  (let [dt (/ 1.0 (inc n))]
-    (sort (concat [0.0]
-                  (->> #(dr/gaussian dt (* dt 0.2))
-                       (repeatedly n)
-                       (reductions +))
-                  [1.0]))))
-
-(comment (var-range 1)
-         (var-range 2)
-         (var-range 5))
-
 (defn lines-between [[a b] n]
-  (for [t (cs/midsection (var-range (inc n)))]
+  (for [t (cs/midsection (dr/var-range (inc n)))]
     (lines/mix-line a b t)))
 
 (defn random-swap [lines]
@@ -57,7 +43,7 @@
 
 (defn control-lines [n]
   (concat [(gl/line2 (rv -0.2 0.0) (rv -0.2 1.0))]
-          (for [t (var-range n)]
+          (for [t (dr/var-range n)]
             (lines/simplify-line
              (make-line (rv t 0.0) (rv t 1.0)
                         (dr/rand-nth [2 3 5 6])

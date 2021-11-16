@@ -110,3 +110,17 @@
   [mu sd]
   (ksd/draw (ksd/normal {:mu mu :sd sd})
             {:seed (random-int MAX-INT)}))
+
+(defn var-range
+  [n]
+  {:pre [(pos-int? n)]}
+  (let [dt (/ 1.0 (inc n))]
+    (sort (concat [0.0]
+                  (->> #(gaussian dt (* dt 0.2))
+                       (repeatedly n)
+                       (reductions +))
+                  [1.0]))))
+
+(comment (var-range 1)
+         (var-range 2)
+         (var-range 5))
