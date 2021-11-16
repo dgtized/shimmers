@@ -69,8 +69,10 @@
 
 (defn offsets-for [density]
   (->> #(dr/random (* density 0.5) density)
-       (repeatedly (int (/ 1 density)))
-       (reductions +)))
+       repeatedly
+       (reductions +)
+       (take-while #(< % 1.0))
+       doall))
 
 (comment (count (offsets-for 0.1)))
 
