@@ -1,6 +1,7 @@
 (ns shimmers.sketches.wood-grain
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -10,6 +11,7 @@
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -56,9 +58,49 @@
              b))
           (partition 2 1 (control-lines n))))
 
+;; Algorithm
+;;
+;; Given a starting spline A
+;; Generate a target spline B that is aligned to the bounding box of A (left or right).
+;; Generate k offsets between [0.0, 1.0]
+;; Mix A & B at each offset and emit the splines
+;; Once B is reached, use it as the new starting spline and recurse,
+;; stopping once splines are off the screen.
+
+(defn grow [control target direction k]
+  (let [aligned (square/align-to direction control target)]
+    (lines-between [control aligned] (cs/midsection (tm/norm-range k)))))
+
+(defn out-of-bounds? [spline]
+  (let [bounds (g/bounds spline)]
+    (or (< (rect/right bounds) 0)
+        (> (rect/left bounds) width))))
+
+(defn grow-until-bounds [control gen-line direction k]
+  (loop [splines [] control control]
+    (if (out-of-bounds? control)
+      splines
+      (let [growth (grow control (gen-line) direction k)]
+        (recur (into splines growth) (last growth))))))
+
+(defn grow-lines []
+  (let [control (lines/simplify-line
+                 (make-line (rv 0.5 0.0) (rv 0.5 1.0)
+                            (dr/rand-nth [2 3 5 6])
+                            (* width 0.05))
+                 (* 0.0002 width))
+        gen-line (fn [] (lines/simplify-line
+                        (make-line (rv 0.0 0.0) (rv 0.0 1.0)
+                                   (dr/rand-nth [2 3 5 6])
+                                   (* width 0.05))
+                        (* 0.0005 width)))]
+    (concat (reverse (grow-until-bounds control gen-line :left 8))
+            [control]
+            (grow-until-bounds control gen-line :right 8))))
+
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
-  (let [shapes (lines 4 12)]
+  (let [shapes (grow-lines)]
     (csvg/svg {:width width
                :height height
                :stroke "black"
