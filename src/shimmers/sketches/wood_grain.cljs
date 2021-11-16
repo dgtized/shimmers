@@ -1,5 +1,6 @@
 (ns shimmers.sketches.wood-grain
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -10,8 +11,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.algorithm.lines :as lines]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
