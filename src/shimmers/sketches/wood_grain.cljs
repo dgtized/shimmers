@@ -67,20 +67,28 @@
 ;; Once B is reached, use it as the new starting spline and recurse,
 ;; stopping once splines are off the screen.
 
-(defn grow [control target direction margin k]
+(defn offsets-for [density]
+  (->> #(dr/random (* density 0.5) density)
+       (repeatedly (int (/ 1 density)))
+       (reductions +)))
+
+(comment (count (offsets-for 0.1)))
+
+(defn grow [control target direction margin density]
   (let [aligned (square/align-to direction margin control target)]
-    (lines-between [control aligned] (cs/midsection (tm/norm-range k)))))
+    (lines-between [control aligned]
+                   (offsets-for density))))
 
 (defn out-of-bounds? [spline]
   (let [bounds (g/bounds spline)]
     (or (< (rect/right bounds) 0)
         (> (rect/left bounds) width))))
 
-(defn grow-until-bounds [control gen-line direction margin k]
+(defn grow-until-bounds [control gen-line direction margin density]
   (loop [splines [] control control]
     (if (out-of-bounds? control)
       splines
-      (let [growth (grow control (gen-line) direction margin k)]
+      (let [growth (grow control (gen-line) direction margin density)]
         (recur (into splines growth) (last growth))))))
 
 (defn grow-lines []
@@ -92,11 +100,12 @@
                                     (* width 0.05))))
         control (line-at 0.5)
         gen-line (partial line-at 0.0)
-        margin (* 0.05 width)]
+        density (/ 1 8)
+        margin (* 0.5 density width)]
     (map simplify
-         (concat (reverse (grow-until-bounds control gen-line :left margin 8))
+         (concat (reverse (grow-until-bounds control gen-line :left margin density))
                  [control]
-                 (grow-until-bounds control gen-line :right margin 8)))))
+                 (grow-until-bounds control gen-line :right margin density)))))
 
 (defn scene []
   (let [shapes (grow-lines)]
