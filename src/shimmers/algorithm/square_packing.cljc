@@ -98,10 +98,10 @@
          square (* (min w h) ratio)]
      (filter has-area? (split-panes rectangle square percent split)))))
 
-(defn place-by
-  "Place a `candidate` shape on a particular side of a `fixed` shape.
+(defn align-to
+  "Translates a `candidate` shape to align with a particular side of a `fixed` shape.
 
-  Uses g/bounds of both shapes to ensure they do not overlap."
+  Uses g/bounds of both shapes to ensure they do not overlap. Only aligns on an axis one at a time."
   [side fixed candidate]
   (let [bounds-fixed (g/bounds fixed)
         bounds-candidate (g/bounds candidate)
@@ -109,12 +109,22 @@
             :left
             (gv/vec2 (- (rect/right bounds-fixed) (rect/left bounds-candidate)) 0)
             :right
-            (gv/vec2 (- (rect/left bounds-fixed) (rect/right bounds-candidate)) 0))]
+            (gv/vec2 (- (rect/left bounds-fixed) (rect/right bounds-candidate)) 0)
+            :top
+            (gv/vec2 0 (- (rect/bottom bounds-fixed) (rect/top bounds-candidate)))
+            :bottom
+            (gv/vec2 0 (- (rect/top bounds-fixed) (rect/bottom bounds-candidate))))]
     (g/translate candidate t)))
 
-(comment (place-by :left (rect/rect 10) (rect/rect 0 0 20))
-         (place-by :left (rect/rect 10) (rect/rect -10 0 20))
-         (place-by :left (rect/rect 10) (rect/rect 10 0 20))
-         (place-by :right (rect/rect 10) (rect/rect 0 0 20))
-         (place-by :right (rect/rect 10) (rect/rect -10 0 20))
-         (place-by :right (rect/rect 10) (rect/rect 10 0 20)))
+(comment (align-to :left (rect/rect 10) (rect/rect 0 0 20))
+         (align-to :left (rect/rect 10) (rect/rect -10 0 20))
+         (align-to :left (rect/rect 10) (rect/rect 10 0 20))
+         (align-to :right (rect/rect 10) (rect/rect 0 0 20))
+         (align-to :right (rect/rect 10) (rect/rect -10 0 20))
+         (align-to :right (rect/rect 10) (rect/rect 10 0 20))
+         (align-to :top (rect/rect 10) (rect/rect 0 0 20))
+         (align-to :top (rect/rect 10) (rect/rect 0 -10 20))
+         (align-to :top (rect/rect 10) (rect/rect 0 10 20))
+         (align-to :bottom (rect/rect 10) (rect/rect 0 0 20))
+         (align-to :bottom (rect/rect 10) (rect/rect 0 -10 20))
+         (align-to :bottom (rect/rect 10) (rect/rect 0 10 20)))
