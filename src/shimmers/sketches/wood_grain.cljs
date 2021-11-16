@@ -15,8 +15,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def width 800)
-(def height 600)
+(def width 1000)
+(def height 800)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -67,19 +67,19 @@
 ;; Once B is reached, use it as the new starting spline and recurse,
 ;; stopping once splines are off the screen.
 
-(defn offsets-for [density]
-  (->> #(dr/random (* density 0.5) density)
+(defn offsets-for [min-offset max-offset]
+  (->> #(dr/random min-offset max-offset)
        repeatedly
        (reductions +)
        (take-while #(< % 1.0))
        doall))
 
-(comment (count (offsets-for 0.1)))
+(comment (count (offsets-for 0.1 0.3)))
 
 (defn grow [control target direction margin density]
   (let [aligned (square/align-to direction margin control target)]
     (lines-between [control aligned]
-                   (offsets-for density))))
+                   (offsets-for (* 0.33 density) density))))
 
 (defn out-of-bounds? [spline]
   (let [bounds (g/bounds spline)]
@@ -102,8 +102,8 @@
                                     (* width 0.05))))
         control (line-at 0.5)
         gen-line (partial line-at 0.0)
-        density (/ 1 8)
-        margin (* 0.5 density width)]
+        density (/ 1 10)
+        margin (* 0.4 density width)]
     (map simplify
          (concat (reverse (grow-until-bounds control gen-line :left margin density))
                  [control]
