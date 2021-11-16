@@ -92,9 +92,10 @@
                                     (* width 0.05))))
         control (line-at 0.5)
         gen-line (partial line-at 0.0)]
-    (concat (reverse (grow-until-bounds control gen-line :left 8))
-            [control]
-            (grow-until-bounds control gen-line :right 8))))
+    (map simplify
+         (concat (reverse (grow-until-bounds control gen-line :left 8))
+                 [control]
+                 (grow-until-bounds control gen-line :right 8)))))
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
