@@ -33,14 +33,6 @@
   (for [t (cs/midsection (dr/var-range (inc n)))]
     (lines/mix-line a b t)))
 
-(defn random-swap [lines]
-  (let [n (count lines)
-        i (dr/random-int (dec n))]
-    (concat (take (dec i) lines)
-            [(nth lines (inc i))
-             (nth lines i)]
-            (drop (inc i) lines))))
-
 (defn control-lines [n]
   (concat [(gl/line2 (rv -0.2 0.0) (rv -0.2 1.0))]
           (for [t (dr/var-range n)]

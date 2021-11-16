@@ -124,3 +124,12 @@
 (comment (var-range 1)
          (var-range 2)
          (var-range 5))
+
+;; (defn random-swap [xs]
+;;   (let [n (count xs)
+;;         i (random-int (dec n))]
+;;     (concat (take (dec i) xs)
+;;             [(nth xs (inc i))
+;;              (nth xs i)]
+;;             (drop (inc i) xs))))
+;; (comment (random-swap (range 5)))
