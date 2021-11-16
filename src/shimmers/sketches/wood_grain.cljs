@@ -29,8 +29,8 @@
         (g/sample-uniform (* 0.01 height) true)
         gl/linestrip2)))
 
-(defn lines-between [[a b] n]
-  (for [t (cs/midsection (dr/var-range (inc n)))]
+(defn lines-between [[a b] offsets]
+  (for [t offsets]
     (lines/mix-line a b t)))
 
 (defn control-lines [n]
@@ -46,7 +46,7 @@
 (defn lines [n divisions]
   (mapcat (fn [[a b]]
             (conj
-             (lines-between [a b] divisions)
+             (lines-between [a b] (cs/midsection (dr/var-range (inc divisions))))
              b))
           (partition 2 1 (control-lines n))))
 
