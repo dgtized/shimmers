@@ -98,7 +98,7 @@
         (fn [spline] (lines/simplify-line spline (* 0.0005 width)))
         line-at
         (fn [t] (simplify (make-line (rv t 0.0) (rv t 1.0)
-                                    (dr/rand-nth [2 3 5 6])
+                                    (dr/rand-nth [2 3 5 7 9])
                                     (* width 0.05))))
         control (line-at 0.5)
         gen-line (partial line-at 0.0)
@@ -114,7 +114,7 @@
     (csvg/svg {:width width
                :height height
                :stroke "black"
-               :stroke-width 1.0}
+               :stroke-width 0.7}
               (for [[i shape] (map-indexed vector shapes)]
                 (vary-meta shape assoc :key (str "l" i))))))
 
