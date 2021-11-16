@@ -84,16 +84,14 @@
         (recur (into splines growth) (last growth))))))
 
 (defn grow-lines []
-  (let [control (lines/simplify-line
-                 (make-line (rv 0.5 0.0) (rv 0.5 1.0)
-                            (dr/rand-nth [2 3 5 6])
-                            (* width 0.05))
-                 (* 0.0002 width))
-        gen-line (fn [] (lines/simplify-line
-                        (make-line (rv 0.0 0.0) (rv 0.0 1.0)
-                                   (dr/rand-nth [2 3 5 6])
-                                   (* width 0.05))
-                        (* 0.0005 width)))]
+  (let [simplify
+        (fn [spline] (lines/simplify-line spline (* 0.0005 width)))
+        line-at
+        (fn [t] (simplify (make-line (rv t 0.0) (rv t 1.0)
+                                    (dr/rand-nth [2 3 5 6])
+                                    (* width 0.05))))
+        control (line-at 0.5)
+        gen-line (partial line-at 0.0)]
     (concat (reverse (grow-until-bounds control gen-line :left 8))
             [control]
             (grow-until-bounds control gen-line :right 8))))
