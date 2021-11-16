@@ -8,10 +8,12 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.equations :as eq]
+            [shimmers.math.geometry :as geometry]
             [shimmers.math.hexagon :as hex]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
@@ -27,6 +29,7 @@
   (ctrl/state {:calc-points "flow-points"
                :draw "curves"
                :align-triangles true
+               :point-source "random"
                :snap-resolution "0"
                :iterations 90
                :step-size 4
@@ -126,9 +129,8 @@
    p (range length)))
 
 (defn points
-  [{:keys [calc-points] :as settings}]
-  (calc-points (cq/rel-vec (dr/random) (dr/random))
-               settings))
+  [{:keys [calc-points point-source] :as settings}]
+  (calc-points (point-source) settings))
 
 (defn draw-triangles [triangle {:keys [align-triangles] :as settings}]
   (let [points (points settings)]
@@ -146,7 +148,8 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (let [{:keys [iterations draw align-triangles calc-points
+  (let [{:keys [iterations draw align-triangles
+                calc-points point-source
                 snap-resolution stroke-weight
                 length step-size noise-div jitter obstacles]}
         @settings]
@@ -155,6 +158,9 @@
      :calc-points (get {"flow-points" flow-points
                         "downhill-points" downhill-points}
                        calc-points)
+     :point-source (case point-source
+                     "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
+                     "center" (fn [] (geometry/random-point-in-circle (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35)))))
      :snap-resolution (edn/read-string snap-resolution)
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
@@ -216,6 +222,9 @@
     "Triangles" "triangles"
     "Hexagon Grid" "hexagons"
     "Debug Grid" "grid"}
+   :point-source
+   {"Random" "random"
+    "Center" "center"}
    :snap-resolution
    {"Disabled" 0
     "90 degrees" (/ Math/PI 2)
@@ -248,6 +257,7 @@
     (ctrl/dropdown settings "Draw" [:draw] (:draw ui-mappings))
     (when (= (:draw @settings) "triangles")
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
+    (ctrl/dropdown settings "Point Source" [:point-source] (:point-source ui-mappings))
     (ctrl/dropdown settings "Snap Angles To "
                    [:snap-resolution] (:snap-resolution ui-mappings))
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
