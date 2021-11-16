@@ -67,8 +67,8 @@
 ;; Once B is reached, use it as the new starting spline and recurse,
 ;; stopping once splines are off the screen.
 
-(defn grow [control target direction k]
-  (let [aligned (square/align-to direction control target)]
+(defn grow [control target direction margin k]
+  (let [aligned (square/align-to direction margin control target)]
     (lines-between [control aligned] (cs/midsection (tm/norm-range k)))))
 
 (defn out-of-bounds? [spline]
@@ -76,11 +76,11 @@
     (or (< (rect/right bounds) 0)
         (> (rect/left bounds) width))))
 
-(defn grow-until-bounds [control gen-line direction k]
+(defn grow-until-bounds [control gen-line direction margin k]
   (loop [splines [] control control]
     (if (out-of-bounds? control)
       splines
-      (let [growth (grow control (gen-line) direction k)]
+      (let [growth (grow control (gen-line) direction margin k)]
         (recur (into splines growth) (last growth))))))
 
 (defn grow-lines []
@@ -91,13 +91,13 @@
                                     (dr/rand-nth [2 3 5 6])
                                     (* width 0.05))))
         control (line-at 0.5)
-        gen-line (partial line-at 0.0)]
+        gen-line (partial line-at 0.0)
+        margin (* 0.05 width)]
     (map simplify
-         (concat (reverse (grow-until-bounds control gen-line :left 8))
+         (concat (reverse (grow-until-bounds control gen-line :left margin 8))
                  [control]
-                 (grow-until-bounds control gen-line :right 8)))))
+                 (grow-until-bounds control gen-line :right margin 8)))))
 
-;; FIXME: handle large gaps and overlapping lines
 (defn scene []
   (let [shapes (grow-lines)]
     (csvg/svg {:width width
