@@ -32,9 +32,12 @@
 (defn group
   [children]
   (Group.
-   (if (sequential? children)
-     children
-     [children])))
+   (cond (sequential? children)
+         children
+         (nil? children)
+         []
+         :else
+         [children])))
 
 (defn fit-grid [n {:keys [rows cols]}]
   (cond (and rows cols)
