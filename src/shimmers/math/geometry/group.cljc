@@ -24,6 +24,11 @@
     (g/height (g/bounds _)))
 
   g/ICenter
+  (center
+    ([{:keys [children]}]
+     (Group. (mapv g/center children)))
+    ([{:keys [children] :as group} o]
+     (Group. (mapv (fn [s] (g/center s o)) children))))
   ;; Not sure if strictly correct centroid, averages centroids of children
   (centroid [{:keys [children]}]
     (gu/centroid (map g/centroid children)))

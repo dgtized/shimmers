@@ -1,8 +1,8 @@
 (ns shimmers.math.geometry.group-test
   (:require
-   #?(:clj [clojure.test :refer [deftest is]]
+   #?(:clj [clojure.test :refer [deftest testing is]]
       :cljs [cljs.test :as t :include-macros true
-             :refer [deftest is]])
+             :refer [deftest testing is]])
    [shimmers.math.geometry.group :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -46,9 +46,17 @@
       "ignores extra elements that won't fit in specified grid"))
 
 (deftest centering
-  (is (= (gv/vec2) (g/centroid (g-circle))))
-  (is (= (gv/vec2 0.5 0.5) (g/centroid (g-rect))))
-  (is (= (gv/vec2 0.25 0.25) (g/centroid (g-rect-circle)))))
+  (testing "centroid"
+    (is (= (gv/vec2) (g/centroid (g-circle))))
+    (is (= (gv/vec2 0.5 0.5) (g/centroid (g-rect))))
+    (is (= (gv/vec2 0.25 0.25) (g/centroid (g-rect-circle)))))
+  (testing "centering around origin"
+    (is (= (g-circle) (g/center (g-circle))))
+    (is (= (sut/group (rect/rect -0.5 -0.5 1.0))
+           (g/center (g-rect))))
+    (is (= (sut/group [(rect/rect -0.5 -0.5 1) (gc/circle)])
+           (g/center (g-rect-circle)))
+        "broken, centering at origin individually")))
 
 (deftest grid-fit
   (is (= [1 1 0] (sut/fit-grid 1 {})))
