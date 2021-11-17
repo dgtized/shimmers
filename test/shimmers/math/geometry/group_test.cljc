@@ -78,6 +78,16 @@
            (g/center (sut/group [(rect/rect -1 0 1) (rect/rect 0 0 1)])
                      (gv/vec2 1 1))))))
 
+(deftest scaling
+  (is (= (sut/group (rect/rect 0 0 2)) (g/scale (g-rect) 2)))
+  (is (= (sut/group (rect/rect 2 0 2)) (g/scale (g/translate (g-rect) [1 0]) 2)))
+  (is (= (sut/group (gc/circle 0 0 2)) (g/scale (g-circle) 2)))
+  (is (= (sut/group (gc/circle 0 2 2)) (g/scale (g/translate (g-circle) [0 1]) 2)))
+  (is (= (sut/group [(rect/rect 0 0 2) (gc/circle 0 0 2)])
+         (g/scale (g-rect-circle) 2)))
+  (is (= (sut/group [(rect/rect 2 2 2) (gc/circle 2 2 2)])
+         (g/scale (g/translate (g-rect-circle) [1 1]) 2))))
+
 (deftest grid-fit
   (is (= [1 1 0] (sut/fit-grid 1 {})))
   (is (= [2 1 0] (sut/fit-grid 2 {})))

@@ -34,6 +34,10 @@
   (centroid [{:keys [children]}]
     (gu/centroid (map g/centroid children)))
 
+  g/IScale
+  (scale [_ s]
+    (Group. (mapv #(g/scale % s) (get _ :children))))
+
   g/ITranslate
   (translate [{:keys [children]} t]
     (Group. (mapv (fn [s] (g/translate s t)) children))))
