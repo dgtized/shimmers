@@ -98,6 +98,9 @@
          square (* (min w h) ratio)]
      (filter has-area? (split-panes rectangle square percent split)))))
 
+;; TODO: re-use to implement g/IAlign align-with? However, this is doing alignmnet
+;; on the axis aligned bounds, perhaps align-with was supposed to allow
+;; alignment to a particular edge?
 (defn align-to
   "Translates a `shape` to align with a particular side of a `fixed` shape.
 
