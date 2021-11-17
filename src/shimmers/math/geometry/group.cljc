@@ -37,6 +37,9 @@
   g/IScale
   (scale [_ s]
     (Group. (mapv #(g/scale % s) (get _ :children))))
+  #_(scale-size [_ s]
+      ;; needs to be relative to group centroid though
+      (Group. (mapv #(g/scale-size % s) (get _ :children))))
 
   g/ITranslate
   (translate [{:keys [children]} t]
