@@ -56,6 +56,10 @@
                path-merge
                coll))
 
+;; TODO: Bentley-Ottman line sweep for crossing line segments
+;; https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm
+;; https://cs.stackexchange.com/questions/2717/polygons-generated-by-a-set-of-segments
+
 ;; Might need path simplification, ie if a,b,c are all collinear just need a-c
 ;; However, path can double back onitself so requires some extra care
 (defn intersections [path]

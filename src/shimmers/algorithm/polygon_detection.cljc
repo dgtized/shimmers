@@ -96,6 +96,13 @@
   (when-let [[p q] (edge-face-near-point g point)]
     (cycle-clockwise-from-edge g p q)))
 
+;; Alternatives approaches with decomposition & finding circuits?
+;; https://en.wikipedia.org/wiki/Polygon_partition#Partition_a_polygon_into_trapezoids
+;; https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0230342
+;; https://javascript.plainenglish.io/finding-simple-cycles-in-an-undirected-graph-a-javascript-approach-1fa84d2f3218
+;; https://www.cs.tufts.edu/comp/150GA/homeworks/hw1/Johnson%2075.PDF
+;; https://github.com/1123/johnson/blob/master/src/main/java/jgraphalgos/johnson/Johnson.java
+;; http://www.cs.technion.ac.il/~itai/publications/Algorithms/min-circuit.pdf
 ;; https://web.ist.utl.pt/alfredo.ferreira/publications/12EPCG-PolygonDetection.pdf
 ;; (defn minimum-cycle-basis [g])
 
