@@ -30,16 +30,12 @@
      (let [children (get _ :children)
            center (g/centroid _)]
        (Group.
-        (if (> (count children) 1)
-          (mapv (fn [s] (g/translate s (tm/- (g/centroid s) center))) children)
-          (mapv g/center children)))))
+        (mapv (fn [s] (g/translate s (tm/- center))) children))))
     ([_ o]
      (let [children (get _ :children)
            center (g/centroid _)]
        (Group.
-        (if (> (count children) 1)
-          (mapv (fn [s] (g/translate s (tm/- (tm/+ (g/centroid s) o) center))) children)
-          (mapv (fn [s] (g/center s o)) children))))))
+        (mapv (fn [s] (g/translate s (tm/- o center))) children)))))
   ;; Not sure if strictly correct centroid, averages centroids of children
   (centroid [{:keys [children]}]
     (gu/centroid (map g/centroid children)))

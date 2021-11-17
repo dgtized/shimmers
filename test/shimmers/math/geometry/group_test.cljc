@@ -53,13 +53,18 @@
   (testing "centering around origin"
     (is (= (g-circle) (g/center (g-circle))))
     (is (= (sut/group (rect/rect -0.5 -0.5 1)) (g/center (g-rect))))
-    (is (= (sut/group [(rect/rect 0.25 0.25 1) (gc/circle -0.25 -0.25 1)])
-           (g/center (g-rect-circle)))))
+    (is (= (sut/group [(rect/rect -0.25 -0.25 1) (gc/circle -0.25 -0.25 1)])
+           (g/center (g-rect-circle))))
+    (is (= (sut/group [(rect/rect -1 -0.5 1) (rect/rect 0 -0.5 1)])
+           (g/center (sut/group [(rect/rect -1 0 1) (rect/rect 0 0 1)])))))
   (testing "centering around 1,1"
     (is (= (sut/group (gc/circle 1 1 1)) (g/center (g-circle) (gv/vec2 1 1))))
     (is (= (sut/group (rect/rect 0.5 0.5 1)) (g/center (g-rect) (gv/vec2 1 1))))
-    (is (= (sut/group [(rect/rect 1.25 1.25 1) (gc/circle 0.75 0.75 1)])
-           (g/center (g-rect-circle) (gv/vec2 1 1))))))
+    (is (= (sut/group [(rect/rect 0.75 0.75 1) (gc/circle 0.75 0.75 1)])
+           (g/center (g-rect-circle) (gv/vec2 1 1))))
+    (is (= (sut/group [(rect/rect 0 0.5 1) (rect/rect 1 0.5 1)])
+           (g/center (sut/group [(rect/rect -1 0 1) (rect/rect 0 0 1)])
+                     (gv/vec2 1 1))))))
 
 (deftest grid-fit
   (is (= [1 1 0] (sut/fit-grid 1 {})))
