@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -65,7 +66,8 @@
                            (svg/line isec q {:key (str "l" isec "-" q)}))))))
 
 (defn page []
-  [:div (scene)])
+  [:div (scene)
+   [:p.center (view-sketch/generate :circuit-intersections)]])
 
 (sketch/definition circuit-intersections
   {:created-at "2021-11-08"
