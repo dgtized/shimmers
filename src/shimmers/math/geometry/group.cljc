@@ -3,6 +3,7 @@
   (:require
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defprotocol IGroup
@@ -25,10 +26,20 @@
 
   g/ICenter
   (center
-    ([{:keys [children]}]
-     (Group. (mapv g/center children)))
-    ([{:keys [children] :as group} o]
-     (Group. (mapv (fn [s] (g/center s o)) children))))
+    ([_]
+     (let [children (get _ :children)
+           center (g/centroid _)]
+       (Group.
+        (if (> (count children) 1)
+          (mapv (fn [s] (g/translate s (tm/- (g/centroid s) center))) children)
+          (mapv g/center children)))))
+    ([_ o]
+     (let [children (get _ :children)
+           center (g/centroid _)]
+       (Group.
+        (if (> (count children) 1)
+          (mapv (fn [s] (g/translate s (tm/- (tm/+ (g/centroid s) o) center))) children)
+          (mapv (fn [s] (g/center s o)) children))))))
   ;; Not sure if strictly correct centroid, averages centroids of children
   (centroid [{:keys [children]}]
     (gu/centroid (map g/centroid children)))
