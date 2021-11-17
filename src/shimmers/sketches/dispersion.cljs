@@ -3,9 +3,11 @@
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]
@@ -59,9 +61,13 @@
               0.9)
       (cq/draw-polygon shape))))
 
+(defn page []
+  [:p.center (view-sketch/generate :dispersion)])
+
 (sketch/defquil dispersion
   :created-at "2021-03-10"
   :tags #{:static}
+  :on-mount #(ctrl/mount page)
   :size [900 600]
   :setup setup
   :draw draw
