@@ -27,15 +27,9 @@
   g/ICenter
   (center
     ([_]
-     (let [children (get _ :children)
-           center (g/centroid _)]
-       (Group.
-        (mapv (fn [s] (g/translate s (tm/- center))) children))))
+     (g/translate _ (tm/- (g/centroid _))))
     ([_ o]
-     (let [children (get _ :children)
-           center (g/centroid _)]
-       (Group.
-        (mapv (fn [s] (g/translate s (tm/- o center))) children)))))
+     (g/translate _ (tm/- o (g/centroid _)))))
   ;; Not sure if strictly correct centroid, averages centroids of children
   (centroid [{:keys [children]}]
     (gu/centroid (map g/centroid children)))
