@@ -67,7 +67,7 @@
 
 (defn page []
   [:div
-   [:div#canvas-host.canvas-frame (scene)]
+   [:div.canvas-frame (scene)]
    [:p.center (view-sketch/generate :circuit-intersections)]])
 
 (sketch/definition circuit-intersections

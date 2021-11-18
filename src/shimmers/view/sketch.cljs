@@ -37,7 +37,8 @@
   (favicon/stop)
 
   ;; inject a canvas-host/frame for quil/p5.js
-  (when-not (dom/getElement "canvas-host")
+  (when (and (= (:type sketch) :quil)
+             (not (dom/getElement "canvas-host")))
     (let [host (dom/getRequiredElement "sketch-host")
           attrs {"id" "canvas-host" "class" "canvas-frame"}]
       (dom/appendChild host (dom/createDom "div" (clj->js attrs)))))
@@ -56,15 +57,9 @@
     (q/with-sketch quil (q/exit)))
 
   ;; TODO: only unmount components used by sketch?
-  ;;
-  ;; The "canvas-host" check is funky because it's inject in `start-sketch`
-  ;; making it the root element if p5 is in charge, but "sketch-host" is it's
-  ;; parent and is in charge for any other sketch.
-  (doseq [id (keep identity
-                   [(when (= (:type sketch) :quil) "canvas-host")
-                    "sketch-host"
-                    "interface" "explanation"
-                    "route-debug-mount" "debug-mount"])]
+  (doseq [id ["sketch-host"
+              "interface" "explanation"
+              "route-debug-mount" "debug-mount"]]
     (when-let [node (dom/getElement id)]
       (rdom/unmount-component-at-node node)))
 

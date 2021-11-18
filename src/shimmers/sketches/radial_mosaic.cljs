@@ -142,7 +142,7 @@
 
 (defn page []
   [:div
-   [:div#canvas-host.canvas-frame [scenes]]
+   [:div.canvas-frame [scenes]]
    [:p.center (view-sketch/generate :radial-mosaic)]
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 

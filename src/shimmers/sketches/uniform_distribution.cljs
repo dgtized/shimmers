@@ -88,7 +88,7 @@
                   "g/sample-uniform"))))
 
 (defn page []
-  [:div#canvas-host.canvas-frame [scene]])
+  [:div.canvas-frame [scene]])
 
 (sketch/definition uniform-distribution
   {:created-at "2021-04-09"

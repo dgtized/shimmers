@@ -79,7 +79,7 @@
                            (svg/rect pos 5 5))))))
 
 (defn page []
-  [:div#canvas-host.canvas-frame [scene]])
+  [:div.canvas-frame [scene]])
 
 (sketch/definition clustered-farmlands
   {:created-at "2021-05-10"

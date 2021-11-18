@@ -40,7 +40,7 @@
 
 ;; Experimenting with line simplification above, and dampening below.
 (defn page []
-  [:div#canvas-host.canvas-frame
+  [:div.canvas-frame
    (scene (-> [(r 0.05 0.0)
                (r 0.33 (dr/random -0.15 0.15))
                (r 0.66 (dr/random -0.15 0.15))
