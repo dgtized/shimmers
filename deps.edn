@@ -34,7 +34,7 @@
         cljs-http/cljs-http {:mvn/version "0.1.46"}
 
         ;; This is not dev only because of production build
-        com.bhauman/figwheel-main {:mvn/version "0.2.15-SNAPSHOT"}
+        com.bhauman/figwheel-main {:mvn/version "0.2.15"}
 
         ;; Better debug output
         binaryage/devtools {:mvn/version "1.0.4"}
