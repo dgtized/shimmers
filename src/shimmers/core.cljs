@@ -85,6 +85,7 @@
    {:use-fragment true})
 
   ;; kick off favicon animation
+  ;; FIXME move to index only so it doesn't run by on first load
   (favicon/start 100)
 
   ;; (rdom/render [debug-root] (dom/getElement "route-debug-mount"))
