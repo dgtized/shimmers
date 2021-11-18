@@ -36,11 +36,11 @@
   ;; disable favicon animation during sketch
   (favicon/stop)
 
-  ;; inject a canvas-host/frame for quil/p5.js
+  ;; inject a quil-host canvas for quil/p5.js
   (when (and (= (:type sketch) :quil)
-             (not (dom/getElement "canvas-host")))
+             (not (dom/getElement "quil-host")))
     (let [host (dom/getRequiredElement "sketch-host")
-          attrs {"id" "canvas-host" "class" "canvas-frame"}]
+          attrs {"id" "quil-host" "class" "canvas-frame"}]
       (dom/appendChild host (dom/createDom "div" (clj->js attrs)))))
 
   (ui/screen-view (name (:id sketch)))
@@ -48,12 +48,13 @@
     (apply run-sketch [])))
 
 ;; TODO: limit to dependencies used by sketch
-(defn stop-sketch [sketch]
+(defn stop-sketch [_]
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
-  ;; kill existing sketch at canvas-host if present
-  (when-let [quil (q/get-sketch-by-id "canvas-host")]
+
+  ;; kill existing sketch at quil-host if present
+  (when-let [quil (q/get-sketch-by-id "quil-host")]
     (q/with-sketch quil (q/exit)))
 
   ;; TODO: only unmount components used by sketch?
