@@ -122,7 +122,7 @@
 
 (defn explanation [automata]
   [:div
-   [:p {:style {:width "45em"}}
+   [:p.readable-width
     "Each of the four visualizations are generated from a corresponding program below.
     Each program is randomly generated from the available instructions, ie a
     subset of the space of possible programs in this language. Sometimes the
