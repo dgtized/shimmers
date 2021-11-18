@@ -2,7 +2,11 @@
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.common.quil :as cq]
+            [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.geometry :as geometry]
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.vector :as gv]))
 
 (defrecord Node [location axis lesser greater])
 
@@ -27,16 +31,14 @@
 ;;   )
 
 (defn example []
-  (map (fn [[x y]] [(* x 40) (- 400 (* y 40))])
+  (map (fn [[x y]] [(* x 40) (- 800 (* y 40))])
        [[2 3] [5 4] [9 6] [4 7] [8 1] [7 2]]))
 
-(defn random-example [n]
-  (repeatedly n (fn []
-                  [(int (q/random (q/width)))
-                   (int (q/random (q/height)))])))
-
 (defn init-state []
-  {:source (random-example 96)
+  {:source (->> (geometry/generate-points 96 dr/random)
+                (mapv cq/rel-vec)
+                (map (partial map int))
+                (mapv gv/vec2))
    :points []})
 
 (defn setup []
@@ -69,14 +71,14 @@
 (defn draw [{:keys [points]}]
   (q/background "white")
   (q/stroke "black")
-  ;; (q/fill "black")
-  ;; (q/text-size 6)
+  (q/fill "black")
+  (q/text-size 7)
   (let [tree (kd-tree points 2 0)]
-    (doseq [point points]
+    (doseq [[x y] points]
       (q/stroke-weight 4)
-      (apply q/point point)
-      ;; (q/stroke-weight 0.5)
-      ;; (apply q/text (str point) point)
+      (q/point x y)
+      (q/stroke-weight 0.2)
+      ;; (q/text (str [x y]) (+ x 5) (- y 5))
       )
     (q/stroke "grey")
     (q/stroke-weight 0.5)
@@ -85,7 +87,7 @@
 (sketch/defquil kd-tree-sketch
   :created-at "2020-11-28"
   :tags #{:datastructures}
-  :size [800 600]
+  :size [800 800]
   :setup setup
   :update update-state
   :draw draw
