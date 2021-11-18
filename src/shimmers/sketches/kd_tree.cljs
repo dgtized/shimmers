@@ -82,12 +82,12 @@
       )
     (q/stroke "grey")
     (q/stroke-weight 0.5)
-    (draw-tree tree [[0 (q/width)] [0 (q/height)]])))
+    (draw-tree tree [[0 (q/height)] [0 (q/width)]])))
 
 (sketch/defquil kd-tree-sketch
   :created-at "2020-11-28"
   :tags #{:datastructures}
-  :size [800 800]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
