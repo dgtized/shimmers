@@ -11,7 +11,7 @@
 (defn explanation []
   [:div
    [:h4 "Concept"]
-   [:p
+   [:div
     "Draw a clockwise spiral through a set of random points in a plane."
     [:ol
      [:li "Generate a set of random points in a plane, and an empty path."]
