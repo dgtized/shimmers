@@ -151,15 +151,12 @@
                 (vary-meta shape assoc :key (str "l" i))))))
 
 (defn page []
-  [:div (scene)])
-
-(defn ui-controls []
   [:div
+   [:div#canvas-host.canvas-frame [scene]]
    [:p.center (view-sketch/generate :displacements-inbetween)]])
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "canvas-host")
-  (ctrl/mount ui-controls))
+  (ctrl/mount page "sketch-host"))

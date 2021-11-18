@@ -37,15 +37,12 @@
               (vary-meta shape assoc :key (str "l" i)))))
 
 (defn page []
-  [:div (scene)])
-
-(defn ui-controls []
   [:div
+   [:div#canvas-host.canvas-frame [scene]]
    [:p.center (view-sketch/generate :radial-wings)]])
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "canvas-host")
-  (ctrl/mount ui-controls))
+  (ctrl/mount page "sketch-host"))

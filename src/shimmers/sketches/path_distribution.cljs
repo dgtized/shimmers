@@ -60,7 +60,8 @@
 
 (defn page []
   (let [d 0.3]
-    [:div (scene d)
+    [:div
+     [:div#canvas-host.canvas-frame (scene d)]
      [:h4 "Two approaches for adding random curvature to a line between p and q"]
      [:p "Both are using a displacement factor " d ", multiplied by
      half the distance from " [:b "p"]  " to " [:b "q"]
@@ -71,4 +72,4 @@
   {:created-at "2021-04-29"
    :type :svg
    :tags #{:demo}}
-  (ctrl/mount page "canvas-host"))
+  (ctrl/mount page "sketch-host"))

@@ -110,15 +110,12 @@
                 (vary-meta shape assoc :key (str "l" i))))))
 
 (defn page []
-  [:div (scene)])
-
-(defn ui-controls []
   [:div
+   [:div#canvas-host.canvas-frame (scene)]
    [:p.center (view-sketch/generate :wood-grain)]])
 
 (sketch/definition wood-grain
   {:created-at "2021-11-14"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "canvas-host")
-  (ctrl/mount ui-controls))
+  (ctrl/mount page "sketch-host"))

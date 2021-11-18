@@ -40,19 +40,18 @@
 
 ;; Experimenting with line simplification above, and dampening below.
 (defn page []
-  [:div (scene (-> [(r 0.05 0.0)
-                    (r 0.33 (dr/random -0.15 0.15))
-                    (r 0.66 (dr/random -0.15 0.15))
-                    (r 0.95 0.0)]
-                   bezier/auto-spline2
-                   (g/sample-uniform 10.0 true)
-                   gl/linestrip2
-                   (g/translate (r 0.0 0.5))))])
+  [:div#canvas-host.canvas-frame
+   (scene (-> [(r 0.05 0.0)
+               (r 0.33 (dr/random -0.15 0.15))
+               (r 0.66 (dr/random -0.15 0.15))
+               (r 0.95 0.0)]
+              bezier/auto-spline2
+              (g/sample-uniform 10.0 true)
+              gl/linestrip2
+              (g/translate (r 0.0 0.5))))])
 
-;; FIXME: mounting inside canvas-host means the frame box surrounds the
-;; description, need to recreate canvas box for react or something?
 (sketch/definition path-following
   {:created-at "2021-11-12"
    :type :svg
    :tags #{:demo :deterministic}}
-  (ctrl/mount page "canvas-host"))
+  (ctrl/mount page "sketch-host"))

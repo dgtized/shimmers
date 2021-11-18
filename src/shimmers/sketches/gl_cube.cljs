@@ -53,7 +53,7 @@
     (gl/draw-with-shader (assoc-in frame [:uniforms :model] (spin t)))))
 
 (defn page []
-  [ctrl/canvas {:width 800 :height 600}
+  [ctrl/canvas {:class "canvas-frame" :width 800 :height 600}
    (fn [this canvas]
      (let [gl-ctx (gl/gl-context canvas)
            camera (cam/perspective-camera {})
@@ -68,4 +68,4 @@
   {:created-at "2021-09-29"
    :type :thing
    :tags #{:shader :demo}}
-  (ctrl/mount page "canvas-host"))
+  (ctrl/mount page "sketch-host"))

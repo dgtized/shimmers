@@ -87,8 +87,11 @@
                   (g/sample-uniform (g/center polygon) 10 true)
                   "g/sample-uniform"))))
 
+(defn page []
+  [:div#canvas-host.canvas-frame [scene]])
+
 (sketch/definition uniform-distribution
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :demo}}
-  (ctrl/mount scene "canvas-host"))
+  (ctrl/mount page "sketch-host"))

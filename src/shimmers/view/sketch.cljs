@@ -36,24 +36,37 @@
   ;; disable favicon animation during sketch
   (favicon/stop)
 
+  ;; inject a canvas-host/frame for quil/p5.js
+  (when-not (dom/getElement "canvas-host")
+    (let [host (dom/getRequiredElement "sketch-host")
+          attrs {"id" "canvas-host" "class" "canvas-frame"}]
+      (dom/appendChild host (dom/createDom "div" (clj->js attrs)))))
+
   (ui/screen-view (name (:id sketch)))
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
 ;; TODO: limit to dependencies used by sketch
-(defn stop-sketch [_]
+(defn stop-sketch [sketch]
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
   ;; kill existing sketch at canvas-host if present
   (when-let [quil (q/get-sketch-by-id "canvas-host")]
     (q/with-sketch quil (q/exit)))
+
   ;; TODO: only unmount components used by sketch?
-  (doseq [id ["canvas-host" "interface" "explanation"
-              "route-debug-mount" "debug-mount"]]
-    (-> id
-        dom/getElement
-        rdom/unmount-component-at-node))
+  ;;
+  ;; The "canvas-host" check is funky because it's inject in `start-sketch`
+  ;; making it the root element if p5 is in charge, but "sketch-host" is it's
+  ;; parent and is in charge for any other sketch.
+  (doseq [id (keep identity
+                   [(when (= (:type sketch) :quil) "canvas-host")
+                    "sketch-host"
+                    "interface" "explanation"
+                    "route-debug-mount" "debug-mount"])]
+    (when-let [node (dom/getElement id)]
+      (rdom/unmount-component-at-node node)))
 
   ;; enable favicon animation when viewing indices
   (favicon/start 100))
@@ -82,4 +95,3 @@
 
 (defn generate [sketch-id]
   [:button.generate {:on-click #(restart-sketch {:id sketch-id})} "Generate"])
-
