@@ -1,5 +1,6 @@
 (ns shimmers.sketch
-  (:require [quil.sketch :include-macros true]
+  (:require #?(:cljs [goog.dom :as dom])
+            [quil.sketch :include-macros true]
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]))
 
@@ -21,6 +22,15 @@
           (if (symbol? v)
             [k `(if (fn? ~v) (fn [& ~'args] (apply ~v ~'args)) ~v)]
             [k v]))))
+
+#?(:cljs
+   (defn inject-quil-host-if-missing!
+     "inject a quil-host canvas for quil/p5.js"
+     [host]
+     (when-not (dom/getElement host)
+       (let [sketch (dom/getRequiredElement "sketch-host")
+             attrs {"id" host "class" "canvas-frame"}]
+         (dom/appendChild sketch (dom/createDom "div" (clj->js attrs)))))))
 
 ;; Problem:
 ;;
@@ -68,6 +78,7 @@
           ~@(apply concat (seq opts))))
 
        (defn ~runner []
+         (inject-quil-host-if-missing! ~(:host opts))
          (when-let [mount# ~(:on-mount opts)]
            (mount#))
 

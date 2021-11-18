@@ -20,14 +20,6 @@
           {:name sketch-name}
           {:seed (dr/fresh-seed-value)}))
 
-(defn inject-quil-host-if-missing!
-  "inject a quil-host canvas for quil/p5.js"
-  []
-  (when-not (dom/getElement "quil-host")
-    (let [host (dom/getRequiredElement "sketch-host")
-          attrs {"id" "quil-host" "class" "canvas-frame"}]
-      (dom/appendChild host (dom/createDom "div" (clj->js attrs))))))
-
 (defn start-sketch [sketch]
   ;; TODO wire up :seed to pass to run-sketch
 
@@ -40,9 +32,6 @@
     ;; migrates set random-seed to sketches that use it?
     ;; performance optimizations?
     (dr/random-seed seed))
-
-  (when (= (:type sketch) :quil)
-    (shimmers.view.sketch/inject-quil-host-if-missing!))
 
   ;; disable favicon animation during sketch
   (favicon/stop)
