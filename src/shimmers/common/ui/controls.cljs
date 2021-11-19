@@ -77,12 +77,12 @@
 
 ;; Cribbed from https://gist.github.com/PlumpMath/66ad1d1654597056bbdde24b9808a883
 ;; and http://timothypratley.blogspot.com/2017/01/reagent-deep-dive-part-2-lifecycle-of.html
-(defn canvas [attributes mount]
+(defn canvas [attributes render-frame-fn]
   (r/create-class
    {:component-did-mount
     (fn [this]
       (r/set-state this {:active true})
-      (mount this (rdom/dom-node this)))
+      (render-frame-fn this (rdom/dom-node this)))
     :component-will-unmount
     (fn [this]
       (r/set-state this {:active false}))
