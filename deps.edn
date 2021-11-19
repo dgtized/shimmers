@@ -4,6 +4,9 @@
         ;; p5 is excluded so that the latest version can be provided through npm
         quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
 
+        ;; raw canvas API
+        io.helins/canvas {:mvn/version "2.0.0-beta0"}
+
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
         thi.ng/shadergraph {:mvn/version "0.3.0"}
