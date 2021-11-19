@@ -27,6 +27,7 @@
 (defn set-size! [width height]
   (swap! canvas-state assoc :width width :height height))
 
+;; not quite updating the canvas size?
 (comment (set-size! 800 600))
 
 (defn canvas-frame [render-frame-fn]
@@ -40,14 +41,17 @@
 (defn draw-frame [_ canvas]
   (let [ctx (cv/high-dpi (.getContext canvas "2d"))]
     (cv/on-frame
-     (fn [_]
-       (let [{:keys [width height]} @canvas-state]
-         (-> ctx
-             (cv/color-fill "white")
-             (cv/rect-fill 0 0 width height)
-             (cv/color-fill "black")
-             (cv/rect-fill (dr/random-int 50 550) (dr/random-int 50 350)
-                           200 200)))))))
+     (fn [ts]
+       (if (<= (mod ts 100) 10)
+         (let [{:keys [width height]} @canvas-state]
+           (-> ctx
+               (cv/color-fill "white")
+               (cv/rect-fill 0 0 width height)
+               (cv/color-fill "black")
+               (cv/rect-fill (dr/random-int 50 (- width 250))
+                             (dr/random-int 50 (- height 250))
+                             (min 200 width) (min 200 height))))
+         ts)))))
 
 (defn page []
   [:div [canvas-frame draw-frame]])
