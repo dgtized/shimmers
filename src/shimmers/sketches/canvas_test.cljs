@@ -6,7 +6,7 @@
             [shimmers.math.deterministic-random :as dr]
             [shimmers.sketch :as sketch :include-macros true]))
 
-(def canvas-state (r/atom {:width 800 :height 600}))
+(def canvas-state (r/atom {:width 400 :height 300}))
 
 (defn canvas [attributes render-frame-fn]
   (let [cancel-animation (atom nil)]
@@ -42,19 +42,32 @@
   (let [ctx (cv/high-dpi (.getContext canvas "2d"))]
     (cv/on-frame
      (fn [ts]
-       (if (<= (mod ts 100) 10)
-         (let [{:keys [width height]} @canvas-state]
+       (if (<= (mod ts 250) 10)
+         (let [{:keys [width height]} @canvas-state
+               size 50
+               margin 10]
            (-> ctx
                (cv/color-fill "white")
                (cv/rect-fill 0 0 width height)
                (cv/color-fill "black")
-               (cv/rect-fill (dr/random-int 50 (- width 250))
-                             (dr/random-int 50 (- height 250))
-                             (min 200 width) (min 200 height))))
+               (cv/rect-fill (dr/random-int margin (- width size margin))
+                             (dr/random-int margin (- height size margin))
+                             (min size width) (min size height))))
          ts)))))
 
 (defn page []
-  [:div [canvas-frame draw-frame]])
+  [:div
+   [:div {:style {:float "left"}}
+    [:h4 "Frame 1"]
+    [canvas-frame draw-frame]]
+   [:div {:style {:float "right"}}
+    [:h4 "Frame 2"]
+    [canvas-frame draw-frame]]
+   [:div {:style {:clear :both}}]
+   [:p.explanation.readable-width
+    "Experimenting with an alternative Canvas renderer from Quil. As it can
+   mount as a React component, it's easier to host multiple in a single
+   sketch."]])
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
