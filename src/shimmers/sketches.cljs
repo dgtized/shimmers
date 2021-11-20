@@ -90,7 +90,7 @@
             shimmers.sketches.quadtree
             shimmers.sketches.radar
             shimmers.sketches.radial-mosaic
-            ;; shimmers.sketches.radial-wings
+            shimmers.sketches.radial-wings
             shimmers.sketches.random-walk
             shimmers.sketches.ray-marching
             shimmers.sketches.reaction-diffusion
