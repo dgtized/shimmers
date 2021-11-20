@@ -1,10 +1,16 @@
 (ns shimmers.sketches.canvas-test
-  (:require [helins.canvas :as cv]
-            [reagent.core :as r]
-            [reagent.dom :as rdom]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [helins.canvas :as cv]
+   [reagent.core :as r]
+   [reagent.dom :as rdom]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def canvas-state (r/atom {:width 400 :height 300}))
 
@@ -38,22 +44,45 @@
                      :height (str height "px")}}
             render-frame-fn)))
 
+
+(defn update-box [state bounds]
+  (let [{:keys [pos vel size]} state
+        new-pos (tm/+ pos vel)]
+    (if (geometry/contains-box? bounds (rect/rect new-pos (tm/+ new-pos (gv/vec2 size size))))
+      (assoc state
+             :pos new-pos
+             :vel vel)
+      (let [x (:x new-pos)
+            face (if (or (< x (rect/left bounds))
+                         (> (+ x size) (rect/right bounds)))
+                   (gv/vec2 0 1)
+                   (gv/vec2 1 0))
+            new-vel (g/reflect vel face)]
+        (assoc state
+               :pos pos
+               :vel new-vel)))))
+
 (defn draw-frame [_ canvas]
-  (let [ctx (cv/high-dpi (.getContext canvas "2d"))]
+  (let [ctx (cv/high-dpi (.getContext canvas "2d"))
+        {:keys [width height]} @canvas-state
+        margin 10
+        size 50
+        box-state (atom {:size size
+                         :pos (gv/vec2 (dr/random-int margin (- width size margin))
+                                       (dr/random-int margin (- height size margin)))
+                         :vel (tm/normalize (gv/randvec2) 2.0)})
+        bounds (rect/rect 0 0 width height)]
     (cv/on-frame
-     (fn [ts]
-       (if (<= (mod ts 250) 10)
-         (let [{:keys [width height]} @canvas-state
-               size 50
-               margin 10]
-           (-> ctx
-               (cv/color-fill "white")
-               (cv/rect-fill 0 0 width height)
-               (cv/color-fill "black")
-               (cv/rect-fill (dr/random-int margin (- width size margin))
-                             (dr/random-int margin (- height size margin))
-                             (min size width) (min size height))))
-         ts)))))
+     (fn [_]
+       (let [{:keys [width height]} @canvas-state
+             {:keys [pos size] :as box-state'} (update-box @box-state bounds)
+             [x y] pos]
+         (reset! box-state box-state')
+         (-> ctx
+             (cv/color-fill "white")
+             (cv/rect-fill 0 0 width height)
+             (cv/color-fill "black")
+             (cv/rect-fill x y size size)))))))
 
 (defn page []
   [:div

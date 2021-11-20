@@ -175,6 +175,12 @@
          (< (+ y r) (rect/top boundary))
          (> (- y r) (rect/bottom boundary)))))
 
+(defn contains-box? [boundary box]
+  (and (< (rect/left boundary) (rect/left box))
+       (< (rect/right box) (rect/right boundary))
+       (< (rect/top box) (rect/top boundary))
+       (< (rect/bottom boundary) (rect/bottom box))))
+
 (defn point-within? [shapes point]
   (some (fn [s] (g/contains-point? s point)) shapes))
 
