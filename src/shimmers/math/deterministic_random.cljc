@@ -130,15 +130,20 @@
 (defn density-range
   "Generate an ordered range of values from [0..1] with minimum spacing
   `min-offset`, and maximum spacing `max-offset`."
-  [min-offset max-offset]
-  (->> #(random min-offset max-offset)
-       repeatedly
-       (reductions +)
-       (take-while #(< % 1.0))
-       doall))
+  ([min-offset max-offset]
+   (->> #(random min-offset max-offset)
+        repeatedly
+        (reductions +)
+        (take-while #(< % 1.0))
+        doall))
+  ([min-offset max-offset include-edges?]
+   (let [range (density-range min-offset max-offset)]
+     (if include-edges?
+       (concat [0.0] range [1.0])
+       range))))
 
-(comment (count (density-range 0.1 0.2)))
-
+(comment (count (density-range 0.1 0.2))
+         (count (density-range 0.1 0.2 true)))
 
 ;; (defn random-swap [xs]
 ;;   (let [n (count xs)
