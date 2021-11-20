@@ -20,12 +20,13 @@
   (v/polar (* r 0.5 height) theta))
 
 (defn shapes []
-  (->> (for [[a b] (->> (dr/density-range 0.05 0.1)
-                        (map (partial * tm/TWO_PI))
+  (->> (for [[a b] (->> (dr/density-range 0.05 0.1 true)
                         (partition 2 1)
-                        (dr/random-sample 0.9))
-             :let [radius (dr/random 0.1 0.8)]]
-         (gp/polygon2 [(rp 0 0) (rp radius a) (rp radius b)]))
+                        (dr/random-sample 0.8))
+             :let [[ra rb] (map (partial + 0.1) [a b])]]
+         (gp/polygon2 [(rp 0 0)
+                       (rp ra (* a tm/TWO_PI))
+                       (rp rb (* b tm/TWO_PI))]))
        (mapv #(g/translate % (rv 0.5 0.5)))))
 
 ;; FIXME: handle large gaps and overlapping lines
@@ -34,7 +35,7 @@
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 1.0}
+             :stroke-width 0.5}
             (for [[i shape] (map-indexed vector (shapes))]
               (vary-meta shape assoc :key (str "l" i)))))
 
