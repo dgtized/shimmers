@@ -14,6 +14,8 @@
 
 (def canvas-state (r/atom {:width 400 :height 300}))
 
+;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
+;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
 (defn canvas [attributes render-frame-fn]
   (let [cancel-animation (atom nil)]
     (r/create-class
@@ -33,7 +35,7 @@
 (defn set-size! [width height]
   (swap! canvas-state assoc :width width :height height))
 
-;; not quite updating the canvas size?
+;; TODO: not quite updating the canvas size dynamically?
 (comment (set-size! 800 600))
 
 (defn canvas-frame [render-frame-fn]
@@ -62,6 +64,7 @@
                :pos pos
                :vel new-vel)))))
 
+;; TODO: Can the boxes bounce into the other canvas without sharing state?
 (defn draw-frame [_ canvas]
   (let [ctx (cv/high-dpi (.getContext canvas "2d"))
         {:keys [width height]} @canvas-state
