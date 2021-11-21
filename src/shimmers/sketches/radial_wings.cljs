@@ -39,13 +39,9 @@
             (for [[i shape] (map-indexed vector (shapes))]
               (vary-meta shape assoc :key (str "l" i)))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame [scene]]
-   [:p.center (view-sketch/generate :radial-wings)]])
-
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :radial-wings)
+              "sketch-host"))

@@ -150,13 +150,9 @@
               (for [[i shape] (map-indexed vector shapes)]
                 (vary-meta shape assoc :key (str "l" i))))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame [scene]]
-   [:p.center (view-sketch/generate :displacements-inbetween)]])
-
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :displacements-inbetween)
+              "sketch-host"))

@@ -84,3 +84,9 @@
 
 (defn generate [sketch-id]
   [:button.generate {:on-click #(restart-sketch {:id sketch-id})} "Generate"])
+
+(defn page-for [scene sketch-id]
+  (fn []
+    [:div
+     [:div.canvas-frame [scene]]
+     [:p.center (generate sketch-id)]]))

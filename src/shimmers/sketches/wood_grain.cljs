@@ -109,13 +109,9 @@
               (for [[i shape] (map-indexed vector shapes)]
                 (vary-meta shape assoc :key (str "l" i))))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame (scene)]
-   [:p.center (view-sketch/generate :wood-grain)]])
-
 (sketch/definition wood-grain
   {:created-at "2021-11-14"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :wood-grain)
+              "sketch-host"))

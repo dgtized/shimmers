@@ -65,13 +65,9 @@
                            (svg/circle isec 2.5 {:key (str "c" isec)})
                            (svg/line isec q {:key (str "l" isec "-" q)}))))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame (scene)]
-   [:p.center (view-sketch/generate :circuit-intersections)]])
-
 (sketch/definition circuit-intersections
   {:created-at "2021-11-08"
    :type :svg
    :tags #{:static}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :circuit-intersections)
+              "sketch-host"))
