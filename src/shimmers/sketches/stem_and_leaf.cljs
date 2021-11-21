@@ -1,13 +1,15 @@
 (ns shimmers.sketches.stem-and-leaf
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 ;; The intended concept is to plot out bezier curves from a source circle or
 ;; stem, and then add circles that are tangent to the curve, and then randomly
@@ -21,6 +23,8 @@
 ;; Right now it's just playing with straight lines from tangent points, but the
 ;; circles are arranged somewhat analagous to perspective lines to focal points,
 ;; so alternatively could make a different sketch around rotating perspectives.
+
+(defonce defo (debug/state))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -36,11 +40,29 @@
 (defn tangent-lines [c1 c2]
   (let [{:keys [p r]} c1
         {p' :p r' :r} c2
-        angle (+ (* 0.5 Math/PI) (g/heading (tm/- p p')))]
+        angle (+ tm/HALF_PI (g/heading (tm/- p p')))]
     (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
     (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
 
+(defn tangent-curve [c1 c2]
+  (let [{p1 :p r1 :r} c1
+        {p2 :p r2 :r} c2
+        heading (g/heading (tm/- p1 p2))
+        perp (+ tm/HALF_PI heading)
+        a (tm/+ p1 (v/polar r1 perp))
+        b (tm/- p2 (v/polar r2 perp))]
+    (swap! defo update :curves conj [c2 heading perp])
+    [(tm/+ p1 (v/polar (* 0.9 r1) (- perp 1.0)))
+     a
+     (tm/+ p1 (v/polar (* 1.1 r1) (+ perp 1.0)))
+     (tm/- p2 (v/polar (* 1.1 r2) (+ perp 1.0)))
+     b
+     (tm/- p2 (v/polar (* 0.9 r2) (- perp 1.0)))
+     ]))
+
 (defn draw [{:keys [circles]}]
+  (reset! defo {:c1 (first circles)
+                :curves []})
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
@@ -49,25 +71,26 @@
     (cq/circle c))
   (doseq [{:keys [parent] :as c1} circles
           :when parent
-          :let [c2 (nth circles parent)]]
-    (tangent-lines c1 c2)
+          :let [c2 (nth circles parent)
+                curve (tangent-curve c2 c1)]]
+    #_(tangent-lines c1 c2)
 
-    #_(cq/draw-curve-path [(tm/+ p (v/polar r (* 1.5 Math/PI)))
-                           (tm/+ p (v/polar r (* 1.6 Math/PI)))
-                           (tm/+ p (v/polar r (* 1.7 Math/PI)))
-                           (tm/+ p' (tm/* (tm/- p p') 0.5)) ;; midpoint
-                           (tm/+ p' (v/polar r' (* 0.50 Math/PI)))
-                           (tm/+ p' (v/polar r' (* 0.33 Math/PI)))])
-    )
+    (q/fill 0)
+    (doseq [[x y] curve]
+      (cq/circle x y 2.0))
+    (q/no-fill)
+    (cq/draw-curve-path curve)
+    #_(cq/draw-path curve))
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)
-  (doseq [a [1 2]
-          b [3 4]]
-    (tangent-lines (nth circles a) (nth circles b))))
+  #_(doseq [a [1 2]
+            b [3 4]]
+      (tangent-lines (nth circles a) (nth circles b))))
 
 (sketch/defquil stem-and-leaf
   :created-at "2021-07-21"
   :size [800 600]
+  :on-mount #(debug/mount defo)
   :setup setup
   :update update-state
   :draw draw
