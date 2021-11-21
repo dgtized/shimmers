@@ -46,21 +46,24 @@
 
 (defn tangent-curve [c1 c2]
   (let [tightness 1.0
-        spiral 0.1
+        spiral 0.2
         {p1 :p r1 :r} c1
         {p2 :p r2 :r} c2
         heading (g/heading (tm/- p1 p2))
-        perp (+ tm/HALF_PI heading)
-        a (tm/+ p1 (v/polar r1 perp))
-        b (tm/- p2 (v/polar r2 perp))]
+        perp (+ tm/HALF_PI heading)]
     (swap! defo update :curves conj [c2 heading perp])
-    [(tm/+ p1 (v/polar r1 (- perp tightness)))
-     a
+    [(tm/+ p1 (v/polar (* (- 1.0 spiral) r1) (- perp tightness)))
+     (tm/+ p1 (v/polar r1 perp))
      (tm/+ p1 (v/polar (* (+ 1.0 spiral) r1) (+ perp tightness)))
      (tm/- p2 (v/polar (* (+ 1.0 spiral) r2) (+ perp tightness)))
-     b
-     (tm/- p2 (v/polar r2 (- perp tightness)))
-     ]))
+     (tm/- p2 (v/polar r2 perp))
+     (tm/- p2 (v/polar (* (- 1.0 spiral) r2) (- perp tightness)))]))
+
+(defn draw-points [curve]
+  (q/fill 0)
+  (doseq [[x y] curve]
+    (cq/circle x y 2.0))
+  (q/no-fill))
 
 (defn draw [{:keys [circles]}]
   (reset! defo {:c1 (first circles)
@@ -77,10 +80,7 @@
                 curve (tangent-curve c2 c1)]]
     #_(tangent-lines c1 c2)
 
-    (q/fill 0)
-    (doseq [[x y] curve]
-      (cq/circle x y 2.0))
-    (q/no-fill)
+    #_(draw-points curve)
     (cq/draw-curve-path curve)
     #_(cq/draw-path curve))
   ;; Draw all the sibling tangents?
