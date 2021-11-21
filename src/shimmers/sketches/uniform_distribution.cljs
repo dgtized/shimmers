@@ -3,6 +3,7 @@
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.polygon :as gp]
@@ -87,11 +88,9 @@
                   (g/sample-uniform (g/center polygon) 10 true)
                   "g/sample-uniform"))))
 
-(defn page []
-  [:div.canvas-frame [scene]])
-
 (sketch/definition uniform-distribution
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :demo}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :uniform-distribution)
+              "sketch-host"))

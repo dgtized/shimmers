@@ -3,6 +3,7 @@
             [shimmers.common.svg :as csvg]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.bezier :as bezier]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.svg.core :as svg]
@@ -78,11 +79,9 @@
                             :key (str "house" i)}
                            (svg/rect pos 5 5))))))
 
-(defn page []
-  [:div.canvas-frame [scene]])
-
 (sketch/definition clustered-farmlands
   {:created-at "2021-05-10"
    :type :svg
    :tags #{:static}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :clustered-farmlands)
+              "sketch-host"))
