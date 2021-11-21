@@ -45,19 +45,21 @@
     (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
 
 (defn tangent-curve [c1 c2]
-  (let [{p1 :p r1 :r} c1
+  (let [tightness 1.0
+        spiral 0.1
+        {p1 :p r1 :r} c1
         {p2 :p r2 :r} c2
         heading (g/heading (tm/- p1 p2))
         perp (+ tm/HALF_PI heading)
         a (tm/+ p1 (v/polar r1 perp))
         b (tm/- p2 (v/polar r2 perp))]
     (swap! defo update :curves conj [c2 heading perp])
-    [(tm/+ p1 (v/polar (* 0.9 r1) (- perp 1.0)))
+    [(tm/+ p1 (v/polar r1 (- perp tightness)))
      a
-     (tm/+ p1 (v/polar (* 1.1 r1) (+ perp 1.0)))
-     (tm/- p2 (v/polar (* 1.1 r2) (+ perp 1.0)))
+     (tm/+ p1 (v/polar (* (+ 1.0 spiral) r1) (+ perp tightness)))
+     (tm/- p2 (v/polar (* (+ 1.0 spiral) r2) (+ perp tightness)))
      b
-     (tm/- p2 (v/polar (* 0.9 r2) (- perp 1.0)))
+     (tm/- p2 (v/polar r2 (- perp tightness)))
      ]))
 
 (defn draw [{:keys [circles]}]
