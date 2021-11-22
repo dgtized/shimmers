@@ -105,15 +105,17 @@
                          0.2 0.4))
 
 (defn lines [palette]
-  (let [lines (base-lines)
+  (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
         pairs (partition 2 1 lines)
         sampling (dr/random-sample 0.5 pairs)]
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
-            (dr/random-sample 0.85 (mapcat spaced sampling))
-            (mapcat (partial color-strip palette)
-                    (dr/random-sample 0.05 pairs)))))
+            (debug/time-it defo [:time :spacing]
+                           (dr/random-sample 0.85 (mapcat spaced sampling)))
+            (debug/time-it defo [:time :color-strip]
+                           (mapcat (partial color-strip palette)
+                                   (dr/random-sample 0.05 pairs))))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
@@ -125,7 +127,7 @@
 (defn scene []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
         palette (dr/shuffle ["maroon" "gold" "black" "white" "white"])
-        shapes (fit-region screen (lines palette))]
+        shapes (debug/time-it defo [:time :generate] (fit-region screen (lines palette)))]
     (csvg/svg {:width width
                :height height
                :stroke "black"

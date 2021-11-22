@@ -51,6 +51,16 @@
       (tagged-literal 'vec2 [(tm/roundto x 0.01)
                              (tm/roundto y 0.01)]))))
 
+(defmacro time-it
+  "Evaluates expr and stores it in debug `atom` at `key`. Returns the value of expr."
+  [atom key expr]
+  `(let [start# (cljs.core/system-time)
+         ret# ~expr]
+     (swap! ~atom assoc-in ~key
+            (cljs.core/str (.toFixed (- (cljs.core/system-time) start#) 3)
+                           " msecs"))
+     ret#))
+
 (defn display [atom]
   [:pre (with-out-str (fedn/pprint (deref atom)))])
 
