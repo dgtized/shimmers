@@ -4,6 +4,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -16,6 +17,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce defo (debug/state))
 (def width 800)
 (def height 600)
 (defn r [x y]
@@ -60,7 +62,7 @@
               simplify
               (vary-meta assoc :stroke-width 2.0))
         [n1 n2] (repeatedly 2 #(dr/weighted (dissoc spacing-divisions 5 7)))]
-    (println [angle n1 n2])
+    (swap! defo assoc :base [angle n1 n2])
     (concat [a]
             (for [t (tm/norm-range n1)]
               (simplify (lines/mix-line a b t)))
@@ -137,4 +139,5 @@
    :type :svg
    :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :displacements-inbetween)
-              "sketch-host"))
+              "sketch-host")
+  (debug/mount defo))
