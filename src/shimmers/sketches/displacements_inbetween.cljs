@@ -5,6 +5,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -79,7 +80,6 @@
   (for [[t0 t1] (partition 2 1 offsets)]
     (lines/box-between pair t0 t1)))
 
-;; TODO: improve palette selection
 (defn color-strip [palette pair]
   (let [n (dr/weighted spacing-divisions)
         boxes (box-strip pair (tm/norm-range n))
@@ -107,9 +107,21 @@
         shapes
         (gu/fit-all-into-bounds bounds shapes)))
 
+;; TODO: improve palette selection
+(def palettes
+  (into [["maroon" "gold" "black"]]
+        (->> [ ;; palettes borrowed from radial-mosaics
+              "https://artsexperiments.withgoogle.com/artpalette/colors/51467c-dccfbe-d4ba90-aa8c60-726665"
+              "https://artsexperiments.withgoogle.com/artpalette/colors/e7eef0-759acd-81a4d1-9f9a98-454d7d"
+              "https://artsexperiments.withgoogle.com/artpalette/colors/d4ddda-51988e-274b75-a0b5c0-2d5429"
+              "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67"
+              "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982"]
+             (map color/url->colors)
+             (map (partial map (partial str "#"))))))
+
 (defn scene []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
-        palette (dr/shuffle ["maroon" "gold" "black" "white" "white"])
+        palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))
         shapes (debug/time-it defo [:time :generate] (fit-region screen (lines palette)))]
     (csvg/svg {:width width
                :height height
