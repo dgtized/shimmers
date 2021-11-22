@@ -101,16 +101,21 @@
 
 (defn lines [palette]
   (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
-        pairs (partition 2 1 lines)
-        sampling (dr/random-sample 0.5 pairs)]
+        pairs (partition 2 1 lines)]
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
-            (debug/time-it defo [:time :spacing]
-                           (dr/random-sample 0.85 (mapcat spaced sampling)))
-            (debug/time-it defo [:time :color-strip]
-                           (mapcat (partial color-strip palette)
-                                   (dr/random-sample 0.05 pairs))))))
+            (->> pairs
+                 (dr/random-sample 0.5)
+                 (mapcat spaced)
+                 (dr/random-sample 0.85)
+                 (debug/time-it defo [:time :spacing]))
+            (->> pairs
+                 (dr/random-sample (dr/weighted {0.01 1.0
+                                                 0.05 2.0
+                                                 0.10 1.0}))
+                 (mapcat (partial color-strip palette))
+                 (debug/time-it defo [:time :color-strip])))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
