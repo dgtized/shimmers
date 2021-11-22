@@ -46,7 +46,9 @@
 
 ;; TODO: use a Cornu or clothoid spiral
 ;; https://pwayblog.com/2016/07/03/the-clothoid/ origin is the midpoint where r
-;; is infinity and L is 0, and each side of the curve is one of the two circles. 
+;; is infinity and L is 0, and each side of the curve is one of the two circles.
+;; https://math.stackexchange.com/questions/1785816/calculating-coordinates-along-a-clothoid-betwen-2-curves
+;; https://etrr.springeropen.com/articles/10.1007/s12544-013-0119-8
 (defn tangent-curve [c1 c2]
   (let [tightness 1.0
         spiral 0.2
