@@ -84,14 +84,18 @@
        tm/norm-range
        (mapv (fn [t] (connect pair t)))))
 
-(defn box [[a b] t0 t1]
-  (let [b0-b1 (lines/points-between (:points b) t0 t1)
-        a0-a1 (lines/points-between (:points a) t0 t1)]
-    (gp/polygon2 (concat [(g/point-at a t0)
-                          (g/point-at b t0)]
+(defn box [[{a :points arc-index-a :arc-index}
+            {b :points arc-index-b :arc-index}]
+           t0 t1]
+  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
+        arc-index-b (or arc-index-b (gu/arc-length-index b))
+        b0-b1 (lines/points-between b t0 t1 arc-index-b)
+        a0-a1 (lines/points-between a t0 t1 arc-index-a)]
+    (gp/polygon2 (concat [(gu/point-at t0 a arc-index-a)
+                          (gu/point-at t0 b arc-index-b)]
                          b0-b1
-                         [(g/point-at b t1)
-                          (g/point-at a t1)]
+                         [(gu/point-at t1 b arc-index-b)
+                          (gu/point-at t1 a arc-index-a)]
                          (reverse a0-a1)))))
 
 (defn box-strip [pair offsets]
