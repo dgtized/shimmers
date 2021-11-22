@@ -62,12 +62,18 @@
 (defn mix-line
   "Sample two paths at even intervals and return a line-strip with a linear
   interpolation of `factor` between each of the two corresponding points."
-  [path-a path-b factor]
-  (gl/linestrip2
-   (let [samples (max (count (:points path-a))
-                      (count (:points path-b)))]
-     (for [t (tm/norm-range (dec samples))]
-       (tm/mix (g/point-at path-a t) (g/point-at path-b t) factor)))))
+  [{a :points arc-index-a :arc-index}
+   {b :points arc-index-b :arc-index}
+   factor]
+  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
+        arc-index-b (or arc-index-b (gu/arc-length-index b))
+        points (let [samples (max (count a) (count b))]
+                 (for [t (tm/norm-range (dec samples))]
+                   (tm/mix (gu/point-at t a arc-index-a)
+                           (gu/point-at t b arc-index-b)
+                           factor)))]
+    (assoc (gl/linestrip2 points)
+           :arc-index (gu/arc-length-index points))))
 
 (defn dampen
   "Mix each point in a `path` by `factor` with the linear path between the
