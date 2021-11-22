@@ -2,10 +2,15 @@
   (:require
    [fipp.edn :as fedn]
    [fipp.ednize :refer [IEdn]]
-   [shimmers.common.ui.controls :as ctrl]
-   [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
-   [thi.ng.geom.vector :refer [Vec2]]
-   [thi.ng.math.core :as tm]))
+   #?@(:cljs
+       [[shimmers.common.ui.controls :as ctrl]
+        [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
+        [thi.ng.geom.vector :refer [Vec2]]]
+       :clj [[thi.ng.geom.types]
+             [thi.ng.geom.vector]])
+   [thi.ng.math.core :as tm])
+  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]
+                   [thi.ng.geom.vector Vec2])))
 
 ;; identity operation for a map record that removes type info so tagged-literal
 ;; will not be called recursively with the original type. However this should
@@ -46,11 +51,13 @@
       (tagged-literal 'vec2 [(tm/roundto x 0.01)
                              (tm/roundto y 0.01)]))))
 
-(defn state []
-  (ctrl/state {}))
-
 (defn display [atom]
   [:pre (with-out-str (fedn/pprint (deref atom)))])
 
-(defn mount [atom]
-  (ctrl/mount #(display atom) "debug-mount"))
+#?(:cljs
+   (do
+     (defn state []
+       (ctrl/state {}))
+
+     (defn mount [atom]
+       (ctrl/mount #(display atom) "debug-mount"))))
