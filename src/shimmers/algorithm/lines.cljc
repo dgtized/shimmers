@@ -53,15 +53,15 @@
                 (ramer-douglas-peucker (drop index points) epsilon))
       [(first points) (last points)])))
 
+(defn indexed-line-strip [points]
+  (assoc (gl/linestrip2 points)
+         :arc-index (gu/arc-length-index points)))
+
 (defn simplify-line
   "Remove any points that deviate further than `epsilon` distance from the
   perpindicular of the subsection of the line."
   [{:keys [points]} epsilon]
-  (gl/linestrip2 (ramer-douglas-peucker points epsilon)))
-
-(defn indexed-line-strip [points]
-  (assoc (gl/linestrip2 points)
-         :arc-index (gu/arc-length-index points)))
+  (indexed-line-strip (ramer-douglas-peucker points epsilon)))
 
 (defn mix-line
   "Sample two paths at even intervals and return a line-strip with a linear
