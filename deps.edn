@@ -48,8 +48,7 @@
  :aliases
  {:dev
   {:extra-paths ["test"]
-   :extra-deps {com.bhauman/cljs-test-display {:mvn/version "0.1.1"}
-                pjstadig/humane-test-output {:mvn/version "0.11.0"}}}
+   :extra-deps {com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
 
   :repl
   {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
