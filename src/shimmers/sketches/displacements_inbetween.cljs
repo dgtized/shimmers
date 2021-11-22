@@ -17,8 +17,8 @@
    [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
-(def width 800)
-(def height 600)
+(def width 1024)
+(def height 768)
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -129,8 +129,6 @@
 (def palettes
   (into [["maroon" "gold" "black"]]
         (->> [ ;; palettes borrowed from radial-mosaics
-              "https://artsexperiments.withgoogle.com/artpalette/colors/e7eef0-759acd-81a4d1-9f9a98-454d7d"
-              "https://artsexperiments.withgoogle.com/artpalette/colors/d4ddda-51988e-274b75-a0b5c0-2d5429"
               "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67"
               "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982"]
              (map color/url->colors)
