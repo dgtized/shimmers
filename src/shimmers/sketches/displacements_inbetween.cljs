@@ -4,7 +4,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.debug :as debug :include-macros true]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
