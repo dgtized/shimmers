@@ -2,6 +2,7 @@
   (:require
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
 
@@ -103,3 +104,26 @@
           (drop-while (fn [[_ t]] (< t t0)))
           (take-while (fn [[_ t]] (<= t t1)))
           (map first)))))
+
+(defn box-between
+  "Connect two linestrips `a` and `b` between the offsets `t0` and `t1` to create a polygon.
+
+  The polygon contains the connecting points at the specific offsets, as well as
+  every intervening point along `a` and `b` between the offsets `t0` and `t1`.
+
+  `t0` and `t1` are ranged from [0..1] and represent proportional offsets along
+  the arc-length of each linestrip. The assumption is that `a` and `b` do not
+  cross eachother."
+  [[{a :points arc-index-a :arc-index}
+    {b :points arc-index-b :arc-index}]
+   t0 t1]
+  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
+        arc-index-b (or arc-index-b (gu/arc-length-index b))
+        b0-b1 (points-between b t0 t1 arc-index-b)
+        a0-a1 (points-between a t0 t1 arc-index-a)]
+    (gp/polygon2 (concat [(gu/point-at t0 a arc-index-a)
+                          (gu/point-at t0 b arc-index-b)]
+                         b0-b1
+                         [(gu/point-at t1 b arc-index-b)
+                          (gu/point-at t1 a arc-index-a)]
+                         (reverse a0-a1)))))

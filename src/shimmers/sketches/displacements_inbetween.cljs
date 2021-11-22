@@ -11,7 +11,6 @@
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -84,23 +83,9 @@
        tm/norm-range
        (mapv (fn [t] (connect pair t)))))
 
-(defn box [[{a :points arc-index-a :arc-index}
-            {b :points arc-index-b :arc-index}]
-           t0 t1]
-  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
-        arc-index-b (or arc-index-b (gu/arc-length-index b))
-        b0-b1 (lines/points-between b t0 t1 arc-index-b)
-        a0-a1 (lines/points-between a t0 t1 arc-index-a)]
-    (gp/polygon2 (concat [(gu/point-at t0 a arc-index-a)
-                          (gu/point-at t0 b arc-index-b)]
-                         b0-b1
-                         [(gu/point-at t1 b arc-index-b)
-                          (gu/point-at t1 a arc-index-a)]
-                         (reverse a0-a1)))))
-
 (defn box-strip [pair offsets]
   (for [[t0 t1] (partition 2 1 offsets)]
-    (box pair t0 t1)))
+    (lines/box-between pair t0 t1)))
 
 ;; TODO: improve palette selection
 (defn color-strip [palette pair]
