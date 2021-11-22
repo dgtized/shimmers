@@ -80,12 +80,24 @@
   (for [[t0 t1] (partition 2 1 offsets)]
     (lines/box-between pair t0 t1)))
 
+(defn mirror-over [len p]
+  (let [mid (int (* p len))]
+    (fn [i x] [(if (< i mid)
+                (- mid i)
+                (- i mid)) x])))
+
+(comment
+  (let [xs (map char (range 97 123))]
+    (map-indexed (mirror-over (count xs) 0.5) xs)))
+
 (defn color-strip [palette pair]
   (let [n (dr/weighted spacing-divisions)
         boxes (box-strip pair (tm/norm-range n))
-        palette-seq (repeatedly (dr/rand-nth [2 3 4 5 7]) #(rand-nth palette))]
-    (for [[i cell] (map-indexed vector boxes)]
-      (vary-meta cell assoc :fill (nth palette-seq (mod i (count palette-seq)))))))
+        palette-seq (repeatedly (dr/rand-nth [2 3 4 5 7 11]) #(dr/rand-nth palette))
+        palette-size (count palette-seq)
+        index-op (dr/rand-nth [vector (mirror-over (count boxes) 0.5)])]
+    (for [[i cell] (map-indexed index-op boxes)]
+      (vary-meta cell assoc :fill (nth palette-seq (mod i palette-size))))))
 
 (defn lines [palette]
   (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
