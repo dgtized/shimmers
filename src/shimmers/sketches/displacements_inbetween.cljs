@@ -74,10 +74,13 @@
 (defn connect [[a b] t]
   (gl/linestrip2 (g/point-at a t) (g/point-at b t)))
 
-(defn spaced [pair]
-  (->> (dr/weighted spacing-divisions)
-       tm/norm-range
-       (mapv (fn [t] (connect pair t)))))
+(defn spaced [[{a :points} {b :points}]]
+  (let [arc-index-a (gu/arc-length-index a)
+        arc-index-b (gu/arc-length-index b)]
+    (->> (dr/weighted spacing-divisions)
+         tm/norm-range
+         (mapv (fn [t] (gl/linestrip2 (gu/point-at t a arc-index-a)
+                                     (gu/point-at t b arc-index-b)))))))
 
 (defn box [[a b] t0 t1]
   (let [b0-b1 (lines/points-between (:points b) t0 t1)
