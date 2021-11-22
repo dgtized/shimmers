@@ -101,9 +101,6 @@
     (for [[i cell] (map-indexed vector boxes)]
       (vary-meta cell assoc :fill (nth palette-seq (mod i (count palette-seq)))))))
 
-(comment (points-between (:points (make-line (r 0.0 0.0) (r 0.0 1.0) 2 3))
-                         0.2 0.4))
-
 (defn lines [palette]
   (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
         pairs (partition 2 1 lines)
