@@ -44,6 +44,9 @@
     (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
     (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
 
+;; TODO: use a Cornu or clothoid spiral
+;; https://pwayblog.com/2016/07/03/the-clothoid/ origin is the midpoint where r
+;; is infinity and L is 0, and each side of the curve is one of the two circles. 
 (defn tangent-curve [c1 c2]
   (let [tightness 1.0
         spiral 0.2
