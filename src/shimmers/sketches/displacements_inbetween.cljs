@@ -98,17 +98,7 @@
   (for [[t0 t1] (partition 2 1 offsets)]
     (box pair t0 t1)))
 
-;; TODO: either make a version doing an entire column or otherwise allow for
-;; shorter length boxes. Also improve palette selection
-(defn color-box [color pair]
-  (let [t (dr/random 0.1 0.9)
-        w (dr/random 0.05 0.2)
-        t0 (- t (* 0.5 w))
-        t1 (+ t (* 0.5 w))]
-    (vary-meta (box pair t0 t1)
-               assoc :fill color
-               :fill-opacity 0.8)))
-
+;; TODO: improve palette selection
 (defn color-strip [palette pair]
   (let [n (dr/weighted spacing-divisions)
         boxes (box-strip pair (tm/norm-range n))
