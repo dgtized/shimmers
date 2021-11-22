@@ -85,11 +85,12 @@
   points that proportionally lie between `t0` and `t1`. The domain of `t0` and
   `t1` is [0.0..1.0], represents the percentage distance along the total arc
   length of the original points."
-  [points t0 t1]
-  {:pre [(<= t0 t1)]}
-  (let [arc-index (gu/arc-length-index points)
-        arc-length (last arc-index)]
-    (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
-         (drop-while (fn [[_ t]] (< t t0)))
-         (take-while (fn [[_ t]] (<= t t1)))
-         (map first))))
+  ([points t0 t1]
+   (points-between points t0 t1 (gu/arc-length-index points)))
+  ([points t0 t1 arc-index]
+   {:pre [(<= t0 t1)]}
+   (let [arc-length (last arc-index)]
+     (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
+          (drop-while (fn [[_ t]] (< t t0)))
+          (take-while (fn [[_ t]] (<= t t1)))
+          (map first)))))
