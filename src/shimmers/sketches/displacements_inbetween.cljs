@@ -93,9 +93,11 @@
 (defn color-strip [palette pair]
   (let [n (dr/weighted spacing-divisions)
         boxes (box-strip pair (tm/norm-range n))
-        palette-seq (repeatedly (dr/rand-nth [2 3 4 5 7 11]) #(dr/rand-nth palette))
-        palette-size (count palette-seq)
-        index-op (dr/rand-nth [vector (mirror-over (count boxes) 0.5)])]
+        palette-size (dr/rand-nth [2 3 4 5 7 9 11])
+        palette-seq (repeatedly palette-size #(dr/rand-nth palette))
+        index-op (if (dr/chance (/ palette-size 12))
+                   (mirror-over (count boxes) 0.5)
+                   vector)]
     (for [[i cell] (map-indexed index-op boxes)]
       (vary-meta cell assoc :fill (nth palette-seq (mod i palette-size))))))
 
