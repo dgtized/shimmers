@@ -56,9 +56,9 @@
   [atom key expr]
   `(let [start# (cljs.core/system-time)
          ret# ~expr]
-     (swap! ~atom assoc-in ~key
-            (cljs.core/str (.toFixed (- (cljs.core/system-time) start#) 3)
-                           " msecs"))
+     (cljs.core/swap! ~atom cljs.core/assoc-in ~key
+                      (cljs.core/str (.toFixed (- (cljs.core/system-time) start#) 3)
+                                     " msecs"))
      ret#))
 
 (defn display [atom]
