@@ -100,7 +100,8 @@
       (vary-meta cell assoc :fill (nth palette-seq (mod i palette-size))))))
 
 (defn lines [palette]
-  (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
+  (let [lines (->> (base-lines)
+                   #_(debug/time-it defo [:time :base-lines]))
         pairs (partition 2 1 lines)]
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
@@ -109,13 +110,13 @@
                  (dr/random-sample 0.5)
                  (mapcat spaced)
                  (dr/random-sample 0.85)
-                 (debug/time-it defo [:time :spacing]))
+                 #_(debug/time-it defo [:time :spacing]))
             (->> pairs
                  (dr/random-sample (dr/weighted {0.01 1.0
                                                  0.05 2.0
                                                  0.10 1.0}))
                  (mapcat (partial color-strip palette))
-                 (debug/time-it defo [:time :color-strip])))))
+                 #_(debug/time-it defo [:time :color-strip])))))
 
 (defn fit-region
   "fit-all-into-bounds removes the meta attribs in copy, so add them back."
@@ -138,7 +139,9 @@
 (defn scene []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
         palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))
-        shapes (debug/time-it defo [:time :generate] (fit-region screen (lines palette)))]
+        shapes (->> (lines palette)
+                    (fit-region screen)
+                    #_(debug/time-it defo [:time :generate]))]
     (csvg/svg {:width width
                :height height
                :stroke "black"
@@ -153,4 +156,4 @@
    :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :displacements-inbetween)
               "sketch-host")
-  (debug/mount defo))
+  #_(debug/mount defo))
