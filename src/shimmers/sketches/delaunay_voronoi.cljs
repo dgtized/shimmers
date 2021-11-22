@@ -16,6 +16,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; More references: https://www.youtube.com/watch?v=ysLCuqcyJZA
 (defonce defo (debug/state))
 
 (defn neighboring-triangles
