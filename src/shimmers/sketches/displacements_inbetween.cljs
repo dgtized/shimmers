@@ -10,7 +10,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -70,18 +69,11 @@
               (simplify (lines/mix-line b c t)))
             [c])))
 
-(defn connect [[{a :points arc-index-a :arc-index}
-                {b :points arc-index-b :arc-index}] t]
-  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
-        arc-index-b (or arc-index-b (gu/arc-length-index b))]
-    (gl/linestrip2 (gu/point-at t a arc-index-a)
-                   (gu/point-at t b arc-index-b))))
-
 (defn spaced
   [pair]
   (->> (dr/weighted spacing-divisions)
        tm/norm-range
-       (mapv (fn [t] (connect pair t)))))
+       (mapv (fn [t] (lines/connect pair t)))))
 
 (defn box-strip [pair offsets]
   (for [[t0 t1] (partition 2 1 offsets)]

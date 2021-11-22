@@ -105,6 +105,17 @@
           (take-while (fn [[_ t]] (<= t t1)))
           (map first)))))
 
+(defn connect
+  "Connect two linestrips `a` and `b` at offset `t` with a single line.
+
+  `t` is a proprotional offset along the arc-length of the linestrip ranged [0..1]."
+  [[{a :points arc-index-a :arc-index}
+    {b :points arc-index-b :arc-index}] t]
+  (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
+        arc-index-b (or arc-index-b (gu/arc-length-index b))]
+    (gl/line2 (gu/point-at t a arc-index-a)
+              (gu/point-at t b arc-index-b))))
+
 (defn box-between
   "Connect two linestrips `a` and `b` between the offsets `t0` and `t1` to create a polygon.
 
