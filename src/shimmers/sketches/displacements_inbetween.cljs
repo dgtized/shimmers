@@ -113,8 +113,8 @@
                  #_(debug/time-it defo [:time :spacing]))
             (->> pairs
                  (dr/random-sample (dr/weighted {0.01 1.0
-                                                 0.05 2.0
-                                                 0.10 1.0}))
+                                                 0.05 3.0
+                                                 0.10 2.0}))
                  (mapcat (partial color-strip palette))
                  #_(debug/time-it defo [:time :color-strip])))))
 
