@@ -32,7 +32,7 @@
                 [b])
         bezier/auto-spline2
         (g/sample-uniform (* 0.01 height) true)
-        gl/linestrip2)))
+        lines/indexed-line-strip)))
 
 (def spacing-divisions
   {5 1
@@ -111,11 +111,7 @@
       (vary-meta cell assoc :fill (nth palette-seq (mod i (count palette-seq)))))))
 
 (defn lines [palette]
-  (let [base (debug/time-it defo [:time :base-lines] (base-lines))
-        lines (debug/time-it defo [:time :index]
-                             (mapv (fn [strip] (assoc strip :arc-index
-                                                     (gu/arc-length-index (:points strip))))
-                                   base))
+  (let [lines (debug/time-it defo [:time :base-lines] (base-lines))
         pairs (partition 2 1 lines)
         sampling (dr/random-sample 0.5 pairs)]
     (concat (dr/map-random-sample (constantly 0.1)

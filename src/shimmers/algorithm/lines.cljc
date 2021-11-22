@@ -59,6 +59,10 @@
   [{:keys [points]} epsilon]
   (gl/linestrip2 (ramer-douglas-peucker points epsilon)))
 
+(defn indexed-line-strip [points]
+  (assoc (gl/linestrip2 points)
+         :arc-index (gu/arc-length-index points)))
+
 (defn mix-line
   "Sample two paths at even intervals and return a line-strip with a linear
   interpolation of `factor` between each of the two corresponding points."
@@ -67,13 +71,12 @@
    factor]
   (let [arc-index-a (or arc-index-a (gu/arc-length-index a))
         arc-index-b (or arc-index-b (gu/arc-length-index b))
-        points (let [samples (max (count a) (count b))]
-                 (for [t (tm/norm-range (dec samples))]
-                   (tm/mix (gu/point-at t a arc-index-a)
-                           (gu/point-at t b arc-index-b)
-                           factor)))]
-    (assoc (gl/linestrip2 points)
-           :arc-index (gu/arc-length-index points))))
+        samples (max (count a) (count b))]
+    (indexed-line-strip
+     (for [t (tm/norm-range (dec samples))]
+       (tm/mix (gu/point-at t a arc-index-a)
+               (gu/point-at t b arc-index-b)
+               factor)))))
 
 (defn dampen
   "Mix each point in a `path` by `factor` with the linear path between the
