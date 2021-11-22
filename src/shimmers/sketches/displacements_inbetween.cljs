@@ -73,16 +73,9 @@
   (gl/linestrip2 (g/point-at a t) (g/point-at b t)))
 
 (defn spaced [pair]
-  (mapv (fn [t] (connect pair t))
-        (tm/norm-range (dr/weighted spacing-divisions))))
-
-(defn random-connections [n pairs]
-  (repeatedly n (fn [] (connect (dr/rand-nth pairs) (dr/random)))))
-
-(defn p-if [p n]
-  (if (< (dr/random-double) p)
-    (dr/random n)
-    0))
+  (->> (dr/weighted spacing-divisions)
+       tm/norm-range
+       (mapv (fn [t] (connect pair t)))))
 
 (defn box [[a b] t0 t1]
   (let [b0-b1 (lines/points-between (:points b) t0 t1)
@@ -117,7 +110,6 @@
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
             (dr/random-sample 0.85 (mapcat spaced sampling))
-            #_(random-connections (int (p-if 0.3 100)) sampling)
             (mapcat (partial color-strip palette)
                     (dr/random-sample 0.05 pairs)))))
 
