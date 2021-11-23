@@ -39,6 +39,11 @@
                (gaussian-density 1.0 0.5 x)])
        (range 0 1 0.05)))
 
+;; Motion planning application of clothoids:
+;; http://vigir.missouri.edu/~gdesouza/Research/Conference_CDs/IEEE_IROS_2009/papers/0552.pdf
+;; Finding clothoids
+;; https://www.sciencedirect.com/science/article/pii/S0377042704000925
+
 ;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
 (defn clothoid [A L N 𝝀 𝚽0 pos0]
   (let [Δs (/ L N)]
