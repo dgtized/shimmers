@@ -86,6 +86,19 @@
     (cq/circle x y 2.0))
   (q/no-fill))
 
+(defn plot [points]
+  (q/push-style)
+  (q/stroke-weight 0.8)
+  (q/stroke 0.0 0.5 0.5)
+  (q/begin-shape)
+  (doseq [p points
+          :let [[x y] (tm/+ (tm/* p 10) (cq/rel-vec 0.5 0.5))]]
+    (cq/circle x y 2.0)
+    (q/vertex x y))
+  (q/end-shape)
+  (q/pop-style)
+  )
+
 (defn draw [{:keys [circles]}]
   (reset! defo {:c1 (first circles)
                 :curves []})
@@ -93,8 +106,10 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/stroke-weight 1.2)
+  (q/stroke 0)
   (doseq [c circles]
     (cq/circle c))
+
   (doseq [{:keys [parent] :as c1} circles
           :when parent
           :let [c2 (nth circles parent)
@@ -104,6 +119,8 @@
     #_(draw-points curve)
     (cq/draw-curve-path curve)
     #_(cq/draw-path curve))
+  (plot (clothoid 17.32 40 20 -1 0.0 (gv/vec2 0 0)))
+  (plot (clothoid 10 40 50 -1 Math/PI (gv/vec2 0 0)))
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)
   #_(doseq [a [1 2]
