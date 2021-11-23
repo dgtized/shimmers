@@ -45,16 +45,24 @@
 ;; https://www.sciencedirect.com/science/article/pii/S0377042704000925
 
 ;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
-(defn clothoid [A L N 𝝀 𝚽0 pos0]
-  (let [Δs (/ L N)]
-    (reductions (fn [pos n]
-                  (let [s_n (* Δs n)
-                        t (+ (/ (* 𝝀 s_n s_n)
-                                (* 2 A A))
-                             𝚽0)]
-                    (tm/+ pos (gv/vec2 (* Δs (Math/cos t))
-                                       (* Δs (Math/sin t))))))
-                pos0
-                (range N))))
+(defn clothoid-A [radius length]
+  (Math/sqrt (* radius length)))
+
+(defn generalized-clothoid [vector-op directional]
+  (fn [A L N 𝝀 𝚽0 pos0]
+    (let [Δs (/ L N)]
+      (reductions (fn [pos n]
+                    (let [s_n (* Δs n)
+                          t (+ (/ (* 𝝀 s_n s_n)
+                                  (* 2 A A))
+                               𝚽0)]
+                      (vector-op pos
+                                 (gv/vec2 (* Δs (Math/cos t))
+                                          (* Δs (Math/sin t))))))
+                  pos0
+                  (directional (range N))))))
+
+(def clothoid (generalized-clothoid tm/+ identity))
+(def clothoid-from (generalized-clothoid tm/- reverse))
 
 (comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))

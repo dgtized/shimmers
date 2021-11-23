@@ -77,8 +77,7 @@
   (q/stroke-weight 0.8)
   (q/stroke 0.0 0.5 0.5)
   (q/begin-shape)
-  (doseq [p points
-          :let [[x y] (tm/+ (tm/* p 10) (cq/rel-vec 0.5 0.5))]]
+  (doseq [[x y] points]
     (cq/circle x y 2.0)
     (q/vertex x y))
   (q/end-shape)
@@ -105,8 +104,10 @@
     #_(draw-points curve)
     (cq/draw-curve-path curve)
     #_(cq/draw-path curve))
-  (plot (eq/clothoid 17.32 40 20 -1 0.0 (gv/vec2 0 0)))
-  (plot (eq/clothoid 10 40 50 -1 Math/PI (gv/vec2 0 0)))
+  (plot (eq/clothoid 17.32 40 20 -1 0.0 (cq/rel-vec 0.5 0.5)))
+  (plot (eq/clothoid 10 40 50 -1 Math/PI (cq/rel-vec 0.5 0.5)))
+  (plot (eq/clothoid-from (eq/clothoid-A (cq/rel-h 0.15) 200) 200 50 -1
+                          (* -0.15 Math/PI) (tm/+ (cq/rel-vec 0.5 0.2) (gv/vec2 (cq/rel-h 0.15) 0))))
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)
   #_(doseq [a [1 2]
