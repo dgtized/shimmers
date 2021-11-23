@@ -9,6 +9,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; The intended concept is to plot out bezier curves from a source circle or
@@ -63,6 +64,21 @@
      (tm/- p2 (v/polar (* (+ 1.0 spiral) r2) (+ perp tightness)))
      (tm/- p2 (v/polar r2 perp))
      (tm/- p2 (v/polar (* (- 1.0 spiral) r2) (- perp tightness)))]))
+
+;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
+(defn clothoid [A L N 𝝀 𝚽0 pos0]
+  (let [Δs (/ L N)]
+    (reductions (fn [pos n]
+                  (let [s_n (* Δs n)
+                        t (+ (/ (* 𝝀 s_n s_n)
+                                (* 2 A A))
+                             𝚽0)]
+                    (tm/+ pos (gv/vec2 (* Δs (Math/cos t))
+                                       (* Δs (Math/sin t))))))
+                pos0
+                (range N))))
+
+(comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))
 
 (defn draw-points [curve]
   (q/fill 0)
