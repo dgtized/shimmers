@@ -58,6 +58,7 @@
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
+  :tags #{:demo}
   :size [800 600]
   :on-mount #(debug/mount defo)
   :setup setup
