@@ -1,6 +1,7 @@
 (ns shimmers.math.equations
   "Useful equations"
-  (:require [thi.ng.math.core :as tm]))
+  (:require [thi.ng.math.core :as tm]
+            [thi.ng.geom.vector :as gv]))
 
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
@@ -37,3 +38,18 @@
                (gaussian 1.0 0.5 0.2 x)
                (gaussian-density 1.0 0.5 x)])
        (range 0 1 0.05)))
+
+;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
+(defn clothoid [A L N 𝝀 𝚽0 pos0]
+  (let [Δs (/ L N)]
+    (reductions (fn [pos n]
+                  (let [s_n (* Δs n)
+                        t (+ (/ (* 𝝀 s_n s_n)
+                                (* 2 A A))
+                             𝚽0)]
+                    (tm/+ pos (gv/vec2 (* Δs (Math/cos t))
+                                       (* Δs (Math/sin t))))))
+                pos0
+                (range N))))
+
+(comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))

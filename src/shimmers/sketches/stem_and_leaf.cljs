@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -65,21 +66,6 @@
      (tm/- p2 (v/polar r2 perp))
      (tm/- p2 (v/polar (* (- 1.0 spiral) r2) (- perp tightness)))]))
 
-;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
-(defn clothoid [A L N 𝝀 𝚽0 pos0]
-  (let [Δs (/ L N)]
-    (reductions (fn [pos n]
-                  (let [s_n (* Δs n)
-                        t (+ (/ (* 𝝀 s_n s_n)
-                                (* 2 A A))
-                             𝚽0)]
-                    (tm/+ pos (gv/vec2 (* Δs (Math/cos t))
-                                       (* Δs (Math/sin t))))))
-                pos0
-                (range N))))
-
-(comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))
-
 (defn draw-points [curve]
   (q/fill 0)
   (doseq [[x y] curve]
@@ -119,8 +105,8 @@
     #_(draw-points curve)
     (cq/draw-curve-path curve)
     #_(cq/draw-path curve))
-  (plot (clothoid 17.32 40 20 -1 0.0 (gv/vec2 0 0)))
-  (plot (clothoid 10 40 50 -1 Math/PI (gv/vec2 0 0)))
+  (plot (eq/clothoid 17.32 40 20 -1 0.0 (gv/vec2 0 0)))
+  (plot (eq/clothoid 10 40 50 -1 Math/PI (gv/vec2 0 0)))
   ;; Draw all the sibling tangents?
   (q/stroke-weight 0.5)
   #_(doseq [a [1 2]
