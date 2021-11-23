@@ -15,6 +15,7 @@
             shimmers.sketches.circle-hatch
             shimmers.sketches.circle-packing
             shimmers.sketches.circuit-intersections
+            shimmers.sketches.clothoids
             shimmers.sketches.clustered-farmlands
             shimmers.sketches.colonial-growth
             shimmers.sketches.colors
