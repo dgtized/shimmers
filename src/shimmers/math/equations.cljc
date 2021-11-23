@@ -48,16 +48,16 @@
 (defn clothoid-A [radius length]
   (Math/sqrt (* radius length)))
 
-(defn clothoid-phi [A 𝝀 𝚽0 s]
-  (+ (/ (* 𝝀 s s)
+(defn clothoid-phi [A lambda phi0 s]
+  (+ (/ (* lambda s s)
         (* 2 A A))
-     𝚽0))
+     phi0))
 
 (defn generalized-clothoid [vector-op directional]
-  (fn [A L N 𝝀 𝚽0 pos0]
+  (fn [A L N lambda phi0 pos0]
     (let [Δs (/ L N)]
       (reductions (fn [pos n]
-                    (let [phi (clothoid-phi A 𝝀 𝚽0 (* Δs n))]
+                    (let [phi (clothoid-phi A lambda phi0 (* Δs n))]
                       (vector-op pos
                                  (gv/vec2 (* Δs (Math/cos phi))
                                           (* Δs (Math/sin phi))))))
