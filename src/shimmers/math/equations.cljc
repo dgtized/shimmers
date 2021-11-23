@@ -48,6 +48,11 @@
 (defn clothoid-A [radius length]
   (Math/sqrt (* radius length)))
 
+;; `A` is defined above
+;; `lambda` is clockwise or counter-clockwise rotation (1,-1)
+;; `phi0` is the initial angle for -from this is the angle the line ends up, for a
+;; clothoid with flat at origin, it's the angle from the origin.
+;; `s` is the position along the arc-curve
 (defn clothoid-phi [A lambda phi0 s]
   (+ (/ (* lambda s s)
         (* 2 A A))
@@ -64,7 +69,9 @@
                   pos0
                   (directional (range N))))))
 
+;; from origin spiral into quadrant pointed to from `lambda` dir and `phi0`
 (def clothoid (generalized-clothoid tm/+ identity))
+;; inner point of spiral is fixed at origin, and the spiral extends around it, ending with angle `phi0`.
 (def clothoid-from (generalized-clothoid tm/- reverse))
 
 (comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))
