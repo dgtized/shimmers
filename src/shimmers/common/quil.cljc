@@ -27,6 +27,10 @@
   ([scale]
    (g/scale-size (rect/rect 0 0 (q/width) (q/height)) scale)))
 
+(defn plot [shape points]
+  (doseq [p points]
+    (shape p)))
+
 (defn draw-shape [vertices]
   (q/begin-shape)
   (doseq [[x y] vertices]

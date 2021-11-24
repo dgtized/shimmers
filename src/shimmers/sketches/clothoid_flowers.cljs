@@ -18,12 +18,6 @@
 (defn update-state [state]
   (update state :t + 0.01))
 
-(defn plot [size points]
-  (q/begin-shape)
-  (doseq [[x y] points]
-    (cq/circle x y size))
-  (q/end-shape))
-
 (defn draw [{:keys [t]}]
   (q/ellipse-mode :radius)
   (q/no-stroke)
@@ -35,7 +29,7 @@
     (->> (concat (eq/clothoid 18 length 30 -1 (+ rotation 0.0) (gv/vec2))
                  (eq/clothoid 12 length 50 -1 (+ rotation Math/PI) (gv/vec2)))
          (mapv #(tm/* % 12))
-         (plot 0.3))))
+         (cq/plot (fn [p] (cq/circle p 0.3))))))
 
 (sketch/defquil clothoid-flowers
   :created-at "2021-11-23"
