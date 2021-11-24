@@ -4,11 +4,13 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]))
 
 (defn setup []
+  (q/noise-seed (dr/random-int 1000000))
   (q/color-mode :hsl 1.0)
   {:t 0.0})
 
@@ -34,6 +36,7 @@
 
 (sketch/defquil clothoid-flowers
   :created-at "2021-11-23"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state
