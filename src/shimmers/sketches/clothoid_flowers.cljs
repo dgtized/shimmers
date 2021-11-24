@@ -7,7 +7,8 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/noise-seed (dr/random-int 1000000))
@@ -17,10 +18,10 @@
 (defn update-state [state]
   (update state :t + 0.01))
 
-(defn plot [scale points]
+(defn plot [size points]
   (q/begin-shape)
   (doseq [[x y] points]
-    (cq/circle (* scale x) (* scale y) 0.3))
+    (cq/circle x y size))
   (q/end-shape))
 
 (defn draw [{:keys [t]}]
@@ -31,8 +32,10 @@
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [rotation (* eq/TAU (q/noise (* 0.01 t)))
         length (+ 40 (* 20 (Math/sin t)))]
-    (plot 12 (eq/clothoid 18 length 30 -1 (+ rotation 0.0) (gv/vec2)))
-    (plot 12 (eq/clothoid 12 length 50 -1 (+ rotation Math/PI) (gv/vec2)))))
+    (->> (concat (eq/clothoid 18 length 30 -1 (+ rotation 0.0) (gv/vec2))
+                 (eq/clothoid 12 length 50 -1 (+ rotation Math/PI) (gv/vec2)))
+         (mapv #(tm/* % 12))
+         (plot 0.3))))
 
 (sketch/defquil clothoid-flowers
   :created-at "2021-11-23"
