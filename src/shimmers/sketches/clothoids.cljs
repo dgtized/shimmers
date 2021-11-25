@@ -72,12 +72,19 @@
                          (if clockwise 1 -1) phi0
                          (gv/vec2))
                         (mapv #(tm/* % scale)))]
-        (swap! defo assoc :points points)
         (q/translate 0 0)
         (q/scale 1.0)
         (q/stroke-weight 1.0)
         (q/stroke 0)
-        (plot 1.0 points)))))
+        (plot 1.0 points)
+        (q/stroke 0.0 0.5 0.5)
+        (cq/circle (first points) 2.5)
+        (q/stroke 0.6 0.5 0.5)
+        (cq/circle (last points) 2.5)
+        (swap! defo assoc :first (first points)
+               :last (last points)
+               :points points)
+        ))))
 
 (defn ui-controls []
   [:div
