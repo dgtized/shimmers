@@ -51,7 +51,7 @@
                                     "shaders/reaction-diffusion.vert.c")}))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    [:div
     (ctrl/numeric ui-state "Texture Scale (requires restart)" [:texture-scale] [0.1 5.0 0.1])
     (ctrl/checkbox ui-state "Add Droplets Randomly" [:droplets])]
@@ -64,7 +64,7 @@
     (ctrl/numeric ui-state "Iterations per frame" [:iterations] [1.0 64.0 1.0])]
    [:div [:h3 "Display Mode"]
     (ctrl/change-mode ui-state (keys modes) :mode)
-    (ctrl/checkbox ui-state "Invert" [:invert])]])
+    (ctrl/checkbox ui-state "Invert" [:invert])]))
 
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170
 (defn update-state [{:keys [image-size shader in-buffer out-buffer] :as state}]

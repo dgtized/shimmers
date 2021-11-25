@@ -154,8 +154,9 @@
     (q/line position (tm/+ position (tm/* velocity size)))))
 
 (defn ui-controls []
-  [:div (ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
-                     [:align-width] [0.0 Math/PI 0.1])])
+  (ctrl/container
+   (ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
+                [:align-width] [0.0 Math/PI 0.1])))
 
 (sketch/defquil traffic-intersection
   :created-at "2021-10-05"

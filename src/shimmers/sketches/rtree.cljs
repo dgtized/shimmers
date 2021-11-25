@@ -64,7 +64,7 @@
 
 (defn ui-controls []
   (let [{:keys [lower upper]} @ui-state]
-    [:div
+    (ctrl/container
      [:h4 "Requires Restart"]
      [:div (ctrl/slider ui-state (fn [v] (str "Seed Shapes " v)) [:shapes] [100 2000 100])]
      [:p [:em "Radius Bounds"]]
@@ -74,7 +74,7 @@
      [:h4 "On Demand"]
      [:div (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])]
      ;; Debug output on hit path and mouse location
-     (debug/display defo)]))
+     (debug/display defo))))
 
 (sketch/defquil rtree
   :created-at "2021-10-09"

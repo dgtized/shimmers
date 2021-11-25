@@ -252,16 +252,15 @@
 
 (defn ui-controls []
   (let [{:keys [mode]} @ui-state]
-    [:div
-     [:div {:style {:float :left :width "60%"}}
+    [:div.flexcols {:style {:justify-content :space-between}}
+     (ctrl/container ;; TODO: parameters?
       (ctrl/numeric ui-state "Rows" [:rows] [2 5 1])
-      (ctrl/numeric ui-state "Columns" [:columns] [2 5 1])]
-     [:div {:style {:float :right}} (view-sketch/generate :intertwined)]
-     [:div {:style {:clear :both}}]
-     (ctrl/change-mode ui-state modes)
-     (if (= mode :intersections)
-       (ctrl/change-mode ui-state edge-modes :edge-mode)
-       (ctrl/change-mode ui-state graph-modes :graph-mode))]))
+      (ctrl/numeric ui-state "Columns" [:columns] [2 5 1])
+      (ctrl/change-mode ui-state modes)
+      (if (= mode :intersections)
+        (ctrl/change-mode ui-state edge-modes :edge-mode)
+        (ctrl/change-mode ui-state graph-modes :graph-mode)))
+     [:div (view-sketch/generate :intertwined)]]))
 
 (sketch/defquil intertwined
   :created-at "2021-10-23"

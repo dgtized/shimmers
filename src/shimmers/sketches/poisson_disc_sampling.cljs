@@ -80,12 +80,12 @@
     (q/point x y)))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
                 [:radius] [2 16 1])
    ;; Is this parameter even worth tuning?
    (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
-                [:samples] [20 50 1])])
+                [:samples] [20 50 1])))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"

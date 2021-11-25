@@ -138,7 +138,7 @@
     (draw-debug state debug)))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    [:section
     [:b "Applies on next run:"]
     (ctrl/slider settings (fn [v] (str "Attractor Count " (Math/pow 2 v)))
@@ -163,7 +163,7 @@
     (ctrl/checkbox settings "Show Attractors" [:debug :attractors])
     (ctrl/checkbox settings "Show Influence/Prune Bubbles" [:debug :bubbles])
     (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
-    (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]])
+    (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]))
 
 (sketch/defquil space-colonization
   :created-at "2020-11-27"

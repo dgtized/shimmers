@@ -93,7 +93,7 @@
 (defn ui-controls []
   (let [animate (:animate @ui-state)]
     [:div.flexcols {:style {:justify-content "flex-start"}}
-     (ctrl/container
+     (ctrl/container ;; TODO: params
       (ctrl/checkbox ui-state "Animate" [:animate])
       (when-not animate
         [:div

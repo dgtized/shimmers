@@ -16,7 +16,7 @@
 ;; Limit range to show spectrum / palette somehow?
 (defn ui-controls [ui]
   (fn []
-    [:div
+    (ctrl/container
      (ctrl/change-mode ui [:hsla :mix-mod])
      (case (:mode @ui)
        :hsla
@@ -42,7 +42,7 @@
         (ctrl/slider ui (fn [v] (str "Lightness1: " v))
                      [:lightness1] [0 100])
         (ctrl/slider ui (fn [v] (str "Lightness2: " v))
-                     [:lightness2] [0 100])])]))
+                     [:lightness2] [0 100])]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

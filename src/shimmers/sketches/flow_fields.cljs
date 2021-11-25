@@ -251,7 +251,7 @@
       (update-in [:snap-resolution] str)))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    [:section
     (ctrl/dropdown settings "Algorithm" [:calc-points] (:calc-points ui-mappings))
     (ctrl/dropdown settings "Draw" [:draw] (:draw ui-mappings))
@@ -287,7 +287,7 @@
      {:style {:margin-left "1em"}
       :on-click #(do (swap! settings merge (shuffle-settings))
                      (view-sketch/restart-sketch {:id :flow-fields}))}
-     "Shuffle Settings"]]])
+     "Shuffle Settings"]]))
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"

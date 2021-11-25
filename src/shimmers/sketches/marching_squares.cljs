@@ -41,10 +41,10 @@
             (q/line p q)))))))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    (ctrl/slider ui-state (fn [v] (f/format ["Divisor 1 / 2 ^ " (f/float 1)] v))
                 [:divisor] [5.0 12.0 0.1])
-   (ctrl/slider ui-state (fn [v] (str "Threshold " v)) [:threshold] [0.0 1.0 0.01])])
+   (ctrl/slider ui-state (fn [v] (str "Threshold " v)) [:threshold] [0.0 1.0 0.01])))
 
 (sketch/defquil marching-squares
   :created-at "2021-09-20"

@@ -22,13 +22,13 @@
                :deposit 0.5}))
 
 (defn ui-controls []
-  [:div
-   [:div [:h3 "Particle Parameters (after restart)"]
-    (ctrl/numeric ui-state "Sensor Angle" [:sensor-angle] [0.1 360.0 0.1])
-    (ctrl/numeric ui-state "Sensor Distance" [:sensor-distance] [0.1 32.0 0.1])
-    (ctrl/numeric ui-state "Rotation" [:rotation] [0.1 360.0 0.1])
-    (ctrl/numeric ui-state "Step Size" [:step-size] [0.1 32.0 0.1])
-    (ctrl/numeric ui-state "Deposit" [:deposit] [0.1 1.0 0.1])]])
+  (ctrl/container
+   [:h3 "Particle Parameters (after restart)"]
+   (ctrl/numeric ui-state "Sensor Angle" [:sensor-angle] [0.1 360.0 0.1])
+   (ctrl/numeric ui-state "Sensor Distance" [:sensor-distance] [0.1 32.0 0.1])
+   (ctrl/numeric ui-state "Rotation" [:rotation] [0.1 360.0 0.1])
+   (ctrl/numeric ui-state "Step Size" [:step-size] [0.1 32.0 0.1])
+   (ctrl/numeric ui-state "Deposit" [:deposit] [0.1 1.0 0.1])))
 
 (defn wrap-edges [[x y] width height]
   (gv/vec2 (int (tm/roundto (tm/wrap-range x width) 1.0))

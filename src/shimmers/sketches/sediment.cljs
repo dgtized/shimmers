@@ -19,7 +19,7 @@
                :acceleration 2}))
 
 (defn ui-controls []
-  [:div
+  (ctrl/container
    [:h5 "Applies at Restart"]
    (ctrl/slider ui-state (fn [v] (str "Particles: " v))
                 [:particle-count] [20 1000 20])
@@ -30,7 +30,7 @@
                 [:average-window] [4 128 4])
    (ctrl/slider ui-state (fn [v] (str "Acceleration: " v))
                 [:acceleration] [1 20 1])
-   (ctrl/checkbox ui-state "Sand" [:sand])])
+   (ctrl/checkbox ui-state "Sand" [:sand])))
 
 (defrecord Particle [pos prev])
 
