@@ -45,6 +45,11 @@
   margin-left: 1em;
 }
 
+.ui-controls {
+  min-width: 33%;
+  max-width: 50%;
+}
+
 .slider {
   width: 60%;
   display: flex;
@@ -53,7 +58,7 @@
 }
 
 .numeric {
-  width: 40%;
+  width: 20em;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
