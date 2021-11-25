@@ -56,7 +56,7 @@
             :on-change (toggle-value settings field-ref)}]])
 
 (defn dropdown [settings label field-ref options]
-  [:div.label-set {:key (str "dropdown-" field-ref)}
+  [:div.label-set.dropdown {:key (str "dropdown-" field-ref)}
    [:label label]
    [:select {:on-change (assoc-value settings field-ref identity)
              :value (get-in @settings field-ref)}

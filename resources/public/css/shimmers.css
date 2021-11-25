@@ -50,6 +50,12 @@
   max-width: 50%;
 }
 
+.dropdown {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .slider {
   display: flex;
   flex-direction: row;
@@ -72,6 +78,10 @@ input[type=checkbox] {
 
 input[type=range] {
   height: 1em;
+  width: 10em;
+}
+
+select {
   width: 10em;
 }
 
