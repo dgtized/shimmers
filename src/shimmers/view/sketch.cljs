@@ -69,7 +69,7 @@
        (sketch-link rfe/push-state)))
 
 (defn sketch-controls [sketch known-names]
-  [:section.controls
+  [:section.interface-controls
    [:span
     [:button {:on-click #(cycle-sketch sketch known-names)} "Next"]
     [:button {:on-click #(restart-sketch sketch)} "Restart"]

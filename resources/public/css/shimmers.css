@@ -5,7 +5,7 @@
   width: -webkit-max-content; /* Chrome */
 }
 
-.controls {
+.interface-controls {
   font-size: 18px;
   padding: 0.5em;
   background: lightblue;
@@ -14,7 +14,7 @@
   justify-content: space-between;
 }
 
-.controls button {
+.interface-controls button {
   font-size: 18px;
   margin-left: 1em;
 }
