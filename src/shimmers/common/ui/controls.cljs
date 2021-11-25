@@ -26,7 +26,10 @@
     (swap! settings update-in field-ref not)))
 
 (defn container [& body]
-  (into [:div.ui-controls] (keep identity body)))
+  (let [[params body] (if (map? (first body))
+                        [(first body) (rest body)]
+                        [{} body])]
+    (into [:div.ui-controls params] (keep identity body))))
 
 ;; TODO: add support for changing label/button somehow?
 (defn change-mode

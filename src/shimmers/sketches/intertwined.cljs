@@ -252,8 +252,9 @@
 
 (defn ui-controls []
   (let [{:keys [mode]} @ui-state]
-    [:div.flexcols {:style {:justify-content :space-between}}
-     (ctrl/container ;; TODO: parameters?
+    [:div.flexcols {:style {:justify-content :flex-start}}
+     (ctrl/container
+      {:style {:padding-right "5em"}}
       (ctrl/numeric ui-state "Rows" [:rows] [2 5 1])
       (ctrl/numeric ui-state "Columns" [:columns] [2 5 1])
       (ctrl/change-mode ui-state modes)
