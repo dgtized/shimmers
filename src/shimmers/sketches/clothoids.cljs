@@ -14,7 +14,8 @@
 (defonce ui-state (ctrl/state {:animate true
                                :A 12
                                :L 60
-                               :clockwise false}))
+                               :clockwise false
+                               :from false}))
 (defonce defo (debug/state))
 
 (defn setup []
@@ -47,7 +48,7 @@
   (q/stroke 0)
   (q/translate (cq/rel-vec 0.5 0.5))
 
-  (let [{:keys [animate A L clockwise]} @ui-state]
+  (let [{:keys [animate A L clockwise from]} @ui-state]
     (if animate
       (let [length (+ 40 (* 20 (Math/sin t)))
             r 0.1
@@ -63,7 +64,10 @@
         (plot r (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0)))
         (pen-color 3)
         (plot r (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))
-      (let [points (->> (eq/clothoid A L 30 (if clockwise 1 -1) 0 (gv/vec2))
+      (let [points (->> ((if from eq/clothoid-from eq/clothoid)
+                         A L 30
+                         (if clockwise 1 -1) 0
+                         (gv/vec2))
                         (mapv #(tm/* % 10)))]
         (swap! defo assoc :points points)
         (q/translate 0 0)
@@ -79,7 +83,8 @@
      [:div
       (ctrl/numeric ui-state "A" [:A] [1.0 30.0 0.1])
       (ctrl/numeric ui-state "Length" [:L] [1.0 100.0 1.0])
-      (ctrl/checkbox ui-state "Clockwise" [:clockwise])])])
+      (ctrl/checkbox ui-state "Clockwise" [:clockwise])
+      (ctrl/checkbox ui-state "From/To" [:from])])])
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
