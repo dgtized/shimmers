@@ -91,17 +91,23 @@
         ))))
 
 (defn ui-controls []
-  [:div
-   (ctrl/checkbox ui-state "Animate" [:animate])
-   (when-not (:animate @ui-state)
-     [:div
-      (ctrl/numeric ui-state "A" [:A] [0.0 30.0 0.01])
-      (ctrl/numeric ui-state "Length" [:L] [-100.0 100.0 0.1])
-      (ctrl/numeric ui-state "𝛷₀" [:phi0] [0.0 eq/TAU 0.01])
-      (ctrl/numeric ui-state "N Points" [:N] [8 100 1])
-      (ctrl/checkbox ui-state "Clockwise" [:clockwise])
-      (ctrl/checkbox ui-state "From/To" [:from])
-      (ctrl/numeric ui-state "Scale" [:scale] [1.0 50.0 0.1])])])
+  [:div.flexcols {:style {:justify-content "flex-start"}}
+   [:div {:style {:width "30em"}}
+    (ctrl/checkbox ui-state "Animate" [:animate])
+    (when-not (:animate @ui-state)
+      [:div
+       (ctrl/numeric ui-state "A" [:A] [0.0 30.0 0.01])
+       (ctrl/numeric ui-state "Length" [:L] [-100.0 100.0 0.1])
+       (ctrl/numeric ui-state "𝛷₀" [:phi0] [0.0 eq/TAU 0.01])
+       (ctrl/numeric ui-state "N Points" [:N] [8 100 1])
+       (ctrl/checkbox ui-state "Clockwise" [:clockwise])
+       (ctrl/checkbox ui-state "From/To" [:from])
+       (ctrl/numeric ui-state "Scale" [:scale] [1.0 50.0 0.1])])]
+   [:div {:style {:font-size "0.8em"}}
+    (let [points (clothoid->points @ui-state)]
+      [:pre>:code
+       (interpose "\n" [(str (first points))
+                        (str (last points))])])]])
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"

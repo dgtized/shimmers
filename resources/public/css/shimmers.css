@@ -129,3 +129,8 @@ button.generate {
   min-width: 25em;
   max-width: 40em;
 }
+
+.flexcols {
+  display: flex;
+  flex-direction: row;
+}
