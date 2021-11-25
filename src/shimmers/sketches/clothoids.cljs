@@ -84,13 +84,13 @@
    (ctrl/checkbox ui-state "Animate" [:animate])
    (when-not (:animate @ui-state)
      [:div
-      (ctrl/numeric ui-state "A" [:A] [1.0 30.0 0.1])
-      (ctrl/numeric ui-state "Length" [:L] [1.0 100.0 1.0])
+      (ctrl/numeric ui-state "A" [:A] [0.0 30.0 0.01])
+      (ctrl/numeric ui-state "Length" [:L] [-100.0 100.0 0.1])
       (ctrl/numeric ui-state "𝛷₀" [:phi0] [0.0 eq/TAU 0.01])
       (ctrl/numeric ui-state "N Points" [:N] [8 100 1])
       (ctrl/checkbox ui-state "Clockwise" [:clockwise])
       (ctrl/checkbox ui-state "From/To" [:from])
-      (ctrl/numeric ui-state "Scale" [:scale] [1.0 20.0 0.1])])])
+      (ctrl/numeric ui-state "Scale" [:scale] [1.0 50.0 0.1])])])
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
