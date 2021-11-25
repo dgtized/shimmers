@@ -43,6 +43,14 @@
 (defn pen-color [n]
   (q/stroke (mod (* n tm/PHI) 1.0) 0.7 0.4))
 
+(defn clothoid->points [params]
+  (let [{:keys [A L phi0 N clockwise from scale]} params]
+    (->> ((if from eq/clothoid-from eq/clothoid)
+          A L N
+          (if clockwise 1 -1) phi0
+          (gv/vec2))
+         (mapv #(tm/* % scale)))))
+
 (defn draw [{:keys [t]}]
   (reset! defo {})
   (q/background 1.0)
@@ -51,7 +59,7 @@
   (q/stroke 0)
   (q/translate (cq/rel-vec 0.5 0.5))
 
-  (let [{:keys [animate A L phi0 N clockwise from scale]} @ui-state]
+  (let [{:keys [animate]} @ui-state]
     (if animate
       (let [length (+ 40 (* 20 (Math/sin t)))
             r 0.1
@@ -67,11 +75,7 @@
         (plot r (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0)))
         (pen-color 3)
         (plot r (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))
-      (let [points (->> ((if from eq/clothoid-from eq/clothoid)
-                         A L N
-                         (if clockwise 1 -1) phi0
-                         (gv/vec2))
-                        (mapv #(tm/* % scale)))]
+      (let [points (clothoid->points @ui-state)]
         (q/translate 0 0)
         (q/scale 1.0)
         (q/stroke-weight 1.0)
