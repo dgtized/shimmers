@@ -9,6 +9,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -55,12 +56,15 @@
 (defn clothoid-circle-at-end [points]
   (let [{:keys [A L phi0 clockwise from scale]} @ui-state
         tangent-point (if from (first points) (last points))
-        tangent-angle (eq/clothoid-tangent A (if clockwise 1 -1) L phi0)
+        ;; not working, maybe precision errors as it looks right L<20 ish?
+        ;; tangent-angle (mod (eq/clothoid-tangent A (if clockwise 1 -1) L phi0) eq/TAU)
+        [fp0 fp1] (if from (take 2 points) (reverse (take-last 2 points)))
+        tangent-angle (g/heading (tm/- fp1 fp0))
         R (* scale (/ (* A A) L))]
     (swap! defo assoc
            :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
-           :tangent-angle (mod tangent-angle eq/TAU))
-    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (if clockwise -1 1) 0.5 Math/PI))))
+           :tangent-angle tangent-angle)
+    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (if clockwise 1 -1) 0.5 Math/PI))))
      R]))
 
 (defn draw [{:keys [t]}]
