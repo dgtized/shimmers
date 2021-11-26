@@ -91,10 +91,11 @@
         (q/stroke-weight 1.0)
         (q/stroke 0)
         (plot 1.0 points)
-        (q/stroke 0.0 0.5 0.5)
-        (cq/circle (first points) 2.5)
         (q/stroke 0.6 0.5 0.5)
+        (cq/circle (first points) 2.5)
+        (q/stroke 0.0 0.5 0.5)
         (cq/circle (last points) 2.5)
+        (q/stroke-weight 0.5)
         (cq/circle p r)
         (swap! defo assoc
                :points points)
