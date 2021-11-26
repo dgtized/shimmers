@@ -75,3 +75,7 @@
 (def clothoid-from (generalized-clothoid tm/- reverse))
 
 (comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))
+
+(defn clothoid-tangent [A lambda s phi0]
+  (+ (* lambda (/ (* s s) (* 2 A A)))
+     phi0))

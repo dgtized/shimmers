@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -51,6 +52,14 @@
           (gv/vec2))
          (mapv #(tm/* % scale)))))
 
+(defn clothoid-circle-at-end [points]
+  (let [{:keys [A L phi0 clockwise from scale]} @ui-state
+        tangent-point (if from (first points) (last points))
+        tangent-angle (eq/clothoid-tangent A (if clockwise 1 -1) L phi0)
+        R (* scale (/ (* A A) L))]
+    [(tm/- tangent-point (v/polar R (+ tangent-angle (* 0.5 Math/PI))))
+     R]))
+
 (defn draw [{:keys [t]}]
   (reset! defo {})
   (q/background 1.0)
@@ -75,7 +84,8 @@
         (plot r (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0)))
         (pen-color 3)
         (plot r (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))
-      (let [points (clothoid->points @ui-state)]
+      (let [points (clothoid->points @ui-state)
+            [p r] (clothoid-circle-at-end points)]
         (q/translate 0 0)
         (q/scale 1.0)
         (q/stroke-weight 1.0)
@@ -85,8 +95,8 @@
         (cq/circle (first points) 2.5)
         (q/stroke 0.6 0.5 0.5)
         (cq/circle (last points) 2.5)
-        (swap! defo assoc :first (first points)
-               :last (last points)
+        (cq/circle p r)
+        (swap! defo assoc
                :points points)
         ))))
 
@@ -106,10 +116,12 @@
          (ctrl/numeric ui-state "Scale" [:scale] [1.0 50.0 0.1])]))
      (when-not animate
        [:div {:style {:font-size "0.8em"}}
-        (let [points (clothoid->points @ui-state)]
-          [:pre>:code
+        (let [points (clothoid->points @ui-state)
+              [p r] (clothoid-circle-at-end points)]
+          [:pre>code
            (interpose "\n" [(str (first points))
-                            (str (last points))])])])]))
+                            (str (last points))
+                            (str "circle " p " " r)])])])]))
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
