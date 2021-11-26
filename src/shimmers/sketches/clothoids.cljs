@@ -57,6 +57,9 @@
         tangent-point (if from (first points) (last points))
         tangent-angle (eq/clothoid-tangent A (if clockwise 1 -1) L phi0)
         R (* scale (/ (* A A) L))]
+    (swap! defo assoc
+           :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
+           :tangent-angle (mod tangent-angle eq/TAU))
     [(tm/- tangent-point (v/polar R (+ tangent-angle (* 0.5 Math/PI))))
      R]))
 
@@ -68,7 +71,7 @@
   (q/stroke 0)
   (q/translate (cq/rel-vec 0.5 0.5))
 
-  (let [{:keys [animate]} @ui-state]
+  (let [{:keys [animate from]} @ui-state]
     (if animate
       (let [length (+ 40 (* 20 (Math/sin t)))
             r 0.1
@@ -85,6 +88,7 @@
         (pen-color 3)
         (plot r (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))
       (let [points (clothoid->points @ui-state)
+            lp (if from (first points) (last points))
             [p r] (clothoid-circle-at-end points)]
         (q/translate 0 0)
         (q/scale 1.0)
@@ -97,6 +101,7 @@
         (cq/circle (last points) 2.5)
         (q/stroke-weight 0.5)
         (cq/circle p r)
+        (q/line p lp)
         (swap! defo assoc
                :points points)
         ))))
