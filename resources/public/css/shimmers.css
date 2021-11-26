@@ -157,3 +157,7 @@ button.generate {
   justify-content: flex-start;
   gap: 0px 3em;
 }
+
+pre.debug code {
+  font-size: 0.9em;
+}

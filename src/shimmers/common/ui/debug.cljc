@@ -62,7 +62,7 @@
      ret#))
 
 (defn display [atom]
-  [:pre (with-out-str (fedn/pprint (deref atom)))])
+  [:pre.debug [:code (with-out-str (fedn/pprint (deref atom)))]])
 
 #?(:cljs
    (do
