@@ -60,7 +60,7 @@
     (swap! defo assoc
            :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
            :tangent-angle (mod tangent-angle eq/TAU))
-    [(tm/- tangent-point (v/polar R (+ tangent-angle (* 0.5 Math/PI))))
+    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (if clockwise -1 1) 0.5 Math/PI))))
      R]))
 
 (defn draw [{:keys [t]}]
