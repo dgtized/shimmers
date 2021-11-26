@@ -68,8 +68,16 @@
   justify-content: space-between;
 }
 
+input, select {
+  height: 1.5em;
+  margin: 1px;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 input[type=number] {
-  width: 4em;
+  width: 5em;
 }
 
 input[type=checkbox] {
