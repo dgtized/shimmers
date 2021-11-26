@@ -84,15 +84,16 @@
             cq/draw-polygon)))))
 
 (defn ui-controls []
-  (ctrl/container
-   (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
-   (ctrl/dropdown ui-state "Split Approach" [:algorithm]
-                  (zipmap (map name modes) modes))
-   (ctrl/checkbox ui-state "Show Squares" [:show-squares])
-   (when (:show-squares @ui-state)
-     (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
-   (ctrl/checkbox ui-state "Show Remaining Rectangle" [:show-remaining])
-   [:p (view-sketch/generate :square-packing)]))
+  [:div.flexcols
+   (ctrl/container
+    (ctrl/slider ui-state (fn [v] (str "Max Iterations " v)) [:max-iterations] [1 1280 1.0])
+    (ctrl/dropdown ui-state "Split Approach" [:algorithm]
+                   (zipmap (map name modes) modes))
+    (ctrl/checkbox ui-state "Show Squares" [:show-squares])
+    (when (:show-squares @ui-state)
+      (ctrl/checkbox ui-state "Padding on Square" [:square-padding]))
+    (ctrl/checkbox ui-state "Show Remaining Rectangle" [:show-remaining]))
+   [:div (view-sketch/generate :square-packing)]])
 
 (sketch/defquil square-packing
   :created-at "2021-10-17"

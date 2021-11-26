@@ -92,7 +92,7 @@
 
 (defn ui-controls []
   (let [animate (:animate @ui-state)]
-    [:div.flexcols {:style {:justify-content "flex-start"}}
+    [:div.flexcols
      (ctrl/container ;; TODO: params
       (ctrl/checkbox ui-state "Animate" [:animate])
       (when-not animate
@@ -105,7 +105,7 @@
          (ctrl/checkbox ui-state "From/To" [:from])
          (ctrl/numeric ui-state "Scale" [:scale] [1.0 50.0 0.1])]))
      (when-not animate
-       [:div {:style {:padding-left "2em" :font-size "0.8em"}}
+       [:div {:style {:font-size "0.8em"}}
         (let [points (clothoid->points @ui-state)]
           [:pre>:code
            (interpose "\n" [(str (first points))

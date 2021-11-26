@@ -46,8 +46,8 @@
 }
 
 .ui-controls {
-  min-width: 33%;
-  max-width: 50%;
+  min-width: 25em;
+  max-width: 45em;
 }
 
 .dropdown {
@@ -154,4 +154,6 @@ button.generate {
 .flexcols {
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
+  gap: 0px 3em;
 }

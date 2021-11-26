@@ -251,8 +251,8 @@
       (update-in [:snap-resolution] str)))
 
 (defn ui-controls []
-  (ctrl/container
-   [:section
+  [:div.flexcols
+   (ctrl/container
     (ctrl/dropdown settings "Algorithm" [:calc-points] (:calc-points ui-mappings))
     (ctrl/dropdown settings "Draw" [:draw] (:draw ui-mappings))
     (when (= (:draw @settings) "triangles")
@@ -279,15 +279,14 @@
          [:div.indent
           (ctrl/slider settings (fn [v] (str "Radius " v)) [:obstacles :radius] [2 128])
           (ctrl/checkbox-after settings "Display" [:obstacles :display])
-          (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])])]
-
-   [:p
+          (ctrl/checkbox-after settings "Voronoi" [:obstacles :voronoi])])]))
+   [:div
     (view-sketch/generate :flow-fields)
     [:button.generate
      {:style {:margin-left "1em"}
       :on-click #(do (swap! settings merge (shuffle-settings))
                      (view-sketch/restart-sketch {:id :flow-fields}))}
-     "Shuffle Settings"]]))
+     "Shuffle Settings"]]])
 
 (sketch/defquil flow-fields
   :created-at "2021-06-17"
