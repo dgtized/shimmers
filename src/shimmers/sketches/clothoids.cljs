@@ -69,27 +69,26 @@
 
 (defn draw-animation [{:keys [t]}]
   (let [length (+ 40 (* 20 (Math/sin t)))
-        r 0.1
+        scaled (fn scaled [xs] (mapv #(tm/* % 11) xs))
+        r 1.0
         A3 (+ 15 (* 5 (Math/cos t)))
         A4 (+ 8 (* 2 (Math/cos t)))]
-    (q/scale 11.0)
-    (q/stroke-weight 0.04)
+    (q/stroke-weight 0.5)
     (pen-color 0)
-    (plot r (eq/clothoid 18 length 20 -1 0.0 (gv/vec2)))
+    (plot r (scaled (eq/clothoid 18 length 20 -1 0.0 (gv/vec2))))
     (pen-color 1)
-    (plot r (eq/clothoid 12 length 50 -1 Math/PI (gv/vec2)))
+    (plot r (scaled (eq/clothoid 12 length 50 -1 Math/PI (gv/vec2))))
     (pen-color 2)
-    (plot r (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0)))
+    (plot r (scaled (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0))))
     (pen-color 3)
-    (plot r (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0)))))
+    (plot r (scaled (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))))
 
 (defn draw-sandbox [from]
   (let [points (clothoid->points @ui-state)
         lp (if from (first points) (last points))
         [p r] (clothoid-circle-at-end points)]
     (q/translate 0 0)
-    (q/scale 1.0)
-    (q/stroke-weight 1.0)
+    (q/stroke-weight 0.66)
     (q/stroke 0)
     (plot 1.0 points)
     (q/stroke 0.6 0.5 0.5)
@@ -141,10 +140,10 @@
       (ctrl/change-mode ui-state [:animation :sandbox])
       (case mode
         :animation nil
-        :sandbox [:div [sandbox-ctrls]]))
+        :sandbox [sandbox-ctrls]))
      (case mode
        :animation nil
-       :sandbox [:div [sandbox-view]])]))
+       :sandbox [sandbox-view])]))
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
