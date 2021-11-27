@@ -123,10 +123,12 @@
     (let [R (:r c1)
           L (eq/clothoid-length R (eq/clothoid-tau lambda-c1 (* 0.25 eq/TAU) phi0-c1))
           A (Math/sqrt (* R L))]
+      (swap! defo assoc :c1 {:circle c1 :phi0 phi0-c1 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c1 phi0-c1 f1))))
     (let [R (:r c2)
           L (eq/clothoid-length R (eq/clothoid-tau lambda-c2 (* 0.75 eq/TAU) phi0-c2))
           A (Math/sqrt (* R L))]
+      (swap! defo assoc :c2 {:circle c2 :phi0 phi0-c2 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c2 phi0-c2 f2))))))
 
 (defn draw [state]
@@ -179,7 +181,7 @@
      (case mode
        :animation nil
        :sandbox [sandbox-view]
-       :circle-circle nil)]))
+       :circle-circle (debug/display defo))]))
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
