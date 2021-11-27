@@ -106,8 +106,12 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (q/stroke 0)
   (q/translate (cq/rel-vec 0.5 0.5))
+  (q/scale 1 1)
+  (q/stroke 0.5)
+  (q/line (cq/rel-vec -0.5 0) (cq/rel-vec 0.5 0))
+  (q/line (cq/rel-vec 0 -0.5) (cq/rel-vec 0 0.5))
+  (q/stroke 0)
 
   (let [{:keys [mode from]} @ui-state]
     (case mode
