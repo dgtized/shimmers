@@ -119,7 +119,15 @@
     (cq/circle scaled-c1)
     (cq/circle scaled-c2)
     (cq/circle scaled-f1 1.0)
-    (cq/circle scaled-f2 1.0)))
+    (cq/circle scaled-f2 1.0)
+    (let [R (:r c1)
+          L (eq/clothoid-length R (eq/clothoid-tau lambda-c1 (* 0.25 eq/TAU) phi0-c1))
+          A (Math/sqrt (* R L))]
+      (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c1 phi0-c1 f1))))
+    (let [R (:r c2)
+          L (eq/clothoid-length R (eq/clothoid-tau lambda-c2 (* 0.75 eq/TAU) phi0-c2))
+          A (Math/sqrt (* R L))]
+      (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c2 phi0-c2 f2))))))
 
 (defn draw [state]
   (reset! defo {})
