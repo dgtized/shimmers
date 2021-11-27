@@ -131,7 +131,8 @@
      [:pre>code
       (interpose "\n" [(str (first points))
                        (str (last points))
-                       (str "circle " p " " r)])])])
+                       (str "circle " p " " r)])])
+   (debug/display defo)])
 
 (defn ui-controls []
   (let [mode (:mode @ui-state)]
@@ -149,8 +150,7 @@
   :created-at "2021-11-23"
   :tags #{:demo}
   :size [800 600]
-  :on-mount #(do (debug/mount defo)
-                 (ctrl/mount ui-controls))
+  :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
   :draw draw
