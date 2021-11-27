@@ -9,6 +9,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -101,6 +102,16 @@
     (swap! defo assoc
            :points points)))
 
+(defn draw-circle-circle [_]
+  (let [c1 (gc/circle (gv/vec2 4 3) 2.0)
+        c2 (gc/circle (gv/vec2 -3 -2) 1.0)
+        scaled-c1 (g/scale c1 30)
+        scaled-c2 (g/scale c2 30)
+        ]
+    (q/scale 1 -1) ;; flip y over x-axis
+    (cq/circle scaled-c1)
+    (cq/circle scaled-c2)))
+
 (defn draw [state]
   (reset! defo {})
   (q/background 1.0)
@@ -116,7 +127,8 @@
   (let [{:keys [mode from]} @ui-state]
     (case mode
       :animation (draw-animation state)
-      :sandbox (draw-sandbox from))))
+      :sandbox (draw-sandbox from)
+      :circle-circle (draw-circle-circle state))))
 
 (defn sandbox-ctrls []
   [:div
@@ -142,13 +154,15 @@
   (let [mode (:mode @ui-state)]
     [:div.flexcols
      (ctrl/container ;; TODO: params
-      (ctrl/change-mode ui-state [:animation :sandbox])
+      (ctrl/change-mode ui-state [:animation :sandbox :circle-circle])
       (case mode
         :animation nil
-        :sandbox [sandbox-ctrls]))
+        :sandbox [sandbox-ctrls]
+        :circle-circle nil))
      (case mode
        :animation nil
-       :sandbox [sandbox-view])]))
+       :sandbox [sandbox-view]
+       :circle-circle nil)]))
 
 (sketch/defquil clothoids
   :created-at "2021-11-23"
