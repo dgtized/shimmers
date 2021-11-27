@@ -79,3 +79,15 @@
 (defn clothoid-tangent [A lambda s phi0]
   (+ (* lambda (/ (* s s) (* 2 A A)))
      phi0))
+
+(defn clothoid-alpha [lambda L R phi0]
+  (+ (* lambda (/ L (* 2 R))) phi0))
+
+(defn clothoid-tau [lambda alpha phi0]
+  (let [theta (* lambda (- alpha phi0))]
+    (if (>= theta 0)
+      theta
+      (+ tm/TWO_PI theta))))
+
+(defn clothoid-length [R tau]
+  (* 2 R tau))
