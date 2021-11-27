@@ -50,7 +50,7 @@
   (let [{:keys [A L phi0 N clockwise from scale]} params]
     (->> ((if from eq/clothoid-from eq/clothoid)
           A L N
-          (if clockwise 1 -1) phi0
+          (if clockwise -1 1) phi0
           (gv/vec2))
          (mapv #(tm/* % scale)))))
 
@@ -65,7 +65,7 @@
     (swap! defo assoc
            :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
            :tangent-angle tangent-angle)
-    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (tm/sign L) (if clockwise 1 -1) 0.5 Math/PI))))
+    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (tm/sign L) (if clockwise -1 1) 0.5 Math/PI))))
      R]))
 
 (defn draw-animation [{:keys [t]}]
@@ -76,9 +76,9 @@
         A4 (+ 8 (* 2 (Math/cos t)))]
     (q/stroke-weight 0.5)
     (pen-color 0)
-    (plot r (scaled (eq/clothoid 18 length 20 -1 0.0 (gv/vec2))))
+    (plot r (scaled (eq/clothoid 18 length 20 1 0.0 (gv/vec2))))
     (pen-color 1)
-    (plot r (scaled (eq/clothoid 12 length 50 -1 Math/PI (gv/vec2))))
+    (plot r (scaled (eq/clothoid 12 length 50 1 Math/PI (gv/vec2))))
     (pen-color 2)
     (plot r (scaled (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0))))
     (pen-color 3)
@@ -108,7 +108,6 @@
         scaled-c1 (g/scale c1 30)
         scaled-c2 (g/scale c2 30)
         ]
-    (q/scale 1 -1) ;; flip y over x-axis
     (cq/circle scaled-c1)
     (cq/circle scaled-c2)))
 
@@ -118,7 +117,7 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/translate (cq/rel-vec 0.5 0.5))
-  (q/scale 1 1)
+  (q/scale 1 -1) ;; flip y over x-axis
   (q/stroke 0.5)
   (q/line (cq/rel-vec -0.5 0) (cq/rel-vec 0.5 0))
   (q/line (cq/rel-vec 0 -0.5) (cq/rel-vec 0 0.5))
