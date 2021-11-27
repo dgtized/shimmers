@@ -106,10 +106,20 @@
   (let [c1 (gc/circle (gv/vec2 4 3) 2.0)
         c2 (gc/circle (gv/vec2 -3 -2) 1.0)
         scaled-c1 (g/scale c1 30)
-        scaled-c2 (g/scale c2 30)]
+        scaled-c2 (g/scale c2 30)
+        lambda-c1 1
+        lambda-c2 1
+        phi0-c1 (* 0.0 eq/TAU)
+        phi0-c2 (* 0.5 eq/TAU)
+        f1 (tm/+ (:p c1) (v/polar (:r c1) 0))
+        f2 (tm/+ (:p c2) (v/polar (:r c2) Math/PI))
+        scaled-f1 (g/scale f1 30)
+        scaled-f2 (g/scale f2 30)]
     ;; TODO: solve for circle/circle connection clothoids between c1,c2
     (cq/circle scaled-c1)
-    (cq/circle scaled-c2)))
+    (cq/circle scaled-c2)
+    (cq/circle scaled-f1 1.0)
+    (cq/circle scaled-f2 1.0)))
 
 (defn draw [state]
   (reset! defo {})
