@@ -106,8 +106,8 @@
   (let [c1 (gc/circle (gv/vec2 4 3) 2.0)
         c2 (gc/circle (gv/vec2 -3 -2) 1.0)
         scaled-c1 (g/scale c1 30)
-        scaled-c2 (g/scale c2 30)
-        ]
+        scaled-c2 (g/scale c2 30)]
+    ;; TODO: solve for circle/circle connection clothoids between c1,c2
     (cq/circle scaled-c1)
     (cq/circle scaled-c2)))
 
