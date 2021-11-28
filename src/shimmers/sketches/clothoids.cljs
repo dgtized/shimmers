@@ -36,6 +36,9 @@
 ;; is infinity and L is 0, and each side of the curve is one of the two circles.
 ;; https://math.stackexchange.com/questions/1785816/calculating-coordinates-along-a-clothoid-betwen-2-curves
 ;; https://etrr.springeropen.com/articles/10.1007/s12544-013-0119-8
+;;
+;; Fitting polygons with piecewise clothoid curves
+;; http://www.dgp.toronto.edu/~mccrae/projects/clothoid/sbim2008mccrae.pdf
 (defn plot [r points]
   (q/begin-shape)
   (doseq [[x y] points]
