@@ -107,6 +107,8 @@
         c2 (gc/circle (gv/vec2 -3 -2) 1.0)
         scaled-c1 (g/scale c1 30)
         scaled-c2 (g/scale c2 30)
+        c1-angle (* 0.25 eq/TAU)
+        c2-angle (* 0.75 eq/TAU)
         lambda-c1 1
         lambda-c2 1
         phi0-c1 (* 0.0 eq/TAU)
@@ -121,12 +123,12 @@
     (cq/circle scaled-f1 1.0)
     (cq/circle scaled-f2 1.0)
     (let [R (:r c1)
-          L (eq/clothoid-length R (eq/clothoid-tau lambda-c1 (* 0.25 eq/TAU) phi0-c1))
+          L (eq/clothoid-length R (eq/clothoid-tau lambda-c1 c1-angle phi0-c1))
           A (Math/sqrt (* R L))]
       (swap! defo assoc :c1 {:circle c1 :phi0 phi0-c1 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c1 phi0-c1 f1))))
     (let [R (:r c2)
-          L (eq/clothoid-length R (eq/clothoid-tau lambda-c2 (* 0.75 eq/TAU) phi0-c2))
+          L (eq/clothoid-length R (eq/clothoid-tau lambda-c2 c2-angle phi0-c2))
           A (Math/sqrt (* R L))]
       (swap! defo assoc :c2 {:circle c2 :phi0 phi0-c2 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c2 phi0-c2 f2))))))
