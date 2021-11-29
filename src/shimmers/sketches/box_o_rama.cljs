@@ -24,8 +24,10 @@
         side (dr/rand-nth [:right :left :top :bottom])
         fixed (dr/rand-nth boxes)
         box (random-box scale)
-        placed (square/align-to side 3.0 fixed (g/center box (:p fixed)))]
-    (when (geometry/contains-box? (cq/screen-rect 0.95) placed)
+        placed (square/align-to side 3.0 fixed (g/center box (:p fixed)))
+        overlaps (filter #(g/intersect-shape % placed) boxes)]
+    (when (and (geometry/contains-box? (cq/screen-rect 0.95) placed)
+               (< (count overlaps) 2))
       placed)))
 
 (defn update-state [{:keys [boxes] :as state}]
