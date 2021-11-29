@@ -41,7 +41,8 @@
                (<= percent 0.25))
       (let [theta (g/heading (tm/- corner (:p placed)))]
         (assoc placed :hatching
-               (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5]))))))
+               (when (dr/chance 0.4)
+                 (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5])))))))
 
 (defn update-state [{:keys [boxes] :as state}]
   (if (> (count boxes) 30)
