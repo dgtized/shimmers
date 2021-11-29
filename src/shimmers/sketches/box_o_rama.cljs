@@ -8,19 +8,14 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
-   [thi.ng.math.core :as tm]))
-
-(defn centered-around [shape pos]
-  (let [{p :p size :size} (g/bounds shape)]
-    (g/translate shape (tm/- pos p (tm/* size 0.5)))))
+   [thi.ng.geom.rect :as rect]))
 
 (defn random-box []
   (rect/rect 0 0 (dr/random-int 50 100) (dr/random-int 50 100)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:boxes [(centered-around (random-box) (cq/rel-vec 0.5 0.5))]})
+  {:boxes [(g/center (random-box) (cq/rel-vec 0.5 0.5))]})
 
 (defn update-state [state]
   state)
