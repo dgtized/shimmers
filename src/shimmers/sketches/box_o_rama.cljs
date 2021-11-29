@@ -42,7 +42,8 @@
   (q/stroke 0)
   (q/stroke-weight 0.8)
   (q/no-fill)
-  (doseq [shape boxes]
+  (doseq [[i shape] (map-indexed vector boxes)]
+    (q/stroke-weight (- 1.0 (/ i 40)))
     (qdg/draw shape)))
 
 (sketch/defquil box-o-rama
