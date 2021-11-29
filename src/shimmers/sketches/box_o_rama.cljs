@@ -10,7 +10,9 @@
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.math.core :as tm]
+   [shimmers.math.equations :as eq]))
 
 (defn random-box [s]
   (g/scale (rect/rect 0 0 (dr/random-int 50 100) (dr/random-int 50 100)) s))
@@ -19,15 +21,24 @@
   (q/color-mode :hsl 1.0)
   {:boxes [(g/center (random-box 1.0) (cq/rel-vec 0.5 0.5))]})
 
+(defn percent-intersect [shape box]
+  (/ (g/area (tm/intersection shape box))
+     (g/area box)))
+
 (defn generate-box [boxes]
   (let [scale (- 1.0 (/ (count boxes) 50))
         side (dr/rand-nth [:right :left :top :bottom])
         fixed (dr/rand-nth boxes)
         box (random-box scale)
-        placed (square/align-to side 3.0 fixed (g/center box (:p fixed)))
-        overlaps (filter #(g/intersect-shape % placed) boxes)]
+        corner (dr/rand-nth [(:p fixed) (rect/top-right fixed)])
+        placed (square/align-to side 3.0 fixed (g/center box corner))
+        overlaps (filter #(g/intersect-shape % placed) boxes)
+        percent (if (seq overlaps)
+                  (percent-intersect (first overlaps) placed)
+                  0)]
     (when (and (geometry/contains-box? (cq/screen-rect 0.95) placed)
-               (< (count overlaps) 2))
+               (< (count overlaps) 2)
+               (<= percent 0.25))
       placed)))
 
 (defn update-state [{:keys [boxes] :as state}]
