@@ -30,8 +30,8 @@
         side (dr/rand-nth [:right :left :top :bottom])
         fixed (dr/rand-nth boxes)
         box (random-box scale)
-        corner (dr/rand-nth [(:p fixed) (rect/top-right fixed)])
-        placed (square/align-to side 5.0 fixed (g/center box corner))
+        fixed-pos (dr/rand-nth [(:p fixed) (rect/top-right fixed) (g/centroid fixed)])
+        placed (square/align-to side 5.0 fixed (g/center box fixed-pos))
         overlaps (filter #(g/intersect-shape % placed) boxes)
         percent (if (seq overlaps)
                   (percent-intersect (first overlaps) placed)
@@ -39,7 +39,7 @@
     (when (and (geometry/contains-box? (cq/screen-rect 0.9) placed)
                (< (count overlaps) 2)
                (<= percent 0.25))
-      (let [theta (g/heading (tm/- corner (:p placed)))
+      (let [theta (g/heading (tm/- fixed-pos (:p placed)))
             t (* 0.05 theta)
             o (g/centroid placed)]
         (assoc placed
