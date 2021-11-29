@@ -12,17 +12,18 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]))
 
-(defn random-box []
-  (rect/rect 0 0 (dr/random-int 50 100) (dr/random-int 50 100)))
+(defn random-box [s]
+  (g/scale (rect/rect 0 0 (dr/random-int 50 100) (dr/random-int 50 100)) s))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:boxes [(g/center (random-box) (cq/rel-vec 0.5 0.5))]})
+  {:boxes [(g/center (random-box 1.0) (cq/rel-vec 0.5 0.5))]})
 
 (defn generate-box [boxes]
-  (let [side (dr/rand-nth [:right :left :top :bottom])
+  (let [scale (- 1.0 (/ (count boxes) 50))
+        side (dr/rand-nth [:right :left :top :bottom])
         fixed (dr/rand-nth boxes)
-        box (random-box)
+        box (random-box scale)
         placed (square/align-to side 3.0 fixed (g/center box (:p fixed)))]
     (when (geometry/contains-box? (cq/screen-rect 0.95) placed)
       placed)))
