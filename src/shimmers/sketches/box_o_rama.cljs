@@ -41,7 +41,7 @@
                   0)]
     (when (and (geometry/contains-box? (cq/screen-rect 0.9) placed)
                (< (count overlaps) 2)
-               (<= percent 0.25))
+               (<= percent 0.1))
       (let [theta (g/heading (tm/- fixed-pos (:p placed)))
             t (* 0.03 theta)
             o (g/centroid placed)]
@@ -69,7 +69,6 @@
                      (g/dist (cq/rel-vec 0.5 0.5) (cq/rel-vec 0 0)))
                 weight (- 0.8 (* 0.5 d))]]
     (q/stroke-weight weight)
-    (q/fill (mod (* i tm/PHI) 1.0) 0.4 0.4 0.25)
     (qdg/draw (geometry/rotate-around-centroid shape (get shape :theta 0)))
     (q/stroke-weight (* 0.66 weight))
     (when-let [{:keys [hatching]} shape]
