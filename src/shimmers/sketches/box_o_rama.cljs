@@ -55,10 +55,12 @@
   (q/no-fill)
   (doseq [[i shape] (map-indexed vector boxes)]
     (q/stroke-weight (- 1.0 (/ i 40)))
+    (q/fill (mod (* i tm/PHI) 1.0) 0.4 0.4 0.25)
     (qdg/draw shape)))
 
 (sketch/defquil box-o-rama
-  :created-at "2021-"
+  :created-at "2021-11-29"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state
