@@ -61,6 +61,14 @@
       (g/rotate t)
       (g/translate (g/centroid polygon))))
 
+(defn rotate-around
+  "Rotate a polygon `theta` radians around a specific `position`."
+  [polygon position theta]
+  (-> polygon
+      (g/translate (tm/- position))
+      (g/rotate theta)
+      (g/translate position)))
+
 ;; Quaternion
 ;; https://www.weizmann.ac.il/sci-tea/benari/sites/sci-tea.benari/files/uploads/softwareAndLearningMaterials/quaternion-tutorial-2-0-1.pdf
 ;; http://danceswithcode.net/engineeringnotes/quaternions/quaternions.html

@@ -39,10 +39,15 @@
     (when (and (geometry/contains-box? (cq/screen-rect 0.9) placed)
                (< (count overlaps) 2)
                (<= percent 0.25))
-      (let [theta (g/heading (tm/- corner (:p placed)))]
-        (assoc placed :hatching
+      (let [theta (g/heading (tm/- corner (:p placed)))
+            t (* 0.05 theta)
+            o (g/centroid placed)]
+        (assoc placed
+               :theta t
+               :hatching
                (when (dr/chance 0.4)
-                 (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5])))))))
+                 (mapv #(geometry/rotate-around % o t)
+                       (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5]))))))))
 
 (defn update-state [{:keys [boxes] :as state}]
   (if (> (count boxes) 30)
@@ -60,7 +65,7 @@
           :let [weight (- 1.0 (/ i 40))]]
     (q/stroke-weight weight)
     (q/fill (mod (* i tm/PHI) 1.0) 0.4 0.4 0.25)
-    (qdg/draw shape)
+    (qdg/draw (geometry/rotate-around-centroid shape (get shape :theta 0)))
     (q/stroke-weight (* 0.66 weight))
     (when-let [{:keys [hatching]} shape]
       (doseq [{[p q] :points} hatching]
