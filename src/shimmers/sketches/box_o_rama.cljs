@@ -27,7 +27,10 @@
 
 (defn generate-box [boxes]
   (let [scale (- 1.0 (/ (count boxes) 48))
-        side (dr/rand-nth [:right :left :top :bottom])
+        side (dr/weighted {:right 4.0
+                           :left 4.0
+                           :top 1.0
+                           :bottom 1.0})
         fixed (dr/rand-nth boxes)
         box (random-box scale)
         fixed-pos (dr/rand-nth [(:p fixed) (rect/top-right fixed) (g/centroid fixed)])
