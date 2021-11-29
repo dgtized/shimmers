@@ -2,10 +2,12 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]))
@@ -17,8 +19,20 @@
   (q/color-mode :hsl 1.0)
   {:boxes [(g/center (random-box) (cq/rel-vec 0.5 0.5))]})
 
-(defn update-state [state]
-  state)
+(defn generate-box [boxes]
+  (let [side (dr/rand-nth [:right :left :top :bottom])
+        fixed (dr/rand-nth boxes)
+        box (random-box)
+        placed (square/align-to side 3.0 fixed (g/center box (:p fixed)))]
+    (when (geometry/contains-box? (cq/screen-rect 0.95) placed)
+      placed)))
+
+(defn update-state [{:keys [boxes] :as state}]
+  (if (> (count boxes) 30)
+    state
+    (if-let [box (generate-box boxes)]
+      (update state :boxes conj box)
+      state)))
 
 (defn draw [{:keys [boxes]}]
   (q/background 1.0)
