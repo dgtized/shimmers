@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
@@ -11,8 +12,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.equations :as eq]))
+   [thi.ng.math.core :as tm]))
 
 (defn random-box [s]
   (g/scale (rect/rect 0 0 (dr/random-int 50 100) (dr/random-int 50 100)) s))
@@ -39,7 +39,9 @@
     (when (and (geometry/contains-box? (cq/screen-rect 0.9) placed)
                (< (count overlaps) 2)
                (<= percent 0.25))
-      placed)))
+      (let [theta (g/heading (tm/- corner (:p placed)))]
+        (assoc placed :hatching
+               (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5]))))))
 
 (defn update-state [{:keys [boxes] :as state}]
   (if (> (count boxes) 30)
@@ -53,10 +55,15 @@
   (q/stroke 0)
   (q/stroke-weight 0.8)
   (q/no-fill)
-  (doseq [[i shape] (map-indexed vector boxes)]
-    (q/stroke-weight (- 1.0 (/ i 40)))
+  (doseq [[i shape] (map-indexed vector boxes)
+          :let [weight (- 1.0 (/ i 40))]]
+    (q/stroke-weight weight)
     (q/fill (mod (* i tm/PHI) 1.0) 0.4 0.4 0.25)
-    (qdg/draw shape)))
+    (qdg/draw shape)
+    (q/stroke-weight (* 0.66 weight))
+    (when-let [{:keys [hatching]} shape]
+      (doseq [{[p q] :points} hatching]
+        (q/line p q)))))
 
 (sketch/defquil box-o-rama
   :created-at "2021-11-29"
