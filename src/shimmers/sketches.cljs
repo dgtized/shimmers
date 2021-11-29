@@ -5,6 +5,7 @@
 
             shimmers.sketches.additive-displacement
             shimmers.sketches.ascendance
+            shimmers.sketches.box-o-rama
             shimmers.sketches.braid
             shimmers.sketches.brush-sweep
             shimmers.sketches.breathing-hexes
