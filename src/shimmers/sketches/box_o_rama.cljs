@@ -26,7 +26,7 @@
      (g/area box)))
 
 (defn generate-box [boxes]
-  (let [scale (- 1.0 (/ (count boxes) 50))
+  (let [scale (- 1.0 (/ (count boxes) 48))
         side (dr/rand-nth [:right :left :top :bottom])
         fixed (dr/rand-nth boxes)
         box (random-box scale)
@@ -40,7 +40,7 @@
                (< (count overlaps) 2)
                (<= percent 0.25))
       (let [theta (g/heading (tm/- fixed-pos (:p placed)))
-            t (* 0.05 theta)
+            t (* 0.03 theta)
             o (g/centroid placed)]
         (assoc placed
                :theta t
@@ -50,7 +50,7 @@
                        (clip/hatch-rectangle placed (* 6.0 scale) theta [0.5 0.5]))))))))
 
 (defn update-state [{:keys [boxes] :as state}]
-  (if (> (count boxes) 30)
+  (if (> (count boxes) 32)
     state
     (if-let [box (generate-box boxes)]
       (update state :boxes conj box)
