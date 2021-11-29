@@ -39,6 +39,16 @@
                (gaussian-density 1.0 0.5 x)])
        (range 0 1 0.05)))
 
+;; clothoid spiral
+;; https://pwayblog.com/2016/07/03/the-clothoid/ origin is the midpoint where r
+;; is infinity and L is 0, and each side of the curve is one of the two circles.
+;; https://math.stackexchange.com/questions/1785816/calculating-coordinates-along-a-clothoid-betwen-2-curves
+;; https://etrr.springeropen.com/articles/10.1007/s12544-013-0119-8
+;; https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6687603/
+;;
+;; Fitting polygons with piecewise clothoid curves
+;; http://www.dgp.toronto.edu/~mccrae/projects/clothoid/sbim2008mccrae.pdf
+;;
 ;; Motion planning application of clothoids:
 ;; http://vigir.missouri.edu/~gdesouza/Research/Conference_CDs/IEEE_IROS_2009/papers/0552.pdf
 ;; Finding clothoids
