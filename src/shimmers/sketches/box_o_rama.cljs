@@ -64,7 +64,7 @@
   (q/stroke 0)
   (q/stroke-weight 0.8)
   (q/no-fill)
-  (doseq [[i shape] (map-indexed vector boxes)
+  (doseq [shape boxes
           :let [d (/ (g/dist (g/centroid shape) (cq/rel-vec 0.5 0.5))
                      (g/dist (cq/rel-vec 0.5 0.5) (cq/rel-vec 0 0)))
                 weight (- 0.8 (* 0.5 d))]]
