@@ -109,11 +109,11 @@
                         segment-distance)))))
 
 (defn pruning-set
-  [closest-fn influencers]
+  [quadtree prune-distance influencers]
   (->> influencers
        vals
        (apply set/union)
-       (filter closest-fn)
+       (filter (partial close-to-branch? quadtree prune-distance))
        set))
 
 (defn grow
@@ -123,8 +123,7 @@
   (let [influencers (influencing-attractors attractors quadtree influence-distance)
         growth (grow-branches branches influencers segment-distance snap-theta)
         new-quadtree (add-branch-positions quadtree growth)
-        prune (pruning-set (partial close-to-branch? new-quadtree prune-distance)
-                           influencers)
+        prune (pruning-set new-quadtree prune-distance influencers)
         new-branches (vec (concat branches growth))]
     (if (steady-state? growth prune attractors)
       (assoc state :steady-state true)
