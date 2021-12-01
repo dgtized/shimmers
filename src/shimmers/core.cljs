@@ -32,18 +32,25 @@
         (println action "sketch" (:id sketch)))
       (f sketch))))
 
+(defn on-index []
+  [{:start #(favicon/start 100)
+    :stop #(favicon/stop)}])
+
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [["/" ::root]
    ["/sketches"
     {:name :shimmers.view.index/by-alphabetical
-     :view #(view-index/by-alphabetical (sketches/all))}]
+     :view #(view-index/by-alphabetical (sketches/all))
+     :controllers (on-index)}]
    ["/sketches-by-date"
     {:name :shimmers.view.index/by-date
-     :view #(view-index/by-date (sketches/all))}]
+     :view #(view-index/by-date (sketches/all))
+     :controllers (on-index)}]
    ["/sketches-by-tag"
     {:name :shimmers.view.index/by-tag
-     :view #(view-index/by-tag (sketches/all))}]
+     :view #(view-index/by-tag (sketches/all))
+     :controllers (on-index)}]
    ["/sketches/:name"
     {:name :shimmers.view.sketch/sketch-by-name
      :view (on-event #(view-sketch/sketch-by-name % (sketches/known-names)) nil)
@@ -84,9 +91,8 @@
    on-navigate
    {:use-fragment true})
 
-  ;; kick off favicon animation
-  ;; FIXME move to index only so it doesn't run by on first load
-  (favicon/start 100)
+  ;; Render at least one frame of the favicon animation at start
+  (favicon/favicon)
 
   ;; (rdom/render [debug-root] (dom/getElement "route-debug-mount"))
   (rdom/render [page-root] (dom/getElement "shimmer-mount")))
