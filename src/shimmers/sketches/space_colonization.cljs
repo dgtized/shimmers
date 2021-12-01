@@ -10,6 +10,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.ui.debug :as debug]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -17,6 +18,7 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]))
 
+(defonce defo (debug/state))
 (defonce settings
   (ctrl/state
    {:influence-distance 48
@@ -95,7 +97,9 @@
   (cq/circle pos prune))
 
 (defn draw-debug
-  [{:keys [attractors influence-distance prune-distance quadtree]} debug]
+  [{:keys [attractors branches influence-distance prune-distance quadtree]} debug]
+  (reset! defo {:attractors (count attractors)
+                :branches (count branches)})
 
   (when (:attractors debug)
     (doseq [[x y] attractors]
@@ -138,32 +142,34 @@
     (draw-debug state debug)))
 
 (defn ui-controls []
-  (ctrl/container
-   [:section
-    [:b "Applies on next run:"]
-    (ctrl/slider settings (fn [v] (str "Attractor Count " (Math/pow 2 v)))
-                 [:attractor-power] [4 12])
-    (ctrl/slider settings (fn [v] (str "Influence Distance " v))
-                 [:influence-distance] [10 100])
-    (ctrl/slider settings (fn [v] (str "Prune Distance " v))
-                 [:prune-distance] [2 50])
-    (ctrl/slider settings (fn [v] (str "Segment Distance " v))
-                 [:segment-distance] [1 30])
-    (ctrl/dropdown settings
-                   "Snap Angles To " [:snap-theta]
-                   {"Disabled" 0
-                    "90 degrees" (/ Math/PI 2)
-                    "60 degrees" (/ Math/PI 3)
-                    "45 degrees" (/ Math/PI 4)
-                    "30 degrees" (/ Math/PI 6)})]
-   [:br]
-   [:section
-    [:b "Applies immediately:"]
-    (ctrl/checkbox settings "Show Canalization" [:debug :canalization])
-    (ctrl/checkbox settings "Show Attractors" [:debug :attractors])
-    (ctrl/checkbox settings "Show Influence/Prune Bubbles" [:debug :bubbles])
-    (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
-    (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])]))
+  [:div.flexcols
+   (ctrl/container
+    [:section
+     [:b "Applies on next run:"]
+     (ctrl/slider settings (fn [v] (str "Attractor Count " (Math/pow 2 v)))
+                  [:attractor-power] [4 12])
+     (ctrl/slider settings (fn [v] (str "Influence Distance " v))
+                  [:influence-distance] [10 100])
+     (ctrl/slider settings (fn [v] (str "Prune Distance " v))
+                  [:prune-distance] [2 50])
+     (ctrl/slider settings (fn [v] (str "Segment Distance " v))
+                  [:segment-distance] [1 30])
+     (ctrl/dropdown settings
+                    "Snap Angles To " [:snap-theta]
+                    {"Disabled" 0
+                     "90 degrees" (/ Math/PI 2)
+                     "60 degrees" (/ Math/PI 3)
+                     "45 degrees" (/ Math/PI 4)
+                     "30 degrees" (/ Math/PI 6)})]
+    [:br]
+    [:section
+     [:b "Applies immediately:"]
+     (ctrl/checkbox settings "Show Canalization" [:debug :canalization])
+     (ctrl/checkbox settings "Show Attractors" [:debug :attractors])
+     (ctrl/checkbox settings "Show Influence/Prune Bubbles" [:debug :bubbles])
+     (ctrl/checkbox settings "Show Influence-By Lines" [:debug :influenced-by])
+     (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])])
+   (debug/display defo)])
 
 (sketch/defquil space-colonization
   :created-at "2020-11-27"
