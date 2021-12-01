@@ -91,7 +91,7 @@
           quadtree
           branches))
 
-(defn influencing-attractors [attractors quadtree influence-distance]
+(defn influencing-attractors [quadtree influence-distance attractors]
   (apply merge-with set/union
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
@@ -99,7 +99,7 @@
            {(closest-branch attractor influences) #{attractor}})))
 
 (defn grow-branches
-  [branches influencers segment-distance snap-theta]
+  [segment-distance snap-theta branches influencers]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
@@ -120,8 +120,8 @@
   [{:keys [influence-distance segment-distance prune-distance snap-theta
            attractors branches quadtree weights]
     :as state}]
-  (let [influencers (influencing-attractors attractors quadtree influence-distance)
-        growth (vec (grow-branches branches influencers segment-distance snap-theta))
+  (let [influencers (influencing-attractors quadtree influence-distance attractors)
+        growth (vec (grow-branches segment-distance snap-theta branches influencers))
         quadtree' (add-branch-positions quadtree growth)
         pruned (pruning-set quadtree' prune-distance influencers)
         branches' (vec (concat branches growth))]
