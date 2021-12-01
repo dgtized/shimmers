@@ -18,8 +18,7 @@
 
 (defn grow-branch [parent parent-idx direction length]
   (->Branch parent-idx
-            (v/add (:position parent)
-                   (g/scale direction length))
+            (tm/+ (:position parent) (tm/normalize direction length))
             direction))
 
 (defn branch-distance [attractor branch]
@@ -37,11 +36,10 @@
 (defn average-attraction
   [{:keys [position direction]} attractors]
   (-> (reduce (fn [acc attractor]
-                (v/add acc (tm/- attractor position)))
+                (tm/+ acc (tm/- attractor position)))
               direction
               attractors)
-      (v/add (v/jitter 1.0))
-      (g/scale (/ 1 (inc (count attractors))))
+      (tm/+ (v/jitter 1.0))
       tm/normalize))
 
 (comment
