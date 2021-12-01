@@ -103,10 +103,10 @@
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
-    (vec (for [[branch attractors] influencers]
-           (grow-branch branch (get branch-index branch)
-                        (v/snap-to (average-attraction branch attractors) snap-theta)
-                        segment-distance)))))
+    (for [[branch attractors] influencers]
+      (grow-branch branch (get branch-index branch)
+                   (v/snap-to (average-attraction branch attractors) snap-theta)
+                   segment-distance))))
 
 (defn pruning-set
   [quadtree prune-distance influencers]
@@ -121,7 +121,7 @@
            attractors branches quadtree weights]
     :as state}]
   (let [influencers (influencing-attractors attractors quadtree influence-distance)
-        growth (grow-branches branches influencers segment-distance snap-theta)
+        growth (vec (grow-branches branches influencers segment-distance snap-theta))
         quadtree' (add-branch-positions quadtree growth)
         pruned (pruning-set quadtree' prune-distance influencers)
         branches' (vec (concat branches growth))]
