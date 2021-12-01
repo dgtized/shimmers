@@ -103,10 +103,10 @@
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
-    (for [[branch attractors] influencers]
-      (grow-branch branch (get branch-index branch)
-                   (v/snap-to (average-attraction branch attractors) snap-theta)
-                   segment-distance))))
+    (vec (for [[branch attractors] influencers]
+           (grow-branch branch (get branch-index branch)
+                        (v/snap-to (average-attraction branch attractors) snap-theta)
+                        segment-distance)))))
 
 (defn pruning-set
   [closest-fn influencers]
@@ -121,16 +121,7 @@
            attractors branches quadtree weights]
     :as state}]
   (let [influencers (influencing-attractors attractors quadtree influence-distance)
-        growth
-        (->> (grow-branches branches influencers segment-distance snap-theta)
-             ;; remove any branches created too close to an existing branch this
-             ;; forces it to select a given jitter influenced branch instead of
-             ;; repeatedly adding new children at a point.
-             (remove (fn [branch]
-                       (close-to-branch? quadtree (/ segment-distance 4)
-                                         (:position branch))))
-             vec)
-
+        growth (grow-branches branches influencers segment-distance snap-theta)
         new-quadtree (add-branch-positions quadtree growth)
         prune (pruning-set (partial close-to-branch? new-quadtree prune-distance)
                            influencers)
