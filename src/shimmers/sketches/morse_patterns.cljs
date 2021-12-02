@@ -19,7 +19,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn poly-divide [gap-cycle len-cycle line]
-  (let [{[p q] :points} (g/scale-size line 1.01)
+  (let [{[p q] :points} (g/scale-size line 1.1)
         dist (g/dist p q)
         perp (g/rotate (tm/normalize (tm/- p q) (/ (:width line) 2)) (* 0.25 eq/TAU))
         u0 (tm/+ p perp)
@@ -39,11 +39,14 @@
                  (+ b gap len)))))))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)]
-    (mapcat (partial poly-divide (dr/cyclic [5 10]) (dr/cyclic [10 20 30 25]))
-            (clip/variable-hatching bounds 0.3 0 120
-                                    (dr/cyclic [12 13 14])
-                                    (dr/cyclic [4 6 4 15 8])))))
+  (let [bounds (rect/rect 0 0 width height)
+        gaps (repeatedly 17 #(dr/random 4 10))
+        lengths (repeatedly 11 #(dr/random-int 20 40))
+        spacings (repeatedly 7 #(dr/random-int 10 16))
+        widths (repeatedly 13 #(dr/random-int 4 16))]
+    (mapcat (partial poly-divide (dr/cyclic gaps) (dr/cyclic lengths))
+            (clip/variable-hatching bounds 0.3 0 120 (dr/cyclic spacings)
+                                    (dr/cyclic widths)))))
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
