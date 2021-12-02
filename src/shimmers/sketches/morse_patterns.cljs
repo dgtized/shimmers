@@ -15,19 +15,17 @@
 
 (def width 800)
 (def height 600)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 (defn poly-divide [gap-cycle len-cycle line]
-  (let [{[p q] :points} (g/scale-size line 1.1)
+  (let [{[p q] :points width :width} line
         dist (g/dist p q)
-        perp (g/rotate (tm/normalize (tm/- p q) (/ (:width line) 2)) (* 0.25 eq/TAU))
+        perp (g/rotate (tm/normalize (tm/- p q) (/ width 2)) (* 0.25 eq/TAU))
         u0 (tm/+ p perp)
         l0 (tm/- p perp)
         upper (tm/normalize (tm/- (tm/+ q perp) u0) 1.0)
         lower (tm/normalize (tm/- (tm/- q perp) l0))]
     (loop [polys [] a 0 b 20]
-      (if (>= b dist)
+      (if (> b dist)
         polys
         (let [gap (gap-cycle)
               len (len-cycle)]
@@ -39,7 +37,8 @@
                  (+ b gap len)))))))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [margin 24
+        bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
         gaps (repeatedly 17 #(dr/random 4 10))
         lengths (repeatedly 11 #(dr/random-int 20 40))
         spacings (repeatedly 7 #(dr/random-int 10 16))
