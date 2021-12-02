@@ -58,9 +58,15 @@
         w0 (int (/ (apply max widths) 1.5))
         spacings (repeatedly 11 #(dr/random-int w0 (int (* 1.8 w0))))]
     ;; TODO get rid of 0,120 constants?
-    (mapcat (partial poly-divide (dr/cyclic gaps) (dr/cyclic lengths))
-            (clip/variable-hatching bounds (dr/random 0.1 0.7) 0 120 (dr/cyclic spacings)
-                                    (dr/cyclic widths)))))
+    (->> (clip/variable-hatching bounds (dr/random 0.1 0.7) 0 120 (dr/cyclic spacings)
+                                 (dr/cyclic widths))
+         (mapcat (partial poly-divide (dr/cyclic gaps) (dr/cyclic lengths)))
+         (map-indexed (fn [i poly]
+                        (cond (zero? (mod i 13))
+                              (g/scale-size poly (/ 1 tm/PHI))
+                              (zero? (mod i 19))
+                              (g/scale-size poly 0.5)
+                              :else poly))))))
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
