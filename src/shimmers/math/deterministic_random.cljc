@@ -153,3 +153,14 @@
 ;;              (nth xs i)]
 ;;             (drop (inc i) xs))))
 ;; (comment (random-swap (range 5)))
+
+(defn cyclic
+  "Given a collection of values, return a function which will generate the values
+  in the collection on each call."
+  [coll]
+  (let [len (count coll)
+        iter (atom 0)]
+    (fn []
+      (let [i @iter]
+        (swap! iter inc)
+        (nth coll (mod i len))))))
