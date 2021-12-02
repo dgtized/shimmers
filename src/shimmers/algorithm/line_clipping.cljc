@@ -155,5 +155,28 @@
                          spacing cosa
                          [x0 y0] [x1 y1])))
 
+
+;; TODO: change x0 a percent of width + height of shape to find start of slashes
+(defn variable-hatching [bounds angle x0 n spacing width]
+  (let [{[bx by] :p [bw bh] :size} bounds
+        m (Math/tan angle)
+        cosa (Math/cos angle)
+        c (- (+ by bh) (* m x0))
+        x0 (- bx (/ bw 2))
+        y0 (+ (* m x0) c)
+        x1 (+ bx bw (/ bw 2))
+        y1 (+ (* m x1) c)]
+    (loop [i 0 step 0 slashes []]
+      (if (< i n)
+        (let [p (gv/vec2 x0 (- y0 step))
+              q (gv/vec2 x1 (- y1 step))
+              s (spacing)
+              w (width)]
+          (if-let [line (clip-line bounds p q)]
+            (recur (inc i) (+ step (/ (+ s (/ w 2)) cosa))
+                   (conj slashes (assoc line :width w)))
+            slashes))
+        slashes))))
+
 ;; Algorithm for arbitrary polygons?
 ;; http://alienryderflex.com/polygon_hatchline_fill/
