@@ -69,12 +69,14 @@
          (map-indexed (fn [i poly]
                         (cond (zero? (mod i 13))
                               (g/scale-size poly (/ 1 tm/PHI))
-                              (zero? (mod i 19))
+                              (zero? (mod i 23))
                               (g/scale-size poly 0.5)
+                              (zero? (mod i 29))
+                              (vary-meta poly assoc :fill "lightgrey")
                               :else poly)))
          (map (fn [poly]
                 (if (some #(g/contains-point? circle %) (g/vertices poly))
-                  (vary-meta poly assoc :fill "black")
+                  (vary-meta poly assoc :fill "grey")
                   poly))))))
 
 ;; FIXME: handle large gaps and overlapping lines
