@@ -39,12 +39,18 @@
 (defn shapes []
   (let [margin 24
         bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
-        gaps (repeatedly 17 #(dr/random 4 10))
-        lengths (repeatedly 11 #(dr/random-int 20 40))
-        spacings (repeatedly 7 #(dr/random-int 10 16))
-        widths (repeatedly 13 #(dr/random-int 4 16))]
+        gaps (repeatedly 17 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
+                                                 #(dr/random-int 14 30) 1.0}))))
+        lengths (repeatedly 13 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
+                                                    #(dr/random-int 40 60) 1.0}))))
+        widths (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 3 6) 1.0
+                                                   #(dr/random-int 6 12) 4.0
+                                                   #(dr/random-int 12 18) 2.0}))))
+        w0 (int (/ (apply max widths) 1.5))
+        spacings (repeatedly 11 #(dr/random-int w0 (int (* 1.8 w0))))]
+    ;; TODO get rid of 0,120 constants?
     (mapcat (partial poly-divide (dr/cyclic gaps) (dr/cyclic lengths))
-            (clip/variable-hatching bounds 0.3 0 120 (dr/cyclic spacings)
+            (clip/variable-hatching bounds (dr/random 0.1 0.7) 0 120 (dr/cyclic spacings)
                                     (dr/cyclic widths)))))
 
 ;; FIXME: handle large gaps and overlapping lines
@@ -53,7 +59,7 @@
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 0.5}
+             :stroke-width 0.8}
             (for [[i shape] (map-indexed vector (shapes))]
               (vary-meta shape assoc :key (str "l" i)
                          :stroke-width (:width shape)))))
