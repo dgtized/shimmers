@@ -7,6 +7,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
@@ -48,6 +49,9 @@
 (defn shapes []
   (let [margin 24
         bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
+        theta (dr/random 0.1 0.7)
+        point (g/random-point-inside (g/scale-size bounds 0.7))
+        circle (gc/circle point (* height 0.08))
         gaps (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
                                                  #(dr/random-int 14 30) 1.0}))))
         lengths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
@@ -58,7 +62,7 @@
         w0 (int (/ (apply max widths) 1.5))
         spacings (repeatedly 11 #(dr/random-int w0 (int (* 1.8 w0))))]
     ;; TODO get rid of 0,120 constants?
-    (->> (clip/variable-hatching bounds (dr/random 0.1 0.7) 0 120 (dr/cyclic spacings)
+    (->> (clip/variable-hatching bounds theta 0 120 (dr/cyclic spacings)
                                  (dr/cyclic widths))
          (mapcat (partial poly-divide (dr/cyclic gaps) (dr/cyclic lengths)))
          (map-indexed (fn [i poly]
@@ -66,7 +70,8 @@
                               (g/scale-size poly (/ 1 tm/PHI))
                               (zero? (mod i 19))
                               (g/scale-size poly 0.5)
-                              :else poly))))))
+                              :else poly)))
+         (remove (fn [poly] (some? (some #(g/contains-point? circle %) (g/vertices poly))))))))
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
