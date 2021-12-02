@@ -15,6 +15,16 @@
 (def width 800)
 (def height 600)
 
+(defn perturb [pattern]
+  (let [sorted (sort pattern)
+        lower (take 3 sorted)
+        upper (take-last 3 sorted)]
+    (dr/shuffle (concat lower
+                        (map (partial * tm/PHI) lower)
+                        (dr/random-sample 0.8 sorted)
+                        (map (partial * (/ 1 tm/PHI)) upper)
+                        upper))))
+
 (defn poly-divide [gap-cycle len-cycle line]
   (let [{[p q] :points width :width} line
         dist (g/dist p q)
@@ -38,13 +48,13 @@
 (defn shapes []
   (let [margin 24
         bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
-        gaps (repeatedly 17 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
+        gaps (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
                                                  #(dr/random-int 14 30) 1.0}))))
-        lengths (repeatedly 13 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
-                                                    #(dr/random-int 40 60) 1.0}))))
-        widths (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 3 6) 1.0
-                                                   #(dr/random-int 6 12) 4.0
-                                                   #(dr/random-int 12 18) 2.0}))))
+        lengths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
+                                                             #(dr/random-int 40 60) 1.0})))))
+        widths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 3 6) 1.0
+                                                            #(dr/random-int 6 12) 4.0
+                                                            #(dr/random-int 12 18) 2.0})))))
         w0 (int (/ (apply max widths) 1.5))
         spacings (repeatedly 11 #(dr/random-int w0 (int (* 1.8 w0))))]
     ;; TODO get rid of 0,120 constants?
