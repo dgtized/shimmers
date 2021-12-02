@@ -51,7 +51,7 @@
         bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
         theta (dr/random 0.1 0.7)
         point (g/random-point-inside (g/scale-size bounds 0.7))
-        circle (gc/circle point (* height 0.08))
+        circle (gc/circle point (* height (dr/random 0.05 0.12)))
         gaps (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
                                                  #(dr/random-int 14 30) 1.0}))))
         lengths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
@@ -71,7 +71,10 @@
                               (zero? (mod i 19))
                               (g/scale-size poly 0.5)
                               :else poly)))
-         (remove (fn [poly] (some? (some #(g/contains-point? circle %) (g/vertices poly))))))))
+         (map (fn [poly]
+                (if (some #(g/contains-point? circle %) (g/vertices poly))
+                  (vary-meta poly assoc :fill "black")
+                  poly))))))
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
