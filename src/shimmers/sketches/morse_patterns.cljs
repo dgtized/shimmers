@@ -11,6 +11,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (def width 800)
@@ -50,7 +51,7 @@
   (let [margin 24
         bounds (rect/rect (- margin) (- margin) (+ width (* 2 margin)) (+ height (* 2 margin)))
         theta (dr/random 0.1 0.7)
-        point (g/random-point-inside (g/scale-size bounds 0.7))
+        point (g/unmap-point (g/scale-size bounds 0.7) (gv/vec2 (dr/random) (dr/random)))
         circle (gc/circle point (* height (dr/random 0.05 0.12)))
         gaps (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
                                                  #(dr/random-int 14 30) 1.0}))))
