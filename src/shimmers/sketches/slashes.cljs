@@ -6,12 +6,11 @@
             [shimmers.common.quil :as cq]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1 1))
+  (let [bounds (cq/screen-rect)
         hatch (partial clip/variable-hatching bounds)]
     {:slashes
      (concat (hatch (tm/random 5.0 6.0) 0
