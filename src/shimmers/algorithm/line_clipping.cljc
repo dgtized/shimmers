@@ -180,3 +180,6 @@
 
 ;; Algorithm for arbitrary polygons?
 ;; http://alienryderflex.com/polygon_hatchline_fill/
+;;
+;; Not sure if same algorithm, but might work to just find bounds, hatch that
+;; bounds, and then do a ray-intersection check and clip using each line?
