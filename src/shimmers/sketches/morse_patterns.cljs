@@ -53,15 +53,18 @@
         theta (dr/random 0.1 0.7)
         point (g/unmap-point (g/scale-size bounds 0.7) (gv/vec2 (dr/random) (dr/random)))
         circle (gc/circle point (* height (dr/random 0.05 0.12)))
-        gaps (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
-                                                 #(dr/random-int 14 30) 1.0}))))
-        lengths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 20 40) 3.0
-                                                             #(dr/random-int 40 60) 1.0})))))
-        widths (perturb (repeatedly 19 (fn [] ((dr/weighted {#(dr/random-int 3 6) 1.0
-                                                            #(dr/random-int 6 12) 4.0
-                                                            #(dr/random-int 12 18) 2.0})))))
-        w0 (int (/ (apply max widths) 1.5))
-        spacings (repeatedly 11 #(dr/random-int w0 (int (* 1.8 w0))))]
+        gaps (repeatedly 7 (fn [] ((dr/weighted {#(dr/random-int 4 10) 4.0
+                                                #(dr/random-int 14 30) 1.0}))))
+        lengths (perturb (repeatedly 17 (fn [] ((dr/weighted {#(dr/random-int 20 40) 8.0
+                                                             #(dr/random-int 40 60) 2.0
+                                                             #(dr/random-int 60 80) 1.0})))))
+        widths (perturb (repeatedly 11 (fn [] ((dr/weighted {#(dr/random-int 2 6) 2.0
+                                                            #(dr/random-int 4 8) 6.0
+                                                            #(dr/random-int 8 12) 2.0
+                                                            #(dr/random-int 10 16) 1.0
+                                                            #(dr/random-int 12 18) 1.0})))))
+        w0 (int (* (apply max widths) 0.75))
+        spacings (repeatedly 7 #(dr/random-int w0 (int (* 1.5 w0))))]
     ;; TODO get rid of 0,120 constants?
     (->> (clip/variable-hatching bounds theta 0 120 (dr/cyclic spacings)
                                  (dr/cyclic widths))
