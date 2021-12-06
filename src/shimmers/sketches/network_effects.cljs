@@ -2,12 +2,14 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.math.core :as tm]))
 
 (defn neighbors [from nodes]
@@ -57,20 +59,33 @@
 
 (defn update-state [{:keys [bounds nodes connections] :as state}]
   (let [nodes' (clamped bounds (force-directed nodes connections (cq/rel-h 0.25)))
-        conns (neighborhood 3 nodes')]
+        conns (neighborhood 3 nodes')
+        polygons (->> conns
+                      (mapv :points)
+                      poly-detect/edges->graph
+                      poly-detect/simple-polygons)]
     (assoc state
            :nodes nodes'
-           :connections conns)))
+           :connections conns
+           :polygons polygons)))
 
-(defn draw [{:keys [nodes connections]}]
+(defn draw [{:keys [bounds nodes connections polygons]}]
   (q/background 1.0 0.2)
   (q/stroke-weight 0.5)
+  (q/stroke 0 0.5)
   (q/no-fill)
   (doseq [n nodes]
     (cq/circle n 3.0))
 
   (doseq [{[p q] :points} connections]
-    (q/line p q)))
+    (q/line p q))
+
+  (q/no-stroke)
+  (q/fill 0 0.01)
+  (doseq [shape polygons
+          :let [poly (gp/inset-polygon shape -5.0)]]
+    (when (every? #(g/contains-point? bounds %) poly)
+      (cq/draw-shape poly))))
 
 (sketch/defquil network-effects
   :created-at "2021-12-05"
