@@ -22,6 +22,7 @@
                     #{:intersect}))
         lines))
 
+;; TODO: weight edges by how many frames they persist?
 (defn neighborhood [n nodes]
   (reduce (fn [conns node]
             (->> nodes
@@ -48,6 +49,7 @@
                 forces (map (partial force-on node) surroundings)]]
       (tm/mix node (reduce tm/+ node forces) 0.25))))
 
+;; TODO: draw ping points along edges
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [screen (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
