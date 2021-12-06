@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
@@ -26,7 +27,8 @@
                                      (let [d (g/dist node n)]
                                        (tm/* (tm/- node n) (/ 9.8 (* d d)))))
                                    neighborhood))]]
-    (tm/mix node average 0.1)))
+    (v/clamp-bounds (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
+                    (tm/mix node average 0.2))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
