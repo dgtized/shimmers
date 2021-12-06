@@ -34,17 +34,18 @@
 (defn clamped [bounds nodes]
   (mapv (partial v/clamp-bounds bounds) nodes))
 
-(defn force-push [nodes connections]
-  (let [conns (group-by (comp first :points) connections)]
+(defn force-directed [nodes connections ideal-dist]
+  (let [conns (group-by (comp first :points) connections)
+        force-on (fn [node neighbor]
+                   (let [dist (g/dist node neighbor)
+                         dv (tm/- node neighbor)
+                         spring (* 0.1 (- ideal-dist dist))]
+                     (tm/+ (tm/* dv (/ 1.0 (* dist dist)))
+                           (tm/* dv (/ spring dist)))))]
     (for [node nodes
           :let [surroundings (map (comp second :points) (get conns node))
-                average (reduce tm/+
-                                node
-                                (map (fn [n]
-                                       (let [d (g/dist node n)]
-                                         (tm/* (tm/- node n) (/ 9.8 (* d d)))))
-                                     surroundings))]]
-      (tm/mix node average 0.2))))
+                forces (map (partial force-on node) surroundings)]]
+      (tm/mix node (reduce tm/+ node forces) 0.1))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -56,14 +57,14 @@
      :pings []}))
 
 (defn update-state [{:keys [bounds nodes connections] :as state}]
-  (let [nodes' (clamped bounds (force-push nodes connections))
+  (let [nodes' (clamped bounds (force-directed nodes connections (cq/rel-h 0.25)))
         conns (neighborhood 3 nodes')]
     (assoc state
            :nodes nodes'
            :connections conns)))
 
 (defn draw [{:keys [nodes connections]}]
-  (q/background 1.0 0.05)
+  (q/background 1.0 0.2)
   (q/stroke-weight 0.5)
   (q/no-fill)
   (doseq [n nodes]
