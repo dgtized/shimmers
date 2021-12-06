@@ -38,14 +38,13 @@
   (let [conns (group-by (comp first :points) connections)
         force-on (fn [node neighbor]
                    (let [dist (g/dist node neighbor)
-                         dv (tm/- node neighbor)
-                         spring (* 0.1 (- ideal-dist dist))]
-                     (tm/+ (tm/* dv (/ 1.0 (* dist dist)))
-                           (tm/* dv (/ spring dist)))))]
+                         spring (* 0.01 (- ideal-dist dist))]
+                     (tm/* (tm/- node neighbor)
+                           (/ spring dist))))]
     (for [node nodes
           :let [surroundings (map (comp second :points) (get conns node))
                 forces (map (partial force-on node) surroundings)]]
-      (tm/mix node (reduce tm/+ node forces) 0.1))))
+      (tm/mix node (reduce tm/+ node forces) 0.25))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
