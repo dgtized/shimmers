@@ -31,6 +31,9 @@
           []
           nodes))
 
+(defn clamped [bounds nodes]
+  (mapv (partial v/clamp-bounds bounds) nodes))
+
 (defn force-push [nodes connections]
   (let [conns (group-by (comp first :points) connections)]
     (for [node nodes
@@ -41,19 +44,19 @@
                                        (let [d (g/dist node n)]
                                          (tm/* (tm/- node n) (/ 9.8 (* d d)))))
                                      surroundings))]]
-      (v/clamp-bounds (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
-                      (tm/mix node average 0.2)))))
+      (tm/mix node average 0.2))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [screen (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
         nodes (repeatedly 16 #(g/random-point-inside screen))]
-    {:nodes nodes
+    {:bounds screen
+     :nodes nodes
      :connections (neighborhood 3 nodes)
      :pings []}))
 
-(defn update-state [{:keys [nodes connections] :as state}]
-  (let [nodes' (force-push nodes connections)
+(defn update-state [{:keys [bounds nodes connections] :as state}]
+  (let [nodes' (clamped bounds (force-push nodes connections))
         conns (neighborhood 3 nodes')]
     (assoc state
            :nodes nodes'
