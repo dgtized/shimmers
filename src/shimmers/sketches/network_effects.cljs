@@ -31,17 +31,18 @@
           []
           nodes))
 
-(defn force-push [n nodes]
-  (for [node nodes
-        :let [surroundings (take n (neighbors node nodes))
-              average (reduce tm/+
-                              node
-                              (map (fn [n]
-                                     (let [d (g/dist node n)]
-                                       (tm/* (tm/- node n) (/ 9.8 (* d d)))))
-                                   surroundings))]]
-    (v/clamp-bounds (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
-                    (tm/mix node average 0.2))))
+(defn force-push [nodes connections]
+  (let [conns (group-by (comp first :points) connections)]
+    (for [node nodes
+          :let [surroundings (map (comp second :points) (get conns node))
+                average (reduce tm/+
+                                node
+                                (map (fn [n]
+                                       (let [d (g/dist node n)]
+                                         (tm/* (tm/- node n) (/ 9.8 (* d d)))))
+                                     surroundings))]]
+      (v/clamp-bounds (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
+                      (tm/mix node average 0.2)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -51,11 +52,12 @@
      :connections (neighborhood 3 nodes)
      :pings []}))
 
-(defn update-state [{:keys [nodes] :as state}]
-  (let [nodes' (force-push 3 nodes)]
+(defn update-state [{:keys [nodes connections] :as state}]
+  (let [nodes' (force-push nodes connections)
+        conns (neighborhood 3 nodes')]
     (assoc state
            :nodes nodes'
-           :connections (neighborhood 3 nodes'))))
+           :connections conns)))
 
 (defn draw [{:keys [nodes connections]}]
   (q/background 1.0 0.05)
