@@ -50,7 +50,7 @@
          (mapv #(tm/* % scale)))))
 
 (defn clothoid-circle-at-end [points]
-  (let [{:keys [A L phi0 clockwise from scale]} @ui-state
+  (let [{:keys [A L clockwise from scale]} @ui-state
         tangent-point (if from (first points) (last points))
         ;; not working, maybe precision errors as it looks right L<20 ish?
         ;; tangent-angle (mod (eq/clothoid-tangent A (if clockwise 1 -1) L phi0) eq/TAU)

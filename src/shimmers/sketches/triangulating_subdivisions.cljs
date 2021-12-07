@@ -1,17 +1,17 @@
 (ns shimmers.sketches.triangulating-subdivisions
   "Playing with concepts from
   https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.math.probability :as p]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.math.core :as tm]))
 
 (defn new-color []
   [(q/random 1) 0.75 0.85 0.5])

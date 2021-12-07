@@ -3,7 +3,6 @@
   (:require
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defprotocol IGroup
