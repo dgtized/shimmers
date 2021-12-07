@@ -8,6 +8,7 @@
 
 ;; Test helper
 
+;; TODO: consider using https://clojuredocs.org/clojure.test/assert-expr
 (defn line-delta=
   ([l1 l2] (line-delta= l1 l2 1e-4))
   ([{[p1 q1] :points} {[p2 q2] :points} eps]
