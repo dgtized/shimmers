@@ -1,6 +1,6 @@
 ;; https://cjohansen.no/tools-deps-figwheel-main-devcards-emacs/ was very
 ;; helpful for dev setup
-{:deps {org.clojure/clojurescript {:mvn/version "1.10.893"}
+{:deps {org.clojure/clojurescript {:mvn/version "1.10.896"}
         ;; p5 is excluded so that the latest version can be provided through npm
         quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
 
@@ -15,7 +15,7 @@
         kixi/stats {:mvn/version "0.5.4"}
 
         ;; Helper libraries
-        org.clojure/core.async {:mvn/version "1.5.640"}
+        org.clojure/core.async {:mvn/version "1.5.644"}
         org.clojure/core.logic {:mvn/version "1.0.0"}
         org.clojure/core.match {:mvn/version "1.0.0"}
         org.clojure/math.combinatorics {:mvn/version "0.1.6"}
@@ -56,12 +56,12 @@
 
   ;; clj -Mclj-kondo --lint src
   :clj-kondo
-  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.10.19"}}
+  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.12.01"}}
    :main-opts ["-m" "clj-kondo.main"]}
 
   :test
   {:extra-paths ["test"]
-   :extra-deps {org.clojure/test.check {:mvn/version "1.1.0"}
+   :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
                 lambdaisland/kaocha {:mvn/version "1.60.945"}
                 com.lambdaisland/kaocha-cljs {:mvn/version "1.0.113"}}}}}
 
