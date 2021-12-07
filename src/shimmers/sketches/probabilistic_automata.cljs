@@ -1,6 +1,5 @@
 (ns shimmers.sketches.probabilistic-automata
   (:require [cljs.core.match :refer-macros [match]]
-            [goog.string.format]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.automata.programs :as programs]
@@ -9,6 +8,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :refer [weighted]]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.string :as scs]
             [shimmers.math.color :as color]
             [shimmers.sketch :as sketch :include-macros true]))
 
@@ -100,7 +100,7 @@
   (let [[op argument] instruction
         arg (if (vector? argument)
               (print-str argument)
-              (goog.string/format "%.1f" argument))]
+              (scs/format "%.1f" argument))]
     (case op
       :one-of
       (print-str [:one-of (->> argument
