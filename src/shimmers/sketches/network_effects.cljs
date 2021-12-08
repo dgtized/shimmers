@@ -39,6 +39,10 @@
 (defn clamped [bounds nodes]
   (mapv (partial v/clamp-bounds bounds) nodes))
 
+(defn index-nodes [nodes]
+  (let [node->id (zipmap nodes (range (count nodes)))]
+    [node->id (set/map-invert node->id)]))
+
 (defn weighted-affinities [id->node affinities node-id]
   (reduce (fn [acc [_ dest weight]]
             (assoc acc (id->node dest) weight))
@@ -46,8 +50,7 @@
           (filter #(= (first %) node-id) affinities)))
 
 (defn force-directed [nodes connections ideal-dist affinities]
-  (let [node->id (zipmap nodes (range (count nodes)))
-        id->node (set/map-invert node->id)
+  (let [[node->id id->node] (index-nodes nodes)
         conns (group-by (comp first :points) connections)
         force-on (fn [node weights neighbor]
                    (let [dist (g/dist node neighbor)
@@ -92,7 +95,7 @@
            :connections conns
            :polygons polygons)))
 
-(defn draw [{:keys [bounds nodes connections polygons]}]
+(defn draw [{:keys [bounds nodes affinities connections polygons]}]
   (q/background 1.0 0.2)
   (q/stroke-weight 0.5)
   (q/stroke 0 0.5)
@@ -100,8 +103,20 @@
   (doseq [n nodes]
     (cq/circle n 3.0))
 
-  (doseq [{[p q] :points} connections]
-    (q/line p q))
+  (let [[node->id _] (index-nodes nodes)]
+    (doseq [{[p q] :points} connections
+            :let [p-id (node->id p)
+                  q-id (node->id q)]]
+      (if-let [weight (some (fn [[a b w]]
+                              (when (or (and (= a p-id) (= b q-id))
+                                        (and (= b p-id) (= a q-id)))
+                                w))
+                            affinities)]
+        (do (q/stroke-weight (* 3 weight))
+            (q/stroke 0 0.5 0.5 0.5))
+        (do (q/stroke-weight 0.5)
+            (q/stroke 0 0.5)))
+      (q/line p q)))
 
   (q/no-stroke)
   (q/fill 0 0.01)
