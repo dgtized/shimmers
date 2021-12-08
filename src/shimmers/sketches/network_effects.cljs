@@ -49,13 +49,16 @@
           {}
           (filter #(= (first %) node-id) affinities)))
 
-(defn force-directed [nodes connections ideal-dist affinities]
+(defn ideal-dist [weight]
+  (* (cq/rel-h 0.25)
+     (if weight (+ 0.5 weight) 1.0)))
+
+(defn force-directed [nodes connections affinities]
   (let [[node->id id->node] (index-nodes nodes)
         conns (group-by (comp first :points) connections)
         force-on (fn [node weights neighbor]
                    (let [dist (g/dist node neighbor)
-                         expected (* ideal-dist (+ 0.5 (get weights neighbor 0.5)))
-                         spring (* 0.01 (- expected dist))]
+                         spring (* 0.01 (- (ideal-dist (get weights neighbor)) dist))]
                      (tm/* (tm/- node neighbor)
                            (/ spring dist))))]
     (for [node nodes
@@ -84,7 +87,7 @@
      :pings []}))
 
 (defn update-state [{:keys [bounds nodes connections affinities] :as state}]
-  (let [nodes' (clamped bounds (force-directed nodes connections (cq/rel-h 0.25) affinities))
+  (let [nodes' (clamped bounds (force-directed nodes connections affinities))
         conns (neighborhood 3 nodes')
         polygons (->> conns
                       (mapv :points)
@@ -112,10 +115,10 @@
                                         (and (= b p-id) (= a q-id)))
                                 w))
                             affinities)]
-        (do (q/stroke-weight (* 3 weight))
-            (q/stroke 0 0.5 0.5 0.5))
-        (do (q/stroke-weight 0.5)
-            (q/stroke 0 0.5)))
+        (let [dist (g/dist p q)
+              hue (if (< dist (ideal-dist weight)) 0.0 0.3)]
+          (q/stroke hue 0.5 0.5 0.5))
+        (q/stroke 0 0.5))
       (q/line p q)))
 
   (q/no-stroke)
