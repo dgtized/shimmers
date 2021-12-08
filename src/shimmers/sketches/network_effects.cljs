@@ -1,10 +1,12 @@
 (ns shimmers.sketches.network-effects
   (:require
+   [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -37,30 +39,49 @@
 (defn clamped [bounds nodes]
   (mapv (partial v/clamp-bounds bounds) nodes))
 
-(defn force-directed [nodes connections ideal-dist]
-  (let [conns (group-by (comp first :points) connections)
-        force-on (fn [node neighbor]
+(defn weighted-affinities [id->node affinities node-id]
+  (reduce (fn [acc [_ dest weight]]
+            (assoc acc (id->node dest) weight))
+          {}
+          (filter #(= (first %) node-id) affinities)))
+
+(defn force-directed [nodes connections ideal-dist affinities]
+  (let [node->id (zipmap nodes (range (count nodes)))
+        id->node (set/map-invert node->id)
+        conns (group-by (comp first :points) connections)
+        force-on (fn [node weights neighbor]
                    (let [dist (g/dist node neighbor)
-                         spring (* 0.01 (- ideal-dist dist))]
+                         expected (* ideal-dist (+ 0.5 (get weights neighbor 0.5)))
+                         spring (* 0.01 (- expected dist))]
                      (tm/* (tm/- node neighbor)
                            (/ spring dist))))]
     (for [node nodes
           :let [surroundings (map (comp second :points) (get conns node))
-                forces (map (partial force-on node) surroundings)]]
+                weights (weighted-affinities id->node affinities (node->id node))
+                forces (map (partial force-on node weights) surroundings)]]
       (tm/mix node (reduce tm/+ node forces) 0.25))))
+
+(defn gen-pair [n]
+  (let [a (dr/random-int n)
+        b (dr/random-int n)]
+    (if (not= a b)
+      [a b (dr/random-double)]
+      (gen-pair n))))
 
 ;; TODO: draw ping points along edges
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [screen (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))
-        nodes (repeatedly 16 #(g/random-point-inside screen))]
+        nodes (repeatedly 16 #(g/random-point-inside screen))
+        affinities (repeatedly 32 #(gen-pair (count nodes)))]
     {:bounds screen
+     :affinities affinities
      :nodes nodes
      :connections (neighborhood 3 nodes)
      :pings []}))
 
-(defn update-state [{:keys [bounds nodes connections] :as state}]
-  (let [nodes' (clamped bounds (force-directed nodes connections (cq/rel-h 0.25)))
+(defn update-state [{:keys [bounds nodes connections affinities] :as state}]
+  (let [nodes' (clamped bounds (force-directed nodes connections (cq/rel-h 0.25) affinities))
         conns (neighborhood 3 nodes')
         polygons (->> conns
                       (mapv :points)
