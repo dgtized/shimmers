@@ -161,7 +161,7 @@
                       156 2
                       256 1}]
     {:shapes (->> (repeatedly (dr/weighted screen-sizes) random-shape)
-                  (gg/tile-grid (rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.95))))}))
+                  (gg/tile-grid (cq/screen-rect 0.9)))}))
 
 (defn update-state [state]
   state)

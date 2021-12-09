@@ -9,7 +9,6 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn poisson-disc-init [bounds r k n]
@@ -66,8 +65,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [radius samples]} @ui-state]
-    (poisson-disc-init (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
-                       radius samples 10)))
+    (poisson-disc-init (cq/screen-rect 0.8) radius samples 10)))
 
 (defn update-state [state]
   (poisson-disc-fill state))

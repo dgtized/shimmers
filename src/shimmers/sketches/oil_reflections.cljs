@@ -11,12 +11,11 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:bounds (rect/rect (cq/rel-pos 0.1 0.1) (cq/rel-pos 0.9 0.9))
+  {:bounds (cq/screen-rect 0.8)
    :circles []})
 
 (defn remove-middle [hatches n]

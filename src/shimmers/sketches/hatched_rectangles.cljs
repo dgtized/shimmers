@@ -5,13 +5,13 @@
             [shimmers.algorithm.line-clipping :as clip]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.sequence :as cs]
+            [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]
-            [shimmers.math.probability :as p]
-            [shimmers.common.sequence :as cs]))
+            [thi.ng.math.core :as tm]))
 
 (defn nearby [rect rectangles]
   (let [center-x (:x (g/centroid rect))
@@ -82,8 +82,7 @@
     {:cycles (inc (int (/ (* sides sides) 100)))
      :rectangles (cs/iterate-cycles depth
                                     (fn [rs] (combine-with rs 0.3))
-                                    (-> (rect/rect (cq/rel-pos 0 0) (cq/rel-pos 1.0 1.0))
-                                        (g/subdivide {:num sides})))
+                                    (g/subdivide (cq/screen-rect) {:num sides}))
      :angle (if (= angle :random)
               #(tm/random 0 tm/TWO_PI)
               (fn [r] (noise-angle r angle)))

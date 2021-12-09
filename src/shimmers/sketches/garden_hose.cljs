@@ -9,7 +9,6 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]))
 
 (defn next-point [bounds variance {:keys [angle length] :as segment}]
@@ -70,7 +69,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
+  (let [bounds (cq/screen-rect 0.8)]
     {:start (cq/rel-vec 0.5 0.15)
      :bounds bounds
      :hose (make-hose 2048 (chain/->KinematicSegment (cq/rel-vec 0.5 0.5) tm/HALF_PI 8)
