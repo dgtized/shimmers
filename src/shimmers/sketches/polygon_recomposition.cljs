@@ -23,7 +23,7 @@
 
 (defn setup []
   (q/color-mode :rgb 1.0)
-  (let [shape (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))]
+  (let [shape (cq/screen-rect 0.8)]
     {:shape shape
      :points (repeatedly 64 #(g/random-point-inside shape))
      :hull nil

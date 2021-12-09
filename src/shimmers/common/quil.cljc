@@ -25,7 +25,8 @@
   "A rectangle proportional to the size of the current quil canvas."
   ([] (screen-rect 1.0))
   ([scale]
-   (g/scale-size (rect/rect 0 0 (q/width) (q/height)) scale)))
+   (-> (rect/rect 0 0 (q/width) (q/height))
+       (g/scale-size scale))))
 
 (defn plot [shape points]
   (doseq [p points]
