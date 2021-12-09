@@ -44,6 +44,7 @@
 
 ;; https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
 ;; TODO: atkinson dithering from https://beyondloom.com/blog/dither.html
+;; TODO: GPU assisted dithering: http://alex-charlton.com/posts/Dithering_on_the_GPU/
 (defn dither [capture width height]
   (let [image (q/create-image width height)
         source (q/pixels capture)

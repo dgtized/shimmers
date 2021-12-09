@@ -9,6 +9,9 @@
             [thi.ng.math.core :as tm]
             [thi.ng.ndarray.core :as nd]))
 
+;; other reading:
+;; https://shahriyarshahrabi.medium.com/gentle-introduction-to-fluid-simulation-for-programmers-and-technical-artists-7c0045c40bac
+
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
 ;; https://www.math.nyu.edu/~billbao/report930.pdf
 (def directions

@@ -8,6 +8,8 @@
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
+;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
+
 (defn setup []
   (q/frame-rate 30)
   {:theta 0.0})
