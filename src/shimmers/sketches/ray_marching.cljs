@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
-            [shimmers.math.geometry :as geometry]
+            [shimmers.math.geometry.intersection :as isec]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.math.core :as tm]))
 
@@ -40,7 +40,7 @@
   ;; FIXME: slow, this is all pairs
   (->> segments
        ;; FIXME: why does segment-intersect order matter?
-       (keep (fn [segment] (geometry/segment-intersect segment ray)))
+       (keep (fn [segment] (isec/segment-intersect segment ray)))
        (sort-by (fn [[sx sy]]
                   (let [[x y] (first ray)]
                     (q/dist x y sx sy))))
