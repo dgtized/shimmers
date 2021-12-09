@@ -112,6 +112,7 @@
             shimmers.sketches.slashes
             shimmers.sketches.slow-zone
             shimmers.sketches.space-colonization
+            shimmers.sketches.spaces-divided
             shimmers.sketches.sphere
             shimmers.sketches.spiral-distance
             shimmers.sketches.square-packing
