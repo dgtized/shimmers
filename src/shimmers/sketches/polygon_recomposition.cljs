@@ -9,7 +9,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.delaunay :as delaunay]
    [thi.ng.geom.vector :as gv]
@@ -24,7 +23,7 @@
 
 (defn setup []
   (q/color-mode :rgb 1.0)
-  (let [shape (rect/rect (cq/rel-vec 0.1 0.1) (cq/rel-vec 0.9 0.9))]
+  (let [shape (g/center (cq/screen-rect 0.8) (cq/rel-vec 0.5 0.5))]
     {:shape shape
      :points (repeatedly 64 #(g/random-point-inside shape))
      :hull nil
