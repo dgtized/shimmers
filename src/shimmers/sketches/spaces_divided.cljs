@@ -59,8 +59,8 @@
     {:bounds bounds
      :lines (repeatedly 6 (gen-line bounds))}))
 
-(defn update-state [{:keys [lines] :as state}]
-  (let [isecs (line-intersections lines)]
+(defn update-state [{:keys [lines bounds] :as state}]
+  (let [isecs (line-intersections (into lines (map gl/line2 (g/edges bounds))))]
     (assoc state
            :intersections isecs
            :edges (intersections->edges isecs))))
@@ -72,16 +72,17 @@
   (swap! defo assoc :isecs (map first intersections)
          :edges edges)
 
-  (doseq [{[p q] :points} lines]
-    (q/line p q))
+  ;; (doseq [{[p q] :points} lines]
+  ;;   (q/line p q))
 
-  (doseq [p (map first intersections)]
-    (cq/circle p 3.0))
+  ;; (doseq [p (map first intersections)]
+  ;;   (cq/circle p 3.0))
 
-  (q/stroke-weight 1.5)
-  (doseq [[p q] edges]
-    (q/line p q))
+  ;; (q/stroke-weight 1.5)
+  ;; (doseq [[p q] edges]
+  ;;   (q/line p q))
 
+  ;; either inset or polygon detection is occasionally tossing in weird outputs
   (q/stroke-weight 0.5)
   (doseq [poly (-> edges
                    poly-detect/edges->graph
