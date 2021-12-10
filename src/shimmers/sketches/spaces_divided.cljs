@@ -69,8 +69,8 @@
   (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/stroke-weight 0.5)
-  (swap! defo assoc :isecs (map first intersections)
-         :edges edges)
+  ;; (swap! defo assoc :isecs (map first intersections)
+  ;;        :edges edges)
 
   ;; (doseq [{[p q] :points} lines]
   ;;   (q/line p q))
@@ -84,10 +84,13 @@
 
   ;; either inset or polygon detection is occasionally tossing in weird outputs
   (q/stroke-weight 0.5)
-  (doseq [poly (-> edges
-                   poly-detect/edges->graph
-                   poly-detect/simple-polygons)]
-    (cq/draw-shape (gp/inset-polygon poly -5.0))))
+  (let [polygons (->> edges
+                      poly-detect/edges->graph
+                      poly-detect/simple-polygons
+                      (map (fn [p] (gp/inset-polygon p -5.0))))]
+    (swap! defo assoc :polygons (mapv (fn [p] [p (g/area (gp/polygon2 p))]) polygons))
+    (doseq [poly polygons]
+      (cq/draw-shape poly))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
