@@ -10,7 +10,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [clojure.set :as set]))
 
 (defonce defo (debug/state))
 
@@ -24,12 +25,31 @@
 (defn isec-point [l1 l2]
   (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
     (when (= type :intersect)
-      (:p hit))))
+      [(:p hit) #{l1 l2}])))
 
 (defn line-intersections [lines]
   (remove nil?
           (for [[a b] (cs/all-pairs lines)]
             (isec-point a b))))
+
+(defn vertices-per-isec
+  "Calculate the set of vertices for each line from the intersections."
+  [intersections]
+  (->> (for [[p lines] intersections
+             line lines]
+         {line #{p}})
+       (apply (partial merge-with set/union))))
+
+(defn intersections->edges [isecs]
+  (apply set/union
+         (for [[{[a b] :points} vertices] (vertices-per-isec isecs)]
+           (let [ordered (sort-by (fn [p] (g/dist a p)) (conj vertices a b))]
+             (->> ordered
+                  dedupe ;; sometimes a or b is already in points
+                  (partition 2 1)
+                  ;; ensure edges are always low pt -> high pt
+                  (map (fn [v] (sort v)))
+                  set)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -38,17 +58,27 @@
      :lines (repeatedly 6 (gen-line bounds))}))
 
 (defn update-state [{:keys [lines] :as state}]
-  (assoc state :intersections (line-intersections lines)))
+  (let [isecs (line-intersections lines)]
+    (assoc state
+           :intersections isecs
+           :edges (intersections->edges isecs))))
 
-(defn draw [{:keys [lines intersections]}]
+(defn draw [{:keys [lines intersections edges]}]
   (q/ellipse-mode :radius)
   (q/background 1.0)
+  (q/stroke-weight 0.5)
+  (swap! defo assoc :isecs (map first intersections)
+         :edges edges)
+
   (doseq [{[p q] :points} lines]
     (q/line p q))
 
-  (swap! defo assoc :isecs intersections)
-  (doseq [p intersections]
-    (cq/circle p 3.0)))
+  (doseq [p (map first intersections)]
+    (cq/circle p 3.0))
+
+  (q/stroke-weight 1.5)
+  (doseq [[p q] edges]
+    (q/line p q)))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
