@@ -13,6 +13,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
@@ -55,17 +56,20 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect)]
+  (let [bounds (cq/screen-rect 0.9)]
     {:bounds bounds
+     :mouse (gv/vec2)
      :lines (repeatedly 6 (gen-line bounds))}))
 
 (defn update-state [{:keys [lines bounds] :as state}]
   (let [isecs (line-intersections (into lines (map gl/line2 (g/edges bounds))))]
     (assoc state
+           :mouse (cq/mouse-position)
            :intersections isecs
            :edges (intersections->edges isecs))))
 
-(defn draw [{:keys [lines intersections edges]}]
+(defn draw [{:keys [mouse lines intersections edges]}]
+  (reset! defo {})
   (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/stroke-weight 0.5)
@@ -86,11 +90,19 @@
   (q/stroke-weight 0.5)
   (let [polygons (->> edges
                       poly-detect/edges->graph
-                      poly-detect/simple-polygons
-                      (map (fn [p] (gp/inset-polygon p -5.0))))]
-    (swap! defo assoc :polygons (mapv (fn [p] [p (g/area (gp/polygon2 p))]) polygons))
-    (doseq [poly polygons]
-      (cq/draw-shape poly))))
+                      poly-detect/simple-polygons)
+        shapes (->> (for [poly polygons
+                          :let [inset (gp/inset-polygon poly -6.0)]]
+                      (cond (> (g/area (gp/polygon2 inset)) 1000)
+                            inset
+                            (> (g/area (gp/polygon2 poly)) 50)
+                            poly
+                            :else nil))
+                    (remove nil?))]
+    (when-let [shape (filter (fn [s] (g/contains-point? (gp/polygon2 s) mouse)) shapes)]
+      (swap! defo assoc :polygon shape))
+    (doseq [s shapes]
+      (cq/draw-shape s))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
