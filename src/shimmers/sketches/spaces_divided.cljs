@@ -68,6 +68,12 @@
            :intersections isecs
            :edges (intersections->edges isecs))))
 
+(defn draw-inset [shape]
+  (let [inset (gp/inset-polygon shape -4)
+        area (g/area (gp/polygon2 inset))]
+    (when (> area 2000)
+      (cq/draw-shape inset))))
+
 (defn draw [{:keys [mouse lines intersections edges]}]
   (reset! defo {})
   (q/ellipse-mode :radius)
@@ -87,6 +93,7 @@
   ;;   (q/line p q))
 
   ;; either inset or polygon detection is occasionally tossing in weird outputs
+  ;; sometimes inset polygons self-intersect, so need to cut that part out
   (q/stroke-weight 0.5)
   (let [polygons (->> edges
                       poly-detect/edges->graph
@@ -106,7 +113,10 @@
            :n-polys (count shapes)
            :sizes (sort (mapv (comp int g/area gp/polygon2) shapes)))
     (doseq [s shapes]
-      (cq/draw-shape s))))
+      (cq/draw-shape s))
+
+    (doseq [s shapes]
+      (draw-inset s))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
