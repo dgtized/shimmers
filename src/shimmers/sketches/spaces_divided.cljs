@@ -1,7 +1,9 @@
 (ns shimmers.sketches.spaces-divided
   (:require
+   [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
@@ -10,8 +12,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.math.core :as tm]
-   [clojure.set :as set]))
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 
@@ -78,7 +80,13 @@
 
   (q/stroke-weight 1.5)
   (doseq [[p q] edges]
-    (q/line p q)))
+    (q/line p q))
+
+  (q/stroke-weight 0.5)
+  (doseq [poly (-> edges
+                   poly-detect/edges->graph
+                   poly-detect/simple-polygons)]
+    (cq/draw-shape (gp/inset-polygon poly -5.0))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
