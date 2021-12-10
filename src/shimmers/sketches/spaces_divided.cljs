@@ -5,11 +5,14 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn gen-line [bounds]
   (fn []
@@ -24,8 +27,9 @@
       (:p hit))))
 
 (defn line-intersections [lines]
-  (for [[a b] (cs/all-pairs lines)]
-    (isec-point a b)))
+  (remove nil?
+          (for [[a b] (cs/all-pairs lines)]
+            (isec-point a b))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -42,12 +46,14 @@
   (doseq [{[p q] :points} lines]
     (q/line p q))
 
+  (swap! defo assoc :isecs intersections)
   (doseq [p intersections]
     (cq/circle p 3.0)))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
   :size [800 600]
+  :on-mount #(debug/mount defo)
   :setup setup
   :update update-state
   :draw draw
