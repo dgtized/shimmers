@@ -99,8 +99,12 @@
                             poly
                             :else nil))
                     (remove nil?))]
-    (when-let [shape (filter (fn [s] (g/contains-point? (gp/polygon2 s) mouse)) shapes)]
-      (swap! defo assoc :polygon shape))
+    (when-let [shape (first (filter (fn [s] (g/contains-point? (gp/polygon2 s) mouse)) shapes))]
+      (swap! defo assoc :polygon {:p shape
+                                  :area (g/area (gp/polygon2 shape))}))
+    (swap! defo assoc
+           :n-polys (count shapes)
+           :sizes (sort (mapv (comp int g/area gp/polygon2) shapes)))
     (doseq [s shapes]
       (cq/draw-shape s))))
 
