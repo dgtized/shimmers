@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -12,22 +13,37 @@
 
 (defn gen-line [bounds]
   (fn []
-    (let [[[p q] & rest] (dr/shuffle (g/edges bounds))
-          [a b] (dr/rand-nth rest)]
-      (gl/line2 (tm/mix p q (dr/random 0.1 0.9))
-                (tm/mix a b (dr/random 0.1 0.9))))))
+    (let [[a b c d] (g/edges bounds)
+          [[p1 q1] [p2 q2]] (dr/rand-nth [[a c] [b d]])]
+      (gl/line2 (tm/mix p1 q1 (dr/random 0.1 0.9))
+                (tm/mix p2 q2 (dr/random 0.1 0.9))))))
+
+(defn isec-point [l1 l2]
+  (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
+    (when (= type :intersect)
+      (:p hit))))
+
+(defn line-intersections [lines]
+  (for [[a b] (cs/all-pairs lines)]
+    (isec-point a b)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
-    {:lines (repeatedly 8 (gen-line bounds))}))
+    {:bounds bounds
+     :lines (repeatedly 6 (gen-line bounds))}))
 
 (defn update-state [{:keys [lines] :as state}]
-  state)
+  (assoc state :intersections (line-intersections lines)))
 
-(defn draw [{:keys [lines]}]
+(defn draw [{:keys [lines intersections]}]
+  (q/ellipse-mode :radius)
+  (q/background 1.0)
   (doseq [{[p q] :points} lines]
-    (q/line p q)))
+    (q/line p q))
+
+  (doseq [p intersections]
+    (cq/circle p 3.0)))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
