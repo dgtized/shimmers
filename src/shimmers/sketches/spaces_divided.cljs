@@ -116,7 +116,16 @@
       (cq/draw-shape s))
 
     (doseq [s shapes]
-      (draw-inset s))))
+      (draw-inset s))
+
+    ;; example of self intersect after inset operation
+    #_(cq/draw-shape (gp/inset-polygon
+                      (mapv gv/vec2 [[383.33 202.97]
+                                     [435.44 199.85]
+                                     [404.54 355.24]
+                                     [411.73 357.02]])
+                      -10))
+    ))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
