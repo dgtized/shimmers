@@ -78,7 +78,7 @@
   [points d]
   (mapv
    (fn [[p c n]] (inset-corner p c n d))
-   (d/successive-nth 3 (d/wrap-seq points [(peek points)] [(first points)]))))
+   (d/successive-nth 3 (d/wrap-seq points [(last points)] [(first points)]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
