@@ -66,8 +66,12 @@
     (if-not (or (tm/delta= 0.0 d1) (tm/delta= 0.0 d2))
       (let [i1 (tm/* (tm/* (gv/vec2 dy1 (- dx1)) (/ d1)) d) ;; TODO avoid double multiply => (/ d d1)
             i2 (tm/* (tm/* (gv/vec2 dy2 (- dx2)) (/ d2)) d) ;; TODO ditto => (/ d d2)
-            c1 (tm/+ curr i1), c2 (tm/+ curr i2)
-            prev (tm/+ prev i1), next (tm/+ next i2)]
+            c1 (tm/+ curr i1)
+            c2 (tm/+ curr i2)
+            prev (tm/+ prev i1)
+            next (tm/+ next i2)]
+        (swap! defo assoc-in [:inset [prev curr next]]
+               (isec/intersect-line2-line2? prev c1 c2 next))
         (if (tm/delta= c1 c2)
           c1 (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
       curr)))
