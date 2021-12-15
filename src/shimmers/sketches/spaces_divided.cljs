@@ -10,9 +10,11 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.dstruct.core :as d]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -53,6 +55,30 @@
                   ;; ensure edges are always low pt -> high pt
                   (map (fn [v] (sort v)))
                   set)))))
+
+;; extracted from thi.ng.geom.polygon to address bugs
+;; http://alienryderflex.com/polygon_inset/
+(defn- inset-corner
+  [prev curr next d]
+  (let [[dx1 dy1 :as d1] (tm/- curr prev)
+        [dx2 dy2 :as d2] (tm/- next curr)
+        d1 (tm/mag d1) d2 (tm/mag d2)]
+    (if-not (or (tm/delta= 0.0 d1) (tm/delta= 0.0 d2))
+      (let [i1 (tm/* (tm/* (gv/vec2 dy1 (- dx1)) (/ d1)) d) ;; TODO avoid double multiply => (/ d d1)
+            i2 (tm/* (tm/* (gv/vec2 dy2 (- dx2)) (/ d2)) d) ;; TODO ditto => (/ d d2)
+            c1 (tm/+ curr i1), c2 (tm/+ curr i2)
+            prev (tm/+ prev i1), next (tm/+ next i2)]
+        (if (tm/delta= c1 c2)
+          c1 (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
+      curr)))
+
+(defn inset-polygon
+  "For CW polygons, use positive distance to inset or negative to outset.
+  For CCW polygons, use opposite."
+  [points d]
+  (mapv
+   (fn [[p c n]] (inset-corner p c n d))
+   (d/successive-nth 3 (d/wrap-seq points [(peek points)] [(first points)]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -119,12 +145,12 @@
       (draw-inset s))
 
     ;; example of self intersect after inset operation
-    #_(cq/draw-shape (gp/inset-polygon
-                      (mapv gv/vec2 [[383.33 202.97]
-                                     [435.44 199.85]
-                                     [404.54 355.24]
-                                     [411.73 357.02]])
-                      -10))
+    (cq/draw-shape (inset-polygon
+                    (mapv gv/vec2 [[383.33 202.97]
+                                   [435.44 199.85]
+                                   [404.54 355.24]
+                                   [411.73 357.02]])
+                    -10))
     ))
 
 (sketch/defquil spaces-divided
