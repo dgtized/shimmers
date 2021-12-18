@@ -62,16 +62,20 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [radius samples]} @ui-state]
-    (poisson-disc-init (cq/screen-rect 0.8) radius samples 50)))
+    (poisson-disc-init (cq/screen-rect 0.8) radius samples 10)))
 
 (defn update-state [{:keys [n] :as state}]
   (cs/iterate-cycles n poisson-disc-fill state))
 
-(defn draw [{:keys [grid]}]
+(defn draw [{:keys [active grid]}]
   (q/background 255)
   (q/stroke 0)
   (q/stroke-weight 2)
   (doseq [[x y] (vals grid)]
+    (q/point x y))
+  (q/stroke-weight 4)
+  (q/stroke 0 0.5 0.5)
+  (doseq [[x y] active]
     (q/point x y)))
 
 (defn ui-controls []
@@ -85,7 +89,7 @@
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
   :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [600 600]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
