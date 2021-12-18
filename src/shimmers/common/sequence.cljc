@@ -140,7 +140,7 @@
 (defn iterate-cycles
   "Iterate on `x` using `f` for `n` cycles, returning the final `x`."
   [n f x]
-  (last (take (inc n) (iterate f x))))
+  (nth (iterate f x) n))
 
 (defn iterate-fixed-point
   "Iterate on `x` using `f` until `f` does not change the value of `x`."

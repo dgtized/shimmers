@@ -83,4 +83,8 @@
                        (fn [a b] (update a :x + (:x b)))
                        [{:v 1 :x 1} {:v 1 :x 2} {:v 2 :x 2}]))))
 
+(deftest iterate-cyles
+  (is (= 0 (sut/iterate-cycles 0 inc 0)))
+  (is (= 5 (sut/iterate-cycles 5 inc 0))))
+
 (comment (t/run-tests))
