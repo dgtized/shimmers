@@ -47,17 +47,14 @@
              :grid (assoc grid [row col] sample))
       state)))
 
-(defn poisson-disc-fill [{:keys [n] :as state0}]
-  (cs/iterate-cycles n
-                     (fn [{:keys [k active] :as state}]
-                       (if (> (count active) 0)
-                         (let [considering (rand-nth active)
-                               state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
-                           (if (= state state')
-                             (update state' :active (partial remove #(= considering %)))
-                             state'))
-                         state))
-                     state0))
+(defn poisson-disc-fill [{:keys [k active] :as state}]
+  (if (> (count active) 0)
+    (let [considering (rand-nth active)
+          state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
+      (if (= state state')
+        (update state' :active (partial remove #(= considering %)))
+        state'))
+    state))
 
 (def ui-state
   (ctrl/state {:radius 8 :samples 30}))
@@ -65,10 +62,10 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [radius samples]} @ui-state]
-    (poisson-disc-init (cq/screen-rect 0.8) radius samples 10)))
+    (poisson-disc-init (cq/screen-rect 0.8) radius samples 50)))
 
-(defn update-state [state]
-  (poisson-disc-fill state))
+(defn update-state [{:keys [n] :as state}]
+  (cs/iterate-cycles n poisson-disc-fill state))
 
 (defn draw [{:keys [grid]}]
   (q/background 255)
