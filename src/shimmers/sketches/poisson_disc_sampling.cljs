@@ -57,7 +57,7 @@
     state))
 
 (def ui-state
-  (ctrl/state {:radius 8 :samples 30}))
+  (ctrl/state {:radius 8 :samples 10}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -80,7 +80,7 @@
                 [:radius] [2 16 1])
    ;; Is this parameter even worth tuning?
    (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
-                [:samples] [20 50 1])))
+                [:samples] [5 50 1])))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
