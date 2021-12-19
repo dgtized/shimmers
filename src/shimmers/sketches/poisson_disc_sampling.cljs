@@ -42,6 +42,7 @@
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
   :on-mount (fn [] (ctrl/mount ui-controls))
+  :tags #{:demo}
   :size [800 600]
   :setup setup
   :update update-state
