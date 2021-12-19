@@ -2,9 +2,9 @@
   "https://www.youtube.com/watch?v=flQgnCUxHlw"
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.poisson-disc-sampling :as pds]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.algorithm.poisson-disc-sampling :as pds]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]))
