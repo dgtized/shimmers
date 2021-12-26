@@ -144,6 +144,12 @@
                  (g/center p)
                  :points)))))
 
+(defn point-generator [source]
+  (case source
+    "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
+    "center" (let [c (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35))]
+               (fn [] (geometry/random-point-in-circle c)))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
@@ -158,9 +164,7 @@
      :calc-points (get {"flow-points" flow-points
                         "downhill-points" downhill-points}
                        calc-points)
-     :point-source (case point-source
-                     "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
-                     "center" (fn [] (geometry/random-point-in-circle (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35)))))
+     :point-source (point-generator point-source)
      :snap-resolution (edn/read-string snap-resolution)
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
