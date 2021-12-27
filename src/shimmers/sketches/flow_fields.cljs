@@ -148,12 +148,28 @@
   (case source
     "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
     "center" (let [c (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35))]
-               (fn [] (geometry/random-point-in-circle c)))))
+               (fn [] (geometry/random-point-in-circle c)))
+    "grid" (let [{[w h] :size :as rect} (cq/screen-rect 1.05)
+                 grid (time (g/subdivide rect {:cols (* 0.5 w) :rows (* 0.5 h)}))
+                 points (atom (dr/shuffle (mapv g/centroid grid)))]
+             (println (count grid))
+             (fn [] (let [[v & r] @points]
+                     (reset! points (if (seq r) r (dr/shuffle grid)))
+                     v)))))
+
+(defn validate! [settings]
+  (let [{:keys [iterations point-source]} @settings]
+    (println iterations)
+    (swap! settings assoc :iterations
+           (if (= point-source "grid")
+             (min iterations 30)
+             iterations))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
+  (validate! settings)
   (let [{:keys [iterations draw align-triangles
                 calc-points point-source
                 snap-resolution stroke-weight
@@ -228,7 +244,8 @@
     "Debug Grid" "grid"}
    :point-source
    {"Random" "random"
-    "Center" "center"}
+    "Center" "center"
+    "Grid" "grid"}
    :snap-resolution
    {"Disabled" 0
     "90 degrees" (/ Math/PI 2)
