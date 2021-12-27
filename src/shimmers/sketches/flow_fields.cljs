@@ -152,14 +152,12 @@
     "grid" (let [{[w h] :size :as rect} (cq/screen-rect 1.05)
                  grid (time (g/subdivide rect {:cols (* 0.5 w) :rows (* 0.5 h)}))
                  points (atom (dr/shuffle (mapv g/centroid grid)))]
-             (println (count grid))
              (fn [] (let [[v & r] @points]
                      (reset! points (if (seq r) r (dr/shuffle grid)))
                      v)))))
 
 (defn validate! [settings]
   (let [{:keys [iterations point-source]} @settings]
-    (println iterations)
     (swap! settings assoc :iterations
            (if (= point-source "grid")
              (min iterations 30)
