@@ -124,7 +124,7 @@
                (rect/rect (cq/rel-vec 0.66 0.0) (cq/rel-vec 1.0 0.33))
                (rect/rect (cq/rel-vec 0.0 0.66) (cq/rel-vec 0.33 1.0))
                (rect/rect (cq/rel-vec 0.66 0.66) (cq/rel-vec 1.0 1.0))]
-   :bounds (rect/rect (cq/rel-vec 0.0 0.0) (cq/rel-vec 1.0 1.0))
+   :bounds (cq/screen-rect)
    :agents []})
 
 (defn update-state [{:keys [agents bounds obstacles] :as state}]
