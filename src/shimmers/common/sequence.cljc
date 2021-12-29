@@ -161,3 +161,8 @@
           nil
           :else
           (recur (dec tries) retry-fn))))
+
+(defn pair-cycle [coll]
+  (map vector coll (concat (rest coll) [(first coll)])))
+
+(comment (pair-cycle [:a :b :c :d]))
