@@ -4,11 +4,11 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.math.core :as tm]))
 
 (defn correspondences [triangles]
   (apply mapv
@@ -23,27 +23,35 @@
                 (rect/rect (cq/rel-vec 0.2 0.4) (cq/rel-vec 0.4 0.8))
                 (rect/rect (cq/rel-vec 0.6 0.6) (cq/rel-vec 0.9 0.9))]
         triangles (map #(g/tessellate % {:cols 5 :rows 3}) shapes)]
-    {:shapes shapes
+    {:t 0.0
+     :shapes shapes
      :triangles triangles
      :correspondences (correspondences triangles)}))
 
 (defn update-state [state]
-  state)
+  (update state :t + 0.0025))
 
-(defn draw [{:keys [shapes triangles correspondences]}]
-  (q/background 1.0)
+(defn draw [{:keys [t triangles correspondences] :as state}]
   (q/stroke-weight 0.3)
-  (doseq [s shapes]
-    (cq/draw-shape (g/vertices s)))
-
-  (doseq [children triangles
-          t children]
-    (cq/draw-shape (g/vertices t)))
+  ;; (doseq [s (:shapes state)]
+  ;;   (cq/draw-shape (g/vertices s)))
+  ;; (doseq [children triangles
+  ;;         t children]
+  ;;   (cq/draw-shape (g/vertices t)))
 
   (q/stroke-weight 0.8)
-  (doseq [correlate (take 2 correspondences)]
-    (doseq [[t1 t2] (cs/pair-cycle (map (fn [i triset] (nth triset i)) correlate triangles))]
-      (q/line (g/centroid t1) (g/centroid t2)))))
+  (doseq [correlate correspondences
+          :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate triangles)
+                n-states (count triset)
+                raw-offset (* (mod t 1.0) n-states)
+                o1 (int raw-offset)
+                o2 (mod (inc o1) n-states)
+                triangle1 (nth triset o1)
+                triangle2 (nth triset o2)
+                [pts1 pts2] (map :points [triangle1 triangle2])
+                t-delta (- raw-offset o1)
+                vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
+    (apply cq/draw-triangle vertices)))
 
 (sketch/defquil lifecycle-of-shapes
   :created-at "2021-12-28"
