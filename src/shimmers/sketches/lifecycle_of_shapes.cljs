@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
@@ -47,18 +48,28 @@
      :triangles triangles
      :correspondences (correspondences triangles max-triangles-per-shape)}))
 
-(defn update-state [{:keys [t] :as state}]
-  (update state :t + (* 0.0003 (+ 0.25 (q/noise t)))))
+(defn rotate-all [triangles shapes t]
+  (letfn [(rotate [shape-tris shape]
+            (let [shape-center (g/centroid shape)]
+              (mapv (fn [tri]
+                      (geometry/rotate-around tri shape-center (* t 5)))
+                    shape-tris)))]
+    (mapv rotate triangles shapes)))
 
-(defn draw [{:keys [t triangles correspondences]}]
+(defn update-state [{:keys [t triangles shapes] :as state}]
+  (-> state
+      (update :t + (* 0.0003 (+ 0.25 (q/noise t))))
+      (assoc :rotated-triangles (rotate-all triangles shapes t))))
+
+(defn draw [{:keys [t rotated-triangles correspondences]}]
   (q/stroke-weight 0.8)
-  (let [n-states (count triangles)
+  (let [n-states (count rotated-triangles)
         raw-offset (* (mod t 1.0) n-states)
         o1 (int raw-offset)
         t-delta (- raw-offset o1)]
     (when (= 0 (mod (q/frame-count) 5))
       (doseq [correlate correspondences
-              :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate triangles)
+              :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate rotated-triangles)
                     [pts1 pts2] (map (comp :points (partial nth triset))
                                      [o1 (mod (inc o1) n-states)])
                     vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
