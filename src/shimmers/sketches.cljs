@@ -49,6 +49,7 @@
             shimmers.sketches.hatched-rectangles
             shimmers.sketches.hexaclock
             shimmers.sketches.hexcursive
+            shimmers.sketches.hexflare
             shimmers.sketches.impressions-of-open-space
             shimmers.sketches.inconsequential-drift
             shimmers.sketches.integer-circles
