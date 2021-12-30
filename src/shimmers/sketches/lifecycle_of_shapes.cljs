@@ -7,7 +7,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
 (defn correspondences [triangles]
