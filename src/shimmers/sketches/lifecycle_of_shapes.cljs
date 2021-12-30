@@ -19,9 +19,10 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [core-shapes (-> (cq/screen-rect 0.95)
-                        (g/subdivide {:rows 4 :cols 4})
+                        (g/subdivide {:rows 5 :cols 4})
                         dr/shuffle)
-        shapes (drop 4 core-shapes)
+        shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
+                     (drop (* 0.2 (count core-shapes)) core-shapes))
         triangles (map #(g/tessellate % {:cols 5 :rows 3}) (dr/shuffle shapes))]
     {:t 0.0
      :shapes shapes
