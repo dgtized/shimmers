@@ -2,6 +2,7 @@
   (:require [shimmers.common.svg :refer [svg]]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.geometry :as geometry]
+            [shimmers.math.geometry.triangle :as triangle]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.circle :as gc]
@@ -69,8 +70,8 @@
                   (sample-points triangle g/random-point-inside)
                   "g/random-point-inside")
          (example (gv/vec2 300 400) triangle
-                  (sample-points triangle geometry/random-point-in-triangle)
-                  "random-point-in-triangle")
+                  (sample-points triangle triangle/random-point-inside)
+                  "triangle/random-point-inside")
          (example (gv/vec2 500 400) triangle
                   (sample-points triangle g/random-point 200)
                   "g/random-point")

@@ -1,10 +1,17 @@
 (ns shimmers.math.geometry.triangle
   (:require
-   [shimmers.math.geometry :as geometry]
    [shimmers.math.probability :as p]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.math.core :as tm]))
+
+;; Kraemer Method
+;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
+;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
+(defn random-point-inside [{:keys [points]}]
+  (let [[s t] (sort [(rand) (rand)])
+        weighting [s (- t s) (- 1 t)]]
+    (apply tm/+ (map tm/* points weighting))))
 
 ;; Longest edge is aesthetically more pleasing per:
 ;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
@@ -31,7 +38,7 @@
   "Decompose triangle into a collection of smaller triangles"
   [t {:keys [mode inner-point sample sample-low sample-high]
       :or {mode :midpoint
-           inner-point geometry/random-point-in-triangle
+           inner-point random-point-inside
            sample (p/gaussian-clamped 0.5 0.1)
            sample-low (p/gaussian-clamped 0.33 0.1)
            sample-high (p/gaussian-clamped 0.33 0.1)}}]

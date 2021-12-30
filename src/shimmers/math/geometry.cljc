@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry
-  (:require [shimmers.math.probability :as p]
+  (:require [shimmers.math.geometry.triangle :as triangle]
+            [shimmers.math.probability :as p]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.quaternion :as quat]
@@ -16,14 +17,6 @@
   ([n dist]
    (generate-points n dist dist))
   ([n dist-x dist-y] (repeatedly n #(gv/vec2 (dist-x) (dist-y)))))
-
-;; Kraemer Method
-;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
-;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
-(defn random-point-in-triangle [{:keys [points]}]
-  (let [[s t] (sort [(rand) (rand)])
-        weighting [s (- t s) (- 1 t)]]
-    (apply tm/+ (map tm/* points weighting))))
 
 ;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
 (defn random-point-in-circle [_]
@@ -42,7 +35,7 @@
     [_] (->> (g/tessellate _)
              (map gt/triangle2)
              (p/weighted-by g/area)
-             random-point-in-triangle)))
+             triangle/random-point-inside)))
 
 ;; TODO: remove once https://github.com/thi-ng/geom/pull/82 is published
 (extend-type Line2
