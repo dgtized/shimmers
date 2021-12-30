@@ -31,13 +31,7 @@
 (defn update-state [state]
   (update state :t + 0.0005))
 
-(defn draw [{:keys [t triangles correspondences] :as state}]
-  (q/stroke-weight 0.3)
-  ;; (doseq [s (:shapes state)]
-  ;;   (cq/draw-shape (g/vertices s)))
-  ;; (doseq [children triangles
-  ;;         t children]
-  ;;   (cq/draw-shape (g/vertices t)))
+(defn draw [{:keys [t triangles correspondences]}]
   (q/stroke-weight 0.8)
   (when (= 0 (mod (q/frame-count) 3))
     (doseq [correlate correspondences
