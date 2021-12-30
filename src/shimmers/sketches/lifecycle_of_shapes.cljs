@@ -17,9 +17,13 @@
            (dr/shuffle indicies))))
 
 (defn random-tessellation [u1 u2]
-  (fn [shape]
-    (g/tessellate shape {:cols (dr/random-int 3 u1)
-                         :rows (dr/random-int 2 u2)})))
+  (let [max-triangles (* 2 u1 u2)]
+    (fn [shape]
+      (if (dr/chance 0.33)
+        (g/tessellate (g/bounding-circle shape)
+                      (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles)))
+        (g/tessellate shape {:cols (dr/random-int 3 u1)
+                             :rows (dr/random-int 2 u2)})))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
