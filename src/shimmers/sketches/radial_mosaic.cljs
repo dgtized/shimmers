@@ -46,8 +46,7 @@
               (merge
                {:fill "white"
                 :stroke-width 0.6
-                :stroke "black"
-                :key (str "s:" t0 "-" t1 "-" r0)}
+                :stroke "black"}
                attribs))))
 
 (comment

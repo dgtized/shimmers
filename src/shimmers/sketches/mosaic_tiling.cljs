@@ -149,17 +149,15 @@
               (for [[idx color] (map-indexed vector palette)]
                 (-> rect
                     (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
-                    (with-meta {:fill (str color)
-                                :key (str "palette-cell-" idx)}))))))
+                    (with-meta {:fill (str color)}))))))
 
 (defn svg-tile [size cell-size cells]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
     (csvg/svg {:width size :height size :stroke "black"}
-              (for [{:keys [pos fill]} cells
-                    :let [[i j] pos]]
+              (for [{:keys [pos fill]} cells]
                 (-> rect
                     (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
-                    (with-meta {:fill fill :key (str "cell-" i "-" j)}))))))
+                    (with-meta {:fill fill}))))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do

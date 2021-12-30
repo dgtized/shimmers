@@ -101,13 +101,11 @@
                  (grow-until-bounds control gen-line :right margin density)))))
 
 (defn scene []
-  (let [shapes (grow-lines)]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :stroke-width 0.7}
-              (for [[i shape] (map-indexed vector shapes)]
-                (vary-meta shape assoc :key (str "l" i))))))
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :stroke-width 0.7}
+            (grow-lines)))
 
 (sketch/definition wood-grain
   {:created-at "2021-11-14"

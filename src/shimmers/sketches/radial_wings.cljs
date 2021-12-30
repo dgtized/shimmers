@@ -30,6 +30,7 @@
        (mapv #(g/translate % (rv 0.5 0.5)))))
 
 ;; FIXME: handle large gaps and overlapping lines
+;; also why is manual key needed?
 (defn scene []
   (csvg/svg {:width width
              :height height

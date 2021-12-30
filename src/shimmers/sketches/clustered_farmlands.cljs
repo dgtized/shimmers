@@ -71,12 +71,10 @@
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
               (svg/polyline (g/sample-uniform road 10 true)
                             {:stroke-width 5})
-              (for [[y row] rows]
-                (svg/polyline (g/sample-uniform row 10 true)
-                              {:key (str "r" y)}))
-              (for [[i {:keys [pos heading]}] (map-indexed vector houses)]
-                (svg/group {:transform (csvg/rotate heading pos)
-                            :key (str "house" i)}
+              (for [[_ row] rows]
+                (svg/polyline (g/sample-uniform row 10 true)))
+              (for [{:keys [pos heading]} houses]
+                (svg/group {:transform (csvg/rotate heading pos)}
                            (svg/rect pos 5 5))))))
 
 (sketch/definition clustered-farmlands

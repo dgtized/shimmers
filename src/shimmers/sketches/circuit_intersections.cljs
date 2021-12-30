@@ -55,15 +55,14 @@
               (for [[i src] (map-indexed vector sources)]
                 (svg/line src (gv/vec2 (:x src) (* height 0.1))
                           {:stroke (color (+ color-base i))
-                           :stroke-width (dr/random 0.5 3.0)
-                           :key (str "src" i)}))
+                           :stroke-width (dr/random 0.5 3.0)}))
               (for [[a b] connections
                     :let [p (nth sources a)
                           q (nth destinations b)
                           isec (gv/vec2 (:x p) (:y q))]]
-                (svg/group {:key (str (interpose "," [a b]))}
-                           (svg/circle isec 2.5 {:key (str "c" isec)})
-                           (svg/line isec q {:key (str "l" isec "-" q)}))))))
+                (svg/group {}
+                           (svg/circle isec 2.5)
+                           (svg/line isec q))))))
 
 (sketch/definition circuit-intersections
   {:created-at "2021-11-08"

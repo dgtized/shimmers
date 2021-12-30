@@ -89,9 +89,8 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.8}
-            (for [[i shape] (map-indexed vector (shapes))]
-              (vary-meta shape assoc :key (str "l" i)
-                         :stroke-width (:width shape)))))
+            (for [shape (shapes)]
+              (vary-meta shape assoc :stroke-width (:width shape)))))
 
 (sketch/definition morse-patterns
   {:created-at "2021-12-02"

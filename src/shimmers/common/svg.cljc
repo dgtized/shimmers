@@ -15,7 +15,9 @@
         body))
 
 (defn svg [& args]
-  (adapt/all-as-svg (apply svg-elem args)))
+  (->> (apply svg-elem args)
+       adapt/all-as-svg
+       adapt/inject-element-attribs))
 
 (defn rotate [heading [x y]]
   (as-> [(tm/degrees heading) x y] o
