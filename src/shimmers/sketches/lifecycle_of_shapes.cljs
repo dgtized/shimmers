@@ -16,6 +16,11 @@
                :let [indicies (take k (cycle (range (count triset))))]]
            (dr/shuffle indicies))))
 
+(defn random-tessellation [u1 u2]
+  (fn [shape]
+    (g/tessellate shape {:cols (dr/random-int 3 u1)
+                         :rows (dr/random-int 2 u2)})))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [[u1 u2] [6 5]
@@ -25,8 +30,7 @@
                         dr/shuffle)
         shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
                      (drop (* 0.2 (count core-shapes)) core-shapes))
-        triangles (map #(g/tessellate % {:cols (dr/random-int 3 u1)
-                                         :rows (dr/random-int 2 u2)})
+        triangles (map (random-tessellation u1 u2)
                        (dr/shuffle shapes))]
     {:t 0.0
      :shapes shapes
