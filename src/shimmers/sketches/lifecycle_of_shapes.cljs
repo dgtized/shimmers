@@ -105,11 +105,18 @@
       (assoc :rotated-triangles (rotate-all triangles shapes t))))
 
 (defn draw [{:keys [t rotated-triangles correspondences]}]
-  (q/stroke-weight 0.8)
   (let [n-states (count rotated-triangles)
         raw-offset (* (mod t 1.0) n-states)
         o1 (int raw-offset)
         t-delta (- raw-offset o1)]
+    (q/stroke-weight (+ 0.01 (cond (and (= 0 (mod o1 5)) (= 0 (mod o1 3)))
+                                   0.5
+                                   (= 0 (mod o1 5))
+                                   (- 1.0 t-delta)
+                                   (= 0 (mod o1 3))
+                                   (- 1.0 t-delta)
+                                   :else
+                                   t-delta)))
     (when (= 0 (mod (q/frame-count) 5))
       (doseq [correlate correspondences
               :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate rotated-triangles)
