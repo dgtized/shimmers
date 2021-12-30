@@ -43,12 +43,12 @@
      :triangles triangles
      :correspondences (correspondences triangles max-triangles-per-shape)}))
 
-(defn update-state [state]
-  (update state :t + 0.0005))
+(defn update-state [{:keys [t] :as state}]
+  (update state :t + (* 0.0003 (+ 0.25 (q/noise t)))))
 
 (defn draw [{:keys [t triangles correspondences]}]
   (q/stroke-weight 0.8)
-  (when (= 0 (mod (q/frame-count) 3))
+  (when (= 0 (mod (q/frame-count) 5))
     (doseq [correlate correspondences
             :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate triangles)
                   n-states (count triset)
