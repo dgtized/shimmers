@@ -45,10 +45,8 @@
                   n-states (count triset)
                   raw-offset (* (mod t 1.0) n-states)
                   o1 (int raw-offset)
-                  o2 (mod (inc o1) n-states)
-                  triangle1 (nth triset o1)
-                  triangle2 (nth triset o2)
-                  [pts1 pts2] (map :points [triangle1 triangle2])
+                  [pts1 pts2] (map (comp :points (partial nth triset))
+                                   [o1 (mod (inc o1) n-states)])
                   t-delta (- raw-offset o1)
                   vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
       (apply cq/draw-triangle vertices))))
