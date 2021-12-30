@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -21,8 +22,10 @@
 
 (defn shapes []
   (let [r (* height 0.05)
-        line (gl/line2 (rv 0.0 0.9) (rv 1.0 0.05))]
-    (into (for [t (tm/norm-range (/ (apply g/dist (:points line)) (*  (Math/sqrt 3) r)))]
+        line (gl/line2 (rv 0.0 0.9) (rv 1.0 0.05))
+        dist (tm/mag line)]
+    (into (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
+                                    (/ (* 4 r) dist))]
             (g/as-polygon (gc/circle (g/point-at line t) r) 6))
           [line])))
 
