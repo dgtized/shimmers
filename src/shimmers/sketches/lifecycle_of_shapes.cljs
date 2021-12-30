@@ -19,12 +19,10 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [shapes [(rect/rect (cq/rel-vec 0.05 0.1) (cq/rel-vec 0.25 0.3))
-                (rect/rect (cq/rel-vec 0.2 0.4) (cq/rel-vec 0.4 0.8))
-                (rect/rect (cq/rel-vec 0.75 0.15) (cq/rel-vec 0.85 0.25))
-                (rect/rect (cq/rel-vec 0.1 0.8) (cq/rel-vec 0.3 0.9))
-                (rect/rect (cq/rel-vec 0.4 0.4) (cq/rel-vec 0.6 0.6))
-                (rect/rect (cq/rel-vec 0.6 0.6) (cq/rel-vec 0.95 0.9))]
+  (let [core-shapes (-> (cq/screen-rect 0.95)
+                        (g/subdivide {:rows 4 :cols 4})
+                        dr/shuffle)
+        shapes (drop 4 core-shapes)
         triangles (map #(g/tessellate % {:cols 5 :rows 3}) (dr/shuffle shapes))]
     {:t 0.0
      :shapes shapes
