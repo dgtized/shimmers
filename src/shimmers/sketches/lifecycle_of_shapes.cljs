@@ -109,6 +109,7 @@
         raw-offset (* (mod t 1.0) n-states)
         o1 (int raw-offset)
         t-delta (- raw-offset o1)]
+    (q/fill 1.0 (if (< (mod o1 6) 2) 1.0 0.5))
     (q/stroke-weight (+ 0.01 (cond (and (= 0 (mod o1 5)) (= 0 (mod o1 3)))
                                    0.5
                                    (= 0 (mod o1 5))
