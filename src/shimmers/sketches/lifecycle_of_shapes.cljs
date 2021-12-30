@@ -48,17 +48,17 @@
 
 (defn draw [{:keys [t triangles correspondences]}]
   (q/stroke-weight 0.8)
-  (when (= 0 (mod (q/frame-count) 5))
-    (doseq [correlate correspondences
-            :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate triangles)
-                  n-states (count triset)
-                  raw-offset (* (mod t 1.0) n-states)
-                  o1 (int raw-offset)
-                  [pts1 pts2] (map (comp :points (partial nth triset))
-                                   [o1 (mod (inc o1) n-states)])
-                  t-delta (- raw-offset o1)
-                  vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
-      (apply cq/draw-triangle vertices))))
+  (let [n-states (count triangles)
+        raw-offset (* (mod t 1.0) n-states)
+        o1 (int raw-offset)
+        t-delta (- raw-offset o1)]
+    (when (= 0 (mod (q/frame-count) 5))
+      (doseq [correlate correspondences
+              :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate triangles)
+                    [pts1 pts2] (map (comp :points (partial nth triset))
+                                     [o1 (mod (inc o1) n-states)])
+                    vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
+        (apply cq/draw-triangle vertices)))))
 
 (sketch/defquil lifecycle-of-shapes
   :created-at "2021-12-28"
