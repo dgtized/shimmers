@@ -18,18 +18,20 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [core-shapes (-> (cq/screen-rect 0.95)
+  (let [[u1 u2] [6 5]
+        max-triangles-per-shape (* 2 u1 u2)
+        core-shapes (-> (cq/screen-rect 0.95)
                         (g/subdivide {:rows 5 :cols 4})
                         dr/shuffle)
         shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
                      (drop (* 0.2 (count core-shapes)) core-shapes))
-        triangles (map #(g/tessellate % {:cols (dr/random-int 3 6)
-                                         :rows (dr/random-int 2 5)})
+        triangles (map #(g/tessellate % {:cols (dr/random-int 3 u1)
+                                         :rows (dr/random-int 2 u2)})
                        (dr/shuffle shapes))]
     {:t 0.0
      :shapes shapes
      :triangles triangles
-     :correspondences (correspondences triangles (* 2 6 5))}))
+     :correspondences (correspondences triangles max-triangles-per-shape)}))
 
 (defn update-state [state]
   (update state :t + 0.0005))
