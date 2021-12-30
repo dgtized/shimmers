@@ -30,10 +30,6 @@
          [])
        (into [a])))
 
-(defn decompose-largest [triangles]
-  (let [[biggest & remaining] (sort-by g/area > triangles)]
-    (concat remaining (triangle/decompose biggest {:mode :midpoint}))))
-
 (defn shatter [rect n]
   (let [polygon (g/as-polygon rect)
         edges (g/edges polygon)]
@@ -41,7 +37,7 @@
          gp/polygon2
          g/tessellate
          (mapv gt/triangle2)
-         (iterate decompose-largest)
+         (iterate triangle/decompose-largest)
          (take-while #(< (count %) n))
          last)))
 

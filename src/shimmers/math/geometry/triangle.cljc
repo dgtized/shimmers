@@ -63,3 +63,6 @@
               [m1 m2 c]]))
          (mapv gt/triangle2))))
 
+(defn decompose-largest [triangles]
+  (let [[biggest & remaining] (sort-by g/area > triangles)]
+    (concat remaining (decompose biggest {:mode :midpoint}))))
