@@ -36,10 +36,12 @@
         core-shapes (-> screen
                         (g/subdivide {:rows 5 :cols 4})
                         dr/shuffle)
-        shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
-                     (drop (* 0.2 (count core-shapes)) core-shapes))
-        triangles (map (random-tessellation u1 u2)
-                       (dr/shuffle (gu/fit-all-into-bounds screen shapes)))]
+        shapes (->> core-shapes
+                    (drop (* 0.2 (count core-shapes)))
+                    (mapv #(g/scale-size % (dr/random 0.25 1.5)))
+                    (gu/fit-all-into-bounds screen)
+                    dr/shuffle)
+        triangles (map (random-tessellation u1 u2) shapes)]
     {:t 0.0
      :shapes shapes
      :triangles triangles
