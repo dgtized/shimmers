@@ -10,12 +10,14 @@
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
 
-(defn correspondences [triangles k]
-  (apply mapv
-         vector
-         (for [triset triangles
-               :let [indicies (take k (cycle (range (count triset))))]]
-           (dr/shuffle indicies))))
+(defn correspondences
+  "Given `triangles`, a vector of vectors of triangles, and `n`, the maximum
+  number of triangles to correspond, generate a vector of index vectors, where
+  each indice maps back into the corresponding triangle vector."
+  [triangles n]
+  (->> triangles
+       (map (comp dr/shuffle (partial take n) cycle range count))
+       (apply mapv vector)))
 
 (defn random-tessellation [u1 u2]
   (let [max-triangles (* 2 u1 u2)]
