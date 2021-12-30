@@ -13,6 +13,7 @@
             [shimmers.math.geometry-test]
             [shimmers.math.geometry.group-test]
             [shimmers.math.geometry.intersection-test]
+            [shimmers.math.geometry.triangle-test]
             [shimmers.math.hexagon-test]
             [cljs-test-display.core :as td]
             [cljs.test :as t]
@@ -51,6 +52,7 @@
    'shimmers.math.geometry-test
    'shimmers.math.geometry.group-test
    'shimmers.math.geometry.intersection-test
+   'shimmers.math.geometry.triangle-test
    'shimmers.math.hexagon-test))
 
 (defn ^:after-load render-on-reload []

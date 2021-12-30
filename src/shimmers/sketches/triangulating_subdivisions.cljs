@@ -7,6 +7,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -39,7 +40,7 @@
               :sample (p/gaussian-clamped 0.5 0.1)
               :sample-low (p/gaussian-clamped 0.33 0.1)
               :sample-high (p/gaussian-clamped 0.66 0.1)}]
-    (for [child (geometry/decompose t opts)]
+    (for [child (triangle/decompose t opts)]
       (assoc child
              :color
              (when (and color (p/chance 0.90))

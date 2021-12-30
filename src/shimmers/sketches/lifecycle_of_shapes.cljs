@@ -7,6 +7,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -31,7 +32,7 @@
 
 (defn decompose-largest [triangles]
   (let [[biggest & remaining] (sort-by g/area > triangles)]
-    (concat remaining (geometry/decompose biggest {:mode :midpoint}))))
+    (concat remaining (triangle/decompose biggest {:mode :midpoint}))))
 
 (defn shatter [rect n]
   (let [polygon (g/as-polygon rect)
