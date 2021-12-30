@@ -9,11 +9,11 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
-(defn correspondences [triangles]
+(defn correspondences [triangles k]
   (apply mapv
          vector
          (for [triset triangles
-               :let [indicies (range (count triset))]]
+               :let [indicies (take k (cycle (range (count triset))))]]
            (dr/shuffle indicies))))
 
 (defn setup []
@@ -23,11 +23,13 @@
                         dr/shuffle)
         shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
                      (drop (* 0.2 (count core-shapes)) core-shapes))
-        triangles (map #(g/tessellate % {:cols 5 :rows 3}) (dr/shuffle shapes))]
+        triangles (map #(g/tessellate % {:cols (dr/random-int 3 6)
+                                         :rows (dr/random-int 2 5)})
+                       (dr/shuffle shapes))]
     {:t 0.0
      :shapes shapes
      :triangles triangles
-     :correspondences (correspondences triangles)}))
+     :correspondences (correspondences triangles (* 2 6 5))}))
 
 (defn update-state [state]
   (update state :t + 0.0005))
