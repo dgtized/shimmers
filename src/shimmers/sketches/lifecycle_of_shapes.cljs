@@ -7,6 +7,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
 
 (defn correspondences [triangles k]
@@ -29,13 +30,14 @@
   (q/color-mode :hsl 1.0)
   (let [[u1 u2] [6 5]
         max-triangles-per-shape (* 2 u1 u2)
-        core-shapes (-> (cq/screen-rect 0.95)
+        screen (cq/screen-rect 0.95)
+        core-shapes (-> screen
                         (g/subdivide {:rows 5 :cols 4})
                         dr/shuffle)
         shapes (mapv #(g/scale-size % (dr/random 0.25 1.5))
                      (drop (* 0.2 (count core-shapes)) core-shapes))
         triangles (map (random-tessellation u1 u2)
-                       (dr/shuffle shapes))]
+                       (dr/shuffle (gu/fit-all-into-bounds screen shapes)))]
     {:t 0.0
      :shapes shapes
      :triangles triangles
