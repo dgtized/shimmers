@@ -43,12 +43,16 @@
                          (gu/fit-all-into-bounds screen)
                          dr/shuffle)
         shapes (mapv (fn [s]
-                       (let [dt (dr/weighted {(constantly 0.0) 1
+                       (let [dt (dr/weighted {(constantly 0.0) 2
                                               #(dr/random -5 5) 2
                                               #(dr/random -10 10) 2
                                               #(dr/random -25 -50) 1
-                                              #(dr/random 25 50) 1})]
-                         (assoc s :dtheta (dt)))) core-shapes)
+                                              #(dr/random 25 50) 1})
+                             theta (dr/weighted {(constantly 0.0) 3.0
+                                                 #(dr/random 0 tm/TWO_PI) 1.0})]
+                         (assoc s
+                                :theta (theta)
+                                :dtheta (dt)))) core-shapes)
         triangles (map (random-tessellation u1 u2) shapes)]
     {:t 0.0
      :shapes shapes
@@ -56,10 +60,10 @@
      :correspondences (correspondences triangles max-triangles-per-shape)}))
 
 (defn rotate-all [triangles shapes t]
-  (letfn [(rotate [shape-tris shape]
+  (letfn [(rotate [shape-tris {:keys [theta dtheta] :as shape}]
             (let [shape-center (g/centroid shape)]
               (mapv (fn [tri]
-                      (geometry/rotate-around tri shape-center (* t (:dtheta shape))))
+                      (geometry/rotate-around tri shape-center (+ theta (* t dtheta))))
                     shape-tris)))]
     (mapv rotate triangles shapes)))
 
