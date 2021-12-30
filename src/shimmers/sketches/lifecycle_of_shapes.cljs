@@ -24,34 +24,41 @@
        (apply mapv vector)))
 
 (defn split-edge [[a b] cuts]
-  (into [a]
-        (mapv #(tm/mix a b %) (cs/centered-range cuts))))
+  (->> (if (> cuts 0)
+         (mapv #(tm/mix a b %) (cs/midsection (dr/var-range cuts)))
+         [])
+       (into [a])))
+
+(defn decompose-largest [triangles]
+  (let [[biggest & remaining] (sort-by g/area > triangles)]
+    (concat remaining (geometry/decompose biggest {:mode :midpoint}))))
 
 (defn shatter [rect n]
   (let [polygon (g/as-polygon rect)
         edges (g/edges polygon)]
-    (->> (mapcat split-edge edges (repeat n))
-         butlast
+    (->> (mapcat split-edge edges (repeatedly #(dr/random-int 3)))
          gp/polygon2
          g/tessellate
-         (mapv gt/triangle2))))
+         (mapv gt/triangle2)
+         (iterate decompose-largest)
+         (take-while #(< (count %) n))
+         last)))
 
 (defn random-tessellation [u1 u2]
   (let [max-triangles (* 2 u1 u2)]
     (fn [shape]
-      (cond
-        (dr/chance 0.5)
-        {:triangles (shatter shape 4)
-         :shape (merge (g/as-polygon shape) (select-keys shape [:theta :dtheta]))}
-        (dr/chance 0.33)
-        (let [circle (g/bounding-circle shape)]
-          {:triangles (g/tessellate circle
-                                    (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles)))
-           :shape (merge circle (select-keys shape [:theta :dtheta]))})
-        :else
-        {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
-                                         :rows (dr/random-int 2 u2)})
-         :shape shape}))))
+      (let [quantity (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles))]
+        ((dr/weighted {(fn [] {:triangles (shatter shape (int (* 0.8 quantity)))
+                              :shape (merge (g/as-polygon shape) (select-keys shape [:theta :dtheta]))})
+                       2
+                       (fn [] (let [circle (g/bounding-circle shape)]
+                               {:triangles (g/tessellate circle quantity)
+                                :shape (merge circle (select-keys shape [:theta :dtheta]))}))
+                       2
+                       (fn [] {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
+                                                              :rows (dr/random-int 2 u2)})
+                              :shape shape})
+                       1}))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
