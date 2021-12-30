@@ -4,10 +4,13 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
 
@@ -20,14 +23,35 @@
        (map (comp dr/shuffle (partial take n) cycle range count))
        (apply mapv vector)))
 
+(defn split-edge [[a b] cuts]
+  (into [a]
+        (mapv #(tm/mix a b %) (cs/centered-range cuts))))
+
+(defn shatter [rect n]
+  (let [polygon (g/as-polygon rect)
+        edges (g/edges polygon)]
+    (->> (mapcat split-edge edges (repeat n))
+         butlast
+         gp/polygon2
+         g/tessellate
+         (mapv gt/triangle2))))
+
 (defn random-tessellation [u1 u2]
   (let [max-triangles (* 2 u1 u2)]
     (fn [shape]
-      (if (dr/chance 0.33)
-        (g/tessellate (g/bounding-circle shape)
-                      (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles)))
-        (g/tessellate shape {:cols (dr/random-int 3 u1)
-                             :rows (dr/random-int 2 u2)})))))
+      (cond
+        (dr/chance 0.5)
+        {:triangles (shatter shape 4)
+         :shape (merge (g/as-polygon shape) (select-keys shape [:theta :dtheta]))}
+        (dr/chance 0.33)
+        (let [circle (g/bounding-circle shape)]
+          {:triangles (g/tessellate circle
+                                    (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles)))
+           :shape (merge circle (select-keys shape [:theta :dtheta]))})
+        :else
+        {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
+                                         :rows (dr/random-int 2 u2)})
+         :shape shape}))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -53,9 +77,10 @@
                          (assoc s
                                 :theta (theta)
                                 :dtheta (dt)))) core-shapes)
-        triangles (map (random-tessellation u1 u2) shapes)]
+        tessellated (mapv (random-tessellation u1 u2) shapes)
+        triangles (mapv :triangles tessellated)]
     {:t 0.0
-     :shapes shapes
+     :shapes (mapv :shape tessellated)
      :triangles triangles
      :correspondences (correspondences triangles max-triangles-per-shape)}))
 
