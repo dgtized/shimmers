@@ -34,14 +34,21 @@
   (let [[u1 u2] [6 5]
         max-triangles-per-shape (* 2 u1 u2)
         screen (cq/screen-rect 0.95)
-        core-shapes (-> screen
-                        (g/subdivide {:rows 5 :cols 4})
-                        dr/shuffle)
-        shapes (->> core-shapes
-                    (drop (* 0.2 (count core-shapes)))
-                    (mapv #(g/scale-size % (dr/random 0.25 1.5)))
-                    (gu/fit-all-into-bounds screen)
-                    dr/shuffle)
+        initial-shapes (-> screen
+                           (g/subdivide {:rows 5 :cols 4})
+                           dr/shuffle)
+        core-shapes (->> initial-shapes
+                         (drop (* 0.2 (count initial-shapes)))
+                         (mapv #(g/scale-size % (dr/random 0.25 1.5)))
+                         (gu/fit-all-into-bounds screen)
+                         dr/shuffle)
+        shapes (mapv (fn [s]
+                       (let [dt (dr/weighted {(constantly 0.0) 1
+                                              #(dr/random -5 5) 2
+                                              #(dr/random -10 10) 2
+                                              #(dr/random -25 -50) 1
+                                              #(dr/random 25 50) 1})]
+                         (assoc s :dtheta (dt)))) core-shapes)
         triangles (map (random-tessellation u1 u2) shapes)]
     {:t 0.0
      :shapes shapes
@@ -52,7 +59,7 @@
   (letfn [(rotate [shape-tris shape]
             (let [shape-center (g/centroid shape)]
               (mapv (fn [tri]
-                      (geometry/rotate-around tri shape-center (* t 5)))
+                      (geometry/rotate-around tri shape-center (* t (:dtheta shape))))
                     shape-tris)))]
     (mapv rotate triangles shapes)))
 
