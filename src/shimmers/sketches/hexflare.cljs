@@ -40,8 +40,12 @@
         line2 (clip/clip-line (rect/rect 0 0 width height)
                               (tm/- centroid (tm/* right-down width))
                               (tm/+ centroid (tm/* right-down width)))
+        hexes2 (->> (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
+                                              (/ (* 4 r) dist))]
+                      (g/as-polygon (gc/circle (g/point-at line2 t) r) 6))
+                    (remove #(< (g/dist centroid (g/centroid %)) (* 2 r))))
         ]
-    (into hexes [center line1 line2])))
+    (concat [center line1 line2] hexes hexes2)))
 
 (defn scene []
   (csvg/svg {:width width
