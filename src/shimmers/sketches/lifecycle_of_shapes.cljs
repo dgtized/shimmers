@@ -56,9 +56,15 @@
                                    {:triangles (g/tessellate circle quantity)
                                     :shape circle}))
                            2
-                           (fn [] (let [hexagon (g/as-polygon (g/bounding-circle shape) 6)]
-                                   ;; BUG: polygon g/tessellate returns points and not triangles
-                                   {:triangles (decompose quantity (mapv gt/triangle2 (g/tessellate hexagon)))
+                           (fn [] (let [circle (g/bounding-circle shape)
+                                       hexagon (g/as-polygon circle 6)
+                                       ;; Circle is tessellated into 6 triangles around centroid, but
+                                       ;; hexagon is tessellated into a triangle with 3 surrounding triangles
+                                       ;; Note: polygon g/tessellate returns points and not triangles
+                                       triangles (if (dr/chance 0.5)
+                                                   (g/tessellate circle 6)
+                                                   (mapv gt/triangle2 (g/tessellate hexagon)))]
+                                   {:triangles (decompose quantity triangles)
                                     :shape hexagon}))
                            1
                            (fn [] (let [[a b c d] (g/vertices shape)
