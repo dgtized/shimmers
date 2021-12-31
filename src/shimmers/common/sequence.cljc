@@ -52,6 +52,10 @@
   ([n xs]
    (drop n (drop-last n xs))))
 
+;; Note that int is required because (nth (range 10) 5.5) => 5.5
+(defn middle [xs]
+  (nth xs (int (/ (count xs) 2))))
+
 (defn centered-range [n]
   (let [elements (inc n)]
     (->> (rest (range elements))

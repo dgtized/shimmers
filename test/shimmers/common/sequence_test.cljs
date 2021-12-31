@@ -20,6 +20,12 @@
   (t/is (= [[3 2] [1 0]] (sut/separate #(> % 1) (range 4))))
   (t/is (= [[2 3] [0 1]] (sut/separate #(> % 1) (vec (range 4))))))
 
+(deftest middle
+  (is (= 4 (sut/middle (range 8))))
+  (is (= 4 (sut/middle (range 9))))
+  (is (= 5 (sut/middle (range 10))))
+  (is (= 5 (sut/middle (range 11)))))
+
 (deftest map-with-window
   (is (= [[1 [0 1]] [2 [0 1]]
           [3 [1 2]] [4 [2 3]]
