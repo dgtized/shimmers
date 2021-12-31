@@ -49,27 +49,28 @@
   (let [max-triangles (* 2 u1 u2)]
     (fn [shape]
       (let [quantity (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles))]
-        ((dr/weighted {(fn [] {:triangles (shatter shape (int (* 0.8 quantity)))
-                              :shape (merge (g/as-polygon shape) (select-keys shape [:theta :dtheta]))})
-                       2
-                       (fn [] (let [circle (g/bounding-circle shape)]
-                               {:triangles (g/tessellate circle quantity)
-                                :shape (merge circle (select-keys shape [:theta :dtheta]))}))
-                       2
-                       (fn [] (let [hexagon (g/as-polygon (g/bounding-circle shape) 6)]
-                               ;; BUG: polygon g/tessellate returns points and not triangles
-                               {:triangles (decompose quantity (mapv gt/triangle2 (g/tessellate hexagon)))
-                                :shape (merge hexagon (select-keys shape [:theta :dtheta]))}))
-                       1
-                       (fn [] (let [[a b c d] (g/vertices shape)
-                                   triangle (gt/triangle2 (tm/mix a b 0.5) c d)]
-                               {:triangles (decompose quantity [triangle])
-                                :shape (merge triangle (select-keys shape [:thteta :dtheta]))}))
-                       2
-                       (fn [] {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
-                                                              :rows (dr/random-int 2 u2)})
-                              :shape shape})
-                       1}))))))
+        (-> ((dr/weighted {(fn [] {:triangles (shatter shape (int (* 0.8 quantity)))
+                                  :shape (g/as-polygon shape)})
+                           2
+                           (fn [] (let [circle (g/bounding-circle shape)]
+                                   {:triangles (g/tessellate circle quantity)
+                                    :shape circle}))
+                           2
+                           (fn [] (let [hexagon (g/as-polygon (g/bounding-circle shape) 6)]
+                                   ;; BUG: polygon g/tessellate returns points and not triangles
+                                   {:triangles (decompose quantity (mapv gt/triangle2 (g/tessellate hexagon)))
+                                    :shape hexagon}))
+                           1
+                           (fn [] (let [[a b c d] (g/vertices shape)
+                                       triangle (gt/triangle2 (tm/mix a b 0.5) c d)]
+                                   {:triangles (decompose quantity [triangle])
+                                    :shape triangle}))
+                           2
+                           (fn [] {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
+                                                                  :rows (dr/random-int 2 u2)})
+                                  :shape shape})
+                           1}))
+            (update :shape merge (select-keys shape [:theta :dtheta])))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
