@@ -24,12 +24,6 @@
        (map (comp dr/shuffle (partial take n) cycle range count))
        (apply mapv vector)))
 
-(defn decompose [n triangles]
-  (->> triangles
-       (iterate triangle/decompose-largest)
-       (take-while #(< (count %) n))
-       last))
-
 (defn split-edge [[a b] cuts]
   (->> (if (> cuts 0)
          (mapv #(tm/mix a b %) (cs/midsection (dr/var-range cuts)))
@@ -43,7 +37,7 @@
          gp/polygon2
          g/tessellate
          (mapv gt/triangle2)
-         (decompose n))))
+         (triangle/decompose-into n))))
 
 (defn random-tessellation [u1 u2]
   (let [max-triangles (* 2 u1 u2)]
@@ -64,12 +58,12 @@
                                        triangles (if (dr/chance 0.5)
                                                    (g/tessellate circle 6)
                                                    (mapv gt/triangle2 (g/tessellate hexagon)))]
-                                   {:triangles (decompose quantity triangles)
+                                   {:triangles (triangle/decompose-into quantity triangles)
                                     :shape hexagon}))
                            1
                            (fn [] (let [[a b c d] (g/vertices shape)
                                        triangle (gt/triangle2 (tm/mix a b 0.5) c d)]
-                                   {:triangles (decompose quantity [triangle])
+                                   {:triangles (triangle/decompose-into quantity [triangle])
                                     :shape triangle}))
                            2
                            (fn [] {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)
