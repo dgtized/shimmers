@@ -56,6 +56,11 @@
                                {:triangles (g/tessellate circle quantity)
                                 :shape (merge circle (select-keys shape [:theta :dtheta]))}))
                        2
+                       (fn [] (let [hexagon (g/as-polygon (g/bounding-circle shape) 6)]
+                               ;; BUG: polygon g/tessellate returns points and not triangles
+                               {:triangles (decompose quantity (mapv gt/triangle2 (g/tessellate hexagon)))
+                                :shape (merge hexagon (select-keys shape [:theta :dtheta]))}))
+                       1
                        (fn [] (let [[a b c d] (g/vertices shape)
                                    triangle (gt/triangle2 (tm/mix a b 0.5) c d)]
                                {:triangles (decompose quantity [triangle])
