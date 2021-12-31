@@ -3,7 +3,14 @@
    [shimmers.math.probability :as p]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.math.core :as tm]
+   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Triangle2]]))
+  #?(:clj (:import [thi.ng.geom.types Triangle2])))
+
+(extend-type Triangle2
+  g/IArea
+  (area [_] (Math/abs (apply gu/tri-area2 (get _ :points)))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
