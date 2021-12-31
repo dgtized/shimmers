@@ -45,7 +45,7 @@
                       (g/as-polygon (gc/circle (g/point-at line2 t) r) 6))
                     (remove #(< (g/dist centroid (g/centroid %)) (* 2 r))))
         ]
-    (concat [center line1 line2] hexes hexes2)))
+    (concat [line1 line2 center] hexes hexes2)))
 
 (defn scene []
   (csvg/svg {:width width
