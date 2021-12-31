@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hexflare
   (:require
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -24,7 +25,11 @@
 
 (defn shapes []
   (let [r (* height 0.05)
-        line (gl/line2 (rv 0.0 0.9) (rv 1.0 0.05))
+        a (rv 0.0 0.9)
+        mid-face (g/as-cartesian (gv/vec2 r (- tm/TWO_PI (* (/ 1 12) tm/TWO_PI))))
+        b (gv/vec2 800 (clip/project-y a (tm/+ a mid-face) 800))
+        line (gl/line2 a b)
+
         dist (tm/mag line)
         hexes (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
                                         (/ (* 4 r) dist))]
