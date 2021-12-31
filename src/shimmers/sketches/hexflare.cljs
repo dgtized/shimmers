@@ -12,6 +12,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -27,16 +28,20 @@
   (let [r (* height 0.05)
         a (rv 0.0 0.9)
         mid-face (g/as-cartesian (gv/vec2 r (- tm/TWO_PI (* (/ 1 12) tm/TWO_PI))))
-        b (gv/vec2 800 (clip/project-y a (tm/+ a mid-face) 800))
-        line (gl/line2 a b)
-
-        dist (tm/mag line)
+        b (gv/vec2 width (clip/project-y a (tm/+ a mid-face) width))
+        line1 (gl/line2 a b)
+        dist (tm/mag line1)
         hexes (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
                                         (/ (* 4 r) dist))]
-                (g/as-polygon (gc/circle (g/point-at line t) r) 6))
+                (g/as-polygon (gc/circle (g/point-at line1 t) r) 6))
         center (apply gp/polygon2 (gp/inset-polygon (g/vertices (cs/middle hexes)) 5))
+        centroid (g/centroid center)
+        right-down (g/as-cartesian (gv/vec2 r (/ tm/TWO_PI 12)))
+        line2 (clip/clip-line (rect/rect 0 0 width height)
+                              (tm/- centroid (tm/* right-down width))
+                              (tm/+ centroid (tm/* right-down width)))
         ]
-    (into hexes [center line])))
+    (into hexes [center line1 line2])))
 
 (defn scene []
   (csvg/svg {:width width
