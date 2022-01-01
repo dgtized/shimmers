@@ -31,13 +31,13 @@
 
 (defn shapes []
   (let [r (* height 0.05)
-        a (rv 0.0 0.9)
+        a (rv 0.0 (dr/random 0.8 1.05))
         mid-face (g/as-cartesian (gv/vec2 r (- tm/TWO_PI (* (/ 1 12) tm/TWO_PI))))
         b (gv/vec2 width (clip/project-y a (tm/+ a mid-face) width))
         line1 (gl/line2 a b)
         dist (tm/mag line1)
         hexes (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
-                                        (/ (* 4 r) dist))]
+                                        (/ (* 3 r) dist))]
                 (g/as-polygon (gc/circle (g/point-at line1 t) r) 6))
         center (apply gp/polygon2 (gp/inset-polygon (g/vertices (cs/middle hexes)) 5))
         centroid (g/centroid center)
@@ -48,8 +48,7 @@
         hexes2 (->> (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
                                               (/ (* 4 r) dist))]
                       (g/as-polygon (gc/circle (g/point-at line2 t) r) 6))
-                    (remove #(< (g/dist centroid (g/centroid %)) (* 2 r))))
-        ]
+                    (remove #(< (g/dist centroid (g/centroid %)) (* 2.0 r))))]
     (concat [line1 line2 center]
             (mapv (scale-dist centroid 1.3) hexes)
             (mapv (scale-dist centroid 1.8) hexes2))))
