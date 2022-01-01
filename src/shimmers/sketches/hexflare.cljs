@@ -24,6 +24,11 @@
 (defn rp [r theta]
   (v/polar (* r 0.5 height) theta))
 
+(defn scale-dist [center factor]
+  (fn [s]
+    (let [pct (- 1.0 (/ (g/dist (g/centroid s) center) (* factor height)))]
+      (g/scale-size s pct))))
+
 (defn shapes []
   (let [r (* height 0.05)
         a (rv 0.0 0.9)
@@ -45,7 +50,9 @@
                       (g/as-polygon (gc/circle (g/point-at line2 t) r) 6))
                     (remove #(< (g/dist centroid (g/centroid %)) (* 2 r))))
         ]
-    (concat [line1 line2 center] hexes hexes2)))
+    (concat [line1 line2 center]
+            (mapv (scale-dist centroid 1.3) hexes)
+            (mapv (scale-dist centroid 1.8) hexes2))))
 
 (defn scene []
   (csvg/svg {:width width
