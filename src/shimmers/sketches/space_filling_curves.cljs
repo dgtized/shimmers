@@ -8,6 +8,11 @@
    [thi.ng.math.core :as tm]
    [thi.ng.geom.svg.core :as svg]))
 
+;; TODO: space-filling-curves can be used to offset map into a texture with
+;; interesting locality properties. It can map a 2d coordinate to the closest
+;; point on sfc(s) where s is a value from 0 -> 1 representing distance along
+;; the curve. Likewise, for the reverse, from length s to a point in 2d space.
+
 (def width 800)
 (def height 800)
 (defn rv [x y]
