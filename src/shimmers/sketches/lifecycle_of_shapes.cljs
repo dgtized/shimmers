@@ -41,12 +41,12 @@
                                        triangles (if (dr/chance 0.5)
                                                    (g/tessellate circle 6)
                                                    (mapv gt/triangle2 (g/tessellate hexagon)))]
-                                   {:triangles (triangle/decompose-into quantity triangles)
+                                   {:triangles (triangle/decompose-into {:n quantity} triangles)
                                     :shape hexagon}))
                            1
                            (fn [] (let [[a b c d] (g/vertices shape)
                                        triangle (gt/triangle2 (tm/mix a b 0.5) c d)]
-                                   {:triangles (triangle/decompose-into quantity [triangle])
+                                   {:triangles (triangle/decompose-into {:n quantity} [triangle])
                                     :shape triangle}))
                            2
                            (fn [] {:triangles (g/tessellate shape {:cols (dr/random-int 3 u1)

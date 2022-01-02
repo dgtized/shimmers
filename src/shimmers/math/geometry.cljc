@@ -145,4 +145,4 @@
           gp/polygon2
           g/tessellate
           (mapv gt/triangle2)
-          (triangle/decompose-into n)))))
+          (triangle/decompose-into {:n n})))))
