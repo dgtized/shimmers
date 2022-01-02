@@ -16,7 +16,7 @@
 (defn shapes []
   (->> [(rect/rect (rv 0.1 0.1) (rv 0.4 0.9))
         (rect/rect (rv 0.6 0.1) (rv 0.9 0.9))]
-       (mapcat #(geometry/shatter % 100))))
+       (mapcat #(geometry/shatter % 100 {}))))
 
 (defn scene []
   (csvg/svg {:width width

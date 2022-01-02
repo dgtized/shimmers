@@ -136,11 +136,13 @@
          [])
        (into [a])))
 
-(defn shatter [rect n]
-  (let [polygon (g/as-polygon rect)
-        edges (g/edges polygon)]
-    (->> (mapcat split-edge edges (repeatedly #(dr/random-int 3)))
-         gp/polygon2
-         g/tessellate
-         (mapv gt/triangle2)
-         (triangle/decompose-into n))))
+(defn shatter
+  ([rect n] (shatter rect n {}))
+  ([rect n {:keys [edge-splits] :or {edge-splits 3}}]
+   (let [polygon (g/as-polygon rect)
+         edges (g/edges polygon)]
+     (->> (mapcat split-edge edges (repeatedly #(dr/random-int edge-splits)))
+          gp/polygon2
+          g/tessellate
+          (mapv gt/triangle2)
+          (triangle/decompose-into n)))))
