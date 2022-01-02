@@ -1,11 +1,13 @@
 (ns shimmers.math.geometry
-  (:require [shimmers.math.geometry.triangle :as triangle]
+  (:require [shimmers.common.sequence :as cs]
+            [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.geometry.triangle :as triangle]
             [shimmers.math.probability :as p]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.quaternion :as quat]
             [thi.ng.geom.rect :as rect]
-            thi.ng.geom.polygon
             [thi.ng.geom.triangle :as gt]
             #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
             [thi.ng.geom.vector :as gv]
@@ -127,3 +129,18 @@
 
 (defn point-within? [shapes point]
   (some (fn [s] (g/contains-point? s point)) shapes))
+
+(defn split-edge [[a b] cuts]
+  (->> (if (> cuts 0)
+         (mapv #(tm/mix a b %) (cs/midsection (dr/var-range cuts)))
+         [])
+       (into [a])))
+
+(defn shatter [rect n]
+  (let [polygon (g/as-polygon rect)
+        edges (g/edges polygon)]
+    (->> (mapcat split-edge edges (repeatedly #(dr/random-int 3)))
+         gp/polygon2
+         g/tessellate
+         (mapv gt/triangle2)
+         (triangle/decompose-into n))))

@@ -4,13 +4,11 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
@@ -24,26 +22,11 @@
        (map (comp dr/shuffle (partial take n) cycle range count))
        (apply mapv vector)))
 
-(defn split-edge [[a b] cuts]
-  (->> (if (> cuts 0)
-         (mapv #(tm/mix a b %) (cs/midsection (dr/var-range cuts)))
-         [])
-       (into [a])))
-
-(defn shatter [rect n]
-  (let [polygon (g/as-polygon rect)
-        edges (g/edges polygon)]
-    (->> (mapcat split-edge edges (repeatedly #(dr/random-int 3)))
-         gp/polygon2
-         g/tessellate
-         (mapv gt/triangle2)
-         (triangle/decompose-into n))))
-
 (defn random-tessellation [u1 u2]
   (let [max-triangles (* 2 u1 u2)]
     (fn [shape]
       (let [quantity (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles))]
-        (-> ((dr/weighted {(fn [] {:triangles (shatter shape (int (* 0.8 quantity)))
+        (-> ((dr/weighted {(fn [] {:triangles (geometry/shatter shape (int (* 0.8 quantity)))
                                   :shape (g/as-polygon shape)})
                            2
                            (fn [] (let [circle (g/bounding-circle shape)]
