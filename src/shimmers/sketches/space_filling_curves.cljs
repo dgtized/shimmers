@@ -80,14 +80,14 @@
          (mapv (fn [p] [:L p]) (rest positions)))))
 
 (defn shapes []
-  (turtle->path (turtle (rv 0.03 0.97) (/ width (Math/pow 2 4)) (hilbert-curve 4 :up))))
+  (turtle->path (turtle (rv 0.0 1.0) (/ width (Math/pow 2 7)) (hilbert-curve 7 :up))))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 0.5}
+             :stroke-width 1.0}
             (shapes)))
 
 (sketch/definition space-filling-curves
