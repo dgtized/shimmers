@@ -14,8 +14,8 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes []
-  (->> [(rect/rect (rv 0.1 0.1) (rv 0.4 0.9))
-        (rect/rect (rv 0.6 0.1) (rv 0.9 0.9))]
+  (->> [(rect/rect (rv 0.05 0.05) (rv 0.45 0.85))
+        (rect/rect (rv 0.55 0.15) (rv 0.95 0.95))]
        (mapcat #(geometry/shatter % 100 {}))))
 
 (defn scene []
