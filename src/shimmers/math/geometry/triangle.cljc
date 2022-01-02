@@ -77,15 +77,14 @@
               [m1 m2 c]]))
          (mapv gt/triangle2))))
 
-(defn decompose-largest [triangles]
-  (let [[biggest & remaining] (sort-by g/area > triangles)]
-    (concat remaining (decompose biggest {:mode :midpoint}))))
-
 (defn decompose-into
   "Continue decomposing a set of triangles into `n` triangles. May return more if
   initial set is > `n`."
-  [n triangles]
-  (->> triangles
-       (iterate decompose-largest)
-       (take-while #(< (count %) n))
-       last))
+  [n initial-triangles]
+  (letfn [(decompose-largest [triangles]
+            (let [[biggest & remaining] (sort-by g/area > triangles)]
+              (concat remaining (decompose biggest {:mode :midpoint}))))]
+    (->> initial-triangles
+         (iterate decompose-largest)
+         (take-while #(< (count %) n))
+         last)))
