@@ -26,7 +26,7 @@
   (let [max-triangles (* 2 u1 u2)]
     (fn [shape]
       (let [quantity (dr/random-int (* 0.3 max-triangles) (* 0.8 max-triangles))]
-        (-> ((dr/weighted {(fn [] {:triangles (geometry/shatter shape (int (* 0.8 quantity)))
+        (-> ((dr/weighted {(fn [] {:triangles (geometry/shatter shape {:n (int (* 0.8 quantity))})
                                   :shape (g/as-polygon shape)})
                            2
                            (fn [] (let [circle (g/bounding-circle shape)]

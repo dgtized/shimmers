@@ -80,10 +80,10 @@
 (defn decompose-into
   "Continue decomposing a set of triangles into `n` triangles. May return more if
   initial set is > `n`."
-  [{:keys [n]} initial-triangles]
+  [{:keys [n mode] :or {mode :midpoint}} initial-triangles]
   (letfn [(decompose-largest [triangles]
             (let [[biggest & remaining] (sort-by g/area > triangles)]
-              (concat remaining (decompose biggest {:mode :midpoint}))))]
+              (concat remaining (decompose biggest {:mode mode}))))]
     (->> initial-triangles
          (iterate decompose-largest)
          (take-while #(< (count %) n))
