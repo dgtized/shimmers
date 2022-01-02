@@ -96,7 +96,7 @@
             (shapes)))
 
 (sketch/definition space-filling-curves
-  {:created-at "2022-"
+  {:created-at "2022-01-02"
    :type :svg
    :tags #{}}
   (ctrl/mount (view-sketch/page-for scene :space-filling-curves)
