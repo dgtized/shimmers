@@ -84,7 +84,7 @@
 (defn year-month [{:keys [created-at]}]
   (let [date (js/Date. created-at)
         intl (js/Intl.DateTimeFormat. "en-US" #js{:month "long" :timeZone "UTC"})]
-    [(.getFullYear date) (.format intl date)]))
+    [(.getUTCFullYear date) (.format intl date)]))
 
 (defn by-date [sketches]
   (let [[filtered terms] (filter-sketches sketches)
