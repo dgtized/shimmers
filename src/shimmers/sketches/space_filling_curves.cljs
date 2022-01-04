@@ -43,6 +43,11 @@
             {"L" (seq "-RF+LFL+FR-")
              "R" (seq "+LF-RFR-FL+")}))
 
+(def hilbert-curve
+  (l-system (seq "A")
+            {"A" (seq "+BF-AFA-FB+")
+             "B" (seq "-AF+BFB+FA-")}))
+
 (defn rewrite-turtle [pos orientation length rules]
   (svg/path (into [[:M pos]]
                   (keep (fn [[c p _]] (when (= c "F") [:L p]))
@@ -54,69 +59,6 @@
                              "-" ["-" p (right o)]))
                          ["" pos orientation] rules)))))
 
-(defn up-line []
-  [:up])
-
-(defn down-line []
-  [:down])
-
-(defn left-line []
-  [:left])
-
-(defn right-line []
-  [:right])
-
-(defn hilbert-curve [n turn]
-  (if (zero? n)
-    []
-    (case turn
-      :up
-      (concat (hilbert-curve (dec n) :right)
-              (up-line)
-              (hilbert-curve (dec n) :up)
-              (right-line)
-              (hilbert-curve (dec n) :up)
-              (down-line)
-              (hilbert-curve (dec n) :left))
-      :left
-      (concat (hilbert-curve (dec n) :down)
-              (left-line)
-              (hilbert-curve (dec n) :left)
-              (down-line)
-              (hilbert-curve (dec n) :left)
-              (right-line)
-              (hilbert-curve (dec n) :up))
-      :right
-      (concat (hilbert-curve (dec n) :up)
-              (right-line)
-              (hilbert-curve (dec n) :right)
-              (up-line)
-              (hilbert-curve (dec n) :right)
-              (left-line)
-              (hilbert-curve (dec n) :down))
-      :down
-      (concat (hilbert-curve (dec n) :left)
-              (down-line)
-              (hilbert-curve (dec n) :down)
-              (left-line)
-              (hilbert-curve (dec n) :down)
-              (up-line)
-              (hilbert-curve (dec n) :right)))))
-
-(defn turtle [start-pos length curve]
-  (reductions (fn [pos dir]
-                (case dir
-                  :up (tm/+ pos (gv/vec2 0 (- length)))
-                  :down (tm/+ pos (gv/vec2 0 length))
-                  :right (tm/+ pos (gv/vec2 length 0))
-                  :left (tm/+ pos (gv/vec2 (- length) 0))))
-              start-pos curve))
-
-(defn turtle->path [positions]
-  (svg/path
-   (into [[:M (first positions)]]
-         (mapv (fn [p] [:L p]) (rest positions)))))
-
 (defn shapes [algorithm depth]
   (let [divider (dec (Math/pow 2 depth))
         length (/ width divider)]
@@ -126,9 +68,9 @@
                       (orientation :up) length
                       (moore-curve (dec depth)))
       "hilbert"
-      (->> (hilbert-curve depth :up)
-           (turtle (rv 0.0 1.0) length)
-           turtle->path))))
+      (rewrite-turtle (rv 0.0 1.0)
+                      (orientation :up) length
+                      (hilbert-curve (inc depth))))))
 
 (defn scene [algorithm depth]
   (csvg/svg {:width width
