@@ -3,10 +3,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.svg.core :as svg]))
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: space-filling-curves can be used to offset map into a texture with
 ;; interesting locality properties. It can map a 2d coordinate to the closest
