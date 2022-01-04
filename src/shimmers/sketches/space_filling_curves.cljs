@@ -49,28 +49,35 @@
              "B" (seq "-AF+BFB+FA-")}))
 
 (defn rewrite-turtle [pos orientation length rules]
-  (svg/path (into [[:M pos]]
-                  (keep (fn [[c p _]] (when (= c "F") [:L p]))
-                        (reductions
-                         (fn [[_ p o] r]
-                           (case r
-                             "F" ["F" (tm/+ p (tm/* o length)) o]
-                             "+" ["+" p (left o)]
-                             "-" ["-" p (right o)]))
-                         ["" pos orientation] rules)))))
+  (->> rules
+       (reductions
+        (fn [[_ p o] r]
+          (case r
+            "F" ["F" (tm/+ p (tm/* o length)) o]
+            "+" ["+" p (left o)]
+            "-" ["-" p (right o)]))
+        ["" pos orientation])
+       (keep (fn [[c p _]] (when (= c "F") p)))))
+
+(defn rewrite-path [pos orientation length expansions]
+  (->> expansions
+       (rewrite-turtle pos orientation length)
+       (mapv (fn [p] [:L p]))
+       (into [[:M pos]])
+       svg/path))
 
 (defn shapes [algorithm depth]
   (let [divider (dec (Math/pow 2 depth))
         length (/ width divider)]
     (case algorithm
       "moore"
-      (rewrite-turtle (gv/vec2 (* 0.5 (dec divider) length) height)
-                      (orientation :up) length
-                      (moore-curve (dec depth)))
+      (rewrite-path (gv/vec2 (* 0.5 (dec divider) length) height)
+                    (orientation :up) length
+                    (moore-curve (dec depth)))
       "hilbert"
-      (rewrite-turtle (rv 0.0 1.0)
-                      (orientation :up) length
-                      (hilbert-curve (inc depth))))))
+      (rewrite-path (rv 0.0 1.0)
+                    (orientation :up) length
+                    (hilbert-curve (inc depth))))))
 
 (defn scene [algorithm depth]
   (csvg/svg {:width width
