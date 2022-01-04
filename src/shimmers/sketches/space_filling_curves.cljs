@@ -86,7 +86,7 @@
 
 (defn shapes [depth]
   (->> (hilbert-curve depth :up)
-       (turtle (rv 0.0 1.0) (/ width (Math/pow 2 depth)))
+       (turtle (rv 0.0 1.0) (/ width (dec (Math/pow 2 depth))))
        turtle->path))
 
 (defn scene [depth]
