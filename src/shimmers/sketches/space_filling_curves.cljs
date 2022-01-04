@@ -84,20 +84,30 @@
    (into [[:M (first positions)]]
          (mapv (fn [p] [:L p]) (rest positions)))))
 
-(defn shapes []
-  (turtle->path (turtle (rv 0.0 1.0) (/ width (Math/pow 2 7)) (hilbert-curve 7 :up))))
+(defn shapes [depth]
+  (->> (hilbert-curve depth :up)
+       (turtle (rv 0.0 1.0) (/ width (Math/pow 2 depth)))
+       turtle->path))
 
-(defn scene []
+(defn scene [depth]
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes)))
+            (shapes depth)))
+
+(defonce ui-state (ctrl/state {:depth 6}))
+
+(defn page []
+  [:div
+   [:div.canvas-frame [scene (:depth @ui-state)]]
+   [:div
+    (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
+    [:p.center (view-sketch/generate :space-filling-curves)]]])
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
    :type :svg
-   :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :space-filling-curves)
-              "sketch-host"))
+   :tags #{:static :deterministic}}
+  (ctrl/mount page "sketch-host"))
