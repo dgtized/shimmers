@@ -102,9 +102,9 @@
 (defn page []
   [:div
    [:div.canvas-frame [scene (:depth @ui-state)]]
-   [:div
-    (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
-    [:p.center (view-sketch/generate :space-filling-curves)]]])
+   [:div#interface
+    (ctrl/container
+     (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1]))]])
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
