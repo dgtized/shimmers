@@ -115,10 +115,13 @@
          (mapv (fn [p] [:L p]) (rest positions)))))
 
 (defn shapes [algorithm depth]
-  (let [length (/ width (dec (Math/pow 2 depth)))]
+  (let [divider (dec (Math/pow 2 depth))
+        length (/ width divider)]
     (case algorithm
       "moore"
-      (rewrite-turtle (rv 0.0 1.0) (orientation :up) length (moore-curve depth))
+      (rewrite-turtle (gv/vec2 (* 0.5 (dec divider) length) height)
+                      (orientation :up) length
+                      (moore-curve (dec depth)))
       "hilbert"
       (->> (hilbert-curve depth :up)
            (turtle (rv 0.0 1.0) length)
