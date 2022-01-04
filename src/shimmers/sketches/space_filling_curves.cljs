@@ -109,5 +109,5 @@
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
    :type :svg
-   :tags #{:static :deterministic}}
+   :tags #{:static}}
   (ctrl/mount page "sketch-host"))
