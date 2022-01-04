@@ -20,6 +20,37 @@
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
 
+(defn orientation [dir]
+  (case dir
+    :up (gv/vec2 0 -1)
+    :down (gv/vec2 0 1)
+    :right (gv/vec2 1 0)
+    :left (gv/vec2 -1 0)))
+
+(defn right [[x y]]
+  (gv/vec2 y (- x)))
+
+(defn left [[x y]]
+  (gv/vec2 (- y) x))
+
+(defn moore-curve [depth]
+  (let [axiom (seq "LFL+F+LFL")
+        productions {"L" (seq "-RF+LFL+FR-")
+                     "R" (seq "+LF-RFR-FL+")}]
+    (remove (set (keys productions))
+            (nth (iterate (fn [s] (mapcat #(get productions % %) s)) axiom) depth))))
+
+(defn rewrite-turtle [pos orientation length rules]
+  (svg/path (into [[:M pos]]
+                  (keep (fn [[c p _]] (when (= c "F") [:L p]))
+                        (reductions
+                         (fn [[_ p o] r]
+                           (case r
+                             "F" ["F" (tm/+ p (tm/* o length)) o]
+                             "+" ["+" p (left o)]
+                             "-" ["-" p (right o)]))
+                         ["" pos orientation] rules)))))
+
 (defn up-line []
   [:up])
 
@@ -83,26 +114,36 @@
    (into [[:M (first positions)]]
          (mapv (fn [p] [:L p]) (rest positions)))))
 
-(defn shapes [depth]
-  (->> (hilbert-curve depth :up)
-       (turtle (rv 0.0 1.0) (/ width (dec (Math/pow 2 depth))))
-       turtle->path))
+(defn shapes [algorithm depth]
+  (let [length (/ width (dec (Math/pow 2 depth)))]
+    (case algorithm
+      "moore"
+      (rewrite-turtle (rv 0.0 1.0) (orientation :up) length (moore-curve depth))
+      "hilbert"
+      (->> (hilbert-curve depth :up)
+           (turtle (rv 0.0 1.0) length)
+           turtle->path))))
 
-(defn scene [depth]
+(defn scene [algorithm depth]
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes depth)))
+            (shapes algorithm depth)))
 
-(defonce ui-state (ctrl/state {:depth 6}))
+(defonce ui-state (ctrl/state {:algorithm "hilbert"
+                               :depth 6}))
 
 (defn page []
   [:div
-   [:div.canvas-frame [scene (:depth @ui-state)]]
+   (let [{:keys [algorithm depth]} @ui-state]
+     [:div.canvas-frame [scene algorithm depth]])
    [:div#interface
     (ctrl/container
+     (ctrl/dropdown ui-state "Algorithm" [:algorithm]
+                    {"moore" "moore"
+                     "hilbert" "hilbert"})
      (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1]))]])
 
 (sketch/definition space-filling-curves
