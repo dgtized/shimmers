@@ -33,12 +33,15 @@
 (defn left [[x y]]
   (gv/vec2 (- y) x))
 
-(defn moore-curve [depth]
-  (let [axiom (seq "LFL+F+LFL")
-        productions {"L" (seq "-RF+LFL+FR-")
-                     "R" (seq "+LF-RFR-FL+")}]
-    (remove (set (keys productions))
-            (nth (iterate (fn [s] (mapcat #(get productions % %) s)) axiom) depth))))
+(defn l-system [axiom productions]
+  (fn [depth]
+    (let [systems (iterate (fn [s] (mapcat #(get productions % %) s)) axiom)]
+      (remove (set (keys productions)) (nth systems depth)))))
+
+(def moore-curve
+  (l-system (seq "LFL+F+LFL")
+            {"L" (seq "-RF+LFL+FR-")
+             "R" (seq "+LF-RFR-FL+")}))
 
 (defn rewrite-turtle [pos orientation length rules]
   (svg/path (into [[:M pos]]
