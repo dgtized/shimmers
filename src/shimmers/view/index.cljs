@@ -100,8 +100,7 @@
         (list-sketches sketches)])]))
 
 (defn all-tags [sketches]
-  (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
-          #{} sketches))
+  (apply set/union (map :tags sketches)))
 
 (defn by-tag [sketches]
   (let [tagged (remove (fn [s] (empty? (:tags s))) sketches)
