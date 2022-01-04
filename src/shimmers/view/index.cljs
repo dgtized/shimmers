@@ -99,12 +99,14 @@
         [:h3.date (str month " " year " (" (count sketches) ")")]
         (list-sketches sketches)])]))
 
+(defn all-tags [sketches]
+  (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
+          #{} sketches))
+
 (defn by-tag [sketches]
   (let [tagged (remove (fn [s] (empty? (:tags s))) sketches)
         [filtered terms] (filter-sketches tagged)
-        tags (reduce (fn [acc {:keys [tags]}] (set/union acc tags))
-                     #{}
-                     filtered)]
+        tags (all-tags filtered)]
     [:section.sketch-list
      (selector ::by-tag)
      (filtered-terms tagged filtered terms)
