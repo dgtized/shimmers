@@ -6,7 +6,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -17,12 +16,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn inset-rect [rect scale]
-  (let [[a _ c _] (gp/inset-polygon (g/vertices rect) scale)]
-    (rect/rect a c)))
+(defn scale-rect [rect scale]
+  (g/scale-size rect scale))
 
 (defn deepen [{op :p [width height] :size :as outer}]
-  (let [{ip :p [w h] :size :as inner} (inset-rect outer (dr/random -5 -1))]
+  (let [{ip :p [w h] :size :as inner} (scale-rect outer (dr/random 0.75 0.95))]
     (g/translate inner (tm/+ (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
                                       (* (dr/random 0.2 0.8) (- height h)))
                              (tm/- op ip)))))
@@ -34,7 +32,7 @@
     (for [x (range (/ width w))
           y (range (/ height h))]
       (svg/group {:transform (str "translate(" (* x w) "," (* y h) ")")}
-                 (take 16 (iterate deepen (rect/rect o o (- w o) (- h o))))))))
+                 (take 12 (iterate deepen (rect/rect o o (- w o) (- h o))))))))
 
 (defn scene []
   (csvg/svg {:width width
