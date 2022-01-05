@@ -8,7 +8,9 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -19,12 +21,14 @@
   (let [[a _ c _] (gp/inset-polygon (g/vertices rect) scale)]
     (rect/rect a c)))
 
-(defn deepen [square]
-  (for [s (range 0 20)]
-    (inset-rect square (* s (dr/random -11 -7)))))
+(defn deepen [{op :p [width height] :size :as outer}]
+  (let [{ip :p [w h] :size :as inner} (inset-rect outer (dr/random -16 -4))]
+    (g/translate inner (tm/- (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
+                                      (* (dr/random 0.2 0.8) (- height h)))
+                             (tm/- ip op)))))
 
 (defn shapes []
-  (deepen (rect/rect (rv 0.2 0.1) (rv 0.8 0.9))))
+  (svg/group {} (take 20 (iterate deepen (rect/rect (rv 0.2 0.1) (rv 0.8 0.9))))))
 
 (defn scene []
   (csvg/svg {:width width
