@@ -22,13 +22,19 @@
     (rect/rect a c)))
 
 (defn deepen [{op :p [width height] :size :as outer}]
-  (let [{ip :p [w h] :size :as inner} (inset-rect outer (dr/random -16 -4))]
-    (g/translate inner (tm/- (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
+  (let [{ip :p [w h] :size :as inner} (inset-rect outer (dr/random -5 -1))]
+    (g/translate inner (tm/+ (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
                                       (* (dr/random 0.2 0.8) (- height h)))
-                             (tm/- ip op)))))
+                             (tm/- op ip)))))
 
 (defn shapes []
-  (svg/group {} (take 20 (iterate deepen (rect/rect (rv 0.2 0.1) (rv 0.8 0.9))))))
+  (let [w 100
+        h 100
+        o 5]
+    (for [x (range (/ width w))
+          y (range (/ height h))]
+      (svg/group {:transform (str "translate(" (* x w) "," (* y h) ")")}
+                 (take 16 (iterate deepen (rect/rect o o (- w o) (- h o))))))))
 
 (defn scene []
   (csvg/svg {:width width
