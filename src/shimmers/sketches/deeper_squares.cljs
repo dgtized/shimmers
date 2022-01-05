@@ -11,6 +11,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; Variations on (Des)Ordres
+;; https://dam.org/museum/artists_ui/artists/molnar-vera/des-ordres/
+
 (def width 800)
 (def height 600)
 (defn rv [x y]
