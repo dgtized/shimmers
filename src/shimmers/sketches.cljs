@@ -25,6 +25,7 @@
             shimmers.sketches.convex-spiral
             shimmers.sketches.cube
             shimmers.sketches.decaying-foundations
+            shimmers.sketches.deeper-squares
             shimmers.sketches.deformed-spirals
             shimmers.sketches.delaunay-voronoi
             shimmers.sketches.disassociated-boxes
