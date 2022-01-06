@@ -28,8 +28,11 @@
       (fn [_] (@cancel-animation))
       :reagent-render
       (fn [_]
-        @canvas-state
-        [:canvas attributes])})))
+        (let [{:keys [width height]} @canvas-state]
+          [:canvas (merge {:width width :height height
+                           :style {:width (str width "px")
+                                   :height (str height "px")}}
+                          attributes)]))})))
 
 (defn set-size! [width height]
   (swap! canvas-state assoc :width width :height height))
@@ -42,12 +45,8 @@
       (set-size! 200 200))))
 
 (defn canvas-frame [render-frame-fn]
-  (let [{:keys [width height]} @canvas-state]
-    [canvas {:class "canvas-frame"
-             :width width :height height
-             :style {:width (str width "px")
-                     :height (str height "px")}}
-     render-frame-fn]))
+  [canvas {:class "canvas-frame"}
+   render-frame-fn])
 
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
@@ -75,11 +74,11 @@
         box-state (atom {:size size
                          :pos (gv/vec2 (dr/random-int margin (- width size margin))
                                        (dr/random-int margin (- height size margin)))
-                         :vel (tm/normalize (gv/randvec2) 2.0)})
-        bounds (rect/rect 0 0 width height)]
+                         :vel (tm/normalize (gv/randvec2) 2.0)})]
     (cv/on-frame
      (fn [_]
        (let [{:keys [width height]} @canvas-state
+             bounds (rect/rect 0 0 width height)
              {:keys [pos size] :as box-state'} (update-box @box-state bounds)
              [x y] pos]
          (reset! box-state box-state')
@@ -102,7 +101,7 @@
     [:p.readable-width
      "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
-   sketch. However, size toggling is not yet working."]
+   sketch."]
     (debug/display canvas-state)
     [:button {:on-click #(toggle-size)} "Toggle Size"]]])
 
