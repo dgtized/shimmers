@@ -40,12 +40,11 @@
 
 (defn canvas-frame [render-frame-fn]
   (let [{:keys [width height]} @canvas-state]
-    (canvas {:class "canvas-frame"
+    [canvas {:class "canvas-frame"
              :width width :height height
              :style {:width (str width "px")
                      :height (str height "px")}}
-            render-frame-fn)))
-
+     render-frame-fn]))
 
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
