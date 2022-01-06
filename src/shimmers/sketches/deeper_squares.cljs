@@ -17,8 +17,6 @@
 
 (def width 800)
 (def height 600)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 (defn scale-rect [rect scale]
   (g/scale-size rect scale))
