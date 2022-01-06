@@ -11,6 +11,9 @@
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
         thi.ng/shadergraph {:mvn/version "0.3.0"}
 
+        ;; alternative SVG library
+        io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
+
         ;; probability distributions
         kixi/stats {:mvn/version "0.5.4"}
 
