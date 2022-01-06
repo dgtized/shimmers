@@ -4,6 +4,7 @@
    [reagent.core :as r]
    [reagent.dom :as rdom]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
@@ -12,7 +13,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def canvas-state (r/atom {:width 400 :height 300}))
+(defonce canvas-state (r/atom {:width 200 :height 200}))
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
@@ -27,13 +28,18 @@
       (fn [_] (@cancel-animation))
       :reagent-render
       (fn [_]
+        @canvas-state
         [:canvas attributes])})))
 
 (defn set-size! [width height]
   (swap! canvas-state assoc :width width :height height))
 
 ;; TODO: not quite updating the canvas size dynamically?
-(comment (set-size! 800 600))
+(defn toggle-size []
+  (let [{:keys [width]} @canvas-state]
+    (if (= width 200)
+      (set-size! 300 300)
+      (set-size! 200 200))))
 
 (defn canvas-frame [render-frame-fn]
   (let [{:keys [width height]} @canvas-state]
@@ -92,10 +98,13 @@
     [:h4 "Frame 2"]
     [canvas-frame draw-frame]]
    [:div {:style {:clear :both}}]
-   [:p.explanation.readable-width
-    "Experimenting with an alternative Canvas renderer from Quil. As it can
+   [:div.explanation
+    [:p.readable-width
+     "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
-   sketch."]])
+   sketch. However, size toggling is not yet working."]
+    (debug/display canvas-state)
+    [:button {:on-click #(toggle-size)} "Toggle Size"]]])
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
