@@ -21,13 +21,10 @@
     (r/create-class
      {:component-did-mount
       (fn [this]
-        (println "mounting")
         (reset! cancel-animation
                 (render-frame-fn this (rdom/dom-node this))))
       :component-will-unmount
-      (fn [_]
-        (println "canceling")
-        (@cancel-animation))
+      (fn [_] (@cancel-animation))
       :reagent-render
       (fn [_]
         [:canvas attributes])})))
