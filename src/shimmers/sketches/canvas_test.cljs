@@ -16,6 +16,13 @@
 (defonce canvas-state (r/atom {:width 200 :height 200}))
 (def telemetry (r/atom {}))
 
+(defn sizing-attributes [width height attributes]
+  (merge
+   {:width width :height height
+    :style {:width (str width "px")
+            :height (str height "px")}}
+   attributes))
+
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
 (defn canvas [attributes render-frame-fn]
@@ -30,10 +37,7 @@
       :reagent-render
       (fn [_]
         (let [{:keys [width height]} @canvas-state]
-          [:canvas (merge {:width width :height height
-                           :style {:width (str width "px")
-                                   :height (str height "px")}}
-                          attributes)]))})))
+          [:canvas (sizing-attributes width height attributes)]))})))
 
 (defn set-size! [width height]
   (swap! canvas-state assoc :width width :height height))
