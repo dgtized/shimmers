@@ -102,8 +102,8 @@
      "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
    sketch."]
-    (debug/display canvas-state)
-    [:button {:on-click #(toggle-size)} "Toggle Size"]]])
+    [:button {:on-click #(toggle-size)} "Toggle Size"]
+    (debug/display canvas-state)]])
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
