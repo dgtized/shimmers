@@ -14,6 +14,7 @@
    [thi.ng.math.core :as tm]))
 
 (defonce canvas-state (r/atom {:width 200 :height 200}))
+(def telemetry (r/atom {}))
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
@@ -67,36 +68,38 @@
                :vel new-vel)))))
 
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
-(defn draw-frame [_ canvas]
-  (let [ctx (cv/high-dpi (.getContext canvas "2d"))
-        {:keys [width height]} @canvas-state
-        margin 10
-        size 50
-        box-state (atom {:size size
-                         :pos (gv/vec2 (dr/random-int margin (- width size margin))
-                                       (dr/random-int margin (- height size margin)))
-                         :vel (tm/normalize (gv/randvec2) 2.0)})]
-    (cv/on-frame
-     (fn [_]
-       (let [{:keys [width height]} @canvas-state
-             bounds (rect/rect 0 0 width height)
-             {:keys [pos size] :as box-state'} (update-box @box-state bounds)
-             [x y] pos]
-         (reset! box-state box-state')
-         (-> ctx
-             (cv/color-fill "white")
-             (cv/rect-fill 0 0 width height)
-             (cv/color-fill "black")
-             (cv/rect-fill x y size size)))))))
+(defn draw-frame [id]
+  (fn [_ canvas]
+    (let [ctx (cv/high-dpi (.getContext canvas "2d"))
+          {:keys [width height]} @canvas-state
+          margin 10
+          size 50
+          box-state (atom {:size size
+                           :pos (gv/vec2 (dr/random-int margin (- width size margin))
+                                         (dr/random-int margin (- height size margin)))
+                           :vel (tm/normalize (gv/randvec2) 2.0)})]
+      (cv/on-frame
+       (fn [_]
+         (let [{:keys [width height]} @canvas-state
+               bounds (rect/rect 0 0 width height)
+               {:keys [pos size] :as box-state'} (update-box @box-state bounds)
+               [x y] pos]
+           (swap! telemetry assoc id pos)
+           (reset! box-state box-state')
+           (-> ctx
+               (cv/color-fill "white")
+               (cv/rect-fill 0 0 width height)
+               (cv/color-fill "black")
+               (cv/rect-fill x y size size))))))))
 
 (defn page []
   [:div
    [:div {:style {:float "left"}}
     [:h4 "Frame 1"]
-    [canvas-frame draw-frame]]
+    [canvas-frame (draw-frame :a)]]
    [:div {:style {:float "right"}}
     [:h4 "Frame 2"]
-    [canvas-frame draw-frame]]
+    [canvas-frame (draw-frame :b)]]
    [:div {:style {:clear :both}}]
    [:div.explanation
     [:p.readable-width
@@ -104,7 +107,8 @@
    mount as a React component, it's easier to host multiple in a single
    sketch."]
     [:button {:on-click #(toggle-size)} "Toggle Size"]
-    (debug/display canvas-state)]])
+    (debug/display canvas-state)
+    (debug/display telemetry)]])
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
