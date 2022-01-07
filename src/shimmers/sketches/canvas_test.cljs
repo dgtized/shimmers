@@ -51,6 +51,7 @@
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
         new-pos (tm/+ pos vel)]
+    ;; TODO: handle out of bounds case on resize?
     (if (geometry/contains-box? bounds (rect/rect new-pos (tm/+ new-pos (gv/vec2 size size))))
       (assoc state
              :pos new-pos
