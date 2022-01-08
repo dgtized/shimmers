@@ -14,8 +14,6 @@
 
 (def width 800)
 (def height 600)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 (defn shapes []
   (let [template (g/center (gt/triangle2 (gv/vec2 0 0) (gv/vec2 40 40) (gv/vec2 30 5)))
