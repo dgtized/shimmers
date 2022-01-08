@@ -46,9 +46,6 @@
       (set-size! canvas-state 300 300)
       (set-size! canvas-state 200 200))))
 
-(defonce canvas-state (r/atom {:width 200 :height 200}))
-(def telemetry (r/atom {}))
-
 (defn canvas-frame [canvas-state render-frame-fn]
   [animated-canvas canvas-state {:class "canvas-frame"} render-frame-fn])
 
@@ -71,7 +68,7 @@
                :vel new-vel)))))
 
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
-(defn draw-frame [id]
+(defn draw-frame [id telemetry]
   (fn [_ canvas canvas-state]
     (let [ctx (cv/high-dpi (.getContext canvas "2d"))
           {:keys [width height]} @canvas-state
@@ -96,24 +93,27 @@
                (cv/rect-fill x y size size))))))))
 
 (defn page []
-  [:div
-   [:div {:style {:float "left"}}
-    [:h4 "Frame 1"]
-    [canvas-frame canvas-state (draw-frame :a)]]
-   [:div {:style {:float "right"}}
-    [:h4 "Frame 2"]
-    [canvas-frame canvas-state (draw-frame :b)]]
-   [:div {:style {:clear :both}}]
-   [:div.explanation
-    [:p.readable-width
-     "Experimenting with an alternative Canvas renderer from Quil. As it can
+  (let [canvas-state (r/atom {:width 200 :height 200})
+        telemetry (r/atom {})]
+    (fn []
+      [:div
+       [:div {:style {:float "left"}}
+        [:h4 "Frame 1"]
+        [canvas-frame canvas-state (draw-frame :a telemetry)]]
+       [:div {:style {:float "right"}}
+        [:h4 "Frame 2"]
+        [canvas-frame canvas-state (draw-frame :b telemetry)]]
+       [:div {:style {:clear :both}}]
+       [:div.explanation
+        [:p.readable-width
+         "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
    sketch."]
-    [:button {:on-click #(toggle-size canvas-state)} "Toggle Size"]
-    (debug/display canvas-state)
-    (debug/display telemetry)]])
+        [:button {:on-click #(toggle-size canvas-state)} "Toggle Size"]
+        (debug/display canvas-state)
+        (debug/display telemetry)]])))
 
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
    :type :canvas}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount (page) "sketch-host"))
