@@ -30,14 +30,14 @@
                          (g/rotate (dr/random 0 tm/TWO_PI))
                          (g/translate (gv/vec2 (* width x) (* height y))))))]
     (gu/fit-all-into-bounds (rect/rect 0 0 width height)
-                            (repeatedly 1500 generate))))
+                            (repeatedly 4000 generate))))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "none"
-             :stroke-width 0.8}
+             :stroke-width 0.5}
             (shapes)))
 
 (sketch/definition triangle-gradient
