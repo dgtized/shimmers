@@ -13,9 +13,6 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce canvas-state (r/atom {:width 200 :height 200}))
-(def telemetry (r/atom {}))
-
 (defn sizing-attributes [width height attributes]
   (merge
    {:width width :height height
@@ -25,13 +22,13 @@
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
-(defn canvas [attributes render-frame-fn]
+(defn animated-canvas [canvas-state attributes render-frame-fn]
   (let [cancel-animation (atom nil)]
     (r/create-class
      {:component-did-mount
       (fn [this]
         (reset! cancel-animation
-                (render-frame-fn this (rdom/dom-node this))))
+                (render-frame-fn this (rdom/dom-node this) canvas-state)))
       :component-will-unmount
       (fn [_] (@cancel-animation))
       :reagent-render
@@ -39,19 +36,21 @@
         (let [{:keys [width height]} @canvas-state]
           [:canvas (sizing-attributes width height attributes)]))})))
 
-(defn set-size! [width height]
+(defn set-size! [canvas-state width height]
   (swap! canvas-state assoc :width width :height height))
 
 ;; TODO: not quite updating the canvas size dynamically?
-(defn toggle-size []
+(defn toggle-size [canvas-state]
   (let [{:keys [width]} @canvas-state]
     (if (= width 200)
-      (set-size! 300 300)
-      (set-size! 200 200))))
+      (set-size! canvas-state 300 300)
+      (set-size! canvas-state 200 200))))
 
-(defn canvas-frame [render-frame-fn]
-  [canvas {:class "canvas-frame"}
-   render-frame-fn])
+(defonce canvas-state (r/atom {:width 200 :height 200}))
+(def telemetry (r/atom {}))
+
+(defn canvas-frame [canvas-state render-frame-fn]
+  [animated-canvas canvas-state {:class "canvas-frame"} render-frame-fn])
 
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
@@ -73,7 +72,7 @@
 
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
 (defn draw-frame [id]
-  (fn [_ canvas]
+  (fn [_ canvas canvas-state]
     (let [ctx (cv/high-dpi (.getContext canvas "2d"))
           {:keys [width height]} @canvas-state
           margin 10
@@ -100,17 +99,17 @@
   [:div
    [:div {:style {:float "left"}}
     [:h4 "Frame 1"]
-    [canvas-frame (draw-frame :a)]]
+    [canvas-frame canvas-state (draw-frame :a)]]
    [:div {:style {:float "right"}}
     [:h4 "Frame 2"]
-    [canvas-frame (draw-frame :b)]]
+    [canvas-frame canvas-state (draw-frame :b)]]
    [:div {:style {:clear :both}}]
    [:div.explanation
     [:p.readable-width
      "Experimenting with an alternative Canvas renderer from Quil. As it can
    mount as a React component, it's easier to host multiple in a single
    sketch."]
-    [:button {:on-click #(toggle-size)} "Toggle Size"]
+    [:button {:on-click #(toggle-size canvas-state)} "Toggle Size"]
     (debug/display canvas-state)
     (debug/display telemetry)]])
 
