@@ -2,15 +2,15 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.core :as g]
-   [shimmers.math.deterministic-random :as dr]
-   [thi.ng.math.core :as tm]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -22,10 +22,10 @@
         generate (fn []
                    (-> template
                        (g/rotate (dr/random 0 tm/TWO_PI))
-                       (g/translate (gv/vec2 (* width (dr/gaussian 0.33 0.15))
+                       (g/translate (gv/vec2 (* width (Math/pow (dr/random) 0.4))
                                              (dr/random (* 0.2 height) (* 0.8 height))))))]
     (gu/fit-all-into-bounds (rect/rect 0 0 width height)
-                            (repeatedly 1000 generate))))
+                            (repeatedly 1500 generate))))
 
 (defn scene []
   (csvg/svg {:width width
@@ -38,6 +38,6 @@
 (sketch/definition triangle-gradient
   {:created-at "2022-01-07"
    :type :svg
-   :tags #{}}
+   :tags #{:static :deterministic}}
   (ctrl/mount (view-sketch/page-for scene :triangle-gradient)
               "sketch-host"))
