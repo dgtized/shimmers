@@ -12,6 +12,10 @@
 ;; point on sfc(s) where s is a value from 0 -> 1 representing distance along
 ;; the curve. Likewise, for the reverse, from length s to a point in 2d space.
 
+;; TODO: remove individual segments as an inverse greyscale map? Ie instead of
+;; using a space-filling-curve to assist dithering, use the curve *as* the
+;; representational medium and then dither which pixels are on?
+
 (def width 800)
 (def height 800)
 (defn rv [x y]
