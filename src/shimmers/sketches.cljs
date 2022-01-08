@@ -128,6 +128,7 @@
             shimmers.sketches.superposition
             shimmers.sketches.tilt
             shimmers.sketches.traffic-intersection
+            shimmers.sketches.triangle-gradient
             shimmers.sketches.triangulating-subdivisions
             shimmers.sketches.tunnel-flight
             shimmers.sketches.typography
