@@ -8,11 +8,11 @@
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"
   [attribs & body]
-  (into [:svg
-         (svg/svg-attribs
-          attribs
-          {:xmlns "http://www.w3.org/2000/svg"})]
-        body))
+  [:svg
+   (svg/svg-attribs
+    attribs
+    {:xmlns "http://www.w3.org/2000/svg"})
+   body])
 
 (defn svg [& args]
   (->> (apply svg-elem args)
