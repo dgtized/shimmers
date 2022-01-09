@@ -5,7 +5,6 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; TODO: space-filling-curves can be used to offset map into a texture with
@@ -22,12 +21,6 @@
 
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
-
-(defn right [[x y]]
-  (gv/vec2 y (- x)))
-
-(defn left [[x y]]
-  (gv/vec2 (- y) x))
 
 (defn l-system [axiom productions]
   (fn [depth]
@@ -50,8 +43,8 @@
         (fn [[_ p o] r]
           (case r
             "F" ["F" (tm/+ p (tm/* o length)) o]
-            "+" ["+" p (left o)]
-            "-" ["-" p (right o)]))
+            "+" ["+" p (v/turn-right o)]
+            "-" ["-" p (v/turn-left o)]))
         ["" pos orientation])
        (keep (fn [[c p _]] (when (= c "F") p)))))
 
@@ -67,12 +60,12 @@
         length (/ width divider)]
     (case algorithm
       "moore"
-      (rewrite-path (gv/vec2 (* 0.5 (dec divider) length) height)
-                    v/down length
+      (rewrite-path (v/vec2 (* 0.5 (dec divider) length) 0)
+                    v/up length
                     (moore-curve (dec depth)))
       "hilbert"
-      (rewrite-path (gv/vec2 0 height)
-                    v/down length
+      (rewrite-path (v/vec2)
+                    v/up length
                     (hilbert-curve (inc depth))))))
 
 (defn scene [algorithm depth]

@@ -47,10 +47,10 @@
         unit2-from-angle)
     dir))
 
-(defn perp-clockwise [[x y]]
+(defn turn-right [[x y]]
   (vec2 y (- x)))
 
-(defn perp-counter-clockwise [[x y]]
+(defn turn-left [[x y]]
   (vec2 (- y) x))
 
 (defn orientation [[px py] [qx qy] [rx ry]]
