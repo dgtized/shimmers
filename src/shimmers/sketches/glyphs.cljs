@@ -1,5 +1,6 @@
 (ns shimmers.sketches.glyphs
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -9,6 +10,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.utils.subdiv :as gsd]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -16,9 +18,16 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn smooth-line [points]
+  (->> points
+       (gsd/subdivide-closed (:chaikin gsd/schemes))
+       (gsd/subdivide-closed (:chaikin gsd/schemes))
+       cs/midsection
+       (cs/sandwich points)))
+
 (defn glyph []
-  [(gl/linestrip2 (repeatedly (dr/random-int 6 8) #(gv/vec2 (dr/random 1 5) (dr/random 1 7))))
-   (gl/linestrip2 (repeatedly (dr/random-int 1 4) #(gv/vec2 (dr/random 1 5) (dr/random 1 7))))])
+  [(gl/linestrip2 (smooth-line (repeatedly (dr/random-int 4 8) #(gv/vec2 (dr/random 1 5) (dr/random 1 6)))))
+   (gl/linestrip2 (repeatedly (dr/random-int 1 4) #(gv/vec2 (dr/random 1 5) (dr/random 1 4))))])
 
 (defn shapes []
   (let [wm 10
