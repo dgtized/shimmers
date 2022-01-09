@@ -32,8 +32,8 @@
 (defn shapes []
   (let [wm 10
         hm 10
-        rows 14
-        columns 12
+        rows 20
+        columns 30
         dw (/ (- width wm wm) columns)
         dh (/ (- height hm hm) rows)]
     (for [i (range wm (- width wm) dw)
