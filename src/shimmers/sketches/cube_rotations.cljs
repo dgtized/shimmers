@@ -41,7 +41,7 @@
         c 12
         bounds (rect/rect margin margin (- width margin) (- height margin))]
     (map (fn [bbox cube]
-           (gu/fit-all-into-bounds (g/scale-size bbox 0.95) cube))
+           (gu/fit-all-into-bounds (g/scale-size bbox 0.9) cube))
          (g/subdivide bounds {:cols c :rows r})
          (cubes (* r c)))))
 
