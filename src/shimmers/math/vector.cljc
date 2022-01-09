@@ -1,11 +1,11 @@
 (ns shimmers.math.vector
   (:require [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as tv]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-(def vec2 tv/vec2)
-(def vec3 tv/vec3)
+(def vec2 gv/vec2)
+(def vec3 gv/vec3)
 
 (defn add [v1 v2]
   (tm/+ v1 v2))
@@ -19,7 +19,7 @@
         (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
 (defn polar [r theta]
-  (g/as-cartesian (tv/vec2 r theta)))
+  (g/as-cartesian (vec2 r theta)))
 
 (defn- unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
