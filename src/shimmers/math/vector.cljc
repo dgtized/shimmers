@@ -7,6 +7,13 @@
 (def vec2 gv/vec2)
 (def vec3 gv/vec3)
 
+(def ^:const up (vec3 0 1 0))
+(def ^:const down (vec3 0 -1 0))
+(def ^:const left (vec3 -1 0 0))
+(def ^:const right (vec3 1 0 0))
+(def ^:const forward (vec3 0 0 1))
+(def ^:const back (vec3 0 0 -1))
+
 (defn add [v1 v2]
   (tm/+ v1 v2))
 
@@ -50,10 +57,3 @@
   (let [val (- (* (- qy py) (- rx qx))
                (* (- qx px) (- ry qy)))]
     (tm/sign val)))
-
-(def up (vec3 0 1 0))
-(def down (vec3 0 -1 0))
-(def left (vec3 -1 0 0))
-(def right (vec3 1 0 0))
-(def forward (vec3 0 0 1))
-(def back (vec3 0 0 -1))
