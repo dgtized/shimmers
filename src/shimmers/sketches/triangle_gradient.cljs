@@ -15,16 +15,22 @@
 (def width 800)
 (def height 600)
 
+(defn invert [x]
+  (- 1.0 x))
+
 (defn shapes []
   (let [template (g/center (gt/triangle2 [0 0] [40 40] [30 5]))
-        dir (if (dr/chance 0.3)
-              (fn [x] (- 1.0 x))
-              (fn [x] x))
+        dir-s (if (dr/chance 0.3)
+                invert
+                identity)
+        dir-x (if (dr/chance 0.3)
+                invert
+                identity)
         generate (fn []
-                   (let [x (Math/pow (dr/random) 0.4)
+                   (let [x (dir-x (Math/pow (dr/random) 0.4))
                          y (dr/random 0.2 0.8)]
                      (-> template
-                         (g/scale-size (+ 0.15 (tm/clamp01 (Math/pow (dir x) 1.4))))
+                         (g/scale-size (+ 0.15 (dir-s (Math/pow x 1.4))))
                          (g/rotate (dr/random 0 tm/TWO_PI))
                          (g/translate (gv/vec2 (* width x) (* height y))))))]
     (gu/fit-all-into-bounds (rect/rect 0 0 width height)
