@@ -24,6 +24,7 @@
             shimmers.sketches.concentric-moire
             shimmers.sketches.convex-spiral
             shimmers.sketches.cube
+            shimmers.sketches.cube-rotations
             shimmers.sketches.decaying-foundations
             shimmers.sketches.deeper-squares
             shimmers.sketches.deformed-spirals
