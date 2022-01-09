@@ -43,6 +43,9 @@
     (assoc xs i (nth xs j)
            j (nth xs i))))
 
+(defn k-swaps [k xs]
+  (nth (iterate swaps (vec xs)) k))
+
 (defn grid []
   (let [margin 0
         r 8
@@ -51,7 +54,7 @@
     (map (fn [bbox cube]
            (gu/fit-all-into-bounds (g/scale-size bbox 0.9) cube))
          (g/subdivide bounds {:cols c :rows r})
-         (nth (iterate swaps (vec (cubes (* r c)))) 3))))
+         (k-swaps 3 (cubes (* r c))))))
 
 (defn scene []
   (csvg/svg {:width width
