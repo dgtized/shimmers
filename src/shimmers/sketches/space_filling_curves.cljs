@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -21,13 +22,6 @@
 
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
-
-(defn orientation [dir]
-  (case dir
-    :up (gv/vec2 0 -1)
-    :down (gv/vec2 0 1)
-    :right (gv/vec2 1 0)
-    :left (gv/vec2 -1 0)))
 
 (defn right [[x y]]
   (gv/vec2 y (- x)))
@@ -74,11 +68,11 @@
     (case algorithm
       "moore"
       (rewrite-path (gv/vec2 (* 0.5 (dec divider) length) height)
-                    (orientation :up) length
+                    v/down length
                     (moore-curve (dec depth)))
       "hilbert"
       (rewrite-path (gv/vec2 0 height)
-                    (orientation :up) length
+                    v/down length
                     (hilbert-curve (inc depth))))))
 
 (defn scene [algorithm depth]
