@@ -20,12 +20,12 @@
 
 (defn shapes []
   (let [template (g/center (gt/triangle2 [0 0] [40 40] [30 5]))
-        dir-s (if (dr/chance 0.3)
-                invert
-                identity)
-        dir-x (if (dr/chance 0.3)
-                invert
-                identity)
+        scale (dr/random 0.2 0.8)
+        dir-s (dr/weighted {invert 1
+                            identity 3
+                            (constantly scale) 1})
+        dir-x (dr/weighted {invert 1
+                            identity 3})
         generate (fn []
                    (let [x (dir-x (Math/pow (dr/random) 0.4))
                          y (dr/random 0.2 0.8)]
