@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -35,6 +36,13 @@
       (for [[a b] (g/edges cube)]
         (gl/line2 (perspective a) (perspective b))))))
 
+(defn swaps [xs]
+  (let [n (count xs)
+        i (dr/random-int n)
+        j (dr/random-int n)]
+    (assoc xs i (nth xs j)
+           j (nth xs i))))
+
 (defn grid []
   (let [margin 0
         r 8
@@ -43,7 +51,7 @@
     (map (fn [bbox cube]
            (gu/fit-all-into-bounds (g/scale-size bbox 0.9) cube))
          (g/subdivide bounds {:cols c :rows r})
-         (cubes (* r c)))))
+         (nth (iterate swaps (vec (cubes (* r c)))) 3))))
 
 (defn scene []
   (csvg/svg {:width width
