@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
@@ -15,11 +16,17 @@
 (def width 800)
 (def height 600)
 
+(defn contained-by? [f bounds shape]
+  (f (fn [v] (when (g/contains-point? bounds v)
+              v))
+     (g/vertices shape)))
+
 (defn invert [x]
   (- 1.0 x))
 
 (defn shapes []
-  (let [template (g/center (gt/triangle2 [0 0] [40 40] [30 5]))
+  (let [circle (gc/circle (* width 0.5) (* height 0.5) (* width 0.45))
+        template (g/center (gt/triangle2 [0 0] [40 40] [30 5]))
         scale (dr/random 0.1 0.6)
         dir-s (dr/weighted {invert 1
                             identity 3
@@ -29,13 +36,14 @@
                             identity 3})
         generate (fn []
                    (let [x (dir-x (Math/pow (dr/random) 0.4))
-                         y (dr/random 0.2 0.8)]
+                         y (dr/random 0.15 0.85)]
                      (-> template
                          (g/scale-size (+ 0.15 (dir-s (Math/pow x 1.4))))
                          (g/rotate (dr/random 0 tm/TWO_PI))
                          (g/translate (gv/vec2 (* width x) (* height y))))))]
-    (gu/fit-all-into-bounds (rect/rect 0 0 width height)
-                            (repeatedly 4000 generate))))
+    (->> (repeatedly 4000 generate)
+         (filter (partial contained-by? some circle))
+         (gu/fit-all-into-bounds (rect/rect 0 0 width height)))))
 
 (defn scene []
   (csvg/svg {:width width
