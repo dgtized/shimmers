@@ -18,8 +18,6 @@
 
 (def width 800)
 (def height 800)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
@@ -79,7 +77,7 @@
                     (orientation :up) length
                     (moore-curve (dec depth)))
       "hilbert"
-      (rewrite-path (rv 0.0 1.0)
+      (rewrite-path (gv/vec2 0 height)
                     (orientation :up) length
                     (hilbert-curve (inc depth))))))
 
