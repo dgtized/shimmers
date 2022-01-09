@@ -36,15 +36,14 @@
       (for [[a b] (g/edges cube)]
         (gl/line2 (perspective a) (perspective b))))))
 
-(defn swaps [xs]
-  (let [n (count xs)
-        i (dr/random-int n)
-        j (dr/random-int n)]
-    (assoc xs i (nth xs j)
-           j (nth xs i))))
-
 (defn k-swaps [k xs]
-  (nth (iterate swaps (vec xs)) k))
+  (let [n (count xs)]
+    (letfn [(swaps [xs]
+              (let [i (dr/random-int n)
+                    j (dr/random-int n)]
+                (assoc xs i (nth xs j)
+                       j (nth xs i))))]
+      (nth (iterate swaps (vec xs)) k))))
 
 (defn grid []
   (let [margin 0
