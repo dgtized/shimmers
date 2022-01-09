@@ -43,6 +43,7 @@
             ;; shimmers.sketches.fluid
             shimmers.sketches.garden-hose
             shimmers.sketches.gl-cube
+            shimmers.sketches.glyphs
             shimmers.sketches.gossamer-coils
             shimmers.sketches.gravity-well
             shimmers.sketches.grid-variations
