@@ -29,8 +29,9 @@
     (for [t (butlast (tm/norm-range n))
           :let [cube (-> (aabb/aabb 10)
                          g/center
-                         (g/rotate-z (* (/ 1 8) eq/TAU))
-                         (g/rotate-y (* t eq/TAU)))]]
+                         (g/rotate-y (* (/ 1 8) eq/TAU))
+                         (g/rotate-x 0.5)
+                         (g/rotate-z (* t eq/TAU)))]]
       (for [[a b] (g/edges cube)]
         (gl/line2 (perspective a) (perspective b))))))
 
@@ -39,8 +40,8 @@
         bounds (rect/rect margin margin (- width margin) (- height margin))]
     (map (fn [bbox cube]
            (gu/fit-all-into-bounds (g/scale-size bbox 0.95) cube))
-         (g/subdivide bounds {:cols 6 :rows 6})
-         (cubes (* 6 6)))))
+         (g/subdivide bounds {:cols 8 :rows 8})
+         (cubes (* 8 8)))))
 
 (defn scene []
   (csvg/svg {:width width
