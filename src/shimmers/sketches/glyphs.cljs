@@ -16,8 +16,6 @@
 
 (def width 800)
 (def height 600)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 (defn smooth-line [points]
   (->> points
