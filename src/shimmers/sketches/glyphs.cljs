@@ -6,6 +6,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
@@ -26,8 +27,20 @@
        (cs/sandwich points)))
 
 (defn glyph []
-  [(gl/linestrip2 (smooth-line (repeatedly (dr/random-int 4 8) #(gv/vec2 (dr/random 1 5) (dr/random 1 6)))))
-   (gl/linestrip2 (repeatedly (dr/random-int 1 4) #(gv/vec2 (dr/random 1 5) (dr/random 1 4))))])
+  (let [shapes (dr/weighted {0 6
+                             1 3
+                             2 2
+                             3 1})]
+    (concat
+     [(let [pts (repeatedly (dr/random-int 4 8) #(gv/vec2 (dr/random 1 5) (dr/random 1 6)))]
+        (gl/linestrip2 (if (dr/chance 0.8)
+                         (smooth-line pts)
+                         pts)))]
+     (for [_ (range 1 shapes)]
+       (case (dr/random-int 3)
+         0 (gc/circle (gv/vec2 (dr/random 2 4) (dr/random 1 6)) (dr/random 0.5 2))
+         1 (gl/linestrip2 (repeatedly (dr/random-int 2 4) #(gv/vec2 (dr/random 1 5) (dr/random 1 4))))
+         2 (gl/linestrip2 (repeatedly 2 #(gv/vec2 (dr/random 1 5) (dr/random 3 7)))))))))
 
 (defn shapes []
   (let [wm 10
