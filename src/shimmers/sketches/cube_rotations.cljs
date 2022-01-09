@@ -50,7 +50,7 @@
              :height height
              :stroke "black"
              :fill "none"
-             :stroke-width 0.5}
+             :stroke-width 0.8}
             (grid)))
 
 (sketch/definition cube-rotations
