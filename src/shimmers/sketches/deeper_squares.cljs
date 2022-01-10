@@ -32,6 +32,8 @@
 (defn shapes [fx size margin repetition]
   (let [w size
         h size
+        edge-margin-w (/ (mod width w) 2)
+        edge-margin-h (/ (mod height h) 2)
         o (/ margin 2)
         depth-scale (/ size 72)
         min-depth (Math/ceil (* 4 depth-scale))
@@ -39,7 +41,7 @@
     (for [x (range (int (/ width w)))
           y (range (int (/ height h)))
           :let [depth (/ (mod (fx x y) repetition) repetition)]]
-      (svg/group {:transform (str "translate(" (* x w) "," (* y h) ")")}
+      (svg/group {:transform (str "translate(" (+ edge-margin-w (* x w)) "," (+ edge-margin-h (* y h)) ")")}
                  (rotations (take (tm/map-interval depth [0 1] [min-depth max-depth])
                                   (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
 
