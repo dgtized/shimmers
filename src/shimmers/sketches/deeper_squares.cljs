@@ -29,7 +29,7 @@
   (for [square group]
     (geometry/rotate-around-centroid square (dr/random -0.04 0.04))))
 
-(defn shapes [size margin]
+(defn shapes [fx size margin repetition]
   (let [w size
         h size
         o (/ margin 2)
@@ -38,7 +38,7 @@
         max-depth (Math/ceil (+ min-depth (* 8 depth-scale)))]
     (for [x (range (int (/ width w)))
           y (range (int (/ height h)))
-          :let [depth (/ (mod (- x y) 8) 8)]]
+          :let [depth (/ (mod (fx x y) repetition) repetition)]]
       (svg/group {:transform (str "translate(" (* x w) "," (* y h) ")")}
                  (rotations (take (tm/map-interval depth [0 1] [min-depth max-depth])
                                   (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
@@ -49,7 +49,14 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.8}
-            (apply shapes (dr/weighted {[30 6] 1 [72 8] 1}))))
+            (let [fx (dr/weighted {- 1
+                                   + 1
+                                   * 1})
+                  rules (dr/weighted {[fx 30 6 8] 1
+                                      [fx 72 8 8] 2
+                                      [fx 30 8 12] 1
+                                      [fx 30 8 16] 1})]
+              (apply shapes rules))))
 
 (sketch/definition deeper-squares
   {:created-at "2022-01-04"
