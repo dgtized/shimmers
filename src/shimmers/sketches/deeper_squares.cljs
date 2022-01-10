@@ -18,14 +18,12 @@
 (def width 800)
 (def height 600)
 
-(defn scale-rect [rect scale]
-  (g/scale-size rect scale))
-
 (defn deepen [{op :p [width height] :size :as outer}]
-  (let [{ip :p [w h] :size :as inner} (scale-rect outer (dr/random 0.75 0.95))]
-    (g/translate inner (tm/+ (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
-                                      (* (dr/random 0.2 0.8) (- height h)))
-                             (tm/- op ip)))))
+  (let [{ip :p [w h] :size :as inner} (g/scale-size outer (dr/random 0.75 0.95))
+        placement (tm/+ (gv/vec2 (* (dr/random 0.2 0.8) (- width w))
+                                 (* (dr/random 0.2 0.8) (- height h)))
+                        (tm/- op ip))]
+    (g/translate inner placement)))
 
 (defn rotations [group]
   (for [square group]
