@@ -55,9 +55,14 @@
        (into [[:M pos]])
        svg/path))
 
-(defn rewrite-curve [{:keys [large-arc sweep-flag]}]
+(defn rewrite-curve [{:keys [large-arc sweep-flag radius-div]}]
   (fn [pos orientation length expansions]
-    (let [radius (/ length (Math/sqrt 2))]
+    (let [radius (/ length (case radius-div
+                             "0.5" 0.5
+                             "1" 1
+                             "sqrt2" (Math/sqrt 2)
+                             "phi" tm/PHI
+                             "2" 2))]
       (->> expansions
            (rewrite-turtle pos orientation length)
            (mapv (fn [p] [:A [radius radius]
@@ -95,7 +100,8 @@
 (defonce ui-state (ctrl/state {:algorithm "hilbert"
                                :curved {:enabled false
                                         :large-arc false
-                                        :sweep-flag false}
+                                        :sweep-flag false
+                                        :radius-div "sqrt2"}
                                :depth 6}))
 
 (defn page []
@@ -111,6 +117,12 @@
        (ctrl/checkbox ui-state "Curved" [:curved :enabled])
        (when (:enabled curved)
          [:div
+          (ctrl/dropdown ui-state "Radius Divider" [:curved :radius-div]
+                         {"0.5" "0.5"
+                          "1" "1"
+                          "sqrt2" "sqrt2"
+                          "phi" "phi"
+                          "2" "2"})
           (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
           (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))]]))
 
