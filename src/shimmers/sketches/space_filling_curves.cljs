@@ -59,9 +59,11 @@
   (fn [pos orientation length expansions]
     (let [radius (/ length (case radius-div
                              "0.5" 0.5
+                             "1/sqrt2" (/ 1 (Math/sqrt 2))
                              "1" 1
                              "sqrt2" (Math/sqrt 2)
                              "phi" tm/PHI
+                             "1.9" 1.9
                              "2" 2))]
       (->> expansions
            (rewrite-turtle pos orientation length)
@@ -133,9 +135,11 @@
          [:div
           (ctrl/dropdown ui-state "Radius Divider" [:curved :radius-div]
                          {"0.5" "0.5"
+                          "1/sqrt2" "1/sqrt2"
                           "1" "1"
                           "sqrt2" "sqrt2"
                           "phi" "phi"
+                          "1.9" "1.9"
                           "2" "2"})
           (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
           (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))]]))
