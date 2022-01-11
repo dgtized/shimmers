@@ -55,40 +55,64 @@
        (into [[:M pos]])
        svg/path))
 
-(defn shapes [algorithm depth]
-  (let [divider (dec (Math/pow 2 depth))
-        length (/ width divider)]
+(defn rewrite-curve [{:keys [large-arc sweep-flag]}]
+  (fn [pos orientation length expansions]
+    (let [radius (/ length (Math/sqrt 2))]
+      (->> expansions
+           (rewrite-turtle pos orientation length)
+           (mapv (fn [p] [:A [radius radius]
+                         0.0
+                         (if large-arc 1 0)
+                         (if sweep-flag 1 0)
+                         p]))
+           (into [[:M pos]])
+           svg/path))))
+
+(defn shapes [algorithm depth curved]
+  (let [divider (Math/pow 2 depth)
+        length (/ width divider)
+        pathing (if (:enabled curved)
+                  (rewrite-curve curved)
+                  rewrite-path)]
     (case algorithm
       "moore"
-      (rewrite-path (v/vec2 (* 0.5 (dec divider) length) 0)
-                    v/up length
-                    (moore-curve (dec depth)))
+      (pathing (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
+               v/up length
+               (moore-curve (dec depth)))
       "hilbert"
-      (rewrite-path (v/vec2)
-                    v/up length
-                    (hilbert-curve (inc depth))))))
+      (pathing (tm/* (v/vec2 length length) 0.5)
+               v/up length
+               (hilbert-curve depth)))))
 
-(defn scene [algorithm depth]
+(defn scene [algorithm depth curved]
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes algorithm depth)))
+            (shapes algorithm depth curved)))
 
 (defonce ui-state (ctrl/state {:algorithm "hilbert"
+                               :curved {:enabled false
+                                        :large-arc false
+                                        :sweep-flag false}
                                :depth 6}))
 
 (defn page []
-  [:div
-   (let [{:keys [algorithm depth]} @ui-state]
-     [:div.canvas-frame [scene algorithm depth]])
-   [:div#interface
-    (ctrl/container
-     (ctrl/dropdown ui-state "Algorithm" [:algorithm]
-                    {"moore" "moore"
-                     "hilbert" "hilbert"})
-     (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1]))]])
+  (let [{:keys [algorithm depth curved]} @ui-state]
+    [:div
+     [:div.canvas-frame [scene algorithm depth curved]]
+     [:div#interface
+      (ctrl/container
+       (ctrl/dropdown ui-state "Algorithm" [:algorithm]
+                      {"moore" "moore"
+                       "hilbert" "hilbert"})
+       (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
+       (ctrl/checkbox ui-state "Curved" [:curved :enabled])
+       (when (:enabled curved)
+         [:div
+          (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
+          (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))]]))
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
