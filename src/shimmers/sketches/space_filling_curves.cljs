@@ -80,8 +80,8 @@
                v/up length
                (moore-curve (dec depth)))
       "hilbert"
-      (pathing (tm/* (v/vec2 length length) 0.5)
-               v/up length
+      (pathing (v/vec2 (- width (/ length 2)) (/ length 2))
+               v/left length
                (hilbert-curve depth)))))
 
 (defn scene [algorithm depth curved]
