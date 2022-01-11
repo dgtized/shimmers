@@ -73,12 +73,23 @@
            (into [[:M pos]])
            svg/path))))
 
+(defn rewrite-quad-bezier [pos orientation length expansions]
+  (with-redefs [thi.ng.geom.svg.core/path-segment-formats
+                (assoc svg/path-segment-formats :T ["T" svg/*fmt-vec* " "])]
+    (->> expansions
+         (rewrite-turtle pos orientation length)
+         (partition 3 2)
+         (mapcat (fn [[a b c]] [[:M a] [:T b] [:T c]]))
+         (into [[:M pos]])
+         svg/path)))
+
 (defn shapes [algorithm depth curved]
   (let [divider (Math/pow 2 depth)
         length (/ width divider)
-        pathing (if (:enabled curved)
-                  (rewrite-curve curved)
-                  rewrite-path)]
+        pathing (case (:mode curved)
+                  "arcs" (rewrite-curve curved)
+                  "quad-beziers" rewrite-quad-bezier
+                  "lines" rewrite-path)]
     (case algorithm
       "moore"
       (pathing (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
@@ -98,7 +109,7 @@
             (shapes algorithm depth curved)))
 
 (defonce ui-state (ctrl/state {:algorithm "hilbert"
-                               :curved {:enabled false
+                               :curved {:mode "lines"
                                         :large-arc false
                                         :sweep-flag false
                                         :radius-div "sqrt2"}
@@ -114,8 +125,11 @@
                       {"moore" "moore"
                        "hilbert" "hilbert"})
        (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
-       (ctrl/checkbox ui-state "Curved" [:curved :enabled])
-       (when (:enabled curved)
+       (ctrl/dropdown ui-state "Display" [:curved :mode]
+                      {"Lines" "lines"
+                       "Arcs" "arcs"
+                       "Quad-Beziers" "quad-beziers"})
+       (when (= (:mode curved) "arcs")
          [:div
           (ctrl/dropdown ui-state "Radius Divider" [:curved :radius-div]
                          {"0.5" "0.5"
