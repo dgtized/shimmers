@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.math.core :as tm]))
 
@@ -36,6 +37,10 @@
   (l-system (seq "A")
             {"A" (seq "+BF-AFA-FB+")
              "B" (seq "-AF+BFB+FA-")}))
+
+(def sierpinsky-square
+  (l-system (seq "F+XF+F+XF")
+            {"X" (seq "XF-F+F-XF+F+XF-F+F-X")}))
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
@@ -100,7 +105,11 @@
       "hilbert"
       (pathing (v/vec2 (- width (/ length 2)) (/ length 2))
                v/left length
-               (hilbert-curve depth)))))
+               (hilbert-curve depth))
+      "sierpinsky-square"
+      (pathing (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
+               (g/rotate v/up (/ (- tm/TWO_PI) 8)) (/ length (Math/sqrt 2))
+               (sierpinsky-square (dec depth))))))
 
 (defn scene [algorithm depth curved]
   (csvg/svg {:width width
@@ -125,7 +134,8 @@
       (ctrl/container
        (ctrl/dropdown ui-state "Algorithm" [:algorithm]
                       {"moore" "moore"
-                       "hilbert" "hilbert"})
+                       "hilbert" "hilbert"
+                       "sierpinsky-square" "sierpinsky-square"})
        (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
        (ctrl/dropdown ui-state "Display" [:curved :mode]
                       {"Lines" "lines"
