@@ -24,8 +24,8 @@
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
 
-(defn l-system [axiom productions]
-  (let [products (cs/map-kv seq productions)]
+(defn l-system [{:keys [axiom rules]}]
+  (let [products (cs/map-kv seq rules)]
     (fn [depth]
       (as-> (seq axiom) system
         (iterate (fn [s] (mapcat #(get products % %) s)) system)
@@ -33,18 +33,18 @@
         (remove (set (keys products)) system)))))
 
 (def moore-curve
-  (l-system "LFL+F+LFL"
-            {"L" "-RF+LFL+FR-"
-             "R" "+LF-RFR-FL+"}))
+  (l-system {:axiom "LFL+F+LFL"
+             :rules {"L" "-RF+LFL+FR-"
+                     "R" "+LF-RFR-FL+"}}))
 
 (def hilbert-curve
-  (l-system "A"
-            {"A" "+BF-AFA-FB+"
-             "B" "-AF+BFB+FA-"}))
+  (l-system {:axiom "A"
+             :rules {"A" "+BF-AFA-FB+"
+                     "B" "-AF+BFB+FA-"}}))
 
 (def sierpinsky-square
-  (l-system "F+XF+F+XF"
-            {"X" "XF-F+F-XF+F+XF-F+F-X"}))
+  (l-system {:axiom "F+XF+F+XF"
+             :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}}))
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
