@@ -26,3 +26,14 @@
 
 (defn translate [[x y]]
   (f/format ["translate(" (f/float 2) "," (f/float 2) ")"] x y))
+
+;; TODO: include :Q and :q commands
+(defn path
+  "Extend `svg/path` to include T and t quadtratic bezier segment commands."
+  ([segments] (path segments nil))
+  ([segments attribs]
+   (with-redefs [thi.ng.geom.svg.core/path-segment-formats
+                 (assoc svg/path-segment-formats
+                        :T ["T" svg/*fmt-vec* " "]
+                        :t ["t" svg/*fmt-vec* " "])]
+     (svg/path segments attribs))))

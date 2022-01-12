@@ -7,7 +7,6 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.math.core :as tm]))
 
 ;; TODO: space-filling-curves can be used to offset map into a texture with
@@ -102,11 +101,6 @@
        (partition 3 2)
        (mapcat (fn [[a b c]] [[:M a] [:T b] [:T c]]))))
 
-(defn svg-path [pos commands]
-  (with-redefs [thi.ng.geom.svg.core/path-segment-formats
-                (assoc svg/path-segment-formats :T ["T" svg/*fmt-vec* " "])]
-    (svg/path (into [[:M pos]] commands))))
-
 (defn shapes [system depth curved]
   (let [{:keys [pos length]} ((:start system) depth)
         rewrite-segments (case (:mode curved)
@@ -116,7 +110,8 @@
     (->> ((l-system system) (dec depth))
          (rewrite-turtle pos (:orientation system) length)
          rewrite-segments
-         (svg-path pos))))
+         (into [[:M pos]])
+         csvg/path)))
 
 (defn scene [rule-name depth curved]
   (csvg/svg {:width width
