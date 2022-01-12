@@ -38,20 +38,33 @@
     :axiom "LFL+F+LFL"
     :rules {"L" "-RF+LFL+FR-"
             "R" "+LF-RFR-FL+"}
-    :orientation v/up}
+    :orientation v/up
+    :start (fn [depth]
+             (let [divider (Math/pow 2 depth)
+                   length (/ width divider)]
+               {:pos (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
+                :length length}))}
 
    {:name "Hilbert Curve"
     :axiom "A"
     :rules {"A" "+BF-AFA-FB+"
             "B" "-AF+BFB+FA-"}
     :orientation v/left
-    :pos (fn [length] (v/vec2 (- width (/ length 2)) (/ length 2)))}
+    :start (fn [depth]
+             (let [divider (Math/pow 2 depth)
+                   length (/ width divider)]
+               {:pos (v/vec2 (- width (/ length 2)) (/ length 2))
+                :length length}))}
 
    {:name "Sierpinsky Square"
     :axiom "F+XF+F+XF"
     :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}
     :orientation (g/rotate v/up (/ (- tm/TWO_PI) 8))
-    :pos (fn [length] (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length)))}])
+    :start (fn [depth]
+             (let [divider (Math/pow 2 depth)
+                   length (/ width divider)]
+               {:pos (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
+                :length (/ length (Math/sqrt 2))}))}])
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
@@ -102,24 +115,20 @@
          svg/path)))
 
 (defn shapes [system depth curved]
-  (let [divider (Math/pow 2 depth)
-        length (/ width divider)
-        pathing (case (:mode curved)
+  (let [pathing (case (:mode curved)
                   "arcs" (rewrite-curve curved)
                   "quad-beziers" rewrite-quad-bezier
-                  "lines" rewrite-path)]
+                  "lines" rewrite-path)
+        {:keys [pos length]} ((:start system) depth)]
     (case (:name system)
       "Moore Curve"
-      (pathing (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
-               (:orientation system) length
+      (pathing pos (:orientation system) length
                ((l-system system) (dec depth)))
       "Hilbert Curve"
-      (pathing ((:pos system) length)
-               (:orientation system) length
+      (pathing pos (:orientation system) length
                ((l-system system) depth))
       "Sierpinsky Square"
-      (pathing ((:pos system) length)
-               (:orientation system) (/ length (Math/sqrt 2))
+      (pathing pos (:orientation system) length
                ((l-system system) (dec depth))))))
 
 (defn scene [rule-name depth curved]
