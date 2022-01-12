@@ -77,15 +77,14 @@
         ["" pos orientation])
        (keep (fn [[c p _]] (when (= c "F") p)))))
 
-(defn rewrite-path [pos orientation length expansions]
-  (->> expansions
-       (rewrite-turtle pos orientation length)
+(defn rewrite-path [path]
+  (->> path
        (mapv (fn [p] [:L p]))
-       (into [[:M pos]])
+       (into [[:M (first path)]])
        svg/path))
 
-(defn rewrite-curve [{:keys [large-arc sweep-flag radius-div]}]
-  (fn [pos orientation length expansions]
+(defn rewrite-curve [{:keys [large-arc sweep-flag radius-div]} length]
+  (fn [path]
     (let [radius (/ length (case radius-div
                              "0.5" 0.5
                              "1/sqrt2" (/ 1 (Math/sqrt 2))
@@ -94,34 +93,33 @@
                              "phi" tm/PHI
                              "1.9" 1.9
                              "2" 2))]
-      (->> expansions
-           (rewrite-turtle pos orientation length)
+      (->> path
            (mapv (fn [p] [:A [radius radius]
                          0.0
                          (if large-arc 1 0)
                          (if sweep-flag 1 0)
                          p]))
-           (into [[:M pos]])
+           (into [[:M (first path)]])
            svg/path))))
 
-(defn rewrite-quad-bezier [pos orientation length expansions]
+(defn rewrite-quad-bezier [path]
   (with-redefs [thi.ng.geom.svg.core/path-segment-formats
                 (assoc svg/path-segment-formats :T ["T" svg/*fmt-vec* " "])]
-    (->> expansions
-         (rewrite-turtle pos orientation length)
+    (->> path
          (partition 3 2)
          (mapcat (fn [[a b c]] [[:M a] [:T b] [:T c]]))
-         (into [[:M pos]])
+         (into [[:M (first path)]])
          svg/path)))
 
 (defn shapes [system depth curved]
-  (let [pathing (case (:mode curved)
-                  "arcs" (rewrite-curve curved)
+  (let [{:keys [pos length]} ((:start system) depth)
+        pathing (case (:mode curved)
+                  "arcs" (rewrite-curve curved length)
                   "quad-beziers" rewrite-quad-bezier
-                  "lines" rewrite-path)
-        {:keys [pos length]} ((:start system) depth)]
-    (pathing pos (:orientation system) length
-             ((l-system system) (dec depth)))))
+                  "lines" rewrite-path)]
+    (->> ((l-system system) (dec depth))
+         (rewrite-turtle pos (:orientation system) length)
+         pathing)))
 
 (defn scene [rule-name depth curved]
   (csvg/svg {:width width
