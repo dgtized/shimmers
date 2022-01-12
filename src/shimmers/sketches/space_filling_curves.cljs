@@ -4,6 +4,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -65,6 +66,9 @@
                {:pos (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
                 :length (/ length (Math/sqrt 2))}))}])
 
+(defn by-name [n]
+  (first ((set/index rule-systems [:name]) {:name n})))
+
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
        (reductions
@@ -119,9 +123,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (let [by-name (fn [n] (first ((set/index rule-systems [:name]) {:name n})))]
-              (shapes (by-name rule-name)
-                      depth curved))))
+            (shapes (by-name rule-name) depth curved)))
 
 (defonce ui-state
   (ctrl/state {:rule-system (:name (first rule-systems))
@@ -131,31 +133,36 @@
                         :radius-div "sqrt2"}
                :depth 6}))
 
-(defn page []
+(defn controls []
   (let [systems (into {} (map (fn [{:keys [name]}] [name name]) rule-systems))
-        {:keys [rule-system depth curved]} @ui-state]
+        {:keys [curved]} @ui-state]
+    (ctrl/container
+     (ctrl/dropdown ui-state "Rule System" [:rule-system] systems)
+     (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
+     (ctrl/dropdown ui-state "Display" [:curved :mode]
+                    {"Lines" "lines"
+                     "Arcs" "arcs"
+                     "Quad-Beziers" "quad-beziers"})
+     (when (= (:mode curved) "arcs")
+       [:div
+        (ctrl/dropdown ui-state "Radius Divider" [:curved :radius-div]
+                       {"0.5" "0.5"
+                        "1/sqrt2" "1/sqrt2"
+                        "1" "1"
+                        "sqrt2" "sqrt2"
+                        "phi" "phi"
+                        "1.9" "1.9"
+                        "2" "2"})
+        (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
+        (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))))
+
+(defn page []
+  (let [{:keys [rule-system depth curved]} @ui-state]
     [:div
      [:div.canvas-frame [scene rule-system depth curved]]
-     [:div#interface
-      (ctrl/container
-       (ctrl/dropdown ui-state "Rule System" [:rule-system] systems)
-       (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
-       (ctrl/dropdown ui-state "Display" [:curved :mode]
-                      {"Lines" "lines"
-                       "Arcs" "arcs"
-                       "Quad-Beziers" "quad-beziers"})
-       (when (= (:mode curved) "arcs")
-         [:div
-          (ctrl/dropdown ui-state "Radius Divider" [:curved :radius-div]
-                         {"0.5" "0.5"
-                          "1/sqrt2" "1/sqrt2"
-                          "1" "1"
-                          "sqrt2" "sqrt2"
-                          "phi" "phi"
-                          "1.9" "1.9"
-                          "2" "2"})
-          (ctrl/checkbox ui-state "Large Arc" [:curved :large-arc])
-          (ctrl/checkbox ui-state "Sweep Flag" [:curved :sweep-flag])]))]]))
+     [:div.flexcols
+      [:div#interface [controls]]
+      (debug/pre-edn (dissoc (by-name rule-system) :start))]]))
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"
