@@ -36,17 +36,20 @@
 (def rule-systems
   [{:name "Moore Curve"
     :axiom "LFL+F+LFL"
+    :orientation v/up
     :rules {"L" "-RF+LFL+FR-"
             "R" "+LF-RFR-FL+"}}
 
    {:name "Hilbert Curve"
     :axiom "A"
     :rules {"A" "+BF-AFA-FB+"
-            "B" "-AF+BFB+FA-"}}
+            "B" "-AF+BFB+FA-"}
+    :orientation v/left}
 
    {:name "Sierpinsky Square"
     :axiom "F+XF+F+XF"
-    :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}}])
+    :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}
+    :orientation (g/rotate v/up (/ (- tm/TWO_PI) 8))}])
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
@@ -106,15 +109,15 @@
     (case (:name system)
       "Moore Curve"
       (pathing (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
-               v/up length
+               (:orientation system) length
                ((l-system system) (dec depth)))
       "Hilbert Curve"
       (pathing (v/vec2 (- width (/ length 2)) (/ length 2))
-               v/left length
+               (:orientation system) length
                ((l-system system) depth))
       "Sierpinsky Square"
       (pathing (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
-               (g/rotate v/up (/ (- tm/TWO_PI) 8)) (/ length (Math/sqrt 2))
+               (:orientation system) (/ length (Math/sqrt 2))
                ((l-system system) (dec depth))))))
 
 (defn scene [rule-name depth curved]
