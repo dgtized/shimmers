@@ -1,5 +1,6 @@
 (ns shimmers.sketches.space-filling-curves
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
@@ -24,23 +25,26 @@
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
 
 (defn l-system [axiom productions]
-  (fn [depth]
-    (let [systems (iterate (fn [s] (mapcat #(get productions % %) s)) axiom)]
-      (remove (set (keys productions)) (nth systems depth)))))
+  (let [products (cs/map-kv seq productions)]
+    (fn [depth]
+      (as-> (seq axiom) system
+        (iterate (fn [s] (mapcat #(get products % %) s)) system)
+        (nth system depth)
+        (remove (set (keys products)) system)))))
 
 (def moore-curve
-  (l-system (seq "LFL+F+LFL")
-            {"L" (seq "-RF+LFL+FR-")
-             "R" (seq "+LF-RFR-FL+")}))
+  (l-system "LFL+F+LFL"
+            {"L" "-RF+LFL+FR-"
+             "R" "+LF-RFR-FL+"}))
 
 (def hilbert-curve
-  (l-system (seq "A")
-            {"A" (seq "+BF-AFA-FB+")
-             "B" (seq "-AF+BFB+FA-")}))
+  (l-system "A"
+            {"A" "+BF-AFA-FB+"
+             "B" "-AF+BFB+FA-"}))
 
 (def sierpinsky-square
-  (l-system (seq "F+XF+F+XF")
-            {"X" (seq "XF-F+F-XF+F+XF-F+F-X")}))
+  (l-system "F+XF+F+XF"
+            {"X" "XF-F+F-XF+F+XF-F+F-X"}))
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
