@@ -46,7 +46,7 @@
                 :length length}))}
 
    {:name "Hilbert Curve"
-    :axiom "A"
+    :axiom "+BF-AFA-FB+" ;; "A"
     :rules {"A" "+BF-AFA-FB+"
             "B" "-AF+BFB+FA-"}
     :orientation v/left
@@ -120,16 +120,8 @@
                   "quad-beziers" rewrite-quad-bezier
                   "lines" rewrite-path)
         {:keys [pos length]} ((:start system) depth)]
-    (case (:name system)
-      "Moore Curve"
-      (pathing pos (:orientation system) length
-               ((l-system system) (dec depth)))
-      "Hilbert Curve"
-      (pathing pos (:orientation system) length
-               ((l-system system) depth))
-      "Sierpinsky Square"
-      (pathing pos (:orientation system) length
-               ((l-system system) (dec depth))))))
+    (pathing pos (:orientation system) length
+             ((l-system system) (dec depth)))))
 
 (defn scene [rule-name depth curved]
   (csvg/svg {:width width
