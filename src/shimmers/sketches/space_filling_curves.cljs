@@ -78,10 +78,7 @@
        (keep (fn [[c p _]] (when (= c "F") p)))))
 
 (defn rewrite-path [path]
-  (->> path
-       (mapv (fn [p] [:L p]))
-       (into [[:M (first path)]])
-       svg/path))
+  (mapv (fn [p] [:L p]) path))
 
 (defn rewrite-curve [{:keys [large-arc sweep-flag radius-div]} length]
   (fn [path]
@@ -93,33 +90,33 @@
                              "phi" tm/PHI
                              "1.9" 1.9
                              "2" 2))]
-      (->> path
-           (mapv (fn [p] [:A [radius radius]
-                         0.0
-                         (if large-arc 1 0)
-                         (if sweep-flag 1 0)
-                         p]))
-           (into [[:M (first path)]])
-           svg/path))))
+      (mapv (fn [p] [:A [radius radius]
+                    0.0
+                    (if large-arc 1 0)
+                    (if sweep-flag 1 0)
+                    p])
+            path))))
 
 (defn rewrite-quad-bezier [path]
+  (->> path
+       (partition 3 2)
+       (mapcat (fn [[a b c]] [[:M a] [:T b] [:T c]]))))
+
+(defn svg-path [pos commands]
   (with-redefs [thi.ng.geom.svg.core/path-segment-formats
                 (assoc svg/path-segment-formats :T ["T" svg/*fmt-vec* " "])]
-    (->> path
-         (partition 3 2)
-         (mapcat (fn [[a b c]] [[:M a] [:T b] [:T c]]))
-         (into [[:M (first path)]])
-         svg/path)))
+    (svg/path (into [[:M pos]] commands))))
 
 (defn shapes [system depth curved]
   (let [{:keys [pos length]} ((:start system) depth)
-        pathing (case (:mode curved)
-                  "arcs" (rewrite-curve curved length)
-                  "quad-beziers" rewrite-quad-bezier
-                  "lines" rewrite-path)]
+        rewrite-segments (case (:mode curved)
+                           "arcs" (rewrite-curve curved length)
+                           "quad-beziers" rewrite-quad-bezier
+                           "lines" rewrite-path)]
     (->> ((l-system system) (dec depth))
          (rewrite-turtle pos (:orientation system) length)
-         pathing)))
+         rewrite-segments
+         (svg-path pos))))
 
 (defn scene [rule-name depth curved]
   (csvg/svg {:width width
