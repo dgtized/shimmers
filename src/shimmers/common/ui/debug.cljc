@@ -61,8 +61,11 @@
                                      " msecs"))
      ret#))
 
+(defn pre-edn [edn]
+  [:pre.debug [:code (with-out-str (fedn/pprint edn))]])
+
 (defn display [atom]
-  [:pre.debug [:code (with-out-str (fedn/pprint (deref atom)))]])
+  (pre-edn (deref atom)))
 
 #?(:cljs
    (do
