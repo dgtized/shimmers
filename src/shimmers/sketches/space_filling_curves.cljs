@@ -1,5 +1,6 @@
 (ns shimmers.sketches.space-filling-curves
   (:require
+   [clojure.set :as set]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -32,19 +33,20 @@
         (nth system depth)
         (remove (set (keys products)) system)))))
 
-(def moore-curve
-  (l-system {:axiom "LFL+F+LFL"
-             :rules {"L" "-RF+LFL+FR-"
-                     "R" "+LF-RFR-FL+"}}))
+(def rule-systems
+  [{:name "Moore Curve"
+    :axiom "LFL+F+LFL"
+    :rules {"L" "-RF+LFL+FR-"
+            "R" "+LF-RFR-FL+"}}
 
-(def hilbert-curve
-  (l-system {:axiom "A"
-             :rules {"A" "+BF-AFA-FB+"
-                     "B" "-AF+BFB+FA-"}}))
+   {:name "Hilbert Curve"
+    :axiom "A"
+    :rules {"A" "+BF-AFA-FB+"
+            "B" "-AF+BFB+FA-"}}
 
-(def sierpinsky-square
-  (l-system {:axiom "F+XF+F+XF"
-             :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}}))
+   {:name "Sierpinsky Square"
+    :axiom "F+XF+F+XF"
+    :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}}])
 
 (defn rewrite-turtle [pos orientation length rules]
   (->> rules
@@ -94,52 +96,53 @@
          (into [[:M pos]])
          svg/path)))
 
-(defn shapes [algorithm depth curved]
+(defn shapes [system depth curved]
   (let [divider (Math/pow 2 depth)
         length (/ width divider)
         pathing (case (:mode curved)
                   "arcs" (rewrite-curve curved)
                   "quad-beziers" rewrite-quad-bezier
                   "lines" rewrite-path)]
-    (case algorithm
-      "moore"
+    (case (:name system)
+      "Moore Curve"
       (pathing (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
                v/up length
-               (moore-curve (dec depth)))
-      "hilbert"
+               ((l-system system) (dec depth)))
+      "Hilbert Curve"
       (pathing (v/vec2 (- width (/ length 2)) (/ length 2))
                v/left length
-               (hilbert-curve depth))
-      "sierpinsky-square"
+               ((l-system system) depth))
+      "Sierpinsky Square"
       (pathing (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
                (g/rotate v/up (/ (- tm/TWO_PI) 8)) (/ length (Math/sqrt 2))
-               (sierpinsky-square (dec depth))))))
+               ((l-system system) (dec depth))))))
 
-(defn scene [algorithm depth curved]
+(defn scene [rule-name depth curved]
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes algorithm depth curved)))
+            (let [by-name (fn [n] (first ((set/index rule-systems [:name]) {:name n})))]
+              (shapes (by-name rule-name)
+                      depth curved))))
 
-(defonce ui-state (ctrl/state {:algorithm "hilbert"
-                               :curved {:mode "lines"
-                                        :large-arc false
-                                        :sweep-flag false
-                                        :radius-div "sqrt2"}
-                               :depth 6}))
+(defonce ui-state
+  (ctrl/state {:rule-system (:name (first rule-systems))
+               :curved {:mode "lines"
+                        :large-arc false
+                        :sweep-flag false
+                        :radius-div "sqrt2"}
+               :depth 6}))
 
 (defn page []
-  (let [{:keys [algorithm depth curved]} @ui-state]
+  (let [systems (into {} (map (fn [{:keys [name]}] [name name]) rule-systems))
+        {:keys [rule-system depth curved]} @ui-state]
     [:div
-     [:div.canvas-frame [scene algorithm depth curved]]
+     [:div.canvas-frame [scene rule-system depth curved]]
      [:div#interface
       (ctrl/container
-       (ctrl/dropdown ui-state "Algorithm" [:algorithm]
-                      {"moore" "moore"
-                       "hilbert" "hilbert"
-                       "sierpinsky-square" "sierpinsky-square"})
+       (ctrl/dropdown ui-state "Rule System" [:rule-system] systems)
        (ctrl/slider ui-state (fn [depth] (str "Depth " depth)) [:depth] [1 8 1])
        (ctrl/dropdown ui-state "Display" [:curved :mode]
                       {"Lines" "lines"
