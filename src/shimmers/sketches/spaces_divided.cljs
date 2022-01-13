@@ -104,23 +104,11 @@
     (when (> area 2000)
       (cq/draw-shape inset))))
 
-(defn draw [{:keys [mouse lines intersections edges]}]
+(defn draw [{:keys [mouse edges]}]
   (reset! defo {})
   (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/stroke-weight 0.5)
-  ;; (swap! defo assoc :isecs (map first intersections)
-  ;;        :edges edges)
-
-  ;; (doseq [{[p q] :points} lines]
-  ;;   (q/line p q))
-
-  ;; (doseq [p (map first intersections)]
-  ;;   (cq/circle p 3.0))
-
-  ;; (q/stroke-weight 1.5)
-  ;; (doseq [[p q] edges]
-  ;;   (q/line p q))
 
   ;; either inset or polygon detection is occasionally tossing in weird outputs
   ;; sometimes inset polygons self-intersect, so need to cut that part out
