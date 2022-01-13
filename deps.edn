@@ -59,7 +59,7 @@
 
   ;; clj -Mclj-kondo --lint src
   :clj-kondo
-  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2021.12.19"}}
+  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.01.13"}}
    :main-opts ["-m" "clj-kondo.main"]}
 
   :test
