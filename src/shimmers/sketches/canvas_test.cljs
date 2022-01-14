@@ -75,13 +75,13 @@
         telemetry (r/atom {})]
     (fn []
       [:div
-       [:div {:style {:float "left"}}
-        [:h4 "Frame 1"]
-        [canvas/canvas-frame canvas-state (draw-frame :a telemetry)]]
-       [:div {:style {:float "right"}}
-        [:h4 "Frame 2"]
-        [canvas/canvas-frame canvas-state (draw-frame :b telemetry)]]
-       [:div {:style {:clear :both}}]
+       [:div.flexcols
+        [:div
+         [:h4 "Frame 1"]
+         [canvas/canvas-frame canvas-state (draw-frame :a telemetry)]]
+        [:div
+         [:h4 "Frame 2"]
+         [canvas/canvas-frame canvas-state (draw-frame :b telemetry)]]]
        [:div.explanation
         [:p.readable-width
          "Experimenting with an alternative Canvas renderer from Quil. As it can
