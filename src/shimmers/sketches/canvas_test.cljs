@@ -26,20 +26,24 @@
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
         new-pos (tm/+ pos vel)]
-    ;; TODO: handle out of bounds case on resize?
-    (if (geometry/contains-box? bounds (rect/rect new-pos (tm/+ new-pos (gv/vec2 size size))))
-      (assoc state
-             :pos new-pos
-             :vel vel)
-      (let [x (:x new-pos)
-            face (if (or (< x (rect/left bounds))
-                         (> (+ x size) (rect/right bounds)))
-                   (gv/vec2 0 1)
-                   (gv/vec2 1 0))
-            new-vel (g/reflect vel face)]
-        (assoc state
-               :pos pos
-               :vel new-vel)))))
+    (cond (not (geometry/contains-box? bounds (rect/rect pos (tm/+ pos (gv/vec2 size size)))))
+          (assoc state
+                 :pos (g/unmap-point bounds (gv/vec2 0.5 0.5))
+                 :vel vel)
+          (geometry/contains-box? bounds (rect/rect new-pos (tm/+ new-pos (gv/vec2 size size))))
+          (assoc state
+                 :pos new-pos
+                 :vel vel)
+          :else
+          (let [x (:x new-pos)
+                face (if (or (< x (rect/left bounds))
+                             (> (+ x size) (rect/right bounds)))
+                       (gv/vec2 0 1)
+                       (gv/vec2 1 0))
+                new-vel (g/reflect vel face)]
+            (assoc state
+                   :pos pos
+                   :vel new-vel)))))
 
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
 (defn draw-frame [id telemetry]
