@@ -2,40 +2,16 @@
   (:require
    [helins.canvas :as cv]
    [reagent.core :as r]
-   [reagent.dom :as rdom]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.common.ui.canvas :as canvas]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
-;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
-(defn sizing-attributes [width height attributes]
-  (merge
-   {:width width :height height
-    :style {:width (str width "px")
-            :height (str height "px")}}
-   attributes))
-
-;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
-;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
-(defn animated-canvas [canvas-state attributes render-frame-fn]
-  (let [cancel-animation (atom nil)]
-    (r/create-class
-     {:component-did-mount
-      (fn [this]
-        (reset! cancel-animation
-                (render-frame-fn this (rdom/dom-node this) canvas-state)))
-      :component-will-unmount
-      (fn [_] (@cancel-animation))
-      :reagent-render
-      (fn [_]
-        (let [{:keys [width height]} @canvas-state]
-          [:canvas (sizing-attributes width height attributes)]))})))
 
 (defn set-size! [canvas-state width height]
   (swap! canvas-state assoc :width width :height height))
@@ -46,9 +22,6 @@
     (if (= width 200)
       (set-size! canvas-state 300 300)
       (set-size! canvas-state 200 200))))
-
-(defn canvas-frame [canvas-state render-frame-fn]
-  [animated-canvas canvas-state {:class "canvas-frame"} render-frame-fn])
 
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
@@ -100,10 +73,10 @@
       [:div
        [:div {:style {:float "left"}}
         [:h4 "Frame 1"]
-        [canvas-frame canvas-state (draw-frame :a telemetry)]]
+        [canvas/canvas-frame canvas-state (draw-frame :a telemetry)]]
        [:div {:style {:float "right"}}
         [:h4 "Frame 2"]
-        [canvas-frame canvas-state (draw-frame :b telemetry)]]
+        [canvas/canvas-frame canvas-state (draw-frame :b telemetry)]]
        [:div {:style {:clear :both}}]
        [:div.explanation
         [:p.readable-width
