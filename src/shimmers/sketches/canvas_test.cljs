@@ -13,6 +13,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
 (defn sizing-attributes [width height attributes]
   (merge
    {:width width :height height
