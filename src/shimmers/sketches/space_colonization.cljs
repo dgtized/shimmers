@@ -11,12 +11,16 @@
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.common.ui.debug :as debug]
+            [shimmers.math.geometry :as geometry]
+            [shimmers.math.geometry.triangle :as triangle]
             [shimmers.math.probability :as p]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.circle :as gc]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 (defonce settings
@@ -32,8 +36,8 @@
             :influenced-by false
             :next-branch false}}))
 
-(defn generate-attractors
-  [{[width height] :size} n mode]
+(defn attractor-gen
+  [{[width height] :size} mode]
   (let [top 25
         bottom 30]
     (->> (condp = mode
@@ -41,18 +45,21 @@
            (let [base (- height bottom)
                  left (/ width 5)
                  right (- width left)]
-             (gt/triangle2
-              [left base]
-              [(/ width 2) 0]
-              [right base]))
+             (partial triangle/random-point-inside
+                      (gt/triangle2
+                       [left base]
+                       [(/ width 2) 0]
+                       [right base])))
+           :circle
+           (partial geometry/random-point-in-circle
+                    (gc/circle (cq/rel-vec 0.5 0.5)
+                               (cq/rel-h (tm/random 0.1 0.4))))
            :square
            (let [left (/ width 6)]
-             (rect/rect left top
-                        (- width (* left 2))
-                        (- height top bottom))))
-
-         (partial g/random-point-inside)
-         (repeatedly n))))
+             (partial g/random-point-inside
+                      (rect/rect left top
+                                 (- width (* left 2))
+                                 (- height top bottom))))))))
 
 (defn gen-root [{[w h] :size} roots]
   (mapv (fn [base]
@@ -63,9 +70,8 @@
   [{:keys [attractor-power snap-theta] :as settings}]
   (let [bounds (cq/screen-rect)
         attractors
-        (generate-attractors bounds
-                             (Math/pow 2 attractor-power)
-                             (rand-nth [:triangle :square]))
+        (repeatedly (Math/pow 2 attractor-power)
+                    (attractor-gen bounds (rand-nth [:triangle :square :circle])))
         roots (p/weighted {1 4
                            2 2
                            3 1})]
