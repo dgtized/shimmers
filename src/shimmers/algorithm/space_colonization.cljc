@@ -112,18 +112,18 @@
     :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
-    (let [influencers (influencing-attractors quadtree influence-distance attractors)
-          growth (vec (grow-branches segment-distance snap-theta branches influencers))
-          quadtree' (add-branch-positions quadtree growth)
-          pruned (pruning-set quadtree' prune-distance influencers)
-          branches' (vec (concat branches growth))]
+    (let [influencers (influencing-attractors quadtree influence-distance attractors)]
       (if (empty? influencers)
         (assoc state :steady-state true)
-        (assoc state
-               :weights (update-weights weights branches' growth)
-               :branches branches'
-               :attractors (remove pruned attractors)
-               :quadtree quadtree')))))
+        (let [growth (vec (grow-branches segment-distance snap-theta branches influencers))
+              quadtree' (add-branch-positions quadtree growth)
+              pruned (pruning-set quadtree' prune-distance influencers)
+              branches' (vec (concat branches growth))]
+          (assoc state
+                 :weights (update-weights weights branches' growth)
+                 :branches branches'
+                 :attractors (remove pruned attractors)
+                 :quadtree quadtree'))))))
 
 (defn make-root [position direction]
   (->Branch nil position direction))
