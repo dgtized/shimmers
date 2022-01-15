@@ -98,6 +98,26 @@
                    (v/snap-to (average-attraction branch attractors) snap-theta)
                    segment-distance))))
 
+(defn grow-closest
+  "Generate a branch growing towards the closest attractor.
+
+  This is the fallback case if no attractor is close enough to influence a
+  branch. It grows faster as a slight optimization as this case costs
+  branches*attractors comparisons per call."
+  [segment-distance snap-theta branches attractors]
+  (let [branch-index (->> branches
+                          (map-indexed (fn [idx branch] {branch idx}))
+                          (into {}))
+        [branch attractor]
+        (apply min-key (fn [[branch bud]] (branch-distance bud branch))
+               (for [bud attractors
+                     branch branches]
+                 [branch bud]))]
+    (grow-branch branch (get branch-index branch)
+                 (v/snap-to (average-attraction branch [attractor]) snap-theta)
+                 (max segment-distance
+                      (/ (branch-distance attractor branch) 2)))))
+
 (defn pruning-set
   [quadtree prune-distance influencers]
   (->> influencers
@@ -114,7 +134,12 @@
     (assoc state :steady-state true)
     (let [influencers (influencing-attractors quadtree influence-distance attractors)]
       (if (empty? influencers)
-        (assoc state :steady-state true)
+        (let [new-branch (grow-closest segment-distance snap-theta branches attractors)
+              branches' (conj branches new-branch)]
+          (assoc state
+                 :weights (update-weights weights branches' [new-branch])
+                 :branches branches'
+                 :quadtree (add-branch-positions quadtree [new-branch])))
         (let [growth (vec (grow-branches segment-distance snap-theta branches influencers))
               quadtree' (add-branch-positions quadtree growth)
               pruned (pruning-set quadtree' prune-distance influencers)
