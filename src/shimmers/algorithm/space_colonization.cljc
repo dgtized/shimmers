@@ -52,16 +52,6 @@
   (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
                       [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
 
-(defn steady-state?
-  "Check if growth is complete or has stalled somehow."
-  [growth prune attractors]
-  ;; (println {:growth (count growth) :prune (count prune) :attractors (count attractors)})
-  (or
-   ;; no remaining growth possible
-   (empty? attractors)
-   ;; no changes on this iteration
-   (and (empty? growth) (empty? prune))))
-
 ;; Approach borrowed from
 ;; https://github.com/jasonwebb/2d-space-colonization-experiments/blob/master/core/Network.js#L108-L114
 (defn propagate-branch-weight [weights branches branch]
@@ -120,18 +110,20 @@
   [{:keys [influence-distance segment-distance prune-distance snap-theta
            attractors branches quadtree weights]
     :as state}]
-  (let [influencers (influencing-attractors quadtree influence-distance attractors)
-        growth (vec (grow-branches segment-distance snap-theta branches influencers))
-        quadtree' (add-branch-positions quadtree growth)
-        pruned (pruning-set quadtree' prune-distance influencers)
-        branches' (vec (concat branches growth))]
-    (if (steady-state? growth pruned attractors)
-      (assoc state :steady-state true)
-      (assoc state
-             :weights (update-weights weights branches' growth)
-             :branches branches'
-             :attractors (remove pruned attractors)
-             :quadtree quadtree'))))
+  (if (empty? attractors)
+    (assoc state :steady-state true)
+    (let [influencers (influencing-attractors quadtree influence-distance attractors)
+          growth (vec (grow-branches segment-distance snap-theta branches influencers))
+          quadtree' (add-branch-positions quadtree growth)
+          pruned (pruning-set quadtree' prune-distance influencers)
+          branches' (vec (concat branches growth))]
+      (if (empty? influencers)
+        (assoc state :steady-state true)
+        (assoc state
+               :weights (update-weights weights branches' growth)
+               :branches branches'
+               :attractors (remove pruned attractors)
+               :quadtree quadtree')))))
 
 (defn make-root [position direction]
   (->Branch nil position direction))
@@ -147,4 +139,3 @@
    :branches branches
    :weights (update-weights {} branches branches)
    :quadtree (add-branch-positions (spatialtree/quadtree bounds) branches)})
-
