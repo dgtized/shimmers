@@ -78,9 +78,10 @@
             shimmers.sketches.network-effects
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
+            shimmers.sketches.object-permanence
+            shimmers.sketches.offsetting-circles
             shimmers.sketches.oil-reflections
             shimmers.sketches.overlapping-polygons
-            shimmers.sketches.object-permanence
             shimmers.sketches.particles
             shimmers.sketches.path-distribution
             shimmers.sketches.path-following
