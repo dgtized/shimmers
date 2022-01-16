@@ -19,7 +19,7 @@
                (g/unmap-point bounds q))))
 
 (defn square-in-bounds
-  [{pos :p [width height] :size :as bounds}]
+  [{pos :p [width height] :size}]
   (let [s (dr/random)
         size (if (< height width)
                (* s height)
