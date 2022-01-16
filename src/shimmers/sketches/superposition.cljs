@@ -34,10 +34,6 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn ui-controls []
-  [:div
-   (ctrl/checkbox ui-state "Debug" [:debug])])
-
 (defn brush-at [stroke [radius freq] t]
   (tm/+ (gv/vec2)
         (gv/vec2 radius (* t freq)) ;; rotate around origin/path
@@ -201,6 +197,10 @@
     (cq/draw-polygon current)
     (q/stroke 0 0.0 0.0 1.0)
     (cq/draw-polygon target)))
+
+(defn ui-controls []
+  [:div
+   (ctrl/checkbox ui-state "Debug" [:debug])])
 
 (sketch/defquil superposition
   :created-at "2021-03-08"
