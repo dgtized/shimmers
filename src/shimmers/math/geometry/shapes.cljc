@@ -1,8 +1,10 @@
 (ns shimmers.math.geometry.shapes
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
-            [shimmers.math.deterministic-random :as dr]))
+  (:require
+   [shimmers.math.deterministic-random :as dr]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; (g/unmap-point (rect/rect 5 5 10 10) (gv/vec2 0.1 0.1))
 
@@ -16,4 +18,15 @@
     (rect/rect (g/unmap-point bounds p)
                (g/unmap-point bounds q))))
 
-(comment (rectangle-in-bounds (rect/rect 5 5 5 5)))
+(defn square-in-bounds
+  [{pos :p [width height] :size :as bounds}]
+  (let [s (dr/random)
+        size (if (< height width)
+               (* s height)
+               (* s width))]
+    (rect/rect (tm/+ pos (gv/vec2 (dr/random 0 (- width size))
+                                  (dr/random 0 (- height size))))
+               size size)))
+
+(comment (rectangle-in-bounds (rect/rect 5 5 5 5))
+         (square-in-bounds (rect/rect 5 5 5 5)))
