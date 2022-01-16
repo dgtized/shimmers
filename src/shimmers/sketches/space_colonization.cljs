@@ -40,26 +40,26 @@
   [{[width height] :size} mode]
   (let [top 25
         bottom 30]
-    (->> (condp = mode
-           :triangle
-           (let [base (- height bottom)
-                 left (/ width 5)
-                 right (- width left)]
-             (partial triangle/random-point-inside
-                      (gt/triangle2
-                       [left base]
-                       [(/ width 2) 0]
-                       [right base])))
-           :circle
-           (partial geometry/random-point-in-circle
-                    (gc/circle (cq/rel-vec 0.5 0.5)
-                               (cq/rel-h (tm/random 0.1 0.4))))
-           :square
-           (let [left (/ width 6)]
-             (partial g/random-point-inside
-                      (rect/rect left top
-                                 (- width (* left 2))
-                                 (- height top bottom))))))))
+    (condp = mode
+      :triangle
+      (let [base (- height bottom)
+            left (/ width 5)
+            right (- width left)]
+        (partial triangle/random-point-inside
+                 (gt/triangle2
+                  [left base]
+                  [(/ width 2) 0]
+                  [right base])))
+      :circle
+      (partial geometry/random-point-in-circle
+               (gc/circle (cq/rel-vec 0.5 0.5)
+                          (cq/rel-h (tm/random 0.1 0.4))))
+      :square
+      (let [left (/ width 6)]
+        (partial g/random-point-inside
+                 (rect/rect left top
+                            (- width (* left 2))
+                            (- height top bottom)))))))
 
 (defn gen-root [{[w h] :size} roots]
   (mapv (fn [base]
