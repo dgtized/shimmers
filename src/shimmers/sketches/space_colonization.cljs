@@ -129,8 +129,8 @@
           (q/stroke-weight 0.2)
           (q/stroke 0 0 200 128)
           (q/line (:position branch)
-                  (v/add (:position branch)
-                         (g/scale (colonize/average-attraction branch active-attractors) 5))))))))
+                  (tm/+ (:position branch)
+                        (g/scale (colonize/average-attraction branch active-attractors) 5))))))))
 
 (defn draw [{:keys [branches weights] :as state}]
   (let [debug (:debug @settings)]
