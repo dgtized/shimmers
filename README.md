@@ -28,6 +28,18 @@ This launches a [figwheel REPL](https://figwheel.org/) that will update after sa
 https://localhost:9500 shows main app,
 http://localhost:9500/figwheel-extra-main/tests shows test results.
 
+### Emacs & Cider
+
+My preferred development environment is Emacs using Cider to communicate with
+the ClojureScript browser REPL. This should start using `cider-jack-in-cljs`
+presuming Emacs and Cider are already configured.
+
+The [.dir-locals.el](.dir-locals.el) configuration also enables a couple
+convenience functions in [shimmers.el](shimmers.el). It binds <kbd>f8</kbd> to
+`shimmers-visit-sketch`, which will change the current sketch in the browser to
+reflect the current sketch file buffer in Emacs. It also adds
+`shimmers-visit-tests` that opens a browser window to the test runner.
+
 ## Release
 
     $ bin/publish.sh
