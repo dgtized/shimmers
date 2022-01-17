@@ -28,7 +28,7 @@
       (doseq [b (range 0 600 scale)]
         (let [n (q/noise (* a 0.01) (* b 0.01) t)
               x (+ a (* n (Math/tan (* eq/TAU (+ t n)))))]
-          (q/arc x (+ b (- x a)) scale scale (- 1 n) (* n eq/TAU)))))))
+          (q/arc x (+ b (- x a)) scale scale (* eq/TAU (Math/sin t)) (* eq/TAU n)))))))
 
 (sketch/defquil offsetting-circles
   :created-at "2022-01-16"
