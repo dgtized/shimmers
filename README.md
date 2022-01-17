@@ -14,12 +14,16 @@ locally.
 
 ## Install
 
+Install JDK and [Clojure CLI Tools](https://clojure.org/guides/getting_started)
+
     $ npm install # overrides p5.js to current version over cljsjs coordinates
     $ bin/install-bb
 
 ## Usage
 
     $ bin/repl
+
+This launches a [figwheel REPL](https://figwheel.org/) that will update after saving any changes.
 
 https://localhost:9500 shows main app,
 http://localhost:9500/figwheel-extra-main/tests shows test results.
