@@ -3,7 +3,6 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.common.quil :as cq]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -29,7 +28,7 @@
       (doseq [b (range 0 600 scale)]
         (let [n (q/noise (* a 0.01) (* b 0.01) t)
               x (+ a (* n (Math/tan (* eq/TAU (+ t n)))))]
-          (cq/circle x (+ b (- x a)) scale))))))
+          (q/arc x (+ b (- x a)) scale scale (- 1 n) (* n eq/TAU)))))))
 
 (sketch/defquil offsetting-circles
   :created-at "2022-01-16"
