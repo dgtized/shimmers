@@ -26,7 +26,7 @@ http://localhost:9500/figwheel-extra-main/tests shows test results.
 
 ## Release
 
-    $ clojure -m figwheel.main -b release
+    $ bin/publish.sh
 
 ## License
 
