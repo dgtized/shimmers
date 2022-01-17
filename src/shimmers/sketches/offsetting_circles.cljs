@@ -13,15 +13,15 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t + 0.01))
+  (update state :t + 0.005))
 
 ;; TODO: consider using video as input instead of noise?
 ;; also any means to up the resolution
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  (q/stroke 1.0)
-  (q/fill 0.1 0.3)
+  (q/no-stroke)
+  (q/fill 0.0 0.4)
   ;; (q/no-stroke)
   (let [scale 10]
     (doseq [a (range 0 800 scale)]
