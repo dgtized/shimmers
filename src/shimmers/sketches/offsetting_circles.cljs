@@ -9,6 +9,7 @@
 
 ;; A variation on https://twitter.com/incre_ment/status/1482584406933979136
 (defn setup []
+  (set! (.-disableFriendlyErrors js/p5) true)
   (q/color-mode :hsl 1.0)
   {:t 0})
 
