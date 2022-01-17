@@ -1,4 +1,4 @@
-(ns shimmers.sketches.offsetting-circles
+(ns shimmers.sketches.offsetting-arcs
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -30,7 +30,7 @@
               x (+ a (* n (Math/tan (* eq/TAU (+ t n)))))]
           (q/arc x (+ b (- x a)) scale scale (* eq/TAU (Math/sin t)) (* eq/TAU n)))))))
 
-(sketch/defquil offsetting-circles
+(sketch/defquil offsetting-arcs
   :created-at "2022-01-16"
   :size [800 600]
   :setup setup
