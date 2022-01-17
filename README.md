@@ -40,6 +40,13 @@ convenience functions in [shimmers.el](shimmers.el). It binds <kbd>f8</kbd> to
 reflect the current sketch file buffer in Emacs. It also adds
 `shimmers-visit-tests` that opens a browser window to the test runner.
 
+### Testing
+
+Tests are verified in continuous integration using Github Actions but can also
+be run locally using:
+
+    $ bin/ci
+
 ## Release
 
     $ bin/publish.sh
