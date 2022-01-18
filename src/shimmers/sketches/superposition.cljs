@@ -53,12 +53,12 @@
         theta (if spin
                 (* spin t)
                 (* 2 Math/PI (rand)))]
-    (->> points
-         (mapcat (fn [p] (-> p
-                            (tm/madd scale centroid)
-                            (g/rotate theta)
-                            (tm/+ position))))
-         (apply q/triangle))))
+    (doseq [p points]
+      (apply q/vertex
+             (-> p
+                 (tm/madd scale centroid)
+                 (g/rotate theta)
+                 (tm/+ position))))))
 
 (defn random-triangle []
   (let [s (dr/random 0.15 0.5)
@@ -192,9 +192,11 @@
                 (map-noise fc 800 1000.0 [0.45 1.0])
                 (map-noise fc 500 2000.0 [0.001 0.040]))
         ;; Draw each brush in the cohort
+        (q/begin-shape :triangles)
         (doseq [brush cohort
                 :let [position (brush-at brush orbit tween)]]
-          (draw-triangle-at position tween spin scale)))))
+          (draw-triangle-at position tween spin scale))
+        (q/end-shape))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
