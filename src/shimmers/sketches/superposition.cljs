@@ -5,6 +5,8 @@
             [shimmers.common.quil :as cq :refer [rel-h rel-w]]
             [shimmers.common.transition-interval :as transition]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.deterministic-random :as dr]
+            [shimmers.math.equations :as eq]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.probability :as p]
             [shimmers.sketch :as sketch :include-macros true]
@@ -59,28 +61,29 @@
          (apply q/triangle))))
 
 (defn random-triangle []
-  (let [s (q/random 0.15 0.5)
+  (let [s (dr/random 0.15 0.5)
         r [0.2 0.8]]
     (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
-        (geometry/rotate-around-centroid (* 2 Math/PI (rand)))
-        (g/translate (cq/rel-pos (apply q/random r)
-                                    (apply q/random r))))))
+        (geometry/rotate-around-centroid (dr/random eq/TAU))
+        (g/translate (cq/rel-pos (apply dr/random r)
+                                 (apply dr/random r))))))
 
 (defn random-rect []
-  (let [w (q/random 0.15 0.5)
-        h (q/random 0.15 0.5)]
-    (-> (rect/rect (rel-w (* (- 1 w) (rand))) (rel-h (* (- 1 h) (rand)))
+  (let [w (dr/random 0.15 0.5)
+        h (dr/random 0.15 0.5)]
+    (-> (rect/rect (rel-w (* (- 1 w) (dr/random-double)))
+                   (rel-h (* (- 1 h) (dr/random-double)))
                    (rel-w w) (rel-h h))
-        (geometry/rotate-around-centroid (* 2 Math/PI (rand))))))
+        (geometry/rotate-around-centroid (dr/random eq/TAU)))))
 
 (defn random-circle []
-  (let [r (q/random 0.05 0.35)]
-    (gc/circle (cq/rel-pos (tm/clamp (rand) r (- 1 r))
-                           (tm/clamp (rand) r (- 1 r)))
+  (let [r (dr/random 0.05 0.35)]
+    (gc/circle (cq/rel-pos (tm/clamp (dr/random-double) r (- 1 r))
+                           (tm/clamp (dr/random-double) r (- 1 r)))
                (rel-h r))))
 
 (defn random-target []
-  ((rand-nth [random-rect random-circle random-triangle])))
+  ((dr/rand-nth [random-rect random-circle random-triangle])))
 
 (defn var-rate [n]
   (Math/sin (* (/ Math/PI 2) n)))
@@ -117,8 +120,8 @@
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
         random-point-from
-        (p/weighted {g/random-point-inside 8
-                     g/random-point 1})
+        (dr/weighted {g/random-point-inside 8
+                      g/random-point 1})
         cohorts 12]
     (assoc state :current previous
            :target target
@@ -132,13 +135,13 @@
                             :cohort (mod idx cohorts)))))
                 (sort-by :cohort))
 
-           :variance [cohorts (* 20 (q/random-gaussian))]
-           :transition (transition/after fc (q/floor (q/random 120 600)))
-           :spin (when (p/chance 0.65) (* 200 (q/random-gaussian)))
+           :variance [cohorts (* 20 (dr/gaussian 0 1))]
+           :transition (transition/after fc (dr/random-int 120 600))
+           :spin (when (dr/chance 0.65) (* 200 (dr/gaussian 0 1)))
            :orbit
            [last-orbit
-            (if (p/chance 0.35)
-              (gv/vec2 (* (cq/rel-h 0.08) (q/random-gaussian)) (* 50 (q/random-gaussian)))
+            (if (dr/chance 0.35)
+              (gv/vec2 (* (cq/rel-h 0.08) (dr/gaussian 0 1)) (* 50 (dr/gaussian 0 1)))
               (gv/vec2))])))
 
 (defn debug [state]
