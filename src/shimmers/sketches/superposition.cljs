@@ -95,14 +95,20 @@
 
   (let [current (random-target)
         target (random-target)
-        factor (/ (+ (q/width) (q/height)) 800)]
+        factor (/ (+ (q/width) (q/height)) 800)
+        cohorts 12
+        brushes (->> #(make-stroke (g/random-point-inside current)
+                                   (g/random-point-inside target))
+                     (repeatedly (int (* 48 factor)))
+                     (map-indexed (fn [idx brush] (assoc brush :cohort (mod idx cohorts))))
+                     (sort-by :cohort))]
     {:image (q/create-graphics (q/width) (q/height))
      :current current
      :target target
      :factor factor
-     :brushes (repeatedly (int (* 48 factor))
-                          #(make-stroke (g/random-point-inside current)
-                                        (g/random-point-inside target)))
+     :cohorts cohorts
+     :brushes brushes
+     :brush-cohorts (partition-by :cohort brushes)
      :variance [1 0]
      :transition (transition/after 0 500)
      :spin nil
@@ -116,25 +122,25 @@
   (tm/mix (first orbit) (second orbit) (tm/smoothstep* 0 0.2 tween)))
 
 (defn transition-to
-  [{brushes :brushes [_ last-orbit] :orbit previous :target :as state}
+  [{brushes :brushes [_ last-orbit] :orbit previous :target cohorts :cohorts
+    :as state}
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
         random-point-from
         (dr/weighted {g/random-point-inside 8
                       g/random-point 1})
-        cohorts 12]
+        brushes' (->> brushes
+                      (map-indexed
+                       (fn [idx brush]
+                         (let [p (brush-at brush last-orbit 1.0)
+                               q (random-point-from target)]
+                           (assoc (make-stroke p q curve)
+                                  :cohort (mod idx cohorts)))))
+                      (sort-by :cohort))]
     (assoc state :current previous
            :target target
-           :brushes
-           (->> brushes
-                (map-indexed
-                 (fn [idx brush]
-                   (let [p (brush-at brush last-orbit 1.0)
-                         q (random-point-from target)]
-                     (assoc (make-stroke p q curve)
-                            :cohort (mod idx cohorts)))))
-                (sort-by :cohort))
-
+           :brushes brushes'
+           :brush-cohorts (partition-by :cohort brushes')
            :variance [cohorts (* 20 (dr/gaussian 0 1))]
            :transition (transition/after fc (dr/random-int 120 600))
            :spin (when (dr/chance 0.65) (* 200 (dr/gaussian 0 1)))
@@ -164,7 +170,7 @@
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
 
 (defn draw
-  [{:keys [image current target transition factor brushes variance spin] :as state}]
+  [{:keys [image current target transition factor brush-cohorts variance spin] :as state}]
 
   ;; measure/beat
   (let [frame-count (q/frame-count)
@@ -173,7 +179,7 @@
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
       ;; Calculate stroke, stroke-weight, and fill for all brushes in a cohort
-      (doseq [cohort (partition-by :cohort brushes)
+      (doseq [cohort brush-cohorts
               :let [fc (+ frame-count (* (:cohort (first cohort))
                                          (second variance)))
                     scale (* factor (tm/mix-exp 1.0 32 (q/noise (/ fc 500) 4000.0) 12))]]
