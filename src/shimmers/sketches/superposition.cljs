@@ -48,24 +48,21 @@
            :centroid (gu/centroid (:points t)))))
 
 ;; optimized version with cached centroid, also trying to reduce consing?
-(defn draw-triangle-at [position t spin scale]
-  (let [{:keys [points centroid]} triangle-instance
-        theta (if spin
-                (* spin t)
-                (* 2 Math/PI (rand)))]
-    (doseq [p points]
-      (apply q/vertex
-             (-> p
-                 (tm/madd scale centroid)
-                 (g/rotate theta)
-                 (tm/+ position))))))
-
 (defn draw-brush-cohort [cohort scale orbit tween spin]
-  (q/begin-shape :triangles)
-  (doseq [brush cohort
-          :let [position (brush-at brush orbit tween)]]
-    (draw-triangle-at position tween spin scale))
-  (q/end-shape))
+  (let [{:keys [points centroid]} triangle-instance]
+    (q/begin-shape :triangles)
+    (doseq [brush cohort
+            :let [position (brush-at brush orbit tween)
+                  theta (if spin
+                          (* spin tween)
+                          (* 2 Math/PI (rand)))]]
+      (doseq [p points]
+        (apply q/vertex
+               (-> p
+                   (tm/madd scale centroid)
+                   (g/rotate theta)
+                   (tm/+ position)))))
+    (q/end-shape)))
 
 (defn random-triangle []
   (let [s (dr/random 0.15 0.5)
