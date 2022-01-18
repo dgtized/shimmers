@@ -60,6 +60,13 @@
                  (g/rotate theta)
                  (tm/+ position))))))
 
+(defn draw-brush-cohort [cohort scale orbit tween spin]
+  (q/begin-shape :triangles)
+  (doseq [brush cohort
+          :let [position (brush-at brush orbit tween)]]
+    (draw-triangle-at position tween spin scale))
+  (q/end-shape))
+
 (defn random-triangle []
   (let [s (dr/random 0.15 0.5)
         r [0.2 0.8]]
@@ -192,11 +199,7 @@
                 (map-noise fc 800 1000.0 [0.45 1.0])
                 (map-noise fc 500 2000.0 [0.001 0.040]))
         ;; Draw each brush in the cohort
-        (q/begin-shape :triangles)
-        (doseq [brush cohort
-                :let [position (brush-at brush orbit tween)]]
-          (draw-triangle-at position tween spin scale))
-        (q/end-shape))))
+        (draw-brush-cohort cohort scale orbit tween spin))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
