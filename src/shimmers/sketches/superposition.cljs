@@ -95,34 +95,6 @@
 (defn var-rate [n]
   (Math/sin (* (/ Math/PI 2) n)))
 
-(defn setup []
-  ;; Performance, removes calls to addType & friends
-  ;; now dominated by MinorGC and cost of sort?
-  (set! (.-disableFriendlyErrors js/p5) true)
-
-  (q/noise-seed (dr/random-int 100000))
-
-  (let [current (random-target)
-        target (random-target)
-        factor (/ (+ (q/width) (q/height)) 800)
-        cohorts 12
-        brushes (->> #(make-stroke (g/random-point-inside current)
-                                   (g/random-point-inside target))
-                     (repeatedly (int (* 48 factor)))
-                     (map-indexed (fn [idx brush] (assoc brush :cohort (mod idx cohorts))))
-                     (sort-by :cohort))]
-    {:image (q/create-graphics (q/width) (q/height))
-     :current current
-     :target target
-     :factor factor
-     :cohorts cohorts
-     :brushes brushes
-     :brush-cohorts (partition-by :cohort brushes)
-     :variance [1 0]
-     :transition (transition/after 0 500)
-     :spin nil
-     :orbit [(gv/vec2) (gv/vec2)]}))
-
 (defn orbit-transition
   "Transition from old orbit to new in the first 20% of the motion from A to B.
 
@@ -158,6 +130,34 @@
             (if (dr/chance 0.35)
               (gv/vec2 (* (cq/rel-h 0.08) (dr/gaussian 0 1)) (* 50 (dr/gaussian 0 1)))
               (gv/vec2))])))
+
+(defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
+  (q/noise-seed (dr/random-int 100000))
+
+  (let [current (random-target)
+        target (random-target)
+        factor (/ (+ (q/width) (q/height)) 800)
+        cohorts 12
+        brushes (->> #(make-stroke (g/random-point-inside current)
+                                   (g/random-point-inside target))
+                     (repeatedly (int (* 48 factor)))
+                     (map-indexed (fn [idx brush] (assoc brush :cohort (mod idx cohorts))))
+                     (sort-by :cohort))]
+    {:image (q/create-graphics (q/width) (q/height))
+     :current current
+     :target target
+     :factor factor
+     :cohorts cohorts
+     :brushes brushes
+     :brush-cohorts (partition-by :cohort brushes)
+     :variance [1 0]
+     :transition (transition/after 0 500)
+     :spin nil
+     :orbit [(gv/vec2) (gv/vec2)]}))
 
 (defn debug-filter [state]
   (-> state
