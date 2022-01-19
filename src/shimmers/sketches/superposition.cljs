@@ -103,7 +103,9 @@
   (tm/mix (first orbit) (second orbit) (tm/smoothstep* 0 0.2 tween)))
 
 (defn transition-to
-  [{brushes :brushes [_ last-orbit] :orbit previous :target cohorts :cohorts
+  [{:keys [brushes cohorts]
+    [_ last-orbit] :orbit
+    previous :target
     :as state}
    fc target]
   (let [curve (* 0.8 (p/happensity 0.4))
