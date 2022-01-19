@@ -159,7 +159,7 @@
               (gv/vec2 (* (cq/rel-h 0.08) (dr/gaussian 0 1)) (* 50 (dr/gaussian 0 1)))
               (gv/vec2))])))
 
-(defn debug [state]
+(defn debug-filter [state]
   (-> state
       (update :brushes count)
       (assoc :transition
@@ -172,7 +172,7 @@
   (let [fc (q/frame-count)]
     (if (transition/complete? transition fc)
       (let [state' (transition-to state fc (random-target))]
-        (reset! defo (debug state'))
+        (reset! defo (debug-filter state'))
         state')
       state)))
 
