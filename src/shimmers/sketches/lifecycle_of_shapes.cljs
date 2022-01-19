@@ -114,12 +114,15 @@
                                    :else
                                    t-delta)))
     (when (= 0 (mod (q/frame-count) 5))
+      (q/begin-shape :triangles)
       (doseq [correlate correspondences
               :let [triset (map (fn [i tessellation] (nth tessellation i)) correlate rotated-triangles)
                     [pts1 pts2] (map (comp :points (partial nth triset))
                                      [o1 (mod (inc o1) n-states)])
                     vertices (map (fn [v1 v2] (tm/mix v1 v2 t-delta)) pts1 pts2)]]
-        (apply cq/draw-triangle vertices)))))
+        (doseq [v vertices]
+          (apply q/vertex v)))
+      (q/end-shape))))
 
 (sketch/defquil lifecycle-of-shapes
   :created-at "2021-12-28"
