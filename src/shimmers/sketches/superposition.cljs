@@ -219,7 +219,7 @@
 (sketch/defquil superposition
   :created-at "2021-03-08"
   :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [1200 900]
+  :size [1024 768]
   :setup setup
   :update update-state
   :draw draw

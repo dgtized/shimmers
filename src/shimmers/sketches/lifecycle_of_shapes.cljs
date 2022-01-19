@@ -123,7 +123,7 @@
 
 (sketch/defquil lifecycle-of-shapes
   :created-at "2021-12-28"
-  :size [800 600]
+  :size [1024 768]
   :setup setup
   :update update-state
   :draw draw
