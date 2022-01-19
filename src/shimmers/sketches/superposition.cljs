@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq :refer [rel-h rel-w]]
             [shimmers.common.transition-interval :as transition]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.common.ui.debug :as debug]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.equations :as eq]
             [shimmers.math.geometry :as geometry]
@@ -18,6 +19,8 @@
             [thi.ng.geom.utils :as gu]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 ;; Represent a brush stroke from location p to q
 ;; caches the resulting spline and index of positions
@@ -162,13 +165,14 @@
       (assoc :transition
              (let [{:keys [base interval]} (:transition state)]
                [base interval]))
-      (dissoc :image)))
+      (dissoc :image)
+      (dissoc :brush-cohorts)))
 
 (defn update-state [{:keys [transition] :as state}]
   (let [fc (q/frame-count)]
     (if (transition/complete? transition fc)
       (let [state' (transition-to state fc (random-target))]
-        (.log js/console (debug state'))
+        (reset! defo (debug state'))
         state')
       state)))
 
@@ -213,7 +217,9 @@
 
 (defn ui-controls []
   [:div
-   (ctrl/checkbox ui-state "Debug" [:debug])])
+   (ctrl/checkbox ui-state "Debug" [:debug])
+   (when (:debug @ui-state)
+     (debug/display defo))])
 
 (sketch/defquil superposition
   :created-at "2021-03-08"
