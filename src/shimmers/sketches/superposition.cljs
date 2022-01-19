@@ -140,26 +140,19 @@
 
   (q/noise-seed (dr/random-int 100000))
 
-  (let [current (random-target)
-        target (random-target)
+  (let [start (random-target)
         factor (/ (+ (q/width) (q/height)) 800)
-        cohorts 12
-        brushes (->> #(make-stroke (g/random-point-inside current)
-                                   (g/random-point-inside target))
-                     (repeatedly (int (* 48 factor)))
-                     (map-indexed (fn [idx brush] (assoc brush :cohort (mod idx cohorts))))
-                     (sort-by :cohort))]
-    {:image (q/create-graphics (q/width) (q/height))
-     :current current
-     :target target
-     :factor factor
-     :cohorts cohorts
-     :brushes brushes
-     :brush-cohorts (partition-by :cohort brushes)
-     :variance [1 0]
-     :transition (transition/after 0 500)
-     :spin nil
-     :orbit [(gv/vec2) (gv/vec2)]}))
+        brushes (repeatedly (int (* 48 factor))
+                            #(make-stroke (g/random-point-inside start)
+                                          (g/random-point-inside start)))]
+    (-> {:image (q/create-graphics (q/width) (q/height))
+         :current start
+         :target start
+         :factor factor
+         :cohorts 12
+         :brushes brushes
+         :orbit [(gv/vec2) (gv/vec2)]}
+        (transition-to 0 (random-target)))))
 
 (defn debug-filter [state]
   (-> state
