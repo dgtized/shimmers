@@ -5,6 +5,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
+            [shimmers.math.deterministic-random :as dr]
             [shimmers.math.geometry :as geometry]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.circle :as gc]
@@ -18,18 +19,18 @@
 ;; Scott says this should be called "cell-munging"
 
 (defn random-color []
-  [(rand)
-   (q/random 0.15 0.9)
-   (q/random 0.25 0.8)
-   (q/random 0.25 0.8)])
+  [(dr/random)
+   (dr/random 0.15 0.9)
+   (dr/random 0.25 0.8)
+   (dr/random 0.25 0.8)])
 
 (defn mixv [[c1 & v1] [c2 & v2] t]
   (into [(-> (sm/mix-mod c1 c2 t)
-             (+ (* (q/random-gaussian) 0.05))
+             (+ (* (dr/gaussian 0 1) 0.05))
              (mod 1.0))]
         (mapv (fn [a b]
                 (-> (tm/mix* a b t)
-                    (+ (* (q/random-gaussian) 0.05))
+                    (+ (* (dr/gaussian 0 1) 0.05))
                     (tm/clamp 0 1)))
               v1 v2)))
 
@@ -60,8 +61,8 @@
 
 (defn add-circle [quadtree boundary search-radius radius]
   (let [r radius
-        center (gv/vec2 (q/random r (- (q/width) r))
-                        (q/random  r (- (q/height) r)))
+        center (gv/vec2 (dr/random r (- (q/width) r))
+                        (dr/random  r (- (q/height) r)))
         circle (assoc (gc/circle center r) :color (random-color))
         near (spatialtree/select-with-circle quadtree center search-radius)]
     (if (and (geometry/contains-circle? boundary circle)
@@ -108,7 +109,7 @@
 
 ;; Re-enable growth of nearby circles after cull?
 (defn cull-circles [{:keys [circles quadtree] :as state} p]
-  (let [culled (random-sample p circles)]
+  (let [culled (dr/random-sample p circles)]
     (assoc state :circles (remove (set culled) circles)
            :quadtree (reduce g/delete-point quadtree (map :p culled)))))
 
@@ -117,7 +118,7 @@
         pct (max 0 (- 1.0 (/ c 1600)))]
     (-> state
         grow-circles
-        (fresh-circles (q/round (* (mod (+ c (q/frame-count)) 4) (rand) pct)))
+        (fresh-circles (q/round (* (mod (+ c (q/frame-count)) 4) (dr/random) pct)))
         (cull-circles 0.00005))))
 
 (defn draw [{:keys [circles]}]
@@ -134,6 +135,7 @@
 (sketch/defquil circle-packing
   :created-at "2021-03-10"
   :size [900 600]
+  :tags #{:deterministic}
   :setup setup
   :update update-state
   :draw draw
