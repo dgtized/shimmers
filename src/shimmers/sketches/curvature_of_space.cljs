@@ -1,31 +1,57 @@
 (ns shimmers.sketches.curvature-of-space
   (:require
+   [shimmers.algorithm.space-colonization :as colonize]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.svg.core :as svg]))
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn shapes []
-  (svg/group {:transform (csvg/translate (rv 0.5 0.5))}
-             (csvg/path [[:M (gv/vec2)]
-                         [:A [30 30] 0.0 0 1 (gv/vec2 20 20)]
-                         [:A [15 15] 0.0 1 0 (gv/vec2 0 20)]
-                         [:A [40 40] 0.0 1 0 (gv/vec2 -20 20)]])))
+(defn build-tree [bounds source attractors]
+  (-> {:bounds bounds
+       :branches [source]
+       :attractors attractors
+       :influence-distance 48
+       :prune-distance 6
+       :segment-distance 3
+       :snap-theta 0}
+      colonize/create-tree
+      colonize/grow-tree))
+
+(defn tree->segments [{:keys [branches]}]
+  (for [branch branches
+        :let [parent (:parent branch)]
+        :when parent]
+    (gl/line2 (:position (nth branches parent))
+              (:position branch))))
+
+(defn gen-points [n]
+  (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))]
+    (repeatedly n #(geometry/random-point-in-circle circle))))
+
+(defn shapes [bounds]
+  (->> (gen-points 256)
+       (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2)))
+       tree->segments))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 1.5}
-            (shapes)))
+  (let [bounds (rect/rect 0 0 width height)]
+    (csvg/svg {:width width
+               :height height
+               :stroke "black"
+               :fill "white"
+               :stroke-width 1.0}
+              (shapes bounds))))
 
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"

@@ -150,6 +150,10 @@
                  :attractors (remove pruned attractors)
                  :quadtree quadtree'))))))
 
+(defn grow-tree [state]
+  (some (fn [{:keys [steady-state] :as s}] (when steady-state s))
+        (iterate grow state)))
+
 (defn make-root [position direction]
   (->Branch nil position direction))
 

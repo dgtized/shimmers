@@ -25,7 +25,7 @@
             shimmers.sketches.convex-spiral
             shimmers.sketches.cube
             shimmers.sketches.cube-rotations
-            ;; shimmers.sketches.curvature-of-space
+            shimmers.sketches.curvature-of-space
             shimmers.sketches.decaying-foundations
             shimmers.sketches.deeper-squares
             shimmers.sketches.deformed-spirals
