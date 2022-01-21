@@ -22,7 +22,7 @@
   (-> {:bounds bounds
        :branches [source]
        :attractors attractors
-       :influence-distance 48
+       :influence-distance 36
        :prune-distance 6
        :segment-distance 3
        :snap-theta 0}
@@ -34,7 +34,7 @@
        (keep (fn [[parent-idx children]]
                (when (> (count children) 1)
                  parent-idx)))
-       (map #(:position (nth branches %)))))
+       (map #(nth branches %))))
 
 (defn tree->segments [{:keys [branches]}]
   (for [branch branches
@@ -53,7 +53,7 @@
              (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))]
     (svg/group {}
                (svg/group {} (tree->segments tree))
-               (svg/group {} (map #(svg/circle % 2) (tree->branch-points tree))))))
+               (svg/group {} (map #(svg/circle (:position %) 2) (tree->branch-points tree))))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
