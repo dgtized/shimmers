@@ -4,7 +4,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.sequence :as cs]
-            [shimmers.math.probability :as p]
+            [shimmers.math.deterministic-random :as dr :refer [rand-nth]]
             [shimmers.sketch :as sketch :include-macros true]))
 
 (defn sample-color [x y cols rows]
@@ -163,7 +163,7 @@
     (pinwheel (rand-nth (range 1 w))
               (rand-nth (range 1 h))
               (rand-nth [0.02 0.03 0.04 0.06 0.08 0.10 0.12])
-              (if (p/chance 0.5) 1 -1)
+              (if (dr/chance 0.5) 1 -1)
               (rand-nth (range 1 4)))))
 
 (defn make-flip-x [state]
@@ -206,11 +206,11 @@
                 (map (partial e-call :step))))))
 
 (defn create-effect [{:keys [effects] :as state}]
-  (let [effect ((p/weighted {make-rotate-row 1
-                             make-rotate-column 1
-                             make-pinwheel 3
-                             make-flip-x 1
-                             make-flip-y 1}) state)
+  (let [effect ((dr/weighted {make-rotate-row 1
+                              make-rotate-column 1
+                              make-pinwheel 3
+                              make-flip-x 1
+                              make-flip-y 1}) state)
         avoid-cells (set (mapcat :cells effects))]
     (if (empty? (set/intersection (set (:cells effect)) avoid-cells))
       (update state :effects conj effect)
@@ -224,7 +224,7 @@
 (defn update-state [state]
   (let [{:keys [effects] :as state'} (apply-effects state)]
     (if (and (< (count effects) 4)
-             (< (rand) 0.035))
+             (dr/chance 0.035))
       (create-effect state')
       state')))
 
@@ -245,6 +245,7 @@
 (sketch/defquil permutations-of-transfiguration
   :created-at "2021-02-07"
   :size [900 600]
+  :tags #{:deterministic}
   :setup setup
   :update update-state
   :draw draw
