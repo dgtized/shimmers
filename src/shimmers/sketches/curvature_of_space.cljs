@@ -10,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -28,6 +29,13 @@
       colonize/create-tree
       colonize/grow-tree))
 
+(defn tree->branch-points [{:keys [branches]}]
+  (->> (group-by :parent branches)
+       (keep (fn [[parent-idx children]]
+               (when (> (count children) 1)
+                 parent-idx)))
+       (map #(:position (nth branches %)))))
+
 (defn tree->segments [{:keys [branches]}]
   (for [branch branches
         :let [parent (:parent branch)]
@@ -40,9 +48,12 @@
     (repeatedly n #(geometry/random-point-in-circle circle))))
 
 (defn shapes [bounds]
-  (->> (gen-points 256)
-       (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2)))
-       tree->segments))
+  (let [tree
+        (->> (gen-points 256)
+             (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))]
+    (svg/group {}
+               (svg/group {} (tree->segments tree))
+               (svg/group {} (map #(svg/circle % 2) (tree->branch-points tree))))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
