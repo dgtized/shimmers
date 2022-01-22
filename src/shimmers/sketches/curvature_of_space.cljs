@@ -64,8 +64,12 @@
          (keep (fn [[_ branches]] (when (> (count branches) 1) branches))))))
 
 (defn gen-points [n]
-  (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))]
-    (repeatedly n #(geometry/random-point-in-circle circle))))
+  (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))
+        c-left (gc/circle (rv 0.25 0.5) (* height 0.25))
+        c-right (gc/circle (rv 0.75 0.5) (* height 0.25))]
+    (concat (repeatedly (int (* 0.4 n)) #(geometry/random-point-in-circle circle))
+            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-left))
+            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-right)))))
 
 (defn line-path [points]
   (csvg/path (into [[:M (first points)]]
@@ -73,11 +77,11 @@
 
 (defn shapes [bounds]
   (reset! defo {})
-  (let [points (gen-points 96)
-        tree (build-tree bounds (dr/rand-nth points) points)
+  (let [points (gen-points 128)
+        tree (debug/time-it defo [:build-tree] (build-tree bounds (rv 0.5 0.5) points))
         branch-points (tree->branch-points tree)
         leaves (tree->leaf-points tree)
-        paths (tree->paths tree)]
+        paths (debug/time-it defo [:tree->paths] (tree->paths tree))]
     (swap! defo assoc
            :branches (count (:branches tree))
            :branch-points (count branch-points)
