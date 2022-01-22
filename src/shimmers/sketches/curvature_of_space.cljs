@@ -52,19 +52,40 @@
     (gl/line2 (:position (nth branches parent))
               (:position branch))))
 
+(defn tree->paths [{:keys [branches] :as tree}]
+  (let [branch-points (set (tree->branch-points tree))]
+    (->> (map-indexed vector branches)
+         (reduce (fn [paths [idx branch]]
+                   (let [{:keys [parent]} branch]
+                     (if-let [ancestors (get paths parent)]
+                       (let [cut (last ancestors)]
+                         (if (contains? branch-points cut)
+                           (-> paths
+                               (assoc idx (vector cut branch)))
+                           (-> paths
+                               (dissoc parent)
+                               (assoc idx (conj ancestors branch)))))
+                       (assoc paths idx (vector branch)))))
+                 {})
+         (keep (fn [[_ branches]] (when (> (count branches) 1) branches))))))
+
 (defn gen-points [n]
   (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))]
     (repeatedly n #(geometry/random-point-in-circle circle))))
 
 (defn shapes [bounds]
+  (reset! defo {})
   (let [tree
-        (->> (gen-points 256)
+        (->> (gen-points 16)
              (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))
         branch-points (tree->branch-points tree)
-        leaves (tree->leaf-points tree)]
-    (reset! defo {:branches (count (:branches tree))
-                  :branch-points (count branch-points)
-                  :leaves (count leaves)})
+        leaves (tree->leaf-points tree)
+        paths (tree->paths tree)]
+    (swap! defo assoc
+           :branches (count (:branches tree))
+           :branch-points (count branch-points)
+           :leaves (count leaves)
+           :paths (count paths))
     (svg/group {}
                (svg/group {} (tree->segments tree))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
