@@ -24,11 +24,11 @@
 
 (defn build-tree [bounds source attractors]
   (-> {:bounds bounds
-       :branches [source]
+       :branches [(colonize/make-root source (gv/vec2))]
        :attractors attractors
-       :influence-distance 36
+       :influence-distance 96
        :prune-distance 6
-       :segment-distance 3
+       :segment-distance 4
        :snap-theta 0}
       colonize/create-tree
       colonize/grow-tree))
@@ -73,9 +73,8 @@
 
 (defn shapes [bounds]
   (reset! defo {})
-  (let [tree
-        (->> (gen-points 64)
-             (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))
+  (let [points (gen-points 96)
+        tree (build-tree bounds (dr/rand-nth points) points)
         branch-points (tree->branch-points tree)
         leaves (tree->leaf-points tree)
         paths (tree->paths tree)]
@@ -89,9 +88,11 @@
                                    :let [points (map :position path)]]
                                (-> points
                                    gl/linestrip2
-                                   (lines/simplify-line 0.05)
+                                   (lines/simplify-line 0.5)
                                    :points
                                    line-path)))
+               (svg/group {:stroke "green"}
+                          (map #(svg/circle % 0.8) points))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
                (svg/group {} (map #(svg/circle (:position %) 2) leaves)))))
 
