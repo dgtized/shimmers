@@ -45,13 +45,6 @@
          (map-indexed vector)
          (keep (fn [[i b]] (when (not (get parents i)) b))))))
 
-(defn tree->segments [{:keys [branches]}]
-  (for [branch branches
-        :let [parent (:parent branch)]
-        :when parent]
-    (gl/line2 (:position (nth branches parent))
-              (:position branch))))
-
 (defn tree->paths [{:keys [branches] :as tree}]
   (let [branch-points (set (tree->branch-points tree))]
     (->> (map-indexed vector branches)
@@ -73,10 +66,14 @@
   (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))]
     (repeatedly n #(geometry/random-point-in-circle circle))))
 
+(defn line-path [points]
+  (csvg/path (into [[:M (first points)]]
+                   (map (fn [p] [:L p]) (rest points)))))
+
 (defn shapes [bounds]
   (reset! defo {})
   (let [tree
-        (->> (gen-points 16)
+        (->> (gen-points 64)
              (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))
         branch-points (tree->branch-points tree)
         leaves (tree->leaf-points tree)
@@ -87,7 +84,7 @@
            :leaves (count leaves)
            :paths (count paths))
     (svg/group {}
-               (svg/group {} (tree->segments tree))
+               (svg/group {} (for [path paths] (line-path (map :position path))))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
                (svg/group {} (map #(svg/circle (:position %) 2) leaves)))))
 
