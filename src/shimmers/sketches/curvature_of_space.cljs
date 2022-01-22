@@ -3,6 +3,7 @@
    [shimmers.algorithm.space-colonization :as colonize]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
@@ -17,6 +18,8 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+(defonce defo (debug/state))
 
 (defn build-tree [bounds source attractors]
   (-> {:bounds bounds
@@ -56,11 +59,16 @@
 (defn shapes [bounds]
   (let [tree
         (->> (gen-points 256)
-             (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))]
+             (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))
+        branch-points (tree->branch-points tree)
+        leaves (tree->leaf-points tree)]
+    (reset! defo {:branches (count (:branches tree))
+                  :branch-points (count branch-points)
+                  :leaves (count leaves)})
     (svg/group {}
                (svg/group {} (tree->segments tree))
-               (svg/group {} (map #(svg/circle (:position %) 2) (tree->branch-points tree)))
-               (svg/group {} (map #(svg/circle (:position %) 2) (tree->leaf-points tree))))))
+               (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
+               (svg/group {} (map #(svg/circle (:position %) 2) leaves)))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
@@ -71,9 +79,16 @@
                :stroke-width 1.0}
               (shapes bounds))))
 
+(defn page []
+  [:div
+   [:div.canvas-frame [scene]]
+   [:div.explanation
+    [:div.flexcols
+     [:div (view-sketch/generate :curvature-of-space)]
+     [debug/display defo]]]])
+
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :curvature-of-space)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
