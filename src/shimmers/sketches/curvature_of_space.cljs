@@ -1,5 +1,6 @@
 (ns shimmers.sketches.curvature-of-space
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.space-colonization :as colonize]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -84,7 +85,13 @@
            :leaves (count leaves)
            :paths (count paths))
     (svg/group {}
-               (svg/group {} (for [path paths] (line-path (map :position path))))
+               (svg/group {} (for [path paths
+                                   :let [points (map :position path)]]
+                               (-> points
+                                   gl/linestrip2
+                                   (lines/simplify-line 0.05)
+                                   :points
+                                   line-path)))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
                (svg/group {} (map #(svg/circle (:position %) 2) leaves)))))
 
