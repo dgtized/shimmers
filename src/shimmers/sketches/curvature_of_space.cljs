@@ -36,6 +36,12 @@
                  parent-idx)))
        (map #(nth branches %))))
 
+(defn tree->leaf-points [{:keys [branches]}]
+  (let [parents (group-by :parent branches)]
+    (->> branches
+         (map-indexed vector)
+         (keep (fn [[i b]] (when (not (get parents i)) b))))))
+
 (defn tree->segments [{:keys [branches]}]
   (for [branch branches
         :let [parent (:parent branch)]
@@ -53,7 +59,8 @@
              (build-tree bounds (colonize/make-root (rv 0.5 0.5) (dr/randvec2))))]
     (svg/group {}
                (svg/group {} (tree->segments tree))
-               (svg/group {} (map #(svg/circle (:position %) 2) (tree->branch-points tree))))))
+               (svg/group {} (map #(svg/circle (:position %) 2) (tree->branch-points tree)))
+               (svg/group {} (map #(svg/circle (:position %) 2) (tree->leaf-points tree))))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
