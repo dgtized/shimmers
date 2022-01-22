@@ -61,7 +61,8 @@
                                (assoc idx (conj ancestors branch)))))
                        (assoc paths idx (vector branch)))))
                  {})
-         (keep (fn [[_ branches]] (when (> (count branches) 1) branches))))))
+         (keep (fn [[_ branches]] (when (> (count branches) 1) branches)))
+         (map #(map :position %)))))
 
 (defn gen-points [n]
   (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))
@@ -71,9 +72,11 @@
             (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-left))
             (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-right)))))
 
-(defn line-path [points]
-  (csvg/path (into [[:M (first points)]]
-                   (map (fn [p] [:L p]) (rest points)))))
+(defn point-path [{:keys [points]}]
+  (->> (rest points)
+       (map (fn [p] [:L p]))
+       (into [[:M (first points)]])
+       csvg/path))
 
 (defn shapes [bounds]
   (reset! defo {})
@@ -88,13 +91,10 @@
            :leaves (count leaves)
            :paths (count paths))
     (svg/group {}
-               (svg/group {} (for [path paths
-                                   :let [points (map :position path)]]
-                               (-> points
-                                   gl/linestrip2
+               (svg/group {} (for [path paths]
+                               (-> (gl/linestrip2 path)
                                    (lines/simplify-line 0.5)
-                                   :points
-                                   line-path)))
+                                   point-path)))
                (svg/group {:stroke "green"}
                           (map #(svg/circle % 0.8) points))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
