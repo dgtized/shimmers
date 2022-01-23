@@ -96,10 +96,10 @@
                                (-> (gl/linestrip2 path)
                                    (lines/simplify-line 0.5)
                                    point-path)))
-               (svg/group {:stroke "green"}
-                          (map #(svg/circle % 0.8) points))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
-               (svg/group {} (map #(svg/circle (:position %) 2) leaves)))))
+               (svg/group {} (map #(svg/circle (:position %) 2) leaves))
+               (svg/group {:stroke "green"}
+                          (map #(svg/circle % 0.8) points)))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
