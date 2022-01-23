@@ -68,9 +68,9 @@
   (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))
         c-left (gc/circle (rv 0.25 0.5) (* height 0.25))
         c-right (gc/circle (rv 0.75 0.5) (* height 0.25))]
-    (concat (repeatedly (int (* 0.4 n)) #(geometry/random-point-in-circle circle))
-            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-left))
-            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-right)))))
+    (concat (repeatedly (int (* 0.4 n)) #(geometry/random-point-in-circle circle dr/random))
+            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-left dr/random))
+            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-right dr/random)))))
 
 (defn point-path [{:keys [points]}]
   (->> (rest points)

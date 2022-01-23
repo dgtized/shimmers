@@ -21,12 +21,14 @@
   ([n dist-x dist-y] (repeatedly n #(gv/vec2 (dist-x) (dist-y)))))
 
 ;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
-(defn random-point-in-circle [_]
-  (-> (gv/vec2
-       (* (get _ :r) (Math/sqrt (tm/random)))
-       (* tm/TWO_PI (tm/random)))
-      g/as-cartesian
-      (tm/+ (get _ :p))))
+(defn random-point-in-circle
+  ([c] (random-point-in-circle c tm/random))
+  ([{:keys [p r]} random]
+   (-> (gv/vec2
+        (* r (Math/sqrt (random)))
+        (* tm/TWO_PI (random)))
+       g/as-cartesian
+       (tm/+ p))))
 
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
