@@ -10,6 +10,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
@@ -98,8 +99,8 @@
                                    point-path)))
                (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
                (svg/group {} (map #(svg/circle (:position %) 2) leaves))
-               (svg/group {:stroke "green"}
-                          (map #(svg/circle % 0.8) points)))))
+               (svg/group {}
+                          (map #(g/translate (rect/rect 3) %) points)))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
@@ -107,7 +108,7 @@
                :height height
                :stroke "black"
                :fill "white"
-               :stroke-width 1.0}
+               :stroke-width 0.8}
               (shapes bounds))))
 
 (defn page []
