@@ -2,12 +2,13 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.core :as g]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -21,7 +22,7 @@
                  :let [grid (g/subdivide (g/scale-size column 0.9) {:cols 8 :rows 64})]]
              (->> grid
                   (dr/random-sample (dr/random 0.2 0.8))
-                  (map (fn [b] (g/translate (rect/rect 4) (:p b))))
+                  (map (fn [b] (g/translate (rect/rect 4) (tm/+ (:p b) (gv/vec2 1 0)))))
                   (into [(g/scale-size column 0.95)]))))))
 
 (defn scene []
