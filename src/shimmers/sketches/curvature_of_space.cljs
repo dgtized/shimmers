@@ -29,7 +29,8 @@
        :influence-distance 96
        :prune-distance 6
        :segment-distance 4
-       :snap-theta 0}
+       :snap-theta 0
+       :jitter (constantly (gv/vec2))}
       colonize/create-tree
       colonize/grow-tree))
 
@@ -120,5 +121,5 @@
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount page "sketch-host"))

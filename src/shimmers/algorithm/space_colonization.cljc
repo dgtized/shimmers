@@ -34,13 +34,14 @@
   (apply min-key (partial branch-distance attractor) branches))
 
 (defn average-attraction
-  [{:keys [position direction]} attractors]
-  (-> (reduce (fn [acc attractor]
-                (tm/+ acc (tm/- attractor position)))
-              direction
-              attractors)
-      (tm/+ (v/jitter 1.0))
-      tm/normalize))
+  ([branch attractors] (average-attraction branch attractors (v/vec2)))
+  ([{:keys [position direction]} attractors jitter]
+   (-> (reduce (fn [acc attractor]
+                 (tm/+ acc (tm/- attractor position)))
+               direction
+               attractors)
+       (tm/+ jitter)
+       tm/normalize)))
 
 (comment
   (tm/normalize (v/vec2 2 2))
@@ -89,13 +90,13 @@
            {(closest-branch attractor influences) #{attractor}})))
 
 (defn grow-branches
-  [segment-distance snap-theta branches influencers]
+  [segment-distance snap-theta jitter branches influencers]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
     (for [[branch attractors] influencers]
       (grow-branch branch (get branch-index branch)
-                   (v/snap-to (average-attraction branch attractors) snap-theta)
+                   (v/snap-to (average-attraction branch attractors (jitter)) snap-theta)
                    segment-distance))))
 
 (defn grow-closest
@@ -127,7 +128,7 @@
        set))
 
 (defn grow
-  [{:keys [influence-distance segment-distance prune-distance snap-theta
+  [{:keys [influence-distance segment-distance prune-distance snap-theta jitter
            attractors branches quadtree weights]
     :as state}]
   (if (empty? attractors)
@@ -140,7 +141,7 @@
                  :weights (update-weights weights branches' [new-branch])
                  :branches branches'
                  :quadtree (add-branch-positions quadtree [new-branch])))
-        (let [growth (vec (grow-branches segment-distance snap-theta branches influencers))
+        (let [growth (vec (grow-branches segment-distance snap-theta jitter branches influencers))
               quadtree' (add-branch-positions quadtree growth)
               pruned (pruning-set quadtree' prune-distance influencers)
               branches' (vec (concat branches growth))]
@@ -164,6 +165,7 @@
    :prune-distance prune-distance
    :segment-distance segment-distance
    :snap-theta snap-theta
+   :jitter (partial v/jitter 1.0)
    :attractors attractors
    :branches branches
    :weights (update-weights {} branches branches)
