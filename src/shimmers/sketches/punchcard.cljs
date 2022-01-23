@@ -16,10 +16,13 @@
 
 (defn shapes [bounds]
   (let [columns (g/subdivide bounds {:cols 16 :rows (dr/weighted {1 3 2 1})})]
-    (->> columns
-         (map (fn [c] (g/subdivide (g/scale-size c 0.9) {:cols 8 :rows 64})))
-         (map #(dr/random-sample (dr/random 0.2 0.8) %))
-         (mapcat (fn [c] (map (fn [b] (g/translate (rect/rect 4) (:p b))) c))))))
+    (apply concat
+           (for [column columns
+                 :let [grid (g/subdivide (g/scale-size column 0.9) {:cols 8 :rows 64})]]
+             (->> grid
+                  (dr/random-sample (dr/random 0.2 0.8))
+                  (map (fn [b] (g/translate (rect/rect 4) (:p b))))
+                  (into [(g/scale-size column 0.95)]))))))
 
 (defn scene []
   (csvg/svg {:width width
