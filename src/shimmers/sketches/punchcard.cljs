@@ -15,7 +15,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes [bounds]
-  (let [columns (g/subdivide bounds {:cols 16 :rows 1})]
+  (let [columns (g/subdivide bounds {:cols 16 :rows (dr/weighted {1 3 2 1})})]
     (->> columns
          (map (fn [c] (g/subdivide (g/scale-size c 0.9) {:cols 8 :rows 64})))
          (map #(dr/random-sample (dr/random 0.2 0.8) %))
@@ -26,7 +26,7 @@
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 1.0}
+             :stroke-width 0.8}
             (shapes (g/scale-size (rect/rect 0 0 width height) 0.95))))
 
 (sketch/definition punchcard
