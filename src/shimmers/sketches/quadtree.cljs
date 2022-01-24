@@ -44,16 +44,30 @@
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
 
-(defn draw [{:keys [bounds points mouse] :as state}]
+(defn draw-path-to-selection [{:keys [points tree mouse]}]
+  (q/stroke 0.0 0.5 0.5)
+  (doseq [circle points]
+    (cq/circle circle))
+  (when-let [{:keys [p] :as selected}
+             (first (spatialtree/lazy-select-with-shape tree (gc/circle mouse 3)))]
+    (swap! defo assoc :selected selected)
+    (q/stroke 0.5 0.8 0.5)
+    (cq/circle selected)
+    (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
+      (swap! defo assoc :path path-bounds)
+      (q/stroke 0 0 0)
+      (doseq [r path-bounds]
+        (cq/rectangle r)))))
+
+(defn draw [{:keys [bounds mouse] :as state}]
+  (reset! defo {})
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/stroke-weight 0.66)
   (q/no-fill)
   (swap! defo assoc :mouse mouse)
   (if (g/contains-point? bounds mouse)
-    (do
-      (q/stroke 0.0 0.5 0.5)
-      (doseq [circle points]
-        (cq/circle circle)))
+    (draw-path-to-selection state)
     (draw-complete-tree state)))
 
 (sketch/defquil quadtree
