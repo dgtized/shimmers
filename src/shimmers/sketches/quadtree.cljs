@@ -8,7 +8,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.spatialtree :as spatialtree]))
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.vector :as gv]))
 
 (defonce defo (debug/state))
 
@@ -20,8 +21,11 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (build-tree {:points (repeatedly 1000 #(gc/circle (cq/rel-vec (rand) (rand)) 3.0))
-               :tree (spatialtree/quadtree 0 0 (q/width) (q/height))}))
+  (let [bounds (cq/screen-rect 0.99)]
+    (build-tree {:bounds bounds
+                 :points (repeatedly 1000 #(gc/circle (g/random-point-inside bounds) 3.0))
+                 :tree (spatialtree/quadtree bounds)
+                 :mouse (gv/vec2)})))
 
 (defn update-state [state]
   (let [mp (cq/mouse-position)]
@@ -40,12 +44,17 @@
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
 
-(defn draw [{:keys [mouse] :as state}]
+(defn draw [{:keys [bounds points mouse] :as state}]
   (q/background 1.0)
   (q/stroke-weight 0.66)
   (q/no-fill)
   (swap! defo assoc :mouse mouse)
-  (draw-complete-tree state))
+  (if (g/contains-point? bounds mouse)
+    (do
+      (q/stroke 0.0 0.5 0.5)
+      (doseq [circle points]
+        (cq/circle circle)))
+    (draw-complete-tree state)))
 
 (sketch/defquil quadtree
   :created-at "2021-10-10"
