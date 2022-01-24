@@ -23,7 +23,7 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.99)]
     (build-tree {:bounds bounds
-                 :points (repeatedly 1000 #(gc/circle (g/random-point-inside bounds) 3.0))
+                 :points (repeatedly 512 #(gc/circle (g/random-point-inside bounds) 5.0))
                  :tree (spatialtree/quadtree bounds)
                  :mouse (gv/vec2)})))
 
@@ -45,7 +45,7 @@
         (cq/circle circle)))))
 
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
-  (let [cursor (gc/circle mouse 3)]
+  (let [cursor (gc/circle mouse 5)]
     (q/stroke 0.0 0.5 0.5)
     (doseq [circle points]
       (cq/circle circle))
