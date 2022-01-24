@@ -45,19 +45,22 @@
         (cq/circle circle)))))
 
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
-  (q/stroke 0.0 0.5 0.5)
-  (doseq [circle points]
-    (cq/circle circle))
-  (when-let [{:keys [p] :as selected}
-             (first (spatialtree/lazy-select-with-shape tree (gc/circle mouse 3)))]
-    (swap! defo assoc :selected selected)
-    (q/stroke 0.5 0.8 0.5)
-    (cq/circle selected)
-    (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
-      (swap! defo assoc :path path-bounds)
-      (q/stroke 0 0 0)
-      (doseq [r path-bounds]
-        (cq/rectangle r)))))
+  (let [cursor (gc/circle mouse 3)]
+    (q/stroke 0.0 0.5 0.5)
+    (doseq [circle points]
+      (cq/circle circle))
+    (q/stroke 0.6 0.5 0.5)
+    (cq/circle cursor)
+    (when-let [{:keys [p] :as selected}
+               (first (spatialtree/lazy-select-with-shape tree cursor))]
+      (swap! defo assoc :selected selected)
+      (q/stroke 0.5 0.8 0.5)
+      (cq/circle selected)
+      (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
+        (swap! defo assoc :path path-bounds)
+        (q/stroke 0 0 0)
+        (doseq [r path-bounds]
+          (cq/rectangle r))))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
   (reset! defo {})
