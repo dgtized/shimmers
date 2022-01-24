@@ -9,15 +9,19 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.spatialtree :as spatialtree]))
 
+(defn build-tree [{:keys [points] :as state}]
+  (assoc state :tree
+         (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
+                 (spatialtree/quadtree 0 0 (q/width) (q/height))
+                 points)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:points (repeatedly 1000 #(gc/circle (cq/rel-vec (rand) (rand)) 3.0))
-   :tree (spatialtree/quadtree 0 0 (q/width) (q/height))})
+  (build-tree {:points (repeatedly 1000 #(gc/circle (cq/rel-vec (rand) (rand)) 3.0))
+               :tree (spatialtree/quadtree 0 0 (q/width) (q/height))}))
 
-(defn update-state [{:keys [points] :as state}]
-  (assoc state :tree (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
-                             (spatialtree/quadtree 0 0 (q/width) (q/height))
-                             points)))
+(defn update-state [state]
+  state)
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
