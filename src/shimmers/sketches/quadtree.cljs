@@ -19,10 +19,7 @@
                              (spatialtree/quadtree 0 0 (q/width) (q/height))
                              points)))
 
-(defn draw [{:keys [tree]}]
-  (q/background 1.0)
-  (q/stroke-weight 0.66)
-  (q/no-fill)
+(defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
                             (fn [t] (remove nil? (spatialtree/get-children t)))
                             tree)]
@@ -34,6 +31,12 @@
         (cq/rectangle (g/bounds n))
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
+
+(defn draw [{:keys [tree] :as state}]
+  (q/background 1.0)
+  (q/stroke-weight 0.66)
+  (q/no-fill)
+  (draw-complete-tree state))
 
 (sketch/defquil quadtree
   :created-at "2021-10-10"
