@@ -53,11 +53,14 @@
     (cq/circle cursor)
     (when-let [{:keys [p] :as selected}
                (first (spatialtree/lazy-select-with-shape tree cursor))]
-      (swap! defo assoc :selected selected)
       (q/stroke 0.5 0.8 0.5)
       (cq/circle selected)
       (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
-        (swap! defo assoc :path path-bounds)
+        (swap! defo assoc
+               :selected selected
+               :path path-bounds
+               ;; FIXME: why is this *almost* but not quite right
+               :intersection (g/intersect-shape cursor selected))
         (q/stroke 0 0 0)
         (doseq [r path-bounds]
           (cq/rectangle r))))))
