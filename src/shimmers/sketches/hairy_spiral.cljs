@@ -19,7 +19,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn spiral-points [center dr' rotations]
-  (for [t (tm/norm-range 100)
+  (for [t (tm/norm-range (int (* 7 rotations)))
         :let [theta (* eq/TAU rotations t)]]
     (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
 
