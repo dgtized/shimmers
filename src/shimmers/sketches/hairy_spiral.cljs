@@ -18,20 +18,21 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn spiral-points [center dr dtheta steps]
+(defn spiral-points [center dr' dtheta steps]
   (for [theta (range 0 (* steps dtheta) dtheta)]
-    (tm/+ center (v/polar (* dr (/ theta eq/TAU)) theta))))
+    (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
 
-(defn perpindiculars [center dr dtheta steps]
+(defn perpindiculars [center dr' dtheta steps]
   (for [t (dr/density-range 0.0002 0.0008)
-        :let [theta (+ (* 0.1 eq/TAU) (* 0.99 dtheta steps (Math/sqrt t)))
+        :let [theta (+ (* dtheta steps (Math/sqrt t)))
+              dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
-    (gl/line2 (tm/+ center (v/polar (- r (* dr 0.4)) theta))
-              (tm/+ center (v/polar (+ r (* dr 0.4)) theta)))))
+    (gl/line2 (tm/+ center (v/polar (- r (* dr 0.5)) theta))
+              (tm/+ center (v/polar (+ r (* dr 0.5)) theta)))))
 
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.5) 24 0.3 256)
-        perps (perpindiculars (rv 0.5 0.5) 24 0.3 256)]
+  (let [spiral (spiral-points (rv 0.5 0.5) 0.25 0.3 256)
+        perps (perpindiculars (rv 0.5 0.5) 0.25 0.3 256)]
     (svg/group {}
                (svg/group {:stroke-width 0.3}
                           (->> (for [p spiral] [:T p])
@@ -44,6 +45,7 @@
                                      (g/rotate (* 0.2 (dr/gaussian (/ i (count perps)) 1)))
                                      (g/translate c))))))))
 
+;; TODO: add automatic timing to csvg/svg?
 (defn scene []
   (csvg/svg {:width width
              :height height
