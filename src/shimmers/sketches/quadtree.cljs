@@ -44,6 +44,23 @@
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
 
+(defn lazy-select-quad
+  "This is very similar to spatialtree/lazy-select-with but overlap? receives the
+  quadtree and not the underlying point so as to allow overlap comparison with
+  the point data. Not clear if actually performant yet though?"
+  [isec? overlap? queue]
+  (lazy-seq
+   (let [[q & r] queue]
+     (if (and q (isec? (g/bounds q)))
+       (let [children (filter identity (spatialtree/get-children q))
+             p (g/get-point q)]
+         (if (seq children)
+           (lazy-select-quad isec? overlap? (concat children r))
+           (if (and p (overlap? q))
+             (cons (g/get-point-data q) (lazy-select-quad isec? overlap? r))
+             (when (seq r) (lazy-select-quad isec? overlap? r)))))
+       (when (seq r) (lazy-select-quad isec? overlap? r))))))
+
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
   (let [cursor (gc/circle mouse 5)]
     (q/stroke 0.0 0.5 0.5)
@@ -52,11 +69,11 @@
     (q/stroke 0.6 0.5 0.5)
     (cq/circle cursor)
     (when-let [{:keys [p] :as selected}
-               (-> tree
-                   (spatialtree/lazy-select-with
-                    #(g/intersect-shape cursor %)
-                    #(g/contains-point? cursor %))
-                   first)]
+               (->> [tree]
+                    (lazy-select-quad
+                     #(g/intersect-shape cursor %)
+                     #(g/intersect-shape cursor (g/get-point-data %)))
+                    first)]
       (q/stroke 0.5 0.8 0.5)
       (cq/circle selected)
       (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
