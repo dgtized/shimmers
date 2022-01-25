@@ -55,6 +55,8 @@
 ;; 4. What happens if point data is heterogeneous (rects & circles)
 ;; 5. Performance?
 
+;; Again, re-read https://paytonturnage.com/writing/circle-packing-quad-trees/
+
 (defn lazy-select-quad
   "This is very similar to spatialtree/lazy-select-with but overlap? receives the
   quadtree and not the underlying point so as to allow overlap comparison with
