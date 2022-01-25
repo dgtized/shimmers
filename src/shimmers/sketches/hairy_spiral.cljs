@@ -22,8 +22,8 @@
     (tm/+ center (v/polar (* dr (/ theta eq/TAU)) theta))))
 
 (defn perpindiculars [center dr dtheta steps]
-  (for [t (dr/var-range steps)
-        :let [theta (+ (* 0.33 eq/TAU) (* 0.9 dtheta steps t))
+  (for [t (dr/density-range 0.0002 0.001)
+        :let [theta (+ (* 0.1 eq/TAU) (* 0.9 dtheta steps (Math/sqrt t)))
               r (* dr (/ theta eq/TAU))]]
     (gl/line2 (tm/+ center (v/polar (- r (* dr 0.4)) theta))
               (tm/+ center (v/polar (+ r (* dr 0.4)) theta)))))
