@@ -54,8 +54,8 @@
     (svg/group {}
                (draw-spiral spiral)
                (draw-spiral spiral2)
-               (draw-perps perps 0.1)
-               (draw-perps perps2 0.2))))
+               (draw-perps perps 0.05)
+               (draw-perps perps2 0.20))))
 
 ;; TODO: add automatic timing to csvg/svg?
 (defn scene []
