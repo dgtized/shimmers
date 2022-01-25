@@ -18,21 +18,21 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn spiral-points [center dr' dtheta steps]
-  (for [theta (range 0 (* steps dtheta) dtheta)]
+(defn spiral-points [center dr' dtheta rotations]
+  (for [theta (range 0 (* eq/TAU rotations) dtheta)]
     (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
 
-(defn perpindiculars [center dr' dtheta steps]
+(defn perpindiculars [center dr' rotations]
   (for [t (dr/density-range 0.0002 0.0008)
-        :let [theta (+ (* dtheta steps (Math/sqrt t)))
+        :let [theta (* eq/TAU rotations (Math/sqrt t))
               dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
     (gl/line2 (tm/+ center (v/polar (- r (* dr 0.5)) theta))
               (tm/+ center (v/polar (+ r (* dr 0.5)) theta)))))
 
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.5) 0.25 0.3 256)
-        perps (perpindiculars (rv 0.5 0.5) 0.25 0.3 256)]
+  (let [spiral (spiral-points (rv 0.5 0.5) 0.25 0.3 14.5)
+        perps (perpindiculars (rv 0.5 0.5) 0.25 14.5)]
     (svg/group {}
                (svg/group {:stroke-width 0.3}
                           (->> (for [p spiral] [:T p])
