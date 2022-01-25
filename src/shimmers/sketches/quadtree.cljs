@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -23,7 +24,8 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.99)]
     (build-tree {:bounds bounds
-                 :points (repeatedly 512 #(gc/circle (g/random-point-inside bounds) 5.0))
+                 :points (repeatedly 512 #(gc/circle (g/random-point-inside bounds)
+                                                     (dr/random-int 2 12)))
                  :tree (spatialtree/quadtree bounds)
                  :mouse (gv/vec2)})))
 
@@ -43,6 +45,15 @@
         (cq/rectangle (g/bounds n))
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
+
+;; Problems:
+;;
+;; 1. Varying the size of the circles to lookup exposes that isec? is checking the
+;; bounds of the quad, but circles can cross outside of a quad.
+;; 2. Wholly contained cursor or cursor containing a circle are not showing as hits
+;; 3. Really what I want is k-nearest neighboring circles?
+;; 4. What happens if point data is heterogeneous (rects & circles)
+;; 5. Performance?
 
 (defn lazy-select-quad
   "This is very similar to spatialtree/lazy-select-with but overlap? receives the
