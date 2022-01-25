@@ -31,20 +31,30 @@
     (gl/line2 (tm/+ center (v/polar (- r (* dr width)) theta))
               (tm/+ center (v/polar (+ r (* dr width)) theta)))))
 
+(defn draw-spiral [spiral]
+  (svg/group {:stroke-width 0.3}
+             (->> (for [p spiral] [:T p])
+                  (into [[:M (first spiral)]])
+                  (csvg/path))))
+
+(defn draw-perps [perps]
+  (svg/group {} (for [[i line] (map-indexed vector perps)]
+                  (let [c (g/centroid line)]
+                    (-> line
+                        g/center
+                        (g/rotate (dr/gaussian (* 3 eq/TAU (/ i (count perps))) 0.2))
+                        (g/translate c))))))
+
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.525) 0.25 14)
-        perps (perpindiculars (rv 0.5 0.525) 0.25 14 0.75)]
+  (let [spiral (spiral-points (rv 0.2428 0.525) 0.25 11)
+        spiral2 (spiral-points (rv 0.74 0.525) 0.25 11.5)
+        perps (perpindiculars (rv 0.2428 0.525) 0.25 11 0.75)
+        perps2 (perpindiculars (rv 0.74 0.525) 0.25 11.5 0.75)]
     (svg/group {}
-               (svg/group {:stroke-width 0.3}
-                          (->> (for [p spiral] [:T p])
-                               (into [[:M (first spiral)]])
-                               (csvg/path)))
-               (svg/group {} (for [[i line] (map-indexed vector perps)]
-                               (let [c (g/centroid line)]
-                                 (-> line
-                                     g/center
-                                     (g/rotate (dr/gaussian (* 3 eq/TAU (/ i (count perps))) 0.2))
-                                     (g/translate c))))))))
+               (draw-spiral spiral)
+               (draw-spiral spiral2)
+               (draw-perps perps)
+               (draw-perps perps2))))
 
 ;; TODO: add automatic timing to csvg/svg?
 (defn scene []
