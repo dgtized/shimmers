@@ -24,7 +24,7 @@
     (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
 
 (defn perpindiculars [center dr' rotations width]
-  (for [t (dr/density-range 0.0001 0.0006)
+  (for [t (dr/density-range 0.0001 0.0005)
         :let [theta (* eq/TAU rotations (Math/sqrt t))
               dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
@@ -32,8 +32,8 @@
               (tm/+ center (v/polar (+ r (* dr width)) theta)))))
 
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.51) 0.25 14)
-        perps (perpindiculars (rv 0.5 0.51) 0.25 14 0.75)]
+  (let [spiral (spiral-points (rv 0.5 0.525) 0.25 14)
+        perps (perpindiculars (rv 0.5 0.525) 0.25 14 0.75)]
     (svg/group {}
                (svg/group {:stroke-width 0.3}
                           (->> (for [p spiral] [:T p])
