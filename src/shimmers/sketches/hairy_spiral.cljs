@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -21,19 +22,20 @@
     (tm/+ center (v/polar (* dr (/ theta eq/TAU)) theta))))
 
 (defn perpindiculars [center dr dtheta steps]
-  (for [theta (range eq/TAU (* (inc steps) dtheta) dtheta)
-        :let [r (* dr (/ theta eq/TAU))]]
+  (for [t (dr/var-range steps)
+        :let [theta (+ (* 0.33 eq/TAU) (* 0.9 dtheta steps t))
+              r (* dr (/ theta eq/TAU))]]
     (gl/line2 (tm/+ center (v/polar (- r (* dr 0.4)) theta))
               (tm/+ center (v/polar (+ r (* dr 0.4)) theta)))))
 
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.5) 24 0.25 384)]
+  (let [spiral (spiral-points (rv 0.5 0.5) 24 0.3 256)
+        perps (perpindiculars (rv 0.5 0.5) 24 0.3 256)]
     (svg/group {}
                (->> (for [p spiral] [:T p])
                     (into [[:M (first spiral)]])
                     (csvg/path))
-               (svg/group {}
-                          (perpindiculars (rv 0.5 0.5) 24 0.5 128)))))
+               (svg/group {} perps))))
 
 (defn scene []
   (csvg/svg {:width width
