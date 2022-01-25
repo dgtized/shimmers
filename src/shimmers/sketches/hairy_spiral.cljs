@@ -23,7 +23,7 @@
     (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
 
 (defn perpindiculars [center dr' rotations]
-  (for [t (dr/density-range 0.0002 0.0008)
+  (for [t (dr/density-range 0.0001 0.0006)
         :let [theta (* eq/TAU rotations (Math/sqrt t))
               dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
@@ -31,8 +31,8 @@
               (tm/+ center (v/polar (+ r (* dr 0.5)) theta)))))
 
 (defn shapes []
-  (let [spiral (spiral-points (rv 0.5 0.5) 0.25 0.3 14.5)
-        perps (perpindiculars (rv 0.5 0.5) 0.25 14.5)]
+  (let [spiral (spiral-points (rv 0.5 0.5) 0.25 0.3 13.75)
+        perps (perpindiculars (rv 0.5 0.5) 0.25 13.75)]
     (svg/group {}
                (svg/group {:stroke-width 0.3}
                           (->> (for [p spiral] [:T p])
@@ -42,7 +42,7 @@
                                (let [c (g/centroid line)]
                                  (-> line
                                      g/center
-                                     (g/rotate (* 0.2 (dr/gaussian (/ i (count perps)) 1)))
+                                     (g/rotate (dr/gaussian (* 3 eq/TAU (/ i (count perps))) 0.2))
                                      (g/translate c))))))))
 
 ;; TODO: add automatic timing to csvg/svg?
