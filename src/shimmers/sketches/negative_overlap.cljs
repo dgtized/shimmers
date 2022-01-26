@@ -59,12 +59,21 @@
   (poly-exclusion base-shape (random-rect))
   (poly-exclusion (random-rect) (random-rect)))
 
+(defn xor-fill [shapes {a :open} {b :open}]
+  (let [open (bit-xor a b)]
+    (map #(assoc % :open (= open 1))
+         shapes)))
+
 (defn shapes []
   (->> random-rect
        repeatedly
        (filter good-shape?)
        (take 3)
-       (into [base-shape])))
+       (reduce (fn [shapes s]
+                 (let [last-shape (last shapes)]
+                   (concat (butlast shapes)
+                           (xor-fill (poly-exclusion last-shape s) last-shape s))))
+               [base-shape])))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (if open
