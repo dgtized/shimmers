@@ -38,12 +38,14 @@
                   (csvg/path))))
 
 ;; can we make std-dev smoothly transition across both spirals?
-(defn draw-perps [perps std-dev]
+(defn draw-perps [perps std-dev-a std-dev-b]
   (svg/group {} (for [[i line] (map-indexed vector perps)]
-                  (let [c (g/centroid line)]
+                  (let [c (g/centroid line)
+                        t (/ i (count perps))]
                     (-> line
                         g/center
-                        (g/rotate (dr/gaussian (* 3 eq/TAU (/ i (count perps))) std-dev))
+                        (g/rotate (dr/gaussian (* 3 eq/TAU t)
+                                               (tm/mix* std-dev-a std-dev-b t)))
                         (g/translate c))))))
 
 (defn shapes []
@@ -54,8 +56,8 @@
     (svg/group {}
                (draw-spiral spiral)
                (draw-spiral spiral2)
-               (draw-perps perps 0.05)
-               (draw-perps perps2 0.20))))
+               (draw-perps perps 0 0.12)
+               (draw-perps (reverse perps2) 0.12 0.3))))
 
 ;; TODO: add automatic timing to csvg/svg?
 (defn scene []
