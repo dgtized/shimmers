@@ -32,15 +32,21 @@
   (->> random-rect
        repeatedly
        (filter good-shape?)
-       (take 10)))
+       (take 3)
+       (into [(assoc (g/as-polygon (rect/rect 0 0 width height)) :open false)])))
+
+(defn fill-shape [{:keys [open] :as shape}]
+  (if open
+    shape
+    (vary-meta shape assoc :fill "grey")))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 0.5}
-            (shapes)))
+             :stroke-width 1.0}
+            (apply list (map fill-shape (shapes)))))
 
 (sketch/definition negative-overlap
   {:created-at "2022-01-26"
