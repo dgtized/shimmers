@@ -37,14 +37,9 @@
 (defn same-shape? [{a :points} {b :points}]
   (every? true? (map tm/delta= a b)))
 
-(comment
-  (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
-                          (g/as-polygon (rect/rect 12 12 10 10)))
-             (gp/polygon2 [])))
-
-  (let [a (random-rect) ;; base-shape
-        b (random-rect)
-        clip (g/clip-with a b)]
+;; for now this is removing the clip each time
+(defn poly-exclusion [a b]
+  (let [clip (g/clip-with a b)]
     (->> (cond (empty? (:points clip)) ;; no intersection between pair
                [a b]
                (same-shape? clip a) ;; a is contained by b
@@ -55,6 +50,14 @@
                (concat (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
                        (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)))
          (map g/as-polygon))))
+
+(comment
+  (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
+                          (g/as-polygon (rect/rect 12 12 10 10)))
+             (gp/polygon2 [])))
+
+  (poly-exclusion base-shape (random-rect))
+  (poly-exclusion (random-rect) (random-rect)))
 
 (defn shapes []
   (->> random-rect
