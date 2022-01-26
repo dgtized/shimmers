@@ -77,6 +77,7 @@
             shimmers.sketches.mosaic-tiling
             shimmers.sketches.motif-shapes
             shimmers.sketches.motion-of-insects
+            shimmers.sketches.negative-overlap
             shimmers.sketches.network-effects
             shimmers.sketches.noise-grid
             shimmers.sketches.noisy-shapes
