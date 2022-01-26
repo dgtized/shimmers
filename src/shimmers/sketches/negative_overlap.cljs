@@ -32,7 +32,7 @@
          (> h 20))))
 
 (def base-shape
-  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open false))
+  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open true))
 
 (defn same-shape? [{a :points} {b :points}]
   (every? true? (map tm/delta= a b)))
@@ -49,6 +49,7 @@
                :else ;; partial overlap
                (concat (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
                        (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)))
+         (filter square/has-area?)
          (map g/as-polygon))))
 
 (comment
@@ -64,26 +65,23 @@
     (map #(assoc % :open (= open 1))
          shapes)))
 
-(defn split-shapes [all-shapes]
+;; still finding gaps, need to include clip + deal with zero width/height?
+(defn split-shapes [base all-shapes]
   (reduce (fn [shapes s]
-            (if (empty? shapes)
-              [s]
-              (mapcat #(xor-fill (poly-exclusion % s) % s) shapes)))
-          []
+            (mapcat #(xor-fill (poly-exclusion % s) % s) shapes))
+          [base]
           all-shapes))
 
 (defn shapes []
   (->> random-rect
        repeatedly
        (filter good-shape?)
-       (take 2)
-       (into [base-shape])
-       split-shapes))
+       (take 4)
+       (split-shapes base-shape)))
 
 (defn fill-shape [{:keys [open] :as shape}]
-  (if open
-    shape
-    (vary-meta shape assoc :fill "grey")))
+  (vary-meta shape assoc :fill
+             (if open "lightblue" "grey")))
 
 (defn scene []
   (csvg/svg {:width width
