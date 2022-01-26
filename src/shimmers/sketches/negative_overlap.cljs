@@ -9,6 +9,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -32,7 +33,7 @@
          (> h 20))))
 
 (def base-shape
-  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open true))
+  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open false))
 
 (defn assign-open [shapes open]
   (map #(assoc (g/as-polygon %) :open open) shapes))
@@ -72,6 +73,7 @@
 
 ;; still finding gaps, need to include clip + deal with zero width/height?
 (defn split-shapes [base all-shapes]
+  (println all-shapes)
   (reduce (fn [shapes s]
             (let [shapes' (mapcat #(poly-exclusion % s) shapes)]
               (if (= (count shapes') (count shapes))
@@ -80,16 +82,19 @@
           [base]
           all-shapes))
 
-(defn shapes []
-  (->> random-rect
-       repeatedly
-       (filter good-shape?)
-       (take 2)
-       (split-shapes base-shape)))
-
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
              (if open "lightblue" "grey")))
+
+(defn shapes []
+  (let [additions
+        (->> random-rect
+             repeatedly
+             (filter good-shape?)
+             (take 3))]
+    [(svg/group {} (map fill-shape (split-shapes base-shape additions)))
+     (svg/group {:fill "#966"}
+                (map (fn [s] (g/scale-size (g/bounds s) 0.8)) additions))]))
 
 (defn scene []
   (csvg/svg {:width width
@@ -97,7 +102,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (apply list (map fill-shape (shapes)))))
+            (apply list (shapes))))
 
 (sketch/definition negative-overlap
   {:created-at "2022-01-26"
