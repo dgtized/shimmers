@@ -64,16 +64,21 @@
     (map #(assoc % :open (= open 1))
          shapes)))
 
+(defn split-shapes [all-shapes]
+  (reduce (fn [shapes s]
+            (if (empty? shapes)
+              [s]
+              (mapcat #(xor-fill (poly-exclusion % s) % s) shapes)))
+          []
+          all-shapes))
+
 (defn shapes []
   (->> random-rect
        repeatedly
        (filter good-shape?)
-       (take 3)
-       (reduce (fn [shapes s]
-                 (let [last-shape (last shapes)]
-                   (concat (butlast shapes)
-                           (xor-fill (poly-exclusion last-shape s) last-shape s))))
-               [base-shape])))
+       (take 2)
+       (into [base-shape])
+       split-shapes))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (if open
