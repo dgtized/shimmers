@@ -34,23 +34,33 @@
 (def base-shape
   (assoc (g/as-polygon (rect/rect 0 0 width height)) :open true))
 
+(defn assign-open [shapes open]
+  (map #(assoc (g/as-polygon %) :open open) shapes))
+
+(defn xor-fill [{a :open} {b :open}]
+  (= (bit-xor a b) 1))
+
 (defn same-shape? [{a :points} {b :points}]
   (every? true? (map tm/delta= a b)))
 
 ;; for now this is removing the clip each time
 (defn poly-exclusion [a b]
   (let [clip (g/clip-with a b)]
-    (->> (cond (empty? (:points clip)) ;; no intersection between pair
-               [a b]
-               (same-shape? clip a) ;; a is contained by b
-               (square/surrounding-panes (g/bounds b) (g/bounds a) :row)
-               (same-shape? clip b) ;; b is contained by a
-               (square/surrounding-panes (g/bounds a) (g/bounds b) :column)
-               :else ;; partial overlap
-               (concat (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
-                       (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)))
-         (filter square/has-area?)
-         (map g/as-polygon))))
+    (if (empty? (:points clip)) ;; no intersection between pair
+      [a]
+      (->> (cond (same-shape? clip a) ;; a is contained by b
+                 (assign-open (square/surrounding-panes (g/bounds b) (g/bounds a) :row)
+                              (:open b))
+                 (same-shape? clip b) ;; b is contained by a
+                 (assign-open (square/surrounding-panes (g/bounds a) (g/bounds b) :column)
+                              (:open a))
+                 :else ;; partial overlap
+                 (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
+                                      (:open a))
+                         (assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)
+                                      (:open b))))
+           (filter (comp square/has-area? g/bounds))
+           (into (assign-open [clip] (xor-fill a b)))))))
 
 (comment
   (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
@@ -60,15 +70,13 @@
   (poly-exclusion base-shape (random-rect))
   (poly-exclusion (random-rect) (random-rect)))
 
-(defn xor-fill [shapes {a :open} {b :open}]
-  (let [open (bit-xor a b)]
-    (map #(assoc % :open (= open 1))
-         shapes)))
-
 ;; still finding gaps, need to include clip + deal with zero width/height?
 (defn split-shapes [base all-shapes]
   (reduce (fn [shapes s]
-            (mapcat #(xor-fill (poly-exclusion % s) % s) shapes))
+            (let [shapes' (mapcat #(poly-exclusion % s) shapes)]
+              (if (= (count shapes') (count shapes))
+                (conj shapes' s)
+                shapes')))
           [base]
           all-shapes))
 
@@ -76,7 +84,7 @@
   (->> random-rect
        repeatedly
        (filter good-shape?)
-       (take 4)
+       (take 2)
        (split-shapes base-shape)))
 
 (defn fill-shape [{:keys [open] :as shape}]
