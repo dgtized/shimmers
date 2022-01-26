@@ -5,9 +5,10 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -28,12 +29,24 @@
          (> w 20)
          (> h 20))))
 
+(def base-shape
+  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open false))
+
+(defn same-shape? [{a :points} {b :points}]
+  (every? true? (map tm/delta= a b)))
+
+(comment
+  (let [r (random-rect)
+        clip (g/clip-with base-shape r)]
+    [r clip
+     (same-shape? r clip)]))
+
 (defn shapes []
   (->> random-rect
        repeatedly
        (filter good-shape?)
        (take 3)
-       (into [(assoc (g/as-polygon (rect/rect 0 0 width height)) :open false)])))
+       (into [base-shape])))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (if open
