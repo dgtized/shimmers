@@ -1,11 +1,13 @@
 (ns shimmers.sketches.negative-overlap
   (:require
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -36,10 +38,23 @@
   (every? true? (map tm/delta= a b)))
 
 (comment
-  (let [r (random-rect)
-        clip (g/clip-with base-shape r)]
-    [r clip
-     (same-shape? r clip)]))
+  (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
+                          (g/as-polygon (rect/rect 12 12 10 10)))
+             (gp/polygon2 [])))
+
+  (let [a (random-rect) ;; base-shape
+        b (random-rect)
+        clip (g/clip-with a b)]
+    (->> (cond (empty? (:points clip)) ;; no intersection between pair
+               [a b]
+               (same-shape? clip a) ;; a is contained by b
+               (square/surrounding-panes (g/bounds b) (g/bounds a) :row)
+               (same-shape? clip b) ;; b is contained by a
+               (square/surrounding-panes (g/bounds a) (g/bounds b) :column)
+               :else ;; partial overlap
+               (concat (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
+                       (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)))
+         (map g/as-polygon))))
 
 (defn shapes []
   (->> random-rect
