@@ -75,10 +75,13 @@
 (defn split-shapes [base all-shapes]
   (println all-shapes)
   (reduce (fn [shapes s]
-            (let [shapes' (mapcat #(poly-exclusion % s) shapes)]
-              (if (= (count shapes') (count shapes))
-                (conj shapes' s)
-                shapes')))
+            (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
+                  intersections (filter isec? shapes)
+                  disjoint (remove isec? shapes)]
+              (.log js/console "shape:" s)
+              (.log js/console "isec:" intersections)
+              (.log js/console "disj:" disjoint)
+              (concat disjoint (mapcat #(poly-exclusion % s) intersections))))
           [base]
           all-shapes))
 
@@ -91,10 +94,10 @@
         (->> random-rect
              repeatedly
              (filter good-shape?)
-             (take 3))]
+             (take 2))]
     [(svg/group {} (map fill-shape (split-shapes base-shape additions)))
      (svg/group {:fill "#966"}
-                (map (fn [s] (g/scale-size (g/bounds s) 0.8)) additions))]))
+                (mapcat (fn [{:keys [points]}] (map #(svg/circle % 2) points)) additions))]))
 
 (defn scene []
   (csvg/svg {:width width
