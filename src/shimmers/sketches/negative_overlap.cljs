@@ -23,51 +23,51 @@
         h (dr/random)
         x (dr/random)
         y (dr/random)]
-    (assoc (g/as-polygon (rect/rect (rv x y) (rv w h)))
+    (assoc (rect/rect (rv x y) (rv w h))
            :open true)))
 
-(defn big-enough? [poly]
-  (let [{[w h] :size} (g/bounds poly)]
+(defn big-enough? [rect]
+  (let [{[w h] :size} rect]
     (and (> w 20) (> h 20))))
 
 (def base-shape
-  (assoc (g/as-polygon (rect/rect 0 0 width height)) :open false))
+  (assoc (rect/rect 0 0 width height) :open false))
 
 (defn assign-open [shapes open]
-  (map #(assoc (g/as-polygon %) :open open) shapes))
+  (map #(assoc % :open open) shapes))
 
 (defn xor-fill [{a :open} {b :open}]
   (= (bit-xor a b) 1))
 
-(defn same-shape? [{a :points} {b :points}]
-  (every? true? (map tm/delta= a b)))
+(defn same-shape? [{:keys [p size]} {pb :p sizeb :size}]
+  (and (tm/delta= p pb) (tm/delta= size sizeb)))
 
 ;; for now this is removing the clip each time
-(defn poly-exclusion [a b]
-  (let [clip (g/clip-with a b)
-        {point-a :p :as rect-a} (g/bounds a)
-        {point-b :p :as rect-b} (g/bounds b)
-        {point-clip :p :as rect-clip} (g/bounds clip)
-        t-clip (g/translate rect-clip (tm/- point-clip))]
+(defn rect-exclusion [a b]
+  (let [clip (g/clip-with (g/as-polygon a) (g/as-polygon b))]
     (if (empty? (:points clip)) ;; no intersection between pair
       [a]
-      (->> (cond (same-shape? clip b) ;; b is contained by a
-                 (map #(g/translate % point-a)
-                      (concat (assign-open (square/surrounding-panes rect-a rect-b :row)
-                                           (:open a))
-                              (assign-open [clip] (xor-fill a b))))
-                 (same-shape? clip a) ;; a is contained by b
-                 (map #(g/translate % point-b)
-                      (concat (assign-open (square/surrounding-panes rect-b rect-a :row)
-                                           (:open b))
-                              (assign-open [clip] (xor-fill a b))))
-                 :else ;; partial overlap
-                 (let [panes (square/surrounding-panes (g/translate rect-a (tm/- point-a)) t-clip
-                                                       :row)]
+      (let [clip (g/bounds clip)
+            {point-a :p} a
+            {point-b :p} b
+            t-clip (g/translate clip (tm/- point-a))]
+        (->> (cond (same-shape? clip b) ;; b is contained by a
                    (map #(g/translate % point-a)
-                        (concat (assign-open panes (:open a))
-                                (assign-open [t-clip] (xor-fill a b))))))
-           (filter (comp square/has-area? g/bounds))))))
+                        (concat (assign-open (square/surrounding-panes a b :row)
+                                             (:open a))
+                                (assign-open [clip] (xor-fill a b))))
+                   (same-shape? clip a) ;; a is contained by b
+                   (map #(g/translate % point-b)
+                        (concat (assign-open (square/surrounding-panes b a :row)
+                                             (:open b))
+                                (assign-open [clip] (xor-fill a b))))
+                   :else ;; partial overlap
+                   (let [panes (square/surrounding-panes (g/translate a (tm/- point-a)) t-clip
+                                                         :row)]
+                     (map #(g/translate % point-a)
+                          (concat (assign-open panes (:open a))
+                                  (assign-open [t-clip] (xor-fill a b))))))
+             (filter (comp square/has-area? g/bounds)))))))
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                            (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
@@ -82,15 +82,15 @@
                (square/surrounding-panes (rect/rect 200 150 400 300)
                                          (rect/rect 0 0 200 150) :row)))
 
-  (poly-exclusion base-shape (random-rect))
-  (poly-exclusion (random-rect) (random-rect)))
+  (rect-exclusion base-shape (random-rect))
+  (rect-exclusion (random-rect) (random-rect)))
 
 ;; FIXME: ignoring any remainder of shape that did not intersect anything
 (defn add-split-shapes [shapes s]
   (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
         intersections (filter isec? shapes)
         disjoint (remove isec? shapes)]
-    (concat disjoint (mapcat #(poly-exclusion % s) intersections))))
+    (concat disjoint (mapcat #(rect-exclusion % s) intersections))))
 
 (comment
   (add-split-shapes (add-split-shapes [base-shape] (first example))
