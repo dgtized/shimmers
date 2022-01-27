@@ -46,26 +46,28 @@
 
 ;; for now this is removing the clip each time
 (defn poly-exclusion [a b]
-  (println a)
+  (println a " exclude " b)
   (let [clip (g/clip-with a b)]
     (if (empty? (:points clip)) ;; no intersection between pair
       [a]
       (->> (cond (same-shape? clip b) ;; b is contained by a
                  (do (println "b inside a")
-                     (assign-open (square/surrounding-panes (g/bounds a) (g/bounds b) :row)
-                                  (:open a)))
+                     (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds b) :all)
+                                          (:open a))
+                             #_(assign-open [clip] (xor-fill a b))))
                  (same-shape? clip a) ;; a is contained by b
                  (do (println "a inside b")
-                     (assign-open (square/surrounding-panes (g/bounds b) (g/bounds a) :column)
-                                  (:open b)))
+                     (concat (assign-open (square/surrounding-panes (g/bounds b) (g/bounds a) :all)
+                                          (:open b))
+                             #_(assign-open [clip] (xor-fill a b))))
                  :else ;; partial overlap
                  (do (println "partial" clip)
-                     (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
+                     (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds clip) :all)
                                           (:open a))
-                             (assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)
-                                          (:open b)))))
-           (filter (comp square/has-area? g/bounds))
-           (into (assign-open [clip] (xor-fill a b)))))))
+                             #_(assign-open [clip] (xor-fill a b))
+                             #_(assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :all)
+                                            (:open a)))))
+           (filter (comp square/has-area? g/bounds))))))
 
 (comment
   (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
