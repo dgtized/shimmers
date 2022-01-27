@@ -103,10 +103,10 @@
        (take n)))
 
 (defn shapes []
-  (let [additions (random-additions 2)]
+  (let [additions (random-additions 3)]
     [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
      (svg/group {:fill "#F00"}
-                (mapcat (fn [{:keys [points]}] (map #(svg/circle % 2) points)) additions))]))
+                (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
 (defn scene []
   (csvg/svg {:width width
