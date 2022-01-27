@@ -24,7 +24,7 @@
         x (dr/random)
         y (dr/random)]
     (assoc (rect/rect (rv x y) (rv w h))
-           :open (rand-nth [2r01 2r10]))))
+           :open (inc (dr/random-int 2)))))
 
 (defn big-enough? [rect]
   (let [{[w h] :size} rect]
