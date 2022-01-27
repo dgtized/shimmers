@@ -18,13 +18,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn random-rect []
-  (let [w (dr/random)
-        h (dr/random)
-        x (dr/random)
-        y (dr/random)]
-    (assoc (rect/rect (rv x y) (rv w h))
-           :open (inc (dr/random-int 2)))))
+(defn random-rect [scale]
+  (let [scaled (fn [v side] (int (* (tm/roundto v (/ 1 scale)) side)))
+        w (dr/random 0.1 0.9)
+        h (dr/random 0.1 0.9)
+        x (dr/random (- 1 w))
+        y (dr/random (- 1 h))]
+    (assoc (rect/rect (scaled x width) (scaled y height)
+                      (scaled w width) (scaled h height))
+           :open (dr/rand-nth [1 2 3]))))
 
 (defn big-enough? [rect]
   (let [{[w h] :size} rect]
@@ -45,9 +47,10 @@
 (defn translated-panes [{pa :p :as a} b]
   (->> (square/surrounding-panes (g/translate a (tm/- pa))
                                  (g/translate b (tm/- pa))
-                                 (square/row-major a))
+                                 (dr/weighted {(square/row-major a) 5
+                                               :all 1}))
        (map #(g/translate % pa))
-       (filter (fn [{[w h] :size}] (and (> w 0.01) (> h 0.01))))))
+       (filter (fn [{[w h] :size}] (and (> w 1) (> h 1))))))
 
 ;; for now this is removing the clip each time
 (defn rect-exclusion [a b]
@@ -84,8 +87,8 @@
                (square/surrounding-panes (rect/rect 200 150 400 300)
                                          (rect/rect 0 0 200 150) :row)))
 
-  (rect-exclusion base-shape (random-rect))
-  (rect-exclusion (random-rect) (random-rect)))
+  (rect-exclusion base-shape (random-rect 8))
+  (rect-exclusion (random-rect 8) (random-rect 8)))
 
 ;; FIXME: ignoring any remainder of shape that did not intersect anything
 (defn add-split-shapes [shapes s]
@@ -103,14 +106,14 @@
              (nth palette open)))
 
 (defn random-additions [n]
-  (->> random-rect
+  (->> (partial random-rect 25)
        repeatedly
        (filter big-enough?)
        (take n)))
 
 (defn shapes []
   (let [palette ["#966" "#699" "#daa" "#add"]
-        additions (random-additions 5)]
+        additions (random-additions 8)]
     [(svg/group {} (->> additions
                         (reduce add-split-shapes [base-shape])
                         (map (partial fill-shape palette))))
