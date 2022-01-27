@@ -3,6 +3,7 @@
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -111,13 +112,19 @@
        (filter big-enough?)
        (take n)))
 
+(def palettes
+  (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/f2f1f1-959cac-4972a6-2d3447"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/e4ddc8-c8657a-5d554d-c7af9f"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/d4d1ce-715439-a9895e-cfb08a"]
+       (mapv color/url->hex-colors)))
+
 (defn shapes []
-  (let [palette ["#966" "#699" "#daa" "#add"]
+  (let [palette (dr/rand-nth palettes)
         additions (random-additions 8)]
     [(svg/group {} (->> additions
                         (reduce add-split-shapes [base-shape])
                         (map (partial fill-shape palette))))
-     (svg/group {:fill "#F00"}
+     (svg/group {:fill "#000"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
 (defn scene []
