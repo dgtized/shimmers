@@ -71,6 +71,9 @@
                                                (:open a))))))
            (filter (comp square/has-area? g/bounds))))))
 
+(def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
+                           (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
+
 (comment
   (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
                           (g/as-polygon (rect/rect 12 12 10 10)))
@@ -95,9 +98,8 @@
     (concat disjoint additions)))
 
 (comment
-  (add-split-shapes
-   (add-split-shapes [base-shape] (first (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))] true)))
-   (first (assign-open [(rect/rect (rv 0 0) (rv 0.5 0.5))] true))))
+  (add-split-shapes (add-split-shapes [base-shape] (first example))
+                    (second example)))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
@@ -110,8 +112,7 @@
        (take n)))
 
 (defn shapes []
-  (let [additions (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
-                                (rect/rect (rv 0 0) (rv 0.5 0.5))] true)]
+  (let [additions example]
     [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
      (svg/group {:fill "#F00"}
                 (mapcat (fn [{:keys [points]}] (map #(svg/circle % 2) points)) additions))]))
