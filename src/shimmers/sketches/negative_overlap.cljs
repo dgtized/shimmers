@@ -39,7 +39,7 @@
 (defn xor-fill [{a :open} {b :open}]
   (= (bit-xor a b) 1))
 
-(defn same-shape? [{:keys [p size]} {pb :p sizeb :size}]
+(defn rect= [{:keys [p size]} {pb :p sizeb :size}]
   (and (tm/delta= p pb) (tm/delta= size sizeb)))
 
 ;; for now this is removing the clip each time
@@ -51,12 +51,12 @@
             {point-a :p} a
             {point-b :p} b
             t-clip (g/translate clip (tm/- point-a))]
-        (->> (cond (same-shape? clip b) ;; b is contained by a
+        (->> (cond (rect= clip b) ;; b is contained by a
                    (map #(g/translate % point-a)
                         (concat (assign-open (square/surrounding-panes a b :row)
                                              (:open a))
                                 (assign-open [clip] (xor-fill a b))))
-                   (same-shape? clip a) ;; a is contained by b
+                   (rect= clip a) ;; a is contained by b
                    (map #(g/translate % point-b)
                         (concat (assign-open (square/surrounding-panes b a :row)
                                              (:open b))
