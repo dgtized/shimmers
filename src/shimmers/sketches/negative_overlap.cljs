@@ -132,7 +132,7 @@
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 1.0}
+             :stroke-width 2.0}
             (apply list (shapes))))
 
 (sketch/definition negative-overlap
