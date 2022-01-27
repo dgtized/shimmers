@@ -66,9 +66,7 @@
                                                        :row)]
                    (map #(g/translate % point-a)
                         (concat (assign-open panes (:open a))
-                                (assign-open [t-clip] (xor-fill a b))
-                                #_(assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :all)
-                                               (:open a))))))
+                                (assign-open [t-clip] (xor-fill a b))))))
            (filter (comp square/has-area? g/bounds))))))
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
@@ -87,15 +85,12 @@
   (poly-exclusion base-shape (random-rect))
   (poly-exclusion (random-rect) (random-rect)))
 
-;; still finding gaps, need to include clip + deal with zero width/height?
+;; FIXME: ignoring any remainder of shape that did not intersect anything
 (defn add-split-shapes [shapes s]
   (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
         intersections (filter isec? shapes)
-        disjoint (remove isec? shapes)
-        additions (if (= (count intersections) 1)
-                    (poly-exclusion (first intersections) s)
-                    (mapcat #(poly-exclusion % s) intersections))]
-    (concat disjoint additions)))
+        disjoint (remove isec? shapes)]
+    (concat disjoint (mapcat #(poly-exclusion % s) intersections))))
 
 (comment
   (add-split-shapes (add-split-shapes [base-shape] (first example))
