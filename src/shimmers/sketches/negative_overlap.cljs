@@ -52,21 +52,19 @@
             {point-b :p} b
             t-clip (g/translate clip (tm/- point-a))]
         (->> (cond (rect= clip b) ;; b is contained by a
-                   (map #(g/translate % point-a)
-                        (concat (assign-open (square/surrounding-panes a b :row)
-                                             (:open a))
-                                (assign-open [clip] (xor-fill a b))))
+                   (concat (assign-open (map #(g/translate % point-a) (square/surrounding-panes a b :row))
+                                        (:open a))
+                           (assign-open [clip] (xor-fill a b)))
                    (rect= clip a) ;; a is contained by b
-                   (map #(g/translate % point-b)
-                        (concat (assign-open (square/surrounding-panes b a :row)
-                                             (:open b))
-                                (assign-open [clip] (xor-fill a b))))
+                   (concat (assign-open (map #(g/translate % point-b) (square/surrounding-panes b a :row))
+                                        (:open b))
+                           (assign-open [clip] (xor-fill a b)))
                    :else ;; partial overlap
-                   (let [panes (square/surrounding-panes (g/translate a (tm/- point-a)) t-clip
-                                                         :row)]
-                     (map #(g/translate % point-a)
-                          (concat (assign-open panes (:open a))
-                                  (assign-open [t-clip] (xor-fill a b))))))
+                   (let [panes (map #(g/translate % point-a)
+                                    (square/surrounding-panes (g/translate a (tm/- point-a)) t-clip
+                                                              :row))]
+                     (concat (assign-open panes (:open a))
+                             (assign-open [clip] (xor-fill a b)))))
              (filter (comp square/has-area? g/bounds)))))))
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
