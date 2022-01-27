@@ -46,6 +46,7 @@
 
 ;; for now this is removing the clip each time
 (defn poly-exclusion [a b]
+  (println a)
   (let [clip (g/clip-with a b)]
     (if (empty? (:points clip)) ;; no intersection between pair
       [a]
@@ -58,7 +59,7 @@
                      (assign-open (square/surrounding-panes (g/bounds b) (g/bounds a) :column)
                                   (:open b)))
                  :else ;; partial overlap
-                 (do (println "partial")
+                 (do (println "partial" clip)
                      (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds clip) :column)
                                           (:open a))
                              (assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :row)
