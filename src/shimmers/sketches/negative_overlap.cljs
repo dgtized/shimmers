@@ -24,20 +24,20 @@
         x (dr/random)
         y (dr/random)]
     (assoc (rect/rect (rv x y) (rv w h))
-           :open true)))
+           :open (rand-nth [2r01 2r10]))))
 
 (defn big-enough? [rect]
   (let [{[w h] :size} rect]
     (and (> w 20) (> h 20))))
 
 (def base-shape
-  (assoc (rect/rect 0 0 width height) :open false))
+  (assoc (rect/rect 0 0 width height) :open 2r0))
 
 (defn assign-open [shapes open]
   (map #(assoc % :open open) shapes))
 
-(defn xor-fill [{a :open} {b :open}]
-  (= (bit-xor a b) 1))
+(defn xor-open [{a :open} {b :open}]
+  (bit-xor a b))
 
 (defn rect= [{:keys [p size]} {pb :p sizeb :size}]
   (and (tm/delta= p pb) (tm/delta= size sizeb)))
@@ -57,14 +57,14 @@
       (let [clip (g/bounds clip)]
         (cond (rect= clip b) ;; b is contained by a
               (concat (assign-open (translated-panes a b) (:open a))
-                      (assign-open [clip] (xor-fill a b)))
+                      (assign-open [clip] (xor-open a b)))
               (rect= clip a) ;; a is contained by b
               ;; This is probably causing a bug if b also clips other shapes?
               (concat (assign-open (translated-panes b a) (:open b))
-                      (assign-open [clip] (xor-fill a b)))
+                      (assign-open [clip] (xor-open a b)))
               :else ;; partial overlap
               (concat (assign-open (translated-panes a clip) (:open a))
-                      (assign-open [clip] (xor-fill a b))))))))
+                      (assign-open [clip] (xor-open a b))))))))
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                            (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
@@ -95,7 +95,11 @@
 
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
-             (if open "cornflowerblue" "goldenrod")))
+             (case open
+               2r00 "#966"
+               2r01 "#699"
+               2r10 "#daa"
+               2r11 "#add")))
 
 (defn random-additions [n]
   (->> random-rect
