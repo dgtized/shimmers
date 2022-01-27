@@ -93,7 +93,7 @@
 
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
-             (if open "lightblue" "grey")))
+             (if open "cornflowerblue" "goldenrod")))
 
 (defn random-additions [n]
   (->> random-rect
@@ -105,7 +105,7 @@
   (let [additions (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                                 (rect/rect (rv 0 0) (rv 0.5 0.5))] true)]
     [(svg/group {} (map fill-shape (split-shapes base-shape additions)))
-     (svg/group {:fill "#966"}
+     (svg/group {:fill "#F00"}
                 (mapcat (fn [{:keys [points]}] (map #(svg/circle % 2) points)) additions))]))
 
 (defn scene []
