@@ -47,7 +47,7 @@
                                  (g/translate b (tm/- pa))
                                  (square/row-major a))
        (map #(g/translate % pa))
-       (filter (comp square/has-area? g/bounds))))
+       (filter square/has-area?)))
 
 ;; for now this is removing the clip each time
 (defn rect-exclusion [a b]
@@ -59,8 +59,10 @@
               (concat (assign-open (translated-panes a b) (:open a))
                       (assign-open [clip] (xor-open a b)))
               (rect= clip a) ;; a is contained by b
-              ;; This is probably causing a bug if b also clips other shapes?
-              (concat (assign-open (translated-panes b a) (:open b))
+              ;; FIXME: This is probably causing a bug if b also clips other
+              ;; shapes? partial fix to ignore existing panes, but *should*
+              ;; re-clip remainder of a?
+              (concat #_(assign-open (translated-panes b a) (:open b))
                       (assign-open [clip] (xor-open a b)))
               :else ;; partial overlap
               (concat (assign-open (translated-panes a clip) (:open a))
@@ -68,6 +70,9 @@
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                            (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
+
+;; Add example with triple overlap, with weird zero width/height slivers
+;; http://localhost:9500/#/sketches/negative-overlap?seed=3862608476
 
 (comment
   (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
@@ -108,7 +113,7 @@
        (take n)))
 
 (defn shapes []
-  (let [additions (random-additions 4)]
+  (let [additions (random-additions 3)]
     [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
      (svg/group {:fill "#F00"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
