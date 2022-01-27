@@ -115,12 +115,13 @@
 (def palettes
   (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/f2f1f1-959cac-4972a6-2d3447"
         "https://artsexperiments.withgoogle.com/artpalette/colors/e4ddc8-c8657a-5d554d-c7af9f"
-        "https://artsexperiments.withgoogle.com/artpalette/colors/d4d1ce-715439-a9895e-cfb08a"]
+        "https://artsexperiments.withgoogle.com/artpalette/colors/d4d1ce-715439-a9895e-cfb08a"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/edece8-94928b-4f5963-94655f"]
        (mapv color/url->hex-colors)))
 
 (defn shapes []
   (let [palette (dr/rand-nth palettes)
-        additions (random-additions 8)]
+        additions (random-additions 7)]
     [(svg/group {} (->> additions
                         (reduce add-split-shapes [base-shape])
                         (map (partial fill-shape palette))))
