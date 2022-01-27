@@ -26,11 +26,9 @@
     (assoc (g/as-polygon (rect/rect (rv x y) (rv w h)))
            :open true)))
 
-(defn good-shape? [poly]
+(defn big-enough? [poly]
   (let [{[w h] :size} (g/bounds poly)]
-    (and (> (g/area poly) 10)
-         (> w 20)
-         (> h 20))))
+    (and (> w 20) (> h 20))))
 
 (def base-shape
   (assoc (g/as-polygon (rect/rect 0 0 width height)) :open false))
@@ -100,7 +98,7 @@
 (defn random-additions [n]
   (->> random-rect
        repeatedly
-       (filter good-shape?)
+       (filter big-enough?)
        (take n)))
 
 (defn shapes []
