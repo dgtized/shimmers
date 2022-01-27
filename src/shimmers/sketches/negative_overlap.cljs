@@ -47,7 +47,7 @@
                                  (g/translate b (tm/- pa))
                                  (square/row-major a))
        (map #(g/translate % pa))
-       (filter square/has-area?)))
+       (filter (fn [{[w h] :size}] (and (> w 0.01) (> h 0.01))))))
 
 ;; for now this is removing the clip each time
 (defn rect-exclusion [a b]
@@ -71,7 +71,7 @@
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                            (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
 
-;; Add example with triple overlap, with weird zero width/height slivers
+;; Add example with triple overlap, with weird near zero width/height slivers
 ;; http://localhost:9500/#/sketches/negative-overlap?seed=3862608476
 
 (comment
