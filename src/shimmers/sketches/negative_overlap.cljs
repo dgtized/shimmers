@@ -76,20 +76,17 @@
   (poly-exclusion (random-rect) (random-rect)))
 
 ;; still finding gaps, need to include clip + deal with zero width/height?
-(defn split-shapes [base all-shapes]
-  (.log js/console all-shapes)
-  (reduce (fn [shapes s]
-            (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
-                  intersections (filter isec? shapes)
-                  disjoint (remove isec? shapes)]
-              (.log js/console "shape:" s (count shapes))
-              (.log js/console "isec:" intersections)
-              (.log js/console "disj:" disjoint)
-              (let [r (concat disjoint (mapcat #(poly-exclusion % s) intersections))]
-                (println (count r))
-                r)))
-          [base]
-          all-shapes))
+(defn add-split-shapes [shapes s]
+  (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
+        intersections (filter isec? shapes)
+        disjoint (remove isec? shapes)]
+    (.log js/console "shape:" s (count shapes))
+    (.log js/console "isec:" intersections)
+    (.log js/console "disj:" disjoint)
+    (let [exclusions (map #(poly-exclusion % s) intersections)
+          r (concat disjoint (apply concat exclusions) [s])]
+      (println (map count exclusions) (count r))
+      r)))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
