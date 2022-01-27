@@ -42,10 +42,10 @@
 (defn rect= [{:keys [p size]} {pb :p sizeb :size}]
   (and (tm/delta= p pb) (tm/delta= size sizeb)))
 
-(defn translated-panes [{pa :p :as a} b split]
+(defn translated-panes [{pa :p :as a} b]
   (->> (square/surrounding-panes (g/translate a (tm/- pa))
                                  (g/translate b (tm/- pa))
-                                 split)
+                                 (square/row-major a))
        (map #(g/translate % pa))
        (filter (comp square/has-area? g/bounds))))
 
@@ -56,13 +56,14 @@
       [a]
       (let [clip (g/bounds clip)]
         (cond (rect= clip b) ;; b is contained by a
-              (concat (assign-open (translated-panes a b :row) (:open a))
+              (concat (assign-open (translated-panes a b) (:open a))
                       (assign-open [clip] (xor-fill a b)))
               (rect= clip a) ;; a is contained by b
-              (concat (assign-open (translated-panes b a :row) (:open b))
+              ;; This is probably causing a bug if b also clips other shapes?
+              (concat (assign-open (translated-panes b a) (:open b))
                       (assign-open [clip] (xor-fill a b)))
               :else ;; partial overlap
-              (concat (assign-open (translated-panes a clip :row) (:open a))
+              (concat (assign-open (translated-panes a clip) (:open a))
                       (assign-open [clip] (xor-fill a b))))))))
 
 (def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
@@ -103,7 +104,7 @@
        (take n)))
 
 (defn shapes []
-  (let [additions (random-additions 3)]
+  (let [additions (random-additions 4)]
     [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
      (svg/group {:fill "#F00"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
