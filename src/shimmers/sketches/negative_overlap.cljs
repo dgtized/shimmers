@@ -98,13 +98,9 @@
   (add-split-shapes (add-split-shapes [base-shape] (first example))
                     (second example)))
 
-(defn fill-shape [{:keys [open] :as shape}]
+(defn fill-shape [palette {:keys [open] :as shape}]
   (vary-meta shape assoc :fill
-             (case open
-               2r00 "#966"
-               2r01 "#699"
-               2r10 "#daa"
-               2r11 "#add")))
+             (nth palette open)))
 
 (defn random-additions [n]
   (->> random-rect
@@ -113,8 +109,11 @@
        (take n)))
 
 (defn shapes []
-  (let [additions (random-additions 3)]
-    [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
+  (let [palette ["#966" "#699" "#daa" "#add"]
+        additions (random-additions 5)]
+    [(svg/group {} (->> additions
+                        (reduce add-split-shapes [base-shape])
+                        (map (partial fill-shape palette))))
      (svg/group {:fill "#F00"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
