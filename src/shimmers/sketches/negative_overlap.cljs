@@ -44,33 +44,42 @@
 
 ;; for now this is removing the clip each time
 (defn poly-exclusion [a b]
-  (println a " exclude " b)
-  (let [clip (g/clip-with a b)]
+  (let [clip (g/clip-with a b)
+        {point-a :p :as rect-a} (g/bounds a)
+        {point-b :p :as rect-b} (g/bounds b)
+        {point-clip :p :as rect-clip} (g/bounds clip)
+        t-clip (g/translate rect-clip (tm/- point-clip))]
     (if (empty? (:points clip)) ;; no intersection between pair
       [a]
       (->> (cond (same-shape? clip b) ;; b is contained by a
-                 (do (println "b inside a")
-                     (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds b) :all)
-                                          (:open a))
-                             #_(assign-open [clip] (xor-fill a b))))
+                 (map #(g/translate % point-a)
+                      (concat (assign-open (square/surrounding-panes rect-a rect-b :row)
+                                           (:open a))
+                              (assign-open [clip] (xor-fill a b))))
                  (same-shape? clip a) ;; a is contained by b
-                 (do (println "a inside b")
-                     (concat (assign-open (square/surrounding-panes (g/bounds b) (g/bounds a) :all)
-                                          (:open b))
-                             #_(assign-open [clip] (xor-fill a b))))
+                 (map #(g/translate % point-b)
+                      (concat (assign-open (square/surrounding-panes rect-b rect-a :row)
+                                           (:open b))
+                              (assign-open [clip] (xor-fill a b))))
                  :else ;; partial overlap
-                 (do (println "partial" clip)
-                     (concat (assign-open (square/surrounding-panes (g/bounds a) (g/bounds clip) :all)
-                                          (:open a))
-                             #_(assign-open [clip] (xor-fill a b))
-                             #_(assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :all)
-                                            (:open a)))))
+                 (let [panes (square/surrounding-panes (g/translate rect-a (tm/- point-a)) t-clip
+                                                       :row)]
+                   (map #(g/translate % point-a)
+                        (concat (assign-open panes (:open a))
+                                (assign-open [t-clip] (xor-fill a b))
+                                #_(assign-open (square/surrounding-panes (g/bounds b) (g/bounds clip) :all)
+                                               (:open a))))))
            (filter (comp square/has-area? g/bounds))))))
 
 (comment
   (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
                           (g/as-polygon (rect/rect 12 12 10 10)))
              (gp/polygon2 [])))
+
+  (map #(g/translate % (gv/vec2 200 150))
+       (filter square/has-area?
+               (square/surrounding-panes (rect/rect 200 150 400 300)
+                                         (rect/rect 0 0 200 150) :row)))
 
   (poly-exclusion base-shape (random-rect))
   (poly-exclusion (random-rect) (random-rect)))
@@ -79,14 +88,16 @@
 (defn add-split-shapes [shapes s]
   (let [isec? (fn [x] (g/intersect-shape (g/bounds s) (g/bounds x)))
         intersections (filter isec? shapes)
-        disjoint (remove isec? shapes)]
-    (.log js/console "shape:" s (count shapes))
-    (.log js/console "isec:" intersections)
-    (.log js/console "disj:" disjoint)
-    (let [exclusions (map #(poly-exclusion % s) intersections)
-          r (concat disjoint (apply concat exclusions) [s])]
-      (println (map count exclusions) (count r))
-      r)))
+        disjoint (remove isec? shapes)
+        additions (if (= (count intersections) 1)
+                    (poly-exclusion (first intersections) s)
+                    (mapcat #(poly-exclusion % s) intersections))]
+    (concat disjoint additions)))
+
+(comment
+  (add-split-shapes
+   (add-split-shapes [base-shape] (first (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))] true)))
+   (first (assign-open [(rect/rect (rv 0 0) (rv 0.5 0.5))] true))))
 
 (defn fill-shape [{:keys [open] :as shape}]
   (vary-meta shape assoc :fill
@@ -101,7 +112,7 @@
 (defn shapes []
   (let [additions (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
                                 (rect/rect (rv 0 0) (rv 0.5 0.5))] true)]
-    [(svg/group {} (map fill-shape (split-shapes base-shape additions)))
+    [(svg/group {} (map fill-shape (reduce add-split-shapes [base-shape] additions)))
      (svg/group {:fill "#F00"}
                 (mapcat (fn [{:keys [points]}] (map #(svg/circle % 2) points)) additions))]))
 
