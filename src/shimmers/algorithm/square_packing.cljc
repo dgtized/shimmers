@@ -120,21 +120,3 @@
      (g/translate shape t)))
   ([side fixed shape]
    (align-to side 0 fixed shape)))
-
-(comment (align-to :right (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :right 5 (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :right (rect/rect 10) (rect/rect -10 0 20))
-         (align-to :right (rect/rect 10) (rect/rect 10 0 20))
-         (align-to :left (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :left 5 (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :left (rect/rect 10) (rect/rect -10 0 20))
-         (align-to :left (rect/rect 10) (rect/rect 10 0 20))
-
-         (align-to :top (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :top 5 (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :top (rect/rect 10) (rect/rect 0 -10 20))
-         (align-to :top (rect/rect 10) (rect/rect 0 10 20))
-         (align-to :bottom (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :bottom 5 (rect/rect 10) (rect/rect 0 0 20))
-         (align-to :bottom (rect/rect 10) (rect/rect 0 -10 20))
-         (align-to :bottom (rect/rect 10) (rect/rect 0 10 20)))

@@ -49,4 +49,45 @@
          (sut/split-panes rectangle 50 [0.5 0.5] :all))
       "all"))
 
+(deftest alignment
+  (t/testing "east"
+    (is (= (rect/rect 10 0 20 20)
+           (sut/align-to :right (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 15 0 20 20)
+           (sut/align-to :right 5 (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 10 0 20 20)
+           (sut/align-to :right (rect/rect 10) (rect/rect -10 0 20))))
+    (is (= (rect/rect 10 0 20 20)
+           (sut/align-to :right (rect/rect 10) (rect/rect 10 0 20)))))
+
+  (t/testing "west"
+    (is (= (rect/rect -20 0 20 20)
+           (sut/align-to :left (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect -25 0 20 20)
+           (sut/align-to :left 5 (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect -20 0 20 20)
+           (sut/align-to :left (rect/rect 10) (rect/rect -10 0 20))))
+    (is (= (rect/rect -20 0 20 20)
+           (sut/align-to :left (rect/rect 10) (rect/rect 10 0 20)))))
+
+  (t/testing "north"
+    (is (= (rect/rect 0 -20 20 20)
+           (sut/align-to :top (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 0 -25 20 20)
+           (sut/align-to :top 5 (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 0 -20 20 20)
+           (sut/align-to :top (rect/rect 10) (rect/rect 0 -10 20))))
+    (is (= (rect/rect 0 -20 20 20)
+           (sut/align-to :top (rect/rect 10) (rect/rect 0 10 20)))))
+
+  (t/testing "south"
+    (is (= (rect/rect 0 10 20 20)
+           (sut/align-to :bottom (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 0 15 20 20)
+           (sut/align-to :bottom 5 (rect/rect 10) (rect/rect 0 0 20))))
+    (is (= (rect/rect 0 10 20 20)
+           (sut/align-to :bottom (rect/rect 10) (rect/rect 0 -10 20))))
+    (is (= (rect/rect 0 10 20 20)
+           (sut/align-to :bottom (rect/rect 10) (rect/rect 0 10 20))))))
+
 (comment (t/run-tests))
