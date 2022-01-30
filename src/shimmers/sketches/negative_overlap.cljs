@@ -8,7 +8,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -74,20 +73,8 @@
               (concat (assign-open (translated-panes a clip) (:open a))
                       (assign-open [clip] (xor-open a b))))))))
 
-(def example (assign-open [(rect/rect (rv 0.25 0.25) (rv 0.75 0.75))
-                           (rect/rect (rv 0 0) (rv 0.5 0.5))] true))
-
 ;; Add example with triple overlap, with weird near zero width/height slivers
 ;; http://localhost:9500/#/sketches/negative-overlap?seed=3862608476
-
-(comment
-  (map #(g/translate % (gv/vec2 200 150))
-       (filter square/has-area?
-               (square/surrounding-panes (rect/rect 200 150 400 300)
-                                         (rect/rect 0 0 200 150) :row)))
-
-  (rect-exclusion base-shape (random-rect 8))
-  (rect-exclusion (random-rect 8) (random-rect 8)))
 
 ;; FIXME: ignoring any remainder of shape that did not intersect anything
 (defn add-split-shapes [shapes s]
@@ -96,13 +83,8 @@
         disjoint (remove isec? shapes)]
     (concat disjoint (mapcat #(rect-exclusion % s) intersections))))
 
-(comment
-  (add-split-shapes (add-split-shapes [base-shape] (first example))
-                    (second example)))
-
 (defn fill-shape [palette {:keys [open] :as shape}]
-  (vary-meta shape assoc :fill
-             (nth palette open)))
+  (vary-meta shape assoc :fill (nth palette open)))
 
 (defn random-additions [n]
   (->> (partial random-rect 25)
