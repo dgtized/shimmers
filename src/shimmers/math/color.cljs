@@ -47,7 +47,9 @@
       last
       (str/split #"-")))
 
-(defn url->hex-colors [url]
+(defn url->hex-colors
+  "Converts a palette url into a hex color string like `#abcdef`."
+  [url]
   (mapv (partial str "#") (url->colors url)))
 
 (defn url->palette
