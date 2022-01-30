@@ -56,7 +56,9 @@
 ;; for now this is removing the clip each time
 (defn rect-exclusion [a b]
   (let [clip (g/clip-with (g/as-polygon a) (g/as-polygon b))]
-    (if (empty? (:points clip)) ;; no intersection between pair
+    ;; no intersection between pair causes g/clip-with to
+    ;; return (gp/polygon2 [])
+    (if (empty? (:points clip))
       [a]
       (let [clip (g/bounds clip)]
         (cond (rect= clip b) ;; b is contained by a
@@ -79,10 +81,6 @@
 ;; http://localhost:9500/#/sketches/negative-overlap?seed=3862608476
 
 (comment
-  (assert (= (g/clip-with (g/as-polygon (rect/rect 0 0 10 10))
-                          (g/as-polygon (rect/rect 12 12 10 10)))
-             (gp/polygon2 [])))
-
   (map #(g/translate % (gv/vec2 200 150))
        (filter square/has-area?
                (square/surrounding-panes (rect/rect 200 150 400 300)
