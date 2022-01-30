@@ -2,7 +2,8 @@
   (:require
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Row Major & Column Major
 ;; 111         124
@@ -120,3 +121,30 @@
      (g/translate shape t)))
   ([side fixed shape]
    (align-to side 0 fixed shape)))
+
+(defn rect= [{:keys [p size]} {pb :p sizeb :size}]
+  (and (tm/delta= p pb) (tm/delta= size sizeb)))
+
+(defn translated-panes [{p :p :as rect} clip split]
+  (->> (surrounding-panes (g/translate rect (tm/- p))
+                          (g/translate clip (tm/- p))
+                          split)
+       (map #(g/translate % p))
+       (filter (fn [{[w h] :size}] (and (> w 0.01) (> h 0.01))))))
+
+;; attempt to split out exclusion zones, so xor logic is only applied to clip
+;; after. Also will allow testing of behavior and addition of "remainder" logic
+(defn rect-exclusion [a b clip-poly split]
+  (let [clip (g/bounds clip-poly)]
+    (cond (rect= clip b) ;; b is contained by a
+          (translated-panes a b split)
+          (rect= clip a) ;; a is contained by b
+          ;; FIXME: This is probably causing a bug if b also clips other
+          ;; shapes? partial fix to ignore existing panes, but *should*
+          ;; re-clip remainder of a?
+          []
+          :else ;; partial overlap
+          (translated-panes a clip split))))
+
+;; (defn rect-clip [a b clip-poly])
+;; (defn rect-remainder [a b clip-poly])
