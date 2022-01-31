@@ -4,6 +4,7 @@
             [shimmers.registry :as registry]
 
             shimmers.sketches.additive-displacement
+            shimmers.sketches.angle-of-ascent
             shimmers.sketches.ascendance
             shimmers.sketches.box-o-rama
             shimmers.sketches.braid
