@@ -42,7 +42,8 @@
             ((dr/rand-nth [clockwise-arc counter-clockwise-arc]) p ra angle theta)))))
 
 (defn shapes []
-  (concat (planet (rv 0.5 0.5) (* height 0.3) (* 0.85 eq/TAU) 5)))
+  (concat (planet (rv 0.25 0.5) (* height 0.3) (* 0.0 eq/TAU) 7)
+          (planet (rv 0.75 0.5) (* height 0.3) (* 0.0 eq/TAU) 17)))
 
 (defn scene []
   (csvg/svg {:width width
