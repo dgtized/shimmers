@@ -17,22 +17,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn clockwise-arc [p r start-angle end-angle]
-  (let [start (tm/+ p (v/polar r end-angle))
+(defn relative-arc [p r start-angle d-angle]
+  (let [end-angle (+ start-angle d-angle)
+        start (tm/+ p (v/polar r end-angle))
         end (tm/+ p (v/polar r start-angle))
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
-        sweep 0]
-    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]] {:stroke "red"})))
+        sweep (if (> d-angle 0) 0 1)]
+    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]]
+               {:stroke (if (= sweep 1) "blue" "red")})))
 
-(defn counter-clockwise-arc [p r start-angle end-angle]
-  (let [start (tm/+ p (v/polar r end-angle))
-        end (tm/+ p (v/polar r start-angle))
-        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 1 0)
-        sweep 1]
-    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]] {:stroke "blue"})))
-
-;; FIXME: address issues with arcs when starting angle is between 0.25 and 1.0
-;; of eq/TAU
 (defn planet [p radius angle n]
   (let [ranges (rest (dr/var-range n))]
     (into [(gc/circle p 1)
@@ -41,7 +34,7 @@
           (for [arc ranges
                 :let [ra (* radius arc)
                       theta (dr/random (* 0.3 eq/TAU) (* 0.9 eq/TAU))]]
-            ((dr/rand-nth [clockwise-arc counter-clockwise-arc]) p ra angle theta)))))
+            (relative-arc p ra angle ((dr/rand-nth [- +]) theta))))))
 
 (defn shapes []
   (concat (planet (rv 0.25 0.5) (* height 0.3) (* 0.0 eq/TAU) 7)
