@@ -77,6 +77,12 @@
   (is (= [[nil nil] [0 0] [nil nil] [2 2]]
          (sut/partition-segments (cycle [0 1]) (cycle [0 1]) (range 4)))))
 
+(deftest partition-chunks
+  (is (= [[0] [1 2] [3]]
+         (sut/partition-chunks [1 2 3] (range 4))))
+  (is (= [[0] [1 2] [3 4 5] [6 7]]
+         (sut/partition-chunks [1 2 3] (range 8)))))
+
 (deftest collapsable
   (t/are [in out] (= out (sut/collapse = + in))
     [] []

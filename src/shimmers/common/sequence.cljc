@@ -125,6 +125,20 @@
                              (repeatedly #(rand-int 4))
                              (range 100)))
 
+(defn partition-chunks
+  "Separate `coll` into partitions matching the sizes in `chunks` and a final
+  group with any remaining elements.
+
+  (partition-chunks [1 2] (range 4)) => ((0) (1 2) (3))"
+  [chunks coll]
+  (lazy-seq
+   (if-let [s (seq chunks)]
+     (let [n (first s)]
+       (cons (take n coll)
+             (partition-chunks (rest s) (drop n coll))))
+     (when (seq coll)
+       (list coll)))))
+
 (defn collapse
   "Combine consecutive values in `coll` if `collapse?` using `combine`.
 
