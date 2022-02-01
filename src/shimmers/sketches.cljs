@@ -95,6 +95,7 @@
             shimmers.sketches.physarum
             shimmers.sketches.plaid-arrangements
             shimmers.sketches.point-to-point
+            shimmers.sketches.planetary-arcs
             shimmers.sketches.poisson-disc-sampling
             shimmers.sketches.polygon-recomposition
             shimmers.sketches.polygrowth
