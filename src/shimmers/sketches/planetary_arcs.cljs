@@ -35,25 +35,27 @@
      :sweep sweep}))
 
 (defn planet [p radius inputs]
-  (->> inputs
-       (sort-by first)
-       cs/triplet-cycle
-       (mapcat
-        (fn [[[angle0 _] [angle n] [angle1 _]]]
-          (let [ranges (cs/midsection (dr/var-range (inc n)))
-                delta0 (sm/radial-distance angle0 angle)
-                radial0 (if (< angle0 angle) delta0 (- eq/TAU delta0))
-                delta1 (sm/radial-distance angle angle1)
-                radial1 (if (< angle angle1) delta1 (- eq/TAU delta1))]
-            (into [(gc/circle p 1)
-                   (gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
-                             (tm/+ p (v/polar (* radius (last ranges)) angle)))]
-                  (for [arc ranges
-                        :let [ra (* radius arc)
-                              theta (dr/random (* -0.9 radial0) (* 0.9 radial1))
-                              {:keys [start end large-arc sweep]} (relative-arc p ra angle theta)]]
-                    (csvg/path [[:M start] [:A [ra ra] 0 large-arc sweep end]]
-                               {:stroke (if (= sweep 1) "blue" "red")}))))))))
+  (let [arcs (reduce + (map second inputs))
+        all-ranges (dr/shuffle (rest (dr/var-range (+ arcs 1))))
+        ordered-inputs (sort-by first inputs)]
+    (into [(gc/circle p 1)]
+          (mapcat
+           (fn [[angle0 angle angle1] ranges]
+             (let [ranges (sort ranges)
+                   delta0 (sm/radial-distance angle0 angle)
+                   radial0 (if (< angle0 angle) delta0 (- eq/TAU delta0))
+                   delta1 (sm/radial-distance angle angle1)
+                   radial1 (if (< angle angle1) delta1 (- eq/TAU delta1))]
+               (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
+                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
+                     (for [arc ranges
+                           :let [ra (* radius arc)
+                                 theta (dr/random (* -0.9 radial0) (* 0.9 radial1))
+                                 {:keys [start end large-arc sweep]} (relative-arc p ra angle theta)]]
+                       (csvg/path [[:M start] [:A [ra ra] 0 large-arc sweep end]]
+                                  {:stroke (if (= sweep 1) "blue" "red")})))))
+           (cs/triplet-cycle (map first ordered-inputs))
+           (cs/partition-chunks (map second ordered-inputs) all-ranges)))))
 
 ;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
