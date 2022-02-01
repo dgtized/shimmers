@@ -19,12 +19,16 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn relative-arc [p r start-angle d-angle]
-  (let [end-angle (+ start-angle d-angle)
+(defn relative-arc
+  "Calculate arc flags for an SVG path from a start-angle to a relative theta.
+
+  FIXME: Doesn't handle completing a circle if |dtheta| >= 𝜏."
+  [p r start-angle dtheta]
+  (let [end-angle (+ start-angle dtheta)
         start (tm/+ p (v/polar r end-angle))
         end (tm/+ p (v/polar r start-angle))
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
-        sweep (if (> d-angle 0) 0 1)]
+        sweep (if (> dtheta 0) 0 1)]
     {:start start
      :end end
      :large-arc large-arc
