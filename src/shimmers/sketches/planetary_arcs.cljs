@@ -34,24 +34,17 @@
        cs/triplet-cycle
        (mapcat
         (fn [[[angle0 _] [angle n] [angle1 _]]]
-          #_(println [angle0 angle angle1])
           (let [ranges (cs/midsection (dr/var-range (inc n)))
-                radial0 (sm/radial-distance angle0 angle)
-                radial1 (sm/radial-distance angle angle1)]
+                delta0 (sm/radial-distance angle0 angle)
+                radial0 (if (< angle0 angle) delta0 (- eq/TAU delta0))
+                delta1 (sm/radial-distance angle angle1)
+                radial1 (if (< angle angle1) delta1 (- eq/TAU delta1))]
             (into [(gc/circle p 1)
                    (gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
                              (tm/+ p (v/polar (* radius (last ranges)) angle)))]
                   (for [arc ranges
                         :let [ra (* radius arc)
-                              theta (cond (and (tm/delta= angle0 angle) (tm/delta= angle angle1))
-                                          (dr/random (* -0.9 eq/TAU)
-                                                     (* 0.9 eq/TAU))
-                                          (tm/delta= angle0 angle1)
-                                          (dr/random (* -0.9 radial0)
-                                                     (* 0.9 radial1))
-                                          :else
-                                          (dr/random (* -0.9 radial0)
-                                                     (* 0.9 radial1)))]]
+                              theta (dr/random (* -0.9 radial0) (* 0.9 radial1))]]
                     (relative-arc p ra angle theta))))))))
 
 ;; handle loop around for the long direction
@@ -59,7 +52,7 @@
 
 (defn shapes []
   (concat (planet (rv 0.25 0.5) (* height 0.3) [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
-          (planet (rv 0.75 0.5) (* height 0.3) [[(* 0.0 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.75 eq/TAU) 11]])))
+          (planet (rv 0.75 0.5) (* height 0.3) [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
 (defn scene []
   (csvg/svg {:width width
