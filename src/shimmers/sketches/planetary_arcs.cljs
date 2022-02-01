@@ -25,8 +25,10 @@
         end (tm/+ p (v/polar r start-angle))
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
         sweep (if (> d-angle 0) 0 1)]
-    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]]
-               {:stroke (if (= sweep 1) "blue" "red")})))
+    {:start start
+     :end end
+     :large-arc large-arc
+     :sweep sweep}))
 
 (defn planet [p radius inputs]
   (->> inputs
@@ -44,8 +46,10 @@
                              (tm/+ p (v/polar (* radius (last ranges)) angle)))]
                   (for [arc ranges
                         :let [ra (* radius arc)
-                              theta (dr/random (* -0.9 radial0) (* 0.9 radial1))]]
-                    (relative-arc p ra angle theta))))))))
+                              theta (dr/random (* -0.9 radial0) (* 0.9 radial1))
+                              {:keys [start end large-arc sweep]} (relative-arc p ra angle theta)]]
+                    (csvg/path [[:M start] [:A [ra ra] 0 large-arc sweep end]]
+                               {:stroke (if (= sweep 1) "blue" "red")}))))))))
 
 ;; handle loop around for the long direction
 (comment (sm/radial-distance (* 0.0 eq/TAU) (* 0.75 eq/TAU)))
