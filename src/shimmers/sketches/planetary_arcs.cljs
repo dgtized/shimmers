@@ -20,14 +20,16 @@
 (defn clockwise-arc [p r start-angle end-angle]
   (let [start (tm/+ p (v/polar r end-angle))
         end (tm/+ p (v/polar r start-angle))
-        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)]
-    (csvg/path [[:M start] [:A [r r] 0 large-arc 0 end]])))
+        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
+        sweep 0]
+    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]] {:stroke "red"})))
 
 (defn counter-clockwise-arc [p r start-angle end-angle]
   (let [start (tm/+ p (v/polar r end-angle))
         end (tm/+ p (v/polar r start-angle))
-        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 1 0)]
-    (csvg/path [[:M start] [:A [r r] 0 large-arc 1 end]])))
+        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 1 0)
+        sweep 1]
+    (csvg/path [[:M start] [:A [r r] 0 large-arc sweep end]] {:stroke "blue"})))
 
 ;; FIXME: address issues with arcs when starting angle is between 0.25 and 1.0
 ;; of eq/TAU
@@ -43,7 +45,7 @@
 
 (defn shapes []
   (concat (planet (rv 0.25 0.5) (* height 0.3) (* 0.0 eq/TAU) 7)
-          (planet (rv 0.75 0.5) (* height 0.3) (* 0.0 eq/TAU) 17)))
+          (planet (rv 0.75 0.5) (* height 0.3) (* 0.5 eq/TAU) 17)))
 
 (defn scene []
   (csvg/svg {:width width
