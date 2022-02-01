@@ -55,9 +55,7 @@
                     (csvg/path [[:M start] [:A [ra ra] 0 large-arc sweep end]]
                                {:stroke (if (= sweep 1) "blue" "red")}))))))))
 
-;; handle loop around for the long direction
-(comment (sm/radial-distance (* 0.0 eq/TAU) (* 0.75 eq/TAU)))
-
+;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
   (concat (planet (rv 0.25 0.5) (* height 0.3) [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
           (planet (rv 0.75 0.5) (* height 0.3) [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
