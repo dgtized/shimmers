@@ -167,6 +167,14 @@
           (recur (dec tries) retry-fn))))
 
 (defn pair-cycle [coll]
-  (map vector coll (concat (rest coll) [(first coll)])))
+  (map vector coll (concat (rest coll) (take 1 coll))))
 
-(comment (pair-cycle [:a :b :c :d]))
+(defn triplet-cycle [coll]
+  (partition 3 1 (concat (take-last 1 coll) coll (take 1 coll))))
+
+(comment (pair-cycle [:a :b :c :d])
+         (triplet-cycle [:a :b :c :d])
+         (triplet-cycle [:a :b :c])
+         (triplet-cycle [:a :b])
+         (triplet-cycle [:a])
+         )
