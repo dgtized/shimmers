@@ -36,10 +36,10 @@
   FIXME: Doesn't handle completing a circle if |dtheta| >= 𝜏."
   [p r start-angle dtheta]
   (let [end-angle (+ start-angle dtheta)
-        start (tm/+ p (v/polar r end-angle))
-        end (tm/+ p (v/polar r start-angle))
+        start (tm/+ p (v/polar r start-angle))
+        end (tm/+ p (v/polar r end-angle))
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
-        sweep (if (> dtheta 0) 0 1)]
+        sweep (if (> dtheta 0) 1 0)]
     {:start start
      :end end
      :large-arc large-arc
