@@ -11,6 +11,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -30,6 +31,12 @@
       delta
       (- eq/TAU delta))))
 
+(defrecord RelativeArc [start end radius large-arc sweep]
+  ISVGConvert
+  (as-svg [_ _opts]
+    (csvg/path [[:M start] [:A [radius radius] 0 large-arc sweep end]]
+               {:stroke (if (= sweep 1) "blue" "red")})))
+
 (defn relative-arc
   "Calculate arc flags for an SVG path from a start-angle to a relative theta.
 
@@ -40,10 +47,7 @@
         end (tm/+ p (v/polar r end-angle))
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
         sweep (if (> dtheta 0) 1 0)]
-    {:start start
-     :end end
-     :large-arc large-arc
-     :sweep sweep}))
+    (->RelativeArc start end r large-arc sweep)))
 
 (defn planet [p radius inputs]
   (let [total-arcs (reduce + (map second inputs))
@@ -58,10 +62,8 @@
                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
                     (for [arc ranges
                           :let [ra (* radius arc)
-                                theta (dr/random (* -0.9 radial0) (* 0.9 radial1))
-                                {:keys [start end large-arc sweep]} (relative-arc p ra angle theta)]]
-                      (csvg/path [[:M start] [:A [ra ra] 0 large-arc sweep end]]
-                                 {:stroke (if (= sweep 1) "blue" "red")})))))
+                                theta (dr/random (* -0.9 radial0) (* 0.9 radial1))]]
+                      (relative-arc p ra angle theta)))))
           (cs/triplet-cycle (map first ordered-inputs))
           (cs/partition-chunks (map second ordered-inputs) all-ranges))
          (into [(gc/circle p 1)]))))
