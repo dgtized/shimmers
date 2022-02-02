@@ -60,17 +60,22 @@
                   radial1 (radial-angle angle angle1)]
               (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
-                    (for [arc ranges]
-                      (relative-arc p (* radius arc)
-                                    angle (gen-angle arc radial0 radial1))))))
+                    (for [arc ranges
+                          :let [[a b] (gen-angle arc angle radial0 radial1)]]
+                      (relative-arc p (* radius arc) a b)))))
           (cs/triplet-cycle (map first ordered-inputs))
           (cs/partition-chunks (map second ordered-inputs) all-ranges))
          (into [(gc/circle p 1)]))))
 
-(defn angle-gen [_ radial0 radial1]
-  (if (dr/chance 0.5)
-    (dr/random (* -0.85 radial0) (* -0.25 radial0))
-    (dr/random (* -0.25 radial0) (* 0.85 radial1))))
+(defn angle-gen [_ angle radial0 radial1]
+  (cond (dr/chance 0.2)
+        (let [rel- (dr/random (* -0.85 radial0) (* -0.25 radial0))
+              rel+ (dr/random (* -0.25 radial0) (* 0.85 radial1))]
+          [(+ angle rel-) (- rel+ rel-)])
+        (dr/chance 0.5)
+        [angle (dr/random (* -0.85 radial0) (* -0.25 radial0))]
+        :else
+        [angle (dr/random (* -0.25 radial0) (* 0.85 radial1))]))
 
 ;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
