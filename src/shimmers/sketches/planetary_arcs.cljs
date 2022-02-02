@@ -49,7 +49,7 @@
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 
-(defn planet [p radius inputs]
+(defn planet [p radius gen-angle inputs]
   (let [total-arcs (reduce + (map second inputs))
         all-ranges (dr/shuffle (rest (dr/var-range (+ total-arcs 1))))
         ordered-inputs (sort-by first inputs)]
@@ -61,18 +61,23 @@
               (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
                     (for [arc ranges]
-                      (relative-arc p
-                                    (* radius arc)
-                                    angle
-                                    (dr/random (* -0.9 radial0) (* 0.9 radial1)))))))
+                      (relative-arc p (* radius arc)
+                                    angle (gen-angle arc radial0 radial1))))))
           (cs/triplet-cycle (map first ordered-inputs))
           (cs/partition-chunks (map second ordered-inputs) all-ranges))
          (into [(gc/circle p 1)]))))
 
+(defn angle-gen [_ radial0 radial1]
+  (if (dr/chance 0.5)
+    (dr/random (* -0.85 radial0) (* -0.25 radial0))
+    (dr/random (* -0.25 radial0) (* 0.85 radial1))))
+
 ;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
-  (concat (planet (rv 0.25 0.5) (* height 0.3) [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
-          (planet (rv 0.75 0.5) (* height 0.3) [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
+  (concat (planet (rv 0.25 0.5) (* height 0.3) angle-gen
+                  [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
+          (planet (rv 0.75 0.5) (* height 0.3) angle-gen
+                  [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
 (defn scene []
   (csvg/svg {:width width
