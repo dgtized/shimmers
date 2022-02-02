@@ -19,6 +19,17 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn radial-angle
+  "Calculate angle distance between `lower` and `upper` angles.
+
+  If `lower` bound is greater than `upper`, prefer the distance the long way
+  around the circle."
+  [lower upper]
+  (let [delta (sm/radial-distance lower upper)]
+    (if (< lower upper)
+      delta
+      (- eq/TAU delta))))
+
 (defn relative-arc
   "Calculate arc flags for an SVG path from a start-angle to a relative theta.
 
@@ -41,10 +52,8 @@
     (->> (mapcat
           (fn [[angle0 angle angle1] ranges]
             (let [ranges (sort ranges)
-                  delta0 (sm/radial-distance angle0 angle)
-                  radial0 (if (< angle0 angle) delta0 (- eq/TAU delta0))
-                  delta1 (sm/radial-distance angle angle1)
-                  radial1 (if (< angle angle1) delta1 (- eq/TAU delta1))]
+                  radial0 (radial-angle angle0 angle)
+                  radial1 (radial-angle angle angle1)]
               (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
                     (for [arc ranges
