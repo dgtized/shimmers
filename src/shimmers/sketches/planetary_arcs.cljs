@@ -60,10 +60,11 @@
                   radial1 (radial-angle angle angle1)]
               (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
                                (tm/+ p (v/polar (* radius (last ranges)) angle)))]
-                    (for [arc ranges
-                          :let [ra (* radius arc)
-                                theta (dr/random (* -0.9 radial0) (* 0.9 radial1))]]
-                      (relative-arc p ra angle theta)))))
+                    (for [arc ranges]
+                      (relative-arc p
+                                    (* radius arc)
+                                    angle
+                                    (dr/random (* -0.9 radial0) (* 0.9 radial1)))))))
           (cs/triplet-cycle (map first ordered-inputs))
           (cs/partition-chunks (map second ordered-inputs) all-ranges))
          (into [(gc/circle p 1)]))))
