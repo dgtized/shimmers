@@ -69,13 +69,13 @@
 
 (defn angle-gen [_ angle radial0 radial1]
   (cond (dr/chance 0.2)
-        (let [rel- (dr/random (* -0.85 radial0) (* -0.25 radial0))
-              rel+ (dr/random (* -0.25 radial0) (* 0.85 radial1))]
-          [(+ angle rel-) (- rel+ rel-)])
+        (let [rel- (dr/random (* 0.25 radial0) (* 0.85 radial0))
+              rel+ (dr/random (* 0.25 radial1) (* 0.85 radial1))]
+          [(- angle rel-) (+ rel+ rel-)])
         (dr/chance 0.5)
-        [angle (dr/random (* -0.85 radial0) (* -0.25 radial0))]
+        [angle (- (dr/random (* 0.25 radial0) (* 0.85 radial0)))]
         :else
-        [angle (dr/random (* -0.25 radial0) (* 0.85 radial1))]))
+        [angle (dr/random (* 0.25 radial1) (* 0.85 radial1))]))
 
 ;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
