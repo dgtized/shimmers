@@ -1,5 +1,8 @@
 (ns shimmers.sketches.planetary-arcs
   (:require
+   [loom.alg :as la]
+   [loom.graph :as lg]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -10,7 +13,9 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -77,12 +82,20 @@
         :else
         [angle (dr/random (* 0.25 radial1) (* 0.85 radial1))]))
 
+(defn mst-graph [bounds n]
+  (let [points (mapv (fn [rect] (g/random-point-inside rect))
+                     (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))}))]
+    (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
+
 ;; TODO: generate a MST and map planets to each of the points
 (defn shapes []
-  (concat (planet (rv 0.25 0.5) (* height 0.3) angle-gen
-                  [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
-          (planet (rv 0.75 0.5) (* height 0.3) angle-gen
-                  [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
+  (let [graph (mst-graph (g/scale-size (rect/rect 0 0 width height) 0.85) 6)]
+    (concat (map (fn [p] (with-meta (gc/circle p 3) {:stroke "green"})) (lg/nodes graph))
+            (map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
+            (planet (rv 0.25 0.5) (* height 0.3) angle-gen
+                    [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
+            (planet (rv 0.75 0.5) (* height 0.3) angle-gen
+                    [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]]))))
 
 (defn scene []
   (csvg/svg {:width width
