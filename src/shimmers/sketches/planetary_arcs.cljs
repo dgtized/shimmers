@@ -174,11 +174,12 @@
 ;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
-        n (dr/weighted {11 1
-                        17 1
-                        23 1
-                        31 1
-                        61 1})
+        n (dr/weighted {11 2
+                        17 2
+                        23 2
+                        31 2
+                        41 1
+                        63 1})
         center (g/point-at (g/scale-size (g/bounding-circle bounds) 1.1) (dr/random 0.3 0.4))
         arcs (polar-arcs center
                          bounds
