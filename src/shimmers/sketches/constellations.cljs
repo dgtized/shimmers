@@ -1,6 +1,7 @@
 (ns shimmers.sketches.constellations
   (:require
    [loom.alg :as la]
+   [loom.attr :as lga]
    [loom.graph :as lg]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
@@ -19,9 +20,9 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.utils :as gu]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -162,13 +163,14 @@
        (sort-by #(lg/weight g n %))
        (map (fn [p] [p (lg/weight g n p)]))))
 
-(defn max-radius-per-point [bounds graph]
-  (into {}
-        (for [p (lg/nodes graph)
-              :let [neighbors (neighbors-with-distance graph p)
-                    [_ dist] (first neighbors)
-                    r (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))]]
-          [p r])))
+(defn max-radius-per-point [graph bounds]
+  (reduce (fn [g p]
+            (let [neighbors (neighbors-with-distance graph p)
+                  [_ dist] (first neighbors)
+                  r (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))]
+              (lga/add-attr g p :max-radius r)))
+          graph
+          (lg/nodes graph)))
 
 (defn generate-planets [graph circles]
   (mapcat (fn [{:keys [p r]}]
@@ -199,8 +201,8 @@
                          (dr/random 1.15 1.3)
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
-        graph (polar-graph arcs n)
-        max-radius (max-radius-per-point bounds graph)
+        graph (-> (polar-graph arcs n)
+                  (max-radius-per-point bounds))
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
                                   r (min (* 0.475 dist)
@@ -211,7 +213,8 @@
            :arcs (count arcs))
     (concat (generate-planets graph circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
-            #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
+            #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :max-radius))
+                            {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
             ;; randomize dasharray?
             (map (fn [arc]
@@ -221,8 +224,8 @@
                  arcs)
 
             (map (fn [[p q]]
-                   (let [pr (get max-radius p)
-                         qr (get max-radius q)
+                   (let [pr (lga/attr graph p :max-radius)
+                         qr (lga/attr graph q :max-radius)
                          between (tm/mix p q (/ pr (+ pr qr)))]
                      (gc/circle between 1.0)))
                  (lg/edges graph))
