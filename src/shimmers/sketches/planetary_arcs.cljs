@@ -103,6 +103,17 @@
       gp/polygon2
       (g/translate center)))
 
+(defn clockwise-intercept [center bounds]
+  (let [midpoints (map (fn [[p q]] (tm/mix p q 0.5)) (g/edges bounds))]
+    (apply min (map #(g/heading (tm/- % center)) midpoints))))
+
+(comment (clockwise-intercept (gv/vec2 -5 11) (rect/rect 10)))
+
+(defn ellipse-arc [center a b intercept dt]
+  (for [t (range intercept (+ intercept eq/TAU) dt)]
+    (tm/+ center (gv/vec2 (* a (Math/cos t))
+                          (* b (Math/sin t))))))
+
 (comment (ellipse (gv/vec2 1 0 ) 10 10 0.1))
 
 (defn polar-arcs [center bounds a b dt range-offsets]
