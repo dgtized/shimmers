@@ -87,7 +87,7 @@
 
 (defn mst-graph [bounds n]
   (let [k (inc (int (Math/sqrt n)))
-        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (v/jitter (* 0.1 height))))
+        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (v/jitter (* 0.05 height))))
                              (dr/shuffle (g/subdivide bounds {:rows k :cols k}))))]
     (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
 
