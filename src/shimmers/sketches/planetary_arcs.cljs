@@ -85,10 +85,22 @@
         :else
         [angle (dr/random (* 0.25 radial1) (* 0.85 radial1))]))
 
+(defn minimum-separation
+  "Only keep `points` if closest pair distance is greather than `threshold`."
+  [threshold points]
+  (reduce (fn [accepted p]
+            (if (every? #(> (g/dist p %) threshold) accepted)
+              (conj accepted p)
+              accepted))
+          [] points))
+
 (defn mst-graph [bounds n]
   (let [k (inc (int (Math/sqrt n)))
-        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (dr/jitter (* 0.05 height))))
-                             (dr/shuffle (g/subdivide bounds {:rows k :cols k}))))]
+        points (->> (g/subdivide bounds {:rows k :cols k})
+                    dr/shuffle
+                    (mapv (fn [rect] (tm/+ (g/centroid rect) (dr/jitter (* 0.05 height)))))
+                    (minimum-separation (* 0.05 height))
+                    (take n))]
     (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
 
 (defn neighbors-with-distance [g n]
