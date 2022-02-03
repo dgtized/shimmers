@@ -170,6 +170,19 @@
                     r (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))]]
           [p r])))
 
+(defn generate-planets [graph circles]
+  (mapcat (fn [{:keys [p r]}]
+            (let [neighbors (neighbors-with-distance graph p)
+                  density (if (dr/chance 0.1)
+                            (Math/ceil (* (/ r (* 0.04 height))
+                                          (dr/rand-nth [7 11 13])))
+                            (cond (< r (* 0.05 height)) 3
+                                  (< r (* 0.1 height)) 4
+                                  :else (dr/random-int 5 8)))]
+              (planet p r angle-gen
+                      (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
+          circles))
+
 ;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
@@ -196,17 +209,7 @@
                      (lg/nodes graph))]
     (swap! defo assoc :planets (count (lg/nodes graph))
            :arcs (count arcs))
-    (concat (mapcat (fn [{:keys [p r]}]
-                      (let [neighbors (neighbors-with-distance graph p)
-                            density (if (dr/chance 0.1)
-                                      (Math/ceil (* (/ r (* 0.04 height))
-                                                    (dr/rand-nth [7 11 13])))
-                                      (cond (< r (* 0.05 height)) 3
-                                            (< r (* 0.1 height)) 4
-                                            :else (dr/random-int 5 8)))]
-                        (planet p r angle-gen
-                                (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
-                    circles)
+    (concat (generate-planets graph circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
             #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
             ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
