@@ -163,18 +163,22 @@
        (sort-by #(lg/weight g n %))
        (map (fn [p] [p (lg/weight g n p)]))))
 
-(defn max-radius-per-point [graph bounds]
+(defn radius-per-point [graph bounds]
   (reduce (fn [g p]
             (let [neighbors (neighbors-with-distance graph p)
                   [_ dist] (first neighbors)
-                  r (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))]
-              (lga/add-attr g p :max-radius r)))
+                  max-radius (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))
+                  radius (min (* 0.475 dist) max-radius)]
+              (-> g
+                  (lga/add-attr p :max-radius max-radius)
+                  (lga/add-attr p :radius radius))))
           graph
           (lg/nodes graph)))
 
-(defn generate-planets [graph circles]
-  (mapcat (fn [{:keys [p r]}]
+(defn generate-planets [graph]
+  (mapcat (fn [p]
             (let [neighbors (neighbors-with-distance graph p)
+                  r (lga/attr graph p :radius)
                   density (if (dr/chance 0.1)
                             (Math/ceil (* (/ r (* 0.04 height))
                                           (dr/rand-nth [7 11 13])))
@@ -183,7 +187,7 @@
                                   :else (dr/random-int 5 8)))]
               (planet p r angle-gen
                       (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
-          circles))
+          (lg/nodes graph)))
 
 ;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
@@ -202,17 +206,12 @@
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (-> (polar-graph arcs n)
-                  (max-radius-per-point bounds))
-        circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
-                                  [_ dist] (first neighbors)
-                                  r (min (* 0.475 dist)
-                                         (* 0.975 (g/dist p (g/closest-point bounds p))))]
-                              (gc/circle p r)))
-                     (lg/nodes graph))]
+                  (radius-per-point bounds))]
     (swap! defo assoc :planets (count (lg/nodes graph))
            :arcs (count arcs))
-    (concat (generate-planets graph circles)
-            #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
+    (concat (generate-planets graph)
+            #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :radius))
+                            {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :max-radius))
                             {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
