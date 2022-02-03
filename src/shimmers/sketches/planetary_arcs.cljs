@@ -96,6 +96,14 @@
        (sort-by #(lg/weight g n %))
        (map (fn [p] [p (lg/weight g n p)]))))
 
+(defn max-radius-per-point [bounds graph]
+  (into {}
+        (for [p (lg/nodes graph)
+              :let [neighbors (neighbors-with-distance graph p)
+                    [_ dist] (first neighbors)
+                    r (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))]]
+          [p r])))
+
 ;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
@@ -105,6 +113,7 @@
                         31 1
                         61 1})
         graph (mst-graph (g/scale-size bounds 0.85) n)
+        max-radius (max-radius-per-point bounds graph)
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
                                   r (min (* 0.475 dist)
@@ -120,6 +129,13 @@
                                 (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
                     circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
+            #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
+            (map (fn [[p q]]
+                   (let [pr (get max-radius p)
+                         qr (get max-radius q)
+                         between (tm/mix p q (/ pr (+ pr qr)))]
+                     (gc/circle between 1.0)))
+                 (lg/edges graph))
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
 
