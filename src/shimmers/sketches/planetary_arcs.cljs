@@ -87,7 +87,7 @@
 
 (defn mst-graph [bounds n]
   (let [k (inc (int (Math/sqrt n)))
-        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (v/jitter (* 0.05 height))))
+        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (dr/jitter (* 0.05 height))))
                              (dr/shuffle (g/subdivide bounds {:rows k :cols k}))))]
     (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
 
@@ -127,10 +127,9 @@
              :stroke-width 0.5}
             (apply list (planet-graph))))
 
-;; TODO: this is not deterministic for some reason?
 (sketch/definition planetary-arcs
   {:created-at "2022-01-31"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :planetary-arcs)
               "sketch-host"))
