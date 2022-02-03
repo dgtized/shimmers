@@ -96,6 +96,7 @@
        (sort-by #(lg/weight g n %))
        (map (fn [p] [p (lg/weight g n p)]))))
 
+;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
         n (dr/weighted {11 1
@@ -103,18 +104,22 @@
                         23 1
                         31 1
                         61 1})
-        graph (mst-graph (g/scale-size bounds 0.85) n)]
-    (concat (mapcat (fn [p]
+        graph (mst-graph (g/scale-size bounds 0.85) n)
+        circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
+                                  [_ dist] (first neighbors)
+                                  r (min (* 0.475 dist)
+                                         (* 0.975 (g/dist p (g/closest-point bounds p))))]
+                              (gc/circle p r)))
+                     (lg/nodes graph))]
+    (concat (mapcat (fn [{:keys [p r]}]
                       (let [neighbors (neighbors-with-distance graph p)
-                            [_ dist] (first neighbors)
-                            r (min (* 0.45 dist)
-                                   (* 0.95 (g/dist p (g/closest-point bounds p))))
                             density (cond (< r (* 0.05 height)) 3
                                           (< r (* 0.1 height)) 4
                                           :else (dr/random-int 5 8))]
                         (planet p r angle-gen
                                 (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
-                    (lg/nodes graph))
+                    circles)
+            #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
 
