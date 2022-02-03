@@ -84,8 +84,9 @@
         [angle (dr/random (* 0.25 radial1) (* 0.85 radial1))]))
 
 (defn mst-graph [bounds n]
-  (let [points (mapv (fn [rect] (g/random-point-inside rect))
-                     (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))}))]
+  (let [k (inc (int (Math/sqrt n)))
+        points (take n (mapv (fn [rect] (tm/+ (g/centroid rect) (v/jitter (* 0.1 height))))
+                             (dr/shuffle (g/subdivide bounds {:rows k :cols k}))))]
     (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
 
 (defn neighbors-with-distance [g n]
@@ -95,7 +96,7 @@
 
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
-        graph (mst-graph (g/scale-size bounds 0.85) 6)]
+        graph (mst-graph (g/scale-size bounds 0.85) 11)]
     (concat (mapcat (fn [p]
                       (let [neighbors (neighbors-with-distance graph p)
                             [_ dist] (first neighbors)
