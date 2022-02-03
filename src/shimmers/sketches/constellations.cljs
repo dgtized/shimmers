@@ -197,8 +197,10 @@
                         31 2
                         41 1
                         63 1})
-        center (g/point-at (g/scale-size (g/bounding-circle bounds) 1.1) (dr/random 0.3 0.4))
-        arcs (polar-arcs center
+        galaxy-center (-> (g/bounding-circle bounds)
+                          (g/scale-size 1.2)
+                          (g/point-at (+ (dr/random 0.07 0.18) (/ (dr/random-int 4) 4))))
+        arcs (polar-arcs galaxy-center
                          bounds
                          (dr/random 1 1.15)
                          (dr/random 1.15 1.3)
