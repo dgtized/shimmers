@@ -20,7 +20,8 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.utils :as gu]))
 
 (def width 800)
 (def height 600)
@@ -121,14 +122,33 @@
         r-min (g/dist center (first v))
         r-max (g/dist center (last v))]
     (for [rt range-offsets
-          :let [r (tm/mix* r-min r-max rt)]]
-      (->> (ellipse center (* a r) (* b r) dt)
-           :points
-           (filter (fn [p] (g/contains-point? bounds p)))
-           gl/linestrip2))))
+          :let [r (tm/mix* r-min r-max rt)
+                scaled-dt (max (* (- 1 rt) dt) 0.01)
+                points (->> (ellipse center (* a r) (* b r) scaled-dt)
+                            :points
+                            (filter (fn [p] (g/contains-point? bounds p))))]
+          :when (> (count points) 2)]
+      (gl/linestrip2 points))))
 
-#_(defn polar-graph [bounds n]
-    )
+(defn random-arc-points [arcs]
+  (->> arcs
+       (dr/weighted-by (fn [{:keys [points]}] (gu/arc-length points)))
+       g/random-point))
+
+(defn polar-graph [bounds n]
+  (let [arcs (polar-arcs (gv/vec2 (* -0.2 width) (* -0.1 height))
+                         bounds
+                         (dr/random 1 1.15)
+                         (dr/random 1.15 1.3)
+                         0.1
+                         (dr/var-range (max 11 (int (/ n 3)))))
+        points (->> (repeatedly #(random-arc-points arcs))
+                    (take (* n 1.5))
+                    (minimum-separation (* 0.05 height))
+                    (take n))]
+    (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
+
+(comment (polar-graph (rect/rect 0 0 width height) 5))
 
 (defn mst-graph [bounds n]
   (let [k (inc (int (Math/sqrt n)))
@@ -160,7 +180,7 @@
                         23 1
                         31 1
                         61 1})
-        graph (mst-graph (g/scale-size bounds 0.85) n)
+        graph (polar-graph (g/scale-size bounds 0.85) n)
         max-radius (max-radius-per-point bounds graph)
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
@@ -208,7 +228,7 @@
                             :stroke "black"
                             :fill "none"
                             :stroke-width 0.8}
-                           (apply list (arcs-test)))))
+                           (apply list (planet-graph)))))
 
 (defn page []
   [:div
