@@ -134,9 +134,8 @@
       (gl/linestrip2 points))))
 
 (defn random-arc-points [arcs]
-  (->> arcs
-       (dr/weighted-by (fn [{:keys [points]}] (gu/arc-length points)))
-       g/random-point))
+  (g/point-at (dr/weighted-by (fn [{:keys [points]}] (gu/arc-length points)) arcs)
+              (dr/random)))
 
 (defn polar-graph [arcs n]
   (->> (repeatedly #(random-arc-points arcs))
