@@ -134,7 +134,7 @@
              :height height
              :stroke "black"
              :fill "none"
-             :stroke-width 1.0}
+             :stroke-width 0.8}
             (apply list (planet-graph))))
 
 (sketch/definition planetary-arcs
