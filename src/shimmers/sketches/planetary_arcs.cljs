@@ -28,6 +28,8 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defonce defo (debug/state))
+
 (defn radial-angle
   "Calculate angle distance between `lower` and `upper` angles.
 
@@ -185,6 +187,8 @@
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (polar-graph arcs n)
+        _ (swap! defo assoc :planets (count (lg/nodes graph))
+                 :arcs (count arcs))
         max-radius (max-radius-per-point bounds graph)
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
@@ -226,8 +230,6 @@
                   [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
           (planet (rv 0.75 0.5) (* height 0.3) angle-gen
                   [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
-
-(defonce defo (debug/state))
 
 (defn scene []
   (debug/time-it defo [:time :scene]
