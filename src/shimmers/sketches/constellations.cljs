@@ -187,8 +187,6 @@
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (polar-graph arcs n)
-        _ (swap! defo assoc :planets (count (lg/nodes graph))
-                 :arcs (count arcs))
         max-radius (max-radius-per-point bounds graph)
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
@@ -196,6 +194,8 @@
                                          (* 0.975 (g/dist p (g/closest-point bounds p))))]
                               (gc/circle p r)))
                      (lg/nodes graph))]
+    (swap! defo assoc :planets (count (lg/nodes graph))
+           :arcs (count arcs))
     (concat (mapcat (fn [{:keys [p r]}]
                       (let [neighbors (neighbors-with-distance graph p)
                             density (if (dr/chance 0.1)
