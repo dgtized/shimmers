@@ -179,7 +179,7 @@
 (defn arcs-test []
   (polar-arcs (gv/vec2 -30 -20) (rect/rect 0 0 width height)
               1.05 1.15 0.1
-              (tm/norm-range 12)
+              (dr/var-range 16)
               ))
 
 (defn planet-pair []
