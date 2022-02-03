@@ -99,9 +99,12 @@
     (concat (mapcat (fn [p]
                       (let [neighbors (neighbors-with-distance graph p)
                             [_ dist] (first neighbors)
-                            min-dist (min dist (g/dist p (g/closest-point bounds p)))]
-                        (planet p (* 0.49 min-dist) angle-gen
-                                (mapv (fn [[n _]] [(g/heading (tm/- n p)) 3]) neighbors))))
+                            r (min (* 0.45 dist)
+                                   (* 0.95 (g/dist p (g/closest-point bounds p))))
+                            density (cond (< r (* 0.1 height)) 3
+                                          :else 5)]
+                        (planet p r angle-gen
+                                (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
                     (lg/nodes graph))
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
