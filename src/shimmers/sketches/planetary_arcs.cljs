@@ -40,7 +40,7 @@
   ISVGConvert
   (as-svg [_ _opts]
     (csvg/path [[:M start] [:A [radius radius] 0 large-arc sweep end]]
-               {:stroke (if (= sweep 1) "blue" "red")})))
+               #_{:stroke (if (= sweep 1) "blue" "red")})))
 
 (defn relative-arc
   "Calculate arc flags for an SVG path from a start-angle to a relative theta.
@@ -127,6 +127,7 @@
              :stroke-width 0.5}
             (apply list (planet-graph))))
 
+;; TODO: this is not deterministic for some reason?
 (sketch/definition planetary-arcs
   {:created-at "2022-01-31"
    :type :svg
