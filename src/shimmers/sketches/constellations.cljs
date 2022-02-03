@@ -149,15 +149,6 @@
 
 (comment (polar-graph (rect/rect 0 0 width height) 5))
 
-(defn mst-graph [bounds n]
-  (let [k (inc (int (Math/sqrt n)))
-        points (->> (g/subdivide bounds {:rows k :cols k})
-                    dr/shuffle
-                    (mapv (fn [rect] (tm/+ (g/centroid rect) (dr/jitter (* 0.05 height)))))
-                    (minimum-separation (* 0.05 height))
-                    (take n))]
-    (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
-
 (defn neighbors-with-distance [g n]
   (->> (lg/successors g n)
        (sort-by #(lg/weight g n %))
