@@ -54,6 +54,7 @@
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 
+;; occasional bug with offset arcs somehow with correct radius but wrong center?
 (defn planet [p radius gen-angle inputs]
   (let [total-arcs (reduce + (map second inputs))
         all-ranges (dr/shuffle (rest (dr/var-range (+ total-arcs 1))))
@@ -87,15 +88,29 @@
                      (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))}))]
     (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
 
-;; TODO: generate a MST and map planets to each of the points
-(defn shapes []
-  (let [graph (mst-graph (g/scale-size (rect/rect 0 0 width height) 0.85) 6)]
-    (concat (map (fn [p] (with-meta (gc/circle p 3) {:stroke "green"})) (lg/nodes graph))
-            (map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
-            (planet (rv 0.25 0.5) (* height 0.3) angle-gen
-                    [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
-            (planet (rv 0.75 0.5) (* height 0.3) angle-gen
-                    [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]]))))
+(defn neighbors-with-distance [g n]
+  (->> (lg/successors g n)
+       (sort-by #(lg/weight g n %))
+       (map (fn [p] [p (lg/weight g n p)]))))
+
+(defn planet-graph []
+  (let [bounds (rect/rect 0 0 width height)
+        graph (mst-graph (g/scale-size bounds 0.85) 6)]
+    (concat (mapcat (fn [p]
+                      (let [neighbors (neighbors-with-distance graph p)
+                            [_ dist] (first neighbors)
+                            min-dist (min dist (g/dist p (g/closest-point bounds p)))]
+                        (planet p (* 0.49 min-dist) angle-gen
+                                (mapv (fn [[n _]] [(g/heading (tm/- n p)) 3]) neighbors))))
+                    (lg/nodes graph))
+            #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
+            )))
+
+(defn planet-pair []
+  (concat (planet (rv 0.25 0.5) (* height 0.3) angle-gen
+                  [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
+          (planet (rv 0.75 0.5) (* height 0.3) angle-gen
+                  [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
 (defn scene []
   (csvg/svg {:width width
@@ -103,7 +118,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (apply list (shapes))))
+            (apply list (planet-graph))))
 
 (sketch/definition planetary-arcs
   {:created-at "2022-01-31"
