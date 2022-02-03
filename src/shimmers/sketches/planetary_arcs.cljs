@@ -117,6 +117,7 @@
 
 (comment (ellipse (gv/vec2 1 0 ) 10 10 0.1))
 
+;; FIXME: sometimes this looks like it's closing the loop?
 (defn polar-arcs [center bounds a b dt range-offsets]
   (let [v (sort-by #(g/dist center %) (g/vertices bounds))
         r-min (g/dist center (first v))
@@ -126,7 +127,7 @@
                 scaled-dt (max (* (- 1 rt) dt) 0.01)
                 points (->> (ellipse center (* a r) (* b r) scaled-dt)
                             :points
-                            (filter (fn [p] (g/contains-point? bounds p))))]
+                            (filter (fn [p] (g/contains-point? (g/scale-size bounds 0.9) p))))]
           :when (> (count points) 2)]
       (gl/linestrip2 points))))
 
@@ -201,6 +202,8 @@
                     circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
             #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
+            ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
+            ;; randomize dasharray?
             (map #(with-meta % {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 11%"
                                 :stroke-dashoffset (str (dr/rand-nth [-6 -4 0 2 8]) "%")}) arcs)
             (map (fn [[p q]]
