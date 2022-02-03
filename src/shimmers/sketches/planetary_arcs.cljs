@@ -15,6 +15,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.vector :as gv]
@@ -94,6 +95,29 @@
               accepted))
           [] points))
 
+(defn ellipse [center a b dt]
+  (-> (for [t (range 0 eq/TAU dt)]
+        (gv/vec2 (* a (Math/cos t))
+                 (* b (Math/sin t))))
+      gp/polygon2
+      (g/translate center)))
+
+(comment (ellipse (gv/vec2 1 0 ) 10 10 0.1))
+
+(defn polar-arcs [center bounds a b dt range-offsets]
+  (let [v (sort-by #(g/dist center %) (g/vertices bounds))
+        r-min (g/dist center (first v))
+        r-max (g/dist center (last v))]
+    (for [rt range-offsets
+          :let [r (tm/mix* r-min r-max rt)]]
+      (->> (ellipse center (* a r) (* b r) dt)
+           :points
+           (filter (fn [p] (g/contains-point? bounds p)))
+           gl/linestrip2))))
+
+#_(defn polar-graph [bounds n]
+    )
+
 (defn mst-graph [bounds n]
   (let [k (inc (int (Math/sqrt n)))
         points (->> (g/subdivide bounds {:rows k :cols k})
@@ -150,6 +174,12 @@
                  (lg/edges graph))
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
+
+(defn arcs-test []
+  (polar-arcs (gv/vec2 -30 -20) (rect/rect 0 0 width height)
+              1.05 1.15 0.1
+              (tm/norm-range 12)
+              ))
 
 (defn planet-pair []
   (concat (planet (rv 0.25 0.5) (* height 0.3) angle-gen
