@@ -212,8 +212,8 @@
             #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
             ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
             ;; randomize dasharray?
-            (map #(with-meta % {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 11%"
-                                :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}) arcs)
+            #_(map #(with-meta % {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 11%"
+                                  :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}) arcs)
             (map (fn [[p q]]
                    (let [pr (get max-radius p)
                          qr (get max-radius q)
