@@ -236,13 +236,13 @@
                   [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
 (defn scene []
-  (debug/time-it defo [:time :scene]
-                 (csvg/svg {:width width
-                            :height height
-                            :stroke "black"
-                            :fill "none"
-                            :stroke-width 0.8}
-                           (apply list (planet-graph)))))
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :fill "none"
+             :stroke-width 0.8}
+            (apply list (debug/time-it defo [:time :scene]
+                                       (planet-graph)))))
 
 (defn page []
   [:div
