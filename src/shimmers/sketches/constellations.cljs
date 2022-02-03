@@ -189,6 +189,14 @@
                       (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
           (lg/nodes graph)))
 
+(defn plot-midpoints [graph]
+  (map (fn [[p q]]
+         (let [pr (lga/attr graph p :radius)
+               qr (lga/attr graph q :radius)
+               between (tm/mix p q (/ pr (+ pr qr)))]
+           (gc/circle between 1.0)))
+       (lg/edges graph)))
+
 ;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
@@ -210,6 +218,8 @@
     (swap! defo assoc :planets (count (lg/nodes graph))
            :arcs (count arcs))
     (concat (generate-planets graph)
+            (plot-midpoints graph)
+
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :radius))
                             {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :max-radius))
@@ -221,13 +231,6 @@
                          :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
                         (with-meta arc)))
                  arcs)
-
-            (map (fn [[p q]]
-                   (let [pr (lga/attr graph p :radius)
-                         qr (lga/attr graph q :radius)
-                         between (tm/mix p q (/ pr (+ pr qr)))]
-                     (gc/circle between 1.0)))
-                 (lg/edges graph))
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
 
