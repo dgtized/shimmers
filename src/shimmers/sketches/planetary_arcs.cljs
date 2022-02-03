@@ -199,9 +199,12 @@
                      (lg/nodes graph))]
     (concat (mapcat (fn [{:keys [p r]}]
                       (let [neighbors (neighbors-with-distance graph p)
-                            density (cond (< r (* 0.05 height)) 3
-                                          (< r (* 0.1 height)) 4
-                                          :else (dr/random-int 5 8))]
+                            density (if (dr/chance 0.1)
+                                      (Math/ceil (* (/ r (* 0.04 height))
+                                                    (dr/rand-nth [7 11 13])))
+                                      (cond (< r (* 0.05 height)) 3
+                                            (< r (* 0.1 height)) 4
+                                            :else (dr/random-int 5 8)))]
                         (planet p r angle-gen
                                 (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
                     circles)
