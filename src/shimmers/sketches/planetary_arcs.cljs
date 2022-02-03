@@ -104,8 +104,9 @@
                             [_ dist] (first neighbors)
                             r (min (* 0.45 dist)
                                    (* 0.95 (g/dist p (g/closest-point bounds p))))
-                            density (cond (< r (* 0.1 height)) 3
-                                          :else 5)]
+                            density (cond (< r (* 0.05 height)) 3
+                                          (< r (* 0.1 height)) 4
+                                          :else (dr/random-int 5 8))]
                         (planet p r angle-gen
                                 (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
                     (lg/nodes graph))
