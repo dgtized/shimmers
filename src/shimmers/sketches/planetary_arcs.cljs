@@ -135,18 +135,14 @@
        (dr/weighted-by (fn [{:keys [points]}] (gu/arc-length points)))
        g/random-point))
 
-(defn polar-graph [bounds n]
-  (let [arcs (polar-arcs (gv/vec2 (* -0.2 width) (* -0.1 height))
-                         bounds
-                         (dr/random 1 1.15)
-                         (dr/random 1.15 1.3)
-                         0.1
-                         (dr/var-range (max 11 (int (/ n 3)))))
-        points (->> (repeatedly #(random-arc-points arcs))
-                    (take (* n 1.5))
-                    (minimum-separation (* 0.05 height))
-                    (take n))]
-    (la/prim-mst (poly-detect/edges->graph (cs/all-pairs points)))))
+(defn polar-graph [arcs n]
+  (->> (repeatedly #(random-arc-points arcs))
+       (take (* n 1.5))
+       (minimum-separation (* 0.05 height))
+       (take n)
+       cs/all-pairs
+       poly-detect/edges->graph
+       la/prim-mst))
 
 (comment (polar-graph (rect/rect 0 0 width height) 5))
 
@@ -180,7 +176,14 @@
                         23 1
                         31 1
                         61 1})
-        graph (polar-graph (g/scale-size bounds 0.85) n)
+        center (g/point-at (g/scale-size (g/bounding-circle bounds) 1.1) (dr/random 0.3 0.4))
+        arcs (polar-arcs center
+                         bounds
+                         (dr/random 1 1.15)
+                         (dr/random 1.15 1.3)
+                         0.1
+                         (dr/var-range (max 11 (int (/ n 3)))))
+        graph (polar-graph arcs n)
         max-radius (max-radius-per-point bounds graph)
         circles (map (fn [p] (let [neighbors (neighbors-with-distance graph p)
                                   [_ dist] (first neighbors)
@@ -198,6 +201,7 @@
                     circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
             #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
+            (map #(with-meta % {:stroke-dasharray "3 23 2 17"}) arcs)
             (map (fn [[p q]]
                    (let [pr (get max-radius p)
                          qr (get max-radius q)
