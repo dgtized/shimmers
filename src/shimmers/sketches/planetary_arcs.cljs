@@ -98,7 +98,12 @@
 
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
-        graph (mst-graph (g/scale-size bounds 0.85) 11)]
+        n (dr/weighted {11 1
+                        17 1
+                        23 1
+                        31 1
+                        61 1})
+        graph (mst-graph (g/scale-size bounds 0.85) n)]
     (concat (mapcat (fn [p]
                       (let [neighbors (neighbors-with-distance graph p)
                             [_ dist] (first neighbors)
