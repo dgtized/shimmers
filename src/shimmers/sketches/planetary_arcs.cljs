@@ -54,9 +54,7 @@
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 
-;; occasional bug with offset arcs somehow with correct radius but wrong center?
-;; looks like it might happen on single edge nodes with a bidirectional arc
-;; also looks like ocassionally overlapping on triplets?
+;; might ocassionally be overlapping more than one input line on triplets+?
 (defn planet [p radius gen-angle inputs]
   (let [total-arcs (reduce + (map second inputs))
         all-ranges (dr/shuffle (rest (dr/var-range (+ total-arcs 1))))
@@ -78,7 +76,9 @@
 (defn angle-gen [_ angle radial0 radial1]
   (cond (dr/chance 0.05)
         (let [rel- (dr/random (* 0.25 radial0) (* 0.85 radial0))
-              rel+ (dr/random (* 0.25 radial1) (* 0.85 radial1))]
+              ;; avoid completing the circle, but might be biasing?
+              r1 (min (- eq/TAU rel-) radial1)
+              rel+ (dr/random (* 0.25 r1) (* 0.85 r1))]
           [(- angle rel-) (+ rel+ rel-)])
         (dr/chance 0.5)
         [angle (- (dr/random (* 0.25 radial0) (* 0.85 radial0)))]
