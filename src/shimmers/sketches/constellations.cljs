@@ -177,8 +177,7 @@
 
 (defn generate-planets [graph]
   (mapcat (fn [p]
-            (let [neighbors (neighbors-with-distance graph p)
-                  r (lga/attr graph p :radius)
+            (let [r (lga/attr graph p :radius)
                   density (if (dr/chance 0.1)
                             (Math/ceil (* (/ r (* 0.04 height))
                                           (dr/rand-nth [7 11 13])))
@@ -186,7 +185,8 @@
                                   (< r (* 0.1 height)) 4
                                   :else (dr/random-int 5 8)))]
               (planet p r angle-gen
-                      (mapv (fn [[n _]] [(g/heading (tm/- n p)) density]) neighbors))))
+                      (mapv (fn [n] [(g/heading (tm/- n p)) density])
+                            (lg/successors graph p)))))
           (lg/nodes graph)))
 
 (defn plot-midpoints [graph]
@@ -215,7 +215,8 @@
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (-> (polar-graph arcs n)
                   (radius-per-point bounds))]
-    (swap! defo assoc :planets (count (lg/nodes graph))
+    (swap! defo assoc
+           :planets (count (lg/nodes graph))
            :arcs (count arcs))
     (concat (generate-planets graph)
             (plot-midpoints graph)
