@@ -6,6 +6,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -187,17 +188,27 @@
           (planet (rv 0.75 0.5) (* height 0.3) angle-gen
                   [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
+(defonce defo (debug/state))
+
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.8}
-            (apply list (planet-graph))))
+  (debug/time-it defo [:time :scene]
+                 (csvg/svg {:width width
+                            :height height
+                            :stroke "black"
+                            :fill "none"
+                            :stroke-width 0.8}
+                           (apply list (arcs-test)))))
+
+(defn page []
+  [:div
+   [:div.canvas-frame [scene]]
+   [:div.explanation
+    [:div.flexcols
+     [:div (view-sketch/generate :planetary-arcs)]
+     [debug/display defo]]]])
 
 (sketch/definition planetary-arcs
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :planetary-arcs)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
