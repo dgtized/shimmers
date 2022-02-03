@@ -1,4 +1,4 @@
-(ns shimmers.sketches.planetary-arcs
+(ns shimmers.sketches.constellations
   (:require
    [loom.alg :as la]
    [loom.graph :as lg]
@@ -247,10 +247,10 @@
    [:div.canvas-frame [scene]]
    [:div.explanation
     [:div.flexcols
-     [:div (view-sketch/generate :planetary-arcs)]
+     [:div (view-sketch/generate :constellations)]
      [debug/display defo]]]])
 
-(sketch/definition planetary-arcs
+(sketch/definition constellations
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
