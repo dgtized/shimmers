@@ -166,15 +166,16 @@
           graph
           (lg/nodes graph)))
 
+;; TODO: assign high density as an attribute to k elements before building?
 (defn generate-planets [graph]
   (mapcat (fn [p]
             (let [r (lga/attr graph p :radius)
-                  density (if (dr/chance 0.1)
-                            (Math/ceil (* (/ r (* 0.04 height))
-                                          (dr/rand-nth [7 11 13])))
-                            (cond (< r (* 0.05 height)) 3
-                                  (< r (* 0.1 height)) 4
-                                  :else (dr/random-int 5 8)))]
+                  density (cond (dr/chance 0.08)
+                                (Math/ceil (* (/ r (* 0.03 height))
+                                              (dr/rand-nth [7 11 13])))
+                                (< r (* 0.025 height)) (dr/random-int 2 4)
+                                (< r (* 0.050 height)) (dr/random-int 3 5)
+                                :else (dr/random-int 5 8))]
               (planet p r angle-gen
                       (mapv (fn [n] [(g/heading (tm/- n p)) density])
                             (lg/successors graph p)))))
