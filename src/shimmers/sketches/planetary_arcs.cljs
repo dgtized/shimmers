@@ -201,7 +201,8 @@
                     circles)
             #_(map (fn [c] (with-meta c {:stroke-width 0.5 :stroke "green"})) circles)
             #_(map (fn [[p r]] (with-meta (gc/circle p r) {:stroke-width 0.5 :stroke "green"})) max-radius)
-            (map #(with-meta % {:stroke-dasharray "3 23 2 17"}) arcs)
+            (map #(with-meta % {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 11%"
+                                :stroke-dashoffset (dr/random-int 20)}) arcs)
             (map (fn [[p q]]
                    (let [pr (get max-radius p)
                          qr (get max-radius q)
