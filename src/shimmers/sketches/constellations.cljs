@@ -147,8 +147,6 @@
        poly-detect/edges->graph
        la/prim-mst))
 
-(comment (polar-graph (rect/rect 0 0 width height) 5))
-
 (defn neighbors-with-distance [g n]
   (->> (lg/successors g n)
        (sort-by #(lg/weight g n %))
