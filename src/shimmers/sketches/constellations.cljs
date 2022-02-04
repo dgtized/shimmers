@@ -168,6 +168,8 @@
 (defn grow-planets [graph]
   (reduce grow-radius-of-planet graph (lg/nodes graph)))
 
+;; Maybe should consolidate growth/shrink and calculate radius stats first to
+;; try and juke the stats towards variance. That or compare against neighbors?
 (defn shrink-planets [graph likelyhood]
   (reduce (fn [g planet]
             (let [radius (lga/attr g planet :radius)]
