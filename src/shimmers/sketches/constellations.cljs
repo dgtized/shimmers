@@ -11,6 +11,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -180,6 +181,40 @@
                 g)))
           graph (lg/nodes graph)))
 
+(defn planar-edge?
+  "Check if edge `p`-`q` in `graph` is planar.
+
+  The edge is planar if all intersections with existing edges are at `p` or `q`."
+  [graph p q]
+  (every? (fn [[a b]]
+            (let [isec (isec/segment-intersect [p q] [a b])]
+              (or (and isec (or (tm/delta= isec p) (tm/delta= isec q)))
+                  true)))
+          (lg/edges graph)))
+
+(defn add-neighbor-to-lonely
+  "Add a few cycles to MST graph by connecting a `percent` sampling of
+  single out-degree nodes to a nearby, unconnected, planar neighbor.
+
+  Ensures new neighbor edges are > `min-angle` from an existing edge."
+  [graph percent min-angle]
+  (let [lonely (filter #(= 1 (lg/out-degree graph %)) (lg/nodes graph))]
+    (reduce (fn [g p]
+              (let [angles (map (fn [n] (g/heading (tm/- n p))) (lg/successors g p))
+                    big-angle? (fn [q] (not-any? #(tm/delta= % (g/heading (tm/- q p)) min-angle) angles))]
+                (if-let [candidate (->> (lg/nodes g)
+                                        (remove (fn [q] (or (= p q) (lg/has-edge? g p q))))
+                                        (sort-by (partial g/dist-squared p))
+                                        (some (fn [q]
+                                                ;; this is only checking if edge with lonely node is large
+                                                ;; and not if the angle is large enough for the candidate
+                                                (when (and (big-angle? q) (planar-edge? g p q))
+                                                  q))))]
+                  (lg/add-edges g [p candidate (g/dist p candidate)])
+                  g)))
+            graph
+            (dr/random-sample percent lonely))))
+
 ;; TODO: assign high density as an attribute to k elements before building?
 (defn generate-planets [graph]
   (mapcat (fn [p]
@@ -221,6 +256,7 @@
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (-> (polar-graph arcs n)
+                  (add-neighbor-to-lonely 0.4 0.66)
                   (radius-per-point bounds)
                   grow-planets
                   (shrink-planets (/ n 120)))]
