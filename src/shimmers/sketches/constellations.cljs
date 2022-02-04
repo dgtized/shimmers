@@ -134,12 +134,12 @@
           :when (> (count points) 2)]
       (gl/linestrip2 points))))
 
-(defn random-arc-points [arcs]
-  (g/point-at (dr/weighted-by (fn [{:keys [points]}] (gu/arc-length points)) arcs)
-              (dr/random)))
+(defn generate-arc-points [arcs]
+  (let [arc-weights (cs/mapping (fn [{:keys [points]}] (gu/arc-length points)) arcs)]
+    (repeatedly #(g/point-at (dr/weighted arc-weights) (dr/random)))))
 
 (defn polar-graph [arcs n]
-  (->> (repeatedly #(random-arc-points arcs))
+  (->> (generate-arc-points arcs)
        (take (* n 1.5))
        (minimum-separation (* 0.05 height))
        (take n)
