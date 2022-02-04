@@ -151,6 +151,23 @@
           graph
           (lg/nodes graph)))
 
+(defn grow-radius-of-planet [graph planet]
+  (let [{:keys [radius max-radius]} (lga/attrs graph planet)
+        neighbors (neighbors-with-distance graph planet)
+        p-radius (apply min (map (fn [[neighbor distance]]
+                                   (- distance (lga/attr graph neighbor :radius)))
+                                 neighbors))
+        legal-radius (min p-radius max-radius)]
+    (if (and (> legal-radius radius) (> (- legal-radius radius) (* 0.1 radius)))
+      (-> graph
+          (lga/add-attr planet :orig-radius radius)
+          (lga/add-attr planet
+                        :radius (tm/mix* radius legal-radius (dr/random 0.33 0.5))))
+      graph)))
+
+(defn grow-planets [graph]
+  (reduce grow-radius-of-planet graph (lg/nodes graph)))
+
 ;; TODO: assign high density as an attribute to k elements before building?
 (defn generate-planets [graph]
   (mapcat (fn [p]
@@ -174,7 +191,6 @@
            (gc/circle between 1.0)))
        (lg/edges graph)))
 
-;; TODO: maybe expand circles until they bump a neighbor?
 (defn planet-graph []
   (let [bounds (rect/rect 0 0 width height)
         n (dr/weighted {11 2
@@ -193,7 +209,8 @@
                          0.1
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (-> (polar-graph arcs n)
-                  (radius-per-point bounds))]
+                  (radius-per-point bounds)
+                  grow-planets)]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
            :arcs (count arcs))
