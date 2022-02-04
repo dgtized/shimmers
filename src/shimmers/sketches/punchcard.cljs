@@ -10,6 +10,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; Inspired by: https://twitter.com/akacastor/status/1480657994241036289/photo/1
 (def width 800)
 (def height 600)
 (defn rv [x y]
