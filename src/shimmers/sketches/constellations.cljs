@@ -162,11 +162,21 @@
       (-> graph
           (lga/add-attr planet :orig-radius radius)
           (lga/add-attr planet
-                        :radius (tm/mix* radius legal-radius (dr/random 0.33 0.5))))
+                        :radius (tm/mix* radius legal-radius (dr/random 0.25 0.5))))
       graph)))
 
 (defn grow-planets [graph]
   (reduce grow-radius-of-planet graph (lg/nodes graph)))
+
+(defn shrink-planets [graph likelyhood]
+  (reduce (fn [g planet]
+            (let [radius (lga/attr g planet :radius)]
+              (if (dr/chance likelyhood)
+                (-> g
+                    (lga/add-attr planet :orig-radius radius)
+                    (lga/add-attr planet :radius (* (dr/random 0.5 0.8) radius)))
+                g)))
+          graph (lg/nodes graph)))
 
 ;; TODO: assign high density as an attribute to k elements before building?
 (defn generate-planets [graph]
@@ -210,7 +220,8 @@
                          (dr/var-range (max 11 (int (/ n 3)))))
         graph (-> (polar-graph arcs n)
                   (radius-per-point bounds)
-                  grow-planets)]
+                  grow-planets
+                  (shrink-planets (/ n 120)))]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
            :arcs (count arcs))
