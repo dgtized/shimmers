@@ -111,16 +111,11 @@
                :stroke-width 0.8}
               (shapes bounds))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame [scene]]
-   [:div.explanation
-    [:div.flexcols
-     [:div (view-sketch/generate :curvature-of-space)]
-     [debug/display defo]]]])
-
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (-> scene
+      (view-sketch/with-controls :curvature-of-space
+        (partial debug/display defo))
+      (ctrl/mount "sketch-host")))

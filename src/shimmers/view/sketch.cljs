@@ -83,3 +83,12 @@
     [:div
      [:div.canvas-frame [scene]]
      [:p.center (generate sketch-id)]]))
+
+(defn with-controls [scene sketch-id controls]
+  (fn []
+    [:div
+     [:div.canvas-frame [scene]]
+     [:div.explanation
+      [:div.flexcols
+       [:div [generate sketch-id]]
+       [controls]]]]))

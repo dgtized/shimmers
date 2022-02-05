@@ -300,16 +300,11 @@
              :stroke-width 0.8}
             (apply list (planet-graph))))
 
-(defn page []
-  [:div
-   [:div.canvas-frame [scene]]
-   [:div.explanation
-    [:div.flexcols
-     [:div (view-sketch/generate :constellations)]
-     [debug/display defo]]]])
-
 (sketch/definition constellations
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (-> scene
+      (view-sketch/with-controls :constellations
+        (partial debug/display defo))
+      (ctrl/mount "sketch-host")))
