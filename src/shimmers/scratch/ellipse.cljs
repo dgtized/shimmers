@@ -18,5 +18,5 @@
     (tm/+ center (gv/vec2 (* a (Math/cos t))
                           (* b (Math/sin t))))))
 
-(comment (ellipse (gv/vec2 1 0 ) 10 10 0.1))
+(comment (ellipse-arc (gv/vec2 1 0 ) 10 10 0 0.1))
 
