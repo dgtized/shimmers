@@ -7,6 +7,7 @@
 ;; Considering implementing
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/ for performance
 ;; instead of the max-radius per packing iteration.
+;; Also see: https://observablehq.com/@llb4ll/k-nearest-neighbor-search-using-d3-quadtrees
 
 ;; TODO: variations from
 ;; https://sighack.com/post/circle-packing-using-stochastic-search

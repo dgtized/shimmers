@@ -76,6 +76,9 @@
           c1 (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
       curr)))
 
+;; references:
+;; https://stackoverflow.com/questions/1109536/an-algorithm-for-inflating-deflating-offsetting-buffering-polygons
+
 (defn inset-polygon
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."

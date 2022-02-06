@@ -8,6 +8,8 @@
             [thi.ng.color.gradients :as grad]
             [thi.ng.dstruct.streams :as streams]))
 
+;; TODO: https://hugodaniel.com/posts/minimal-color-swatches/
+
 (defn random []
   (let [colors [[128 192 128 32]
                 [128 0 0 32]

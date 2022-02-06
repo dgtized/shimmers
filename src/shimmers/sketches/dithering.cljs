@@ -67,6 +67,9 @@
     (q/update-pixels image)
     image))
 
+;; Further dithering info:
+;; https://codegolf.stackexchange.com/questions/26554/dither-a-grayscale-image?newreg=40354d96e979455ea596c92e2db5a225
+
 (defn boxes [capture width height]
   (q/rect-mode :corner)
   (q/no-stroke)

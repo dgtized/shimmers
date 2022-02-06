@@ -25,6 +25,7 @@
 ;; https://en.wikipedia.org/wiki/Moore_curve
 ;; http://people.cs.aau.dk/~normark/prog3-03/html/notes/fu-intr-2_themes-hilbert-sec.html
 ;; TODO: https://en.wikipedia.org/wiki/Z-order_curve
+;; See also: https://onlinemathtools.com/l-system-generator
 
 (defn l-system [{:keys [axiom rules]}]
   (let [products (cs/map-kv seq rules)]

@@ -6,6 +6,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; See also: https://roughjs.com/
+
 (defn random-point-in-circle [r]
   (-> (gv/vec2
        (* r (Math/sqrt (dr/random-double)))

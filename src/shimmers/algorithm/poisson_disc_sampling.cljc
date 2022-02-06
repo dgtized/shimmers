@@ -4,6 +4,7 @@
             [shimmers.common.sequence :as cs]
             [shimmers.math.vector :as v]))
 
+;; Various discussion on variable density sampling:
 ;; https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
 ;; http://extremelearning.com.au/an-improved-version-of-bridsons-algorithm-n-for-poisson-disc-sampling/
 ;; https://arxiv.org/abs/2004.06789 -- Fast Variable Density Poisson-Disc Sample Generation with Directional Variation

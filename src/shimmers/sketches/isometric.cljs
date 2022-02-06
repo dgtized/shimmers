@@ -10,6 +10,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; See also orthographic perspective:
+;; https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
+
 (def iso-angle (/ (Math/sqrt 2) 2))
 
 ;; https://www.redblobgames.com/articles/coordinate-transforms/_2015/
