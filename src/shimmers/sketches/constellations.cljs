@@ -61,6 +61,7 @@
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 
+;; TODO: alternate rendering with wider arcs?
 ;; might ocassionally be overlapping more than one input line on triplets+?
 (defn planet [p radius gen-angle inputs]
   (let [total-arcs (reduce + (map second inputs))
@@ -249,9 +250,8 @@
            (gc/circle between 1.0)))
        (lg/edges graph)))
 
-(defn planet-graph []
-  (let [bounds (rect/rect 0 0 width height)
-        n (dr/weighted {11 2
+(defn planet-graph [bounds]
+  (let [n (dr/weighted {11 2
                         17 2
                         23 2
                         31 2
@@ -283,25 +283,31 @@
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
 
-(defn arcs-test []
-  (polar-arcs (gv/vec2 -30 -20) (rect/rect 0 0 width height)
-              1.05 1.15 0.1
-              (dr/var-range 16)
-              ))
+(defn arcs-test [bounds]
+  (generate-arcs bounds (dr/random-int 9 23)))
 
-(defn planet-pair []
+(defn planet-pair [_]
   (concat (planet (rv 0.25 0.5) (* height 0.3) angle-gen
                   [[(* 0.0 eq/TAU) 7] [(* 0.25 eq/TAU) 7]])
           (planet (rv 0.75 0.5) (* height 0.3) angle-gen
                   [[(* 0.33 eq/TAU) 7] [(* 0.5 eq/TAU) 7] [(* 0.66 eq/TAU) 11]])))
 
+(def modes {:constellations planet-graph
+            :arcs-test arcs-test
+            :planet-test planet-pair})
+
+(defonce ui-state (ctrl/state {:mode :constellations}))
+
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.8}
-            (apply list (planet-graph))))
+  (let [bounds (rect/rect 0 0 width height)
+        scene-fn (get modes (:mode @ui-state))]
+    (reset! defo {})
+    (csvg/svg {:width width
+               :height height
+               :stroke "black"
+               :fill "none"
+               :stroke-width 0.8}
+              (apply list (scene-fn bounds)))))
 
 (sketch/definition constellations
   {:created-at "2022-01-31"
@@ -309,5 +315,7 @@
    :tags #{:deterministic}}
   (-> scene
       (view-sketch/with-controls :constellations
-        (partial debug/display defo))
+        (fn [] [:div
+               [ctrl/change-mode ui-state (keys modes)]
+               [debug/display defo]]))
       (ctrl/mount "sketch-host")))
