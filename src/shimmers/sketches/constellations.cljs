@@ -215,6 +215,17 @@
             graph
             (dr/random-sample percent lonely))))
 
+(defn generate-arcs [bounds n]
+  (let [galaxy-center (-> (g/bounding-circle bounds)
+                          (g/scale-size 1.2)
+                          (g/point-at (+ (dr/random 0.07 0.18) (/ (dr/random-int 4) 4))))]
+    (polar-arcs galaxy-center
+                bounds
+                (dr/random 1 1.15)
+                (dr/random 1.15 1.3)
+                0.1
+                (dr/var-range n))))
+
 ;; TODO: assign high density as an attribute to k elements before building?
 (defn generate-planets [graph]
   (mapcat (fn [p]
@@ -246,15 +257,7 @@
                         31 2
                         41 1
                         63 1})
-        galaxy-center (-> (g/bounding-circle bounds)
-                          (g/scale-size 1.2)
-                          (g/point-at (+ (dr/random 0.07 0.18) (/ (dr/random-int 4) 4))))
-        arcs (polar-arcs galaxy-center
-                         bounds
-                         (dr/random 1 1.15)
-                         (dr/random 1.15 1.3)
-                         0.1
-                         (dr/var-range (max 11 (int (/ n 3)))))
+        arcs (generate-arcs bounds (max 11 (int (/ n 3))))
         graph (-> (polar-graph arcs n)
                   (add-neighbor-to-lonely 0.4 0.66)
                   (radius-per-point bounds)
