@@ -216,6 +216,18 @@
             graph
             (dr/random-sample percent lonely))))
 
+(defn specify-density [graph]
+  (reduce (fn [g p]
+            (let [r (lga/attr g p :radius)
+                  density (cond (dr/chance 0.08)
+                                (Math/ceil (* (/ r (* 0.03 height))
+                                              (dr/rand-nth [7 11 13])))
+                                (< r (* 0.025 height)) (dr/random-int 2 4)
+                                (< r (* 0.050 height)) (dr/random-int 3 5)
+                                :else (dr/random-int 5 8))]
+              (lga/add-attr g p :density density)))
+          graph (lg/nodes graph)))
+
 (defn generate-arcs [bounds n]
   (let [galaxy-center (-> (g/bounding-circle bounds)
                           (g/scale-size 1.2)
@@ -228,15 +240,10 @@
                 (dr/var-range n))))
 
 ;; TODO: assign high density as an attribute to k elements before building?
-(defn generate-planets [graph]
+(defn plot-planets [graph]
   (mapcat (fn [p]
             (let [r (lga/attr graph p :radius)
-                  density (cond (dr/chance 0.08)
-                                (Math/ceil (* (/ r (* 0.03 height))
-                                              (dr/rand-nth [7 11 13])))
-                                (< r (* 0.025 height)) (dr/random-int 2 4)
-                                (< r (* 0.050 height)) (dr/random-int 3 5)
-                                :else (dr/random-int 5 8))]
+                  density (lga/attr graph p :density)]
               (planet p r angle-gen
                       (mapv (fn [n] [(g/heading (tm/- n p)) density])
                             (lg/successors graph p)))))
@@ -262,11 +269,12 @@
                   (add-neighbor-to-lonely 0.4 0.66)
                   (radius-per-point bounds)
                   grow-planets
-                  (shrink-planets (/ n 120)))]
+                  (shrink-planets (/ n 120))
+                  specify-density)]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
            :arcs (count arcs))
-    (concat (generate-planets graph)
+    (concat (plot-planets graph)
             (plot-midpoints graph)
 
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :radius))
