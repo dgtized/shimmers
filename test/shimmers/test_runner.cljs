@@ -11,6 +11,7 @@
             [shimmers.common.sequence-test]
             [shimmers.math.core-test]
             [shimmers.math.geometry-test]
+            [shimmers.math.geometry.ellipse-test]
             [shimmers.math.geometry.group-test]
             [shimmers.math.geometry.intersection-test]
             [shimmers.math.geometry.triangle-test]
@@ -50,6 +51,7 @@
    'shimmers.common.sequence-test
    'shimmers.math.core-test
    'shimmers.math.geometry-test
+   'shimmers.math.geometry.ellipse-test
    'shimmers.math.geometry.group-test
    'shimmers.math.geometry.intersection-test
    'shimmers.math.geometry.triangle-test
