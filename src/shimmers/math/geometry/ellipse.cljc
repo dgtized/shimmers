@@ -33,8 +33,12 @@
   (bounding-circle [{:keys [p rx ry]}]
     (Circle2. p (max rx ry)))
 
-  ;; g/IBoundary
-  ;; contains-point?
+  ;; https://math.stackexchange.com/a/76463/903738
+  g/IBoundary
+  (contains-point? [{[px py] :p :keys [rx ry]} [qx qy]]
+    (<= (+ (/ (Math/pow (- qx px) 2) (* rx rx))
+          (/ (Math/pow (- qy py) 2) (* ry ry)))
+       1))
 
   g/ICenter
   (center
@@ -63,4 +67,3 @@
     ([_ res]
      (let [verts (g/vertices _ res)]
        (partition 2 1 (conj verts (first verts)))))))
-
