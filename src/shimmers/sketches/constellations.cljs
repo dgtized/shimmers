@@ -249,13 +249,17 @@
                             (lg/successors graph p)))))
           (lg/nodes graph)))
 
+;; midpoint can still fall inside of a third planet if the edge clips the radius
 (defn plot-midpoints [graph]
-  (map (fn [[p q]]
-         (let [pr (lga/attr graph p :radius)
-               qr (lga/attr graph q :radius)
-               between (tm/mix p q (/ pr (+ pr qr)))]
-           (gc/circle between 1.0)))
-       (lg/edges graph)))
+  (keep (fn [[p q]]
+          (let [pr (lga/attr graph p :radius)
+                qr (lga/attr graph q :radius)
+                between (tm/mix p q (/ pr (+ pr qr)))
+                m 1.05]
+            (when (and (> (g/dist between p) (* m pr))
+                       (> (g/dist between q) (* m qr)))
+              (gc/circle between 1.0))))
+        (lg/edges graph)))
 
 (defn planet-graph [bounds]
   (let [n (dr/weighted {11 2
