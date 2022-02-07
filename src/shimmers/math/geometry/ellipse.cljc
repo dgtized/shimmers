@@ -3,10 +3,10 @@
    [thi.ng.geom.core :as g :refer [*resolution*]]
    [thi.ng.geom.vector :as v :refer [vec2]]
    #?(:clj [thi.ng.geom.types]
-      :cljs [thi.ng.geom.types :refer [Ellipse2 Rect2]])
+      :cljs [thi.ng.geom.types :refer [Circle2 Ellipse2 Rect2]])
    [thi.ng.math.core :as m :refer [PI TWO_PI *eps*]])
   #?(:clj
-     (:import [thi.ng.geom.types Ellipse2 Rect2])))
+     (:import [thi.ng.geom.types Circle2 Ellipse2 Rect2])))
 
 ;; Start implementing some thi.ng.geom.core routines for Ellipse2
 ;; It's possible that the defrecord will need to account for axis angle though.
@@ -27,5 +27,9 @@
     (Rect2. (m/- p (vec2 rx ry)) (vec2 (* 2.0 rx) (* 2.0 ry))))
   (width [{:keys [rx]}] (* 2.0 rx))
   (height [{:keys [ry]}] (* 2.0 ry))
-  (depth [_] 0))
+  (depth [_] 0)
+
+  g/IBoundingCircle
+  (bounding-circle [{:keys [p rx ry]}]
+    (Circle2. p (max rx ry))))
 
