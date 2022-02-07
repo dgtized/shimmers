@@ -33,12 +33,18 @@
   (bounding-circle [{:keys [p rx ry]}]
     (Circle2. p (max rx ry)))
 
-  ;; g/iboundary
+  ;; g/IBoundary
   ;; contains-point?
 
   g/ICenter
   (center
     ([{:keys [rx ry]}] (Ellipse2. (vec2) rx ry))
     ([{:keys [rx ry]} p] (Ellipse2. (vec2 p) rx ry)))
-  (centroid [{:keys [p]}] p))
+  (centroid [{:keys [p]}] p)
+
+  ;; g/ICircumference
+  ;; (circumfrence [])
+  ;; Exact requires infinite series / calculus?
+
+  )
 
