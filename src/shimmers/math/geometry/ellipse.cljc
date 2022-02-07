@@ -24,5 +24,8 @@
   g/IBounds
   (bounds
     [{:keys [p rx ry]}]
-    (Rect2. (m/- p (vec2 rx ry)) (vec2 (* 2 rx) (* 2 ry)))))
+    (Rect2. (m/- p (vec2 rx ry)) (vec2 (* 2.0 rx) (* 2.0 ry))))
+  (width [{:keys [rx]}] (* 2.0 rx))
+  (height [{:keys [ry]}] (* 2.0 ry))
+  (depth [_] 0))
 

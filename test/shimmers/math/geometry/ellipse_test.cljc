@@ -10,4 +10,8 @@
 
 (deftest basics
   (is (m/delta= TWO_PI (g/area (sut/ellipse 2 1))))
-  (is (= (rect/rect -3 -2 6 4) (g/bounds (sut/ellipse 3 2)))))
+  (is (= (rect/rect -3 -2 6 4) (g/bounds (sut/ellipse 3 2))))
+  (is (= 6 (g/width (sut/ellipse 3 1))))
+  (is (= 4 (g/height (sut/ellipse 3 2)))))
+
+(comment (t/run-tests))
