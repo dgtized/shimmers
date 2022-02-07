@@ -29,6 +29,10 @@
     (concat [a b c]
             (for [s (g/subdivide a {:rows 5 :cols 1})]
               (gc/circle (g/centroid s) (* 0.15 (g/width a))))
+            (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
+              (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
+                      (gc/circle (g/centroid s) (* 0.08 (g/width c))))
+                    (gc/circle (g/centroid t) (* 0.45 (g/height t)))))
             (for [s (g/subdivide c {:rows 4 :cols 2})]
               (gc/circle (g/centroid s) (* 0.12 (g/width c)))))))
 
