@@ -46,5 +46,14 @@
   ;; (circumfrence [])
   ;; Exact requires infinite series / calculus?
 
-  )
+  g/IVertexAccess
+  (vertices
+    ([_] (g/vertices _ *resolution*))
+    ([{:keys [p rx ry]} res]
+     (->> (m/norm-range res)
+          butlast
+          (mapv (fn [x]
+                  (let [t (* x TWO_PI)]
+                    (m/+ p (vec2 (* rx (Math/cos t))
+                                 (* ry (Math/sin t)))))))))))
 

@@ -25,6 +25,14 @@
   (testing "g/ICenter"
     (is (= (sut/ellipse 2 1) (g/center (sut/ellipse [1 1] 2 1))))
     (is (= (sut/ellipse [2 2] 1 2) (g/center (sut/ellipse [1 1] 1 2) [2 2])))
-    (is (= (v/vec2 1 1) (g/centroid (sut/ellipse [1 1] 1 2))))))
+    (is (= (v/vec2 1 1) (g/centroid (sut/ellipse [1 1] 1 2)))))
+
+  (testing "g/IVertexAccess"
+    (is (m/delta= (g/vertices (gc/circle [1 1] 1))
+                  (g/vertices (sut/ellipse [1 1] 1 1))))
+    (is (m/delta= [(v/vec2 3 0)] (g/vertices (sut/ellipse 3 2) 1)))
+    (is (m/delta= [(v/vec2 3 0) (v/vec2 -3 0)] (g/vertices (sut/ellipse 3 2) 2)))
+    (is (m/delta= [(v/vec2 3 0) (v/vec2 0 2) (v/vec2 -3 0) (v/vec2 0 -2)]
+                  (g/vertices (sut/ellipse 3 2) 4)))))
 
 (comment (t/run-tests))
