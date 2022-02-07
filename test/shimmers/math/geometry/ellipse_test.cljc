@@ -33,6 +33,18 @@
     (is (m/delta= [(v/vec2 3 0)] (g/vertices (sut/ellipse 3 2) 1)))
     (is (m/delta= [(v/vec2 3 0) (v/vec2 -3 0)] (g/vertices (sut/ellipse 3 2) 2)))
     (is (m/delta= [(v/vec2 3 0) (v/vec2 0 2) (v/vec2 -3 0) (v/vec2 0 -2)]
-                  (g/vertices (sut/ellipse 3 2) 4)))))
+                  (g/vertices (sut/ellipse 3 2) 4))))
+
+  (testing "g/IEdgeAccess"
+    (is (m/delta= (g/edges (gc/circle [1 1] 1))
+                  (g/edges (sut/ellipse [1 1] 1 1))))
+    (is (m/delta= [[(v/vec2 3 0) (v/vec2 3 0)]] (g/edges (sut/ellipse 3 2) 1)))
+    (is (m/delta= [[(v/vec2 3 0) (v/vec2 -3 0)] [(v/vec2 -3 0) (v/vec2 3 0)]]
+                  (g/edges (sut/ellipse 3 2) 2)))
+    (is (m/delta= [[(v/vec2 3 0) (v/vec2 0 2)]
+                   [(v/vec2 0 2) (v/vec2 -3 0)]
+                   [(v/vec2 -3 0) (v/vec2 0 -2)]
+                   [(v/vec2 0 -2) (v/vec2 3 0)]]
+                  (g/edges (sut/ellipse 3 2) 4)))))
 
 (comment (t/run-tests))

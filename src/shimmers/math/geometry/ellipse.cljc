@@ -55,5 +55,12 @@
           (mapv (fn [x]
                   (let [t (* x TWO_PI)]
                     (m/+ p (vec2 (* rx (Math/cos t))
-                                 (* ry (Math/sin t)))))))))))
+                                 (* ry (Math/sin t))))))))))
+
+  g/IEdgeAccess
+  (edges
+    ([_] (g/edges _ *resolution*))
+    ([_ res]
+     (let [verts (g/vertices _ res)]
+       (partition 2 1 (conj verts (first verts)))))))
 
