@@ -31,5 +31,14 @@
 
   g/IBoundingCircle
   (bounding-circle [{:keys [p rx ry]}]
-    (Circle2. p (max rx ry))))
+    (Circle2. p (max rx ry)))
+
+  ;; g/iboundary
+  ;; contains-point?
+
+  g/ICenter
+  (center
+    ([{:keys [rx ry]}] (Ellipse2. (vec2) rx ry))
+    ([{:keys [rx ry]} p] (Ellipse2. (vec2 p) rx ry)))
+  (centroid [{:keys [p]}] p))
 
