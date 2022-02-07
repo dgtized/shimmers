@@ -66,4 +66,26 @@
     ([_] (g/edges _ *resolution*))
     ([_ res]
      (let [verts (g/vertices _ res)]
-       (partition 2 1 (conj verts (first verts)))))))
+       (partition 2 1 (conj verts (first verts))))))
+
+  g/ISample
+  (point-at [{:keys [p rx ry]} t]
+    (let [theta (* t TWO_PI)]
+      (m/+ (vec2 (* rx (Math/cos theta))
+                 (* ry (Math/sin theta)))
+           p)))
+  ;; This is not a uniform distribution of points on the circumfrence. From
+  ;; https://codereview.stackexchange.com/questions/243590/generate-random-points-on-perimeter-of-ellipse
+  ;; it sounds like calculating the circumfrence or total arc length, and
+  ;; finding a random point on that and then backtracking to find it's theta and
+  ;; project it back might work?
+  (random-point
+    [_] (g/point-at _ (m/random)))
+  ;; First answer form https://stackoverflow.com/a/5529199/34450, but might not be uniform
+  ;; as the theta's along a longer axis should have more samples?
+  (random-point-inside [{:keys [p rx ry]}]
+    (let [rho (Math/sqrt (m/random))
+          theta (* TWO_PI (m/random))]
+      (m/+ (vec2 (* 2 rx rho (Math/cos theta))
+                 (* 2 ry rho (Math/sin theta)))
+           p))))
