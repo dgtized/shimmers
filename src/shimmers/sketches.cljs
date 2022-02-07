@@ -96,6 +96,7 @@
             shimmers.sketches.plaid-arrangements
             shimmers.sketches.point-to-point
             shimmers.sketches.constellations
+            shimmers.sketches.control-panels
             shimmers.sketches.poisson-disc-sampling
             shimmers.sketches.polygon-recomposition
             shimmers.sketches.polygrowth
