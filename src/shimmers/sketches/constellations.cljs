@@ -219,9 +219,9 @@
 (defn specify-density [graph]
   (reduce (fn [g p]
             (let [r (lga/attr g p :radius)
+                  rfactor (Math/ceil (/ r (* 0.03 height)))
                   density (cond (dr/chance 0.08)
-                                (Math/ceil (* (/ r (* 0.03 height))
-                                              (dr/rand-nth [7 11 13])))
+                                (* rfactor (dr/rand-nth [7 11 13]))
                                 (< r (* 0.025 height)) (dr/random-int 2 4)
                                 (< r (* 0.050 height)) (dr/random-int 3 5)
                                 :else (dr/random-int 5 8))]
