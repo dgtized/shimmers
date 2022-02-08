@@ -4,7 +4,7 @@
    [thi.ng.geom.vector :as v :refer [vec2]]
    #?(:clj [thi.ng.geom.types]
       :cljs [thi.ng.geom.types :refer [Circle2 Ellipse2 Rect2]])
-   [thi.ng.math.core :as m :refer [PI TWO_PI *eps*]])
+   [thi.ng.math.core :as m :refer [PI TWO_PI]])
   #?(:clj
      (:import [thi.ng.geom.types Circle2 Ellipse2 Rect2])))
 
