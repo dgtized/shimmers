@@ -261,14 +261,28 @@
               (gc/circle between 1.0))))
         (lg/edges graph)))
 
-(defn plot-arcs [arcs]
-  ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
+(defn filtered-arcs [graph arcs]
+  (let [overlap-graph
+        (fn [point]
+          (some (fn [p]
+                  (let [c (gc/circle p (* 1.1 (lga/attr graph p :radius)))]
+                    (when (g/contains-point? c point) p)))
+                (lg/nodes graph)))]
+    (mapcat (fn [arc]
+              (let [parts (partition-by overlap-graph (:points arc))]
+                (->> parts
+                     (remove (fn [points] (or (< (count points) 4)
+                                             (overlap-graph (first points)))))
+                     (mapv gl/linestrip2))))
+            (filter (fn [{:keys [points]}] (> (count points) 2)) arcs))))
+
+;; FIXME: sometimes arc segments are looping back to beginning somehow?
+(defn plot-arcs [graph arcs]
   ;; randomize dasharray?
-  (map (fn [arc]
-         (->> {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 13%"
-               :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
-              (with-meta arc)))
-       arcs))
+  (for [arc (filtered-arcs graph arcs)]
+    (->> {:stroke-dasharray "0.1% 0.4% 0.25% 0.4% 0.1% 11%"
+          :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
+         (with-meta arc))))
 
 (defn planet-graph [bounds]
   (let [n (dr/weighted {11 2
@@ -289,7 +303,7 @@
            :arcs (count arcs))
     (concat (plot-planets graph)
             (plot-midpoints graph)
-            (plot-arcs arcs)
+            (plot-arcs graph arcs)
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :radius))
                             {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :max-radius))
