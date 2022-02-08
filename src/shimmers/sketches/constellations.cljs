@@ -222,9 +222,9 @@
                   rfactor (Math/ceil (/ r (* 0.03 height)))
                   density (cond (dr/chance 0.08)
                                 (* rfactor (dr/rand-nth [7 11 13]))
-                                (< r (* 0.025 height)) (dr/random-int 2 4)
-                                (< r (* 0.050 height)) (dr/random-int 3 5)
-                                (dr/chance 0.5) (dr/random-int 5 8)
+                                (< r (* 0.025 height)) (dr/random-int 2 5)
+                                (< r (* 0.060 height)) (dr/random-int 3 6)
+                                (dr/chance 0.5) (dr/random-int 6 9)
                                 :else
                                 (Math/ceil (* (/ rfactor (lg/out-degree g p))
                                               (dr/random-int 5 8))))]
