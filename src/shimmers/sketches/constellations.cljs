@@ -224,7 +224,10 @@
                                 (* rfactor (dr/rand-nth [7 11 13]))
                                 (< r (* 0.025 height)) (dr/random-int 2 4)
                                 (< r (* 0.050 height)) (dr/random-int 3 5)
-                                :else (dr/random-int 5 8))]
+                                (dr/chance 0.5) (dr/random-int 5 8)
+                                :else
+                                (Math/ceil (* (/ rfactor (lg/out-degree g p))
+                                              (dr/random-int 5 8))))]
               (lga/add-attr g p :density density)))
           graph (lg/nodes graph)))
 
