@@ -261,6 +261,15 @@
               (gc/circle between 1.0))))
         (lg/edges graph)))
 
+(defn plot-arcs [arcs]
+  ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
+  ;; randomize dasharray?
+  (map (fn [arc]
+         (->> {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 13%"
+               :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
+              (with-meta arc)))
+       arcs))
+
 (defn planet-graph [bounds]
   (let [n (dr/weighted {11 2
                         17 2
@@ -280,18 +289,11 @@
            :arcs (count arcs))
     (concat (plot-planets graph)
             (plot-midpoints graph)
-
+            (plot-arcs arcs)
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :radius))
                             {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
             #_(map (fn [p] (with-meta (gc/circle p (lga/attr graph p :max-radius))
                             {:stroke-width 0.5 :stroke "green"})) (lg/nodes graph))
-            ;; TODO: show arcs in a way that doesn't clip bodies and looks like rotation sweeps?
-            ;; randomize dasharray?
-            (map (fn [arc]
-                   (->> {:stroke-dasharray "0.1% 0.5% 0.1% 0.5% 0.1% 13%"
-                         :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
-                        (with-meta arc)))
-                 arcs)
             #_(map (fn [[a b]] (gl/line2 a b)) (lg/edges graph))
             )))
 
