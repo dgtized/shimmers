@@ -84,13 +84,13 @@
         disjoint (remove isec? shapes)]
     (concat disjoint (mapcat #(rect-exclusion % s) intersections))))
 
-(defn fill-shape [palette {:keys [open] :as shape}]
-  (if-not (bit-test open 3)
+(defn fill-shape [mode palette {:keys [open] :as shape}]
+  (if (or (= mode :color) (not (bit-test open 3)))
     (vary-meta shape assoc :fill (nth palette (bit-and 2r0011 open)))
     shape))
 
-(defn hatch-shapes [{:keys [open] :as shape}]
-  (if (bit-test open 3)
+(defn hatch-shapes [mode {:keys [open] :as shape}]
+  (if (or (= mode :hatch) (bit-test open 3))
     (let [n (mod open 8)]
       (clip/hatch-rectangle shape
                             (tm/map-interval n [0 8] [3 8])
@@ -111,15 +111,20 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/edece8-94928b-4f5963-94655f"]
        (mapv color/url->hex-colors)))
 
-(defn shapes []
+(defn shapes [mode]
   (let [palette (dr/rand-nth palettes)
         additions (random-additions 7)
         shapes (reduce add-split-shapes [base-shape] additions)]
     [(svg/group {} shapes)
-     (svg/group {} (map (partial fill-shape palette) shapes))
-     (svg/group {:stroke-width 0.5} (mapcat hatch-shapes shapes))
+     (when (#{:mixed :color} mode)
+       (svg/group {} (map (partial fill-shape mode palette) shapes)))
+     (when (#{:mixed :hatch} mode)
+       (svg/group {:stroke-width 0.5} (mapcat (partial hatch-shapes mode) shapes)))
      (svg/group {:stroke-width 2.0 :fill "#000"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
+
+(def modes [:mixed :color :hatch])
+(defonce ui-state (ctrl/state {:mode :mixed}))
 
 (defn scene []
   (csvg/svg {:width width
@@ -127,11 +132,15 @@
              :stroke "black"
              :fill "white"
              :stroke-width 2.0}
-            (apply list (shapes))))
+            (apply list (shapes (:mode @ui-state)))))
+
+;; TODO: embed this in the url somehow?
+(defn ui-controls []
+  [:div (ctrl/change-mode ui-state modes)])
 
 (sketch/definition negative-overlap
   {:created-at "2022-01-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :negative-overlap)
+  (ctrl/mount (view-sketch/with-controls scene :negative-overlap ui-controls)
               "sketch-host"))
