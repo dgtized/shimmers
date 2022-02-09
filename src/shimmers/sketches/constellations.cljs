@@ -258,10 +258,14 @@
           (let [pr (lga/attr graph p :radius)
                 qr (lga/attr graph q :radius)
                 between (tm/mix p q (/ pr (+ pr qr)))
-                m 1.05]
+                m 1.05
+                theta (g/heading (tm/- q p))
+                scale (/ (g/dist p q) (+ pr qr))]
             (when (and (> (g/dist between p) (* m pr))
                        (> (g/dist between q) (* m qr)))
-              (gc/circle between 1.0))))
+              (if (> scale 2.0)
+                (g/translate (g/rotate (g/as-polygon (gc/circle 1.5) 6) theta) between)
+                (gc/circle between 1.0)))))
         (lg/edges graph)))
 
 (defn filtered-arcs [graph arcs]
