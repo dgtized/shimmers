@@ -27,14 +27,14 @@
         y (dr/random (- 1 h))]
     (assoc (rect/rect (scaled x width) (scaled y height)
                       (scaled w width) (scaled h height))
-           :open (dr/rand-nth [1 2 3 4 5 6 7]))))
+           :open (inc (dr/random-int 15)))))
 
 (defn big-enough? [rect]
   (let [{[w h] :size} rect]
     (and (> w 20) (> h 20))))
 
 (def base-shape
-  (assoc (rect/rect 0 0 width height) :open 2r0))
+  (assoc (rect/rect 0 0 width height) :open 2r0000))
 
 (defn assign-open [shapes open]
   (map #(assoc % :open open) shapes))
@@ -85,13 +85,18 @@
     (concat disjoint (mapcat #(rect-exclusion % s) intersections))))
 
 (defn fill-shape [palette {:keys [open] :as shape}]
-  (vary-meta shape assoc :fill (nth palette (bit-and 2r0011 open))))
+  (if-not (bit-test open 3)
+    (vary-meta shape assoc :fill (nth palette (bit-and 2r0011 open)))
+    shape))
 
 (defn hatch-shapes [{:keys [open] :as shape}]
-  (clip/hatch-rectangle shape
-                        (tm/map-interval open [0 8] [3 8])
-                        (+ 0.05 (* (/ open 8) tm/TWO_PI))
-                        [0 0]))
+  (if (bit-test open 3)
+    (let [n (mod open 8)]
+      (clip/hatch-rectangle shape
+                            (tm/map-interval n [0 8] [3 8])
+                            (+ 0.05 (* (/ n 8) tm/TWO_PI))
+                            [0 0]))
+    []))
 
 (defn random-additions [n]
   (->> (partial random-rect 25)
