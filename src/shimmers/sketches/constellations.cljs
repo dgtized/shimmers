@@ -32,6 +32,14 @@
 
 (defonce defo (debug/state))
 
+(defn unique-edges [edges]
+  (reduce (fn [edge-set [p q]]
+            (if (contains? edge-set [q p])
+              edge-set
+              (conj edge-set [p q])))
+          #{}
+          edges))
+
 (defn radial-angle
   "Calculate angle distance between `lower` and `upper` angles.
 
@@ -191,7 +199,7 @@
             (let [isec (isec/segment-intersect [p q] [a b])]
               (or (and isec (or (tm/delta= isec p) (tm/delta= isec q)))
                   true)))
-          (lg/edges graph)))
+          (unique-edges (lg/edges graph))))
 
 (defn add-neighbor-to-lonely
   "Add a few cycles to MST graph by connecting a `percent` sampling of
@@ -307,6 +315,7 @@
                   specify-density)]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
+           :unique-edges (count (unique-edges (lg/edges graph)))
            :arcs (count arcs))
     (concat (plot-planets graph)
             (plot-midpoints graph)
