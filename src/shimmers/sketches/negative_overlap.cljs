@@ -123,8 +123,8 @@
      (svg/group {:stroke-width 2.0 :fill "#000"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
-(def modes [:mixed :color :hatch])
-(defonce ui-state (ctrl/state {:mode :mixed}))
+(def modes [:color :mixed :hatch])
+(defonce ui-state (ctrl/state {:mode :color}))
 
 (defn scene []
   (csvg/svg {:width width
