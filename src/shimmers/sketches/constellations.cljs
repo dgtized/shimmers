@@ -262,19 +262,23 @@
 
 ;; midpoint can still fall inside of a third planet if the edge clips the radius
 (defn plot-midpoints [graph]
-  (keep (fn [[p q]]
-          (let [pr (lga/attr graph p :radius)
-                qr (lga/attr graph q :radius)
-                between (tm/mix p q (/ pr (+ pr qr)))
-                m 1.05
-                theta (g/heading (tm/- q p))
-                scale (/ (g/dist p q) (+ pr qr))]
-            (when (and (> (g/dist between p) (* m pr))
+  (mapcat (fn [[p q]]
+            (let [pr (lga/attr graph p :radius)
+                  qr (lga/attr graph q :radius)
+                  mid-ratio (/ pr (+ pr qr))
+                  between (tm/mix p q mid-ratio)
+                  m 1.05
+                  theta (g/heading (tm/- q p))
+                  scale (/ (g/dist p q) (+ pr qr))]
+              (if (and (> (g/dist between p) (* m pr))
                        (> (g/dist between q) (* m qr)))
-              (if (> scale 2.0)
-                (g/translate (g/rotate (g/as-polygon (gc/circle 1.5) 6) theta) between)
-                (gc/circle between 1.0)))))
-        (lg/edges graph)))
+                (if (> scale 2.0)
+                  [(g/translate (g/rotate (g/as-polygon (gc/circle 1.66) 6) theta) between)
+                   (gc/circle (tm/mix p q (* mid-ratio 0.96)) 0.33)
+                   (gc/circle (tm/mix p q (* mid-ratio 1.04)) 0.33)]
+                  [(gc/circle between 1.0)])
+                [])))
+          (unique-edges (lg/edges graph))))
 
 (defn filtered-arcs [graph arcs]
   (let [overlap-graph
