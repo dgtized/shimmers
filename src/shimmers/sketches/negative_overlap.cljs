@@ -1,5 +1,6 @@
 (ns shimmers.sketches.negative-overlap
   (:require
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -26,7 +27,7 @@
         y (dr/random (- 1 h))]
     (assoc (rect/rect (scaled x width) (scaled y height)
                       (scaled w width) (scaled h height))
-           :open (dr/rand-nth [1 2 3]))))
+           :open (dr/rand-nth [1 2 3 4 5 6 7]))))
 
 (defn big-enough? [rect]
   (let [{[w h] :size} rect]
@@ -84,7 +85,13 @@
     (concat disjoint (mapcat #(rect-exclusion % s) intersections))))
 
 (defn fill-shape [palette {:keys [open] :as shape}]
-  (vary-meta shape assoc :fill (nth palette open)))
+  (vary-meta shape assoc :fill (nth palette (bit-and 2r0011 open))))
+
+(defn hatch-shapes [{:keys [open] :as shape}]
+  (clip/hatch-rectangle shape
+                        (tm/map-interval open [0 8] [3 8])
+                        (+ 0.05 (* (/ open 8) tm/TWO_PI))
+                        [0 0]))
 
 (defn random-additions [n]
   (->> (partial random-rect 25)
@@ -101,11 +108,12 @@
 
 (defn shapes []
   (let [palette (dr/rand-nth palettes)
-        additions (random-additions 7)]
-    [(svg/group {} (->> additions
-                        (reduce add-split-shapes [base-shape])
-                        (map (partial fill-shape palette))))
-     (svg/group {:fill "#000"}
+        additions (random-additions 7)
+        shapes (reduce add-split-shapes [base-shape] additions)]
+    [(svg/group {} shapes)
+     (svg/group {} (map (partial fill-shape palette) shapes))
+     (svg/group {:stroke-width 0.5} (mapcat hatch-shapes shapes))
+     (svg/group {:stroke-width 2.0 :fill "#000"}
                 (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
 (defn scene []
