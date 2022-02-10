@@ -324,8 +324,9 @@
                         63 1})
         arcs (generate-arcs bounds (max 11 (int (/ n 3))))
         graph (-> (polar-graph arcs n)
+                  (radius-per-point bounds) ;; need radius for adding neighbors
                   (add-neighbor-to-lonely 0.4 0.66)
-                  (radius-per-point bounds)
+                  (radius-per-point bounds) ;; recalculate after adding neighbors
                   grow-planets
                   (shrink-planets (/ n 120))
                   specify-density)]
