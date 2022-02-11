@@ -18,6 +18,10 @@
   (let [[a b c d] points]
     (sut/edges->graph [[a b] [b c] [c d] [d a] [a c]])))
 
+(def graph-e
+  (let [[a b c d e] points]
+    (sut/edges->graph [[a b] [b c] [c d] [d a] [a e] [e c]])))
+
 (deftest planarity
   (is (= 10 (count (lg/edges graph))))
   (is (= 5 (count (sut/unique-edges (lg/edges graph)))))
@@ -46,7 +50,13 @@
     (is (sut/planar-edge? graph b f) "coincident to a-b, but *only* at b")
     (is (sut/planar-edge? graph b g))
     (is (sut/planar-edge? graph c f))
-    (is (sut/planar-edge? graph c g) "coincident to c-d, but *only* at c")))
+    (is (sut/planar-edge? graph c g) "coincident to c-d, but *only* at c")
+
+    (t/testing "with edges a-e and e-c instead of a-c"
+      (is (sut/planar-edge? graph-e e b))
+      (is (sut/planar-edge? graph-e e d))
+      (is (not (sut/planar-edge? graph-e a c)) "coincident with a-e and e-c")
+      (is (not (sut/planar-edge? graph-e b d)) "intersects a-e and e-c at e"))))
 
 (comment (t/run-tests))
 
