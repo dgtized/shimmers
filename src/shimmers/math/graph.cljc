@@ -2,7 +2,16 @@
   (:require
    [loom.graph :as lg]
    [shimmers.math.geometry.intersection :as isec]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]
+   [shimmers.common.sequence :as cs]))
+
+(defn edges->graph [edges]
+  (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
+          (lg/weighted-graph) edges))
+
+(defn points->graph [points]
+  (edges->graph (cs/all-pairs points)))
 
 (defn unique-edges [edges]
   (reduce (fn [edge-set [p q]]
