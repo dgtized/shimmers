@@ -6,6 +6,9 @@
    [thi.ng.math.core :as tm]
    [shimmers.common.sequence :as cs]))
 
+;; *probably* need to move position into a graph attribute so that nodes can move.
+;; This would adjust distance calculation and generation
+
 (defn edges->graph [edges]
   (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
           (lg/weighted-graph) edges))
