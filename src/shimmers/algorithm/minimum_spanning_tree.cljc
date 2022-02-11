@@ -4,20 +4,14 @@
    [(:require
      [clojure.data.priority-map :as priority]
      [nifty.disjoint-set :as djs]
-     [shimmers.common.sequence :as cs]
+     [shimmers.math.points :as points]
      [thi.ng.geom.core :as g])]
    :cljs
    [(:require
      [nifty.disjoint-set :as djs]
-     [shimmers.common.sequence :as cs]
+     [shimmers.math.points :as points]
      [tailrecursion.priority-map :as priority]
      [thi.ng.geom.core :as g])]))
-
-(defn ranked-edges [points]
-  (->> (for [[u v] (cs/all-pairs points)]
-         [(g/dist u v) [u v]])
-       (sort-by first)
-       (map second)))
 
 ;; Something off about performance here. Points to edges is <N^2, but pretty
 ;; close, so maybe sort x/y and find close somehow? On top of that though,
@@ -45,7 +39,7 @@
 
 (defn kruskal-points
   [points]
-  (kruskal points (ranked-edges points)))
+  (kruskal points (points/ranked-pairs points)))
 
 (defn prim [distance points]
   (letfn [(prim-update [added vertices weights best-edges]

@@ -1,6 +1,8 @@
 (ns shimmers.math.points
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [shimmers.common.sequence :as cs]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
 (defn generate
   "Generate point 2d points in space"
@@ -16,3 +18,9 @@
               (conj accepted p)
               accepted))
           [] points))
+
+(defn ranked-pairs [points]
+  (->> (for [[u v] (cs/all-pairs points)]
+         [(g/dist u v) [u v]])
+       (sort-by first)
+       (map second)))

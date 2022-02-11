@@ -3,7 +3,6 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
             [shimmers.math.points :as points]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
@@ -11,12 +10,6 @@
             [thi.ng.math.core :as tm]))
 
 ;; Some experiments with drawing lines derived from a set of random points
-
-(defn short-pairs [points]
-  (->> (for [[u v] (cs/all-pairs points)]
-         [(g/dist u v) [u v]])
-       (sort-by first)
-       (map second)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -76,7 +69,7 @@
 
   (q/stroke-weight 0.5)
   (q/stroke 0.99 0.5 0.5)
-  (doseq [[p q] (take (* 1.2 (count points)) (short-pairs points))]
+  (doseq [[p q] (take (* 1.2 (count points)) (points/ranked-pairs points))]
     (q/line (cq/rel-pos p) (cq/rel-pos q)))
 
   (q/stroke 0 0 0)
