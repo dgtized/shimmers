@@ -11,7 +11,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.geometry.intersection :as isec]
+   [shimmers.math.graph :as graph]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -32,14 +32,6 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defonce defo (debug/state))
-
-(defn unique-edges [edges]
-  (reduce (fn [edge-set [p q]]
-            (if (contains? edge-set [q p])
-              edge-set
-              (conj edge-set [p q])))
-          #{}
-          edges))
 
 (defn radial-angle
   "Calculate angle distance between `lower` and `upper` angles.
@@ -191,18 +183,6 @@
                 g)))
           graph (lg/nodes graph)))
 
-;; FIXME: still seeing occasional examples where this fails?
-(defn planar-edge?
-  "Check if edge `p`-`q` in `graph` is planar.
-
-  The edge is planar if all intersections with existing edges are at `p` or `q`."
-  [graph p q]
-  (every? (fn [[a b]]
-            (let [isec (isec/segment-intersect [p q] [a b])]
-              (or (and isec (or (tm/delta= isec p) (tm/delta= isec q)))
-                  true)))
-          (unique-edges (lg/edges graph))))
-
 (defn edge-clips-node-radius?
   "Check if `p` - `q` intersects a node radius in graph `g`."
   [g p q]
@@ -228,7 +208,7 @@
                                                 ;; this is only checking if edge with lonely node is large
                                                 ;; and not if the angle is large enough for the candidate
                                                 (when (and (big-angle? q)
-                                                           (planar-edge? g p q)
+                                                           (graph/planar-edge? g p q)
                                                            (not (edge-clips-node-radius? g p q)))
                                                   q))))]
                   (lg/add-edges g [p candidate (g/dist p candidate)])
@@ -290,7 +270,7 @@
                    (gc/circle (tm/mix p q (* mid-ratio 1.04)) 0.33)]
                   [(gc/circle between 1.0)])
                 [])))
-          (unique-edges (lg/edges graph))))
+          (graph/unique-edges (lg/edges graph))))
 
 (defn filtered-arcs [graph arcs]
   (let [overlap-graph
@@ -332,7 +312,7 @@
                   specify-density)]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
-           :unique-edges (count (unique-edges (lg/edges graph)))
+           :unique-edges (count (graph/unique-edges (lg/edges graph)))
            :arcs (count arcs))
     (concat (plot-planets graph)
             (plot-midpoints graph)
