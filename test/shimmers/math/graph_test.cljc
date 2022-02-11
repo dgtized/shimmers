@@ -30,21 +30,25 @@
       "every existing edge in a planar graph are planar with that graph")
   (let [[a b c d e f g] points]
     (is (not (sut/planar-edge? graph b d)) "crosses a-c")
-    (is (not (sut/planar-edge? graph d b)) "crosses a-c")
-    (is (not (sut/planar-edge? graph a e)) "coincident with a-c")
-    (is (not (sut/planar-edge? graph c e)) "coincident with a-c")
-    (is (sut/planar-edge? graph b e))
-    (is (sut/planar-edge? graph d e))
-    (is (not (sut/planar-edge? graph e f)) "crosses b-c")
-    (is (not (sut/planar-edge? graph e g)) "crosses b-c")
+    (is (not (sut/planar-edge? graph d b)) "crosses a-c, reflexive")
     (is (not (sut/planar-edge? graph a f)) "coincident to a-b")
     (is (not (sut/planar-edge? graph a g)) "crosses b-c")
-    (is (not (sut/planar-edge? graph d f)) "coincident to d-c")
-    (is (not (sut/planar-edge? graph d g)) "crosses b-c")
+    (is (not (sut/planar-edge? graph d f)) "crosses b-c")
+    (is (not (sut/planar-edge? graph d g)) "coincident to d-c")
     (is (sut/planar-edge? graph b f) "coincident to a-b, but *only* at b")
     (is (sut/planar-edge? graph b g))
     (is (sut/planar-edge? graph c f))
     (is (sut/planar-edge? graph c g) "coincident to c-d, but *only* at c")
+
+    (t/testing "given a new, central point e on a-c"
+      ;; b-e and d-e only touch at e, so by current definition they are planar,
+      ;; but this definition is debatable.
+      (is (sut/planar-edge? graph b e))
+      (is (sut/planar-edge? graph d e))
+      (is (not (sut/planar-edge? graph a e)) "coincident with a-c")
+      (is (not (sut/planar-edge? graph c e)) "coincident with a-c")
+      (is (not (sut/planar-edge? graph e f)) "crosses b-c")
+      (is (not (sut/planar-edge? graph e g)) "crosses b-c"))
 
     (t/testing "with edges a-e and e-c instead of a-c"
       (is (sut/planar-edge? graph-e e b))
