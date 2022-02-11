@@ -2,7 +2,6 @@
   (:require #?(:clj [clojure.test :as t :refer [deftest is]]
                :cljs [cljs.test :as t :include-macros true
                       :refer [deftest is]])
-            [shimmers.math.geometry.intersection :as isec]
             [shimmers.math.graph :as sut]
             [thi.ng.geom.vector :as gv]
             [loom.graph :as lg]))
@@ -22,19 +21,14 @@
   (let [[a b c d e] points]
     (sut/edges->graph [[a b] [b c] [c d] [d a] [a e] [e c]])))
 
-(deftest planarity
+(deftest edge-uniqueness
   (is (= 10 (count (lg/edges graph))))
-  (is (= 5 (count (sut/unique-edges (lg/edges graph)))))
-  (is (= 5 (count (filter (fn [[p q]] (sut/planar-edge? graph p q)) (sut/unique-edges (lg/edges graph))))))
+  (is (= 5 (count (sut/unique-edges (lg/edges graph))))))
+
+(deftest planarity
+  (is (every? (fn [[p q]] (sut/planar-edge? graph p q)) (lg/edges graph))
+      "every existing edge in a planar graph are planar with that graph")
   (let [[a b c d e f g] points]
-    (is (= [[a c]]
-           (filter (fn [edge] (isec/segment-intersect [b d] edge))
-                   (sut/unique-edges (lg/edges graph)))))
-    (is (sut/planar-edge? graph a b))
-    (is (sut/planar-edge? graph b c))
-    (is (sut/planar-edge? graph c d))
-    (is (sut/planar-edge? graph d a))
-    (is (sut/planar-edge? graph a c))
     (is (not (sut/planar-edge? graph b d)) "crosses a-c")
     (is (not (sut/planar-edge? graph d b)) "crosses a-c")
     (is (not (sut/planar-edge? graph a e)) "coincident with a-c")
