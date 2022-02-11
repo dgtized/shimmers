@@ -1,8 +1,8 @@
 (ns shimmers.math.graph
   (:require
    [loom.graph :as lg]
-   [shimmers.math.geometry.intersection :as isec]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.utils.intersect :as gisec]
    [thi.ng.math.core :as tm]
    [shimmers.common.sequence :as cs]))
 
@@ -27,10 +27,15 @@
 (defn planar-edge?
   "Check if edge `p`-`q` in `graph` is planar.
 
-  The edge is planar iff intersections with existing edges are at `p` or `q`.
-  Takes roughly O(edges) comparisons."
+  The edge is planar iff intersections with existing edges are at `p` or `q`."
   [graph p q]
-  (not-any? (fn [[a b]]
-              (let [isec (isec/segment-intersect [p q] [a b])]
-                (and isec (not (or (tm/delta= isec p) (tm/delta= isec q))))))
-            (unique-edges (lg/edges graph))))
+  (or (lg/has-edge? graph p q)
+      (lg/has-edge? graph q p)
+      (not-any? (fn [[a b]]
+                  (let [{type :type isec :p isec2 :q} (gisec/intersect-line2-line2? p q a b)]
+                    (or
+                     ;; intersecting somewhere other than p or q
+                     (and (= :intersect type) (not (or (tm/delta= isec p) (tm/delta= isec q))))
+                     ;; coincident at more than one point
+                     (and (= :coincident type) (not (tm/delta= isec isec2))))))
+                (unique-edges (lg/edges graph)))))
