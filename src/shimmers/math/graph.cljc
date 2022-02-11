@@ -24,14 +24,13 @@
           #{}
           edges))
 
-;; FIXME: still seeing occasional examples where this fails?
 (defn planar-edge?
   "Check if edge `p`-`q` in `graph` is planar.
 
-  The edge is planar if all intersections with existing edges are at `p` or `q`."
+  The edge is planar iff intersections with existing edges are at `p` or `q`.
+  Takes roughly O(edges) comparisons."
   [graph p q]
-  (every? (fn [[a b]]
-            (let [isec (isec/segment-intersect [p q] [a b])]
-              (or (and isec (or (tm/delta= isec p) (tm/delta= isec q)))
-                  true)))
-          (unique-edges (lg/edges graph))))
+  (not-any? (fn [[a b]]
+              (let [isec (isec/segment-intersect [p q] [a b])]
+                (and isec (not (or (tm/delta= isec p) (tm/delta= isec q))))))
+            (unique-edges (lg/edges graph))))
