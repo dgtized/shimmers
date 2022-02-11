@@ -3,7 +3,6 @@
    [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
-   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -125,8 +124,7 @@
        (take (* n 1.5))
        (points/minimum-separation (* 0.05 height))
        (take n)
-       cs/all-pairs
-       poly-detect/edges->graph
+       graph/points->graph
        la/prim-mst))
 
 (defn neighbors-with-distance [g n]
