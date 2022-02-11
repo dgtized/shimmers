@@ -12,6 +12,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.graph :as graph]
+   [shimmers.math.points :as points]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -94,15 +95,6 @@
         :else
         [angle (dr/random (* 0.25 radial1) (* 0.85 radial1))]))
 
-(defn minimum-separation
-  "Only keep `points` if closest pair distance is greather than `threshold`."
-  [threshold points]
-  (reduce (fn [accepted p]
-            (if (every? #(> (g/dist p %) threshold) accepted)
-              (conj accepted p)
-              accepted))
-          [] points))
-
 (defn ellipse [center a b dt]
   (-> (for [t (range 0 eq/TAU dt)]
         (gv/vec2 (* a (Math/cos t))
@@ -131,7 +123,7 @@
 (defn polar-graph [arcs n]
   (->> (generate-arc-points arcs)
        (take (* n 1.5))
-       (minimum-separation (* 0.05 height))
+       (points/minimum-separation (* 0.05 height))
        (take n)
        cs/all-pairs
        poly-detect/edges->graph
