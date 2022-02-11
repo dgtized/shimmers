@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
-            [shimmers.math.geometry :as geometry]
+            [shimmers.math.points :as points]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
@@ -25,7 +25,7 @@
                 :p %
                 :theta (- (* 2 Math/PI (rand)) Math/PI)
                 :radius (tm/clamp (+ 0.05 (* 0.02 (q/random-gaussian))) 0 0.5))
-        (geometry/generate-points 24 #(+ 0.5 (* 0.13 (q/random-gaussian)))))})
+        (points/generate 24 #(+ 0.5 (* 0.13 (q/random-gaussian)))))})
 
 (defn sign+
   "Increase magnitude of `n` by `v` without changing sign of `n`"

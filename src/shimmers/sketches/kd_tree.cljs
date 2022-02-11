@@ -7,7 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry :as geometry]
+   [shimmers.math.points :as points]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]))
 
@@ -45,7 +45,7 @@
        [[2 3] [5 4] [9 6] [4 7] [8 1] [7 2]]))
 
 (defn init-state []
-  {:source (->> (geometry/generate-points 96 dr/random)
+  {:source (->> (points/generate 96 dr/random)
                 (mapv cq/rel-vec)
                 (map (partial map int))
                 (mapv gv/vec2))

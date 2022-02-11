@@ -14,7 +14,8 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.delaunay :as delaunay]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.math.points :as points]))
 
 ;; More references: https://www.youtube.com/watch?v=ysLCuqcyJZA
 (defonce defo (debug/state))
@@ -68,13 +69,13 @@
       (intercept-point a b))))
 
 (comment
-  (let [points (geometry/generate-points 5 rand)
+  (let [points (points/generate 5 rand)
         triangles (delaunay/triangulate points)
         neighborhood (neighboring-triangles triangles)
         vertex (first points)]
     [vertex (neighboring-vertices neighborhood vertex)])
 
-  (let [points (geometry/generate-points 8 rand)
+  (let [points (points/generate 8 rand)
         triangles (delaunay/triangulate points)
         neighborhood (neighboring-triangles triangles)
         vertex (first points)]
@@ -96,7 +97,7 @@
 
 (defn setup []
   (q/no-loop)
-  (let [points (geometry/generate-points 8 #(q/random 0.15 0.85))]
+  (let [points (points/generate 8 #(q/random 0.15 0.85))]
     {:points points
      ;; FIXME sometimes triangulation is not convex, suggesting not actually on hull?
      ;; maybe a problem with the triangulation function here?

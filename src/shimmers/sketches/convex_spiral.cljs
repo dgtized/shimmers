@@ -4,7 +4,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.geometry :as geometry]
+            [shimmers.math.points :as points]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.polygon :as gp]))
 
@@ -35,7 +35,7 @@
 
 (defn setup []
   (q/no-loop)
-  {:points (geometry/generate-points 64 #(q/random 0.15 0.85))})
+  {:points (points/generate 64 #(q/random 0.15 0.85))})
 
 (defn draw [{:keys [points]}]
   (q/background 255)

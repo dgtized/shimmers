@@ -14,12 +14,6 @@
             [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
 
-(defn generate-points
-  "Generate point 2d points in space"
-  ([n dist]
-   (generate-points n dist dist))
-  ([n dist-x dist-y] (repeatedly n #(gv/vec2 (dist-x) (dist-y)))))
-
 ;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
 (defn random-point-in-circle
   ([c] (random-point-in-circle c tm/random))
