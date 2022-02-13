@@ -100,7 +100,14 @@
       (for [s (g/subdivide bounds {:rows (dr/random-int 2 6) :cols (dr/random-int 3 5)})]
         (knob (g/centroid s) (* 0.08 min-edge) (dr/random)))
       :vu-meter
-      [(vu-meter (g/centroid bounds) (* 0.45 min-edge) (dr/random))]
+      (for [{[w1 h1] :size :as s}
+            (g/subdivide bounds (cond (> w (* 2 h))
+                                      {:rows 1 :cols (dr/random-int 2 4)}
+                                      (> h (* 3 w))
+                                      {:rows (dr/random-int 2 4) :cols 1}
+                                      :else
+                                      {:rows 1 :cols 1}))]
+        (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random)))
       :circles
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
         (gc/circle (g/centroid s) (* 0.12 min-edge))))))
