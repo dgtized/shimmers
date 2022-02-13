@@ -20,8 +20,28 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn vu-meter [center r pct]
+  (let [p (tm/+ center (gv/vec2 0 (* 0.25 r)))
+        t0 (* (/ 7 6) Math/PI)
+        t1 (* (/ 11 6) Math/PI)
+        inner (* 0.75 r)
+        upper (* 0.9 r)
+        lower (* 0.8 r)
+        theta (tm/mix* t0 t1 pct)]
+    (svg/group {}
+               (csvg/path [[:M (tm/+ p (v/polar r t0))]
+                           [:A [r r] 0 0 1 (tm/+ p (v/polar r t1))]
+                           [:L (tm/+ p (v/polar inner t1))]
+                           [:A [inner inner] 0 0 0 (tm/+ p (v/polar inner t0))]
+                           [:Z]])
+               (for [t (map #(+ % 0.05) (range t0 t1 0.1))]
+                 (g/translate (gl/line2 (v/polar lower t) (v/polar upper t))
+                              p))
+               (gl/line2 (tm/+ p (v/polar (* 0.5 r) theta))
+                         (tm/+ p (v/polar (* 0.95 r) theta))))))
+
 (defn knob [p r theta]
-  (svg/group {:fill "none"}
+  (svg/group {}
              (gc/circle p r)
              (gl/line2 p (tm/+ p (v/polar r theta)))))
 
@@ -41,7 +61,7 @@
             (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
               (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
                       (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random 0 Math/PI)))
-                    (gc/circle (g/centroid t) (* 0.45 (g/height t)))))
+                    (vu-meter (g/centroid t) (* 0.45 (g/height t)) (dr/random))))
             (for [s (g/subdivide c {:rows 4 :cols 2})]
               (gc/circle (g/centroid s) (* 0.12 (g/width c)))))))
 
@@ -49,7 +69,7 @@
   (csvg/svg {:width width
              :height height
              :stroke "black"
-             :fill "white"
+             :fill "none"
              :stroke-width 0.75}
             (apply list (shapes))))
 
