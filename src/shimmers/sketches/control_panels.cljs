@@ -57,10 +57,20 @@
                                      (tm/+ center (gv/vec2 (+ r) (* -0.0 r))))
                  {:rx 10}))))
 
-(defn knob [p r theta]
-  (svg/group {}
-             (gc/circle p r)
-             (gl/line2 p (tm/+ p (v/polar r theta)))))
+(defn knob [p r pct]
+  (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
+        theta (mapper pct)
+        w 0.08]
+    (svg/group {}
+               (gc/circle p (* 0.9 r))
+               (for [t (range 0 1 0.1)]
+                 (gl/line2 (tm/+ p (v/polar (* 0.90 r) (mapper t)))
+                           (tm/+ p (v/polar (* 1 r) (mapper t)))))
+               (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
+                                         (gv/vec2 (* 1.025 r) (* w r)))
+                              (g/rotate theta)
+                              (g/translate p))
+                 {:rx 10 :fill "white"}))))
 
 (defn shapes []
   (let [{p :p :as bounds} (g/scale-size (rect/rect 0 0 width height) 0.975)
@@ -77,7 +87,7 @@
               (vertical-slider s (dr/random)))
             (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
               (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
-                      (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random 0 Math/PI)))
+                      (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random)))
                     (vu-meter (g/centroid t) (* 0.45 (g/height t)) (dr/random))))
             (for [s (g/subdivide c {:rows 4 :cols 2})]
               (gc/circle (g/centroid s) (* 0.12 (g/width c)))))))
