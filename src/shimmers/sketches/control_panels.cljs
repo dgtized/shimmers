@@ -75,10 +75,15 @@
 (defn divide-panels [bounds depth]
   (if (>= depth 2)
     [bounds]
-    (let [divisions {(fn [b] [(gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) (square/row-major b)]) 1
-                     (fn [b] [(gv/vec2 0.4 0.0) (gv/vec2 1.0 0.5) (square/row-major b)]) 1
-                     (fn [b] [(gv/vec2 0.0 0.0) (gv/vec2 0.6 0.5) (square/row-major b)]) 1
-                     (fn [b] [(gv/vec2 0.0 0.0) (gv/vec2 0.5 0.3) (square/row-major b)]) 1}]
+    (let [div (fn [p q]
+                (fn [b]
+                  [(gv/vec2 p) (gv/vec2 q) (if (dr/chance 0.2)
+                                             (dr/rand-nth [:clockwise :counter-clockwise :all])
+                                             (square/row-major b))]))
+          divisions {(div [0.3 0.0] [0.7 1.0]) 1
+                     (div [0.4 0.0] [1.0 0.5]) 1
+                     (div [0.0 0.0] [0.6 0.5]) 1
+                     (div [0.0 0.0] [0.5 0.3]) 1}]
       (mapcat (fn [s] (divide-panels s (+ depth (dr/weighted {1 1
                                                              2 4}))))
               (apply square/punch-out-relative bounds ((dr/weighted divisions) bounds))))))
