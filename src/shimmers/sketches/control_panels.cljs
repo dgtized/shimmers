@@ -91,17 +91,17 @@
                  {:rx 10 :fill "white"}))))
 
 (defn divide-panels [{[w h] :size :as bounds}]
-  (let [min-edge (min w h)
-        ratio (/ min-edge (min width height))]
-    (if-not (dr/chance (if (< ratio 0.25) 0
-                           ratio))
+  (let [area-ratio (/ (g/area bounds) (g/area screen))]
+    (if (dr/chance (cond (< area-ratio 0.1) 1
+                         (> area-ratio 0.8) 0
+                         :else (- 1.0 area-ratio)))
       [bounds]
       (let [div (fn [p q]
                   (fn [b]
                     [(gv/vec2 p) (gv/vec2 q) (if (dr/chance 0.2)
                                                (dr/rand-nth [:clockwise :counter-clockwise :all])
                                                (square/row-major b))]))
-            divisions {(div [0.3 0.0] [0.7 1.0]) 1
+            divisions {(div [0.3 0.0] [0.7 1.0]) (if (> w h) 1 0)
                        (div [0.4 0.0] [1.0 0.5]) 1
                        (div [0.0 0.0] [0.6 0.5]) 1
                        (div [0.0 0.0] [0.5 0.3]) 1}]
