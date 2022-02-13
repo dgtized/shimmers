@@ -3,18 +3,27 @@
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.circle :as gc]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+(defn knob [p r theta]
+  (svg/group {:fill "none"}
+             (gc/circle p r)
+             (gl/line2 p (tm/+ p (v/polar r theta)))))
 
 (defn shapes []
   (let [{p :p :as bounds} (g/scale-size (rect/rect 0 0 width height) 0.975)
@@ -31,7 +40,7 @@
               (gc/circle (g/centroid s) (* 0.15 (g/width a))))
             (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
               (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
-                      (gc/circle (g/centroid s) (* 0.08 (g/width c))))
+                      (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random 0 Math/PI)))
                     (gc/circle (g/centroid t) (* 0.45 (g/height t)))))
             (for [s (g/subdivide c {:rows 4 :cols 2})]
               (gc/circle (g/centroid s) (* 0.12 (g/width c)))))))
