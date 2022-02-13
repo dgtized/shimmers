@@ -73,15 +73,9 @@
                  {:rx 10 :fill "white"}))))
 
 (defn shapes []
-  (let [{p :p :as bounds} (g/scale-size (rect/rect 0 0 width height) 0.975)
-        inner (rect/rect (g/unmap-point bounds (gv/vec2 0.3 0.0))
-                         (g/unmap-point bounds (gv/vec2 0.7 1.0)))
-        panes (square/surrounding-panes bounds (g/translate inner (tm/- p)) :column)
+  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
         [a c b] (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
-                      (conj (->> panes
-                                 (filter square/has-area?)
-                                 (mapv (fn [s] (g/translate s p))))
-                            inner))]
+                      (square/punch-out-relative bounds (gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) :column))]
     (concat [a b c]
             (for [s (g/subdivide a {:rows 1 :cols 3})]
               (vertical-slider s (dr/random)))

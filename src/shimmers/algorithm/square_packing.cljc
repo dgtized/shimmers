@@ -99,6 +99,19 @@
          square (* (min w h) ratio)]
      (filter has-area? (split-panes rectangle square percent split)))))
 
+;; TODO: rename method for clarity
+(defn punch-out-relative
+  "Given a rectangle bounds, punch out a relative coordinate pane from upper left
+  to lower right and return all the panes inside of the original bounds
+  translated into world coordinates."
+  [{p :p :as bounds} ul lr mode]
+  (let [inner (rect/rect (g/unmap-point bounds ul)
+                         (g/unmap-point bounds lr))
+        panes (surrounding-panes bounds (g/translate inner (tm/- p)) mode)]
+    (conj (->> panes (filter has-area?)
+               (mapv (fn [s] (g/translate s p))))
+          inner)))
+
 ;; TODO: re-use to implement g/IAlign align-with? However, this is doing alignmnet
 ;; on the axis aligned bounds, perhaps align-with was supposed to allow
 ;; alignment to a particular edge?
