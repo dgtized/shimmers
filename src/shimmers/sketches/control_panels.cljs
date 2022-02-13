@@ -20,6 +20,19 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn vertical-slider [rect pct]
+  (let [slider0 (g/scale-size rect 0.9)
+        slider (rect/rect (g/unmap-point slider0 (gv/vec2 0.15 0))
+                          (g/unmap-point slider0 (gv/vec2 0.85 1)))
+        inner (g/scale-size slider 0.95)]
+    (svg/group {}
+               slider
+               (for [t (range 0 1 0.1)]
+                 (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
+                           (g/unmap-point slider (gv/vec2 0.1 t))))
+               (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct 0.01)))
+                          (g/unmap-point inner (gv/vec2 0.9 (+ pct 0.01)))))))
+
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.25 r)))
         t0 (* (/ 7 6) Math/PI)
@@ -56,8 +69,8 @@
                                  (mapv (fn [s] (g/translate s p))))
                             inner))]
     (concat [a b c]
-            (for [s (g/subdivide a {:rows 5 :cols 1})]
-              (gc/circle (g/centroid s) (* 0.15 (g/width a))))
+            (for [s (g/subdivide a {:rows 1 :cols 3})]
+              (vertical-slider s (dr/random)))
             (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
               (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
                       (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random 0 Math/PI)))
