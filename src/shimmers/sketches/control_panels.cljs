@@ -51,7 +51,11 @@
                  (g/translate (gl/line2 (v/polar lower t) (v/polar upper t))
                               p))
                (gl/line2 (tm/+ p (v/polar (* 0.5 r) theta))
-                         (tm/+ p (v/polar (* 0.95 r) theta))))))
+                         (tm/+ p (v/polar (* 0.95 r) theta)))
+               ;; bounding box
+               (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.9 r)))
+                                     (tm/+ center (gv/vec2 (+ r) (* -0.0 r))))
+                 {:rx 10}))))
 
 (defn knob [p r theta]
   (svg/group {}
