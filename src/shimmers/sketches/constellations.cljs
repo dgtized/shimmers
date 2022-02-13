@@ -302,7 +302,6 @@
                   specify-density)]
     (swap! defo assoc
            :planets (count (lg/nodes graph))
-           :unique-edges (count (graph/unique-edges (lg/edges graph)))
            :arcs (count arcs))
     (concat (plot-planets graph)
             (plot-midpoints graph)
