@@ -69,6 +69,11 @@
                  (gl/line2 (g/unmap-point rect (gv/vec2 0.025 t))
                            (g/unmap-point rect (gv/vec2 0.975 t)))))))
 
+(defn plug [p r]
+  (svg/group {}
+             (gc/circle p (* 0.75 r))
+             (gc/circle p r)))
+
 (defn knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
@@ -108,6 +113,7 @@
         mode (dr/weighted {:sliders 1
                            :vu-meter 1
                            :knobs 2
+                           :plugs 1
                            :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                                   (> ratio 0.2)) 1 0.0)
                            :circles 0.5
@@ -136,6 +142,10 @@
         (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random)))
       :oscilliscope
       (oscilliscope (g/centroid bounds) (* 0.45 min-edge))
+      :plugs
+      (let [size (* 0.05 (min width height))]
+        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+          (plug (g/centroid s) (* 0.3 size))))
       :circles
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
         (gc/circle (g/centroid s) (* 0.12 min-edge))))))
