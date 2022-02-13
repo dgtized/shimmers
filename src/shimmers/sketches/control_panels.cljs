@@ -72,11 +72,16 @@
                               (g/translate p))
                  {:rx 10 :fill "white"}))))
 
-(defn divide-panels [bounds height]
-  (if (= height 0)
+(defn divide-panels [bounds depth]
+  (if (>= depth 2)
     [bounds]
-    (mapcat (fn [s] (divide-panels s (dec height)))
-            ((dr/weighted {(fn [] (square/punch-out-relative bounds (gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) :column)) 1})))))
+    (let [divisions {(fn [b] [(gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) (square/row-major b)]) 1
+                     (fn [b] [(gv/vec2 0.4 0.0) (gv/vec2 1.0 0.5) (square/row-major b)]) 1
+                     (fn [b] [(gv/vec2 0.0 0.0) (gv/vec2 0.6 0.5) (square/row-major b)]) 1
+                     (fn [b] [(gv/vec2 0.0 0.0) (gv/vec2 0.5 0.3) (square/row-major b)]) 1}]
+      (mapcat (fn [s] (divide-panels s (+ depth (dr/weighted {1 1
+                                                             2 4}))))
+              (apply square/punch-out-relative bounds ((dr/weighted divisions) bounds))))))
 
 (defn assign-pane [depth {[w h] :size :as bounds}]
   (let [mode (dr/weighted {:sliders 1
@@ -114,7 +119,7 @@
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
         panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
-                     (divide-panels bounds 1))]
+                     (divide-panels bounds 0))]
     (concat panels (mapcat (partial assign-pane 1) panels))))
 
 (defn scene []
