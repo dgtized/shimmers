@@ -72,19 +72,37 @@
                               (g/translate p))
                  {:rx 10 :fill "white"}))))
 
+(defn divide-panels [bounds height]
+  (if (= height 0)
+    [bounds]
+    (mapcat (fn [s] (divide-panels s (dec height)))
+            ((dr/weighted {(fn [] (square/punch-out-relative bounds (gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) :column)) 1})))))
+
+(defn panes [bounds mode n]
+  (case mode
+    :sliders
+    (for [s (g/subdivide bounds {:rows 1 :cols n})]
+      (vertical-slider s (dr/random)))
+    :knobs
+    (for [s (g/subdivide bounds {:rows 3 :cols 4})]
+      (knob (g/centroid s) (* 0.08 (g/width bounds)) (dr/random)))
+    :vu-meter
+    [(vu-meter (g/centroid bounds) (* 0.45 (g/height bounds)) (dr/random))]
+    :circles
+    (for [s (g/subdivide bounds {:rows 4 :cols 2})]
+      (gc/circle (g/centroid s) (* 0.12 (g/width bounds))))))
+
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
-        [a c b] (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
-                      (square/punch-out-relative bounds (gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) :column))]
-    (concat [a b c]
-            (for [s (g/subdivide a {:rows 1 :cols 3})]
-              (vertical-slider s (dr/random)))
+        panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
+                     (divide-panels bounds 1))
+        [a c b] panels]
+    (concat panels
+            (panes a :sliders (dr/random-int 2 5))
             (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
-              (conj (for [s (g/subdivide b {:rows 3 :cols 4})]
-                      (knob (g/centroid s) (* 0.08 (g/width c)) (dr/random)))
-                    (vu-meter (g/centroid t) (* 0.45 (g/height t)) (dr/random))))
-            (for [s (g/subdivide c {:rows 4 :cols 2})]
-              (gc/circle (g/centroid s) (* 0.12 (g/width c)))))))
+              (concat (panes t :vu-meter 0)
+                      (panes b :knobs 0)))
+            (panes c :circles 0))))
 
 (defn scene []
   (csvg/svg {:width width
