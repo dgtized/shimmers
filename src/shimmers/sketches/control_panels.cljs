@@ -101,12 +101,11 @@
         (knob (g/centroid s) (* 0.08 min-edge) (dr/random)))
       :vu-meter
       (for [{[w1 h1] :size :as s}
-            (g/subdivide bounds (cond (> w (* 2 h))
-                                      {:rows 1 :cols (dr/random-int 2 4)}
-                                      (> h (* 3 w))
-                                      {:rows (dr/random-int 2 4) :cols 1}
-                                      :else
-                                      {:rows 1 :cols 1}))]
+            (let [n (dr/random-int 2 4)
+                  opts (cond (> w (* 2 h)) {:rows 1 :cols n}
+                             (> h (* 2 w)) {:rows n :cols 1}
+                             :else {:rows 1 :cols 1})]
+              (g/subdivide bounds opts))]
         (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random)))
       :circles
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
