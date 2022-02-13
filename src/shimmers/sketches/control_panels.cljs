@@ -111,17 +111,17 @@
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
-        mode (dr/weighted {:sliders 1
-                           :vu-meter 1
-                           :knobs 2
-                           :plugs (if (< area-ratio 0.1)
-                                    0.8
-                                    0)
-                           :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
-                                                  (> area-ratio 0.2)) 1 0.0)
-                           :circles 0.5
-                           :subdivide (if (< area-ratio 0.1) 0 area-ratio)})]
-    (case mode
+        weights {:sliders 1
+                 :vu-meter 1
+                 :knobs 2
+                 :plugs (if (< area-ratio 0.1)
+                          0.8
+                          0)
+                 :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
+                                        (> area-ratio 0.2)) 1 0.0)
+                 :circles 0.5
+                 :subdivide (if (< area-ratio 0.1) 0 area-ratio)}]
+    (case (dr/weighted weights)
       :subdivide
       (mapcat assign-pane
               (let [splits (dr/weighted {2 2
