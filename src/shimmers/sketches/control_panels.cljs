@@ -17,6 +17,7 @@
 
 (def width 800)
 (def height 600)
+(def screen (rect/rect 0 0 width height))
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -109,15 +110,17 @@
 
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
-        ratio (/ min-edge (min width height))
+        area-ratio (/ (g/area bounds) (g/area screen))
         mode (dr/weighted {:sliders 1
                            :vu-meter 1
                            :knobs 2
-                           :plugs 1
+                           :plugs (if (< area-ratio 0.1)
+                                    0.8
+                                    0)
                            :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
-                                                  (> ratio 0.2)) 1 0.0)
+                                                  (> area-ratio 0.2)) 1 0.0)
                            :circles 0.5
-                           :subdivide (if (< ratio 0.1) 0 ratio)})]
+                           :subdivide (if (< area-ratio 0.1) 0 area-ratio)})]
     (case mode
       :subdivide
       (mapcat assign-pane
@@ -151,7 +154,7 @@
         (gc/circle (g/centroid s) (* 0.12 min-edge))))))
 
 (defn shapes []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
+  (let [bounds (g/scale-size screen 0.975)
         panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
                      (divide-panels bounds))]
     (concat panels (mapcat assign-pane panels))))
