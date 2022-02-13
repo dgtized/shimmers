@@ -72,32 +72,35 @@
                               (g/translate p))
                  {:rx 10 :fill "white"}))))
 
-(defn divide-panels [bounds depth]
-  (if (>= depth 2)
-    [bounds]
-    (let [div (fn [p q]
-                (fn [b]
-                  [(gv/vec2 p) (gv/vec2 q) (if (dr/chance 0.2)
-                                             (dr/rand-nth [:clockwise :counter-clockwise :all])
-                                             (square/row-major b))]))
-          divisions {(div [0.3 0.0] [0.7 1.0]) 1
-                     (div [0.4 0.0] [1.0 0.5]) 1
-                     (div [0.0 0.0] [0.6 0.5]) 1
-                     (div [0.0 0.0] [0.5 0.3]) 1}]
-      (mapcat (fn [s] (divide-panels s (+ depth (dr/weighted {1 1
-                                                             2 4}))))
-              (apply square/punch-out-relative bounds ((dr/weighted divisions) bounds))))))
+(defn divide-panels [{[w h] :size :as bounds}]
+  (let [min-edge (min w h)
+        ratio (/ min-edge (min width height))]
+    (if-not (dr/chance (if (< ratio 0.25) 0
+                           ratio))
+      [bounds]
+      (let [div (fn [p q]
+                  (fn [b]
+                    [(gv/vec2 p) (gv/vec2 q) (if (dr/chance 0.2)
+                                               (dr/rand-nth [:clockwise :counter-clockwise :all])
+                                               (square/row-major b))]))
+            divisions {(div [0.3 0.0] [0.7 1.0]) 1
+                       (div [0.4 0.0] [1.0 0.5]) 1
+                       (div [0.0 0.0] [0.6 0.5]) 1
+                       (div [0.0 0.0] [0.5 0.3]) 1}]
+        (mapcat (fn [s] (divide-panels s))
+                (apply square/punch-out-relative bounds ((dr/weighted divisions) bounds)))))))
 
-(defn assign-pane [depth {[w h] :size :as bounds}]
-  (let [mode (dr/weighted {:sliders 1
+(defn assign-pane [{[w h] :size :as bounds}]
+  (let [min-edge (min w h)
+        ratio (/ min-edge (min width height))
+        mode (dr/weighted {:sliders 1
                            :vu-meter 1
-                           :knobs 1
+                           :knobs 2
                            :circles 0.5
-                           :subdivide (* 3 (/ 1 depth))})
-        min-edge (min w h)]
+                           :subdivide (if (< ratio 0.1) 0 ratio)})]
     (case mode
       :subdivide
-      (mapcat (partial assign-pane (inc depth))
+      (mapcat assign-pane
               (let [splits (dr/weighted {2 2
                                          3 1})]
                 (if (> w h)
@@ -124,8 +127,8 @@
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
         panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
-                     (divide-panels bounds 0))]
-    (concat panels (mapcat (partial assign-pane 1) panels))))
+                     (divide-panels bounds))]
+    (concat panels (mapcat assign-pane panels))))
 
 (defn scene []
   (csvg/svg {:width width
