@@ -34,7 +34,7 @@
                           (g/unmap-point inner (gv/vec2 0.9 (+ pct 0.01)))))))
 
 (defn vu-meter [center r pct]
-  (let [p (tm/+ center (gv/vec2 0 (* 0.25 r)))
+  (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
         t0 (* (/ 7 6) Math/PI)
         t1 (* (/ 11 6) Math/PI)
         inner (* 0.75 r)
@@ -53,8 +53,8 @@
                (gl/line2 (tm/+ p (v/polar (* 0.5 r) theta))
                          (tm/+ p (v/polar (* 0.95 r) theta)))
                ;; bounding box
-               (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.9 r)))
-                                     (tm/+ center (gv/vec2 (+ r) (* -0.0 r))))
+               (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.5 r)))
+                                     (tm/+ center (gv/vec2 (+ r) (* 0.5 r))))
                  {:rx 10}))))
 
 (defn knob [p r pct]
@@ -78,31 +78,38 @@
     (mapcat (fn [s] (divide-panels s (dec height)))
             ((dr/weighted {(fn [] (square/punch-out-relative bounds (gv/vec2 0.3 0.0) (gv/vec2 0.7 1.0) :column)) 1})))))
 
-(defn panes [bounds mode n]
-  (case mode
-    :sliders
-    (for [s (g/subdivide bounds {:rows 1 :cols n})]
-      (vertical-slider s (dr/random)))
-    :knobs
-    (for [s (g/subdivide bounds {:rows 3 :cols 4})]
-      (knob (g/centroid s) (* 0.08 (g/width bounds)) (dr/random)))
-    :vu-meter
-    [(vu-meter (g/centroid bounds) (* 0.45 (g/height bounds)) (dr/random))]
-    :circles
-    (for [s (g/subdivide bounds {:rows 4 :cols 2})]
-      (gc/circle (g/centroid s) (* 0.12 (g/width bounds))))))
+(defn assign-pane [depth {[w h] :size :as bounds}]
+  (let [mode (dr/weighted {:sliders 1
+                           :vu-meter 1
+                           :knobs 1
+                           :circles 0.5
+                           :subdivide (* 3 (/ 1 depth))})
+        min-edge (min w h)]
+    (case mode
+      :subdivide
+      (mapcat (partial assign-pane (inc depth))
+              (let [splits (dr/weighted {2 2
+                                         3 1})]
+                (if (> w h)
+                  (g/subdivide bounds {:rows 1 :cols splits})
+                  (g/subdivide bounds {:rows splits :cols 1}))))
+      :sliders
+      (for [s (g/subdivide bounds {:rows 1 :cols (dr/random-int 2 5)})]
+        (vertical-slider s (dr/random)))
+      :knobs
+      (for [s (g/subdivide bounds {:rows (dr/random-int 2 6) :cols (dr/random-int 3 5)})]
+        (knob (g/centroid s) (* 0.08 min-edge) (dr/random)))
+      :vu-meter
+      [(vu-meter (g/centroid bounds) (* 0.45 min-edge) (dr/random))]
+      :circles
+      (for [s (g/subdivide bounds {:rows 4 :cols 2})]
+        (gc/circle (g/centroid s) (* 0.12 min-edge))))))
 
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.975)
         panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
-                     (divide-panels bounds 1))
-        [a c b] panels]
-    (concat panels
-            (panes a :sliders (dr/random-int 2 5))
-            (let [[t b] (g/subdivide b {:rows 2 :cols 1})]
-              (concat (panes t :vu-meter 0)
-                      (panes b :knobs 0)))
-            (panes c :circles 0))))
+                     (divide-panels bounds 1))]
+    (concat panels (mapcat (partial assign-pane 1) panels))))
 
 (defn scene []
   (csvg/svg {:width width
