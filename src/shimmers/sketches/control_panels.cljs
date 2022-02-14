@@ -159,7 +159,7 @@
 
 (defn shapes []
   (let [bounds (g/scale-size screen 0.975)
-        panels (mapv (fn [s] (with-meta (g/scale-size s 0.95) {:rx 10}))
+        panels (mapv (fn [s] (with-meta (g/scale-size s 0.98) {:rx 10}))
                      (divide-panels bounds))]
     (concat panels (mapcat assign-pane panels))))
 
