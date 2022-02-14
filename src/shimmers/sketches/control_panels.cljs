@@ -91,10 +91,11 @@
                  {:rx 10 :fill "white"}))))
 
 (defn divide-panels [{[w h] :size :as bounds}]
-  (let [area-ratio (/ (g/area bounds) (g/area screen))]
-    (if (dr/chance (cond (< area-ratio 0.1) 1
-                         (> area-ratio 0.8) 0
-                         :else (- 1.0 area-ratio)))
+  (let [area-ratio (/ (g/area bounds) (g/area screen))
+        p-done (cond (< area-ratio 0.1) 1
+                     (> area-ratio 0.65) 0
+                     :else (- 1.0 area-ratio))]
+    (if (dr/chance p-done)
       [bounds]
       (let [div
             (fn [p q]
