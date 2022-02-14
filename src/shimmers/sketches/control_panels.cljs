@@ -10,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -157,9 +158,16 @@
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
         (gc/circle (g/centroid s) (* 0.12 min-edge))))))
 
+(defn inset-rectangle [rect amount]
+  (-> rect
+      g/vertices
+      (gp/inset-polygon amount)
+      gp/polygon2
+      g/bounds))
+
 (defn shapes []
   (let [bounds (g/scale-size screen 0.975)
-        panels (mapv (fn [s] (with-meta (g/scale-size s 0.98) {:rx 10}))
+        panels (mapv (fn [s] (with-meta (inset-rectangle s -3) {:rx 10}))
                      (divide-panels bounds))]
     (concat panels (mapcat assign-pane panels))))
 
