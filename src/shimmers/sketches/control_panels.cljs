@@ -96,17 +96,20 @@
                          (> area-ratio 0.8) 0
                          :else (- 1.0 area-ratio)))
       [bounds]
-      (let [div (fn [p q]
-                  (fn [b]
-                    [(gv/vec2 p) (gv/vec2 q) (if (dr/chance 0.2)
-                                               (dr/rand-nth [:clockwise :counter-clockwise :all])
-                                               (square/row-major b))]))
+      (let [div
+            (fn [p q]
+              (fn [b]
+                [(gv/vec2 p) (gv/vec2 q)
+                 (if (dr/chance 0.2)
+                   (dr/rand-nth [:clockwise :counter-clockwise :all])
+                   (square/row-major b))]))
             divisions {(div [0.3 0.0] [0.7 1.0]) (if (> w h) 1 0)
                        (div [0.4 0.0] [1.0 0.5]) 1
                        (div [0.0 0.0] [0.6 0.5]) 1
-                       (div [0.0 0.0] [0.5 0.3]) 1}]
+                       (div [0.0 0.0] [0.5 0.3]) 1}
+            region ((dr/weighted divisions) bounds)]
         (mapcat (fn [s] (divide-panels s))
-                (apply square/punch-out-relative bounds ((dr/weighted divisions) bounds)))))))
+                (apply square/punch-out-relative bounds region))))))
 
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
