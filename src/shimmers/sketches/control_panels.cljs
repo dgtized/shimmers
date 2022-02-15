@@ -22,6 +22,13 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn relative-polar-vector
+  "Translate from a point `p` with angle `theta` over distance `radius`."
+  [p radius theta]
+  (tm/+ p (v/polar radius theta)))
+
+(def rpv relative-polar-vector)
+
 (defn vertical-slider [rect pct]
   (let [slider0 (g/scale-size rect 0.9)
         slider (rect/rect (g/unmap-point slider0 (gv/vec2 0.15 0))
@@ -44,16 +51,15 @@
         lower (* 0.8 r)
         theta (tm/mix* t0 t1 pct)]
     (svg/group {}
-               (csvg/path [[:M (tm/+ p (v/polar r t0))]
-                           [:A [r r] 0 0 1 (tm/+ p (v/polar r t1))]
-                           [:L (tm/+ p (v/polar inner t1))]
-                           [:A [inner inner] 0 0 0 (tm/+ p (v/polar inner t0))]
+               (csvg/path [[:M (rpv p r t0)]
+                           [:A [r r] 0 0 1 (rpv p r t1)]
+                           [:L (rpv p inner t1)]
+                           [:A [inner inner] 0 0 0 (rpv p inner t0)]
                            [:Z]])
                (for [t (map #(+ % 0.05) (range t0 t1 0.1))]
-                 (g/translate (gl/line2 (v/polar lower t) (v/polar upper t))
-                              p))
-               (gl/line2 (tm/+ p (v/polar (* 0.5 r) theta))
-                         (tm/+ p (v/polar (* 0.95 r) theta)))
+                 (gl/line2 (rpv p lower t) (rpv p upper t)))
+               (gl/line2 (rpv p (* 0.5 r) theta)
+                         (rpv p (* 0.95 r) theta))
                ;; bounding box
                (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.5 r)))
                                      (tm/+ center (gv/vec2 (+ r) (* 0.5 r))))
@@ -83,8 +89,8 @@
     (svg/group {}
                (gc/circle p (* 0.9 r))
                (for [t (range 0 1 0.1)]
-                 (gl/line2 (tm/+ p (v/polar (* 0.90 r) (mapper t)))
-                           (tm/+ p (v/polar (* 1 r) (mapper t)))))
+                 (gl/line2 (rpv p (* 0.90 r) (mapper t))
+                           (rpv p (* 1.00 r) (mapper t))))
                (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
                                          (gv/vec2 (* 1.025 r) (* w r)))
                               (g/rotate theta)
