@@ -125,7 +125,6 @@
          (var-range 2)
          (var-range 5))
 
-
 ;; tm/norm-range but with random offsets and an uncertain number of samples
 (defn density-range
   "Generate an ordered range of values from [0..1] with minimum spacing

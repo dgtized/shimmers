@@ -230,7 +230,9 @@
                 (dr/random 1 1.15)
                 (dr/random 1.15 1.3)
                 0.1
-                (dr/var-range n))))
+                (if (dr/chance 0.5)
+                  (dr/density-range 0.008 0.08)
+                  (dr/var-range n)))))
 
 ;; TODO: assign high density as an attribute to k elements before building?
 (defn plot-planets [graph]
