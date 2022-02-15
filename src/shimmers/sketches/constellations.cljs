@@ -289,8 +289,10 @@
 
 (defn planet-graph [bounds]
   (let [n (dr/weighted {11 2
-                        17 2
-                        23 2
+                        17 3
+                        19 4
+                        23 5
+                        29 3
                         31 2
                         41 1
                         63 1})
