@@ -142,3 +142,10 @@
          g/tessellate
          (mapv gt/triangle2)
          (triangle/decompose-into (dissoc opts :edge-splits)))))
+
+(defn inset-rectangle [rect amount]
+  (-> rect
+      g/vertices
+      (gp/inset-polygon amount)
+      gp/polygon2
+      g/bounds))
