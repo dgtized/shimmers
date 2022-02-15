@@ -5,7 +5,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -23,10 +22,11 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn relative-polar-vector
-  "Translate from a point `p` with angle `theta` over distance `radius`."
+  "Translate from a point `p` with distance `radius` along an angle `theta`"
   [p radius theta]
-  (tm/+ p (v/polar radius theta)))
+  (tm/+ p (g/as-cartesian (gv/vec2 radius theta))))
 
+;; Alternative short name might be +pv, as in plus polar vector.
 (def rpv relative-polar-vector)
 
 (defn vertical-slider [rect pct]
