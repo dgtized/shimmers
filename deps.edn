@@ -7,12 +7,12 @@
         ;; raw canvas API
         io.helins/canvas {:mvn/version "2.0.0-beta0"}
 
+        ;; alternative SVG library
+        io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
+
         ;; vectors math and such, kinda weird as it does much of what quil does
         thi.ng/geom {:mvn/version "1.0.0-RC4"}
         thi.ng/shadergraph {:mvn/version "0.3.0"}
-
-        ;; alternative SVG library
-        io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
 
         ;; probability distributions
         kixi/stats {:mvn/version "0.5.4"}
