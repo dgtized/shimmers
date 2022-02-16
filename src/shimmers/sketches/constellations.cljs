@@ -346,14 +346,16 @@
                :stroke-width 0.8}
               (apply list (scene-fn bounds)))))
 
+(defn ui-controls []
+  [:div
+   [ctrl/change-mode ui-state (keys modes)]
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "constellations")]
+   [debug/display defo]])
+
 (sketch/definition constellations
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
   (-> scene
-      (view-sketch/with-controls :constellations
-        (fn [] [:div
-               [ctrl/change-mode ui-state (keys modes)]
-               [kb/kb-action "alt-s" #(svg-export/download "scene" "constellations")]
-               [debug/display defo]]))
+      (view-sketch/with-controls :constellations ui-controls)
       (ctrl/mount "sketch-host")))
