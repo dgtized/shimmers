@@ -336,12 +336,29 @@
   (let [bounds (rect/rect 0 0 width height)
         scene-fn (get modes (:mode @ui-state))]
     (reset! defo {})
-    (csvg/svg {:width width
+    (csvg/svg {:id "scene"
+               :width width
                :height height
                :stroke "black"
                :fill "none"
                :stroke-width 0.8}
               (apply list (scene-fn bounds)))))
+
+;; cribbed from http://bl.ocks.org/curran/7cf9967028259ea032e8
+(defn as-file [svg]
+  (let [svg-as-xml (.serializeToString (js/XMLSerializer.) svg)
+        data-url (str "data:image/svg+xml," (js/encodeURIComponent svg-as-xml))]
+    data-url))
+
+(defn download [id]
+  (fn []
+    (let [el (.getElementById js/document id)
+          data-url (as-file el)
+          link (.createElement js/document "a")]
+      (.appendChild (.-body js/document) link)
+      (.setAttribute link "href" data-url)
+      (.setAttribute link "download" "test.svg")
+      (.click link))))
 
 (sketch/definition constellations
   {:created-at "2022-01-31"
@@ -351,5 +368,7 @@
       (view-sketch/with-controls :constellations
         (fn [] [:div
                [ctrl/change-mode ui-state (keys modes)]
+               #_[:input {:type "button" :value "Download"
+                          :on-click (download "scene")}]
                [debug/display defo]]))
       (ctrl/mount "sketch-host")))
