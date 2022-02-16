@@ -68,7 +68,7 @@
   :test
   {:extra-paths ["test"]
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
-                lambdaisland/kaocha {:mvn/version "1.62.993" :exclusions [com.lambdaisland/glogi]}
+                lambdaisland/kaocha {:mvn/version "1.63.998" :exclusions [com.lambdaisland/glogi]}
                 com.lambdaisland/glogi {:mvn/version "1.1.144"}
                 com.lambdaisland/kaocha-cljs {:mvn/version "1.0.113"}}}}}
 
