@@ -1,4 +1,5 @@
-(ns shimmers.common.svg-export)
+(ns shimmers.common.svg-export
+  "Convert a generated SVG into a file for download using an image data url")
 
 (def svg-header
   "<?xml version=\"1.0\" standalone=\"no\"?>
