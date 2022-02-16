@@ -1,6 +1,7 @@
 (ns shimmers.view.sketch
   (:require [goog.dom :as dom]
             [quil.core :as q]
+            [reagent-keybindings.keyboard :as kb]
             [reagent.dom :as rdom]
             [reitit.frontend.easy :as rfe]
             [shimmers.common.sequence :as cs]
@@ -84,9 +85,14 @@
      [:div.canvas-frame [scene]]
      [:p.center (generate sketch-id)]]))
 
+(defn allow-reload-save-keybindings []
+  (reset! kb/preventing-default-keys []))
+
 (defn with-controls [scene sketch-id controls]
   (fn []
+    (allow-reload-save-keybindings)
     [:div
+     [kb/keyboard-listener]
      [:div.canvas-frame [scene]]
      [:div.explanation
       [:div.flexcols

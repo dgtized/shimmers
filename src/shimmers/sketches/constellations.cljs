@@ -3,6 +3,7 @@
    [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.svg-export :as svg-export]
@@ -353,6 +354,6 @@
       (view-sketch/with-controls :constellations
         (fn [] [:div
                [ctrl/change-mode ui-state (keys modes)]
-               #_[svg-export/button "scene" "constellations"]
+               [kb/kb-action "alt-s" #(svg-export/download "scene" "constellations")]
                [debug/display defo]]))
       (ctrl/mount "sketch-host")))
