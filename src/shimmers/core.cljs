@@ -1,5 +1,6 @@
 (ns shimmers.core
   (:require [goog.dom :as dom]
+            [reagent-keybindings.keyboard :as kb]
             [reagent.core :as r]
             [reagent.dom :as rdom]
             [reitit.coercion.spec :as rss]
@@ -74,11 +75,16 @@
                       (rfc/apply-controllers (:controllers old-match) new-match))
                old-match)))))
 
+(defn allow-reload-save-keybindings []
+  (reset! kb/preventing-default-keys []))
+
 (defn page-root []
   (let [page @match
         view (:view (:data page))]
     (when view
-      [view (:parameters page)])))
+      [:div
+       [kb/keyboard-listener]
+       [view (:parameters page)]])))
 
 (defn init []
   (rfe/start!
@@ -89,6 +95,8 @@
 
   ;; Render at least one frame of the favicon animation at start
   (favicon/favicon)
+
+  (allow-reload-save-keybindings)
 
   ;; (rdom/render [debug/display match] (dom/getElement "route-debug-mount"))
   (rdom/render [page-root] (dom/getElement "shimmer-mount")))
