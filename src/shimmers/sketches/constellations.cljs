@@ -357,5 +357,5 @@
    :type :svg
    :tags #{:deterministic}}
   (-> scene
-      (view-sketch/with-controls :constellations ui-controls)
+      (view-sketch/page-for :constellations ui-controls)
       (ctrl/mount "sketch-host")))

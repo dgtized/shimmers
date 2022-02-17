@@ -116,6 +116,5 @@
    :type :svg
    :tags #{:deterministic}}
   (-> scene
-      (view-sketch/with-controls :curvature-of-space
-        (partial debug/display defo))
+      (view-sketch/page-for :curvature-of-space (partial debug/display defo))
       (ctrl/mount "sketch-host")))
