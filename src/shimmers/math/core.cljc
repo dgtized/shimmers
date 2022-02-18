@@ -97,6 +97,11 @@
                    (cons n (lazy-seq (this (+ n 2)))))))
              3)))
 
+(defn primes-between [a b]
+  (->> primes
+       (drop-while #(>= % a))
+       (take-while #(< % b))))
+
 (comment
   (take 10 primes)
-  (->> primes (drop-while #(> % 10)) (take-while #(< % 50))))
+  (primes-between 10 50))
