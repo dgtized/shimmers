@@ -86,3 +86,17 @@
   (/ (tm/abs-diff a b)
      (max a b)))
 
+;; cribbed from http://clj-me.cgrand.net/2008/06/07/primes/
+;; and updated to use lazy-seq
+(def primes
+  (lazy-cat [2]
+            ((fn this [n]
+               (let [potential-divisors (take-while #(<= (* % %) n) primes)]
+                 (if (some #(zero? (rem n %)) (rest potential-divisors))
+                   (recur (+ n 2))
+                   (cons n (lazy-seq (this (+ n 2)))))))
+             3)))
+
+(comment
+  (take 10 primes)
+  (->> primes (drop-while #(> % 10)) (take-while #(< % 50))))
