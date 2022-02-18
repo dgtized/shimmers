@@ -103,17 +103,20 @@
       gp/polygon2
       (g/translate center)))
 
-;; FIXME: sometimes this looks like it's closing the loop?
+;; FIXME: every once and a while it doesn't fill the space with this?
+;; like only the first couple arcs generate?
 (defn polar-arcs [center bounds a b dt range-offsets]
   (let [v (sort-by #(g/dist center %) (g/vertices bounds))
         r-min (g/dist center (first v))
-        r-max (g/dist center (last v))]
+        r-max (g/dist center (last v))
+        inside? (fn [p] (g/contains-point? (g/scale-size bounds 0.9) p))]
     (for [rt range-offsets
           :let [r (tm/mix* r-min r-max rt)
                 scaled-dt (max (* (- 1 rt) dt) 0.01)
                 points (->> (ellipse center (* a r) (* b r) scaled-dt)
                             :points
-                            (filter (fn [p] (g/contains-point? (g/scale-size bounds 0.9) p))))]
+                            (drop-while (complement inside?))
+                            (take-while inside?))]
           :when (> (count points) 2)]
       (gl/linestrip2 points))))
 
