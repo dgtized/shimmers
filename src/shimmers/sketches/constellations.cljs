@@ -282,12 +282,26 @@
             (filter (fn [{:keys [points]}] (> (count points) 2)) arcs))))
 
 ;; FIXME: sometimes arc segments are looping back to beginning somehow?
+;; though I think that is happening from the arc generation not the plot
+;; TODO: skip over edges in the graph?
 (defn plot-arcs [graph arcs]
-  ;; randomize dasharray?
-  (for [arc (filtered-arcs graph arcs)]
-    (->> {:stroke-dasharray "0.1% 0.4% 0.25% 0.4% 0.1% 11%"
-          :stroke-dashoffset (* 0.01 height (dr/rand-nth [-6 -4 0 2 8]))}
-         (with-meta arc))))
+  (let [spacing (/ height 150)]
+    (apply concat
+           (for [arc (filtered-arcs graph arcs)
+                 :let [length (/ (tm/mag arc) spacing)
+                       range (tm/norm-range (tm/ceil length))
+                       beat (dr/rand-nth [23 29 31 41])
+                       offset (dr/random-int (tm/ceil (/ beat 2)))]]
+             (for [[i [a b]] (map-indexed vector (partition 2 1 range))
+                   :let [major (= 0 (mod (+ i offset) beat))
+                         leading (= 0 (mod (- (+ i offset) 2) beat))
+                         trailing (= 0 (mod (+ (+ i offset) 2) beat))]
+                   :when (or leading major trailing)]
+               (if major
+                 (gl/linestrip2 (g/point-at arc a)
+                                (g/point-at arc b))
+                 (gl/linestrip2 (g/point-at arc (tm/mix* a b 0.25))
+                                (g/point-at arc (tm/mix* a b 0.75)))))))))
 
 (defn planet-graph [bounds]
   (let [n (dr/weighted {11 2
