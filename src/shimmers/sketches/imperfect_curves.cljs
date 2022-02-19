@@ -2,11 +2,14 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+;; original plan was a perspective drawing of two building faces joined by a curve
 
 (def width 800)
 (def height 600)
@@ -20,7 +23,8 @@
           p)))
 
 (defn shapes []
-  [(gl/linestrip2 (upper-ellipse (rv 0.5 0.5) (* 0.2 width) (* 0.2 height)))])
+  (for [t (dr/var-range 10)]
+    (gl/linestrip2 (upper-ellipse (rv 0.5 0.5) (* t 0.3 width) (* t 0.4 height)))))
 
 (defn scene []
   (csvg/svg {:width width
