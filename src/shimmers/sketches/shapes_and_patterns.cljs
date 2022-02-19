@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -21,9 +22,10 @@
       (gc/circle (rv (+ u (/ r width)) (+ v (/ r height))) r))))
 
 (defn shapes [rows]
-  (let [row-height (/ height rows)]
-    (for [v (tm/norm-range rows)]
-      (gen-row v row-height))))
+  (let [ranges (dr/var-range rows)
+        heights (map - (rest ranges) ranges)]
+    (for [[v gap] (map vector ranges heights)]
+      (gen-row v (* gap height)))))
 
 (defn scene []
   (csvg/svg {:width width
