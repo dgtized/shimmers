@@ -36,13 +36,28 @@
       (g/translate triangle (rv (+ u (* 0.5 (/ base width)))
                                 (+ v (* 0.5 (/ base height))))))))
 
+;; fixme, align the top/bottom of each triangle?
+(defn updown-row [v row-height]
+  (let [base row-height
+        cols (/ width (* 0.8 base))
+        triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
+                                      (gv/vec2 (* -0.8 base) 0.0))
+                     g/center)
+        freq (dr/random-int 2 5)]
+    (for [[idx u] (map-indexed vector (tm/norm-range cols))]
+      (-> triangle
+          (g/rotate (if (zero? (mod idx freq)) (* 0.5 eq/TAU) 0))
+          (g/translate (rv (+ u (* 0.5 (/ base width)))
+                           (+ v (* 0.5 (/ base height)))))))))
+
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)]
     (for [[v gap] (map vector ranges heights)
           :let [row-height (* gap height)]]
       ((dr/weighted {#(circle-row v row-height) 1
-                     #(triangle-row v row-height) 1})))))
+                     #(triangle-row v row-height) 1
+                     #(updown-row v row-height) 1})))))
 
 (defn scene []
   (csvg/svg {:width width
