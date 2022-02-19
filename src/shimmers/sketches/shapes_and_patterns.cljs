@@ -63,9 +63,9 @@
   (csvg/svg {:width width
              :height height
              :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
-            (apply list (shapes 12))))
+             :fill "none"
+             :stroke-width 1.0}
+            (apply list (shapes 17))))
 
 (sketch/definition shapes-and-patterns
   {:created-at "2022-02-19"
