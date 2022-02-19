@@ -3,6 +3,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -25,10 +26,15 @@
 
 (defn triangle-row [v row-height]
   (let [base row-height
-        cols (/ width base)]
+        cols (/ width base)
+        up (dr/chance 0.5)
+        triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
+                                      (gv/vec2 (* -0.8 base) 0.0))
+                     g/center
+                     (g/rotate (if up 0 (* 0.5 eq/TAU))))]
     (for [u (tm/norm-range cols)]
-      (g/translate (gt/equilateral2 (gv/vec2 0.0 0.1) (gv/vec2 (* -0.9 base) 0.1))
-                   (rv u v)))))
+      (g/translate triangle (rv (+ u (* 0.5 (/ base width)))
+                                (+ v (* 0.5 (/ base height))))))))
 
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
