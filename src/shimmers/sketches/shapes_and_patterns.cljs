@@ -20,7 +20,7 @@
 (defn circle-row [v row-height]
   (let [diameter row-height
         cols (/ width diameter)
-        r (* 0.5 diameter)]
+        r (* 0.475 diameter)]
     (for [u (tm/norm-range cols)]
       (gc/circle (rv (+ u (/ r width)) (+ v (/ r height))) r))))
 
