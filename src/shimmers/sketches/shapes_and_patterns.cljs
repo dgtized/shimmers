@@ -8,6 +8,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -50,14 +51,32 @@
           (g/translate (rv (+ u (* 0.5 (/ base width)))
                            (+ v (* 0.5 (/ base height)))))))))
 
+(defn box-row [v row-height]
+  (let [r (* 0.5 row-height)
+        rw (/ r width)
+        rh (/ r height)
+        base (* 0.5 row-height)
+        cols (tm/floor (/ width row-height))
+        square (rect/rect base)]
+    (apply concat
+           (for [u (tm/norm-range cols)]
+             [(g/translate square
+                           (rv (+ u (* 0.25 rw))
+                               (+ v (* 0.25 rh))))
+              (g/translate square
+                           (rv (+ u (* 0.5 rw))
+                               (+ v (* 0.5 rh))))]))))
+
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)]
     (for [[v gap] (map vector ranges heights)
-          :let [row-height (* gap height)]]
+          :let [row-height (* gap height)]
+          :when (> row-height (* 0.02 height))]
       ((dr/weighted {#(circle-row v row-height) 1
                      #(triangle-row v row-height) 1
-                     #(updown-row v row-height) 1})))))
+                     #(updown-row v row-height) 1
+                     #(box-row v row-height) 1})))))
 
 (defn scene []
   (csvg/svg {:width width
