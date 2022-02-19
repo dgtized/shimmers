@@ -19,14 +19,14 @@
 
 (defn circle-row [v row-height]
   (let [diameter row-height
-        cols (/ width diameter)
+        cols (tm/floor (/ width diameter))
         r (* 0.475 diameter)]
     (for [u (tm/norm-range cols)]
       (gc/circle (rv (+ u (/ r width)) (+ v (/ r height))) r))))
 
 (defn triangle-row [v row-height]
   (let [base row-height
-        cols (/ width base)
+        cols (tm/floor (/ width base))
         up (dr/chance 0.5)
         triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
                                       (gv/vec2 (* -0.8 base) 0.0))
@@ -39,7 +39,7 @@
 ;; fixme, align the top/bottom of each triangle?
 (defn updown-row [v row-height]
   (let [base row-height
-        cols (/ width (* 0.8 base))
+        cols (tm/floor (/ width (* 0.8 base)))
         triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
                                       (gv/vec2 (* -0.8 base) 0.0))
                      g/center)
