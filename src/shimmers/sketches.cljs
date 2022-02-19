@@ -122,6 +122,7 @@
             shimmers.sketches.scintillation
             shimmers.sketches.sea-and-sky
             shimmers.sketches.sediment
+            shimmers.sketches.shapes-and-patterns
             shimmers.sketches.shattered
             shimmers.sketches.six-of-one-half-dozen-of-the-other
             shimmers.sketches.slashes
