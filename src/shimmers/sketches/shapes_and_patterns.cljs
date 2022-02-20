@@ -51,10 +51,13 @@
                                        (gv/vec2 0.0 0.0))
                       g/center)
         freq (dr/random-int 2 5)]
-    (for [[idx u] (map-indexed vector (tm/norm-range cols))]
-      (-> (if (zero? (mod idx freq)) triangle1 triangle2)
-          (g/translate (rv (+ u (* 0.5 (/ base width)))
-                           (+ v (* 0.5 (/ base height)))))))))
+    (into (for [[idx u] (map-indexed vector (tm/norm-range cols))]
+            (-> (if (zero? (mod idx freq)) triangle1 triangle2)
+                (g/translate (rv (+ u (* 0.5 (/ base width)))
+                                 (+ v (* 0.5 (/ base height)))))))
+          [(gl/line2 (rv 0.0 v) (rv 1.0 v))
+           (gl/line2 (rv 0.0 (+ v (/ base height)))
+                     (rv 1.0 (+ v (/ base height))))])))
 
 (defn box-row [v row-height]
   (let [r (* 0.5 row-height)
@@ -78,12 +81,10 @@
     (for [[v gap] (map vector ranges heights)
           :let [row-height (* gap height)]
           :when (> row-height (* 0.02 height))]
-      (svg/group {}
-                 #_(gl/line2 (rv 0.0 v) (rv 1.0 v))
-                 ((dr/weighted {#(circle-row v row-height) 1
-                                #(triangle-row v row-height) 1
-                                #(updown-row v row-height) 1
-                                #(box-row v row-height) 1}))))))
+      ((dr/weighted {#(circle-row v row-height) 1
+                     #(triangle-row v row-height) 1
+                     #(updown-row v row-height) 1
+                     #(box-row v row-height) 1})))))
 
 (defn scene []
   (csvg/svg {:width width
