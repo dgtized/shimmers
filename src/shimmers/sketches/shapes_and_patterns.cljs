@@ -80,6 +80,15 @@
         :let [t (/ p row-height)]]
     (gl/line2 (rv 0.0 (+ v t)) (rv 1.0 (+ v t)))))
 
+(defn zig-zag [v row-height]
+  (let [cols (tm/floor (/ width row-height))]
+    (csvg/path (into [[:M (rv 0.0 v)]]
+                     (for [[idx p] (map-indexed vector (tm/norm-range cols))
+                           :let [offset (if (zero? (mod idx 2))
+                                          (/ (* 0.1 row-height) height)
+                                          (/ (* 0.9 row-height) height))]]
+                       [:L (rv p (+ v offset))])))))
+
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)]
@@ -90,7 +99,8 @@
                      #(triangle-row v row-height) 1
                      #(updown-row v row-height) 1
                      #(box-row v row-height) 1
-                     #(rulers v row-height) 1})))))
+                     #(rulers v row-height) 1
+                     #(zig-zag v row-height) 1})))))
 
 (defn scene []
   (csvg/svg {:width width
