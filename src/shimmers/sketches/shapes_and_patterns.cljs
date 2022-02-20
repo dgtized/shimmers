@@ -1,5 +1,6 @@
 (ns shimmers.sketches.shapes-and-patterns
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -10,7 +11,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -75,6 +75,11 @@
                            (rv (+ u (* 0.5 rw))
                                (+ v (* 0.5 rh))))]))))
 
+(defn rulers [v row-height]
+  (for [p (cs/midsection (tm/norm-range (dr/rand-nth [1 2 3 5])))
+        :let [t (/ p row-height)]]
+    (gl/line2 (rv 0.0 (+ v t)) (rv 1.0 (+ v t)))))
+
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)]
@@ -84,7 +89,8 @@
       ((dr/weighted {#(circle-row v row-height) 1
                      #(triangle-row v row-height) 1
                      #(updown-row v row-height) 1
-                     #(box-row v row-height) 1})))))
+                     #(box-row v row-height) 1
+                     #(rulers v row-height) 1})))))
 
 (defn scene []
   (csvg/svg {:width width
