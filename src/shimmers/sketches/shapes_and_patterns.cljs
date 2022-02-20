@@ -43,13 +43,16 @@
 (defn updown-row [v row-height]
   (let [base row-height
         cols (tm/floor (/ width (* 0.8 base)))
-        triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
-                                      (gv/vec2 (* -0.8 base) 0.0))
-                     g/center)
+
+        triangle1 (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
+                                       (gv/vec2 (* -0.8 base) 0.0))
+                      g/center)
+        triangle2 (-> (gt/equilateral2 (gv/vec2 (* -0.8 base) 0.0)
+                                       (gv/vec2 0.0 0.0))
+                      g/center)
         freq (dr/random-int 2 5)]
     (for [[idx u] (map-indexed vector (tm/norm-range cols))]
-      (-> triangle
-          (g/rotate (if (zero? (mod idx freq)) (* 0.5 eq/TAU) 0))
+      (-> (if (zero? (mod idx freq)) triangle1 triangle2)
           (g/translate (rv (+ u (* 0.5 (/ base width)))
                            (+ v (* 0.5 (/ base height)))))))))
 
