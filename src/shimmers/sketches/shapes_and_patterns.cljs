@@ -11,6 +11,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -95,7 +96,8 @@
     (for [[v gap] (map vector ranges heights)
           :let [row-height (* gap height)]
           :when (> row-height (* 0.02 height))]
-      ((dr/weighted {#(circle-row v row-height) 1
+      ((dr/weighted {#(svg/group {}) 1
+                     #(circle-row v row-height) 1
                      #(triangle-row v row-height) 1
                      #(updown-row v row-height) 1
                      #(box-row v row-height) 1
