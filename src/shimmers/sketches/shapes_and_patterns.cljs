@@ -110,7 +110,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 1.0}
-            (apply list (shapes 17))))
+            (apply list (shapes (dr/rand-nth [17 23])))))
 
 (sketch/definition shapes-and-patterns
   {:created-at "2022-02-19"
