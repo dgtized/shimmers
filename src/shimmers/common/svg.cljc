@@ -27,8 +27,25 @@
 (defn translate [[x y]]
   (f/format ["translate(" (f/float 2) "," (f/float 2) ")"] x y))
 
+;; Comment is cribbed from https://github.com/thi-ng/geom/pull/79/files
 (defn path
-  "Extend `svg/path` to include T and t quadtratic bezier segment commands."
+  "Extend `svg/path` to include all segment types.
+
+  Uppercase are absolute coordinates, lowercase are relative coordinates.
+
+  | Command | Name                     | Arguments                                             |
+  |---------+--------------------------+-------------------------------------------------------|
+  | M/m     | moveto                   | [pt]                                                  |
+  | L/l     | lineto                   | [pt]                                                  |
+  | H/h     | horizontal lineto        | [x]                                                   |
+  | V/v     | vertical lineto          | [y]                                                   |
+  | C/c     | cubic curveto            | [pt1 pt2 endpt]                                       |
+  | S/s     | smooth cubic curveto     | [pt2 endpt]                                           |
+  | Q/q     | quadratic curveto        | [pt1 endpt]                                           |
+  | T/t     | smooth quadratic curveto | [endpt]                                               |
+  | A/a     | elliptical arc           | [rx ry x-axis-rotation large-arc-flag sweep-flag x y] |
+  | Z/z     | closepath                | []                                                    |
+  "
   ([segments] (path segments nil))
   ([segments attribs]
    (with-redefs [thi.ng.geom.svg.core/path-segment-formats
