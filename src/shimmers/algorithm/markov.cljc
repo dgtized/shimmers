@@ -1,4 +1,5 @@
-(ns shimmers.algorithm.markov)
+(ns shimmers.algorithm.markov
+  (:require [clojure.math.combinatorics :as mc]))
 
 ;; inspired by https://jackrusher.com/journal/markov-creativity.html
 (defn learn
@@ -21,8 +22,16 @@
        (lazy-cat (take 1 start) (predict model (concat (drop 1 start) choice))))
      start)))
 
-(defn combine [a b]
-  (merge-with concat a b))
+(defn combine [& args]
+  (apply merge-with (comp vec concat) args))
+
+(defn all-transitions
+  "Calculate all possible transitions from a set of states."
+  [states prefix-len]
+  (apply combine
+         (for [prefix (mc/selections states prefix-len)
+               suffix states]
+           {prefix [(list suffix)]})))
 
 (comment
   (def example "the quick brown fox jumped over the lazy dog")
@@ -32,4 +41,6 @@
   (apply str (take 100 (predict (learn example 3 1) (seq "the"))))
   (apply str (take 100 (predict (learn example 2 1))))
 
-  (combine (learn "the quick" 1 1) (learn "the brown" 1 1)))
+  (combine (learn "the quick" 2 1) (learn "the brown" 2 1))
+  (take 10 (predict (all-transitions [:a :b :c] 1)))
+  (take 10 (predict (all-transitions [:a :b :c] 2))))
