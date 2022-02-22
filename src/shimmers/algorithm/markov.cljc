@@ -18,7 +18,7 @@
   ([model start]
    (if-let [transitions (get model start)]
      (let [choice (rand-nth transitions)]
-       (lazy-cat (first start) (predict model (concat (rest start) choice))))
+       (lazy-cat (take 1 start) (predict model (concat (drop 1 start) choice))))
      start)))
 
 (defn combine [a b]
