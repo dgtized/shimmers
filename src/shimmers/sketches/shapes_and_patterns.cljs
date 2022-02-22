@@ -88,7 +88,7 @@
                                (+ v (* 0.5 rh))))]))))
 
 (defmethod svg-row :rulers [{:keys [v row-height]}]
-  (for [p (cs/midsection (tm/norm-range (dr/rand-nth [1 2 3 5])))
+  (for [p (cs/midsection (tm/norm-range (inc (dr/rand-nth [1 2 3 5]))))
         :let [t (/ p row-height)]]
     (gl/line2 (rv 0.0 (+ v t)) (rv 1.0 (+ v t)))))
 
