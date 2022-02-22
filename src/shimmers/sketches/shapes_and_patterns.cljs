@@ -33,7 +33,7 @@
     (for [u (tm/norm-range cols)]
       (gc/circle (rv (+ u (/ r width)) (+ v (/ r height))) (* 0.95 r)))))
 
-(defmethod svg-row :triangle [{:keys [v row-height]}]
+(defn triangle [up v row-height]
   (let [base row-height
         cols (tm/floor (/ width base))
         up (dr/chance 0.5)
@@ -44,6 +44,12 @@
     (for [u (tm/norm-range cols)]
       (g/translate triangle (rv (+ u (* 0.5 (/ base width)))
                                 (+ v (* 0.5 (/ base height))))))))
+
+(defmethod svg-row :triangle-up [{:keys [v row-height]}]
+  (triangle true v row-height))
+
+(defmethod svg-row :triangle-down [{:keys [v row-height]}]
+  (triangle false v row-height))
 
 ;; fixme, align the top/bottom of each triangle?
 (defmethod svg-row :updown [{:keys [v row-height]}]
@@ -112,10 +118,11 @@
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)
         distribution {:blank 1
-                      :circle 3
-                      :triangle 3
-                      :updown 3
-                      :box 3
+                      :circle 4
+                      :triangle-up 2
+                      :triangle-down 2
+                      :updown 4
+                      :box 4
                       :rulers 2
                       :sawtooth 2
                       :zig-zag 2}]
