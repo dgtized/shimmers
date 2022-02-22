@@ -43,12 +43,12 @@
 ;; fixme, align the top/bottom of each triangle?
 (defn updown-row [v row-height]
   (let [base row-height
-        cols (tm/floor (/ width (* 0.8 base)))
+        cols (tm/floor (/ width (* 0.9 base)))
 
         triangle1 (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
-                                       (gv/vec2 (* -0.8 base) 0.0))
+                                       (gv/vec2 (* -0.75 base) 0.0))
                       g/center)
-        triangle2 (-> (gt/equilateral2 (gv/vec2 (* -0.8 base) 0.0)
+        triangle2 (-> (gt/equilateral2 (gv/vec2 (* -0.75 base) 0.0)
                                        (gv/vec2 0.0 0.0))
                       g/center)
         freq (dr/random-int 2 5)]
@@ -102,6 +102,7 @@
                                           (/ (* 0.9 row-height) height))]]
                        [:A [rw rh] 0 0 (if zero 0 1) (rv p (+ v offset))])))))
 
+;; Consider using markov chain transition probabilities between each row type?
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)]
