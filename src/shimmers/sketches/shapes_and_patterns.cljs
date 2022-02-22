@@ -91,7 +91,7 @@
                        [:L (rv p (+ v offset))])))))
 
 (defn sawtooth [v row-height]
-  (let [cols (tm/floor (/ width row-height (dr/weighted {1 6 2 2 3 1})))
+  (let [cols (tm/floor (/ width row-height (dr/weighted {1 6 2 2})))
         rh (* 0.8 row-height)
         rw (* 1 (/ width cols))]
     (csvg/path (into [[:M (rv 0.0 v)]]
