@@ -82,7 +82,7 @@
     (gl/line2 (rv 0.0 (+ v t)) (rv 1.0 (+ v t)))))
 
 (defn zig-zag [v row-height]
-  (let [cols (tm/floor (/ width row-height (dr/weighted {1 3 2 2 3 1})))]
+  (let [cols (tm/floor (/ width row-height (dr/weighted {1 4 2 2 3 1})))]
     (csvg/path (into [[:M (rv 0.0 v)]]
                      (for [[idx p] (map-indexed vector (tm/norm-range cols))
                            :let [offset (if (zero? (mod idx 2))
@@ -91,7 +91,7 @@
                        [:L (rv p (+ v offset))])))))
 
 (defn sawtooth [v row-height]
-  (let [cols (tm/floor (/ width row-height (dr/weighted {1 3 2 2 3 1})))
+  (let [cols (tm/floor (/ width row-height (dr/weighted {1 6 2 2 3 1})))
         rh (* 0.8 row-height)
         rw (* 1 (/ width cols))]
     (csvg/path (into [[:M (rv 0.0 v)]]
@@ -109,10 +109,10 @@
           :let [row-height (* gap height)]
           :when (> row-height (* 0.02 height))]
       ((dr/weighted {#(svg/group {}) 1
-                     #(circle-row v row-height) 2
-                     #(triangle-row v row-height) 2
-                     #(updown-row v row-height) 2
-                     #(box-row v row-height) 2
+                     #(circle-row v row-height) 3
+                     #(triangle-row v row-height) 3
+                     #(updown-row v row-height) 3
+                     #(box-row v row-height) 3
                      #(rulers v row-height) 2
                      #(sawtooth v row-height) 2
                      #(zig-zag v row-height) 2})))))
