@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.algorithm.markov :as markov]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -113,36 +114,52 @@
                                           (/ (* 0.9 row-height) height))]]
                        [:A [rw rh] 0 0 (if zero 0 1) (rv p (+ v offset))])))))
 
+(def states [:blank :circle :triangle-up :triangle-down :updown :box :rulers :sawtooth :zig-zag])
+
+(defn chain []
+  (let [base (markov/all-transitions states 1)]
+    (markov/combine base
+                    (markov/learn [:circle :circle :box] 1 1)
+                    (markov/learn [:circle :sawtooth :updown] 1 1)
+                    (markov/learn [:circle :box] 1 1)
+                    (markov/learn [:triangle-up :triangle-down] 1 1)
+                    (markov/learn [:triangle-down :triangle-up] 1 1)
+                    (markov/learn [:updown :triangle-up] 1 1)
+                    (markov/learn [:updown :triangle-down] 1 1))))
+
+(def distribution
+  {:blank 1
+   :circle 4
+   :triangle-up 2
+   :triangle-down 2
+   :updown 4
+   :box 4
+   :rulers 2
+   :sawtooth 2
+   :zig-zag 2})
+
 ;; Consider using markov chain transition probabilities between each row type?
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
         heights (map - (rest ranges) ranges)
-        distribution {:blank 1
-                      :circle 4
-                      :triangle-up 2
-                      :triangle-down 2
-                      :updown 4
-                      :box 4
-                      :rulers 2
-                      :sawtooth 2
-                      :zig-zag 2}]
-    (for [[v gap] (map vector ranges heights)
-          :let [row-height (* gap height)
-                type (dr/weighted distribution)]
+        ;; types (take rows (markov/predict (chain)))
+        types (repeatedly rows #(dr/weighted distribution))]
+    (for [[v gap type] (map vector ranges heights types)
+          :let [row-height (* gap height)]
           :when (> row-height (* 0.02 height))]
       (svg-row {:type type :v v :row-height row-height}))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 1.0}
-            (apply list (shapes (dr/rand-nth [17 23])))))
+(csvg/svg {:width width
+           :height height
+           :stroke "black"
+           :fill "none"
+           :stroke-width 1.0}
+          (apply list (shapes (dr/rand-nth [17 23])))))
 
 (sketch/definition shapes-and-patterns
-  {:created-at "2022-02-19"
-   :type :svg
-   :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)
-              "sketch-host"))
+{:created-at "2022-02-19"
+ :type :svg
+ :tags #{}}
+(ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)
+            "sketch-host"))
