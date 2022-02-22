@@ -21,14 +21,19 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn circle-row [v row-height]
+(defmulti svg-row :type)
+
+(defmethod svg-row :blank [_]
+  (svg/group {}))
+
+(defmethod svg-row :circle [{:keys [v row-height]}]
   (let [diameter row-height
         cols (tm/floor (/ width diameter))
         r (* 0.5 diameter)]
     (for [u (tm/norm-range cols)]
       (gc/circle (rv (+ u (/ r width)) (+ v (/ r height))) (* 0.95 r)))))
 
-(defn triangle-row [v row-height]
+(defmethod svg-row :triangle [{:keys [v row-height]}]
   (let [base row-height
         cols (tm/floor (/ width base))
         up (dr/chance 0.5)
@@ -41,7 +46,7 @@
                                 (+ v (* 0.5 (/ base height))))))))
 
 ;; fixme, align the top/bottom of each triangle?
-(defn updown-row [v row-height]
+(defmethod svg-row :updown [{:keys [v row-height]}]
   (let [base row-height
         cols (tm/floor (/ width (* 0.9 base)))
 
@@ -60,7 +65,7 @@
            (gl/line2 (rv 0.0 (+ v (/ base height)))
                      (rv 1.0 (+ v (/ base height))))])))
 
-(defn box-row [v row-height]
+(defmethod svg-row :box [{:keys [v row-height]}]
   (let [r (* 0.5 row-height)
         rw (/ r width)
         rh (/ r height)
@@ -76,12 +81,12 @@
                            (rv (+ u (* 0.5 rw))
                                (+ v (* 0.5 rh))))]))))
 
-(defn rulers [v row-height]
+(defmethod svg-row :rulers [{:keys [v row-height]}]
   (for [p (cs/midsection (tm/norm-range (dr/rand-nth [1 2 3 5])))
         :let [t (/ p row-height)]]
     (gl/line2 (rv 0.0 (+ v t)) (rv 1.0 (+ v t)))))
 
-(defn zig-zag [v row-height]
+(defmethod svg-row :zig-zag [{:keys [v row-height]}]
   (let [cols (tm/floor (/ width row-height (dr/weighted {1 4 2 2 3 1})))]
     (csvg/path (into [[:M (rv 0.0 v)]]
                      (for [[idx p] (map-indexed vector (tm/norm-range cols))
@@ -90,7 +95,7 @@
                                           (/ (* 0.9 row-height) height))]]
                        [:L (rv p (+ v offset))])))))
 
-(defn sawtooth [v row-height]
+(defmethod svg-row :sawtooth [{:keys [v row-height]}]
   (let [cols (tm/floor (/ width row-height (dr/weighted {1 6 2 2})))
         rh (* 0.8 row-height)
         rw (* 1 (/ width cols))]
@@ -105,18 +110,20 @@
 ;; Consider using markov chain transition probabilities between each row type?
 (defn shapes [rows]
   (let [ranges (dr/var-range rows)
-        heights (map - (rest ranges) ranges)]
+        heights (map - (rest ranges) ranges)
+        distribution {:blank 1
+                      :circle 3
+                      :triangle 3
+                      :updown 3
+                      :box 3
+                      :rulers 2
+                      :sawtooth 2
+                      :zig-zag 2}]
     (for [[v gap] (map vector ranges heights)
-          :let [row-height (* gap height)]
+          :let [row-height (* gap height)
+                type (dr/weighted distribution)]
           :when (> row-height (* 0.02 height))]
-      ((dr/weighted {#(svg/group {}) 1
-                     #(circle-row v row-height) 3
-                     #(triangle-row v row-height) 3
-                     #(updown-row v row-height) 3
-                     #(box-row v row-height) 3
-                     #(rulers v row-height) 2
-                     #(sawtooth v row-height) 2
-                     #(zig-zag v row-height) 2})))))
+      (svg-row {:type type :v v :row-height row-height}))))
 
 (defn scene []
   (csvg/svg {:width width
