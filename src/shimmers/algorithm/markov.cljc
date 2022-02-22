@@ -21,10 +21,15 @@
        (lazy-cat (first start) (predict model (concat (rest start) choice))))
      start)))
 
+(defn combine [a b]
+  (merge-with concat a b))
+
 (comment
   (def example "the quick brown fox jumped over the lazy dog")
   (learn example 2 1)
   (learn example 2 2 (partial apply str) {})
 
   (apply str (take 100 (predict (learn example 3 1) (seq "the"))))
-  (apply str (take 100 (predict (learn example 2 1)))))
+  (apply str (take 100 (predict (learn example 2 1))))
+
+  (combine (learn "the quick" 1 1) (learn "the brown" 1 1)))
