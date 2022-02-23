@@ -37,7 +37,6 @@
 (defn triangle [up v row-height]
   (let [base row-height
         cols (tm/floor (/ width base))
-        up (dr/chance 0.5)
         triangle (-> (gt/equilateral2 (gv/vec2 0.0 0.0)
                                       (gv/vec2 (* -0.8 base) 0.0))
                      g/center
