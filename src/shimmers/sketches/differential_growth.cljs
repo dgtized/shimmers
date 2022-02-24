@@ -38,6 +38,11 @@
                      (rejection-force config b points)]))
           [(last points)]))
 
+(defn natural-selection [{:keys [max-pop]} points]
+  (if (> (count points) max-pop)
+    (dr/random-sample 0.95 points)
+    points))
+
 (defn path-update [{:keys [points]}]
   (let [config {:attraction 0.05
                 :alignment 0.05
@@ -45,10 +50,12 @@
                 :split-chance 0.0002
                 :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
-                :repulsion 0.75}]
+                :repulsion 0.9
+                :max-pop 200}]
     (->> points
          (path-split config)
          (apply-forces config)
+         (natural-selection config)
          gl/linestrip2)))
 
 (defn setup []
