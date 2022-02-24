@@ -17,8 +17,19 @@
                      [p])))
           [(last points)]))
 
+(defn apply-forces [attraction points]
+  (concat [(first points)]
+          (for [[a b c] (partition 3 1 points)]
+            (tm/+ b
+                  (tm/* (tm/- a b) attraction)
+                  (tm/* (tm/- c b) attraction)))
+          [(last points)]))
+
 (defn path-update [{:keys [points]}]
-  (gl/linestrip2 (path-split (cq/rel-w 0.03) points)))
+  (->> points
+       (apply-forces 0.01)
+       (path-split (cq/rel-w 0.03))
+       gl/linestrip2))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
