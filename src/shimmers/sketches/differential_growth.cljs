@@ -9,6 +9,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.spatialtree :as spatialtree]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -23,23 +24,24 @@
                      [p])))
           [(last points)]))
 
-(defn rejection-force [{:keys [neighborhood repulsion]} from points]
-  (let [forces (->> points
-                    (filter (fn [p] (and (not= from p) (< (g/dist from p) neighborhood))))
+(defn rejection-force [{:keys [neighborhood repulsion]} quad from]
+  (let [forces (->> (spatialtree/select-with-circle quad from neighborhood)
+                    (remove #(tm/delta= from %))
                     (map (fn [p] (tm/* (tm/- from p) (/ repulsion (g/dist from p))))))]
     (if (empty? forces)
       (gv/vec2)
       (reduce tm/+ forces))))
 
-(defn apply-forces [{:keys [attraction alignment] :as config} points]
-  (concat [(first points)]
-          (for [[a b c] (partition 3 1 points)]
-            (reduce tm/+ b
-                    [(tm/* (tm/- a b) attraction)
-                     (tm/* (tm/- c b) attraction)
-                     (tm/* (tm/- (tm/mix a c 0.5) b) alignment)
-                     (rejection-force config b points)]))
-          [(last points)]))
+(defn apply-forces [{:keys [attraction alignment] :as config} bounds points]
+  (let [quad (reduce (fn [q p] (g/add-point q p p)) (spatialtree/quadtree bounds) points)]
+    (concat [(first points)]
+            (for [[a b c] (partition 3 1 points)]
+              (reduce tm/+ b
+                      [(tm/* (tm/- a b) attraction)
+                       (tm/* (tm/- c b) attraction)
+                       (tm/* (tm/- (tm/mix a c 0.5) b) alignment)
+                       (rejection-force config quad b)]))
+            [(last points)])))
 
 (defn natural-selection [{:keys [max-pop]} points]
   (if (> (count points) max-pop)
@@ -61,8 +63,8 @@
                 :max-pop 512}]
     (->> points
          (path-split config)
-         (apply-forces config)
          (bounds-check bounds)
+         (apply-forces config bounds)
          (natural-selection config)
          gl/linestrip2)))
 
