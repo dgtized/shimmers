@@ -70,6 +70,7 @@
          (natural-selection config)
          gl/linestrip2)))
 
+;; TODO: correctly handle loops in apply-forces and path-split and try it with a circle
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:path (gl/linestrip2 [(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)])})
