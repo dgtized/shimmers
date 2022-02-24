@@ -20,7 +20,7 @@
                  (for [[p q] (partition 2 1 points)]
                    (if (or (> (g/dist p q) split-threshold)
                            (dr/chance split-chance))
-                     [p (tm/+ (tm/mix p q 0.5) (dr/jitter jitter))]
+                     [p (tm/+ (tm/mix p q (dr/random)) (dr/jitter jitter))]
                      [p])))
           [(last points)]))
 
@@ -56,7 +56,7 @@
         config {:attraction 0.1
                 :alignment 0.1
                 :split-threshold (cq/rel-w 0.02)
-                :split-chance 0.001
+                :split-chance 0.0005
                 :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
                 :repulsion 0.2
