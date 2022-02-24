@@ -31,6 +31,7 @@
             shimmers.sketches.deeper-squares
             shimmers.sketches.deformed-spirals
             shimmers.sketches.delaunay-voronoi
+            shimmers.sketches.differential-growth
             shimmers.sketches.disassociated-boxes
             shimmers.sketches.dispersion
             shimmers.sketches.displacements-inbetween
