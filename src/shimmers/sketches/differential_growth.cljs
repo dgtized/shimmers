@@ -6,6 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -15,6 +16,7 @@
 
 (defonce defo (debug/state))
 
+;; FIXME: split-chance is proportional to quantity of points
 (defn path-split [{:keys [split-threshold split-chance jitter]} points]
   (concat (apply concat
                  (for [[p q] (partition 2 1 points)]
@@ -49,7 +51,7 @@
     points))
 
 (defn bounds-check [bounds points]
-  (filter #(g/contains-point? bounds %) points))
+  (map #(v/clamp-bounds bounds %) points))
 
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
