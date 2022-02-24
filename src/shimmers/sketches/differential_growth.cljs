@@ -4,12 +4,15 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn path-split [{:keys [split-threshold split-chance jitter]} points]
   (concat (apply concat
@@ -68,6 +71,7 @@
   {:path (gl/linestrip2 [(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)])})
 
 (defn update-state [state]
+  (reset! defo {})
   (update state :path path-update))
 
 (defn draw-path [vertices]
@@ -83,11 +87,14 @@
 (defn draw [{:keys [path]}]
   (q/background 1.0)
   (q/stroke-weight 1.0)
-  (draw-path (:points path)))
+  (let [{:keys [points]} path]
+    (swap! defo assoc :count (count points))
+    (draw-path points)))
 
 (sketch/defquil differential-growth
   :created-at "2022-02-23"
   :size [800 600]
+  :on-mount (fn [] (debug/mount defo))
   :setup setup
   :update update-state
   :draw draw
