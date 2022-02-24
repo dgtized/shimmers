@@ -48,13 +48,13 @@
 
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
-        config {:attraction 0.05
-                :alignment 0.05
-                :split-threshold (cq/rel-w 0.05)
-                :split-chance 0.0005
+        config {:attraction 0.1
+                :alignment 0.1
+                :split-threshold (cq/rel-w 0.02)
+                :split-chance 0.001
                 :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
-                :repulsion 0.9
+                :repulsion 0.2
                 :max-pop 512}]
     (->> points
          (path-split config)
