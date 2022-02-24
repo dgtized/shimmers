@@ -11,12 +11,12 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn path-split [threshold points]
+(defn path-split [{:keys [split-threshold split-chance jitter]} points]
   (concat (apply concat
                  (for [[p q] (partition 2 1 points)]
-                   (if (or (> (g/dist p q) threshold)
-                           (dr/chance 0.0005))
-                     [p (tm/+ (tm/mix p q 0.5) (dr/jitter 10))]
+                   (if (or (> (g/dist p q) split-threshold)
+                           (dr/chance split-chance))
+                     [p (tm/+ (tm/mix p q 0.5) (dr/jitter jitter))]
                      [p])))
           [(last points)]))
 
@@ -39,11 +39,15 @@
           [(last points)]))
 
 (defn path-update [{:keys [points]}]
-  (let [config {:attraction 0.05 :alignment 0.05
+  (let [config {:attraction 0.05
+                :alignment 0.05
+                :split-threshold (cq/rel-w 0.05)
+                :split-chance 0.0002
+                :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
                 :repulsion 0.75}]
     (->> points
-         (path-split (cq/rel-w 0.05))
+         (path-split config)
          (apply-forces config)
          gl/linestrip2)))
 
