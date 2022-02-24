@@ -43,18 +43,23 @@
     (dr/random-sample 0.95 points)
     points))
 
+(defn bounds-check [bounds points]
+  (filter #(g/contains-point? bounds %) points))
+
 (defn path-update [{:keys [points]}]
-  (let [config {:attraction 0.05
+  (let [bounds (cq/screen-rect 0.95)
+        config {:attraction 0.05
                 :alignment 0.05
                 :split-threshold (cq/rel-w 0.05)
-                :split-chance 0.0002
+                :split-chance 0.0005
                 :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
                 :repulsion 0.9
-                :max-pop 200}]
+                :max-pop 512}]
     (->> points
          (path-split config)
          (apply-forces config)
+         (bounds-check bounds)
          (natural-selection config)
          gl/linestrip2)))
 
