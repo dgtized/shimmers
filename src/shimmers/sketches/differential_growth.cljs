@@ -57,9 +57,9 @@
 
 (defn natural-selection [{:keys [max-pop]} points]
   (let [n (count points)]
-    (cond (> n (* 0.99 max-pop))
+    (cond (and (> n (* 0.99 max-pop)) (dr/chance 0.3))
           (dr/random-sample 0.90 points)
-          (> n (* 0.90 max-pop))
+          (and (> n (* 0.90 max-pop)) (dr/chance 0.01))
           (dr/random-sample 0.99 points)
           :else
           points)))
@@ -69,14 +69,14 @@
 
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
-        config {:attraction 0.1
-                :alignment 0.1
-                :split-threshold (cq/rel-w 0.02)
-                :split-chance 0.1
-                :jitter (cq/rel-w 0.01)
+        config {:attraction 0.15
+                :alignment 0.15
+                :split-threshold (cq/rel-w 0.03)
+                :split-chance 0.4
+                :jitter (cq/rel-w 0.02)
                 :neighborhood (cq/rel-w 0.05)
-                :repulsion 0.2
-                :max-pop 512}]
+                :repulsion 1.5
+                :max-pop 600}]
     (->> points
          (path-split config)
          (bounds-check bounds)
