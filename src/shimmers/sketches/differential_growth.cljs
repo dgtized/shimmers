@@ -14,6 +14,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; References:
+;; https://medium.com/@jason.webb/2d-differential-growth-in-js-1843fd51b0ce
+;; https://inconvergent.net/generative/differential-line/
+;; https://inconvergent.net/2016/shepherding-random-growth/
+
 (defonce defo (debug/state))
 
 ;; FIXME: split-chance is proportional to quantity of points
