@@ -28,7 +28,7 @@
       points
       (concat (apply concat
                      (for [[p q] (partition 2 1 points)]
-                       (if (or (> (g/dist p q) split-threshold) (dr/chance split))
+                       (if (dr/chance (* (/ (g/dist p q) split-threshold) split))
                          [p (tm/+ (tm/mix p q (dr/random)) (dr/jitter jitter))]
                          [p])))
               [(last points)]))))
@@ -56,9 +56,13 @@
             [(last points)])))
 
 (defn natural-selection [{:keys [max-pop]} points]
-  (if (> (count points) max-pop)
-    (dr/random-sample 0.95 points)
-    points))
+  (let [n (count points)]
+    (cond (> n (* 0.99 max-pop))
+          (dr/random-sample 0.90 points)
+          (> n (* 0.90 max-pop))
+          (dr/random-sample 0.99 points)
+          :else
+          points)))
 
 (defn bounds-check [bounds points]
   (map #(v/clamp-bounds bounds %) points))
