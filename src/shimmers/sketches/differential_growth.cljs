@@ -39,15 +39,18 @@
       (gv/vec2)
       (reduce tm/+ forces))))
 
-(defn apply-forces [{:keys [attraction alignment] :as config} bounds points]
+(defn apply-force [{:keys [attraction alignment] :as config} quad [before after] point]
+  (reduce tm/+ point
+          [(tm/* (tm/- before point) attraction)
+           (tm/* (tm/- after point) attraction)
+           (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
+           (rejection-force config quad point)]))
+
+(defn apply-forces [config bounds points]
   (let [quad (reduce (fn [q p] (g/add-point q p p)) (spatialtree/quadtree bounds) points)]
     (concat [(first points)]
             (for [[a b c] (partition 3 1 points)]
-              (reduce tm/+ b
-                      [(tm/* (tm/- a b) attraction)
-                       (tm/* (tm/- c b) attraction)
-                       (tm/* (tm/- (tm/mix a c 0.5) b) alignment)
-                       (rejection-force config quad b)]))
+              (apply-force config quad [a c] b))
             [(last points)])))
 
 (defn natural-selection [{:keys [max-pop]} points]
