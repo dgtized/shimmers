@@ -21,14 +21,17 @@
 
 (defonce defo (debug/state))
 
-(defn path-split [{:keys [split-threshold split-chance jitter]} points]
-  (let [split (/ split-chance (count points))]
-    (concat (apply concat
-                   (for [[p q] (partition 2 1 points)]
-                     (if (or (> (g/dist p q) split-threshold) (dr/chance split))
-                       [p (tm/+ (tm/mix p q (dr/random)) (dr/jitter jitter))]
-                       [p])))
-            [(last points)])))
+(defn path-split [{:keys [max-pop split-threshold split-chance jitter]} points]
+  (let [n (count points)
+        split (/ split-chance n)]
+    (if (> n max-pop)
+      points
+      (concat (apply concat
+                     (for [[p q] (partition 2 1 points)]
+                       (if (or (> (g/dist p q) split-threshold) (dr/chance split))
+                         [p (tm/+ (tm/mix p q (dr/random)) (dr/jitter jitter))]
+                         [p])))
+              [(last points)]))))
 
 (defn rejection-force [{:keys [neighborhood repulsion]} quad from]
   (let [forces (->> (spatialtree/select-with-circle quad from neighborhood)
