@@ -82,7 +82,7 @@
 (defn bounds-check [bounds points]
   (map #(v/clamp-bounds bounds %) points))
 
-;; What would happen if updates only happen to a percentage of nodes?
+;; What would happen if each node was a circle with radius and that adjusted force calculations
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
         config {:force-scale 0.33
