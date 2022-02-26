@@ -48,11 +48,16 @@
            (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
            (rejection-force config quad point)]))
 
-(defn apply-forces [config bounds points]
+;; only applies forces to a sampling of the points each frame
+(defn apply-forces [{:keys [percent-update] :as config} bounds points]
   (let [quad (reduce (fn [q p] (g/add-point q p p)) (spatialtree/quadtree bounds) points)]
     (concat [(first points)]
-            (for [[a b c] (partition 3 1 points)]
-              (apply-force config quad [a c] b))
+            (->> points
+                 (partition 3 1)
+                 (map (fn [[a b c]]
+                        (if (dr/chance percent-update)
+                          (apply-force config quad [a c] b)
+                          b))))
             [(last points)])))
 
 (defn natural-selection [{:keys [max-pop]} points]
@@ -70,7 +75,8 @@
 ;; What would happen if updates only happen to a percentage of nodes?
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
-        config {:attraction 0.15
+        config {:percent-update 0.33
+                :attraction 0.15
                 :alignment 0.15
                 :split-threshold (cq/rel-w 0.03)
                 :split-chance 0.4
