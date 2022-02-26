@@ -8,6 +8,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.spatialtree :as spatialtree]
@@ -94,9 +95,13 @@
 ;; TODO: correctly handle loops in apply-forces and path-split and try it with a circle
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:path (dr/rand-nth [(gl/linestrip2 [(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)])
-                       (gl/linestrip2 [(cq/rel-vec 0.05 0.95) (cq/rel-vec 0.05 0.05)
-                                       (cq/rel-vec 0.95 0.05) (cq/rel-vec 0.95 0.95)])])})
+  {:path (->> [[(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)]
+               [(cq/rel-vec 0.05 0.95) (cq/rel-vec 0.05 0.05)
+                (cq/rel-vec 0.95 0.05) (cq/rel-vec 0.95 0.95)]
+               (let [points (g/vertices (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1)) 36)]
+                 (conj points (first points)))]
+              dr/rand-nth
+              gl/linestrip2)})
 
 (defn update-state [state]
   (reset! defo {})
