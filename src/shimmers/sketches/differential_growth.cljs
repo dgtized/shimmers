@@ -12,6 +12,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -42,15 +43,20 @@
       (gv/vec2)
       (reduce tm/+ forces))))
 
+;; Push inward towards the center of a convex boundary
+(defn boundary-force [bounds position]
+  (let [[obstacle _] (gu/closest-point-on-segments position (g/edges bounds))]
+    (tm/normalize (tm/- (g/centroid bounds) obstacle)
+                  (* 50 (tm/clamp01 (/ 1 (g/dist-squared position obstacle)))))))
+
 (defn apply-force [{:keys [force-scale attraction alignment] :as config}
-                   quad [before after] point]
-  (tm/mix point
-          (reduce tm/+ point
-                  [(tm/* (tm/- before point) attraction)
-                   (tm/* (tm/- after point) attraction)
-                   (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
-                   (rejection-force config quad point)])
-          force-scale))
+                   quad bounds [before after] point]
+  (let [forces [(tm/* (tm/- before point) attraction)
+                (tm/* (tm/- after point) attraction)
+                (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
+                (rejection-force config quad point)]
+        goal (reduce tm/+ point forces)]
+    (tm/+ (tm/mix point goal force-scale) (boundary-force bounds goal))))
 
 ;; only applies forces to a sampling of the points each frame
 (defn apply-forces [{:keys [percent-update] :as config} bounds points]
@@ -60,7 +66,7 @@
                  (partition 3 1)
                  (map (fn [[a b c]]
                         (if (dr/chance percent-update)
-                          (apply-force config quad [a c] b)
+                          (apply-force config quad bounds [a c] b)
                           b))))
             [(last points)])))
 
