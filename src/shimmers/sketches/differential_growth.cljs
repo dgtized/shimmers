@@ -88,7 +88,9 @@
 ;; TODO: correctly handle loops in apply-forces and path-split and try it with a circle
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:path (gl/linestrip2 [(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)])})
+  {:path (dr/rand-nth [(gl/linestrip2 [(cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)])
+                       (gl/linestrip2 [(cq/rel-vec 0.05 0.95) (cq/rel-vec 0.05 0.05)
+                                       (cq/rel-vec 0.95 0.05) (cq/rel-vec 0.95 0.95)])])})
 
 (defn update-state [state]
   (reset! defo {})
