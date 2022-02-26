@@ -42,12 +42,15 @@
       (gv/vec2)
       (reduce tm/+ forces))))
 
-(defn apply-force [{:keys [attraction alignment] :as config} quad [before after] point]
-  (reduce tm/+ point
-          [(tm/* (tm/- before point) attraction)
-           (tm/* (tm/- after point) attraction)
-           (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
-           (rejection-force config quad point)]))
+(defn apply-force [{:keys [force-scale attraction alignment] :as config}
+                   quad [before after] point]
+  (tm/mix point
+          (reduce tm/+ point
+                  [(tm/* (tm/- before point) attraction)
+                   (tm/* (tm/- after point) attraction)
+                   (tm/* (tm/- (tm/mix before after 0.5) point) alignment)
+                   (rejection-force config quad point)])
+          force-scale))
 
 ;; only applies forces to a sampling of the points each frame
 (defn apply-forces [{:keys [percent-update] :as config} bounds points]
@@ -76,14 +79,15 @@
 ;; What would happen if updates only happen to a percentage of nodes?
 (defn path-update [{:keys [points]}]
   (let [bounds (cq/screen-rect 0.95)
-        config {:percent-update 0.33
-                :attraction 0.2
-                :alignment 0.1
+        config {:force-scale 0.33
+                :percent-update 0.33
+                :attraction 0.4
+                :alignment 0.2
                 :split-threshold (cq/rel-w 0.03)
                 :split-chance 0.5
-                :jitter (cq/rel-w 0.02)
+                :jitter (cq/rel-w 0.01)
                 :neighborhood (cq/rel-w 0.05)
-                :repulsion 0.6
+                :repulsion 0.8
                 :max-pop 1000}]
     (->> points
          (path-split config)
