@@ -25,6 +25,8 @@
 
 (def ^:const TAU tm/TWO_PI)
 (def ^:const SQRT_TWO_PI (Math/sqrt tm/TWO_PI))
+(def ^:const SQRT2_2 (/ (Math/sqrt 2) 2))
+(def ^:const SQRT2_3 (/ (Math/sqrt 2) 3))
 
 (defn gaussian-density
   "Probability density function with expected value `mu`, variance `sigma`."
