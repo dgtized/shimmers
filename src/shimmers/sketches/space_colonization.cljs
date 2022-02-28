@@ -53,7 +53,7 @@
       :circle
       (partial geometry/random-point-in-circle
                (gc/circle (cq/rel-vec 0.5 0.5)
-                          (cq/rel-h (tm/random 0.1 0.4))))
+                          (cq/rel-h (tm/random 0.2 0.45))))
       :square
       (let [left (/ width 6)]
         (partial g/random-point-inside
