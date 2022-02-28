@@ -96,7 +96,7 @@
   This is the fallback case if no attractor is close enough to influence a
   branch. It grows faster as a slight optimization as this case costs
   branches*attractors comparisons per call."
-  [segment-distance snap-theta branches attractors]
+  [{:keys [segment-distance snap-theta]} branches attractors]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))
@@ -126,7 +126,7 @@
     (assoc state :steady-state true)
     (let [influencers (influencing-attractors state attractors)]
       (if (empty? influencers)
-        (let [new-branch (grow-closest segment-distance snap-theta branches attractors)
+        (let [new-branch (grow-closest state branches attractors)
               branches' (conj branches new-branch)]
           (assoc state
                  :weights (update-weights weights branches' [new-branch])
