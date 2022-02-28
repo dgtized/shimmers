@@ -43,16 +43,6 @@
        (tm/+ jitter)
        tm/normalize)))
 
-(comment
-  (tm/normalize (v/vec2 2 2))
-  (tm/- (v/vec2 2 2) (v/vec2 0 0))
-  (reduce v/add (map tm/normalize [(v/vec2 2 2) (v/vec2 2 2)]))
-  (g/scale (v/vec2 4 4) (/ 1 2))
-  (average-attraction {:position (v/vec2 0 0) :direction (v/vec2 0 0)}
-                      [(v/vec2 2 2) (v/vec2 2 2)])
-  (average-attraction (->Branch nil (v/vec2 100 195) (v/vec2 0 -1))
-                      [(v/vec2 112.0 189.0) (v/vec2 85.2 182.0) (v/vec2 [91.9 173.5])]))
-
 ;; Approach borrowed from
 ;; https://github.com/jasonwebb/2d-space-colonization-experiments/blob/master/core/Network.js#L108-L114
 (defn propagate-branch-weight [weights branches branch]
