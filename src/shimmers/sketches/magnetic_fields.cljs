@@ -27,22 +27,30 @@
                        :let [[x y] (tm/- pos p)
                              b (tm/cross (gv/vec3 x y 0) (gv/vec3 0 0 strength))
                              a (gv/vec2 (:x b) (:y b))]]
-                   (tm/* a (/ 200 (+ (g/dist-squared pos p) 1e-5))))]
-      (reduce tm/+ pos forces))))
+                   (tm/* a (/ 1 (+ (g/dist-squared pos p) 1e-4))))
+          force-at-point (reduce tm/+ (gv/vec2) forces)]
+      (tm/+ pos (tm/normalize force-at-point 8)))))
 
 (defn line [bounds dipoles]
   (let [start (g/random-point-inside (g/scale-size bounds 0.9))]
-    (gl/linestrip2 (take 50 (iterate (line-step dipoles) start)))))
+    (->> start
+         (iterate (line-step dipoles))
+         #_(take-while (fn [p] (g/contains-point? bounds p)))
+         (take 100)
+         gl/linestrip2)))
+
+(defn random-dipole [bounds]
+  (let [strength (dr/random 2 6)]
+    {:p (g/random-point-inside (g/scale-size bounds 0.5))
+     :strength (if (dr/chance 0.5) strength (- strength))}))
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        dipoles (repeatedly (dr/random-int 2 5)
-                            (fn [] {:p (g/random-point-inside (g/scale-size bounds 0.5))
-                                   :strength (if (dr/chance 0.5) (dr/random 2 6) (- (dr/random 2 6)))}))]
+        dipoles (repeatedly (dr/random-int 2 5) (partial random-dipole bounds))]
     [(svg/group {} (for [{:keys [p strength]} dipoles]
                      (with-meta (gc/circle p (Math/abs strength))
                        {:fill (if (> strength 0) "none" "black")})))
-     (svg/group {} (repeatedly 50 #(line bounds dipoles)))]))
+     (svg/group {} (repeatedly 100 #(line bounds dipoles)))]))
 
 (defn scene []
   (csvg/svg {:width width
