@@ -106,7 +106,7 @@
                      branch branches]
                  [branch bud]))]
     (grow-branch branch (get branch-index branch)
-                 (average-attraction branch [attractor] snap-theta)
+                 (average-attraction branch [attractor] snap-theta (v/vec2))
                  (max segment-distance
                       (/ (branch-distance attractor branch) 2)))))
 
