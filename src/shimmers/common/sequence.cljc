@@ -190,5 +190,4 @@
          (triplet-cycle [:a :b :c :d])
          (triplet-cycle [:a :b :c])
          (triplet-cycle [:a :b])
-         (triplet-cycle [:a])
-         )
+         (triplet-cycle [:a]))

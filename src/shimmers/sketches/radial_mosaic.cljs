@@ -129,7 +129,7 @@
          :radius (range 6 (int (* 0.5 height)))}
         {:origin (r (dr/rand-nth [0.33 0.66]) 0.5)
          :radius (range 6 (int (* 0.6 width)))}
-        {:origin (r (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]) )
+        {:origin (r (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]))
          :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
        dr/rand-nth
        (merge {:palette (dr/rand-nth palettes)

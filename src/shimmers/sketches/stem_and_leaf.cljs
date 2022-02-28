@@ -77,8 +77,7 @@
     (cq/circle x y 2.0)
     (q/vertex x y))
   (q/end-shape)
-  (q/pop-style)
-  )
+  (q/pop-style))
 
 (defn draw [{:keys [circles]}]
   (reset! defo {:c1 (first circles)

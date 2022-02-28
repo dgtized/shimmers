@@ -156,7 +156,6 @@
                          spacing cosa
                          [x0 y0] [x1 y1])))
 
-
 ;; TODO: change x0 a percent of width + height of shape to find start of slashes
 (defn variable-hatching [bounds angle x0 n spacing width]
   (let [{[bx by] :p [bw bh] :size} bounds

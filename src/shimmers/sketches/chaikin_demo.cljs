@@ -60,8 +60,7 @@
     (draw-at "subdiv Cubic-Bezier" (gsd-bezier vertices) (cq/rel-vec 0.2 0.6))
     (draw-at (gsd-bezier (gsd-bezier vertices)) (cq/rel-vec 0.4 0.6))
     (draw-at (gsd-bezier (gsd-bezier (gsd-bezier vertices))) (cq/rel-vec 0.6 0.6))
-    (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))
-    ))
+    (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))))
 
 (sketch/defquil chaikin-demo
   :created-at "2021-08-31"

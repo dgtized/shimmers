@@ -46,7 +46,7 @@
   (/ 1 diametral-pitch))
 
 (defn outside-diameter [{:keys [diametral-pitch] :as gear}]
-  ( + diametral-pitch (* 2 (addendum gear))))
+  (+ diametral-pitch (* 2 (addendum gear))))
 
 (defn whole-depth [{:keys [diametral-pitch]}]
   (/ 2.157 diametral-pitch))

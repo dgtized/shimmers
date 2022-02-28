@@ -100,7 +100,7 @@
      (cube [x0 y1 0] [theta theta 0] [s s s])
      (cube [x1 y1 0] [0 theta theta] [s s s])
      (cube [x2 y1 0] [theta 0 theta] [s s s])
-     (-> (box (* 0.8 s) (* 0.8 s)(* 0.8 s))
+     (-> (box (* 0.8 s) (* 0.8 s) (* 0.8 s))
          (translate-box (gv/vec3 0 0 (* 0.8 s)))
          (rotate-box [theta theta theta])
          (translate-box lower-left))
@@ -112,7 +112,7 @@
          (rotate-box [theta theta theta])
          (translate-box lower-left))
      (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])
-     (-> (box (* 0.8 s) (* 0.8 s)(* 0.8 s))
+     (-> (box (* 0.8 s) (* 0.8 s) (* 0.8 s))
          (rotate-box [theta theta theta])
          (translate-box (gv/vec3 0 0 (* 0.8 s)))
          (translate-box lower-right))
@@ -122,8 +122,7 @@
      (-> (box (* 0.3 s) (* 0.3 s) (* 0.3 s))
          (rotate-box [theta theta theta])
          (translate-box (gv/vec3 0 0 (* -0.6 s)))
-         (translate-box lower-right))
-     ]))
+         (translate-box lower-right))]))
 
 (defn draw [shapes]
   (q/background "white")

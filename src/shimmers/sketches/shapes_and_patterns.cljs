@@ -149,16 +149,16 @@
       (svg-row {:type type :v v :row-height row-height}))))
 
 (defn scene []
-(csvg/svg {:width width
-           :height height
-           :stroke "black"
-           :fill "none"
-           :stroke-width 1.0}
-          (apply list (shapes (dr/rand-nth [17 23])))))
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :fill "none"
+             :stroke-width 1.0}
+            (apply list (shapes (dr/rand-nth [17 23])))))
 
 (sketch/definition shapes-and-patterns
-{:created-at "2022-02-19"
- :type :svg
- :tags #{}}
-(ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)
-            "sketch-host"))
+  {:created-at "2022-02-19"
+   :type :svg
+   :tags #{}}
+  (ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)
+              "sketch-host"))

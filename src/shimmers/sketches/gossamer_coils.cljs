@@ -12,7 +12,7 @@
   (let [fc (/ (q/frame-count) 100)
         adjusted-r (+ (* 50 (- (q/noise r (* 2 fc)) 0.5)) r)]
     (g/translate (g/as-cartesian (gv/vec2 adjusted-r fc))
-                    center)))
+                 center)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

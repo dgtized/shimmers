@@ -27,7 +27,7 @@
         q (cq/rel-pos 1.0 0.28)]
     (-> (g/point-at (gl/line2 p q) d)
         (g/translate (gv/vec2 (* 2 (q/random-gaussian))
-                                 (* 8 (q/random-gaussian))))
+                              (* 8 (q/random-gaussian))))
         (hex/hexagon (+ 20 (q/random-gaussian)))
         (g/vertices 6)
         gp/polygon2

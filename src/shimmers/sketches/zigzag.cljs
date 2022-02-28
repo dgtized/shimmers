@@ -34,8 +34,8 @@
       (zig gap [(* i gap) 0] (/ t 256)))))
 
 (sketch/defquil zigzag
-    :created-at "2020-12-04"
-    :size [600 600]
-    :draw draw
-    :middleware [framerate/mode])
+  :created-at "2020-12-04"
+  :size [600 600]
+  :draw draw
+  :middleware [framerate/mode])
 

@@ -58,7 +58,7 @@
            (if (empty? path)
              root
              (let [[node & remaining] path]
-               (recur remaining ))))))))
+               (recur remaining))))))))
 
   (comment
     (def tree (create {:max-children 2} (repeatedly 10 #(rect/rect (rand-int 100) (rand-int 100) (rand-int 10) (rand-int 10)))))

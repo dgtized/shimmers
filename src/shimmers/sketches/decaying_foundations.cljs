@@ -23,7 +23,7 @@
   (let [x-gap (tm/random (/ width 24) (/ width 12))]
     (for [x (range (* -0.33 width x-off) (q/width) width)]
       (g/translate (brick (- width x-gap) height)
-                      (gv/vec2 x y)))))
+                   (gv/vec2 x y)))))
 
 (defn wall [brick-height]
   (let [screen-height (q/height)

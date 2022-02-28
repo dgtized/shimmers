@@ -65,7 +65,7 @@
     :start (fn [depth]
              (let [divider (Math/pow 2 depth)
                    length (/ width divider)]
-               {:pos (v/vec2 (* (/(Math/sqrt 2) 3) length) (- height length))
+               {:pos (v/vec2 (* (/ (Math/sqrt 2) 3) length) (- height length))
                 :length (/ length (Math/sqrt 2))}))}])
 
 (defn by-name [n]

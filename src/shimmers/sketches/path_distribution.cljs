@@ -27,7 +27,7 @@
         [x1 y1] (tm/* (tm/- p midpoint) d)
         [x2 y2] (tm/* (tm/- q midpoint) d)]
     (g/translate (gl/line2 (- y1) x1 (- y2) x2)
-                    midpoint)))
+                 midpoint)))
 
 (defn displace-at-bisector [line d]
   (let [[p q] (g/vertices line)

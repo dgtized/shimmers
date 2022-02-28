@@ -107,7 +107,6 @@
 
   (is (= [5 2 0] (sut/fit-grid 10 {:rows 2})))
   (is (= [2 5 0] (sut/fit-grid 10 {:cols 2})))
-  (is (= [3 3 -1] (sut/fit-grid 10 {:rows 3 :cols 3})))
-  )
+  (is (= [3 3 -1] (sut/fit-grid 10 {:rows 3 :cols 3}))))
 
 (comment (t/run-tests))

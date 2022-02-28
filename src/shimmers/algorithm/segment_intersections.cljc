@@ -68,9 +68,8 @@
                     below (avl/nearest T' < (:y p))
                     events (if-let [crossing-ab (crossing-point above below)]
                              (disj events crossing-ab)
-                             events)
-                    ]
-                ))
+                             events)]))
+
             (recur events T intersections))))))
 
 ;; Some AVL tree tests
@@ -81,6 +80,5 @@
          (avl/split-key 20 t)
          (avl/split-at 3 t)
          (avl/subrange t >= 20 < 40)
-         (nth t 5)
-         )
+         (nth t 5))
 

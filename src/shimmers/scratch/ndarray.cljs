@@ -13,5 +13,4 @@
   (seq (nd/step a 1 nil))
   ;; => (0 1 2 3 4 5 6 7 8)
   (seq (nd/step a -1 -1))
-  (-> a (nd/truncate-h 2 2) (nd/truncate-l 1 1) nd/index-seq)
-  )
+  (-> a (nd/truncate-h 2 2) (nd/truncate-l 1 1) nd/index-seq))

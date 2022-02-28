@@ -158,8 +158,7 @@
   (small-angle-between (gv/vec2 1 0) (gv/vec2 0 1))
   (small-angle-between (gv/vec2 0 1) (gv/vec2 1 0))
 
-  (tm/cross (gv/vec2 5 3) (gv/vec2 5 4))
-  )
+  (tm/cross (gv/vec2 5 3) (gv/vec2 5 4)))
 
 ;; Possibly worth looking into similar routines in the Java Topology Suite
 ;; https://github.com/locationtech/jts, and https://github.com/bjornharrtell/jsts

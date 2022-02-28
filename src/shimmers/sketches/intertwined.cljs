@@ -126,8 +126,7 @@
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 0 10) (gv/vec2 4 12))
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 0 10))
   (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 4 12) (gv/vec2 10 0))
-  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 10 0) (gv/vec2 4 12))
-  )
+  (poly-detect/cycle-clockwise-from-edge mg (gv/vec2 10 0) (gv/vec2 4 12)))
 
 (defn debug-isecs [state path]
   (assoc state
