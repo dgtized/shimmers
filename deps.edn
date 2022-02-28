@@ -70,7 +70,7 @@
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
                 lambdaisland/kaocha {:mvn/version "1.63.998" :exclusions [com.lambdaisland/glogi]}
                 com.lambdaisland/glogi {:mvn/version "1.1.144"}
-                com.lambdaisland/kaocha-cljs {:mvn/version "1.1.118"}}}}}
+                com.lambdaisland/kaocha-cljs {:mvn/version "1.2.123"}}}}}
 
 ;; fastmath is clojure only, but worth taking a look at for certain impls
 ;; https://github.com/generateme/fastmath
