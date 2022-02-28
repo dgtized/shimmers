@@ -73,7 +73,7 @@
           quadtree
           branches))
 
-(defn influencing-attractors [{:keys [quadtree influence-distance]} attractors]
+(defn influencing-attractors [{:keys [quadtree influence-distance attractors]}]
   (apply merge-with set/union
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
@@ -81,7 +81,7 @@
            {(closest-branch attractor influences) #{attractor}})))
 
 (defn grow-branches
-  [{:keys [segment-distance snap-theta jitter]} branches influencers]
+  [{:keys [segment-distance snap-theta jitter branches]} influencers]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
@@ -96,7 +96,7 @@
   This is the fallback case if no attractor is close enough to influence a
   branch. It grows faster as a slight optimization as this case costs
   branches*attractors comparisons per call."
-  [{:keys [segment-distance snap-theta]} branches attractors]
+  [{:keys [segment-distance snap-theta branches attractors]}]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))
@@ -123,15 +123,15 @@
     :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
-    (let [influencers (influencing-attractors state attractors)]
+    (let [influencers (influencing-attractors state)]
       (if (empty? influencers)
-        (let [new-branch (grow-closest state branches attractors)
+        (let [new-branch (grow-closest state)
               branches' (conj branches new-branch)]
           (assoc state
                  :weights (update-weights weights branches' [new-branch])
                  :branches branches'
                  :quadtree (add-branch-positions quadtree [new-branch])))
-        (let [growth (vec (grow-branches state branches influencers))
+        (let [growth (vec (grow-branches state influencers))
               quadtree' (add-branch-positions quadtree growth)
               pruned (pruning-set quadtree' prune-distance influencers)
               branches' (vec (concat branches growth))]

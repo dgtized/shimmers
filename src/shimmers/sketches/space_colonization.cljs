@@ -114,7 +114,7 @@
       (q/point x y)))
 
   (when ((some-fn :bubbles :influenced-by :next-branch) debug)
-    (let [influencers (colonize/influencing-attractors state attractors)]
+    (let [influencers (colonize/influencing-attractors state)]
       (doseq [[branch active-attractors] influencers]
         (doseq [attractor active-attractors]
           (when (:bubbles debug)
