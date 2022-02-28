@@ -73,7 +73,7 @@
           quadtree
           branches))
 
-(defn influencing-attractors [quadtree influence-distance attractors]
+(defn influencing-attractors [{:keys [quadtree influence-distance]} attractors]
   (apply merge-with set/union
          (for [attractor attractors
                :let [influences (influenced-branches quadtree influence-distance attractor)]
@@ -119,12 +119,12 @@
        set))
 
 (defn grow
-  [{:keys [influence-distance segment-distance prune-distance snap-theta jitter
+  [{:keys [segment-distance prune-distance snap-theta jitter
            attractors branches quadtree weights]
     :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
-    (let [influencers (influencing-attractors quadtree influence-distance attractors)]
+    (let [influencers (influencing-attractors state attractors)]
       (if (empty? influencers)
         (let [new-branch (grow-closest segment-distance snap-theta branches attractors)
               branches' (conj branches new-branch)]

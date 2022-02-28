@@ -103,7 +103,7 @@
   (cq/circle pos prune))
 
 (defn draw-debug
-  [{:keys [attractors branches influence-distance prune-distance quadtree]} debug]
+  [{:keys [attractors branches influence-distance prune-distance] :as state} debug]
   (reset! defo {:attractors (count attractors)
                 :branches (count branches)})
 
@@ -114,7 +114,7 @@
       (q/point x y)))
 
   (when ((some-fn :bubbles :influenced-by :next-branch) debug)
-    (let [influencers (colonize/influencing-attractors attractors quadtree influence-distance)]
+    (let [influencers (colonize/influencing-attractors state attractors)]
       (doseq [[branch active-attractors] influencers]
         (doseq [attractor active-attractors]
           (when (:bubbles debug)
