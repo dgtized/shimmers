@@ -34,14 +34,15 @@
   (apply min-key (partial branch-distance attractor) branches))
 
 (defn average-attraction
-  ([branch attractors] (average-attraction branch attractors (v/vec2)))
-  ([{:keys [position direction]} attractors jitter]
+  ([branch attractors]
+   (average-attraction branch attractors 0 (v/vec2)))
+  ([{:keys [position direction]} attractors snap-theta jitter]
    (-> (reduce (fn [acc attractor]
                  (tm/+ acc (tm/- attractor position)))
-               direction
-               attractors)
+               direction attractors)
        (tm/+ jitter)
-       tm/normalize)))
+       tm/normalize
+       (v/snap-to snap-theta))))
 
 ;; Approach borrowed from
 ;; https://github.com/jasonwebb/2d-space-colonization-experiments/blob/master/core/Network.js#L108-L114
@@ -86,7 +87,7 @@
                           (into {}))]
     (for [[branch attractors] influencers]
       (grow-branch branch (get branch-index branch)
-                   (v/snap-to (average-attraction branch attractors (jitter)) snap-theta)
+                   (average-attraction branch attractors snap-theta (jitter))
                    segment-distance))))
 
 (defn grow-closest
@@ -105,7 +106,7 @@
                      branch branches]
                  [branch bud]))]
     (grow-branch branch (get branch-index branch)
-                 (v/snap-to (average-attraction branch [attractor]) snap-theta)
+                 (average-attraction branch [attractor] snap-theta)
                  (max segment-distance
                       (/ (branch-distance attractor branch) 2)))))
 
