@@ -81,7 +81,7 @@
            {(closest-branch attractor influences) #{attractor}})))
 
 (defn grow-branches
-  [segment-distance snap-theta jitter branches influencers]
+  [{:keys [segment-distance snap-theta jitter]} branches influencers]
   (let [branch-index (->> branches
                           (map-indexed (fn [idx branch] {branch idx}))
                           (into {}))]
@@ -119,8 +119,7 @@
        set))
 
 (defn grow
-  [{:keys [segment-distance prune-distance snap-theta jitter
-           attractors branches quadtree weights]
+  [{:keys [prune-distance attractors branches quadtree weights]
     :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
@@ -132,7 +131,7 @@
                  :weights (update-weights weights branches' [new-branch])
                  :branches branches'
                  :quadtree (add-branch-positions quadtree [new-branch])))
-        (let [growth (vec (grow-branches segment-distance snap-theta jitter branches influencers))
+        (let [growth (vec (grow-branches state branches influencers))
               quadtree' (add-branch-positions quadtree growth)
               pruned (pruning-set quadtree' prune-distance influencers)
               branches' (vec (concat branches growth))]
