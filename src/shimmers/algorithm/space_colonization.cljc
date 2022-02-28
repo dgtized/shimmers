@@ -1,9 +1,10 @@
 (ns shimmers.algorithm.space-colonization
-  (:require [clojure.set :as set]
-            [shimmers.math.vector :as v]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.set :as set]
+   [shimmers.math.vector :as v]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.math.core :as tm]))
 
 ;; Ideas:
 ;;  * attractors could have influence PER attractor instead of global, or a weight on their influence?

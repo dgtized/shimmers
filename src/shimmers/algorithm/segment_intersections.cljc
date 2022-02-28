@@ -1,11 +1,12 @@
 (ns shimmers.algorithm.segment-intersections
   "https://en.wikipedia.org/wiki/Bentley%E2%80%93Ottmann_algorithm"
-  (:require [clojure.data.avl :as avl]
-            #?(:clj [clojure.data.priority-map :as priority]
-               :cljs [tailrecursion.priority-map :as priority])
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.rect :as rect]))
+  (:require
+   [clojure.data.avl :as avl]
+   #?(:clj [clojure.data.priority-map :as priority]
+      :cljs [tailrecursion.priority-map :as priority])
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]))
 
 ;; tailrecursion.priority-map is cljs only, hence why this is cljs and not cljc
 

@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.kinematic-chain
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn project [angle length]
   (g/as-cartesian (gv/vec2 length angle)))

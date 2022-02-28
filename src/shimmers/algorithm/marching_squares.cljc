@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.marching-squares
   "https://en.wikipedia.org/wiki/Marching_squares"
-  (:require [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn corners [[x y] [xs ys]]
   [(gv/vec2 x y)

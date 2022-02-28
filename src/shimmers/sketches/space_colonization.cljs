@@ -2,25 +2,26 @@
   "Inspired by https://thecodingtrain.com/CodingChallenges/017-spacecolonizer.html and
   https://medium.com/@jason.webb/space-colonization-algorithm-in-javascript-6f683b743dc5
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
-  (:require [clojure.edn :as edn]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.space-colonization :as colonize]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.ui.debug :as debug]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.math.geometry.triangle :as triangle]
-            [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.edn :as edn]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.space-colonization :as colonize]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.probability :as p]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 (defonce settings

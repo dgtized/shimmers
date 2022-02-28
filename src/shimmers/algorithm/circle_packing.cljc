@@ -1,8 +1,9 @@
 (ns shimmers.algorithm.circle-packing
-  (:require [shimmers.math.equations :as eq]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.spatialtree :as spatialtree]))
+  (:require
+   [shimmers.math.equations :as eq]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.spatialtree :as spatialtree]))
 
 ;; Considering implementing
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/ for performance

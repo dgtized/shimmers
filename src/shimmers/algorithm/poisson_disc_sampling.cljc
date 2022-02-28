@@ -1,8 +1,9 @@
 (ns shimmers.algorithm.poisson-disc-sampling
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.vector :as v]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.vector :as v]))
 
 ;; Various discussion on variable density sampling:
 ;; https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf

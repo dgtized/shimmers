@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.rtree
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.utils :as gu]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils :as gu]))
 
 ;; adapted from
 ;; https://medium.com/@wetter.j/rtrees-in-clojure-51aa164a6102
