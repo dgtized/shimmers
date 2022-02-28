@@ -43,9 +43,9 @@
    (physics/physics
     {:particles (repeatedly 64 make-particle)
      :behaviors
-     {:dipoleA (dipole (gv/vec2 (cq/rel-w 0.25) (cq/rel-h 0.6)) (cq/rel-h 0.1)
+     {:dipoleA (dipole (cq/rel-vec 0.25 0.6) (cq/rel-h 0.1)
                        (cq/rel-h 0.4) 1.2)
-      :dipoleB (dipole (gv/vec2 (cq/rel-w 0.75) (cq/rel-h 0.4)) (cq/rel-h 0.1)
+      :dipoleB (dipole (cq/rel-vec 0.75 0.4) (cq/rel-h 0.1)
                        (cq/rel-h 0.4) -1.3)}
      :drag 0.05})})
 
@@ -53,12 +53,11 @@
   (update state :physics physics/timestep 10))
 
 (defn brush [particle]
-  (let [[x y] (physics/position particle)]
-    (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
-        (g/scale-size 5)
-        (g/rotate (rand))
-        (g/translate (gv/vec2 x y))
-        cq/draw-polygon)))
+  (-> (gt/triangle2 [0 0] [0 1.5] [2 0])
+      (g/scale-size 5)
+      (g/rotate (rand))
+      (g/translate (physics/position particle))
+      cq/draw-polygon))
 
 (defn draw [{:keys [physics base-color]}]
   ;; (q/background 1.0 0.1)
