@@ -72,6 +72,7 @@
             shimmers.sketches.lattice-in-steps
             shimmers.sketches.lattice-of-common-chords
             shimmers.sketches.lifecycle-of-shapes
+            shimmers.sketches.magnetic-fields
             shimmers.sketches.marching-squares
             shimmers.sketches.mechanism
             shimmers.sketches.memory-allocation
