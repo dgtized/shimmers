@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -10,13 +11,15 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+(defn random-point-inside [{:keys [p size]}]
+  (tm/+ p (dr/random (size 0)) (dr/random (size 1))))
 
 (defn closest [dipoles pos]
   (apply min-key (fn [dipole] (g/dist-squared pos (:p dipole))) dipoles))
@@ -32,7 +35,7 @@
       (tm/+ pos (tm/normalize force-at-point 8)))))
 
 (defn line [bounds dipoles]
-  (let [start (g/random-point-inside (g/scale-size bounds 0.9))]
+  (let [start (random-point-inside (g/scale-size bounds 0.8))]
     (->> start
          (iterate (line-step dipoles))
          #_(take-while (fn [p] (g/contains-point? bounds p)))
@@ -41,7 +44,7 @@
 
 (defn random-dipole [bounds]
   (let [strength (dr/random 2 6)]
-    {:p (g/random-point-inside (g/scale-size bounds 0.5))
+    {:p (random-point-inside (g/scale-size bounds 0.5))
      :strength (if (dr/chance 0.5) strength (- strength))}))
 
 (defn shapes []
@@ -63,6 +66,6 @@
 (sketch/definition magnetic-fields
   {:created-at "2022-02-27"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :magnetic-fields)
               "sketch-host"))
