@@ -3,11 +3,9 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.hexagon :as hex]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
@@ -39,26 +37,21 @@
             [axial (assoc (hex/hexagon center size)
                           :axial axial)]))))
 
-(def flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
-
-(defn hexagon->polygon [{:keys [p r axial]}]
-  (let [hex (-> (for [theta flat-hex-angles]
-                  (v/polar r theta))
-                gp/polygon2
-                (g/translate p))
-        text (svg/text p
+(defn hexagon [{:keys [p axial] :as hex}]
+  (svg/group {}
+             (hex/flat-hexagon->polygon hex)
+             (svg/text p
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
                         :font-size "0.66em"
                         :stroke "none"
                         :fill "black"
                         :alignment-baseline "middle"
-                        :text-anchor "middle"})]
-    (svg/group {} hex text)))
+                        :text-anchor "middle"})))
 
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)]
-    (map hexagon->polygon (vals (hex-grid bounds 16 10)))))
+    (map hexagon (vals (hex-grid bounds 16 10)))))
 
 (defn scene []
   (csvg/svg {:width width

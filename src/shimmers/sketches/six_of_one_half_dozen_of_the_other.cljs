@@ -1,33 +1,24 @@
 (ns shimmers.sketches.six-of-one-half-dozen-of-the-other
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.hexagon :as hex :refer [hexagon]]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
-
-(def flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
-
-(defn hexagon->polygon [{:keys [p r]}]
-  (-> (for [theta flat-hex-angles]
-        (v/polar r theta))
-      gp/polygon2
-      (g/translate p)))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.hexagon :as hex :refer [hexagon]]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
 (defn subdivide-hexagon-inset
   "Returns a list of hexagons contained in or just touching the border of
   containing hexagon subdivided by `n`, where `n` >= 3."
   [{:keys [p r]} n]
   (let [r' (/ r n)
-        hex (hexagon->polygon (hex/hexagon p (* r 0.999)))]
+        hex (hex/flat-hexagon->polygon (hex/hexagon p (* r 0.999)))]
     (->> (hex/axial-range (- n 2))
          (map (comp (partial g/translate (hex/hexagon p r'))
                     (partial hex/axial-flat->pixel r')))
@@ -37,7 +28,7 @@
   [{:keys [p r]}]
   (let [hex (hexagon p (/ r 3))]
     (into [hex]
-          (for [theta flat-hex-angles]
+          (for [theta hex/flat-hex-angles]
             (g/translate hex (v/polar r theta))))))
 
 (defn maybe-subdivide [shape]
@@ -76,7 +67,7 @@
   (q/with-translation (cq/rel-pos 0.5 0.5)
     (doseq [shape shapes]
       (->> shape
-           hexagon->polygon
+           hex/flat-hexagon->polygon
            cq/draw-polygon))))
 
 (sketch/defquil six-of-one-half-dozen-of-the-other

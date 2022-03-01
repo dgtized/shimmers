@@ -1,10 +1,22 @@
 (ns shimmers.math.hexagon
-  (:require [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.math.vector :as v]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn hexagon [p r]
   (gc/circle p r))
+
+(def ^:const flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
+
+(defn flat-hexagon->polygon [{:keys [p r]}]
+  (-> (for [theta flat-hex-angles]
+        (v/polar r theta))
+      gp/polygon2
+      (g/translate p)))
 
 ;; https://www.redblobgames.com/grids/hexagons/
 (defn cube->axial [[x _ z]]
