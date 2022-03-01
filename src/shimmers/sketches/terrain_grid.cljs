@@ -32,13 +32,12 @@
         base (tm/+ p
                    (gv/vec2 (* 0.5 (- width (* (/ 3 4) (- cols 1) w)))
                             (* 0.5 (- height (* (- rows 0.5) h)))))]
-    (into {}
-          (for [q (range cols)
-                r (range rows)
-                :let [axial (oddq-to-axial q r)
-                      center (tm/+ base (hex/axial-flat->pixel size axial))]]
-            [axial (assoc (hex/hexagon center size)
-                          :axial axial)]))))
+    (for [q (range cols)
+          r (range rows)
+          :let [axial (oddq-to-axial q r)
+                center (tm/+ base (hex/axial-flat->pixel size axial))]]
+      (assoc (hex/hexagon center size)
+             :axial axial))))
 
 (defn hexagon [show-coords {:keys [p axial] :as hex}]
   (svg/group {:on-click #(swap! defo assoc :hex hex)}
@@ -58,7 +57,8 @@
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         show-coords (get-in @ui-state [:debug :coords])]
-    (map (partial hexagon show-coords) (vals (hex-grid bounds 16 10)))))
+    (for [cell (hex-grid bounds 16 10)]
+      (hexagon show-coords cell) )))
 
 (defn scene []
   (csvg/svg {:width width
