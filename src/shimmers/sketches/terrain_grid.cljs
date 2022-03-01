@@ -24,9 +24,9 @@
     [q r]))
 
 (defn hex-grid [{[w h] :size} rows cols]
-  (let [size (min (/ w (* 2 cols))
-                  (/ h (* (Math/sqrt 3) rows)))
-        base (gv/vec2 size (* 0.5 (* size (Math/sqrt 3))))]
+  (let [size (min (/ w (+ (* (/ 4 3) rows) (Math/sqrt 2)))
+                  (/ h (* 1.35 (+ 0.5 rows))))
+        base (gv/vec2 (+ 1 size) (+ 1 (* 0.5 (* size (Math/sqrt 3)))))]
     (into {}
           (for [q (range rows)
                 r (range cols)
@@ -52,7 +52,7 @@
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)]
-    (map hexagon->polygon (vals (hex-grid bounds 4 3)))))
+    (map hexagon->polygon (vals (hex-grid bounds 16 12)))))
 
 (defn scene []
   (csvg/svg {:width width
