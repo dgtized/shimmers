@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -10,6 +11,8 @@
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (def width 800)
 (def height 600)
@@ -38,8 +41,10 @@
                           :axial axial)]))))
 
 (defn hexagon [{:keys [p axial] :as hex}]
-  (svg/group {}
-             (hex/flat-hexagon->polygon hex)
+  (svg/group {:style {:pointer-events "fill"}
+              :on-click #(swap! defo assoc :hex hex)}
+             (let [vertices (g/vertices (hex/flat-hexagon->polygon hex))]
+               (csvg/path (concat [[:M (first vertices)]] (map (fn [p] [:L p]) (rest vertices)) [[:Z]])))
              (svg/text p
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
@@ -65,5 +70,7 @@
   {:created-at "2022-02-28"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :terrain-grid)
+  (ctrl/mount (view-sketch/page-for scene
+                                    :terrain-grid
+                                    #(debug/display defo))
               "sketch-host"))
