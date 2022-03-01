@@ -10,9 +10,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.sequence :as cs]
-   [clojure.set :as set]))
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 
