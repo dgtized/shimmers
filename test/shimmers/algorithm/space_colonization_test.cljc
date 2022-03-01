@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.space-colonization-test
   (:require
-   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   #?(:clj [clojure.test :as t :refer [deftest is]]
+      :cljs [cljs.test :as t :refer-macros [deftest is] :include-macros true])
    [shimmers.algorithm.space-colonization :as sut]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
