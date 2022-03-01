@@ -40,21 +40,25 @@
             [axial (assoc (hex/hexagon center size)
                           :axial axial)]))))
 
-(defn hexagon [{:keys [p axial] :as hex}]
+(defn hexagon [show-coords {:keys [p axial] :as hex}]
   (svg/group {:on-click #(swap! defo assoc :hex hex)}
              (hex/flat-hexagon->polygon hex)
-             (svg/text p
-                       (apply str (interpose "," axial))
-                       {:font-weight "normal"
-                        :font-size "0.66em"
-                        :stroke "none"
-                        :fill "black"
-                        :alignment-baseline "middle"
-                        :text-anchor "middle"})))
+             (when show-coords
+               (svg/text p
+                         (apply str (interpose "," axial))
+                         {:font-weight "normal"
+                          :font-size "0.66em"
+                          :stroke "none"
+                          :fill "black"
+                          :alignment-baseline "middle"
+                          :text-anchor "middle"}))))
+
+(defonce ui-state (ctrl/state {:debug {:coords true}}))
 
 (defn shapes []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)]
-    (map hexagon (vals (hex-grid bounds 16 10)))))
+  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
+        show-coords (get-in @ui-state [:debug :coords])]
+    (map (partial hexagon show-coords) (vals (hex-grid bounds 16 10)))))
 
 (defn scene []
   (csvg/svg {:width width
@@ -66,11 +70,14 @@
              :style {:pointer-events "fill"}}
             (shapes)))
 
+(defn ui-controls []
+  [:div.flexcols
+   [:div (ctrl/checkbox ui-state "Show Coordinates" [:debug :coords])]
+   (debug/display defo)])
+
 (sketch/definition terrain-grid
   {:created-at "2022-02-28"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene
-                                    :terrain-grid
-                                    #(debug/display defo))
+  (ctrl/mount (view-sketch/page-for scene :terrain-grid ui-controls)
               "sketch-host"))
