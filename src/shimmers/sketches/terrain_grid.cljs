@@ -43,8 +43,7 @@
 (defn hexagon [{:keys [p axial] :as hex}]
   (svg/group {:style {:pointer-events "fill"}
               :on-click #(swap! defo assoc :hex hex)}
-             (let [vertices (g/vertices (hex/flat-hexagon->polygon hex))]
-               (csvg/path (concat [[:M (first vertices)]] (map (fn [p] [:L p]) (rest vertices)) [[:Z]])))
+             (hex/flat-hexagon->polygon hex)
              (svg/text p
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
