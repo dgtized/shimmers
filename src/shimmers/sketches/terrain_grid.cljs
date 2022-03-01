@@ -10,7 +10,9 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.common.sequence :as cs]
+   [clojure.set :as set]))
 
 (defonce defo (debug/state))
 
@@ -39,8 +41,20 @@
       (assoc (hex/hexagon center size)
              :axial axial))))
 
-(defn hexagon [show-coords {:keys [p axial] :as hex}]
-  (svg/group {:on-click #(swap! defo assoc :hex hex)}
+(defn neighbors [index axial]
+  (for [neighbor (hex/axial-range 1)
+        :let [coord (tm/+ (gv/vec2 axial) neighbor)]
+        :when (and (not= axial coord) (get index coord))]
+    coord))
+
+(defn hex-click
+  [index {:keys [axial] :as hex}]
+  #(swap! defo assoc
+          :hex hex
+          :neighbors (neighbors index axial)))
+
+(defn hexagon [show-coords {:keys [p axial] :as hex} click]
+  (svg/group {:on-click click}
              (hex/flat-hexagon->polygon hex)
              (when show-coords
                (svg/text p
@@ -56,9 +70,11 @@
 
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
-        show-coords (get-in @ui-state [:debug :coords])]
-    (for [cell (hex-grid bounds 16 10)]
-      (hexagon show-coords cell) )))
+        show-coords (get-in @ui-state [:debug :coords])
+        grid (hex-grid bounds 16 10)
+        index (into {} (for [c grid] [(:axial c) c]))]
+    (for [cell grid]
+      (hexagon show-coords cell (hex-click index cell)))))
 
 (defn scene []
   (csvg/svg {:width width
