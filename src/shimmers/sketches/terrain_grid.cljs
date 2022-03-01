@@ -41,9 +41,8 @@
                           :axial axial)]))))
 
 (defn hexagon [{:keys [p axial] :as hex}]
-  (svg/group {}
-             (with-meta (hex/flat-hexagon->polygon hex)
-               {:on-click #(swap! defo assoc :hex hex)})
+  (svg/group {:on-click #(swap! defo assoc :hex hex)}
+             (hex/flat-hexagon->polygon hex)
              (svg/text p
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
