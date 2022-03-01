@@ -31,8 +31,8 @@
           (for [q (range cols)
                 r (range rows)
                 :let [axial (oddq-to-axial q r)
-                      center (hex/axial-flat->pixel size axial)]]
-            [axial (assoc (hex/hexagon (tm/+ center base) size)
+                      center (tm/+ base (hex/axial-flat->pixel size axial))]]
+            [axial (assoc (hex/hexagon center size)
                           :axial axial)]))))
 
 (def flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
@@ -46,6 +46,8 @@
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
                         :font-size "0.66em"
+                        :stroke "none"
+                        :fill "black"
                         :alignment-baseline "middle"
                         :text-anchor "middle"})]
     (svg/group {} hex text)))
@@ -63,7 +65,7 @@
             (shapes)))
 
 (sketch/definition terrain-grid
-  {:created-at "2022-"
+  {:created-at "2022-02-28"
    :type :svg
    :tags #{}}
   (ctrl/mount (view-sketch/page-for scene :terrain-grid)
