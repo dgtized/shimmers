@@ -44,7 +44,8 @@
                 (g/translate p))
         text (svg/text p
                        (apply str (interpose "," axial))
-                       {:fill "black"
+                       {:font-weight "normal"
+                        :font-size "0.66em"
                         :alignment-baseline "middle"
                         :text-anchor "middle"})]
     (svg/group {} hex text)))
