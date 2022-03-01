@@ -72,8 +72,12 @@
 
 (defn ui-controls []
   [:div.flexcols
-   [:div (ctrl/checkbox ui-state "Show Coordinates" [:debug :coords])]
-   (debug/display defo)])
+   [:div {:style {:width "10em"}}
+    [:h4 "Controls"]
+    (ctrl/checkbox ui-state "Show Coordinates" [:debug :coords])]
+   [:div
+    [:h4 "Debug"]
+    (debug/display defo)]])
 
 (sketch/definition terrain-grid
   {:created-at "2022-02-28"
