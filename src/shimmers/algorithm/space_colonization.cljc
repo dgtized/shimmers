@@ -15,12 +15,10 @@
 ;;  * add more weight to roots of the tree
 ;;  * improve rules for detecting steady state completion
 ;;  * grow to fit shapes or other distributions of attractors
-(defrecord Branch [parent position direction])
+(defrecord Branch [parent position])
 
-(defn grow-branch [parent parent-idx direction length]
-  (->Branch parent-idx
-            (tm/+ (:position parent) (tm/normalize direction length))
-            direction))
+(defn grow-branch [{:keys [position]} parent-idx direction length]
+  (->Branch parent-idx (tm/+ position (tm/normalize direction length))))
 
 (defn branch-distance [attractor branch]
   (g/dist attractor (:position branch)))
@@ -37,11 +35,10 @@
 (defn average-attraction
   ([branch attractors]
    (average-attraction branch attractors 0 (v/vec2)))
-  ([{:keys [position direction]} attractors snap-theta jitter]
+  ([{:keys [position]} attractors snap-theta jitter]
    (-> (reduce (fn [acc attractor]
-                 (tm/+ acc (tm/- attractor position)))
-               direction attractors)
-       (tm/+ jitter)
+                 (tm/+ acc (tm/normalize (tm/- attractor position))))
+               jitter attractors)
        tm/normalize
        (v/snap-to snap-theta))))
 
@@ -146,8 +143,8 @@
   (some (fn [{:keys [steady-state] :as s}] (when steady-state s))
         (iterate grow state)))
 
-(defn make-root [position direction]
-  (->Branch nil position direction))
+(defn make-root [position]
+  (->Branch nil position))
 
 (defn create-tree
   [{:keys [bounds attractors branches
@@ -156,7 +153,7 @@
    :prune-distance prune-distance
    :segment-distance segment-distance
    :snap-theta snap-theta
-   :jitter (partial v/jitter 1.0)
+   :jitter (partial v/jitter 0.33)
    :attractors attractors
    :branches branches
    :weights (update-weights {} branches branches)

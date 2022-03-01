@@ -25,7 +25,7 @@
 
 (defn build-tree [bounds source attractors]
   (-> {:bounds bounds
-       :branches [(colonize/make-root source (gv/vec2))]
+       :branches [(colonize/make-root source)]
        :attractors attractors
        :influence-distance 96
        :prune-distance 6

@@ -64,7 +64,7 @@
 
 (defn gen-root [{[w h] :size} roots]
   (mapv (fn [base]
-          (colonize/make-root (v/vec2 (* w base) (- h 10)) (v/vec2 0 -1)))
+          (colonize/make-root (v/vec2 (* w base) (- h 10))))
         (cs/centered-range roots)))
 
 (defn generate-tree
