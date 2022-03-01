@@ -64,10 +64,13 @@
    weights growth))
 
 (defn add-branch-positions [quadtree branches]
-  ;; CAUTION: if add-point fails the return value is nil
-  ;; I believe this happens if point is out of bounds of the quadtree
+  ;; CAUTION: if add-point fails the return value is nil. I believe
+  ;; this happens if point is out of bounds of the quadtree but we
+  ;; can recover as those branches should never be within an
+  ;; attractors range.q
   (reduce (fn [tree branch]
-            (g/add-point tree (:position branch) branch))
+            (if-let [tree' (g/add-point tree (:position branch) branch)]
+              tree' tree))
           quadtree
           branches))
 
