@@ -1,10 +1,10 @@
 (ns shimmers.algorithm.space-colonization-test
-  (:require [cljs.test :as t :include-macros true
-             :refer-macros [deftest is run-tests testing]]
-            [shimmers.algorithm.space-colonization :as sut]
-            [shimmers.math.vector :as v]
-            [shimmers.math.equations :as eq]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.algorithm.space-colonization :as sut]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
+   [thi.ng.math.core :as tm]))
 
 (deftest closest
   (is (= {:position (v/vec2 2 1)}
@@ -23,4 +23,4 @@
                    (sut/average-attraction branch attractors)
                    0.001))))
 
-(comment (run-tests))
+(comment (t/run-tests))
