@@ -41,9 +41,9 @@
                           :axial axial)]))))
 
 (defn hexagon [{:keys [p axial] :as hex}]
-  (svg/group {:style {:pointer-events "fill"}
-              :on-click #(swap! defo assoc :hex hex)}
-             (hex/flat-hexagon->polygon hex)
+  (svg/group {}
+             (with-meta (hex/flat-hexagon->polygon hex)
+               {:on-click #(swap! defo assoc :hex hex)})
              (svg/text p
                        (apply str (interpose "," axial))
                        {:font-weight "normal"
@@ -62,7 +62,9 @@
              :height height
              :stroke "black"
              :fill "none"
-             :stroke-width 1.0}
+             :stroke-width 1.0
+             ;; required for on-click to fire on pointer events within group/polygon clip path
+             :style {:pointer-events "fill"}}
             (shapes)))
 
 (sketch/definition terrain-grid
