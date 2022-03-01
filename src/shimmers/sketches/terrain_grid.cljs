@@ -23,10 +23,14 @@
         r (- row (/ (- col (bit-and col 1)) 2))]
     [q r]))
 
-(defn hex-grid [{[width height] :size} cols rows]
+(defn hex-grid [{p :p [width height] :size} cols rows]
   (let [size (min (/ width (* 1.5 (+ 0.5 cols)))
                   (/ height (* (Math/sqrt 3) (+ 0.5 rows))))
-        base (gv/vec2 size (* 0.5 (* size (Math/sqrt 3))))]
+        w (* 2 size)
+        h (* (Math/sqrt 3) size)
+        base (tm/+ p
+                   (gv/vec2 (* 0.5 (- width (* (/ 3 4) (- cols 1) w)))
+                            (* 0.5 (- height (* (- rows 0.5) h)))))]
     (into {}
           (for [q (range cols)
                 r (range rows)
@@ -53,8 +57,8 @@
     (svg/group {} hex text)))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)]
-    (map hexagon->polygon (vals (hex-grid bounds 10 6)))))
+  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.95)]
+    (map hexagon->polygon (vals (hex-grid bounds 12 8)))))
 
 (defn scene []
   (csvg/svg {:width width
