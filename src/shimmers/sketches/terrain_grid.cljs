@@ -57,8 +57,8 @@
     (svg/group {} hex text)))
 
 (defn shapes []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.95)]
-    (map hexagon->polygon (vals (hex-grid bounds 12 8)))))
+  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)]
+    (map hexagon->polygon (vals (hex-grid bounds 16 10)))))
 
 (defn scene []
   (csvg/svg {:width width
