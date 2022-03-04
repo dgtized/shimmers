@@ -12,6 +12,10 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; TODO: look at https://www.redblobgames.com/grids/parts/ for how to calculate
+;; adjoining edges. Also, look at how axial coordinates pretend to be grid
+;; coordinates on that page unlike my generation algorithm here.
+
 (defonce defo (debug/state))
 
 (def width 800)
