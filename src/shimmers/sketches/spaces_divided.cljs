@@ -102,7 +102,7 @@
            :edges (intersections->edges isecs))))
 
 (defn draw-inset [shape]
-  (let [inset (gp/inset-polygon shape -4)]
+  (let [inset (gp/inset-polygon (:points shape) -4)]
     (when (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
       (cq/draw-shape inset))))
 
@@ -118,24 +118,27 @@
   (let [polygons (->> edges
                       poly-detect/edges->graph
                       poly-detect/simple-polygons)
-        shapes (->> (for [poly polygons
-                          :let [inset (gp/inset-polygon poly -6.0)]]
-                      (cond (> (g/area (gp/polygon2 inset)) 1000)
+        shapes (->> (for [poly (map gp/polygon2 polygons)
+                          :let [inset (gp/polygon2 (gp/inset-polygon (:points poly) -6.0))]]
+                      (cond (and (> (g/area inset) 1000)
+                                 (not (poly-detect/self-intersecting? inset)))
                             inset
-                            (> (g/area (gp/polygon2 poly)) 50)
+                            (> (g/area poly) 50)
                             poly
                             :else nil))
                     (remove nil?))]
 
     (swap! defo assoc :n-polygons (count shapes))
-    (when-let [shape (first (filter (fn [s] (g/contains-point? (gp/polygon2 s) mouse)) shapes))]
-      (let [poly (gp/polygon2 shape)]
-        (swap! defo assoc :polygon {:p shape
-                                    :self-intersecting (poly-detect/self-intersecting? poly)
-                                    :area (g/area poly)})))
+    (when-let [{:keys [points] :as shape}
+               (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
+      (swap! defo assoc :polygon
+             {:p points
+              :self-intersecting (poly-detect/self-intersecting? shape)
+              :clockwise (poly-detect/clockwise-polygon? points)
+              :area (g/area shape)}))
 
     (doseq [s shapes]
-      (cq/draw-shape s))
+      (cq/draw-polygon s))
 
     (doseq [s shapes]
       (draw-inset s))))
