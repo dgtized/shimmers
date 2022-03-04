@@ -5,6 +5,7 @@
             [shimmers.algorithm.polygon-detection :as sut]
             [shimmers.math.vector :as v]
             [thi.ng.geom.core :as g]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -105,5 +106,14 @@
           "lower-left boundary (counter-clockwise outer loop)")
       (is (= [f c b a d e] (sut/polygon-near-point bisect2 (gv/vec2 20 10)))
           "lower-right boundary (counter-clockwise outer loop)"))))
+
+(deftest self-intersection
+  (let [points [(gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 10) (gv/vec2 0 10)]
+        [a b c d] points]
+    (is (not (sut/self-intersecting? (gp/polygon2 points))))
+    (is (tm/delta= (gv/vec2 5 5)
+                   (sut/self-intersecting? (gp/polygon2 [a b d c]))))
+    (is (tm/delta= (gv/vec2 5 10)
+                   (sut/self-intersecting? (gp/polygon2 [a b c d (gv/vec2 10 20)]))))))
 
 (comment (t/run-tests))

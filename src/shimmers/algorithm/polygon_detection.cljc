@@ -1,8 +1,10 @@
 (ns shimmers.algorithm.polygon-detection
   (:require
    [loom.graph :as lg]
+   [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -141,6 +143,22 @@
 ;; polygon isomorphism?
 ;; detect if hull polygon by orientation of edges?
 ;; scale polygons towards center even if concave polygon without it looking weird?
+
+(defn self-intersecting?
+  "Returns the intersection coordinate of an edge that intersects another edge in a polygon.
+
+  Excludes intersections at overlapping vertices, to ensure the intersection is
+  at some point in the middle of an edge."
+  [polygon]
+  (->> polygon
+       g/edges
+       cs/all-pairs
+       (some (fn [[[p0 q0] [p1 q1]]]
+               (when-let [{type :type isec-point :p} (isec/intersect-line2-line2? p0 q0 p1 q1)]
+                 (when (and (= :intersect type)
+                            (not (tm/delta= isec-point p0))
+                            (not (tm/delta= isec-point q0)))
+                   isec-point))))))
 
 (comment
   (g/heading (gv/vec2 -1 0))
