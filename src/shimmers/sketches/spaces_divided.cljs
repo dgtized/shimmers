@@ -102,9 +102,8 @@
            :edges (intersections->edges isecs))))
 
 (defn draw-inset [shape]
-  (let [inset (gp/inset-polygon shape -4)
-        area (g/area (gp/polygon2 inset))]
-    (when (> area 2000)
+  (let [inset (gp/inset-polygon shape -4)]
+    (when (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
       (cq/draw-shape inset))))
 
 (defn draw [{:keys [mouse edges]}]
@@ -127,25 +126,28 @@
                             poly
                             :else nil))
                     (remove nil?))]
+
+    (swap! defo assoc :n-polygons (count shapes))
     (when-let [shape (first (filter (fn [s] (g/contains-point? (gp/polygon2 s) mouse)) shapes))]
-      (swap! defo assoc :polygon {:p shape
-                                  :area (g/area (gp/polygon2 shape))}))
-    (swap! defo assoc
-           :n-polys (count shapes)
-           :sizes (sort (mapv (comp int g/area gp/polygon2) shapes)))
+      (let [poly (gp/polygon2 shape)]
+        (swap! defo assoc :polygon {:p shape
+                                    :self-intersecting (poly-detect/self-intersecting? poly)
+                                    :area (g/area poly)})))
+
     (doseq [s shapes]
       (cq/draw-shape s))
 
     (doseq [s shapes]
-      (draw-inset s))
+      (draw-inset s))))
 
-    ;; example of self intersect after inset operation
-    (cq/draw-shape (inset-polygon
-                    (mapv gv/vec2 [[383.33 202.97]
-                                   [435.44 199.85]
-                                   [404.54 355.24]
-                                   [411.73 357.02]])
-                    -10))))
+(comment
+  ;; example of self intersect after inset operation
+  (poly-detect/self-intersecting?
+   (gp/polygon2 (inset-polygon (mapv gv/vec2 [[383.33 202.97]
+                                              [435.44 199.85]
+                                              [404.54 355.24]
+                                              [411.73 357.02]])
+                               -10))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
