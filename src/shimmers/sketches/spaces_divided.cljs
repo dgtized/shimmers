@@ -107,6 +107,12 @@
     (when (not (poly-detect/self-intersecting? inset))
       (cq/draw-polygon inset))))
 
+(defn describe [{:keys [points] :as shape}]
+  {:vertices points
+   :self-intersecting (poly-detect/self-intersecting? shape)
+   :clockwise (poly-detect/clockwise-polygon? points)
+   :area (g/area shape)})
+
 (defn draw [{:keys [mouse edges]}]
   (reset! defo {})
   (q/ellipse-mode :radius)
@@ -142,11 +148,10 @@
     ;; highlight points on hover + debug info
     (when-let [{:keys [points] :as shape}
                (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
-      (swap! defo assoc :polygon
-             {:p points
-              :self-intersecting (poly-detect/self-intersecting? shape)
-              :clockwise (poly-detect/clockwise-polygon? points)
-              :area (g/area shape)})
+      (let [inner (inset-polygon shape 4)]
+        (swap! defo assoc :polygon
+               {:outer (describe shape)
+                :inner (describe inner)}))
       (doseq [[idx p] (map-indexed vector points)]
         (q/fill (/ idx (count points)) 0.5 0.5 1.0)
         (cq/circle p 3.0)))))
