@@ -82,10 +82,11 @@
 (defn inset-polygon
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
-  [points d]
-  (mapv
-   (fn [[p c n]] (inset-corner n c p d))
-   (partition 3 1 (d/wrap-seq points [(last points)] [(first points)]))))
+  [{:keys [points]} d]
+  (->> (d/wrap-seq points [(last points)] [(first points)])
+       (partition 3 1)
+       (mapv (fn [[p c n]] (inset-corner n c p d)))
+       gp/polygon2))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -102,9 +103,9 @@
            :edges (intersections->edges isecs))))
 
 (defn draw-inset [shape]
-  (let [inset (inset-polygon (:points shape) 4)]
-    (when (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
-      (cq/draw-shape inset))))
+  (let [inset (inset-polygon shape 4)]
+    (when (not (poly-detect/self-intersecting? inset))
+      (cq/draw-polygon inset))))
 
 (defn draw [{:keys [mouse edges]}]
   (reset! defo {})
@@ -118,7 +119,7 @@
                       poly-detect/edges->graph
                       poly-detect/simple-polygons)
         shapes (->> (for [poly (map gp/polygon2 polygons)
-                          :let [inset (gp/polygon2 (inset-polygon (:points poly) 8.0))]]
+                          :let [inset (inset-polygon poly 8.0)]]
                       (cond (and (> (g/area inset) 1000)
                                  (not (poly-detect/self-intersecting? inset)))
                             inset
