@@ -84,8 +84,8 @@
   For CCW polygons, use opposite."
   [points d]
   (mapv
-   (fn [[p c n]] (inset-corner p c n d))
-   (d/successive-nth 3 (d/wrap-seq points [(last points)] [(first points)]))))
+   (fn [[p c n]] (inset-corner n c p d))
+   (partition 3 1 (d/wrap-seq points [(last points)] [(first points)]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -102,7 +102,7 @@
            :edges (intersections->edges isecs))))
 
 (defn draw-inset [shape]
-  (let [inset (inset-polygon (:points shape) -4)]
+  (let [inset (inset-polygon (:points shape) 4)]
     (when (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
       (cq/draw-shape inset))))
 
@@ -118,7 +118,7 @@
                       poly-detect/edges->graph
                       poly-detect/simple-polygons)
         shapes (->> (for [poly (map gp/polygon2 polygons)
-                          :let [inset (gp/polygon2 (gp/inset-polygon (:points poly) -6.0))]]
+                          :let [inset (gp/polygon2 (inset-polygon (:points poly) 8.0))]]
                       (cond (and (> (g/area inset) 1000)
                                  (not (poly-detect/self-intersecting? inset)))
                             inset
