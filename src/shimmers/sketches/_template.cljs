@@ -1,4 +1,4 @@
-(ns shimmers.sketches.template
+(ns shimmers.sketches._template
   (:require [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]

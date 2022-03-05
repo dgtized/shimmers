@@ -1,4 +1,4 @@
-(ns shimmers.sketches.svg-template
+(ns shimmers.sketches._svg-template
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
