@@ -1,13 +1,16 @@
 (ns shimmers.sketches.vanishing-point
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.common.quil :as cq]
-            [thi.ng.geom.vector :as gv]
-            [shimmers.common.ui.debug :as debug]
-            [shimmers.math.vector :as v]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 
@@ -20,10 +23,23 @@
   (assoc state :mouse (v/clamp-bounds bounds (cq/mouse-position))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
-  (q/background 1.0 0.05)
+  (q/background 1.0 0.1)
+  (q/fill 1.0 0.1)
   (reset! defo state)
-  (doseq [p (g/vertices bounds)]
-    (q/line p mouse)))
+  (let [outer (g/scale-size bounds 0.8)
+        inner (g/scale bounds 0.15)
+        bounded-mouse (v/clamp-bounds (rect/rect (:p outer)
+                                                 (tm/- (:size outer)
+                                                       ;; Why 1/3, only works for current scale
+                                                       (tm/* (:size inner) 0.33)))
+                                      mouse)
+        cursor (g/translate inner bounded-mouse)]
+    (cq/draw-polygon outer)
+    (doseq [[p q] (map vector
+                       (g/vertices outer)
+                       (g/vertices cursor))]
+      (q/line p q))
+    (cq/draw-polygon cursor)))
 
 (sketch/defquil template
   :created-at "2022-03-05"
