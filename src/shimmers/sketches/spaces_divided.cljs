@@ -135,8 +135,13 @@
              {:p points
               :self-intersecting (poly-detect/self-intersecting? shape)
               :clockwise (poly-detect/clockwise-polygon? points)
-              :area (g/area shape)}))
+              :area (g/area shape)})
+      ;; highlight points on hover
+      (doseq [[idx p] (map-indexed vector points)]
+        (q/fill (/ idx (count points)) 0.5 0.5 1.0)
+        (cq/circle p 3.0)))
 
+    (q/no-fill)
     (q/stroke 0.55 0.5 0.5 1.0)
     (doseq [s shapes]
       (cq/draw-polygon s))
