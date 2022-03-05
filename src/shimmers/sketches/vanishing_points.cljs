@@ -1,4 +1,4 @@
-(ns shimmers.sketches.vanishing-point
+(ns shimmers.sketches.vanishing-points
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -41,7 +41,7 @@
       (q/line p q))
     (cq/draw-polygon cursor)))
 
-(sketch/defquil template
+(sketch/defquil vanishing-points
   :created-at "2022-03-05"
   :on-mount (fn [] (debug/mount defo))
   :size [800 600]
