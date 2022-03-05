@@ -110,11 +110,10 @@
   (reset! defo {})
   (q/ellipse-mode :radius)
   (q/background 1.0)
-  (q/stroke-weight 0.5)
 
   ;; either inset or polygon detection is occasionally tossing in weird outputs
   ;; sometimes inset polygons self-intersect, so need to cut that part out
-  (q/stroke-weight 0.5)
+  (q/stroke-weight 1.0)
   (let [polygons (->> edges
                       poly-detect/edges->graph
                       poly-detect/simple-polygons)
@@ -137,9 +136,11 @@
               :clockwise (poly-detect/clockwise-polygon? points)
               :area (g/area shape)}))
 
+    (q/stroke 0.55 0.5 0.5 1.0)
     (doseq [s shapes]
       (cq/draw-polygon s))
 
+    (q/stroke 0.0 0.5 0.0 1.0)
     (doseq [s shapes]
       (draw-inset s))))
 
