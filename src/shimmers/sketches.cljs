@@ -150,6 +150,7 @@
             shimmers.sketches.undulating-figures
             shimmers.sketches.uniform-distribution
             shimmers.sketches.unit-circle
+            shimmers.sketches.vanishing-point
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
             shimmers.sketches.yin-yang
