@@ -70,8 +70,8 @@
             c2 (tm/+ curr i2)
             prev (tm/+ prev i1)
             next (tm/+ next i2)]
-        (swap! defo assoc-in [:inset [prev curr next]]
-               (isec/intersect-line2-line2? prev c1 c2 next))
+        #_(swap! defo assoc-in [:inset [prev curr next]]
+                 (isec/intersect-line2-line2? prev c1 c2 next))
         (if (tm/delta= c1 c2)
           c1 (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
       curr)))
@@ -102,7 +102,7 @@
            :edges (intersections->edges isecs))))
 
 (defn draw-inset [shape]
-  (let [inset (gp/inset-polygon (:points shape) -4)]
+  (let [inset (inset-polygon (:points shape) -4)]
     (when (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
       (cq/draw-shape inset))))
 
