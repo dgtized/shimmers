@@ -129,17 +129,6 @@
                     (remove nil?))]
 
     (swap! defo assoc :n-polygons (count shapes))
-    (when-let [{:keys [points] :as shape}
-               (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
-      (swap! defo assoc :polygon
-             {:p points
-              :self-intersecting (poly-detect/self-intersecting? shape)
-              :clockwise (poly-detect/clockwise-polygon? points)
-              :area (g/area shape)})
-      ;; highlight points on hover
-      (doseq [[idx p] (map-indexed vector points)]
-        (q/fill (/ idx (count points)) 0.5 0.5 1.0)
-        (cq/circle p 3.0)))
 
     (q/no-fill)
     (q/stroke 0.55 0.5 0.5 1.0)
@@ -148,7 +137,19 @@
 
     (q/stroke 0.0 0.5 0.0 1.0)
     (doseq [s shapes]
-      (draw-inset s))))
+      (draw-inset s))
+
+    ;; highlight points on hover + debug info
+    (when-let [{:keys [points] :as shape}
+               (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
+      (swap! defo assoc :polygon
+             {:p points
+              :self-intersecting (poly-detect/self-intersecting? shape)
+              :clockwise (poly-detect/clockwise-polygon? points)
+              :area (g/area shape)})
+      (doseq [[idx p] (map-indexed vector points)]
+        (q/fill (/ idx (count points)) 0.5 0.5 1.0)
+        (cq/circle p 3.0)))))
 
 (comment
   ;; example of self intersect after inset operation
