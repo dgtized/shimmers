@@ -123,8 +123,9 @@
   (q/stroke-weight 1.0)
   (let [polygons (->> edges
                       poly-detect/edges->graph
-                      poly-detect/simple-polygons)
-        shapes (->> (for [poly (map gp/polygon2 polygons)
+                      poly-detect/simple-polygons
+                      (mapv gp/polygon2))
+        shapes (->> (for [poly polygons
                           :let [inset (inset-polygon poly 8.0)]]
                       (cond (and (> (g/area inset) 1000)
                                  (not (poly-detect/self-intersecting? inset)))
