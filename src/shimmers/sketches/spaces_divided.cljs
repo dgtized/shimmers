@@ -113,6 +113,23 @@
    :clockwise (poly-detect/clockwise-polygon? points)
    :area (g/area shape)})
 
+(defn calculate-polygons [edges]
+  (->> edges
+       poly-detect/edges->graph
+       poly-detect/simple-polygons
+       (mapv gp/polygon2)))
+
+(defn inset-shapes [polygons]
+  (->> (for [poly polygons
+             :let [inset (inset-polygon poly 8.0)]]
+         (cond (and (> (g/area inset) 1000)
+                    (not (poly-detect/self-intersecting? inset)))
+               inset
+               (> (g/area poly) 50)
+               poly
+               :else nil))
+       (remove nil?)))
+
 (defn draw [{:keys [mouse edges]}]
   (reset! defo {})
   (q/ellipse-mode :radius)
@@ -121,19 +138,9 @@
   ;; either inset or polygon detection is occasionally tossing in weird outputs
   ;; sometimes inset polygons self-intersect, so need to cut that part out
   (q/stroke-weight 1.0)
-  (let [polygons (->> edges
-                      poly-detect/edges->graph
-                      poly-detect/simple-polygons
-                      (mapv gp/polygon2))
-        shapes (->> (for [poly polygons
-                          :let [inset (inset-polygon poly 8.0)]]
-                      (cond (and (> (g/area inset) 1000)
-                                 (not (poly-detect/self-intersecting? inset)))
-                            inset
-                            (> (g/area poly) 50)
-                            poly
-                            :else nil))
-                    (remove nil?))]
+  (let [shapes (-> edges
+                   calculate-polygons
+                   inset-shapes)]
 
     (swap! defo assoc :n-polygons (count shapes))
 
