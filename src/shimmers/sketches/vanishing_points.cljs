@@ -23,17 +23,14 @@
   (assoc state :mouse (v/clamp-bounds bounds (cq/mouse-position))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
-  (q/background 1.0 0.1)
+  (q/background 1.0 0.5)
   (q/fill 1.0 0.1)
   (reset! defo state)
-  (let [outer (g/scale-size bounds 0.8)
-        inner (g/scale bounds 0.15)
-        bounded-mouse (v/clamp-bounds (rect/rect (:p outer)
-                                                 (tm/- (:size outer)
-                                                       ;; Why 1/3, only works for current scale
-                                                       (tm/* (:size inner) 0.33)))
-                                      mouse)
-        cursor (g/translate inner bounded-mouse)]
+  (let [scale (tm/map-interval (q/sin (/ (q/frame-count) 100)) -1 1 0.1 0.5)
+        outer (g/scale-size bounds 0.85)
+        inner (g/scale bounds scale)
+        bounded-mouse (v/clamp-bounds (g/center inner (cq/rel-vec 0.5 0.5)) mouse)
+        cursor (g/center inner bounded-mouse)]
     (cq/draw-polygon outer)
     (let [vertex-pairs (map vector (g/vertices outer) (g/vertices cursor))
           divisions (partition 2 1 (conj vertex-pairs (last vertex-pairs)))]
