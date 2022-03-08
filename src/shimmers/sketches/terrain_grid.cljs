@@ -68,12 +68,20 @@
                           :alignment-baseline "middle"
                           :text-anchor "middle"}))))
 
-(defonce ui-state (ctrl/state {:debug {:coords true}}))
+(defonce ui-state (ctrl/state {:size "16x10"
+                               :debug {:coords true}}))
+
+(def sizes {"8x5" [8 5]
+            "16x10" [16 10]
+            "32x20" [32 20]
+            "64x20" [64 20]
+            "64x40" [64 40]})
 
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         show-coords (get-in @ui-state [:debug :coords])
-        grid (hex-grid bounds 16 10)
+        size (get sizes (get-in @ui-state [:size]))
+        grid (apply hex-grid bounds size)
         index (into {} (for [c grid] [(:axial c) c]))]
     (for [cell grid]
       (hexagon show-coords cell (hex-click index cell)))))
@@ -90,8 +98,9 @@
 
 (defn ui-controls []
   [:div.flexcols
-   [:div {:style {:width "10em"}}
+   [:div {:style {:width "15em"}}
     [:h4 "Controls"]
+    (ctrl/dropdown ui-state "Grid Size" [:size] (zipmap (keys sizes) (keys sizes)))
     (ctrl/checkbox ui-state "Show Coordinates" [:debug :coords])]
    [:div
     [:h4 "Debug"]
