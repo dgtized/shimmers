@@ -120,7 +120,10 @@
   (update state :path path-update))
 
 (defn draw-path [vertices]
+  (q/background 1.0)
+  (q/stroke-weight 0.5)
   (q/no-fill)
+  (q/stroke 0.0)
   (q/begin-shape)
   (doseq [[x y] vertices]
     (q/vertex x y))
@@ -129,12 +132,24 @@
   (doseq [v vertices]
     (cq/circle v 3)))
 
+(defn draw-continous-path [vertices]
+  ;; (q/background 1.0 0.05)
+  (q/stroke-weight 0.5)
+  (q/no-fill)
+  (q/stroke 0.0 0.01)
+  (q/begin-shape)
+  (doseq [[x y] vertices]
+    (q/vertex x y))
+  (q/end-shape)
+  (q/fill 0.0 0.01)
+  (doseq [v vertices]
+    (cq/circle v 3)))
+
 (defn draw [{:keys [path]}]
-  (q/background 1.0)
-  (q/stroke-weight 1.0)
-  (let [{:keys [points]} path]
+  (let [{:keys [points]} path
+        draw-mode draw-continous-path]
     (swap! defo assoc :count (count points))
-    (draw-path points)))
+    (draw-mode points)))
 
 (sketch/defquil differential-growth
   :created-at "2022-02-23"
