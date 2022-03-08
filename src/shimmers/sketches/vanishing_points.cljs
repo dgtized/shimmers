@@ -35,10 +35,13 @@
                                       mouse)
         cursor (g/translate inner bounded-mouse)]
     (cq/draw-polygon outer)
-    (doseq [[p q] (map vector
-                       (g/vertices outer)
-                       (g/vertices cursor))]
-      (q/line p q))
+    (let [vertex-pairs (map vector (g/vertices outer) (g/vertices cursor))
+          divisions (partition 2 1 (conj vertex-pairs (last vertex-pairs)))]
+      (doseq [[p q] vertex-pairs]
+        (q/line p q))
+      (doseq [t (tm/norm-range 5)]
+        (doseq [[[p1 q1] [p2 q2]] divisions]
+          (q/line (tm/mix p1 q1 t) (tm/mix p2 q2 t)))))
     (cq/draw-polygon cursor)))
 
 (sketch/defquil vanishing-points
