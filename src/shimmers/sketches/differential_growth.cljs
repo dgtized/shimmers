@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
@@ -145,16 +146,28 @@
   (doseq [v vertices]
     (cq/circle v 3)))
 
+(defonce ui-state (ctrl/state {:persistent false}))
+
 (defn draw [{:keys [path]}]
   (let [{:keys [points]} path
-        draw-mode draw-continous-path]
+        draw-mode (if (get-in @ui-state [:persistent])
+                    draw-continous-path
+                    draw-path)]
     (swap! defo assoc :count (count points))
     (draw-mode points)))
+
+(defn ui-controls []
+  [:div.flexcols
+   (ctrl/container {:style {:width "15em"}}
+                   [:h4 "Controls"]
+                   (ctrl/checkbox ui-state "Persistent Background" [:persistent]))
+   [:div
+    (debug/display defo)]])
 
 (sketch/defquil differential-growth
   :created-at "2022-02-23"
   :size [800 600]
-  :on-mount (fn [] (debug/mount defo))
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
   :update update-state
   :draw draw
