@@ -21,6 +21,8 @@
 ;; https://inconvergent.net/generative/differential-line/
 ;; https://inconvergent.net/2016/shepherding-random-growth/
 
+;; TODO: what happens to algorithm with gravity/wind forces in addition to the
+;; neighbor points
 (defonce defo (debug/state))
 
 (defn path-split [{:keys [max-pop split-threshold split-chance jitter]} points]
