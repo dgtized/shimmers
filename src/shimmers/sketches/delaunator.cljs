@@ -97,6 +97,10 @@
                :show-voronoi-edges true
                :debug false}))
 
+;; TODO: calculate voronoi polygons (including border clip edges?)
+;; TODO: ensure points are stable as debug state changes, but not as n-points changes
+;; TODO: add hover debug on selected polygon/point/triangle?
+;; TODO: investigate why circumcenter was unhappy?
 (defn diagram [state points]
   (let [{:keys [:show-edges :show-triangles :show-circumcircles :show-voronoi-edges]} state
         edges (triangle-edges points)
