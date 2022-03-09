@@ -11,11 +11,14 @@ var Delaunator = class {
     /** @type {Uint32Array} */
     this._halfedges;
   }
-
-  from() {}
 };
 
+Delaunator.from = function () {};
 Delaunator.prototype = {
+  "coords": function() {},
+  "_triangles": function() {},
+  "_halfedges": function() {},
+
   "update": function() {},
   "_addTriangle": function () {},
   "_hashKey": function () {},
