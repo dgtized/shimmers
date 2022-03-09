@@ -93,6 +93,7 @@
   (ctrl/state {:n-points 12
                :show-edges false
                :show-triangles true
+               :show-circumcenters false
                :show-circumcircles false
                :show-voronoi-edges true
                :debug false}))
@@ -102,8 +103,7 @@
 ;; TODO: add hover debug on selected polygon/point/triangle?
 ;; TODO: investigate why circumcenter was unhappy?
 (defn diagram [state points]
-  (let [{:keys [:show-edges :show-triangles :show-circumcircles :show-voronoi-edges]} state
-        edges (triangle-edges points)
+  (let [edges (triangle-edges points)
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
                         (gt/circumcircle a b c))
@@ -116,13 +116,15 @@
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
-     (when show-edges
+     (when (get state :show-edges)
        (svg/group {} edges))
-     (when show-triangles
+     (when (get state :show-triangles)
        (svg/group {:fill "none"} triangles))
-     (when show-circumcircles
+     (when (get state :show-circumcenters)
+       (svg/group {:fill "red"} (map (fn [{:keys [p]}] (gc/circle p 2)) circumcircles)))
+     (when (get state :show-circumcircles)
        (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
-     (when show-voronoi-edges
+     (when (get state :show-voronoi-edges)
        (svg/group {:stroke "blue"} voronoi-edges))]))
 
 (defn scene []
@@ -144,6 +146,7 @@
       (ctrl/numeric ui-state "Generated Points" [:n-points] [2 128 1])
       (ctrl/checkbox ui-state "Edges" [:show-edges])
       (ctrl/checkbox ui-state "Triangles" [:show-triangles])
+      (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
       (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
       (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
       (ctrl/checkbox ui-state "Debug" [:debug])]
