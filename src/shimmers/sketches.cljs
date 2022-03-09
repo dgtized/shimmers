@@ -30,6 +30,7 @@
             shimmers.sketches.decaying-foundations
             shimmers.sketches.deeper-squares
             shimmers.sketches.deformed-spirals
+            shimmers.sketches.delaunator
             shimmers.sketches.delaunay-voronoi
             shimmers.sketches.differential-growth
             shimmers.sketches.disassociated-boxes

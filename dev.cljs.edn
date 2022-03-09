@@ -11,12 +11,15 @@
  ;; used http://jmmk.github.io/javascript-externs-generator/ to create
  ;; resources/p5-externs.js with latest externs from p5.js version 1.3.1
  ;; Then override (:require cljsjs.p5) to in quil to use the version installed in node_modules.
- :externs ["p5-externs.js" "sparkles-externs.js"]
+ :externs ["p5-externs.js" "sparkles-externs.js" "delaunator-externs.js"]
  :foreign-libs [{:file "node_modules/p5/lib/p5.js"
                  :file-min "node_modules/p5/lib/p5.min.js"
                  :provides ["cljsjs.p5"]}
                 {:file "node_modules/sparkles/src/sparkles.js"
-                 :provides ["sparkles"]}]
+                 :provides ["sparkles"]}
+                {:file "node_modules/delaunator/delaunator.js"
+                 :file-min "node_modules/delaunator/delaunator.min.js"
+                 :provides ["delaunator"]}]
 
  ;; never got bundle to work but just overriding the extern above seemed sufficient
  ;; :clean-outputs true
