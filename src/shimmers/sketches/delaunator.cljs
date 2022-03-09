@@ -3,13 +3,17 @@
    [delaunator]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.line :as gl]))
+   [shimmers.math.geometry.triangle :as triangle]))
+
+(defonce defo (debug/state))
 
 (def width 800)
 (def height 600)
@@ -28,7 +32,7 @@
 
 (defn edges [points]
   (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [e (.-triangles delaunay)
+    (for [e (range (.-length (.-triangles delaunay)))
           :when (> e (aget (.-halfedges delaunay) e))
           :let [p (nth points (aget (.-triangles delaunay) e))
                 q (nth points (aget (.-triangles delaunay) (next-half-edge e)))]]
@@ -38,8 +42,11 @@
   (edges (repeatedly 10 gen-point)))
 
 (defn shapes []
-  (let [points (repeatedly 10 gen-point)
+  (let [points (repeatedly 100 gen-point)
         triangle-edges (edges points)]
+    #_(swap! defo assoc
+             :points points
+             :edges triangle-edges)
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
@@ -57,5 +64,5 @@
   {:created-at "2022-05-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :delaunator)
+  (ctrl/mount (view-sketch/page-for scene :delaunator (partial debug/display defo))
               "sketch-host"))
