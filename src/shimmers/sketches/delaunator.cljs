@@ -8,7 +8,9 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
@@ -88,7 +90,7 @@
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
 
 (defn shapes []
-  (let [points (repeatedly 8 gen-point)
+  (let [points (concat (repeatedly 12 gen-point) (g/vertices (rect/rect 0 0 width height)))
         edges (triangle-edges points)
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
@@ -104,7 +106,7 @@
                   (gc/circle p 2)))
      #_(svg/group {} edges)
      (svg/group {:fill "none"} triangles)
-     (svg/group {:fill "none" :stroke "red"} circumcircles)
+     (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles)
      (svg/group {:stroke "blue"} voronoi-edges)]))
 
 (defn scene []
