@@ -5,19 +5,26 @@
  */
 var Delaunator = class {
   constructor() {
+    /** @type {Float64Array} */
     this.coords;
+    /** @type {Number} */
+    this.trianglesLen;
     /** @type {Uint32Array} */
-    this._triangles;
+    this.triangles;
     /** @type {Uint32Array} */
-    this._halfedges;
+    this.halfedges;
+    /** @type {Uint32Array} */
+    this.hull;
   }
 };
 
 Delaunator.from = function () {};
 Delaunator.prototype = {
   "coords": function() {},
-  "_triangles": function() {},
-  "_halfedges": function() {},
+  "triangles": function() {},
+  "trianglesLen": function() {},
+  "halfedges": function() {},
+  "hull": function() {},
 
   "update": function() {},
   "_addTriangle": function () {},
