@@ -36,7 +36,7 @@
 
 (defn triangle-edges [points]
   (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [e (range (.-length (.-triangles delaunay)))
+    (for [e (range (alength (.-triangles delaunay)))
           :when (> e (aget (.-halfedges delaunay) e))
           :let [p (nth points (aget (.-triangles delaunay) e))
                 q (nth points (aget (.-triangles delaunay) (next-half-edge e)))]]
@@ -53,7 +53,7 @@
 
 (defn triangles [points]
   (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [t (range (/ (.-length (.-triangles delaunay)) 3))]
+    (for [t (range (/ (alength (.-triangles delaunay)) 3))]
       (delaunay-triangle points delaunay t))))
 
 (comment (triangles [[0 10] [0 5] [5 5] [4 2]]))
@@ -84,7 +84,7 @@
 
 (defn voronoi-edges [points]
   (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [e (range (.-length (.-triangles delaunay)))
+    (for [e (range (alength (.-triangles delaunay)))
           :when (< e (aget (.-halfedges delaunay) e))]
       (gl/line2 (triangle-center points delaunay (triangle-of-edge e))
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
