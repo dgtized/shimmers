@@ -96,11 +96,11 @@
         circumcircles (for [{[a b c] :points} triangles]
                         (gt/circumcircle a b c))
         voronoi-edges (voronoi-edges points)]
-    (swap! defo assoc
-           :points points
-           :edges edges
-           :circumcircles circumcircles
-           :voronoi-edges voronoi-edges)
+    (reset! defo
+            {:points points
+             :edges edges
+             :circumcircles circumcircles
+             :voronoi-edges voronoi-edges})
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
