@@ -23,7 +23,9 @@
 (defn gen-point []
   (rv (dr/random 0.05 0.95) (dr/random 0.05 0.95)))
 
-;; https://mapbox.github.io/delaunator/
+;; Most of the following functions are translated into ClojureScript from
+;; https://mapbox.github.io/delaunator/ and then converted into thi.ng/geom type
+;; records.
 (defn next-half-edge [e]
   (if (= 2 (mod e 3)) (- e 2) (+ e 1)))
 
