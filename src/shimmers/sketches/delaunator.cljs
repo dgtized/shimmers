@@ -89,8 +89,16 @@
       (gl/line2 (triangle-center points delaunay (triangle-of-edge e))
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
 
-(defn shapes []
-  (let [points (concat (repeatedly 12 gen-point) (g/vertices (rect/rect 0 0 width height)))
+(defonce ui-state
+  (ctrl/state {:n-points 12
+               :show-edges false
+               :show-triangles true
+               :show-circumcircles false
+               :show-voronoi-edges true
+               :debug false}))
+
+(defn diagram [state points]
+  (let [{:keys [:show-edges :show-triangles :show-circumcircles :show-voronoi-edges]} state
         edges (triangle-edges points)
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
@@ -104,22 +112,44 @@
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
-     #_(svg/group {} edges)
-     (svg/group {:fill "none"} triangles)
-     (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles)
-     (svg/group {:stroke "blue"} voronoi-edges)]))
+     (when show-edges
+       (svg/group {} edges))
+     (when show-triangles
+       (svg/group {:fill "none"} triangles))
+     (when show-circumcircles
+       (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
+     (when show-voronoi-edges
+       (svg/group {:stroke "blue"} voronoi-edges))]))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
-            (apply list (shapes))))
+  (let [{:keys [n-points] :as state} @ui-state
+        points (concat (repeatedly n-points gen-point)
+                       (g/vertices (rect/rect 0 0 width height)))]
+    (csvg/svg {:width width
+               :height height
+               :stroke "black"
+               :fill "white"
+               :stroke-width 0.5}
+              (apply list (diagram state points)))))
+
+(defn ui-controls []
+  (let [{:keys [debug]} @ui-state]
+    [:div.flexcols
+     [:div {:style {:width "15em"}}
+      [:h4 "Controls"]
+      (ctrl/numeric ui-state "Generated Points" [:n-points] [2 128 1])
+      (ctrl/checkbox ui-state "Edges" [:show-edges])
+      (ctrl/checkbox ui-state "Triangles" [:show-triangles])
+      (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
+      (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
+      (ctrl/checkbox ui-state "Debug" [:debug])]
+     (when debug
+       [:div [:h4 "Debug"]
+        (debug/display defo)])]))
 
 (sketch/definition delaunator
   {:created-at "2022-03-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :delaunator (partial debug/display defo))
+  (ctrl/mount (view-sketch/page-for scene :delaunator ui-controls)
               "sketch-host"))
