@@ -56,6 +56,7 @@
 
 (comment (triangles [[0 10] [0 5] [5 5] [4 2]]))
 
+;; Something about this is wrong, but not clear what, so using gt/circumcircle
 (defn circumcenter [[ax ay] [bx by] [cx cy]]
   (let [ad (+ (* ax ax) (* ay ay))
         bd (+ (* bx bx) (* by by))
@@ -77,7 +78,7 @@
 
 (defn triangle-center [points delaunay t]
   (let [{[a b c] :points} (delaunay-triangle points delaunay t)]
-    (circumcenter a b c)))
+    (first (gt/circumcircle-raw a b c))))
 
 (defn voronoi-edges [points]
   (let [delaunay (js/Delaunator.from (clj->js points))]
@@ -90,20 +91,20 @@
   (let [points (repeatedly 8 gen-point)
         edges (triangle-edges points)
         triangles (triangles points)
-        circumcenters (for [{[a b c] :points} triangles]
-                        (circumcenter a b c))
+        circumcircles (for [{[a b c] :points} triangles]
+                        (gt/circumcircle a b c))
         voronoi-edges (voronoi-edges points)]
     (swap! defo assoc
            :points points
            :edges edges
-           :circumcenters circumcenters
+           :circumcircles circumcircles
            :voronoi-edges voronoi-edges)
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
      #_(svg/group {} edges)
      (svg/group {:fill "none"} triangles)
-     (svg/group {:fill "red"} (map (fn [p] (gc/circle p 3)) circumcenters))
+     (svg/group {:fill "none" :stroke "red"} circumcircles)
      (svg/group {:stroke "blue"} voronoi-edges)]))
 
 (defn scene []
