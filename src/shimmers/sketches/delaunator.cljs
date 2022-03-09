@@ -51,17 +51,38 @@
 
 (comment (triangles [[0 10] [0 5] [5 5] [4 2]]))
 
+(defn circumcenter [[ax ay] [bx by] [cx cy]]
+  (let [ad (+ (* ax ax) (* ay ay))
+        bd (+ (* bx bx) (* by by))
+        cd (+ (* cx cx) (* cy cy))
+        D (* 2 (+ (* ax (- by cy))
+                  (* bx (- cy ay))
+                  (* cx (- ay by))))]
+    (gv/vec2 (/ (+ (* ad (- by cy))
+                   (* bd (- cy ay))
+                   (* cd (- ay cy)))
+                D)
+             (/ (+ (* ad (- cx bx))
+                   (* bd (- ax cx))
+                   (* cd (- bx ax)))
+                D))))
+
 (defn shapes []
-  (let [points (repeatedly 64 gen-point)
-        edges (triangle-edges points)]
-    #_(swap! defo assoc
-             :points points
-             :edges triangle-edges)
+  (let [points (repeatedly 8 gen-point)
+        edges (triangle-edges points)
+        triangles (triangles points)
+        circumcenters (for [{[a b c] :points} triangles]
+                        (gc/circle (circumcenter a b c) 3))]
+    (swap! defo assoc
+           :points points
+           :edges triangle-edges
+           :circumcenters circumcenters)
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
      #_(svg/group {} edges)
-     (svg/group {:fill "none"} (triangles points))]))
+     (svg/group {:fill "none"} triangles)
+     (svg/group {:fill "red"} circumcenters)]))
 
 (defn scene []
   (csvg/svg {:width width
