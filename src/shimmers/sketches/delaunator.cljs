@@ -10,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
 
 (defonce defo (debug/state))
@@ -40,8 +41,18 @@
 (comment
   (triangle-edges [[0 10] [0 5] [5 5] [4 2]]))
 
+(defn triangles [points]
+  (let [delaunay (js/Delaunator.from (clj->js points))]
+    (for [t (range (/ (.-length (.-triangles delaunay)) 3))]
+      (let [a (aget (.-triangles delaunay) (* 3 t))
+            b (aget (.-triangles delaunay) (+ (* 3 t) 1))
+            c (aget (.-triangles delaunay) (+ (* 3 t) 2))]
+        (gt/triangle2 (nth points a) (nth points b) (nth points c))))))
+
+(comment (triangles [[0 10] [0 5] [5 5] [4 2]]))
+
 (defn shapes []
-  (let [points (repeatedly 100 gen-point)
+  (let [points (repeatedly 64 gen-point)
         edges (triangle-edges points)]
     #_(swap! defo assoc
              :points points
@@ -49,7 +60,8 @@
     [(svg/group {:fill "black"}
                 (for [p points]
                   (gc/circle p 2)))
-     (svg/group {} edges)]))
+     #_(svg/group {} edges)
+     (svg/group {:fill "none"} (triangles points))]))
 
 (defn scene []
   (csvg/svg {:width width
