@@ -105,14 +105,14 @@
              :circumcircles circumcircles
              :voronoi-edges voronoi-edges})
     [(svg/group {:fill "black"}
-                (for [p points]
-                  (gc/circle p 2)))
+                (for [p points] (gc/circle p 1.5)))
      (when (get state :show-edges)
        (svg/group {} edges))
      (when (get state :show-triangles)
        (svg/group {:fill "none"} triangles))
      (when (get state :show-circumcenters)
-       (svg/group {:fill "red"} (map (fn [{:keys [p]}] (gc/circle p 2)) circumcircles)))
+       (svg/group {:fill "red"}
+                  (for [{:keys [p]} circumcircles] (gc/circle p 1.5))))
      (when (get state :show-circumcircles)
        (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
      (when (get state :show-voronoi-edges)
