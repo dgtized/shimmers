@@ -10,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]
@@ -89,7 +90,33 @@
       (gl/line2 (triangle-center points delaunay (triangle-of-edge e))
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
 
-;; TODO: calculate voronoi polygons (including border clip edges?)
+(defn edges-around-point [delaunay start]
+  (loop [incoming start result []]
+    (let [r (conj result incoming)
+          outgoing (next-half-edge incoming)
+          incoming (aget (.-halfedges delaunay) outgoing)]
+      (if (and (not= incoming -1) (not= incoming start))
+        (recur incoming r)
+        r))))
+
+(defn voronoi-polygons [points]
+  (let [delaunay (js/Delaunator.from (clj->js points))]
+    (loop [e 0 seen #{} out []]
+      (if (< e (alength (.-triangles delaunay)))
+        (let [p (aget (.-triangles delaunay) (next-half-edge e))]
+          (if (contains? seen p)
+            (recur (inc e) seen out)
+            (let [edges (edges-around-point delaunay e)
+                  triangles (map triangle-of-edge edges)
+                  vertices (for [t triangles]
+                             (triangle-center points delaunay t))]
+              (recur (inc e) (conj seen p)
+                     (conj out (gp/polygon2 vertices))))))
+        out))))
+
+(comment (voronoi-polygons [[0 0] [10 0] [10 10] [0 10] [5 5]]))
+
+;; TODO: border clip voronoi polygons?
 ;; TODO: ensure points are stable as debug state changes, but not as n-points changes
 ;; TODO: add hover debug on selected polygon/point/triangle?
 ;; TODO: investigate why circumcenter was unhappy?
@@ -98,12 +125,14 @@
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
                         (gt/circumcircle a b c))
-        voronoi-edges (voronoi-edges points)]
+        voronoi-edges (voronoi-edges points)
+        polygons (voronoi-polygons points)]
     (reset! defo
             {:points points
              :edges edges
              :circumcircles circumcircles
-             :voronoi-edges voronoi-edges})
+             :voronoi-edges voronoi-edges
+             :polygons polygons})
     [(svg/group {:fill "black"}
                 (for [p points] (gc/circle p 1.5)))
      (when (get state :show-edges)
@@ -116,7 +145,11 @@
      (when (get state :show-circumcircles)
        (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
      (when (get state :show-voronoi-edges)
-       (svg/group {:stroke "blue"} voronoi-edges))]))
+       (svg/group {:stroke "blue"} voronoi-edges))
+     (when (get state :show-polygons)
+       (svg/group {:stroke "blue" :fill "none"}
+                  (filter (fn [{points :points}] (> (count points) 2))
+                          polygons)))]))
 
 (defn scene [state points]
   (csvg/svg {:width width
@@ -132,7 +165,8 @@
                :show-triangles true
                :show-circumcenters false
                :show-circumcircles false
-               :show-voronoi-edges true
+               :show-voronoi-edges false
+               :show-polygons false
                :debug false}))
 
 (defn generate-points [ui-state]
@@ -156,6 +190,7 @@
      (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
      (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
      (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
+     (ctrl/checkbox ui-state "Voronoi Polygons" [:show-polygons])
      (ctrl/checkbox ui-state "Debug" [:debug])]
     (when (:debug @ui-state)
       [:div [:h4 "Debug"]
