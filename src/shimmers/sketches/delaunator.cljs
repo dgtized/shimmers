@@ -89,21 +89,13 @@
       (gl/line2 (triangle-center points delaunay (triangle-of-edge e))
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
 
-(defonce ui-state
-  (ctrl/state {:n-points 12
-               :show-edges false
-               :show-triangles true
-               :show-circumcenters false
-               :show-circumcircles false
-               :show-voronoi-edges true
-               :debug false}))
-
 ;; TODO: calculate voronoi polygons (including border clip edges?)
 ;; TODO: ensure points are stable as debug state changes, but not as n-points changes
 ;; TODO: add hover debug on selected polygon/point/triangle?
 ;; TODO: investigate why circumcenter was unhappy?
-(defn diagram [state points]
-  (let [edges (triangle-edges points)
+(defn diagram [state]
+  (let [points (:points state)
+        edges (triangle-edges points)
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
                         (gt/circumcircle a b c))
@@ -127,36 +119,51 @@
      (when (get state :show-voronoi-edges)
        (svg/group {:stroke "blue"} voronoi-edges))]))
 
-(defn scene []
-  (let [{:keys [n-points] :as state} @ui-state
-        points (concat (repeatedly n-points gen-point)
-                       (g/vertices (rect/rect 0 0 width height)))]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :fill "white"
-               :stroke-width 0.5}
-              (apply list (diagram state points)))))
+(defn scene [state]
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :fill "white"
+             :stroke-width 0.5}
+            (apply list (diagram state))))
 
-(defn ui-controls []
-  (let [{:keys [debug]} @ui-state]
-    [:div.flexcols
-     [:div {:style {:width "15em"}}
-      [:h4 "Controls"]
-      (ctrl/numeric ui-state "Generated Points" [:n-points] [2 128 1])
-      (ctrl/checkbox ui-state "Edges" [:show-edges])
-      (ctrl/checkbox ui-state "Triangles" [:show-triangles])
-      (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
-      (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
-      (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
-      (ctrl/checkbox ui-state "Debug" [:debug])]
-     (when debug
-       [:div [:h4 "Debug"]
-        (debug/display defo)])]))
+(defn generate-points [ui-state]
+  (let [{:keys [points n-points]} @ui-state]
+    (when-not (= (count points) (+ 4 n-points))
+      (let [points (concat (repeatedly n-points gen-point)
+                           (g/vertices (rect/rect 0 0 width height)))]
+        (swap! ui-state assoc :points points)))))
+
+(defn page []
+  (let [ui-state (ctrl/state {:points []
+                              :n-points 12
+                              :show-edges false
+                              :show-triangles true
+                              :show-circumcenters false
+                              :show-circumcircles false
+                              :show-voronoi-edges true
+                              :debug false})]
+    (fn []
+      (generate-points ui-state)
+      [:div
+       [:div.canvas-frame [scene @ui-state]]
+       [:div.flexcols
+        [:div {:style {:width "18em"}}
+         (view-sketch/generate :delaunator)
+         [:h4 "Controls"]
+         (ctrl/numeric ui-state "Generated Points" [:n-points] [2 128 1])
+         (ctrl/checkbox ui-state "Edges" [:show-edges])
+         (ctrl/checkbox ui-state "Triangles" [:show-triangles])
+         (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
+         (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
+         (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
+         (ctrl/checkbox ui-state "Debug" [:debug])]
+        (when (:debug @ui-state)
+          [:div [:h4 "Debug"]
+           (debug/display defo)])]])))
 
 (sketch/definition delaunator
   {:created-at "2022-03-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :delaunator ui-controls)
-              "sketch-host"))
+  (ctrl/mount (page) "sketch-host"))
