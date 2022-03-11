@@ -163,15 +163,19 @@
                                               (gl/line2 p q))))))))]))
 
 (defn scene [state points]
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
-            (apply list (diagram state points))))
+  (let [coords (if (:include-bounding-corners state)
+                 (concat points (g/vertices (rect/rect 0 0 width height)))
+                 points)]
+    (csvg/svg {:width width
+               :height height
+               :stroke "black"
+               :fill "white"
+               :stroke-width 0.5}
+              (apply list (diagram state coords)))))
 
 (defonce ui-state
   (ctrl/state {:n-points 12
+               :include-bounding-corners true
                :show-edges false
                :show-triangles true
                :show-circumcenters false
@@ -185,8 +189,7 @@
         points (if (pos? n-points)
                  n-points
                  5)]
-    (concat (repeatedly points gen-point)
-            (g/vertices (rect/rect 0 0 width height)))))
+    (repeatedly points gen-point)))
 
 (defn page [points]
   [:div
@@ -196,6 +199,7 @@
      (view-sketch/generate :delaunator)
      [:h4 "Controls"]
      (ctrl/numeric ui-state "Generated Points" [:n-points] [2 256 1])
+     (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners])
      (ctrl/checkbox ui-state "Edges" [:show-edges])
      (ctrl/checkbox ui-state "Triangles" [:show-triangles])
      (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
