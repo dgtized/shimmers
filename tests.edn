@@ -8,7 +8,8 @@
 
           :cljs/timeout 45000 ;; github ci needs more timeout?
           :cljs/compiler-options
-          {:externs ["p5-externs.js" "sparkles-externs.js" "delaunator-externs.js"]
+          {:externs ["p5-externs.js" "sparkles-externs.js"
+                     "delaunator-externs.js" "d3-delaunay-externs.js"]
            :foreign-libs [{:file "node_modules/p5/lib/p5.js"
                            :file-min "node_modules/p5/lib/p5.min.js"
                            :provides ["cljsjs.p5"]
@@ -17,7 +18,11 @@
                            :provides ["sparkles"]}
                           {:file "node_modules/delaunator/delaunator.js"
                            :file-min "node_modules/delaunator/delaunator.min.js"
-                           :provides ["delaunator"]}]}
+                           :provides ["delaunator"]}
+                          {:file "node_modules/d3-delaunay/dist/d3-delaunay.js"
+                           :file-min "node_modules/d3-delaunay/dist/d3-delaunay.min.js"
+                           :provides ["d3-delaunay"]}]}
+          :infer-externs true
           }]
  ;; :capture-output? false
  ;; :bindings {kaocha.type.cljs/*debug* true}

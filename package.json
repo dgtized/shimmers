@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "d3-delaunay": "^6.0.2",
     "delaunator": "^5.0.0",
     "p5": "1.4.0",
     "sparkles": "file:vendor/sparkles",
