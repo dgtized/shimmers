@@ -132,7 +132,8 @@
              :edges edges
              :circumcircles circumcircles
              :voronoi-edges voronoi-edges
-             :polygons polygons})
+             :polygons polygons
+             :bad-polygons (filter (fn [{:keys [points]}] (<= (count points) 2)) polygons)})
     [(svg/group {:fill "black"}
                 (for [p points] (gc/circle p 1.5)))
      (when (get state :show-edges)
@@ -147,9 +148,19 @@
      (when (get state :show-voronoi-edges)
        (svg/group {:stroke "blue"} voronoi-edges))
      (when (get state :show-polygons)
-       (svg/group {:stroke "blue" :fill "none"}
-                  (filter (fn [{points :points}] (> (count points) 2))
-                          polygons)))]))
+       (svg/group {}
+                  (svg/group {:stroke "blue" :fill "none"}
+                             (filter (fn [{points :points}] (> (count points) 2))
+                                     polygons))
+                  (svg/group {:fill "green" :stroke "green"}
+                             (for [{:keys [points]} (filter (fn [{points :points}] (<= (count points) 2))
+                                                            polygons)]
+                               (let [[p q] points]
+                                 (svg/group {}
+                                            (gc/circle p 3.0)
+                                            (when q (gc/circle q 3.0))
+                                            (when (= 2 (count points))
+                                              (gl/line2 p q))))))))]))
 
 (defn scene [state points]
   (csvg/svg {:width width
