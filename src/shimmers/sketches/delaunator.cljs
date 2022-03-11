@@ -116,6 +116,8 @@
 
 (comment (voronoi-polygons [[0 0] [10 0] [10 10] [0 10] [5 5]]))
 
+;; TODO: import and use d3-delaunay: https://github.com/d3/d3-delaunay
+;; it handles clipping to bounds for voronoi and some other niceties
 ;; TODO: border clip voronoi polygons?
 ;; TODO: ensure points are stable as debug state changes, but not as n-points changes
 ;; TODO: add hover debug on selected polygon/point/triangle?
