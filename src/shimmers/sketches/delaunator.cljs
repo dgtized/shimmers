@@ -140,8 +140,9 @@
              :voronoi-edges voronoi-edges
              :polygons polygons
              :bad-polygons (filter (fn [{:keys [points]}] (<= (count points) 2)) polygons)})
-    [(svg/group {:fill "black"}
-                (for [p points] (gc/circle p 1.5)))
+    [(when (get state :show-points)
+       (svg/group {:fill "black"}
+                  (for [p points] (gc/circle p 1.5))))
      (when (get state :show-edges)
        (svg/group {} edges))
      (when (get state :show-triangles)
@@ -177,8 +178,9 @@
              :triangles triangles
              :circumcenters circumcenters
              :voronoi polygons})
-    [(svg/group {:fill "black"}
-                (for [p points] (gc/circle p 1.5)))
+    [(when (get state :show-points)
+       (svg/group {:fill "black"}
+                  (for [p points] (gc/circle p 1.5))))
      (when (get state :show-triangles)
        (svg/group {:fill "none"} triangles))
      (when (get state :show-circumcenters)
@@ -200,8 +202,9 @@
 
 (defonce ui-state
   (ctrl/state {:mode :delaunator
-               :n-points 12
+               :n-points 32
                :include-bounding-corners true
+               :show-points true
                :show-edges false
                :show-triangles true
                :show-circumcenters false
@@ -229,6 +232,7 @@
        (ctrl/change-mode ui-state [:delaunator :d3-delaunay])
        (when (= mode :delaunator)
          (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
+       (ctrl/checkbox ui-state "Points" [:show-points])
        (when (= mode :delaunator)
          (ctrl/checkbox ui-state "Edges" [:show-edges]))
        (ctrl/checkbox ui-state "Triangles" [:show-triangles])
