@@ -2,26 +2,25 @@
   (:require d3-delaunay
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]))
+            [thi.ng.geom.triangle :as gt]))
 
 (set! *warn-on-infer* true)
 
-(defn trimmed-polygon [points]
-  (gp/polygon2 (if (tm/delta= (first points) (last points))
-                 (butlast points)
-                 points)))
+;; d3-delaunay polygons and triangles API results include the initial point as
+;; the closing point, so they need to be trimmed of the last point.
 
 (defn delaunay-triangles [points]
   (let [^js/Delaunay delaunay (js/d3.Delaunay.from (clj->js points))]
-    (for [poly (.trianglePolygons delaunay)]
-      (gp/polygon2 (js->clj poly)))))
+    (for [triangle (.trianglePolygons delaunay)
+          :let [[a b c] (js->clj triangle)]]
+      (gt/triangle2 a b c))))
 
 (comment (delaunay-triangles [[0 0] [0 10] [10 10] [0 10] [3 3] [7 7] [3 7]]))
 
 (defn convex-hull [points]
   (let [^js/Delaunay delaunay (js/d3.Delaunay.from (clj->js points))
         hull (js->clj (.hullPolygon delaunay))]
-    (trimmed-polygon hull)))
+    (gp/polygon2 (butlast hull))))
 
 (comment (convex-hull [[0 0] [5 0] [5 10]]))
 
@@ -34,6 +33,6 @@
   (let [^js/Delaunay delaunay (js/d3.Delaunay.from (clj->js points))
         ^js/Voronoi voronoi (.voronoi delaunay (clj->js (bounds->ranges bounds)))]
     (for [cell (.cellPolygons voronoi)]
-      (trimmed-polygon (js->clj cell)))))
+      (gp/polygon2 (butlast (js->clj cell))))))
 
 (comment (voronoi-cells [[5 5] [8 8] [3 6] [7 4]] (rect/rect 0 0 10 10)))
