@@ -2,7 +2,8 @@
   (:require d3-delaunay
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]))
+            [thi.ng.geom.triangle :as gt]
+            [thi.ng.geom.vector :as gv]))
 
 (set! *warn-on-infer* true)
 
@@ -36,3 +37,12 @@
       (gp/polygon2 (butlast (js->clj cell))))))
 
 (comment (voronoi-cells [[5 5] [8 8] [3 6] [7 4]] (rect/rect 0 0 10 10)))
+
+(defn voronoi-circumcenters [points bounds]
+  (let [^js/Delaunay delaunay (js/d3.Delaunay.from (clj->js points))
+        ^js/Voronoi voronoi (.voronoi delaunay (clj->js (bounds->ranges bounds)))]
+    (for [t (range 0 (alength (.-circumcenters voronoi)) 2)]
+      (gv/vec2 (aget (.-circumcenters voronoi) t)
+               (aget (.-circumcenters voronoi) (inc t))))))
+
+(comment (voronoi-circumcenters [[5 5] [8 8] [3 6] [7 4]] (rect/rect 0 0 10 10)))
