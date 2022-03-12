@@ -1,6 +1,7 @@
 (ns shimmers.sketches.delaunator
   (:require
    [delaunator]
+   [shimmers.algorithm.delaunay :as delvor]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -122,8 +123,11 @@
 ;; TODO: ensure points are stable as debug state changes, but not as n-points changes
 ;; TODO: add hover debug on selected polygon/point/triangle?
 ;; TODO: investigate why circumcenter was unhappy?
-(defn diagram [state points]
-  (let [edges (triangle-edges points)
+(defn delaunator-diagram [bounds state coords]
+  (let [points (if (:include-bounding-corners state)
+                 (concat coords (g/vertices bounds))
+                 coords)
+        edges (triangle-edges points)
         triangles (triangles points)
         circumcircles (for [{[a b c] :points} triangles]
                         (gt/circumcircle a b c))
@@ -164,19 +168,39 @@
                                             (when (= 2 (count points))
                                               (gl/line2 p q))))))))]))
 
+(defn d3-diagram [bounds state points]
+  (let [triangles (delvor/delaunay-triangles points)
+        circumcenters (delvor/voronoi-circumcenters points bounds)
+        polygons (delvor/voronoi-cells points bounds)]
+    (reset! defo
+            {:points points
+             :triangles triangles
+             :circumcenters circumcenters
+             :voronoi polygons})
+    [(svg/group {:fill "black"}
+                (for [p points] (gc/circle p 1.5)))
+     (when (get state :show-triangles)
+       (svg/group {:fill "none"} triangles))
+     (when (get state :show-circumcenters)
+       (svg/group {:fill "red"} (for [c circumcenters] (gc/circle c 1.5))))
+     (when (get state :show-polygons)
+       (svg/group {:stroke "blue" :fill "none"} polygons))]))
+
 (defn scene [state points]
-  (let [coords (if (:include-bounding-corners state)
-                 (concat points (g/vertices (rect/rect 0 0 width height)))
-                 points)]
+  (let [bounds (rect/rect 0 0 width height)
+        diagram (case (:mode state)
+                  :delaunator delaunator-diagram
+                  :d3-delaunay d3-diagram)]
     (csvg/svg {:width width
                :height height
                :stroke "black"
                :fill "white"
                :stroke-width 0.5}
-              (apply list (diagram state coords)))))
+              (apply list (diagram bounds state points)))))
 
 (defonce ui-state
-  (ctrl/state {:n-points 12
+  (ctrl/state {:mode :delaunator
+               :n-points 12
                :include-bounding-corners true
                :show-edges false
                :show-triangles true
@@ -194,24 +218,30 @@
     (repeatedly points gen-point)))
 
 (defn page [points]
-  [:div
-   [:div.canvas-frame [scene @ui-state points]]
-   [:div.flexcols
-    [:div {:style {:width "18em"}}
-     (view-sketch/generate :delaunator)
-     [:h4 "Controls"]
-     (ctrl/numeric ui-state "Generated Points" [:n-points] [2 256 1])
-     (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners])
-     (ctrl/checkbox ui-state "Edges" [:show-edges])
-     (ctrl/checkbox ui-state "Triangles" [:show-triangles])
-     (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
-     (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles])
-     (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges])
-     (ctrl/checkbox ui-state "Voronoi Polygons" [:show-polygons])
-     (ctrl/checkbox ui-state "Debug" [:debug])]
-    (when (:debug @ui-state)
-      [:div [:h4 "Debug"]
-       (debug/display defo)])]])
+  (let [mode (:mode @ui-state)]
+    [:div
+     [:div.canvas-frame [scene @ui-state points]]
+     [:div.flexcols
+      [:div {:style {:width "18em"}}
+       (view-sketch/generate :delaunator)
+       [:h4 "Controls"]
+       (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
+       (ctrl/change-mode ui-state [:delaunator :d3-delaunay])
+       (when (= mode :delaunator)
+         (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
+       (when (= mode :delaunator)
+         (ctrl/checkbox ui-state "Edges" [:show-edges]))
+       (ctrl/checkbox ui-state "Triangles" [:show-triangles])
+       (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
+       (when (= mode :delaunator)
+         (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles]))
+       (when (= mode :delaunator)
+         (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges]))
+       (ctrl/checkbox ui-state "Voronoi Polygons" [:show-polygons])
+       (ctrl/checkbox ui-state "Debug" [:debug])]
+      (when (:debug @ui-state)
+        [:div [:h4 "Debug"]
+         (debug/display defo)])]]))
 
 (sketch/definition delaunator
   {:created-at "2022-03-08"
