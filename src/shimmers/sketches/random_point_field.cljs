@@ -22,30 +22,35 @@
             :random-cells rp/random-cells
             :random-cell-jitter rp/random-cell-jitter} )
 
-(defn scene []
+(defn scene [points]
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :fill "white"
+             :stroke-width 0.5}
+            (svg/group {:fill "black"}
+                       (map (fn [p] (gc/circle p 1.5)) points))))
+
+(defn page []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
         {:keys [mode n-points]} @ui-state
         point-cloud (get modes mode)
         points (point-cloud bounds n-points)]
-    (println (count points))
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :fill "white"
-               :stroke-width 0.5}
-              (svg/group {:fill "black"}
-                         (map (fn [p] (gc/circle p 1.5)) points)))))
-
-(defn ui-controls []
-  [:div
-   [:p "Various methods of generating a random set of points in a boundary"]
-   [:h4 "Controls"]
-   (ctrl/change-mode ui-state (keys modes))
-   (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])])
+    [:div
+     [:div.canvas-frame [scene points]]
+     [:div.explanation
+      [:div.flexcols
+       [:div.width {:style {:width "15em"}}
+        [view-sketch/generate :random-point-field]
+        [:p "Various approaches of generating a random set of points in a boundary."]
+        [:p (str "Generated " (count points) " points")]]
+       [:div
+        [:h4 "Controls"]
+        (ctrl/change-mode ui-state (keys modes))
+        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])]]]]))
 
 (sketch/definition random-point-field
   {:created-at "2022-05-12"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :random-point-field ui-controls)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
