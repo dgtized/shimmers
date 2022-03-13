@@ -3,6 +3,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -16,19 +17,35 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn random-points [bounds n]
+
+(defn random-points
+  "Generate `n` random points within a given `bounds`."
+  [bounds n]
   (repeatedly n #(g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))))
 
 ;; Generates *close* to n points
-(defn random-cells [bounds n]
+(defn random-cells
+  "Subdivide into ~`n` cells and pick a random point in each cell."
+  [bounds n]
   (let [cells (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))})]
     (for [cell cells]
       (g/unmap-point cell (gv/vec2 (dr/random) (dr/random))))))
 
+;; Generates *close* to n points
+(defn random-cell-jitter
+  "Subdivide into ~`n` cells and then create a circle just touching the inside of
+  the cell and pick a random point inside that circle."
+  [bounds n]
+  (let [cells (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))})]
+    (for [{[w h] :size :as cell} cells]
+      (geometry/random-point-in-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
+                                       dr/random))))
+
 (defonce ui-state (ctrl/state {:mode :random-points
                                :n-points 512}))
 (def modes {:random-points random-points
-            :random-cells random-cells} )
+            :random-cells random-cells
+            :random-cell-jitter random-cell-jitter} )
 
 (defn scene []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
