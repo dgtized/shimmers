@@ -2,10 +2,10 @@
   (:require
    [delaunator]
    [shimmers.algorithm.delaunay :as delvor]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -23,9 +23,6 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
-
-(defn gen-point []
-  (rv (dr/random 0.05 0.95) (dr/random 0.05 0.95)))
 
 ;; Most of the following functions are translated into ClojureScript from
 ;; https://mapbox.github.io/delaunator/ and then converted into thi.ng/geom type
@@ -188,9 +185,8 @@
      (when (get state :show-polygons)
        (svg/group {:stroke "blue" :fill "none"} polygons))]))
 
-(defn scene [state points]
-  (let [bounds (rect/rect 0 0 width height)
-        diagram (case (:mode state)
+(defn scene [bounds state points]
+  (let [diagram (case (:mode state)
                   :delaunator delaunator-diagram
                   :d3-delaunay d3-diagram)]
     (csvg/svg {:width width
@@ -202,6 +198,7 @@
 
 (defonce ui-state
   (ctrl/state {:mode :delaunator
+               :point-mode :random-points
                :n-points 32
                :include-bounding-corners true
                :show-points true
@@ -213,23 +210,28 @@
                :show-polygons false
                :debug false}))
 
-(defn generate-points [ui-state]
-  (let [{:keys [n-points]} @ui-state
+(def point-modes {:random-points rp/random-points
+                  :random-cells rp/random-cells
+                  :random-cell-jitter rp/random-cell-jitter} )
+
+(defn generate-points [bounds ui-state]
+  (let [{:keys [n-points point-mode]} @ui-state
         points (if (pos? n-points)
                  n-points
                  5)]
-    (repeatedly points gen-point)))
+    ((get point-modes point-mode) bounds points)))
 
-(defn page [points]
+(defn page [bounds points]
   (let [mode (:mode @ui-state)]
     [:div
-     [:div.canvas-frame [scene @ui-state points]]
+     [:div.canvas-frame [scene bounds @ui-state points]]
      [:div.flexcols
       [:div {:style {:width "18em"}}
        (view-sketch/generate :delaunator)
        [:h4 "Controls"]
        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
-       (ctrl/change-mode ui-state [:delaunator :d3-delaunay])
+       (ctrl/change-mode ui-state (keys point-modes) :point-mode)
+       (ctrl/change-mode ui-state [:delaunator :d3-delaunay] :mode)
        (when (= mode :delaunator)
          (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
        (ctrl/checkbox ui-state "Points" [:show-points])
@@ -251,5 +253,6 @@
   {:created-at "2022-03-08"
    :type :svg
    :tags #{}}
-  (let [points (generate-points ui-state)]
-    (ctrl/mount #(page points) "sketch-host")))
+  (let [bounds (rect/rect 0 0 width height)
+        points (generate-points (g/scale-size bounds 0.99) ui-state)]
+    (ctrl/mount #(page bounds points) "sketch-host")))
