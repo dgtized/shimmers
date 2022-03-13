@@ -35,12 +35,12 @@
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
         {:keys [mode n-points]} @ui-state
         point-cloud (get modes mode)
-        points (point-cloud bounds n-points)]
+        points (point-cloud bounds (or n-points 1))]
     [:div
      [:div.canvas-frame [scene points]]
      [:div.explanation
       [:div.flexcols
-       [:div.width {:style {:width "15em"}}
+       [:div {:style {:width "40%"}}
         [view-sketch/generate :random-point-field]
         [:p "Various approaches of generating a random set of points in a boundary."]
         [:p (str "Generated " (count points) " points")]]
