@@ -136,6 +136,7 @@
             shimmers.sketches.space-filling-curves
             shimmers.sketches.sphere
             shimmers.sketches.spiral-distance
+            shimmers.sketches.spiral-pack
             shimmers.sketches.square-packing
             shimmers.sketches.squiggle-line
             shimmers.sketches.stem-and-leaf
