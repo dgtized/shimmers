@@ -6,6 +6,15 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
+(defn cell-fit [{[w h] :size} n]
+  (let [ratio (if (> h w) (/ w h) (/ h w))
+        r (Math/ceil (* ratio (Math/sqrt n)))
+        c (Math/ceil (/ n r))]
+    {:rows r :cols c}))
+
+(comment (cell-fit {:size [80 60]} 100)
+         (cell-fit {:size [60 80]} 100))
+
 (defn random-points
   "Generate `n` random points within a given `bounds`."
   [bounds n]
@@ -15,7 +24,7 @@
 (defn random-cells
   "Subdivide into ~`n` cells and pick a random point in each cell."
   [bounds n]
-  (let [cells (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))})]
+  (let [cells (g/subdivide bounds (cell-fit bounds n))]
     (for [cell cells]
       (g/unmap-point cell (gv/vec2 (dr/random) (dr/random))))))
 
@@ -24,7 +33,7 @@
   "Subdivide into ~`n` cells and then create a circle just touching the inside of
   the cell and pick a random point inside that circle."
   [bounds n]
-  (let [cells (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))})]
+  (let [cells (g/subdivide bounds (cell-fit bounds n))]
     (for [{[w h] :size :as cell} cells]
       (geometry/random-point-in-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
                                        dr/random))))
