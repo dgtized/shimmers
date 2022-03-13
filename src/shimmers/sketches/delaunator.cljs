@@ -197,7 +197,7 @@
               (apply list (diagram bounds state points)))))
 
 (defonce ui-state
-  (ctrl/state {:mode :delaunator
+  (ctrl/state {:mode :d3-delaunay
                :point-mode :random-points
                :n-points 32
                :include-bounding-corners true
