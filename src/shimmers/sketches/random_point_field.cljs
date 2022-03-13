@@ -19,23 +19,30 @@
 (defn random-points [bounds n]
   (repeatedly n #(g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))))
 
+;; Generates *close* to n points
+(defn random-cells [bounds n]
+  (let [cells (g/subdivide bounds {:num (Math/ceil (Math/sqrt n))})]
+    (for [cell cells]
+      (g/unmap-point cell (gv/vec2 (dr/random) (dr/random))))))
 
 (defonce ui-state (ctrl/state {:mode :random-points
                                :n-points 512}))
-(def modes {:random-points random-points} )
+(def modes {:random-points random-points
+            :random-cells random-cells} )
 
 (defn scene []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
         {:keys [mode n-points]} @ui-state
-        point-cloud (get modes mode)]
+        point-cloud (get modes mode)
+        points (point-cloud bounds n-points)]
+    (println (count points))
     (csvg/svg {:width width
                :height height
                :stroke "black"
                :fill "white"
                :stroke-width 0.5}
               (svg/group {:fill "black"}
-                         (map (fn [p] (gc/circle p 1.5))
-                              (point-cloud bounds n-points))))))
+                         (map (fn [p] (gc/circle p 1.5)) points)))))
 
 (defn ui-controls []
   [:div
