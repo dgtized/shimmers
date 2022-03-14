@@ -2,13 +2,12 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.vector :as v]
-   [shimmers.math.equations :as eq]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
