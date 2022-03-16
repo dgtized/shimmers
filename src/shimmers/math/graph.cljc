@@ -1,10 +1,11 @@
 (ns shimmers.math.graph
   (:require
+   [loom.attr :as lga]
    [loom.graph :as lg]
+   [shimmers.common.sequence :as cs]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils.intersect :as gisec]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.sequence :as cs]))
+   [thi.ng.math.core :as tm]))
 
 ;; *probably* need to move position into a graph attribute so that nodes can move.
 ;; This would adjust distance calculation and generation
@@ -39,3 +40,13 @@
                      ;; coincident at more than one point
                      (and (= :coincident type) (not (tm/delta= isec isec2))))))
                 (unique-edges (lg/edges graph)))))
+
+(defn edge-clips-node-radius?
+  "Check if `p` - `q` intersects a node radius in graph `g`.
+
+  attr `:radius` is used to represent the radius of a node."
+  [g p q]
+  (some (fn [node] (let [r (lga/attr g node :radius)]
+                    (when-let [hit (gisec/intersect-ray-sphere? p (tm/- q p) node r)]
+                      (< (g/dist p q) (first hit)))))
+        (disj (set (lg/nodes g)) p q)))

@@ -24,7 +24,6 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.utils :as gu]
-   [thi.ng.geom.utils.intersect :as gisec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -178,14 +177,6 @@
                 g)))
           graph (lg/nodes graph)))
 
-(defn edge-clips-node-radius?
-  "Check if `p` - `q` intersects a node radius in graph `g`."
-  [g p q]
-  (some (fn [node] (let [r (lga/attr g node :radius)]
-                    (when-let [hit (gisec/intersect-ray-sphere? p (tm/- q p) node r)]
-                      (< (g/dist p q) (first hit)))))
-        (disj (set (lg/nodes g)) p q)))
-
 (defn add-neighbor-to-lonely
   "Add a few cycles to MST graph by connecting a `percent` sampling of
   single out-degree nodes to a nearby, unconnected, planar neighbor.
@@ -204,7 +195,7 @@
                                                 ;; and not if the angle is large enough for the candidate
                                                 (when (and (big-angle? q)
                                                            (graph/planar-edge? g p q)
-                                                           (not (edge-clips-node-radius? g p q)))
+                                                           (not (graph/edge-clips-node-radius? g p q)))
                                                   q))))]
                   (lg/add-edges g [p candidate (g/dist p candidate)])
                   g)))
