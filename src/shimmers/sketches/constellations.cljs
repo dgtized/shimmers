@@ -308,6 +308,16 @@
    41 1
    63 1})
 
+;; Thoughts on how to filter for *better* constellations:
+
+;; * Can we count the x/y distribution and try to *balance* the planets and try
+;; and prefer graphs with nodes on both sides?
+
+;; * In counterpoint, it can be nice if one side has lots of little stars/planets
+;; and other has one big
+
+;; * Are there other interesting radial patterns that can account for the
+;; * varying incoming angles from edges to add more variety?
 (defn planet-graph [bounds]
   (let [n (dr/weighted weighted-primes)
         arcs (generate-arcs bounds (max 11 (int (/ n 3))))
