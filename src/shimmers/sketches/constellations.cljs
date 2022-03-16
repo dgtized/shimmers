@@ -298,15 +298,18 @@
                  (gl/linestrip2 (g/point-at arc (tm/mix* a b 0.25))
                                 (g/point-at arc (tm/mix* a b 0.75)))))))))
 
+(def weighted-primes
+  {11 2
+   17 3
+   19 4
+   23 5
+   29 3
+   31 2
+   41 1
+   63 1})
+
 (defn planet-graph [bounds]
-  (let [n (dr/weighted {11 2
-                        17 3
-                        19 4
-                        23 5
-                        29 3
-                        31 2
-                        41 1
-                        63 1})
+  (let [n (dr/weighted weighted-primes)
         arcs (generate-arcs bounds (max 11 (int (/ n 3))))
         graph (-> (polar-graph arcs n)
                   (radius-per-point bounds) ;; need radius for adding neighbors
