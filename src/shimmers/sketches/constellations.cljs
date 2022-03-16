@@ -183,24 +183,25 @@
 
   Ensures new neighbor edges are > `min-angle` from an existing edge."
   [graph percent min-angle]
-  (let [lonely (filter #(= 1 (lg/out-degree graph %)) (lg/nodes graph))]
-    (reduce (fn [g p]
-              (let [angles (map (fn [n] (g/heading (tm/- n p))) (lg/successors g p))
-                    big-angle? (fn [q] (not-any? #(tm/delta= % (g/heading (tm/- q p)) min-angle) angles))]
-                (if-let [candidate (->> (lg/nodes g)
-                                        (remove (fn [q] (or (= p q) (lg/has-edge? g p q))))
-                                        (sort-by (partial g/dist-squared p))
-                                        (some (fn [q]
-                                                ;; this is only checking if edge with lonely node is large
-                                                ;; and not if the angle is large enough for the candidate
-                                                (when (and (big-angle? q)
-                                                           (graph/planar-edge? g p q)
-                                                           (not (graph/edge-clips-node-radius? g p q)))
-                                                  q))))]
-                  (lg/add-edges g [p candidate (g/dist p candidate)])
-                  g)))
-            graph
-            (dr/random-sample percent lonely))))
+  (letfn [(possibly-add-edge [g p]
+            (let [angles (map (fn [n] (g/heading (tm/- n p))) (lg/successors g p))
+                  big-angle? (fn [q] (not-any? #(tm/delta= % (g/heading (tm/- q p)) min-angle) angles))]
+              (if-let [candidate (->> (lg/nodes g)
+                                      (remove (fn [q] (or (= p q) (lg/has-edge? g p q))))
+                                      (sort-by (partial g/dist-squared p))
+                                      (some (fn [q]
+                                              ;; this is only checking if edge with lonely node is large
+                                              ;; and not if the angle is large enough for the candidate
+                                              (when (and (big-angle? q)
+                                                         (graph/planar-edge? g p q)
+                                                         (not (graph/edge-clips-node-radius? g p q)))
+                                                q))))]
+                (lg/add-edges g [p candidate (g/dist p candidate)])
+                g)))]
+    (->> (lg/nodes graph)
+         (filter #(= 1 (lg/out-degree graph %))) ;; "lonely" nodes only
+         (dr/random-sample percent)
+         (reduce possibly-add-edge graph))))
 
 (defn specify-density [graph]
   (reduce (fn [g p]
