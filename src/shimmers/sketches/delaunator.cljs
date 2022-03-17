@@ -35,8 +35,11 @@
 (defn prev-half-edge [e]
   (if (= 0 (mod e 3)) (+ e 2) (- e 1)))
 
+(defn delaunator-from ^js/Delaunator [points]
+  (js/Delaunator (clj->js points)))
+
 (defn triangle-edges [points]
-  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+  (let [^js/Delaunator delaunay (delaunator-from points)
         triangles (.-triangles delaunay)
         half-edges (.-halfedges delaunay)]
     (for [e (range (alength triangles))
@@ -56,7 +59,7 @@
     (gt/triangle2 (nth points a) (nth points b) (nth points c))))
 
 (defn triangles [points]
-  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+  (let [^js/Delaunator delaunay (delaunator-from points)
         triangles (.-triangles delaunay)]
     (for [t (range (/ (alength triangles) 3))]
       (delaunay-triangle points delaunay t))))

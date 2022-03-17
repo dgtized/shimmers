@@ -18,7 +18,9 @@ var Delaunator = class {
   }
 };
 
+/** @return {Delaunator} */
 Delaunator.from = function () {};
+
 Delaunator.prototype = {
   "coords": function() {},
   "triangles": function() {},
