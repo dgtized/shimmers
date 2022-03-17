@@ -18,8 +18,16 @@
                  :module-type :amd
                  :provides ["d3-delaunay"]}]
  :infer-externs true
+ :pseudo-names true
+ :pretty-print true
+
+ :compiler-stats true
+ :parallel-build true
 
  :clean-outputs true
  :optimizations :advanced
  :source-map "target/public/cljs-out/release-main.js.map"
+
+ ;; TODO: see https://clojurescript.org/reference/compiler-options
+ ;; :fingerprint true
  }

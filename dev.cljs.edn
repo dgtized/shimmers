@@ -28,7 +28,7 @@
                  :provides ["d3-delaunay"]}]
  :optimizations :none
  :infer-externs true
-
+ :compiler-stats true
  ;; never got bundle to work but just overriding the extern above seemed sufficient
  ;; :clean-outputs true
  ;; :target :bundle
