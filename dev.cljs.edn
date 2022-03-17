@@ -20,11 +20,9 @@
                  :provides ["sparkles"]}
                 {:file "node_modules/delaunator/delaunator.js"
                  :file-min "node_modules/delaunator/delaunator.min.js"
-                 :module-type :amd
                  :provides ["delaunator"]}
                 {:file "node_modules/d3-delaunay/dist/d3-delaunay.js"
                  :file-min "node_modules/d3-delaunay/dist/d3-delaunay.min.js"
-                 :module-type :amd
                  :provides ["d3-delaunay"]}]
  :optimizations :none
  :infer-externs true
