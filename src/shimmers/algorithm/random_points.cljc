@@ -44,8 +44,7 @@
   "Generate ~`n` random points in a boundary using poisson disc sampling.
 
   Note the automatic radius use of PHI is just a magic constant that just seems
-  to work. Usually results in a few more points than requested given the radius
-  and iteration cycles."
+  to work. Usually results in a few more points than requested given the radius."
   [bounds n]
   (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
-    (pds/generate bounds radius 20 n)))
+    (pds/generate bounds radius 12 n)))

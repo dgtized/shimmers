@@ -57,7 +57,9 @@
     state))
 
 (defn generate [bounds radius k-attempts n]
-  (let [{:keys [active grid]}
+  (let [{:keys [grid]}
         (->> (init bounds radius k-attempts n)
-             (cs/iterate-cycles (int (* tm/PHI n)) fill-step))]
-    (concat active (vals grid))))
+             (iterate fill-step)
+             (take-while (fn [{:keys [active]}] (not-empty active)))
+             last)]
+    (vals grid)))
