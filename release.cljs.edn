@@ -20,6 +20,8 @@
  :pretty-print true
 
  :compiler-stats true
+ :verbose false
+ :parallel-build true
 
  :clean-outputs true
  :optimizations :advanced
