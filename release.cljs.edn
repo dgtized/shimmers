@@ -16,8 +16,8 @@
                  :file-min "node_modules/d3-delaunay/dist/d3-delaunay.min.js"
                  :provides ["d3-delaunay"]}]
  :infer-externs true
- :pseudo-names true
- :pretty-print true
+ ;; :pseudo-names true
+ ;; :pretty-print true
 
  :compiler-stats true
  :verbose false
