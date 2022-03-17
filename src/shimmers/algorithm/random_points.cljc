@@ -1,10 +1,12 @@
 (ns shimmers.algorithm.random-points
   (:require
+   [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn cell-fit [{[w h] :size} n]
   (let [ratio (if (> h w) (/ w h) (/ h w))
@@ -37,3 +39,13 @@
     (for [{[w h] :size :as cell} cells]
       (geometry/random-point-in-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
                                        dr/random))))
+
+(defn poisson-disc-sampling
+  "Generate ~`n` random points in a boundary using poisson disc sampling.
+
+  Note the automatic radius use of PHI is just a magic constant that just seems
+  to work. Usually results in a few more points than requested given the radius
+  and iteration cycles."
+  [bounds n]
+  (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
+    (pds/generate bounds radius 20 n)))

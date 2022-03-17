@@ -1,9 +1,9 @@
 (ns shimmers.algorithm.poisson-disc-sampling
   (:require
-   [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
    [shimmers.common.sequence :as cs]
-   [shimmers.math.vector :as v]))
+   [shimmers.math.vector :as v]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 ;; Various discussion on variable density sampling:
 ;; https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
@@ -53,3 +53,9 @@
         (update state' :active (partial remove #(= considering %)))
         state'))
     state))
+
+(defn generate [bounds radius k-attempts n]
+  (let [{:keys [active grid]}
+        (->> (init bounds radius k-attempts n)
+             (cs/iterate-cycles (int (* tm/PHI n)) fill-step))]
+    (concat active (vals grid))))

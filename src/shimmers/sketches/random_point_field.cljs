@@ -1,9 +1,7 @@
 (ns shimmers.sketches.random-point-field
   (:require
    [loom.alg :as la]
-   [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.algorithm.random-points :as rp]
-   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.graph :as graph]
@@ -26,23 +24,10 @@
                :n-points 512
                :mst false}))
 
-(defn poisson-disc-sampling
-  "Generate ~`n` random points in a boundary using poisson disc sampling.
-
-  Note the automatic radius use of PHI is just a magic constant that just seems
-  to work. Usually results in a few more points than requested given the radius
-  and iteration cycles."
-  [bounds n]
-  (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))
-        {:keys [active grid]}
-        (->> (pds/init bounds radius 20 n)
-             (cs/iterate-cycles (int (* tm/PHI n)) pds/fill-step))]
-    (concat active (vals grid))))
-
 (def modes {:random-points rp/random-points
             :random-cells rp/random-cells
             :random-cell-jitter rp/random-cell-jitter
-            :poisson-disc-sampling poisson-disc-sampling} )
+            :poisson-disc-sampling rp/poisson-disc-sampling} )
 
 (defn circle-between-closest [points]
   (for [[p q] (la/prim-mst-edges (graph/points->graph points))]
