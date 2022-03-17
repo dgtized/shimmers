@@ -1,6 +1,6 @@
 (ns shimmers.sketches.delaunator
   (:require
-   [delaunator]
+   ["delaunator"]
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]

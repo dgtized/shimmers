@@ -1,5 +1,5 @@
 (ns shimmers.algorithm.delaunay
-  (:require d3-delaunay
+  (:require ["d3-delaunay"]
             [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.triangle :as gt]
