@@ -17,6 +17,8 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
 
+(set! *warn-on-infer* true)
+
 (defonce defo (debug/state))
 
 (def width 800)
@@ -34,25 +36,29 @@
   (if (= 0 (mod e 3)) (+ e 2) (- e 1)))
 
 (defn triangle-edges [points]
-  (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [e (range (alength (.-triangles delaunay)))
-          :when (> e (aget (.-halfedges delaunay) e))
-          :let [p (nth points (aget (.-triangles delaunay) e))
-                q (nth points (aget (.-triangles delaunay) (next-half-edge e)))]]
+  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+        triangles (.-triangles delaunay)
+        half-edges (.-halfedges delaunay)]
+    (for [e (range (alength triangles))
+          :when (> e (aget half-edges e))
+          :let [p (nth points (aget triangles e))
+                q (nth points (aget triangles (next-half-edge e)))]]
       (gl/line2 p q))))
 
 (comment
   (triangle-edges [[0 10] [0 5] [5 5] [4 2]]))
 
-(defn delaunay-triangle [points delaunay t]
-  (let [a (aget (.-triangles delaunay) (* 3 t))
-        b (aget (.-triangles delaunay) (+ (* 3 t) 1))
-        c (aget (.-triangles delaunay) (+ (* 3 t) 2))]
+(defn delaunay-triangle [points ^js/Delaunator delaunay t]
+  (let [triangles (.-triangles delaunay)
+        a (aget triangles (* 3 t))
+        b (aget triangles (+ (* 3 t) 1))
+        c (aget triangles (+ (* 3 t) 2))]
     (gt/triangle2 (nth points a) (nth points b) (nth points c))))
 
 (defn triangles [points]
-  (let [delaunay (js/Delaunator.from (clj->js points))]
-    (for [t (range (/ (alength (.-triangles delaunay)) 3))]
+  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+        triangles (.-triangles delaunay)]
+    (for [t (range (/ (alength triangles) 3))]
       (delaunay-triangle points delaunay t))))
 
 (comment (triangles [[0 10] [0 5] [5 5] [4 2]]))
@@ -82,26 +88,29 @@
     (first (gt/circumcircle-raw a b c))))
 
 (defn voronoi-edges [points]
-  (let [delaunay (js/Delaunator.from (clj->js points))]
+  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+        half-edges (.-halfedges delaunay)]
     (for [e (range (alength (.-triangles delaunay)))
-          :when (< e (aget (.-halfedges delaunay) e))]
+          :when (< e (aget half-edges e))]
       (gl/line2 (triangle-center points delaunay (triangle-of-edge e))
                 (triangle-center points delaunay (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
 
-(defn edges-around-point [delaunay start]
-  (loop [incoming start result []]
-    (let [r (conj result incoming)
-          outgoing (next-half-edge incoming)
-          incoming (aget (.-halfedges delaunay) outgoing)]
-      (if (and (not= incoming -1) (not= incoming start))
-        (recur incoming r)
-        r))))
+(defn edges-around-point [^js/Delaunator delaunay start]
+  (let [half-edges (.-halfedges delaunay)]
+    (loop [incoming start result []]
+      (let [r (conj result incoming)
+            outgoing (next-half-edge incoming)
+            incoming (aget half-edges outgoing)]
+        (if (and (not= incoming -1) (not= incoming start))
+          (recur incoming r)
+          r)))))
 
 (defn voronoi-polygons [points]
-  (let [delaunay (js/Delaunator.from (clj->js points))]
+  (let [^js/Delaunator delaunay (js/Delaunator.from (clj->js points))
+        triangles (.-triangles delaunay)]
     (loop [e 0 seen #{} out []]
-      (if (< e (alength (.-triangles delaunay)))
-        (let [p (aget (.-triangles delaunay) (next-half-edge e))]
+      (if (< e (alength triangles))
+        (let [p (aget triangles (next-half-edge e))]
           (if (contains? seen p)
             (recur (inc e) seen out)
             (let [edges (edges-around-point delaunay e)
