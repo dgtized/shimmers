@@ -5,8 +5,5 @@
     "p5": "1.4.0",
     "sparkles": "file:vendor/sparkles",
     "ws": "^7.4.0"
-  },
-  "devDependencies": {
-    "@cljs-oss/module-deps": "github:cljs-oss/module-deps"
   }
 }
