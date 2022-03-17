@@ -1,8 +1,10 @@
 (ns shimmers.algorithm.poisson-disc-sampling
   (:require
    [shimmers.common.sequence :as cs]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; Various discussion on variable density sampling:
@@ -11,7 +13,7 @@
 ;; https://arxiv.org/abs/2004.06789 -- Fast Variable Density Poisson-Disc Sample Generation with Directional Variation
 (defn init [bounds r k n]
   (let [w (/ r (Math/sqrt 2))
-        p (g/random-point-inside bounds)
+        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))
         [x y] p
         row (Math/floor (/ x w))
         col (Math/floor (/ y w))]
@@ -32,8 +34,8 @@
 
 (defn maybe-add-sample [considering {:keys [r w grid active bounds] :as state}]
   (let [sample (v/add considering
-                      (v/polar (tm/random r (* 2 r))
-                               (tm/random tm/TWO_PI)))
+                      (v/polar (dr/random r (* 2 r))
+                               (dr/random tm/TWO_PI)))
         [sx sy] sample
         row (Math/floor (/ sx w))
         col (Math/floor (/ sy w))]
@@ -47,7 +49,7 @@
 
 (defn fill-step [{:keys [k active] :as state}]
   (if (> (count active) 0)
-    (let [considering (rand-nth active)
+    (let [considering (dr/rand-nth active)
           state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
