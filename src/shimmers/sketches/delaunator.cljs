@@ -212,7 +212,8 @@
 
 (def point-modes {:random-points rp/random-points
                   :random-cells rp/random-cells
-                  :random-cell-jitter rp/random-cell-jitter} )
+                  :random-cell-jitter rp/random-cell-jitter
+                  :poisson-disc-sampling rp/poisson-disc-sampling} )
 
 (defn generate-points [bounds ui-state]
   (let [{:keys [n-points point-mode]} @ui-state
@@ -226,7 +227,7 @@
     [:div
      [:div.canvas-frame [scene bounds @ui-state points]]
      [:div.flexcols
-      [:div {:style {:width "18em"}}
+      [:div {:style {:width "20em"}}
        (view-sketch/generate :delaunator)
        [:h4 "Controls"]
        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
