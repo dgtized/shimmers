@@ -68,7 +68,7 @@
         (ctrl/checkbox ui-state "Show MST Circles" [:mst])]]]]))
 
 (sketch/definition random-point-field
-  {:created-at "2022-05-12"
+  {:created-at "2022-03-12"
    :type :svg
    :tags #{}}
   (ctrl/mount page "sketch-host"))
