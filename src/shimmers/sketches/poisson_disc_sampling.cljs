@@ -28,15 +28,12 @@
 (defn update-state [{:keys [n] :as state}]
   (cs/iterate-cycles n pds/fill-step state))
 
-(defn draw [{:keys [active grid]}]
+(defn draw [{:keys [active points]}]
   (q/background 255)
   (q/stroke 0)
   (q/stroke-weight 2)
-  (if (:variable @ui-state)
-    (doseq [[x y] (mapcat identity (vals grid))]
-      (q/point x y))
-    (doseq [[x y] (vals grid)]
-      (q/point x y)))
+  (doseq [[x y] points]
+    (q/point x y))
   (q/stroke-weight 4)
   (q/stroke 0 0.5 0.5)
   (doseq [[x y] active]

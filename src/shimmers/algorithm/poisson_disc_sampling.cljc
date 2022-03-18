@@ -27,7 +27,7 @@
           :when neighbor]
       neighbor)))
 
-(defn maybe-add-sample [considering r {:keys [w grid active bounds] :as state}]
+(defn maybe-add-sample [considering r {:keys [w grid points active bounds] :as state}]
   (let [sample (v/add considering
                       (v/polar (dr/random r (* 2 r))
                                (dr/random tm/TWO_PI)))
@@ -37,11 +37,12 @@
                      (neighbors grid 1 location)))
       (assoc state
              :active (conj active sample)
+             :points (conj points sample)
              :grid (assoc grid location sample))
       state)))
 
 (defn maybe-add-dynamic-sample
-  [considering r {:keys [w r-min grid active bounds radius-fn] :as state}]
+  [considering r {:keys [w r-min grid points active bounds radius-fn] :as state}]
   (let [sample (v/add considering
                       (v/polar (dr/random r (* 2 r))
                                (dr/random tm/TWO_PI)))
@@ -51,6 +52,7 @@
                      (mapcat identity (neighbors grid (Math/ceil (/ r r-min)) location))))
       (assoc state
              :active (conj active sample)
+             :points (conj points sample)
              :grid (update grid location (fnil conj []) sample))
       state)))
 
@@ -75,7 +77,8 @@
      :maybe-add-sample-fn maybe-add-sample
      :radius-fn (constantly r)
      :grid {(grid-location w p) p}
-     :active [p]}))
+     :active [p]
+     :points [p]}))
 
 (defn init-dynamic [bounds k n [r-min r-max] radius-fn]
   (let [dims 2
@@ -90,20 +93,19 @@
      :maybe-add-sample-fn maybe-add-dynamic-sample
      :radius-fn radius-fn
      :grid {(grid-location w p) [p]}
-     :active [p]}))
+     :active [p]
+     :points [p]}))
 
 (defn generate [bounds k-attempts n radius]
-  (let [{:keys [grid]}
-        (->> (init bounds k-attempts n radius)
-             (iterate fill-step)
-             (take-while (fn [{:keys [active]}] (not-empty active)))
-             last)]
-    (vals grid)))
+  (->> (init bounds k-attempts n radius)
+       (iterate fill-step)
+       (take-while (fn [{:keys [active]}] (not-empty active)))
+       last
+       :points))
 
 (defn generate-dynamic [bounds k-attempts n radius radius-fn]
-  (let [{:keys [grid]}
-        (->> (init-dynamic bounds k-attempts n radius radius-fn)
-             (iterate fill-step)
-             (take-while (fn [{:keys [active]}] (not-empty active)))
-             last)]
-    (mapcat identity (vals grid))))
+  (->> (init-dynamic bounds k-attempts n radius radius-fn)
+       (iterate fill-step)
+       (take-while (fn [{:keys [active]}] (not-empty active)))
+       last
+       :points))
