@@ -7,25 +7,37 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]))
+            [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]))
 
 (def ui-state
-  (ctrl/state {:radius 8 :samples 10}))
+  (ctrl/state
+   {:variable false
+    :radius 8
+    :samples 10}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [radius samples]} @ui-state]
-    (pds/init (cq/screen-rect 0.8) radius samples 10)))
+  (let [{:keys [variable radius samples]} @ui-state]
+    (if variable
+      (pds/init-dynamic (cq/screen-rect 0.8) [radius (* 4 radius)] samples 10
+                        (fn [p] (Math/sqrt (g/dist p (cq/rel-vec 0.5 0.5)))))
+      (pds/init (cq/screen-rect 0.8) radius samples 10))))
 
 (defn update-state [{:keys [n] :as state}]
-  (cs/iterate-cycles n pds/fill-step state))
+  (if (:variable @ui-state)
+    (cs/iterate-cycles n pds/fill-step-dynamic state)
+    (cs/iterate-cycles n pds/fill-step state)))
 
 (defn draw [{:keys [active grid]}]
   (q/background 255)
   (q/stroke 0)
   (q/stroke-weight 2)
-  (doseq [[x y] (vals grid)]
-    (q/point x y))
+  (if (:variable @ui-state)
+    (doseq [[x y] (mapcat identity (vals grid))]
+      (q/point x y))
+    (doseq [[x y] (vals grid)]
+      (q/point x y)))
   (q/stroke-weight 4)
   (q/stroke 0 0.5 0.5)
   (doseq [[x y] active]
@@ -37,7 +49,8 @@
                 [:radius] [2 16 1])
    ;; Is this parameter even worth tuning?
    (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
-                [:samples] [5 50 1])))
+                [:samples] [5 50 1])
+   (ctrl/checkbox ui-state "Variable Radius" [:variable])))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
