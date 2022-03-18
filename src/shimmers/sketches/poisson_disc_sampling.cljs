@@ -25,9 +25,7 @@
       (pds/init (cq/screen-rect 0.8) radius samples 10))))
 
 (defn update-state [{:keys [n] :as state}]
-  (if (:variable @ui-state)
-    (cs/iterate-cycles n pds/fill-step-dynamic state)
-    (cs/iterate-cycles n pds/fill-step state)))
+  (cs/iterate-cycles n pds/fill-step state))
 
 (defn draw [{:keys [active grid]}]
   (q/background 255)

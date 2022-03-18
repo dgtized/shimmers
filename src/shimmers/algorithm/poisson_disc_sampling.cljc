@@ -16,17 +16,6 @@
 ;; http://extremelearning.com.au/an-improved-version-of-bridsons-algorithm-n-for-poisson-disc-sampling/
 ;; https://arxiv.org/abs/2004.06789 -- Fast Variable Density Poisson-Disc Sample Generation with Directional Variation
 ;; http://devmag.org.za/2009/05/03/poisson-disk-sampling/
-(defn init [bounds r k n]
-  (let [dims 2
-        w (/ r (Math/sqrt dims))
-        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
-    {:bounds bounds
-     :r r
-     :k k
-     :n n;; => nil
-     :w w
-     :grid {(grid-location w p) p}
-     :active [p]}))
 
 (defn neighbors
   "Find all points in the `grid` in the surrounding neighborhood of radius `size`."
@@ -38,7 +27,7 @@
           :when neighbor]
       neighbor)))
 
-(defn maybe-add-sample [considering {:keys [r w grid active bounds] :as state}]
+(defn maybe-add-sample [considering r {:keys [w grid active bounds] :as state}]
   (let [sample (v/add considering
                       (v/polar (dr/random r (* 2 r))
                                (dr/random tm/TWO_PI)))
@@ -50,37 +39,6 @@
              :active (conj active sample)
              :grid (assoc grid location sample))
       state)))
-
-(defn fill-step [{:keys [k active] :as state}]
-  (if (empty? active)
-    state
-    (let [considering (dr/rand-nth active)
-          state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
-      (if (= state state')
-        (update state' :active (partial remove #(= considering %)))
-        state'))))
-
-(defn generate [bounds radius k-attempts n]
-  (let [{:keys [grid]}
-        (->> (init bounds radius k-attempts n)
-             (iterate fill-step)
-             (take-while (fn [{:keys [active]}] (not-empty active)))
-             last)]
-    (vals grid)))
-
-(defn init-dynamic [bounds [r-min r-max] k n radius-fn]
-  (let [dims 2
-        w (/ r-max (Math/sqrt dims))
-        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
-    {:bounds bounds
-     :r-min r-min
-     :r-max r-max
-     :k k
-     :n n;; => nil
-     :w w
-     :radius-fn radius-fn
-     :grid {(grid-location w p) [p]}
-     :active [p]}))
 
 (defn maybe-add-dynamic-sample
   [considering r {:keys [w r-min grid active bounds radius-fn] :as state}]
@@ -96,20 +54,56 @@
              :grid (update grid location (fnil conj []) sample))
       state)))
 
-(defn fill-step-dynamic [{:keys [k active radius-fn] :as state}]
+(defn fill-step [{:keys [k active radius-fn maybe-add-sample-fn] :as state}]
   (if (empty? active)
     state
     (let [considering (dr/rand-nth active)
           r (radius-fn considering)
-          state' (cs/iterate-cycles k (partial maybe-add-dynamic-sample considering r) state)]
+          state' (cs/iterate-cycles k (partial maybe-add-sample-fn considering r) state)]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
         state'))))
 
+(defn init [bounds r k n]
+  (let [dims 2
+        w (/ r (Math/sqrt dims))
+        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
+    {:bounds bounds
+     :k k
+     :n n;; => nil
+     :w w
+     :maybe-add-sample-fn maybe-add-sample
+     :radius-fn (constantly r)
+     :grid {(grid-location w p) p}
+     :active [p]}))
+
+(defn init-dynamic [bounds [r-min r-max] k n radius-fn]
+  (let [dims 2
+        w (/ r-max (Math/sqrt dims))
+        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
+    {:bounds bounds
+     :r-min r-min
+     :r-max r-max
+     :k k
+     :n n;; => nil
+     :w w
+     :maybe-add-sample-fn maybe-add-dynamic-sample
+     :radius-fn radius-fn
+     :grid {(grid-location w p) [p]}
+     :active [p]}))
+
+(defn generate [bounds radius k-attempts n]
+  (let [{:keys [grid]}
+        (->> (init bounds radius k-attempts n)
+             (iterate fill-step)
+             (take-while (fn [{:keys [active]}] (not-empty active)))
+             last)]
+    (vals grid)))
+
 (defn generate-dynamic [bounds radius k-attempts n radius-fn]
   (let [{:keys [grid]}
         (->> (init-dynamic bounds radius k-attempts n radius-fn)
-             (iterate fill-step-dynamic)
+             (iterate fill-step)
              (take-while (fn [{:keys [active]}] (not-empty active)))
              last)]
     (mapcat identity (vals grid))))
