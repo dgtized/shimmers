@@ -7,6 +7,10 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn grid-location [w [x y]]
+  [(Math/floor (/ x w))
+   (Math/floor (/ y w))])
+
 ;; Various discussion on variable density sampling:
 ;; https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
 ;; http://extremelearning.com.au/an-improved-version-of-bridsons-algorithm-n-for-poisson-disc-sampling/
@@ -14,19 +18,16 @@
 (defn init [bounds r k n]
   (let [dims 2
         w (/ r (Math/sqrt dims))
-        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))
-        [x y] p
-        row (Math/floor (/ x w))
-        col (Math/floor (/ y w))]
+        p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
     {:bounds bounds
      :r r
      :k k
      :n n;; => nil
      :w w
-     :grid {[row col] p}
+     :grid {(grid-location w p) p}
      :active [p]}))
 
-(defn neighbors [grid row col]
+(defn neighbors [grid [row col]]
   (for [i [-1 0 1]
         j [-1 0 1]
         :let [neighbor (get grid [(+ row i) (+ col j)])]
@@ -37,15 +38,13 @@
   (let [sample (v/add considering
                       (v/polar (dr/random r (* 2 r))
                                (dr/random tm/TWO_PI)))
-        [sx sy] sample
-        row (Math/floor (/ sx w))
-        col (Math/floor (/ sy w))]
+        location (grid-location w sample)]
     (if (and (g/contains-point? bounds sample)
              (every? (fn [neighbor] (>= (g/dist sample neighbor) r))
-                     (neighbors grid row col)))
+                     (neighbors grid location)))
       (assoc state
              :active (conj active sample)
-             :grid (assoc grid [row col] sample))
+             :grid (assoc grid location sample))
       state)))
 
 (defn fill-step [{:keys [k active] :as state}]
