@@ -12,7 +12,8 @@
 ;; http://extremelearning.com.au/an-improved-version-of-bridsons-algorithm-n-for-poisson-disc-sampling/
 ;; https://arxiv.org/abs/2004.06789 -- Fast Variable Density Poisson-Disc Sample Generation with Directional Variation
 (defn init [bounds r k n]
-  (let [w (/ r (Math/sqrt 2))
+  (let [dims 2
+        w (/ r (Math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))
         [x y] p
         row (Math/floor (/ x w))
