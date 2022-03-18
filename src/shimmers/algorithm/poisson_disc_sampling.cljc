@@ -27,12 +27,15 @@
      :grid {(grid-location w p) p}
      :active [p]}))
 
-(defn neighbors [grid [row col]]
-  (for [i [-1 0 1]
-        j [-1 0 1]
-        :let [neighbor (get grid [(+ row i) (+ col j)])]
-        :when neighbor]
-    neighbor))
+(defn neighbors
+  "Find all points in the `grid` in the surrounding neighborhood of radius `size`."
+  [grid size [row col]]
+  (let [surroundings (range (- size) (inc size) 1)]
+    (for [i surroundings
+          j surroundings
+          :let [neighbor (get grid [(+ row i) (+ col j)])]
+          :when neighbor]
+      neighbor)))
 
 (defn maybe-add-sample [considering {:keys [r w grid active bounds] :as state}]
   (let [sample (v/add considering
@@ -41,7 +44,7 @@
         location (grid-location w sample)]
     (if (and (g/contains-point? bounds sample)
              (every? (fn [neighbor] (>= (g/dist sample neighbor) r))
-                     (neighbors grid location)))
+                     (neighbors grid 1 location)))
       (assoc state
              :active (conj active sample)
              :grid (assoc grid location sample))
