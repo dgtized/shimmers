@@ -64,7 +64,7 @@
         (update state' :active (partial remove #(= considering %)))
         state'))))
 
-(defn init [bounds r k n]
+(defn init [bounds k n r]
   (let [dims 2
         w (/ r (Math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
@@ -77,7 +77,7 @@
      :grid {(grid-location w p) p}
      :active [p]}))
 
-(defn init-dynamic [bounds [r-min r-max] k n radius-fn]
+(defn init-dynamic [bounds k n [r-min r-max] radius-fn]
   (let [dims 2
         w (/ r-max (Math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
@@ -92,17 +92,17 @@
      :grid {(grid-location w p) [p]}
      :active [p]}))
 
-(defn generate [bounds radius k-attempts n]
+(defn generate [bounds k-attempts n radius]
   (let [{:keys [grid]}
-        (->> (init bounds radius k-attempts n)
+        (->> (init bounds k-attempts n radius)
              (iterate fill-step)
              (take-while (fn [{:keys [active]}] (not-empty active)))
              last)]
     (vals grid)))
 
-(defn generate-dynamic [bounds radius k-attempts n radius-fn]
+(defn generate-dynamic [bounds k-attempts n radius radius-fn]
   (let [{:keys [grid]}
-        (->> (init-dynamic bounds radius k-attempts n radius-fn)
+        (->> (init-dynamic bounds k-attempts n radius radius-fn)
              (iterate fill-step)
              (take-while (fn [{:keys [active]}] (not-empty active)))
              last)]

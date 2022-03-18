@@ -20,9 +20,10 @@
   (q/color-mode :hsl 1.0)
   (let [{:keys [variable radius samples]} @ui-state]
     (if variable
-      (pds/init-dynamic (cq/screen-rect 0.8) [radius (* 4 radius)] samples 10
+      (pds/init-dynamic (cq/screen-rect 0.8) samples 10
+                        [radius (* 4 radius)]
                         (fn [p] (Math/sqrt (g/dist p (cq/rel-vec 0.5 0.5)))))
-      (pds/init (cq/screen-rect 0.8) radius samples 10))))
+      (pds/init (cq/screen-rect 0.8) samples 10 radius))))
 
 (defn update-state [{:keys [n] :as state}]
   (cs/iterate-cycles n pds/fill-step state))
