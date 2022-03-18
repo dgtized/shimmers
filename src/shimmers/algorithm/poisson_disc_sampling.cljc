@@ -48,13 +48,13 @@
       state)))
 
 (defn fill-step [{:keys [k active] :as state}]
-  (if (> (count active) 0)
+  (if (empty? active)
+    state
     (let [considering (dr/rand-nth active)
           state' (cs/iterate-cycles k (partial maybe-add-sample considering) state)]
       (if (= state state')
         (update state' :active (partial remove #(= considering %)))
-        state'))
-    state))
+        state'))))
 
 (defn generate [bounds radius k-attempts n]
   (let [{:keys [grid]}
