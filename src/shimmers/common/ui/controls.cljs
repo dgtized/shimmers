@@ -33,10 +33,11 @@
 
 ;; TODO: add support for changing label/button somehow?
 (defn change-mode
-  ([ui-state modes] (change-mode ui-state modes :mode))
-  ([ui-state modes key-name]
-   (let [mode (key-name @ui-state)
-         cycle-mode #(swap! ui-state update key-name
+  ([ui-state modes]
+   (change-mode ui-state modes {:mode-key :mode}))
+  ([ui-state modes {:keys [mode-key] :or {mode-key :mode}}]
+   (let [mode (mode-key @ui-state)
+         cycle-mode #(swap! ui-state update mode-key
                             (partial cs/cycle-next modes))]
      [:div
       [:input {:type "button" :value "Cycle Mode"

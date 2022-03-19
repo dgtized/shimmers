@@ -63,7 +63,7 @@
     (ctrl/numeric ui-state "𝚫t" [:delta-t] [0.0 2.0 0.001])
     (ctrl/numeric ui-state "Iterations per frame" [:iterations] [1.0 64.0 1.0])]
    [:div [:h3 "Display Mode"]
-    (ctrl/change-mode ui-state (keys modes) :mode)
+    (ctrl/change-mode ui-state (keys modes))
     (ctrl/checkbox ui-state "Invert" [:invert])]))
 
 ;; Cribbed some of the feedback loop from https://medium.com/@edoueda/integrating-p5-js-and-webgl-with-react-js-96c848a63170

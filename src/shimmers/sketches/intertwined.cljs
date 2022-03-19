@@ -257,8 +257,8 @@
       (ctrl/numeric ui-state "Columns" [:columns] [2 5 1])
       (ctrl/change-mode ui-state modes)
       (if (= mode :intersections)
-        (ctrl/change-mode ui-state edge-modes :edge-mode)
-        (ctrl/change-mode ui-state graph-modes :graph-mode)))
+        (ctrl/change-mode ui-state edge-modes {:mode-key :edge-mode})
+        (ctrl/change-mode ui-state graph-modes {:mode-key :graph-mode})))
      [:div (view-sketch/generate :intertwined)]]))
 
 (sketch/defquil intertwined
