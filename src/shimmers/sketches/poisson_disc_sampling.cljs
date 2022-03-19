@@ -18,18 +18,23 @@
    {:mode :fixed
     :radius 8
     :cycles-per-frame 10
+    :radius-fn :sqrt-distance
     :samples 10}))
 
-(defn sqrt-dist-from [origin]
-  (fn [p] (Math/sqrt (g/dist p origin))))
+;; TODO: fix radius-fn so they are in normalized 0 to 1 space
+(def radius-source
+  {:sqrt-distance (fn [p] (Math/sqrt (g/dist p (cq/rel-vec 0.5 0.5))))
+   :perlin-noise (fn [[x y]]
+                   (let [d 0.01]
+                     (* 2 (:radius @ui-state) (q/noise (* d x) (* d y)))))})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [mode radius samples]} @ui-state]
+  (let [{:keys [mode radius samples radius-fn]} @ui-state]
     (if (= mode :variable)
       (pds/init-dynamic (cq/screen-rect 0.8) samples
                         [radius (* 4 radius)]
-                        (sqrt-dist-from (cq/rel-vec 0.5 0.5)))
+                        (get radius-source radius-fn))
       (pds/init (cq/screen-rect 0.8) samples radius))))
 
 (defn update-state [state]
@@ -54,7 +59,9 @@
   (ctrl/container
    (ctrl/change-mode ui-state [:fixed :variable] {:on-change restart})
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
-                [:radius] [2 32 1])))
+                [:radius] [2 32 1])
+   (when (= (:mode @ui-state) :variable)
+     (ctrl/change-mode ui-state (keys radius-source) {:mode-key :radius-fn}))))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
