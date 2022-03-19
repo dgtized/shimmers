@@ -35,10 +35,13 @@
 (defn change-mode
   ([ui-state modes]
    (change-mode ui-state modes {:mode-key :mode}))
-  ([ui-state modes {:keys [mode-key] :or {mode-key :mode}}]
+  ([ui-state modes {:keys [mode-key on-change]
+                    :or {mode-key :mode
+                         on-change (fn [])}}]
    (let [mode (mode-key @ui-state)
-         cycle-mode #(swap! ui-state update mode-key
-                            (partial cs/cycle-next modes))]
+         cycle-mode #(do (swap! ui-state update mode-key
+                                (partial cs/cycle-next modes))
+                         (on-change))]
      [:div
       [:input {:type "button" :value "Cycle Mode"
                :on-click cycle-mode}]

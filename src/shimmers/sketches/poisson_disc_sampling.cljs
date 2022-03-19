@@ -8,11 +8,14 @@
             [shimmers.common.sequence :as cs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.sketch :as sketch :include-macros true]
+            [shimmers.view.sketch :as view-sketch]
             [thi.ng.geom.core :as g]))
+
+(def modes [:fixed :variable])
 
 (def ui-state
   (ctrl/state
-   {:variable false
+   {:mode :fixed
     :radius 8
     :cycles-per-frame 10
     :samples 10}))
@@ -22,8 +25,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [variable radius samples]} @ui-state]
-    (if variable
+  (let [{:keys [mode radius samples]} @ui-state]
+    (if (= mode :variable)
       (pds/init-dynamic (cq/screen-rect 0.8) samples
                         [radius (* 4 radius)]
                         (sqrt-dist-from (cq/rel-vec 0.5 0.5)))
@@ -44,14 +47,17 @@
   (doseq [[x y] active]
     (q/point x y)))
 
+(defn restart []
+  (view-sketch/restart-sketch {:id :poisson-disc-sampling}))
+
 (defn ui-controls []
   (ctrl/container
+   (ctrl/change-mode ui-state [:fixed :variable] {:on-change restart})
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
                 [:radius] [2 16 1])
    ;; Is this parameter even worth tuning?
    (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
-                [:samples] [5 50 1])
-   (ctrl/checkbox ui-state "Variable Radius" [:variable])))
+                [:samples] [5 50 1])))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
