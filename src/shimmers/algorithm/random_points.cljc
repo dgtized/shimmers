@@ -47,4 +47,4 @@
   to work. Usually results in a few more points than requested given the radius."
   [bounds n]
   (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
-    (pds/generate bounds 12 n radius)))
+    (pds/generate bounds 12 radius)))

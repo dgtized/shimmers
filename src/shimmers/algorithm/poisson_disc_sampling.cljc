@@ -66,13 +66,12 @@
         (update state' :active (partial remove #(= considering %)))
         state'))))
 
-(defn init [bounds k n r]
+(defn init [bounds k r]
   (let [dims 2
         w (/ r (Math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
     {:bounds bounds
      :k k
-     :n n;; => nil
      :w w
      :maybe-add-sample-fn maybe-add-sample
      :radius-fn (constantly r)
@@ -80,7 +79,7 @@
      :active [p]
      :points [p]}))
 
-(defn init-dynamic [bounds k n [r-min r-max] radius-fn]
+(defn init-dynamic [bounds k [r-min r-max] radius-fn]
   (let [dims 2
         w (/ r-max (Math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
@@ -88,7 +87,6 @@
      :r-min r-min
      :r-max r-max
      :k k
-     :n n;; => nil
      :w w
      :maybe-add-sample-fn maybe-add-dynamic-sample
      :radius-fn radius-fn
@@ -96,15 +94,15 @@
      :active [p]
      :points [p]}))
 
-(defn generate [bounds k-attempts n radius]
-  (->> (init bounds k-attempts n radius)
+(defn generate [bounds k-attempts radius]
+  (->> (init bounds k-attempts radius)
        (iterate fill-step)
        (take-while (fn [{:keys [active]}] (not-empty active)))
        last
        :points))
 
-(defn generate-dynamic [bounds k-attempts n radius radius-fn]
-  (->> (init-dynamic bounds k-attempts n radius radius-fn)
+(defn generate-dynamic [bounds k-attempts radius radius-fn]
+  (->> (init-dynamic bounds k-attempts radius radius-fn)
        (iterate fill-step)
        (take-while (fn [{:keys [active]}] (not-empty active)))
        last

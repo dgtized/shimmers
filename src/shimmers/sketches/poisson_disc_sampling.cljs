@@ -14,6 +14,7 @@
   (ctrl/state
    {:variable false
     :radius 8
+    :cycles-per-frame 10
     :samples 10}))
 
 (defn sqrt-dist-from [origin]
@@ -23,13 +24,14 @@
   (q/color-mode :hsl 1.0)
   (let [{:keys [variable radius samples]} @ui-state]
     (if variable
-      (pds/init-dynamic (cq/screen-rect 0.8) samples 10
+      (pds/init-dynamic (cq/screen-rect 0.8) samples
                         [radius (* 4 radius)]
                         (sqrt-dist-from (cq/rel-vec 0.5 0.5)))
-      (pds/init (cq/screen-rect 0.8) samples 10 radius))))
+      (pds/init (cq/screen-rect 0.8) samples radius))))
 
-(defn update-state [{:keys [n] :as state}]
-  (cs/iterate-cycles n pds/fill-step state))
+(defn update-state [state]
+  (cs/iterate-cycles (:cycles-per-frame @ui-state)
+                     pds/fill-step state))
 
 (defn draw [{:keys [active points]}]
   (q/background 255)
