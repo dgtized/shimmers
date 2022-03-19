@@ -10,9 +10,8 @@
 ;; d3-delaunay polygons and triangles API results include the initial point as
 ;; the closing point, so they need to be trimmed of the last point.
 
-(defn delaunay-from [points]
-  (.from (get (js->clj js/d3-delaunay) "Delaunay")
-         (clj->js points)))
+(defn delaunay-from ^js/Delaunay [points]
+  (js/d3.Delaunay.from (clj->js points)))
 
 (defn delaunay-triangles [points]
   (let [^js/Delaunay delaunay (delaunay-from points)]

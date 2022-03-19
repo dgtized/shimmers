@@ -36,8 +36,7 @@
   (if (= 0 (mod e 3)) (+ e 2) (- e 1)))
 
 (defn delaunator-from ^js/Delaunator [points]
-  (.from (get (js->clj js/delaunator) "default")
-         (clj->js points)))
+  (js/Delaunator.from (clj->js points)))
 
 (defn triangle-edges [points]
   (let [^js/Delaunator delaunay (delaunator-from points)
