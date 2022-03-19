@@ -16,13 +16,16 @@
     :radius 8
     :samples 10}))
 
+(defn sqrt-dist-from [origin]
+  (fn [p] (Math/sqrt (g/dist p origin))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [variable radius samples]} @ui-state]
     (if variable
       (pds/init-dynamic (cq/screen-rect 0.8) samples 10
                         [radius (* 4 radius)]
-                        (fn [p] (Math/sqrt (g/dist p (cq/rel-vec 0.5 0.5)))))
+                        (sqrt-dist-from (cq/rel-vec 0.5 0.5)))
       (pds/init (cq/screen-rect 0.8) samples 10 radius))))
 
 (defn update-state [{:keys [n] :as state}]
