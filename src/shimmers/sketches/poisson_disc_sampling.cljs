@@ -54,10 +54,7 @@
   (ctrl/container
    (ctrl/change-mode ui-state [:fixed :variable] {:on-change restart})
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
-                [:radius] [2 16 1])
-   ;; Is this parameter even worth tuning?
-   (ctrl/slider ui-state (fn [v] (str "Samples per Location: " v))
-                [:samples] [5 50 1])))
+                [:radius] [2 32 1])))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
