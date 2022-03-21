@@ -6,18 +6,20 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.graph :as graph]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
-(defn make-graph []
-  (let [src (cq/rel-vec 0.1 0.5)
-        dst (cq/rel-vec 0.9 0.5)
-        ta (cq/rel-vec 0.25 0.3)
-        la (cq/rel-vec 0.25 0.7)
-        tc (cq/rel-vec 0.5 0.25)
-        mc (cq/rel-vec 0.5 0.5)
-        lc (cq/rel-vec 0.5 0.75)
-        tb (cq/rel-vec 0.75 0.3)
-        lb (cq/rel-vec 0.75 0.7)
+(defn make-graph [bounds]
+  (let [src[0.1 0.5]
+        dst[0.9 0.5]
+        ta [0.25 0.3]
+        la [0.25 0.7]
+        tc [0.5 0.25]
+        mc [0.5 0.5]
+        lc [0.5 0.75]
+        tb [0.75 0.3]
+        lb [0.75 0.7]
         edges [[src ta]
                [src la]
                [ta tc]
@@ -30,11 +32,13 @@
                [lc lb]
                [tb dst]
                [lb dst]]]
-    (graph/edges->graph edges)))
+    (->> edges
+         (mapv (fn [pair] (mapv #(g/unmap-point bounds (gv/vec2 %)) pair)))
+         graph/edges->graph)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:graph (make-graph)})
+  {:graph (make-graph (cq/screen-rect))})
 
 (defn update-state [state]
   state)
