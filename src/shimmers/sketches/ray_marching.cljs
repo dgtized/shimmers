@@ -19,16 +19,16 @@
 (defn update-state [state]
   (update state :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI)))))
 
+(defn polar-project [p theta radius]
+  (tm/+ p (v/polar radius theta)))
+
 (defn circle-blob [[cx cy] rmin rmax]
   (for [angle (sm/range-subdivided tm/TWO_PI 10)]
     (let [dt (/ (q/frame-count) 50)
           xoff (+ (q/cos angle) 1)
           yoff (+ (q/sin angle) 1)
           r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
-      (tm/+ (gv/vec2 cx cy) (v/polar r angle)))))
-
-(defn polar-coord [theta radius x y]
-  (tm/+ (gv/vec2 x y) (v/polar radius theta)))
+      (polar-project (gv/vec2 cx cy) angle r))))
 
 (defn shape-segments
   "Convert vertices into a list of paired segments connecting each vertice in a loop."
@@ -53,10 +53,12 @@
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
-  (let [shapes [(circle-blob (polar-coord theta 50 100 100)
-                             25 50)
-                (circle-blob (polar-coord (+ theta 2) 25 400 400)
-                             25 50)]
+  (let [r-min (cq/rel-w 0.08)
+        r-max (cq/rel-w 0.15)
+        shapes [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
+                             r-min r-max)
+                (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
+                             r-min r-max)]
         segments (mapcat shape-segments shapes)]
 
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
@@ -70,7 +72,7 @@
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
-  :size [500 500]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw-state
