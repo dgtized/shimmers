@@ -3,6 +3,7 @@
             [quil.middleware :as m]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
             [shimmers.math.geometry.intersection :as isec]
             [shimmers.math.vector :as v]
@@ -11,6 +12,8 @@
             [thi.ng.math.core :as tm]))
 
 ;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
+
+(defonce ui-state (ctrl/state {:mode :mouse}))
 
 (defn setup []
   {:theta 0.0
@@ -62,15 +65,28 @@
   (q/no-fill)
   (let [shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
-    (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
-      (let [ray [mouse (polar-project mouse angle (q/width))]]
+    (case (:mode @ui-state)
+      :mouse
+      (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
+        (let [ray [mouse (polar-project mouse angle (q/width))]]
+          (when-let [intersection (closest-intersection ray segments)]
+            (q/line mouse intersection))))
+      :ray-march
+      (let [from (cq/rel-vec 0.25 0.75)
+            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
+            ray [from (polar-project from angle (q/width))]]
         (when-let [intersection (closest-intersection ray segments)]
-          (q/line mouse intersection))))
+          (q/line from intersection))))
     (doseq [shape shapes]
       (cq/draw-shape shape))))
 
+(defn ui-controls []
+  (ctrl/container
+   (ctrl/change-mode ui-state [:mouse :ray-march])))
+
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
+  :on-mount #(ctrl/mount ui-controls)
   :size [800 600]
   :setup setup
   :update update-state
