@@ -21,18 +21,18 @@
     :radius-fn :sqrt-distance
     :samples 10}))
 
-;; TODO: fix radius-fn so they are in normalized 0 to 1 space
 (def radius-source
-  {:sqrt-distance (fn [p] (Math/sqrt (g/dist p (cq/rel-vec 0.5 0.5))))
+  {:sqrt-distance (fn [p] (/ (g/dist p (cq/rel-vec 0.5 0.5)) (* 0.5 (q/width))))
    :perlin-noise (fn [[x y]]
                    (let [d 0.01]
-                     (* 2 (:radius @ui-state) (q/noise (* d x) (* d y)))))})
+                     (q/noise (* d x) (* d y))))})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [mode radius samples radius-fn]} @ui-state]
     (if (= mode :variable)
       (pds/init-dynamic (cq/screen-rect 0.8) samples
+                        ;; Need a better way to map 0 to 1 to radius
                         [radius (* 4 radius)]
                         (get radius-source radius-fn))
       (pds/init (cq/screen-rect 0.8) samples radius))))

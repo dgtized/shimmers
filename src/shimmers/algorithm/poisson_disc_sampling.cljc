@@ -89,7 +89,7 @@
      :k k
      :w w
      :maybe-add-sample-fn maybe-add-dynamic-sample
-     :radius-fn radius-fn
+     :radius-fn (fn [p] (tm/map-interval (radius-fn p) [0 1] [r-min r-max]))
      :grid {(grid-location w p) [p]}
      :active [p]
      :points [p]}))
