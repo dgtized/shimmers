@@ -48,10 +48,6 @@
                     (q/dist x y sx sy))))
        first))
 
-(defn center-origin []
-  [(/ (q/width) 2)
-   (/ (q/height) 2)])
-
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 0)
   (q/stroke 255)
