@@ -55,7 +55,13 @@
     [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
                   r-min r-max
                   (* theta 0.20))
-     (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
+     (circle-blob (polar-project (cq/rel-vec 0.7 0.2) (* 0.1 theta) (cq/rel-w 0.025))
+                  (* 0.5 r-min) (* 0.5 r-max)
+                  (* theta 0.1))
+     (circle-blob (polar-project (cq/rel-vec 0.8 0.4) (* 0.1 theta) (cq/rel-w 0.01))
+                  (* 0.5 r-min) (* 0.5 r-max)
+                  (* theta 0.1))
+     (circle-blob (polar-project (cq/rel-vec 0.6 0.7) (+ theta 2) (cq/rel-w 0.08))
                   r-min r-max
                   (* theta 0.40))]))
 
