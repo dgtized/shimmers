@@ -17,6 +17,7 @@
 (defonce ui-state (ctrl/state {:mode :mouse}))
 
 (defn setup []
+  (q/color-mode :hsl 1.0)
   {:theta 0.0
    :mouse (gv/vec2)})
 
@@ -78,7 +79,6 @@
     (let [position (tm/+ from (v/polar depth angle))
           [close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
           dist (sdf-line position close-a close-b 1)]
-      (apply q/point position)
       (cq/circle position (* 2 dist))
       (cond
         (> depth 1000)
@@ -89,8 +89,9 @@
         (recur (+ depth dist))))))
 
 (defn draw-state [{:keys [theta mouse]}]
-  (q/background 0)
-  (q/stroke 255)
+  (q/background 1.0)
+  (q/stroke 0.0)
+  (q/stroke-weight 1.0)
   (q/no-fill)
   (let [shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
@@ -103,8 +104,14 @@
       :ray-march
       (let [from (cq/rel-vec 0.25 0.75)
             angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))]
+        (q/stroke-weight 0.3)
+        (q/stroke 0.0 0.5 0.5)
         (when-let [intersection (ray-march from angle segments)]
+          (q/stroke-weight 1.0)
+          (q/stroke 0.33)
           (q/line from intersection))))
+    (q/stroke-weight 2.0)
+    (q/stroke 0.0)
     (doseq [shape shapes]
       (cq/draw-shape shape))))
 
