@@ -25,9 +25,8 @@
 
 (defn shapes []
   (let [radius (* height 0.05)
-        {:keys [p r] :as center}
-        (gc/circle (rv 0.5 0.5) radius)]
-    (->> {:circle center :t 0 :r radius :dr (* 0.3 radius)}
+        circle (gc/circle (rv 0.5 0.5) radius)]
+    (->> {:circle circle :t 0 :r radius :dr (* 0.3 radius)}
          (iterate spiral-step)
          (take 60)
          (map :circle))))
