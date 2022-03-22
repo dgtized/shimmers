@@ -18,7 +18,7 @@
 
 (defn update-state [state]
   (-> state
-      (update :theta (fn [theta] (rem (+ theta 0.025) (* 2 Math/PI))))
+      (update :theta + 0.025)
       (assoc :mouse (cq/mouse-position))))
 
 (defn polar-project [p theta radius]
@@ -50,15 +50,14 @@
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
-  (let [dt (/ (q/frame-count) 150)
-        r-min (cq/rel-w 0.05)
+  (let [r-min (cq/rel-w 0.05)
         r-max (cq/rel-w 0.18)
         shapes [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
                              r-min r-max
-                             dt)
+                             (* theta 0.20))
                 (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
                              r-min r-max
-                             dt)]
+                             (* theta 0.40))]
         segments (mapcat shape-segments shapes)]
 
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
