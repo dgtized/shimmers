@@ -5,7 +5,9 @@
             [shimmers.common.quil :as cq]
             [shimmers.math.core :as sm]
             [shimmers.math.geometry.intersection :as isec]
+            [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
 ;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
@@ -22,14 +24,11 @@
     (let [dt (/ (q/frame-count) 50)
           xoff (+ (q/cos angle) 1)
           yoff (+ (q/sin angle) 1)
-          r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)
-          x (+ cx (* r (q/cos angle)))
-          y (+ cy (* r (q/sin angle)))]
-      [x y])))
+          r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
+      (tm/+ (gv/vec2 cx cy) (v/polar r angle)))))
 
 (defn polar-coord [theta radius x y]
-  [(+ x (* radius (q/cos theta)))
-   (+ y (* radius (q/sin theta)))])
+  (tm/+ (gv/vec2 x y) (v/polar radius theta)))
 
 (defn shape-segments
   "Convert vertices into a list of paired segments connecting each vertice in a loop."
