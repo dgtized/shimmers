@@ -13,22 +13,20 @@
 ;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
 
 (defn setup []
-  (q/frame-rate 30)
   {:theta 0.0
    :mouse (gv/vec2)})
 
 (defn update-state [state]
   (-> state
-      (update :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI))))
+      (update :theta (fn [theta] (rem (+ theta 0.025) (* 2 Math/PI))))
       (assoc :mouse (cq/mouse-position))))
 
 (defn polar-project [p theta radius]
   (tm/+ p (v/polar radius theta)))
 
-(defn circle-blob [[cx cy] rmin rmax]
+(defn circle-blob [[cx cy] rmin rmax dt]
   (for [angle (sm/range-subdivided tm/TWO_PI 10)]
-    (let [dt (/ (q/frame-count) 50)
-          xoff (+ (q/cos angle) 1)
+    (let [xoff (+ (q/cos angle) 1)
           yoff (+ (q/sin angle) 1)
           r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
       (polar-project (gv/vec2 cx cy) angle r))))
@@ -52,12 +50,15 @@
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
-  (let [r-min (cq/rel-w 0.08)
-        r-max (cq/rel-w 0.15)
+  (let [dt (/ (q/frame-count) 150)
+        r-min (cq/rel-w 0.05)
+        r-max (cq/rel-w 0.18)
         shapes [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
-                             r-min r-max)
+                             r-min r-max
+                             dt)
                 (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
-                             r-min r-max)]
+                             r-min r-max
+                             dt)]
         segments (mapcat shape-segments shapes)]
 
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
