@@ -74,6 +74,7 @@
         h (tm/clamp01 (/ (tm/dot pa ba) (tm/dot ba ba)))]
     (- (tm/mag (tm/- pa (tm/* ba h))) r)))
 
+;; TODO: split out the debug circle routine somehow so it's not a side-effect
 (defn ray-march [from angle segments]
   (loop [depth 0]
     (let [position (tm/+ from (v/polar depth angle))
