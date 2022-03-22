@@ -46,20 +46,22 @@
                     (q/dist x y sx sy))))
        first))
 
+(defn gen-shapes [theta]
+  (let [r-min (cq/rel-w 0.05)
+        r-max (cq/rel-w 0.18)]
+    [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
+                  r-min r-max
+                  (* theta 0.20))
+     (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
+                  r-min r-max
+                  (* theta 0.40))]))
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
-  (let [r-min (cq/rel-w 0.05)
-        r-max (cq/rel-w 0.18)
-        shapes [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
-                             r-min r-max
-                             (* theta 0.20))
-                (circle-blob (polar-project (cq/rel-vec 0.7 0.7) (+ theta 2) (cq/rel-w 0.08))
-                             r-min r-max
-                             (* theta 0.40))]
+  (let [shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
-
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
       (let [ray [mouse (polar-project mouse angle (q/width))]]
         (when-let [intersection (closest-intersection ray segments)]
