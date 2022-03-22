@@ -12,6 +12,7 @@
             [thi.ng.math.core :as tm]))
 
 ;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
+;; and  https://michaelwalczyk.com/blog-ray-marching.html
 
 (defonce ui-state (ctrl/state {:mode :mouse}))
 
@@ -65,6 +66,28 @@
                   r-min r-max
                   (* theta 0.40))]))
 
+;; https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+(defn sdf-line [p a b r]
+  (let [pa (tm/- p a)
+        ba (tm/- b a)
+        h (tm/clamp01 (/ (tm/dot pa ba) (tm/dot ba ba)))]
+    (- (tm/mag (tm/- pa (tm/* ba h))) r)))
+
+(defn ray-march [from angle segments]
+  (loop [depth 0]
+    (let [position (tm/+ from (v/polar depth angle))
+          [close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
+          dist (sdf-line position close-a close-b 1)]
+      (apply q/point position)
+      (cq/circle position (* 2 dist))
+      (cond
+        (> depth 1000)
+        nil
+        (< dist 0.1)
+        position
+        :else
+        (recur (+ depth dist))))))
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 0)
   (q/stroke 255)
@@ -79,9 +102,8 @@
             (q/line mouse intersection))))
       :ray-march
       (let [from (cq/rel-vec 0.25 0.75)
-            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
-            ray [from (polar-project from angle (q/width))]]
-        (when-let [intersection (closest-intersection ray segments)]
+            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))]
+        (when-let [intersection (ray-march from angle segments)]
           (q/line from intersection))))
     (doseq [shape shapes]
       (cq/draw-shape shape))))
