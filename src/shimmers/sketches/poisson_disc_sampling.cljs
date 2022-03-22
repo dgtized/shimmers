@@ -29,13 +29,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [mode radius samples radius-fn]} @ui-state]
+  (let [{:keys [mode radius samples radius-fn]} @ui-state
+        bounds (cq/screen-rect 0.8)]
     (if (= mode :variable)
-      (pds/init-dynamic (cq/screen-rect 0.8) samples
+      (pds/init-dynamic bounds samples
                         ;; Need a better way to map 0 to 1 to radius
                         [radius (* 4 radius)]
                         (get radius-source radius-fn))
-      (pds/init (cq/screen-rect 0.8) samples radius))))
+      (pds/init bounds samples radius))))
 
 (defn update-state [state]
   (cs/iterate-cycles (:cycles-per-frame @ui-state)
