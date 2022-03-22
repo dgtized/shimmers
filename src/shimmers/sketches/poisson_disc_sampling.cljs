@@ -62,7 +62,8 @@
    (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
                 [:radius] [2 32 1])
    (when (= (:mode @ui-state) :variable)
-     (ctrl/change-mode ui-state (keys radius-source) {:mode-key :radius-fn}))))
+     (ctrl/change-mode ui-state (keys radius-source)
+                       {:mode-key :radius-fn :on-change restart}))))
 
 (sketch/defquil poisson-disc-sampling
   :created-at "2021-06-30"
