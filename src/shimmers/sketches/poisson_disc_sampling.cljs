@@ -13,7 +13,7 @@
 
 (def modes [:fixed :variable])
 
-(def ui-state
+(defonce ui-state
   (ctrl/state
    {:mode :fixed
     :radius 8
