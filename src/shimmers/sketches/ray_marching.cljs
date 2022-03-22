@@ -14,10 +14,13 @@
 
 (defn setup []
   (q/frame-rate 30)
-  {:theta 0.0})
+  {:theta 0.0
+   :mouse (gv/vec2)})
 
 (defn update-state [state]
-  (update state :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI)))))
+  (-> state
+      (update :theta (fn [theta] (rem (+ theta 0.05) (* 2 Math/PI))))
+      (assoc :mouse (cq/mouse-position))))
 
 (defn polar-project [p theta radius]
   (tm/+ p (v/polar radius theta)))
@@ -49,7 +52,7 @@
   [(/ (q/width) 2)
    (/ (q/height) 2)])
 
-(defn draw-state [{:keys [theta]}]
+(defn draw-state [{:keys [theta mouse]}]
   (q/background 0)
   (q/stroke 255)
   (q/no-fill)
@@ -62,11 +65,9 @@
         segments (mapcat shape-segments shapes)]
 
     (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
-      (let [origin (cq/mouse-position)
-            [x y] origin
-            ray [origin [(+ x (* 1000 (q/cos angle))) (+ y (* 1000 (q/sin angle)))]]]
+      (let [ray [mouse (polar-project mouse angle (q/width))]]
         (when-let [intersection (closest-intersection ray segments)]
-          (q/line origin intersection))))
+          (q/line mouse intersection))))
     (doseq [shape shapes]
       (cq/draw-shape shape))))
 
