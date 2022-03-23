@@ -13,6 +13,12 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+;; Experimenting with moving points but drawing the delayed voronoi diagram
+;; around those points.
+
+;; FIXME: it drifts to the right for some reason
+;; TODO: experiment with particle physics for the underlying points?
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0 1.0)
