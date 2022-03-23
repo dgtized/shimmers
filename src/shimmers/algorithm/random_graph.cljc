@@ -3,6 +3,8 @@
    [clojure.set :as set]
    [loom.alg :as la]
    [loom.graph :as lg]
+   #?(:cljs
+      [shimmers.algorithm.delaunator :as deltor])
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.graph :as graph]
@@ -21,3 +23,8 @@
                 g))
             mst
             (dr/shuffle possible-edges))))
+
+#?(:cljs
+   (defn voronoi [points]
+     (let [edges (deltor/triangle-edges points)]
+       (graph/edges->graph edges))))

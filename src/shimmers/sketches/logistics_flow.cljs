@@ -50,7 +50,7 @@
   (q/color-mode :hsl 1.0)
   (let [n 15
         points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)]
-    {:graph (rg/planar (take n (dr/shuffle points)))}))
+    {:graph (rg/voronoi (take n (dr/shuffle points)))}))
 
 (defn update-state [state]
   state)
