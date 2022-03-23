@@ -4,8 +4,11 @@
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-graph :as rg]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -45,7 +48,9 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:graph (make-graph (cq/screen-rect))})
+  (let [n 15
+        points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)]
+    {:graph (rg/planar (take n (dr/shuffle points)))}))
 
 (defn update-state [state]
   state)
