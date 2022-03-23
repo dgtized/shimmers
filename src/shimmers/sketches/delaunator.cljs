@@ -52,7 +52,7 @@
        (svg/group {:fill "black"}
                   (for [p points] (gc/circle p 1.5))))
      (when (get state :show-edges)
-       (svg/group {} edges))
+       (svg/group {} (map gl/line2 edges)))
      (when (get state :show-triangles)
        (svg/group {:fill "none"} triangles))
      (when (get state :show-circumcenters)
@@ -61,7 +61,7 @@
      (when (get state :show-circumcircles)
        (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
      (when (get state :show-voronoi-edges)
-       (svg/group {:stroke "blue"} voronoi-edges))
+       (svg/group {:stroke "blue"} (map gl/line2 voronoi-edges)))
      (when (get state :show-polygons)
        (svg/group {}
                   (svg/group {:stroke "blue" :fill "none"}

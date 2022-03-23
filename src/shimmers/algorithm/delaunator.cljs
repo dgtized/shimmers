@@ -1,7 +1,6 @@
 (ns shimmers.algorithm.delaunator
   (:require
    ["delaunator"]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
@@ -26,7 +25,7 @@
           :when (> e (aget half-edges e))
           :let [p (nth points (aget triangles e))
                 q (nth points (aget triangles (next-half-edge e)))]]
-      (gl/line2 p q))))
+      [p q])))
 
 (comment
   (triangle-edges [[0 10] [0 5] [5 5] [4 2]]))
@@ -74,10 +73,10 @@
   (let [^js/Delaunator delaunay (delaunator-from points)]
     (for [e (range (alength (.-triangles delaunay)))
           :when (< e (aget (.-halfedges delaunay) e))]
-      (gl/line2 (triangle-center points delaunay
-                                 (triangle-of-edge e))
-                (triangle-center points delaunay
-                                 (triangle-of-edge (aget (.-halfedges delaunay) e)))))))
+      [(triangle-center points delaunay
+                        (triangle-of-edge e))
+       (triangle-center points delaunay
+                        (triangle-of-edge (aget (.-halfedges delaunay) e)))])))
 
 (defn edges-around-point [^js/Delaunator delaunay start]
   (loop [incoming start result []]
