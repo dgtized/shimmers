@@ -157,6 +157,7 @@
             shimmers.sketches.vanishing-points
             shimmers.sketches.verlet-brushes
             shimmers.sketches.video-shader
+            shimmers.sketches.voronoi-after-effect
             shimmers.sketches.yin-yang
             shimmers.sketches.wood-grain
             shimmers.sketches.zigzag
