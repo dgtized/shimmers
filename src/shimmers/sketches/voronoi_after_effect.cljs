@@ -26,7 +26,7 @@
       (tm/+ p (v/polar (dr/gaussian 2.0 1) (* eq/TAU (q/noise vx vy t)))))))
 
 (defn perturb-points [points t]
-  (dr/map-random-sample (constantly 0.01) (kick-point t) points))
+  (dr/map-random-sample (constantly 0.025) (kick-point t) points))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state
@@ -34,11 +34,13 @@
       (update :t + 0.01)))
 
 (defn draw [{:keys [points]}]
-  (q/no-fill)
   (q/stroke-weight 0.33)
-  (q/stroke 0.0 0.01)
+  (q/stroke 0.0 0.2)
   (let [polygons (delvor/voronoi-cells points (cq/screen-rect))]
-    (doseq [shape polygons]
+    (doseq [shape (dr/random-sample 0.05 polygons)]
+      (q/no-fill)
+      (when (dr/chance 0.05)
+        (q/fill 1.0 0.25))
       (cq/draw-shape (g/vertices shape)))))
 
 (sketch/defquil voronoi-after-effect
