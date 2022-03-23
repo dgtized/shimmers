@@ -69,8 +69,7 @@
   (doseq [[p q] (lg/edges graph)
           :let [pos-p (graph/position graph p)
                 pos-q (graph/position graph q)
-                [x y] (tm/+ (tm/mix pos-p pos-q 0.3)
-                            (gv/vec2 8 12))]]
+                [x y] (tm/mix pos-p pos-q 0.66)]]
     (q/stroke 0.0)
     (q/line pos-p pos-q)
     (q/no-stroke)
