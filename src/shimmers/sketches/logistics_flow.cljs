@@ -9,6 +9,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -40,11 +41,10 @@
                [lb dst]]]
     (->> edges
          (mapv (fn [pair] (mapv #(g/unmap-point bounds (gv/vec2 %)) pair)))
-         (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))
-                 (lg/weighted-digraph)))))
+         graph/edges->graph)))
 
 (comment (let [g (make-graph (rect/rect 10))]
-           (la/max-flow g (gv/vec2 [1 5]) (gv/vec2 [9 5]))))
+           (la/max-flow (lg/weighted-digraph g) (gv/vec2 [1 5]) (gv/vec2 [9 5]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
