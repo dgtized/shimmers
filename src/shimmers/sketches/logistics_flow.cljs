@@ -59,8 +59,11 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0)
-  (doseq [node (lg/nodes graph)]
-    (cq/circle (graph/position graph node) 4.0))
+  (doseq [node (lg/nodes graph)
+          :let [p (graph/position graph node)
+                [x y] p]]
+    (cq/circle p 4.0)
+    (q/text node (+ x 8) (+ y 12)))
   (q/no-fill)
   (q/stroke 0.0)
   (q/stroke-weight 0.8)
