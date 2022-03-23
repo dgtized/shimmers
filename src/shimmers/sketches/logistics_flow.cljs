@@ -13,7 +13,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn make-graph [bounds]
   (let [src[0.1 0.5]
@@ -61,15 +62,19 @@
   (q/fill 0.0)
   (doseq [node (lg/nodes graph)
           :let [p (graph/position graph node)
-                [x y] p]]
+                [x y] (tm/+ p (gv/vec2 8 12))]]
     (cq/circle p 4.0)
-    (q/text node (+ x 8) (+ y 12)))
-  (q/no-fill)
-  (q/stroke 0.0)
-  (q/stroke-weight 0.8)
-  (doseq [[p q] (lg/edges graph)]
-    (q/line (graph/position graph p)
-            (graph/position graph q))))
+    (q/text node x y))
+  (q/stroke-weight 0.6)
+  (doseq [[p q] (lg/edges graph)
+          :let [pos-p (graph/position graph p)
+                pos-q (graph/position graph q)
+                [x y] (tm/+ (tm/mix pos-p pos-q 0.3)
+                            (gv/vec2 8 12))]]
+    (q/stroke 0.0)
+    (q/line pos-p pos-q)
+    (q/no-stroke)
+    (q/text (str p "-" q) x y)))
 
 (sketch/defquil logistics-flow
   :created-at "2022-03-20"

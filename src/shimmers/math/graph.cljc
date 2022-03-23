@@ -69,6 +69,5 @@
                                 [(gv/vec2 0 1) (gv/vec2 0 2)]]))
 
 (defn position [graph node]
-  (or (lga/attr graph node :position)
-      [0 0]))
+  (lga/attr graph node :position))
 
