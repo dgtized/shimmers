@@ -59,13 +59,14 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0)
-  (doseq [p (lg/nodes graph)]
-    (cq/circle p 4.0))
+  (doseq [node (lg/nodes graph)]
+    (cq/circle (graph/position graph node) 4.0))
   (q/no-fill)
   (q/stroke 0.0)
   (q/stroke-weight 0.8)
   (doseq [[p q] (lg/edges graph)]
-    (q/line p q)))
+    (q/line (graph/position graph p)
+            (graph/position graph q))))
 
 (sketch/defquil logistics-flow
   :created-at "2022-03-20"

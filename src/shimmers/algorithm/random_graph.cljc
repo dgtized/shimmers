@@ -27,4 +27,4 @@
 #?(:cljs
    (defn voronoi [points]
      (let [edges (deltor/triangle-edges points)]
-       (graph/edges->graph edges))))
+       (graph/edges->labeled-graph edges))))

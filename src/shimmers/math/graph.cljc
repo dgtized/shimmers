@@ -5,6 +5,7 @@
    [shimmers.common.sequence :as cs]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils.intersect :as gisec]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; *probably* need to move position into a graph attribute so that nodes can move.
@@ -50,3 +51,24 @@
                     (when-let [hit (gisec/intersect-ray-sphere? p (tm/- q p) node r)]
                       (< (g/dist p q) (first hit)))))
         (disj (set (lg/nodes g)) p q)))
+
+(defn edges->labeled-graph [edges]
+  (let [nodes (vec (set (mapcat identity edges)))
+        nodes->idx (into {} (map-indexed (fn [i n] [n (str "n" i)]) nodes))]
+    (as-> (lg/weighted-graph) graph
+      (reduce-kv (fn [g point idx]
+                   (-> g
+                       (lg/add-nodes idx)
+                       (lga/add-attr idx :position point)))
+                 graph nodes->idx)
+      (reduce (fn [g [a b]]
+                (lg/add-edges g [(nodes->idx a) (nodes->idx b) (g/dist a b)]))
+              graph edges))))
+
+(comment (edges->labeled-graph [[(gv/vec2 0 0) (gv/vec2 0 1)]
+                                [(gv/vec2 0 1) (gv/vec2 0 2)]]))
+
+(defn position [graph node]
+  (or (lga/attr graph node :position)
+      [0 0]))
+
