@@ -5,6 +5,10 @@
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]))
 
+;; clojure wrapper for https://github.com/d3/d3-delaunay
+
+;; reference: https://www.cs.cmu.edu/~quake/triangle.html
+
 (set! *warn-on-infer* true)
 
 ;; d3-delaunay polygons and triangles API results include the initial point as
