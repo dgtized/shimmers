@@ -71,3 +71,6 @@
 (defn position [graph node]
   (lga/attr graph node :position))
 
+(defn heaviest-edge [graph]
+  (apply max-key (partial lg/weight graph) (lg/edges graph)))
+

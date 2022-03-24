@@ -66,7 +66,10 @@
         points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)
         graph (lg/weighted-digraph (rg/voronoi (take n (dr/shuffle points))))
         [src dst] (extreme-edges graph)
+        heaviest (graph/heaviest-edge graph)
+        max-edge (apply lg/weight graph heaviest)
         [flow max-flow] (la/max-flow graph src dst)]
+    (println heaviest max-edge)
     {:graph (annotate-flow graph flow)
      :src src
      :dst dst
