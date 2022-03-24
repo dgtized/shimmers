@@ -102,9 +102,10 @@
     (q/text (str p "-" q " " (int cost) "/" (int capacity)) x y))
 
   (q/no-fill)
-  (q/stroke 0.0 0.5 0.5)
+  (q/stroke-weight 1.5)
+  (q/stroke 0.0 0.5 0.5 0.75)
   (cq/circle (graph/position graph src) 5.0)
-  (q/stroke 0.45 0.7 0.5)
+  (q/stroke 0.75 0.7 0.5 0.75)
   (cq/circle (graph/position graph dst) 5.0))
 
 (sketch/defquil logistics-flow
