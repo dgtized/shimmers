@@ -11,8 +11,10 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
-;; Reference for future work: https://legends2k.github.io/2d-fov/design.html
-;; and  https://michaelwalczyk.com/blog-ray-marching.html
+;; Reference for future work:
+;; https://legends2k.github.io/2d-fov/design.html
+;; https://michaelwalczyk.com/blog-ray-marching.html
+;; http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
 (defonce ui-state (ctrl/state {:mode :mouse}))
 
