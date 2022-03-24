@@ -1,6 +1,7 @@
 (ns shimmers.sketches.logistics-flow
   (:require
    [loom.alg :as la]
+   [loom.attr :as lga]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -52,15 +53,24 @@
         sorted (sort-by (fn [[[x _] _]] x) node-pos)]
     (map second [(first sorted) (last sorted)])))
 
+(defn annotate-flow [graph flow]
+  (reduce (fn [g [from outbound]]
+            (reduce (fn [g' [to cost]]
+                      (lga/add-attr g' from to :cost cost))
+                    g outbound))
+          graph flow))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [n 15
         points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)
         graph (rg/voronoi (take n (dr/shuffle points)))
-        [src dst] (extreme-edges graph)]
-    {:graph graph
+        [src dst] (extreme-edges graph)
+        [flow max-flow] (la/max-flow (lg/weighted-digraph graph) src dst)]
+    {:graph (annotate-flow graph flow)
      :src src
-     :dst dst}))
+     :dst dst
+     :max-flow max-flow}))
 
 (defn update-state [state]
   state)
@@ -84,7 +94,7 @@
     (q/stroke 0.0)
     (q/line pos-p pos-q)
     (q/no-stroke)
-    (q/text (str p "-" q) x y))
+    (q/text (str p "-" q " " (int (lga/attr graph p q :cost))) x y))
 
   (q/no-fill)
   (q/stroke 0.0 0.5 0.5)
