@@ -73,7 +73,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [n 15
+  (let [n 12
         points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)
         graph (lg/weighted-digraph (rg/voronoi (take n (dr/shuffle points))))
         [src dst] (extreme-edges graph)
@@ -110,7 +110,7 @@
                 cost (lga/attr graph p q :cost)
                 capacity (lg/weight graph p q)]]
     (when (> cost 0)
-      (q/stroke-weight (+ 3 (* 4 (/ cost capacity))))
+      (q/stroke-weight (+ 2 (* 4 (/ cost capacity))))
       (q/stroke 0.35 0.5 0.5 0.35)
       (q/line pos-p pos-q))
     (q/stroke-weight 0.75)
