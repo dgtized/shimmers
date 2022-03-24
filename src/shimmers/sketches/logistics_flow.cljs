@@ -80,8 +80,8 @@
         heaviest (graph/heaviest-edge graph)
         max-edge (apply lg/weight graph heaviest)
         g (map-edges (fn [_ a b]
-                       (let [rel-weight (/ (lg/weight graph a b) max-edge)]
-                         [a b (+ 1 (int (* 15 (- 1 rel-weight))))]))
+                       (let [rel-weight (/ (lg/weight graph a b) (+ 2 max-edge))]
+                         [a b (int (* 10 (- 1 rel-weight)))]))
                      graph)
         [flow max-flow] (la/max-flow g src dst)]
     {:graph (annotate-flow g flow)
