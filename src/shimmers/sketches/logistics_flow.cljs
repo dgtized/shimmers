@@ -109,9 +109,10 @@
                 [x y] (tm/mix pos-p pos-q 0.33)
                 cost (lga/attr graph p q :cost)
                 capacity (lg/weight graph p q)]]
-    (q/stroke-weight (+ 0.75 (* 4.25 (/ cost capacity))))
-    (q/stroke 0.35 0.5 0.5 0.35)
-    (q/line pos-p pos-q)
+    (when (> cost 0)
+      (q/stroke-weight (+ 3 (* 4 (/ cost capacity))))
+      (q/stroke 0.35 0.5 0.5 0.35)
+      (q/line pos-p pos-q))
     (q/stroke-weight 0.75)
     (q/stroke 0.0)
     (q/line pos-p pos-q)
