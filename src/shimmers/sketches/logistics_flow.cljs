@@ -86,15 +86,20 @@
                 [x y] (tm/+ p (gv/vec2 8 12))]]
     (cq/circle p 3.0)
     (q/text node x y))
-  (q/stroke-weight 0.6)
   (doseq [[p q] (lg/edges graph)
           :let [pos-p (graph/position graph p)
                 pos-q (graph/position graph q)
-                [x y] (tm/mix pos-p pos-q 0.33)]]
+                [x y] (tm/mix pos-p pos-q 0.33)
+                cost (lga/attr graph p q :cost)
+                capacity (lg/weight graph p q)]]
+    (q/stroke-weight (+ 0.75 (* 3 (/ cost capacity))))
+    (q/stroke 0.35 0.5 0.5 0.35)
+    (q/line pos-p pos-q)
+    (q/stroke-weight 0.75)
     (q/stroke 0.0)
     (q/line pos-p pos-q)
     (q/no-stroke)
-    (q/text (str p "-" q " " (int (lga/attr graph p q :cost))) x y))
+    (q/text (str p "-" q " " (int cost) "/" (int capacity)) x y))
 
   (q/no-fill)
   (q/stroke 0.0 0.5 0.5)
