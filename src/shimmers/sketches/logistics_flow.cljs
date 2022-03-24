@@ -45,8 +45,8 @@
          (mapv (fn [pair] (mapv #(g/unmap-point bounds (gv/vec2 %)) pair)))
          graph/edges->graph)))
 
-(comment (let [g (make-graph (rect/rect 10))]
-           (la/max-flow (lg/weighted-digraph g) (gv/vec2 [1 5]) (gv/vec2 [9 5]))))
+(comment (let [g (lg/weighted-digraph (make-graph (rect/rect 10)))]
+           (la/max-flow g (gv/vec2 [1 5]) (gv/vec2 [9 5]))))
 
 (defn extreme-edges [g]
   (let [node-pos (map (fn [n] [(graph/position g n) n]) (lg/nodes g))
@@ -64,9 +64,9 @@
   (q/color-mode :hsl 1.0)
   (let [n 15
         points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)
-        graph (rg/voronoi (take n (dr/shuffle points)))
+        graph (lg/weighted-digraph (rg/voronoi (take n (dr/shuffle points))))
         [src dst] (extreme-edges graph)
-        [flow max-flow] (la/max-flow (lg/weighted-digraph graph) src dst)]
+        [flow max-flow] (la/max-flow graph src dst)]
     {:graph (annotate-flow graph flow)
      :src src
      :dst dst
