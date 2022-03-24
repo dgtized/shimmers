@@ -60,6 +60,17 @@
                     g outbound))
           graph flow))
 
+;; I think subgraph/flygraph does this too but couldn't get it working
+(defn map-edges [f graph]
+  (let [g' (reduce (fn [g [a b]] (lg/add-edges g (f g a b)))
+                   (if (lg/directed? graph)
+                     (lg/weighted-digraph)
+                     (lg/weighted-graph))
+                   (lg/edges graph))]
+    (if-let [attrs (:attrs graph)]
+      (assoc g' :attrs attrs)
+      g')))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [n 15
@@ -68,9 +79,12 @@
         [src dst] (extreme-edges graph)
         heaviest (graph/heaviest-edge graph)
         max-edge (apply lg/weight graph heaviest)
-        [flow max-flow] (la/max-flow graph src dst)]
-    (println heaviest max-edge)
-    {:graph (annotate-flow graph flow)
+        g (map-edges (fn [_ a b]
+                       (let [rel-weight (/ (lg/weight graph a b) max-edge)]
+                         [a b (+ 1 (int (* 15 (- 1 rel-weight))))]))
+                     graph)
+        [flow max-flow] (la/max-flow g src dst)]
+    {:graph (annotate-flow g flow)
      :src src
      :dst dst
      :max-flow max-flow}))
@@ -95,7 +109,7 @@
                 [x y] (tm/mix pos-p pos-q 0.33)
                 cost (lga/attr graph p q :cost)
                 capacity (lg/weight graph p q)]]
-    (q/stroke-weight (+ 0.75 (* 3 (/ cost capacity))))
+    (q/stroke-weight (+ 0.75 (* 4.25 (/ cost capacity))))
     (q/stroke 0.35 0.5 0.5 0.35)
     (q/line pos-p pos-q)
     (q/stroke-weight 0.75)
