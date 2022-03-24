@@ -47,33 +47,50 @@
 (comment (let [g (make-graph (rect/rect 10))]
            (la/max-flow (lg/weighted-digraph g) (gv/vec2 [1 5]) (gv/vec2 [9 5]))))
 
+(defn extreme-edges [g]
+  (let [node-pos (map (fn [n] [(graph/position g n) n]) (lg/nodes g))
+        sorted (sort-by (fn [[[x _] _]] x) node-pos)]
+    (map second [(first sorted) (last sorted)])))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [n 15
-        points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)]
-    {:graph (rg/voronoi (take n (dr/shuffle points)))}))
+        points (rp/poisson-disc-sampling (cq/screen-rect 0.9) n)
+        graph (rg/voronoi (take n (dr/shuffle points)))
+        [src dst] (extreme-edges graph)]
+    {:graph graph
+     :src src
+     :dst dst}))
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [graph]}]
+(defn draw [{:keys [graph src dst]}]
+  (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0)
+  (q/text-size 8)
   (doseq [node (lg/nodes graph)
           :let [p (graph/position graph node)
                 [x y] (tm/+ p (gv/vec2 8 12))]]
-    (cq/circle p 4.0)
+    (cq/circle p 3.0)
     (q/text node x y))
   (q/stroke-weight 0.6)
   (doseq [[p q] (lg/edges graph)
           :let [pos-p (graph/position graph p)
                 pos-q (graph/position graph q)
-                [x y] (tm/mix pos-p pos-q 0.66)]]
+                [x y] (tm/mix pos-p pos-q 0.33)]]
     (q/stroke 0.0)
     (q/line pos-p pos-q)
     (q/no-stroke)
-    (q/text (str p "-" q) x y)))
+    (q/text (str p "-" q) x y))
+
+  (q/no-fill)
+  (q/stroke 0.0 0.5 0.5)
+  (cq/circle (graph/position graph src) 5.0)
+  (q/stroke 0.45 0.7 0.5)
+  (cq/circle (graph/position graph dst) 5.0))
 
 (sketch/defquil logistics-flow
   :created-at "2022-03-20"
