@@ -5,6 +5,7 @@
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.core :as sm]
+            [shimmers.math.equations :as eq]
             [shimmers.math.geometry.intersection :as isec]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -78,6 +79,23 @@
         ba (tm/- b a)
         h (tm/clamp01 (/ (tm/dot pa ba) (tm/dot ba ba)))]
     (- (tm/mag (tm/- pa (tm/* ba h))) r)))
+
+;; ~55% of profiled total time instead of ~59.5% for sdf-line, but may also
+;; reduce GC as frame-rate jumps. Main problem is N^2 check for closest segment though
+;; Disabled for now to test against ADVANCED_COMPILATION of original.
+(defn inline-sdf-line [[px py] [ax ay] [bx by] r]
+  (let [pax (- px ax)
+        pay (- py ay)
+        bax (- bx ax)
+        bay (- by ay)
+        h (let [t (/ (+ (* pax bax) (* pay bay))
+                     (+ (* bax bax) (* bay bay)))]
+            (cond (< t 0) 0.0
+                  (> t 1) 1.0
+                  :else t))]
+    (- (Math/sqrt (+ (eq/sqr (- pax (* bax h)))
+                     (eq/sqr (- pay (* bay h)))))
+       r)))
 
 (defn ray-march [from angle segments]
   (loop [depth 0 path []]
