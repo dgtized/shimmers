@@ -20,6 +20,7 @@
 
 (defonce ui-state
   (ctrl/state {:mode :ray-march
+               :bounding-rectangle true
                :omnidirectional true
                :show-path false}))
 
@@ -62,8 +63,7 @@
 (defn gen-shapes [theta]
   (let [r-min (cq/rel-w 0.05)
         r-max (cq/rel-w 0.18)]
-    [(cq/screen-rect 1.1)
-     (circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
+    [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
                   r-min r-max
                   (* theta 0.20))
      (circle-blob (polar-project (cq/rel-vec 0.7 0.2) (* 0.1 theta) (cq/rel-w 0.025))
@@ -115,8 +115,11 @@
   (q/stroke 0.0)
   (q/stroke-weight 0.75)
   (q/no-fill)
-  (let [{:keys [mode omnidirectional] :as ui-mode} @ui-state
-        shapes (gen-shapes theta)
+  (let [{:keys [mode omnidirectional bounding-rectangle] :as ui-mode} @ui-state
+        shapes (let [s (gen-shapes theta)]
+                 (if bounding-rectangle
+                   (conj s (cq/screen-rect 1.1))
+                   s))
         segments (mapcat g/edges shapes)]
     (case mode
       :closest
@@ -148,6 +151,7 @@
 (defn ui-controls []
   (ctrl/container
    (ctrl/change-mode ui-state [:ray-march :closest])
+   (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (when (= :ray-march (:mode @ui-state))
      [:div
       (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional])
