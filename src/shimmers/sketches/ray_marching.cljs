@@ -8,6 +8,7 @@
             [shimmers.math.geometry.intersection :as isec]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -29,7 +30,10 @@
   (-> state
       (update :theta + 0.025)
       (assoc :mouse (if (q/mouse-pressed?)
-                      (cq/mouse-position)
+                      (let [p (cq/mouse-position)]
+                        (if (g/contains-point? (cq/screen-rect) p)
+                          p
+                          mouse))
                       mouse))))
 
 (defn polar-project [p theta radius]
