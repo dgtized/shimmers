@@ -16,7 +16,9 @@
 ;; https://michaelwalczyk.com/blog-ray-marching.html
 ;; http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
-(defonce ui-state (ctrl/state {:mode :mouse-closest}))
+(defonce ui-state
+  (ctrl/state {:mode :mouse-closest
+               :show-path true}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -102,9 +104,10 @@
   (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [shapes (gen-shapes theta)
+  (let [{:keys [mode show-path]} @ui-state
+        shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
-    (case (:mode @ui-state)
+    (case mode
       :mouse-closest
       (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
         (let [ray [mouse (polar-project mouse angle (q/width))]]
@@ -119,7 +122,8 @@
       (let [from (cq/rel-vec 0.25 0.75)
             angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
             [hit path] (ray-march from angle segments)]
-        (draw-path path)
+        (when show-path
+          (draw-path path))
         (when hit
           (q/stroke-weight 1.0)
           (q/stroke 0.33)
@@ -128,7 +132,8 @@
       (let [from (cq/rel-vec 0.45 0.45)]
         (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
                 :let [[hit path] (ray-march from angle segments)]]
-          (draw-path path)
+          (when show-path
+            (draw-path path))
           (when hit
             (q/stroke 0.33)
             (q/line from hit)))))
@@ -139,7 +144,8 @@
 
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest :visible-from])))
+   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest :visible-from])
+   (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])))
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
