@@ -9,6 +9,7 @@
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
             [thi.ng.geom.core :as g]
+            [thi.ng.geom.polygon :as gp]
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
@@ -41,16 +42,12 @@
   (tm/+ p (v/polar radius theta)))
 
 (defn circle-blob [[cx cy] rmin rmax dt]
-  (for [angle (sm/range-subdivided tm/TWO_PI 10)]
-    (let [xoff (+ (q/cos angle) 1)
-          yoff (+ (q/sin angle) 1)
-          r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
-      (polar-project (gv/vec2 cx cy) angle r))))
-
-(defn shape-segments
-  "Convert vertices into a list of paired segments connecting each vertice in a loop."
-  [vertices]
-  (conj (partition 2 1 vertices) (list (last vertices) (first vertices))))
+  (gp/polygon2
+   (for [angle (sm/range-subdivided tm/TWO_PI 10)]
+     (let [xoff (+ (q/cos angle) 1)
+           yoff (+ (q/sin angle) 1)
+           r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
+       (polar-project (gv/vec2 cx cy) angle r)))))
 
 (defn closest-intersection [ray segments]
   ;; FIXME: slow, this is all pairs
@@ -118,7 +115,7 @@
   (q/no-fill)
   (let [{:keys [mode ray-mode] :as ui-mode} @ui-state
         shapes (gen-shapes theta)
-        segments (mapcat shape-segments shapes)]
+        segments (mapcat g/edges shapes)]
     (case mode
       :closest
       (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
@@ -139,7 +136,7 @@
     (q/stroke 0.0)
     (q/stroke-weight 2.0)
     (doseq [shape shapes]
-      (cq/draw-shape shape))))
+      (cq/draw-shape (g/vertices shape)))))
 
 
 (defn ui-controls []
