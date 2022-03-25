@@ -23,12 +23,14 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:theta 0.0
-   :mouse (gv/vec2)})
+   :mouse (cq/rel-vec 0.5 0.5)})
 
-(defn update-state [state]
+(defn update-state [{:keys [mouse] :as state}]
   (-> state
       (update :theta + 0.025)
-      (assoc :mouse (cq/mouse-position))))
+      (assoc :mouse (if (q/mouse-pressed?)
+                      (cq/mouse-position)
+                      mouse))))
 
 (defn polar-project [p theta radius]
   (tm/+ p (v/polar radius theta)))
