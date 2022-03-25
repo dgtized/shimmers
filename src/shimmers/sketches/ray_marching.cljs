@@ -136,9 +136,22 @@
           (draw-ray mouse hit path ui-mode))
         (let [angle (* theta 0.5)
               [hit path] (ray-march mouse angle segments)]
-          (draw-ray mouse hit path ui-mode))))
+          (draw-ray mouse hit path ui-mode)))
+      :visible-polygon
+      (let [vertices (for [angle (sm/range-subdivided tm/TWO_PI 120)
+                           :let [ray [mouse (polar-project mouse angle (q/width))]
+                                 hit (closest-intersection ray segments)]
+                           :when hit]
+                       hit)]
+        (q/background 0.8)
+        (q/stroke-weight 0.8)
+        (q/fill 1.0)
+        (cq/draw-shape vertices)))
 
     (when visible-shapes
+      (q/stroke 0.0)
+      (q/stroke-weight 0.75)
+      (q/no-fill)
       (draw-shapes shapes))))
 
 (defn explanation []
@@ -146,11 +159,12 @@
    [:p "In " [:em "closest"] " mode, rays are drawn from the selected origin to
    the closest segment along the path of the ray."]
    [:p "In " [:em "ray-march"] " mode, rays are drawn from the selected origin, but moving forward each step only as far as the closest segment to that point. The closest jump distance can be visualized if " [:em "closest surface radius"] " is enabled."]
+   [:p "In " [:em "visible-polygon"] " mode, it draws the polygon re-constructed from all the closest segment hits from a omnidirectional sweep."]
    [:p "Click inside the canvas to place the ray origin."]])
 
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:ray-march :closest])
+   (ctrl/change-mode ui-state [:ray-march :closest :visible-polygon])
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
    (when (= :ray-march (:mode @ui-state))
