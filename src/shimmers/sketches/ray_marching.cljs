@@ -110,6 +110,12 @@
       (q/stroke (if inside? 0.33 0.66))
       (q/line from hit))))
 
+(defn draw-shapes [shapes]
+  (q/stroke 0.0)
+  (q/stroke-weight 2.0)
+  (doseq [shape shapes]
+    (cq/draw-shape (g/vertices shape))))
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
   (q/stroke 0.0)
@@ -136,10 +142,7 @@
               [hit path] (ray-march mouse angle segments)]
           (draw-ray mouse hit path ui-mode))))
 
-    (q/stroke 0.0)
-    (q/stroke-weight 2.0)
-    (doseq [shape shapes]
-      (cq/draw-shape (g/vertices shape)))))
+    (draw-shapes shapes)))
 
 (defn explanation []
   [:div
