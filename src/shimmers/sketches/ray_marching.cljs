@@ -91,6 +91,12 @@
          (+ depth dist)
          (conj path [position (* 2 dist)]))))))
 
+(defn draw-path [path]
+  (q/stroke-weight 0.3)
+  (q/stroke 0.0 0.5 0.5)
+  (doseq [[c r] path]
+    (cq/circle c r)))
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
   (q/stroke 0.0)
@@ -113,14 +119,19 @@
       (let [from (cq/rel-vec 0.25 0.75)
             angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
             [hit path] (ray-march from angle segments)]
-        (q/stroke-weight 0.3)
-        (q/stroke 0.0 0.5 0.5)
-        (doseq [[c r] path]
-          (cq/circle c r))
+        (draw-path path)
         (when hit
           (q/stroke-weight 1.0)
           (q/stroke 0.33)
-          (q/line from hit))))
+          (q/line from hit)))
+      :visible-from
+      (let [from (cq/rel-vec 0.45 0.45)]
+        (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
+                :let [[hit path] (ray-march from angle segments)]]
+          (draw-path path)
+          (when hit
+            (q/stroke 0.33)
+            (q/line from hit)))))
     (q/stroke-weight 2.0)
     (q/stroke 0.0)
     (doseq [shape shapes]
@@ -128,7 +139,7 @@
 
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest])))
+   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest :visible-from])))
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
