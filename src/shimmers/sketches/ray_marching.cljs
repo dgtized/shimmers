@@ -18,7 +18,8 @@
 ;; http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
 (defonce ui-state
-  (ctrl/state {:mode :mouse-closest
+  (ctrl/state {:mode :ray-march
+               :ray-mode :omnidirectional
                :show-path true}))
 
 (defn setup []
@@ -99,59 +100,55 @@
          (+ depth dist)
          (conj path [position (* 2 dist)]))))))
 
-(defn draw-path [path]
-  (q/stroke-weight 0.3)
-  (q/stroke 0.0 0.5 0.5)
-  (doseq [[c r] path]
-    (cq/circle c r)))
+(defn draw-ray [from hit path {:keys [show-path]}]
+  (when show-path
+    (q/stroke-weight 0.4)
+    (q/stroke 0.0 0.5 0.5)
+    (doseq [[c r] path]
+      (cq/circle c r)))
+  (when hit
+    (q/stroke-weight 0.8)
+    (q/stroke 0.33)
+    (q/line from hit)))
 
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
   (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [{:keys [mode show-path]} @ui-state
+  (let [{:keys [mode ray-mode] :as ui-mode} @ui-state
         shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
     (case mode
-      :mouse-closest
+      :closest
       (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
         (let [ray [mouse (polar-project mouse angle (q/width))]]
           (when-let [intersection (closest-intersection ray segments)]
             (q/line mouse intersection))))
-      :mouse-rays
-      (doseq [angle (sm/range-subdivided tm/TWO_PI 60)
-              :let [[hit path] (ray-march mouse angle segments)]]
-        (when hit
-          (q/line mouse hit)))
       :ray-march
-      (let [from (cq/rel-vec 0.25 0.75)
-            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
-            [hit path] (ray-march from angle segments)]
-        (when show-path
-          (draw-path path))
-        (when hit
-          (q/stroke-weight 1.0)
-          (q/stroke 0.33)
-          (q/line from hit)))
-      :visible-from
-      (let [from (cq/rel-vec 0.45 0.45)]
+      (case ray-mode
+        :sweep-ray
+        (let [angle (* theta 0.5)
+              [hit path] (ray-march mouse angle segments)]
+          (draw-ray mouse hit path ui-mode))
+        :omnidirectional
         (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
-                :let [[hit path] (ray-march from angle segments)]]
-          (when show-path
-            (draw-path path))
-          (when hit
-            (q/stroke 0.33)
-            (q/line from hit)))))
-    (q/stroke-weight 2.0)
+                :let [[hit path] (ray-march mouse angle segments)]]
+          (draw-ray mouse hit path ui-mode))))
+
     (q/stroke 0.0)
+    (q/stroke-weight 2.0)
     (doseq [shape shapes]
       (cq/draw-shape shape))))
 
+
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest :visible-from])
-   (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])))
+   (ctrl/change-mode ui-state [:ray-march :closest])
+   (when (= :ray-march (:mode @ui-state))
+     [:div
+      (ctrl/change-mode ui-state [:sweep-ray :omnidirectional] {:mode-key :ray-mode})
+      (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])])))
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
