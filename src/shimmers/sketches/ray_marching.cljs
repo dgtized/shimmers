@@ -29,15 +29,10 @@
   {:theta 0.0
    :mouse (cq/rel-vec 0.5 0.5)})
 
-(defn update-state [{:keys [mouse] :as state}]
+(defn update-state [state]
   (-> state
       (update :theta + 0.025)
-      (assoc :mouse (if (q/mouse-pressed?)
-                      (let [p (cq/mouse-position)]
-                        (if (g/contains-point? (cq/screen-rect) p)
-                          p
-                          mouse))
-                      mouse))))
+      (update :mouse cq/mouse-last-position-clicked)))
 
 (defn polar-project [p theta radius]
   (tm/+ p (v/polar radius theta)))

@@ -4,9 +4,6 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.geom.vector :as gv]))
 
-(defn mouse-position []
-  (gv/vec2 (q/mouse-x) (q/mouse-y)))
-
 (defn rel-h [p]
   (* (q/height) p))
 
@@ -27,6 +24,23 @@
   ([scale]
    (-> (rect/rect 0 0 (q/width) (q/height))
        (g/scale-size scale))))
+
+(defn mouse-position []
+  (gv/vec2 (q/mouse-x) (q/mouse-y)))
+
+(defn mouse-last-position-clicked
+  "Returns the current position of the mouse on a click.
+
+  Returns a new position from the mouse within the canvas frame on mouse click,
+  otherwise returns the previous location if outside of bounds or no buttons
+  currently pressed."
+  [last-position]
+  (if (q/mouse-pressed?)
+    (let [pos (mouse-position)]
+      (if (g/contains-point? (screen-rect) pos)
+        pos
+        last-position))
+    last-position))
 
 (defn plot [shape points]
   (doseq [p points]
