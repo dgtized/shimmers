@@ -22,6 +22,7 @@
   (ctrl/state {:mode :ray-march
                :bounding-rectangle true
                :omnidirectional true
+               :visible-shapes true
                :show-path false}))
 
 (defn setup []
@@ -116,7 +117,7 @@
   (q/stroke 0.0)
   (q/stroke-weight 0.75)
   (q/no-fill)
-  (let [{:keys [mode omnidirectional bounding-rectangle] :as ui-mode} @ui-state
+  (let [{:keys [mode omnidirectional bounding-rectangle visible-shapes] :as ui-mode} @ui-state
         shapes (let [s (gen-shapes theta)]
                  (if bounding-rectangle
                    (conj s (cq/screen-rect 1.1))
@@ -137,7 +138,8 @@
               [hit path] (ray-march mouse angle segments)]
           (draw-ray mouse hit path ui-mode))))
 
-    (draw-shapes shapes)))
+    (when visible-shapes
+      (draw-shapes shapes))))
 
 (defn explanation []
   [:div
@@ -150,6 +152,7 @@
   (ctrl/container
    (ctrl/change-mode ui-state [:ray-march :closest])
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
+   (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
    (when (= :ray-march (:mode @ui-state))
      [:div
       (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional])
