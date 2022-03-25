@@ -16,7 +16,7 @@
 ;; https://michaelwalczyk.com/blog-ray-marching.html
 ;; http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
-(defonce ui-state (ctrl/state {:mode :mouse}))
+(defonce ui-state (ctrl/state {:mode :mouse-closest}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -76,20 +76,20 @@
         h (tm/clamp01 (/ (tm/dot pa ba) (tm/dot ba ba)))]
     (- (tm/mag (tm/- pa (tm/* ba h))) r)))
 
-;; TODO: split out the debug circle routine somehow so it's not a side-effect
 (defn ray-march [from angle segments]
-  (loop [depth 0]
+  (loop [depth 0 path []]
     (let [position (tm/+ from (v/polar depth angle))
           [close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
           dist (sdf-line position close-a close-b 1)]
-      (cq/circle position (* 2 dist))
       (cond
         (> depth 1000)
-        nil
+        [nil path]
         (< dist 0.1)
-        position
+        [position path]
         :else
-        (recur (+ depth dist))))))
+        (recur
+         (+ depth dist)
+         (conj path [position (* 2 dist)]))))))
 
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
@@ -99,20 +99,28 @@
   (let [shapes (gen-shapes theta)
         segments (mapcat shape-segments shapes)]
     (case (:mode @ui-state)
-      :mouse
+      :mouse-closest
       (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
         (let [ray [mouse (polar-project mouse angle (q/width))]]
           (when-let [intersection (closest-intersection ray segments)]
             (q/line mouse intersection))))
+      :mouse-rays
+      (doseq [angle (sm/range-subdivided tm/TWO_PI 60)
+              :let [[hit path] (ray-march mouse angle segments)]]
+        (when hit
+          (q/line mouse hit)))
       :ray-march
       (let [from (cq/rel-vec 0.25 0.75)
-            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))]
+            angle (+ (mod (* 0.25 theta) tm/PI) (* 1.25 tm/PI))
+            [hit path] (ray-march from angle segments)]
         (q/stroke-weight 0.3)
         (q/stroke 0.0 0.5 0.5)
-        (when-let [intersection (ray-march from angle segments)]
+        (doseq [[c r] path]
+          (cq/circle c r))
+        (when hit
           (q/stroke-weight 1.0)
           (q/stroke 0.33)
-          (q/line from intersection))))
+          (q/line from hit))))
     (q/stroke-weight 2.0)
     (q/stroke 0.0)
     (doseq [shape shapes]
@@ -120,7 +128,7 @@
 
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:mouse :ray-march])))
+   (ctrl/change-mode ui-state [:ray-march :mouse-rays :mouse-closest])))
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
