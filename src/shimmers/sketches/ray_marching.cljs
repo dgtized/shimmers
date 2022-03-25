@@ -113,7 +113,7 @@
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
   (q/stroke 0.0)
-  (q/stroke-weight 1.0)
+  (q/stroke-weight 0.75)
   (q/no-fill)
   (let [{:keys [mode omnidirectional] :as ui-mode} @ui-state
         shapes (gen-shapes theta)
@@ -138,6 +138,12 @@
     (doseq [shape shapes]
       (cq/draw-shape (g/vertices shape)))))
 
+(defn explanation []
+  [:div
+   [:p "In " [:em "closest"] " mode, rays are drawn from the selected origin to
+   the closest segment along the path of the ray."]
+   [:p "In " [:em "ray-march"] " mode, rays are drawn from the selected origin, but moving forward each step only as far as the closest segment to that point. The closest jump distance can be visualized if " [:em "closest surface radius"] " is enabled."]
+   [:p "Click inside the canvas to place the ray origin."]])
 
 (defn ui-controls []
   (ctrl/container
@@ -145,7 +151,8 @@
    (when (= :ray-march (:mode @ui-state))
      [:div
       (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional])
-      (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])])))
+      (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])])
+   [explanation]))
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
