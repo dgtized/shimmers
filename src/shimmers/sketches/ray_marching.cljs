@@ -20,7 +20,7 @@
 
 (defonce ui-state
   (ctrl/state {:mode :ray-march
-               :ray-mode :omnidirectional
+               :omnidirectional true
                :show-path false}))
 
 (defn setup []
@@ -115,7 +115,7 @@
   (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [{:keys [mode ray-mode] :as ui-mode} @ui-state
+  (let [{:keys [mode omnidirectional] :as ui-mode} @ui-state
         shapes (gen-shapes theta)
         segments (mapcat g/edges shapes)]
     (case mode
@@ -125,14 +125,12 @@
           (when-let [intersection (closest-intersection ray segments)]
             (q/line mouse intersection))))
       :ray-march
-      (case ray-mode
-        :sweep-ray
-        (let [angle (* theta 0.5)
-              [hit path] (ray-march mouse angle segments)]
-          (draw-ray mouse hit path ui-mode))
-        :omnidirectional
+      (if omnidirectional
         (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
                 :let [[hit path] (ray-march mouse angle segments)]]
+          (draw-ray mouse hit path ui-mode))
+        (let [angle (* theta 0.5)
+              [hit path] (ray-march mouse angle segments)]
           (draw-ray mouse hit path ui-mode))))
 
     (q/stroke 0.0)
@@ -146,7 +144,7 @@
    (ctrl/change-mode ui-state [:ray-march :closest])
    (when (= :ray-march (:mode @ui-state))
      [:div
-      (ctrl/change-mode ui-state [:sweep-ray :omnidirectional] {:mode-key :ray-mode})
+      (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional])
       (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])])))
 
 (sketch/defquil ray-marching
