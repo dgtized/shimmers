@@ -21,7 +21,7 @@
 (defonce ui-state
   (ctrl/state {:mode :ray-march
                :ray-mode :omnidirectional
-               :show-path true}))
+               :show-path false}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
