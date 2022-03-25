@@ -62,7 +62,8 @@
 (defn gen-shapes [theta]
   (let [r-min (cq/rel-w 0.05)
         r-max (cq/rel-w 0.18)]
-    [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
+    [(cq/screen-rect 1.1)
+     (circle-blob (polar-project (cq/rel-vec 0.3 0.3) theta (cq/rel-w 0.04))
                   r-min r-max
                   (* theta 0.20))
      (circle-blob (polar-project (cq/rel-vec 0.7 0.2) (* 0.1 theta) (cq/rel-w 0.025))
@@ -104,9 +105,10 @@
     (doseq [[c r] path]
       (cq/circle c r)))
   (when hit
-    (q/stroke-weight 0.8)
-    (q/stroke 0.33)
-    (q/line from hit)))
+    (let [inside? (g/contains-point? (cq/screen-rect) hit)]
+      (q/stroke-weight (if inside? 0.8 0.33))
+      (q/stroke (if inside? 0.33 0.66))
+      (q/line from hit))))
 
 (defn draw-state [{:keys [theta mouse]}]
   (q/background 1.0)
