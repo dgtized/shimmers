@@ -48,3 +48,9 @@
   [bounds n]
   (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
     (pds/generate bounds 12 radius)))
+
+(def modes
+  {:random-points random-points
+   :random-cells random-cells
+   :random-cell-jitter random-cell-jitter
+   :poisson-disc-sampling poisson-disc-sampling} )

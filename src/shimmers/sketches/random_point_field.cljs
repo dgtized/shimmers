@@ -24,11 +24,6 @@
                :n-points 512
                :mst false}))
 
-(def modes {:random-points rp/random-points
-            :random-cells rp/random-cells
-            :random-cell-jitter rp/random-cell-jitter
-            :poisson-disc-sampling rp/poisson-disc-sampling} )
-
 (defn circle-between-closest [points]
   (for [[p q] (la/prim-mst-edges (graph/points->graph points))]
     (let [d (g/dist p q)]
@@ -51,7 +46,7 @@
 (defn page []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
         {:keys [mode n-points mst]} @ui-state
-        point-cloud (get modes mode)
+        point-cloud (get rp/modes mode)
         points (point-cloud bounds (or n-points 1))]
     [:div
      [:div.canvas-frame [scene points mst]]

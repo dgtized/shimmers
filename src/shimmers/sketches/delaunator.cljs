@@ -121,17 +121,12 @@
                :show-polygons false
                :debug false}))
 
-(def point-modes {:random-points rp/random-points
-                  :random-cells rp/random-cells
-                  :random-cell-jitter rp/random-cell-jitter
-                  :poisson-disc-sampling rp/poisson-disc-sampling} )
-
 (defn generate-points [bounds ui-state]
   (let [{:keys [n-points point-mode]} @ui-state
         points (if (pos? n-points)
                  n-points
                  5)]
-    ((get point-modes point-mode) bounds points)))
+    ((get rp/modes point-mode) bounds points)))
 
 (defn page [bounds points]
   (let [mode (:mode @ui-state)]
