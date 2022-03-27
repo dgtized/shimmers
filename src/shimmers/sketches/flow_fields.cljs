@@ -308,7 +308,7 @@
   :created-at "2021-06-17"
   :tags #{:static :deterministic}
   :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [1200 900]
+  :size [1024 768]
   :setup setup
   :update update-state
   :draw draw

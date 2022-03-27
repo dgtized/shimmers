@@ -74,7 +74,7 @@
   :created-at "2021-05-17"
   :tags #{:static :deterministic}
   :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]))
-  :size [1200 900]
+  :size [1024 768]
   :setup setup
   :update update-state
   :draw draw
