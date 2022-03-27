@@ -82,6 +82,13 @@
             :value (get-in @settings field-ref)
             :on-change (assoc-value settings field-ref edn/read-string)}]])
 
+(defn color [settings label field-ref]
+  [:div.label-set.color {:key (str "color-" field-ref)}
+   [:lable label]
+   [:input {:type "color"
+            :value (get-in @settings field-ref)
+            :on-change (assoc-value settings field-ref identity)}]])
+
 (defn details [summary & body]
   (into [:details [:summary summary]] body))
 

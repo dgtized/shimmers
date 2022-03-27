@@ -68,6 +68,12 @@
   justify-content: space-between;
 }
 
+.color {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 input, select {
   height: 1.5em;
   margin: 1px;
@@ -87,6 +93,12 @@ input[type=checkbox] {
 input[type=range] {
   height: 1em;
   width: 10em;
+}
+
+input[type=color] {
+  height: 2em;
+  width: 10em;
+  padding: 0em;
 }
 
 select {
