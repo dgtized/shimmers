@@ -58,7 +58,7 @@
         [:p (str "Generated " (count points) " points")]]
        [:div
         [:h4 "Controls"]
-        (ctrl/change-mode ui-state (keys modes))
+        (ctrl/change-mode ui-state (keys rp/modes))
         (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
         (ctrl/checkbox ui-state "Show MST Circles" [:mst])]]]]))
 
