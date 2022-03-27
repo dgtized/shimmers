@@ -58,6 +58,16 @@
   (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
     (pds/generate bounds 12 radius)))
 
+(defn sample-pool-replacement
+  "Given a seq of points, return a function that will sample each of those points
+  in a random order. Once the pool is emptied, it's reshuffled and sampled all
+  over again."
+  [points]
+  (let [pool (atom (dr/shuffle points))]
+    (fn [] (let [[v & r] @pool]
+            (reset! pool (if (seq r) r (dr/shuffle points)))
+            v))))
+
 (def modes
   {:random-points random-points
    :random-cells random-cells

@@ -154,12 +154,8 @@
                  grid (time (->> {:cols (int (/ w grid-divisor))
                                   :rows (int (/ h grid-divisor))}
                                  (g/subdivide rect)
-                                 (mapv g/centroid)
-                                 dr/shuffle))
-                 points (atom grid)]
-             (fn [] (let [[v & r] @points]
-                     (reset! points (if (seq r) r (dr/shuffle grid)))
-                     v)))))
+                                 (mapv g/centroid)))]
+             (rp/sample-pool-replacement grid))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
