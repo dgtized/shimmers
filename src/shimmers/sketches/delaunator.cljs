@@ -137,7 +137,7 @@
        (view-sketch/generate :delaunator)
        [:h4 "Controls"]
        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
-       (ctrl/change-mode ui-state (keys point-modes) {:mode-key :point-mode})
+       (ctrl/change-mode ui-state (keys rp/modes) {:mode-key :point-mode})
        (ctrl/change-mode ui-state [:delaunator :d3-delaunay] {:mode-key :mode})
        (when (= mode :delaunator)
          (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
