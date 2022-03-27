@@ -7,6 +7,7 @@
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
+            [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.equations :as eq]
             [shimmers.math.hexagon :as hex]
@@ -32,7 +33,8 @@
                :point-source "random"
                :grid-divisor 8
                :snap-resolution "0"
-               :palette "monochrome"
+               :palette-mode "monochrome"
+               :palette-color "#000000"
                :iterations 90
                :step-size 4
                :stroke-weight 8
@@ -146,10 +148,12 @@
                  (g/center p)
                  :points)))))
 
-(defn palettes [palette]
-  (case palette
-    "monochrome" [0.0 0.0 0.0 1.0]
-    "blue" [0.55 (dr/random 0.1 0.9) (dr/random 0.35 0.75) 1.0]))
+(defn palettes [mode color]
+  (let [hsla-color (color/hex->hsla color)
+        hue (first hsla-color)]
+    (case mode
+      "monochrome" hsla-color
+      "random-sl" [hue (dr/random 0.1 0.9) (dr/random 0.35 0.75) 1.0])))
 
 (defn point-generator [source grid-divisor]
   (case source
@@ -169,7 +173,8 @@
   (q/noise-seed (dr/random 1000000))
   (let [{:keys [iterations draw align-triangles
                 calc-points point-source grid-divisor
-                palette snap-resolution stroke-weight
+                palette-mode palette-color
+                snap-resolution stroke-weight
                 length step-size noise-div jitter obstacles]}
         @settings]
     {:iter 0
@@ -180,7 +185,8 @@
      :point-source (point-generator point-source grid-divisor)
      :grid-divisor grid-divisor
      :snap-resolution (edn/read-string snap-resolution)
-     :palette palette
+     :palette-mode palette-mode
+     :palette-color palette-color
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
      :noise-div (Math/pow 2 noise-div)
@@ -195,7 +201,8 @@
   (update state :iter inc))
 
 (defn draw
-  [{:keys [palette stroke-weight step-size iter iterations
+  [{:keys [palette-mode palette-color
+           stroke-weight step-size iter iterations
            draw obstacles]
     :as settings}]
   (q/stroke-weight (* 4 stroke-weight))
@@ -208,7 +215,7 @@
   (q/no-fill)
   (q/stroke-weight stroke-weight)
   (when (< iter iterations)
-    (apply q/stroke (palettes palette))
+    (apply q/stroke (palettes palette-mode palette-color))
     (let [hstep (* step-size 0.5)]
       (case draw
         "segments"
@@ -257,9 +264,12 @@
     "20 degrees" (/ Math/PI 9)
     "15 degrees" (/ Math/PI 12)
     "10 degrees" (/ Math/PI 18)}
-   :palette
-   {"Monochrome" :monochrome
-    "Blue" :blue}
+   :palette-mode
+   {"Monochrome" "monochrome"
+    "Random Saturation/Lightness" "random-sl"}
+   :palette-color {"black" "#000000"
+                   "red" "#ff0000"
+                   "blue" "#2222ff"}
    :iterations [1 500]
    :stroke-weight [1 64]
    :step-size [1 64]
@@ -288,7 +298,8 @@
       (ctrl/slider settings (partial str "Grid Divisor ") [:grid-divisor] (:grid-divisor ui-mappings)))
     (ctrl/dropdown settings "Snap Angles To "
                    [:snap-resolution] (:snap-resolution ui-mappings))
-    (ctrl/dropdown settings "Color Palette" [:palette] (:palette ui-mappings))
+    (ctrl/dropdown settings "Palette Mode" [:palette-mode] (:palette-mode ui-mappings))
+    (ctrl/color settings "Palette Color" [:palette-color])
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
                  [:iterations] (:iterations ui-mappings))
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v)))
