@@ -92,26 +92,28 @@
 
 (defn palette-colors [settings label field-ref]
   (let [colors (str/split (get-in @settings field-ref) #",")]
-    [:div.label-set.color {:key (str "colors-" field-ref)}
+    [:div.label-set.palette {:key (str "colors-" field-ref)}
      [:label label]
      (into [:div]
            (for [[idx color] (map-indexed vector colors)]
-             [:span [:input {:type "color"
-                             :value color
-                             :on-change
-                             (fn [e] (swap! settings assoc-in field-ref
-                                           (str/join "," (assoc colors idx (.-target.value e)))))}]
+             [:span.color [:input {:type "color"
+                                   :value color
+                                   :on-change
+                                   (fn [e] (swap! settings assoc-in field-ref
+                                                 (str/join "," (assoc colors idx (.-target.value e)))))}]
               (when (> (count colors) 1)
-                [:input {:type "button" :value "X"
-                         :on-click
-                         (fn [] (swap! settings assoc-in field-ref
-                                      (str/join "," (concat (take idx colors)
-                                                            (drop (inc idx) colors)))))}])]))
+                [:button.remove-palette
+                 {:on-click
+                  (fn [] (swap! settings assoc-in field-ref
+                               (str/join "," (concat (take idx colors)
+                                                     (drop (inc idx) colors)))))}
+                 [:sup "x"]])]))
      (when (< (count colors) 6)
-       [:input {:type "button" :value "+"
-                :on-click
-                (fn [] (swap! settings assoc-in field-ref
-                             (str/join "," (conj colors "#000000"))))}])]))
+       [:button.add-palette
+        {:on-click
+         (fn [] (swap! settings assoc-in field-ref
+                      (str/join "," (conj colors "#000000"))))}
+        "+"])]))
 
 (defn details [summary & body]
   (into [:details [:summary summary]] body))
