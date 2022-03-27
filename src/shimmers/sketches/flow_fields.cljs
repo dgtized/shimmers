@@ -30,6 +30,7 @@
                :draw "curves"
                :align-triangles true
                :point-source "random"
+               :grid-divisor 8
                :snap-resolution "0"
                :iterations 90
                :step-size 4
@@ -144,32 +145,28 @@
                  (g/center p)
                  :points)))))
 
-(defn point-generator [source]
+(defn point-generator [source grid-divisor]
   (case source
     "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
     "center" (let [c (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35))]
                (partial rp/inside-circle c))
     "grid" (let [{[w h] :size :as rect} (cq/screen-rect 1.05)
-                 grid (time (g/subdivide rect {:cols (* 0.5 w) :rows (* 0.5 h)}))
-                 points (atom (dr/shuffle (mapv g/centroid grid)))]
+                 grid (time (->> {:cols (int (/ w grid-divisor))
+                                  :rows (int (/ h grid-divisor))}
+                                 (g/subdivide rect)
+                                 (mapv g/centroid)
+                                 dr/shuffle))
+                 points (atom grid)]
              (fn [] (let [[v & r] @points]
                      (reset! points (if (seq r) r (dr/shuffle grid)))
                      v)))))
-
-(defn validate! [settings]
-  (let [{:keys [iterations point-source]} @settings]
-    (swap! settings assoc :iterations
-           (if (= point-source "grid")
-             (min iterations 30)
-             iterations))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/noise-seed (dr/random 1000000))
-  (validate! settings)
   (let [{:keys [iterations draw align-triangles
-                calc-points point-source
+                calc-points point-source grid-divisor
                 snap-resolution stroke-weight
                 length step-size noise-div jitter obstacles]}
         @settings]
@@ -178,7 +175,8 @@
      :calc-points (get {"flow-points" flow-points
                         "downhill-points" downhill-points}
                        calc-points)
-     :point-source (point-generator point-source)
+     :point-source (point-generator point-source grid-divisor)
+     :grid-divisor grid-divisor
      :snap-resolution (edn/read-string snap-resolution)
      :step-size step-size
      :stroke-weight (/ 1 stroke-weight)
@@ -244,6 +242,7 @@
    {"Random" "random"
     "Center" "center"
     "Grid" "grid"}
+   :grid-divisor [4 32]
    :snap-resolution
    {"Disabled" 0
     "90 degrees" (/ Math/PI 2)
@@ -277,6 +276,8 @@
     (when (= (:draw @settings) "triangles")
       (ctrl/checkbox settings "Align Triangles" [:align-triangles]))
     (ctrl/dropdown settings "Point Source" [:point-source] (:point-source ui-mappings))
+    (when (= (:point-source @settings) "grid")
+      (ctrl/slider settings (partial str "Grid Divisor ") [:grid-divisor] (:grid-divisor ui-mappings)))
     (ctrl/dropdown settings "Snap Angles To "
                    [:snap-resolution] (:snap-resolution ui-mappings))
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
