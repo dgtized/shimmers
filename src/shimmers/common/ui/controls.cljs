@@ -1,5 +1,6 @@
 (ns shimmers.common.ui.controls
   (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [goog.dom :as dom]
             [reagent.core :as r]
             [reagent.dom :as rdom]
@@ -84,10 +85,33 @@
 
 (defn color [settings label field-ref]
   [:div.label-set.color {:key (str "color-" field-ref)}
-   [:lable label]
+   [:label label]
    [:input {:type "color"
             :value (get-in @settings field-ref)
             :on-change (assoc-value settings field-ref identity)}]])
+
+(defn palette-colors [settings label field-ref]
+  (let [colors (str/split (get-in @settings field-ref) #",")]
+    [:div.label-set.color {:key (str "colors-" field-ref)}
+     [:label label]
+     (into [:div]
+           (for [[idx color] (map-indexed vector colors)]
+             [:span [:input {:type "color"
+                             :value color
+                             :on-change
+                             (fn [e] (swap! settings assoc-in field-ref
+                                           (str/join "," (assoc colors idx (.-target.value e)))))}]
+              (when (> (count colors) 1)
+                [:input {:type "button" :value "X"
+                         :on-click
+                         (fn [] (swap! settings assoc-in field-ref
+                                      (str/join "," (concat (take idx colors)
+                                                            (drop (inc idx) colors)))))}])]))
+     (when (< (count colors) 6)
+       [:input {:type "button" :value "+"
+                :on-click
+                (fn [] (swap! settings assoc-in field-ref
+                             (str/join "," (conj colors "#000000"))))}])]))
 
 (defn details [summary & body]
   (into [:details [:summary summary]] body))
