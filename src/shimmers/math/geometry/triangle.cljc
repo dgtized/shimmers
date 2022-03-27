@@ -15,10 +15,12 @@
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
 ;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580
-(defn random-point-inside [{:keys [points]}]
-  (let [[s t] (sort [(rand) (rand)])
-        weighting [s (- t s) (- 1 t)]]
-    (apply tm/+ (map tm/* points weighting))))
+(defn random-point-inside
+  ([triangle] (random-point-inside triangle tm/random))
+  ([{:keys [points]} random]
+   (let [[s t] (sort [(random) (random)])
+         weighting [s (- t s) (- 1 t)]]
+     (apply tm/+ (map tm/* points weighting)))))
 
 ;; Longest edge is aesthetically more pleasing per:
 ;; https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision
