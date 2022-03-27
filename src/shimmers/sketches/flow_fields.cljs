@@ -149,12 +149,9 @@
                  (g/center p)
                  :points)))))
 
-(defn palettes [mode color-str]
-  (let [colors (map color/hex->hsla (str/split color-str #","))
-        color (dr/rand-nth colors)]
-    (case mode
-      "monochrome" color
-      "random-sl" [(first color) (dr/random 0.1 0.9) (dr/random 0.35 0.75) 1.0])))
+(defn palettes [_ color-str]
+  (let [colors (map color/hex->hsla (str/split color-str #","))]
+    (dr/rand-nth colors)))
 
 (defn point-generator [source grid-divisor]
   (case source
@@ -299,7 +296,7 @@
       (ctrl/slider settings (partial str "Grid Divisor ") [:grid-divisor] (:grid-divisor ui-mappings)))
     (ctrl/dropdown settings "Snap Angles To "
                    [:snap-resolution] (:snap-resolution ui-mappings))
-    (ctrl/dropdown settings "Palette Mode" [:palette-mode] (:palette-mode ui-mappings))
+    #_(ctrl/dropdown settings "Palette Mode" [:palette-mode] (:palette-mode ui-mappings))
     (ctrl/palette-colors settings "Palette Color(s)" [:palette-color])
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
                  [:iterations] (:iterations ui-mappings))
