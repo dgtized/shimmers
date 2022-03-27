@@ -6,13 +6,13 @@
    [clojure.edn :as edn]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.algorithm.space-colonization :as colonize]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
@@ -52,7 +52,7 @@
                   [(/ width 2) 0]
                   [right base])))
       :circle
-      (partial geometry/random-point-in-circle
+      (partial rp/inside-circle
                (gc/circle (cq/rel-vec 0.5 0.5)
                           (cq/rel-h (tm/random 0.2 0.45))))
       :square

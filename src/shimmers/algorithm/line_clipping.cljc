@@ -5,8 +5,8 @@
   polygon clipping."
   (:require
    [clojure.set :as set]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.math.equations :as eq]
-   [shimmers.math.geometry :as geometry]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -143,7 +143,7 @@
 
 (defn hatch-circle [circle spacing theta]
   (let [{[cx _] :p radius :r} circle
-        [xstart ystart] (geometry/random-point-in-circle circle)
+        [xstart ystart] (rp/inside-circle circle)
         cosa (Math/cos theta)
         m (Math/tan theta)
         c (- ystart (* m xstart))

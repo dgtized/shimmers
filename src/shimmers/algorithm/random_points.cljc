@@ -2,7 +2,6 @@
   (:require
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -16,6 +15,16 @@
 
 (comment (cell-fit {:size [80 60]} 100)
          (cell-fit {:size [60 80]} 100))
+
+;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
+(defn inside-circle
+  ([c] (inside-circle c tm/random))
+  ([{:keys [p r]} random]
+   (-> (gv/vec2
+        (* r (Math/sqrt (random)))
+        (* tm/TWO_PI (random)))
+       g/as-cartesian
+       (tm/+ p))))
 
 (defn random-points
   "Generate `n` random points within a given `bounds`."
@@ -37,8 +46,8 @@
   [bounds n]
   (let [cells (g/subdivide bounds (cell-fit bounds n))]
     (for [{[w h] :size :as cell} cells]
-      (geometry/random-point-in-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
-                                       dr/random))))
+      (inside-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
+                     dr/random))))
 
 (defn poisson-disc-sampling
   "Generate ~`n` random points in a boundary using poisson disc sampling.

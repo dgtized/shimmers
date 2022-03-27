@@ -1,7 +1,7 @@
 (ns shimmers.sketches.uniform-distribution
-  (:require [shimmers.common.svg :refer [svg]]
+  (:require [shimmers.algorithm.random-points :as rp]
+            [shimmers.common.svg :refer [svg]]
             [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.geometry :as geometry]
             [shimmers.math.geometry.triangle :as triangle]
             [shimmers.sketch :as sketch :include-macros true]
             [shimmers.view.sketch :as view-sketch]
@@ -44,7 +44,7 @@
                   (sample-points circle g/random-point-inside)
                   "g/random-point-inside")
          (example (gv/vec2 300 100) circle
-                  (sample-points circle geometry/random-point-in-circle)
+                  (sample-points circle rp/inside-circle)
                   "random-point-in-circle")
          (example (gv/vec2 500 100) circle
                   (sample-points circle g/random-point 200)

@@ -3,12 +3,12 @@
   (:require [clojure.edn :as edn]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
+            [shimmers.algorithm.random-points :as rp]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.deterministic-random :as dr]
             [shimmers.math.equations :as eq]
-            [shimmers.math.geometry :as geometry]
             [shimmers.math.hexagon :as hex]
             [shimmers.math.vector :as v]
             [shimmers.sketch :as sketch :include-macros true]
@@ -148,7 +148,7 @@
   (case source
     "random" (fn [] (cq/rel-vec (dr/random) (dr/random)))
     "center" (let [c (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35))]
-               (fn [] (geometry/random-point-in-circle c)))
+               (partial rp/inside-circle c))
     "grid" (let [{[w h] :size :as rect} (cq/screen-rect 1.05)
                  grid (time (g/subdivide rect {:cols (* 0.5 w) :rows (* 0.5 h)}))
                  points (atom (dr/shuffle (mapv g/centroid grid)))]

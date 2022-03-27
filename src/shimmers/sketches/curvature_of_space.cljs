@@ -1,12 +1,12 @@
 (ns shimmers.sketches.curvature-of-space
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.algorithm.space-colonization :as colonize]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -70,9 +70,9 @@
   (let [circle (gc/circle (rv 0.5 0.5) (* height 0.45))
         c-left (gc/circle (rv 0.25 0.5) (* height 0.25))
         c-right (gc/circle (rv 0.75 0.5) (* height 0.25))]
-    (concat (repeatedly (int (* 0.4 n)) #(geometry/random-point-in-circle circle dr/random))
-            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-left dr/random))
-            (repeatedly (int (* 0.3 n)) #(geometry/random-point-in-circle c-right dr/random)))))
+    (concat (repeatedly (int (* 0.4 n)) #(rp/inside-circle circle dr/random))
+            (repeatedly (int (* 0.3 n)) #(rp/inside-circle c-left dr/random))
+            (repeatedly (int (* 0.3 n)) #(rp/inside-circle c-right dr/random)))))
 
 (defn point-path [{:keys [points]}]
   (->> (rest points)

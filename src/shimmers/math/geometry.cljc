@@ -14,16 +14,6 @@
             [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
 
-;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
-(defn random-point-in-circle
-  ([c] (random-point-in-circle c tm/random))
-  ([{:keys [p r]} random]
-   (-> (gv/vec2
-        (* r (Math/sqrt (random)))
-        (* tm/TWO_PI (random)))
-       g/as-cartesian
-       (tm/+ p))))
-
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
 ;; https://observablehq.com/@scarysize/finding-random-points-in-a-polygon
