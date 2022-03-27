@@ -1,6 +1,7 @@
 (ns shimmers.sketches.flow-fields
   "https://tylerxhobbs.com/essays/2020/flow-fields"
   (:require [clojure.edn :as edn]
+            [clojure.string :as str]
             [quil.core :as q :include-macros true]
             [quil.middleware :as m]
             [shimmers.algorithm.random-points :as rp]
@@ -148,11 +149,11 @@
                  (g/center p)
                  :points)))))
 
-(defn palettes [mode color]
-  (let [hsla-color (color/hex->hsla color)
-        hue (first hsla-color)]
+(defn palettes [mode color-str]
+  (let [colors (map color/hex->hsla (str/split color-str #","))
+        hue (ffirst colors)]
     (case mode
-      "monochrome" hsla-color
+      "monochrome" (first colors)
       "random-sl" [hue (dr/random 0.1 0.9) (dr/random 0.35 0.75) 1.0])))
 
 (defn point-generator [source grid-divisor]
