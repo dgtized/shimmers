@@ -7,6 +7,7 @@
             [shimmers.algorithm.random-points :as rp]
             [shimmers.common.framerate :as framerate]
             [shimmers.common.quil :as cq]
+            [shimmers.common.string :as scs]
             [shimmers.common.ui.controls :as ctrl]
             [shimmers.math.color :as color]
             [shimmers.math.deterministic-random :as dr]
@@ -19,8 +20,7 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [thi.ng.strf.core :as f]))
+            [thi.ng.math.core :as tm]))
 
 ;; TODO: play with some of the modes in
 ;; https://sighack.com/post/getting-creative-with-perlin-noise-fields
@@ -324,7 +324,7 @@
     (ctrl/palette-colors settings "Palette Color(s)" [:palette-color])
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
                  [:iterations] (:iterations ui-mappings))
-    (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v)))
+    (ctrl/slider settings (fn [v] (scs/format "Stroke Weight %7.4f" (/ 1 v)))
                  [:stroke-weight] (:stroke-weight ui-mappings))
     (ctrl/numeric settings "Stroke Weight Variance"
                   [:stroke-weight-variance] (:stroke-weight-variance ui-mappings))
@@ -335,7 +335,7 @@
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] (:length ui-mappings))
     (ctrl/numeric settings "Length Variance"
                   [:length-variance] (:length-variance ui-mappings))
-    (ctrl/slider settings (fn [v] (f/format ["Noise Multiplier 1/" (f/float 1)] (Math/pow 2 v)))
+    (ctrl/slider settings (fn [v] (scs/format "Noise Multiplier 1/%.1f" (Math/pow 2 v)))
                  [:noise-div] (:noise-div ui-mappings))
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size") "No Jitter"))
                  [:jitter] (:jitter ui-mappings))
