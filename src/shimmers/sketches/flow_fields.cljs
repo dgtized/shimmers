@@ -38,13 +38,21 @@
                :palette-color "#000000"
                :iterations 90
                :step-size 4
+               :step-size-variance 0
                :stroke-weight 8
+               :stroke-weight-variance 0
                :length 32
+               :length-variance 0
                :noise-div 6
                :jitter 0
                :obstacles {:n 0 :points [] :radius 12
                            :display true
                            :voronoi false}}))
+
+(defn variance [mu sd]
+  (if (> sd 0)
+    (int (Math/abs (dr/gaussian mu sd)))
+    mu))
 
 (defn dir-at
   [[x y] noise-div]
@@ -62,10 +70,11 @@
     (gv/vec2)))
 
 (defn noise-point
-  [{:keys [step-size noise-div snap-resolution jitter obstacles]}
+  [{:keys [step-size step-size-variance
+           noise-div snap-resolution jitter obstacles]}
    point]
   (let [dir (snap-to (dir-at point noise-div) snap-resolution)
-        next-point (tm/+ point (v/polar step-size dir))]
+        next-point (tm/+ point (v/polar (variance step-size step-size-variance) dir))]
     (tm/+ next-point
           (avoid-obstacles next-point obstacles)
           (v/jitter (tm/random jitter)))))
@@ -103,8 +112,9 @@
       (cq/draw-shape hex))))
 
 (defn flow-points
-  [p {:keys [length] :as settings}]
-  (reductions (partial noise-point settings) p (range length)))
+  [p {:keys [length length-variance] :as settings}]
+  (reductions (partial noise-point settings) p
+              (range (variance length length-variance))))
 
 (defn angles [r resolution]
   (map (fn [theta] (v/polar r theta))
@@ -125,13 +135,17 @@
       (gv/vec2 px py))))
 
 (defn downhill-points
-  [p {:keys [step-size length noise-div snap-resolution jitter]}]
+  [p {:keys [step-size step-size-variance
+             length length-variance
+             noise-div snap-resolution jitter]}]
   (reductions
    (fn [p]
-     (if-let [next-point (downhill p step-size noise-div snap-resolution)]
+     (if-let [next-point (downhill p
+                                   (variance step-size step-size-variance)
+                                   noise-div snap-resolution)]
        (tm/+ p next-point (v/jitter (tm/random jitter)))
        (reduced p)))
-   p (range length)))
+   p (range (variance length length-variance))))
 
 (defn points
   [{:keys [calc-points point-source] :as settings}]
@@ -172,8 +186,11 @@
   (let [{:keys [iterations draw align-triangles
                 calc-points point-source grid-divisor
                 palette-mode palette-color
-                snap-resolution stroke-weight
-                length step-size noise-div jitter obstacles]}
+                snap-resolution
+                stroke-weight stroke-weight-variance
+                length length-variance
+                step-size step-size-variance
+                noise-div jitter obstacles]}
         @settings]
     {:iter 0
      :iterations iterations
@@ -186,11 +203,14 @@
      :palette-mode palette-mode
      :palette-color palette-color
      :step-size step-size
+     :step-size-variance (* step-size (/ step-size-variance 100))
      :stroke-weight (/ 1 stroke-weight)
+     :stroke-weight-variance (* (/ 1 stroke-weight) (/ stroke-weight-variance 100))
      :noise-div (Math/pow 2 noise-div)
      :draw draw
      :align-triangles align-triangles
      :length length
+     :length-variance (* length (/ length-variance 100))
      :jitter (* step-size (if (> jitter 0) (/ 1 jitter) 0))
      :obstacles (assoc obstacles :points
                        (repeatedly (:n obstacles) #(cq/rel-vec (dr/random-vertex))))}))
@@ -200,7 +220,8 @@
 
 (defn draw
   [{:keys [palette-mode palette-color
-           stroke-weight step-size iter iterations
+           stroke-weight stroke-weight-variance
+           step-size iter iterations
            draw obstacles]
     :as settings}]
   (q/stroke-weight (* 4 stroke-weight))
@@ -211,7 +232,7 @@
     (doseq [p (:points obstacles)]
       (cq/circle p (/ (:radius obstacles) 4))))
   (q/no-fill)
-  (q/stroke-weight stroke-weight)
+  (q/stroke-weight (Math/abs (dr/gaussian stroke-weight stroke-weight-variance)))
   (when (< iter iterations)
     (apply q/stroke (palettes palette-mode palette-color))
     (let [hstep (* step-size 0.5)]
@@ -270,8 +291,11 @@
                    "blue" "#2222ff"}
    :iterations [1 500]
    :stroke-weight [1 64]
+   :stroke-weight-variance [0 200]
    :step-size [1 64]
+   :step-size-variance [0 200]
    :length [8 128]
+   :length-variance [0 200]
    :noise-div [0 12 0.1]
    :jitter [0 32]})
 
@@ -302,9 +326,15 @@
                  [:iterations] (:iterations ui-mappings))
     (ctrl/slider settings (fn [v] (str "Stroke Weight " (/ 1 v)))
                  [:stroke-weight] (:stroke-weight ui-mappings))
+    (ctrl/numeric settings "Stroke Weight Variance"
+                  [:stroke-weight-variance] (:stroke-weight-variance ui-mappings))
     (ctrl/slider settings (fn [v] (str "Step Size " v))
                  [:step-size] (:step-size ui-mappings))
+    (ctrl/numeric settings "Step Size Variance"
+                  [:step-size-variance] (:step-size-variance ui-mappings))
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] (:length ui-mappings))
+    (ctrl/numeric settings "Length Variance"
+                  [:length-variance] (:length-variance ui-mappings))
     (ctrl/slider settings (fn [v] (f/format ["Noise Multiplier 1/" (f/float 1)] (Math/pow 2 v)))
                  [:noise-div] (:noise-div ui-mappings))
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size") "No Jitter"))
