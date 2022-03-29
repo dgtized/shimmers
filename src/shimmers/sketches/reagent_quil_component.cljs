@@ -1,19 +1,20 @@
 (ns shimmers.sketches.reagent-quil-component
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.ui.quil :as qc]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.vector :as v]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.quil :as qc]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0})
 
 (defn update-state [state]
-  (update state :t + 0.1))
+  (update state :t + 0.01))
 
 (defn draw [{:keys [t]}]
   (q/ellipse-mode :radius)
@@ -21,19 +22,25 @@
   (q/no-stroke)
   (q/fill 0.0)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (cq/circle (v/polar (cq/rel-h 0.8) t) 20))
+  (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
 (defn page []
   [:div
-   [:div "before"]
+   [:p "before"]
    [qc/sketch-component
-    {:host "quil-host"
-     :size [800 600]
+    {:size [800 300]
      :setup setup
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode]}]
-   [:div "after"]])
+   [:p "between"]
+   [qc/sketch-component
+    {:size [800 300]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode]}]
+   [:p "after"]])
 
 (sketch/definition reagent-quil-component
   {:created-at "2022-03-29"
