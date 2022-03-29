@@ -26,6 +26,7 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
+;; TODO: per sketch framerate, currently they are both updating the same value
 ;; TODO: adjusting width/height dynamically?
 
 ;; note that sketch/component is a macro specifically to allow repl changes to
