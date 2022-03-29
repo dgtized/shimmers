@@ -8,12 +8,15 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {:t 0})
+(defn setup [speed]
+  (fn [args]
+    (println "setup" args)
+    (q/color-mode :hsl 1.0)
+    {:t 0
+     :speed speed}))
 
 (defn update-state [state]
-  (update state :t + 0.01))
+  (update state :t + (:speed state)))
 
 (defn draw [{:keys [t]}]
   (q/ellipse-mode :radius)
@@ -23,23 +26,34 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
+;; TODO: adjusting width/height dynamically?
+
+;; note that sketch/component is a macro specifically to allow repl changes to
+;; setup/update/draw. Otherwise using shimmers.common.ui.quil/sketch-component
+;; is better if defining each component programatically.
 (defn page []
   [:div
-   [:p "before"]
+   [:p.explanation.readable-width
+    "Experimenting with wrapping Quil sketches in a Reagent Component"]
    (sketch/component
     :size [800 300]
-    :setup setup
+    :setup (setup 0.01)
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:p "between"]
+   [:p.explanation.readable-width
+    "and now the same sketch, but with a setup function using dθ of 0.05"]
    (sketch/component
     :size [800 300]
-    :setup setup
+    :setup (setup 0.05)
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:p "after"]])
+   [:p.explanation.readable-width
+    "The sketches are nameless and mostly statically defined, as the macro "
+    [:code "sketch/component"] " wraps the underlying "
+    [:code "update"] " and " [:code "draw"] " routines, allowing live updates of
+    those functions to propagate to the corresponding view."]])
 
 (sketch/definition reagent-quil-component
   {:created-at "2022-03-29"
