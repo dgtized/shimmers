@@ -5,7 +5,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.quil :as qc]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -27,19 +26,19 @@
 (defn page []
   [:div
    [:p "before"]
-   [qc/sketch-component
-    {:size [800 300]
-     :setup setup
-     :update update-state
-     :draw draw
-     :middleware [m/fun-mode framerate/mode]}]
+   (sketch/component
+    :size [800 300]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
    [:p "between"]
-   [qc/sketch-component
-    {:size [800 300]
-     :setup setup
-     :update update-state
-     :draw draw
-     :middleware [m/fun-mode framerate/mode]}]
+   (sketch/component
+    :size [800 300]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
    [:p "after"]])
 
 (sketch/definition reagent-quil-component

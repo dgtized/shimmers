@@ -1,6 +1,7 @@
 (ns shimmers.sketch
   (:require #?(:cljs [goog.dom :as dom])
             [quil.sketch :include-macros true]
+            #?(:cljs [shimmers.common.ui.quil :as ui-quil])
             [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]))
 
@@ -97,6 +98,11 @@
                          :ns (:ns m#)
                          :file (:file m#)
                          :line (:line m#)})))))
+
+(defmacro component [& options]
+  (let [raw-opts (apply hash-map options)
+        opts (wrap-fns raw-opts)]
+    `[shimmers.common.ui.quil/sketch-component ~opts]))
 
 (defmacro definition
   [app-name options & body]
