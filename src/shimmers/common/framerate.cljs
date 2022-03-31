@@ -4,19 +4,19 @@
    [quil.core :as q]
    [shimmers.common.string :as scs]))
 
-(defn display [value]
-  (let [node (dom/getElement "framerate")
-        rate (cond (= value "") ""
+(defn display [host value]
+  (let [rate (cond (= value "") ""
                    (= value 0) ""
                    :else (scs/format "%04.1f fps" value))]
-    (when node
+    (when-let [node (dom/getElement host)]
       (dom/setTextContent node rate))))
 
 (defn mode
   "Quil Middleware to update framerate"
   [options]
   (let [draw (:draw options (fn [_]))
-        timed-draw (fn [& args]
+        host (get options :performance-id "framerate")
+        timed-draw (fn timed-draw [& args]
                      (apply draw args)
-                     (display (q/current-frame-rate)))]
+                     (display host (q/current-frame-rate)))]
     (assoc options :draw timed-draw)))

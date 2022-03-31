@@ -20,4 +20,16 @@
         (q/with-sketch (.-processing-obj div-host) (q/exit))))
     :render
     (fn []
-      [:div.canvas-frame])}])
+      [:div.canvas-frame {:style {:position "relative"}}
+       (when-let [performance-id (:performance-id sketch-args)]
+         [:div.performance
+          {:id performance-id
+           :style {:position "absolute"
+                   :color "#000"
+                   :background "#999"
+                   :opacity 0.50
+                   :left 1
+                   :top 1
+                   :padding "0.1em 0.33em"
+                   :z-index 100}}
+          "00.0 fps"])])}])

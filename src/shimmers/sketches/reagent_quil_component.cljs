@@ -11,6 +11,8 @@
 (defn setup [speed]
   (fn []
     (q/color-mode :hsl 1.0)
+    (when (< speed 0.05)
+      (q/frame-rate 30))
     {:t 0
      :speed speed}))
 
@@ -25,7 +27,6 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
-;; TODO: per sketch framerate, currently they are both updating the same value
 ;; TODO: adjusting width/height dynamically?
 
 ;; note that sketch/component is a macro specifically to allow repl changes to
@@ -40,6 +41,7 @@
     :setup (setup 0.01)
     :update update-state
     :draw draw
+    :performance-id "first"
     :middleware [m/fun-mode framerate/mode])
    [:p.explanation.readable-width
     "and now the same sketch, but with a setup function using dθ of 0.05"]
@@ -48,6 +50,7 @@
     :setup (setup 0.05)
     :update update-state
     :draw draw
+    :performance-id "second"
     :middleware [m/fun-mode framerate/mode])
    [:p.explanation.readable-width
     "The sketches are nameless and mostly statically defined, as the macro "
