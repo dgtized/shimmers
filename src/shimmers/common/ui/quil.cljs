@@ -26,9 +26,10 @@
           {:id performance-id
            :style {:position "absolute"
                    :color "#000"
-                   :background "#999"
-                   :opacity 0.50
-                   :right 0
+                   :background "#ddd"
+                   :opacity 0.66
+                   :right "-4em"
+                   :top 0
                    :padding "0.1em 0.33em"
                    :z-index 100}}
           "00.0 fps"])])}])
