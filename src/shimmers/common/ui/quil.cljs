@@ -15,14 +15,15 @@
   [r/create-class
    {:component-did-mount
     (fn [component]
-      (println "did-mount" component)
+      (.log js/console "did-mount" component)
       (let [node (rdom/dom-node component)]
-        (println "on-start " node)
+        (.log js/console "on-start" node)
         (apply q/sketch (apply concat (assoc sketch-args :host node)))))
     :component-will-unmount
     (fn [component]
-      (println (str "will-unmount " component))
+      (.log js/console "will-unmount" component)
       (when-let [quil (rdom/dom-node component)]
+        (.log js/console "quil" quil)
         (q/with-sketch quil (q/exit))))
     :render
     (fn []
