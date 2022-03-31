@@ -44,7 +44,6 @@
 
   ;; kill existing sketch at quil-host if present
   (when-let [quil (q/get-sketch-by-id "quil-host")]
-    (.log js/console "unloading quil-host" quil)
     (q/with-sketch quil (q/exit)))
 
   ;; TODO: only unmount components used by sketch?

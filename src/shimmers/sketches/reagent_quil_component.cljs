@@ -23,8 +23,6 @@
   (q/background 1.0)
   (q/no-stroke)
   (q/fill 0.0)
-  (when (<= (mod t 1) 0.0001)
-    (println t))
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
