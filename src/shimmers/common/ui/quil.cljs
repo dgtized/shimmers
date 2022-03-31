@@ -22,9 +22,9 @@
     :component-will-unmount
     (fn [component]
       (.log js/console "will-unmount" component)
-      (when-let [quil (rdom/dom-node component)]
-        (.log js/console "quil" quil)
-        (q/with-sketch quil (q/exit))))
+      (when-let [div-host (rdom/dom-node component)]
+        (.log js/console "div-host" div-host (.-processing-obj div-host))
+        (q/with-sketch (.-processing-obj div-host) (q/exit))))
     :render
     (fn []
       (println "render ")
