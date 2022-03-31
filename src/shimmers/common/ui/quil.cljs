@@ -28,8 +28,7 @@
                    :color "#000"
                    :background "#999"
                    :opacity 0.50
-                   :left 1
-                   :top 1
+                   :right 0
                    :padding "0.1em 0.33em"
                    :z-index 100}}
           "00.0 fps"])])}])
