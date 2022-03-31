@@ -9,8 +9,7 @@
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup [speed]
-  (fn [args]
-    (println "setup" args)
+  (fn []
     (q/color-mode :hsl 1.0)
     {:t 0
      :speed speed}))
