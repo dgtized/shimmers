@@ -2,7 +2,6 @@
   (:require #?(:cljs [goog.dom :as dom])
             [quil.sketch :include-macros true]
             #?(:cljs [shimmers.common.ui.quil :as ui-quil])
-            [shimmers.macros.loader :as loader :include-macros true]
             [shimmers.registry :as registry]))
 
 ;; Copied from
