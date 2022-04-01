@@ -89,9 +89,10 @@
             {:fn ~sketch-start
              :host-id ~(:host opts)})))
 
-       (let [m# (meta (var ~sketch-page-name))]
-         (registry/add! ~(keyword sketch-page-name)
-                        {:id (loader/namespace-to-id (:ns m#))
+       (let [page-identifier# ~(keyword sketch-page-name)
+             m# (meta (var ~sketch-page-name))]
+         (registry/add! page-identifier#
+                        {:id page-identifier#
                          :type :quil
                          :fn ~runner
                          :created-at ~(:created-at opts)
@@ -116,9 +117,10 @@
     `(do (defn ~runner []
            ~@body)
 
-         (let [m# (meta (var ~sketch-page-name))]
-           (registry/add! ~(keyword sketch-page-name)
-                          {:id (loader/namespace-to-id (:ns m#))
+         (let [page-identifier# ~(keyword sketch-page-name)
+               m# (meta (var ~sketch-page-name))]
+           (registry/add! page-identifier#
+                          {:id page-identifier#
                            :type ~(:type options)
                            :fn ~runner
                            :created-at ~(:created-at options)
