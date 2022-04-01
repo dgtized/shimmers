@@ -65,13 +65,14 @@
 ;; https://github.com/quil/quil/blob/master/src/cljs/quil/sketch.clj#L22
 ;; to allow modifications like auto-starting explanation and metadata like date.
 (defmacro defquil
-  [app-name & options]
+  [sketch-page-name & options]
   (let [raw-opts (apply hash-map options)
         opts (->> raw-opts
-                  (merge {:host "quil-host"})
+                  (merge {:host "quil-host"
+                          :sketch-id (keyword sketch-page-name)})
                   wrap-fns)
-        runner (vary-meta app-name assoc :export true)
-        sketch-start (vary-meta (symbol (str app-name '-start))
+        runner (vary-meta sketch-page-name assoc :export true)
+        sketch-start (vary-meta (symbol (str sketch-page-name '-start))
                                 assoc :export true)]
     `(do
        (defn ~sketch-start []
@@ -88,8 +89,8 @@
             {:fn ~sketch-start
              :host-id ~(:host opts)})))
 
-       (let [m# (meta (var ~app-name))]
-         (registry/add! ~(keyword app-name)
+       (let [m# (meta (var ~sketch-page-name))]
+         (registry/add! ~(keyword sketch-page-name)
                         {:id (loader/namespace-to-id (:ns m#))
                          :type :quil
                          :fn ~runner
@@ -109,13 +110,14 @@
     `[shimmers.common.ui.quil/sketch-component ~opts]))
 
 (defmacro definition
-  [app-name options & body]
-  (let [runner (vary-meta app-name merge {:export true})]
+  [sketch-page-name options & body]
+  (let [runner (vary-meta sketch-page-name merge {:export true})
+        options (assoc options :sketch-id (keyword sketch-page-name))]
     `(do (defn ~runner []
            ~@body)
 
-         (let [m# (meta (var ~app-name))]
-           (registry/add! ~(keyword app-name)
+         (let [m# (meta (var ~sketch-page-name))]
+           (registry/add! ~(keyword sketch-page-name)
                           {:id (loader/namespace-to-id (:ns m#))
                            :type ~(:type options)
                            :fn ~runner
