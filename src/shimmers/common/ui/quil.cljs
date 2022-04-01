@@ -9,19 +9,20 @@
 ;; https://github.com/simon-katz/nomisdraw/blob/for-quil-api-request/src/cljs/nomisdraw/utils/nomis_quil_on_reagent.cljs
 
 (defn sketch-component [sketch-args]
-  [r/create-class
-   {:component-did-mount
-    (fn [component]
-      (let [node (rdom/dom-node component)]
-        (apply q/sketch (apply concat (assoc sketch-args :host node)))))
-    :component-will-unmount
-    (fn [component]
-      (when-let [div-host (rdom/dom-node component)]
-        (q/with-sketch (.-processing-obj div-host) (q/exit))))
-    :render
-    (fn []
-      [:div.canvas-frame {:style {:position "relative"}}
-       (when-let [performance-id (:performance-id sketch-args)]
+  (let [performance-id (name (gensym "performance_"))
+        options (assoc sketch-args :performance-id performance-id)]
+    [r/create-class
+     {:component-did-mount
+      (fn [component]
+        (let [node (rdom/dom-node component)]
+          (apply q/sketch (apply concat (assoc options :host node)))))
+      :component-will-unmount
+      (fn [component]
+        (when-let [div-host (rdom/dom-node component)]
+          (q/with-sketch (.-processing-obj div-host) (q/exit))))
+      :render
+      (fn []
+        [:div.canvas-frame {:style {:position "relative"}}
          [:div.performance
           {:id performance-id
            :style {:position "absolute"
@@ -31,5 +32,4 @@
                    :right 0
                    :top 0
                    :padding "0.1em 0.33em"
-                   :z-index 100}}
-          "00.0 fps"])])}])
+                   :z-index 100}}]])}]))

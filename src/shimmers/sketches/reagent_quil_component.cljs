@@ -41,7 +41,6 @@
     :setup (setup 0.01)
     :update update-state
     :draw draw
-    :performance-id "first"
     :middleware [m/fun-mode framerate/mode])
    [:p.explanation.readable-width
     "and now the same sketch, but with a setup function using dθ of 0.05"]
@@ -50,7 +49,6 @@
     :setup (setup 0.05)
     :update update-state
     :draw draw
-    :performance-id "second"
     :middleware [m/fun-mode framerate/mode])
    [:p.explanation.readable-width
     "The sketches are nameless and mostly statically defined, as the macro "
