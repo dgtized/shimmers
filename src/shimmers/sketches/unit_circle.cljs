@@ -74,23 +74,22 @@
               (gv/vec2 0 (- radius))
               (gv/vec2 radius 0)
               (gv/vec2 (- radius) 0)]
-        quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)
-        mouse-heading (tm/roundto (g/heading mouse) 0.01)]
+        quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)]
     (doseq [p axis]
       (draw-bisector p 0.5))
     (doseq [p quarter-axis]
       (draw-bisector p 0.3))
 
-    (let [[x y] (v/polar (* radius 1.5) 0.8)]
-      (q/text (str mouse-heading " "
-                   (mapv #(tm/roundto % 0.1) mouse))
-              x y)
+    (let [[mx my] mouse
+          [tx ty] (tm/- (v/polar (* radius 1.5) 0.8) (gv/vec2 8 0))]
+      (q/text (scs/format "%.2f [%.2f %.2f]" (g/heading mouse) mx my)
+              tx ty)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
       (q/no-fill)
       (cq/draw-path (g/vertices chain)))
 
-    (let [axis-pts (radial-points (concat axis quarter-axis) mouse-heading)]
+    (let [axis-pts (radial-points (concat axis quarter-axis) (g/heading mouse))]
       (q/no-stroke)
       (doseq [[i [p q]] (map-indexed vector (partition 2 1 axis-pts))]
         (q/fill 0.6 0.5 0.5 (* 0.4 (/ (inc i) (inc (count axis-pts)))))
