@@ -6,6 +6,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.string :as scs]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
@@ -40,7 +41,7 @@
   (q/text-size 16)
   (q/fill 0)
   (let [theta (g/heading q)
-        num (tm/roundto theta 0.01)
+        num (scs/format "%.1f" theta)
         [x0 y0] (-> q
                     (g/scale 1.1)
                     (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
