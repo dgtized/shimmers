@@ -29,7 +29,7 @@
   (fn [request]
     (let [sketch (request->sketch request)]
       (when action
-        (println action "sketch" (:id sketch)))
+        (println action "sketch" (:sketch-id sketch)))
       (f sketch))))
 
 (defn on-index []
@@ -113,7 +113,7 @@
                           (sketches/by-name id)
                           (symbol? id)
                           (sketches/by-ns id))]
-    (view-sketch/sketch-link rfe/push-state (:id sketch))))
+    (view-sketch/sketch-link rfe/push-state (:sketch-id sketch))))
 
 (comment (visit! 'shimmers.sketches.cube)
          (visit! :superposition)

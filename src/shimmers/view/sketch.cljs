@@ -32,7 +32,7 @@
     ;; performance optimizations?
     (dr/random-seed seed))
 
-  (ui/screen-view (name (:id sketch)))
+  (ui/screen-view (name (:sketch-id sketch)))
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
@@ -54,10 +54,10 @@
       (rdom/unmount-component-at-node node))))
 
 (defn restart-sketch [sketch]
-  (sketch-link rfe/push-state (:id sketch)))
+  (sketch-link rfe/push-state (:sketch-id sketch)))
 
 (defn cycle-sketch [sketch known-names]
-  (->> (name (:id sketch))
+  (->> (name (:sketch-id sketch))
        (cs/cycle-next known-names)
        (sketch-link rfe/push-state)))
 
@@ -68,7 +68,7 @@
     [:button {:on-click #(restart-sketch sketch)} "Restart"]
     [:button {:on-click #(rfe/push-state :shimmers.view.index/by-alphabetical)} "All"]]
    [:span
-    [:a {:href (:href (ui/code-link sketch))} (name (:id sketch))]]
+    [:a {:href (:href (ui/code-link sketch))} (name (:sketch-id sketch))]]
    [:span#framerate]])
 
 (defn sketch-by-name [sketch known-names]
@@ -76,7 +76,7 @@
    [sketch-controls sketch known-names]])
 
 (defn generate [sketch-id]
-  [:button.generate {:on-click #(restart-sketch {:id sketch-id})} "Generate"])
+  [:button.generate {:on-click #(restart-sketch {:sketch-id sketch-id})} "Generate"])
 
 (defn page-for
   ([scene sketch-id] (page-for scene sketch-id nil))

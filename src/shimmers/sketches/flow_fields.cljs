@@ -353,7 +353,7 @@
     [:button.generate
      {:style {:margin-left "1em"}
       :on-click #(do (swap! settings merge (shuffle-settings))
-                     (view-sketch/restart-sketch {:id :flow-fields}))}
+                     (view-sketch/restart-sketch {:sketch-id :flow-fields}))}
      "Shuffle Settings"]]])
 
 (sketch/defquil flow-fields

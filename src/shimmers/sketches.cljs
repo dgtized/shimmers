@@ -173,11 +173,11 @@
        (map (fn [s] (update s :created-at date-parse)))))
 
 (defn all []
-  (sort-by (comp name :id) (db)))
+  (sort-by (comp name :sketch-id) (db)))
 
 (defn by-name [sketch-name]
   (let [sketch-id (keyword sketch-name)]
-    (cs/find-first #(= sketch-id (:id %)) (db))))
+    (cs/find-first #(= sketch-id (:sketch-id %)) (db))))
 
 ;; Only allows one sketch per namespace
 (defn by-ns [ns-name]
@@ -185,6 +185,6 @@
     (cs/find-first #(= sketch-ns (:ns %)) (db))))
 
 (defn known-names []
-  (map (comp name :id) (all)))
+  (map (comp name :sketch-id) (all)))
 
 (comment (loader/all-sketches))

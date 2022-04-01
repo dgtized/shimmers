@@ -16,9 +16,9 @@
 (defn list-sketches [sketches]
   (into [:ul]
         (for [sketch sketches]
-          [:li [:a {:href (view-sketch/sketch-link rfe/href (:id sketch))
+          [:li [:a {:href (view-sketch/sketch-link rfe/href (:sketch-id sketch))
                     :title (sketch-title sketch)}
-                (:id sketch)]])))
+                (:sketch-id sketch)]])))
 
 (defonce text-filter (r/atom ""))
 
@@ -26,7 +26,9 @@
   (let [terms @text-filter]
     (if (empty? terms)
       [sketches ""]
-      [(filter (fn [{:keys [id]}] (re-find (re-pattern terms) (name id))) sketches)
+      [(filter (fn [sketch]
+                 (re-find (re-pattern terms) (name (:sketch-id sketch))))
+               sketches)
        terms])))
 
 (defn update-terms [event]
@@ -74,7 +76,7 @@
        [:div.sketch-columns
         [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
        (let [[sketches-an sketches-mz]
-             (split-with (fn [{:keys [id]}] (re-find #"^[a-mA-M]" (name id)))
+             (split-with (fn [sketch] (re-find #"^[a-mA-M]" (name (:sketch-id sketch))))
                          filtered)]
          [:div.sketch-columns
           [:div.column [:h3 "A-M"] (list-sketches sketches-an)]

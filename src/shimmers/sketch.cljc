@@ -92,7 +92,7 @@
        (let [page-identifier# ~(keyword sketch-page-name)
              m# (meta (var ~sketch-page-name))]
          (registry/add! page-identifier#
-                        {:id page-identifier#
+                        {:sketch-id page-identifier#
                          :type :quil
                          :fn ~runner
                          :created-at ~(:created-at opts)
@@ -120,7 +120,7 @@
          (let [page-identifier# ~(keyword sketch-page-name)
                m# (meta (var ~sketch-page-name))]
            (registry/add! page-identifier#
-                          {:id page-identifier#
+                          {:sketch-id page-identifier#
                            :type ~(:type options)
                            :fn ~runner
                            :created-at ~(:created-at options)
