@@ -28,10 +28,6 @@
   (cq/circle (v/polar (cq/rel-h 0.4) t) 20))
 
 ;; TODO: adjusting width/height dynamically?
-
-;; note that sketch/component is a macro specifically to allow repl changes to
-;; setup/update/draw. Otherwise using shimmers.common.ui.quil/sketch-component
-;; is better if defining each component programatically.
 (defn page []
   [:div
    [:p.explanation.readable-width

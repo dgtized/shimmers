@@ -99,6 +99,10 @@
                          :file (:file m#)
                          :line (:line m#)})))))
 
+
+;; `component` is a macro specifically to allow repl changes to
+;; setup/update/draw. Otherwise using `shimmers.common.ui.quil/sketch-component`
+;; is better if defining each component programatically.
 (defmacro component [& options]
   (let [raw-opts (apply hash-map options)
         opts (wrap-fns raw-opts)]
