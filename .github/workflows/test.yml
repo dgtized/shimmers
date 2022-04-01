@@ -49,8 +49,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Test
-        run: bin/kaocha
-
       - name: Lint
         run: bin/lint
+
+      - name: Test
+        run: bin/kaocha
