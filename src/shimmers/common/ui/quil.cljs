@@ -28,7 +28,7 @@
                    :color "#000"
                    :background "#ddd"
                    :opacity 0.66
-                   :right "-4em"
+                   :right 0
                    :top 0
                    :padding "0.1em 0.33em"
                    :z-index 100}}
