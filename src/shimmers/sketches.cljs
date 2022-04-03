@@ -24,6 +24,7 @@
             shimmers.sketches.colors
             shimmers.sketches.concentric-moire
             shimmers.sketches.convex-spiral
+            shimmers.sketches.cracked-playa
             shimmers.sketches.cube
             shimmers.sketches.cube-rotations
             shimmers.sketches.curvature-of-space
