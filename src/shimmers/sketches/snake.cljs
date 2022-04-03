@@ -3,11 +3,11 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.kinematic-chain :as chain]
-   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -32,15 +32,18 @@
                (take 32)
                chain/->KinematicChain)})
 
-(defn follow [pos {:keys [r] :as target}]
-  (tm/mix pos (rp/inside-circle target dr/random) (/ r (* 2 (cq/rel-h 1.0)))))
+(defn follow [pos {:keys [p r]} t]
+  (let [[x y] (tm/* pos 0.01)
+        n (q/noise x y t)]
+    (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) t))
+            (* 0.03 n))))
 
-(defn update-state [{:keys [chain target] :as state}]
+(defn update-state [{:keys [chain target t] :as state}]
   (let [tip (chain/segment-endpoint (last (:segments chain)))]
     (-> (if (g/contains-point? target tip)
           (assoc state :target (gen-target))
           state)
-        (update :chain chain/chain-update nil (follow tip target))
+        (update :chain chain/chain-update nil (follow tip target t))
         (update :t + 0.01))))
 
 (defn draw [{:keys [chain]}]
