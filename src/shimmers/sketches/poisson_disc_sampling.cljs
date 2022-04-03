@@ -54,7 +54,7 @@
     (q/point x y)))
 
 (defn restart []
-  (view-sketch/restart-sketch {:sketch-id :poisson-disc-sampling}))
+  (view-sketch/restart-sketch :poisson-disc-sampling))
 
 (defn ui-controls []
   (ctrl/container
