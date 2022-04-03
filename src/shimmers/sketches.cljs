@@ -133,6 +133,7 @@
             shimmers.sketches.six-of-one-half-dozen-of-the-other
             shimmers.sketches.slashes
             shimmers.sketches.slow-zone
+            shimmers.sketches.snake
             shimmers.sketches.space-colonization
             shimmers.sketches.spaces-divided
             shimmers.sketches.space-filling-curves
