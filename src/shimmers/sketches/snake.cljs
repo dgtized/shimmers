@@ -1,23 +1,30 @@
 (ns shimmers.sketches.snake
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.algorithm.kinematic-chain :as chain]
-            [shimmers.math.deterministic-random :as dr]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.quil :as cq]
-            [thi.ng.geom.core :as g]
-            [shimmers.math.vector :as v]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.kinematic-chain :as chain]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
-(defn gen-segment []
-  (chain/->KinematicSegment (gv/vec2) 0 (Math/abs (dr/gaussian 14 5))))
+(defn gen-segment [{:keys [angle] :as segment}]
+  (let [base (chain/segment-endpoint segment)]
+    (chain/->KinematicSegment base (dr/gaussian angle 0.5)
+                              (Math/abs (dr/gaussian 18 5)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0.0
-   :chain (chain/->KinematicChain (repeatedly 18 #(gen-segment)))})
+   :chain (->> (chain/->KinematicSegment (gv/vec2) (dr/random eq/TAU) 8)
+               (iterate gen-segment)
+               (take 32)
+               chain/->KinematicChain)})
 
 (defn follow [pos t]
   (let [[x y] (v/polar (cq/rel-h 0.4) t)
