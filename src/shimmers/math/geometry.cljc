@@ -1,17 +1,18 @@
 (ns shimmers.math.geometry
-  (:require [shimmers.common.sequence :as cs]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.geometry.triangle :as triangle]
-            [shimmers.math.probability :as p]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.quaternion :as quat]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm])
+  (:require
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.probability :as p]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.quaternion :as quat]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
 
 ;; Uniformly sample points from tesselated triangles of polygon

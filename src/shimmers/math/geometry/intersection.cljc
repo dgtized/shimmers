@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry.intersection
-  (:require [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Need tests, not sure this is always working?
 (defn segment-intersect

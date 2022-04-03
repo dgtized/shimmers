@@ -1,9 +1,10 @@
 (ns shimmers.math.verlet-particles
   "Simplified version of thi.ng.geom.physics.core.VerletPhysics with slightly
   more functional approach."
-  (:require [thi.ng.geom.core :as g]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defprotocol IParticle
   (pstep [_ drag force delta])

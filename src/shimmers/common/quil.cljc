@@ -1,8 +1,9 @@
 (ns shimmers.common.quil
-  (:require [quil.core :as q :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]))
 
 (defn rel-h [p]
   (* (q/height) p))

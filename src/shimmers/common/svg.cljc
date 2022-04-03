@@ -1,9 +1,10 @@
 (ns shimmers.common.svg
-  (:require [clojure.string :as str]
-            [thi.ng.geom.svg.adapter :as adapt]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.math.core :as tm]
-            [thi.ng.strf.core :as f]))
+  (:require
+   [clojure.string :as str]
+   [thi.ng.geom.svg.adapter :as adapt]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"

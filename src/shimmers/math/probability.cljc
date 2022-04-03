@@ -1,7 +1,8 @@
 (ns shimmers.math.probability
-  (:require [shimmers.common.sequence :as cs]
-            [kixi.stats.distribution :as ksd]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.common.sequence :as cs]
+   [kixi.stats.distribution :as ksd]
+   [thi.ng.math.core :as tm]))
 
 (defn chance [prob]
   (< (rand) prob))

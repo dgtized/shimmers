@@ -1,6 +1,7 @@
 (ns shimmers.common.string
-  (:require [goog.string :as gstring]
-            [goog.string.format]))
+  (:require
+   [goog.string :as gstring]
+   [goog.string.format]))
 
 ;; see https://martinklepsch.org/posts/requiring-closure-namespaces.html for
 ;; weirdness around requiring goog.string.format to force it to create format

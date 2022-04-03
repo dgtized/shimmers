@@ -2,11 +2,12 @@
   "Useful tools for generating or working with colors
 
   Gradients borrowed from https://github.com/thi-ng/color/blob/master/src/gradients.org"
-  (:require [clojure.string :as str]
-            [quil.core :as q :include-macros true]
-            [thi.ng.color.core :as col]
-            [thi.ng.color.gradients :as grad]
-            [thi.ng.dstruct.streams :as streams]))
+  (:require
+   [clojure.string :as str]
+   [quil.core :as q :include-macros true]
+   [thi.ng.color.core :as col]
+   [thi.ng.color.gradients :as grad]
+   [thi.ng.dstruct.streams :as streams]))
 
 ;; TODO: https://hugodaniel.com/posts/minimal-color-swatches/
 

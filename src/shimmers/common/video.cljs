@@ -1,5 +1,5 @@
 (ns shimmers.common.video
-  (:require quil.sketch))
+  (:require [quil.sketch]))
 
 ;; TODO: use faceMode constraints to add controls to flip between "user"
 ;; and "environment" for mobile use. See documentation @

@@ -1,6 +1,7 @@
 (ns shimmers.common.particle-system
-  (:require [quil.core :as q :include-macros true]
-            [shimmers.math.vector :as v]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [shimmers.math.vector :as v]))
 
 (defn step [{:keys [position velocity acceleration] :as particle}]
   (let [new-velocity (v/add velocity acceleration)

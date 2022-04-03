@@ -1,7 +1,8 @@
 (ns shimmers.math.equations
   "Useful equations"
-  (:require [thi.ng.math.core :as tm]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.vector :as gv]))
 
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
