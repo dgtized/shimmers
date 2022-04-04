@@ -39,7 +39,6 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
         points (nth (gen-points bounds (cq/rel-h 0.3)) (dr/random-int 1 3))]
-    (println points)
     {:bounds bounds
      :lines (mapcat make-start points)}))
 
