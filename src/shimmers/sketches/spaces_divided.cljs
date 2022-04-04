@@ -59,7 +59,7 @@
 ;; extracted from thi.ng.geom.polygon to address bugs
 ;; http://alienryderflex.com/polygon_inset/
 (defn- inset-corner
-  [prev curr next d]
+  [prev curr next d debug-key]
   (let [[dx1 dy1 :as d1] (tm/- curr prev)
         [dx2 dy2 :as d2] (tm/- next curr)
         d1 (tm/mag d1)
@@ -71,8 +71,13 @@
             c2 (tm/+ curr i2)
             prev (tm/+ prev i1)
             next (tm/+ next i2)]
-        #_(swap! defo assoc-in [:inset [prev curr next]]
-                 (isec/intersect-line2-line2? prev c1 c2 next))
+        (when debug-key
+          ;; sometimes self-intersect may correlate to :intersect-outside?
+          (let [{type :type isec :p} (isec/intersect-line2-line2? prev c1 c2 next)]
+            (swap! defo update-in debug-key
+                   conj
+                   [[prev curr next]
+                    [(tm/delta= c1 c2) type isec]])))
         (if (tm/delta= c1 c2)
           c1
           (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
@@ -84,10 +89,10 @@
 (defn inset-polygon
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
-  [{:keys [points]} d]
+  [{:keys [points]} d & debug-key]
   (->> (d/wrap-seq points [(last points)] [(first points)])
        (partition 3 1)
-       (mapv (fn [[p c n]] (inset-corner n c p d)))
+       (mapv (fn [[p c n]] (inset-corner n c p d debug-key)))
        gp/polygon2))
 
 (defn setup []
@@ -97,10 +102,10 @@
      :mouse (gv/vec2)
      :lines (repeatedly 6 (gen-line bounds))}))
 
-(defn update-state [{:keys [lines bounds] :as state}]
+(defn update-state [{:keys [lines bounds mouse] :as state}]
   (let [isecs (line-intersections (into lines (map gl/line2 (g/edges bounds))))]
     (assoc state
-           :mouse (cq/mouse-position)
+           :mouse (cq/mouse-last-position-clicked mouse)
            :intersections isecs
            :edges (intersections->edges isecs))))
 
@@ -158,7 +163,7 @@
     ;; highlight points on hover + debug info
     (when-let [{:keys [points] :as shape}
                (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
-      (let [inner (inset-polygon shape 4)]
+      (let [inner (inset-polygon shape 4 :corners)]
         (swap! defo assoc :polygon
                {:outer (describe shape)
                 :inner (describe inner)})
