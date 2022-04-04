@@ -47,22 +47,26 @@
           line')
         (assoc line :complete true)))))
 
-(defn spur [{[p q] :points}]
+(defn spur [{[p q] :points} dir]
   (let [heading (g/heading (tm/- q p))
-        angle (* (dr/rand-nth [-1 1]) (dr/gaussian 0.6 0.05))]
+        angle (* dir (dr/gaussian 0.6 0.05))]
     (gl/line2 q (tm/+ q (v/polar 1.1 (+ heading angle))))))
 
 (defn update-state [{:keys [bounds lines] :as state}]
   (let [lines' (map (partial growth bounds lines) lines)]
-    (assoc state :lines (if (dr/chance 0.05)
+    (assoc state :lines (if (dr/chance 0.09)
                           (let [double (dr/rand-nth lines')]
                             (if-not (:complete double)
-                              (conj lines' (spur double))
+                              (into (remove #{double} lines')
+                                    [(assoc double :complete true)
+                                     (spur double 1)
+                                     (spur double -1)])
                               lines'))
                           lines'))))
 
 (defn draw [{:keys [lines]}]
   (q/background 1.0)
+  (q/stroke-weight 1)
   (doseq [{[p q] :points} lines]
     (q/line p q)))
 
