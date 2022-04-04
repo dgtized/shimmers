@@ -58,6 +58,15 @@
 
 ;; extracted from thi.ng.geom.polygon to address bugs
 ;; http://alienryderflex.com/polygon_inset/
+
+;; The problem here I *think* is if a corner has a small segment like: a -> b --
+;; c -> d, where b -- c is small, and a->b and c->d will intersect prior to b--c
+;; if they are inset, resulting in a self intersection, and a ccw triangle
+;; containing the remaining b--c edge. Presumably there can be more then one
+;; edge between self-intersection points.
+
+;; The problem here is that the polygon needs to be split into two new polygons
+;; that share the self-intersection point.
 (defn- inset-corner
   [prev curr next d debug-key]
   (let [[dx1 dy1 :as d1] (tm/- curr prev)
