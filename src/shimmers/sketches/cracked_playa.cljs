@@ -26,8 +26,9 @@
   (let [bounds (rect/rect 0 0 width height)
         points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
         cells (delvor/voronoi-cells points bounds)]
-    (for [cell cells]
-      (gp/polygon2 (gp/inset-polygon (:points cell) (dr/random -0.5 -4))))))
+    (for [cell cells
+          :let [width (dr/random -0.5 -4)]]
+      (gp/polygon2 (gp/inset-polygon (:points cell) width)))))
 
 (defn scene []
   (csvg/svg {:width width
