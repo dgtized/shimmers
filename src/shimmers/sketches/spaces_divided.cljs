@@ -68,7 +68,7 @@
 ;; The problem here is that the polygon needs to be split into two new polygons
 ;; that share the self-intersection point.
 (defn- inset-corner
-  [prev curr next d debug-key]
+  [prev curr next d]
   (let [[dx1 dy1 :as d1] (tm/- curr prev)
         [dx2 dy2 :as d2] (tm/- next curr)
         d1 (tm/mag d1)
@@ -80,13 +80,6 @@
             c2 (tm/+ curr i2)
             prev (tm/+ prev i1)
             next (tm/+ next i2)]
-        (when debug-key
-          ;; sometimes self-intersect may correlate to :intersect-outside?
-          (let [{type :type isec :p} (isec/intersect-line2-line2? prev c1 c2 next)]
-            (swap! defo update-in debug-key
-                   conj
-                   [[prev curr next]
-                    [(tm/delta= c1 c2) type isec]])))
         (if (tm/delta= c1 c2)
           c1
           (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
@@ -98,10 +91,10 @@
 (defn inset-polygon
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
-  [{:keys [points]} d & debug-key]
+  [{:keys [points]} d]
   (->> (d/wrap-seq points [(last points)] [(first points)])
        (partition 3 1)
-       (mapv (fn [[p c n]] (inset-corner n c p d debug-key)))
+       (mapv (fn [[p c n]] (inset-corner n c p d)))
        gp/polygon2))
 
 (defn setup []
@@ -172,7 +165,7 @@
     ;; highlight points on hover + debug info
     (when-let [{:keys [points] :as shape}
                (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
-      (let [inner (inset-polygon shape 4 :corners)]
+      (let [inner (inset-polygon shape 4)]
         (swap! defo assoc :polygon
                {:outer (describe shape)
                 :inner (describe inner)})
