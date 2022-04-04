@@ -2,24 +2,42 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.utils.intersect :as gisec]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
+
+(defn gen-points [bounds radius]
+  (->> [(rp/inside-circle (gc/circle (g/unmap-point bounds (gv/vec2 0.5 0.5))  radius) dr/random)]
+       (iterate (fn [points] (let [p (tm/+ (dr/rand-nth points)
+                                          (v/polar (* radius (Math/sqrt (dr/random 0.7 0.9)))
+                                                   (dr/random eq/TAU)))]
+                              (if (and (g/contains-point? bounds p)
+                                       (not (some (fn [o] (< (g/dist o p) (* 0.6 radius))) points)))
+                                (conj points p)
+                                points))))))
+
+(defn make-start [epicenter]
+  (for [t (take (dr/random-int 3 7) (dr/shuffle (butlast (tm/norm-range 12))))
+        :let [direction (v/polar 1 (dr/gaussian (* eq/TAU t) 0.2))]]
+    (gl/line2 epicenter (tm/+ epicenter direction))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [epicenter (cq/rel-vec 0.5 0.5)]
-    {:bounds (cq/screen-rect)
-     :lines (for [t (take (dr/random-int 3 7) (dr/shuffle (butlast (tm/norm-range 12))))
-                  :let [direction (v/polar 1 (dr/gaussian (* eq/TAU t) 0.2))]]
-              (gl/line2 epicenter (tm/+ epicenter direction)))}))
+  (let [bounds (cq/screen-rect)
+        points (nth (gen-points bounds (cq/rel-h 0.3)) (dr/random-int 1 3))]
+    (println points)
+    {:bounds bounds
+     :lines (mapcat make-start points)}))
 
 (defn intersects? [lines {[p q] :points}]
   (some (fn [{[a b] :points}]
