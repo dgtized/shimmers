@@ -31,6 +31,10 @@
         :let [direction (v/polar 1 (dr/gaussian (* eq/TAU t) 0.2))]]
     (gl/line2 epicenter (tm/+ epicenter direction))))
 
+;; TODO: add canalization weight based on numer of children so initial impact is thicker
+;; consider adding additional impacts after a delay
+;; variable growth rates per line?
+;; small chance of zig zags instead of bifurcating, and a small chance of trifurcating
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
