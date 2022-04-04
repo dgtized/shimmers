@@ -17,8 +17,8 @@
   (q/color-mode :hsl 1.0)
   (let [epicenter (cq/rel-vec 0.5 0.5)]
     {:bounds (cq/screen-rect)
-     :lines (for [t (butlast (tm/norm-range 4))
-                  :let [direction (v/polar 1 (* eq/TAU t))]]
+     :lines (for [t (butlast (tm/norm-range 6))
+                  :let [direction (v/polar 1 (dr/gaussian (* eq/TAU t) 0.2))]]
               (gl/line2 epicenter (tm/+ epicenter direction)))}))
 
 (defn intersects? [lines {[p q] :points}]
