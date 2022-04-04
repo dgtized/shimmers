@@ -154,11 +154,11 @@
        g/edges
        cs/all-pairs
        (some (fn [[[p0 q0] [p1 q1]]]
-               (when-let [{type :type isec-point :p} (isec/intersect-line2-line2? p0 q0 p1 q1)]
+               (let [{type :type isec :p} (isec/intersect-line2-line2? p0 q0 p1 q1)]
                  (when (and (= :intersect type)
-                            (not (tm/delta= isec-point p0))
-                            (not (tm/delta= isec-point q0)))
-                   isec-point))))))
+                            (not (tm/delta= isec p0))
+                            (not (tm/delta= isec q0)))
+                   isec))))))
 
 (comment
   (g/heading (gv/vec2 -1 0))
