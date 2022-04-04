@@ -17,7 +17,7 @@
   (q/color-mode :hsl 1.0)
   (let [epicenter (cq/rel-vec 0.5 0.5)]
     {:bounds (cq/screen-rect)
-     :lines (for [t (butlast (tm/norm-range 6))
+     :lines (for [t (take (dr/random-int 3 7) (dr/shuffle (butlast (tm/norm-range 12))))
                   :let [direction (v/polar 1 (dr/gaussian (* eq/TAU t) 0.2))]]
               (gl/line2 epicenter (tm/+ epicenter direction)))}))
 
