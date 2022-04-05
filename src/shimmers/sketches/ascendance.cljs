@@ -1,9 +1,10 @@
 (ns shimmers.sketches.ascendance
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defrecord Particle [t0 fuel delta-v velocity radius mass])
 

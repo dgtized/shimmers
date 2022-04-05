@@ -2,12 +2,13 @@
   "References:
    * https://en.wikipedia.org/wiki/Langton%27s_ant
    * https://thecodingtrain.com/CodingChallenges/089-langtonsant.html"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]))
 
 (defn turn-right [dir] (+ dir (/ Math/PI 2)))
 (defn turn-left [dir] (- dir (/ Math/PI 2)))

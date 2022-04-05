@@ -1,13 +1,14 @@
 (ns shimmers.sketches.rolling-shapes
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Concept here is to "roll" a particle polygon along a line
 ;; Related to https://en.wikipedia.org/wiki/Cyclogon

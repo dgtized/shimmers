@@ -1,17 +1,18 @@
 (ns shimmers.sketches.oil-reflections
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.circle-packing :as pack]
-            [shimmers.algorithm.line-clipping :as clip]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.equations :as eq]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

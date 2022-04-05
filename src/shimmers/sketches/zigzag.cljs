@@ -1,7 +1,8 @@
 (ns shimmers.sketches.zigzag
-  (:require [quil.core :as q :include-macros true]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.sketch :as sketch]))
 
 (defn seconds-since-epoch []
   (/ (.getTime (js/Date.)) 1000.0))

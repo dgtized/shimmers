@@ -1,18 +1,19 @@
 (ns shimmers.sketches.traffic-intersection
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.core :as sm]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.geom.utils :as gu]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; https://medium.com/@knave/collision-avoidance-the-math-1f6cdf383b5c
 ;; https://gamedevelopment.tutsplus.com/tutorials/understanding-steering-behaviors-collision-avoidance--gamedev-7777

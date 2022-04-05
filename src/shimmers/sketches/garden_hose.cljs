@@ -1,15 +1,16 @@
 (ns shimmers.sketches.garden-hose
   "Concept is a randomly generated hose and then slowly unwind as water flows through it."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.kinematic-chain :as chain]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.kinematic-chain :as chain]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defn next-point [bounds variance {:keys [angle length] :as segment}]
   (loop [variance variance]

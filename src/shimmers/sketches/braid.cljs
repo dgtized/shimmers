@@ -1,10 +1,11 @@
 (ns shimmers.sketches.braid
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :refer [index-of]]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :refer [index-of]]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn color [value]
   (let [low 64 high 192]

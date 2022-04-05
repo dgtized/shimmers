@@ -1,14 +1,15 @@
 (ns shimmers.sketches.clustered-farmlands
-  (:require [kixi.stats.distribution :as ksd]
-            [shimmers.common.svg :as csvg]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.bezier :as bezier]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [kixi.stats.distribution :as ksd]
+   [shimmers.common.svg :as csvg]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.bezier :as bezier]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn randnorm [mu sd]
   (ksd/draw (ksd/normal {:mu mu :sd sd})))

@@ -1,11 +1,12 @@
 (ns shimmers.sketches.radar
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defrecord Particle [position velocity])
 

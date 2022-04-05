@@ -3,17 +3,18 @@
   kick from the blades and then slowing to join the denser mass of particles.
 
   Name is a reference to 'Zones of thought' series by Vernor Vinge."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
-            [shimmers.math.verlet-particles :as vp]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
+   [shimmers.math.verlet-particles :as vp]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn dust-mote [loc]
   (let [start (gv/vec2 loc)

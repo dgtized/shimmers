@@ -1,18 +1,19 @@
 (ns shimmers.sketches.uniform-distribution
-  (:require [shimmers.algorithm.random-points :as rp]
-            [shimmers.common.svg :refer [svg]]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.geometry.triangle :as triangle]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.svg :refer [svg]]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn sample-points
   ([shape sample-method] (sample-points shape sample-method 400))

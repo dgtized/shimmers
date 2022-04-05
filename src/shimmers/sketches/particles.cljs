@@ -1,17 +1,18 @@
 (ns shimmers.sketches.particles
   "Loosely derived from Coding Challenge #24: Perlin Noise Flow Field
   https://www.youtube.com/watch?v=BjoM9oKOAKY"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            quil.sketch
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.particle-system :as particles]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.color :as color]
-            [shimmers.math.core :as sm]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   quil.sketch
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.particle-system :as particles]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.color :as color]
+   [shimmers.math.core :as sm]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])

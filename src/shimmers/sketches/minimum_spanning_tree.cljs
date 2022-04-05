@@ -1,12 +1,13 @@
 (ns shimmers.sketches.minimum-spanning-tree
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.minimum-spanning-tree :as mst]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.points :as points]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.minimum-spanning-tree :as mst]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.points :as points]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn fresh-graph []
   (let [point-gen (rand-nth [(partial q/random 0.05 0.95)

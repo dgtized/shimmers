@@ -1,11 +1,12 @@
 (ns shimmers.sketches.harsh-lines
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

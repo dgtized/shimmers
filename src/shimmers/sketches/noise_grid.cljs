@@ -1,11 +1,12 @@
 (ns shimmers.sketches.noise-grid
   "Display a tiling grid of noise function to show dicontinuities."
-  (:require [quil.core :as q :include-macros true]
-            [quil.sketch]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.math.core :as sm]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.sketch]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.math.core :as sm]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn noise-at [x y _ factor fc]
   (q/noise (/ x factor) (/ y factor) fc))

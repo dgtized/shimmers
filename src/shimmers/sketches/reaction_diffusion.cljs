@@ -1,13 +1,14 @@
 (ns shimmers.sketches.reaction-diffusion
   "From https://www.karlsims.com/rd.html and https://ciphrd.com/2019/08/24/reaction-diffusion-on-shader/. Also some tricks from http://colordodge.com/ReactionDiffusion/."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.shader :as shader]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.shader :as shader]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes {:abs-difference 0
             :concentration-a 1

@@ -1,21 +1,22 @@
 (ns shimmers.sketches.lattice-of-common-chords
-  (:require [kixi.stats.distribution :as ksd]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.core :as sm]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [kixi.stats.distribution :as ksd]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Trying out the technique Casey Reas described in
 ;; https://www.youtube.com/watch?v=_8DMEHxOLQE, ie move circles through space,

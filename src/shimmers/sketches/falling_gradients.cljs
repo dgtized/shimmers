@@ -1,13 +1,14 @@
 (ns shimmers.sketches.falling-gradients
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))

@@ -1,18 +1,19 @@
 (ns shimmers.sketches.circle-packing
   "Inspired by https://thecodingtrain.com/CodingChallenges/050.1-circlepackinganimated.html"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.core :as sm]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: represent circles as polygons and grow individual points until it
 ;; intersects a neighbor and only mark the individual vertex as "done".

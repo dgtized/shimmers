@@ -1,11 +1,12 @@
 (ns shimmers.sketches.permutations-of-transfiguration
-  (:require [clojure.set :as set]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.deterministic-random :as dr :refer [rand-nth]]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [clojure.set :as set]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.deterministic-random :as dr :refer [rand-nth]]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn sample-color [x y cols rows]
   [(/ (+ x y) (+ cols rows))

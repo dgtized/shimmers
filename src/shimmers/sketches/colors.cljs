@@ -1,12 +1,13 @@
 (ns shimmers.sketches.colors
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.core :as sm]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn random-hues []
   {:hue1 (int (* 100 (rand)))

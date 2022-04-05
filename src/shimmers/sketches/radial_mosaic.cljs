@@ -1,18 +1,19 @@
 (ns shimmers.sketches.radial-mosaic
-  (:require [shimmers.common.sequence :as cs]
-            [shimmers.common.svg :as csvg]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.color :as color]
-            [shimmers.math.core :as sm]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]
-            [thi.ng.strf.core :as f]))
+  (:require
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.svg :as csvg]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.color :as color]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 (def settings (ctrl/state {:dispersion false}))
 (def width 900)

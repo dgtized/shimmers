@@ -1,15 +1,16 @@
 (ns shimmers.sketches.pulsing-grid
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.equations :as eq]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.utils.subdiv :as gsd]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.equations :as eq]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.subdiv :as gsd]
+   [thi.ng.math.core :as tm]))
 
 (defn rounding [rect]
   (as-> rect _

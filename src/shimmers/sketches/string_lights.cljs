@@ -1,14 +1,15 @@
 (ns shimmers.sketches.string-lights
   "Concept is bokah circles from out of focus string lights in a backdrop."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.equations :as eq]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; modify fill/size opacity by y-pos or time to animate?
 (defn string-line [p q n r]

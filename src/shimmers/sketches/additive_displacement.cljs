@@ -1,16 +1,17 @@
 (ns shimmers.sketches.additive-displacement
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.lines :as lines]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.lines :as lines]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Draw consecutive vertical lines from segments, but ensure none of them overlap
 

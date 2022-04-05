@@ -4,11 +4,12 @@
   https://nbickford.wordpress.com/2011/04/03/the-minsky-circle-algorithm/
   https://blog.hrvoje.org/2020/05/drawing-circles/
   https://www.shadertoy.com/view/4lSGRG"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.shader :as shader]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.shader :as shader]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn next-point [[x y]]
   (let [x' (int (+ x (bit-shift-right y 4)))]

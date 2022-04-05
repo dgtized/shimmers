@@ -1,14 +1,15 @@
 (ns shimmers.sketches.random-walk
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.particle-system :as particles]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.color :as color]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.particle-system :as particles]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.color :as color]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defn make-particle []
   (let [initial-pos (cq/rel-vec (rand) (rand))]

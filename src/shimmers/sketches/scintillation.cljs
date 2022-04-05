@@ -1,8 +1,9 @@
 (ns shimmers.sketches.scintillation
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   {:theta 0})

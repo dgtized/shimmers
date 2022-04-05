@@ -1,12 +1,13 @@
 (ns shimmers.sketches.gravity-well
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.particle-system :as particles]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.particle-system :as particles]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defrecord Body
     [position last-pos velocity acceleration mass color])
@@ -88,4 +89,3 @@
   :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
-

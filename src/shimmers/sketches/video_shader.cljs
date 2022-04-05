@@ -3,13 +3,14 @@
   https://itp-xstory.github.io/p5js-shaders/#/./docs/examples/image_effects and
   combined with https://thebookofshaders.com/07/.
   "
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.shader :as shader]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.video :as video]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.shader :as shader]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.video :as video]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes {:specular-mouse 0
             :edge-detection 1})

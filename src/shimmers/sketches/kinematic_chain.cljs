@@ -1,14 +1,15 @@
 (ns shimmers.sketches.kinematic-chain
   "Inspired by https://www.youtube.com/watch?v=hbgDqyy8bIwa"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.kinematic-chain :as chain]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.kinematic-chain :as chain]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:mode :sin}))
 

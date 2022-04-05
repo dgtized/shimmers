@@ -1,16 +1,17 @@
 (ns shimmers.sketches.path-morph
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.utils :as gu]
-            [thi.ng.math.core :as tm]
-            [shimmers.common.quil :as cq]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.math.core :as tm]
+   [shimmers.common.quil :as cq]))
 
 ;; TODO: define a path record from a set of points
 (defn zig-zag []

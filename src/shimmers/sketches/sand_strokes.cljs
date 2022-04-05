@@ -2,17 +2,18 @@
   "Attempting the sand-stroke technique from
   http://www.complexification.net/gallery/machines/sandstroke/ and further
   explained in https://inconvergent.net/2017/grains-of-sand/."
-  (:require [kixi.stats.distribution :as ksd]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [kixi.stats.distribution :as ksd]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.math.core :as tm]))
 
 (defn displacement-noise [t v]
   (cq/rel-h (tm/mix-exp 0.0001 0.15 (q/noise (/ t 0.5) (* 2 v)) 2)))

@@ -1,9 +1,10 @@
 (ns shimmers.sketches.undulating-figures
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/noise-detail 6 0.4)

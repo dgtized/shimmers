@@ -1,8 +1,9 @@
 (ns shimmers.sketches.butterfly
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 ;; TODO: Perturb parameters a little to generate random wings? Similarly is it
 ;; possible to flex the leading/trailing edges a little as a function of angle

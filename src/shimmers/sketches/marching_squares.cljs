@@ -1,13 +1,14 @@
 (ns shimmers.sketches.marching-squares
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.marching-squares :as iso]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.math.core :as tm]
-            [thi.ng.strf.core :as f]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.marching-squares :as iso]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 (defonce ui-state
   (ctrl/state {:threshold 0.5

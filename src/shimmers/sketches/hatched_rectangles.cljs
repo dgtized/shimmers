@@ -1,17 +1,18 @@
 (ns shimmers.sketches.hatched-rectangles
   "Reconstruction of https://sighack.com/post/cohen-sutherland-line-clipping-algorithm examples"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.line-clipping :as clip]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.math.core :as tm]))
 
 (defn nearby [rect rectangles]
   (let [center-x (:x (g/centroid rect))

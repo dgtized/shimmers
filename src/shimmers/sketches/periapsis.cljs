@@ -1,13 +1,14 @@
 (ns shimmers.sketches.periapsis
-  (:require [kixi.stats.distribution :as ksd]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.probability :as p]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [kixi.stats.distribution :as ksd]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.probability :as p]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 ;; Math cobbled together from:
 ;; https://en.wikipedia.org/wiki/Ellipse

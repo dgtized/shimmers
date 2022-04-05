@@ -1,15 +1,16 @@
 (ns shimmers.sketches.poisson-disc-sampling
   "https://www.youtube.com/watch?v=flQgnCUxHlw"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.poisson-disc-sampling :as pds]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :as cs]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.poisson-disc-sampling :as pds]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]))
 
 (def modes [:fixed :variable])
 

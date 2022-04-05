@@ -1,16 +1,17 @@
 (ns shimmers.sketches.path-distribution
   "Perturbations of displaced lines."
-  (:require [shimmers.common.svg :as csvg]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.geometry :as geometry]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.bezier :as bezier]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.svg.core :as svg]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.common.svg :as csvg]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.bezier :as bezier]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn displace-line
   "Generate a set of points on a curved line between p and q by picking a confused

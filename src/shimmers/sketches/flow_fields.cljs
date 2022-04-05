@@ -1,26 +1,27 @@
 (ns shimmers.sketches.flow-fields
   "https://tylerxhobbs.com/essays/2020/flow-fields"
-  (:require [clojure.edn :as edn]
-            [clojure.string :as str]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.random-points :as rp]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.string :as scs]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.color :as color]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.equations :as eq]
-            [shimmers.math.hexagon :as hex]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [shimmers.view.sketch :as view-sketch]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.string :as str]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.string :as scs]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.color :as color]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.hexagon :as hex]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: play with some of the modes in
 ;; https://sighack.com/post/getting-creative-with-perlin-noise-fields

@@ -1,11 +1,12 @@
 (ns shimmers.sketches.ripples
   "Based on https://thecodingtrain.com/CodingChallenges/102-2d-water-ripple.html"
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.macros.loop :as loop :include-macros true]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.ndarray.core :as nd]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.macros.loop :as loop :include-macros true]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.ndarray.core :as nd]))
 
 (defn make-buffer [width height]
   (let [zeros (repeatedly (* width height) (fn [] (float 0)))]

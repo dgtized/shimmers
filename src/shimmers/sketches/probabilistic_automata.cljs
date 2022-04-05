@@ -1,16 +1,17 @@
 (ns shimmers.sketches.probabilistic-automata
-  (:require [cljs.core.match :refer-macros [match]]
-            [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.automata.programs :as programs]
-            [shimmers.automata.simplify :as simplify]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.sequence :refer [weighted]]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.common.string :as scs]
-            [shimmers.math.color :as color]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [cljs.core.match :refer-macros [match]]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.automata.programs :as programs]
+   [shimmers.automata.simplify :as simplify]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :refer [weighted]]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.string :as scs]
+   [shimmers.math.color :as color]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y] bounds]
   (and (>= x (- bounds)) (< x (+ (q/width) bounds))

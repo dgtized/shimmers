@@ -1,8 +1,9 @@
 (ns shimmers.sketches.precipitation
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.sketch :as sketch :include-macros true]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn rain [noise]
   (let [x0 (q/random (- 140) (+ 140 (q/width)))

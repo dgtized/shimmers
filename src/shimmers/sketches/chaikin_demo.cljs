@@ -1,15 +1,16 @@
 (ns shimmers.sketches.chaikin-demo
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.algorithm.chaikin :as chaikin]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.utils.subdiv :as gsd]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.triangle :as gt]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.algorithm.chaikin :as chaikin]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.subdiv :as gsd]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.geom.triangle :as gt]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

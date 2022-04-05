@@ -1,11 +1,12 @@
 (ns shimmers.sketches.impressions-of-open-space
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.quil :as cq]
-            [shimmers.math.deterministic-random :as dr]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn scribble [points t]
   (q/curve-tightness t)

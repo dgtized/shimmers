@@ -1,19 +1,20 @@
 (ns shimmers.sketches.gl-cube
   "Proof of concept spike using thi.ng directly to animate with webgl shaders.
   Cribbed from a whole list of examples."
-  (:require [reagent.core :as r]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.aabb :as aabb]
-            [thi.ng.geom.attribs :as attr]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.gl.camera :as cam]
-            [thi.ng.geom.gl.core :as gl]
-            [thi.ng.geom.gl.glmesh :as glmesh]
-            [thi.ng.geom.gl.shaders :as shaders]
-            [thi.ng.geom.gl.webgl.animator :as anim]
-            [thi.ng.geom.gl.webgl.constants :as glc]
-            [thi.ng.geom.matrix :as mat]))
+  (:require
+   [reagent.core :as r]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.aabb :as aabb]
+   [thi.ng.geom.attribs :as attr]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.gl.camera :as cam]
+   [thi.ng.geom.gl.core :as gl]
+   [thi.ng.geom.gl.glmesh :as glmesh]
+   [thi.ng.geom.gl.shaders :as shaders]
+   [thi.ng.geom.gl.webgl.animator :as anim]
+   [thi.ng.geom.gl.webgl.constants :as glc]
+   [thi.ng.geom.matrix :as mat]))
 
 ;; https://github.com/Rovanion/webgl-clojurescript-tutorial
 ;; and https://github.com/thi-ng/geom/blob/develop/examples/gl/webgl.org
