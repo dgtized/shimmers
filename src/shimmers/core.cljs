@@ -1,17 +1,18 @@
 (ns shimmers.core
-  (:require [goog.dom :as dom]
-            [reagent-keybindings.keyboard :as kb]
-            [reagent.core :as r]
-            [reagent.dom :as rdom]
-            [reitit.coercion.spec :as rss]
-            [reitit.frontend :as rf]
-            [reitit.frontend.controllers :as rfc]
-            [reitit.frontend.easy :as rfe]
-            [shimmers.sketches :as sketches]
-            [shimmers.view.favicon :as favicon]
-            [shimmers.view.index :as view-index]
-            [shimmers.view.sketch :as view-sketch]
-            [spec-tools.data-spec :as ds]))
+  (:require
+   [goog.dom :as dom]
+   [reagent-keybindings.keyboard :as kb]
+   [reagent.core :as r]
+   [reagent.dom :as rdom]
+   [reitit.coercion.spec :as rss]
+   [reitit.frontend :as rf]
+   [reitit.frontend.controllers :as rfc]
+   [reitit.frontend.easy :as rfe]
+   [shimmers.sketches :as sketches]
+   [shimmers.view.favicon :as favicon]
+   [shimmers.view.index :as view-index]
+   [shimmers.view.sketch :as view-sketch]
+   [spec-tools.data-spec :as ds]))
 
 ;; Uncomment to see javascript source of functions at repl
 ;; (set! cljs.core/*print-fn-bodies* true)

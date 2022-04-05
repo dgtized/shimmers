@@ -1,9 +1,10 @@
 (ns shimmers.algorithm.delaunay
-  (:require ["d3-delaunay"]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   ["d3-delaunay"]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]))
 
 ;; clojure wrapper for https://github.com/d3/d3-delaunay
 

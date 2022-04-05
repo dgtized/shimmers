@@ -1,7 +1,8 @@
 (ns shimmers.automata.simplify-test
-  (:require [cljs.test :as t :include-macros true
-             :refer-macros [deftest is testing run-tests]]
-            [shimmers.automata.simplify :as sut]))
+  (:require
+   [cljs.test :as t :include-macros true
+    :refer-macros [deftest is testing run-tests]]
+   [shimmers.automata.simplify :as sut]))
 
 (deftest collapse-trivial-one-of
   (is (empty? (mapcat sut/collapse-trivial-one-of [[:one-of []]])))

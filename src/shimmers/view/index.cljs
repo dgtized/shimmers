@@ -1,9 +1,10 @@
 (ns shimmers.view.index
-  (:require [clojure.set :as set]
-            [clojure.string :as str]
-            [reagent.core :as r]
-            [reitit.frontend.easy :as rfe]
-            [shimmers.view.sketch :as view-sketch]))
+  (:require
+   [clojure.set :as set]
+   [clojure.string :as str]
+   [reagent.core :as r]
+   [reitit.frontend.easy :as rfe]
+   [shimmers.view.sketch :as view-sketch]))
 
 (defn sketch-title [sketch]
   (->> [(when-let [created-at (:created-at sketch)]

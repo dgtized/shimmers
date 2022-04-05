@@ -1,7 +1,8 @@
 (ns shimmers.automata.memory-test
-  (:require [cljs.test :as t :include-macros true
-             :refer-macros [deftest is]]
-            [shimmers.automata.memory :as sut]))
+  (:require
+   [cljs.test :as t :include-macros true
+    :refer-macros [deftest is]]
+   [shimmers.automata.memory :as sut]))
 
 (def pages 8)
 (def a1 (sut/->Allocation 0 2 2))

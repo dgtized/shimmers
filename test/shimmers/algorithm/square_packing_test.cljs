@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.square-packing-test
-  (:require [cljs.test :as t :refer-macros [deftest is] :include-macros true]
-            [shimmers.algorithm.square-packing :as sut]
-            [thi.ng.geom.rect :as rect]))
+  (:require
+   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.algorithm.square-packing :as sut]
+   [thi.ng.geom.rect :as rect]))
 
 (def rectangle (rect/rect 0 0 100 120))
 

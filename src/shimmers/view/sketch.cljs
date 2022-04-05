@@ -1,11 +1,12 @@
 (ns shimmers.view.sketch
-  (:require [goog.dom :as dom]
-            [quil.core :as q]
-            [reagent.dom :as rdom]
-            [reitit.frontend.easy :as rfe]
-            [shimmers.common.sequence :as cs]
-            [shimmers.common.ui :as ui]
-            [shimmers.math.deterministic-random :as dr]))
+  (:require
+   [goog.dom :as dom]
+   [quil.core :as q]
+   [reagent.dom :as rdom]
+   [reitit.frontend.easy :as rfe]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui :as ui]
+   [shimmers.math.deterministic-random :as dr]))
 
 ;; detect window size for initial setup?
 (defn fit-window []

@@ -1,8 +1,9 @@
 (ns shimmers.math.core-test
-  (:require [shimmers.math.core :as sut]
-            [cljs.test :as t :include-macros true
-             :refer-macros [deftest is run-tests testing]]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.math.core :as sut]
+   [cljs.test :as t :include-macros true
+    :refer-macros [deftest is run-tests testing]]
+   [thi.ng.math.core :as tm]))
 
 (deftest mod-mixing
   (testing "normal mixing"

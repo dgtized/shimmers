@@ -1,6 +1,7 @@
 (ns shimmers.common.ui.canvas
-  (:require [reagent.core :as r]
-            [reagent.dom :as rdom]))
+  (:require
+   [reagent.core :as r]
+   [reagent.dom :as rdom]))
 
 ;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
 (defn sizing-attributes [width height attributes]

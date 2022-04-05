@@ -1,11 +1,12 @@
 (ns shimmers.algorithm.rtree-test
-  (:require [cljs.test :as t :refer-macros [deftest is] :include-macros true]
-            [clojure.set :as set]
-            [shimmers.algorithm.rtree :as sut]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.utils :as gu]))
+  (:require
+   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.set :as set]
+   [shimmers.algorithm.rtree :as sut]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils :as gu]))
 
 (deftest creation
   (is (nil? (sut/create [])))

@@ -1,10 +1,11 @@
 (ns shimmers.algorithm.line-clipping-test
-  (:require [cljs.test :as t :refer-macros [deftest is] :include-macros true]
-            [shimmers.algorithm.line-clipping :as sut]
-            [thi.ng.geom.line :as gl]
-            [thi.ng.geom.rect :as rect]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.algorithm.line-clipping :as sut]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Test helper
 

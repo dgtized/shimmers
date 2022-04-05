@@ -1,10 +1,11 @@
 (ns shimmers.common.ui.controls
-  (:require [clojure.edn :as edn]
-            [clojure.string :as str]
-            [goog.dom :as dom]
-            [reagent.core :as r]
-            [reagent.dom :as rdom]
-            [shimmers.common.sequence :as cs]))
+  (:require
+   [clojure.edn :as edn]
+   [clojure.string :as str]
+   [goog.dom :as dom]
+   [reagent.core :as r]
+   [reagent.dom :as rdom]
+   [shimmers.common.sequence :as cs]))
 
 (defn mount
   "Mounts reagent component to render in an element, defaults to interface.
