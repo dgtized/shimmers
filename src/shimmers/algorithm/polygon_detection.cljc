@@ -84,7 +84,7 @@
   [g point]
   (when-let [p (closest-in point (lg/nodes g))]
     (when-let [q (closest-angle point p (lg/successors g p))]
-      (if (> (v/orientation p q point) 0)
+      (if (pos? (v/orientation p q point))
         [q p]
         [p q]))))
 
