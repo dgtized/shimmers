@@ -6,12 +6,12 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]))
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y]]
   (and (>= x 0) (< x (q/width))
@@ -32,11 +32,8 @@
 (defn intersects [self point crack]
   (if (#{self (:parent self)} crack)
     false
-    (let [{:keys [start position]} crack
-          dseg (g/dist start position)
-          dstart (g/dist start point)
-          dend (g/dist point position)]
-      (< (Math/abs (- dseg dstart dend)) 0.005))))
+    (let [{:keys [start position]} crack]
+      (poly-detect/point-on-line? start position point 0.005))))
 
 (defn update-crack [cracks {:keys [position angle] :as crack}]
   (let [new-pos (v/add position (v/polar 0.33 angle))]

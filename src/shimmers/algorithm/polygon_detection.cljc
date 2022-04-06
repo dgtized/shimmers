@@ -184,10 +184,12 @@
 
 
 (defn point-on-line?
-  [p q point]
-  (when (tm/delta= (+ (g/dist p point) (g/dist point q))
-                   (g/dist p q))
-    point))
+  ([p q point] (point-on-line? p q point tm/*eps*))
+  ([p q point epsilon]
+   (when (tm/delta= (+ (g/dist p point) (g/dist point q))
+                    (g/dist p q)
+                    epsilon)
+     point)))
 
 (defn split-self-intersection
   "Recursively splits a polygon into a sequence of polygons on each
