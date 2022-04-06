@@ -4,6 +4,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -180,3 +181,43 @@
 
 ;; Possibly worth looking into similar routines in the Java Topology Suite
 ;; https://github.com/locationtech/jts, and https://github.com/bjornharrtell/jsts
+
+
+(defn point-on-line?
+  [p q point]
+  (when (tm/delta= (+ (g/dist p point) (g/dist point q))
+                   (g/dist p q))
+    point))
+
+(defn split-self-intersection
+  "Recursively splits a polygon into a sequence of polygons on each
+  self-intersection point."
+  [polygon]
+  (if-let [isec (self-intersecting? polygon)]
+    (loop [edges (g/edges polygon)
+           a [] b [] in-split-polygon false]
+      (let [[[p q] & remaining] edges]
+        (cond (empty? edges)
+              (concat (split-self-intersection (gp/polygon2 a))
+                      (split-self-intersection (gp/polygon2 b)))
+              (point-on-line? p q isec)
+              (if-not in-split-polygon
+                (recur remaining
+                       (conj a p)
+                       (conj b isec)
+                       true)
+                (recur remaining
+                       (conj a isec)
+                       (conj b p)
+                       false))
+              :else
+              (if in-split-polygon
+                (recur remaining
+                       a
+                       (conj b p)
+                       true)
+                (recur remaining
+                       (conj a p)
+                       b
+                       false)))))
+    [polygon]))

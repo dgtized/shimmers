@@ -114,6 +114,9 @@
     (is (tm/delta= (gv/vec2 5 5)
                    (sut/self-intersecting? (gp/polygon2 [a b d c]))))
     (is (tm/delta= (gv/vec2 5 10)
-                   (sut/self-intersecting? (gp/polygon2 [a b c d (gv/vec2 10 20)]))))))
+                   (sut/self-intersecting? (gp/polygon2 [a b c d (gv/vec2 10 20)]))))
+    (is (= [(gp/polygon2 [[0 0] [10 0] [5 5]])
+            (gp/polygon2 [[5 5] [0 10] [10 10]])]
+           (sut/split-self-intersection (gp/polygon2 [a b d c]))))))
 
 (comment (t/run-tests))
