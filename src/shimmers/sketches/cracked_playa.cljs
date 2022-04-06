@@ -15,7 +15,7 @@
    [thi.ng.math.core :as tm]
    [thi.ng.math.noise :as noise]))
 
-(def width 800)
+(def width 900)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
@@ -25,6 +25,7 @@
     (tm/clamp01 (noise/noise2 x y))))
 
 ;; TODO: add rough edges to each polygon?
+;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
@@ -49,6 +50,6 @@
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :cracked-playa)
               "sketch-host"))
