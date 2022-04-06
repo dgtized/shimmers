@@ -8,6 +8,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
@@ -30,36 +31,63 @@
                    (g/dist p q))
     point))
 
-;; need to actually split into sub-polygons on isec hit, then can determine which to filter out.
-;; this is not removing the points between the two isec points.
-(defn remove-self-intersection [polygon]
+;; Not quite working, looks like it leaves an extra triangle not part of a or b,
+;; or only fills out a or b but not both? Leaving it in debug view for now
+(defn split-self-intersection [polygon]
   (if-let [isec (poly-detect/self-intersecting? polygon)]
-    (let [vertices (g/vertices polygon)]
-      (recur (-> (for [[p q] (partition 2 1 (cons (last vertices) (vec vertices)))]
-                   (if (point-on-line? p q isec)
-                     isec
-                     q))
-                 dedupe
-                 gp/polygon2)))
-    polygon))
+    (loop [[[p q] & edges] (g/edges polygon)
+           a [] b [] in-split-polygon false]
+      (cond (empty? edges)
+            [(with-meta polygon {:stroke-width 1.0})
+             (with-meta (gp/polygon2 a) {:fill-opacity 0.1 :fill "green"})
+             (with-meta (gp/polygon2 b) {:fill-opacity 0.1 :fill "red"})
+             (gc/circle isec 1.0)]
+            (point-on-line? p q isec)
+            (if-not in-split-polygon
+              (recur edges
+                     (conj a p)
+                     (conj b isec)
+                     true)
+              (recur edges
+                     (conj a isec)
+                     (conj b p)
+                     false))
+            :else
+            (if in-split-polygon
+              (recur edges
+                     a
+                     (conj b p)
+                     true)
+              (recur edges
+                     (conj a p)
+                     b
+                     false))))
+    [polygon]))
+
+(comment
+  (let [overlap (gp/polygon2 [(gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 0 10) (gv/vec2 10 10)])]
+    [(poly-detect/self-intersecting? overlap)
+     (map first (g/edges overlap))
+     (split-self-intersection overlap)]))
 
 ;; TODO: add rough edges to each polygon?
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
         cells (delvor/voronoi-cells points bounds)]
-    (for [cell cells
-          :let [width (dr/random -0.5 -4)
-                inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-          ;; :when (poly-detect/self-intersecting? inset)
-          ]
-      (remove-self-intersection inset))))
+    (apply concat
+           (for [cell cells
+                 :let [width (dr/random -0.5 -4)
+                       inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+                 :when (poly-detect/self-intersecting? inset)
+                 ]
+             (split-self-intersection inset)))))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
-             :fill "white"
+             :fill "none"
              :stroke-width 0.5}
             (apply list (shapes))))
 
