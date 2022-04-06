@@ -31,41 +31,42 @@
                    (g/dist p q))
     point))
 
-;; Not quite working, looks like it leaves an extra triangle not part of a or b,
-;; or only fills out a or b but not both? Leaving it in debug view for now
-(defn split-self-intersection [polygon]
+(defn split-self-intersection
+  "Recursively splits a polygon into a sequence of polygons on each
+  self-intersection point."
+  [polygon]
   (if-let [isec (poly-detect/self-intersecting? polygon)]
-    (loop [[[p q] & edges] (g/edges polygon)
+    (loop [edges (g/edges polygon)
            a [] b [] in-split-polygon false]
-      (cond (empty? edges)
-            [(with-meta polygon {:stroke-width 1.0})
-             (with-meta (gp/polygon2 a) {:fill-opacity 0.1 :fill "green"})
-             (with-meta (gp/polygon2 b) {:fill-opacity 0.1 :fill "red"})
-             (gc/circle isec 1.0)]
-            (point-on-line? p q isec)
-            (if-not in-split-polygon
-              (recur edges
-                     (conj a p)
-                     (conj b isec)
-                     true)
-              (recur edges
-                     (conj a isec)
-                     (conj b p)
-                     false))
-            :else
-            (if in-split-polygon
-              (recur edges
-                     a
-                     (conj b p)
-                     true)
-              (recur edges
-                     (conj a p)
-                     b
-                     false))))
+      (let [[[p q] & remaining] edges]
+        (cond (empty? edges)
+              (concat (split-self-intersection (gp/polygon2 a))
+                      (split-self-intersection (gp/polygon2 b)))
+              (point-on-line? p q isec)
+              (if-not in-split-polygon
+                (recur remaining
+                       (conj a p)
+                       (conj b isec)
+                       true)
+                (recur remaining
+                       (conj a isec)
+                       (conj b p)
+                       false))
+              :else
+              (if in-split-polygon
+                (recur remaining
+                       a
+                       (conj b p)
+                       true)
+                (recur remaining
+                       (conj a p)
+                       b
+                       false)))))
     [polygon]))
 
 (comment
   (let [overlap (gp/polygon2 [(gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 0 10) (gv/vec2 10 10)])]
+    (tap> nil)
     [(poly-detect/self-intersecting? overlap)
      (map first (g/edges overlap))
      (split-self-intersection overlap)]))
@@ -75,13 +76,14 @@
   (let [bounds (rect/rect 0 0 width height)
         points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
         cells (delvor/voronoi-cells points bounds)]
-    (apply concat
-           (for [cell cells
-                 :let [width (dr/random -0.5 -4)
-                       inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-                 :when (poly-detect/self-intersecting? inset)
-                 ]
-             (split-self-intersection inset)))))
+    (->> (for [cell cells
+               :let [width (dr/random -0.5 -4)
+                     inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+               ;;:when (poly-detect/self-intersecting? inset)
+               ]
+           (split-self-intersection inset))
+         (apply concat)
+         (filter (fn [s] (> (g/area s) 0))))))
 
 (defn scene []
   (csvg/svg {:width width
