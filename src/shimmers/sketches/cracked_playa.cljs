@@ -44,9 +44,13 @@
                           (apply concat)
                           (filter (fn [s] (> (g/area s) 0)))
                           (map (fn [{:keys [points]}]
-                                 (gp/polygon2 (chaikin/chaikin 0.12 true 3 points))))))))
+                                 ;; TODO: make this proportional to size?
+                                 (let [ratio (dr/random 0.05 0.25)
+                                       iters (dr/random-int 1 4)]
+                                   (gp/polygon2 (chaikin/chaikin ratio true iters points)))))))))
 
 (defonce sink (debug/state []))
+;; This add tap is still duplicating with some frequency
 (add-tap (debug/profile-to sink))
 
 (defn scene []
