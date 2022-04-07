@@ -47,19 +47,17 @@
                                  (gp/polygon2 (chaikin/chaikin 0.12 true 3 points))))))))
 
 (defonce sink (debug/state []))
+(add-tap (debug/profile-to sink))
 
 (defn scene []
-  (let [capture (debug/profile-to sink)]
-    (add-tap capture)
-    (let [v (csvg/svg {:width width
-                       :height height
-                       :stroke "black"
-                       :fill "none"
-                       :stroke-width 0.5}
-                      (debug/span-prof :render
-                                       (apply list (shapes))))]
-      ;; (remove-tap capture)
-      v)))
+  (reset! sink [])
+  (csvg/svg {:width width
+             :height height
+             :stroke "black"
+             :fill "none"
+             :stroke-width 0.5}
+            (debug/span-prof :render
+                             (apply list (shapes)))))
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
