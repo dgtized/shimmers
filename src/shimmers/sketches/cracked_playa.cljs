@@ -25,22 +25,25 @@
   (let [[x y] (tm/* p 0.01)]
     (tm/clamp01 (noise/noise2 x y))))
 
+(defonce defo (debug/state))
+
 ;; TODO: add rough edges to each polygon?
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
-        cells (delvor/voronoi-cells points bounds)]
-    (->> (for [cell cells
-               :let [width (dr/random -0.5 -4)
-                     inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-               ;;:when (poly-detect/self-intersecting? inset)
-               ]
-           (poly-detect/split-self-intersection inset))
-         (apply concat)
-         (filter (fn [s] (> (g/area s) 0))))))
-
-(defonce defo (debug/state))
+        points (debug/time-it defo [:time :gen-points]
+                              (pds/generate-dynamic bounds 10 [18 256] noise-at-point))
+        cells (debug/time-it defo [:time :voronoi]
+                             (delvor/voronoi-cells points bounds))]
+    (debug/time-it defo [:time :inset-split]
+                   (->> (for [cell cells
+                              :let [width (dr/random -0.5 -4)
+                                    inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+                              ;;:when (poly-detect/self-intersecting? inset)
+                              ]
+                          (poly-detect/split-self-intersection inset))
+                        (apply concat)
+                        (filter (fn [s] (> (g/area s) 0)))))))
 
 (defn scene []
   (csvg/svg {:width width
@@ -48,10 +51,11 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (debug/time-it defo [:render-time] (apply list (shapes)))))
+            (debug/time-it defo [:time :render]
+                           (apply list (shapes)))))
 
 (defn time-view []
-  [:div "Rendered in " (:render-time @defo)])
+  (debug/pre-edn (:time @defo)))
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
