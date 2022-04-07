@@ -14,7 +14,8 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]))
+   [thi.ng.math.noise :as noise]
+   [reagent.core :as r]))
 
 (def width 900)
 (def height 600)
@@ -25,41 +26,43 @@
   (let [[x y] (tm/* p 0.01)]
     (tm/clamp01 (noise/noise2 x y))))
 
-(defonce defo (debug/state))
-
 ;; TODO: add rough edges to each polygon?
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        points (debug/time-it defo [:time :gen-points]
-                              (pds/generate-dynamic bounds 10 [18 256] noise-at-point))
-        cells (debug/time-it defo [:time :voronoi]
-                             (delvor/voronoi-cells points bounds))]
-    (debug/time-it defo [:time :inset-split]
-                   (->> (for [cell cells
-                              :let [width (dr/random -0.5 -4)
-                                    inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-                              ;;:when (poly-detect/self-intersecting? inset)
-                              ]
-                          (poly-detect/split-self-intersection inset))
-                        (apply concat)
-                        (filter (fn [s] (> (g/area s) 0)))))))
+        points (debug/span-prof :gen-points
+                                (pds/generate-dynamic bounds 10 [18 256] noise-at-point))
+        cells (debug/span-prof :voronoi
+                               (delvor/voronoi-cells points bounds))]
+    (debug/span-prof :inset-split
+                     (->> (for [cell cells
+                                :let [width (dr/random -0.5 -4)
+                                      inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+                                ;;:when (poly-detect/self-intersecting? inset)
+                                ]
+                            (poly-detect/split-self-intersection inset))
+                          (apply concat)
+                          (filter (fn [s] (> (g/area s) 0)))))))
+
+(defonce sink (r/atom []))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.5}
-            (debug/time-it defo [:time :render]
-                           (apply list (shapes)))))
-
-(defn time-view []
-  (debug/pre-edn (:time @defo)))
+  (let [capture (debug/profile-to sink)]
+    (add-tap capture)
+    (let [v (csvg/svg {:width width
+                       :height height
+                       :stroke "black"
+                       :fill "none"
+                       :stroke-width 0.5}
+                      (debug/span-prof :render
+                                       (apply list (shapes))))]
+      ;; (remove-tap capture)
+      v)))
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :cracked-playa time-view)
+  (ctrl/mount (view-sketch/page-for scene :cracked-playa
+                                    (fn [] [debug/pre-edn @sink]))
               "sketch-host"))

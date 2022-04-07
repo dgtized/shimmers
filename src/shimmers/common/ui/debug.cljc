@@ -61,6 +61,19 @@
                                      " msecs"))
      ret#))
 
+(defmacro span-prof
+  [desc expr]
+  `(let [start# (cljs.core/system-time)
+         ret# ~expr
+         stop# (cljs.core/system-time)]
+     (cljs.core/tap> [:profile {:desc ~desc :start start# :stop stop#}])
+     ret#))
+
+(defn profile-to [sink]
+  (fn [tap-value]
+    (when (= :profile (first tap-value))
+      (swap! sink conj (second tap-value)))))
+
 (defn pre-edn [edn]
   [:pre.debug [:code (with-out-str (fedn/pprint edn))]])
 
