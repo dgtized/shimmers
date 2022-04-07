@@ -14,8 +14,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]
-   [reagent.core :as r]))
+   [thi.ng.math.noise :as noise]))
 
 (def width 900)
 (def height 600)
@@ -44,7 +43,7 @@
                           (apply concat)
                           (filter (fn [s] (> (g/area s) 0)))))))
 
-(defonce sink (r/atom []))
+(defonce sink (debug/state []))
 
 (defn scene []
   (let [capture (debug/profile-to sink)]

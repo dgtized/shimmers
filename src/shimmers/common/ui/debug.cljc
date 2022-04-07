@@ -82,8 +82,9 @@
 
 #?(:cljs
    (do
-     (defn state []
-       (ctrl/state {}))
+     (defn state
+       ([] (ctrl/state {}))
+       ([init] (ctrl/state init)))
 
      (defn mount [atom]
        (ctrl/mount #(display atom) "debug-mount"))))
