@@ -5,6 +5,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -39,17 +40,22 @@
          (apply concat)
          (filter (fn [s] (> (g/area s) 0))))))
 
+(defonce defo (debug/state))
+
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (apply list (shapes))))
+            (debug/time-it defo [:render-time] (apply list (shapes)))))
+
+(defn time-view []
+  [:div "Rendered in " (:render-time @defo)])
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :cracked-playa)
+  (ctrl/mount (view-sketch/page-for scene :cracked-playa time-view)
               "sketch-host"))
