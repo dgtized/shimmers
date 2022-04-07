@@ -1,5 +1,6 @@
 (ns shimmers.sketches.cracked-playa
   (:require
+   [shimmers.algorithm.chaikin :as chaikin]
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.algorithm.polygon-detection :as poly-detect]
@@ -41,7 +42,9 @@
                                 ]
                             (poly-detect/split-self-intersection inset))
                           (apply concat)
-                          (filter (fn [s] (> (g/area s) 0)))))))
+                          (filter (fn [s] (> (g/area s) 0)))
+                          (map (fn [{:keys [points]}]
+                                 (gp/polygon2 (chaikin/chaikin 0.12 true 3 points))))))))
 
 (defonce sink (debug/state []))
 
