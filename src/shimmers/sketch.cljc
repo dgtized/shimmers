@@ -49,14 +49,13 @@
 ;;
 ;; Plan:
 ;;
-;; * Consolidate `definition` and `defquil`?
-;; * Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks?
-;; * Allow more than one sketch per namespace
-;; ** 2+ sketches in parallel (probably less useful except for long form explanation)
-;; ** Multiple sketches from the same namespace, each with own index entry
-;; * Propagate metadata like creation time, tags, or a display name to index view for sorting?
-;; * Is it possible to wrap defsketch and reduces the overlap?
-;; * Assist in passing parameters like RNG seed into the sketch at invoke?
+;; - [ ] Consolidate `definition` and `defquil`?
+;; - [x] Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks? -- See reagent-quil-component sketch
+;; - [x] Allow more than one sketch per namespace
+;; - [x] 2+ sketches in parallel (probably less useful except for long form explanation)
+;; - [ ] Multiple sketches from the same namespace, each with own index entry
+;; - [ ] Is it possible to wrap defsketch and reduces the overlap?
+;; - [ ] Assist in passing parameters like RNG seed into the sketch at invoke?
 ;; - [x] add sketches to a registry automatically ala
 ;;   https://github.com/quil/quil/blob/master/src/clj/quil/snippets/macro.clj#L52
 ;;
