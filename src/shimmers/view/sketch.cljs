@@ -33,15 +33,21 @@
     ;; performance optimizations?
     (dr/random-seed seed))
 
+  (when-let [taps (seq (:taps sketch))]
+    (doseq [t taps] (add-tap t)))
+
   (ui/screen-view (name (:sketch-id sketch)))
   (when-let [run-sketch (:fn sketch)]
     (apply run-sketch [])))
 
 ;; TODO: limit to dependencies used by sketch
-(defn stop-sketch [_]
+(defn stop-sketch [sketch]
   ;; force active video capture to stop
   (doseq [video (dom/getElementsByTagName "video")]
     (.stop (first (.getTracks (aget video "srcObject")))))
+
+  (when-let [taps (seq (:taps sketch))]
+    (doseq [t taps] (remove-tap t)))
 
   ;; kill existing sketch at quil-host if present
   (when-let [quil (q/get-sketch-by-id "quil-host")]

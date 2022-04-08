@@ -94,6 +94,7 @@
                         {:sketch-id page-identifier#
                          :type :quil
                          :fn ~runner
+                         :taps ~(:taps options)
                          :created-at ~(:created-at opts)
                          :tags ~(:tags opts #{})
                          :ns (:ns m#)
@@ -122,6 +123,7 @@
                           {:sketch-id page-identifier#
                            :type ~(:type options)
                            :fn ~runner
+                           :taps ~(:taps options)
                            :created-at ~(:created-at options)
                            :tags ~(:tags options #{})
                            :ns (:ns m#)

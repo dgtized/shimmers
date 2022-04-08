@@ -50,8 +50,6 @@
                                    (gp/polygon2 (chaikin/chaikin ratio true iters points)))))))))
 
 (defonce sink (debug/state []))
-;; This add tap is still duplicating with some frequency
-(add-tap (debug/profile-to sink))
 
 (defn scene []
   (reset! sink [])
@@ -66,6 +64,7 @@
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
+   :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :cracked-playa
                                     (fn [] [debug/pre-edn @sink]))
