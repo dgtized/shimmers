@@ -4,6 +4,7 @@
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.algorithm.polygon-detection :as poly-detect]
+   [shimmers.common.string :as scs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -61,11 +62,27 @@
             (debug/span-prof :render
                              (apply list (shapes)))))
 
+(defn profile-summary [sink]
+  (fn []
+    (let [spans @sink
+          started (apply min (map :start spans))
+          complete (apply max (map :stop spans))
+          total-duration (- complete started)
+          spans (for [{:keys [start stop] :as span} spans
+                      :let [duration (- stop start)]]
+                  (assoc span
+                         :duration duration
+                         :percent (/ duration total-duration)))]
+      [:ul
+       (for [{:keys [desc duration percent]} (sort-by :start spans)]
+         [:li (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
+       [:li (scs/format "Total %.1f ms" total-duration)]])))
+
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
    :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :cracked-playa
-                                    (fn [] [debug/pre-edn @sink]))
+                                    (profile-summary sink))
               "sketch-host"))
