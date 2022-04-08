@@ -45,7 +45,7 @@
                           (filter (fn [s] (> (g/area s) 0)))
                           (map (fn [{:keys [points]}]
                                  ;; TODO: make this proportional to size?
-                                 (let [ratio (dr/random 0.05 0.25)
+                                 (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
                                        iters (dr/random-int 1 4)]
                                    (gp/polygon2 (chaikin/chaikin ratio true iters points)))))))))
 
