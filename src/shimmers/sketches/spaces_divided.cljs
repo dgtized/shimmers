@@ -99,7 +99,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect 0.9)]
+  (let [bounds (cq/screen-rect 0.95)]
     {:bounds bounds
      :mouse (gv/vec2)
      :lines (repeatedly 6 (gen-line bounds))}))
@@ -111,9 +111,12 @@
            :intersections isecs
            :edges (intersections->edges isecs))))
 
+;; improved but still showing backwards triangles form inset sometimes?
 (defn draw-inset [shape]
-  (let [inset (inset-polygon shape 4)]
-    (when (not (poly-detect/self-intersecting? inset))
+  (let [inset (->> (inset-polygon shape 4)
+                   poly-detect/split-self-intersection
+                   (apply max-key g/area))]
+    (when (> (g/area inset) 50)
       (cq/draw-polygon inset))))
 
 (defn describe [{:keys [points] :as shape}]
@@ -130,11 +133,11 @@
 
 (defn inset-shapes [polygons]
   (->> (for [poly polygons
-             :let [inset (inset-polygon poly 8.0)]]
+             :let [inset (inset-polygon poly 2.0)]]
          (cond (poly-detect/self-intersecting? inset)
                (apply max-key g/area (poly-detect/split-self-intersection inset))
-               (> (g/area poly) 50)
-               poly
+               (> (g/area inset) 125)
+               inset
                :else nil))
        (remove nil?)))
 
