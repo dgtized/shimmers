@@ -131,9 +131,8 @@
 (defn inset-shapes [polygons]
   (->> (for [poly polygons
              :let [inset (inset-polygon poly 8.0)]]
-         (cond (and (> (g/area inset) 1000)
-                    (not (poly-detect/self-intersecting? inset)))
-               inset
+         (cond (poly-detect/self-intersecting? inset)
+               (apply max-key g/area (poly-detect/split-self-intersection inset))
                (> (g/area poly) 50)
                poly
                :else nil))
