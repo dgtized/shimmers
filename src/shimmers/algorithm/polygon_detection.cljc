@@ -3,6 +3,7 @@
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
+   [thi.ng.dstruct.core :as d]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils.intersect :as isec]
@@ -182,6 +183,47 @@
 ;; Possibly worth looking into similar routines in the Java Topology Suite
 ;; https://github.com/locationtech/jts, and https://github.com/bjornharrtell/jsts
 
+
+;; extracted from thi.ng.geom.polygon to address bugs
+;; http://alienryderflex.com/polygon_inset/
+
+;; The problem here I *think* is if a corner has a small segment like: a -> b --
+;; c -> d, where b -- c is small, and a->b and c->d will intersect prior to b--c
+;; if they are inset, resulting in a self intersection, and a ccw triangle
+;; containing the remaining b--c edge. Presumably there can be more then one
+;; edge between self-intersection points.
+
+;; The problem here is that the polygon needs to be split into two new polygons
+;; that share the self-intersection point.
+(defn- inset-corner
+  [prev curr next d]
+  (let [[dx1 dy1 :as d1] (tm/- curr prev)
+        [dx2 dy2 :as d2] (tm/- next curr)
+        d1 (tm/mag d1)
+        d2 (tm/mag d2)]
+    (if-not (or (tm/delta= 0.0 d1) (tm/delta= 0.0 d2))
+      (let [i1 (tm/* (gv/vec2 dy1 (- dx1)) (/ d d1))
+            i2 (tm/* (gv/vec2 dy2 (- dx2)) (/ d d2))
+            c1 (tm/+ curr i1)
+            c2 (tm/+ curr i2)
+            prev (tm/+ prev i1)
+            next (tm/+ next i2)]
+        (if (tm/delta= c1 c2)
+          c1
+          (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
+      curr)))
+
+;; references:
+;; https://stackoverflow.com/questions/1109536/an-algorithm-for-inflating-deflating-offsetting-buffering-polygons
+
+(defn inset-polygon
+  "For CW polygons, use positive distance to inset or negative to outset.
+  For CCW polygons, use opposite."
+  [{:keys [points]} d]
+  (->> (d/wrap-seq points [(last points)] [(first points)])
+       (partition 3 1)
+       (mapv (fn [[p c n]] (inset-corner n c p d)))
+       gp/polygon2))
 
 (defn point-on-line?
   ([p q point] (point-on-line? p q point tm/*eps*))

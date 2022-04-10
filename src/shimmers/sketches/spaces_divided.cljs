@@ -10,11 +10,9 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.dstruct.core :as d]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -56,47 +54,6 @@
                   (map (fn [v] (sort v)))
                   set)))))
 
-;; extracted from thi.ng.geom.polygon to address bugs
-;; http://alienryderflex.com/polygon_inset/
-
-;; The problem here I *think* is if a corner has a small segment like: a -> b --
-;; c -> d, where b -- c is small, and a->b and c->d will intersect prior to b--c
-;; if they are inset, resulting in a self intersection, and a ccw triangle
-;; containing the remaining b--c edge. Presumably there can be more then one
-;; edge between self-intersection points.
-
-;; The problem here is that the polygon needs to be split into two new polygons
-;; that share the self-intersection point.
-(defn- inset-corner
-  [prev curr next d]
-  (let [[dx1 dy1 :as d1] (tm/- curr prev)
-        [dx2 dy2 :as d2] (tm/- next curr)
-        d1 (tm/mag d1)
-        d2 (tm/mag d2)]
-    (if-not (or (tm/delta= 0.0 d1) (tm/delta= 0.0 d2))
-      (let [i1 (tm/* (gv/vec2 dy1 (- dx1)) (/ d d1))
-            i2 (tm/* (gv/vec2 dy2 (- dx2)) (/ d d2))
-            c1 (tm/+ curr i1)
-            c2 (tm/+ curr i2)
-            prev (tm/+ prev i1)
-            next (tm/+ next i2)]
-        (if (tm/delta= c1 c2)
-          c1
-          (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
-      curr)))
-
-;; references:
-;; https://stackoverflow.com/questions/1109536/an-algorithm-for-inflating-deflating-offsetting-buffering-polygons
-
-(defn inset-polygon
-  "For CW polygons, use positive distance to inset or negative to outset.
-  For CCW polygons, use opposite."
-  [{:keys [points]} d]
-  (->> (d/wrap-seq points [(last points)] [(first points)])
-       (partition 3 1)
-       (mapv (fn [[p c n]] (inset-corner n c p d)))
-       gp/polygon2))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.95)]
@@ -113,7 +70,7 @@
 
 ;; improved but still showing backwards triangles form inset sometimes?
 (defn draw-inset [shape]
-  (let [inset (->> (inset-polygon shape 4)
+  (let [inset (->> (poly-detect/inset-polygon shape 4)
                    poly-detect/split-self-intersection
                    (apply max-key g/area))]
     (when (> (g/area inset) 50)
@@ -133,7 +90,7 @@
 
 (defn inset-shapes [polygons]
   (->> (for [poly polygons
-             :let [inset (inset-polygon poly 2.0)]]
+             :let [inset (poly-detect/inset-polygon poly 2.0)]]
          (cond (poly-detect/self-intersecting? inset)
                (apply max-key g/area (poly-detect/split-self-intersection inset))
                (> (g/area inset) 125)
@@ -167,7 +124,7 @@
     ;; highlight points on hover + debug info
     (when-let [{:keys [points] :as shape}
                (some (fn [s] (when (g/contains-point? s mouse) s)) shapes)]
-      (let [inner (inset-polygon shape 4)]
+      (let [inner (poly-detect/inset-polygon shape 4)]
         (swap! defo assoc :polygon
                {:outer (describe shape)
                 :inner (describe inner)})
@@ -182,11 +139,11 @@
 (comment
   ;; example of self intersect after inset operation
   (poly-detect/self-intersecting?
-   (gp/polygon2 (inset-polygon (mapv gv/vec2 [[383.33 202.97]
-                                              [435.44 199.85]
-                                              [404.54 355.24]
-                                              [411.73 357.02]])
-                               -10))))
+   (gp/polygon2 (poly-detect/inset-polygon (mapv gv/vec2 [[383.33 202.97]
+                                                          [435.44 199.85]
+                                                          [404.54 355.24]
+                                                          [411.73 357.02]])
+                                           -10))))
 
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
