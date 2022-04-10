@@ -1,6 +1,5 @@
 (ns shimmers.sketches.spaces-divided
   (:require
-   [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.polygon-detection :as poly-detect]
@@ -28,31 +27,12 @@
 (defn isec-point [l1 l2]
   (when-let [{:keys [type] :as hit} (g/intersect-line l1 l2)]
     (when (= type :intersect)
-      [(:p hit) #{l1 l2}])))
+      {:isec (:p hit) :segments #{l1 l2}})))
 
 (defn line-intersections [lines]
   (remove nil?
           (for [[a b] (cs/all-pairs lines)]
             (isec-point a b))))
-
-(defn vertices-per-isec
-  "Calculate the set of vertices for each line from the intersections."
-  [intersections]
-  (->> (for [[p lines] intersections
-             line lines]
-         {line #{p}})
-       (apply (partial merge-with set/union))))
-
-(defn intersections->edges [isecs]
-  (apply set/union
-         (for [[{[a b] :points} vertices] (vertices-per-isec isecs)]
-           (let [ordered (sort-by (fn [p] (g/dist a p)) (conj vertices a b))]
-             (->> ordered
-                  dedupe ;; sometimes a or b is already in points
-                  (partition 2 1)
-                  ;; ensure edges are always low pt -> high pt
-                  (map (fn [v] (sort v)))
-                  set)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -66,7 +46,7 @@
     (assoc state
            :mouse (cq/mouse-last-position-clicked mouse)
            :intersections isecs
-           :edges (intersections->edges isecs))))
+           :edges (poly-detect/intersections->edges isecs))))
 
 ;; improved but still showing backwards triangles form inset sometimes?
 (defn draw-inset [shape]

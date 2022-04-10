@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.polygon-detection
   (:require
+   [clojure.set :as set]
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
@@ -9,6 +10,26 @@
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defn vertices-per-isec
+  "Calculate the set of vertices for each segment from the intersections."
+  [intersections]
+  (->> (for [{:keys [isec segments]} intersections
+             seg segments]
+         {seg #{isec}})
+       (apply (partial merge-with set/union))))
+
+;; WIP just trying to get basic output here. I think problems with directed vs undirected graph?
+(defn intersections->edges [isecs]
+  (apply set/union
+         (for [[{[a b] :points} vertices] (vertices-per-isec isecs)]
+           (let [ordered (sort-by (fn [p] (g/dist a p)) (conj vertices a b))]
+             (->> ordered
+                  dedupe ;; sometimes a or b is already in points
+                  (partition 2 1)
+                  ;; ensure edges are always low pt -> high pt
+                  (map (fn [v] (sort v)))
+                  set)))))
 
 (defn edges->graph [edges]
   (reduce (fn [g [a b]] (lg/add-edges g [a b (g/dist a b)]))

@@ -35,7 +35,9 @@
 (defonce defo (debug/state))
 
 (defn path-point [p segments joint]
-  {:p p :segments (set segments) :joint joint})
+  {:isec p
+   :segments (set segments)
+   :joint joint})
 
 (defn path-merge [prior curr]
   (assoc prior
@@ -52,7 +54,7 @@
 (defn collapse
   "Collapse consecutive points on the path, unioning associated segments together."
   [coll]
-  (cs/collapse (fn [{a :p} {b :p}] (identical? a b))
+  (cs/collapse (fn [{a :isec} {b :isec}] (identical? a b))
                path-merge
                coll))
 
@@ -72,29 +74,9 @@
               hits (keep (partial intersect-point current) (rest xs))
               {[a b] :points} current
               ;; order points as distance along path
-              ordered-hits (sort-by (fn [{:keys [p]}] (g/dist p a)) hits)
+              ordered-hits (sort-by (fn [{:keys [isec]}] (g/dist isec a)) hits)
               joint (path-point b [current] true)]
           (recur (into intersections (conj ordered-hits joint)) xs))))))
-
-(defn vertices-per-isec
-  "Calculate the set of vertices for each segment from the intersections."
-  [intersections]
-  (->> (for [{:keys [p segments]} intersections
-             seg segments]
-         {seg #{p}})
-       (apply (partial merge-with set/union))))
-
-;; WIP just trying to get basic output here. I think problems with directed vs undirected graph?
-(defn intersections->edges [isecs]
-  (apply set/union
-         (for [[{[a b] :points} vertices] (vertices-per-isec isecs)]
-           (let [ordered (sort-by (fn [p] (g/dist a p)) (conj vertices a b))]
-             (->> ordered
-                  dedupe ;; sometimes a or b is already in points
-                  (partition 2 1)
-                  ;; ensure edges are always low pt -> high pt
-                  (map (fn [v] (sort v)))
-                  set)))))
 
 ;; FIXME: sometimes leader/trailing node has one connection despite being on an existing line segment?
 ;; This is not strictly necessary for polygon detection
@@ -111,7 +93,7 @@
   (do (def mvp (map gv/vec2 [[20 0] [20 20] [0 10] [0 20] [10 0] [10 10] [20 10] [10 20]]))
       (def medges
         (let [isecs (intersections mvp)]
-          (intersections->edges isecs)))
+          (poly-detect/intersections->edges isecs)))
       (def morig (poly-detect/edges->graph medges))
       (def mg (remove-tails morig)))
   ;; Contains three cycles, 2 triangles and a 5-gon plus removal of first and last point as tails
@@ -131,9 +113,9 @@
 (defn debug-isecs [state path]
   (assoc state
          :path
-         (for [{:keys [p joint segments]} (intersections path)]
-           [(if joint :j :p) p
-            :c (disj (set (apply set/union (map :points segments))) p)])))
+         (for [{:keys [isec joint segments]} (intersections path)]
+           [(if joint :j :p) isec
+            :c (disj (set (apply set/union (map :points segments))) isec)])))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -175,13 +157,13 @@
 
   (let [intersects (intersections path)
         isecs (count intersects)]
-    (doseq [[idx {:keys [p segments joint]}] (map-indexed vector intersects)]
+    (doseq [[idx {:keys [isec segments joint]}] (map-indexed vector intersects)]
       (q/fill (/ idx isecs) 0.75 0.6)
-      (cq/circle p (+ 3 (* 9 (- 1.0 (/ idx isecs)))))
+      (cq/circle isec (+ 3 (* 9 (- 1.0 (/ idx isecs)))))
       (when joint
         (q/fill 0)
-        (cq/circle p 2))
-      (when (near-mouse mouse p)
+        (cq/circle isec 2))
+      (when (near-mouse mouse isec)
         (q/push-style)
         (q/stroke-weight 3.0)
         (doseq [{[a b] :points} segments]
@@ -190,18 +172,18 @@
 
     (swap! defo assoc :intersections
            (->> intersects
-                (filter (fn [isec] (near-mouse mouse (:p isec))))
+                (filter (fn [isec] (near-mouse mouse (:isec isec))))
                 (map (fn [i] (update i :segments (partial mapv :points))))))))
 
 (defn draw-graph [path mouse]
   (q/fill 0)
   (let [intersects (intersections path)
-        edges (intersections->edges intersects)
+        edges (poly-detect/intersections->edges intersects)
         original (poly-detect/edges->graph edges)
         graph (remove-tails original)]
     (q/stroke-weight 0.5)
-    (doseq [{:keys [p]} intersects]
-      (cq/circle p 3.0))
+    (doseq [{:keys [isec]} intersects]
+      (cq/circle isec 3.0))
     (swap! defo assoc :edges (filter (fn [[a b]] (near-mouse mouse a b)) edges))
     (doseq [[p q] edges
             :let [mouse-hit (near-mouse mouse p q)]]
