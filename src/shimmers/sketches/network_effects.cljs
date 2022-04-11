@@ -124,9 +124,10 @@
   (q/no-stroke)
   (q/fill 0 0.01)
   (doseq [shape polygons
-          :let [poly (gp/inset-polygon shape -5.0)]]
-    (when (every? #(g/contains-point? bounds %) poly)
-      (cq/draw-shape poly))))
+          :let [inset (gp/inset-polygon shape -5.0)]]
+    (when (and (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
+               (every? #(g/contains-point? bounds %) inset))
+      (cq/draw-shape inset))))
 
 (sketch/defquil network-effects
   :created-at "2021-12-05"
