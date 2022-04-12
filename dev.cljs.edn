@@ -30,7 +30,7 @@
  :pretty-print true
 
  :compiler-stats true
- :verbose true
+ ;; :verbose true
 
  ;; never got bundle to work but just overriding the extern above seemed sufficient
  ;; :clean-outputs true
