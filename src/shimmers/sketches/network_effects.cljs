@@ -12,6 +12,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.spatialtree :as spatialtree]
    [thi.ng.math.core :as tm]))
 
 (defn neighbors [from nodes]
@@ -74,6 +75,10 @@
       [a b (dr/random-double)]
       (gen-pair n))))
 
+(defn build-tree [bounds nodes]
+  (reduce (fn [tree node] (g/add-point tree node node))
+          (spatialtree/quadtree bounds) nodes))
+
 ;; TODO: draw ping points along edges
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -81,6 +86,7 @@
         nodes (repeatedly 16 #(g/random-point-inside (g/scale-size screen 0.8)))
         affinities (repeatedly 32 #(gen-pair (count nodes)))]
     {:bounds screen
+     :quadtree (build-tree screen nodes)
      :affinities affinities
      :nodes nodes
      :connections (neighborhood 3 nodes)
@@ -95,16 +101,20 @@
                       poly-detect/simple-polygons)]
     (assoc state
            :nodes nodes'
+           :quadtree (build-tree bounds nodes')
            :connections conns
            :polygons polygons)))
 
-(defn draw [{:keys [bounds nodes affinities connections polygons]}]
+(defn draw [{:keys [bounds quadtree nodes affinities connections polygons]}]
   (q/background 1.0 0.2)
   (q/stroke-weight 0.5)
   (q/stroke 0 0.5)
   (q/no-fill)
   (doseq [n nodes]
-    (cq/circle n 3.0))
+    (cq/circle n 3.0)
+    (let [path-bounds (map g/bounds (spatialtree/path-for-point quadtree n))]
+      (doseq [r path-bounds]
+        (cq/rectangle r))))
 
   (let [[node->id _] (index-nodes nodes)]
     (doseq [{[p q] :points} connections
