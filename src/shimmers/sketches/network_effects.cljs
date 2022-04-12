@@ -77,8 +77,8 @@
 ;; TODO: draw ping points along edges
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [screen (cq/screen-rect 0.8)
-        nodes (repeatedly 16 #(g/random-point-inside screen))
+  (let [screen (cq/screen-rect)
+        nodes (repeatedly 16 #(g/random-point-inside (g/scale-size screen 0.8)))
         affinities (repeatedly 32 #(gen-pair (count nodes)))]
     {:bounds screen
      :affinities affinities
