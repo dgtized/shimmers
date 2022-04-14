@@ -4,12 +4,14 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn noise-at-p [bounds p t]
@@ -59,13 +61,15 @@
       (g/scale-size scale)
       (g/translate p)))
 
-(defn draw [{:keys [bounds t particles]}]
-  #_(q/background 1.0 0.05)
-  #_(doseq [i (tm/norm-range 45)
-            j (tm/norm-range 45)
-            :let [p (g/unmap-point bounds (gv/vec2 i j))]]
-      (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t))))))
+(defn draw-field [{:keys [bounds t]}]
+  (q/background 1.0 0.05)
+  (q/stroke 0.0 0.1)
+  (doseq [i (tm/norm-range 45)
+          j (tm/norm-range 45)
+          :let [p (g/unmap-point bounds (gv/vec2 i j))]]
+    (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t)))))))
 
+(defn draw-flow [{:keys [t particles]}]
   (doseq [{:keys [pos last-pos dt color]} particles
           :let [t (+ t dt)
                 [x y] pos
@@ -85,8 +89,20 @@
       (+ 2 (* 38 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
+(def modes {:flow draw-flow
+            :field draw-field})
+
+(defonce ui-state (ctrl/state {:mode :flow}))
+
+(defn draw [state]
+  ((get modes (:mode @ui-state)) state))
+
+(defn ui-controls []
+  (ctrl/change-mode ui-state (keys modes)))
+
 (sketch/defquil triangle-flow
   :created-at "2022-04-13"
+  :on-mount #(ctrl/mount ui-controls)
   :size [900 600]
   :setup setup
   :update update-state
