@@ -48,14 +48,14 @@
       (update :t + 0.005)
       (update :particles (partial map (partial update-particle bounds t)))))
 
-(defn brush-at [p t]
+(defn brush-at [rotate scale p]
   (-> (gt/triangle2 [-1 -1] [1 -1] [0 1])
-      (g/rotate t)
-      (g/scale-size 8)
+      (g/rotate rotate)
+      (g/scale-size scale)
       (g/translate p)))
 
 (defn draw [{:keys [bounds t particles]}]
-  (q/background 1.0 0.2)
+  ;; (q/background 1.0 0.0)
   #_(doseq [i (tm/norm-range 45)
             j (tm/norm-range 45)
             :let [p (g/unmap-point bounds (gv/vec2 i j))]]
@@ -63,8 +63,13 @@
 
   (doseq [{:keys [pos last-pos]} particles]
     #_(q/line last-pos pos)
-    (q/fill 0 0.5)
-    (cq/draw-polygon (brush-at (tm/mix pos last-pos 0.5) t))))
+    (q/stroke 0 0.03)
+    (q/fill 0 0.01)
+    (cq/draw-polygon
+     (brush-at
+      (* 4 t)
+      10
+      (tm/mix pos last-pos 0.5)))))
 
 (sketch/defquil triangle-flow
   :created-at "2022-04-13"
