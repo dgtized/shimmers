@@ -21,7 +21,7 @@
 (defn make-particle [pos velocity]
   {:pos pos
    :last-pos (tm/- pos velocity)
-   :dt (tm/random 0 2)})
+   :dt (tm/random eq/TAU)})
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [velocity (tm/- pos last-pos)
@@ -65,10 +65,11 @@
       (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t))))))
 
   (doseq [{:keys [pos last-pos dt]} particles
-          :let [t (+ t dt)]]
+          :let [t (+ t dt)
+                vis (tm/smoothstep* 0.3 0.75 (q/noise 0.1 t))]]
     #_(q/line last-pos pos)
-    (q/stroke 0 0.03)
-    (q/fill 0 0.01)
+    (q/stroke 0 (* vis 0.06))
+    (q/fill 0 (* vis 0.03))
     (cq/draw-polygon
      (brush-at
       (* 4 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
