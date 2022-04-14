@@ -22,6 +22,7 @@
 (defn make-particle [pos velocity]
   {:pos pos
    :last-pos (tm/- pos velocity)
+   :color (tm/random)
    :dt (tm/random eq/TAU)})
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
@@ -65,24 +66,23 @@
             :let [p (g/unmap-point bounds (gv/vec2 i j))]]
       (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t))))))
 
-  (doseq [{:keys [pos last-pos dt]} particles
+  (doseq [{:keys [pos last-pos dt color]} particles
           :let [t (+ t dt)
+                [x y] pos
                 vis (tm/smoothstep* 0.3 0.75 (q/noise dt (* t 0.25)))
-                color (Math/abs (Math/sin t))
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
     (if (> color 0.75)
-      (do
+      (let [hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.01))) 1)]
         (q/stroke grey (* vis 0.2))
-        (q/fill (q/noise (* t 0.05) dt)
-                0.5 0.5 (* 0.1 vis)))
+        (q/fill hue 0.5 0.5 (* 0.1 vis)))
       (do
         (q/stroke grey (* vis 0.1))
         (q/fill grey (* vis 0.04))))
     (cq/draw-polygon
      (brush-at
       (* 3 (tm/smoothstep* 0.2 0.8 (eq/unit-cos t)) t)
-      (+ 2 (* 30 (q/noise dt (* t 0.1))))
+      (+ 2 (* 38 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
 (sketch/defquil triangle-flow
