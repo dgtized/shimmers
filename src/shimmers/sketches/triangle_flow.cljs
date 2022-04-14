@@ -30,7 +30,8 @@
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [n (noise-at-p bounds pos t)
         rf (+ (* (tm/smoothstep* 0.2 0.8 (eq/unit-sin (* 0.5 (+ t dt)))) 0.15) 0.10)
-        accel (v/polar rf (* 2 eq/TAU n))
+        accel (tm/+ (v/polar rf (* 2 eq/TAU n))
+                    (v/polar 0.05 (tm/random (* 2 eq/TAU))))
         velocity (tm/- pos last-pos)
         velocity' (tm/* (tm/+ velocity accel) 0.9)
         pos' (tm/+ pos velocity')]
