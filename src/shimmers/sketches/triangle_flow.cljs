@@ -18,7 +18,7 @@
   (let [[rx ry] (tm/* (g/map-point bounds p) 2)
         x (sm/reflect-into rx 2)
         y (sm/reflect-into ry 2)
-        s 0.1]
+        s 0.5]
     (q/noise (* s x) (* s y) (* s t))))
 
 (defn make-particle [pos velocity]
@@ -29,7 +29,8 @@
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [n (noise-at-p bounds pos t)
-        accel (v/polar 0.1 (* 3 eq/TAU n))
+        rf (+ (* (tm/smoothstep* 0.2 0.8 (eq/unit-sin (* 0.5 (+ t dt)))) 0.15) 0.10)
+        accel (v/polar rf (* 2 eq/TAU n))
         velocity (tm/- pos last-pos)
         velocity' (tm/* (tm/+ velocity accel) 0.9)
         pos' (tm/+ pos velocity')]
@@ -76,7 +77,7 @@
                 vis (tm/smoothstep* 0.3 0.75 (q/noise dt (* t 0.25)))
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
-    (if (> color 0.75)
+    (if (> color 0.66)
       (let [hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.01))) 1)]
         (q/stroke grey (* vis 0.2))
         (q/fill hue 0.5 0.5 (* 0.1 vis)))
