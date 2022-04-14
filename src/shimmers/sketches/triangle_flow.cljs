@@ -78,7 +78,7 @@
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
     (if (> color 0.66)
-      (let [hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.01))) 1)]
+      (let [hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.05))) 1)]
         (q/stroke grey (* vis 0.2))
         (q/fill hue 0.5 0.5 (* 0.1 vis)))
       (do
