@@ -68,14 +68,21 @@
   (doseq [{:keys [pos last-pos dt]} particles
           :let [t (+ t dt)
                 vis (tm/smoothstep* 0.3 0.75 (q/noise dt (* t 0.25)))
-                hue (tm/smoothstep* 0.4 0.6 vis)]]
+                color (Math/abs (Math/sin t))
+                grey (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
-    (q/stroke hue (* vis 0.1))
-    (q/fill hue (* vis 0.04))
+    (if (> color 0.5)
+      (do
+        (q/stroke grey (* vis 0.2))
+        (q/fill (q/noise (* t 0.1) dt)
+                0.5 0.5 (* 0.1 vis)))
+      (do
+        (q/stroke grey (* vis 0.1))
+        (q/fill grey (* vis 0.04))))
     (cq/draw-polygon
      (brush-at
       (* 4 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
-      (+ 5 (* 15 (q/noise dt (* t 0.1))))
+      (+ 6 (* 26 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
 (sketch/defquil triangle-flow
