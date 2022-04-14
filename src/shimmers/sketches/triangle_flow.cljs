@@ -12,6 +12,12 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn noise-at-p [bounds p t]
+  (let [[rx ry] (tm/* (g/map-point bounds p) 2)
+        x (sm/reflect-into rx 2)
+        y (sm/reflect-into ry 2)]
+    (q/noise x y t)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:bounds (cq/screen-rect)
@@ -24,12 +30,8 @@
   (q/background 1.0 0.2)
   (doseq [i (tm/norm-range 45)
           j (tm/norm-range 45)
-          :let [rp (gv/vec2 i j)
-                p (g/unmap-point bounds rp)
-                [rx ry] (tm/* rp 2)
-                x (sm/reflect-into rx 2)
-                y (sm/reflect-into ry 2)]]
-    (q/line p (tm/+ p (v/polar 10 (* eq/TAU (q/noise x y t)))))))
+          :let [p (g/unmap-point bounds (gv/vec2 i j))]]
+    (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t)))))))
 
 (sketch/defquil triangle-flow
   :created-at "2022-04-13"
