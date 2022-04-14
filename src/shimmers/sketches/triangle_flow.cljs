@@ -16,7 +16,7 @@
   (let [[rx ry] (tm/* (g/map-point bounds p) 2)
         x (sm/reflect-into rx 2)
         y (sm/reflect-into ry 2)]
-    (q/noise x y t)))
+    (mod (* 2 (q/noise (* 0.5 x) (* 0.5 y) t)) 1)))
 
 (defn make-particle [pos velocity]
   {:pos pos
@@ -26,7 +26,8 @@
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [velocity (tm/- pos last-pos)
         n (noise-at-p bounds pos (+ t dt))
-        velocity' (tm/normalize (tm/+ velocity (v/polar 0.05 (* eq/TAU n))) 0.75)
+        accel (v/polar 0.2 (* eq/TAU n))
+        velocity' (tm/normalize (tm/+ velocity accel) 0.8)
         pos' (tm/+ pos velocity')]
     (if (g/contains-point? bounds pos')
       (assoc particle
@@ -42,7 +43,7 @@
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :t 0
-     :particles (repeatedly 24 #(make-particle (g/random-point-inside (g/scale-size bounds 0.8))
+     :particles (repeatedly 12 #(make-particle (g/random-point-inside (g/scale-size bounds 0.8))
                                                (v/polar 3 (* eq/TAU (tm/random)))))}))
 
 (defn update-state [{:keys [bounds t] :as state}]
