@@ -55,7 +55,7 @@
       (g/translate p)))
 
 (defn draw [{:keys [bounds t particles]}]
-  ;; (q/background 1.0 0.0)
+  #_(q/background 1.0 0.05)
   #_(doseq [i (tm/norm-range 45)
             j (tm/norm-range 45)
             :let [p (g/unmap-point bounds (gv/vec2 i j))]]
@@ -67,7 +67,7 @@
     (q/fill 0 0.01)
     (cq/draw-polygon
      (brush-at
-      (* 4 t)
+      (* 4 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
       10
       (tm/mix pos last-pos 0.5)))))
 
