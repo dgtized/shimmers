@@ -152,6 +152,7 @@
    shimmers.sketches.terrain-grid
    shimmers.sketches.tilt
    shimmers.sketches.traffic-intersection
+   shimmers.sketches.triangle-flow
    shimmers.sketches.triangle-gradient
    shimmers.sketches.triangulating-subdivisions
    shimmers.sketches.tunnel-flight
