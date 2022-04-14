@@ -74,15 +74,15 @@
     (if (> color 0.5)
       (do
         (q/stroke grey (* vis 0.2))
-        (q/fill (q/noise (* t 0.1) dt)
+        (q/fill (q/noise (* t 0.05) dt)
                 0.5 0.5 (* 0.1 vis)))
       (do
         (q/stroke grey (* vis 0.1))
         (q/fill grey (* vis 0.04))))
     (cq/draw-polygon
      (brush-at
-      (* 4 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
-      (+ 6 (* 26 (q/noise dt (* t 0.1))))
+      (* 3 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
+      (+ 2 (* 30 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
 (sketch/defquil triangle-flow
