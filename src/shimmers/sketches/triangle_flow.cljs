@@ -73,17 +73,16 @@
 (defn draw-flow [{:keys [t particles]}]
   (doseq [{:keys [pos last-pos dt color]} particles
           :let [t (+ t dt)
-                [x y] pos
                 vis (tm/smoothstep* 0.3 0.75 (q/noise dt (* t 0.25)))
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
-    #_(q/line last-pos pos)
-    (if (> color (eq/unit-sin (* 0.1 t)))
-      (let [hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.05))) 1)]
+    (if (> color (eq/unit-sin (* 0.2 t)))
+      (let [[x y] pos
+            hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.05))) 1)]
         (q/stroke grey (* vis 0.2))
         (q/fill hue 0.5 0.5 (* 0.1 vis)))
       (do
-        (q/stroke grey (* vis 0.1))
-        (q/fill grey (* vis 0.04))))
+        (q/stroke grey (* vis 0.2))
+        (q/fill grey (* vis 0.08))))
     (cq/draw-polygon
      (brush-at
       (* 3 (tm/smoothstep* 0.2 0.8 (eq/unit-cos t)) t)
