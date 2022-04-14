@@ -15,8 +15,9 @@
 (defn noise-at-p [bounds p t]
   (let [[rx ry] (tm/* (g/map-point bounds p) 2)
         x (sm/reflect-into rx 2)
-        y (sm/reflect-into ry 2)]
-    (mod (* 2 (q/noise (* 0.5 x) (* 0.5 y) t)) 1)))
+        y (sm/reflect-into ry 2)
+        s 0.1]
+    (q/noise (* s x) (* s y) (* s t))))
 
 (defn make-particle [pos velocity]
   {:pos pos
@@ -25,8 +26,8 @@
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [velocity (tm/- pos last-pos)
-        n (noise-at-p bounds pos (+ t dt))
-        accel (v/polar 0.2 (* eq/TAU n))
+        n (noise-at-p bounds pos t)
+        accel (v/polar 0.01 (* 3 eq/TAU n))
         velocity' (tm/normalize (tm/+ velocity accel) 0.8)
         pos' (tm/+ pos velocity')]
     (if (g/contains-point? bounds pos')
@@ -66,14 +67,15 @@
 
   (doseq [{:keys [pos last-pos dt]} particles
           :let [t (+ t dt)
-                vis (tm/smoothstep* 0.3 0.75 (q/noise 0.1 t))]]
+                vis (tm/smoothstep* 0.3 0.75 (q/noise dt (* t 0.25)))
+                hue (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
-    (q/stroke 0 (* vis 0.06))
-    (q/fill 0 (* vis 0.03))
+    (q/stroke hue (* vis 0.1))
+    (q/fill hue (* vis 0.04))
     (cq/draw-polygon
      (brush-at
       (* 4 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
-      10
+      (+ 5 (* 15 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
 (sketch/defquil triangle-flow
