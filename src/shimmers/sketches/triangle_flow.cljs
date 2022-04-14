@@ -71,7 +71,7 @@
                 color (Math/abs (Math/sin t))
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
     #_(q/line last-pos pos)
-    (if (> color 0.5)
+    (if (> color 0.75)
       (do
         (q/stroke grey (* vis 0.2))
         (q/fill (q/noise (* t 0.05) dt)
@@ -81,7 +81,7 @@
         (q/fill grey (* vis 0.04))))
     (cq/draw-polygon
      (brush-at
-      (* 3 (tm/smoothstep* 0.2 0.8 (mod t 1)) t)
+      (* 3 (tm/smoothstep* 0.2 0.8 (eq/unit-cos t)) t)
       (+ 2 (* 30 (q/noise dt (* t 0.1))))
       (tm/mix pos last-pos 0.5)))))
 
