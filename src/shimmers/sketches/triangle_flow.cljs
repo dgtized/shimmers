@@ -20,11 +20,13 @@
 
 (defn make-particle [pos velocity]
   {:pos pos
-   :last-pos (tm/- pos velocity)})
+   :last-pos (tm/- pos velocity)
+   :dt (tm/random 0 2)})
 
-(defn update-particle [bounds t {:keys [pos last-pos] :as particle}]
+(defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [velocity (tm/- pos last-pos)
-        velocity' (tm/normalize (tm/+ velocity (v/polar 0.05 (* eq/TAU (noise-at-p bounds pos t)))) 0.75)
+        n (noise-at-p bounds pos (+ t dt))
+        velocity' (tm/normalize (tm/+ velocity (v/polar 0.05 (* eq/TAU n))) 0.75)
         pos' (tm/+ pos velocity')]
     (if (g/contains-point? bounds pos')
       (assoc particle
@@ -61,7 +63,8 @@
             :let [p (g/unmap-point bounds (gv/vec2 i j))]]
       (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t))))))
 
-  (doseq [{:keys [pos last-pos]} particles]
+  (doseq [{:keys [pos last-pos dt]} particles
+          :let [t (+ t dt)]]
     #_(q/line last-pos pos)
     (q/stroke 0 0.03)
     (q/fill 0 0.01)
