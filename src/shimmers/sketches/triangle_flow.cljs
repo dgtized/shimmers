@@ -25,10 +25,10 @@
    :dt (tm/random eq/TAU)})
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
-  (let [velocity (tm/- pos last-pos)
-        n (noise-at-p bounds pos t)
-        accel (v/polar 0.01 (* 3 eq/TAU n))
-        velocity' (tm/normalize (tm/+ velocity accel) 0.8)
+  (let [n (noise-at-p bounds pos t)
+        accel (v/polar 0.1 (* 3 eq/TAU n))
+        velocity (tm/- pos last-pos)
+        velocity' (tm/* (tm/+ velocity accel) 0.9)
         pos' (tm/+ pos velocity')]
     (if (g/contains-point? bounds pos')
       (assoc particle
