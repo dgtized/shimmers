@@ -37,6 +37,7 @@
     (chain/->KinematicSegment base direction size)))
 
 (defn setup []
+  (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
   (let [start (gv/vec2 (g/point-at (cq/screen-rect 0.85) (dr/random)))]
     {:t 0.0
