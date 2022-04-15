@@ -16,15 +16,15 @@
    [thi.ng.math.core :as tm]))
 
 (defn gen-target []
-  (let [r (dr/random 0.05 0.1)
+  (let [r (dr/random 0.05 0.15)
         e (* 1 r)]
     (gc/circle (cq/rel-vec (dr/random e (- 1 e)) (dr/random e (- 1 e)))
                (cq/rel-h r))))
 
-(defn gen-segment [{:keys [angle] :as segment}]
+(defn gen-segment [segment]
   (let [base (chain/segment-endpoint segment)]
-    (chain/->KinematicSegment base (dr/gaussian angle 0.5)
-                              (Math/abs (dr/gaussian 18 5)))))
+    (chain/->KinematicSegment base (dr/random eq/TAU)
+                              (Math/abs (dr/gaussian 20 6)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
