@@ -18,7 +18,8 @@
 
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
-               :follow-mode :sinusoidal}))
+               :follow-mode :sinusoidal
+               :color false}))
 
 (defn gen-target []
   (let [r (dr/random 0.05 0.15)
@@ -92,13 +93,16 @@
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
-  (let [edges (g/edges chain)]
+  (let [edges (g/edges chain)
+        color (:color @ui-state)]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
             :let [[x y] (tm/* a 0.001)
                   grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
                   opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]]
-      (q/fill grey opacity)
+      (if (and color (< 0.4 grey 0.6))
+        (q/fill (mod (* tm/PHI (q/noise x y (+ 80 (* 0.02 t)))) 1) 0.5 0.5 opacity)
+        (q/fill grey opacity))
       (apply q/vertex a)
       (apply q/vertex b)
       (apply q/vertex (tm/+ b (g/rotate (tm/- a b) (* (if (even? i) 1 -1) (/ eq/TAU 6))))))
@@ -119,7 +123,10 @@
    [:p "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
                   "kinematic chain"]
     " across a canvas, drawing triangles or lines along it's path."]
-   (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
+   [:div.flexcols
+    (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
+    (when (= (:draw-mode @ui-state) :equilateral-links)
+      (ctrl/checkbox ui-state "Add Color Patches" [:color]))]
    [:ul
     [:li "Equilateral links draws triangles from each link in the chain."]
     [:li "Chain draws the lines between each link of the chain."]
