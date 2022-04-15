@@ -19,7 +19,7 @@
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
-               :color false}))
+               :color true}))
 
 (defn gen-target []
   (let [r (dr/random 0.05 0.15)
