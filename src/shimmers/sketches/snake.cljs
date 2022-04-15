@@ -39,8 +39,8 @@
 (defn follow [pos {:keys [p r]} t]
   (let [[x y] (tm/* pos 0.01)
         n (q/noise x y (* 0.01 t))]
-    (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) t))
-            (* 0.03 n))))
+    (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) (* 0.5 t)))
+            (* 0.04 n))))
 
 (defn update-state [{:keys [chain target t] :as state}]
   (let [tip (chain/segment-endpoint (last (:segments chain)))]
@@ -76,7 +76,7 @@
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
             :let [[x y] (tm/* a 0.001)]]
-      (q/fill (tm/smoothstep* 0.3 0.7 (q/noise x y (* t 0.001)))
+      (q/fill (tm/smoothstep* 0.35 0.65 (q/noise x y (* t 0.001)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t))))))
       (apply q/vertex a)
       (apply q/vertex b)
