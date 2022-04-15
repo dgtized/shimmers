@@ -16,8 +16,10 @@
    [thi.ng.math.core :as tm]))
 
 (defn gen-target []
-  (gc/circle (cq/rel-vec (dr/random) (dr/random))
-             (dr/random (cq/rel-h 0.05) (cq/rel-h 0.2))))
+  (let [r (dr/random 0.05 0.1)
+        e (* 1 r)]
+    (gc/circle (cq/rel-vec (dr/random e (- 1 e)) (dr/random e (- 1 e)))
+               (cq/rel-h r))))
 
 (defn gen-segment [{:keys [angle] :as segment}]
   (let [base (chain/segment-endpoint segment)]
@@ -28,7 +30,7 @@
   (q/color-mode :hsl 1.0)
   {:t 0.0
    :target (gen-target)
-   :chain (->> (chain/->KinematicSegment (cq/rel-vec (dr/random) (dr/random))
+   :chain (->> (chain/->KinematicSegment (:p (gen-target))
                                          (dr/random eq/TAU) 8)
                (iterate gen-segment)
                (take 32)
