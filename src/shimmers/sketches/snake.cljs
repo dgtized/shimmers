@@ -59,6 +59,7 @@
            speed (* 2 (+ 0.9 (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t)))))]
        (tm/+ pos (tm/normalize (g/rotate dirv (Math/sin (* 2 t))) speed))))})
 
+;; TODO: fix how harsh the transition is between old target and new target somehow?
 (defn update-state [{:keys [chain target t] :as state}]
   (let [tip (chain/segment-endpoint (last (:segments chain)))
         follow (get follow-modes (:follow-mode @ui-state))]
@@ -88,13 +89,13 @@
 
 (defn draw-equilateral-links [{:keys [target chain t]}]
   (let [[x y] (tm/* (:p target) 0.1)]
-    (q/stroke (tm/smoothstep* 0.3 0.7 (q/noise x y (* 0.01 t)))
+    (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
   (let [edges (g/edges chain)]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
             :let [[x y] (tm/* a 0.001)]]
-      (q/fill (tm/smoothstep* 0.35 0.65 (q/noise x y (* t 0.001)))
+      (q/fill (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t))))))
       (apply q/vertex a)
       (apply q/vertex b)
