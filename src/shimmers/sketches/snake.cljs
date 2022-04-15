@@ -15,6 +15,10 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state
+  (ctrl/state {:draw-mode :equilateral-links
+               :follow-mode :sinusoidal}))
+
 (defn gen-target []
   (let [r (dr/random 0.05 0.15)
         e (* 1 r)]
@@ -36,14 +40,22 @@
                (take 32)
                chain/->KinematicChain)})
 
-(defn follow [pos {:keys [p r]} t]
-  (let [[x y] (tm/* pos 0.01)
-        n (q/noise x y (* 0.01 t))]
-    (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) (* 0.5 t)))
-            (* 0.04 n))))
+(def follow-modes
+  {:proportional
+   (fn follow-proportional [pos {:keys [p r]} t]
+     (let [[x y] (tm/* pos 0.01)
+           n (q/noise x y (* 0.01 t))]
+       (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) (* 0.5 t)))
+               (* 0.04 n))))
+   :sinusoidal
+   (fn follow-sinusoidal [pos {:keys [p]} t]
+     (let [dirv (tm/- p pos)
+           speed (* 2 (+ 0.9 (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t)))))]
+       (tm/+ pos (tm/normalize (g/rotate dirv (Math/sin (* 2 t))) speed))))})
 
 (defn update-state [{:keys [chain target t] :as state}]
-  (let [tip (chain/segment-endpoint (last (:segments chain)))]
+  (let [tip (chain/segment-endpoint (last (:segments chain)))
+        follow (get follow-modes (:follow-mode @ui-state))]
     (-> (if (g/contains-point? target tip)
           (assoc state :target (gen-target))
           state)
@@ -88,23 +100,24 @@
   (q/no-fill)
   (cq/draw-path (g/vertices chain)))
 
-(defonce ui-state (ctrl/state {:mode :equilateral-links}))
-
-(def modes {:chain draw-chain
-            :brushes draw-triangle-brushes
-            :equilateral-links draw-equilateral-links})
+(def draw-modes
+  {:chain draw-chain
+   :brushes draw-triangle-brushes
+   :equilateral-links draw-equilateral-links})
 
 (defn ui-controls []
-  (ctrl/change-mode ui-state (keys modes)))
+  [:div
+   (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
+   (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})])
 
 (defn draw [state]
-  ((get modes (:mode @ui-state)) state))
+  ((get draw-modes (:draw-mode @ui-state)) state))
 
 (sketch/defquil snake
   :created-at "2022-04-02"
-  :size [900 600]
+  :size [1024 768]
   :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
   :draw draw
-  :middleware [m/fun-mode framerate/mode])
+  :middleware [m/fun-mode framerate/mode])1
