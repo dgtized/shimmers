@@ -35,6 +35,7 @@
                :point-source "random"
                :grid-divisor 8
                :snap-resolution "0"
+               :region-specific-snap false
                :palette-mode "monochrome"
                :palette-color "#000000"
                :iterations 90
@@ -59,10 +60,16 @@
   [[x y] noise-div]
   (* tm/TWO_PI (q/noise (/ x noise-div) (/ y noise-div))))
 
-(defn snap-to [theta resolution]
-  (if (> resolution 0)
-    (* (Math/round (/ theta resolution)) resolution)
-    theta))
+(defn snap-to [{:keys [snap-resolution region-specific-snap]} point theta]
+  (let [resolution (if region-specific-snap
+                     (let [[x y] point
+                           f 0.0005
+                           n (q/noise (* f x) (* f y))]
+                       (int (Math/floor (* 12 (eq/sqr (- (* 2 n) 1))))))
+                     snap-resolution)]
+    (if (> resolution 0)
+      (* (Math/round (/ theta resolution)) resolution)
+      theta)))
 
 (defn avoid-obstacles [p {:keys [points radius voronoi]}]
   (if-let [closest (apply min-key #(g/dist-squared p %) points)]
@@ -72,15 +79,15 @@
 
 (defn noise-point
   [{:keys [step-size step-size-variance
-           noise-div snap-resolution jitter obstacles]}
+           noise-div jitter obstacles] :as state}
    point]
-  (let [dir (snap-to (dir-at point noise-div) snap-resolution)
+  (let [dir (snap-to state point (dir-at point noise-div))
         next-point (tm/+ point (v/polar (variance step-size step-size-variance) dir))]
     (tm/+ next-point
           (avoid-obstacles next-point obstacles)
           (v/jitter (tm/random jitter)))))
 
-(defn draw-grid [{:keys [length step-size noise-div snap-resolution jitter]}]
+(defn draw-grid [{:keys [length step-size noise-div jitter] :as state}]
   (let [w (/ (q/width) length)
         h (/ (q/height) length)]
     (doseq [[p dir]
@@ -89,7 +96,7 @@
               [(gv/vec2 x y) (dir-at [x y] noise-div)])]
       (q/line p
               (-> p
-                  (v/add (v/polar step-size (snap-to dir snap-resolution)))
+                  (v/add (v/polar step-size (snap-to state p dir)))
                   (v/add (v/jitter (tm/random jitter))))))))
 
 (defn pointy-hexagon [r [x y]]
@@ -187,7 +194,7 @@
   (let [{:keys [iterations draw align-triangles
                 calc-points point-source grid-divisor
                 palette-mode palette-color
-                snap-resolution
+                snap-resolution region-specific-snap
                 stroke-weight stroke-weight-variance
                 length length-variance
                 step-size step-size-variance
@@ -201,6 +208,7 @@
      :point-source (point-generator point-source grid-divisor)
      :grid-divisor grid-divisor
      :snap-resolution (edn/read-string snap-resolution)
+     :region-specific-snap region-specific-snap
      :palette-mode palette-mode
      :palette-color palette-color
      :step-size step-size
@@ -275,6 +283,7 @@
     "Center" "center"
     "Grid" "grid"}
    :grid-divisor [4 32]
+   :region-specific-snap #{true false}
    :snap-resolution
    {"Disabled" 0
     "90 degrees" (/ Math/PI 2)
@@ -306,6 +315,7 @@
   (-> (into {}
             (for [[k v] ui-mappings]
               (cond (map? v) [k (dr/rand-nth (vals v))]
+                    (set? v) [k (dr/rand-nth (vec v))]
                     (vector? v) [k (dr/rand-nth (apply range v))])))
       (update-in [:snap-resolution] str)))
 
@@ -319,8 +329,11 @@
     (ctrl/dropdown settings "Point Source" [:point-source] (:point-source ui-mappings))
     (when (= (:point-source @settings) "grid")
       (ctrl/slider settings (partial str "Grid Divisor ") [:grid-divisor] (:grid-divisor ui-mappings)))
-    (ctrl/dropdown settings "Snap Angles To "
-                   [:snap-resolution] (:snap-resolution ui-mappings))
+    (when-not (= (:calc-points @settings) "downhill-points")
+      (ctrl/checkbox settings "Region Specific Snap" [:region-specific-snap]))
+    (when-not (:region-specific-snap @settings)
+      (ctrl/dropdown settings "Snap Angles To "
+                     [:snap-resolution] (:snap-resolution ui-mappings)))
     #_(ctrl/dropdown settings "Palette Mode" [:palette-mode] (:palette-mode ui-mappings))
     (ctrl/palette-colors settings "Palette Color(s)" [:palette-color])
     (ctrl/slider settings (fn [v] (str "Iterations " (* flows-per-iter v)))
