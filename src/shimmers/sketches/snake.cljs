@@ -95,9 +95,10 @@
   (let [edges (g/edges chain)]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
-            :let [[x y] (tm/* a 0.001)]]
-      (q/fill (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
-              (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t))))))
+            :let [[x y] (tm/* a 0.001)
+                  grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
+                  opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]]
+      (q/fill grey opacity)
       (apply q/vertex a)
       (apply q/vertex b)
       (apply q/vertex (tm/+ b (g/rotate (tm/- a b) (* (if (even? i) 1 -1) (/ eq/TAU 6))))))
