@@ -113,9 +113,19 @@
    :equilateral-links draw-equilateral-links})
 
 (defn ui-controls []
-  [:div
+  [:div.readable-width
+   [:p "Drag a kinematic chain across a canvas, drawing triangles or lines along it's path."]
    (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
-   (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})])
+   [:ul
+    [:li "Equilateral links draws triangles from each link in the chain."]
+    [:li "Chain draws the lines between each link of the chain."]
+    [:li "Brushes draws triangles at each vertex of the chain, spinning them
+     proportional to distance from the head of the chain."]]
+   (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})
+   [:ul
+    [:li "Sinusoidal chooses a winding path towards each target locations."]
+    [:li "Proportional follows the path mixing from the current location to a
+     circle around the target."]]])
 
 (defn draw [state]
   ((get draw-modes (:draw-mode @ui-state)) state))
