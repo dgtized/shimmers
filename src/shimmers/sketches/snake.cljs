@@ -13,6 +13,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
@@ -26,19 +27,24 @@
                (cq/rel-h r))))
 
 (defn gen-segment [segment]
-  (let [base (chain/segment-endpoint segment)]
-    (chain/->KinematicSegment base (dr/random eq/TAU)
-                              (Math/abs (dr/gaussian 20 6)))))
+  (let [base (chain/segment-endpoint segment)
+        dir-center (tm/- (cq/rel-vec 0.5 0.5) base)
+        direction (if (dr/chance 0.66)
+                    (+ (g/heading dir-center)
+                       (dr/gaussian 0 0.8))
+                    (dr/random eq/TAU))
+        size (Math/abs (dr/gaussian 20 6))]
+    (chain/->KinematicSegment base direction size)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0.0
-   :target (gen-target)
-   :chain (->> (chain/->KinematicSegment (:p (gen-target))
-                                         (dr/random eq/TAU) 8)
-               (iterate gen-segment)
-               (take 32)
-               chain/->KinematicChain)})
+  (let [start (gv/vec2 (g/point-at (cq/screen-rect 0.85) (dr/random)))]
+    {:t 0.0
+     :target (gen-target)
+     :chain (->> (chain/->KinematicSegment start (dr/random eq/TAU) 8)
+                 (iterate gen-segment)
+                 (take 32)
+                 chain/->KinematicChain)}))
 
 (def follow-modes
   {:proportional
