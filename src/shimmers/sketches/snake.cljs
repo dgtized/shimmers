@@ -114,7 +114,9 @@
 
 (defn ui-controls []
   [:div.readable-width
-   [:p "Drag a kinematic chain across a canvas, drawing triangles or lines along it's path."]
+   [:p "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
+                  "kinematic chain"]
+    " across a canvas, drawing triangles or lines along it's path."]
    (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
    [:ul
     [:li "Equilateral links draws triangles from each link in the chain."]
