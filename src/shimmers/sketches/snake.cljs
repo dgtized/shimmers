@@ -143,8 +143,9 @@
 
 (sketch/defquil snake
   :created-at "2022-04-02"
-  :size [1024 768]
   :on-mount #(ctrl/mount ui-controls)
+  :tags #{:deterministic}
+  :size [1024 768]
   :setup setup
   :update update-state
   :draw draw
