@@ -25,8 +25,8 @@
 (defn make-particle [pos velocity]
   {:pos pos
    :last-pos (tm/- pos velocity)
-   :color (tm/random)
-   :dt (tm/random eq/TAU)})
+   :color (dr/random 0.66)
+   :dt (dr/random eq/TAU)})
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [n (noise-at-p bounds pos t)
