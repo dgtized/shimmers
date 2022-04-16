@@ -78,7 +78,7 @@
                 grey (tm/smoothstep* 0.4 0.6 vis)]]
     (if (> color (eq/unit-sin (* 0.2 t)))
       (let [[x y] pos
-            hue (mod (* 1.75 (q/noise (* x 0.001) (* y 0.001) (* t 0.05))) 1)]
+            hue (mod (* tm/PHI (q/noise (* x 0.001) (* y 0.001) (* t 0.05))) 1)]
         (q/stroke grey (* vis 0.2))
         (q/fill hue 0.5 0.5 (* 0.1 vis)))
       (do
