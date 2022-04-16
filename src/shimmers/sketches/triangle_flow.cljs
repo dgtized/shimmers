@@ -12,7 +12,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.math.deterministic-random :as dr]))
 
 (defn noise-at-p [bounds p t]
   (let [[rx ry] (tm/* (g/map-point bounds p) 2)
@@ -46,6 +47,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/noise-seed (dr/random 1000000))
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :t 0
