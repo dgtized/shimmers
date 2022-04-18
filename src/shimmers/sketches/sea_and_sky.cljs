@@ -12,7 +12,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.common.ui.controls :as ctrl]))
 
 (defn random-triangle-at [pos rotation scale]
   (geometry/shape-at (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
@@ -72,9 +73,20 @@
           (streak pos (int (tm/random 8 32)) (* d r) 0 #(cq/circle % r)))
         (cq/circle pos (tm/random 1.0 10.0))))))
 
-(sketch/defquil sea-and-sky
-  :created-at "2021-07-06"
-  :size [800 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode]) ;; TODO: optionally hide framerate somehow?
+   [:p.explanation.readable-width
+    "Continuous layering of low opacity, random triangle streaks create an
+    impression of a red morning sunrise over a whitecapped sea. Inspired by Mark
+    Rothko."]])
+
+(sketch/definition sea-and-sky
+  {:created-at "2021-07-06"
+   :type :quil
+   :tags #{}}
+  (ctrl/mount page "sketch-host"))
