@@ -60,9 +60,15 @@
                                       [fx 30 8 16] 1})]
               (apply shapes rules))))
 
+(defn ui-controls []
+  [:div
+   [:p "Variations on Vera Molnár's "
+    [:a {:href "https://dam.org/museum/artists_ui/artists/molnar-vera/des-ordres/"}
+     "(Des)Ordres"]]])
+
 (sketch/definition deeper-squares
   {:created-at "2022-01-04"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :deeper-squares)
+  (ctrl/mount (view-sketch/page-for scene :deeper-squares ui-controls)
               "sketch-host"))
