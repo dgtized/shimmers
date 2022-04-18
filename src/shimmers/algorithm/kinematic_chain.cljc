@@ -26,18 +26,18 @@
 (defrecord KinematicChain [segments]
   IKinematicChain
   (follow [chain target]
-    (loop [segments (reverse segments) target target new-chain []]
-      (if (empty? segments)
+    (loop [links (reverse segments) target target new-chain []]
+      (if (empty? links)
         (assoc chain :segments (reverse new-chain))
-        (let [segment (follow (first segments) target)]
-          (recur (rest segments) (:base segment) (conj new-chain segment))))))
+        (let [link (follow (first links) target)]
+          (recur (rest links) (:base link) (conj new-chain link))))))
 
   (propagate [chain base]
-    (loop [segments segments base base new-chain []]
-      (if (empty? segments)
+    (loop [links segments base base new-chain []]
+      (if (empty? links)
         (assoc chain :segments new-chain)
-        (let [s (assoc (first segments) :base base)]
-          (recur (rest segments) (segment-endpoint s) (conj new-chain s))))))
+        (let [link (assoc (first links) :base base)]
+          (recur (rest links) (segment-endpoint link) (conj new-chain link))))))
 
   g/IVertexAccess
   (vertices [_]
