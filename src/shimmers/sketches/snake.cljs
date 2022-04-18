@@ -67,8 +67,7 @@
         follow (get follow-modes (:follow-mode @ui-state))]
     (-> (if (g/contains-point? target tip)
           (assoc state :target (gen-target))
-          state)
-        (update :chain chain/chain-update nil (follow tip target t))
+          (update state :chain chain/chain-update nil (follow tip target t)))
         (update :t + 0.01))))
 
 (defn brush-at [pos theta]
