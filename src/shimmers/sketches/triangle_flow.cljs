@@ -102,7 +102,8 @@
   ((get modes (:mode @ui-state)) state))
 
 (defn ui-controls []
-  (ctrl/change-mode ui-state (keys modes)))
+  [:div
+   (ctrl/change-mode ui-state (keys modes))])
 
 (sketch/defquil triangle-flow
   :created-at "2022-04-13"
