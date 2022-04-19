@@ -6,6 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.physics.core :as physics]
@@ -102,15 +103,16 @@
 (defn update-state [state]
   (update state :physics physics/timestep 4))
 
+(def boid-triangle (gt/triangle2 [1.5 0] [-0.5 -0.5] [-0.5 0.5]))
+
 (defn brush [particle scale]
-  (let [[x y] (physics/position particle)
-        [[ax ay] [bx by] [cx cy]]
-        (-> (gt/triangle2 [1.5 0] [-0.5 -0.5] [-0.5 0.5])
-            (g/scale-size scale)
-            (g/rotate (g/heading (physics/velocity particle)))
-            (g/translate (gv/vec2 x y))
-            :points)]
-    (q/triangle ax ay bx by cx cy)))
+  (let [[x y] (physics/position particle)]
+    (-> boid-triangle
+        (geometry/shape-at (g/heading (physics/velocity particle))
+                           scale
+                           (gv/vec2 x y))
+        :points
+        cq/draw-triangle)))
 
 (defn map-noise [t rate offset interval]
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))

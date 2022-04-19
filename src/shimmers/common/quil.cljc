@@ -79,8 +79,11 @@
   [set-color-fn color]
   (when (seq color) (apply set-color-fn color)))
 
-(defn draw-triangle [[ax ay] [bx by] [cx cy]]
-  (q/triangle ax ay bx by cx cy))
+(defn draw-triangle
+  ([[ax ay] [bx by] [cx cy]]
+   (q/triangle ax ay bx by cx cy))
+  ([[[ax ay] [bx by] [cx cy]]]
+   (q/triangle ax ay bx by cx cy)))
 
 (defn lerp-line [[x y] [x' y'] amt]
   (q/line x y (q/lerp x x' amt) (q/lerp y y' amt)))
