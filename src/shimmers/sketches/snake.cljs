@@ -19,7 +19,8 @@
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
-               :color true}))
+               :color true
+               :spinners false}))
 
 (defn gen-target []
   (let [r (dr/random 0.05 0.15)
@@ -37,6 +38,26 @@
         size (Math/abs (dr/gaussian 20 6))]
     (chain/->KinematicSegment base direction size)))
 
+(defrecord Spinner [pos vel t0 t1])
+
+(defn gen-spinners [chain t]
+  (for [[i [a b]] (map-indexed vector (g/edges chain))
+        :when (dr/chance 0.002)
+        :let [dir (if (even? i) 1 -1)
+              tip (g/rotate (tm/- a b) (* dir (/ eq/TAU 6)))
+              [x y] (tm/- b a)
+              f (tm/cross (gv/vec3 x y 0) (gv/vec3 0 0 (* dir 0.1)))]]
+    (->Spinner (tm/+ b tip) (gv/vec2 (:x f) (:y f))
+               t (+ t (dr/random 0.2 2.5)))))
+
+;; 32 is capacity for active spinners
+(defn update-spinners [spinners t]
+  (for [{:keys [pos vel t1] :as spin} (take 32 spinners)
+        :when (< t t1)]
+    (assoc spin
+           :pos (tm/+ pos vel)
+           :vel (tm/* vel 0.975))))
+
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
@@ -46,7 +67,8 @@
      :chain (->> (chain/->KinematicSegment start (dr/random eq/TAU) 8)
                  (iterate gen-segment)
                  (take 32)
-                 chain/->KinematicChain)}))
+                 chain/->KinematicChain)
+     :spinners []}))
 
 (def follow-modes
   {:proportional
@@ -68,6 +90,8 @@
     (-> (if (g/contains-point? target tip)
           (assoc state :target (gen-target))
           (update state :chain chain/chain-update nil (follow tip target t)))
+        (update :spinners update-spinners t)
+        (update :spinners into (gen-spinners chain t))
         (update :t + 0.01))))
 
 (defn brush-at [pos theta]
@@ -84,11 +108,17 @@
     (doseq [vertex vertices
             :let [[x y] (tm/* vertex 0.001)]]
       (q/fill (q/noise x y (* t 0.001))
-              0.03)
+              0.2)
       (brush-at vertex (* eq/TAU t (/ 50 (g/dist vertex (:p target))))))
     (q/end-shape)))
 
-(defn draw-equilateral-links [{:keys [target chain t]}]
+(defn draw-spinners [{:keys [spinners t]}]
+  (q/no-stroke)
+  (doseq [{:keys [pos t0 t1]} spinners]
+    (q/fill (/ (- t t0) (- t1 t0)) 0.08)
+    (cq/circle pos 3.0)))
+
+(defn draw-equilateral-links [{:keys [target chain t] :as state}]
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
@@ -105,7 +135,9 @@
       (apply q/vertex a)
       (apply q/vertex b)
       (apply q/vertex (tm/+ b (g/rotate (tm/- a b) (* (if (even? i) 1 -1) (/ eq/TAU 6))))))
-    (q/end-shape)))
+    (q/end-shape)
+    (when (:spinners @ui-state)
+      (draw-spinners state))))
 
 (defn draw-chain [{:keys [chain]}]
   (q/stroke 0.0 0.05)
@@ -125,7 +157,9 @@
    [:div.flexcols
     (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
     (when (= (:draw-mode @ui-state) :equilateral-links)
-      (ctrl/checkbox ui-state "Add Color Patches" [:color]))]
+      (ctrl/checkbox ui-state "Add Color Patches" [:color]))
+    #_(when (= (:draw-mode @ui-state) :equilateral-links)
+        (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
    [:ul
     [:li "Equilateral links draws triangles from each link in the chain."]
     [:li "Chain draws the lines between each link of the chain."]
