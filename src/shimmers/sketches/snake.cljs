@@ -114,9 +114,15 @@
 
 (defn draw-spinners [{:keys [spinners t]}]
   (q/no-stroke)
-  (doseq [{:keys [pos t0 t1]} spinners]
-    (q/fill (/ (- t t0) (- t1 t0)) 0.08)
-    (cq/circle pos 3.0)))
+  (doseq [{:keys [pos t0 t1]} spinners
+          :let [pct (/ (- t t0) (- t1 t0))]]
+    (q/fill (* 0.2 (dr/gaussian 0 0.1)) 0.6 0.3 0.08)
+    (-> (gt/equilateral2 (- tm/SQRT2) tm/SQRT3)
+        (g/scale-size tm/PHI)
+        (g/rotate (* 2 (tm/smoothstep* 0.2 0.8 (eq/unit-sin t))))
+        (g/translate pos)
+        :points
+        cq/draw-triangle)))
 
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
   (let [[x y] (tm/* (:p target) 0.1)]
