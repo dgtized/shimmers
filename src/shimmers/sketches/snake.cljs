@@ -41,7 +41,7 @@
 (defrecord Spinner [pos vel t0 t1])
 
 (defn gen-spinners [chain t]
-  (for [[i [a b]] (map-indexed vector (g/edges chain))
+  (for [[i [a b]] (map-indexed vector (take-last 8 (g/edges chain)))
         :when (dr/chance 0.002)
         :let [dir (if (even? i) 1 -1)
               tip (g/rotate (tm/- a b) (* dir (/ eq/TAU 6)))
