@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
@@ -12,8 +13,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.ui.controls :as ctrl]))
+   [thi.ng.math.core :as tm]))
 
 (defn random-triangle-at [pos rotation scale]
   (geometry/shape-at (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
