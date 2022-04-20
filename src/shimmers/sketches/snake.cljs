@@ -46,9 +46,9 @@
         :let [dir (if (even? i) 1 -1)
               tip (g/rotate (tm/- a b) (* dir (/ eq/TAU 6)))
               [x y] (tm/- b a)
-              f (tm/cross (gv/vec3 x y 0) (gv/vec3 0 0 (* dir 0.1)))]]
+              f (tm/cross (gv/vec3 x y 0) (gv/vec3 0 0 (* dir 0.15)))]]
     (->Spinner (tm/+ b tip) (gv/vec2 (:x f) (:y f))
-               t (+ t (dr/random 0.2 2.5)))))
+               t (+ t (dr/random 0.2 1.8)))))
 
 ;; 32 is capacity for active spinners
 (defn update-spinners [spinners t]
@@ -56,7 +56,7 @@
         :when (< t t1)]
     (assoc spin
            :pos (tm/+ pos vel)
-           :vel (tm/* vel 0.975))))
+           :vel (tm/* vel 0.99))))
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
@@ -116,10 +116,10 @@
   (q/no-stroke)
   (doseq [{:keys [pos t0 t1]} spinners
           :let [pct (/ (- t t0) (- t1 t0))]]
-    (q/fill (* 0.2 (dr/gaussian 0 0.1)) 0.6 0.3 0.08)
+    (q/fill (* 0.2 (dr/gaussian 0 0.1)) 0.6 0.3 0.12)
     (-> (gt/equilateral2 (- tm/SQRT2) tm/SQRT3)
         (g/scale-size tm/PHI)
-        (g/rotate (* 2 (tm/smoothstep* 0.2 0.8 (eq/unit-sin t))))
+        (g/rotate (* 8 pct))
         (g/translate pos)
         :points
         cq/draw-triangle)))
