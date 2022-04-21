@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.sketch :as sketch :include-macros true]
@@ -18,7 +19,7 @@
 (defn ui-controls [ui]
   (fn []
     (ctrl/container
-     (ctrl/change-mode ui [:hsla :mix-mod])
+     (ctrl/change-mode ui [:hsla :mix-mod :noise])
      (case (:mode @ui)
        :hsla
        [:div
@@ -43,7 +44,11 @@
         (ctrl/slider ui (fn [v] (str "Lightness1: " v))
                      [:lightness1] [0 100])
         (ctrl/slider ui (fn [v] (str "Lightness2: " v))
-                     [:lightness2] [0 100])]))))
+                     [:lightness2] [0 100])]
+       :noise
+       [:div
+        (ctrl/numeric ui "Noise Multiplier" [:noise-div] [1 4 0.0001])
+        (ctrl/checkbox ui "Animate" [:animate])]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -54,7 +59,8 @@
          :saturation1 50
          :saturation2 50
          :lightness1 50
-         :lightness2 50}
+         :lightness2 50
+         :noise-div 0.2}
         ui (ctrl/state (merge defaults (random-hues)))]
     (ctrl/mount (ui-controls ui))
     {:ui ui}))
@@ -85,12 +91,26 @@
       (q/fill (sm/mix-mod h1 h2 h) (tm/mix* s1 s2 h) (tm/mix* l1 l2 h) a)
       (q/rect (cq/rel-w h) (cq/rel-h 0) (cq/rel-w dx) (cq/rel-h 1)))))
 
+(defn draw-noise [ui]
+  (let [{:keys [noise-div animate]} @ui
+        dx 0.01
+        dy 0.01
+        fc (q/frame-count)
+        m (/ 1.0 noise-div)]
+    (doseq [y (range 0 1 dy)]
+      (doseq [x (range 0 1 dx)]
+        (q/fill (q/noise (* x m) (* y m)
+                         (if animate (* fc m 0.01) 0))
+                0.5 0.5 1.0)
+        (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy))))))
+
 (defn draw [{:keys [ui]}]
   (q/background 1.0)
   (q/no-stroke)
   (case (:mode @ui)
     :hsla (draw-hsla ui)
-    :mix-mod (draw-mix-mod ui)))
+    :mix-mod (draw-mix-mod ui)
+    :noise (draw-noise ui)))
 
 (sketch/defquil colors
   :created-at "2021-03-11"
