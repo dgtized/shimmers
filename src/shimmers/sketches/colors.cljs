@@ -46,7 +46,7 @@
                      [:lightness2] [0 100])]
        :noise
        [:div
-        (ctrl/numeric ui "Noise Multiplier" [:noise-div] [1 4 0.0001])
+        (ctrl/numeric ui "Noise Multiplier" [:noise-mult] [0 16 0.00001])
         (ctrl/checkbox ui "Animate" [:animate])]))))
 
 (defn setup []
@@ -59,7 +59,7 @@
          :saturation2 50
          :lightness1 50
          :lightness2 50
-         :noise-div 0.2}
+         :noise-mult 0.5}
         ui (ctrl/state (merge defaults (random-hues)))]
     (ctrl/mount (ui-controls ui))
     {:ui ui}))
@@ -91,11 +91,10 @@
       (q/rect (cq/rel-w h) (cq/rel-h 0) (cq/rel-w dx) (cq/rel-h 1)))))
 
 (defn draw-noise [ui]
-  (let [{:keys [noise-div animate]} @ui
+  (let [{:keys [animate] m :noise-mult} @ui
         dx 0.01
         dy 0.01
-        fc (q/frame-count)
-        m (/ 1.0 noise-div)]
+        fc (q/frame-count)]
     (doseq [y (range 0 1 dy)]
       (doseq [x (range 0 1 dx)]
         (let [n (q/noise (* x m) (* y m) (if animate (* fc m 0.01) 0))]
