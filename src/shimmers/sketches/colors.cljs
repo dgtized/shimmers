@@ -4,7 +4,6 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.sketch :as sketch :include-macros true]
@@ -99,10 +98,9 @@
         m (/ 1.0 noise-div)]
     (doseq [y (range 0 1 dy)]
       (doseq [x (range 0 1 dx)]
-        (q/fill (q/noise (* x m) (* y m)
-                         (if animate (* fc m 0.01) 0))
-                0.5 0.5 1.0)
-        (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy))))))
+        (let [n (q/noise (* x m) (* y m) (if animate (* fc m 0.01) 0))]
+          (q/fill n 0.5 0.5 1.0)
+          (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy)))))))
 
 (defn draw [{:keys [ui]}]
   (q/background 1.0)
