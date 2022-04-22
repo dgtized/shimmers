@@ -1,12 +1,28 @@
 (ns shimmers.math.geometry.shapes
   (:require
    [shimmers.math.deterministic-random :as dr]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; (g/unmap-point (rect/rect 5 5 10 10) (gv/vec2 0.1 0.1))
+
+(defn circle-in-bounds
+  [{p :p [width height] :size}]
+  (let [c (gv/vec2 (dr/random) (dr/random))
+        [x y] c
+        r (* (min (* (min x (- 1 x)) width)
+                  (* (min y (- 1 y)) height)))]
+    (gc/circle (tm/+ p c) (dr/random r))))
+
+(comment
+  (let [bounds (rect/rect 10 10 50 50)
+        circles (repeatedly 100 #(circle-in-bounds bounds))]
+    (remove
+     (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
+     (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
 
 (defn rectangle-in-bounds
   "Generate a random rectangle inside of an existing bounds."
