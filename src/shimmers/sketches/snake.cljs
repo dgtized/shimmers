@@ -23,9 +23,8 @@
                :spinners false}))
 
 (defn gen-target []
-  (let [r (dr/random 0.05 0.15)
-        e (* 1 r)]
-    (gc/circle (cq/rel-vec (dr/random e (- 1 e)) (dr/random e (- 1 e)))
+  (let [r (dr/random 0.05 0.15)]
+    (gc/circle (cq/rel-vec (dr/random r (- 1 r)) (dr/random r (- 1 r)))
                (cq/rel-h r))))
 
 (defn gen-segment [segment]
