@@ -25,6 +25,21 @@
      (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
      (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
 
+(defn circle-in-bounds-with-radius
+  [{[width height] :size :as bounds} r0 r1]
+  (let [r (dr/random r0 r1)
+        m (/ r (min width height))
+        c (gv/vec2 (dr/random m (- 1 m))
+                   (dr/random m (- 1 m)))]
+    (gc/circle (g/unmap-point bounds c) r)))
+
+(comment
+  (let [bounds (rect/rect 10 10 20 20)
+        circles (repeatedly 1000 #(circle-in-bounds-with-radius bounds 2 10))]
+    (every?
+     (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
+     (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
+
 (defn rectangle-in-bounds
   "Generate a random rectangle inside of an existing bounds."
   [bounds]
