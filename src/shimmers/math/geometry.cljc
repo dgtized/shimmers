@@ -10,10 +10,10 @@
    [thi.ng.geom.quaternion :as quat]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
-   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2 Line2 Line3]])
+   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Polygon2]])
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm])
-  #?(:clj (:import [thi.ng.geom.types Polygon2 Line2 Line3])))
+  #?(:clj (:import [thi.ng.geom.types Polygon2])))
 
 ;; Uniformly sample points from tesselated triangles of polygon
 ;; https://blogs.sas.com/content/iml/2020/10/21/random-points-in-polygon.html
@@ -25,17 +25,6 @@
              (map gt/triangle2)
              (p/weighted-by g/area)
              triangle/random-point-inside)))
-
-;; TODO: remove once https://github.com/thi-ng/geom/pull/82 is published
-(extend-type Line2
-  g/IFlip
-  (flip [_]
-    (Line2. (vec (rseq (:points _))))))
-
-(extend-type Line3
-  g/IFlip
-  (flip [_]
-    (Line3. (vec (rseq (:points _))))))
 
 (defn rotate-around-centroid [polygon t]
   (-> polygon
