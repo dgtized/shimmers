@@ -8,7 +8,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -24,6 +24,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
+  (q/noise-seed (dr/random-int 1000000))
   (q/noise-detail 6 0.75)
   (q/ellipse-mode :radius)
   {:t 0
@@ -39,14 +40,14 @@
 
 (defn new-shape []
   (let [offsets [0.2 0.35 0.5 0.65 0.80]]
-    ((p/weighted
-      {(fn [] (gc/circle (cq/rel-pos (rand-nth (range 0.35 0.65 0.05)) 0.5)
+    ((dr/weighted
+      {(fn [] (gc/circle (cq/rel-pos (dr/rand-nth (range 0.35 0.65 0.05)) 0.5)
                         (cq/rel-h 0.3))) 0.5
-       (fn [] (gl/line2 (cq/rel-pos 0.05 (rand-nth offsets))
-                       (cq/rel-pos 0.95 (rand-nth offsets)))) 1.0}))))
+       (fn [] (gl/line2 (cq/rel-pos 0.05 (dr/rand-nth offsets))
+                       (cq/rel-pos 0.95 (dr/rand-nth offsets)))) 1.0}))))
 
 (defn shade-shape [{:keys [t v color shape] :as state}]
-  (let [t' (mod (+ t (* dt (rand))) 1.0)
+  (let [t' (mod (+ t (dr/random dt)) 1.0)
         new-pass (< t' t)
         v' (if new-pass (inc v) v)
         color' (if new-pass (rand-color) color)
@@ -57,7 +58,7 @@
             :v v'
             :color color'
             :shape (if (and new-pass (= (mod v' passes) 0)) (new-shape) shape)
-            :angle (ksd/draw (ksd/normal {:mu 0 :sd 0.05})))]))
+            :angle (dr/gaussian 0 0.05))]))
 
 (defn update-state [state]
   (cq/if-steady-state state 5 setup shade-shape))
@@ -81,7 +82,7 @@
         ;; normal (ksd/normal {:mu 0.5 :sd 0.05})
         uniform (ksd/uniform {:a 0.1 :b 0.9})]
     (dotimes [iter cols]
-      (let [t (+ t (* dt (+ (/ iter cols) (* (/ 1 cols) (rand)))))
+      (let [t (+ t (* dt (+ (/ iter cols) (dr/random (/ 1 cols)))))
             s-disp (displacement-noise t v)
             line (perpindicular-line-at shape t s-disp angle)]
         (doseq [p (ksd/sample density uniform)
