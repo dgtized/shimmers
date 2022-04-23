@@ -116,7 +116,7 @@
 (defn gaussian
   ([] (gaussian 0 1))
   ([mu sd]
-   (ksd/draw (ksd/normal {:mu mu :sd sd})
+   (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (Math/abs sd))})
              {:seed (random-int MAX-INT)})))
 
 (defn var-range
