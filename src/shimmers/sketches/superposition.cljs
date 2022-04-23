@@ -59,7 +59,7 @@
             :let [position (brush-at brush orbit tween)
                   theta (if spin
                           (* spin tween)
-                          (* 2 Math/PI (rand)))]]
+                          (dr/random eq/TAU))]]
       (doseq [p points]
         (apply q/vertex
                (-> p
