@@ -15,7 +15,7 @@
         thi.ng/shadergraph {:mvn/version "0.3.1"}
 
         ;; probability distributions
-        kixi/stats {:mvn/version "0.5.4"}
+        kixi/stats {:mvn/version "0.5.5"}
 
         ;; Helper libraries
         org.clojure/core.async {:mvn/version "1.5.648"}
