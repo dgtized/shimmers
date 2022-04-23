@@ -9,7 +9,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -25,8 +25,8 @@
 (defn spawn-crack [{:keys [position angle] :as crack}]
   (make-crack position
               (+ angle
-                 (* (rand-nth [-1 1]) (/ Math/PI 2))
-                 (* 0.15 (q/random-gaussian)))
+                 (* (dr/rand-nth [-1 1]) (/ Math/PI 2))
+                 (* 0.15 (dr/gaussian)))
               crack))
 
 (defn intersects [self point crack]
@@ -43,8 +43,8 @@
       (assoc crack :position new-pos))))
 
 (defn make-random-crack []
-  (make-crack (cq/rel-vec (rand) (rand))
-              (* (rand-nth [0 1 2 3]) (/ Math/PI 2))))
+  (make-crack (cq/rel-vec (dr/random) (dr/random))
+              (* (dr/rand-nth [0 1 2 3]) (/ Math/PI 2))))
 
 (defn create-cracks []
   {:cracks (repeatedly 16 make-random-crack)})
@@ -56,7 +56,7 @@
   (let [[active inactive] ((juxt filter remove) :active cracks)
         fresh-cracks (into active (if (< (count active) 64)
                                     (for [crack active
-                                          :when (p/chance 0.01)]
+                                          :when (dr/chance 0.01)]
                                       (spawn-crack crack))
                                     []))]
     ;; (println [(count inactive) (count active)])
@@ -80,6 +80,7 @@
 
 (sketch/defquil substrate
   :created-at "2021-01-21"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state

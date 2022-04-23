@@ -106,9 +106,10 @@
 
 (def ^:constant MAX-INT (Math/pow 2 32))
 (defn gaussian
-  [mu sd]
-  (ksd/draw (ksd/normal {:mu mu :sd sd})
-            {:seed (random-int MAX-INT)}))
+  ([] (gaussian 0 1))
+  ([mu sd]
+   (ksd/draw (ksd/normal {:mu mu :sd sd})
+             {:seed (random-int MAX-INT)})))
 
 (defn var-range
   [n]
