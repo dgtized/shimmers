@@ -1,8 +1,8 @@
 (ns shimmers.sketches.clustered-farmlands
   (:require
-   [kixi.stats.distribution :as ksd]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
@@ -11,9 +11,6 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn randnorm [mu sd]
-  (ksd/draw (ksd/normal {:mu mu :sd sd})))
-
 (def width 800)
 (def height 800)
 (defn r [x y]
@@ -21,7 +18,7 @@
 
 (defn random-offsets-spaced [lower upper spacing]
   (for [o (range lower upper spacing)]
-    (+ o (* spacing (randnorm 0 0.1)))))
+    (+ o (* spacing (dr/gaussian 0 0.1)))))
 
 (defn generate-houses
   [road]
@@ -35,11 +32,11 @@
                      (tm/* (* units 1)))]
       [{:pos (tm/+ (tm/mix mid1 mid2 0.5)
                    normal
-                   (gv/vec2 (randnorm 0 (* 0.1 units)) (randnorm 0 (* 0.2 units))))
+                   (gv/vec2 (dr/gaussian 0 (* 0.1 units)) (dr/gaussian 0 (* 0.2 units))))
         :heading (g/heading-xy normal)}
        {:pos (tm/+ (tm/mix mid1 mid2 0.5)
                    (tm/- normal)
-                   (gv/vec2 (randnorm 0 (* 0.1 units)) (randnorm 0 (* 0.2 units))))
+                   (gv/vec2 (dr/gaussian 0 (* 0.1 units)) (dr/gaussian 0 (* 0.2 units))))
         :heading (g/heading-xy normal)}])))
 
 ;; TODO curve the "road" and add houses + lots along it, spaced at some interval
@@ -48,10 +45,10 @@
 ;; Add varying green levels per row
 (defn scene []
   (let [spacing 0.05
-        road (bezier/auto-spline2 [(r (randnorm 0.5 0.1) (- (* 2 spacing)))
-                                   (r (randnorm 0.5 0.01) 0.3)
-                                   (r (randnorm 0.5 0.01) 0.7)
-                                   (r (randnorm 0.5 0.1) (+ 1 (* 2 spacing)))])
+        road (bezier/auto-spline2 [(r (dr/gaussian 0.5 0.1) (- (* 2 spacing)))
+                                   (r (dr/gaussian 0.5 0.01) 0.3)
+                                   (r (dr/gaussian 0.5 0.01) 0.7)
+                                   (r (dr/gaussian 0.5 0.1) (+ 1 (* 2 spacing)))])
         ;; Trying to make them line up, but to be fields I think they have to be
         ;; separate to fill later
         road-start (g/point-at road 0.0)
@@ -81,6 +78,6 @@
 (sketch/definition clustered-farmlands
   {:created-at "2021-05-10"
    :type :svg
-   :tags #{:static}}
+   :tags #{:static :deterministic}}
   (ctrl/mount (view-sketch/page-for scene :clustered-farmlands)
               "sketch-host"))
