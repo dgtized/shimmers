@@ -97,6 +97,14 @@
   [amount]
   (v/polar amount (random tm/TWO_PI)))
 
+(defn jitter-x [[x y] r]
+  (let [rx (random (- r) r)]
+    [(+ x rx) y]))
+
+(defn jitter-y [[x y] r]
+  (let [ry (random (- r) r)]
+    [x (+ y ry)]))
+
 (defn random-vertex []
   (v/vec2 (random-double) (random-double)))
 
