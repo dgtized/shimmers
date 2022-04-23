@@ -55,16 +55,20 @@
   (< (random-double) prob))
 
 (defn weighted
-  "Given a mapping of values to weights, randomly choose a value biased by weight"
-  [weights]
-  (let [sample (random (apply + (vals weights)))]
-    (loop [cumulative 0.0
-           [[choice weight] & remaining] weights]
-      (when weight
-        (let [sum (+ cumulative weight)]
-          (if (< sample sum)
-            choice
-            (recur sum remaining)))))))
+  "Given a mapping of values to weights, randomly choose a value biased by weight.
+
+  With two arguments, use `v` to specify a specific element as a percent of the
+  total weight."
+  ([weights] (weighted weights (random)))
+  ([weights v]
+   (let [sample (* v (apply + (vals weights)))]
+     (loop [cumulative 0.0
+            [[choice weight] & remaining] weights]
+       (when weight
+         (let [sum (+ cumulative weight)]
+           (if (< sample sum)
+             choice
+             (recur sum remaining))))))))
 
 (defn weighted-by
   "Given a sequence of values `xs`, weight each value by a function `f` and return
