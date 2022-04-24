@@ -18,32 +18,6 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn clip-line
-  "Clip a line to only the segments inside of a polygon."
-  [line polygon]
-  (let [[p q] (:points line)
-        points (keep (fn [[e0 e1]]
-                       (let [isec (isec/intersect-line2-line2? p q e0 e1)]
-                         (when (= (:type isec) :intersect)
-                           (:p isec))))
-                     (g/edges polygon))]
-    (map gl/line2 (cond (empty? points)
-                        []
-                        (even? (count points))
-                        (partition 2 2 (sort-by (partial g/dist-squared p) points))
-                        :else
-                        (let [points (sort-by (partial g/dist-squared p) points)]
-                          (if (g/contains-point? polygon p)
-                            (concat [[p (first points)]]
-                                    (partition 2 2 (rest points)))
-                            (concat (partition 2 2 (butlast points))
-                                    [[(last points) q]])))))))
-
-(comment (clip-line (gl/line2 0 0 10 10) (rect/rect 10 2 5 5)) ;; no clip
-         (clip-line (gl/line2 0 0 10 10) (rect/rect 1 2 5 5)) ;; clipped
-         (clip-line (gl/line2 5 5 10 10) (rect/rect 2 2 4 6)) ;; inside/outside
-         (clip-line (gl/line2 0 2 10 8) (gp/polygon2 [1 0] [8 1] [8 9] [5 2] [2 9])))
-
 (defn cut-rectangle [cell {[pl ql] :points :as line}]
   (let [edges (g/edges cell)
         isecs (keep (fn [edge]

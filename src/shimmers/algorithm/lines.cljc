@@ -4,6 +4,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.math.core :as tm]))
 
 (defn points->lines [points]
@@ -138,3 +139,25 @@
                          [(gu/point-at t1 b arc-index-b)
                           (gu/point-at t1 a arc-index-a)]
                          (reverse a0-a1)))))
+
+(defn clip-line
+  "Clip a line to only the segments inside of a polygon."
+  [line polygon]
+  (let [[p q] (:points line)
+        points (keep (fn [[e0 e1]]
+                       (let [isec (isec/intersect-line2-line2? p q e0 e1)]
+                         (when (= (:type isec) :intersect)
+                           (:p isec))))
+                     (g/edges polygon))]
+    (map gl/line2
+         (cond (empty? points)
+               []
+               (even? (count points))
+               (partition 2 2 (sort-by (partial g/dist-squared p) points))
+               :else
+               (let [points (sort-by (partial g/dist-squared p) points)]
+                 (if (g/contains-point? polygon p)
+                   (concat [[p (first points)]]
+                           (partition 2 2 (rest points)))
+                   (concat (partition 2 2 (butlast points))
+                           [[(last points) q]])))))))
