@@ -42,8 +42,8 @@
             (apply list (landscape))))
 
 (sketch/definition texas-fields
-  {:created-at "2022-"
+  {:created-at "2022-04-24"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :texas-fields)
               "sketch-host"))
