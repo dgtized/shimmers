@@ -59,7 +59,7 @@
 
   With two arguments, use `v` to specify a specific element as a percent of the
   total weight."
-  ([weights] (weighted weights (random)))
+  ([weights] (weighted weights (random-double)))
   ([weights v]
    (let [sample (* v (apply + (vals weights)))]
      (loop [cumulative 0.0
