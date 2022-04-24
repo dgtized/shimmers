@@ -15,14 +15,19 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn roads []
+(defn make-roads []
   [(gl/line2 (rv 0 (dr/random 0.2 0.8)) (rv 1 (dr/random 0.2 0.8)))
    (gl/line2 (rv (dr/random 0.2 0.8) 0) (rv (dr/random 0.2 0.8) 1))])
 
-(defn grid []
+(defn make-grid []
   (for [j (tm/norm-range 15)
         i (tm/norm-range 20)]
     (rect/rect (rv i j) (tm/+ (rv i j) (gv/vec2 (/ width 20) (/ height 15))))))
+
+(defn landscape []
+  (let [roads (make-roads)
+        grid (make-grid)]
+    (concat roads grid)))
 
 (defn scene []
   (csvg/svg {:width width
@@ -30,7 +35,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (apply list (concat (grid) (roads)))))
+            (apply list (landscape))))
 
 (sketch/definition texas-fields
   {:created-at "2022-"
