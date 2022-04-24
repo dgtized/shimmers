@@ -8,6 +8,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -15,6 +16,17 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+(defn cut-rectangle [cell {[pl ql] :points :as line}]
+  (let [edges (g/edges cell)
+        isecs (keep (fn [edge]
+                      (let [[pe qe] edge
+                            isec (isec/intersect-line2-line2? pl ql pe qe)]
+                        (when (= (:type isec) :intersect)
+                          [edge {:p (:p isec) :line line}]))) edges)]
+    isecs))
+
+(comment (cut-rectangle (rect/rect 10) (gl/line2 4 0 8 10)))
 
 (defn make-roads []
   [(gl/line2 (rv 0 (dr/random 0.2 0.8)) (rv 1 (dr/random 0.2 0.8)))
