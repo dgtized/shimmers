@@ -150,6 +150,7 @@
    shimmers.sketches.string-lights
    shimmers.sketches.superposition
    shimmers.sketches.terrain-grid
+   shimmers.sketches.texas-fields
    shimmers.sketches.tilt
    shimmers.sketches.traffic-intersection
    shimmers.sketches.triangle-flow
