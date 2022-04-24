@@ -20,6 +20,7 @@
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
                :color true
+               :limit-palette false
                :spinners false}))
 
 (defn gen-target []
@@ -130,14 +131,19 @@
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
   (let [edges (g/edges chain)
-        color (:color @ui-state)]
+        {:keys [color limit-palette]} @ui-state]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
             :let [[x y] (tm/* a 0.001)
                   grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
                   opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]]
       (if (and color (< 0.4 grey 0.6))
-        (q/fill (mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5 opacity)
+        (if limit-palette
+          (q/fill (tm/map-interval (q/noise x (+ 80 (* 0.02 t)) y) [0 1] [-0.1 0.1])
+                  (tm/map-interval (q/noise x (+ 120 (* 0.05 t)) y) [0 1] [0.5 0.75])
+                  (tm/map-interval (q/noise x (+ 240 (* 0.02 t)) y) [0 1] [0.25 0.5])
+                  opacity)
+          (q/fill (mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5 opacity))
         (q/fill grey opacity))
       (apply q/vertex a)
       (apply q/vertex b)
@@ -165,6 +171,9 @@
     (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
     (when (= (:draw-mode @ui-state) :equilateral-links)
       (ctrl/checkbox ui-state "Add Color Patches" [:color]))
+    (when (and (= (:draw-mode @ui-state) :equilateral-links)
+               (:color @ui-state))
+      (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
     #_(when (= (:draw-mode @ui-state) :equilateral-links)
         (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
    [:ul
