@@ -141,23 +141,27 @@
                          (reverse a0-a1)))))
 
 (defn clip-line
-  "Clip a line to only the segments inside of a polygon."
+  "Clip a `line` into set of line segments contained by the `polygon`."
   [line polygon]
   (let [[p q] (:points line)
-        points (keep (fn [[e0 e1]]
-                       (let [isec (isec/intersect-line2-line2? p q e0 e1)]
-                         (when (= (:type isec) :intersect)
-                           (:p isec))))
-                     (g/edges polygon))]
+        points (->> polygon
+                    g/edges
+                    (keep (fn [[e0 e1]]
+                            (let [isec (isec/intersect-line2-line2? p q e0 e1)]
+                              (when (= (:type isec) :intersect)
+                                (:p isec)))))
+                    (sort-by (partial g/dist-squared p))
+                    ;; if line clips at a corner, remove duplicates
+                    ;; might have difficulty with floating point coordinate boundaries
+                    dedupe)]
     (map gl/line2
          (cond (empty? points)
                []
                (even? (count points))
-               (partition 2 2 (sort-by (partial g/dist-squared p) points))
+               (partition 2 2 points)
                :else
-               (let [points (sort-by (partial g/dist-squared p) points)]
-                 (if (g/contains-point? polygon p)
-                   (concat [[p (first points)]]
-                           (partition 2 2 (rest points)))
-                   (concat (partition 2 2 (butlast points))
-                           [[(last points) q]])))))))
+               (if (g/contains-point? polygon p)
+                 (concat [[p (first points)]]
+                         (partition 2 2 (rest points)))
+                 (concat (partition 2 2 (butlast points))
+                         [[(last points) q]]))))))
