@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -27,7 +28,10 @@
 (defn landscape []
   (let [roads (make-roads)
         grid (make-grid)]
-    (concat roads grid)))
+    (concat (map (fn [cell] (if-let [isec (some (fn [line] (g/intersect-line cell line)) roads)]
+                             (with-meta cell {:fill "hsl(0,50%,50%,10%)"})
+                             cell))
+                 grid) roads)))
 
 (defn scene []
   (csvg/svg {:width width
