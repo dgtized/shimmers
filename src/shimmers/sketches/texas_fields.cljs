@@ -2,16 +2,22 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+(defn roads []
+  [(gl/line2 (rv 0 (dr/random 0.2 0.8)) (rv 1 (dr/random 0.2 0.8)))
+   (gl/line2 (rv (dr/random 0.2 0.8) 0) (rv (dr/random 0.2 0.8) 1))])
 
 (defn grid []
   (for [j (tm/norm-range 15)
@@ -24,7 +30,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (apply list (grid))))
+            (apply list (concat (grid) (roads)))))
 
 (sketch/definition texas-fields
   {:created-at "2022-"
