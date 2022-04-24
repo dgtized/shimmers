@@ -7,6 +7,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
@@ -26,22 +27,22 @@
                          (when (= (:type isec) :intersect)
                            (:p isec))))
                      (g/edges polygon))]
-    (cond (empty? points)
-          nil
-          (= (count points) 1)
-          (if (g/contains-point? polygon p)
-            (gl/line2 p (first points))
-            (gl/line2 (first points) q))
-          (= (count points) 2)
-          (let [[a b] points]
-            (gl/line2 a b))
-          ;; TODO: handle polygons with multiple segments
-          )))
+    (map gl/line2 (cond (empty? points)
+                        []
+                        (even? (count points))
+                        (partition 2 2 (sort-by (partial g/dist-squared p) points))
+                        :else
+                        (let [points (sort-by (partial g/dist-squared p) points)]
+                          (if (g/contains-point? polygon p)
+                            (concat [[p (first points)]]
+                                    (partition 2 2 (rest points)))
+                            (concat (partition 2 2 (butlast points))
+                                    [[(last points) q]])))))))
 
 (comment (clip-line (gl/line2 0 0 10 10) (rect/rect 10 2 5 5)) ;; no clip
          (clip-line (gl/line2 0 0 10 10) (rect/rect 1 2 5 5)) ;; clipped
          (clip-line (gl/line2 5 5 10 10) (rect/rect 2 2 4 6)) ;; inside/outside
-         )
+         (clip-line (gl/line2 0 2 10 8) (gp/polygon2 [1 0] [8 1] [8 9] [5 2] [2 9])))
 
 (defn cut-rectangle [cell {[pl ql] :points :as line}]
   (let [edges (g/edges cell)
