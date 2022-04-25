@@ -5,8 +5,7 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.utils.intersect :as isec]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.math.core :as tm]))
 
 (defn points->lines [points]
   (map gl/line2 (partition 2 1 points)))
