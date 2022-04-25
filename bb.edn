@@ -22,4 +22,7 @@
   {:depends [build
              build-static-site
              rewrite-index
-             github-publish]}}}
+             github-publish]}
+
+  view
+  {:task (shell "xdg-open static-site/index.html")}}}
