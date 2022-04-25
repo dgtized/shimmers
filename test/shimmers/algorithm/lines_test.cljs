@@ -154,8 +154,8 @@
               (gp/polygon2 [5 0] b c d e [5 4])]
              (sut/cut-polygon poly (gl/line2 [5 0] [5 10])))
           "vertical slice")
-      #_(is (= [(gp/polygon2 a [2 0] #_f g h)
-                (gp/polygon2 [2 0] b c d e f)]
+      #_(is (= [(gp/polygon2 a [2 0] g h)
+                (gp/polygon2 [2 0] b c d e f #_g)]
                (sut/cut-polygon poly (gl/line2 [2 0] [2 10])))
             "vertical slice, coincident f-g")
       (is (= [(gp/polygon2 a b [10 8] [8 8] e f [2 8] [0 8])

@@ -202,8 +202,10 @@
       [(g/as-polygon polygon)]
       (loop [[edge & remaining] edges active [] shapes []]
         (if (nil? edge)
-          (mapv (comp gp/polygon2 dedupe)
-                (if (> (count active) 1) (conj shapes active) shapes))
+          (->> (conj shapes active)
+               (mapv dedupe)
+               (filter (fn [points] (> (count points) 2)))
+               (mapv gp/polygon2))
           (let [p (first edge)
                 current-polygon (conj active p)]
             (if-let [isec (some (fn [{iedge :edge :as isec}] (when (= iedge edge) isec)) isecs)]
@@ -217,3 +219,6 @@
                          [cut-p]
                          (conj shapes (conj current-polygon cut-p)))))
               (recur remaining current-polygon shapes))))))))
+
+(comment (cut-polygon (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
+                      (gl/line2 [2 0] [2 10])))
