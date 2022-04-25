@@ -45,7 +45,7 @@
     (println "  build:" timestamp "rev:" revision)
     (spit to
           (-> contents
-              (str/replace-first #"<base href=\"\">$" (str "<base href=\"" base-href "\">"))
+              (str/replace-first #"<base href=\"\">" (str "<base href=\"" base-href "\">"))
               (str/replace-first #"cljs-out\/dev-main\.js" (str "js/" (release-file)))
               (str/replace-first "<span id=\"revision\"><code>rev:abcdef12</code></span>"
                                  (revision-span timestamp revision))))))

@@ -11,9 +11,10 @@
              (clojure "-M -m figwheel.main -bo release"))}
   build-static-site
   {:task (t/build-static-site "resources/public" "static-site")}
-  rewrite-index (t/rewrite-index :from "resources/public/index.html"
-                                 :to "static-site/index.html"
-                                 :base-href "https://dgtized.github.io/shimmers/")
+  rewrite-index
+  {:task (t/rewrite-index :from "resources/public/index.html"
+                          :to "static-site/index.html"
+                          :base-href "https://dgtized.github.io/shimmers/")}
   ;; For routing to page handler after not using fragments
   ;; ln -sf index.html 404.html
   ;; TODO: consider fetching repo from .git/config?
