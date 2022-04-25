@@ -181,7 +181,7 @@
 (defn cut-polygon
   "Cut a polygon with a line, returning the set of polygons from each side of the
   line."
-  [polygon {[pl ql] :points :as line}]
+  [polygon {[pl ql] :points}]
   (let [edges (g/edges polygon)
         isecs (->> edges
                    (keep (fn [edge]
