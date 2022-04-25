@@ -80,4 +80,43 @@
                         (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
       "line segment clips multiple regions of a concave polygon"))
 
+(deftest cut-polygon
+  (let [poly (gp/polygon2 [0 0] [10 0] [0 10])
+        [a b c] (g/vertices poly)]
+    (t/testing "triangles"
+      (is (= [poly] (sut/cut-polygon poly (gl/line2 [0 11] [1 11])))
+          "identity if line does not intersect")
+      (is (= [poly] (sut/cut-polygon poly (gl/line2 [0 10] [1 10])))
+          "identity if line only intersects one corner")
+      (is (= [(gp/polygon2 a [5 5] c)
+              (gp/polygon2 a b [5 5])]
+             (sut/cut-polygon poly (gl/line2 a [10 10])))
+          "diagonal cut")
+      (is (= [(gp/polygon2 a b [5 5] [0 5])
+              (gp/polygon2 [5 5] c [0 5])]
+             (sut/cut-polygon poly (gl/line2 [0 5] [10 5])))
+          "horizontal cut")
+      (is (= [(gp/polygon2 a [5 0] [5 5] c)
+              (gp/polygon2 [5 0] b [5 5])]
+             (sut/cut-polygon poly (gl/line2 [5 0] [5 10])))
+          "vertical cut")))
+  (let [rect (rect/rect 0 0 10 10)
+        [a b c d] (g/vertices rect)]
+    (t/testing "rectangles"
+      (is (= [(gp/polygon2 a b c d)]
+             (sut/cut-polygon rect (gl/line2 [0 0] [0 10])))
+          "identity if line is coincident with edge")
+      (is (= [(gp/polygon2 a b [10 5] [0 5])
+              (gp/polygon2 [10 5] c d [0 5])]
+             (sut/cut-polygon rect (gl/line2 [0 5] [10 5])))
+          "horizontal split")
+      (is (= [(gp/polygon2 a [5 0] [5 10] d)
+              (gp/polygon2 [5 0] b c [5 10])]
+             (sut/cut-polygon rect (gl/line2 [5 0] [5 10])))
+          "vertical split")
+      (is (= [(gp/polygon2 a [5 0] [10 5] c d)
+              (gp/polygon2 [5 0] b [10 5])]
+             (sut/cut-polygon rect (gl/line2 [5 0] [10 5])))
+          "diagonal cut"))))
+
 (comment (t/run-tests))

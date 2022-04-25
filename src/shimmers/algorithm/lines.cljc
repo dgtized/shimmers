@@ -176,31 +176,50 @@
                               []
                               [[z q]]))))))))
 
+;; https://stackoverflow.com/a/5533807/34450
+(defn cut-polygon
+  "Cut a polygon with a line, returning the set of polygons from each side of the
+  line."
+  [polygon {[pl ql] :points :as line}]
+  (let [edges (g/edges polygon)
+        isecs (->> edges
+                   (keep (fn [edge]
+                           (let [[pe qe] edge
+                                 isec (isec/intersect-line2-line2? pl ql pe qe)]
+                             (when (and (= (:type isec) :intersect) (not (tm/delta= qe (:p isec))))
+                               {:edge edge :p (:p isec)}))))
+                   (sort-by (fn [{:keys [p]}] (g/dist-squared pl p))))
+        pairs (partition 2 2 (map :p isecs))
+        isecs (for [isec isecs]
+                (if-let [opposite (some (fn [[p q]] (cond (tm/delta= p (:p isec)) q
+                                                         (tm/delta= q (:p isec)) p))
+                                        pairs)]
+                  (assoc isec :pair opposite)
+                  isec))]
+    (if (< (count isecs) 2)
+      [(g/as-polygon polygon)]
+      (loop [[edge & remaining] edges active [] shapes []]
+        (if (nil? edge)
+          (mapv (comp gp/polygon2 dedupe)
+                (if (> (count active) 1) (conj shapes active) shapes))
+          (let [p (first edge)
+                current-polygon (conj active p)]
+            (if-let [isec (some (fn [{iedge :edge :as isec}] (when (= iedge edge) isec)) isecs)]
+              (let [{cut-p :p cut-q :pair} isec]
+                (if-let [resume (some (fn [s] (when (tm/delta= (last s) cut-q) s)) shapes)]
+                  (recur remaining
+                         (conj resume cut-p)
+                         (conj (remove #{resume} shapes)
+                               (conj current-polygon cut-p)))
+                  (recur remaining
+                         [cut-p]
+                         (conj shapes (conj current-polygon cut-p)))))
+              (recur remaining current-polygon shapes))))))))
 
-(comment (defn cut-polygon
-           "Cut a polygon with a line, and return the set of independent closed polygons."
-           [polygon {[pl ql] :points :as line}]
-           (let [edges (g/edges polygon)
-                 isecs (into {}
-                             (keep (fn [edge]
-                                     (let [[pe qe] edge
-                                           isec (isec/intersect-line2-line2? pl ql pe qe)]
-                                       (when (= (:type isec) :intersect)
-                                         [edge {:p (:p isec) :line line}]))) edges))]
-             (loop [[edge & remaining] edges active [] shapes []]
-               (let [[p q] edge
-                     isec (get isecs edge)]
-                 (cond (nil? edge)
-                       shapes
-                       (some? isec)
-                       (let [{cut-pt :p} isec]
-                         )
-                       (recur remaining (conj active p) shapes))))))
-
-         (comment (cut-polygon (rect/rect 10) (gl/line2 5 0 5 10))))
+(comment (cut-polygon (rect/rect 10) (gl/line2 5 0 5 10))
+         (cut-polygon (rect/rect 10) (gl/line2 0 5 10 5)))
 ;; a --   -- b
 ;; |         |
 ;; | e --- d |
 ;; |/       \|
 ;; f         c
-
