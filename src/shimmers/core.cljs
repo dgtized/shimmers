@@ -34,7 +34,7 @@
       (f sketch))))
 
 (defn on-index []
-  [{:start #(favicon/start 100)
+  [{:start #(favicon/start 333)
     :stop #(favicon/stop)}])
 
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
