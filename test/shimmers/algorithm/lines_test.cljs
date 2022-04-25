@@ -65,16 +65,19 @@
       "line segment clips a corner from outside")
   (is (= [(gl/line2 5 5 2 2)] (sut/clip-line (gl/line2 5 5 0 0) (rect/rect 2 2 8 8)))
       "line segment clips a corner from inside")
-  (is (= [(gl/line2 0.5 1.5 1.5 1.5)] (sut/clip-line (gl/line2 0.5 1.5 2 1.5) (gp/polygon2 [0 0] [1.5 1.5] [0 3])))
+  (is (= [(gl/line2 0.5 1.5 1.5 1.5)]
+         (sut/clip-line (gl/line2 0.5 1.5 2 1.5) (gp/polygon2 [0 0] [1.5 1.5] [0 3])))
       "line segment clips a corner from inside, floating point")
   (is (= [] (sut/clip-line (gl/line2 1.5 1.5 0 0) (gp/polygon2 [3 1.5] [1.5 1.5] [1.5 3])))
       "segment intersects vertex at start")
   (is (= [] (sut/clip-line (gl/line2 0 0 1.5 1.5) (gp/polygon2 [3 1.5] [1.5 1.5] [1.5 3])))
       "segment intersects vertex at end")
-  (is (= [(gl/line2 1 1 2 1)] (sut/clip-line (gl/line2 0 1 3 1) (gp/polygon2 [1 1] [2 1] [2 2] [1 2])))
+  (is (= [(gl/line2 1 1 2 1)]
+         (sut/clip-line (gl/line2 0 1 3 1) (gp/polygon2 [1 1] [2 1] [2 2] [1 2])))
       "segment is coincident with an edge")
   (is (= [(gl/line2 2 5 3 5) (gl/line2 7 5 8 5)]
-         (sut/clip-line (gl/line2 0 5 10 5) (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
+         (sut/clip-line (gl/line2 0 5 10 5)
+                        (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
       "line segment clips multiple regions of a concave polygon"))
 
 (comment (t/run-tests))
