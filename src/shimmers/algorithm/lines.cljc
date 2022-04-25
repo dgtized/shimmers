@@ -177,6 +177,7 @@
                               [[z q]]))))))))
 
 ;; https://stackoverflow.com/a/5533807/34450
+;; FIXME: not handling internal coincident edges on concave polygons
 (defn cut-polygon
   "Cut a polygon with a line, returning the set of polygons from each side of the
   line."
@@ -215,11 +216,3 @@
                          [cut-p]
                          (conj shapes (conj current-polygon cut-p)))))
               (recur remaining current-polygon shapes))))))))
-
-(comment (cut-polygon (rect/rect 10) (gl/line2 5 0 5 10))
-         (cut-polygon (rect/rect 10) (gl/line2 0 5 10 5)))
-;; a --   -- b
-;; |         |
-;; | e --- d |
-;; |/       \|
-;; f         c
