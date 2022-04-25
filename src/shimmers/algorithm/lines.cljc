@@ -5,7 +5,8 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.utils.intersect :as isec]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.rect :as rect]))
 
 (defn points->lines [points]
   (map gl/line2 (partition 2 1 points)))
@@ -174,3 +175,32 @@
                             (if (tm/delta= q z)
                               []
                               [[z q]]))))))))
+
+
+(comment (defn cut-polygon
+           "Cut a polygon with a line, and return the set of independent closed polygons."
+           [polygon {[pl ql] :points :as line}]
+           (let [edges (g/edges polygon)
+                 isecs (into {}
+                             (keep (fn [edge]
+                                     (let [[pe qe] edge
+                                           isec (isec/intersect-line2-line2? pl ql pe qe)]
+                                       (when (= (:type isec) :intersect)
+                                         [edge {:p (:p isec) :line line}]))) edges))]
+             (loop [[edge & remaining] edges active [] shapes []]
+               (let [[p q] edge
+                     isec (get isecs edge)]
+                 (cond (nil? edge)
+                       shapes
+                       (some? isec)
+                       (let [{cut-pt :p} isec]
+                         )
+                       (recur remaining (conj active p) shapes))))))
+
+         (comment (cut-polygon (rect/rect 10) (gl/line2 5 0 5 10))))
+;; a --   -- b
+;; |         |
+;; | e --- d |
+;; |/       \|
+;; f         c
+
