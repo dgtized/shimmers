@@ -21,8 +21,7 @@
   ;; TODO: add circle ci exclusion for gh-pages?
   github-publish
   {:task (t/github-publish :dir "static-site"
-                           :repo "git@github.com:dgtized/shimmers.git"
-                           :fake true)}
+                           :repo "git@github.com:dgtized/shimmers.git")}
   publish
   {:depends [build
              build-static-site
