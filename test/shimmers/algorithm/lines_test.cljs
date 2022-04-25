@@ -2,11 +2,13 @@
   (:require
    [cljs.test :as t :refer-macros [deftest is] :include-macros true]
    [shimmers.algorithm.lines :as sut]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def points [(gv/vec2 0 0) (gv/vec2 1 2.1) (gv/vec2 2 (/ 1 3)) (gv/vec2 3 1) (gv/vec2 2 2)])
 (def lines [(gl/line2 [0 0] [1 2.1])
@@ -80,6 +82,13 @@
                         (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
       "line segment clips multiple regions of a concave polygon"))
 
+(defn roughly-same-polygon [a b]
+  (let [as (g/vertices a)
+        bs (g/vertices b)]
+    (and (= (count as) (count bs))
+         (every? (fn [[p q]] (tm/delta= p q))
+                 (map vector as bs)))))
+
 (deftest cut-polygon
   (let [poly (gp/polygon2 [0 0] [10 0] [0 10])
         [a b c] (g/vertices poly)]
@@ -90,7 +99,7 @@
           "identity if line only intersects one corner")
       (is (= [(gp/polygon2 a [5 5] c)
               (gp/polygon2 a b [5 5])]
-             (sut/cut-polygon poly (gl/line2 a [10 10])))
+             (sut/cut-polygon poly (gl/line2 [0 0] [10 10])))
           "diagonal cut")
       (is (= [(gp/polygon2 a b [5 5] [0 5])
               (gp/polygon2 [5 5] c [0 5])]
@@ -106,6 +115,9 @@
       (is (= [(gp/polygon2 a b c d)]
              (sut/cut-polygon rect (gl/line2 [0 0] [0 10])))
           "identity if line is coincident with edge")
+      (is (= [(gp/polygon2 a b c d)]
+             (sut/cut-polygon rect (gl/line2 [0 5] [0 10])))
+          "identify if line is partially coincident with edge")
       (is (= [(gp/polygon2 a b [10 5] [0 5])
               (gp/polygon2 [10 5] c d [0 5])]
              (sut/cut-polygon rect (gl/line2 [0 5] [10 5])))
@@ -117,7 +129,19 @@
       (is (= [(gp/polygon2 a [5 0] [10 5] c d)
               (gp/polygon2 [5 0] b [10 5])]
              (sut/cut-polygon rect (gl/line2 [5 0] [10 5])))
-          "diagonal cut")))
+          "diagonal cut into rectangle missing corner & triangle")
+      (is (= [(gp/polygon2 a b d)
+              (gp/polygon2 b c d)]
+             (sut/cut-polygon rect (gl/line2 [0 10] [10 0])))
+          "diagonal cut into two triangles")))
+  (let [circle (g/as-polygon (gc/circle 5 5 5) 4)]
+    (t/testing "circles"
+      ;; FIXME: not sure if working when line is from vertex to vertex
+      (is (every? (fn [[a b]] (roughly-same-polygon a b))
+                  (map vector
+                       [(gp/polygon2 [10 5] [5 10] [0 5] [1 4] [9 4])
+                        (gp/polygon2 [1 4] [5 0] [9 4])]
+                       (sut/cut-polygon circle (gl/line2 [-1 4] [11 4])))))))
   ;; a --   -- b
   ;; |         |
   ;; | f --- e |

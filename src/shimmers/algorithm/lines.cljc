@@ -187,7 +187,8 @@
                    (keep (fn [edge]
                            (let [[pe qe] edge
                                  isec (isec/intersect-line2-line2? pl ql pe qe)]
-                             (when (and (= (:type isec) :intersect) (not (tm/delta= qe (:p isec))))
+                             (when (and (= (:type isec) :intersect)
+                                        (not (tm/delta= qe (:p isec))))
                                {:edge edge :p (:p isec)}))))
                    (sort-by (fn [{:keys [p]}] (g/dist-squared pl p))))
         pairs (partition 2 2 (map :p isecs))
