@@ -154,14 +154,23 @@
                     ;; if line clips at a corner, remove duplicates
                     ;; might have difficulty with floating point coordinate boundaries
                     dedupe)]
-    (map gl/line2
-         (cond (empty? points)
-               []
-               (even? (count points))
-               (partition 2 2 points)
-               :else
-               (if (g/contains-point? polygon p)
-                 (concat [[p (first points)]]
-                         (partition 2 2 (rest points)))
-                 (concat (partition 2 2 (butlast points))
-                         [[(last points) q]]))))))
+    (mapv gl/line2
+          (cond (empty? points)
+                (if (and (g/contains-point? polygon p)
+                         (g/contains-point? polygon q))
+                  [[p q]]
+                  [])
+                (even? (count points))
+                (partition 2 2 points)
+                :else
+                (if (g/contains-point? polygon p)
+                  (let [[a & xs] points]
+                    (concat (if (tm/delta= p a)
+                              []
+                              [[p a]])
+                            (partition 2 2 xs)))
+                  (let [z (last points)]
+                    (concat (partition 2 2 (butlast points))
+                            (if (tm/delta= q z)
+                              []
+                              [[z q]]))))))))
