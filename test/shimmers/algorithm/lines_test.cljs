@@ -80,7 +80,20 @@
   (is (= [(gl/line2 2 5 3 5) (gl/line2 7 5 8 5)]
          (sut/clip-line (gl/line2 0 5 10 5)
                         (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
-      "line segment clips multiple regions of a concave polygon"))
+      "line segment clips multiple regions of a concave polygon")
+  (is (= [(gl/line2 2 2 3 2) (gl/line2 7 2 8 2)]
+         (sut/clip-line (gl/line2 0 2 10 2)
+                        (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
+      "line segment clips multiple regions of a concave polygon including coincident edges")
+  (is (= [(gl/line2 2.5 2 3 2) (gl/line2 7 2 8 2)]
+         (sut/clip-line (gl/line2 2.5 2 8 2)
+                        (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
+      "line segment clips coincident edge of concave polygon starting inside")
+  (is (= [(gl/line2 2 2 3 2) (gl/line2 7 2 7.5 2)]
+         (sut/clip-line (gl/line2 2 2 7.5 2)
+                        (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])))
+      "line segment clips coincident edge of concave polygon ending inside")
+  )
 
 (defn roughly-same-polygon [a b]
   (let [as (g/vertices a)
