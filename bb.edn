@@ -1,6 +1,25 @@
-{:tasks {:requires ([babashka.fs :as fs])
-         clean {:task (do (println "Remove target directory")
-                          (fs/delete-tree "target")
-                          (fs/delete-tree "resources/public/.git"))}
-         publish {:depends [clean]
-                  :task (shell "bin/publish.sh")}}}
+{:paths ["src/bb"]
+ :tasks
+ {:requires ([babashka.fs :as fs]
+             [tasks :as t])
+  clean
+  {:task (do (println "Remove target directory")
+             (fs/delete-tree "target"))}
+  build
+  {:depends [clean]
+   :task (clojure "-M -m figwheel.main -bo release")}
+  build-static-site
+  {:task (t/build-static-site "resources/public" "static-site")}
+  rewrite-index (t/rewrite-index :from "resources/public/index.html"
+                                 :to "static-site/index.html"
+                                 :base-href "https://dgtized.github.io/shimmers/")
+  ;; TODO: consider fetching repo from .git/config?
+  github-publish
+  {:task (t/github-publish :dir "static-site"
+                           :repo "git@github.com:dgtized/shimmers.git"
+                           :fake true)}
+  publish
+  {:depends [build
+             build-static-site
+             rewrite-index
+             github-publish]}}}

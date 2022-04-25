@@ -1,5 +1,4 @@
-^{:open-url "http://[[server-hostname]]:[[server-port]]/index.html"
-  :post-build-hooks [shimmers.release/make-index]}
+^{:open-url "http://[[server-hostname]]:[[server-port]]/index.html"}
 {:main shimmers.core
 
  :externs ["p5-externs.js" "sparkles-externs.js"
@@ -28,5 +27,5 @@
  :source-map "target/public/cljs-out/release-main.js.map"
 
  ;; TODO: see https://clojurescript.org/reference/compiler-options
- ;; :fingerprint true
+ :fingerprint true
  }

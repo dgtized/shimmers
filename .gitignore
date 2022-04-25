@@ -16,3 +16,4 @@ resources/public/shimmers.html
 /out/
 /bin/bb
 .clj-kondo/.cache/
+static-site
