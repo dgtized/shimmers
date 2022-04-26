@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.wave-function-collapse
   (:require
    [clojure.string :as str]
+   [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -78,7 +79,38 @@
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
 
+(defn fully-collapsed? [grid]
+  (every? (fn [v] (= 1 (count v)))
+          (vals (dissoc grid :dims))))
+
+(defn propagate [grid rules position tile]
+  (loop [visiting (neighbors (:dims grid) position)
+         grid (assoc grid position (set tile))]
+    (if (empty? visiting)
+      grid
+      (let [[pos & remaining] visiting]
+        (if (collapsed? grid pos)
+          (recur remaining grid)
+          (let [legal (legal-rules grid rules pos)
+                legal-tiles (set (map first legal))]
+            (if (= legal-tiles (get grid pos))
+              (recur remaining grid)
+              (recur (into remaining (neighbors (:dims grid) pos))
+                     (assoc grid position legal-tiles)))))))))
+
+(defn solve [grid rules]
+  (loop [positions (keys (dissoc grid :dims)) grid grid]
+    (if (empty? positions)
+      grid
+      (let [[pos & remaining] positions]
+        (if (collapsed? grid pos)
+          (recur remaining grid)
+          (let [legal (legal-rules grid rules pos)
+                choice (dr/weighted (tile-weights legal))]
+            (recur remaining
+                   (propagate grid rules pos choice))))))))
+
 (comment
   (let [rt (rules (grid->amatrix rule-a) cardinal-directions)
-        grid (init-grid [3 3] (all-tiles rt))]
-    [(legal-rules grid rt (gv/vec2 1 1))]))
+        grid (init-grid [4 4] (all-tiles rt))]
+    (solve grid rt)))
