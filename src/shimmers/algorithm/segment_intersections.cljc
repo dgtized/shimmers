@@ -36,7 +36,8 @@
 ;; (defn event-queue [segments]
 ;;   (priority/priority-map-keyfn-by))
 
-;; (conj (priority/priority-map) [1 2])
+(comment
+  (into (priority/priority-map) [[2 4] [1 2] [3 4]]))
 
 (defn left-endpoint? [point]
   (fn [{:keys [points]}]
