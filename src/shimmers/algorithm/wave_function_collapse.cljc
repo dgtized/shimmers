@@ -18,9 +18,12 @@
     ABA
     AAA"))
 
+(defn dims [grid]
+  [(count (first grid))
+   (count grid)])
+
 (defn grid->amatrix [grid]
-  (let [h (count grid)
-        w (count (first grid))]
+  (let [[w h] (dims grid)]
     (->>
      (for [j (range h)
            i (range w)]
