@@ -44,9 +44,8 @@
 (defn scene []
   (csvg/svg {:width width
              :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
+             :stroke "none"
+             :fill "none"}
             (apply list (shapes))))
 
 (sketch/definition wave-function-collapse
