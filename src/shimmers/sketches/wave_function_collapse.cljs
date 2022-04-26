@@ -33,12 +33,13 @@
 
 (def rule-a
   (wfc/str->matrix
-   "AAAAAA
-    ABBBBA
-    ABCCBA
-    ABCCBA
-    ABBBBA
-    AAAAAA"))
+   "AAAAAAA
+    ABBBBBA
+    ABCCCBA
+    ABCCCBA
+    ABCCCBA
+    ABBBBBA
+    AAAAAAA"))
 
 (defn shapes []
   (let [rt (wfc/rules (wfc/matrix->grid rule-a) wfc/cardinal-directions)]

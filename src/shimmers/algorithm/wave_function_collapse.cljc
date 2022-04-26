@@ -95,27 +95,27 @@
             (vals choices))))
 
 (defn propagate [grid rules position tile]
-  (loop [visiting (neighbors (:dims grid) position)
-         grid (assoc grid position (set tile))]
-    (if (empty? visiting)
-      grid
-      (let [[pos & remaining] visiting]
-        (if (collapsed? grid pos)
-          (recur remaining grid)
-          (let [legal (legal-rules grid rules pos)
-                legal-tiles (set (map first legal))]
-            (if (= legal-tiles (get grid pos))
-              (recur remaining grid)
-              (recur (into remaining (neighbors (:dims grid) pos))
-                     (assoc grid position legal-tiles)))))))))
+  (let [initial (neighbors (:dims grid) position)]
+    (loop [visiting initial
+           changes (set initial)
+           grid (assoc grid position (set tile))]
+      (if (empty? visiting)
+        [changes grid]
+        (let [[pos & remaining] visiting]
+          (if (collapsed? grid pos)
+            (recur remaining (disj changes pos) grid)
+            (let [legal (legal-rules grid rules pos)
+                  legal-tiles (set (map first legal))]
+              (if (= legal-tiles (get grid pos))
+                (recur remaining changes grid)
+                (let [to-visit (neighbors (:dims grid) pos)]
+                  (recur (into remaining to-visit)
+                         (into changes to-visit)
+                         (assoc grid position legal-tiles)))))))))))
 
 (defn solve [grid rules]
-  (let [weights (frequencies (map first rules))
-        pairs (map (fn [pos] [(+ (entropy grid weights pos)
-                                (* 0.01 (- (rand) 0.5)))
-                             (gv/vec2 pos)])
-                   (keys (dissoc grid :dims)))]
-    (loop [positions (into (priority/priority-map) pairs)
+  (let [weights (frequencies (map first rules))]
+    (loop [positions (conj (priority/priority-map) [1 (first (keys (dissoc grid :dims)))])
            grid grid]
       (if (empty? positions)
         grid
@@ -123,9 +123,14 @@
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
             (let [legal (legal-rules grid rules pos)
-                  choice (dr/weighted (tile-weights legal))]
-              (recur (pop positions)
-                     (propagate grid rules pos choice)))))))))
+                  choice (dr/weighted (tile-weights legal))
+                  [changes grid'] (propagate grid rules pos choice)]
+              (recur (into (pop positions)
+                           (map (fn [pos] [(+ (entropy grid weights pos)
+                                             (* 0.001 (- (rand) 0.5)))
+                                          (gv/vec2 pos)])
+                                changes))
+                     grid'))))))))
 
 (def rule-a
   (str->matrix
