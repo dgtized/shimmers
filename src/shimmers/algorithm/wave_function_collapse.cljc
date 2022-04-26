@@ -8,29 +8,29 @@
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
 
-(defn str->grid [s]
+(defn str->matrix [s]
   (->> s
        str/split-lines
        (map str/trim)
        (mapv vec)))
 
-(def rule-a
-  (str->grid
-   "AAA
-    ABA
-    AAA"))
-
 (defn dims [grid]
   [(count (first grid))
    (count grid)])
 
-(defn grid->amatrix [grid]
-  (let [[w h] (dims grid)]
+(defn matrix->grid [matrix]
+  (let [[w h] (dims matrix)]
     (->>
      (for [j (range h)
            i (range w)]
-       [(gv/vec2 i j) (nth (nth grid j) i)])
+       [(gv/vec2 i j) (nth (nth matrix j) i)])
      (into {:dims [w h]}))))
+
+(defn grid->matrix [grid]
+  (let [[w h] (:dims grid)]
+    (vec (for [j (range h)]
+           (vec (for [i (range w)]
+                  (get grid (gv/vec2 i j))))))))
 
 (defn valid-neighbor? [[cols rows] [i j]]
   (and (>= i 0) (< i cols)
@@ -98,6 +98,7 @@
               (recur (into remaining (neighbors (:dims grid) pos))
                      (assoc grid position legal-tiles)))))))))
 
+;; FIXME: walk positions in order of shannon-entropy until fully-collapsed?
 (defn solve [grid rules]
   (loop [positions (keys (dissoc grid :dims)) grid grid]
     (if (empty? positions)
@@ -110,7 +111,13 @@
             (recur remaining
                    (propagate grid rules pos choice))))))))
 
+(def rule-a
+  (str->matrix
+   "AAAAA
+    ABCBA
+    AAAAA"))
+
 (comment
-  (let [rt (rules (grid->amatrix rule-a) cardinal-directions)
-        grid (init-grid [4 4] (all-tiles rt))]
-    (solve grid rt)))
+  (let [rt (rules (matrix->grid rule-a) cardinal-directions)
+        grid (init-grid [8 8] (all-tiles rt))]
+    (grid->matrix (solve grid rt))))
