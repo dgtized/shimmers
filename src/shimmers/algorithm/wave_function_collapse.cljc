@@ -28,7 +28,7 @@
      (for [j (range h)
            i (range w)]
        [(gv/vec2 i j) (nth (nth grid j) i)])
-     (into {:size [w h]}))))
+     (into {:dims [w h]}))))
 
 (defn valid-neighbor? [[i j] cols rows]
   (and (>= i 0) (< i cols)
@@ -38,7 +38,7 @@
   [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)])
 
 (defn rules [amatrix directions]
-  (let [{[w h] :size} amatrix]
+  (let [{[w h] :dims} amatrix]
     (for [j (range h)
           i (range w)
           dir directions
@@ -47,4 +47,22 @@
           :when (valid-neighbor? neighbor w h)]
       [(get amatrix pos) dir (get amatrix neighbor)])))
 
-(comment (rules (grid->amatrix rule-a) cardinal-directions))
+(defn all-tiles [rules]
+  (set (map first rules)))
+
+(defn init-grid [cols rows cases]
+  (into {:dims [cols rows]}
+        (for [j (range rows)
+              i (range cols)]
+          [(gv/vec2 i j) cases])))
+
+(defn tile-weights [rules]
+  (frequencies (map first rules)))
+
+(comment
+  (let [rt (rules (grid->amatrix rule-a) cardinal-directions)]
+    [(init-grid 3 3 (all-tiles rt))
+     (tile-weights rt)]))
+
+(defn collapsed? [grid pos]
+  (= 1 (count (get grid pos))))
