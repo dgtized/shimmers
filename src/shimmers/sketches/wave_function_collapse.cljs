@@ -13,6 +13,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(def color-map
+  {"A" "#4444dd"
+   "B" "#ffffff"
+   "C" "#000000"})
+
 (defn grid->cells [grid]
   (let [[cols rows] (:dims grid)
         w (/ width cols)
@@ -20,13 +25,19 @@
     (for [j (range rows)
           i (range cols)]
       (vary-meta (rect/rect (* w i) (* h j) w h)
-                 merge {:fill (get {"A" "#000000"
-                                    "B" "#ffffff"
-                                    "C" "#888888"}
-                                   (first (get grid (gv/vec2 i j))))}))))
+                 merge {:fill (get color-map (first (get grid (gv/vec2 i j))))}))))
+
+(def rule-a
+  (wfc/str->matrix
+   "AAAAAA
+    ABBBBA
+    ABCCBA
+    ABCCBA
+    ABBBBA
+    AAAAAA"))
 
 (defn shapes []
-  (let [rt (wfc/rules (wfc/matrix->grid wfc/rule-a) wfc/cardinal-directions)]
+  (let [rt (wfc/rules (wfc/matrix->grid rule-a) wfc/cardinal-directions)]
     (grid->cells (wfc/solve (wfc/init-grid [32 24] (wfc/all-tiles rt))
                             rt))))
 
