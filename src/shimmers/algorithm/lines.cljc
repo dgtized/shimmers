@@ -176,6 +176,7 @@
                               [[z q]]))))))))
 
 ;; https://stackoverflow.com/a/5533807/34450
+;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
 ;; FIXME: not handling internal coincident edges on concave polygons
 (defn cut-polygon
   "Cut a polygon with a line, returning the set of polygons from each side of the
