@@ -3,6 +3,9 @@
             [thi.ng.geom.vector :as gv]
             [thi.ng.math.core :as tm]))
 
+;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
+;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
+
 (defn str->grid [s]
   (->> s
        str/split-lines
