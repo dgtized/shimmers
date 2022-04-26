@@ -3,7 +3,9 @@
    [clojure.string :as str]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   #?(:clj [clojure.data.priority-map :as priority]
+      :cljs [tailrecursion.priority-map :as priority])))
 
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
@@ -83,6 +85,15 @@
   (every? (fn [v] (= 1 (count v)))
           (vals (dissoc grid :dims))))
 
+(defn entropy [grid weights position]
+  (let [choices (select-keys weights (seq (get grid position)))
+        all-options (reduce + 0.0 (vals choices))]
+    (reduce (fn [shannon c]
+              (let [p (/ (get weights c 1.0) all-options)]
+                (+ shannon (* p (Math/log (/ 1 p))))))
+            0.0
+            (vals choices))))
+
 (defn propagate [grid rules position tile]
   (loop [visiting (neighbors (:dims grid) position)
          grid (assoc grid position (set tile))]
@@ -98,18 +109,23 @@
               (recur (into remaining (neighbors (:dims grid) pos))
                      (assoc grid position legal-tiles)))))))))
 
-;; FIXME: walk positions in order of shannon-entropy until fully-collapsed?
 (defn solve [grid rules]
-  (loop [positions (keys (dissoc grid :dims)) grid grid]
-    (if (empty? positions)
-      grid
-      (let [[pos & remaining] positions]
-        (if (collapsed? grid pos)
-          (recur remaining grid)
-          (let [legal (legal-rules grid rules pos)
-                choice (dr/weighted (tile-weights legal))]
-            (recur remaining
-                   (propagate grid rules pos choice))))))))
+  (let [weights (frequencies (map first rules))
+        pairs (map (fn [pos] [(+ (entropy grid weights pos)
+                                (* 0.01 (- (rand) 0.5)))
+                             (gv/vec2 pos)])
+                   (keys (dissoc grid :dims)))]
+    (loop [positions (into (priority/priority-map) pairs)
+           grid grid]
+      (if (empty? positions)
+        grid
+        (let [pos (second (peek positions))]
+          (if (collapsed? grid pos)
+            (recur (pop positions) grid)
+            (let [legal (legal-rules grid rules pos)
+                  choice (dr/weighted (tile-weights legal))]
+              (recur (pop positions)
+                     (propagate grid rules pos choice)))))))))
 
 (def rule-a
   (str->matrix
