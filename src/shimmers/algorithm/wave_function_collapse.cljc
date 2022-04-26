@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.wave-function-collapse
-  (:require [clojure.string :as str]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.string :as str]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
@@ -30,27 +31,32 @@
        [(gv/vec2 i j) (nth (nth grid j) i)])
      (into {:dims [w h]}))))
 
-(defn valid-neighbor? [[i j] cols rows]
+(defn valid-neighbor? [[cols rows] [i j]]
   (and (>= i 0) (< i cols)
        (>= j 0) (< j rows)))
 
 (def cardinal-directions
   [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)])
 
+(defn neighbors [dims pos]
+  (filter (fn [p] (valid-neighbor? dims p))
+          (map (partial tm/+ pos) cardinal-directions)))
+
 (defn rules [amatrix directions]
-  (let [{[w h] :dims} amatrix]
+  (let [{:keys [dims]} amatrix
+        [w h] dims]
     (for [j (range h)
           i (range w)
           dir directions
           :let [pos (gv/vec2 i j)
                 neighbor (tm/+ pos dir)]
-          :when (valid-neighbor? neighbor w h)]
+          :when (valid-neighbor? dims neighbor)]
       [(get amatrix pos) dir (get amatrix neighbor)])))
 
 (defn all-tiles [rules]
   (set (map first rules)))
 
-(defn init-grid [cols rows cases]
+(defn init-grid [[cols rows] cases]
   (into {:dims [cols rows]}
         (for [j (range rows)
               i (range cols)]
@@ -61,8 +67,7 @@
 
 (comment
   (let [rt (rules (grid->amatrix rule-a) cardinal-directions)]
-    [(init-grid 3 3 (all-tiles rt))
-     (tile-weights rt)]))
+    [(init-grid [3 3] (all-tiles rt))]))
 
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
