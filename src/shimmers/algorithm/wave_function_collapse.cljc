@@ -65,9 +65,20 @@
 (defn tile-weights [rules]
   (frequencies (map first rules)))
 
-(comment
-  (let [rt (rules (grid->amatrix rule-a) cardinal-directions)]
-    [(init-grid [3 3] (all-tiles rt))]))
+(defn legal-rules
+  "Calculate subset of legal rules given current `grid` and a `position`."
+  [grid rules position]
+  (let [{:keys [dims]} grid]
+    (for [[value dir tile] rules
+          :let [neighbor (tm/+ position dir)]
+          :when (valid-neighbor? dims neighbor)
+          :when (contains? (get grid neighbor) tile)]
+      [value dir tile])))
 
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
+
+(comment
+  (let [rt (rules (grid->amatrix rule-a) cardinal-directions)
+        grid (init-grid [3 3] (all-tiles rt))]
+    [(legal-rules grid rt (gv/vec2 1 1))]))
