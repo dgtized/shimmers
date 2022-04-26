@@ -25,7 +25,11 @@
     (for [j (range rows)
           i (range cols)]
       (vary-meta (rect/rect (* w i) (* h j) w h)
-                 merge {:fill (get color-map (first (get grid (gv/vec2 i j))))}))))
+                 merge {:fill
+                        (let [values (get grid (gv/vec2 i j))]
+                          (if (= (count values) 1)
+                            (get color-map (first values))
+                            "#dd4444"))}))))
 
 (def rule-a
   (wfc/str->matrix
