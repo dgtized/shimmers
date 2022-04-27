@@ -99,12 +99,13 @@
         all-options (reduce + 0.0 (vals choices))]
     (reduce (fn [shannon v]
               (let [p (/ v all-options)]
-                (- shannon (* p (Math/log (/ 1 p))))))
-            1.0
+                (+ shannon (* p (Math/log (/ 1 p))))))
+            0.0
             (vals choices))))
 
 (comment (entropy {(gv/vec2) #{:A :B :C}} {:A 3 :B 1 :C 1} (gv/vec2))
          (entropy {(gv/vec2) #{:A :B}} {:A 3 :B 1 :C 1} (gv/vec2))
+         (entropy {(gv/vec2) #{:C :B}} {:A 3 :B 1 :C 1} (gv/vec2))
          (entropy {(gv/vec2) #{:A}} {:A 3 :B 1 :C 1} (gv/vec2))
          (entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))
 
@@ -129,11 +130,11 @@
 
 (defn solve [grid rules]
   (let [weights (tile-weights rules)]
-    (loop [positions (conj (priority/priority-map) [0 (gv/vec2)])
+    (loop [positions (conj (priority/priority-map) [(gv/vec2) 0])
            grid grid]
       (if (empty? positions)
         grid
-        (let [pos (second (peek positions))]
+        (let [pos (first (peek positions))]
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
             (let [legal (legal-rules grid rules pos)
@@ -141,9 +142,9 @@
                   [changes grid'] (propagate grid rules pos choice)]
               (println pos (entropy grid weights pos) choice changes)
               (recur (into (pop positions)
-                           (map (fn [pos] [(+ (entropy grid' weights pos)
-                                             (* 0.0000001 (- (rand) 0.5)))
-                                          (gv/vec2 pos)])
+                           (map (fn [pos] [(gv/vec2 pos)
+                                          (+ (entropy grid' weights pos)
+                                             (* 0.0000001 (- (rand) 0.5)))])
                                 changes))
                      grid'))))))))
 
