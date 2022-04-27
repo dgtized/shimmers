@@ -95,14 +95,14 @@
             0.0
             (vals choices))))
 
-(defn tiles-from-rules [rules]
-  (let [by-dir (vals (group-by second rules))]
-    (reduce set/intersection (map (comp set (partial map first)) by-dir))))
-
-(comment (tiles-from-rules [[:a (gv/vec2 1 0) :a]
-                            [:b (gv/vec2 1 0) :b]
-                            [:a (gv/vec2 0 1) :b]
-                            [:c (gv/vec2 0 1) :b]]))
+(defn tiles-from-rules
+  "List tiles that are legal according to rules for each surrounding direction."
+  [rules]
+  (->> rules
+       (group-by second)
+       vals
+       (map (comp set (partial map first)))
+       (reduce set/intersection)))
 
 (defn propagate [grid rules position tile]
   (let [initial (neighbors (:dims grid) position)]

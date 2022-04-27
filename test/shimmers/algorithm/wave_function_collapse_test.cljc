@@ -35,5 +35,16 @@
   (is (tm/delta= 0 (sut/entropy {(gv/vec2) #{:A}} {:A 3 :B 1 :C 1} (gv/vec2))))
   (is (tm/delta= 0 (sut/entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))))
 
+(deftest tiles-from-rules
+  (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
+                                      [:b (gv/vec2 1 0) :b]
+                                      [:a (gv/vec2 0 1) :b]
+                                      [:c (gv/vec2 0 1) :b]]))
+      "allows tiles if all directions support that option")
+  (is (empty? (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
+                                     [:b (gv/vec2 1 0) :b]
+                                     [:c (gv/vec2 0 1) :b]]))
+      "empty if a direction does not have overlapping legal tiles"))
+
 (comment (t/run-tests))
 
