@@ -95,12 +95,6 @@
             0.0
             (vals choices))))
 
-(comment (entropy {(gv/vec2) #{:A :B :C}} {:A 3 :B 1 :C 1} (gv/vec2))
-         (entropy {(gv/vec2) #{:A :B}} {:A 3 :B 1 :C 1} (gv/vec2))
-         (entropy {(gv/vec2) #{:C :B}} {:A 3 :B 1 :C 1} (gv/vec2))
-         (entropy {(gv/vec2) #{:A}} {:A 3 :B 1 :C 1} (gv/vec2))
-         (entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))
-
 (defn tiles-from-rules [rules]
   (let [by-dir (vals (group-by second rules))]
     (reduce set/intersection (map (comp set (partial map first)) by-dir))))
