@@ -5,7 +5,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
    #?(:clj [clojure.data.priority-map :as priority]
-      :cljs [tailrecursion.priority-map :as priority])))
+      :cljs [tailrecursion.priority-map :as priority])
+   [clojure.set :as set]))
 
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
@@ -85,7 +86,15 @@
                        [:a (gv/vec2 0 1) :b]
                        [:b (gv/vec2 1 0) :c]
                        [:b (gv/vec2 0 1) :c]]
-                      (gv/vec2 0 0)))
+                      (gv/vec2 0 0))
+         (legal-rules {:dims [2 2]
+                       (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a}
+                       (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a :b}}
+                      [[:a (gv/vec2 1 0) :a]
+                       [:b (gv/vec2 1 0) :b]
+                       [:a (gv/vec2 0 1) :a]
+                       [:b (gv/vec2 0 1) :b]]
+                      (gv/vec2)))
 
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
@@ -109,6 +118,15 @@
          (entropy {(gv/vec2) #{:A}} {:A 3 :B 1 :C 1} (gv/vec2))
          (entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))
 
+(defn tiles-from-rules [rules]
+  (let [by-dir (vals (group-by second rules))]
+    (reduce set/intersection (map (comp set (partial map first)) by-dir))))
+
+(comment (tiles-from-rules [[:a (gv/vec2 1 0) :a]
+                            [:b (gv/vec2 1 0) :b]
+                            [:a (gv/vec2 0 1) :b]
+                            [:c (gv/vec2 0 1) :b]]))
+
 (defn propagate [grid rules position tile]
   (let [initial (neighbors (:dims grid) position)]
     (loop [visiting initial
@@ -120,13 +138,24 @@
               neighborhood (remove (partial collapsed? grid) (neighbors (:dims grid) pos))]
           (if (collapsed? grid pos)
             (recur remaining (disj changes pos) grid)
-            (let [legal (legal-rules grid rules pos)
-                  legal-tiles (set (map first legal))]
-              (if (= legal-tiles (get grid pos))
-                (recur remaining changes grid)
-                (recur (into remaining neighborhood)
-                       (into changes neighborhood)
-                       (assoc grid position legal-tiles))))))))))
+            (let [lr (legal-rules grid rules pos)
+                  legal-tiles (tiles-from-rules lr)]
+              (cond (empty? legal-tiles)
+                    (throw [:no-legal-tiles pos lr])
+                    (= legal-tiles (get grid pos))
+                    (recur remaining changes grid)
+                    :else
+                    (recur (into remaining neighborhood)
+                           (into changes neighborhood)
+                           (assoc grid position legal-tiles))))))))))
+
+(comment (propagate {:dims [2 2]
+                     (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
+                     (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
+                    [[:a (gv/vec2 1 0) :b]
+                     [:b (gv/vec2 1 0) :a]]
+                    (gv/vec2)
+                    #{:a}))
 
 (defn solve [grid rules]
   (let [weights (tile-weights rules)]
@@ -137,8 +166,8 @@
         (let [pos (first (peek positions))]
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
-            (let [legal (legal-rules grid rules pos)
-                  choice (dr/weighted (tile-weights legal))
+            (let [legal (tiles-from-rules (legal-rules grid rules pos))
+                  choice (dr/weighted (zipmap legal (map weights legal)))
                   [changes grid'] (propagate grid rules pos choice)]
               (println pos (entropy grid weights pos) choice changes)
               (recur (into (pop positions)
