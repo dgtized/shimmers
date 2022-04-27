@@ -33,17 +33,13 @@
 
 (def rule-a
   (wfc/str->matrix
-   "AAAAAAA
-    ABBBBBA
-    ABCCCBA
-    ABCCCBA
-    ABCCCBA
-    ABBBBBA
-    AAAAAAA"))
+   "AAA
+    ABA
+    AAA"))
 
 (defn shapes []
   (let [rt (wfc/rules (wfc/matrix->grid rule-a) wfc/cardinal-directions)]
-    (grid->cells (wfc/solve (wfc/init-grid [32 24] (wfc/all-tiles rt))
+    (grid->cells (wfc/solve (wfc/init-grid [12 8] (wfc/all-tiles rt))
                             rt))))
 
 (defn scene []

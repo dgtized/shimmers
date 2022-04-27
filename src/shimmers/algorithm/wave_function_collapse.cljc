@@ -115,21 +115,21 @@
            grid (assoc grid position (set tile))]
       (if (empty? visiting)
         [changes grid]
-        (let [[pos & remaining] visiting]
+        (let [[pos & remaining] visiting
+              neighborhood (remove (partial collapsed? grid) (neighbors (:dims grid) pos))]
           (if (collapsed? grid pos)
             (recur remaining (disj changes pos) grid)
             (let [legal (legal-rules grid rules pos)
                   legal-tiles (set (map first legal))]
               (if (= legal-tiles (get grid pos))
                 (recur remaining changes grid)
-                (let [to-visit (neighbors (:dims grid) pos)]
-                  (recur (into remaining to-visit)
-                         (into changes to-visit)
-                         (assoc grid position legal-tiles)))))))))))
+                (recur (into remaining neighborhood)
+                       (into changes neighborhood)
+                       (assoc grid position legal-tiles))))))))))
 
 (defn solve [grid rules]
-  (let [weights (frequencies (map first rules))]
-    (loop [positions (conj (priority/priority-map) [1 (first (keys (dissoc grid :dims)))])
+  (let [weights (tile-weights rules)]
+    (loop [positions (conj (priority/priority-map) [0 (gv/vec2)])
            grid grid]
       (if (empty? positions)
         grid
@@ -139,9 +139,10 @@
             (let [legal (legal-rules grid rules pos)
                   choice (dr/weighted (tile-weights legal))
                   [changes grid'] (propagate grid rules pos choice)]
+              (println pos (entropy grid weights pos) choice changes)
               (recur (into (pop positions)
-                           (map (fn [pos] [(+ (entropy grid weights pos)
-                                             (* 0.001 (- (rand) 0.5)))
+                           (map (fn [pos] [(+ (entropy grid' weights pos)
+                                             (* 0.0000001 (- (rand) 0.5)))
                                           (gv/vec2 pos)])
                                 changes))
                      grid'))))))))
