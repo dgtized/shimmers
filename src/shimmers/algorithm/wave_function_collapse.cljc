@@ -97,11 +97,16 @@
 (defn entropy [grid weights position]
   (let [choices (select-keys weights (seq (get grid position)))
         all-options (reduce + 0.0 (vals choices))]
-    (reduce (fn [shannon c]
-              (let [p (/ (get weights c 1.0) all-options)]
-                (+ shannon (* p (Math/log (/ 1 p))))))
-            0.0
+    (reduce (fn [shannon v]
+              (let [p (/ v all-options)]
+                (- shannon (* p (Math/log (/ 1 p))))))
+            1.0
             (vals choices))))
+
+(comment (entropy {(gv/vec2) #{:A :B :C}} {:A 3 :B 1 :C 1} (gv/vec2))
+         (entropy {(gv/vec2) #{:A :B}} {:A 3 :B 1 :C 1} (gv/vec2))
+         (entropy {(gv/vec2) #{:A}} {:A 3 :B 1 :C 1} (gv/vec2))
+         (entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))
 
 (defn propagate [grid rules position tile]
   (let [initial (neighbors (:dims grid) position)]
