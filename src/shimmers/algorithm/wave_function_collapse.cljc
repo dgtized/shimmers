@@ -74,9 +74,18 @@
   (let [{:keys [dims]} grid]
     (for [[value dir tile] rules
           :let [neighbor (tm/+ position dir)]
-          :when (valid-neighbor? dims neighbor)
-          :when (contains? (get grid neighbor) tile)]
+          :when (and (valid-neighbor? dims neighbor)
+                     (contains? (get grid neighbor) tile))]
       [value dir tile])))
+
+(comment (legal-rules {:dims [2 2]
+                       (gv/vec2 0 0) #{:a :b :c} (gv/vec2 1 0) #{:a :c}
+                       (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b :c}}
+                      [[:a (gv/vec2 1 0) :b]
+                       [:a (gv/vec2 0 1) :b]
+                       [:b (gv/vec2 1 0) :c]
+                       [:b (gv/vec2 0 1) :c]]
+                      (gv/vec2 0 0)))
 
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
