@@ -104,17 +104,18 @@
        (map (comp set (partial map first)))
        (reduce set/intersection)))
 
-(defn propagate [grid rules position tile]
-  (let [initial (neighbors (:dims grid) position)]
+(defn propagate [initial-grid rules position tile]
+  (let [dims (:dims initial-grid)
+        initial (neighbors dims position)]
     (loop [visiting initial
            changes (set initial)
-           grid (assoc grid position (set tile))]
+           grid (assoc initial-grid position tile)]
       (if (empty? visiting)
         [changes grid]
         (let [[pos & remaining] visiting
-              neighborhood (remove (partial collapsed? grid) (neighbors (:dims grid) pos))]
+              neighborhood (remove (partial collapsed? grid) (neighbors dims pos))]
           (if (collapsed? grid pos)
-            (recur remaining (disj changes pos) grid)
+            (recur remaining changes grid)
             (let [lr (legal-rules grid rules pos)
                   legal-tiles (tiles-from-rules lr)]
               (cond (empty? legal-tiles)
@@ -122,7 +123,7 @@
                     (= legal-tiles (get grid pos))
                     (recur remaining changes grid)
                     :else
-                    (recur (into remaining neighborhood)
+                    (recur (into remaining (remove changes neighborhood))
                            (into changes neighborhood)
                            (assoc grid position legal-tiles))))))))))
 
@@ -133,10 +134,10 @@
                      [:b (gv/vec2 0 1) :a]
                      [:b (gv/vec2 -1 0) :a]
                      [:b (gv/vec2 0 -1) :a]
-                     [:b (gv/vec2 1 0) :b]
-                     [:b (gv/vec2 0 1) :b]
-                     [:b (gv/vec2 -1 0) :b]
-                     [:b (gv/vec2 0 -1) :b]
+                     [:a (gv/vec2 1 0) :b]
+                     [:a (gv/vec2 0 1) :b]
+                     [:a (gv/vec2 -1 0) :b]
+                     [:a (gv/vec2 0 -1) :b]
                      ]
                     (gv/vec2)
                     #{:a}))
@@ -152,7 +153,7 @@
             (recur (pop positions) grid)
             (let [legal (tiles-from-rules (legal-rules grid rules pos))
                   choice (dr/weighted (zipmap legal (map weights legal)))
-                  [changes grid'] (propagate grid rules pos choice)]
+                  [changes grid'] (propagate grid rules pos (set [choice]))]
               (println pos (entropy grid weights pos) choice changes)
               (recur (into (pop positions)
                            (map (fn [pos] [(gv/vec2 pos)
