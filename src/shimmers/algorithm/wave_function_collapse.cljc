@@ -108,6 +108,7 @@
 (defn propagate [initial-grid rules position tile]
   (let [dims (:dims initial-grid)
         initial (neighbors dims position)]
+    (tap> [:init initial])
     (loop [visiting initial
            changes (set initial)
            grid (assoc initial-grid position tile)]
@@ -115,7 +116,7 @@
         [changes grid]
         (let [[pos & remaining] visiting
               neighborhood (remove (partial collapsed? grid) (neighbors dims pos))]
-          (tap> pos)
+          (tap> [:p pos])
           (if (collapsed? grid pos)
             (recur remaining changes grid)
             (let [lr (legal-rules grid rules pos)
@@ -125,9 +126,10 @@
                     (= legal-tiles (get grid pos))
                     (recur remaining changes grid)
                     :else
-                    (recur (into remaining (remove changes neighborhood))
-                           (into changes neighborhood)
-                           (assoc grid position legal-tiles))))))))))
+                    (do (tap> [:change (get grid pos) legal-tiles])
+                        (recur (into remaining (remove changes neighborhood))
+                               (set/union changes (set neighborhood))
+                               (assoc grid pos legal-tiles)))))))))))
 
 (comment
   (debug/with-tap-log

@@ -46,5 +46,31 @@
                                      [:c (gv/vec2 0 1) :b]]))
       "empty if a direction does not have overlapping legal tiles"))
 
+(deftest propagate
+  (let [alternating-ab [[:b (gv/vec2 1 0) :a]
+                        [:b (gv/vec2 0 1) :a]
+                        [:b (gv/vec2 -1 0) :a]
+                        [:b (gv/vec2 0 -1) :a]
+                        [:a (gv/vec2 1 0) :b]
+                        [:a (gv/vec2 0 1) :b]
+                        [:a (gv/vec2 -1 0) :b]
+                        [:a (gv/vec2 0 -1) :b]
+                        ]]
+    (is (= [#{(gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 0 1)}
+            {:dims [2 2]
+             (gv/vec2 0 0) #{:a} (gv/vec2 1 0) #{:b}
+             (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a}}]
+           (sut/propagate (sut/init-grid [2 2] #{:a :b})
+                          alternating-ab (gv/vec2) #{:a})))
+    (is (= [#{(gv/vec2 2 2) (gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 0 2)
+              (gv/vec2 2 0) (gv/vec2 2 1) (gv/vec2 1 2) (gv/vec2 0 1)}
+            {:dims [3 3]
+             (gv/vec2 0 0) #{:a} (gv/vec2 1 0) #{:b} (gv/vec2 2 0) #{:a}
+             (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a} (gv/vec2 2 1) #{:b}
+             (gv/vec2 0 2) #{:a} (gv/vec2 1 2) #{:b} (gv/vec2 2 2) #{:a}
+             }]
+           (sut/propagate (sut/init-grid [3 3] #{:a :b})
+                          alternating-ab (gv/vec2) #{:a})))))
+
 (comment (t/run-tests))
 
