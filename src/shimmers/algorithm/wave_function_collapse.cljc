@@ -43,6 +43,10 @@
 (def cardinal-directions
   [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)])
 
+(def directions-8
+  [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)
+   (gv/vec2 -1 -1) (gv/vec2 1 1) (gv/vec2 -1 1) (gv/vec2 1 -1)])
+
 (defn neighbors [dims pos]
   (filter (fn [p] (valid-neighbor? dims p))
           (map (partial tm/+ pos) cardinal-directions)))
