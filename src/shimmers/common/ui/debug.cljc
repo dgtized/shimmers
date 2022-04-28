@@ -88,3 +88,16 @@
 
      (defn mount [atom]
        (ctrl/mount #(display atom) "debug-mount"))))
+
+;; FIXME: broken in Clojure
+(defn with-tap-log [f]
+  (binding #?(:cljs [cljs.core/*exec-tap-fn* (fn [f] (f) true)]
+              :clj [])
+    (let [tap-log (atom [])
+          tap-f (fn [v] (swap! tap-log conj v))
+          _ (add-tap tap-f)
+          result (f)]
+      (remove-tap tap-f)
+      {:log @tap-log :result result})))
+
+(comment (with-tap-log (fn [] (tap> 1) (tap> 2) 3)))

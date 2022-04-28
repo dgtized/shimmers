@@ -1,12 +1,13 @@
 (ns shimmers.algorithm.wave-function-collapse
   (:require
+   [clojure.set :as set]
    [clojure.string :as str]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
    #?(:clj [clojure.data.priority-map :as priority]
-      :cljs [tailrecursion.priority-map :as priority])
-   [clojure.set :as set]))
+      :cljs [tailrecursion.priority-map :as priority])))
 
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
@@ -114,6 +115,7 @@
         [changes grid]
         (let [[pos & remaining] visiting
               neighborhood (remove (partial collapsed? grid) (neighbors dims pos))]
+          (tap> pos)
           (if (collapsed? grid pos)
             (recur remaining changes grid)
             (let [lr (legal-rules grid rules pos)
@@ -127,20 +129,22 @@
                            (into changes neighborhood)
                            (assoc grid position legal-tiles))))))))))
 
-(comment (propagate {:dims [2 2]
-                     (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
-                     (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
-                    [[:b (gv/vec2 1 0) :a]
-                     [:b (gv/vec2 0 1) :a]
-                     [:b (gv/vec2 -1 0) :a]
-                     [:b (gv/vec2 0 -1) :a]
-                     [:a (gv/vec2 1 0) :b]
-                     [:a (gv/vec2 0 1) :b]
-                     [:a (gv/vec2 -1 0) :b]
-                     [:a (gv/vec2 0 -1) :b]
-                     ]
-                    (gv/vec2)
-                    #{:a}))
+(comment
+  (debug/with-tap-log
+    (fn [] (propagate {:dims [2 2]
+                      (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
+                      (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
+                     [[:b (gv/vec2 1 0) :a]
+                      [:b (gv/vec2 0 1) :a]
+                      [:b (gv/vec2 -1 0) :a]
+                      [:b (gv/vec2 0 -1) :a]
+                      [:a (gv/vec2 1 0) :b]
+                      [:a (gv/vec2 0 1) :b]
+                      [:a (gv/vec2 -1 0) :b]
+                      [:a (gv/vec2 0 -1) :b]
+                      ]
+                     (gv/vec2)
+                     #{:a}))))
 
 (defn solve [grid rules]
   (let [weights (tile-weights rules)]
