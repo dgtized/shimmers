@@ -129,8 +129,15 @@
 (comment (propagate {:dims [2 2]
                      (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
                      (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
-                    [[:a (gv/vec2 1 0) :b]
-                     [:b (gv/vec2 1 0) :a]]
+                    [[:b (gv/vec2 1 0) :a]
+                     [:b (gv/vec2 0 1) :a]
+                     [:b (gv/vec2 -1 0) :a]
+                     [:b (gv/vec2 0 -1) :a]
+                     [:b (gv/vec2 1 0) :b]
+                     [:b (gv/vec2 0 1) :b]
+                     [:b (gv/vec2 -1 0) :b]
+                     [:b (gv/vec2 0 -1) :b]
+                     ]
                     (gv/vec2)
                     #{:a}))
 
