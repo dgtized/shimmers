@@ -62,10 +62,11 @@
                            [:b (gv/vec2 0 1) :c]]
                           (gv/vec2))))
   (is (= [[:a (gv/vec2 1 0) :a]
+          [:a (gv/vec2 0 1) :a]
           [:b (gv/vec2 0 1) :b]]
          (sut/legal-rules {:dims [2 2]
                            (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a}
-                           (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a :b}}
+                           (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
                           [[:a (gv/vec2 1 0) :a]
                            [:b (gv/vec2 1 0) :b]
                            [:a (gv/vec2 0 1) :a]
@@ -80,10 +81,18 @@
   (is (tm/delta= 0 (sut/entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))))
 
 (deftest tiles-from-rules
+  (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]]))
+      "allows tile if only direction support")
   (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
-                                      [:b (gv/vec2 1 0) :b]
-                                      [:a (gv/vec2 0 1) :b]
-                                      [:c (gv/vec2 0 1) :b]]))
+                                      [:a (gv/vec2 0 1) :a]
+                                      [:a (gv/vec2 -1 0) :a]
+                                      [:a (gv/vec2 0 -1) :a]]))
+      "allows tile if all directions support")
+  (is (= #{:a :b} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
+                                         [:b (gv/vec2 1 0) :b]
+                                         [:c (gv/vec2 1 0) :c]
+                                         [:a (gv/vec2 0 1) :b]
+                                         [:b (gv/vec2 0 1) :b]]))
       "allows tiles if all directions support that option")
   (is (empty? (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
                                      [:b (gv/vec2 1 0) :b]
