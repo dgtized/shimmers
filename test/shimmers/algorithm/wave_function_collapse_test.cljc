@@ -81,22 +81,34 @@
   (is (tm/delta= 0 (sut/entropy {(gv/vec2) #{:B}} {:A 3 :B 1 :C 1} (gv/vec2)))))
 
 (deftest tiles-from-rules
-  (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]]))
+  (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]]
+                                     [(gv/vec2 1 0)]))
       "allows tile if only direction support")
+  (is (= #{} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]]
+                                   [(gv/vec2 1 0) (gv/vec2 0 1)]))
+      "tile is not allowed if missing expected direction")
   (is (= #{:a} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
                                       [:a (gv/vec2 0 1) :a]
                                       [:a (gv/vec2 -1 0) :a]
-                                      [:a (gv/vec2 0 -1) :a]]))
+                                      [:a (gv/vec2 0 -1) :a]]
+                                     sut/cardinal-directions))
       "allows tile if all directions support")
   (is (= #{:a :b} (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
                                          [:b (gv/vec2 1 0) :b]
                                          [:c (gv/vec2 1 0) :c]
                                          [:a (gv/vec2 0 1) :b]
-                                         [:b (gv/vec2 0 1) :b]]))
+                                         [:b (gv/vec2 0 1) :b]]
+                                        [(gv/vec2 1 0) (gv/vec2 0 1)]))
       "allows tiles if all directions support that option")
   (is (empty? (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
                                      [:b (gv/vec2 1 0) :b]
-                                     [:c (gv/vec2 0 1) :b]]))
+                                     [:c (gv/vec2 0 1) :b]]
+                                    [(gv/vec2 1 0) (gv/vec2 0 1)]))
+      "empty if a direction does not have overlapping legal tiles")
+  (is (empty? (sut/tiles-from-rules [[:a (gv/vec2 1 0) :a]
+                                     [:b (gv/vec2 1 0) :b]
+                                     [:a (gv/vec2 0 1) :b]]
+                                    sut/cardinal-directions))
       "empty if a direction does not have overlapping legal tiles"))
 
 (deftest propagate

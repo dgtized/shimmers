@@ -103,13 +103,17 @@
             (vals choices))))
 
 (defn tiles-from-rules
-  "List tiles that are legal according to rules for each surrounding direction."
-  [rules]
-  (->> rules
-       (group-by second)
-       vals
-       (map (comp set (partial map first)))
-       (reduce set/intersection)))
+  "List tiles that are legal according to rules for each `check-dir` direction listed."
+  [rules check-dirs]
+  ;; Map is {dir #{tiles}}
+  (let [surroundings
+        (->> rules
+             (group-by second)
+             (reduce-kv (fn [m k v] (assoc m k (set (mapv first v))))
+                        {}))]
+    (reduce (fn [acc dir] (set/intersection acc (get surroundings dir #{})))
+            (first (vals surroundings))
+            check-dirs)))
 
 (defn propagate [initial-grid rules position tile]
   (let [dims (:dims initial-grid)
@@ -126,7 +130,7 @@
           (if (collapsed? grid pos)
             (recur remaining changes grid)
             (let [lr (legal-rules grid rules pos)
-                  legal-tiles (tiles-from-rules lr)]
+                  legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors dims pos)))]
               (cond (empty? legal-tiles)
                     (throw [:no-legal-tiles pos lr])
                     (= legal-tiles (get grid pos))
@@ -154,7 +158,7 @@
                      (gv/vec2)
                      #{:a}))))
 
-(defn solve [grid rules]
+(defn solve [{:keys [dims] :as grid} rules]
   (let [weights (tile-weights rules)]
     (loop [positions (conj (priority/priority-map) [(gv/vec2) 0])
            grid grid]
@@ -163,7 +167,8 @@
         (let [pos (first (peek positions))]
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
-            (let [legal (tiles-from-rules (legal-rules grid rules pos))
+            (let [legal (tiles-from-rules (legal-rules grid rules pos)
+                                          (mapv (fn [n] (tm/- n pos)) (neighbors dims pos)))
                   choice (dr/weighted (zipmap legal (map weights legal)))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               (println pos (entropy grid weights pos) choice changes)
