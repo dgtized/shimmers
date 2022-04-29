@@ -51,6 +51,8 @@
   (filter (fn [p] (valid-neighbor? dims p))
           (map (partial tm/+ pos) cardinal-directions)))
 
+;; Rules are in form of [legal-tile dir other-tile]
+;; ie given `other-tile` is present in `dir`, `legal-tile` is possible.
 (defn rules [amatrix directions]
   (let [{:keys [dims]} amatrix
         [w h] dims]

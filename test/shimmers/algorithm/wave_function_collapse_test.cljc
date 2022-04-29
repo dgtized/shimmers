@@ -6,6 +6,50 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(deftest rules-from-example
+  (let [example (sut/str->matrix
+                 "AA
+                  AB")]
+    (is (= [["A" (gv/vec2 1 0) "A"]
+            ["A" (gv/vec2 0 1) "A"]
+            ["A" (gv/vec2 -1 0) "A"]
+            ["A" (gv/vec2 0 1) "B"]
+            ["A" (gv/vec2 1 0) "B"]
+            ["A" (gv/vec2 0 -1) "A"]
+            ["B" (gv/vec2 -1 0) "A"]
+            ["B" (gv/vec2 0 -1) "A"]]
+           (sut/rules (sut/matrix->grid example)
+                      sut/cardinal-directions))))
+  (let [example (sut/str->matrix
+                 "AAA
+                  ABA
+                  AAA")]
+    (is (= [["A" (gv/vec2 1 0) "A"]
+            ["A" (gv/vec2 0 1) "A"]
+            ["A" (gv/vec2 1 0) "A"]
+            ["A" (gv/vec2 -1 0) "A"]
+            ["A" (gv/vec2 0 1) "B"]
+            ["A" (gv/vec2 -1 0) "A"]
+            ["A" (gv/vec2 0 1) "A"]
+            ["A" (gv/vec2 1 0) "B"]
+            ["A" (gv/vec2 0 1) "A"]
+            ["A" (gv/vec2 0 -1) "A"]
+            ["B" (gv/vec2 1 0) "A"]
+            ["B" (gv/vec2 -1 0) "A"]
+            ["B" (gv/vec2 0 1) "A"]
+            ["B" (gv/vec2 0 -1) "A"]
+            ["A" (gv/vec2 -1 0) "B"]
+            ["A" (gv/vec2 0 1) "A"]
+            ["A" (gv/vec2 0 -1) "A"]
+            ["A" (gv/vec2 1 0) "A"]
+            ["A" (gv/vec2 0 -1) "A"]
+            ["A" (gv/vec2 1 0) "A"]
+            ["A" (gv/vec2 -1 0) "A"]
+            ["A" (gv/vec2 0 -1) "B"]
+            ["A" (gv/vec2 -1 0) "A"]
+            ["A" (gv/vec2 0 -1) "A"]]
+           (sut/rules (sut/matrix->grid example) sut/cardinal-directions)))))
+
 (deftest legal-rules
   (is (= [[:a (gv/vec2 0 1) :b]
           [:b (gv/vec2 1 0) :c]]
