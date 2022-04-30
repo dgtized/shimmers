@@ -115,7 +115,10 @@
         [:div.flexcols
          [:button.generate {:on-click #(reset state)} "Reset"]
          #_[:button.generate {} "Step"]
-         [:button.generate {:on-click #(solve state)} "Solve"]]]])))
+         [:button.generate {:on-click #(solve state)} "Solve"]]
+        [:p.readable
+         "Click on a cell to collapse it to a specific tile, or to expand it to
+         the set of all legal tiles."]]])))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-05-26"
