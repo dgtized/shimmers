@@ -69,22 +69,39 @@
     AAAAAAAA
     AAAAAAAA"))
 
-(defn shapes []
-  (let [directions wfc/directions-8+4
-        rt (wfc/rules (wfc/matrix->grid rule-c directions))]
-    (grid->cells (wfc/solve (wfc/init-grid [40 30] directions (wfc/all-tiles rt))
-                            rt))))
-
-(defn scene []
+(defn scene [grid]
   (csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "none"}
-            (apply list (shapes))))
+            (apply list (grid->cells grid))))
+
+(defn init-state []
+  (let [directions wfc/directions-8+4
+        rules (wfc/rules (wfc/matrix->grid rule-c directions))]
+    {:grid (wfc/init-grid [40 30] directions (wfc/all-tiles rules))
+     :rules rules}))
+
+(defn reset [state]
+  (reset! state (init-state)))
+
+(defn solve [state]
+  (let [{:keys [rules]} @state]
+    (swap! state update :grid wfc/solve rules)))
+
+(defn page [state]
+  (fn []
+    (let [{:keys [grid]} @state]
+      [:div
+       [:div.canvas-frame [scene grid]]
+       [:div#interface
+        [:div.flexcols
+         [:button.generate {:on-click #(reset state)} "Reset"]
+         #_[:button.generate {} "Step"]
+         [:button.generate {:on-click #(solve state)} "Solve"]]]])))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-05-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :wave-function-collapse)
-              "sketch-host"))
+  (ctrl/mount (page (ctrl/state (init-state))) "sketch-host"))
