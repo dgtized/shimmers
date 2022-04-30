@@ -10,7 +10,7 @@
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]))
 
-(def width 800)
+(def width 900)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
@@ -110,7 +110,7 @@
   (let [directions wfc/directions-8
         rules (wfc/rules (wfc/matrix->grid rule-c directions))
         tiles (wfc/all-tiles rules)]
-    {:grid (wfc/init-grid [40 30] directions tiles)
+    {:grid (wfc/init-grid [30 20] directions tiles)
      :highlight #{}
      :tiles tiles
      :rules rules}))
