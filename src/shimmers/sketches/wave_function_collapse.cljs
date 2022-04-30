@@ -97,7 +97,7 @@
             (apply list (grid->cells state grid highlight))))
 
 (defn init-state []
-  (let [directions wfc/directions-8+4
+  (let [directions wfc/directions-8
         rules (wfc/rules (wfc/matrix->grid rule-c directions))
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [40 30] directions tiles)
