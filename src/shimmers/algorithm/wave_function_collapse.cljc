@@ -169,9 +169,10 @@
         (let [pos (first (peek positions))]
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
-            (let [legal (tiles-from-rules (legal-rules grid rules pos)
+            (let [legal-rules (legal-rules grid rules pos)
+                  legal (tiles-from-rules legal-rules
                                           (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))
-                  choice (dr/weighted (zipmap legal (map weights legal)))
+                  choice (dr/weighted (select-keys (tile-weights legal-rules) legal))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               (recur (into (pop positions)
                            (map (fn [pos] [(gv/vec2 pos)
