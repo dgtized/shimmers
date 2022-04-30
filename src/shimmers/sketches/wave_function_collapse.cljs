@@ -47,7 +47,6 @@
           i (range cols)]
       (let [loc (gv/vec2 i j)
             values (get grid loc)
-            id (+ (* j cols) i)
             cell (rect/rect (* w i) (* h j) w h)
             changed? (contains? highlight loc)]
         (->> (g/subdivide cell (get subdivisions (count values)))
@@ -58,8 +57,7 @@
                                                                 tiles
                                                                 #{value}))))
                   values)
-             (svg/group {:id id
-                         :stroke (if changed? "red" "none")}))))))
+             (svg/group {:stroke (if changed? "red" "none")}))))))
 
 (def rule-a
   (wfc/str->matrix
