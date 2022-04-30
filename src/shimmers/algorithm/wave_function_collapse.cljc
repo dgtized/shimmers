@@ -128,30 +128,29 @@
             (first (vals surroundings))
             check-dirs)))
 
-(defn propagate [initial-grid rules position tile]
+(defn propagate [initial-grid rules position tiles]
   (let [initial (neighbors initial-grid position)]
     (tap> [:init initial])
     (loop [visiting initial
            changes (set initial)
-           grid (assoc initial-grid position tile)]
+           grid (assoc initial-grid position tiles)]
       (if (empty? visiting)
         [changes grid]
         (let [[pos & remaining] visiting
-              neighborhood (remove (partial collapsed? grid) (neighbors initial-grid pos))]
+              neighborhood (remove (partial collapsed? grid) (neighbors initial-grid pos))
+              lr (legal-rules grid rules pos)
+              legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))]
           (tap> [:p pos])
-          (if (collapsed? grid pos)
-            (recur remaining changes grid)
-            (let [lr (legal-rules grid rules pos)
-                  legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors initial-grid pos)))]
-              (cond (empty? legal-tiles)
-                    (throw [:no-legal-tiles pos lr])
-                    (= legal-tiles (get grid pos))
-                    (recur remaining changes grid)
-                    :else
-                    (do (tap> [:change (get grid pos) legal-tiles])
-                        (recur (into remaining (remove changes neighborhood))
-                               (set/union changes (set neighborhood))
-                               (assoc grid pos legal-tiles)))))))))))
+          (cond (empty? legal-tiles)
+                (throw [:no-legal-tiles pos lr])
+                (or (= legal-tiles (get grid pos))
+                    (collapsed? grid pos))
+                (recur remaining changes grid)
+                :else
+                (do (tap> [:change (get grid pos) legal-tiles])
+                    (recur (into remaining (remove changes neighborhood))
+                           (set/union changes (set neighborhood))
+                           (assoc grid pos legal-tiles)))))))))
 
 (comment
   (debug/with-tap-log
