@@ -167,9 +167,17 @@
                      (gv/vec2)
                      #{:a}))))
 
+(defn cells-with-entropy [grid weights]
+  (let [[rows cols] (:dims grid)]
+    (for [j (range rows)
+          i (range cols)
+          :let [loc (gv/vec2 i j)]
+          :when (not (collapsed? grid loc))]
+      [loc (entropy grid weights loc)])))
+
 (defn solve [grid rules]
   (let [weights (tile-weights rules)]
-    (loop [positions (conj (priority/priority-map) [(gv/vec2) 0])
+    (loop [positions (into (priority/priority-map) (cells-with-entropy grid weights))
            grid grid]
       (if (empty? positions)
         grid
@@ -182,9 +190,7 @@
                   choice (dr/weighted (select-keys (tile-weights legal-rules) legal))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               (recur (into (pop positions)
-                           (map (fn [pos] [(gv/vec2 pos)
-                                          (+ (entropy grid' weights pos)
-                                             (* 0.0000001 (- (rand) 0.5)))])
+                           (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                                 changes))
                      grid'))))))))
 
