@@ -113,9 +113,17 @@
   (reset! state (init-state)))
 
 (defn solve [state]
-  (let [{:keys [rules]} @state]
-    (swap! state assoc :highlight #{})
-    (swap! state update :grid wfc/solve rules)))
+  (let [{:keys [grid rules]} @state]
+    (swap! state assoc
+           :grid (wfc/solve grid rules)
+           :highlight #{})))
+
+(defn solve-one [state]
+  (let [{:keys [grid rules]} @state
+        [changes grid'] (wfc/solve-one grid rules)]
+    (swap! state assoc
+           :grid grid'
+           :highlight changes)))
 
 (defn page [state]
   (fn []
@@ -125,7 +133,7 @@
        [:div#interface
         [:div.flexcols
          [:button.generate {:on-click #(reset state)} "Reset"]
-         #_[:button.generate {} "Step"]
+         [:button.generate {:on-click #(solve-one state)} "Solve One"]
          [:button.generate {:on-click #(solve state)} "Solve"]]
         [:p.readable
          "Click on a cell to collapse it to a specific tile, or to expand it to

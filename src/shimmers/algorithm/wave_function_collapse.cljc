@@ -171,7 +171,7 @@
                      #{:a}))))
 
 (defn cells-with-entropy [grid weights]
-  (let [[rows cols] (:dims grid)]
+  (let [[cols rows] (:dims grid)]
     (for [j (range rows)
           i (range cols)
           :let [loc (gv/vec2 i j)]
@@ -194,6 +194,20 @@
                            (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                                 changes))
                      grid'))))))))
+
+(defn solve-one [grid rules]
+  (let [weights (tile-weights rules)]
+    (loop [positions (into (priority/priority-map) (cells-with-entropy grid weights))
+           grid grid]
+      (if (empty? positions)
+        [#{} grid]
+        (let [pos (first (peek positions))]
+          (if (collapsed? grid pos)
+            (recur (pop positions) grid)
+            (let [[legal-tiles legal-rules] (legal-at-location grid rules pos)
+                  choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
+                  [changes grid'] (propagate grid rules pos (set [choice]))]
+              [changes grid'])))))))
 
 (def rule-a
   (str->matrix
