@@ -1,12 +1,14 @@
 (ns shimmers.sketches.wave-function-collapse
   (:require
+   [shimmers.algorithm.wave-function-collapse :as wfc]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.algorithm.wave-function-collapse :as wfc]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -24,12 +26,14 @@
         h (/ height rows)]
     (for [j (range rows)
           i (range cols)]
-      (vary-meta (rect/rect (* w i) (* h j) w h)
-                 merge {:fill
-                        (let [values (get grid (gv/vec2 i j))]
-                          (if (= (count values) 1)
-                            (get color-map (first values))
-                            "#dd4444"))}))))
+      (let [values (get grid (gv/vec2 i j))
+            cell (rect/rect (* w i) (* h j) w h)]
+        (if (= (count values) 1)
+          (vary-meta cell assoc :fill (get color-map (first values)))
+          (->> (g/subdivide cell {:cols 2 :rows 2})
+               (map (fn [color piece] (vary-meta piece assoc :fill color))
+                    (map color-map values))
+               (svg/group {})))))))
 
 (def rule-a
   (wfc/str->matrix
