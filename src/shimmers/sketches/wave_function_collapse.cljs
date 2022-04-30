@@ -66,7 +66,7 @@
     AAAAAAAA"))
 
 (defn shapes []
-  (let [directions wfc/directions-8
+  (let [directions wfc/directions-8+4
         rt (wfc/rules (wfc/matrix->grid rule-c directions))]
     (grid->cells (wfc/solve (wfc/init-grid [40 30] directions (wfc/all-tiles rt))
                             rt))))

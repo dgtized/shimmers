@@ -44,9 +44,20 @@
 (def cardinal-directions
   [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)])
 
+(def diagonal-directions
+  [(gv/vec2 1 -1) (gv/vec2 -1 -1) (gv/vec2 -1 1) (gv/vec2 1 1)])
+
 (def directions-8
-  [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)
-   (gv/vec2 -1 -1) (gv/vec2 1 1) (gv/vec2 -1 1) (gv/vec2 1 -1)])
+  (concat cardinal-directions diagonal-directions))
+
+(def directions-4+4
+  (concat cardinal-directions (mapv #(tm/* % 2) cardinal-directions)))
+
+(def directions-8+4
+  (concat directions-4+4 diagonal-directions))
+
+(def directions-8+8
+  (concat directions-4+4 diagonal-directions (mapv #(tm/* % 2) diagonal-directions)))
 
 (defn neighbors [{:keys [dims directions]} pos]
   (filter (fn [p] (valid-neighbor? dims p))
