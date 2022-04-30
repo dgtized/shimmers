@@ -50,20 +50,16 @@
             id (+ (* j cols) i)
             cell (rect/rect (* w i) (* h j) w h)
             changed? (contains? highlight loc)]
-        (if (= (count values) 1)
-          (vary-meta cell assoc
-                     :id id
-                     :on-click #(cell-set state loc tiles)
-                     :stroke (if changed? "red" "none")
-                     :fill (get color-map (first values)))
-          (->> (g/subdivide cell (get subdivisions (count values)))
-               (map (fn [value piece]
-                      (vary-meta piece assoc
-                                 :fill (get color-map value)
-                                 :on-click #(cell-set state loc #{value})))
-                    values)
-               (svg/group {:id id
-                           :stroke (if changed? "red" "none")})))))))
+        (->> (g/subdivide cell (get subdivisions (count values)))
+             (map (fn [value piece]
+                    (vary-meta piece assoc
+                               :fill (get color-map value)
+                               :on-click #(cell-set state loc (if (= (count values) 1)
+                                                                tiles
+                                                                #{value}))))
+                  values)
+             (svg/group {:id id
+                         :stroke (if changed? "red" "none")}))))))
 
 (def rule-a
   (wfc/str->matrix
