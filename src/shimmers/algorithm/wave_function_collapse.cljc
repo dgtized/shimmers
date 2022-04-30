@@ -128,6 +128,11 @@
             (first (vals surroundings))
             check-dirs)))
 
+(defn legal-at-location [grid rules pos]
+  (let [legal-rules (legal-rules grid rules pos)]
+    [(tiles-from-rules legal-rules (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))
+     legal-rules]))
+
 (defn propagate [initial-grid rules position tiles]
   (let [initial (neighbors initial-grid position)]
     (tap> [:init initial])
@@ -138,11 +143,10 @@
         [changes grid]
         (let [[pos & remaining] visiting
               neighborhood (remove (partial collapsed? grid) (neighbors initial-grid pos))
-              lr (legal-rules grid rules pos)
-              legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))]
+              [legal-tiles legal-rules] (legal-at-location grid rules pos)]
           (tap> [:p pos])
           (cond (empty? legal-tiles)
-                (throw [:no-legal-tiles pos lr])
+                (throw [:no-legal-tiles pos legal-rules])
                 (or (= legal-tiles (get grid pos))
                     (collapsed? grid pos))
                 (recur remaining changes grid)
@@ -183,10 +187,8 @@
         (let [pos (first (peek positions))]
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
-            (let [legal-rules (legal-rules grid rules pos)
-                  legal (tiles-from-rules legal-rules
-                                          (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))
-                  choice (dr/weighted (select-keys (tile-weights legal-rules) legal))
+            (let [[legal-tiles legal-rules] (legal-at-location grid rules pos)
+                  choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               (recur (into (pop positions)
                            (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])

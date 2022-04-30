@@ -1,5 +1,6 @@
 (ns shimmers.sketches.wave-function-collapse
   (:require
+   [clojure.set :as set]
    [shimmers.algorithm.wave-function-collapse :as wfc]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -21,7 +22,8 @@
 
 (defn cell-set [state loc values]
   (let [{:keys [grid rules]} @state
-        [_ grid'] (wfc/propagate grid rules loc values)]
+        [legal-tiles _] (wfc/legal-at-location grid rules loc)
+        [_ grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
     (swap! state assoc :grid grid')))
 
 (defn grid->cells [state grid]
