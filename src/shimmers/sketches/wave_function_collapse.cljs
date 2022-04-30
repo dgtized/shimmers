@@ -19,14 +19,14 @@
    "B" "#cdcd00"
    "C" "#228b22"})
 
-(defn cell-reset [state loc]
-  (swap! state assoc-in [:grid loc] (:tiles @state)))
-
 (defn cell-set [state loc values]
-  (swap! state assoc-in [:grid loc] values))
+  (let [{:keys [grid rules]} @state
+        [_ grid'] (wfc/propagate grid rules loc values)]
+    (swap! state assoc :grid grid')))
 
 (defn grid->cells [state grid]
   (let [[cols rows] (:dims grid)
+        tiles (:tiles @state)
         w (/ width cols)
         h (/ height rows)]
     (for [j (range rows)
@@ -38,13 +38,13 @@
         (if (= (count values) 1)
           (vary-meta cell assoc
                      :id id
-                     :on-click #(cell-reset state loc)
+                     :on-click #(cell-set state loc tiles)
                      :fill (get color-map (first values)))
           (->> (g/subdivide cell {:cols 2 :rows 2})
                (map (fn [value piece]
                       (vary-meta piece assoc
                                  :fill (get color-map value)
-                                 :on-click #(cell-set state loc value)))
+                                 :on-click #(cell-set state loc #{value})))
                     values)
                (svg/group {:id id})))))))
 
