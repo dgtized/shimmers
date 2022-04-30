@@ -23,10 +23,12 @@
 (defn cell-set [state loc values]
   (let [{:keys [grid rules]} @state
         [legal-tiles _] (wfc/legal-at-location grid rules loc)
-        [_ grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
-    (swap! state assoc :grid grid')))
+        [changes grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
+    (swap! state assoc
+           :highlight (conj changes loc)
+           :grid grid')))
 
-(defn grid->cells [state grid]
+(defn grid->cells [state grid highlight]
   (let [[cols rows] (:dims grid)
         tiles (:tiles @state)
         w (/ width cols)
@@ -36,11 +38,13 @@
       (let [loc (gv/vec2 i j)
             values (get grid loc)
             id (+ (* j cols) i)
-            cell (rect/rect (* w i) (* h j) w h)]
+            cell (rect/rect (* w i) (* h j) w h)
+            changed? (contains? highlight loc)]
         (if (= (count values) 1)
           (vary-meta cell assoc
                      :id id
                      :on-click #(cell-set state loc tiles)
+                     :stroke (if changed? "red" "none")
                      :fill (get color-map (first values)))
           (->> (g/subdivide cell {:cols 2 :rows 2})
                (map (fn [value piece]
@@ -48,7 +52,8 @@
                                  :fill (get color-map value)
                                  :on-click #(cell-set state loc #{value})))
                     values)
-               (svg/group {:id id})))))))
+               (svg/group {:id id
+                           :stroke (if changed? "red" "none")})))))))
 
 (def rule-a
   (wfc/str->matrix
@@ -84,18 +89,19 @@
     AAAAAAAA
     AAAAAAAA"))
 
-(defn scene [state grid]
+(defn scene [state grid highlight]
   (csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "none"}
-            (apply list (grid->cells state grid))))
+            (apply list (grid->cells state grid highlight))))
 
 (defn init-state []
   (let [directions wfc/directions-8+4
         rules (wfc/rules (wfc/matrix->grid rule-c directions))
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [40 30] directions tiles)
+     :highlight #{}
      :tiles tiles
      :rules rules}))
 
@@ -104,13 +110,14 @@
 
 (defn solve [state]
   (let [{:keys [rules]} @state]
+    (swap! state assoc :highlight #{})
     (swap! state update :grid wfc/solve rules)))
 
 (defn page [state]
   (fn []
-    (let [{:keys [grid]} @state]
+    (let [{:keys [grid highlight]} @state]
       [:div
-       [:div.canvas-frame [scene state grid]]
+       [:div.canvas-frame [scene state grid highlight]]
        [:div#interface
         [:div.flexcols
          [:button.generate {:on-click #(reset state)} "Reset"]
