@@ -199,6 +199,7 @@
     AAAAA"))
 
 (comment
-  (let [rt (rules (matrix->grid rule-a cardinal-directions))
-        grid (init-grid [8 8] (all-tiles rt))]
+  (let [dirs cardinal-directions
+        rt (rules (matrix->grid rule-a dirs))
+        grid (init-grid [8 8] dirs (all-tiles rt))]
     (grid->matrix (solve grid rt))))
