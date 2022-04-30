@@ -23,6 +23,8 @@
    "C" "#228b22"})
 
 (defn cell-set [state loc values]
+  (when-let [cancel (:cancel @state)]
+    (async/close! cancel))
   (let [{:keys [grid rules]} @state
         [legal-tiles _] (wfc/legal-at-location grid rules loc)
         [changes grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
