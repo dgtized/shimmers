@@ -15,8 +15,8 @@
 
 (def color-map
   {"A" "#4444dd"
-   "B" "#ffffff"
-   "C" "#000000"})
+   "B" "#cdcd00"
+   "C" "#228b22"})
 
 (defn grid->cells [grid]
   (let [[cols rows] (:dims grid)
@@ -54,9 +54,21 @@
     ABBBBA
     AAAAAA"))
 
+(def rule-d
+  (wfc/str->matrix
+   "AAAAAAAA
+    AAAAAAAA
+    AABBBBAA
+    AABCCBAA
+    AABCCBAA
+    AABBBBAA
+    AAAAAAAA
+    AAAAAAAA"))
+
 (defn shapes []
-  (let [rt (wfc/rules (wfc/matrix->grid rule-c) wfc/cardinal-directions)]
-    (grid->cells (wfc/solve (wfc/init-grid [40 30] (wfc/all-tiles rt))
+  (let [directions wfc/directions-8
+        rt (wfc/rules (wfc/matrix->grid rule-d directions))]
+    (grid->cells (wfc/solve (wfc/init-grid [40 30] directions (wfc/all-tiles rt))
                             rt))))
 
 (defn scene []

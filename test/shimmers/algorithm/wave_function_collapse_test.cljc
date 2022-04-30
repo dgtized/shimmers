@@ -7,48 +7,42 @@
    [thi.ng.math.core :as tm]))
 
 (deftest rules-from-example
-  (let [example (sut/str->matrix
-                 "AA
-                  AB")]
-    (is (= [["A" (gv/vec2 1 0) "A"]
-            ["A" (gv/vec2 0 1) "A"]
-            ["A" (gv/vec2 -1 0) "A"]
-            ["A" (gv/vec2 0 1) "B"]
-            ["A" (gv/vec2 1 0) "B"]
-            ["A" (gv/vec2 0 -1) "A"]
-            ["B" (gv/vec2 -1 0) "A"]
-            ["B" (gv/vec2 0 -1) "A"]]
-           (sut/rules (sut/matrix->grid example)
-                      sut/cardinal-directions))))
-  (let [example (sut/str->matrix
-                 "AAA
-                  ABA
-                  AAA")]
-    (is (= [["A" (gv/vec2 1 0) "A"]
-            ["A" (gv/vec2 0 1) "A"]
-            ["A" (gv/vec2 1 0) "A"]
-            ["A" (gv/vec2 -1 0) "A"]
-            ["A" (gv/vec2 0 1) "B"]
-            ["A" (gv/vec2 -1 0) "A"]
-            ["A" (gv/vec2 0 1) "A"]
-            ["A" (gv/vec2 1 0) "B"]
-            ["A" (gv/vec2 0 1) "A"]
-            ["A" (gv/vec2 0 -1) "A"]
-            ["B" (gv/vec2 1 0) "A"]
-            ["B" (gv/vec2 -1 0) "A"]
-            ["B" (gv/vec2 0 1) "A"]
-            ["B" (gv/vec2 0 -1) "A"]
-            ["A" (gv/vec2 -1 0) "B"]
-            ["A" (gv/vec2 0 1) "A"]
-            ["A" (gv/vec2 0 -1) "A"]
-            ["A" (gv/vec2 1 0) "A"]
-            ["A" (gv/vec2 0 -1) "A"]
-            ["A" (gv/vec2 1 0) "A"]
-            ["A" (gv/vec2 -1 0) "A"]
-            ["A" (gv/vec2 0 -1) "B"]
-            ["A" (gv/vec2 -1 0) "A"]
-            ["A" (gv/vec2 0 -1) "A"]]
-           (sut/rules (sut/matrix->grid example) sut/cardinal-directions)))))
+  (is (= [["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 0 1) "B"]
+          ["A" (gv/vec2 1 0) "B"]
+          ["A" (gv/vec2 0 -1) "A"]
+          ["B" (gv/vec2 -1 0) "A"]
+          ["B" (gv/vec2 0 -1) "A"]]
+         (sut/rules (sut/matrix->grid (sut/str->matrix "AA\nAB")
+                                      sut/cardinal-directions))))
+  (is (= [["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 0 1) "B"]
+          ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 1 0) "B"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 0 -1) "A"]
+          ["B" (gv/vec2 1 0) "A"]
+          ["B" (gv/vec2 -1 0) "A"]
+          ["B" (gv/vec2 0 1) "A"]
+          ["B" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 -1 0) "B"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 0 -1) "B"]
+          ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 0 -1) "A"]]
+         (sut/rules (sut/matrix->grid (sut/str->matrix "AAA\nABA\nAAA")
+                                      sut/cardinal-directions)))))
 
 (deftest legal-rules
   (is (= [[:a (gv/vec2 0 1) :b]
@@ -119,22 +113,23 @@
                         [:a (gv/vec2 1 0) :b]
                         [:a (gv/vec2 0 1) :b]
                         [:a (gv/vec2 -1 0) :b]
-                        [:a (gv/vec2 0 -1) :b]
-                        ]]
+                        [:a (gv/vec2 0 -1) :b]]]
     (is (= [#{(gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 0 1)}
             {:dims [2 2]
+             :directions sut/cardinal-directions
              (gv/vec2 0 0) #{:a} (gv/vec2 1 0) #{:b}
              (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a}}]
-           (sut/propagate (sut/init-grid [2 2] #{:a :b})
+           (sut/propagate (sut/init-grid [2 2] sut/cardinal-directions #{:a :b})
                           alternating-ab (gv/vec2) #{:a})))
     (is (= [#{(gv/vec2 2 2) (gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 0 2)
               (gv/vec2 2 0) (gv/vec2 2 1) (gv/vec2 1 2) (gv/vec2 0 1)}
             {:dims [3 3]
+             :directions sut/cardinal-directions
              (gv/vec2 0 0) #{:a} (gv/vec2 1 0) #{:b} (gv/vec2 2 0) #{:a}
              (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a} (gv/vec2 2 1) #{:b}
              (gv/vec2 0 2) #{:a} (gv/vec2 1 2) #{:b} (gv/vec2 2 2) #{:a}
              }]
-           (sut/propagate (sut/init-grid [3 3] #{:a :b})
+           (sut/propagate (sut/init-grid [3 3] sut/cardinal-directions #{:a :b})
                           alternating-ab (gv/vec2) #{:a})))))
 
 (comment (t/run-tests))

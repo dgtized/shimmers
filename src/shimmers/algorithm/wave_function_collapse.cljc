@@ -22,13 +22,14 @@
   [(count (first grid))
    (count grid)])
 
-(defn matrix->grid [matrix]
+(defn matrix->grid [matrix directions]
   (let [[w h] (dims matrix)]
     (->>
      (for [j (range h)
            i (range w)]
        [(gv/vec2 i j) (nth (nth matrix j) i)])
-     (into {:dims [w h]}))))
+     (into {:dims [w h]
+            :directions directions}))))
 
 (defn grid->matrix [grid]
   (let [[w h] (:dims grid)]
@@ -47,14 +48,14 @@
   [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)
    (gv/vec2 -1 -1) (gv/vec2 1 1) (gv/vec2 -1 1) (gv/vec2 1 -1)])
 
-(defn neighbors [dims pos]
+(defn neighbors [{:keys [dims directions]} pos]
   (filter (fn [p] (valid-neighbor? dims p))
-          (map (partial tm/+ pos) cardinal-directions)))
+          (map (partial tm/+ pos) directions)))
 
 ;; Rules are in form of [legal-tile dir other-tile]
 ;; ie given `other-tile` is present in `dir`, `legal-tile` is possible.
-(defn rules [amatrix directions]
-  (let [{:keys [dims]} amatrix
+(defn rules [amatrix]
+  (let [{:keys [dims directions]} amatrix
         [w h] dims]
     (for [j (range h)
           i (range w)
@@ -67,8 +68,9 @@
 (defn all-tiles [rules]
   (set (map first rules)))
 
-(defn init-grid [[cols rows] cases]
-  (into {:dims [cols rows]}
+(defn init-grid [[cols rows] directions cases]
+  (into {:dims [cols rows]
+         :directions directions}
         (for [j (range rows)
               i (range cols)]
           [(gv/vec2 i j) cases])))
@@ -116,8 +118,7 @@
             check-dirs)))
 
 (defn propagate [initial-grid rules position tile]
-  (let [dims (:dims initial-grid)
-        initial (neighbors dims position)]
+  (let [initial (neighbors initial-grid position)]
     (tap> [:init initial])
     (loop [visiting initial
            changes (set initial)
@@ -125,12 +126,12 @@
       (if (empty? visiting)
         [changes grid]
         (let [[pos & remaining] visiting
-              neighborhood (remove (partial collapsed? grid) (neighbors dims pos))]
+              neighborhood (remove (partial collapsed? grid) (neighbors initial-grid pos))]
           (tap> [:p pos])
           (if (collapsed? grid pos)
             (recur remaining changes grid)
             (let [lr (legal-rules grid rules pos)
-                  legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors dims pos)))]
+                  legal-tiles (tiles-from-rules lr (mapv (fn [n] (tm/- n pos)) (neighbors initial-grid pos)))]
               (cond (empty? legal-tiles)
                     (throw [:no-legal-tiles pos lr])
                     (= legal-tiles (get grid pos))
@@ -144,6 +145,7 @@
 (comment
   (debug/with-tap-log
     (fn [] (propagate {:dims [2 2]
+                      :directions cardinal-directions
                       (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
                       (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
                      [[:b (gv/vec2 1 0) :a]
@@ -158,7 +160,7 @@
                      (gv/vec2)
                      #{:a}))))
 
-(defn solve [{:keys [dims] :as grid} rules]
+(defn solve [grid rules]
   (let [weights (tile-weights rules)]
     (loop [positions (conj (priority/priority-map) [(gv/vec2) 0])
            grid grid]
@@ -168,10 +170,9 @@
           (if (collapsed? grid pos)
             (recur (pop positions) grid)
             (let [legal (tiles-from-rules (legal-rules grid rules pos)
-                                          (mapv (fn [n] (tm/- n pos)) (neighbors dims pos)))
+                                          (mapv (fn [n] (tm/- n pos)) (neighbors grid pos)))
                   choice (dr/weighted (zipmap legal (map weights legal)))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
-              (println pos (entropy grid weights pos) choice changes)
               (recur (into (pop positions)
                            (map (fn [pos] [(gv/vec2 pos)
                                           (+ (entropy grid' weights pos)
@@ -186,6 +187,6 @@
     AAAAA"))
 
 (comment
-  (let [rt (rules (matrix->grid rule-a) cardinal-directions)
+  (let [rt (rules (matrix->grid rule-a cardinal-directions))
         grid (init-grid [8 8] (all-tiles rt))]
     (grid->matrix (solve grid rt))))
