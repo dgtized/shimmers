@@ -1,5 +1,6 @@
 (ns shimmers.sketches.wave-function-collapse
   (:require
+   [cljs.core.async :as async :include-macros true]
    [clojure.set :as set]
    [shimmers.algorithm.wave-function-collapse :as wfc]
    [shimmers.common.svg :as csvg]
@@ -8,7 +9,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
 (def width 900)
 (def height 600)
@@ -106,19 +108,36 @@
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [30 20] directions tiles)
      :highlight #{}
+     :cancel nil
      :tiles tiles
      :rules rules}))
 
 (defn reset [state]
+  (when-let [cancel (:cancel @state)]
+    (async/close! cancel))
   (reset! state (init-state)))
 
 (defn solve [state]
-  (let [{:keys [grid rules]} @state]
-    (swap! state assoc
-           :grid (wfc/solve grid rules)
-           :highlight #{})))
+  (if-let [cancel (:cancel @state)]
+    (async/close! cancel)
+    (let [new-cancel (async/chan 1)]
+      (swap! state assoc :cancel new-cancel)
+      (go-loop [state state]
+        (let [[_ c] (async/alts! [new-cancel (async/timeout 1)])]
+          (if-not (= c new-cancel)
+            (let [{:keys [grid rules]} @state
+                  [changes grid'] (wfc/solve-one grid rules)]
+              (swap! state assoc
+                     :grid grid'
+                     :highlight changes)
+              (if (seq changes)
+                (recur state)
+                (swap! state assoc :cancel nil)))
+            (swap! state assoc :cancel nil)))))))
 
 (defn solve-one [state]
+  (when-let [cancel (:cancel @state)]
+    (async/close! cancel))
   (let [{:keys [grid rules]} @state
         [changes grid'] (wfc/solve-one grid rules)]
     (swap! state assoc
@@ -127,14 +146,14 @@
 
 (defn page [state]
   (fn []
-    (let [{:keys [grid highlight]} @state]
+    (let [{:keys [grid highlight cancel]} @state]
       [:div
        [:div.canvas-frame [scene state grid highlight]]
        [:div#interface
         [:div.flexcols
          [:button.generate {:on-click #(reset state)} "Reset"]
          [:button.generate {:on-click #(solve-one state)} "Solve One"]
-         [:button.generate {:on-click #(solve state)} "Solve"]]
+         [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
         [:p.readable
          "Click on a cell to collapse it to a specific tile, or to expand it to
          the set of all legal tiles."]]])))
