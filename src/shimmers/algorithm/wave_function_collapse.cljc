@@ -155,10 +155,7 @@
 
 (comment
   (debug/with-tap-log
-    (fn [] (propagate {:dims [2 2]
-                      :directions cardinal-directions
-                      (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a :b}
-                      (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
+    (fn [] (propagate (init-grid [2 2] cardinal-directions #{:a :b})
                      [[:b (gv/vec2 1 0) :a]
                       [:b (gv/vec2 0 1) :a]
                       [:b (gv/vec2 -1 0) :a]
@@ -166,8 +163,7 @@
                       [:a (gv/vec2 1 0) :b]
                       [:a (gv/vec2 0 1) :b]
                       [:a (gv/vec2 -1 0) :b]
-                      [:a (gv/vec2 0 -1) :b]
-                      ]
+                      [:a (gv/vec2 0 -1) :b]]
                      (gv/vec2)
                      #{:a}))))
 
