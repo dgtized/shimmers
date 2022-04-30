@@ -20,8 +20,10 @@
    "C" "#228b22"})
 
 (defn cell-reset [state loc]
-  (fn []
-    (swap! state assoc-in [:grid loc] (:tiles @state))))
+  (swap! state assoc-in [:grid loc] (:tiles @state)))
+
+(defn cell-set [state loc values]
+  (swap! state assoc-in [:grid loc] values))
 
 (defn grid->cells [state grid]
   (let [[cols rows] (:dims grid)
@@ -36,11 +38,14 @@
         (if (= (count values) 1)
           (vary-meta cell assoc
                      :id id
-                     :on-click (cell-reset state loc)
+                     :on-click #(cell-reset state loc)
                      :fill (get color-map (first values)))
           (->> (g/subdivide cell {:cols 2 :rows 2})
-               (map (fn [color piece] (vary-meta piece assoc :fill color))
-                    (map color-map values))
+               (map (fn [value piece]
+                      (vary-meta piece assoc
+                                 :fill (get color-map value)
+                                 :on-click #(cell-set state loc value)))
+                    values)
                (svg/group {:id id})))))))
 
 (def rule-a
