@@ -4,7 +4,6 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
@@ -20,20 +19,29 @@
    "B" "#cdcd00"
    "C" "#228b22"})
 
-(defn grid->cells [grid]
+(defn cell-reset [state loc]
+  (fn []
+    (swap! state assoc-in [:grid loc] (:tiles @state))))
+
+(defn grid->cells [state grid]
   (let [[cols rows] (:dims grid)
         w (/ width cols)
         h (/ height rows)]
     (for [j (range rows)
           i (range cols)]
-      (let [values (get grid (gv/vec2 i j))
+      (let [loc (gv/vec2 i j)
+            values (get grid loc)
+            id (+ (* j cols) i)
             cell (rect/rect (* w i) (* h j) w h)]
         (if (= (count values) 1)
-          (vary-meta cell assoc :fill (get color-map (first values)))
+          (vary-meta cell assoc
+                     :id id
+                     :on-click (cell-reset state loc)
+                     :fill (get color-map (first values)))
           (->> (g/subdivide cell {:cols 2 :rows 2})
                (map (fn [color piece] (vary-meta piece assoc :fill color))
                     (map color-map values))
-               (svg/group {})))))))
+               (svg/group {:id id})))))))
 
 (def rule-a
   (wfc/str->matrix
@@ -69,17 +77,19 @@
     AAAAAAAA
     AAAAAAAA"))
 
-(defn scene [grid]
+(defn scene [state grid]
   (csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "none"}
-            (apply list (grid->cells grid))))
+            (apply list (grid->cells state grid))))
 
 (defn init-state []
   (let [directions wfc/directions-8+4
-        rules (wfc/rules (wfc/matrix->grid rule-c directions))]
-    {:grid (wfc/init-grid [40 30] directions (wfc/all-tiles rules))
+        rules (wfc/rules (wfc/matrix->grid rule-c directions))
+        tiles (wfc/all-tiles rules)]
+    {:grid (wfc/init-grid [40 30] directions tiles)
+     :tiles tiles
      :rules rules}))
 
 (defn reset [state]
@@ -93,7 +103,7 @@
   (fn []
     (let [{:keys [grid]} @state]
       [:div
-       [:div.canvas-frame [scene grid]]
+       [:div.canvas-frame [scene state grid]]
        [:div#interface
         [:div.flexcols
          [:button.generate {:on-click #(reset state)} "Reset"]
