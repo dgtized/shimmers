@@ -28,6 +28,16 @@
            :highlight (conj changes loc)
            :grid grid')))
 
+(def subdivisions {1 {:cols 1 :rows 1}
+                   2 {:cols 1 :rows 2}
+                   3 {:cols 3 :rows 1}
+                   4 {:cols 2 :rows 2}
+                   5 {:cols 2 :rows 3}
+                   6 {:cols 3 :rows 2}
+                   7 {:cols 3 :rows 3}
+                   8 {:cols 3 :rows 3}
+                   9 {:cols 3 :rows 3}})
+
 (defn grid->cells [state grid highlight]
   (let [[cols rows] (:dims grid)
         tiles (:tiles @state)
@@ -46,7 +56,7 @@
                      :on-click #(cell-set state loc tiles)
                      :stroke (if changed? "red" "none")
                      :fill (get color-map (first values)))
-          (->> (g/subdivide cell {:cols 2 :rows 2})
+          (->> (g/subdivide cell (get subdivisions (count values)))
                (map (fn [value piece]
                       (vary-meta piece assoc
                                  :fill (get color-map value)
