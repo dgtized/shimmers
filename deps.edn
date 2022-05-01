@@ -43,19 +43,18 @@
         cljs-http/cljs-http {:mvn/version "0.1.46"}
 
         ;; This is not dev only because of production build
-        com.bhauman/figwheel-main {:mvn/version "0.2.17"}
 
         ;; Better debug output
         binaryage/devtools {:mvn/version "1.0.6"}
         }
  ;; setup some development paths
- :paths ["src" "target" "resources"]
+ :paths ["src" "resources"]
  ;; setup a helpful alias to start the build
  :aliases
  {:dev
-  {:extra-paths ["test"]
-   :extra-deps {com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
-
+  {:extra-paths ["target" "test"]
+   :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.17"}
+                com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
   :repl
   {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
    :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}

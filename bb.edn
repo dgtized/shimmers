@@ -8,7 +8,7 @@
   build
   {:depends [clean]
    :task (do (shell "npm install")
-             (clojure "-M -m figwheel.main -bo release"))}
+             (clojure "-Mdev -m figwheel.main -bo release"))}
   build-static-site
   {:task (t/build-static-site "resources/public" "static-site")}
   rewrite-index
