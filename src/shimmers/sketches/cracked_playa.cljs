@@ -75,8 +75,8 @@
                          :percent (/ duration total-duration)))]
       [:ul
        (for [{:keys [desc duration percent]} (sort-by :start spans)]
-         [:li (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
-       [:li (scs/format "Total %.1f ms" total-duration)]])))
+         [:li {:key (str "li-" (name desc))} (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
+       [:li {:key "li-total"} (scs/format "Total %.1f ms" total-duration)]])))
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
