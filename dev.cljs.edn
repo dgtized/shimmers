@@ -29,6 +29,7 @@
  :pseudo-names true
  :pretty-print true
 
+ :parallel-build true
  :compiler-stats true
  ;; :verbose true
 
