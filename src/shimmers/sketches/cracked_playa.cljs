@@ -63,26 +63,31 @@
                              (apply list (shapes)))))
 
 (defn profile-summary [sink]
-  (fn []
-    (let [spans @sink
-          started (apply min (map :start spans))
-          complete (apply max (map :stop spans))
-          total-duration (- complete started)
-          spans (for [{:keys [start stop] :as span} spans
-                      :let [duration (- stop start)]]
-                  (assoc span
-                         :duration duration
-                         :percent (/ duration total-duration)))]
-      [:ul
-       (for [{:keys [desc duration percent]} (sort-by :start spans)]
-         [:li {:key (str "li-" (name desc))} (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
-       [:li {:key "li-total"} (scs/format "Total %.1f ms" total-duration)]])))
+  (let [spans @sink
+        started (apply min (map :start spans))
+        complete (apply max (map :stop spans))
+        total-duration (- complete started)
+        spans (for [{:keys [start stop] :as span} spans
+                    :let [duration (- stop start)]]
+                (assoc span
+                       :duration duration
+                       :percent (/ duration total-duration)))]
+    [:ul {:key "profile-cracked-playa"}
+     (for [{:keys [desc duration percent]} (sort-by :start spans)]
+       [:li {:key (str "li-" (name desc))} (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
+     [:li {:key "li-total"} (scs/format "Total %.1f ms" total-duration)]]))
+
+(defn page []
+  [:div
+   [:div.canvas-frame [scene]]
+   [:div.explanation
+    [:div.flexcols
+     [:div [view-sketch/generate :cracked-playa]]
+     [profile-summary sink]]]])
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
    :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :cracked-playa
-                                    (profile-summary sink))
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
