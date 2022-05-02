@@ -31,37 +31,31 @@
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        points (debug/span-prof :gen-points
-                                (pds/generate-dynamic bounds 10 [18 256] noise-at-point))
-        cells (debug/span-prof :voronoi
-                               (delvor/voronoi-cells points bounds))]
-    (debug/span-prof :inset-split
-                     (->> (for [cell cells
-                                :let [width (dr/random -0.5 -4)
-                                      inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-                                ;;:when (poly-detect/self-intersecting? inset)
-                                ]
-                            (poly-detect/split-self-intersection inset))
-                          (apply concat)
-                          (filter (fn [s] (> (g/area s) 0)))
-                          (map (fn [{:keys [points]}]
-                                 ;; TODO: make this proportional to size?
-                                 (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
-                                       iters (dr/random-int 1 4)]
-                                   (gp/polygon2 (chaikin/chaikin ratio true iters points)))))))))
-
-(defonce sink (debug/state []))
+        points (pds/generate-dynamic bounds 10 [18 256] noise-at-point)
+        cells (delvor/voronoi-cells points bounds)]
+    (->> (for [cell cells
+               :let [width (dr/random -0.5 -4)
+                     inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+               ;;:when (poly-detect/self-intersecting? inset)
+               ]
+           (poly-detect/split-self-intersection inset))
+         (apply concat)
+         (filter (fn [s] (> (g/area s) 0)))
+         (map (fn [{:keys [points]}]
+                ;; TODO: make this proportional to size?
+                (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
+                      iters (dr/random-int 1 4)]
+                  (gp/polygon2 (chaikin/chaikin ratio true iters points))))))))
 
 (defn scene []
-  (reset! sink [])
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (debug/span-prof :render
-                             (apply list (shapes)))))
+            (apply list (shapes))))
 
+(defonce sink (debug/state []))
 (defn profile-summary [sink]
   (let [spans @sink
         started (apply min (map :start spans))
@@ -83,7 +77,7 @@
    [:div.explanation
     [:div.flexcols
      [:div [view-sketch/generate :cracked-playa]]
-     [profile-summary sink]]]])
+     #_[profile-summary sink]]]])
 
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
