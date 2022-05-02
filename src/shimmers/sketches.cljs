@@ -23,6 +23,7 @@
    shimmers.sketches.clustered-farmlands
    shimmers.sketches.colonial-growth
    shimmers.sketches.colors
+   shimmers.sketches.color-mapping
    shimmers.sketches.concentric-moire
    shimmers.sketches.convex-spiral
    shimmers.sketches.cracked-playa
