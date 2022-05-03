@@ -175,15 +175,8 @@
                               []
                               [[z q]]))))))))
 
-;; https://stackoverflow.com/a/5533807/34450
-;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
-;; FIXME: not handling internal coincident edges on concave polygons
-(defn cut-polygon
-  "Cut a polygon with a line, returning the set of polygons from each side of the
-  line."
-  [polygon {[pl ql] :points}]
-  (let [edges (g/edges polygon)
-        isecs (->> edges
+(defn find-paired-intersections [edges {[pl ql] :points}]
+  (let [isecs (->> edges
                    (keep (fn [edge]
                            (let [[pe qe] edge
                                  isec (isec/intersect-line2-line2? pl ql pe qe)]
@@ -191,13 +184,23 @@
                                         (not (tm/delta= qe (:p isec))))
                                {:edge edge :p (:p isec)}))))
                    (sort-by (fn [{:keys [p]}] (g/dist-squared pl p))))
-        pairs (partition 2 2 (map :p isecs))
-        isecs (for [isec isecs]
-                (if-let [opposite (some (fn [[p q]] (cond (tm/delta= p (:p isec)) q
-                                                         (tm/delta= q (:p isec)) p))
-                                        pairs)]
-                  (assoc isec :pair opposite)
-                  isec))]
+        pairs (partition 2 2 (map :p isecs))]
+    (for [isec isecs]
+      (if-let [opposite (some (fn [[p q]] (cond (tm/delta= p (:p isec)) q
+                                               (tm/delta= q (:p isec)) p))
+                              pairs)]
+        (assoc isec :pair opposite)
+        isec))))
+
+;; https://stackoverflow.com/a/5533807/34450
+;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
+;; FIXME: not handling internal coincident edges on concave polygons
+(defn cut-polygon
+  "Cut a polygon with a line, returning the set of polygons from each side of the
+  line."
+  [polygon line]
+  (let [edges (g/edges polygon)
+        isecs (find-paired-intersections edges line)]
     (if (< (count isecs) 2)
       [(g/as-polygon polygon)]
       (loop [[edge & remaining] edges active [] shapes []]
@@ -220,5 +223,8 @@
                          (conj shapes (conj current-polygon cut-p)))))
               (recur remaining current-polygon shapes))))))))
 
-(comment (cut-polygon (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
-                      (gl/line2 [2 0] [2 10])))
+(comment
+  (let [poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
+        line (gl/line2 [2 0] [2 10])]
+    {:pairs (find-paired-intersections (g/edges poly) line)
+     :cuts (cut-polygon poly line)}))
