@@ -102,10 +102,6 @@
 (defn collapsed? [grid pos]
   (= 1 (count (get grid pos))))
 
-(defn fully-collapsed? [grid]
-  (every? (fn [v] (= 1 (count v)))
-          (vals (dissoc grid :dims))))
-
 (defn entropy [grid weights position]
   (let [choices (select-keys weights (seq (get grid position)))
         all-options (reduce + 0.0 (vals choices))]
