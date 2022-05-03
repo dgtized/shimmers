@@ -185,6 +185,14 @@
                 (gp/polygon2 f g h [0 4])
                 (gp/polygon2 [10 4] c d e)]
                (sut/cut-polygon poly (gl/line2 [0 4] [10 4])))
-            "horizontal slice, coincident to f-e"))))
+            "horizontal slice, coincident to f-e")
+      (is (= [(gp/polygon2 a b e f g h)
+              (gp/polygon2 b c d e)]
+             (sut/cut-polygon poly (gl/line2 b e)))
+          "trims off a corner connected by two vertices")
+      (is (= [poly] (sut/cut-polygon poly (gl/line2 f e)))
+          "cutting with an internal coincident horizontal line is identity")
+      (is (= [poly] (sut/cut-polygon poly (gl/line2 f g)))
+          "cutting with an internal coincident vertical line is identity"))))
 
 (comment (t/run-tests))
