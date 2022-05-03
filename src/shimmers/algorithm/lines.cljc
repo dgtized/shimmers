@@ -5,6 +5,7 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.utils.intersect :as isec]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn points->lines [points]
@@ -175,6 +176,10 @@
                               []
                               [[z q]]))))))))
 
+;; TODO: handle coincident line segments
+;; at least two cases,
+;; a) trim line to non-coincident segments,
+;; b) split line into each non-coincident segments
 (defn find-paired-intersections [edges {[pl ql] :points}]
   (let [isecs (->> edges
                    (keep (fn [edge]
@@ -191,6 +196,14 @@
                               pairs)]
         (assoc isec :pair opposite)
         isec))))
+
+(comment (let [a (gv/vec2 0 0)
+               b (gv/vec2 5 0)
+               c (gv/vec2 10 0)
+               d (gv/vec2 20 0)]
+           [(isec/intersect-line2-line2? a b a c)
+            (isec/intersect-line2-line2? a b b c)
+            (isec/intersect-line2-line2? a d b c)]))
 
 ;; https://stackoverflow.com/a/5533807/34450
 ;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
@@ -227,4 +240,8 @@
   (let [poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
         line (gl/line2 [2 0] [2 10])]
     {:pairs (find-paired-intersections (g/edges poly) line)
-     :cuts (cut-polygon poly line)}))
+     :cuts (cut-polygon poly line)})
+
+  (let [poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])]
+    [(cut-polygon poly (gl/line2 [2 0] [2 10]))
+     (cut-polygon poly (gl/line2 [0 4] [10 4]))]))
