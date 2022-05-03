@@ -245,3 +245,6 @@
   (let [poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])]
     [(cut-polygon poly (gl/line2 [2 0] [2 10]))
      (cut-polygon poly (gl/line2 [0 4] [10 4]))]))
+
+;; TODO: join-polygon
+;; simple case is for coincident lines, complex is if edges cut eachother.
