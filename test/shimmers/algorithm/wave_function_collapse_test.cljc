@@ -67,6 +67,22 @@
                            [:b (gv/vec2 0 1) :b]]
                           (gv/vec2)))))
 
+;; This is correct but seems off, as 1,1 is only place that can be B in test
+;; case, but it's 4/5 likely to be assigned A
+(deftest tile-weights
+  (is (= {"A" 16 "B" 4}
+         (sut/tile-weights
+          (let [dirs sut/cardinal-directions
+                grid (sut/matrix->grid (sut/str->matrix "AAA\nABA\nAAA")
+                                       dirs)]
+            (sut/legal-rules (assoc (sut/init-grid [3 3] dirs #{"A" "B"})
+                                    (gv/vec2 1 0) #{"A"}
+                                    (gv/vec2 0 1) #{"A"}
+                                    (gv/vec2 2 1) #{"A"}
+                                    (gv/vec2 1 2) #{"A"})
+                             (sut/rules grid)
+                             (gv/vec2 1 1)))))))
+
 (deftest entropy
   (is (tm/delta= 0.950270 (sut/entropy {(gv/vec2) #{:A :B :C}} {:A 3 :B 1 :C 1} (gv/vec2))))
   (is (tm/delta= 0.562335 (sut/entropy {(gv/vec2) #{:A :B}} {:A 3 :B 1 :C 1} (gv/vec2))))
