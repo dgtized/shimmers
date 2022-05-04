@@ -197,13 +197,19 @@
         (assoc isec :pair opposite)
         isec))))
 
-(comment (let [a (gv/vec2 0 0)
-               b (gv/vec2 5 0)
-               c (gv/vec2 10 0)
-               d (gv/vec2 20 0)]
-           [(isec/intersect-line2-line2? a b a c)
-            (isec/intersect-line2-line2? a b b c)
-            (isec/intersect-line2-line2? a d b c)]))
+(comment
+  (let [a (gv/vec2 0 0)
+        b (gv/vec2 5 0)
+        c (gv/vec2 10 0)
+        d (gv/vec2 20 0)]
+    {:ab-ac (isec/intersect-line2-line2? a b a c)
+     :ac-ab (isec/intersect-line2-line2? a c a b)
+     :ab-bc (isec/intersect-line2-line2? a b b c)
+     :bc-ab (isec/intersect-line2-line2? b c a b)
+     :ad-bc (isec/intersect-line2-line2? a d b c)
+     ;; coincident-no-intersect because neither b or c match an endpoint of a-d
+     ;; but are wholly contained and coincidental
+     :bc-ad (isec/intersect-line2-line2? b c a d)}))
 
 ;; https://stackoverflow.com/a/5533807/34450
 ;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
