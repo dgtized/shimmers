@@ -211,6 +211,18 @@
      ;; but are wholly contained and coincidental
      :bc-ad (isec/intersect-line2-line2? b c a d)}))
 
+(defn intersection-with-edge [isecs edge]
+  (some (fn [{iedge :edge :as isec}]
+          (when (= iedge edge)
+            isec))
+        isecs))
+
+(defn resume-shape-at-point [shapes cut-q]
+  (some (fn [shape]
+          (when (tm/delta= (last shape) cut-q)
+            shape))
+        shapes))
+
 ;; https://stackoverflow.com/a/5533807/34450
 ;; See also https://www.inf.usi.ch/hormann/papers/Greiner.1998.ECO.pdf for generalized
 ;; FIXME: not handling internal coincident edges on concave polygons
@@ -228,19 +240,22 @@
                (mapv dedupe)
                (filter (fn [points] (> (count points) 2)))
                (mapv gp/polygon2))
-          (let [p (first edge)
-                current-polygon (conj active p)]
-            (if-let [isec (some (fn [{iedge :edge :as isec}] (when (= iedge edge) isec)) isecs)]
-              (let [{cut-p :p cut-q :pair} isec]
-                (if-let [resume (some (fn [s] (when (tm/delta= (last s) cut-q) s)) shapes)]
+          (let [p (first edge)]
+            (if-let [isec (intersection-with-edge isecs edge)]
+              (let [{cut-p :p cut-q :pair} isec
+                    current-polygon (conj active p cut-p)]
+                (if-let [existing-shape (resume-shape-at-point shapes cut-q)]
+                  ;; resume appending to polygon from crossback pair
                   (recur remaining
-                         (conj resume cut-p)
-                         (conj (remove #{resume} shapes)
-                               (conj current-polygon cut-p)))
+                         (conj existing-shape cut-p)
+                         (conj (remove #{existing-shape} shapes)
+                               current-polygon))
+                  ;; start new polygon
                   (recur remaining
                          [cut-p]
-                         (conj shapes (conj current-polygon cut-p)))))
-              (recur remaining current-polygon shapes))))))))
+                         (conj shapes current-polygon))))
+              ;; append point to active shape
+              (recur remaining (conj active p) shapes))))))))
 
 (comment
   (let [poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
