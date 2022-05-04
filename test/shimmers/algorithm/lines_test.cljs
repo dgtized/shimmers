@@ -101,10 +101,11 @@
 
 (deftest find-paired-intersections-for-cut
   (let [triangle (gp/polygon2 [0 0] [10 0] [0 10])]
-    (is (empty? (sut/find-paired-intersections (g/edges triangle) (gl/line2 [-5 0] [5 -5])))
+    (is (empty? (sut/find-paired-intersections (g/edges triangle)
+                                               (gl/line2 [-5 0] [5 -5])))
         "no intersections")
-    (is (= [{:edge [[0 0] [10 0]] :p [0 0]}]
-           (sut/find-paired-intersections (g/edges triangle) (gl/line2 [-5 5] [5 -5])))
+    (is (empty? (sut/find-paired-intersections (g/edges triangle)
+                                               (gl/line2 [-5 5] [5 -5])))
         "glancing intersection at one vertex")
     (is (= [{:edge [[0 0] [10 0]] :p [0 0] :pair [5 5]}
             {:edge [[10 0] [0 10]] :p [5 5] :pair [0 0]}]
