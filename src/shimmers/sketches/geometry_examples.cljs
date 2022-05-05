@@ -60,13 +60,13 @@
                 :fill "white"
                 :stroke-width 0.5}
                shapes)
-     (when description
-       [:p description])
-     [:div {}
-      [:h4 "Given"]
+     [:details
+      [:summary "Given/Results"]
       (edn-list given)
       [:h4 "Results"]
-      (edn-list results)]]))
+      (edn-list results)]
+     (when description
+       [:p description])]))
 
 (defn page []
   (into [:div {}] (mapv show-example examples)))
