@@ -3,6 +3,7 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -47,7 +48,7 @@
        :given [convex-poly diagonal]
        :results [(lines/cut-polygon convex-poly diagonal)]})]))
 
-(defn show-example [{:keys [title description size shapes]}]
+(defn show-example [{:keys [title description size given results shapes]}]
   (let [[width height] (or size [400 100])]
     [:div
      (when title [:h3 title])
@@ -58,7 +59,10 @@
                 :stroke-width 0.5}
                shapes)
      (when description
-       [:p description])]))
+       [:p description])
+     [:div.flexcols {:style {:width "500px"}}
+      (into [:div {}] (mapv debug/pre-edn given))
+      (into [:div {}] (mapv debug/pre-edn results))]]))
 
 (defn page []
   (into [:div {}] (mapv show-example examples)))
