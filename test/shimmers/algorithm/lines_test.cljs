@@ -143,7 +143,6 @@
               {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
              (sut/find-paired-intersections convex-poly (gl/line2 [2 4] [10 4])))
           "clip right tail with coincident segment removed")
-    ;; TODO: re-verify by hand?
     (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
             {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}
             {:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
