@@ -180,22 +180,34 @@
 ;; at least two cases,
 ;; a) trim line to non-coincident segments,
 ;; b) split line into each non-coincident segments
-(defn find-paired-intersections [edges {[pl ql] :points}]
-  (let [isecs (->> edges
-                   (keep (fn [edge]
-                           (let [[pe qe] edge
-                                 isec (isec/intersect-line2-line2? pl ql pe qe)]
-                             (when (and (= (:type isec) :intersect)
-                                        (not (tm/delta= qe (:p isec))))
-                               {:edge edge :p (:p isec)}))))
-                   (sort-by (fn [{:keys [p]}] (g/dist-squared pl p))))
+(defn find-paired-intersections [polygon {[pl ql] :points :as line}]
+  (let [isecs
+        (->> (g/edges polygon)
+             (mapcat (fn [edge]
+                       (let [[pe qe] edge
+                             {:keys [type p]} (isec/intersect-line2-line2? pe qe pl ql)]
+                         (cond (and (= type :intersect)
+                                    (not (tm/delta= qe p)))
+                               [{:edge edge :p p}]
+                               ;; awkward coincident case, simplify
+                               (#{:coincident-no-intersect :coincident} type)
+                               (for [{[sp sq] :points} (clip-line line polygon)
+                                     :let [{:keys [p]} (isec/intersect-line2-line2? pe qe sp sq)]
+                                     :when (not (tm/delta= qe p))]
+                                 {:edge edge :p p})
+                               :else
+                               []))))
+             (sort-by (fn [{:keys [p]}] (g/dist-squared pl p))))
+
         pairs (partition 2 2 (map :p isecs))]
-    (for [isec isecs]
-      (if-let [opposite (some (fn [[p q]] (cond (tm/delta= p (:p isec)) q
-                                               (tm/delta= q (:p isec)) p))
-                              pairs)]
-        (assoc isec :pair opposite)
-        isec))))
+    (for [isec isecs
+          :let [opposite (some (fn [[a b]]
+                                 (cond (tm/delta= a (:p isec)) b
+                                       (tm/delta= b (:p isec)) a))
+                               pairs)]
+          :when opposite
+          ]
+      (assoc isec :pair opposite))))
 
 (comment
   (let [a (gv/vec2 10 0)
@@ -233,11 +245,10 @@
   "Cut a polygon with a line, returning the set of polygons from each side of the
   line."
   [polygon line]
-  (let [edges (g/edges polygon)
-        isecs (find-paired-intersections edges line)]
+  (let [isecs (find-paired-intersections polygon line)]
     (if (< (count isecs) 2)
       [(g/as-polygon polygon)]
-      (loop [[edge & remaining] edges active [] shapes []]
+      (loop [[edge & remaining] (g/edges polygon) active [] shapes []]
         (if (nil? edge)
           (->> (conj shapes active)
                (mapv dedupe)

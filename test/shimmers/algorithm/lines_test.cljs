@@ -82,6 +82,12 @@
       (is (= [(gl/line2 2 5 3 5) (gl/line2 7 5 8 5)]
              (sut/clip-line (gl/line2 0 5 10 5) concave-poly))
           "line segment clips multiple regions of a concave polygon")
+      (is (= [(gl/line2 2 5 3 5)]
+             (sut/clip-line (gl/line2 0 5 7 5) concave-poly))
+          "clips right tail")
+      (is (= [(gl/line2 7 5 8 5)]
+             (sut/clip-line (gl/line2 3 5 10 5) concave-poly))
+          "clips left tail")
       (is (= [(gl/line2 2 2 3 2) (gl/line2 7 2 8 2)]
              (sut/clip-line (gl/line2 0 2 10 2) concave-poly))
           "line segment clips multiple regions of a concave polygon including coincident edges")
@@ -101,48 +107,49 @@
 
 (deftest find-paired-intersections-for-cut
   (let [triangle (gp/polygon2 [0 0] [10 0] [0 10])]
-    (is (empty? (sut/find-paired-intersections (g/edges triangle)
+    (is (empty? (sut/find-paired-intersections triangle
                                                (gl/line2 [-5 0] [5 -5])))
         "no intersections")
-    (is (empty? (sut/find-paired-intersections (g/edges triangle)
+    (is (empty? (sut/find-paired-intersections triangle
                                                (gl/line2 [-5 5] [5 -5])))
         "glancing intersection at one vertex")
     (is (= [{:edge [[0 0] [10 0]] :p [0 0] :pair [5 5]}
             {:edge [[10 0] [0 10]] :p [5 5] :pair [0 0]}]
-           (sut/find-paired-intersections (g/edges triangle) (gl/line2 [0 0] [10 10])))
+           (sut/find-paired-intersections triangle (gl/line2 [0 0] [10 10])))
         "intersection with vertex & edge"))
   (let [square (rect/rect [0 0] [10 10])]
     (is (= [{:edge [[0 0] [10 0]] :p [0 0] :pair [10 10]}
             {:edge [[10 10] [0 10]] :p [10 10] :pair [0 0]}]
-           (sut/find-paired-intersections (g/edges square) (gl/line2 [0 0] [10 10])))
+           (sut/find-paired-intersections square (gl/line2 [0 0] [10 10])))
         "intersection at two vertices")
     (is (= [{:edge [[0 10] [0 0]] :p [0 5] :pair [10 5]}
             {:edge [[10 0] [10 10]] :p [10 5] :pair [0 5]}]
-           (sut/find-paired-intersections (g/edges square) (gl/line2 [0 5] [10 5])))
+           (sut/find-paired-intersections square (gl/line2 [0 5] [10 5])))
         "intersection at two edges"))
   (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])]
     (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
             {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
-           (sut/find-paired-intersections (g/edges convex-poly) (gl/line2 [0 4] [2 4])))
+           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [2 4])))
         "clip left tail")
     (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
             {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
-           (sut/find-paired-intersections (g/edges convex-poly) (gl/line2 [0 4] [8 4])))
+           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [8 4])))
         "clip left tail with coincident segment removed")
-    #_(is (= [{:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}
-              {:edge [[8 10] [8 4]] :p [8 4] :pair [10 4]}]
-             (sut/find-paired-intersections (g/edges convex-poly) (gl/line2 [8 4] [10 4])))
-          "clip right tail")
-    #_(is (= [{:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}
-              {:edge [[8 10] [8 4]] :p [8 4] :pair [10 4]}]
-             (sut/find-paired-intersections (g/edges convex-poly) (gl/line2 [2 4] [10 4])))
+    (is (= [{:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
+            {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
+           (sut/find-paired-intersections convex-poly (gl/line2 [8 4] [10 4])))
+        "clip right tail")
+    #_(is (= [{:edge [[8 10] [8 4]] :p [8 4] :pair [10 4]}
+              {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
+             (sut/find-paired-intersections convex-poly (gl/line2 [2 4] [10 4])))
           "clip right tail with coincident segment removed")
-    #_(is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
-              {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}
-              {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}
-              {:edge [[8 10] [8 4]] :p [8 4] :pair [10 4]}]
-             (sut/find-paired-intersections (g/edges convex-poly) (gl/line2 [0 4] [10 4])))
-          "coincident in middle")))
+    ;; TODO: re-verify by hand?
+    (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
+            {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}
+            {:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
+            {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
+           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [10 4])))
+        "coincident in middle")))
 
 (deftest cut-polygon
   (let [poly (gp/polygon2 [0 0] [10 0] [0 10])
