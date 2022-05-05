@@ -36,7 +36,9 @@
                "vertical-right" (gl/line2 [8 0] [8 10])
                "vertical-middle" (gl/line2 [5 0] [5 10])
                "diagonal-left" (gl/line2 [0 0] [10 10])
-               "diagonal-right" (gl/line2 [10 0] [0 10])}]
+               "diagonal-low-left" (gl/line2 [0 3] [10 7])
+               "diagonal-right" (gl/line2 [0 10] [10 0])
+               "diagonal-low-right" (gl/line2 [0 7] [8 0])}]
     (for [[desc line] (sort-by first lines)]
       (make-example
        {:title (str "cut-polygon convex " desc)
