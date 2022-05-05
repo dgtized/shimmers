@@ -242,7 +242,10 @@
           (->> (conj shapes active)
                (mapv dedupe)
                (filter (fn [points] (> (count points) 2)))
-               (mapv gp/polygon2))
+               (mapv (fn [points]
+                       (gp/polygon2 (if (tm/delta= (first points) (last points))
+                                      (butlast points)
+                                      points)))))
           (let [p (first edge)]
             (if-let [isec (intersection-with-edge isecs edge)]
               (let [{cut-p :p cut-q :pair} isec
