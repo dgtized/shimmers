@@ -51,6 +51,7 @@
    shimmers.sketches.folding-triangles
    ;; shimmers.sketches.fluid
    shimmers.sketches.garden-hose
+   shimmers.sketches.geometry-examples
    shimmers.sketches.gl-cube
    shimmers.sketches.glyphs
    shimmers.sketches.gossamer-coils
