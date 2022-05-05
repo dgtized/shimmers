@@ -5,12 +5,12 @@
    #?@(:cljs
        [[shimmers.common.ui.controls :as ctrl]
         [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
-        [thi.ng.geom.vector :refer [Vec2]]]
+        [thi.ng.geom.vector :refer [Vec2 Vec3]]]
        :clj [[thi.ng.geom.types]
              [thi.ng.geom.vector]])
    [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]
-                   [thi.ng.geom.vector Vec2])))
+                   [thi.ng.geom.vector Vec2 Vec3])))
 
 ;; identity operation for a map record that removes type info so tagged-literal
 ;; will not be called recursively with the original type. However this should
@@ -48,8 +48,15 @@
   Vec2
   (-edn [s]
     (let [[x y] s]
-      (tagged-literal 'vec2 [(tm/roundto x 0.01)
-                             (tm/roundto y 0.01)]))))
+      (tagged-literal 'v2 [(tm/roundto x 0.01)
+                           (tm/roundto y 0.01)])))
+
+  Vec3
+  (-edn [s]
+    (let [[x y z] s]
+      (tagged-literal 'v3 [(tm/roundto x 0.01)
+                           (tm/roundto y 0.01)
+                           (tm/roundto z 0.01)]))))
 
 (defmacro time-it
   "Evaluates expr and stores it in debug `atom` at `key`. Returns the value of expr."
