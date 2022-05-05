@@ -81,8 +81,10 @@
     (when (= :profile (first tap-value))
       (swap! sink conj (second tap-value)))))
 
-(defn pre-edn [edn]
-  [:pre.debug [:code (with-out-str (fedn/pprint edn))]])
+(defn pre-edn
+  ([edn] (pre-edn edn {}))
+  ([edn options]
+   [:pre.debug [:code (with-out-str (fedn/pprint edn options))]]))
 
 (defn display [atom]
   (pre-edn (deref atom)))

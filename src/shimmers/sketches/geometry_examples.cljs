@@ -48,6 +48,11 @@
        :given [convex-poly diagonal]
        :results [(lines/cut-polygon convex-poly diagonal)]})]))
 
+(defn edn-list [xs]
+  (into [:div {}]
+        (mapv (fn [v] (debug/pre-edn v {:width 120}))
+              xs)))
+
 (defn show-example [{:keys [title description size given results shapes]}]
   (let [[width height] (or size [400 100])]
     [:div
@@ -60,9 +65,11 @@
                shapes)
      (when description
        [:p description])
-     [:div.flexcols {:style {:width "500px"}}
-      (into [:div {}] (mapv debug/pre-edn given))
-      (into [:div {}] (mapv debug/pre-edn results))]]))
+     [:div {}
+      [:h4 "Given"]
+      (edn-list given)
+      [:h4 "Results"]
+      (edn-list results)]]))
 
 (defn page []
   (into [:div {}] (mapv show-example examples)))
