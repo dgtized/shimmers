@@ -29,24 +29,54 @@
 
 (def examples
   (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
-        horizontal (gl/line2 [0 4] [10 4])
-        vertical (gl/line2 [2 0] [2 10])
-        diagonal (gl/line2 [0 0] [10 10])]
+        horizontal-coincident (gl/line2 [0 4] [10 4])
+        horizontal-low (gl/line2 [0 2] [10 2])
+        horizontal-high (gl/line2 [0 6] [10 6])
+        vertical-left (gl/line2 [2 0] [2 10])
+        vertical-right (gl/line2 [8 0] [8 10])
+        vertical-middle (gl/line2 [5 0] [5 10])
+        diagonal-left (gl/line2 [0 0] [10 10])
+        diagonal-right (gl/line2 [10 0] [0 10])]
     [(make-example
-      {:title "cut-polygon convex horizontal"
+      {:title "cut-polygon convex horizontal low"
        :description ""
-       :given [convex-poly horizontal]
-       :results [(lines/cut-polygon convex-poly horizontal)]})
+       :given [convex-poly horizontal-low]
+       :results [(lines/cut-polygon convex-poly horizontal-low)]})
      (make-example
-      {:title "cut-polygon convex vertical"
+      {:title "cut-polygon convex horizontal high"
        :description ""
-       :given [convex-poly vertical]
-       :results [(lines/cut-polygon convex-poly vertical)]})
+       :given [convex-poly horizontal-high]
+       :results [(lines/cut-polygon convex-poly horizontal-high)]})
      (make-example
-      {:title "cut-polygon convex diagonal"
+      {:title "cut-polygon convex horizontal coincident"
        :description ""
-       :given [convex-poly diagonal]
-       :results [(lines/cut-polygon convex-poly diagonal)]})]))
+       :given [convex-poly horizontal-coincident]
+       :results [(lines/cut-polygon convex-poly horizontal-coincident)]})
+     (make-example
+      {:title "cut-polygon convex vertical left"
+       :description ""
+       :given [convex-poly vertical-left]
+       :results [(lines/cut-polygon convex-poly vertical-left)]})
+     (make-example
+      {:title "cut-polygon convex vertical right"
+       :description ""
+       :given [convex-poly vertical-right]
+       :results [(lines/cut-polygon convex-poly vertical-right)]})
+     (make-example
+      {:title "cut-polygon convex vertical middle"
+       :description ""
+       :given [convex-poly vertical-middle]
+       :results [(lines/cut-polygon convex-poly vertical-middle)]})
+     (make-example
+      {:title "cut-polygon convex diagonal-left"
+       :description ""
+       :given [convex-poly diagonal-left]
+       :results [(lines/cut-polygon convex-poly diagonal-left)]})
+     (make-example
+      {:title "cut-polygon convex diagonal-right"
+       :description ""
+       :given [convex-poly diagonal-right]
+       :results [(lines/cut-polygon convex-poly diagonal-right)]})]))
 
 (defn edn-list [xs]
   (into [:div {}]
