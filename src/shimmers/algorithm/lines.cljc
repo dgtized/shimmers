@@ -198,18 +198,21 @@
         isec))))
 
 (comment
-  (let [a (gv/vec2 0 0)
-        b (gv/vec2 5 0)
-        c (gv/vec2 10 0)
-        d (gv/vec2 20 0)]
+  (let [a (gv/vec2 10 0)
+        b (gv/vec2 20 0)
+        c (gv/vec2 30 0)
+        d (gv/vec2 40 0)]
     {:ab-ac (isec/intersect-line2-line2? a b a c)
      :ac-ab (isec/intersect-line2-line2? a c a b)
+     :ba-ca (isec/intersect-line2-line2? b a c a)
+     :ca-ba (isec/intersect-line2-line2? c a b a)
      :ab-bc (isec/intersect-line2-line2? a b b c)
      :bc-ab (isec/intersect-line2-line2? b c a b)
      :ad-bc (isec/intersect-line2-line2? a d b c)
      ;; coincident-no-intersect because neither b or c match an endpoint of a-d
      ;; but are wholly contained and coincidental
-     :bc-ad (isec/intersect-line2-line2? b c a d)}))
+     :bc-ad (isec/intersect-line2-line2? b c a d)
+     :ac-bd (isec/intersect-line2-line2? a c b d)}))
 
 (defn intersection-with-edge [isecs edge]
   (some (fn [{iedge :edge :as isec}]
