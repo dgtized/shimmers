@@ -12,9 +12,9 @@
    [thi.ng.geom.utils :as gu]))
 
 (defn fit-example [given results]
-  (let [bounds (rect/rect 0 0 400 150)
-        left (g/scale-size (rect/rect 0 0 200 150) 0.9)
-        right (g/scale-size (rect/rect 200 0 200 150) 0.9)
+  (let [bounds (rect/rect 0 0 300 150)
+        left (rect/rect 0 0 150 150)
+        right (rect/rect 150 0 150 150)
         shapes (concat (gu/fit-all-into-bounds left given)
                        (mapcat (fn [place result]
                                  (gu/fit-all-into-bounds place result))
