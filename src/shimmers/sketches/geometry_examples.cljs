@@ -15,20 +15,23 @@
   (let [bounds (rect/rect 0 0 300 150)
         left (rect/rect 0 0 150 150)
         right (rect/rect 150 0 150 150)
-        shapes (concat (gu/fit-all-into-bounds left given)
-                       (mapcat (fn [place result]
-                                 (gu/fit-all-into-bounds place result))
-                               (g/subdivide right {:cols (count results)})
-                               results))]
+
+        given-fit (gu/fit-all-into-bounds left given)
+        results-fit
+        (mapcat (fn [place result]
+                  (gu/fit-all-into-bounds place result))
+                (g/subdivide right {:cols (count results)})
+                results)]
     {:size (:size bounds)
-     :shapes shapes}))
+     :shapes (concat given-fit results-fit)}))
 
 (defn make-example
   [{:keys [given results] :as example}]
   (merge example (fit-example given results)))
 
 (def examples
-  (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])
+  (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
+                                 [8 4] [2 4] [2 10] [0 10])
         lines {"horizontal-coincident" (gl/line2 [0 4] [10 4])
                "horizontal-low" (gl/line2 [0 2] [10 2])
                "horizontal-high" (gl/line2 [0 6] [10 6])
