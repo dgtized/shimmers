@@ -9,17 +9,34 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.utils :as gu]))
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.math.core :as tm]))
+
+;; FIXME: inlined from geom.utils, to explore problems with centroid of concave
+;; polygons
+(defn fit-all-into-bounds
+  "Takes an AABB or rect and seq of shapes, proportionally scales and
+  repositions all items to fit into given bounds. Returns lazyseq of
+  transformed entities. Does not support collections of mixed 2D/3D
+  entities. Use rects as target bounds for 2D colls."
+  [bounds coll]
+  (let [b (gu/coll-bounds coll)
+        s (reduce min (tm/div (get bounds :size) (get b :size)))
+        b' (g/center (g/scale b s) (g/centroid bounds))]
+    (for [shape coll]
+      (-> shape
+          (g/center (g/unmap-point b' (g/map-point b (g/centroid shape))))
+          (g/scale-size s)))))
 
 (defn make-example [{:keys [given results] :as example}]
   (let [bounds (rect/rect 0 0 300 150)
         left (rect/rect 0 0 150 150)
         right (rect/rect 150 0 150 150)
 
-        given-fit (gu/fit-all-into-bounds left given)
+        given-fit (fit-all-into-bounds left given)
         results-fit
         (mapcat (fn [place result]
-                  (gu/fit-all-into-bounds place result))
+                  (fit-all-into-bounds place result))
                 (g/subdivide right {:cols (count results)})
                 results)]
     (merge example
