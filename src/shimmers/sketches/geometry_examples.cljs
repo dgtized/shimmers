@@ -11,7 +11,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]))
 
-(defn fit-example [given results]
+(defn make-example [{:keys [given results] :as example}]
   (let [bounds (rect/rect 0 0 300 150)
         left (rect/rect 0 0 150 150)
         right (rect/rect 150 0 150 150)
@@ -22,12 +22,9 @@
                   (gu/fit-all-into-bounds place result))
                 (g/subdivide right {:cols (count results)})
                 results)]
-    {:size (:size bounds)
-     :shapes (concat given-fit results-fit)}))
-
-(defn make-example
-  [{:keys [given results] :as example}]
-  (merge example (fit-example given results)))
+    (merge example
+           {:size (:size bounds)
+            :shapes (concat given-fit results-fit)})))
 
 (def examples
   (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
