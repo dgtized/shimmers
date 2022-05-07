@@ -10,6 +10,7 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; FIXME: inlined from geom.utils, to explore problems with centroid of concave
@@ -23,14 +24,18 @@
   (let [b (gu/coll-bounds coll)
         s (reduce min (tm/div (get bounds :size) (get b :size)))
         b' (g/center (g/scale b s) (g/centroid bounds))]
-    (for [shape coll]
+    (for [shape coll
+          ;; temporary hardcoded offset
+          :let [center (if (> (count (:points shape)) 2)
+                         (tm/+ (g/centroid shape) (gv/vec2 0 2))
+                         (g/centroid shape))]]
       (-> shape
-          (g/center (g/unmap-point b' (g/map-point b (g/centroid shape))))
+          (g/center (g/unmap-point b' (g/map-point b center)))
           (g/scale-size s)))))
 
 (defn make-example [{:keys [given results] :as example}]
   (let [bounds (rect/rect 0 0 300 150)
-        left (rect/rect 0 0 150 150)
+        left (g/scale-size (rect/rect 0 0 150 150) 0.9)
         right (rect/rect 150 0 150 150)
 
         given-fit (fit-all-into-bounds left given)
