@@ -69,7 +69,11 @@
        [:p description])]))
 
 (defn page []
-  (into [:div {}] (mapv show-example examples)))
+  [:div
+   [:h2 "Cut Polygon with a Line"]
+   [:p.explanation "Visual test cases for cutting a polygon with a line, and
+   separating it into the component polygons."]
+   (into [:div {}] (mapv show-example examples))])
 
 (sketch/definition geometry-examples
   {:created-at "2022-05-05"
