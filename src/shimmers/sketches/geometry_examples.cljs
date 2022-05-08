@@ -48,29 +48,38 @@
            {:size (:size bounds)
             :shapes (concat given-fit results-fit)})))
 
-(def examples
-  (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
-                                 [8 4] [2 4] [2 10] [0 10])
-        lines {"horizontal-coincident" (gl/line2 [0 4] [10 4])
-               "horizontal-low" (gl/line2 [0 2] [10 2])
-               "horizontal-high" (gl/line2 [0 6] [10 6])
-               "vertical-left" (gl/line2 [2 0] [2 10])
-               "vertical-right" (gl/line2 [8 0] [8 10])
-               "vertical-middle" (gl/line2 [5 0] [5 10])
-               "diagonal-left" (gl/line2 [0 0] [10 10])
-               "diagonal-low-left" (gl/line2 [0 3] [10 7])
-               "diagonal-right" (gl/line2 [0 10] [10 0])
-               "diagonal-low-right" (gl/line2 [0 7] [8 0])}]
-    (for [[desc line] (sort-by first lines)]
-      (make-example
-       {:title (str "cut-polygon convex " desc)
-        :given [convex-poly line]
-        :results [(lines/cut-polygon convex-poly line)]}))))
-
 (defn edn-list [xs]
   (into [:div {}]
         (mapv (fn [v] (debug/pre-edn v {:width 120}))
               xs)))
+
+(def convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
+                              [8 4] [2 4] [2 10] [0 10]))
+
+(def lines {"horizontal-coincident" (gl/line2 [0 4] [10 4])
+            "horizontal-low" (gl/line2 [0 2] [10 2])
+            "horizontal-high" (gl/line2 [0 6] [10 6])
+            "vertical-left" (gl/line2 [2 0] [2 10])
+            "vertical-right" (gl/line2 [8 0] [8 10])
+            "vertical-middle" (gl/line2 [5 0] [5 10])
+            "diagonal-left" (gl/line2 [0 0] [10 10])
+            "diagonal-low-left" (gl/line2 [0 3] [10 7])
+            "diagonal-right" (gl/line2 [0 10] [10 0])
+            "diagonal-low-right" (gl/line2 [0 7] [8 0])})
+
+(defn cut-polygon-examples []
+  (for [[desc line] (sort-by first lines)]
+    (make-example
+     {:title (str "cut-polygon convex " desc)
+      :given [convex-poly line]
+      :results [(lines/cut-polygon convex-poly line)]})))
+
+(defn clip-line-examples []
+  (for [[desc line] (sort-by first lines)]
+    (make-example
+     {:title (str "clip-line convex " desc)
+      :given [convex-poly line]
+      :results [(lines/clip-line line convex-poly)]})))
 
 (defn show-example [{:keys [title description size given results shapes]}]
   (let [[width height] (or size [400 100])]
@@ -92,10 +101,14 @@
 
 (defn page []
   [:div
-   [:h2 "Cut Polygon with a Line"]
-   [:p.explanation "Visual test cases for cutting a polygon with a line, and
+   [:div
+    [:h2 "Cut Polygon with a Line"]
+    [:p.explanation "Visual test cases for cutting a polygon with a line, and
    separating it into the component polygons."]
-   (into [:div {}] (mapv show-example examples))])
+    (into [:div {}] (mapv show-example (cut-polygon-examples)))]
+   [:div
+    [:h2 "Clip lines to segments inside of a polygon"]
+    (into [:div {}] (mapv show-example (clip-line-examples)))]])
 
 (sketch/definition geometry-examples
   {:created-at "2022-05-05"
