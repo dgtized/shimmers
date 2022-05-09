@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
@@ -33,6 +34,11 @@
           (g/center (g/unmap-point b' (g/map-point b center)))
           (g/scale-size s)))))
 
+(defn mark-centroids [shapes]
+  (for [s shapes]
+    (vary-meta (gc/circle (g/centroid s) 1)
+               assoc :fill "black")))
+
 (defn make-example [{:keys [given results] :as example}]
   (let [bounds (rect/rect 0 0 300 150)
         left (g/scale-size (rect/rect 0 0 150 150) 0.9)
@@ -46,7 +52,10 @@
                 results)]
     (merge example
            {:size (:size bounds)
-            :shapes (concat given-fit results-fit)})))
+            :shapes (concat given-fit
+                            (mark-centroids given-fit)
+                            results-fit
+                            (mark-centroids results-fit))})))
 
 (defn edn-list [xs]
   (into [:div {}]
