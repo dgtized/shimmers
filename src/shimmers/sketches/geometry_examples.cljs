@@ -36,8 +36,9 @@
 
 (defn mark-centroids [shapes]
   (for [s shapes]
-    (vary-meta (gc/circle (g/centroid s) 1)
-               assoc :fill "black")))
+    (vary-meta (gc/circle (g/centroid s) 1) assoc
+               :fill "maroon"
+               :stroke "none")))
 
 (defn make-example [{:keys [given results] :as example}]
   (let [bounds (rect/rect 0 0 300 150)
