@@ -34,6 +34,8 @@
           (g/center (g/unmap-point b' (g/map-point b center)))
           (g/scale-size s)))))
 
+(comment (gu/coll-bounds [(gl/line2 [0 2] [10 2])]))
+
 (defn mark-centroids [shapes]
   (for [s shapes]
     (vary-meta (gc/circle (g/centroid s) 1) assoc
