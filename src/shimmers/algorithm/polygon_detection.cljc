@@ -201,6 +201,15 @@
 
   (tm/cross (gv/vec2 5 3) (gv/vec2 5 4)))
 
+(defn convex?
+  [polygon]
+  (every? (fn [[a b c]] (< (g/angle-between (tm/- c b) (tm/- a b)) Math/PI))
+          (partition 3 1 (g/vertices polygon))))
+
+(defn concave?
+  [polygon]
+  (not (convex? polygon)))
+
 ;; Possibly worth looking into similar routines in the Java Topology Suite
 ;; https://github.com/locationtech/jts, and https://github.com/bjornharrtell/jsts
 

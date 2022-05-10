@@ -119,4 +119,17 @@
             (gp/polygon2 [[5 5] [0 10] [10 10]])]
            (sut/split-self-intersection (gp/polygon2 [a b d c]))))))
 
+(deftest concave-convex
+  (let [concave-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
+                                  [8 4] [2 4] [2 10] [0 10])
+        right-triangle (gp/polygon2 [0 0] [5 0] [0 5])
+        hexagon (gp/polygon2 (for [t (tm/norm-range 6)]
+                               (v/polar 1 (* t tm/TWO_PI))))]
+    (is (sut/concave? concave-poly))
+    (is (not (sut/convex? concave-poly)))
+    (is (not (sut/concave? right-triangle)))
+    (is (sut/convex? right-triangle))
+    (is (not (sut/concave? hexagon)))
+    (is (sut/convex? hexagon))))
+
 (comment (t/run-tests))
