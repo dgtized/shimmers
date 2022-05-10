@@ -23,7 +23,7 @@
   entities. Use rects as target bounds for 2D colls."
   [bounds coll]
   ;; check minimum bounds
-  (let [b (tm/union (gu/coll-bounds coll) (rect/rect 0 0 1 1))
+  (let [b (update (gu/coll-bounds coll) :size tm/max (gv/vec2 1 1))
         s (reduce min (tm/div (get bounds :size) (get b :size)))
         b' (g/center (g/scale b s) (g/centroid bounds))]
     (for [shape coll
