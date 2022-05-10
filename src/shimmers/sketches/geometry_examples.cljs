@@ -78,8 +78,8 @@
         (mapv (fn [v] (debug/pre-edn v {:width 120}))
               xs)))
 
-(def convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
-                              [8 4] [2 4] [2 10] [0 10]))
+(def concave-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
+                               [8 4] [2 4] [2 10] [0 10]))
 
 (def hexagon (g/as-polygon (gc/circle [5 5] 5) 6))
 
@@ -97,9 +97,9 @@
 (defn cut-polygon-examples []
   (concat (for [[desc line] (sort-by first lines)]
             (make-example
-             {:title (str "cut-polygon convex " desc)
-              :given [convex-poly line]
-              :results [(lines/cut-polygon convex-poly line)]}))
+             {:title (str "cut-polygon concave " desc)
+              :given [concave-poly line]
+              :results [(lines/cut-polygon concave-poly line)]}))
           (for [[desc line] (sort-by first lines)]
             (make-example
              {:title (str "cut-polygon hexagon " desc)
@@ -109,9 +109,9 @@
 (defn clip-line-examples []
   (for [[desc line] (sort-by first lines)]
     (make-example
-     {:title (str "clip-line convex " desc)
-      :given [convex-poly line]
-      :results [(lines/clip-line line convex-poly)]})))
+     {:title (str "clip-line concave " desc)
+      :given [concave-poly line]
+      :results [(lines/clip-line line concave-poly)]})))
 
 (defn show-example [{:keys [title description size given results shapes]}]
   (let [[width height] (or size [400 100])]
