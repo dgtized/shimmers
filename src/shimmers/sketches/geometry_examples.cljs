@@ -1,6 +1,7 @@
 (ns shimmers.sketches.geometry-examples
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -25,10 +26,11 @@
   ;; check minimum bounds
   (let [b (update (gu/coll-bounds coll) :size tm/max (gv/vec2 1 1))
         s (reduce min (tm/div (get bounds :size) (get b :size)))
-        b' (g/center (g/scale b s) (g/centroid bounds))]
+        b' (g/center (g/scale b s) (g/centroid bounds))
+        concave (some poly-detect/concave? coll)]
     (for [shape coll
           ;; temporary hardcoded offset
-          :let [center (if (> (count (:points shape)) 2)
+          :let [center (if (and concave (> (count (:points shape)) 2))
                          (tm/+ (g/centroid shape) (gv/vec2 0 2))
                          (g/centroid shape))]]
       (-> shape
@@ -79,6 +81,8 @@
 (def convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10]
                               [8 4] [2 4] [2 10] [0 10]))
 
+(def hexagon (g/as-polygon (gc/circle [5 5] 5) 6))
+
 (def lines {"horizontal-coincident" (gl/line2 [0 4] [10 4])
             "horizontal-low" (gl/line2 [0 2] [10 2])
             "horizontal-high" (gl/line2 [0 6] [10 6])
@@ -91,11 +95,16 @@
             "diagonal-low-right" (gl/line2 [0 7] [8 0])})
 
 (defn cut-polygon-examples []
-  (for [[desc line] (sort-by first lines)]
-    (make-example
-     {:title (str "cut-polygon convex " desc)
-      :given [convex-poly line]
-      :results [(lines/cut-polygon convex-poly line)]})))
+  (concat (for [[desc line] (sort-by first lines)]
+            (make-example
+             {:title (str "cut-polygon convex " desc)
+              :given [convex-poly line]
+              :results [(lines/cut-polygon convex-poly line)]}))
+          (for [[desc line] (sort-by first lines)]
+            (make-example
+             {:title (str "cut-polygon hexagon " desc)
+              :given [hexagon line]
+              :results [(lines/cut-polygon hexagon line)]}))))
 
 (defn clip-line-examples []
   (for [[desc line] (sort-by first lines)]
