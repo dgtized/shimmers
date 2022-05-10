@@ -34,7 +34,17 @@
           (g/center (g/unmap-point b' (g/map-point b center)))
           (g/scale-size s)))))
 
-(comment (gu/coll-bounds [(gl/line2 [0 2] [10 2])]))
+(comment
+  (let [horizontal (gl/line2 [0 5] [10 5])
+        vertical (gl/line2 [5 0] [5 10])
+        diagonal (gl/line2 [0 0] [10 10])
+        bounds (rect/rect 0 0 8 8)]
+    {:bounds-h (gu/coll-bounds [horizontal])
+     :bounds-v (gu/coll-bounds [vertical])
+     :bounds-d (gu/coll-bounds [diagonal])
+     :fit-h (fit-all-into-bounds bounds [horizontal])
+     :fit-v (fit-all-into-bounds bounds [vertical])
+     :fit-d (fit-all-into-bounds bounds [diagonal])}))
 
 (defn mark-centroids [shapes]
   (for [s shapes]
