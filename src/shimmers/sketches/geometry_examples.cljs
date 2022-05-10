@@ -51,27 +51,17 @@
 
 (defn mark-centroids [shapes]
   (for [s shapes]
-    (vary-meta (gc/circle (g/centroid s) 1) assoc
+    (vary-meta (gc/circle (g/centroid s) 0.1) assoc
                :fill "maroon"
                :stroke "none")))
 
 (defn make-example [{:keys [given results] :as example}]
-  (let [bounds (rect/rect 0 0 300 150)
-        left (g/scale-size (rect/rect 0 0 150 150) 0.9)
-        right (rect/rect 150 0 150 150)
-
-        given-fit (fit-all-into-bounds left given)
-        results-fit
-        (mapcat (fn [place result]
-                  (fit-all-into-bounds place result))
-                (g/subdivide right {:cols (count results)})
-                results)]
+  (let [viewbox "0 0 10 10"]
     (merge example
-           {:size (:size bounds)
-            :shapes (concat given-fit
-                            (mark-centroids given-fit)
-                            results-fit
-                            (mark-centroids results-fit))})))
+           {:shapes [[:svg {:viewBox viewbox :x "5%" :width "40%"}
+                      (concat given (mark-centroids given))]
+                     [:svg {:viewBox viewbox :x "55%" :width "40%"}
+                      (concat results (mark-centroids results))]]})))
 
 (defn edn-list [xs]
   (into [:div {}]
@@ -99,37 +89,36 @@
             (make-example
              {:title (str "cut-polygon concave " desc)
               :given [concave-poly line]
-              :results [(lines/cut-polygon concave-poly line)]}))
+              :results (lines/cut-polygon concave-poly line)}))
           (for [[desc line] (sort-by first lines)]
             (make-example
              {:title (str "cut-polygon hexagon " desc)
               :given [hexagon line]
-              :results [(lines/cut-polygon hexagon line)]}))))
+              :results (lines/cut-polygon hexagon line)}))))
 
 (defn clip-line-examples []
   (for [[desc line] (sort-by first lines)]
     (make-example
      {:title (str "clip-line concave " desc)
       :given [concave-poly line]
-      :results [(lines/clip-line line concave-poly)]})))
+      :results (lines/clip-line line concave-poly)})))
 
-(defn show-example [{:keys [title description size given results shapes]}]
-  (let [[width height] (or size [400 100])]
-    [:div
-     (when title [:h3 title])
-     (csvg/svg {:width width
-                :height height
-                :stroke "black"
-                :fill "white"
-                :stroke-width 0.5}
-               shapes)
-     [:details
-      [:summary "Given/Results"]
-      (edn-list given)
-      [:h4 "Results"]
-      (edn-list results)]
-     (when description
-       [:p description])]))
+(defn show-example [{:keys [title description given results shapes]}]
+  [:div
+   (when title [:h3 title])
+   (csvg/svg {:width 400
+              :height 200
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.05}
+             (apply list shapes))
+   [:details
+    [:summary "Given/Results"]
+    (edn-list given)
+    [:h4 "Results"]
+    (edn-list results)]
+   (when description
+     [:p description])])
 
 (defn page []
   [:div
