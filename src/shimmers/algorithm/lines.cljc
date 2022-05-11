@@ -262,20 +262,23 @@
   "Cut a polygon with a line, returning the set of polygons from each side of the
   line."
   [polygon line]
-  (let [isecs (find-paired-intersections polygon line)]
-    (if (< (count isecs) 2)
-      [(g/as-polygon polygon)]
-      (loop [[edge & remaining] (g/edges polygon) active [] shapes []]
-        (if (nil? edge)
-          (->> (conj shapes active)
-               (mapv dedupe)
+  (let [cleaned-polygons
+        (fn [shapes]
+          (->> shapes
+               (mapv dedupe) ;; TODO: can this get handled with remove-coincident?
                (filter (fn [points] (> (count points) 2)))
                (mapv (fn [points]
                        (->> (if (tm/delta= (first points) (last points))
                               (butlast points)
                               points)
                             gp/polygon2
-                            remove-coincident-segments))))
+                            remove-coincident-segments)))))
+        isecs (find-paired-intersections polygon line)]
+    (if (< (count isecs) 2)
+      [(g/as-polygon polygon)]
+      (loop [[edge & remaining] (g/edges polygon) active [] shapes []]
+        (if (nil? edge)
+          (cleaned-polygons (conj shapes active))
           (let [p (first edge)]
             (if-let [isec (intersection-with-edge isecs edge)]
               (let [{cut-p :p cut-q :pair} isec
