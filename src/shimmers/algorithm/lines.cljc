@@ -176,23 +176,21 @@
                               []
                               [[z q]]))))))))
 
-(defn remove-coincident-segments [poly]
+(defn remove-coincident-segments
+  "Remove sequential coincident segments from a polygon.
+
+  TODO: generalize for linestrip?"
+  [poly]
   (let [points (g/vertices poly)]
     (if (<= (count points) 3)
       poly
-      (loop [points points
-             out []]
-        (if (empty? points)
-          (gp/polygon2 out)
-          (let [a (or (last out) (last points))
-                b (first points)
-                c (or (second points) (first out))
-                {:keys [type]} (isec/intersect-line2-line2? a b b c)]
-            (if (= type :coincident)
-              (recur (rest points) out)
-              (recur (rest points) (conj out b)))))))))
-
-(comment (remove-coincident-segments (gp/polygon2 [1 0] [10 0] [10 10] [0 10] [0 0])))
+      (->> (concat (take-last 1 points) points (take 1 points))
+           (partition 3 1)
+           (keep (fn [[a b c]]
+                   (let [{:keys [type]} (isec/intersect-line2-line2? a b b c)]
+                     (when (not= type :coincident)
+                       b))))
+           gp/polygon2))))
 
 ;; TODO: handle coincident line segments
 ;; at least two cases,
