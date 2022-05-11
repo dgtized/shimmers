@@ -238,10 +238,10 @@
               (gp/polygon2 [5 0] b c d e [5 4])]
              (sut/cut-polygon poly (gl/line2 [5 0] [5 10])))
           "vertical slice")
-      #_(is (= [(gp/polygon2 a [2 0] g h)
-                (gp/polygon2 [2 0] b c d e f #_g)]
-               (sut/cut-polygon poly (gl/line2 [2 0] [2 10])))
-            "vertical slice, coincident f-g")
+      (is (= [(gp/polygon2 a [2 0] g h)
+              (gp/polygon2 [2 0] b c d e f)]
+             (sut/cut-polygon poly (gl/line2 [2 0] [2 10])))
+          "vertical slice, coincident f-g")
       (is (= [(gp/polygon2 a b [10 8] [8 8] e f [2 8] [0 8])
               (gp/polygon2 [2 8] g h [0 8])
               (gp/polygon2 [10 8] c d [8 8])]
@@ -252,11 +252,11 @@
               (gp/polygon2 [10 8] c d [8 8])]
              (sut/cut-polygon poly (gl/line2 [0 8] [10 8])))
           "horizontal slice into three polygons")
-      #_(is (= [(gp/polygon2 a b [10 4] e f [0 4])
-                (gp/polygon2 f g h [0 4])
-                (gp/polygon2 [10 4] c d e)]
-               (sut/cut-polygon poly (gl/line2 [0 4] [10 4])))
-            "horizontal slice, coincident to f-e")
+      (is (= [(gp/polygon2 a b [10 4] [0 4])
+              (gp/polygon2 f g h [0 4])
+              (gp/polygon2 [10 4] c d e)]
+             (sut/cut-polygon poly (gl/line2 [0 4] [10 4])))
+          "horizontal slice, coincident to f-e")
       (is (= [(gp/polygon2 a b e f g h)
               (gp/polygon2 b c d e)]
              (sut/cut-polygon poly (gl/line2 b e)))
