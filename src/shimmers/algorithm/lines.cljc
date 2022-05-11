@@ -176,6 +176,24 @@
                               []
                               [[z q]]))))))))
 
+(defn remove-coincident-segments [poly]
+  (let [points (g/vertices poly)]
+    (if (<= (count points) 3)
+      poly
+      (loop [points points
+             out []]
+        (if (empty? points)
+          (gp/polygon2 out)
+          (let [a (or (last out) (last points))
+                b (first points)
+                c (or (second points) (first out))
+                {:keys [type]} (isec/intersect-line2-line2? a b b c)]
+            (if (= type :coincident)
+              (recur (rest points) out)
+              (recur (rest points) (conj out b)))))))))
+
+(comment (remove-coincident-segments (gp/polygon2 [1 0] [10 0] [10 10] [0 10] [0 0])))
+
 ;; TODO: handle coincident line segments
 ;; at least two cases,
 ;; a) trim line to non-coincident segments,
