@@ -1,4 +1,4 @@
-(ns shimmers.math.scratch
+(ns shimmers.scratch.golden
   (:require [thi.ng.math.core :as tm]))
 
 ;; Playing with golden ratio splits
