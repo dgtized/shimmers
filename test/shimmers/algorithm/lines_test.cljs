@@ -98,7 +98,7 @@
              (sut/clip-line (gl/line2 2 2 7.5 2) concave-poly))
           "line segment clips coincident edge of concave polygon ending inside"))))
 
-(deftest removing-coincident-segments
+(deftest remove-coincident-segments
   (is (= (gp/polygon2 [0 0] [10 0])
          (sut/remove-coincident-segments (gp/polygon2 [0 0] [10 0])))
       "line degenerate case")
