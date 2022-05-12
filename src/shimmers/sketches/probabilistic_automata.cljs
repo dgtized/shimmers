@@ -166,7 +166,7 @@
         (for [x [0.25 0.75]
               y [0.25 0.75]]
           (make-automata (cq/rel-vec x y) (generate-program)))]
-    (ctrl/mount (partial explanation automata) "explanation")
+    (ctrl/mount (partial explanation automata) "interface")
     {:automata automata}))
 
 (defn update-state
