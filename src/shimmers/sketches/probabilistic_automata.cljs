@@ -12,7 +12,9 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn in-bounds? [[x y] bounds]
   (and (< (- bounds) x (+ (q/width) bounds))
@@ -41,10 +43,8 @@
     (case op
       :heading (assoc bot :heading arg)
       :rotate (assoc bot :heading (+ heading arg))
-      :forward (let [[x y] position
-                     velocity arg
-                     new-position [(+ x (* velocity (q/cos heading)))
-                                   (+ y (* velocity (q/sin heading)))]]
+      :forward (let [velocity arg
+                     new-position (tm/+ position (v/polar velocity heading))]
                  (if (in-bounds? new-position 100)
                    (assoc bot :position new-position)
                    (interpret bot [:halt 0])))
@@ -163,7 +163,7 @@
   (let [automata
         (for [x [0.25 0.75]
               y [0.25 0.75]]
-          (make-automata (cq/rel-pos x y) (generate-program)))]
+          (make-automata (cq/rel-vec x y) (generate-program)))]
     (ctrl/mount (partial explanation automata) "explanation")
     {:automata automata}))
 
