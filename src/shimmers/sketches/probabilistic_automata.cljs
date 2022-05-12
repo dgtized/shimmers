@@ -15,8 +15,8 @@
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y] bounds]
-  (and (>= x (- bounds)) (< x (+ (q/width) bounds))
-       (>= y (- bounds)) (< y (+ (q/height) bounds))))
+  (and (< (- bounds) x (+ (q/width) bounds))
+       (< (- bounds) y (+ (q/height) bounds))))
 
 (def lifespan 1000)
 (def max-population 128)
