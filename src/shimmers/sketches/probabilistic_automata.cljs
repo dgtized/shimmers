@@ -116,13 +116,13 @@
                                vec)])
       (print-str [op arg]))))
 
-(defn describe [bot]
-  (let [pos (print-str (:position bot))]
+(defn describe [{:keys [position program]}]
+  (let [[x y] position
+        pos (str "[" x "," y "]")]
     [:div {:key pos}
      [:p "Program @ " pos]
      [:pre {:style {:font-size 10}}
-      (->> bot
-           :program
+      (->> program
            (map prettify-instruction)
            (interpose "\n")
            str-vec)]]))
