@@ -37,17 +37,19 @@
     [:gradient value] (color/random-gradient value)
     :else arg))
 
-(defn interpret [{:keys [position heading ip program] :as bot} instruction]
+(defn update-position [{:keys [position heading] :as bot} velocity]
+  (let [new-position (tm/+ position (v/polar velocity heading))]
+    (if (in-bounds? new-position 100)
+      (assoc bot :position new-position)
+      (assoc bot :state :halt))))
+
+(defn interpret [{:keys [heading ip program] :as bot} instruction]
   (let [[op argument] instruction
         arg (interpret-argument argument)]
     (case op
       :heading (assoc bot :heading arg)
       :rotate (assoc bot :heading (+ heading arg))
-      :forward (let [velocity arg
-                     new-position (tm/+ position (v/polar velocity heading))]
-                 (if (in-bounds? new-position 100)
-                   (assoc bot :position new-position)
-                   (interpret bot [:halt 0])))
+      :forward (update-position bot arg)
       :color (assoc bot :color arg)
 
       :goto (assoc bot :ip
