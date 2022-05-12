@@ -8,9 +8,10 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :refer [weighted]]
-   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.string :as scs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn in-bounds? [[x y] bounds]
@@ -30,7 +31,7 @@
 
 (defn interpret-argument [arg]
   (match arg
-    [:random value] (rand-int value)
+    [:random value] (dr/random value)
     [:gradient value] (color/random-gradient value)
     :else arg))
 
@@ -49,7 +50,10 @@
                    (interpret bot [:halt 0])))
       :color (assoc bot :color arg)
 
-      :goto (assoc bot :ip (dec (+ ip (- (count program) (mod ip (count program))) arg)))
+      :goto (assoc bot :ip
+                   (dec (+ ip
+                           (- (count program) (mod ip (count program)))
+                           (int arg))))
       :one-of (interpret bot (rand-nth arg))
       :halt (assoc bot :state :halt)
       :fork (assoc bot :state :forking))))
@@ -130,8 +134,8 @@
     [:div "The argument " [:code "[:gradient :rainbow1]"]
      " selects a random color from a gradient."]]
    :goto [:span "Jump forward " [:em "n"] " instructions, modular to the length of the program."]
-   :fork [:span "Create a copy of the current automata running from the next instruction."]
    :one-of [:span "Execute a random instruction from a list of instructions."]
+   :fork [:span "Create a copy of the current automata running from the next instruction."]
    :halt [:span "Apoptosis for the current automata, removing it from scheduling list."]})
 
 (defn explanation [automata]
