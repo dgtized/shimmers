@@ -5,10 +5,6 @@
   width: -webkit-max-content; /* Chrome */
 }
 
-dt {
-  font-weight: bold;
-}
-
 .interface-controls {
   font-size: 18px;
   padding: 0.5em;
@@ -182,4 +178,21 @@ button.generate {
 
 pre.debug code {
   font-size: 0.9em;
+}
+
+dl.instruction-set {
+  width: 600px;
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.instruction-set dt {
+  flex-basis: 12.5%;
+  font-weight: bold;
+}
+
+.instruction-set dd {
+  flex-basis: 80%;
+  flex-grow: 1;
+  margin: 0;
 }

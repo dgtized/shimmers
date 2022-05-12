@@ -152,12 +152,12 @@
     (map describe automata)]
    [:p.readable-width
     "The language has 8 instructions. Most instructions take integer or floating
-    point argument, or " [:code "[:random n]"] " to select a value at runtime."
-    (into [:dl]
-          (apply concat
-                 (for [[term explanation] instruction-set]
-                   [[:dt term]
-                    [:dd explanation]])))]])
+    point argument, or " [:code "[:random n]"] " to select a value at runtime."]
+   (into [:dl.instruction-set]
+         (apply concat
+                (for [[term explanation] instruction-set]
+                  [[:dt term]
+                   [:dd explanation]])))])
 
 (defn setup
   []
