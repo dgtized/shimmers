@@ -7,7 +7,6 @@
    [shimmers.automata.simplify :as simplify]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.sequence :refer [weighted]]
    [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
@@ -56,7 +55,7 @@
                    (dec (+ ip
                            (- (count program) (mod ip (count program)))
                            (int arg))))
-      :one-of (interpret bot (rand-nth arg))
+      :one-of (interpret bot (dr/rand-nth arg))
       :halt (assoc bot :state :halt)
       :fork (assoc bot :state :forking))))
 
@@ -79,22 +78,23 @@
          (map execute))))
 
 (defn generate-instruction []
-  ((rand-nth
-    (weighted
-     5 (fn [] [:forward (+ 1 (rand-int 80))])
-     2 (fn [] [:rotate (rand (* Math/PI 2))])
-     1 (fn [] (programs/rotate 60))
-     3 (fn [] [:rotate (- (rand (/ Math/PI 3)) (/ Math/PI 3))]) ;; small angles
-     1 (fn [] [:heading (rand (* Math/PI 2))])
-     2 (fn [] [:fork 0])
-     1 (fn [] [:halt 0])
-     3 (fn [] [:color [:gradient :rainbow1]])
-     2 (fn [] [:color [0 0 0 32]])
-     1 (fn [] [:color [255 255 255 255]])
-     1 (fn [] [:one-of (repeatedly (+ 1 (rand-int 5)) generate-instruction)])))))
+  ((dr/weighted
+    {(fn [] [:forward (dr/random-int 1 80)]) 5
+     (fn [] [:rotate (dr/random tm/TWO_PI)]) 2
+     (fn [] (programs/rotate 60)) 1
+     (fn [] [:rotate (dr/random (- (/ Math/PI 3)) (/ Math/PI 3))]) 3 ;; small angles
+     (fn [] [:heading (dr/random tm/TWO_PI)]) 1
+     (fn [] [:fork 0]) 2
+     (fn [] [:halt 0]) 1
+     (fn [] [:color [:gradient :rainbow1]]) 3
+     (fn [] [:color [0 0 0 32]]) 2
+     (fn [] [:color [255 255 255 255]]) 1
+     (fn [] [:one-of (repeatedly (dr/random-int 1 6) generate-instruction)]) 1})))
 
 (defn generate-program
-  ([] (->> (fn [] (simplify/simplify-program (generate-program (+ 3 (rand-int 10)))))
+  ([] (->> (fn [] (->> (dr/random-int 3 14)
+                      generate-program
+                      simplify/simplify-program))
            repeatedly
            (filter simplify/accept-program?)
            first))
