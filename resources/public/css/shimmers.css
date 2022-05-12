@@ -5,6 +5,10 @@
   width: -webkit-max-content; /* Chrome */
 }
 
+dt {
+  font-weight: bold;
+}
+
 .interface-controls {
   font-size: 18px;
   padding: 0.5em;
