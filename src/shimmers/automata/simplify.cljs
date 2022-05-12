@@ -43,8 +43,12 @@
           program))
 
 (defn accept-program?
-  "Only accept programs that have a forward instruction before halting."
+  "Only accept programs that have a forward instruction before halting, and both a
+  rotate and forward command."
   [program]
   (let [expanded (map first (expand-possible-instructions program))
         up-to-halt (take-while #(not= % :halt) expanded)]
-    (boolean (some #{:forward} up-to-halt))))
+    (boolean
+     (and (some #{:forward} up-to-halt)
+          (some #{:rotate} expanded)
+          (some #{:forward} expanded)))))
