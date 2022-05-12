@@ -121,6 +121,16 @@
            (interpose "\n")
            str-vec)]]))
 
+(def instruction-set
+  {:forward [:span "Move automata forward by " [:em "n"] " units."]
+   :rotate [:span "Rotate automata heading by " [:em "t"] " radians."]
+   :heading [:span "Set automata on a specific heading " [:em "t"] " in radians."]
+   :color [:span "Specify an RGBA color of the pen, or select a random color from a gradient or from all colors."]
+   :goto [:span "Jump forward " [:em "n"] " instructions, modular to the length of the program."]
+   :fork [:span "Create a copy of the current automata running from the next instruction."]
+   :one-of [:span "Execute a random instruction from a list of instructions."]
+   :halt [:span "Apoptosis for the current automata, removing it from scheduling list."]})
+
 (defn explanation [automata]
   [:div
    [:p.readable-width
@@ -130,7 +140,13 @@
     programs are boring or do not create output, so the examples cycle every ~30
     seconds."]
    [:div {:style {:display :grid :grid-template-columns "auto auto"}}
-    (map describe automata)]])
+    (map describe automata)]
+   [:p.readable-width "The language has 8 instructions"
+    (into [:dl]
+          (apply concat
+                 (for [[term explanation] instruction-set]
+                   [[:dt term]
+                    [:dd explanation]])))]])
 
 (defn setup
   []
