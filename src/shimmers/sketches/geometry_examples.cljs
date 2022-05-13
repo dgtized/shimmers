@@ -82,11 +82,12 @@
      [:p description])])
 
 (defn page []
-  [:div
+  [:div.explanation {:style {:width "800px"}}
    [:div
     [:h2 "Cut Polygon with a Line"]
-    [:p.explanation "Visual test cases for cutting a polygon with a line, and
-   separating it into the component polygons."]
+    [:p.readable-width "Visual test cases for cutting a polygon with a line, and
+   separating it into the component polygons. Red points mark the centroid of
+   each polygon or line."]
     (into [:div {}] (mapv show-example (cut-polygon-examples)))]
    [:div
     [:h2 "Clip lines to segments inside of a polygon"]
@@ -96,4 +97,4 @@
   {:created-at "2022-05-05"
    :type :svg
    :tags #{}}
-  (ctrl/mount page "interface"))
+  (ctrl/mount page "sketch-host"))
