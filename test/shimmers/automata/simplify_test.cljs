@@ -28,7 +28,7 @@
            [:rotate [:random 5]]
            [:rotate [:random 5]]
            [:color [0 0 0 0]]])))
-  (is (= [[:fork 2]
+  (is (= [[:fork 0]
           [:one-of [[:fork 0]
                     [:forward 1]]]]
          (sut/simplify-program
@@ -50,24 +50,24 @@
           [:one-of [[:goto 2]
                     [:halt 0]]]
           [:halt 0]
-          [:fork 1]]
+          [:fork 0]]
          (sut/simplify-program
           [[:rotate 1]
            [:forward 1]
            [:one-of [[:goto 2]
                      [:halt 0]]]
            [:halt 0]
-           [:fork 1]]))
+           [:fork 0]]))
       "does not remove instructions after halt if a goto occurs prior")
   (is (= [[:rotate 1]
           [:one-of [[:goto 2]
                     [:halt 0]]]
-          [:fork 1]]
+          [:fork 0]]
          (sut/simplify-program
           [[:rotate 1]
            [:one-of [[:goto 2]
                      [:halt 0]]]
-           [:fork 1]]))
+           [:fork 0]]))
       "does not remove instructions after a one-of halt"))
 
 (deftest accept-program

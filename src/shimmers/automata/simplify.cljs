@@ -35,7 +35,7 @@
     [(last snippet)]
     ;; reduce to a single fork call
     [:fork _]
-    [[:fork (count snippet)]]
+    [[:fork 0]]
     :else snippet))
 
 (defn trim-after-halt
