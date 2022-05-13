@@ -34,13 +34,11 @@
         seed (gv/vec2 (dr/random 100) (dr/random 100))
         points (pds/generate-dynamic bounds 10 [18 256] (partial noise-at-point seed))
         cells (delvor/voronoi-cells points bounds)]
-    (->> (for [cell cells
-               :let [width (dr/random -0.5 -4)
-                     inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
-               ;;:when (poly-detect/self-intersecting? inset)
-               ]
-           (poly-detect/split-self-intersection inset))
-         (apply concat)
+    (->> cells
+         (mapcat (fn [cell]
+                   (let [width (dr/random -0.5 -4)
+                         inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+                     (poly-detect/split-self-intersection inset))) )
          (filter (fn [s] (> (g/area s) 0)))
          (map (fn [{:keys [points]}]
                 ;; TODO: make this proportional to size?
