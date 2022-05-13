@@ -35,7 +35,28 @@
           [[:fork 0]
            [:fork 0]
            [:one-of [[:fork 0]
-                     [:forward 1]]]]))))
+                     [:forward 1]]]])))
+  (is (= [[:rotate 1]
+          [:forward 1]
+          [:halt 0]]
+         (sut/simplify-program
+          [[:rotate 1]
+           [:forward 1]
+           [:halt 0]
+           [:fork 0]])))
+  (is (= [[:rotate 1]
+          [:forward 1]
+          [:one-of [[:goto 2]
+                    [:halt 0]]]
+          [:halt 0]
+          [:fork 1]]
+         (sut/simplify-program
+          [[:rotate 1]
+           [:forward 1]
+           [:one-of [[:goto 2]
+                     [:halt 0]]]
+           [:halt 0]
+           [:fork 1]]))))
 
 (deftest accept-program
   (is (not (sut/accept-program? [[:halt 0]])))
