@@ -24,15 +24,15 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn noise-at-point [seed p]
-  (let [[x y] (tm/+ seed (tm/* p 0.01))]
-    (tm/clamp01 (noise/noise2 x y))))
+  (let [[x y] (tm/+ seed (tm/* p 0.005))]
+    (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
 
 ;; TODO: add rough edges to each polygon?
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         seed (gv/vec2 (dr/random 100) (dr/random 100))
-        points (pds/generate-dynamic bounds 10 [18 256] (partial noise-at-point seed))
+        points (pds/generate-dynamic bounds 10 [12 64] (partial noise-at-point seed))
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
