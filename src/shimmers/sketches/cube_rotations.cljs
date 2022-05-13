@@ -31,7 +31,7 @@
           :let [cube (-> (aabb/aabb 10)
                          g/center
                          (g/rotate-y (* (/ 1 8) eq/TAU))
-                         (g/rotate-x 0.5)
+                         (g/rotate-x (* (/ 1 8) eq/TAU))
                          (g/rotate-z (* t eq/TAU)))]]
       (for [[a b] (g/edges cube)]
         (gl/line2 (perspective a) (perspective b))))))
