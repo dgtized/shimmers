@@ -1,7 +1,7 @@
 (ns shimmers.automata.simplify-test
   (:require
    [cljs.test :as t :include-macros true
-    :refer-macros [deftest is testing run-tests]]
+    :refer-macros [deftest is run-tests]]
    [shimmers.automata.simplify :as sut]))
 
 (deftest collapse-trivial-one-of
@@ -27,11 +27,20 @@
            [:rotate 0.2]
            [:rotate [:random 5]]
            [:rotate [:random 5]]
-           [:color [0 0 0 0]]]))))
+           [:color [0 0 0 0]]])))
+  (is (= [[:fork 2]
+          [:one-of [[:fork 0]
+                    [:forward 1]]]]
+         (sut/simplify-program
+          [[:fork 0]
+           [:fork 0]
+           [:one-of [[:fork 0]
+                     [:forward 1]]]]))))
 
 (deftest accept-program
   (is (not (sut/accept-program? [[:halt 0]])))
-  (is (sut/accept-program? [[:one-of [[:forward 1]
+  (is (sut/accept-program? [[:rotate 0.1]
+                            [:one-of [[:forward 1]
                                       [:halt 0]]]
                             [:halt 0]])))
 

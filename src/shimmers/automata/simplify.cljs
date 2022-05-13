@@ -22,6 +22,9 @@
     ;; last color/heading wins
     [(:or :color :heading) _]
     [(last snippet)]
+    ;; reduce to a single fork call
+    [:fork _]
+    [[:fork (count snippet)]]
     :else snippet))
 
 (defn simplify-program
