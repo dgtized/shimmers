@@ -16,24 +16,19 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]))
+   [thi.ng.math.core :as tm]))
 
 (def width 900)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn noise-at-point [seed scale p]
-  (let [[x y] (tm/+ seed (tm/* p scale))]
-    (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
-
 ;; TODO: add rough edges to each polygon?
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         seed (gv/vec2 (dr/random 100) (dr/random 100))
-        points (pds/generate-dynamic bounds 10 [12 64] (partial noise-at-point seed 0.005))
+        points (pds/generate-dynamic bounds 10 [12 64] (partial dr/noise-at-point seed 0.005))
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
@@ -46,7 +41,7 @@
                 (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
                       iters (dr/random-int 1 4)
                       poly (gp/polygon2 (chaikin/chaikin ratio true iters points))
-                      centroid-noise (noise-at-point (tm/* seed 1.1) 0.005 (g/centroid poly))]
+                      centroid-noise (dr/noise-at-point (tm/* seed 1.1) 0.005 (g/centroid poly))]
                   (vary-meta poly assoc :fill
                              (color/css-hsl (+ 0.1 (* 0.15 centroid-noise)) 0.4 0.75))))))))
 

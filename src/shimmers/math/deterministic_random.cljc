@@ -7,7 +7,8 @@
    [kixi.stats.distribution :as ksd]
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.math.noise :as noise]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
@@ -175,3 +176,12 @@
       (let [i @iter]
         (swap! iter inc)
         (nth coll (mod i len))))))
+
+(defn noise-at-point [seed scale p]
+  (let [[x y] (tm/+ seed (tm/* p scale))]
+    (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
+
+(comment
+  (let [xs (repeatedly 1000 #(noise-at-point (v/vec2 0 0) 0.1 (v/vec2 (random 0 100) (random 0 100))))]
+    {:min (apply min xs)
+     :max (apply max xs)}))
