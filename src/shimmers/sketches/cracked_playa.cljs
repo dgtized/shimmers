@@ -23,8 +23,8 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn noise-at-point [seed p]
-  (let [[x y] (tm/+ seed (tm/* p 0.005))]
+(defn noise-at-point [seed scale p]
+  (let [[x y] (tm/+ seed (tm/* p scale))]
     (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
 
 ;; TODO: add rough edges to each polygon?
@@ -32,7 +32,7 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         seed (gv/vec2 (dr/random 100) (dr/random 100))
-        points (pds/generate-dynamic bounds 10 [12 64] (partial noise-at-point seed))
+        points (pds/generate-dynamic bounds 10 [12 64] (partial noise-at-point seed 0.005))
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
