@@ -25,8 +25,8 @@
         (tm/* scale)
         (tm/+ origin))))
 
-(defn cubes [n]
-  (let [perspective (partial projection [80 80])]
+(defn cubes [n size]
+  (let [perspective (partial projection size)]
     (for [t (butlast (tm/norm-range n))
           :let [cube (-> (aabb/aabb 10)
                          g/center
@@ -53,7 +53,7 @@
     (map (fn [bbox cube]
            (gu/fit-all-into-bounds (g/scale-size bbox 0.9) cube))
          (g/subdivide bounds {:cols c :rows r})
-         (k-swaps 3 (cubes (* r c))))))
+         (k-swaps 3 (cubes (* r c) [(/ width c) (/ height r)])))))
 
 (defn scene []
   (csvg/svg {:width width
