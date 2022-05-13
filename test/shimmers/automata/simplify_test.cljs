@@ -43,7 +43,8 @@
           [[:rotate 1]
            [:forward 1]
            [:halt 0]
-           [:fork 0]])))
+           [:fork 0]]))
+      "removes instructions after halt")
   (is (= [[:rotate 1]
           [:forward 1]
           [:one-of [[:goto 2]
@@ -56,7 +57,18 @@
            [:one-of [[:goto 2]
                      [:halt 0]]]
            [:halt 0]
-           [:fork 1]]))))
+           [:fork 1]]))
+      "does not remove instructions after halt if a goto occurs prior")
+  (is (= [[:rotate 1]
+          [:one-of [[:goto 2]
+                    [:halt 0]]]
+          [:fork 1]]
+         (sut/simplify-program
+          [[:rotate 1]
+           [:one-of [[:goto 2]
+                     [:halt 0]]]
+           [:fork 1]]))
+      "does not remove instructions after a one-of halt"))
 
 (deftest accept-program
   (is (not (sut/accept-program? [[:halt 0]])))
