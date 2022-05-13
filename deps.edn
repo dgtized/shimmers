@@ -1,6 +1,6 @@
 ;; https://cjohansen.no/tools-deps-figwheel-main-devcards-emacs/ was very
 ;; helpful for dev setup
-{:deps {org.clojure/clojurescript {:mvn/version "1.11.50"}
+{:deps {org.clojure/clojurescript {:mvn/version "1.11.4"}
         ;; p5 is excluded so that the latest version can be provided through npm
         quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
 
