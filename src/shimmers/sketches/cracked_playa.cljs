@@ -8,6 +8,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -43,8 +44,11 @@
          (map (fn [{:keys [points]}]
                 ;; TODO: make this proportional to size?
                 (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
-                      iters (dr/random-int 1 4)]
-                  (gp/polygon2 (chaikin/chaikin ratio true iters points))))))))
+                      iters (dr/random-int 1 4)
+                      poly (gp/polygon2 (chaikin/chaikin ratio true iters points))
+                      centroid-noise (noise-at-point (tm/* seed 1.1) 0.005 (g/centroid poly))]
+                  (vary-meta poly assoc :fill
+                             (color/css-hsl (+ 0.1 (* 0.15 centroid-noise)) 0.4 0.75))))))))
 
 (defn scene []
   (csvg/svg {:width width
