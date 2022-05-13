@@ -8,18 +8,13 @@
    [thi.ng.color.core :as col]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 
-(defn noise-at-point [seed p]
-  (let [[x y] (tm/+ seed (tm/* p 0.008))]
-    (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
-
 (defn color [seed i j]
-  (col/as-css (col/hsla (mod (* (noise-at-point seed (gv/vec2 i j)) tm/PHI) 1.0)
+  (col/as-css (col/hsla (mod (* (dr/noise-at-point seed 0.01 (gv/vec2 i j)) tm/PHI) 1.0)
                         0.5 0.45 1.0)))
 
 (defn shapes []
