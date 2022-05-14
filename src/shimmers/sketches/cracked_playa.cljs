@@ -41,9 +41,9 @@
                 (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
                       iters (dr/random-int 1 4)
                       poly (gp/polygon2 (chaikin/chaikin ratio true iters points))
-                      centroid-noise (dr/noise-at-point (tm/* seed 1.1) 0.005 (g/centroid poly))]
+                      centroid-noise (dr/noise-at-point (tm/* seed 1.5) 0.005 (g/centroid poly))]
                   (vary-meta poly assoc :fill
-                             (color/css-hsl (+ 0.1 (* 0.15 centroid-noise)) 0.4 0.75))))))))
+                             (color/css-hsl (+ 0.075 (* 0.25 centroid-noise)) 0.4 0.75))))))))
 
 (defn scene []
   (csvg/svg {:width width
