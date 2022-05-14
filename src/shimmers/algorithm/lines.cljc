@@ -308,3 +308,6 @@
 
 ;; TODO: join-polygon
 ;; simple case is for coincident lines, complex is if edges cut eachother.
+
+(defn overlapping-polygon? [a b]
+  (some? (some (partial g/contains-point? a) (g/vertices b))))

@@ -266,4 +266,13 @@
       (is (= [poly] (sut/cut-polygon poly (gl/line2 f g)))
           "cutting with an internal coincident vertical line is identity"))))
 
+(deftest overlapping-polygons
+  (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 10))
+      "identity")
+  (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 10 0 10 10))
+      "along an edge")
+  (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 5 5 10 10))
+      "vertice falls inside")
+  (is (not (sut/overlapping-polygon? (rect/rect 10) (rect/rect 11 0 10 10)))))
+
 (comment (t/run-tests))
