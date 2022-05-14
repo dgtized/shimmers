@@ -179,9 +179,11 @@
 
 (defn noise-at-point [seed scale p]
   (let [[x y] (tm/+ seed (tm/* p scale))]
-    (tm/clamp01 (+ 0.5 (noise/noise2 x y)))))
+    (* 0.5 (+ 1.0 (noise/noise2 x y)))))
 
 (comment
-  (let [xs (repeatedly 1000 #(noise-at-point (v/vec2 0 0) 0.1 (v/vec2 (random 0 100) (random 0 100))))]
+  (defn summary [xs]
     {:min (apply min xs)
-     :max (apply max xs)}))
+     :max (apply max xs)})
+  (summary (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
+  (summary (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))

@@ -14,7 +14,7 @@
 (def height 600)
 
 (defn color [seed i j]
-  (let [n (dr/noise-at-point seed 0.01 (gv/vec2 i j))]
+  (let [n (dr/noise-at-point seed 0.02 (gv/vec2 i j))]
     (color/css-hsl (mod (* n tm/PHI) 1.0) 0.5 0.45 1.0)))
 
 (defn shapes []
