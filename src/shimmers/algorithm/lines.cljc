@@ -311,3 +311,8 @@
 
 (defn overlapping-polygon? [a b]
   (some? (some (partial g/contains-point? a) (g/vertices b))))
+
+(defn join-polygons [a b]
+  (if-not (overlapping-polygon? a b)
+    nil
+    nil))

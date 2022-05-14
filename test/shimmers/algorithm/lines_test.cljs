@@ -275,4 +275,16 @@
       "vertice falls inside")
   (is (not (sut/overlapping-polygon? (rect/rect 10) (rect/rect 11 0 10 10)))))
 
+#_(deftest join-polygons
+    (is (= (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+           (sut/join-polygons (rect/rect 10) (rect/rect 10)))
+        "identity")
+    (is (= (gp/polygon2 [0 0] [20 0] [20 10] [0 10])
+           (sut/join-polygons (rect/rect 10) (rect/rect 10 0 10 10)))
+        "along an edge")
+    (is (= (gp/polygon2 [0 0] [10 0] [10 5] [15 5] [15 15] [5 15] [5 10] [0 10])
+           (sut/join-polygons (rect/rect 10) (rect/rect 5 5 10 10)))
+        "overlapping an internal point")
+    (is (nil? (sut/join-polygons (rect/rect 10) (rect/rect 11 0 10 10)))))
+
 (comment (t/run-tests))
