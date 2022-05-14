@@ -277,6 +277,8 @@
 
 (deftest polygon-intersections
   #_(is (= []
+           (sut/polygon-intersections (rect/rect 10) (rect/rect 10))))
+  #_(is (= []
            (sut/polygon-intersections (rect/rect 10) (rect/rect 10 0 10 10))))
   (is (= [[[[10 0] [10 10]] [[5 5] [15 5]]
            {:type :intersect, :p [10 5], :ua 0.5, :ub 0.5}]
