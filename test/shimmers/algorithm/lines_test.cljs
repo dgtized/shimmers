@@ -325,6 +325,12 @@
   (is (= (gp/polygon2 [0 10] [0 0] [10 0] [10 5] [15 5] [15 15] [5 15] [5 10])
          (sut/join-polygons (gp/polygon2 [0 10] [0 0] [10 0] [10 10]) (rect/rect 5 5 10 10)))
       "overlapping an internal point, rotated 3")
-  (is (nil? (sut/join-polygons (rect/rect 10) (rect/rect 11 0 10 10)))))
+  (is (nil? (sut/join-polygons (rect/rect 10) (rect/rect 11 0 10 10))))
+  (is (= (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+         (sut/join-polygons (rect/rect 10) (rect/rect 1 1 8 8)))
+      "a contains b")
+  #_(is (= (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+           (sut/join-polygons (rect/rect 1 1 8 8) (rect/rect 10)))
+        "b contains a"))
 
 (comment (t/run-tests))

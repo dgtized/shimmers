@@ -331,6 +331,7 @@
               (= type :coincident)
               [isec (concat after before)])))))
 
+;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
 ;; assume both polygons have points oriented in a clockwise sequence
 (defn join-polygons [a b]
   (if-not (overlapping-polygon? a b)
