@@ -32,8 +32,8 @@
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
-                   (let [width (dr/random -0.5 -4)
-                         inset (gp/polygon2 (gp/inset-polygon (:points cell) width))]
+                   (let [width (dr/random 0.5 4)
+                         inset (poly-detect/inset-polygon cell width)]
                      (poly-detect/split-self-intersection inset))) )
          (filter (fn [s] (> (g/area s) 0)))
          (map (fn [{:keys [points]}]
