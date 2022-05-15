@@ -312,15 +312,6 @@
 (defn overlapping-polygon? [a b]
   (some? (some (partial g/contains-point? a) (g/vertices b))))
 
-(defn polygon-intersections [a b]
-  (for [a-edge (g/edges a)
-        b-edge (g/edges b)
-        :let [[ap aq] a-edge
-              [bp bq] b-edge
-              isec (isec/intersect-line2-line2? ap aq bp bq)]
-        :when (contains? #{:coincident :intersect} (:type isec))]
-    [a-edge b-edge isec]))
-
 (defn rotate-to-correspondence [pa qa edges-b]
   (let [[before after]
         (split-with (fn [[pb qb]]
