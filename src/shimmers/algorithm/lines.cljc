@@ -321,7 +321,41 @@
         :when (contains? #{:coincident :intersect} (:type isec))]
     [a-edge b-edge isec]))
 
+(defn rotate-to-correspondence [pa qa edges-b]
+  (let [[before after]
+        (split-with (fn [[pb qb]]
+                      (let [isec (isec/intersect-line2-line2? pa qa pb qb)]
+                        (not (contains? #{:coincident :intersect} (:type isec)))))
+                    edges-b)]
+    (if (empty? after)
+      [nil edges-b]
+      (let [[pb qb] (first after)
+            {:keys [type p] :as isec} (isec/intersect-line2-line2? pa qa pb qb)]
+        (tap> [:rotate isec])
+        (cond (and (= type :intersect) (not (tm/delta= pa p)) (not (tm/delta= qa p)))
+              [isec (concat after before)]
+              (and (= type :intersect) (tm/delta= qa p))
+              [isec (concat after before)]
+              (= type :coincident)
+              [isec (concat after before)])))))
+
+;; assume both polygons have points oriented in a clockwise sequence
 (defn join-polygons [a b]
   (if-not (overlapping-polygon? a b)
     nil
-    nil))
+    (loop [edges-a (g/edges a)
+           edges-b (g/edges b)
+           out []]
+      (if (empty? edges-a)
+        (gp/polygon2 out)
+        (let [[pa qa] (first edges-a)
+              [isec rotated-b] (rotate-to-correspondence pa qa edges-b)]
+          (tap> [:join isec])
+          (cond (= :coincident (:type isec))
+                (recur (rest rotated-b) (rest edges-a) (conj out pa))
+                (= :intersect (:type isec))
+                (recur (rest rotated-b) (rest edges-a) (conj out pa (:p isec)))
+                :else
+                (recur (rest edges-a) edges-b (conj out pa))))))))
+
+(comment (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 10 0 10 10))))
