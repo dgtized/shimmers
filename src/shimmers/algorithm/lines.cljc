@@ -336,6 +336,7 @@
               [isec (concat after before)]
               (and (= type :intersect) (tm/delta= qa p))
               [isec (concat after before)]
+              ;; handle internal coincident edges?
               (= type :coincident)
               [isec (concat after before)])))))
 
@@ -347,7 +348,7 @@
            edges-b (g/edges b)
            out []]
       (if (empty? edges-a)
-        (gp/polygon2 out)
+        (remove-coincident-segments (gp/polygon2 (dedupe out)))
         (let [[pa qa] (first edges-a)
               [isec rotated-b] (rotate-to-correspondence pa qa edges-b)]
           (tap> [:join isec])
