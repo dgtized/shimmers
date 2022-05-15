@@ -350,4 +350,11 @@
                 :else
                 (recur (rest edges-a) edges-b (conj out pa))))))))
 
-(comment (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 10 0 10 10))))
+(comment
+  (require '[shimmers.common.ui.debug :as debug]
+           '[thi.ng.geom.rect :as rect])
+  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 10 0 10 10)))
+
+  ;; doesn't work as it's hitting the "out" edge and then trying to loop through
+  ;; internal points before resuming from the "in" edge
+  (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10))))
