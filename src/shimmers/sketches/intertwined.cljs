@@ -218,8 +218,9 @@
           (swap! defo assoc :polygons polygons)
           (doseq [shape polygons]
             (-> shape
-                (gp/inset-polygon -5.0)
-                cq/draw-shape)))))))
+                gp/polygon2
+                (poly-detect/inset-polygon 5.0)
+                cq/draw-polygon)))))))
 
 (defn draw [{:keys [path mouse]}]
   (q/background 1.0)

@@ -1,6 +1,7 @@
 (ns shimmers.sketches.hexflare
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -39,7 +40,7 @@
         hexes (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
                                         (/ (* 3 r) dist))]
                 (g/as-polygon (gc/circle (g/point-at line1 t) r) 6))
-        center (apply gp/polygon2 (gp/inset-polygon (g/vertices (cs/middle hexes)) 5))
+        center (poly-detect/inset-polygon (gp/polygon2 (g/vertices (cs/middle hexes))) -5)
         centroid (g/centroid center)
         right-down (g/as-cartesian (gv/vec2 r (/ tm/TWO_PI 12)))
         line2 (clip/clip-line (rect/rect 0 0 width height)

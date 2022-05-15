@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry
   (:require
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
@@ -125,7 +126,6 @@
 
 (defn inset-rectangle [rect amount]
   (-> rect
-      g/vertices
-      (gp/inset-polygon amount)
-      gp/polygon2
+      g/as-polygon
+      (poly-detect/inset-polygon amount)
       g/bounds))
