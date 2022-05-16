@@ -341,12 +341,13 @@
         min-point (reduce tm/min (lg/nodes graph))
         start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))]
     (tap> graph)
+    (tap> [:start start (lg/successors graph start)])
     (loop [polygon [] vertex start]
-      (let [prev (or (last polygon) min-point)
-            candidates (remove (disj (set polygon) start) (lg/successors graph vertex))
-            next-pt (poly-detect/clockwise-point prev vertex candidates)
-            polygon' (conj polygon vertex)]
-        (tap> [vertex :-> next-pt :from candidates])
+      (let [prev (or (last polygon) start)
+            polygon' (conj polygon vertex)
+            candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
+            next-pt (poly-detect/clockwise-point prev vertex candidates)]
+        (tap> [vertex :-> next-pt :from candidates (lg/successors graph vertex)])
         (cond (empty? candidates)
               []
               (and (> (count polygon') 2) (tm/delta= next-pt start))
