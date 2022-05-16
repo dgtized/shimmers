@@ -273,6 +273,12 @@
       "along an edge")
   (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 5 5 10 10))
       "vertice falls inside")
+  (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 1 1 5 5))
+      "contains b")
+  (is (sut/overlapping-polygon? (rect/rect 1 1 5 5) (rect/rect 10))
+      "encompassed by b")
+  (is (sut/overlapping-polygon? (rect/rect 10) (rect/rect 10 10 5 5))
+      "single point of contact")
   (is (not (sut/overlapping-polygon? (rect/rect 10) (rect/rect 11 0 10 10)))))
 
 (deftest join-polygons
