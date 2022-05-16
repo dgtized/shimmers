@@ -339,11 +339,12 @@
 (defn find-clockwise-polygon [a b]
   (let [graph (connectivity-graph a b)
         min-point (reduce tm/min (lg/nodes graph))
-        start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))]
+        start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))
+        centroid (tm/div (tm/+ (g/centroid a) (g/centroid b)) 2)]
     (tap> graph)
     (tap> [:start start (lg/successors graph start)])
     (loop [polygon [] vertex start]
-      (let [prev (or (last polygon) start)
+      (let [prev (or (last polygon) centroid)
             polygon' (conj polygon vertex)
             candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
             next-pt (poly-detect/clockwise-point prev vertex candidates)]
