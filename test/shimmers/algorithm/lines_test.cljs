@@ -276,9 +276,9 @@
   (is (not (sut/overlapping-polygon? (rect/rect 10) (rect/rect 11 0 10 10)))))
 
 (deftest join-polygons
-  (is (= (gp/polygon2 [0 0] [0 10] [10 10])
-         (sut/join-polygons (gp/polygon2 [0 0] [0 10] [10 10])
-                            (gp/polygon2 [0 0] [0 10] [10 10])))
+  (is (= (gp/polygon2 [0 0] [10 10] [0 10])
+         (sut/join-polygons (gp/polygon2 [0 0] [10 10] [0 10])
+                            (gp/polygon2 [0 0] [10 10] [0 10])))
       "triangle identity")
   (is (= (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
          (sut/join-polygons (rect/rect 10) (rect/rect 10)))

@@ -357,6 +357,8 @@
 ;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
 ;; assume both polygons have points oriented in a clockwise sequence
 (defn join-polygons [a b]
+  {:pre [(poly-detect/clockwise-polygon? (g/vertices a))
+         (poly-detect/clockwise-polygon? (g/vertices b))]}
   (when (overlapping-polygon? a b)
     (->> (find-clockwise-polygon a b)
          dedupe
@@ -370,6 +372,8 @@
 
   ;; doesn't work as it's hitting the "out" edge and then trying to loop through
   ;; internal points before resuming from the "in" edge
+  (debug/with-tap-log #(join-polygons (gp/polygon2 [0 0] [10 0] [10 10])
+                                      (gp/polygon2 [0 0] [10 10] [0 10])))
   (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10)))
   (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 5 10 10)))
   (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 0 10 10))))
