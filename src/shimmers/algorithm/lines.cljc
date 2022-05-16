@@ -315,44 +315,6 @@
   (or (some? (some (partial g/contains-point? a) (g/vertices b)))
       (some? (some (partial g/contains-point? b) (g/vertices a)))))
 
-(defn rotate-to-correspondence [pa qa edges-b]
-  (let [[before after]
-        (split-with (fn [[pb qb]]
-                      (let [isec (isec/intersect-line2-line2? pa qa pb qb)]
-                        (not (contains? #{:coincident :intersect} (:type isec)))))
-                    edges-b)]
-    (if (empty? after)
-      [nil edges-b]
-      (let [[pb qb] (first after)
-            {:keys [type p] :as isec} (isec/intersect-line2-line2? pa qa pb qb)]
-        (tap> [:rotate isec])
-        (cond (and (= type :intersect) (not (tm/delta= pa p)) (not (tm/delta= qa p)))
-              [isec (concat after before)]
-              (and (= type :intersect) (tm/delta= qa p))
-              [isec (concat after before)]
-              ;; handle internal coincident edges?
-              (= type :coincident)
-              [isec (concat after before)])))))
-
-;; assume both polygons have points oriented in a clockwise sequence
-(defn join-polygons2 [a b]
-  (if-not (overlapping-polygon? a b)
-    nil
-    (loop [edges-a (g/edges a)
-           edges-b (g/edges b)
-           out []]
-      (if (empty? edges-a)
-        (remove-coincident-segments (gp/polygon2 (dedupe out)))
-        (let [[pa qa] (first edges-a)
-              [isec rotated-b] (rotate-to-correspondence pa qa edges-b)]
-          (tap> [:join isec])
-          (cond (= :coincident (:type isec))
-                (recur (rest rotated-b) (rest edges-a) (conj out pa))
-                (= :intersect (:type isec))
-                (recur (rest rotated-b) (rest edges-a) (conj out pa (:p isec)))
-                :else
-                (recur (rest edges-a) edges-b (conj out pa))))))))
-
 (defn isec-points [[pa qa] edges-b]
   (->> edges-b
        (mapcat (fn [[pb qb]]
@@ -393,6 +355,7 @@
               (recur polygon' next-pt))))))
 
 ;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
+;; assume both polygons have points oriented in a clockwise sequence
 (defn join-polygons [a b]
   (when (overlapping-polygon? a b)
     (->> (find-clockwise-polygon a b)
