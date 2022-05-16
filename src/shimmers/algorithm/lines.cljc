@@ -1,5 +1,7 @@
 (ns shimmers.algorithm.lines
   (:require
+   [loom.graph :as lg]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
@@ -331,9 +333,8 @@
               (= type :coincident)
               [isec (concat after before)])))))
 
-;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
 ;; assume both polygons have points oriented in a clockwise sequence
-(defn join-polygons [a b]
+(defn join-polygons2 [a b]
   (if-not (overlapping-polygon? a b)
     nil
     (loop [edges-a (g/edges a)
@@ -351,6 +352,44 @@
                 :else
                 (recur (rest edges-a) edges-b (conj out pa))))))))
 
+(defn isec-points [[pa qa] edges-b]
+  (->> edges-b
+       (mapcat (fn [[pb qb]]
+                 (let [{:keys [type p q]} (isec/intersect-line2-line2? pa qa pb qb)]
+                   (cond (= type :intersect)
+                         [p]
+                         (= type :coincident)
+                         [p q]))))
+       (sort-by #(g/dist-squared pa %))))
+
+(defn connectivity-graph [a b]
+  (let [a-points (->> (for [[pa qa] (g/edges a)]
+                        (cons pa (isec-points [pa qa] (g/edges b))))
+                      (apply concat))
+        b-points (->> (for [[pb qb] (g/edges b)]
+                        (cons pb (isec-points [pb qb] (g/edges b))))
+                      (apply concat))]
+    (apply lg/add-cycle
+           (apply lg/add-cycle (lg/digraph) a-points)
+           b-points)))
+
+;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
+(defn join-polygons [a b]
+  (let [graph (connectivity-graph a b)
+        min-point (reduce tm/min (lg/nodes graph))
+        start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))]
+    (loop [polygon [] vertex start]
+      (let [prev (or (last polygon) min-point)
+            candidates (remove (disj (set polygon) start) (lg/successors graph vertex))
+            next-pt (poly-detect/counter-clockwise-point prev vertex candidates)
+            polygon' (conj polygon vertex)]
+        (cond (empty? candidates)
+              []
+              (and (> (count polygon') 2) (tm/delta= next-pt start))
+              (gp/polygon2 (dedupe polygon'))
+              :else
+              (recur polygon' next-pt))))))
+
 (comment
   (require '[shimmers.common.ui.debug :as debug]
            '[thi.ng.geom.rect :as rect])
@@ -358,4 +397,8 @@
 
   ;; doesn't work as it's hitting the "out" edge and then trying to loop through
   ;; internal points before resuming from the "in" edge
-  (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10))))
+  (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10)))
+
+  (join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10))
+  (join-polygons (rect/rect 10) (rect/rect 5 5 10 10))
+  (join-polygons (rect/rect 10) (rect/rect 5 0 10 10)))
