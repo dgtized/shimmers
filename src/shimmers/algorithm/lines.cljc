@@ -312,7 +312,8 @@
 ;; simple case is for coincident lines, complex is if edges cut eachother.
 
 (defn overlapping-polygon? [a b]
-  (some? (some (partial g/contains-point? a) (g/vertices b))))
+  (or (some? (some (partial g/contains-point? a) (g/vertices b)))
+      (some? (some (partial g/contains-point? b) (g/vertices a)))))
 
 (defn rotate-to-correspondence [pa qa edges-b]
   (let [[before after]
@@ -367,28 +368,37 @@
                         (cons pa (isec-points [pa qa] (g/edges b))))
                       (apply concat))
         b-points (->> (for [[pb qb] (g/edges b)]
-                        (cons pb (isec-points [pb qb] (g/edges b))))
+                        (cons pb (isec-points [pb qb] (g/edges a))))
                       (apply concat))]
     (apply lg/add-cycle
            (apply lg/add-cycle (lg/digraph) a-points)
            b-points)))
 
-;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
-(defn join-polygons [a b]
+(defn find-clockwise-polygon [a b]
   (let [graph (connectivity-graph a b)
         min-point (reduce tm/min (lg/nodes graph))
         start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))]
+    (tap> graph)
     (loop [polygon [] vertex start]
       (let [prev (or (last polygon) min-point)
             candidates (remove (disj (set polygon) start) (lg/successors graph vertex))
-            next-pt (poly-detect/counter-clockwise-point prev vertex candidates)
+            next-pt (poly-detect/clockwise-point prev vertex candidates)
             polygon' (conj polygon vertex)]
+        (tap> [vertex :-> next-pt :from candidates])
         (cond (empty? candidates)
               []
               (and (> (count polygon') 2) (tm/delta= next-pt start))
-              (gp/polygon2 (dedupe polygon'))
+              polygon'
               :else
               (recur polygon' next-pt))))))
+
+;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
+(defn join-polygons [a b]
+  (when (overlapping-polygon? a b)
+    (->> (find-clockwise-polygon a b)
+         dedupe
+         gp/polygon2
+         remove-coincident-segments)))
 
 (comment
   (require '[shimmers.common.ui.debug :as debug]
@@ -398,7 +408,5 @@
   ;; doesn't work as it's hitting the "out" edge and then trying to loop through
   ;; internal points before resuming from the "in" edge
   (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10)))
-
-  (join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10))
-  (join-polygons (rect/rect 10) (rect/rect 5 5 10 10))
-  (join-polygons (rect/rect 10) (rect/rect 5 0 10 10)))
+  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 5 10 10)))
+  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 0 10 10))))
