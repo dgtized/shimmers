@@ -53,10 +53,10 @@
   (when (seq outbound)
     (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
-        (apply (partial max-key
-                        (fn [v] (let [p (tm/- v vertex)]
-                                 [(g/angle-between p from-vertex)
-                                  (/ 1.0 (tm/mag-squared p))])))
+        (apply max-key
+               (fn [v] (let [p (tm/- v vertex)]
+                        [(g/angle-between p from-vertex)
+                         (/ 1.0 (tm/mag-squared p))]))
                points))
       from)))
 
@@ -67,10 +67,10 @@
   (when (seq outbound)
     (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
-        (apply (partial min-key
-                        (fn [v] (let [p (tm/- v vertex)]
-                                 [(- (g/angle-between p from-vertex))
-                                  (tm/mag-squared p)])))
+        (apply min-key
+               (fn [v] (let [p (tm/- v vertex)]
+                        [(- (g/angle-between p from-vertex))
+                         (tm/mag-squared p)]))
                points))
       from)))
 
