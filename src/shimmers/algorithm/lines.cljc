@@ -379,3 +379,11 @@
   (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10)))
   (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 5 10 10)))
   (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 0 10 10))))
+
+(defn coincident-edges
+  [a b]
+  (for [[pa qa] (g/edges a)
+        [pb qb] (g/edges b)
+        :let [{:keys [type p q]} (isec/intersect-line2-line2? pa qa pb qb)]
+        :when (and (= type :coincident) (not (tm/delta= p q)))]
+    {:segment [p q] :edge-a [pa qa] :edge-b [pb qb]}))

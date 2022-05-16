@@ -364,4 +364,22 @@
          (sut/join-polygons (rect/rect 1 1 8 8) (rect/rect 10)))
       "b contains a"))
 
+(deftest coincident-edges
+  (is (= [{:segment [[10 0] [0 10]] :edge-a [[10 0] [0 10]] :edge-b [[10 0] [0 10]]}]
+         (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [0 10])
+                               (gp/polygon2 [10 0] [0 10] [10 10])))
+      "exact coincident edge")
+  (is (= [{:segment [[10 5] [10 0]] :edge-a [[10 0] [10 10]] :edge-b [[10 5] [10 0]]}]
+         (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+                               (gp/polygon2 [10 0] [15 0] [15 5] [10 5])))
+      "partial coincident edge")
+  (is (empty? (sut/coincident-edges (rect/rect 10) (rect/rect 15 15 1 1)))
+      "no coincident edges")
+  (is (= [{:segment [[0 0] [10 0]] :edge-a [[0 0] [10 0]] :edge-b [[0 0] [10 0]]}
+          {:segment [[10 0] [10 10]] :edge-a [[10 0] [10 10]] :edge-b [[10 0] [10 10]]}
+          {:segment [[10 10] [0 10]] :edge-a [[10 10] [0 10]] :edge-b [[10 10] [0 10]]}
+          {:segment [[0 10] [0 0]] :edge-a [[0 10] [0 0]] :edge-b [[0 10] [0 0]]}]
+         (sut/coincident-edges (rect/rect 10) (rect/rect 10)))
+      "identity, all edges are coincident"))
+
 (comment (t/run-tests))
