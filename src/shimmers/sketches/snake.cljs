@@ -127,17 +127,29 @@
         :points
         cq/draw-triangle)))
 
+(defn equilateral-point [a b i t]
+  (let [a-b (tm/- a b)
+        p (tm/+ b (g/rotate a-b (* (if (even? i) 1 -1) (/ eq/TAU 6))))]
+    ;; with rotation enabled some orientations rotate regardless of theta from
+    ;; changes in axis orientation?
+    (if t
+      (let [mid (tm/+ b (tm/* a-b 0.5))
+            quat-angle (quat/quat-from-axis-angle a-b t)]
+        (tm/+ mid (tm/* (tm/- p mid) (:xy quat-angle))))
+      p)))
+
 (defn test-rotation [t]
   (q/stroke 0 1.0)
   (q/fill 1.0 1.0)
   (let [a (gv/vec2 45 52)
-        b (gv/vec2 30 30)
-        mid (tm/+ b (tm/* (tm/- a b) 0.5))
-        tip (tm/- (tm/+ b (g/rotate (tm/- a b) (/ eq/TAU 6))) mid)
-        q-angle (quat/quat-from-axis-angle (tm/- a b) t)]
-    (cq/draw-triangle a b (tm/+ mid (tm/* tip (:xy q-angle))))))
+        b (gv/vec2 30 30)]
+    (cq/draw-triangle a b (equilateral-point a b 0 tm/HALF_PI)))
+  (let [a (gv/vec2 120 20)
+        b (gv/vec2 80 30)]
+    (cq/draw-triangle a b (equilateral-point a b 0 tm/HALF_PI))))
 
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
+  ;; (test-rotation t)
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
@@ -158,7 +170,7 @@
         (q/fill grey opacity))
       (apply q/vertex a)
       (apply q/vertex b)
-      (apply q/vertex (tm/+ b (g/rotate (tm/- a b) (* (if (even? i) 1 -1) (/ eq/TAU 6))))))
+      (apply q/vertex (equilateral-point a b i nil)))
     (q/end-shape)
     (when (:spinners @ui-state)
       (draw-spinners state))))
