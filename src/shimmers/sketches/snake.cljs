@@ -167,20 +167,20 @@
    [:p "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
                   "kinematic chain"]
     " across a canvas, drawing triangles or lines along it's path."]
-   [:div.flexcols
-    (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
-    (when (= (:draw-mode @ui-state) :equilateral-links)
-      (ctrl/checkbox ui-state "Add Color Patches" [:color]))
-    (when (and (= (:draw-mode @ui-state) :equilateral-links)
-               (:color @ui-state))
-      (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
-    #_(when (= (:draw-mode @ui-state) :equilateral-links)
-        (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
+   (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
    [:ul
     [:li "Equilateral links draws triangles from each link in the chain."]
     [:li "Chain draws the lines between each link of the chain."]
     [:li "Brushes draws triangles at each vertex of the chain, spinning them
      proportional to distance from the head of the chain."]]
+   [:p.flexmodes
+    (when (= (:draw-mode @ui-state) :equilateral-links)
+      (ctrl/checkbox ui-state "Color Patches" [:color]))
+    (when (and (= (:draw-mode @ui-state) :equilateral-links)
+               (:color @ui-state))
+      (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
+    (when (= (:draw-mode @ui-state) :equilateral-links)
+      (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
    (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})
    [:ul
     [:li "Sinusoidal chooses a winding path towards each target locations."]
