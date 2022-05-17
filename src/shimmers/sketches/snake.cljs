@@ -143,13 +143,13 @@
   (q/fill 1.0 1.0)
   (let [a (gv/vec2 45 52)
         b (gv/vec2 30 30)]
-    (cq/draw-triangle a b (equilateral-point a b 0 tm/HALF_PI)))
+    (cq/draw-triangle a b (equilateral-point a b 0 t)))
   (let [a (gv/vec2 120 20)
         b (gv/vec2 80 30)]
-    (cq/draw-triangle a b (equilateral-point a b 0 tm/HALF_PI))))
+    (cq/draw-triangle a b (equilateral-point a b 0 t))))
 
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
-  ;; (test-rotation t)
+  ;; (test-rotation tm/HALF_PI)
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
