@@ -12,6 +12,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.quaternion :as quat]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -125,6 +126,16 @@
         (g/translate pos)
         :points
         cq/draw-triangle)))
+
+(defn test-rotation [t]
+  (q/stroke 0 1.0)
+  (q/fill 1.0 1.0)
+  (let [a (gv/vec2 45 52)
+        b (gv/vec2 30 30)
+        mid (tm/+ b (tm/* (tm/- a b) 0.5))
+        tip (tm/- (tm/+ b (g/rotate (tm/- a b) (/ eq/TAU 6))) mid)
+        q-angle (quat/quat-from-axis-angle (tm/- a b) t)]
+    (cq/draw-triangle a b (tm/+ mid (tm/* tip (:xy q-angle))))))
 
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
   (let [[x y] (tm/* (:p target) 0.1)]
