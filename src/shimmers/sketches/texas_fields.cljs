@@ -38,10 +38,12 @@
 (defn separate-with-roads [grid roads]
   (mapcat (fn [cell]
             (if (some (fn [line] (g/intersect-line cell line)) roads)
-              (for [[i poly] (map-indexed vector (decompose cell roads))]
-                (with-meta poly
-                  {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
-                   :combine (< (g/area poly) (* 0.9 (g/area cell)))}))
+              (let [group (random-uuid)]
+                (for [[i poly] (map-indexed vector (decompose cell roads))]
+                  (with-meta poly
+                    {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
+                     :combine (< (g/area poly) (* 0.9 (g/area cell)))
+                     :group group})))
               [cell]))
           grid))
 
@@ -54,15 +56,16 @@
           grid))
 
 ;; not finding the longest coincident edge yet
-(defn find-closest [tree shape r]
-  (apply max-key
-         (fn [adj]
-           (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
-             (let [[p q] (apply max-key (fn [[p q]] (g/dist-squared p q)) segments)]
-               (g/dist-squared p q))
-             0))
-         (remove #{shape}
-                 (spatialtree/select-with-circle tree (g/centroid shape) r))))
+(defn find-closest [tree shape radius]
+  (->> (spatialtree/select-with-circle tree (g/centroid shape) radius)
+       (remove #{shape})
+       (remove (fn [s] (= (:group (meta s)) (:group (meta shape)))))
+       (apply max-key
+              (fn [adj]
+                (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
+                  (let [[p q] (apply max-key (fn [[p q]] (g/dist-squared p q)) segments)]
+                    (g/dist-squared p q))
+                  0)))))
 
 (defn landscape []
   (let [roads (make-roads)
@@ -79,7 +82,7 @@
                 (filter (comp :combine meta) separated-grid))]
     (concat (for [shape separated-grid]
               (if (:combine (meta shape))
-                (vary-meta shape dissoc :combine)
+                (vary-meta shape dissoc :combine :group)
                 shape))
             roads
             (svg/group {:stroke "black"} closest-links)
