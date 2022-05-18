@@ -7,6 +7,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -35,16 +36,22 @@
 (defn separate-with-roads [grid roads]
   (mapcat (fn [cell]
             (if (some (fn [line] (g/intersect-line cell line)) roads)
-              (for [[i cell] (map-indexed vector (decompose cell roads))
-                    :let [fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)]]
-                (with-meta cell {:fill fill}))
+              (for [[i poly] (map-indexed vector (decompose cell roads))]
+                (with-meta poly
+                  {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
+                   :combine (< (g/area poly) (* 0.9 (g/area cell)))}))
               [cell]))
           grid))
 
 (defn landscape []
   (let [roads (make-roads)
-        grid (make-grid)]
-    (concat (separate-with-roads grid roads)
+        grid (make-grid)
+        separated-grid (separate-with-roads grid roads)]
+    (concat (apply concat
+                   (for [shape separated-grid]
+                     (if (:combine (meta shape))
+                       [shape (gc/circle (g/centroid shape) 1.0)]
+                       [shape])))
             roads)))
 
 (defn scene []
