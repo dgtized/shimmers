@@ -24,8 +24,8 @@
    (gl/line2 (rv (dr/random 0.2 0.8) 0) (rv (dr/random 0.2 0.8) 1))])
 
 (defn make-grid []
-  (for [j (tm/norm-range 15)
-        i (tm/norm-range 20)]
+  (for [j (butlast (tm/norm-range 15))
+        i (butlast (tm/norm-range 20))]
     (rect/rect (rv i j) (tm/+ (rv i j) (gv/vec2 (/ width 20) (/ height 15))))))
 
 (defn decompose [cell lines]
