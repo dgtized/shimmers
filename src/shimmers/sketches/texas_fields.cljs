@@ -11,6 +11,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -43,16 +45,45 @@
               [cell]))
           grid))
 
+(defn build-tree [grid]
+  (reduce (fn [qt cell]
+            (if cell
+              (g/add-point qt (g/centroid cell) cell)
+              qt))
+          (spatialtree/quadtree 0 0 width height)
+          grid))
+
+;; not finding the longest coincident edge yet
+(defn find-closest [tree shape r]
+  (apply max-key
+         (fn [adj]
+           (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
+             (let [[p q] (apply max-key (fn [[p q]] (g/dist-squared p q)) segments)]
+               (g/dist-squared p q))
+             0))
+         (remove #{shape}
+                 (spatialtree/select-with-circle tree (g/centroid shape) r))))
+
 (defn landscape []
   (let [roads (make-roads)
         grid (make-grid)
-        separated-grid (separate-with-roads grid roads)]
-    (concat (apply concat
-                   (for [shape separated-grid]
-                     (if (:combine (meta shape))
-                       [shape (gc/circle (g/centroid shape) 1.0)]
-                       [shape])))
-            roads)))
+        separated-grid (separate-with-roads grid roads)
+        quadtree (build-tree separated-grid)
+        radius (let [x (first grid)]
+                 (* 1.2 (max (g/width x) (g/height x))))
+        closest-links
+        (mapcat (fn [shape]
+                  [(gc/circle (g/centroid shape) 1.0)
+                   (gl/line2 (g/centroid shape)
+                             (g/centroid (find-closest quadtree shape radius)))])
+                (filter (comp :combine meta) separated-grid))]
+    (concat (for [shape separated-grid]
+              (if (:combine (meta shape))
+                (vary-meta shape dissoc :combine)
+                shape))
+            roads
+            (svg/group {:stroke "black"} closest-links)
+            )))
 
 (defn scene []
   (csvg/svg {:width width
