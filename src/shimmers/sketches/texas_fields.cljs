@@ -32,16 +32,19 @@
             (mapcat (fn [cell] (lines/cut-polygon cell line)) cells))
           [cell] lines))
 
+(defn separate-with-roads [grid roads]
+  (mapcat (fn [cell]
+            (if (some (fn [line] (g/intersect-line cell line)) roads)
+              (for [[i cell] (map-indexed vector (decompose cell roads))
+                    :let [fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)]]
+                (with-meta cell {:fill fill}))
+              [cell]))
+          grid))
+
 (defn landscape []
   (let [roads (make-roads)
         grid (make-grid)]
-    (concat (mapcat (fn [cell]
-                      (if (some (fn [line] (g/intersect-line cell line)) roads)
-                        (for [[i cell] (map-indexed vector (decompose cell roads))
-                              :let [fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)]]
-                          (with-meta cell {:fill fill}))
-                        [cell]))
-                    grid)
+    (concat (separate-with-roads grid roads)
             roads)))
 
 (defn scene []
