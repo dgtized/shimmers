@@ -5,6 +5,8 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -21,9 +23,24 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn make-roads []
-  [(gl/line2 (rv 0 (dr/random 0.2 0.8)) (rv 1 (dr/random 0.2 0.8)))
-   (gl/line2 (rv (dr/random 0.2 0.8) 0) (rv (dr/random 0.2 0.8) 1))])
+;; roads need to be 2 lines, so will need to remove slices from inside
+;; also roads are more interesting if they extrude outward
+;; idea: pick a central circle, then attach a line at a random point tangent to curve,
+;; then pick 2 points on line, left and right, and extrude lines from there
+;; FIXME: will require fixes to decompose if road ends *inside* a cell
+
+(defn make-roads [region]
+  (let [{:keys [p r]} (gc/circle (rv 0.5 0.5) (* 0.1 width))
+        theta (dr/random eq/TAU)
+        tangent-dir (v/polar r theta)
+        tangent-pt (tm/+ p tangent-dir)
+        direction (v/polar width (+ theta tm/HALF_PI))
+        base-line (first (lines/clip-line (gl/line2 (tm/- tangent-pt direction) (tm/+ tangent-pt direction)) region))]
+    [base-line
+     (let [a (g/point-at base-line (dr/random 0.25 0.40))]
+       (first (lines/clip-line (gl/line2 a (tm/+ a (tm/* tangent-dir width))) region)))
+     (let [a (g/point-at base-line (dr/random 0.60 0.75))]
+       (first (lines/clip-line (gl/line2 a (tm/- a (tm/* tangent-dir width))) region)))]))
 
 (defn make-grid []
   (for [j (butlast (tm/norm-range 15))
@@ -67,9 +84,9 @@
                     (g/dist-squared p q))
                   0)))))
 
-(defn landscape []
-  (let [roads (make-roads)
-        grid (make-grid)
+(defn landscape [region]
+  (let [grid (make-grid)
+        roads (make-roads region)
         separated-grid (separate-with-roads grid roads)
         quadtree (build-tree separated-grid)
         radius (let [x (first grid)]
@@ -94,7 +111,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (apply list (landscape))))
+            (apply list (landscape (rect/rect 0 0 width height)))))
 
 (sketch/definition texas-fields
   {:created-at "2022-04-24"
