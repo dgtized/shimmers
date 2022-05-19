@@ -112,7 +112,8 @@
   (apply concat
          (for [[i [_ group]] (map-indexed vector (group-by (road-side roads) cells))]
            (for [cell group]
-             (vary-meta cell assoc :fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3))))))
+             (vary-meta cell assoc :fill (or (:fill (meta cell))
+                                             (color/css-hsl (mod (* (+ 5 i) tm/PHI) 1.0) 0.5 0.5 0.1)))))))
 
 (defn landscape [region]
   (let [grid (make-grid 16 12)
