@@ -119,7 +119,7 @@
                 (filter (comp :combine meta) separated-grid))]
     (concat (for [shape separated-grid
                   :let [cell (if (:combine (meta shape))
-                               (vary-meta shape dissoc :combine)
+                               (vary-meta shape dissoc :combine :zone)
                                shape)]]
               (vary-meta cell assoc :on-click #(debug-info cell)))
             region
