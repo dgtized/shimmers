@@ -101,6 +101,19 @@
                     (g/dist-squared p q))
                   0)))))
 
+(defn road-side [roads]
+  (fn [poly]
+    (let [centroid (g/centroid poly)]
+      (vec (for [r roads]
+             (g/classify-point r centroid))))))
+
+;; FIXME: classifies points past the point a line ends
+(defn classify-groups [cells roads]
+  (apply concat
+         (for [[i [_ group]] (map-indexed vector (group-by (road-side roads) cells))]
+           (for [cell group]
+             (vary-meta cell assoc :fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3))))))
+
 (defn landscape [region]
   (let [grid (make-grid 16 12)
         roads (make-roads region)
@@ -114,10 +127,12 @@
                    (gl/line2 (g/centroid shape)
                              (g/centroid (find-closest quadtree shape radius)))])
                 (filter (comp :combine meta) separated-grid))]
-    (concat (for [shape separated-grid]
-              (if (:combine (meta shape))
-                (vary-meta shape dissoc :combine :group)
-                shape))
+    (concat (classify-groups
+             (for [shape separated-grid]
+               (if (:combine (meta shape))
+                 (vary-meta shape dissoc :combine :group)
+                 shape))
+             roads)
             roads
             (svg/group {:stroke "black"} closest-links)
             )))
