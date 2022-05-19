@@ -117,11 +117,13 @@
                    (gl/line2 (g/centroid shape)
                              (g/centroid (find-closest quadtree shape radius)))])
                 (filter (comp :combine meta) separated-grid))]
+    ;; FIXME: missing react key error?
     (concat (for [shape separated-grid
                   :let [cell (if (:combine (meta shape))
                                (vary-meta shape dissoc :combine :zone)
                                shape)]]
-              (vary-meta cell assoc :on-click #(debug-info cell)))
+              (vary-meta cell assoc
+                         :on-click #(debug-info cell)))
             region
             roads
             (svg/group {:stroke "black"} closest-links)
