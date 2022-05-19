@@ -42,10 +42,10 @@
      (let [a (g/point-at base-line (dr/random 0.60 0.75))]
        (first (lines/clip-line (gl/line2 a (tm/- a (tm/* tangent-dir width))) region)))]))
 
-(defn make-grid []
-  (for [j (butlast (tm/norm-range 15))
-        i (butlast (tm/norm-range 20))]
-    (rect/rect (rv i j) (tm/+ (rv i j) (gv/vec2 (/ width 20) (/ height 15))))))
+(defn make-grid [cols rows]
+  (for [j (butlast (tm/norm-range rows))
+        i (butlast (tm/norm-range cols))]
+    (rect/rect (rv i j) (tm/+ (rv i j) (gv/vec2 (/ width cols) (/ height rows))))))
 
 (defn decompose [cell lines]
   (reduce (fn [cells line]
@@ -85,7 +85,7 @@
                   0)))))
 
 (defn landscape [region]
-  (let [grid (make-grid)
+  (let [grid (make-grid 16 12)
         roads (make-roads region)
         separated-grid (separate-with-roads grid roads)
         quadtree (build-tree separated-grid)
