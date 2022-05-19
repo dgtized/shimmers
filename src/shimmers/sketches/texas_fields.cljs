@@ -27,7 +27,6 @@
 ;; also roads are more interesting if they extrude outward
 ;; idea: pick a central circle, then attach a line at a random point tangent to curve,
 ;; then pick 2 points on line, left and right, and extrude lines from there
-;; FIXME: will require fixes to decompose if road ends *inside* a cell
 
 (defn make-roads [region]
   (let [{:keys [p r]} (gc/circle (rv 0.5 0.5) (* 0.1 width))
@@ -47,6 +46,8 @@
         i (butlast (tm/norm-range cols))]
     (rect/rect (rv i j) (tm/+ (rv i j) (gv/vec2 (/ width cols) (/ height rows))))))
 
+;; FIXME: sometimes roads in inside of a cell, and despite the fact that the
+;; base-line cuts first, it's still not always separating on subsequent cuts
 (defn decompose [cell lines]
   (reduce (fn [cells line]
             (mapcat (fn [cell] (lines/cut-polygon cell line)) cells))
@@ -59,7 +60,7 @@
                 (for [[i poly] (map-indexed vector (decompose cell roads))]
                   (with-meta poly
                     {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
-                     :combine (< (g/area poly) (* 0.9 (g/area cell)))
+                     :combine (< (g/area poly) (* 1.0 (g/area cell)))
                      :group group})))
               [cell]))
           grid))
