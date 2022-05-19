@@ -51,8 +51,13 @@
 ;; base-line cuts first, it's still not always separating on subsequent cuts
 (defn decompose [cell lines]
   (reduce (fn [cells line]
-            ;; line is scaled to handle edge cases when endpoint is on an edge but counting as inside
-            (mapcat (fn [cell] (lines/cut-polygon cell (g/scale-size line 1.01))) cells))
+            (mapcat (fn [cell]
+                      ;; line is scaled to handle edge cases when endpoint is on an edge but counting as inside
+                      (->> (g/scale-size line 1.01)
+                           (lines/cut-polygon cell)
+                           ;; remove tiny slivers from output
+                           (filter #(> (Math/abs (g/area %)) 1.0))))
+                    cells))
           [cell] lines))
 
 (defonce defo (debug/state))
