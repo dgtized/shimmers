@@ -60,26 +60,29 @@
                     cells))
           [cell] lines))
 
+(defn identify-zone [regions]
+  (let [indexed-regions (map-indexed vector regions)]
+    (fn [poly]
+      (let [centroid (g/centroid poly)]
+        (some (fn [[i r]] (when (g/contains-point? r centroid) i)) indexed-regions)))))
+
 (defonce defo (debug/state))
 
-(defn debug-info [cell roads group]
-  (reset! defo {:group group
-                :roads roads
-                :cell cell
-                :decompose (decompose cell roads)}))
+(defn debug-info [cell]
+  (reset! defo {:zone (:zone (meta cell))
+                :cell cell}))
 
-(defn separate-with-roads [grid roads]
-  (mapcat (fn [cell]
-            (if (some (fn [line] (g/intersect-line cell line)) roads)
-              (let [group (random-uuid)]
+(defn separate-with-roads [region grid roads]
+  (let [zone-id (identify-zone (decompose region roads))]
+    (mapcat (fn [cell]
+              (if (some (fn [line] (g/intersect-line cell line)) roads)
                 (for [[i poly] (map-indexed vector (decompose cell roads))]
                   (with-meta poly
                     {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
-                     :combine (< (g/area poly) (* 1.0 (g/area cell)))
-                     :group group
-                     :on-click #(debug-info cell roads group)})))
-              [cell]))
-          grid))
+                     :zone (zone-id poly)
+                     :combine (< (g/area poly) (* 1.0 (g/area cell)))}))
+                [(with-meta cell {:zone (zone-id cell)})]))
+            grid)))
 
 (defn build-tree [grid]
   (reduce (fn [qt cell]
@@ -93,7 +96,7 @@
 (defn find-closest [tree shape radius]
   (->> (spatialtree/select-with-circle tree (g/centroid shape) radius)
        (remove #{shape})
-       (remove (fn [s] (= (:group (meta s)) (:group (meta shape)))))
+       (filter (fn [s] (= (:zone (meta s)) (:zone (meta shape)))))
        (apply max-key
               (fn [adj]
                 (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
@@ -101,27 +104,10 @@
                     (g/dist-squared p q))
                   0)))))
 
-(defn identify-zone [regions]
-  (let [indexed-regions (map-indexed vector regions)]
-    (fn [poly]
-      (let [centroid (g/centroid poly)]
-        (some (fn [[i r]] (when (g/contains-point? r centroid) i)) indexed-regions)))))
-
-;; FIXME: classifies points past the point a line ends
-(defn classify-groups [cells region roads]
-  (let [zone-id (identify-zone (decompose region roads))]
-    (apply concat
-           (for [[zone group] (group-by zone-id cells)]
-             (for [cell group]
-               (vary-meta cell assoc
-                          :zone zone
-                          :fill (or (:fill (meta cell))
-                                    (color/css-hsl (mod (* (+ 5 zone) tm/PHI) 1.0) 0.5 0.5 0.1))))))))
-
 (defn landscape [region]
   (let [grid (make-grid 16 12)
         roads (make-roads region)
-        separated-grid (separate-with-roads grid roads)
+        separated-grid (separate-with-roads region grid roads)
         quadtree (build-tree separated-grid)
         radius (let [x (first grid)]
                  (* 1.2 (max (g/width x) (g/height x))))
@@ -131,13 +117,12 @@
                    (gl/line2 (g/centroid shape)
                              (g/centroid (find-closest quadtree shape radius)))])
                 (filter (comp :combine meta) separated-grid))]
-    (concat (classify-groups
-             (for [shape separated-grid]
-               (if (:combine (meta shape))
-                 (vary-meta shape dissoc :combine :group)
-                 shape))
-             region
-             roads)
+    (concat (for [shape separated-grid
+                  :let [cell (if (:combine (meta shape))
+                               (vary-meta shape dissoc :combine)
+                               shape)]]
+              (vary-meta cell assoc :on-click #(debug-info cell)))
+            region
             roads
             (svg/group {:stroke "black"} closest-links)
             )))
