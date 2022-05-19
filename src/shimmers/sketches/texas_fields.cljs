@@ -3,6 +3,7 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -50,8 +51,17 @@
 ;; base-line cuts first, it's still not always separating on subsequent cuts
 (defn decompose [cell lines]
   (reduce (fn [cells line]
-            (mapcat (fn [cell] (lines/cut-polygon cell line)) cells))
+            ;; line is scaled to handle edge cases when endpoint is on an edge but counting as inside
+            (mapcat (fn [cell] (lines/cut-polygon cell (g/scale-size line 1.01))) cells))
           [cell] lines))
+
+(defonce defo (debug/state))
+
+(defn debug-info [cell roads group]
+  (reset! defo {:group group
+                :roads roads
+                :cell cell
+                :decompose (decompose cell roads)}))
 
 (defn separate-with-roads [grid roads]
   (mapcat (fn [cell]
@@ -61,7 +71,8 @@
                   (with-meta poly
                     {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
                      :combine (< (g/area poly) (* 1.0 (g/area cell)))
-                     :group group})))
+                     :group group
+                     :on-click #(debug-info cell roads group)})))
               [cell]))
           grid))
 
@@ -114,9 +125,13 @@
              :stroke-width 0.5}
             (apply list (landscape (rect/rect 0 0 width height)))))
 
+(defn ui-controls []
+  (let [debug @defo]
+    (debug/pre-edn debug)))
+
 (sketch/definition texas-fields
   {:created-at "2022-04-24"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :texas-fields)
+  (ctrl/mount (view-sketch/page-for scene :texas-fields ui-controls)
               "sketch-host"))
