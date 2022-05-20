@@ -362,10 +362,14 @@
   {:pre [(poly-detect/clockwise-polygon? (g/vertices a))
          (poly-detect/clockwise-polygon? (g/vertices b))]}
   (when (overlapping-polygon? a b)
-    (->> (find-clockwise-polygon a b)
-         dedupe
-         gp/polygon2
-         remove-coincident-segments)))
+    (let [{:keys [points] :as polygon}
+          (->> (find-clockwise-polygon a b)
+               dedupe
+               gp/polygon2
+               remove-coincident-segments)]
+      ;; FIXME: add missing test case, probably single point overlap?
+      (when (>= (count points) 3)
+        polygon))))
 
 (comment
   (require '[shimmers.common.ui.debug :as debug]
