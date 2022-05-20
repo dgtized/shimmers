@@ -92,6 +92,17 @@
           (spatialtree/quadtree 0 0 width height)
           grid))
 
+(defn replace-point [qt shape shape']
+  (-> qt
+      (g/delete-point (g/centroid shape))
+      (g/add-point (g/centroid shape') shape')))
+
+(defn mark-error [shape error]
+  (vary-meta shape assoc
+             :error error
+             :stroke "red"
+             :stroke-width 2.0))
+
 ;; not finding the longest coincident edge yet
 ;; FIXME: prefer attaching to polygon that stays convex, or at least add up all coincident edges
 (defn find-closest [tree shape radius]
@@ -112,23 +123,12 @@
                        (if closest
                          (if-let [joined (lines/join-polygons shape closest)]
                            (-> qt
-                               (g/delete-point (g/centroid shape))
                                (g/delete-point (g/centroid closest))
-                               (g/add-point (g/centroid joined) (with-meta joined (dissoc (meta shape) :combine))))
-                           (-> qt
-                               (g/delete-point (g/centroid shape))
-                               (g/add-point (g/centroid shape)
-                                            (vary-meta shape assoc
-                                                       :error [:unable-to-join closest]
-                                                       :stroke "red"
-                                                       :stroke-width 2.0))))
-                         (-> qt
-                             (g/delete-point (g/centroid shape))
-                             (g/add-point (g/centroid shape)
-                                          (vary-meta shape assoc
-                                                     :error [:no-closest]
-                                                     :stroke "red"
-                                                     :stroke-width 2.0))))))
+                               (replace-point shape (with-meta joined (dissoc (meta shape) :combine))))
+                           (replace-point qt shape
+                                          (mark-error shape [:unable-to-join closest])))
+                         (replace-point qt shape
+                                        (mark-error shape [:no-closest])))))
                    quadtree
                    (filter (comp :combine meta) grid))]
     (spatialtree/select-with-shape qt region)))
