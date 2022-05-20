@@ -69,8 +69,8 @@
 (defonce defo (debug/state))
 
 (defn debug-info [cell]
-  (reset! defo {:zone (:zone (meta cell))
-                :cell cell}))
+  (reset! defo (dissoc (merge {:cell cell} (meta cell))
+                       :on-click)))
 
 (defn separate-with-roads [region grid roads]
   (let [zone-id (identify-zone (decompose region roads))]
@@ -93,6 +93,7 @@
           grid))
 
 ;; not finding the longest coincident edge yet
+;; FIXME: prefer attaching to polygon that stays convex, or at least add up all coincident edges
 (defn find-closest [tree shape radius]
   (->> (spatialtree/select-with-circle tree (g/centroid shape) radius)
        (remove #{shape})
@@ -109,16 +110,25 @@
   (let [qt (reduce (fn [qt shape]
                      (let [closest (find-closest qt shape radius)]
                        (if closest
-                         (let [joined (lines/join-polygons shape closest)]
-                           (if (and closest joined (seq (:points joined)))
-                             (-> qt
-                                 (g/delete-point (g/centroid shape))
-                                 (g/delete-point (g/centroid closest))
-                                 (g/add-point (g/centroid joined) (with-meta joined (dissoc (meta shape) :combine))))
-                             (do (println [:skipping joined :<- shape closest])
-                                 qt)))
-                         (do (println [:no-closest shape closest])
-                             qt))))
+                         (if-let [joined (lines/join-polygons shape closest)]
+                           (-> qt
+                               (g/delete-point (g/centroid shape))
+                               (g/delete-point (g/centroid closest))
+                               (g/add-point (g/centroid joined) (with-meta joined (dissoc (meta shape) :combine))))
+                           (-> qt
+                               (g/delete-point (g/centroid shape))
+                               (g/add-point (g/centroid shape)
+                                            (vary-meta shape assoc
+                                                       :error [:unable-to-join closest]
+                                                       :stroke "red"
+                                                       :stroke-width 2.0))))
+                         (-> qt
+                             (g/delete-point (g/centroid shape))
+                             (g/add-point (g/centroid shape)
+                                          (vary-meta shape assoc
+                                                     :error [:no-closest]
+                                                     :stroke "red"
+                                                     :stroke-width 2.0))))))
                    quadtree
                    (filter (comp :combine meta) grid))]
     (spatialtree/select-with-shape qt region)))
@@ -142,15 +152,15 @@
         joined-grid (vec (join-grid region quadtree separated-grid radius))]
     ;; FIXME: missing react key error?
     [(svg/group {:stroke "black"}
-                (for [shape joined-grid
-                      :let [cell (if (:combine (meta shape))
-                                   (vary-meta shape dissoc :combine :zone)
-                                   shape)]]
-                  (vary-meta cell assoc :on-click #(debug-info cell))))
+                (for [cell joined-grid]
+                  (-> cell
+                      (vary-meta assoc :on-click #(debug-info cell))
+                      (vary-meta dissoc :error :combine :zone))))
      (svg/group {:stroke "red"} (apply list roads))
      (svg/group {:stroke "black"} (apply list closest-links))]))
 
 (defn scene []
+  (reset! defo {})
   (csvg/svg {:width width
              :height height
              :stroke "black"
