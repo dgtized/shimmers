@@ -99,10 +99,29 @@
        (filter (fn [s] (= (:zone (meta s)) (:zone (meta shape)))))
        (apply max-key
               (fn [adj]
-                (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
-                  (let [[p q] (apply max-key (fn [[p q]] (g/dist-squared p q)) segments)]
-                    (g/dist-squared p q))
-                  0)))))
+                (when adj
+                  (if-let [segments (seq (map :segment (lines/coincident-edges shape adj)))]
+                    (let [[p q] (apply max-key (fn [[p q]] (g/dist-squared p q)) segments)]
+                      (g/dist-squared p q))
+                    0))))))
+
+(defn join-grid [region quadtree grid radius]
+  (let [qt (reduce (fn [qt shape]
+                     (let [closest (find-closest qt shape radius)]
+                       (if closest
+                         (let [joined (lines/join-polygons shape closest)]
+                           (if (and closest joined (seq (:points joined)))
+                             (-> qt
+                                 (g/delete-point (g/centroid shape))
+                                 (g/delete-point (g/centroid closest))
+                                 (g/add-point (g/centroid joined) (with-meta joined (dissoc (meta shape) :combine))))
+                             (do (println [:skipping joined :<- shape closest])
+                                 qt)))
+                         (do (println [:no-closest shape closest])
+                             qt))))
+                   quadtree
+                   (filter (comp :combine meta) grid))]
+    (spatialtree/select-with-shape qt region)))
 
 (defn landscape [region]
   (let [grid (make-grid 16 12)
@@ -112,22 +131,24 @@
         radius (let [x (first grid)]
                  (* 1.2 (max (g/width x) (g/height x))))
         closest-links
-        (mapcat (fn [shape]
-                  [(gc/circle (g/centroid shape) 1.0)
-                   (gl/line2 (g/centroid shape)
-                             (g/centroid (find-closest quadtree shape radius)))])
-                (filter (comp :combine meta) separated-grid))]
+        (vec (mapcat (fn [shape]
+                       (if-let [closest (find-closest quadtree shape radius)]
+                         [(gc/circle (g/centroid shape) 1.0)
+                          (gl/line2 (g/centroid shape)
+                                    (g/centroid closest))]
+                         [(gc/circle (g/centroid shape) 3.0)]))
+                     (filter (comp :combine meta) separated-grid)))
+
+        joined-grid (vec (join-grid region quadtree separated-grid radius))]
     ;; FIXME: missing react key error?
-    (concat (for [shape separated-grid
-                  :let [cell (if (:combine (meta shape))
-                               (vary-meta shape dissoc :combine :zone)
-                               shape)]]
-              (vary-meta cell assoc
-                         :on-click #(debug-info cell)))
-            region
-            roads
-            (svg/group {:stroke "black"} closest-links)
-            )))
+    [(svg/group {:stroke "black"}
+                (for [shape joined-grid
+                      :let [cell (if (:combine (meta shape))
+                                   (vary-meta shape dissoc :combine :zone)
+                                   shape)]]
+                  (vary-meta cell assoc :on-click #(debug-info cell))))
+     (svg/group {:stroke "red"} (apply list roads))
+     (svg/group {:stroke "black"} (apply list closest-links))]))
 
 (defn scene []
   (csvg/svg {:width width
