@@ -130,6 +130,9 @@
                          (replace-point qt shape
                                         (mark-error shape [:no-closest])))))
                    quadtree
+                   ;; this is fishy could have already removed this shape, and
+                   ;; not double checked. Maybe need to first find shape in tree
+                   ;; & then find closest?
                    (filter (comp :combine meta) grid))]
     (spatialtree/select-with-shape qt region)))
 
