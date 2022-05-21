@@ -8,7 +8,6 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -43,7 +42,7 @@
                       poly (gp/polygon2 (chaikin/chaikin ratio true iters points))
                       centroid-noise (dr/noise-at-point (tm/* seed 1.5) 0.005 (g/centroid poly))]
                   (vary-meta poly assoc :fill
-                             (color/css-hsl (+ 0.075 (* 0.25 centroid-noise)) 0.4 0.75))))))))
+                             (csvg/hsl (+ 0.075 (* 0.25 centroid-noise)) 0.4 0.75))))))))
 
 (defn scene []
   (csvg/svg {:width width

@@ -63,10 +63,3 @@
   (->> url
        url->colors
        (map hex->hsla)))
-
-(defn css-hsl
-  ([h s l] (css-hsl h s l 1.0))
-  ([h s l a]
-   (col/as-css (col/hsla h s l a))))
-
-(comment (css-hsl 0.5 0.8 0.4 0.6))

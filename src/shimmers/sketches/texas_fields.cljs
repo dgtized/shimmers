@@ -4,7 +4,6 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -78,7 +77,7 @@
               (if (some (fn [line] (g/intersect-line cell line)) roads)
                 (for [[i poly] (map-indexed vector (decompose cell roads))]
                   (with-meta poly
-                    {:fill (color/css-hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
+                    {:fill (csvg/hsl (mod (* i tm/PHI) 1.0) 0.5 0.5 0.3)
                      :zone (zone-id poly)
                      :combine (< (g/area poly) (* 1.0 (g/area cell)))}))
                 [(with-meta cell {:zone (zone-id cell)})]))

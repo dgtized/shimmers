@@ -1,6 +1,7 @@
 (ns shimmers.common.svg
   (:require
    [clojure.string :as str]
+   [thi.ng.color.core :as col]
    [thi.ng.geom.svg.adapter :as adapt]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.math.core :as tm]
@@ -62,3 +63,10 @@
                         :T ["T" svg/*fmt-vec* " "]
                         :t ["t" svg/*fmt-vec* " "])]
      (svg/path segments attribs))))
+
+(defn hsl
+  ([h s l] (hsl h s l 1.0))
+  ([h s l a]
+   (col/as-css (col/hsla h s l a))))
+
+(comment (hsl 0.5 0.8 0.4 0.6))
