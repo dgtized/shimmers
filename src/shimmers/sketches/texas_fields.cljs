@@ -169,7 +169,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (apply list (landscape (rect/rect 0 0 width height)))))
+            (landscape (rect/rect 0 0 width height))))
 
 (defn ui-controls []
   (let [debug @defo]

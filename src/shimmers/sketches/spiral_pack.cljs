@@ -37,7 +37,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (apply list (shapes))))
+            (shapes)))
 
 (sketch/definition spiral-pack
   {:created-at "2022-03-13"

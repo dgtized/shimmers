@@ -132,7 +132,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 2.0}
-            (apply list (shapes (:mode @ui-state)))))
+            (shapes (:mode @ui-state))))
 
 ;; TODO: embed this in the url somehow?
 (defn ui-controls []

@@ -31,7 +31,7 @@
   (csvg/svg {:width width
              :height height
              :stroke "none"}
-            (apply list (shapes))))
+            (shapes)))
 
 (sketch/definition color-mapping
   {:created-at "2022-05-02"

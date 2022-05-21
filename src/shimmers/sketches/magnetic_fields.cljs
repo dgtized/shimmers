@@ -61,7 +61,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (apply list (shapes))))
+            (shapes)))
 
 (sketch/definition magnetic-fields
   {:created-at "2022-02-27"

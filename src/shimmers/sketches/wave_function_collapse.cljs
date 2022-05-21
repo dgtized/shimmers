@@ -102,7 +102,7 @@
              :height height
              :stroke "none"
              :fill "none"}
-            (apply list (grid->cells state grid highlight))))
+            (grid->cells state grid highlight)))
 
 (defn init-state []
   (let [directions wfc/directions-8

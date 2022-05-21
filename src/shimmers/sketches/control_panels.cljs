@@ -176,7 +176,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.75}
-            (apply list (shapes))))
+            (shapes)))
 
 (sketch/definition control-panels
   {:created-at "2022-02-07"
