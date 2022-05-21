@@ -37,11 +37,11 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (svg/group {:fill "black"}
-                       (map (fn [p] (gc/circle p 1.5)) points))
-            (when mst
-              (svg/group {:fill "none"}
-                         (circle-between-closest points)))))
+            [(svg/group {:fill "black"}
+                        (map (fn [p] (gc/circle p 1.5)) points))
+             (when mst
+               (svg/group {:fill "none"}
+                          (circle-between-closest points)))]))
 
 (defn page []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)

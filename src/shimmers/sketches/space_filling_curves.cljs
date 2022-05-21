@@ -125,7 +125,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes (by-name rule-name) depth curved)))
+            [(shapes (by-name rule-name) depth curved)]))
 
 (defonce ui-state
   (ctrl/state {:rule-system (:name (first rule-systems))

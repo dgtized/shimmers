@@ -151,8 +151,7 @@
                :stroke "black"
                :stroke-opacity 0.8
                :stroke-width 1.0}
-              (for [[i shape] (map-indexed vector shapes)]
-                (vary-meta shape assoc :key (str "l" i))))))
+              shapes)))
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
