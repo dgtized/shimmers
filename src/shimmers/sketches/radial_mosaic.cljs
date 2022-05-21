@@ -122,10 +122,9 @@
                               displacement)))))
        (svg/group {:transform (csvg/translate origin)}
                   (with-meta (gc/circle (gv/vec2) (first radius))
-                    {:fill (dr/rand-nth palette)}))
-       (csvg/svg {:width width :height height})))
+                    {:fill (dr/rand-nth palette)}))))
 
-(defn scenes []
+(defn mosaic-params []
   (->> [{:origin (r (dr/rand-nth [0.4 0.5 0.6]) 0.5)
          :radius (range 6 (int (* 0.5 height)))}
         {:origin (r (dr/rand-nth [0.33 0.66]) 0.5)
@@ -137,12 +136,15 @@
                ;; TODO: set arc0 to arc1 to be close to a far corner from
                ;; center? Also, Consider setting a single theta with a radial
                ;; width and displace more the closer the piece is to theta?
-               :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})
-       scene))
+               :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))
+
+(defn frame []
+  (csvg/svg {:width width :height height}
+            [(scene (mosaic-params))]))
 
 (defn page []
   [:div
-   [:div.canvas-frame [scenes]]
+   [:div.canvas-frame [frame]]
    [:p.center (view-sketch/generate :radial-mosaic)]
    #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
 
