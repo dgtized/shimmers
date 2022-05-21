@@ -1,4 +1,4 @@
-(ns tasks
+(ns bb.tasks
   (:require [babashka.fs :as fs]
             [babashka.tasks :as bt]
             [clojure.edn :as edn]
