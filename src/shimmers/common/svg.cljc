@@ -8,17 +8,21 @@
 
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"
-  [attribs body]
-  (into [:svg
-         (svg/svg-attribs
-          attribs
-          {:xmlns "http://www.w3.org/2000/svg"})]
-        (apply concat body)))
+  [attribs]
+  [:svg
+   (svg/svg-attribs
+    attribs
+    {:xmlns "http://www.w3.org/2000/svg"})])
 
-(defn svg [attribs & body]
-  (->> (svg-elem attribs body)
-       adapt/all-as-svg
-       adapt/inject-element-attribs))
+;; still not quite right, (svg {} [el el ...]) works, but
+;; and (svg {} [el el] [el]) work,
+;; but (svg {} el) and (svg {} el el) do not.
+(defn svg
+  [attribs & body]
+  (-> (svg-elem attribs)
+      (into (apply concat body))
+      adapt/all-as-svg
+      adapt/inject-element-attribs))
 
 (defn rotate [heading [x y]]
   (as-> [(tm/degrees heading) x y] o
