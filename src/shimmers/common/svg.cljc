@@ -1,11 +1,11 @@
 (ns shimmers.common.svg
   (:require
    [clojure.string :as str]
+   [shimmers.common.string :as scs]
    [thi.ng.color.core :as col]
    [thi.ng.geom.svg.adapter :as adapt]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.math.core :as tm]
-   [thi.ng.strf.core :as f]))
+   [thi.ng.math.core :as tm]))
 
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"
@@ -25,13 +25,34 @@
       adapt/all-as-svg
       adapt/inject-element-attribs))
 
-(defn rotate [heading [x y]]
-  (as-> [(tm/degrees heading) x y] o
-    (str/join "," o)
-    (str "rotate(" o ")")))
+(defn rotate
+  ([angle]
+   (scs/format "rotate(%.3f)" (tm/degrees angle)))
+  ([angle [x y]]
+   (scs/format "rotate(%.3f,%.3f,%.3f)"
+               (tm/degrees angle) x y)))
 
-(defn translate [[x y]]
-  (f/format ["translate(" (f/float 2) "," (f/float 2) ")"] x y))
+(defn transform [& operations]
+  (str/join " " operations))
+
+(defn translate
+  ([[x y]] (translate x y))
+  ([x y] (scs/format "translate(%.3f,%.3f)" x y)))
+
+(defn matrix [a b c d e f]
+  (scs/format "matrix(%.3f,%.3f,%.3f,%.3f,%.3f,%.3f)"
+              a b c d e f))
+
+(defn scale [scale-x scale-y]
+  (scs/format "scale(%.3f,%.3f)" scale-x scale-y))
+
+(defn skew-x [angle]
+  (scs/format "skewX(%.3f)" (tm/degrees angle)))
+
+(defn skew-y [angle]
+  (scs/format "skewY(%.3f)" (tm/degrees angle)))
+
+(comment (transform (translate 0.5 1.2) (skew-y 2)))
 
 ;; Comment is cribbed from https://github.com/thi-ng/geom/pull/79/files
 (defn path
