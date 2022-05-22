@@ -27,30 +27,30 @@
 
 (defn rotate
   ([angle]
-   (scs/format "rotate(%.3f)" (tm/degrees angle)))
+   (scs/cl-format "rotate(~0,3f)" (tm/degrees angle)))
   ([angle [x y]]
-   (scs/format "rotate(%.3f,%.3f,%.3f)"
-               (tm/degrees angle) x y)))
+   (scs/cl-format "rotate(~0,3f,~0,3f,~0,3f)"
+                  (tm/degrees angle) x y)))
 
 (defn transform [& operations]
   (str/join " " operations))
 
 (defn translate
   ([[x y]] (translate x y))
-  ([x y] (scs/format "translate(%.3f,%.3f)" x y)))
+  ([x y] (scs/cl-format "translate(~0,3f,~0,3f)" x y)))
 
 (defn matrix [a b c d e f]
-  (scs/format "matrix(%.3f,%.3f,%.3f,%.3f,%.3f,%.3f)"
-              a b c d e f))
+  (scs/cl-format "matrix(~0,3f,~0,3f,~0,3f,~0,3f,~0,3f,~0,3f)"
+                 a b c d e f))
 
 (defn scale [scale-x scale-y]
-  (scs/format "scale(%.3f,%.3f)" scale-x scale-y))
+  (scs/cl-format "scale(~0,3f,~0,3f)" scale-x scale-y))
 
 (defn skew-x [angle]
-  (scs/format "skewX(%.3f)" (tm/degrees angle)))
+  (scs/cl-format "skewX(~0,3f)" (tm/degrees angle)))
 
 (defn skew-y [angle]
-  (scs/format "skewY(%.3f)" (tm/degrees angle)))
+  (scs/cl-format "skewY(~0,3f)" (tm/degrees angle)))
 
 (comment (transform (translate 0.5 1.2) (skew-y 2)))
 
