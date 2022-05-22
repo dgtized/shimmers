@@ -7,7 +7,7 @@
 (defn display [host value]
   (let [rate (cond (= value "") ""
                    (= value 0) ""
-                   :else (scs/format "%04.1f fps" value))]
+                   :else (scs/cl-format "~1,2$ fps" value))]
     (when-let [node (dom/getElement host)]
       (dom/setTextContent node rate))))
 

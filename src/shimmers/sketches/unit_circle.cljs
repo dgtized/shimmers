@@ -41,7 +41,7 @@
   (q/text-size 16)
   (q/fill 0)
   (let [theta (g/heading q)
-        num (scs/format "%.1f" theta)
+        num (scs/cl-format "~1$" theta)
         [x0 y0] (-> q
                     (g/scale 1.1)
                     (g/translate (gv/vec2 (* -0.5 (q/text-width num)) 6)))]
@@ -82,7 +82,7 @@
 
     (let [[mx my] mouse
           [tx ty] (tm/- (v/polar (* radius 1.5) 0.8) (gv/vec2 8 0))]
-      (q/text (scs/format "%.2f [%.2f %.2f]" (g/heading mouse) mx my)
+      (q/text (scs/cl-format "~1,1$ [~1,3$ ~1,3$]" (g/heading mouse) mx my)
               tx ty)
       (q/stroke 0 0.5 0.5)
       (q/stroke-weight 1.0)
