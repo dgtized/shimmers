@@ -15,5 +15,6 @@
      (apply gstring/format fmt args)))
 
 
+;; https://gigamonkeys.com/book/a-few-format-recipes.html
 (defn cl-format [fmt & args]
   (apply pp/cl-format nil fmt args))
