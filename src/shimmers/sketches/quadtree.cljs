@@ -8,6 +8,7 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -75,30 +76,6 @@
              (when (seq r) (lazy-select-quad isec? overlap? r)))))
        (when (seq r) (lazy-select-quad isec? overlap? r))))))
 
-
-;; translated from http://bl.ocks.org/patricksurry/6478178
-(defn nearest-neighbor
-  ([quadtree point]
-   (:p (nearest-neighbor quadtree point
-                         (let [{[w h] :size} (g/bounds quadtree)]
-                           {:d (+ w h) :p nil}))))
-  ([quadtree point {:keys [d] :as best}]
-   (if-not quadtree
-     best
-     (let [[x y] point
-           {[x0 y0] :p [nw nh] :size} (g/bounds quadtree)]
-       (if (or (< x (- x0 d)) (> x (+ x0 nw d))
-               (< y (- y0 d)) (> y (+ y0 nh d)))
-         best
-         (let [best' (or (when-let [node-point (g/get-point quadtree)]
-                           (let [d' (g/dist point node-point)]
-                             (when (< d' d)
-                               {:d d' :p node-point})))
-                         best)]
-           (reduce (fn [better child]
-                     (nearest-neighbor child point better))
-                   best' (spatialtree/get-children quadtree))))))))
-
 (defonce ui-state (ctrl/state {:isec-mode :circles-overlap}))
 
 (def intersect-modes {:intersect-shape g/intersect-shape
@@ -129,7 +106,7 @@
             (q/stroke 0 0 0)
             (doseq [r path-bounds]
               (cq/rectangle r))))
-        (let [neighbor (nearest-neighbor tree mouse)]
+        (let [neighbor (saq/nearest-neighbor tree mouse)]
           (q/stroke 0.75 0.8 0.5)
           (q/line mouse neighbor)
           (swap! defo assoc :matches
