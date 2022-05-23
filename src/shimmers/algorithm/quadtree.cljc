@@ -42,20 +42,24 @@
           (range (count size)))))
 
 ;; translated from http://bl.ocks.org/patricksurry/6478178
-(defn nearest-neighbor
+(defn nearest-neighbor-node
+  "Given a `spatialtree` and a `point`, return the nearest leaf node to `point`.
+
+  Use `g/get-point` and `g/get-point-data` to fetch neighbor from the node."
   ([tree point]
    (let [max-dist (apply + (:size (g/bounds tree)))]
-     (:p (nearest-neighbor tree point {:d max-dist :p nil}))))
-  ([tree point {:keys [d] :as best}]
-   (if (further-than-best? tree point d)
+     (:node (nearest-neighbor-node tree point
+                                   {:distance max-dist :node tree}))))
+  ([tree point {:keys [distance] :as best}]
+   (if (further-than-best? tree point distance)
      best
      (let [best' (or (when-let [node-point (g/get-point tree)]
                        (let [d' (g/dist point node-point)]
-                         (when (< d' d)
-                           {:d d' :p node-point})))
+                         (when (< d' distance)
+                           {:distance d' :node tree})))
                      best)]
        (reduce (fn [better child]
                  (if child
-                   (nearest-neighbor child point better)
+                   (nearest-neighbor-node child point better)
                    better))
                best' (spatialtree/get-children tree))))))

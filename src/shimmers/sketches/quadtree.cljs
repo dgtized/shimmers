@@ -78,11 +78,13 @@
             (q/stroke 0 0 0)
             (doseq [r path-bounds]
               (cq/rectangle r))))
-        (let [neighbor (saq/nearest-neighbor tree mouse)]
-          (q/stroke 0.75 0.8 0.5)
-          (q/line mouse neighbor)
-          (swap! defo assoc :matches
-                 {:neighbor neighbor}))))))
+        (let [neighbor (saq/nearest-neighbor-node tree mouse)]
+          (when-let [p (g/get-point neighbor)]
+            (q/stroke 0.75 0.8 0.5)
+            (q/line mouse p)
+            (swap! defo assoc :matches
+                   {:p p
+                    :data (g/get-point-data neighbor)})))))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
   (reset! defo {:matches []})
