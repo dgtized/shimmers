@@ -2,6 +2,34 @@
   (:require [thi.ng.geom.spatialtree :as spatialtree]
             [thi.ng.geom.core :as g]))
 
+;; Problems:
+;;
+;; 1. Varying the size of the circles to lookup exposes that isec? is checking the
+;; bounds of the quad, but circles can cross outside of a quad.
+;; 2. Wholly contained cursor or cursor containing a circle are not showing as hits
+;; 3. Really what I want is k-nearest neighboring circles?
+;; 4. What happens if point data is heterogeneous (rects & circles)
+;; 5. Performance?
+
+;; Again, re-read https://paytonturnage.com/writing/circle-packing-quad-trees/
+
+(defn lazy-select-quad
+  "This is very similar to spatialtree/lazy-select-with but overlap? receives the
+  quadtree and not the underlying point so as to allow overlap comparison with
+  the point data. Not clear if actually performant yet though?"
+  [isec? overlap? queue]
+  (lazy-seq
+   (let [[q & r] queue]
+     (if (and q (isec? (g/bounds q)))
+       (let [children (filter identity (spatialtree/get-children q))
+             p (g/get-point q)]
+         (if (seq children)
+           (lazy-select-quad isec? overlap? (concat children r))
+           (if (and p (overlap? q))
+             (cons (g/get-point-data q) (lazy-select-quad isec? overlap? r))
+             (when (seq r) (lazy-select-quad isec? overlap? r)))))
+       (when (seq r) (lazy-select-quad isec? overlap? r))))))
+
 ;; translated from http://bl.ocks.org/patricksurry/6478178
 (defn nearest-neighbor
   ([quadtree point]
