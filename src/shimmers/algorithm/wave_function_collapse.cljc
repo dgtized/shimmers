@@ -9,8 +9,11 @@
    #?(:clj [clojure.data.priority-map :as priority]
       :cljs [tailrecursion.priority-map :as priority])))
 
+;; https://www.boristhebrave.com/2020/04/13/wave-function-collapse-explained/
 ;; https://robertheaton.com/2018/12/17/wavefunction-collapse-algorithm/
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
+;; https://adam-james-v.github.io/oatmilk/index.html#/notebooks/wave-collapse.org.md
+;; https://github.com/maacl/wfclj
 
 (defn str->matrix [s]
   (->> s
