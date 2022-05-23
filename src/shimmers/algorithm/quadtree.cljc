@@ -92,7 +92,16 @@
          " :children " (pr-str children)
          " :p " (pr-str point)
          " :d " (pr-str data)
-         "}")))
+         "}"))
+
+  #?@(:cljs [IPrintWithWriter
+             (-pr-writer [o writer _]
+                         (-write writer (str "#shimmers.algorithm.quadtree.MutableCircleTreeNode"
+                                             "{:bounds " (pr-str (g/bounds o))
+                                             " :children " (pr-str children)
+                                             " :p " (pr-str point)
+                                             " :d " (pr-str data)
+                                             "}")))]))
 
 (defn circletree
   "Create a new circletree root node with the given XY position & dimensions."
@@ -106,7 +115,11 @@
   ([x y w h]
    (MutableCircleTreeNode. x y (* 0.5 w) (* 0.5 h) nil nil nil nil)))
 
-(comment (g/add-point (circletree 0 0 10 10) (gv/vec2 5 5) (gc/circle 5 5 2)))
+(comment
+  (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 4)]
+                  (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
+                          (circletree 0 0 10 10)))]
+    (spatialtree/path-for-point tree (gv/vec2 3 3))))
 
 ;; Helpers
 (defn add-point
