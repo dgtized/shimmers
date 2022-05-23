@@ -4,8 +4,10 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -24,14 +26,13 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.99)]
     (build-tree {:bounds bounds
-                 :points (repeatedly 512 #(gc/circle (g/random-point-inside bounds)
+                 :points (repeatedly 256 #(gc/circle (g/random-point-inside bounds)
                                                      (dr/random-int 2 12)))
                  :tree (spatialtree/quadtree bounds)
                  :mouse (gv/vec2)})))
 
 (defn update-state [state]
-  (let [mp (cq/mouse-position)]
-    (assoc state :mouse mp)))
+  (assoc state :mouse (cq/mouse-position)))
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
@@ -74,33 +75,40 @@
              (when (seq r) (lazy-select-quad isec? overlap? r)))))
        (when (seq r) (lazy-select-quad isec? overlap? r))))))
 
+(defonce ui-state (ctrl/state {:isec-mode :circles-overlap}))
+
+(def intersect-modes {:intersect-shape g/intersect-shape
+                      :circles-overlap geometry/circles-overlap?})
+
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
-  (let [cursor (gc/circle mouse 5)]
+  (let [overlap-isec (get intersect-modes (get @ui-state :isec-mode))
+        cursor (gc/circle mouse 5)]
     (q/stroke 0.0 0.5 0.5)
     (doseq [circle points]
       (cq/circle circle))
     (q/stroke 0.6 0.5 0.5)
     (cq/circle cursor)
-    (when-let [{:keys [p] :as selected}
+    (when-let [matches
                (->> [tree]
                     (lazy-select-quad
                      #(g/intersect-shape cursor %)
-                     #(g/intersect-shape cursor (g/get-point-data %)))
-                    first)]
-      (q/stroke 0.5 0.8 0.5)
-      (cq/circle selected)
-      (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
-        (swap! defo assoc
-               :selected selected
-               :path path-bounds
-               ;; FIXME: this is not quite right because it's only selected if cursor contains the point
-               :intersection (g/intersect-shape cursor selected))
-        (q/stroke 0 0 0)
-        (doseq [r path-bounds]
-          (cq/rectangle r))))))
+                     #(overlap-isec cursor (g/get-point-data %)))
+                    seq)]
+      (doseq [{:keys [p] :as selected} matches]
+        (q/stroke 0.5 0.8 0.5)
+        (cq/circle selected)
+        (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
+          (swap! defo update :matches conj
+                 {:selected selected
+                  :path path-bounds
+                  ;; FIXME: this is not quite right because it's only selected if cursor contains the point
+                  :intersection (g/intersect-shape cursor selected)})
+          (q/stroke 0 0 0)
+          (doseq [r path-bounds]
+            (cq/rectangle r)))))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
-  (reset! defo {})
+  (reset! defo {:matches []})
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.66)
@@ -110,11 +118,18 @@
     (draw-path-to-selection state)
     (draw-complete-tree state)))
 
+(defn ui-controls []
+  [:div.flexcols
+   [:div
+    (ctrl/change-mode ui-state (keys intersect-modes)
+                      {:mode-key :isec-mode})]
+   [:div (debug/display defo)]])
+
 (sketch/defquil quadtree
   :created-at "2021-10-10"
   :tags #{:datastructures}
   :size [800 600]
-  :on-mount #(debug/mount defo)
+  :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
   :draw draw
