@@ -16,13 +16,15 @@
         ^:unsynchronized-mutable children
         ^:unsynchronized-mutable point
         ^:unsynchronized-mutable data
-        ^:unsynchronized-mutable bounds]
+        ^:unsynchronized-mutable bounds
+        ^:unsynchronized-mutable largest-contained-circle]
        :cljs
        [x y w h
         ^:mutable children
         ^:mutable point
         ^:mutable data
-        ^:mutable bounds])
+        ^:mutable bounds
+        ^:mutable largest-contained-circle])
 
   g/ISpatialTree
   (add-point [_ p d]
@@ -35,12 +37,13 @@
 
   g/IClear
   (clear*
-    [_] (MutableCircleTreeNode. x y w h nil nil nil bounds))
+    [_] (MutableCircleTreeNode. x y w h nil nil nil bounds nil))
   (clear!
     [_]
     (set! children nil)
-    (set! children point)
-    (set! children data)
+    (set! point nil)
+    (set! data nil)
+    (set! largest-contained-circle nil)
     _)
 
   spatialtree/PTreeOps
@@ -60,7 +63,11 @@
           (let [cx (if (> (bit-and idx 1) 0) (+ x w) x)
                 cy (if (> (bit-and idx 2) 0) (+ y h) y)
                 c  (MutableCircleTreeNode.
-                    cx cy (* 0.5 w) (* 0.5 h) nil (when add? p) (when add? d) nil)]
+                    cx cy (* 0.5 w) (* 0.5 h)
+                    nil
+                    (when add? p) (when add? d)
+                    nil
+                    nil)]
             (spatialtree/set-child _ idx c)
             c))))
   (split-node
@@ -68,11 +75,16 @@
     (set! children [nil nil nil nil])
     (set! point nil)
     (set! data nil)
+    (set! largest-contained-circle nil)
     _)
   (get-children [_] children)
   (set-child [_ i c] (set! children (assoc children i c)) _)
   (set-children [_ c] (set! children c) _)
-  (set-point [_ p d] (set! point p) (set! data d) _)
+  (set-point [_ p d]
+    (set! point p)
+    (set! data d)
+    (set! largest-contained-circle d)
+    _)
 
   g/IBounds
   (bounds
@@ -92,6 +104,7 @@
          " :children " (pr-str children)
          " :p " (pr-str point)
          " :d " (pr-str data)
+         " :largest-contained-circle " (pr-str largest-contained-circle)
          "}"))
 
   #?@(:cljs [IPrintWithWriter
@@ -101,6 +114,7 @@
                                              " :children " (pr-str children)
                                              " :p " (pr-str point)
                                              " :d " (pr-str data)
+                                             " :largest-contained-circle " (pr-str largest-contained-circle)
                                              "}")))]))
 
 (defn circletree
@@ -113,7 +127,7 @@
   ([x y size]
    (circletree x y size size))
   ([x y w h]
-   (MutableCircleTreeNode. x y (* 0.5 w) (* 0.5 h) nil nil nil nil)))
+   (MutableCircleTreeNode. x y (* 0.5 w) (* 0.5 h) nil nil nil nil nil)))
 
 (comment
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 4)]
