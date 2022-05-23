@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.quadtree
   (:require
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.spatialtree :as spatialtree]
    #?(:clj [thi.ng.geom.types]
@@ -104,6 +105,8 @@
    (circletree x y size size))
   ([x y w h]
    (MutableCircleTreeNode. x y (* 0.5 w) (* 0.5 h) nil nil nil nil)))
+
+(comment (g/add-point (circletree 0 0 10 10) (gv/vec2 5 5) (gc/circle 5 5 2)))
 
 ;; Helpers
 (defn add-point
