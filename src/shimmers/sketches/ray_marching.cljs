@@ -132,6 +132,7 @@
     (cq/draw-shape (g/vertices shape))))
 
 (defn draw-state [{:keys [theta mouse]}]
+  (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/stroke 0.0)
   (q/stroke-weight 0.75)
@@ -165,7 +166,10 @@
         (q/background 0.8)
         (q/stroke-weight 0.8)
         (q/fill 1.0)
-        (cq/draw-shape vertices)))
+        (cq/draw-shape vertices)
+        (q/no-stroke)
+        (q/fill 0.155 0.6 0.6 1.0)
+        (cq/circle mouse 3.0)))
 
     (when visible-shapes
       (q/stroke 0.0)
