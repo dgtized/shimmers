@@ -96,15 +96,19 @@
          " :largest-contained-circle " (pr-str largest-contained-circle)
          "}"))
 
-  #?@(:cljs [IPrintWithWriter
-             (-pr-writer [o writer _]
-                         (-write writer (str "#shimmers.algorithm.quadtree.MutableCircleTreeNode"
-                                             "{:rect " (pr-str rect)
-                                             " :children " (pr-str children)
-                                             " :p " (pr-str point)
-                                             " :d " (pr-str data)
-                                             " :largest-contained-circle " (pr-str largest-contained-circle)
-                                             "}")))]))
+  #?@(:cljs
+      [IPrintWithWriter
+       (-pr-writer
+        [_ writer opts]
+        (pr-seq-writer
+         [(symbol "#shimmers.algorithm.quadtree.MutableCircleTreeNode")
+          {:rect rect
+           :children children
+           :p point
+           :d data
+           :largest-contained-circle largest-contained-circle}]
+         writer
+         opts))]))
 
 (defn circletree
   "Create a new circletree root node with the given XY position & dimensions."
@@ -119,7 +123,7 @@
    (MutableCircleTreeNode. (rect/rect x y w h) nil nil nil nil)))
 
 (comment
-  (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 4)]
+  (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 5)]
                   (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
                           (circletree 0 0 10 10)))]
     (spatialtree/select-with-shape tree (rect/rect 10))))
