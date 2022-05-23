@@ -31,12 +31,16 @@
              (when (seq r) (lazy-select-quad isec? overlap? r)))))
        (when (seq r) (lazy-select-quad isec? overlap? r))))))
 
-(defn- further-than-best? [tree point d]
+(defn- further-than-best?
+  [tree point d]
   (if tree
-    (let [[x y] point
-          {[x0 y0] :p [nw nh] :size} (g/bounds tree)]
-      (or (< x (- x0 d)) (> x (+ x0 nw d))
-          (< y (- y0 d)) (> y (+ y0 nh d))))
+    (let [{:keys [p size]} (g/bounds tree)]
+      ;; loop over each axis so should work for vec2 and vec3
+      (some (fn [axis]
+              (let [v (nth point axis)]
+                (or (< v (- (nth p axis) d))
+                    (> v (+ (nth p axis) (nth size axis) d)))))
+            (range (count size))))
     true))
 
 ;; translated from http://bl.ocks.org/patricksurry/6478178
@@ -44,14 +48,14 @@
   ([tree point]
    (let [max-dist (apply + (:size (g/bounds tree)))]
      (:p (nearest-neighbor tree point {:d max-dist :p nil}))))
-  ([quadtree point {:keys [d] :as best}]
-   (if (further-than-best? quadtree point d)
+  ([tree point {:keys [d] :as best}]
+   (if (further-than-best? tree point d)
      best
-     (let [best' (or (when-let [node-point (g/get-point quadtree)]
+     (let [best' (or (when-let [node-point (g/get-point tree)]
                        (let [d' (g/dist point node-point)]
                          (when (< d' d)
                            {:d d' :p node-point})))
                      best)]
        (reduce (fn [better child]
                  (nearest-neighbor child point better))
-               best' (spatialtree/get-children quadtree))))))
+               best' (spatialtree/get-children tree))))))
