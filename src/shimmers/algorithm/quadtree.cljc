@@ -3,6 +3,21 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.spatialtree :as spatialtree]))
 
+(defn add-point
+  "Safer add-point that throws an out of bounds exception instead of returning a nil tree"
+  [tree point data]
+  (or (g/add-point tree point data)
+      (throw (ex-info "Unable to add-point to tree, possibly out of bounds?"
+                      {:bounds (g/bounds tree)
+                       :point point
+                       :data data}))))
+
+(defn replace-point
+  "Replace a point in tree, recovering if point is missing, and using safer add-point."
+  [tree point data]
+  (let [deleted (g/delete-point tree point)]
+    (add-point (or deleted tree) point data)))
+
 ;; Problems:
 ;;
 ;; 1. Varying the size of the circles to lookup exposes that isec? is checking the

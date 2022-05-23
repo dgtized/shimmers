@@ -3,6 +3,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.core :as sm]
@@ -71,8 +72,8 @@
       circle
       nil)))
 
-(defn spatial-replace [tree {:keys [p] :as circle}]
-  (g/add-point (g/delete-point tree p) p circle))
+(defn spatial-replace [tree {p :p :as c}]
+  (saq/replace-point tree p c))
 
 (defn grow [quadtree boundary search-radius scale circle]
   (if-not (:done circle)

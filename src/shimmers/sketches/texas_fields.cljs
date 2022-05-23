@@ -1,6 +1,7 @@
 (ns shimmers.sketches.texas-fields
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -86,15 +87,16 @@
 (defn build-tree [grid]
   (reduce (fn [qt cell]
             (if cell
-              (g/add-point qt (g/centroid cell) cell)
+              (saq/add-point qt (g/centroid cell) cell)
               qt))
           (spatialtree/quadtree 0 0 width height)
           grid))
 
-(defn replace-point [qt shape shape']
+(defn replace-shape [qt shape shape']
   (-> qt
       (g/delete-point (g/centroid shape))
-      (g/add-point (g/centroid shape') shape')))
+      (or qt)
+      (saq/add-point (g/centroid shape') shape')))
 
 (defn mark-error [shape error]
   (vary-meta shape assoc
@@ -123,10 +125,10 @@
                          (if-let [joined (lines/join-polygons shape closest)]
                            (-> qt
                                (g/delete-point (g/centroid closest))
-                               (replace-point shape (with-meta joined (dissoc (meta shape) :combine))))
-                           (replace-point qt shape
+                               (replace-shape shape (with-meta joined (dissoc (meta shape) :combine))))
+                           (replace-shape qt shape
                                           (mark-error shape [:unable-to-join closest])))
-                         (replace-point qt shape
+                         (replace-shape qt shape
                                         (mark-error shape [:no-closest])))))
                    quadtree
                    ;; this is fishy could have already removed this shape, and
