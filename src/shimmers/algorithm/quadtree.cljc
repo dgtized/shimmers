@@ -32,10 +32,12 @@
        (when (seq r) (lazy-select-quad isec? overlap? r))))))
 
 (defn- further-than-best? [tree point d]
-  (let [[x y] point
-        {[x0 y0] :p [nw nh] :size} (g/bounds tree)]
-    (or (< x (- x0 d)) (> x (+ x0 nw d))
-        (< y (- y0 d)) (> y (+ y0 nh d)))))
+  (if tree
+    (let [[x y] point
+          {[x0 y0] :p [nw nh] :size} (g/bounds tree)]
+      (or (< x (- x0 d)) (> x (+ x0 nw d))
+          (< y (- y0 d)) (> y (+ y0 nh d))))
+    true))
 
 ;; translated from http://bl.ocks.org/patricksurry/6478178
 (defn nearest-neighbor
@@ -43,7 +45,7 @@
    (let [max-dist (apply + (:size (g/bounds tree)))]
      (:p (nearest-neighbor tree point {:d max-dist :p nil}))))
   ([quadtree point {:keys [d] :as best}]
-   (if (or (not quadtree) (further-than-best? quadtree point d))
+   (if (further-than-best? quadtree point d)
      best
      (let [best' (or (when-let [node-point (g/get-point quadtree)]
                        (let [d' (g/dist point node-point)]
