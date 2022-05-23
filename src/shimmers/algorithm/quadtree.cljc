@@ -2,34 +2,27 @@
   (:require
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.spatialtree :as spatialtree]
-   #?(:clj [thi.ng.geom.types]
-      :cljs [thi.ng.geom.types :refer [Rect2]])
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.rect :as rect])
-  #?(:clj
-     (:import [thi.ng.geom.types Rect2])))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.spatialtree :as spatialtree]))
 
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/
 (deftype MutableCircleTreeNode
     #?(:clj
-       [^double x ^double y ^double w ^double h
+       [^:unsynchronized-mutable rect
         ^:unsynchronized-mutable children
         ^:unsynchronized-mutable point
         ^:unsynchronized-mutable data
-        ^:unsynchronized-mutable bounds
         ^:unsynchronized-mutable largest-contained-circle]
        :cljs
-       [x y w h
+       [^:mutable rect
         ^:mutable children
         ^:mutable point
         ^:mutable data
-        ^:mutable bounds
         ^:mutable largest-contained-circle])
 
   g/ISpatialTree
   (add-point [_ p d]
-    (when (g/contains-point? (g/bounds _) p)
+    (when (g/contains-point? rect p)
       (spatialtree/add-point* _ p d)
       _))
   (delete-point [_ p] (spatialtree/delete-point* _ p))
@@ -38,7 +31,7 @@
 
   g/IClear
   (clear*
-    [_] (MutableCircleTreeNode. x y w h nil nil nil bounds nil))
+    [_] (MutableCircleTreeNode. rect nil nil nil nil))
   (clear!
     [_]
     (set! children nil)
@@ -50,9 +43,10 @@
   spatialtree/PTreeOps
   (child-index-for-point
     [_ [px py]]
-    (if (< px (+ x w))
-      (if (< py (+ y h)) 0 2)
-      (if (< py (+ y h)) 1 3)))
+    (let [{[x y] :p [w h] :size} rect]
+      (if (< px (+ x (* 0.5 w)))
+        (if (< py (+ y (* 0.5 h))) 0 2)
+        (if (< py (+ y (* 0.5 h))) 1 3))))
   (child-for-point
     [_ p]
     (when children
@@ -61,13 +55,13 @@
     [_ p d add?]
     (let [idx (spatialtree/child-index-for-point _ p)]
       (or (children idx)
-          (let [cx (if (> (bit-and idx 1) 0) (+ x w) x)
-                cy (if (> (bit-and idx 2) 0) (+ y h) y)
+          (let [{[x y] :p [w h] :size} rect
+                cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
+                cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
                 c  (MutableCircleTreeNode.
-                    cx cy (* 0.5 w) (* 0.5 h)
+                    (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                     nil
                     (when add? p) (when add? d)
-                    nil
                     nil)]
             (spatialtree/set-child _ idx c)
             c))))
@@ -88,20 +82,14 @@
     _)
 
   g/IBounds
-  (bounds
-    [_]
-    (if bounds
-      bounds
-      (set! bounds
-            (Rect2.
-             (gv/vec2 x y) (gv/vec2 (* w 2.0) (* h 2.0))))))
+  (bounds [_] rect)
 
   ;; not working in Javascript?
   Object
   (toString
     [_]
     (str "#shimmers.algorithm.quadtree.MutableCircleTreeNode"
-         "{:bounds " (pr-str (g/bounds _))
+         "{:rect " (pr-str rect)
          " :children " (pr-str children)
          " :p " (pr-str point)
          " :d " (pr-str data)
@@ -111,7 +99,7 @@
   #?@(:cljs [IPrintWithWriter
              (-pr-writer [o writer _]
                          (-write writer (str "#shimmers.algorithm.quadtree.MutableCircleTreeNode"
-                                             "{:bounds " (pr-str (g/bounds o))
+                                             "{:rect " (pr-str rect)
                                              " :children " (pr-str children)
                                              " :p " (pr-str point)
                                              " :d " (pr-str data)
@@ -128,7 +116,7 @@
   ([x y size]
    (circletree x y size size))
   ([x y w h]
-   (MutableCircleTreeNode. x y (* 0.5 w) (* 0.5 h) nil nil nil nil nil)))
+   (MutableCircleTreeNode. (rect/rect x y w h) nil nil nil nil)))
 
 (comment
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 4)]
