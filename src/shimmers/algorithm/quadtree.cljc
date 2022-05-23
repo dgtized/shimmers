@@ -33,15 +33,13 @@
 
 (defn- further-than-best?
   [tree point d]
-  (if tree
-    (let [{:keys [p size]} (g/bounds tree)]
-      ;; loop over each axis so should work for vec2 and vec3
-      (some (fn [axis]
-              (let [v (nth point axis)]
-                (or (< v (- (nth p axis) d))
-                    (> v (+ (nth p axis) (nth size axis) d)))))
-            (range (count size))))
-    true))
+  (let [{:keys [p size]} (g/bounds tree)]
+    ;; loop over each axis so should work for vec2 and vec3
+    (some (fn [axis]
+            (let [v (nth point axis)]
+              (or (< v (- (nth p axis) d))
+                  (> v (+ (nth p axis) (nth size axis) d)))))
+          (range (count size)))))
 
 ;; translated from http://bl.ocks.org/patricksurry/6478178
 (defn nearest-neighbor
@@ -57,5 +55,7 @@
                            {:d d' :p node-point})))
                      best)]
        (reduce (fn [better child]
-                 (nearest-neighbor child point better))
+                 (if child
+                   (nearest-neighbor child point better)
+                   better))
                best' (spatialtree/get-children tree))))))
