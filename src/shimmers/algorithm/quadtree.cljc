@@ -5,7 +5,8 @@
    [thi.ng.geom.spatialtree :as spatialtree]
    #?(:clj [thi.ng.geom.types]
       :cljs [thi.ng.geom.types :refer [Rect2]])
-   [thi.ng.geom.vector :as gv])
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.geom.rect :as rect])
   #?(:clj
      (:import [thi.ng.geom.types Rect2])))
 
@@ -133,7 +134,7 @@
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 4)]
                   (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
                           (circletree 0 0 10 10)))]
-    (spatialtree/path-for-point tree (gv/vec2 3 3))))
+    (spatialtree/select-with-shape tree (rect/rect 10))))
 
 ;; Helpers
 (defn add-point
