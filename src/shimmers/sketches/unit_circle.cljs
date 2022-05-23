@@ -52,8 +52,8 @@
         (->> chain :segments (map (juxt :base :angle))
              (mapv (fn [[p a]]
                      {:p (mapv int p)
-                      :rθ (tm/roundto a 0.01)
-                      :θ (tm/roundto (g/heading p) 0.01)
+                      :rθ (debug/fixed-width a)
+                      :θ (debug/fixed-width (g/heading p))
                       :d (int (g/dist (gv/vec2) p))})))
         turns (for [[a b c] (partition 3 1 segments)]
                 (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
@@ -97,10 +97,10 @@
       (q/no-fill)
 
       (swap! defo assoc
-             :mouse {:p (mapv #(tm/roundto % 0.01) mouse)
-                     :heading (tm/roundto (g/heading mouse) 0.01)
-                     :atan2 (tm/roundto (poly-detect/atan2 mouse) 0.01)
-                     :small-angle (tm/roundto (poly-detect/small-angle-between mouse (gv/vec2 1 0)) 0.01)}
+             :mouse {:p mouse
+                     :heading (debug/fixed-width (g/heading mouse))
+                     :atan2 (debug/fixed-width (poly-detect/atan2 mouse))
+                     :small-angle (debug/fixed-width (poly-detect/small-angle-between mouse (gv/vec2 1 0)))}
              :axis {:cw (first axis-pts) :ccw (last axis-pts)}
              :chain (debug-chain chain)))))
 

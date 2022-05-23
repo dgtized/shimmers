@@ -7,8 +7,7 @@
         [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
         [thi.ng.geom.vector :refer [Vec2 Vec3]]]
        :clj [[thi.ng.geom.types]
-             [thi.ng.geom.vector]])
-   [thi.ng.math.core :as tm])
+             [thi.ng.geom.vector]]))
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]
                    [thi.ng.geom.vector Vec2 Vec3])))
 
@@ -18,6 +17,17 @@
 ;; TODO: worth including meta info?
 (defn untyped [s]
   (zipmap (keys s) (vals s)))
+
+;; See https://github.com/brandonbloom/fipp/issues/83 for symbol hack, basically
+;; it's forcing EdnPrinter to believe it's a symbol and not a float so it
+;; doesn't wrap it in a string.
+(defn fixed-width
+  "Format float `v` to 2 decimal places as long as it's not infinite."
+  [v]
+  (if (infinite? v)
+    v
+    (let [v' (.toFixed v 2)]
+      (symbol v'))))
 
 ;; Simplify IEdn output for pretty printing
 (extend-protocol IEdn
@@ -47,16 +57,11 @@
 
   Vec2
   (-edn [s]
-    (let [[x y] s]
-      (tagged-literal 'v2 [(tm/roundto x 0.01)
-                           (tm/roundto y 0.01)])))
+    (tagged-literal 'v2 (mapv fixed-width s)))
 
   Vec3
   (-edn [s]
-    (let [[x y z] s]
-      (tagged-literal 'v3 [(tm/roundto x 0.01)
-                           (tm/roundto y 0.01)
-                           (tm/roundto z 0.01)]))))
+    (tagged-literal 'v3 (mapv fixed-width s))))
 
 (defmacro time-it
   "Evaluates expr and stores it in debug `atom` at `key`. Returns the value of expr."
