@@ -5,6 +5,16 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.spatialtree :as spatialtree]))
 
+(defprotocol ILargestContainedCircle
+  (get-largest-contained-circle [t]))
+
+(defn largest-circle [rect circles]
+  (->> circles
+       (keep (fn [c]
+               (when (and c (g/contains-point? rect (:p c)))
+                 c)))
+       (apply max-key :r)))
+
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/
 (deftype MutableCircleTreeNode
     #?(:clj
@@ -58,11 +68,12 @@
           (let [{[x y] :p [w h] :size} rect
                 cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
                 cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
+                r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                 c  (MutableCircleTreeNode.
-                    (rect/rect cx cy (* 0.5 w) (* 0.5 h))
+                    r
                     nil
                     (when add? p) (when add? d)
-                    nil)]
+                    (if add? d (largest-circle r [d largest-contained-circle])))]
             (spatialtree/set-child _ idx c)
             c))))
   (split-node
@@ -70,16 +81,23 @@
     (set! children [nil nil nil nil])
     (set! point nil)
     (set! data nil)
-    (set! largest-contained-circle nil)
+    ;; split-node is called *before* make-child-for-point so don't override
+    ;; (set! largest-contained-circle nil)
     _)
   (get-children [_] children)
-  (set-child [_ i c] (set! children (assoc children i c)) _)
+  (set-child [_ i c]
+    (set! children (assoc children i c))
+    (set! largest-contained-circle (largest-circle rect (mapv get-largest-contained-circle (filter some? children))))
+    _)
   (set-children [_ c] (set! children c) _)
   (set-point [_ p d]
     (set! point p)
     (set! data d)
     (set! largest-contained-circle d)
     _)
+
+  ILargestContainedCircle
+  (get-largest-contained-circle [_] largest-contained-circle)
 
   g/IBounds
   (bounds [_] rect)

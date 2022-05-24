@@ -20,7 +20,7 @@
 (defn build-tree [{:keys [points] :as state}]
   (assoc state :tree
          (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
-                 (spatialtree/quadtree 0 0 (q/width) (q/height))
+                 (saq/circletree 0 0 (q/width) (q/height))
                  points)))
 
 (defn setup []
@@ -29,7 +29,7 @@
     (build-tree {:bounds bounds
                  :points (repeatedly 256 #(gc/circle (g/random-point-inside bounds)
                                                      (dr/random-int 2 12)))
-                 :tree (spatialtree/quadtree bounds)
+                 :tree (saq/circletree bounds)
                  :mouse (gv/vec2)})))
 
 (defn update-state [state]
@@ -69,10 +69,13 @@
         (doseq [{:keys [p] :as selected} matches]
           (q/stroke 0.5 0.8 0.5)
           (cq/circle selected)
-          (let [path-bounds (map g/bounds (spatialtree/path-for-point tree p))]
+          (let [point-path (spatialtree/path-for-point tree p)
+                path-bounds (map g/bounds point-path)]
             (swap! defo update :matches conj
                    {:selected selected
-                    :path path-bounds
+                    :path (mapv (fn [t] (let [b (g/bounds t)]
+                                         [b (saq/get-largest-contained-circle t)]))
+                                point-path)
                     ;; FIXME: this is not quite right because it's only selected if cursor contains the point
                     :intersection (g/intersect-shape cursor selected)})
             (q/stroke 0 0 0)
