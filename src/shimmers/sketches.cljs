@@ -50,6 +50,7 @@
    shimmers.sketches.flow-fields
    shimmers.sketches.folding-triangles
    ;; shimmers.sketches.fluid
+   shimmers.sketches.future-cities
    shimmers.sketches.garden-hose
    shimmers.sketches.geometry-examples
    shimmers.sketches.gl-cube
