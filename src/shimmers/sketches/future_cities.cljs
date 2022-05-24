@@ -26,8 +26,16 @@
 (defn in-bounds? [p]
   (g/contains-point? (rect/rect 0 0 width height) p))
 
+;; TODO: check if road is intersecting building
 (defn legal? [{:keys [shape]}]
   (every? in-bounds? (g/vertices shape)))
+
+(defn legal-building? [{:keys [entities]} change]
+  (let [entity (-> change :entity)
+        building (:shape entity)]
+    (and (legal? entity)
+         (not-any? (fn [{:keys [shape]}] (g/intersect-shape building shape))
+                   entities))))
 
 (defn road-extensions [{:keys [entity] :as change}]
   (let [{[p q] :points} (:shape entity)
@@ -47,6 +55,14 @@
   {:type :building
    :shape (rect/rect x y w h)})
 
+(defn candidate-building [{:keys [entities]}]
+  {:cost 1
+   :path (count entities)
+   :entity (building (v (* 5 (dr/random-int (/ width 5)))
+                        (* 5 (dr/random-int (/ height 5))))
+                     (* 5 (dr/random-int 1 4))
+                     (* 5 (dr/random-int 1 4)))})
+
 (defn city-start []
   {:turn 0
    :cash 100
@@ -55,11 +71,14 @@
               (building (v 285 290) 10 20)
               (building (v 305 285) 20 20)]})
 
-(defn list-moves [state]
-  (->> (:entities state)
-       (map-indexed (fn [i e] {:path i :entity e :cost 1}))
-       (filter (fn [change] (= (:type (:entity change)) :road)))
-       (mapcat road-extensions)))
+(defn list-moves [{:keys [entities] :as state}]
+  (concat (->> entities
+               (map-indexed (fn [i e] {:path i :entity e :cost 1}))
+               (filter (fn [change] (= (:type (:entity change)) :road)))
+               (mapcat road-extensions))
+          (->> #(candidate-building state)
+               (repeatedly 2)
+               (filter (partial legal-building? state)))))
 
 (defn next-turn [state]
   (if-let [moves (seq (list-moves state))]
