@@ -74,7 +74,7 @@
             (swap! defo update :matches conj
                    {:selected selected
                     :path (mapv (fn [t] (let [b (g/bounds t)]
-                                         [b (saq/get-largest-contained-circle t)]))
+                                         [b (g/get-point-data t)]))
                                 point-path)
                     ;; FIXME: this is not quite right because it's only selected if cursor contains the point
                     :intersection (g/intersect-shape cursor selected)})

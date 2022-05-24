@@ -5,9 +5,6 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.spatialtree :as spatialtree]))
 
-(defprotocol ILargestContainedCircle
-  (get-largest-contained-circle [t]))
-
 (defn largest-circle [rect circles]
   (->> circles
        (keep (fn [c]
@@ -20,15 +17,11 @@
     #?(:clj
        [^:unsynchronized-mutable rect
         ^:unsynchronized-mutable children
-        ^:unsynchronized-mutable point
-        ^:unsynchronized-mutable data
-        ^:unsynchronized-mutable largest-contained-circle]
+        ^:unsynchronized-mutable circle]
        :cljs
        [^:mutable rect
         ^:mutable children
-        ^:mutable point
-        ^:mutable data
-        ^:mutable largest-contained-circle])
+        ^:mutable circle])
 
   g/ISpatialTree
   (add-point [_ p d]
@@ -36,18 +29,16 @@
       (spatialtree/add-point* _ p d)
       _))
   (delete-point [_ p] (spatialtree/delete-point* _ p))
-  (get-point [_] point)
-  (get-point-data [_] data)
+  (get-point [_] (:p circle))
+  (get-point-data [_] circle)
 
   g/IClear
   (clear*
-    [_] (MutableCircleTreeNode. rect nil nil nil nil))
+    [_] (MutableCircleTreeNode. rect nil nil))
   (clear!
     [_]
     (set! children nil)
-    (set! point nil)
-    (set! data nil)
-    (set! largest-contained-circle nil)
+    (set! circle nil)
     _)
 
   spatialtree/PTreeOps
@@ -70,34 +61,25 @@
                 cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
                 r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                 c  (MutableCircleTreeNode.
-                    r
-                    nil
-                    (when add? p) (when add? d)
-                    (if add? d (largest-circle r [d largest-contained-circle])))]
+                    r nil
+                    (if add? d (largest-circle r [d circle])))]
             (spatialtree/set-child _ idx c)
             c))))
   (split-node
     [_]
     (set! children [nil nil nil nil])
-    (set! point nil)
-    (set! data nil)
     ;; split-node is called *before* make-child-for-point so don't override
-    ;; (set! largest-contained-circle nil)
+    ;; (set! circle nil)
     _)
   (get-children [_] children)
   (set-child [_ i c]
     (set! children (assoc children i c))
-    (set! largest-contained-circle (largest-circle rect (mapv get-largest-contained-circle (filter some? children))))
+    (set! circle (largest-circle rect (mapv g/get-point-data (filter some? children))))
     _)
   (set-children [_ c] (set! children c) _)
   (set-point [_ p d]
-    (set! point p)
-    (set! data d)
-    (set! largest-contained-circle d)
+    (set! circle d)
     _)
-
-  ILargestContainedCircle
-  (get-largest-contained-circle [_] largest-contained-circle)
 
   g/IBounds
   (bounds [_] rect)
@@ -109,9 +91,7 @@
     (str "#shimmers.algorithm.quadtree.MutableCircleTreeNode"
          "{:rect " (pr-str rect)
          " :children " (pr-str children)
-         " :p " (pr-str point)
-         " :d " (pr-str data)
-         " :largest-contained-circle " (pr-str largest-contained-circle)
+         " :circle " (pr-str circle)
          "}"))
 
   #?@(:cljs
@@ -120,11 +100,7 @@
         [_ writer opts]
         (pr-seq-writer
          [(symbol "#shimmers.algorithm.quadtree.MutableCircleTreeNode")
-          {:rect rect
-           :children children
-           :p point
-           :d data
-           :largest-contained-circle largest-contained-circle}]
+          {:rect rect :children children :circle circle}]
          writer
          opts))]))
 
@@ -138,7 +114,7 @@
   ([x y size]
    (circletree x y size size))
   ([x y w h]
-   (MutableCircleTreeNode. (rect/rect x y w h) nil nil nil nil)))
+   (MutableCircleTreeNode. (rect/rect x y w h) nil nil)))
 
 (comment
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 5)]
