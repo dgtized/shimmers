@@ -29,19 +29,19 @@
 (defn legal? [{:keys [shape]}]
   (every? in-bounds? (g/vertices shape)))
 
-(defn extend-road [path]
-  (let [{[p q] :points} (:shape path)
+(defn road-extensions [{:keys [entity] :as change}]
+  (let [{[p q] :points} (:shape entity)
         [x0 y0] p
         [x1 y1] q
         dir (tm/* (gv/vec2 (tm/signum (- x1 x0))
                            (tm/signum (- y1 y0)))
                   20)]
-    (if-let [extended (->> [(road (tm/- p dir) q)
-                            (road p (tm/+ q dir))]
-                           (filter legal?)
-                           seq)]
-      (dr/rand-nth extended)
-      path)))
+    (when-let [extensions (->> [(road (tm/- p dir) q)
+                                (road p (tm/+ q dir))]
+                               (filter legal?)
+                               seq)]
+      (for [road extensions]
+        (assoc change :entity road)))))
 
 (defn building [[x y] w h]
   {:type :building
@@ -55,21 +55,20 @@
               (building (v 285 290) 10 20)
               (building (v 305 285) 20 20)]})
 
-(defn move [state]
-  (let [change (->> (:entities state)
-                    (map-indexed (fn [i e] {:path i :entity e}))
-                    (filter (fn [change] (= (:type (:entity change)) :road)))
-                    dr/rand-nth)]
-    (-> change
-        (update :entity extend-road)
-        (assoc :cost 1))))
+(defn list-moves [state]
+  (->> (:entities state)
+       (map-indexed (fn [i e] {:path i :entity e :cost 1}))
+       (filter (fn [change] (= (:type (:entity change)) :road)))
+       (mapcat road-extensions)))
 
 (defn next-turn [state]
-  (let [{:keys [path entity cost]} (move state)]
-    (-> state
-        (update :entities assoc path entity)
-        (update :cash - cost)
-        (update :turn inc))))
+  (if-let [moves (seq (list-moves state))]
+    (let [{:keys [path entity cost]} (dr/rand-nth moves)]
+      (-> state
+          (update :entities assoc path entity)
+          (update :cash - cost)
+          (update :turn inc)))
+    state))
 
 (defn scene [state]
   (let [{:keys [entities]} @state
@@ -84,7 +83,10 @@
 (defn ui-controls [state]
   [:div
    [:button.generate {:on-click #(swap! state next-turn)} "Next Turn"]
-   (debug/display state)])
+   (debug/display state)
+   [:details
+    [:summary "Moves"]
+    (debug/pre-edn (list-moves @state))]])
 
 (sketch/definition future-cities
   {:created-at "2022-05-24"
