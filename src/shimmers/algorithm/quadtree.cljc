@@ -77,7 +77,7 @@
     (set! circle (largest-circle rect (mapv g/get-point-data (filter some? children))))
     _)
   (set-children [_ c] (set! children c) _)
-  (set-point [_ p d]
+  (set-point [_ _ d]
     (set! circle d)
     _)
 
