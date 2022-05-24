@@ -18,12 +18,12 @@
   (gv/vec2 (int x) (int y)))
 
 (defn road [p q]
-  (with-meta (gl/line2 p q)
-    {:stroke-width 3
-     :type :road}))
+  {:type :road
+   :shape (with-meta (gl/line2 p q)
+            {:stroke-width 3})})
 
 (defn extend-road [path]
-  (let [{[p q] :points} path
+  (let [{[p q] :points} (:shape path)
         [x0 y0] p
         [x1 y1] q
         dir (tm/* (gv/vec2 (tm/signum (- x1 x0))
@@ -34,20 +34,21 @@
       (road p (tm/+ q dir)))))
 
 (defn building [[x y] w h]
-  (rect/rect x y w h))
+  {:type :building
+   :shape (rect/rect x y w h)})
 
 (defn city-start []
   {:turn 0
    :cash 100
-   :shapes [(road (v 300 280) (v 300 320))
-            (road (v 300 280) (v 330 280))
-            (building (v 285 290) 10 20)
-            (building (v 305 285) 20 20)]})
+   :entities [(road (v 300 280) (v 300 320))
+              (road (v 300 280) (v 330 280))
+              (building (v 285 290) 10 20)
+              (building (v 305 285) 20 20)]})
 
 (defn move [state]
-  (let [change (->> (:shapes state)
+  (let [change (->> (:entities state)
                     (map-indexed (fn [i e] {:path i :entity e}))
-                    (filter (fn [change] (= (:type (meta (:entity change))) :road)))
+                    (filter (fn [change] (= (:type (:entity change)) :road)))
                     dr/rand-nth)]
     (-> change
         (update :entity extend-road)
@@ -56,12 +57,13 @@
 (defn next-turn [state]
   (let [{:keys [path entity cost]} (move state)]
     (-> state
-        (update :shapes assoc path entity)
+        (update :entities assoc path entity)
         (update :cash - cost)
         (update :turn inc))))
 
 (defn scene [state]
-  (let [{:keys [shapes]} @state]
+  (let [{:keys [entities]} @state
+        shapes (mapv :shape entities)]
     (csvg/svg {:width width
                :height height
                :stroke "black"
