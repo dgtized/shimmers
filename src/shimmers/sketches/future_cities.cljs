@@ -26,15 +26,15 @@
 (defn in-bounds? [p]
   (g/contains-point? (rect/rect 0 0 width height) p))
 
-;; TODO: check if road is intersecting building
-(defn legal? [{:keys [shape]}]
-  (every? in-bounds? (g/vertices shape)))
-
 (defn legal-building? [{:keys [entities]} change]
   (let [entity (-> change :entity)
         building (:shape entity)]
-    (and (legal? entity)
-         (not-any? (fn [{:keys [shape]}] (g/intersect-shape building shape))
+    (and (every? in-bounds? (g/vertices building))
+         (not-any? (fn [{:keys [shape type]}]
+                     (if (= (:type entity) :road)
+                       (when (= type :building)
+                         (some #(g/contains-point? shape %) (g/vertices building)))
+                       (g/intersect-shape building shape)))
                    entities))))
 
 (defn road-extensions [{:keys [entity] :as change}]
@@ -44,12 +44,9 @@
         dir (tm/* (gv/vec2 (tm/signum (- x1 x0))
                            (tm/signum (- y1 y0)))
                   20)]
-    (when-let [extensions (->> [(road (tm/- p dir) q)
-                                (road p (tm/+ q dir))]
-                               (filter legal?)
-                               seq)]
-      (for [road extensions]
-        (assoc change :entity road)))))
+    (for [e [(road (tm/- p dir) q)
+             (road p (tm/+ q dir))]]
+      (assoc change :entity e))))
 
 (defn building [[x y] w h]
   {:type :building
@@ -72,13 +69,13 @@
               (building (v 305 285) 20 20)]})
 
 (defn list-moves [{:keys [entities] :as state}]
-  (concat (->> entities
-               (map-indexed (fn [i e] {:path i :entity e :cost 1}))
-               (filter (fn [change] (= (:type (:entity change)) :road)))
-               (mapcat road-extensions))
-          (->> #(candidate-building state)
-               (repeatedly 2)
-               (filter (partial legal-building? state)))))
+  (->> (concat (->> entities
+                    (map-indexed (fn [i e] {:path i :entity e :cost 1}))
+                    (filter (fn [change] (= (:type (:entity change)) :road)))
+                    (mapcat road-extensions))
+               (->> #(candidate-building state)
+                    (repeatedly 2)))
+       (filter (partial legal-building? state))))
 
 (defn next-turn [state]
   (if-let [moves (seq (list-moves state))]
