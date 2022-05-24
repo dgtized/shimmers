@@ -129,3 +129,19 @@
       g/as-polygon
       (poly-detect/inset-polygon amount)
       g/bounds))
+
+(defn manhattan-to-rectangle
+  "Manhattan distance to a `rect` edge from a `point`.
+
+  Returns [0,0] for any internal points."
+  [rect point]
+  (tm/max (tm/- point (rect/top-right rect))
+          (tm/- (rect/bottom-left rect) point)
+          (gv/vec2)))
+
+(comment
+  (manhattan-to-rectangle (rect/rect 3 1 3 2) (gv/vec2))
+  (manhattan-to-rectangle (rect/rect 1 3 3 2) (gv/vec2 1.5 3.5))
+  (manhattan-to-rectangle (rect/rect 1 3 3 2) (gv/vec2 4 6))
+  (manhattan-to-rectangle (rect/rect 1 3 3 2) (gv/vec2 5 5))
+  (manhattan-to-rectangle (rect/rect -3 -3 2 1) (gv/vec2)))
