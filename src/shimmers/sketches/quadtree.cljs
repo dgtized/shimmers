@@ -61,11 +61,20 @@
       (cq/circle circle))
     (q/stroke 0.6 0.5 0.5)
     (cq/circle cursor)
+
+    (let [neighbor (saq/nearest-neighbor-node tree mouse)]
+      (when-let [p (g/get-point neighbor)]
+        (q/stroke 0.75 0.8 0.5)
+        (q/line mouse p)
+        (swap! defo assoc :nearest-neighbor
+               {:p p
+                :data (g/get-point-data neighbor)})))
+
     (let [matches (->> [tree]
                        (saq/lazy-select-quad
                         #(g/intersect-shape cursor %)
                         #(overlap-isec cursor (g/get-point-data %))))]
-      (if (seq matches)
+      (when (seq matches)
         (doseq [{:keys [p] :as selected} matches]
           (q/stroke 0.5 0.8 0.5)
           (cq/circle selected)
@@ -80,22 +89,14 @@
                     :intersection (g/intersect-shape cursor selected)})
             (q/stroke 0 0 0)
             (doseq [r path-bounds]
-              (cq/rectangle r))))
-        (let [neighbor (saq/nearest-neighbor-node tree mouse)]
-          (when-let [p (g/get-point neighbor)]
-            (q/stroke 0.75 0.8 0.5)
-            (q/line mouse p)
-            (swap! defo assoc :matches
-                   {:p p
-                    :data (g/get-point-data neighbor)})))))))
+              (cq/rectangle r))))))))
 
 (defn draw [{:keys [bounds mouse] :as state}]
-  (reset! defo {:matches []})
+  (reset! defo {:mouse mouse :nearest-neighbor {} :matches []})
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.66)
   (q/no-fill)
-  (swap! defo assoc :mouse mouse)
   (if (g/contains-point? bounds mouse)
     (draw-path-to-selection state)
     (draw-complete-tree state)))
