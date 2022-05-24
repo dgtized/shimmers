@@ -6,6 +6,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -22,16 +23,25 @@
    :shape (with-meta (gl/line2 p q)
             {:stroke-width 3})})
 
+(defn in-bounds? [p]
+  (g/contains-point? (rect/rect 0 0 width height) p))
+
+(defn legal? [{:keys [shape]}]
+  (every? in-bounds? (g/vertices shape)))
+
 (defn extend-road [path]
   (let [{[p q] :points} (:shape path)
         [x0 y0] p
         [x1 y1] q
         dir (tm/* (gv/vec2 (tm/signum (- x1 x0))
                            (tm/signum (- y1 y0)))
-                  5)]
-    (if (dr/chance 0.5)
-      (road (tm/- p dir) q)
-      (road p (tm/+ q dir)))))
+                  20)]
+    (if-let [extended (->> [(road (tm/- p dir) q)
+                            (road p (tm/+ q dir))]
+                           (filter legal?)
+                           seq)]
+      (dr/rand-nth extended)
+      path)))
 
 (defn building [[x y] w h]
   {:type :building
