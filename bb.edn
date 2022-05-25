@@ -1,4 +1,4 @@
-{:paths ["src/bb"]
+{:paths ["src"]
  :tasks
  {:requires ([babashka.fs :as fs]
              [bb.tasks :as t])
