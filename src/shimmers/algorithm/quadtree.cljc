@@ -226,3 +226,6 @@
                         children)
                 k point results)
          (recur (pop best-queue) k point (conj results node)))))))
+
+;; Some other references:
+;; https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html

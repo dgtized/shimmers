@@ -11,6 +11,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]))
 
+;; See also https://github.com/abscondment/clj-kdtree
+
 (defonce defo (debug/state))
 
 (defrecord Node [location axis lesser greater])

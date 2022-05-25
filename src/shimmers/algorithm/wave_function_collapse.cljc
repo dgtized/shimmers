@@ -14,6 +14,7 @@
 ;; https://isaackarth.com/papers/wfc_is_constraint_solving_in_the_wild.pdf
 ;; https://adam-james-v.github.io/oatmilk/index.html#/notebooks/wave-collapse.org.md
 ;; https://github.com/maacl/wfclj
+;; https://github.com/mxgmn/WaveFunctionCollapse
 
 (defn str->matrix [s]
   (->> s

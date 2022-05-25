@@ -391,3 +391,11 @@
         :let [{:keys [type p q]} (isec/intersect-line2-line2? pa qa pb qb)]
         :when (and (= type :coincident) (not (tm/delta= p q)))]
     {:segment [p q] :edge-a [pa qa] :edge-b [pb qb]}))
+
+;; tab sweep references on polygon union / intersection / subtract
+;; https://math.stackexchange.com/questions/3094996/how-to-scale-a-polygon-such-that-all-the-points-lie-within-the-original-polygon
+;; https://en.wikipedia.org/wiki/Straight_skeleton
+;; https://stackoverflow.com/questions/57817892/best-way-to-merge-overlapping-convex-polygons-into-a-single-concave-polygon
+;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
+;; https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm
+;; https://mathoverflow.net/questions/111296/subtract-rectangle-from-polygon/111323#111323
