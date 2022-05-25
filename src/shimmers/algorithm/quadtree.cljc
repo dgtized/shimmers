@@ -1,9 +1,13 @@
 (ns shimmers.algorithm.quadtree
   (:require
+   [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.spatialtree :as spatialtree]))
+   [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.math.core :as tm]
+   #?(:clj [clojure.data.priority-map :as priority]
+      :cljs [tailrecursion.priority-map :as priority])))
 
 (defn largest-circle [rect circles]
   (->> circles
@@ -198,3 +202,25 @@
                    (nearest-neighbor-node child point better)
                    better))
                best' (spatialtree/get-children tree))))))
+
+(defn distance-to-neighbor [node point]
+  (if (seq (spatialtree/get-children node))
+    (tm/mag (geometry/manhattan-to-rectangle (g/bounds node) point))
+    (g/dist point (g/get-point node))))
+
+;; Vague translation of
+;; https://observablehq.com/@llb4ll/k-nearest-neighbor-search-using-d3-quadtrees
+(defn k-nearest-neighbors
+  ([tree k point]
+   (k-nearest-neighbors (priority/priority-map tree 0) k point []))
+  ([best-queue k point results]
+   (if (or (empty? best-queue) (>= (count results) k))
+     results
+     (let [[node _] (peek best-queue)]
+       (if-let [children (seq (spatialtree/get-children node))]
+         (recur (reduce (fn [q n]
+                          (assoc q n (distance-to-neighbor n point)))
+                        (pop best-queue)
+                        (remove nil? children))
+                k point results)
+         (recur (pop best-queue) k point (conj results node)))))))

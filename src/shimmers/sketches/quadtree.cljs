@@ -48,27 +48,39 @@
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
 
-(defonce ui-state (ctrl/state {:isec-mode :circles-overlap}))
+(defonce ui-state (ctrl/state {:isec-mode :circles-overlap
+                               :knearest 1}))
 
 (def intersect-modes {:intersect-shape g/intersect-shape
                       :circles-overlap geometry/circles-overlap?})
 
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
   (let [overlap-isec (get intersect-modes (get @ui-state :isec-mode))
-        cursor (gc/circle mouse 5)]
+        cursor (gc/circle mouse 5)
+        k (get @ui-state :knearest)]
     (q/stroke 0.0 0.5 0.5)
     (doseq [circle points]
       (cq/circle circle))
     (q/stroke 0.6 0.5 0.5)
     (cq/circle cursor)
 
-    (let [neighbor (saq/nearest-neighbor-node tree mouse)]
-      (when-let [p (g/get-point neighbor)]
-        (q/stroke 0.75 0.8 0.5)
-        (q/line mouse p)
+    (if (> k 1)
+      (let [neighbors (saq/k-nearest-neighbors tree k mouse)]
         (swap! defo assoc :nearest-neighbor
-               {:p p
-                :data (g/get-point-data neighbor)})))
+               (mapv (fn [n] {:p (g/get-point n)
+                             :data (g/get-point-data n)})
+                     neighbors))
+        (doseq [neighbor neighbors
+                :let [p (g/get-point neighbor)]]
+          (q/stroke 0.75 0.8 0.5)
+          (q/line mouse p)))
+      (let [neighbor (saq/nearest-neighbor-node tree mouse)]
+        (when-let [p (g/get-point neighbor)]
+          (q/stroke 0.75 0.8 0.5)
+          (q/line mouse p)
+          (swap! defo assoc :nearest-neighbor
+                 {:p p
+                  :data (g/get-point-data neighbor)}))))
 
     (let [matches (->> [tree]
                        (saq/lazy-select-quad
@@ -105,7 +117,8 @@
   [:div.flexcols
    [:div
     (ctrl/change-mode ui-state (keys intersect-modes)
-                      {:mode-key :isec-mode})]
+                      {:mode-key :isec-mode})
+    (ctrl/numeric ui-state "K-nearest" [:knearest] [1 16 1])]
    [:div (debug/display defo)]])
 
 (sketch/defquil quadtree
