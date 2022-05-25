@@ -219,8 +219,10 @@
      (let [[node _] (peek best-queue)]
        (if-let [children (seq (spatialtree/get-children node))]
          (recur (reduce (fn [q n]
-                          (assoc q n (distance-to-neighbor n point)))
+                          (if n
+                            (assoc q n (distance-to-neighbor n point))
+                            q))
                         (pop best-queue)
-                        (remove nil? children))
+                        children)
                 k point results)
          (recur (pop best-queue) k point (conj results node)))))))
