@@ -112,9 +112,8 @@
   (q/no-fill)
   (doseq [n nodes]
     (cq/circle n 3.0)
-    (let [path-bounds (map g/bounds (spatialtree/path-for-point quadtree n))]
-      (doseq [r path-bounds]
-        (cq/rectangle r))))
+    (doseq [r (spatialtree/path-for-point quadtree n)]
+      (cq/rectangle (g/bounds r))))
 
   (let [[node->id _] (index-nodes nodes)]
     (doseq [{[p q] :points} connections
