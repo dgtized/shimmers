@@ -10,9 +10,13 @@
    :task (do (shell "npm install")
              (clojure "-Mdev -m figwheel.main -bo release"))}
   build-static-site
-  {:task (t/build-static-site "resources/public" "static-site")}
+  {:task (t/build-static-site
+          :build-dir "target/public/cljs-out/"
+          :from "resources/public"
+          :to "static-site")}
   rewrite-index
-  {:task (t/rewrite-index :from "resources/public/index.html"
+  {:task (t/rewrite-index :build-dir "target/public/cljs-out/"
+                          :from "resources/public/index.html"
                           :to "static-site/index.html"
                           :base-href "https://dgtized.github.io/shimmers/")}
   ;; For routing to page handler after not using fragments

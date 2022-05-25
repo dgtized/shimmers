@@ -21,23 +21,21 @@
        (subs sha 0 8)
        "</code></span>"))
 
-(def cljs-output-dir "target/public/cljs-out/")
+(defn release-file [build-dir]
+  (let [manifest (edn/read-string (slurp (str build-dir "manifest.edn")))]
+    (fs/file-name (get manifest (str build-dir "release-main.js")))))
 
-(defn release-file []
-  (let [manifest (edn/read-string (slurp (str cljs-output-dir "manifest.edn")))]
-    (fs/file-name (get manifest (str cljs-output-dir "release-main.js")))))
-
-(defn build-static-site [from dir]
-  (let [js-dir (str dir "/js")]
-    (fs/delete-tree dir)
-    (println "Creating" dir "from" from "with javascript")
-    (fs/copy-tree from dir)
+(defn build-static-site [& {:keys [build-dir from to]}]
+  (let [js-dir (str to "/js")]
+    (fs/delete-tree to)
+    (println "Creating" to "from" from "with javascript")
+    (fs/copy-tree from to)
     (fs/create-dirs js-dir)
-    (doseq [js (fs/glob cljs-output-dir "**release-main*")]
+    (doseq [js (fs/glob build-dir "**release-main*")]
       (fs/copy js js-dir))
     (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir "/release-main*"))))
 
-(defn rewrite-index [& {:keys [from to base-href]}]
+(defn rewrite-index [& {:keys [build-dir from to base-href]}]
   (let [revision (git-revision)
         timestamp (timestamp-iso8601)
         contents (slurp from)]
@@ -45,8 +43,10 @@
     (println "  build:" timestamp "rev:" revision)
     (spit to
           (-> contents
-              (str/replace-first #"<base href=\"\">" (str "<base href=\"" base-href "\">"))
-              (str/replace-first #"cljs-out\/dev-main\.js" (str "js/" (release-file)))
+              (str/replace-first #"<base href=\"\">"
+                                 (str "<base href=\"" base-href "\">"))
+              (str/replace-first #"cljs-out\/dev-main\.js"
+                                 (str "js/" (release-file build-dir)))
               (str/replace-first "<span id=\"revision\"><code>rev:abcdef12</code></span>"
                                  (revision-span timestamp revision))))))
 
