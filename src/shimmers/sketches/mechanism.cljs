@@ -123,9 +123,7 @@
   [gear
    {:keys [pos dir ratio] :as driver} angle]
   (assoc gear
-         :pos (->> (gv/vec2 (center-distance driver gear) angle)
-                   g/as-cartesian
-                   (tm/+ pos))
+         :pos (tm/+ pos (v/polar (center-distance driver gear) angle))
          :dir (* -1 dir)
          :ratio (* ratio (gear-ratio driver gear))
          :offset (meshing-interlock-angle gear driver angle)))
