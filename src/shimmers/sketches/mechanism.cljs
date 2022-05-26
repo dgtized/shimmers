@@ -86,20 +86,6 @@
            {:radius radius
             :shape (gp/polygon2 (mapcat (partial tooth gear) points))})))
 
-(defonce ui-state
-  (ctrl/state {:running true
-               :diametral-pitch 0.25
-               :driver-teeth 30
-               :driver-ratio 1.0}))
-
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {:t 0})
-
-(defn update-state [state]
-  (if (:running @ui-state)
-    (update state :t + 0.01)
-    state))
 
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
@@ -157,6 +143,22 @@
   (* dir (+ (/ t ratio) offset)))
 
 (comment (map #(dissoc % :shape) (gear-system (gv/vec2) 0.3 30 1.0)))
+
+;; Visualization & User Interface
+(defonce ui-state
+  (ctrl/state {:running true
+               :diametral-pitch 0.25
+               :driver-teeth 30
+               :driver-ratio 1.0}))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  {:t 0})
+
+(defn update-state [state]
+  (if (:running @ui-state)
+    (update state :t + 0.01)
+    state))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
