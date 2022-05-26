@@ -130,7 +130,6 @@
          :ratio (* ratio (gear-ratio driver gear))
          :offset (meshing-interlock-angle gear driver angle)))
 
-;; TODO: solve for starting offset automatically so it meshes correctly?
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
 ;;  * planatary gears (adjusts position of subystem relative to t)
