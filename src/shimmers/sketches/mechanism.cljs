@@ -143,15 +143,17 @@
   (let [dp diametral-pitch
         driver (assoc (gear dp 30) :pos center :dir 1 :ratio 1 :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
-        above-left (driven-by (gear dp 20) left (/ Math/PI 2))
-        left-left (driven-by (gear dp 12) left Math/PI)
-        right (driven-by (gear dp 24) driver 0)
+        right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
-        above2 (driven-by (gear dp 50) above (- (/ Math/PI 3)))
-        below (driven-by (gear dp 30) right (/ Math/PI 2))
-        small (driven-by (gear dp 8) right -0.5)
-        big (driven-by (gear dp 128) below (/ Math/PI 3))]
-    [driver left above-left left-left right above above2 below small big]))
+        below (driven-by (gear dp 30) right (/ Math/PI 2))]
+    [driver left
+     (driven-by (gear dp 20) left (/ Math/PI 2))
+     (driven-by (gear dp 12) left Math/PI)
+     right above
+     (driven-by (gear dp 50) above (- (/ Math/PI 3)))
+     below
+     (driven-by (gear dp 8) right -0.5)
+     (driven-by (gear dp 128) below (/ Math/PI 3))]))
 
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
