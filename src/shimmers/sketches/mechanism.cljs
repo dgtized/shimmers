@@ -99,6 +99,8 @@
     (update state :t + 0.01)
     (assoc state :t 0)))
 
+;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
+;; and http://kirox.de/html/Gears.html (GearView.setPos)
 (defn meshing-interlock-angle
   "Calculate the initial angle for meshing with `driver` gear.
 
@@ -115,25 +117,16 @@
          ))
     0))
 
-;; how to solve for offset for meshing?
-;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
-;; and http://kirox.de/html/Gears.html (GearView.setPos)
-;; Still looks a little off but really close now
 (defn driven-by
   [gear
    {:keys [pos dir ratio] :as driver} angle]
-  (let [direction (* -1 dir)
-        speed (* ratio (gear-ratio driver gear))
-        offset (meshing-interlock-angle gear driver angle)]
-    (assoc gear
-           :pos (->> (gv/vec2 (center-distance driver gear) angle)
-                     g/as-cartesian
-                     (tm/+ pos))
-           :dir direction
-           :ratio speed
-           :offset offset
-           :rotation
-           (fn [t] (* direction (+ offset (/ t speed)))))))
+  (assoc gear
+         :pos (->> (gv/vec2 (center-distance driver gear) angle)
+                   g/as-cartesian
+                   (tm/+ pos))
+         :dir (* -1 dir)
+         :ratio (* ratio (gear-ratio driver gear))
+         :offset (meshing-interlock-angle gear driver angle)))
 
 ;; TODO: solve for starting offset automatically so it meshes correctly?
 ;; randomly generate gear systems that don't intersect with themselves
@@ -147,7 +140,7 @@
 ;;  * kinematic chain to another gear?
 (defn gear-system [center]
   (let [dp 0.15 ;; diametral-pitch
-        driver (assoc (gear dp 30) :pos center :rotation identity :dir 1 :ratio 1 :offset 0)
+        driver (assoc (gear dp 30) :pos center :dir 1 :ratio 1 :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
         above-left (driven-by (gear dp 20) left (/ Math/PI 2))
         left-left (driven-by (gear dp 12) left Math/PI)
@@ -159,7 +152,10 @@
         big (driven-by (gear dp 128) below (/ Math/PI 3))]
     [driver left above-left left-left right above above2 below small big]))
 
-(comment (map #(dissoc % :shape :angle :rotation) (gear-system (gv/vec2 0 0))))
+(defn rotation [{:keys [dir ratio offset]} t]
+  (* dir (+ (/ t ratio) offset)))
+
+(comment (map #(dissoc % :shape :angle) (gear-system (gv/vec2 0 0))))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
@@ -167,13 +163,13 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
-  (doseq [{:keys [shape angle pos rotation radius offset]}
+  (doseq [{:keys [shape angle pos radius offset] :as gear}
           (gear-system (cq/rel-vec 0.5 0.5))]
     (q/stroke-weight 1.0)
     (q/stroke 0)
-    (cq/draw-shape (poly-at shape pos (rotation t)))
+    (cq/draw-shape (poly-at shape pos (rotation gear t)))
     (q/stroke 0 0.6 0.6)
-    (apply q/line (poly-at angle pos (rotation t)))
+    (apply q/line (poly-at angle pos (rotation gear t)))
     ;; (cq/circle pos radius)
     (q/stroke 0.55 0.6 0.6)
     (q/stroke-weight 2)
