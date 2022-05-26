@@ -99,20 +99,32 @@
     (update state :t + 0.01)
     (assoc state :t 0)))
 
+(defn meshing-interlock-angle
+  "Calculate the initial angle for meshing with `driver` gear.
+
+  `angle` is the heading of the vector between the driving gear and the connecting gear."
+  [{:keys [teeth] :as gear}
+   {:keys [offset dir] :as driver}
+   angle]
+  (if driver
+    ;; mod by (/ tm/TWO_PI teeth) to keep this small
+    (let [gear-ratio (gear-ratio gear driver)]
+      (+ (* gear-ratio offset)
+         (* (+ 1 gear-ratio) (* -1 dir angle))
+         (* (mod (inc teeth) 2) (/ Math/PI teeth)) ;; add a tooth width if even?
+         ))
+    0))
+
 ;; how to solve for offset for meshing?
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
 ;; Still looks a little off but really close now
 (defn driven-by
-  [{:keys [teeth] :as gear}
-   {:keys [pos dir ratio offset] :as driver} angle]
+  [gear
+   {:keys [pos dir ratio] :as driver} angle]
   (let [direction (* -1 dir)
         speed (* ratio (gear-ratio driver gear))
-        offset (if driver
-                 (+ (* (gear-ratio gear driver) offset)
-                    (* (+ 1 (gear-ratio gear driver)) (* direction angle))
-                    (* (mod (inc teeth) 2) (/ Math/PI teeth)))
-                 0)]
+        offset (meshing-interlock-angle gear driver angle)]
     (assoc gear
            :pos (->> (gv/vec2 (center-distance driver gear) angle)
                      g/as-cartesian
