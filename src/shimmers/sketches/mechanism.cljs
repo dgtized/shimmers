@@ -88,7 +88,9 @@
             :shape (gp/polygon2 (mapcat (partial tooth gear) points))
             :angle (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))})))
 
-(defonce ui-state (ctrl/state {:running true}))
+(defonce ui-state
+  (ctrl/state {:running true
+               :diametral-pitch 0.25}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -138,8 +140,8 @@
 ;;  * pulley/belt systems?
 ;;  * sun & planet?
 ;;  * kinematic chain to another gear?
-(defn gear-system [center]
-  (let [dp 0.15 ;; diametral-pitch
+(defn gear-system [center diametral-pitch]
+  (let [dp diametral-pitch
         driver (assoc (gear dp 30) :pos center :dir 1 :ratio 1 :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
         above-left (driven-by (gear dp 20) left (/ Math/PI 2))
@@ -155,7 +157,7 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
-(comment (map #(dissoc % :shape :angle) (gear-system (gv/vec2 0 0))))
+(comment (map #(dissoc % :shape :angle) (gear-system (gv/vec2) 0.3)))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
@@ -164,7 +166,7 @@
   (q/no-fill)
   (q/background 1.0)
   (doseq [{:keys [shape angle pos] :as gear}
-          (gear-system (cq/rel-vec 0.5 0.5))]
+          (gear-system (cq/rel-vec 0.5 0.5) (:diametral-pitch @ui-state))]
     (q/stroke-weight 1.0)
     (q/stroke 0)
     (cq/draw-shape (poly-at shape pos (rotation gear t)))
@@ -172,7 +174,9 @@
     (apply q/line (poly-at angle pos (rotation gear t)))))
 
 (defn ui-controls []
-  [:div (ctrl/checkbox ui-state "Running?" [:running])])
+  [:div {:style {:width "20em"}}
+   (ctrl/checkbox ui-state "Running?" [:running])
+   (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])])
 
 (sketch/defquil mechanism
   :created-at "2021-04-19"
