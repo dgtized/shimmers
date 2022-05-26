@@ -109,8 +109,8 @@
   (let [direction (* -1 dir)
         speed (* ratio (gear-ratio driver gear))
         offset (if driver
-                 (+ (- (* ratio offset))
-                    (+ (* (+ 1 ratio) (Math/abs angle)))
+                 (+ (* (gear-ratio gear driver) offset)
+                    (* (+ 1 (gear-ratio gear driver)) (* direction angle))
                     (* (mod (inc teeth) 2) (/ Math/PI teeth)))
                  0)]
     (assoc gear
