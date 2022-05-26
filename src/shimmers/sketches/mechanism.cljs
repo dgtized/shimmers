@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -83,7 +84,8 @@
         radius (pitch-radius gear)
         points (g/vertices (gc/circle (gv/vec2) radius) teeth)]
     (merge gear
-           {:shape (gp/polygon2 (mapcat (partial tooth gear) points))
+           {:radius radius
+            :shape (gp/polygon2 (mapcat (partial tooth gear) points))
             :angle (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))})))
 
 (defonce ui-state (ctrl/state {:running true}))
@@ -150,13 +152,20 @@
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
 (defn draw [{:keys [t]}]
+  (q/ellipse-mode :radius)
+  (q/no-fill)
   (q/background 1.0)
-  (doseq [{:keys [shape angle pos rotation]}
+  (doseq [{:keys [shape angle pos rotation radius offset]}
           (gear-system (cq/rel-vec 0.5 0.5))]
+    (q/stroke-weight 1.0)
     (q/stroke 0)
     (cq/draw-shape (poly-at shape pos (rotation t)))
     (q/stroke 0 0.6 0.6)
-    (apply q/line (poly-at angle pos (rotation t)))))
+    (apply q/line (poly-at angle pos (rotation t)))
+    ;; (cq/circle pos radius)
+    (q/stroke 0.55 0.6 0.6)
+    (q/stroke-weight 2)
+    (q/line pos (tm/+ pos (v/polar (* 0.2 radius) offset)))))
 
 (defn ui-controls []
   [:div (ctrl/checkbox ui-state "Running?" [:running])])
