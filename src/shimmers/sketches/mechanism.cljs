@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -85,12 +86,14 @@
            {:shape (gp/polygon2 (mapcat (partial tooth gear) points))
             :angle (gl/line2 (gv/vec2) (gv/vec2 (* 0.66 radius) 0))})))
 
+(defonce ui-state (ctrl/state {:running true}))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0})
 
 (defn update-state [state]
-  (if true
+  (if (:running @ui-state)
     (update state :t + 0.01)
     (assoc state :t 0)))
 
@@ -155,9 +158,13 @@
     (q/stroke 0 0.6 0.6)
     (apply q/line (poly-at angle pos (rotation t)))))
 
+(defn ui-controls []
+  [:div (ctrl/checkbox ui-state "Running?" [:running])])
+
 (sketch/defquil mechanism
   :created-at "2021-04-19"
   :size [800 800]
+  :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
   :draw draw
