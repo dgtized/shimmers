@@ -163,17 +163,13 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
-  (doseq [{:keys [shape angle pos radius offset] :as gear}
+  (doseq [{:keys [shape angle pos] :as gear}
           (gear-system (cq/rel-vec 0.5 0.5))]
     (q/stroke-weight 1.0)
     (q/stroke 0)
     (cq/draw-shape (poly-at shape pos (rotation gear t)))
     (q/stroke 0 0.6 0.6)
-    (apply q/line (poly-at angle pos (rotation gear t)))
-    ;; (cq/circle pos radius)
-    (q/stroke 0.55 0.6 0.6)
-    (q/stroke-weight 2)
-    (q/line pos (tm/+ pos (v/polar (* 0.2 radius) offset)))))
+    (apply q/line (poly-at angle pos (rotation gear t)))))
 
 (defn ui-controls []
   [:div (ctrl/checkbox ui-state "Running?" [:running])])
