@@ -129,16 +129,17 @@
 ;;  * sun & planet?
 ;;  * kinematic chain to another gear?
 (defn gear-system [center]
-  (let [dp 0.25 ;; diametral-pitch
+  (let [dp 0.15 ;; diametral-pitch
         driver (assoc (gear dp 30) :pos center :rotation identity :dir 1 :ratio 1 :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
+        above-left (driven-by (gear dp 20) left (/ Math/PI 2))
         right (driven-by (gear dp 24) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
         above2 (driven-by (gear dp 50) above (- (/ Math/PI 3)))
         below (driven-by (gear dp 30) right (/ Math/PI 2))
         small (driven-by (gear dp 8) right -0.5)
         big (driven-by (gear dp 128) below (/ Math/PI 3))]
-    [driver left right above above2 below small big]))
+    [driver left above-left right above above2 below small big]))
 
 (comment (map #(dissoc % :shape :angle :rotation) (gear-system (gv/vec2 0 0))))
 
