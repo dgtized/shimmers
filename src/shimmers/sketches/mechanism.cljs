@@ -100,23 +100,23 @@
 ;; Still looks a little off but really close now
 (defn driven-by
   [{:keys [teeth] :as gear}
-   {:keys [pos dir ratio] :as driver} angle]
+   {:keys [pos dir ratio offset] :as driver} angle]
   (let [direction (* -1 dir)
         speed (* ratio (gear-ratio driver gear))
-        sync-offset (cond driver
-                          (+ (- (* ratio (:offset driver)))
-                             (+ (* (+ 1 ratio) (Math/abs angle)))
-                             (* (mod (inc teeth) 2) (/ Math/PI teeth)))
-                          :else 0)]
+        offset (if driver
+                 (+ (- (* ratio offset))
+                    (+ (* (+ 1 ratio) (Math/abs angle)))
+                    (* (mod (inc teeth) 2) (/ Math/PI teeth)))
+                 0)]
     (assoc gear
            :pos (->> (gv/vec2 (center-distance driver gear) angle)
                      g/as-cartesian
                      (tm/+ pos))
            :dir direction
            :ratio speed
-           :offset sync-offset
+           :offset offset
            :rotation
-           (fn [t] (* direction (+ sync-offset (/ t speed)))))))
+           (fn [t] (* direction (+ offset (/ t speed)))))))
 
 ;; TODO: solve for starting offset automatically so it meshes correctly?
 ;; randomly generate gear systems that don't intersect with themselves
