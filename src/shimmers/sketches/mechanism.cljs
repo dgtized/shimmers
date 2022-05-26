@@ -99,7 +99,7 @@
 (defn update-state [state]
   (if (:running @ui-state)
     (update state :t + 0.01)
-    (assoc state :t 0)))
+    state))
 
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
