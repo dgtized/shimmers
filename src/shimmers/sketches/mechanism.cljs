@@ -88,7 +88,9 @@
 
 (defonce ui-state
   (ctrl/state {:running true
-               :diametral-pitch 0.25}))
+               :diametral-pitch 0.25
+               :driver-teeth 30
+               :driver-ratio 1.0}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -137,9 +139,9 @@
 ;;  * pulley/belt systems?
 ;;  * sun & planet?
 ;;  * kinematic chain to another gear?
-(defn gear-system [center diametral-pitch]
+(defn gear-system [center diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
-        driver (assoc (gear dp 30) :pos center :dir 1 :ratio 1.0 :offset 0)
+        driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
@@ -156,7 +158,7 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
-(comment (map #(dissoc % :shape) (gear-system (gv/vec2) 0.3)))
+(comment (map #(dissoc % :shape) (gear-system (gv/vec2) 0.3 30 1.0)))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
@@ -164,19 +166,22 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
-  (doseq [{:keys [shape radius pos] :as gear}
-          (gear-system (cq/rel-vec 0.5 0.5) (:diametral-pitch @ui-state))
-          :let [theta (rotation gear t)]]
-    (q/stroke-weight 1.0)
-    (q/stroke 0)
-    (cq/draw-shape (poly-at shape pos theta))
-    (q/stroke 0 0.6 0.6)
-    (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+  (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state]
+    (doseq [{:keys [shape radius pos] :as gear}
+            (gear-system (cq/rel-vec 0.5 0.5) diametral-pitch driver-teeth driver-ratio)
+            :let [theta (rotation gear t)]]
+      (q/stroke-weight 1.0)
+      (q/stroke 0)
+      (cq/draw-shape (poly-at shape pos theta))
+      (q/stroke 0 0.6 0.6)
+      (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta))))))
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
    (ctrl/checkbox ui-state "Running?" [:running])
-   (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])])
+   (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
+   (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
+   (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])])
 
 (sketch/defquil mechanism
   :created-at "2021-04-19"
