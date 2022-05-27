@@ -55,23 +55,21 @@
                       :circles-overlap geometry/circles-overlap?})
 
 (defn list-nearest-neighbors [tree k mouse]
-  (if (> k 1)
-    (let [neighbors (saq/k-nearest-neighbors tree k mouse)]
-      (swap! defo assoc :nearest-neighbor
-             (mapv (fn [n] {:p (g/get-point n)
-                           :data (g/get-point-data n)})
-                   neighbors))
-      (doseq [neighbor neighbors
-              :let [p (g/get-point neighbor)]]
-        (q/stroke 0.75 0.8 0.5)
-        (q/line mouse p)))
-    (let [neighbor (saq/nearest-neighbor-node tree mouse)]
-      (when-let [p (g/get-point neighbor)]
-        (q/stroke 0.75 0.8 0.5)
-        (q/line mouse p)
-        (swap! defo assoc :nearest-neighbor
-               {:p p
-                :data (g/get-point-data neighbor)})))))
+  (let [neighbors (if (> k 1)
+                    (saq/k-nearest-neighbors tree k mouse)
+                    [(saq/nearest-neighbor-node tree mouse)])]
+    (doseq [neighbor neighbors
+            :let [p (g/get-point neighbor)]]
+      (q/stroke 0.75 0.8 0.5)
+      (q/line mouse p))
+
+    (swap! defo assoc :nearest-neighbor
+           (mapv (fn [n]
+                   (let [p (g/get-point n)]
+                     {:p p
+                      :d (g/dist mouse p)
+                      :data (g/get-point-data n)}))
+                 neighbors))))
 
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
   (let [overlap-isec (get intersect-modes (get @ui-state :isec-mode))
