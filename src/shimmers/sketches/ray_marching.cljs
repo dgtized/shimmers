@@ -125,9 +125,7 @@
     (let [[close-a close-b]
           (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
           dist (sdf-line position close-a close-b 1)]
-      (cond (or (> depth (q/width))
-                (> steps 64)
-                (not (g/contains-point? (cq/screen-rect) position)))
+      (cond (or (> depth (q/width)) (> steps 64))
             [position path]
             ;; FIXME: sometimes we clip through a line and then reflection happens
             ;; on the wrong side need to detect crossing a line boundary somehow.
