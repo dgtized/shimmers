@@ -21,7 +21,8 @@
 ;; http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/#signed-distance-functions
 
 (defonce ui-state
-  (ctrl/state {:mode :ray-march
+  (ctrl/state {:animated true
+               :mode :ray-march
                :bounding-rectangle true
                :omnidirectional true
                :visible-shapes true
@@ -33,8 +34,9 @@
    :mouse (cq/rel-vec 0.5 0.5)})
 
 (defn update-state [state]
-  (-> state
-      (update :theta + 0.025)
+  (-> (if (:animated @ui-state)
+        (update state :theta + 0.025)
+        state)
       (update :mouse cq/mouse-last-position-clicked)))
 
 (defn polar-project [p theta radius]
@@ -234,6 +236,7 @@
 
 (defn ui-controls []
   (ctrl/container
+   (ctrl/checkbox ui-state "Animated" [:animated])
    (ctrl/change-mode ui-state [:ray-march :reflect-ray-march :closest :visible-polygon])
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
