@@ -38,9 +38,7 @@
      :mouse (gv/vec2)}))
 
 (defn update-state [state]
-  (if (:mouse-hover @ui-state)
-    (assoc state :mouse (cq/mouse-position))
-    (update state :mouse cq/mouse-last-position-clicked)))
+  (update state :mouse cq/mouse-last-position-clicked (:mouse-hover @ui-state)))
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))

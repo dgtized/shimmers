@@ -41,12 +41,12 @@
      :mouse (gv/vec2)
      :lines (repeatedly 6 (gen-line bounds))}))
 
-(defn update-state [{:keys [lines bounds mouse] :as state}]
+(defn update-state [{:keys [lines bounds] :as state}]
   (let [isecs (line-intersections (into lines (map gl/line2 (g/edges bounds))))]
-    (assoc state
-           :mouse (cq/mouse-last-position-clicked mouse)
-           :intersections isecs
-           :edges (poly-detect/intersections->edges isecs))))
+    (-> state
+        (assoc :intersections isecs
+               :edges (poly-detect/intersections->edges isecs))
+        (update :mouse cq/mouse-last-position-clicked))))
 
 ;; improved but still showing backwards triangles form inset sometimes?
 (defn draw-inset [shape]

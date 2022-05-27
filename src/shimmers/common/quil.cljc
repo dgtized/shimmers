@@ -35,13 +35,16 @@
   Returns a new position from the mouse within the canvas frame on mouse click,
   otherwise returns the previous location if outside of bounds or no buttons
   currently pressed."
-  [last-position]
-  (if (q/mouse-pressed?)
-    (let [pos (mouse-position)]
-      (if (g/contains-point? (screen-rect) pos)
-        pos
+  [last-position & hover?]
+  (cond (q/mouse-pressed?)
+        (let [pos (mouse-position)]
+          (if (g/contains-point? (screen-rect) pos)
+            pos
+            last-position))
+        (first (seq hover?))
+        (mouse-position)
+        :else
         last-position))
-    last-position))
 
 (defn plot [shape points]
   (doseq [p points]
