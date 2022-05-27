@@ -111,7 +111,7 @@
         :else
         (recur
          (+ depth dist)
-         (conj path [position (* 2 dist)]))))))
+         (conj path [position dist]))))))
 
 (defn draw-ray [from hit path {:keys [show-path]}]
   (when show-path
