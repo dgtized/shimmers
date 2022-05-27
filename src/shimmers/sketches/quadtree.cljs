@@ -54,6 +54,25 @@
 (def intersect-modes {:intersect-shape g/intersect-shape
                       :circles-overlap geometry/circles-overlap?})
 
+(defn list-nearest-neighbors [tree k mouse]
+  (if (> k 1)
+    (let [neighbors (saq/k-nearest-neighbors tree k mouse)]
+      (swap! defo assoc :nearest-neighbor
+             (mapv (fn [n] {:p (g/get-point n)
+                           :data (g/get-point-data n)})
+                   neighbors))
+      (doseq [neighbor neighbors
+              :let [p (g/get-point neighbor)]]
+        (q/stroke 0.75 0.8 0.5)
+        (q/line mouse p)))
+    (let [neighbor (saq/nearest-neighbor-node tree mouse)]
+      (when-let [p (g/get-point neighbor)]
+        (q/stroke 0.75 0.8 0.5)
+        (q/line mouse p)
+        (swap! defo assoc :nearest-neighbor
+               {:p p
+                :data (g/get-point-data neighbor)})))))
+
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
   (let [overlap-isec (get intersect-modes (get @ui-state :isec-mode))
         cursor (gc/circle mouse 5)
@@ -64,23 +83,7 @@
     (q/stroke 0.6 0.5 0.5)
     (cq/circle cursor)
 
-    (if (> k 1)
-      (let [neighbors (saq/k-nearest-neighbors tree k mouse)]
-        (swap! defo assoc :nearest-neighbor
-               (mapv (fn [n] {:p (g/get-point n)
-                             :data (g/get-point-data n)})
-                     neighbors))
-        (doseq [neighbor neighbors
-                :let [p (g/get-point neighbor)]]
-          (q/stroke 0.75 0.8 0.5)
-          (q/line mouse p)))
-      (let [neighbor (saq/nearest-neighbor-node tree mouse)]
-        (when-let [p (g/get-point neighbor)]
-          (q/stroke 0.75 0.8 0.5)
-          (q/line mouse p)
-          (swap! defo assoc :nearest-neighbor
-                 {:p p
-                  :data (g/get-point-data neighbor)}))))
+    (list-nearest-neighbors tree k mouse)
 
     (let [matches (->> [tree]
                        (saq/lazy-select-quad
