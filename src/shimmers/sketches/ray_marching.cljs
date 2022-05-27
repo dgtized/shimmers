@@ -232,7 +232,8 @@
    [:p "In " [:em "closest"] " mode, rays are drawn from the selected origin to
    the closest segment along the path of the ray."]
    [:p "In " [:em "ray-march"] " mode, rays are drawn from the selected origin, but moving forward each step only as far as the closest segment to that point. The closest jump distance can be visualized if " [:em "closest surface radius"] " is enabled."]
-   [:p "In " [:em "visible-polygon"] " mode, it draws the polygon re-constructed from all the closest segment hits from a omnidirectional sweep."]
+   [:p "In " [:em "reflect-ray-march"] " mode, the ray will reflect on any segment hit instead of terminating immediately."]
+   [:p "In " [:em "visible-polygon"] " mode, draws the polygon re-constructed from all the closest segment hits from a omnidirectional sweep."]
    [:p "Click inside the canvas to place the ray origin."]])
 
 (defn ui-controls []
