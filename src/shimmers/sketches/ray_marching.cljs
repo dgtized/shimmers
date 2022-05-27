@@ -115,32 +115,35 @@
 
 (defn reflect-ray-march [from angle segments]
   (loop [depth 0
+         steps 0
          position from
          angle angle
          path []]
     (let [[close-a close-b]
           (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
-          dist (sdf-line position close-a close-b 1)]
-      (cond
-        (or (> depth (q/width))
-            (not (g/contains-point? (cq/screen-rect) position)))
-        [position path]
-        ;; FIXME: sometimes we clip through a line and then reflection happens
-        ;; on the wrong side need to detect crossing a line boundary somehow.
-        (< dist 1)
-        (let [normal (g/normal (tm/- close-b close-a))
-              reflection (g/reflect (v/polar 1 angle) normal)
-              reflection-angle (- (g/heading reflection))
-              dist 2]
-          (recur (+ depth dist)
-                 (tm/+ position (v/polar dist reflection-angle))
-                 reflection-angle
-                 (conj path [position dist])))
-        :else
-        (recur (+ depth dist)
-               (tm/+ position (v/polar dist angle))
-               angle
-               (conj path [position dist]))))))
+          dist (* 0.98 (sdf-line position close-a close-b 1))]
+      (cond (or (> depth (q/width))
+                (> steps 64)
+                (not (g/contains-point? (cq/screen-rect) position)))
+            [position path]
+            ;; FIXME: sometimes we clip through a line and then reflection happens
+            ;; on the wrong side need to detect crossing a line boundary somehow.
+            (< dist 0.01)
+            (let [normal (g/normal (tm/- close-a close-b))
+                  reflection (g/reflect (v/polar 1 angle) normal)
+                  reflection-angle (- (g/heading reflection))
+                  dist (Math/abs dist)]
+              (recur (+ depth dist)
+                     (inc steps)
+                     (tm/+ position (v/polar dist reflection-angle))
+                     reflection-angle
+                     (conj path [position dist])))
+            :else
+            (recur (+ depth dist)
+                   (inc steps)
+                   (tm/+ position (v/polar dist angle))
+                   angle
+                   (conj path [position dist]))))))
 
 (defn draw-ray [from hit path {:keys [show-path]}]
   (when show-path
