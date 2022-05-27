@@ -158,7 +158,11 @@
   (q/stroke 0.0)
   (q/stroke-weight 2.0)
   (doseq [shape shapes]
-    (cq/draw-shape (g/vertices shape))))
+    (let [vertices (g/vertices shape)]
+      (cq/draw-shape vertices)
+      (doseq [[a b] (g/edges shape)
+              :let [mid (tm/mix a b 0.5)]]
+        (q/line mid (tm/+ mid (tm/normalize (g/normal (tm/- a b)) 3)))))))
 
 (defn draw-state [{:keys [theta mouse]}]
   (q/ellipse-mode :radius)
