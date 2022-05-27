@@ -74,7 +74,8 @@
                   (* theta 0.1))
      (circle-blob (polar-project (cq/rel-vec 0.6 0.7) (+ theta 2) (cq/rel-w 0.08))
                   r-min r-max
-                  (* theta 0.40))]))
+                  (* theta 0.40))
+     (g/translate (cq/screen-rect 0.2) (cq/rel-vec -0.35 0.35))]))
 
 ;; https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 (defn sdf-line [p a b r]
