@@ -17,20 +17,19 @@
 
 (defonce defo (debug/state))
 
-(defn build-tree [{:keys [points] :as state}]
-  (assoc state :tree
-         (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
-                 (saq/circletree 0 0 (q/width) (q/height))
-                 points)))
+(defn build-tree [tree points]
+  (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
+          tree points))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect 0.99)]
-    (build-tree {:bounds bounds
-                 :points (repeatedly 256 #(gc/circle (g/random-point-inside bounds)
-                                                     (dr/random-int 2 12)))
-                 :tree (saq/circletree bounds)
-                 :mouse (gv/vec2)})))
+  (let [bounds (cq/screen-rect 0.99)
+        points (repeatedly 256 #(gc/circle (g/random-point-inside bounds)
+                                           (dr/random-int 8 32)))]
+    {:bounds bounds
+     :points points
+     :tree (build-tree (saq/circletree bounds) points)
+     :mouse (gv/vec2)}))
 
 (defn update-state [state]
   (assoc state :mouse (cq/mouse-position)))
