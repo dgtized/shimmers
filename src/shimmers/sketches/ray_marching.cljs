@@ -127,17 +127,19 @@
           dist (sdf-line position close-a close-b 1)]
       (cond (or (> depth (q/width)) (> steps 64))
             [position path]
-            ;; FIXME: sometimes we clip through a line and then reflection happens
-            ;; on the wrong side need to detect crossing a line boundary somehow.
             (<= dist 0.01)
-            (let [normal (g/normal (tm/- close-a close-b))
-                  reflection (g/reflect (v/polar 1 angle) normal)
-                  reflection-angle (- (g/heading reflection))
-                  dist (+ 0.02 (Math/abs dist))]
+            (let [facing-normal
+                  (tm/normalize (g/normal (tm/- close-a close-b))
+                                (v/orientation close-a close-b position))
+                  reflection (g/reflect (v/polar 1 angle) facing-normal)
+                  ;; not sure why normal is needed here. *something* is needed
+                  ;; to keep it from reflecting immediately, but this adjust the
+                  ;; angle of reflection and not sure it's always quite right.
+                  dir (tm/- facing-normal reflection)]
               (recur (+ depth dist)
                      (inc steps)
-                     (tm/+ position (v/polar dist reflection-angle))
-                     reflection-angle
+                     (tm/+ position (tm/* dir dist))
+                     (g/heading dir)
                      (conj path [position dist])))
             :else
             (recur (+ depth dist)
