@@ -16,6 +16,12 @@
    [thi.ng.geom.vector :as gv]))
 
 (defonce defo (debug/state))
+(defonce ui-state (ctrl/state {:isec-mode :circles-overlap
+                               :mouse-hover true
+                               :knearest 1}))
+
+(def intersect-modes {:intersect-shape g/intersect-shape
+                      :circles-overlap geometry/circles-overlap?})
 
 (defn build-tree [tree points]
   (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
@@ -32,7 +38,9 @@
      :mouse (gv/vec2)}))
 
 (defn update-state [state]
-  (assoc state :mouse (cq/mouse-position)))
+  (if (:mouse-hover @ui-state)
+    (assoc state :mouse (cq/mouse-position))
+    (update state :mouse cq/mouse-last-position-clicked)))
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
@@ -46,12 +54,6 @@
         (cq/rectangle (g/bounds n))
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
-
-(defonce ui-state (ctrl/state {:isec-mode :circles-overlap
-                               :knearest 1}))
-
-(def intersect-modes {:intersect-shape g/intersect-shape
-                      :circles-overlap geometry/circles-overlap?})
 
 (defn list-nearest-neighbors [tree k mouse]
   (let [neighbors (if (> k 1)
@@ -116,6 +118,7 @@
 (defn ui-controls []
   [:div.flexcols
    [:div
+    (ctrl/checkbox-after ui-state "Mouse Hover" [:mouse-hover])
     (ctrl/change-mode ui-state (keys intersect-modes)
                       {:mode-key :isec-mode})
     (ctrl/numeric ui-state "K-nearest" [:knearest] [1 16 1])]
