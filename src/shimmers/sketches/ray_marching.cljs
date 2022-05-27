@@ -122,16 +122,13 @@
           (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
           dist (sdf-line position close-a close-b 1)]
       (cond
-        (or (> depth 500)
+        (or (> depth (* 2 (q/width)))
             (not (g/contains-point? (cq/screen-rect) position)))
         [position path]
         (< dist 1)
-        (let [reflection-angle
-              (-> (v/polar dist angle)
-                  (g/reflect (tm/- close-a close-b))
-                  g/heading
-                  -)
-              dist 2]
+        (let [reflection (g/reflect (v/polar 1 angle) (tm/- close-a close-b))
+              reflection-angle (- (g/heading reflection))
+              dist 1.5]
           (recur (+ depth dist)
                  (tm/+ position (v/polar dist reflection-angle))
                  reflection-angle
