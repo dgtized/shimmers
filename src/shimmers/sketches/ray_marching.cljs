@@ -113,6 +113,35 @@
          (+ depth dist)
          (conj path [position dist]))))))
 
+(defn reflect-ray-march [from angle segments]
+  (loop [depth 0
+         position from
+         angle angle
+         path []]
+    (let [[close-a close-b]
+          (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
+          dist (sdf-line position close-a close-b 1)]
+      (cond
+        (or (> depth 500)
+            (not (g/contains-point? (cq/screen-rect) position)))
+        [position path]
+        (< dist 1)
+        (let [reflection-angle
+              (-> (v/polar dist angle)
+                  (g/reflect (tm/- close-a close-b))
+                  g/heading
+                  -)
+              dist 2]
+          (recur (+ depth dist)
+                 (tm/+ position (v/polar dist reflection-angle))
+                 reflection-angle
+                 (conj path [position dist])))
+        :else
+        (recur (+ depth dist)
+               (tm/+ position (v/polar dist angle))
+               angle
+               (conj path [position dist]))))))
+
 (defn draw-ray [from hit path {:keys [show-path]}]
   (when show-path
     (q/stroke-weight 0.4)
@@ -157,6 +186,17 @@
         (let [angle (* theta 0.5)
               [hit path] (ray-march mouse angle segments)]
           (draw-ray mouse hit path ui-mode)))
+      :reflect-ray-march
+      (let [angle (* theta 0.5)
+            [_ path] (reflect-ray-march mouse angle segments)]
+        (when (:show-path ui-mode)
+          (q/stroke-weight 0.4)
+          (q/stroke 0.0 0.5 0.5)
+          (doseq [[c r] path]
+            (cq/circle c r)))
+        (q/stroke-weight 0.8)
+        (q/stroke 0.5)
+        (cq/draw-path (mapv first path)))
       :visible-polygon
       (let [vertices (for [angle (sm/range-subdivided tm/TWO_PI 120)
                            :let [ray [mouse (polar-project mouse angle (q/width))]
@@ -187,13 +227,15 @@
 
 (defn ui-controls []
   (ctrl/container
-   (ctrl/change-mode ui-state [:ray-march :closest :visible-polygon])
+   (ctrl/change-mode ui-state [:ray-march :reflect-ray-march :closest :visible-polygon])
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
-   (when (= :ray-march (:mode @ui-state))
-     [:div
-      (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional])
-      (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])])
+   (let [{:keys [mode]} @ui-state]
+     (when (#{:ray-march :reflect-ray-march} mode)
+       [:div
+        (when (= :ray-march mode)
+          (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional]))
+        (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])]))
    [explanation]))
 
 (sketch/defquil ray-marching
