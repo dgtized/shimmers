@@ -65,46 +65,46 @@
 (deftest faces-and-polygons
   (let [[a b c
          d e f] nodes]
-    (t/testing "closest edge of face near point"
+    (t/testing "edge of face near point"
       (is (= [a b] (sut/edge-face-near-point simple-loop (gv/vec2 2 1))))
       (is (= [b a] (sut/edge-face-near-point simple-loop (gv/vec2 2 -1))))
       (is (= [d a] (sut/edge-face-near-point simple-loop (gv/vec2 1 2))))
       (is (= [a d] (sut/edge-face-near-point simple-loop (gv/vec2 -1 2)))))
 
     (t/testing "simple loop"
-      (is (= [a b c f e d] (sut/polygon-near-point simple-loop (gv/vec2 2 1)))
+      (is (= [a b c f e d] (sut/cycle-near-point simple-loop (gv/vec2 2 1)))
           "clockwise cycle from a-b")
-      (is (= [b a d e f c] (sut/polygon-near-point simple-loop (gv/vec2 2 -1)))
+      (is (= [b a d e f c] (sut/cycle-near-point simple-loop (gv/vec2 2 -1)))
           "counter-clockwise outer cycle from b-a")
-      (is (= [d a b c f e] (sut/polygon-near-point simple-loop (gv/vec2 1 2)))
+      (is (= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 1 2)))
           "clockwise cycle from d-a")
-      (is (= [a d e f c b] (sut/polygon-near-point simple-loop (gv/vec2 -1 2)))
+      (is (= [a d e f c b] (sut/cycle-near-point simple-loop (gv/vec2 -1 2)))
           "counter-clockwise cycle from d-a")
-      (is (= [d a b c f e] (sut/polygon-near-point simple-loop (gv/vec2 0 0)))
+      (is (= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 0 0)))
           "upper-left boundary (clockwise)")
-      (is (= [e f c b a d] (sut/polygon-near-point simple-loop (gv/vec2 20 10)))
+      (is (= [e f c b a d] (sut/cycle-near-point simple-loop (gv/vec2 20 10)))
           "lower-right boundary (counter-clockwise)"))
 
     (t/testing "bisected loop at b-e"
-      (is (= [a b e d] (sut/polygon-near-point bisect2 (gv/vec2 4 1)))
+      (is (= [a b e d] (sut/cycle-near-point bisect2 (gv/vec2 4 1)))
           "short clockwise cycle from a-b")
-      (is (= [d a b e] (sut/polygon-near-point bisect2 (gv/vec2 1 4)))
+      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 1 4)))
           "short clockwise cycle from a-b")
-      (is (= [c f e b] (sut/polygon-near-point bisect2 (gv/vec2 18 4)))
+      (is (= [c f e b] (sut/cycle-near-point bisect2 (gv/vec2 18 4)))
           "short clockwise cycle from c-f")
-      (is (= [f e b c] (sut/polygon-near-point bisect2 (gv/vec2 15 8)))
+      (is (= [f e b c] (sut/cycle-near-point bisect2 (gv/vec2 15 8)))
           "short clockwise cycle from f-e")
-      (is (= [b a d e f c] (sut/polygon-near-point bisect2 (gv/vec2 4 -1)))
+      (is (= [b a d e f c] (sut/cycle-near-point bisect2 (gv/vec2 4 -1)))
           "long counter-clockwise cycle from b-a")
-      (is (= [a d e f c b] (sut/polygon-near-point bisect2 (gv/vec2 -1 4)))
+      (is (= [a d e f c b] (sut/cycle-near-point bisect2 (gv/vec2 -1 4)))
           "long counter-clockwise cycle from a-d")
-      (is (= [d a b e] (sut/polygon-near-point bisect2 (gv/vec2 0 0)))
+      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 0)))
           "upper-left boundary (clockwise inner loop)")
-      (is (= [f c b a d e] (sut/polygon-near-point bisect2 (gv/vec2 20 0)))
+      (is (= [f c b a d e] (sut/cycle-near-point bisect2 (gv/vec2 20 0)))
           "upper-right boundary (counter-clockwise outer loop)")
-      (is (= [d a b e] (sut/polygon-near-point bisect2 (gv/vec2 0 10)))
+      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 10)))
           "lower-left boundary (clockwise inner loop)")
-      (is (= [e f c b a d] (sut/polygon-near-point bisect2 (gv/vec2 20 10)))
+      (is (= [e f c b a d] (sut/cycle-near-point bisect2 (gv/vec2 20 10)))
           "lower-right boundary (counter-clockwise outer loop)"))))
 
 (deftest self-intersection

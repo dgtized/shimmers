@@ -200,7 +200,7 @@
     (let [graph-mode (get-in @ui-state [:graph-mode])]
       (if (= graph-mode :faces)
         (let [[p q] (poly-detect/edge-face-closest-point graph mouse)
-              cycle (poly-detect/polygon-near-point graph mouse)
+              cycle (poly-detect/cycle-near-point graph mouse)
               mid-point (tm/mix p q 0.5)]
           (q/stroke 0.6 0.5 0.5 1.0)
           (q/stroke-weight 1.0)

@@ -133,8 +133,8 @@
 ;; the polygon it can construct the hull over the outer edge. Put differently,
 ;; following the counter-clockwise point on the outside gift wraps the polygon.
 ;; This doesn't always happen though so something is weird.
-(defn polygon-near-point
-  "Given a graph of points in a plane and a point, find the closest polygon around that point."
+(defn cycle-near-point
+  "Given a graph of points in a plane and a point, find the closest polygon near that point."
   [g point]
   (when-let [[p q] (edge-face-closest-point g point)]
     (cycle-clockwise-from-edge g p q)))
