@@ -24,7 +24,7 @@
 (defn fixed-width
   "Format float `v` to 2 decimal places as long as it's not infinite."
   [v]
-  (if (infinite? v)
+  (if (or (integer? v) (infinite? v))
     v
     (let [v' (.toFixed v 2)]
       (symbol v'))))
