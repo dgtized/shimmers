@@ -5,11 +5,10 @@
 
 ;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
 (defn sizing-attributes [width height attributes]
-  (merge
-   {:width width :height height
-    :style {:width (str width "px")
-            :height (str height "px")}}
-   attributes))
+  (-> attributes
+      (merge {:width width :height height})
+      (assoc-in [:style :width] (str width "px"))
+      (assoc-in [:style :height] (str width "px"))))
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
@@ -27,5 +26,5 @@
         (let [{:keys [width height]} @canvas-state]
           [:canvas (sizing-attributes width height attributes)]))})))
 
-(defn canvas-frame [canvas-state render-frame-fn]
-  [animated-canvas canvas-state {:class "canvas-frame"} render-frame-fn])
+(defn canvas-frame [attrs canvas-state render-frame-fn]
+  [animated-canvas canvas-state attrs render-frame-fn])

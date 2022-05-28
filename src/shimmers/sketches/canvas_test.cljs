@@ -2,12 +2,12 @@
   (:require
    [helins.canvas :as cv]
    [reagent.core :as r]
+   [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.canvas :as canvas]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -46,6 +46,7 @@
                    :vel new-vel)))))
 
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
+;; also playing with neon effect from https://codepen.io/agar3s/pen/pJpoya
 (defn draw-frame [id telemetry]
   (fn [_ canvas canvas-state]
     (let [ctx (cv/high-dpi (.getContext canvas "2d"))
@@ -65,23 +66,31 @@
            (swap! telemetry assoc id pos)
            (reset! box-state box-state')
            (-> ctx
-               (cv/color-fill "white")
-               (cv/rect-fill 0 0 width height)
-               (cv/color-fill "black")
-               (cv/rect-fill x y size size))))))))
+               (cv/clear 0 0 width height)
+               (cv/composite-op "lighter")
+               (cv/line-join "round")
+               (cv/shadow-blur "20")
+               (cv/line-width 6)
+               (cv/color-stroke (str "rgba(" 55 "," 240 "," 180 "," 5 ")"))
+               (cv/rect-stroke x y size size))))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 200 :height 200})
-        telemetry (r/atom {})]
+        telemetry (r/atom {})
+        attributes
+        {:class "canvas-frame"
+         :style {:background "#000000"}}]
     (fn []
       [:div
        [:div.flexcols
         [:div
          [:h4 "Frame 1"]
-         [canvas/canvas-frame canvas-state (draw-frame :a telemetry)]]
+         [canvas/canvas-frame attributes canvas-state
+          (draw-frame :a telemetry)]]
         [:div
          [:h4 "Frame 2"]
-         [canvas/canvas-frame canvas-state (draw-frame :b telemetry)]]]
+         [canvas/canvas-frame attributes canvas-state
+          (draw-frame :b telemetry)]]]
        [:div.explanation
         [:p.readable-width
          "Experimenting with an alternative Canvas renderer from Quil. As it can
