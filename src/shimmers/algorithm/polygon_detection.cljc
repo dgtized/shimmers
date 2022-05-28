@@ -7,6 +7,7 @@
    [thi.ng.dstruct.core :as d]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -111,6 +112,23 @@
         [q p]
         [p q]))))
 
+;; Better heuristics by selecting closest two points and finding closest
+(defn edge-face-closest-point
+  "Return the closest facing edge pair `p`, `q` in `g` from `point`.
+
+  `p` and `q` are ordered to ensure that point is oriented clockwise from the
+  edge."
+  [g point]
+  (when-let [[p q]
+             (apply min-key
+                    (fn [[p q]]
+                      (g/dist-squared point
+                                      (gu/closest-point-on-segment point p q)))
+                    (lg/edges g))]
+    (if (pos? (v/orientation p q point))
+      [q p]
+      [p q])))
+
 ;; Note that if initial point order is reversed, as if if point is outside of
 ;; the polygon it can construct the hull over the outer edge. Put differently,
 ;; following the counter-clockwise point on the outside gift wraps the polygon.
@@ -118,7 +136,7 @@
 (defn polygon-near-point
   "Given a graph of points in a plane and a point, find the closest polygon around that point."
   [g point]
-  (when-let [[p q] (edge-face-near-point g point)]
+  (when-let [[p q] (edge-face-closest-point g point)]
     (cycle-clockwise-from-edge g p q)))
 
 ;; Alternatives approaches with decomposition & finding circuits?
