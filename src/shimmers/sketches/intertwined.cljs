@@ -176,6 +176,15 @@
                 (filter (fn [isec] (near-mouse mouse (:isec isec))))
                 (map (fn [i] (update i :segments (partial mapv :points))))))))
 
+(defn highlight-cycle [cycle]
+  (q/stroke 0.6 0.5 0.5 1.0)
+  (q/stroke-weight 1.0)
+  (cq/draw-shape cycle)
+  (q/no-stroke)
+  (doseq [[i c] (map-indexed vector cycle)]
+    (q/fill (/ i (count cycle)) 0.75 0.5)
+    (cq/circle c 3.0)))
+
 (defn draw-graph [path mouse]
   (q/fill 0)
   (let [intersects (intersections path)
@@ -202,27 +211,19 @@
       (let [[p q] (poly-detect/edge-face-closest-point graph mouse)
             cycle (poly-detect/cycle-near-point graph mouse)
             mid-point (tm/mix p q 0.5)]
-        (q/stroke 0.6 0.5 0.5 1.0)
-        (q/stroke-weight 1.0)
-        (cq/draw-shape cycle)
+        (highlight-cycle cycle)
         (q/stroke-weight 2.5)
         (q/line p q)
         (q/stroke-weight 1)
         ;; facing normal line on closest edge
         (q/line mid-point (tm/+ mid-point (tm/normalize (g/normal (tm/- q p)) 5.0)))
-        (q/no-stroke)
-        (doseq [[i c] (map-indexed vector cycle)]
-          (q/fill (/ i (count cycle)) 0.75 0.5)
-          (cq/circle c 3.0))
         (swap! defo assoc
                :cycle cycle
                :edge-face [p q]))
 
       :polygon-select
       (when-let [polygon (poly-detect/polygon-around-point graph mouse)]
-        (q/stroke 0.6 0.5 0.5 1.0)
-        (q/stroke-weight 1.0)
-        (cq/draw-polygon polygon)
+        (highlight-cycle (g/vertices polygon))
         (swap! defo assoc
                :polygon polygon))
 
