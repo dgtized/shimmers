@@ -21,11 +21,13 @@
     #?(:clj
        [^:unsynchronized-mutable rect
         ^:unsynchronized-mutable children
-        ^:unsynchronized-mutable circle]
+        ^:unsynchronized-mutable circle
+        meta]
        :cljs
        [^:mutable rect
         ^:mutable children
-        ^:mutable circle])
+        ^:mutable circle
+        meta])
 
   g/ISpatialTree
   (add-point [_ p d]
@@ -38,7 +40,7 @@
 
   g/IClear
   (clear*
-    [_] (MutableCircleTreeNode. rect nil nil))
+    [_] (MutableCircleTreeNode. rect nil nil meta))
   (clear!
     [_]
     (set! children nil)
@@ -66,7 +68,8 @@
                 r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                 c  (MutableCircleTreeNode.
                     r nil
-                    (if add? d (largest-circle r [d circle])))]
+                    (if add? d (largest-circle r [d circle]))
+                    nil)]
             (spatialtree/set-child _ idx c)
             c))))
   (split-node
@@ -87,6 +90,24 @@
 
   g/IBounds
   (bounds [_] rect)
+
+  #?@(:clj
+      [clojure.lang.IObj
+       (meta [_] meta)
+       (withMeta
+        [_ meta']
+        (if (identical? meta' meta)
+          _
+          (MutableCircleTreeNode. rect children circle meta')))]
+      :cljs
+      [IMeta
+       (-meta [_] meta)
+       IWithMeta
+       (-with-meta
+        [_ meta']
+        (if (identical? meta' meta)
+          _
+          (MutableCircleTreeNode. rect children circle meta')))])
 
   ;; not working in Javascript?
   Object
@@ -118,7 +139,7 @@
   ([x y size]
    (circletree x y size size))
   ([x y w h]
-   (MutableCircleTreeNode. (rect/rect x y w h) nil nil)))
+   (MutableCircleTreeNode. (rect/rect x y w h) nil nil nil)))
 
 (comment
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 5)]

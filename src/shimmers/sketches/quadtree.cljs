@@ -2,13 +2,13 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
-   [shimmers.algorithm.quadtree :as saq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -42,14 +42,17 @@
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
-                            (fn [t] (remove nil? (spatialtree/get-children t)))
-                            tree)]
+                            (fn [t] (map #(vary-meta % assoc :depth (inc (:depth (meta t))))
+                                        (remove nil? (spatialtree/get-children t))))
+                            (vary-meta tree assoc :depth 0))]
     (doseq [n traversal]
       (q/stroke 0.5)
       (cq/rectangle (g/bounds n))
       (when-let [circle (g/get-point-data n)]
         (q/stroke 0.0)
+        (q/fill (/ 16.0 (Math/pow 2 (:depth (meta n)))) 0.1)
         (cq/rectangle (g/bounds n))
+        (q/no-fill)
         (q/stroke 0.0 0.5 0.5)
         (cq/circle circle)))))
 
