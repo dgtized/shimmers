@@ -71,6 +71,12 @@
       (is (= [d a] (sut/edge-face-near-point simple-loop (gv/vec2 1 2))))
       (is (= [a d] (sut/edge-face-near-point simple-loop (gv/vec2 -1 2)))))
 
+    (t/testing "edge of face closest point"
+      (is (= [a b] (sut/edge-face-closest-point simple-loop (gv/vec2 2 1))))
+      (is (= [b a] (sut/edge-face-closest-point simple-loop (gv/vec2 2 -1))))
+      (is (= [d a] (sut/edge-face-closest-point simple-loop (gv/vec2 1 2))))
+      (is (= [a d] (sut/edge-face-closest-point simple-loop (gv/vec2 -1 2)))))
+
     (t/testing "simple loop"
       (is (= [a b c f e d] (sut/cycle-near-point simple-loop (gv/vec2 2 1)))
           "clockwise cycle from a-b")
