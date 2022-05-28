@@ -139,6 +139,14 @@
   (when-let [[p q] (edge-face-closest-point g point)]
     (cycle-clockwise-from-edge g p q)))
 
+(defn polygon-around-point
+  "Given a graph `g`, and a `point`, find the polygon surrounding the point."
+  [g point]
+  (when-let [cycle (cycle-near-point g point)]
+    (let [polygon (gp/polygon2 cycle)]
+      (when (g/contains-point? polygon point)
+        polygon))))
+
 ;; Alternatives approaches with decomposition & finding circuits?
 ;; https://en.wikipedia.org/wiki/Polygon_partition#Partition_a_polygon_into_trapezoids
 ;; https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0230342

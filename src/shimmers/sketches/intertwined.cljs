@@ -27,7 +27,7 @@
 
 (def modes [:intersections :graph])
 (def edge-modes [:weighted-by-order :even-weight :hidden])
-(def graph-modes [:faces :polygons])
+(def graph-modes [:faces :polygon-select :polygons])
 (defonce ui-state (ctrl/state {:mode :intersections
                                :rows 3
                                :columns 4
@@ -197,35 +197,45 @@
       (cq/circle p 4.0))
 
     (q/fill 0.5 0.2)
-    (let [graph-mode (get-in @ui-state [:graph-mode])]
-      (if (= graph-mode :faces)
-        (let [[p q] (poly-detect/edge-face-closest-point graph mouse)
-              cycle (poly-detect/cycle-near-point graph mouse)
-              mid-point (tm/mix p q 0.5)]
-          (q/stroke 0.6 0.5 0.5 1.0)
-          (q/stroke-weight 1.0)
-          (cq/draw-shape cycle)
-          (q/stroke-weight 2.5)
-          (q/line p q)
-          (q/stroke-weight 1)
-          ;; facing normal line on closest edge
-          (q/line mid-point (tm/+ mid-point (tm/normalize (g/normal (tm/- q p)) 5.0)))
-          (q/no-stroke)
-          (doseq [[i c] (map-indexed vector cycle)]
-            (q/fill (/ i (count cycle)) 0.75 0.5)
-            (cq/circle c 3.0))
-          (swap! defo assoc
-                 :cycle cycle
-                 :edge-face [p q]))
-        (let [polygons (poly-detect/simple-polygons graph)]
-          (q/stroke 0 0.5)
-          (q/stroke-weight 0.5)
-          (swap! defo assoc :polygons polygons)
-          (doseq [shape polygons]
-            (-> shape
-                gp/polygon2
-                (poly-detect/inset-polygon 5.0)
-                cq/draw-polygon)))))))
+    (case (get-in @ui-state [:graph-mode])
+      :faces
+      (let [[p q] (poly-detect/edge-face-closest-point graph mouse)
+            cycle (poly-detect/cycle-near-point graph mouse)
+            mid-point (tm/mix p q 0.5)]
+        (q/stroke 0.6 0.5 0.5 1.0)
+        (q/stroke-weight 1.0)
+        (cq/draw-shape cycle)
+        (q/stroke-weight 2.5)
+        (q/line p q)
+        (q/stroke-weight 1)
+        ;; facing normal line on closest edge
+        (q/line mid-point (tm/+ mid-point (tm/normalize (g/normal (tm/- q p)) 5.0)))
+        (q/no-stroke)
+        (doseq [[i c] (map-indexed vector cycle)]
+          (q/fill (/ i (count cycle)) 0.75 0.5)
+          (cq/circle c 3.0))
+        (swap! defo assoc
+               :cycle cycle
+               :edge-face [p q]))
+
+      :polygon-select
+      (when-let [polygon (poly-detect/polygon-around-point graph mouse)]
+        (q/stroke 0.6 0.5 0.5 1.0)
+        (q/stroke-weight 1.0)
+        (cq/draw-polygon polygon)
+        (swap! defo assoc
+               :polygon polygon))
+
+      :polygons
+      (let [polygons (poly-detect/simple-polygons graph)]
+        (q/stroke 0 0.5)
+        (q/stroke-weight 0.5)
+        (swap! defo assoc :polygons polygons)
+        (doseq [shape polygons]
+          (-> shape
+              gp/polygon2
+              (poly-detect/inset-polygon 5.0)
+              cq/draw-polygon))))))
 
 (defn draw [{:keys [path mouse]}]
   (q/background 1.0)
