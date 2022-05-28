@@ -17,7 +17,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Random path through a space, then subdivide into polygons where the path crosses itself
 ;; TODO: find polygons
@@ -199,12 +200,16 @@
     (let [graph-mode (get-in @ui-state [:graph-mode])]
       (if (= graph-mode :faces)
         (let [[p q] (poly-detect/edge-face-near-point graph mouse)
-              cycle (poly-detect/polygon-near-point graph mouse)]
+              cycle (poly-detect/polygon-near-point graph mouse)
+              mid-point (tm/mix p q 0.5)]
           (q/stroke 0.6 0.5 0.5 1.0)
           (q/stroke-weight 1.0)
           (cq/draw-shape cycle)
           (q/stroke-weight 2.5)
           (q/line p q)
+          (q/stroke-weight 1)
+          ;; facing normal line on closest edge
+          (q/line mid-point (tm/+ mid-point (tm/normalize (g/normal (tm/- q p)) 5.0)))
           (q/no-stroke)
           (doseq [[i c] (map-indexed vector cycle)]
             (q/fill (/ i (count cycle)) 0.75 0.5)
