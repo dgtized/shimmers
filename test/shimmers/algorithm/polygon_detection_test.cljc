@@ -62,6 +62,22 @@
   (def bisect2 (lg/add-edges simple-loop [b e (g/dist b e)]))
   (def bisect3 (lg/add-edges simple-loop [c e (g/dist c e)])))
 
+(defn cycle=
+  "`xs` is the same cyclic ordering as `cycle`, regardless of starting element."
+  [cycle xs]
+  (let [elements (seq (take-while (partial not= (first cycle)) xs))
+        n (count elements)]
+    (if (< n (count xs))
+      (= cycle (concat (drop n xs) elements))
+      false)))
+
+(comment (cycle= [0 1 2] [0 1 2])
+         (cycle= [0 1 2] [1 2 0])
+         (cycle= [0 1 2] [2 0 1])
+         (not (cycle= [0 1 2] [2 1 0]))
+         (not (cycle= [0] [1]))
+         (not (cycle= [0 1] [2 0 1])))
+
 (deftest faces-and-polygons
   (let [[a b c
          d e f] nodes]
@@ -78,39 +94,39 @@
       (is (= [a d] (sut/edge-face-closest-point simple-loop (gv/vec2 -1 2)))))
 
     (t/testing "simple loop"
-      (is (= [a b c f e d] (sut/cycle-near-point simple-loop (gv/vec2 2 1)))
+      (is (cycle= [a b c f e d] (sut/cycle-near-point simple-loop (gv/vec2 2 1)))
           "clockwise cycle from a-b")
-      (is (= [b a d e f c] (sut/cycle-near-point simple-loop (gv/vec2 2 -1)))
+      (is (cycle= [b a d e f c] (sut/cycle-near-point simple-loop (gv/vec2 2 -1)))
           "counter-clockwise outer cycle from b-a")
-      (is (= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 1 2)))
+      (is (cycle= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 1 2)))
           "clockwise cycle from d-a")
-      (is (= [a d e f c b] (sut/cycle-near-point simple-loop (gv/vec2 -1 2)))
+      (is (cycle= [a d e f c b] (sut/cycle-near-point simple-loop (gv/vec2 -1 2)))
           "counter-clockwise cycle from d-a")
-      (is (= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 0 0)))
+      (is (cycle= [d a b c f e] (sut/cycle-near-point simple-loop (gv/vec2 0 0)))
           "upper-left boundary (clockwise)")
-      (is (= [e f c b a d] (sut/cycle-near-point simple-loop (gv/vec2 20 10)))
+      (is (cycle= [e f c b a d] (sut/cycle-near-point simple-loop (gv/vec2 20 10)))
           "lower-right boundary (counter-clockwise)"))
 
     (t/testing "bisected loop at b-e"
-      (is (= [a b e d] (sut/cycle-near-point bisect2 (gv/vec2 4 1)))
+      (is (cycle= [a b e d] (sut/cycle-near-point bisect2 (gv/vec2 4 1)))
           "short clockwise cycle from a-b")
-      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 1 4)))
+      (is (cycle= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 1 4)))
           "short clockwise cycle from a-b")
-      (is (= [c f e b] (sut/cycle-near-point bisect2 (gv/vec2 18 4)))
+      (is (cycle= [c f e b] (sut/cycle-near-point bisect2 (gv/vec2 18 4)))
           "short clockwise cycle from c-f")
-      (is (= [f e b c] (sut/cycle-near-point bisect2 (gv/vec2 15 8)))
+      (is (cycle= [f e b c] (sut/cycle-near-point bisect2 (gv/vec2 15 8)))
           "short clockwise cycle from f-e")
-      (is (= [b a d e f c] (sut/cycle-near-point bisect2 (gv/vec2 4 -1)))
+      (is (cycle= [b a d e f c] (sut/cycle-near-point bisect2 (gv/vec2 4 -1)))
           "long counter-clockwise cycle from b-a")
-      (is (= [a d e f c b] (sut/cycle-near-point bisect2 (gv/vec2 -1 4)))
+      (is (cycle= [a d e f c b] (sut/cycle-near-point bisect2 (gv/vec2 -1 4)))
           "long counter-clockwise cycle from a-d")
-      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 0)))
+      (is (cycle= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 0)))
           "upper-left boundary (clockwise inner loop)")
-      (is (= [f c b a d e] (sut/cycle-near-point bisect2 (gv/vec2 20 0)))
+      (is (cycle= [f c b a d e] (sut/cycle-near-point bisect2 (gv/vec2 20 0)))
           "upper-right boundary (counter-clockwise outer loop)")
-      (is (= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 10)))
+      (is (cycle= [d a b e] (sut/cycle-near-point bisect2 (gv/vec2 0 10)))
           "lower-left boundary (clockwise inner loop)")
-      (is (= [e f c b a d] (sut/cycle-near-point bisect2 (gv/vec2 20 10)))
+      (is (cycle= [e f c b a d] (sut/cycle-near-point bisect2 (gv/vec2 20 10)))
           "lower-right boundary (counter-clockwise outer loop)"))))
 
 (deftest self-intersection
