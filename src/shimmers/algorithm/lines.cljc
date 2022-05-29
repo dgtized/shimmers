@@ -336,31 +336,31 @@
            (apply lg/add-cycle (lg/digraph) a-points)
            b-points)))
 
-(defn find-clockwise-polygon [a b]
-  (let [graph (connectivity-graph a b)
-        min-point (reduce tm/min (lg/nodes graph))
-        start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))
-        centroid (tm/div (tm/+ (g/centroid a) (g/centroid b)) 2)]
-    (loop [polygon [] vertex start]
-      (let [prev (or (last polygon) centroid)
-            polygon' (conj polygon vertex)
-            candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
-            next-pt (poly-detect/clockwise-point prev vertex candidates)]
-        (cond (empty? candidates)
-              []
-              (and (> (count polygon') 2) (tm/delta= next-pt start))
-              polygon'
-              :else
-              (recur polygon' next-pt))))))
+(defn find-clockwise-polygon [graph start centroid]
+  (loop [polygon [] vertex start]
+    (let [prev (or (last polygon) centroid)
+          polygon' (conj polygon vertex)
+          candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
+          next-pt (poly-detect/clockwise-point prev vertex candidates)]
+      (cond (empty? candidates)
+            []
+            (and (> (count polygon') 2) (tm/delta= next-pt start))
+            polygon'
+            :else
+            (recur polygon' next-pt)))))
 
 ;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
-;; assume both polygons have points oriented in a clockwise sequence
 (defn join-polygons [a b]
   {:pre [(poly-detect/clockwise-polygon? (g/vertices a))
          (poly-detect/clockwise-polygon? (g/vertices b))]}
   (when (overlapping-polygon? a b)
-    (let [{:keys [points] :as polygon}
-          (->> (find-clockwise-polygon a b)
+    (let [graph (connectivity-graph a b)
+          min-point (reduce tm/min (lg/nodes graph))
+          start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))
+          centroid (tm/div (tm/+ (g/centroid a) (g/centroid b)) 2)
+
+          {:keys [points] :as polygon}
+          (->> (find-clockwise-polygon graph start centroid)
                dedupe
                gp/polygon2
                remove-coincident-segments)]
