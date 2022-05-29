@@ -176,7 +176,7 @@
 
   They should be simple cycles without any internal edges/chords."
   [graph]
-  (let [g (lg/weighted-digraph graph)]
+  (let [g (lg/digraph graph)]
     (loop [pending (set (lg/edges g)) polygons []]
       (if (empty? pending)
         polygons
