@@ -341,14 +341,11 @@
         min-point (reduce tm/min (lg/nodes graph))
         start (apply min-key (partial g/dist-squared min-point) (lg/nodes graph))
         centroid (tm/div (tm/+ (g/centroid a) (g/centroid b)) 2)]
-    (tap> graph)
-    (tap> [:start start (lg/successors graph start)])
     (loop [polygon [] vertex start]
       (let [prev (or (last polygon) centroid)
             polygon' (conj polygon vertex)
             candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
             next-pt (poly-detect/clockwise-point prev vertex candidates)]
-        (tap> [vertex :-> next-pt :from candidates (lg/successors graph vertex)])
         (cond (empty? candidates)
               []
               (and (> (count polygon') 2) (tm/delta= next-pt start))
@@ -370,19 +367,6 @@
       ;; FIXME: add missing test case, probably single point overlap?
       (when (>= (count points) 3)
         polygon))))
-
-(comment
-  (require '[shimmers.common.ui.debug :as debug]
-           '[thi.ng.geom.rect :as rect])
-  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 10 0 10 10)))
-
-  ;; doesn't work as it's hitting the "out" edge and then trying to loop through
-  ;; internal points before resuming from the "in" edge
-  (debug/with-tap-log #(join-polygons (gp/polygon2 [0 0] [10 0] [10 10])
-                                      (gp/polygon2 [0 0] [10 10] [0 10])))
-  (debug/with-tap-log #(join-polygons (gp/polygon2 [10 10] [0 10] [0 0] [10 0]) (rect/rect 5 5 10 10)))
-  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 5 10 10)))
-  (debug/with-tap-log #(join-polygons (rect/rect 10) (rect/rect 5 0 10 10))))
 
 (defn coincident-edges
   [a b]
