@@ -75,22 +75,34 @@
                points))
       from)))
 
-(defn cycle-clockwise-from-edge [g start to]
-  ;; FIXME change to starting edge in a clockwise direction. Currently if
-  ;; clockwise-starts gives a ccw point, it will detect a larger polygon with
-  ;; internal edges.
-  (loop [cycle [start] vertex to]
-    (let [previous-pt (or (last cycle) start)
-          candidates (remove (disj (set cycle) start) (lg/successors g vertex))
-          next-pt (counter-clockwise-point previous-pt vertex candidates)
-          cycle' (conj cycle vertex)]
+(defn find-cycle
+  "Find a cycle in `graph` from `start` with more than 2 vertices.
+
+  Use `select-point` to select a candidate successor from the given vertex given
+  the cycle thus far, the current vertex and all unvisited successor nodes other
+  than the `start` node."
+  [graph select-point start]
+  (loop [cycle [] vertex start]
+    (let [cycle' (conj cycle vertex)
+          candidates (remove (disj (set cycle') start) (lg/successors graph vertex))
+          next-pt (select-point cycle vertex candidates)]
       (cond (empty? candidates)
             []
-            ;; FIXME: Why are points occasionally not identical?
-            (and (> (count cycle') 2) (tm/delta= next-pt start))
+            (and (> (count cycle') 2) (identical? next-pt start))
             cycle'
             :else
             (recur cycle' next-pt)))))
+
+;; FIXME change to starting edge in a clockwise direction. Currently if
+;; clockwise-starts gives a ccw point, it will detect a larger polygon with
+;; internal edges.
+(defn cycle-clockwise-from-edge [g start to]
+  (find-cycle
+   g
+   (fn [cycle vertex points]
+     (counter-clockwise-point (or (last cycle) start)
+                              vertex points))
+   to))
 
 (defn closest-in [point points]
   (apply min-key (partial g/dist-squared point) points))

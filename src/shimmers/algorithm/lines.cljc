@@ -336,19 +336,6 @@
            (apply lg/add-cycle (lg/digraph) a-points)
            b-points)))
 
-(defn find-clockwise-polygon [graph start centroid]
-  (loop [polygon [] vertex start]
-    (let [prev (or (last polygon) centroid)
-          polygon' (conj polygon vertex)
-          candidates (remove (disj (set polygon') start) (lg/successors graph vertex))
-          next-pt (poly-detect/clockwise-point prev vertex candidates)]
-      (cond (empty? candidates)
-            []
-            (and (> (count polygon') 2) (tm/delta= next-pt start))
-            polygon'
-            :else
-            (recur polygon' next-pt)))))
-
 ;; https://stackoverflow.com/questions/2667748/how-do-i-combine-complex-polygons
 (defn join-polygons [a b]
   {:pre [(poly-detect/clockwise-polygon? (g/vertices a))
@@ -360,7 +347,12 @@
           centroid (tm/div (tm/+ (g/centroid a) (g/centroid b)) 2)
 
           {:keys [points] :as polygon}
-          (->> (find-clockwise-polygon graph start centroid)
+          (->> (poly-detect/find-cycle
+                graph
+                (fn [cycle vertex points]
+                  (poly-detect/clockwise-point (or (last cycle) centroid)
+                                               vertex points))
+                start)
                dedupe
                gp/polygon2
                remove-coincident-segments)]
