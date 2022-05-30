@@ -178,11 +178,11 @@
 ;;  * pulley/belt systems?
 ;;  * sun & planet?
 ;;  * kinematic chain to another gear?
-(defn gear-system [center diametral-pitch driver-teeth driver-ratio]
+(defn gear-system [origin diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
-        driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
+        driver (assoc (gear dp driver-teeth) :pos origin :dir 1 :ratio driver-ratio :offset 0)
         left-step (driven-by (gear dp 20) driver (* 0.8 Math/PI))
         left (attached-to (gear dp2 70) left-step dec)
         left2 (driven-by (gear dp2 16) left Math/PI)
@@ -199,7 +199,7 @@
         tr-last (driven-by (gear dp2 35) tr-bottom (* 0.75 Math/PI))
         tr-step (attached-to (gear dp 12) tr-last inc)
         ring (driven-by (ring-gear dp 36) tr-step (* eq/TAU 0.25))
-        below (driven-by (gear dp 30) right (/ Math/PI 2))]
+        below (driven-by (gear dp 30) right (/ Math/PI 3))]
     [driver
      left-step
      left
@@ -222,7 +222,7 @@
      (driven-by (gear dp 12) ring (* eq/TAU 0.25))
      below
      (driven-by (gear dp 8) right -0.5)
-     (driven-by (gear dp 128) below (/ Math/PI 3))]))
+     (driven-by (gear dp 128) below 0)]))
 
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
@@ -232,8 +232,8 @@
 ;; Visualization & User Interface
 (defonce ui-state
   (ctrl/state {:running true
-               :diametral-pitch 0.25
-               :driver-teeth 30
+               :diametral-pitch 0.35
+               :driver-teeth 35
                :driver-ratio 1.0}))
 
 (defn setup []
@@ -302,7 +302,7 @@
   (q/no-fill)
   (q/background 1.0)
   (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
-        parts (gear-system (cq/rel-vec 0.5 0.5) diametral-pitch driver-teeth driver-ratio)]
+        parts (gear-system (cq/rel-vec 0.35 0.5) diametral-pitch driver-teeth driver-ratio)]
     (doseq [{:keys [type] :as part} (sort-by :depth parts)]
       (case type
         :gear (draw-gear part t)
@@ -318,7 +318,7 @@
 
 (sketch/defquil mechanism
   :created-at "2021-04-19"
-  :size [800 800]
+  :size [900 600]
   :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
