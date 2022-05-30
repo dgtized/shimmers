@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -128,6 +129,13 @@
          :offset offset ;; or 0
          ))
 
+(defn piston [multiplier angle driver]
+  {:type :piston
+   :depth 0
+   :multiplier multiplier
+   :angle angle
+   :driver driver})
+
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
 ;;  * planatary gears (adjusts position of subystem relative to t)
@@ -141,6 +149,7 @@
   (let [dp diametral-pitch
         driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
+        piston-driver (driven-by (gear dp 31) left (/ Math/PI 2))
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
         top-right (driven-by (gear dp 60) above (- (/ Math/PI 3)))
@@ -150,7 +159,8 @@
         tr-bottom (attached-to (gear (* dp 1.5) 80) tr-attach dec)
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver left
-     (driven-by (gear dp 31) left (/ Math/PI 2))
+     piston-driver
+     (piston 3.5 (* 0.5 Math/PI) piston-driver)
      (driven-by (gear dp 12) left Math/PI)
      right above
      top-right
@@ -193,6 +203,28 @@
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
+(defn draw-piston [{:keys [multiplier angle driver]} t]
+  (let [{:keys [pos radius]} driver
+        attach-radius (* 0.85 radius)
+        connecting-len (* 0.8 multiplier attach-radius)
+        shaft-len (* 0.2 multiplier attach-radius)
+        theta (rotation driver t)
+        attach-dir (v/polar (* 0.75 radius) theta)
+        closest (v/polar (- connecting-len attach-radius) angle)
+        furthest (v/polar (+ connecting-len attach-radius) angle)
+        attached-pt (tm/+ pos attach-dir)
+        socket-pt (tm/+ pos (tm/mix closest furthest (eq/unit-cos (- theta angle))))]
+    ;; (println (g/dist attached-pt socket-pt))
+    (q/stroke 0)
+    (q/stroke-weight 1)
+    (q/line (tm/+ pos closest)
+            (tm/+ pos (v/polar attach-radius angle) (v/polar connecting-len angle)))
+    (q/stroke-weight 8)
+    (q/stroke 0 0.3)
+    (q/line attached-pt socket-pt)
+    (q/stroke-weight 24)
+    (q/line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)))))
+
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
 (defn draw [{:keys [t]}]
@@ -203,7 +235,8 @@
         parts (gear-system (cq/rel-vec 0.5 0.5) diametral-pitch driver-teeth driver-ratio)]
     (doseq [{:keys [type] :as part} (sort-by :depth parts)]
       (case type
-        :gear (draw-gear part t)))))
+        :gear (draw-gear part t)
+        :piston (draw-piston part t)))))
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
