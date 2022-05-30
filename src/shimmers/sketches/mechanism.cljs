@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mechanism
   (:require
+   [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -119,7 +120,8 @@
     0))
 
 (defn driven-by
-  [{gear-type :type :as gear}
+  [sys
+   {gear-type :type :as gear}
    {driver-type :type :keys [pos dir ratio depth] :as driver} angle]
   {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))
          (contains? #{[:gear :gear]
@@ -138,24 +140,36 @@
                      :dir (if ring-gear-mesh
                             dir
                             (* -1 dir))
-                     :ratio (* ratio (gear-ratio driver gear)))]
-    (assoc gear' :offset (meshing-interlock-angle gear' driver angle))))
+                     :ratio (* ratio (gear-ratio driver gear)))
+        gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle))]
+    [(-> sys
+         (lg/add-nodes gear')
+         (lg/add-edges [driver gear']))
+     gear']))
 
 (defn attached-to
-  [gear {:keys [depth pos dir ratio offset]} depth-dir]
-  (assoc gear
-         :depth (depth-dir depth)
-         :pos pos
-         :dir dir
-         :ratio ratio
-         :offset offset ;; or 0
-         ))
+  [sys gear {:keys [depth pos dir ratio offset] :as driver} depth-dir]
+  (let [gear' (assoc gear
+                     :depth (depth-dir depth)
+                     :pos pos
+                     :dir dir
+                     :ratio ratio
+                     :offset offset ;; or 0
+                     )]
+    [(-> sys
+         (lg/add-nodes gear')
+         (lg/add-edges [driver gear']))
+     gear']))
 
-(defn piston [angle driver]
-  {:type :piston
-   :depth (inc (:depth driver))
-   :angle angle
-   :driver driver})
+(defn piston [sys angle driver]
+  (let [piston {:type :piston
+                :depth (inc (:depth driver))
+                :angle angle
+                :driver driver}]
+    [(-> sys
+         (lg/add-nodes piston)
+         (lg/add-edges [driver piston]))
+     piston]))
 
 (defn piston-displacement
   "Calculates displacement along the axis of a piston from `theta` of the circle.
@@ -181,46 +195,31 @@
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
         driver (assoc (gear dp driver-teeth) :pos origin :dir 1 :ratio driver-ratio :offset 0)
-        left-step (driven-by (gear dp 20) driver (* 0.8 Math/PI))
-        left (attached-to (gear dp2 70) left-step dec)
-        left2 (driven-by (gear dp2 16) left Math/PI)
-        piston-driver (driven-by (gear dp2 26) left (/ Math/PI 2))
-        piston-driver-b (driven-by (gear dp2 16) piston-driver Math/PI)
-        piston-driver-c (driven-by (gear dp2 26) piston-driver-b Math/PI)
-        right (driven-by (gear dp 25) driver 0)
-        above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
-        top-right (driven-by (gear dp 60) above (- (/ Math/PI 3)))
-        top-right-b (attached-to (gear dp1 20) top-right inc)
-        tr-left (driven-by (gear dp1 40) top-right-b (* 1.05 Math/PI))
-        tr-attach (driven-by (gear dp1 20) tr-left (* 1 Math/PI))
-        tr-bottom (attached-to (gear dp2 80) tr-attach dec)
-        tr-last (driven-by (gear dp2 35) tr-bottom (* 0.75 Math/PI))
-        tr-step (attached-to (gear dp 12) tr-last inc)
-        ring (driven-by (ring-gear dp 36) tr-step (* eq/TAU 0.25))
-        below (driven-by (gear dp 30) right (/ Math/PI 3))]
-    [driver
-     left-step
-     left
-     piston-driver
-     piston-driver-b
-     piston-driver-c
-     (piston (* 0.5 Math/PI) piston-driver)
-     (piston (* 0.5 Math/PI) piston-driver-c)
-     left2
-     (piston Math/PI left2)
-     right above
-     top-right
-     top-right-b
-     tr-left
-     tr-attach
-     tr-bottom
-     tr-last
-     tr-step
-     ring
-     (driven-by (gear dp 12) ring (* eq/TAU 0.25))
-     below
-     (driven-by (gear dp 8) right -0.5)
-     (driven-by (gear dp 128) below 0)]))
+        sys (lg/add-nodes (lg/digraph) driver)
+        [sys left-step] (driven-by sys (gear dp 20) driver (* 0.8 Math/PI))
+        [sys left] (attached-to sys (gear dp2 70) left-step dec)
+        [sys left2] (driven-by sys (gear dp2 16) left Math/PI)
+        [sys piston-driver] (driven-by sys (gear dp2 26) left (/ Math/PI 2))
+        [sys piston-driver-b] (driven-by sys (gear dp2 16) piston-driver Math/PI)
+        [sys piston-driver-c] (driven-by sys (gear dp2 26) piston-driver-b Math/PI)
+        [sys _] (piston sys (* 0.5 Math/PI) piston-driver)
+        [sys _] (piston sys (* 0.5 Math/PI) piston-driver-c)
+        [sys _] (piston sys Math/PI left2)
+        [sys right] (driven-by sys (gear dp 25) driver 0)
+        [sys above] (driven-by sys (gear dp 21) right (- (/ Math/PI 2)))
+        [sys top-right] (driven-by sys (gear dp 60) above (- (/ Math/PI 3)))
+        [sys top-right-b] (attached-to sys (gear dp1 20) top-right inc)
+        [sys tr-left] (driven-by sys (gear dp1 40) top-right-b (* 1.05 Math/PI))
+        [sys tr-attach] (driven-by sys (gear dp1 20) tr-left (* 1 Math/PI))
+        [sys tr-bottom] (attached-to sys (gear dp2 80) tr-attach dec)
+        [sys tr-last] (driven-by sys (gear dp2 35) tr-bottom (* 0.75 Math/PI))
+        [sys tr-step] (attached-to sys (gear dp 12) tr-last inc)
+        [sys ring] (driven-by sys (ring-gear dp 36) tr-step (* eq/TAU 0.25))
+        [sys below] (driven-by sys (gear dp 30) right (/ Math/PI 3))
+        [sys _] (driven-by sys (gear dp 12) ring (* eq/TAU 0.25))
+        [sys _] (driven-by sys (gear dp 8) right -0.5)
+        [sys _] (driven-by sys (gear dp 128) below 0)]
+    (lg/nodes sys)))
 
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
