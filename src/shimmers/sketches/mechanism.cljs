@@ -133,7 +133,7 @@
   {:type :piston
    :depth (inc (:depth driver))
    :angle angle
-   :driver driver})
+   :driver (dissoc driver :shape)})
 
 (defn piston-displacement
   "Calculates displacement along the axis of a piston from `theta` of the circle.
