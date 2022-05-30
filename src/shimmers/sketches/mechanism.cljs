@@ -135,7 +135,8 @@
     (assoc gear
            :depth depth
            :pos (if ring-gear-mesh
-                  (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
+                  (tm/+ pos (v/polar (ring-center-distance driver gear)
+                                     (if (= :ring-gear driver-type) (- angle) angle)))
                   (tm/+ pos (v/polar (center-distance driver gear) angle)))
            :dir (if ring-gear-mesh
                   dir
@@ -219,7 +220,7 @@
      tr-last
      tr-step
      ring
-     (driven-by (gear dp 12) ring (* eq/TAU -0.25))
+     (driven-by (gear dp 12) ring (* eq/TAU 0.25))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
