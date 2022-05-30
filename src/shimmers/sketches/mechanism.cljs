@@ -91,17 +91,15 @@
   (let [gear {:depth 0
               :type :gear
               :diametral-pitch diametral-pitch
-              :teeth teeth}
-        radius (pitch-radius gear)]
-    (assoc gear :radius radius)))
+              :teeth teeth}]
+    (assoc gear :radius (pitch-radius gear))))
 
 (defn ring-gear [diametral-pitch teeth]
   (let [gear {:depth 0
               :type :ring-gear
               :diametral-pitch diametral-pitch
-              :teeth teeth}
-        radius (pitch-radius gear)]
-    (assoc gear :radius radius)))
+              :teeth teeth}]
+    (assoc gear :radius (pitch-radius gear))))
 
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
