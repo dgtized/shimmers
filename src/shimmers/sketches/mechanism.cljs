@@ -110,6 +110,7 @@
 (defn driven-by
   [gear
    {:keys [pos dir ratio depth] :as driver} angle]
+  {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))]}
   (assoc gear
          :depth depth
          :pos (tm/+ pos (v/polar (center-distance driver gear) angle))
