@@ -219,7 +219,7 @@
         [sys _] (driven-by sys (gear dp 12) ring (* eq/TAU 0.25))
         [sys _] (driven-by sys (gear dp 8) right -0.5)
         [sys _] (driven-by sys (gear dp 128) below 0)]
-    (lg/nodes sys)))
+    sys))
 
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
@@ -299,8 +299,8 @@
   (q/no-fill)
   (q/background 1.0)
   (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
-        parts (gear-system (cq/rel-vec 0.35 0.5) diametral-pitch driver-teeth driver-ratio)]
-    (doseq [{:keys [type] :as part} (sort-by :depth parts)]
+        sys (gear-system (cq/rel-vec 0.35 0.5) diametral-pitch driver-teeth driver-ratio)]
+    (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
         :gear (draw-gear part t)
         :ring-gear (draw-ring-gear part t)
