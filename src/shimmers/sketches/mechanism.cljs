@@ -125,7 +125,8 @@
          :pos pos
          :dir dir
          :ratio ratio
-         :offset offset))
+         :offset offset ;; or 0
+         ))
 
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
