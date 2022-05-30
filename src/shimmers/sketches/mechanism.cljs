@@ -108,7 +108,7 @@
   "Calculate the initial angle for meshing with `driver` gear.
 
   `angle` is the heading of the vector between the driving gear and the connecting gear."
-  [{:keys [teeth type] :as gear}
+  [{:keys [teeth] :as gear}
    {:keys [offset dir] :as driver}
    angle]
   (if driver
@@ -116,9 +116,7 @@
     (let [gear-ratio (gear-ratio gear driver)]
       (+ (* gear-ratio offset)
          (* (+ 1 gear-ratio) (* -1 dir angle))
-         (if (= type :ring-gear)
-           (* (if (odd? teeth) -1 1) (/ Math/PI teeth))
-           (* (mod (inc teeth) 2) (/ Math/PI teeth))) ;; add a tooth width if even?
+         (* (mod (inc teeth) 2) (/ Math/PI teeth)) ;; add a tooth width if even?
          ))
     0))
 
@@ -131,18 +129,18 @@
                       [:gear :ring-gear]}
                     [gear-type driver-type])]}
   (let [ring-gear-mesh (or (= gear-type :ring-gear)
-                           (= driver-type :ring-gear))]
-    (assoc gear
-           :depth depth
-           :pos (if ring-gear-mesh
-                  (tm/+ pos (v/polar (ring-center-distance driver gear)
-                                     (if (= :ring-gear driver-type) (- angle) angle)))
-                  (tm/+ pos (v/polar (center-distance driver gear) angle)))
-           :dir (if ring-gear-mesh
-                  dir
-                  (* -1 dir))
-           :ratio (* ratio (gear-ratio driver gear))
-           :offset (meshing-interlock-angle gear driver angle))))
+                           (= driver-type :ring-gear))
+        gear' (assoc gear
+                     :depth depth
+                     :pos (if ring-gear-mesh
+                            (tm/+ pos (v/polar (ring-center-distance driver gear)
+                                               (if (= :ring-gear driver-type) (- angle) angle)))
+                            (tm/+ pos (v/polar (center-distance driver gear) angle)))
+                     :dir (if ring-gear-mesh
+                            dir
+                            (* -1 dir))
+                     :ratio (* ratio (gear-ratio driver gear)))]
+    (assoc gear' :offset (meshing-interlock-angle gear driver angle))))
 
 (defn attached-to
   [gear {:keys [depth pos dir ratio offset]} depth-dir]
