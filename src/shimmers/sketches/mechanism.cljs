@@ -131,7 +131,7 @@
 
 (defn piston [angle driver]
   {:type :piston
-   :depth 0
+   :depth (inc (:depth driver))
    :angle angle
    :driver driver})
 
@@ -216,20 +216,21 @@
   (let [{:keys [pos radius]} driver
         attach-radius (* 0.75 radius)
         connecting-len (* 2.2 radius)
-        shaft-len (* 0.2 radius)
+        shaft-len (* 0.5 radius)
         theta (rotation driver t)
-        attach-dir (v/polar (* 0.75 radius) theta)
         closest (v/polar (- connecting-len attach-radius) angle)
         furthest (v/polar (+ connecting-len attach-radius) angle)
-        attached-pt (tm/+ pos attach-dir)
+        attached-pt (tm/+ pos (v/polar attach-radius theta))
         displacement (piston-displacement attach-radius connecting-len (- theta angle))
         socket-pt (tm/+ pos (v/polar displacement angle))]
-    (q/stroke 0)
+    (q/stroke 0 0.6 0.6)
     (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
-    (q/stroke-weight 8)
-    (q/stroke 0 0.3)
+    (q/stroke-weight 6)
+    (q/stroke 0.2)
+    (q/stroke-cap :round)
     (q/line attached-pt socket-pt)
+    (q/stroke-cap :square)
     (q/stroke-weight 24)
     (q/line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)))))
 
