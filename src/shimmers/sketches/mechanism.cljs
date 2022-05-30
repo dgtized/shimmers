@@ -162,10 +162,10 @@
      gear']))
 
 (defn piston [sys angle driver]
-  (let [piston {:type :piston
+  (let [piston {:id (count (lg/nodes sys))
+                :type :piston
                 :depth (inc (:depth driver))
-                :angle angle
-                :driver driver}]
+                :angle angle}]
     [(-> sys
          (lg/add-nodes piston)
          (lg/add-edges [driver piston]))
@@ -221,6 +221,12 @@
         [sys _] (driven-by sys (gear dp 128) below 0)]
     sys))
 
+(defn driver [sys part]
+  (let [preds (lg/predecessors sys part)]
+    (assert (<= (count preds) 1)
+            "part should have at most 1 driver")
+    (first preds)))
+
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
@@ -271,8 +277,8 @@
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
-(defn draw-piston [{:keys [angle driver]} t]
-  (let [{:keys [pos radius]} driver
+(defn draw-piston [sys {:keys [angle] :as part} t]
+  (let [{:keys [pos radius] :as driver} (driver sys part)
         inner (* 2.5 (dedendum driver))
         attach-radius (- radius inner)
         connecting-len (* 2.1 radius)
@@ -304,7 +310,7 @@
       (case type
         :gear (draw-gear part t)
         :ring-gear (draw-ring-gear part t)
-        :piston (draw-piston part t)))))
+        :piston (draw-piston sys part t)))))
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
