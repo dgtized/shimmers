@@ -8,9 +8,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
