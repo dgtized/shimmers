@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mechanism
   (:require
+   [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
@@ -198,7 +199,9 @@
   (let [dp diametral-pitch
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
-        driver (assoc (gear dp driver-teeth) :dir 1 :ratio driver-ratio :offset 0)
+        driver (assoc (gear dp driver-teeth)
+                      :id 0
+                      :dir 1 :ratio driver-ratio :offset 0)
         sys (lga/add-attr (lg/add-nodes (lg/digraph) driver) driver :pos origin)
         [sys left-step] (driven-by sys (gear dp 20) driver (* 0.8 Math/PI))
         [sys left] (attached-to sys (gear dp2 70) left-step dec)
@@ -234,7 +237,10 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
-(comment (gear-system (gv/vec2) 0.3 30 1.0))
+(comment (let [sys (gear-system (gv/vec2) 0.3 30 1.0)]
+           (->> sys
+                (la/topsort)
+                (map (fn [n] [(:id n) (:id (driver sys n))])))))
 
 ;; Visualization & User Interface
 (defonce ui-state
