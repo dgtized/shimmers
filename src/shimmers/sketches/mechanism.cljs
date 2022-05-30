@@ -135,6 +135,16 @@
    :angle angle
    :driver driver})
 
+(defn piston-displacement
+  "Calculates displacement along the axis of a piston from `theta` of the circle.
+
+  From https://en.wikipedia.org/wiki/Piston_motion_equations#Deriving_angle_domain_equations"
+  [radius length theta]
+  (+ (* radius (Math/cos theta))
+     (Math/sqrt (- (eq/sqr length)
+                   (* (eq/sqr radius)
+                      (eq/sqr (Math/sin theta)))))))
+
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
 ;;  * planatary gears (adjusts position of subystem relative to t)
@@ -212,8 +222,8 @@
         closest (v/polar (- connecting-len attach-radius) angle)
         furthest (v/polar (+ connecting-len attach-radius) angle)
         attached-pt (tm/+ pos attach-dir)
-        socket-pt (tm/+ pos (tm/mix closest furthest (eq/unit-cos (- theta angle))))]
-    ;; (println (g/dist attached-pt socket-pt))
+        displacement (piston-displacement attach-radius connecting-len (- theta angle))
+        socket-pt (tm/+ pos (v/polar displacement angle))]
     (q/stroke 0)
     (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
