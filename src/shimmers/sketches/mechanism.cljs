@@ -180,6 +180,31 @@
                    (* (eq/sqr radius)
                       (eq/sqr (Math/sin theta)))))))
 
+(defn driver [sys part]
+  (let [preds (lg/predecessors sys part)]
+    (assert (<= (count preds) 1)
+            "part should have at most 1 driver")
+    (first preds)))
+
+(defn rotation [{:keys [dir ratio offset]} t]
+  (* dir (+ (/ t ratio) offset)))
+
+(defn propagate-position [system origin _]
+  (reduce (fn [sys {part-type :type :keys [angle] :as part}]
+            (if-let [{driver-type :type :as driver} (driver sys part)]
+              (let [pos (lga/attr sys driver :pos)]
+                (if (and angle (not= part-type :piston))
+                  (lga/add-attr sys part :pos
+                                (tm/+ pos
+                                      (if (ring-gear-mesh? part driver)
+                                        (v/polar (ring-center-distance driver part)
+                                                 (if (= :ring-gear driver-type) (- angle) angle))
+                                        (v/polar (center-distance driver part) angle))))
+                  (lga/add-attr sys part :pos pos)))
+              (lga/add-attr sys part :pos origin)))
+          system
+          (la/topsort system)))
+
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
 ;;  * planatary gears (adjusts position of subystem relative to t)
@@ -194,8 +219,7 @@
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
         driver (assoc (gear dp driver-teeth)
-                      :id 0
-                      :dir 1 :ratio driver-ratio :offset 0)
+                      :id 0 :dir 1 :ratio driver-ratio :offset 0)
         sys (lg/add-nodes (lg/digraph) driver)
         [sys left-step] (driven-by sys (gear dp 20) driver (* 0.8 Math/PI))
         [sys left] (attached-to sys (gear dp2 70) left-step dec)
@@ -221,31 +245,6 @@
         [sys _] (driven-by sys (gear dp 8) right -0.5)
         [sys _] (driven-by sys (gear dp 128) below 0)]
     sys))
-
-(defn driver [sys part]
-  (let [preds (lg/predecessors sys part)]
-    (assert (<= (count preds) 1)
-            "part should have at most 1 driver")
-    (first preds)))
-
-(defn rotation [{:keys [dir ratio offset]} t]
-  (* dir (+ (/ t ratio) offset)))
-
-(defn propagate-position [system origin _]
-  (reduce (fn [sys {part-type :type :keys [angle] :as part}]
-            (if-let [{driver-type :type :as driver} (driver sys part)]
-              (let [pos (lga/attr sys driver :pos)]
-                (if (and angle (not= part-type :piston))
-                  (lga/add-attr sys part :pos
-                                (tm/+ pos
-                                      (if (ring-gear-mesh? part driver)
-                                        (v/polar (ring-center-distance driver part)
-                                                 (if (= :ring-gear driver-type) (- angle) angle))
-                                        (v/polar (center-distance driver part) angle))))
-                  (lga/add-attr sys part :pos pos)))
-              (lga/add-attr sys part :pos origin)))
-          system
-          (la/topsort system)))
 
 (comment (-> (gear-system 0.3 30 1.0)
              (propagate-position (gv/vec2) 0)))
