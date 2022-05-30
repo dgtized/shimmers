@@ -59,13 +59,13 @@
 
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
-(defn tooth [gear p]
-  (let [polar (g/as-polar p)
+(defn tooth [gear theta]
+  (let [p (gv/vec2 (:radius gear) theta)
         thickness (tooth-thickness gear)
         pitch (/ thickness 2.5)
         addendum (addendum gear)
         dedendum (dedendum gear)]
-    (mapv (fn [t] (g/as-cartesian (tm/+ polar (gv/vec2 t))))
+    (mapv (fn [t] (tm/+ (:pos gear) (g/as-cartesian (tm/+ p (gv/vec2 t)))))
           [[(- dedendum) (- thickness)]
            [0 (- thickness)]
            [addendum (- pitch)]
@@ -73,14 +73,11 @@
            [0 thickness]
            [(- dedendum) thickness]])))
 
-(defn gear-polygon [{:keys [pos radius teeth] :as gear} theta]
+(defn gear-polygon [{:keys [pos teeth] :as gear} theta]
   (as-> teeth _
-    (g/vertices (gc/circle (gv/vec2) radius) _)
-    (mapcat (partial tooth gear) _)
-    (gp/polygon2 _)
-    (g/rotate _ theta)
-    (g/translate _ pos)
-    (g/vertices _)))
+    (tm/norm-range _)
+    (mapv (fn [t] (+ (* eq/TAU t) theta)) _)
+    (mapcat (partial tooth gear) _)))
 
 (defn gear [diametral-pitch teeth]
   (let [gear {:depth 0
