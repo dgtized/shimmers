@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mechanism
   (:require
+   [loom.attr :as lga]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -74,7 +75,7 @@
      [0 thickness]
      [(- dedendum) thickness]]))
 
-(defn gear-polygon [{:keys [pos radius teeth] :as gear} theta]
+(defn gear-polygon [{:keys [radius teeth] :as gear} pos theta]
   (let [tooth (involute-tooth gear)]
     (->> (for [v (range teeth)]
            (let [t (+ (* eq/TAU (/ v teeth)) theta)]
@@ -122,7 +123,7 @@
 (defn driven-by
   [sys
    {gear-type :type :as gear}
-   {driver-type :type :keys [pos dir ratio depth] :as driver} angle]
+   {driver-type :type :keys [dir ratio depth] :as driver} angle]
   {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))
          (contains? #{[:gear :gear]
                       [:ring-gear :gear]
@@ -133,11 +134,6 @@
         gear' (assoc gear
                      :id (count (lg/nodes sys))
                      :depth depth
-                     :pos (tm/+ pos
-                                (if ring-gear-mesh
-                                  (v/polar (ring-center-distance driver gear)
-                                           (if (= :ring-gear driver-type) (- angle) angle))
-                                  (v/polar (center-distance driver gear) angle)))
                      :dir (if ring-gear-mesh
                             dir
                             (* -1 dir))
@@ -145,22 +141,28 @@
         gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle))]
     [(-> sys
          (lg/add-nodes gear')
-         (lg/add-edges [driver gear']))
+         (lg/add-edges [driver gear'])
+         (lga/add-attr gear'
+                       :pos (tm/+ (lga/attr sys driver :pos)
+                                (if ring-gear-mesh
+                                  (v/polar (ring-center-distance driver gear)
+                                           (if (= :ring-gear driver-type) (- angle) angle))
+                                  (v/polar (center-distance driver gear) angle)))))
      gear']))
 
 (defn attached-to
-  [sys gear {:keys [depth pos dir ratio offset] :as driver} depth-dir]
+  [sys gear {:keys [depth dir ratio offset] :as driver} depth-dir]
   (let [gear' (assoc gear
                      :id (count (lg/nodes sys))
                      :depth (depth-dir depth)
-                     :pos pos
                      :dir dir
                      :ratio ratio
                      :offset offset ;; or 0
                      )]
     [(-> sys
          (lg/add-nodes gear')
-         (lg/add-edges [driver gear']))
+         (lg/add-edges [driver gear'])
+         (lga/add-attr gear' :pos (lga/attr sys driver :pos)))
      gear']))
 
 (defn piston [sys angle driver]
@@ -196,8 +198,8 @@
   (let [dp diametral-pitch
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
-        driver (assoc (gear dp driver-teeth) :pos origin :dir 1 :ratio driver-ratio :offset 0)
-        sys (lg/add-nodes (lg/digraph) driver)
+        driver (assoc (gear dp driver-teeth) :dir 1 :ratio driver-ratio :offset 0)
+        sys (lga/add-attr (lg/add-nodes (lg/digraph) driver) driver :pos origin)
         [sys left-step] (driven-by sys (gear dp 20) driver (* 0.8 Math/PI))
         [sys left] (attached-to sys (gear dp2 70) left-step dec)
         [sys left2] (driven-by sys (gear dp2 16) left Math/PI)
@@ -250,16 +252,18 @@
     (update state :t + 0.01)
     state))
 
-(defn draw-gear [{:keys [radius pos] :as gear} t]
-  (let [theta (rotation gear t)]
+(defn draw-gear [sys {:keys [radius] :as gear} t]
+  (let [theta (rotation gear t)
+        pos (lga/attr sys gear :pos)]
     (q/stroke 0)
     (q/fill 1.0)
-    (cq/draw-shape (gear-polygon gear theta))
+    (cq/draw-shape (gear-polygon gear pos theta))
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
-(defn draw-ring-gear [{:keys [radius pos teeth] :as gear} t]
+(defn draw-ring-gear [sys {:keys [radius teeth] :as gear} t]
   (let [theta (rotation gear t)
+        pos (lga/attr sys gear :pos)
         outer-r (+ radius (* 3 (addendum gear)))]
     (q/stroke 0)
     (q/fill 1.0)
@@ -271,7 +275,7 @@
     (q/begin-contour)
     ;; reverse points to counter-clockwise ordering, as contour subtraction
     ;; requires that inner polygon has opposing winding order of outer polygon.
-    (doseq [[x y] (reverse (gear-polygon gear theta))]
+    (doseq [[x y] (reverse (gear-polygon gear pos theta))]
       (q/vertex x y))
     (q/end-contour)
     (q/end-shape :close)
@@ -280,7 +284,8 @@
 
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
 (defn draw-piston [sys {:keys [angle] :as part} t]
-  (let [{:keys [pos radius] :as driver} (driver sys part)
+  (let [{:keys [radius] :as driver} (driver sys part)
+        pos (lga/attr sys driver :pos)
         inner (* 2.5 (dedendum driver))
         attach-radius (- radius inner)
         connecting-len (* 2.1 radius)
@@ -310,8 +315,8 @@
         sys (gear-system (cq/rel-vec 0.35 0.5) diametral-pitch driver-teeth driver-ratio)]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
-        :gear (draw-gear part t)
-        :ring-gear (draw-ring-gear part t)
+        :gear (draw-gear sys part t)
+        :ring-gear (draw-ring-gear sys part t)
         :piston (draw-piston sys part t)))))
 
 (defn ui-controls []
