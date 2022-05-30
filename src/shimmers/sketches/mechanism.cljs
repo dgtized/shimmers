@@ -141,14 +141,14 @@
         left (driven-by (gear dp 40) driver Math/PI)
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
-        top-right (driven-by (gear dp 50) above (- (/ Math/PI 3)))
-        top-right-b (attached-to (gear dp 30) top-right inc)
-        tr-left (driven-by (gear dp 35) top-right-b Math/PI)
-        tr-attach (driven-by (gear dp 20) tr-left (* 1.25 Math/PI))
-        tr-bottom (attached-to (gear (* dp 1.5) 52) tr-attach dec)
+        top-right (driven-by (gear dp 60) above (- (/ Math/PI 3)))
+        top-right-b (attached-to (gear (* 0.75 dp) 20) top-right inc)
+        tr-left (driven-by (gear (* 0.75 dp) 40) top-right-b Math/PI)
+        tr-attach (driven-by (gear (* 0.75 dp) 20) tr-left (* 1.1 Math/PI))
+        tr-bottom (attached-to (gear (* dp 1.5) 80) tr-attach dec)
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver left
-     (driven-by (gear dp 20) left (/ Math/PI 2))
+     (driven-by (gear dp 31) left (/ Math/PI 2))
      (driven-by (gear dp 12) left Math/PI)
      right above
      top-right
