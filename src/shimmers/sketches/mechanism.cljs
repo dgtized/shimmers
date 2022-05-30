@@ -79,16 +79,19 @@
       (g/translate pos)
       g/vertices))
 
+(defn gear-polygon [{:keys [radius teeth] :as gear}]
+  (->> teeth
+       (g/vertices (gc/circle (gv/vec2) radius))
+       (mapcat (partial tooth gear))
+       gp/polygon2))
+
 (defn gear [diametral-pitch teeth]
   (let [gear {:depth 0
               :type :gear
               :diametral-pitch diametral-pitch
               :teeth teeth}
-        radius (pitch-radius gear)
-        points (g/vertices (gc/circle (gv/vec2) radius) teeth)]
-    (merge gear
-           {:radius radius
-            :shape (gp/polygon2 (mapcat (partial tooth gear) points))})))
+        radius (pitch-radius gear)]
+    (assoc gear :radius radius)))
 
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
@@ -133,7 +136,7 @@
   {:type :piston
    :depth (inc (:depth driver))
    :angle angle
-   :driver (dissoc driver :shape)})
+   :driver driver})
 
 (defn piston-displacement
   "Calculates displacement along the axis of a piston from `theta` of the circle.
@@ -197,7 +200,7 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
-(comment (map #(dissoc % :shape) (gear-system (gv/vec2) 0.3 30 1.0)))
+(comment (gear-system (gv/vec2) 0.3 30 1.0))
 
 ;; Visualization & User Interface
 (defonce ui-state
@@ -215,11 +218,11 @@
     (update state :t + 0.01)
     state))
 
-(defn draw-gear [{:keys [shape radius pos] :as gear} t]
+(defn draw-gear [{:keys [radius pos] :as gear} t]
   (let [theta (rotation gear t)]
     (q/stroke 0)
     (q/fill 1.0)
-    (cq/draw-shape (poly-at shape pos theta))
+    (cq/draw-shape (poly-at (gear-polygon gear) pos theta))
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
