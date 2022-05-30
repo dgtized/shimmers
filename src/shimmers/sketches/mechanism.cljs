@@ -132,10 +132,11 @@
                            (= driver-type :ring-gear))
         gear' (assoc gear
                      :depth depth
-                     :pos (if ring-gear-mesh
-                            (tm/+ pos (v/polar (ring-center-distance driver gear)
-                                               (if (= :ring-gear driver-type) (- angle) angle)))
-                            (tm/+ pos (v/polar (center-distance driver gear) angle)))
+                     :pos (tm/+ pos
+                                (if ring-gear-mesh
+                                  (v/polar (ring-center-distance driver gear)
+                                           (if (= :ring-gear driver-type) (- angle) angle))
+                                  (v/polar (center-distance driver gear) angle)))
                      :dir (if ring-gear-mesh
                             dir
                             (* -1 dir))
