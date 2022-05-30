@@ -127,9 +127,7 @@
    {:keys [pos dir ratio depth] :as driver} angle]
   {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))]}
   (assoc gear
-         :depth (if (= type :ring-gear)
-                  (dec depth)
-                  depth)
+         :depth depth
          :pos (if (= type :ring-gear)
                 (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
                 (tm/+ pos (v/polar (center-distance driver gear) angle)))
@@ -251,18 +249,19 @@
   (let [theta (rotation gear t)
         outer-r (+ radius (* 3 (addendum gear)))]
     (q/stroke 0)
-    ;; FIXME: contour clipping is not working, low opacity is for depth
-    (q/fill 1.0 0.75)
+    (q/fill 1.0)
     (q/begin-shape)
     (doseq [t (range teeth)
             :let [v (v/polar outer-r (+ theta (* (/ t teeth) eq/TAU)))
                   [x y] (tm/+ pos v)]]
       (q/vertex x y))
     (q/begin-contour)
-    (doseq [[x y] (gear-polygon gear theta)]
+    ;; reverse points to counter-clockwise ordering, as contour subtraction
+    ;; requires that inner polygon has opposing winding order of outer polygon.
+    (doseq [[x y] (reverse (gear-polygon gear theta))]
       (q/vertex x y))
     (q/end-contour)
-    (q/end-shape)
+    (q/end-shape :close)
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
