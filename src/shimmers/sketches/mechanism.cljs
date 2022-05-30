@@ -160,9 +160,11 @@
         dp2 (* 1.25 dp)
         driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
         left-step (driven-by (gear dp 20) driver (* 0.8 Math/PI))
-        left (attached-to (gear dp2 80) left-step dec)
-        left2 (driven-by (gear dp2 12) left Math/PI)
-        piston-driver (driven-by (gear dp2 25) left (/ Math/PI 2))
+        left (attached-to (gear dp2 70) left-step dec)
+        left2 (driven-by (gear dp2 16) left Math/PI)
+        piston-driver (driven-by (gear dp2 26) left (/ Math/PI 2))
+        piston-driver-b (driven-by (gear dp2 16) piston-driver Math/PI)
+        piston-driver-c (driven-by (gear dp2 26) piston-driver-b Math/PI)
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
         top-right (driven-by (gear dp 60) above (- (/ Math/PI 3)))
@@ -175,7 +177,10 @@
      left-step
      left
      piston-driver
+     piston-driver-b
+     piston-driver-c
      (piston (* 0.5 Math/PI) piston-driver)
+     (piston (* 0.5 Math/PI) piston-driver-c)
      left2
      (piston Math/PI left2)
      right above
