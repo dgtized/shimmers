@@ -225,20 +225,20 @@
         [sys _] (piston sys (* 0.5 Math/PI) piston-driver)
         [sys _] (piston sys (* 0.5 Math/PI) piston-driver-c)
         [sys _] (piston sys Math/PI left2)
-        [sys right] (driven-by sys (gear dp 18) driver 0)
-        [sys above] (driven-by sys (gear dp 26) right (* eq/TAU 0.75))
+        [sys right] (driven-by sys (gear dp 20) driver 0)
+        [sys above] (driven-by sys (gear dp 26) right (* eq/TAU 0.78))
         [sys top-right] (driven-by sys (gear dp 60) above (- (/ Math/PI 3)))
         [sys top-right-b] (attached-to sys (gear dp1 20) top-right inc)
-        [sys tr-left] (driven-by sys (gear dp1 40) top-right-b (* 1.05 Math/PI))
-        [sys tr-attach] (driven-by sys (gear dp1 20) tr-left (* 1 Math/PI))
+        [sys tr-left] (driven-by sys (gear dp1 38) top-right-b (* eq/TAU 0.56))
+        [sys tr-attach] (driven-by sys (gear dp1 20) tr-left (* eq/TAU 0.47))
         [sys tr-bottom] (attached-to sys (gear dp2 80) tr-attach dec)
-        [sys tr-last] (driven-by sys (gear dp2 35) tr-bottom (* 0.75 Math/PI))
+        [sys tr-last] (driven-by sys (gear dp2 35) tr-bottom (* eq/TAU 0.39))
         [sys tr-step] (attached-to sys (gear dp 12) tr-last inc)
         [sys ring] (driven-by sys (ring-gear dp 36) tr-step (* eq/TAU 0.25))
         [sys below] (driven-by sys (gear dp 38) right (/ Math/PI 3))
         [sys _] (piston sys 0 below)
         [sys _] (driven-by sys (gear dp 12) ring (* eq/TAU 0.25))
-        [sys big] (driven-by sys (gear dp 128) below 0)
+        [sys big] (driven-by sys (gear dp 128) below 0.1)
         [sys s-big] (driven-by sys (gear dp 20) big (* eq/TAU 0.68))
         [sys _] (piston sys (* eq/TAU 0.85) s-big)
         [sys _] (driven-by sys (gear dp 13) big (* eq/TAU 0.6))
@@ -256,8 +256,10 @@
 (defonce ui-state
   (ctrl/state {:running true
                :diametral-pitch 0.35
-               :driver-teeth 35
+               :driver-teeth 42
                :driver-ratio 1.0}))
+
+(defn origin [] (cq/rel-vec 0.32 0.51))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -329,7 +331,7 @@
   (q/background 1.0)
   (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
         sys (-> (gear-system diametral-pitch driver-teeth driver-ratio)
-                (propagate-position (cq/rel-vec 0.33 0.5) t))]
+                (propagate-position (origin) t))]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
         :gear (draw-gear sys part t)
