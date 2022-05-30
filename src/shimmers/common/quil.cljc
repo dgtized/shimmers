@@ -78,7 +78,9 @@
     (q/curve-vertex x y))
   (q/end-shape))
 
-(defn segment [p q margin]
+(defn box-line
+  "Construct a box centered on the line from `p` to `q` with margin above/below."
+  [p q margin]
   (let [angle (g/heading (tm/- p q))
         side (g/as-cartesian (gv/vec2 margin (+ angle (* 0.5 Math/PI))))]
     [(tm/+ p side)

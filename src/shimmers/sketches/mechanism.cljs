@@ -230,9 +230,9 @@
     (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
     (q/stroke 0)
-    (cq/draw-shape (cq/segment attached-pt socket-pt (* 0.2 inner)))
+    (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
     (cq/circle attached-pt (* 0.3 inner))
-    (cq/draw-shape (cq/segment socket-pt (tm/+ socket-pt (v/polar shaft-len angle)) (* 0.8 inner)))
+    (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)) (* 0.8 inner)))
     (cq/circle socket-pt (* 0.3 inner))))
 
 ;; Add stroke shading along the teeth somehow?
