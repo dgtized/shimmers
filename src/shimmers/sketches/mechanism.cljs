@@ -127,7 +127,9 @@
    {:keys [pos dir ratio depth] :as driver} angle]
   {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))]}
   (assoc gear
-         :depth depth
+         :depth (if (= type :ring-gear)
+                  (dec depth)
+                  depth)
          :pos (if (= type :ring-gear)
                 (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
                 (tm/+ pos (v/polar (center-distance driver gear) angle)))
@@ -211,7 +213,7 @@
      tr-bottom
      tr-last
      tr-step
-     (driven-by (ring-gear dp 40) tr-step (* eq/TAU 0.25))
+     (driven-by (ring-gear dp 36) tr-step (* eq/TAU 0.25))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
@@ -245,12 +247,22 @@
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
-(defn draw-ring-gear [{:keys [radius pos] :as gear} t]
-  (let [theta (rotation gear t)]
+(defn draw-ring-gear [{:keys [radius pos teeth] :as gear} t]
+  (let [theta (rotation gear t)
+        outer-r (+ radius (* 3 (addendum gear)))]
     (q/stroke 0)
-    (q/no-fill)
-    (cq/circle pos (* 1.15 radius))
-    (cq/draw-shape (gear-polygon gear theta))
+    ;; FIXME: contour clipping is not working, low opacity is for depth
+    (q/fill 1.0 0.75)
+    (q/begin-shape)
+    (doseq [t (range teeth)
+            :let [v (v/polar outer-r (+ theta (* (/ t teeth) eq/TAU)))
+                  [x y] (tm/+ pos v)]]
+      (q/vertex x y))
+    (q/begin-contour)
+    (doseq [[x y] (gear-polygon gear theta)]
+      (q/vertex x y))
+    (q/end-contour)
+    (q/end-shape)
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
