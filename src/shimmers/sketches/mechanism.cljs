@@ -79,13 +79,15 @@
       g/vertices))
 
 (defn gear [diametral-pitch teeth]
-  (let [gear {:diametral-pitch diametral-pitch :teeth teeth}
+  (let [gear {:depth 0
+              :type :gear
+              :diametral-pitch diametral-pitch
+              :teeth teeth}
         radius (pitch-radius gear)
         points (g/vertices (gc/circle (gv/vec2) radius) teeth)]
     (merge gear
            {:radius radius
             :shape (gp/polygon2 (mapcat (partial tooth gear) points))})))
-
 
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
@@ -107,12 +109,22 @@
 
 (defn driven-by
   [gear
-   {:keys [pos dir ratio] :as driver} angle]
+   {:keys [pos dir ratio depth] :as driver} angle]
   (assoc gear
+         :depth depth
          :pos (tm/+ pos (v/polar (center-distance driver gear) angle))
          :dir (* -1 dir)
          :ratio (* ratio (gear-ratio driver gear))
          :offset (meshing-interlock-angle gear driver angle)))
+
+(defn attached-to
+  [gear {:keys [depth pos dir ratio offset]} depth-dir]
+  (assoc gear
+         :depth (depth-dir depth)
+         :pos pos
+         :dir dir
+         :ratio ratio
+         :offset offset))
 
 ;; randomly generate gear systems that don't intersect with themselves
 ;; additional mechanisms like:
@@ -129,12 +141,22 @@
         left (driven-by (gear dp 40) driver Math/PI)
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
+        top-right (driven-by (gear dp 50) above (- (/ Math/PI 3)))
+        top-right-b (attached-to (gear dp 30) top-right inc)
+        tr-left (driven-by (gear dp 35) top-right-b Math/PI)
+        tr-attach (driven-by (gear dp 20) tr-left (* 1.25 Math/PI))
+        tr-bottom (attached-to (gear (* dp 1.5) 52) tr-attach dec)
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver left
      (driven-by (gear dp 20) left (/ Math/PI 2))
      (driven-by (gear dp 12) left Math/PI)
      right above
-     (driven-by (gear dp 50) above (- (/ Math/PI 3)))
+     top-right
+     top-right-b
+     tr-left
+     tr-attach
+     tr-bottom
+     (driven-by (gear (* dp 1.5) 30) tr-bottom (* 0.75 Math/PI))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
@@ -160,21 +182,26 @@
     (update state :t + 0.01)
     state))
 
+(defn draw-gear [{:keys [shape radius pos] :as gear} t]
+  (let [theta (rotation gear t)]
+    (q/stroke-weight 1.0)
+    (q/stroke 0)
+    (q/fill 1.0)
+    (cq/draw-shape (poly-at shape pos theta))
+    (q/stroke 0 0.6 0.6)
+    (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
 (defn draw [{:keys [t]}]
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
-  (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state]
-    (doseq [{:keys [shape radius pos] :as gear}
-            (gear-system (cq/rel-vec 0.5 0.5) diametral-pitch driver-teeth driver-ratio)
-            :let [theta (rotation gear t)]]
-      (q/stroke-weight 1.0)
-      (q/stroke 0)
-      (cq/draw-shape (poly-at shape pos theta))
-      (q/stroke 0 0.6 0.6)
-      (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta))))))
+  (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
+        parts (gear-system (cq/rel-vec 0.5 0.5) diametral-pitch driver-teeth driver-ratio)]
+    (doseq [{:keys [type] :as part} (sort-by :depth parts)]
+      (case type
+        :gear (draw-gear part t)))))
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
