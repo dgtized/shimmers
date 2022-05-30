@@ -158,6 +158,7 @@
   (let [dp diametral-pitch
         driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
         left (driven-by (gear dp 40) driver Math/PI)
+        left2 (driven-by (gear dp 12) left Math/PI)
         piston-driver (driven-by (gear dp 31) left (/ Math/PI 2))
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
@@ -170,7 +171,8 @@
     [driver left
      piston-driver
      (piston (* 0.5 Math/PI) piston-driver)
-     (driven-by (gear dp 12) left Math/PI)
+     left2
+     (piston Math/PI left2)
      right above
      top-right
      top-right-b
@@ -214,9 +216,9 @@
 
 (defn draw-piston [{:keys [angle driver]} t]
   (let [{:keys [pos radius]} driver
-        attach-radius (* 0.75 radius)
-        connecting-len (* 2.2 radius)
-        shaft-len (* 0.5 radius)
+        attach-radius (- radius (* 2.5 (dedendum driver)))
+        connecting-len (* 2.1 radius)
+        shaft-len (* 0.4 radius)
         theta (rotation driver t)
         closest (v/polar (- connecting-len attach-radius) angle)
         furthest (v/polar (+ connecting-len attach-radius) angle)
@@ -226,12 +228,12 @@
     (q/stroke 0 0.6 0.6)
     (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
-    (q/stroke-weight 6)
+    (q/stroke-weight 4)
     (q/stroke 0.2)
     (q/stroke-cap :round)
     (q/line attached-pt socket-pt)
     (q/stroke-cap :square)
-    (q/stroke-weight 24)
+    (q/stroke-weight 18)
     (q/line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)))))
 
 ;; Add stroke shading along the teeth somehow?
