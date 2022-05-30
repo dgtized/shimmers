@@ -216,9 +216,10 @@
 
 (defn draw-piston [{:keys [angle driver]} t]
   (let [{:keys [pos radius]} driver
-        attach-radius (- radius (* 2.5 (dedendum driver)))
+        inner (* 2.5 (dedendum driver))
+        attach-radius (- radius inner)
         connecting-len (* 2.1 radius)
-        shaft-len (* 0.4 radius)
+        shaft-len (* 1.8 inner)
         theta (rotation driver t)
         closest (v/polar (- connecting-len attach-radius) angle)
         furthest (v/polar (+ connecting-len attach-radius) angle)
@@ -228,13 +229,11 @@
     (q/stroke 0 0.6 0.6)
     (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
-    (q/stroke-weight 4)
-    (q/stroke 0.2)
-    (q/stroke-cap :round)
-    (q/line attached-pt socket-pt)
-    (q/stroke-cap :square)
-    (q/stroke-weight 18)
-    (q/line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)))))
+    (q/stroke 0)
+    (cq/draw-shape (cq/segment attached-pt socket-pt (* 0.2 inner)))
+    (cq/circle attached-pt (* 0.3 inner))
+    (cq/draw-shape (cq/segment socket-pt (tm/+ socket-pt (v/polar shaft-len angle)) (* 0.8 inner)))
+    (cq/circle socket-pt (* 0.3 inner))))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?

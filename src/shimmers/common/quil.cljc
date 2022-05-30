@@ -3,7 +3,8 @@
    [quil.core :as q :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn rel-h [p]
   (* (q/height) p))
@@ -76,6 +77,14 @@
   (doseq [[x y] points]
     (q/curve-vertex x y))
   (q/end-shape))
+
+(defn segment [p q margin]
+  (let [angle (g/heading (tm/- p q))
+        side (g/as-cartesian (gv/vec2 margin (+ angle (* 0.5 Math/PI))))]
+    [(tm/+ p side)
+     (tm/- p side)
+     (tm/- q side)
+     (tm/+ q side)]))
 
 (defn color-if
   "Apply `set-color-fn` with `color` if color is a sequence."
