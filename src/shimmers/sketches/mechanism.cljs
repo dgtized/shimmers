@@ -38,6 +38,9 @@
 (defn center-distance [gear1 gear2]
   (* 0.5 (+ (pitch-diameter gear1) (pitch-diameter gear2))))
 
+(defn ring-center-distance [gear ring]
+  (* 0.5 (- (pitch-diameter ring) (pitch-diameter gear))))
+
 (defn gear-ratio [gear-in gear-out]
   (/ (:teeth gear-out) (:teeth gear-in)))
 
@@ -59,11 +62,12 @@
 
 ;; https://en.wikipedia.org/wiki/Gear#Spur
 ;; http://www.gearseds.com/files/Approx_method_draw_involute_tooth_rev2.pdf
-(defn involute-tooth [gear]
+(defn involute-tooth [{:keys [type] :as gear}]
   (let [thickness (tooth-thickness gear)
         pitch (/ thickness 2.5)
-        addendum (addendum gear)
-        dedendum (dedendum gear)]
+        invert (if (= type :ring-gear) -1 1)
+        addendum (* invert (addendum gear))
+        dedendum (* invert (dedendum gear))]
     [[(- dedendum) (- thickness)]
      [0 (- thickness)]
      [addendum (- pitch)]
@@ -90,6 +94,14 @@
         radius (pitch-radius gear)]
     (assoc gear :radius radius)))
 
+(defn ring-gear [diametral-pitch teeth]
+  (let [gear {:depth 0
+              :type :ring-gear
+              :diametral-pitch diametral-pitch
+              :teeth teeth}
+        radius (pitch-radius gear)]
+    (assoc gear :radius radius)))
+
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
 (defn meshing-interlock-angle
@@ -109,13 +121,17 @@
     0))
 
 (defn driven-by
-  [gear
+  [{:keys [type] :as gear}
    {:keys [pos dir ratio depth] :as driver} angle]
   {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))]}
   (assoc gear
          :depth depth
-         :pos (tm/+ pos (v/polar (center-distance driver gear) angle))
-         :dir (* -1 dir)
+         :pos (if (= type :ring-gear)
+                (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
+                (tm/+ pos (v/polar (center-distance driver gear) angle)))
+         :dir (if (= type :ring-gear)
+                dir
+                (* -1 dir))
          :ratio (* ratio (gear-ratio driver gear))
          :offset (meshing-interlock-angle gear driver angle)))
 
@@ -172,6 +188,8 @@
         tr-left (driven-by (gear dp1 40) top-right-b (* 1.05 Math/PI))
         tr-attach (driven-by (gear dp1 20) tr-left (* 1 Math/PI))
         tr-bottom (attached-to (gear dp2 80) tr-attach dec)
+        tr-last (driven-by (gear dp2 35) tr-bottom (* 0.75 Math/PI))
+        tr-step (attached-to (gear dp 12) tr-last inc)
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver
      left-step
@@ -189,7 +207,9 @@
      tr-left
      tr-attach
      tr-bottom
-     (driven-by (gear dp2 30) tr-bottom (* 0.75 Math/PI))
+     tr-last
+     tr-step
+     (driven-by (ring-gear dp 40) tr-step (* eq/TAU 0.25))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
@@ -219,6 +239,15 @@
   (let [theta (rotation gear t)]
     (q/stroke 0)
     (q/fill 1.0)
+    (cq/draw-shape (gear-polygon gear theta))
+    (q/stroke 0 0.6 0.6)
+    (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+
+(defn draw-ring-gear [{:keys [radius pos] :as gear} t]
+  (let [theta (rotation gear t)]
+    (q/stroke 0)
+    (q/no-fill)
+    (cq/circle pos (* 1.15 radius))
     (cq/draw-shape (gear-polygon gear theta))
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
@@ -255,6 +284,7 @@
     (doseq [{:keys [type] :as part} (sort-by :depth parts)]
       (case type
         :gear (draw-gear part t)
+        :ring-gear (draw-ring-gear part t)
         :piston (draw-piston part t)))))
 
 (defn ui-controls []
