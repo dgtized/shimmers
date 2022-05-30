@@ -225,8 +225,8 @@
         [sys _] (piston sys (* 0.5 Math/PI) piston-driver)
         [sys _] (piston sys (* 0.5 Math/PI) piston-driver-c)
         [sys _] (piston sys Math/PI left2)
-        [sys right] (driven-by sys (gear dp 25) driver 0)
-        [sys above] (driven-by sys (gear dp 21) right (- (/ Math/PI 2)))
+        [sys right] (driven-by sys (gear dp 18) driver 0)
+        [sys above] (driven-by sys (gear dp 26) right (* eq/TAU 0.75))
         [sys top-right] (driven-by sys (gear dp 60) above (- (/ Math/PI 3)))
         [sys top-right-b] (attached-to sys (gear dp1 20) top-right inc)
         [sys tr-left] (driven-by sys (gear dp1 40) top-right-b (* 1.05 Math/PI))
@@ -238,8 +238,10 @@
         [sys below] (driven-by sys (gear dp 38) right (/ Math/PI 3))
         [sys _] (piston sys 0 below)
         [sys _] (driven-by sys (gear dp 12) ring (* eq/TAU 0.25))
-        [sys _] (driven-by sys (gear dp 8) right -0.5)
         [sys big] (driven-by sys (gear dp 128) below 0)
+        [sys s-big] (driven-by sys (gear dp 20) big (* eq/TAU 0.68))
+        [sys _] (piston sys (* eq/TAU 0.85) s-big)
+        [sys _] (driven-by sys (gear dp 13) big (* eq/TAU 0.6))
         [sys small] (driven-by sys (gear dp 21) big (* 0.8 eq/TAU))
         [sys small-a] (attached-to sys (gear dp1 32) small dec)
         ;; FIXME: mesh-offset is wrong for rings on: non-cardinal directions,
@@ -327,7 +329,7 @@
   (q/background 1.0)
   (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
         sys (-> (gear-system diametral-pitch driver-teeth driver-ratio)
-                (propagate-position (cq/rel-vec 0.35 0.5) t))]
+                (propagate-position (cq/rel-vec 0.33 0.5) t))]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
         :gear (draw-gear sys part t)
