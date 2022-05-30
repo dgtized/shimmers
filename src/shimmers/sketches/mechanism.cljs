@@ -123,6 +123,12 @@
   (or (= (:type gear) :ring-gear)
       (= (:type driver) :ring-gear)))
 
+(defn add-part [sys part driver]
+  [(-> sys
+      (lg/add-nodes part)
+      (lg/add-edges [driver part]))
+   part])
+
 (defn driven-by
   [sys
    {gear-type :type :as gear}
@@ -139,10 +145,7 @@
                      :dir (if (ring-gear-mesh? gear driver) dir (* -1 dir))
                      :ratio (* ratio (gear-ratio driver gear)))
         gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle))]
-    [(-> sys
-         (lg/add-nodes gear')
-         (lg/add-edges [driver gear']))
-     gear']))
+    (add-part sys gear' driver)))
 
 (defn attached-to
   [sys gear {:keys [depth dir ratio offset] :as driver} depth-dir]
@@ -153,20 +156,14 @@
                      :ratio ratio
                      :offset offset ;; or 0
                      )]
-    [(-> sys
-         (lg/add-nodes gear')
-         (lg/add-edges [driver gear']))
-     gear']))
+    (add-part sys gear' driver)))
 
 (defn piston [sys angle driver]
   (let [piston {:id (count (lg/nodes sys))
                 :type :piston
                 :depth (inc (:depth driver))
                 :angle angle}]
-    [(-> sys
-         (lg/add-nodes piston)
-         (lg/add-edges [driver piston]))
-     piston]))
+    (add-part sys piston driver)))
 
 (defn piston-displacement
   "Calculates displacement along the axis of a piston from `theta` of the circle.
