@@ -106,14 +106,14 @@
   "Calculate the initial angle for meshing with `driver` gear.
 
   `angle` is the heading of the vector between the driving gear and the connecting gear."
-  [{:keys [teeth] :as gear}
-   {:keys [offset dir] :as driver}
+  [{:keys [teeth dir] :as gear}
+   {:keys [offset] :as driver}
    angle]
   (if driver
     ;; mod by (/ tm/TWO_PI teeth) to keep this small
     (let [gear-ratio (gear-ratio gear driver)]
       (+ (* gear-ratio offset)
-         (* (+ 1 gear-ratio) (* -1 dir angle))
+         (* (+ 1 gear-ratio) (* dir angle))
          (* (mod (inc teeth) 2) (/ Math/PI teeth)) ;; add a tooth width if even?
          ))
     0))
@@ -139,7 +139,7 @@
                             dir
                             (* -1 dir))
                      :ratio (* ratio (gear-ratio driver gear)))]
-    (assoc gear' :offset (meshing-interlock-angle gear driver angle))))
+    (assoc gear' :offset (meshing-interlock-angle gear' driver angle))))
 
 (defn attached-to
   [gear {:keys [depth pos dir ratio offset]} depth-dir]
