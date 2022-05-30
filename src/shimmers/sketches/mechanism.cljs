@@ -217,7 +217,6 @@
 
 (defn draw-gear [{:keys [shape radius pos] :as gear} t]
   (let [theta (rotation gear t)]
-    (q/stroke-weight 1.0)
     (q/stroke 0)
     (q/fill 1.0)
     (cq/draw-shape (poly-at shape pos theta))
@@ -238,7 +237,6 @@
         displacement (piston-displacement attach-radius connecting-len (- theta angle))
         socket-pt (tm/+ pos (v/polar displacement angle))]
     (q/stroke 0 0.6 0.6)
-    (q/stroke-weight 1)
     (q/line (tm/+ pos closest) (tm/+ pos furthest))
     (q/stroke 0)
     (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
