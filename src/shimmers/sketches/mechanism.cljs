@@ -131,6 +131,7 @@
   (let [ring-gear-mesh (or (= gear-type :ring-gear)
                            (= driver-type :ring-gear))
         gear' (assoc gear
+                     :id (count (lg/nodes sys))
                      :depth depth
                      :pos (tm/+ pos
                                 (if ring-gear-mesh
@@ -150,6 +151,7 @@
 (defn attached-to
   [sys gear {:keys [depth pos dir ratio offset] :as driver} depth-dir]
   (let [gear' (assoc gear
+                     :id (count (lg/nodes sys))
                      :depth (depth-dir depth)
                      :pos pos
                      :dir dir
