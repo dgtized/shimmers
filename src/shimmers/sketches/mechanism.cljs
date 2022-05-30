@@ -123,19 +123,25 @@
     0))
 
 (defn driven-by
-  [{:keys [type] :as gear}
-   {:keys [pos dir ratio depth] :as driver} angle]
-  {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))]}
-  (assoc gear
-         :depth depth
-         :pos (if (= type :ring-gear)
-                (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
-                (tm/+ pos (v/polar (center-distance driver gear) angle)))
-         :dir (if (= type :ring-gear)
-                dir
-                (* -1 dir))
-         :ratio (* ratio (gear-ratio driver gear))
-         :offset (meshing-interlock-angle gear driver angle)))
+  [{gear-type :type :as gear}
+   {driver-type :type :keys [pos dir ratio depth] :as driver} angle]
+  {:pre [(= (:diametral-pitch gear) (:diametral-pitch driver))
+         (contains? #{[:gear :gear]
+                      [:ring-gear :gear]
+                      [:gear :ring-gear]}
+                    [gear-type driver-type])]}
+  (let [ring-gear-mesh (or (= gear-type :ring-gear)
+                           (= driver-type :ring-gear))]
+    (assoc gear
+           :depth depth
+           :pos (if ring-gear-mesh
+                  (tm/+ pos (v/polar (ring-center-distance driver gear) angle))
+                  (tm/+ pos (v/polar (center-distance driver gear) angle)))
+           :dir (if ring-gear-mesh
+                  dir
+                  (* -1 dir))
+           :ratio (* ratio (gear-ratio driver gear))
+           :offset (meshing-interlock-angle gear driver angle))))
 
 (defn attached-to
   [gear {:keys [depth pos dir ratio offset]} depth-dir]
@@ -192,6 +198,7 @@
         tr-bottom (attached-to (gear dp2 80) tr-attach dec)
         tr-last (driven-by (gear dp2 35) tr-bottom (* 0.75 Math/PI))
         tr-step (attached-to (gear dp 12) tr-last inc)
+        ring (driven-by (ring-gear dp 36) tr-step (* eq/TAU 0.25))
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver
      left-step
@@ -211,7 +218,8 @@
      tr-bottom
      tr-last
      tr-step
-     (driven-by (ring-gear dp 36) tr-step (* eq/TAU 0.25))
+     ring
+     (driven-by (gear dp 12) ring (* eq/TAU -0.25))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
