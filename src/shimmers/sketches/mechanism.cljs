@@ -274,6 +274,7 @@
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
+;; TODO: correct attach-radius for ring-gear so it's outside of radius
 (defn draw-piston [{:keys [angle driver]} t]
   (let [{:keys [pos radius]} driver
         inner (* 2.5 (dedendum driver))
