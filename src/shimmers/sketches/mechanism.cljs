@@ -121,6 +121,10 @@
          ))
     0))
 
+(defn ring-gear-mesh? [gear driver]
+  (or (= (:type gear) :ring-gear)
+      (= (:type driver) :ring-gear)))
+
 (defn driven-by
   [sys
    {gear-type :type :as gear}
@@ -130,25 +134,16 @@
                       [:ring-gear :gear]
                       [:gear :ring-gear]}
                     [gear-type driver-type])]}
-  (let [ring-gear-mesh (or (= gear-type :ring-gear)
-                           (= driver-type :ring-gear))
-        gear' (assoc gear
+  (let [gear' (assoc gear
                      :id (count (lg/nodes sys))
                      :depth depth
-                     :dir (if ring-gear-mesh
-                            dir
-                            (* -1 dir))
+                     :angle angle
+                     :dir (if (ring-gear-mesh? gear driver) dir (* -1 dir))
                      :ratio (* ratio (gear-ratio driver gear)))
         gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle))]
     [(-> sys
          (lg/add-nodes gear')
-         (lg/add-edges [driver gear'])
-         (lga/add-attr gear'
-                       :pos (tm/+ (lga/attr sys driver :pos)
-                                (if ring-gear-mesh
-                                  (v/polar (ring-center-distance driver gear)
-                                           (if (= :ring-gear driver-type) (- angle) angle))
-                                  (v/polar (center-distance driver gear) angle)))))
+         (lg/add-edges [driver gear']))
      gear']))
 
 (defn attached-to
@@ -162,8 +157,7 @@
                      )]
     [(-> sys
          (lg/add-nodes gear')
-         (lg/add-edges [driver gear'])
-         (lga/add-attr gear' :pos (lga/attr sys driver :pos)))
+         (lg/add-edges [driver gear']))
      gear']))
 
 (defn piston [sys angle driver]
@@ -195,14 +189,14 @@
 ;;  * pulley/belt systems?
 ;;  * sun & planet?
 ;;  * kinematic chain to another gear?
-(defn gear-system [origin diametral-pitch driver-teeth driver-ratio]
+(defn gear-system [diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
         driver (assoc (gear dp driver-teeth)
                       :id 0
                       :dir 1 :ratio driver-ratio :offset 0)
-        sys (lga/add-attr (lg/add-nodes (lg/digraph) driver) driver :pos origin)
+        sys (lg/add-nodes (lg/digraph) driver)
         [sys left-step] (driven-by sys (gear dp 20) driver (* 0.8 Math/PI))
         [sys left] (attached-to sys (gear dp2 70) left-step dec)
         [sys left2] (driven-by sys (gear dp2 16) left Math/PI)
@@ -237,10 +231,24 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
-(comment (let [sys (gear-system (gv/vec2) 0.3 30 1.0)]
-           (->> sys
-                (la/topsort)
-                (map (fn [n] [(:id n) (:id (driver sys n))])))))
+(defn propagate-position [system origin _]
+  (reduce (fn [sys {part-type :type :keys [angle] :as part}]
+            (if-let [{driver-type :type :as driver} (driver sys part)]
+              (let [pos (lga/attr sys driver :pos)]
+                (if (and angle (not= part-type :piston))
+                  (lga/add-attr sys part :pos
+                                (tm/+ pos
+                                      (if (ring-gear-mesh? part driver)
+                                        (v/polar (ring-center-distance driver part)
+                                                 (if (= :ring-gear driver-type) (- angle) angle))
+                                        (v/polar (center-distance driver part) angle))))
+                  (lga/add-attr sys part :pos pos)))
+              (lga/add-attr sys part :pos origin)))
+          system
+          (la/topsort system)))
+
+(comment (-> (gear-system 0.3 30 1.0)
+             (propagate-position (gv/vec2) 0)))
 
 ;; Visualization & User Interface
 (defonce ui-state
@@ -318,7 +326,8 @@
   (q/no-fill)
   (q/background 1.0)
   (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
-        sys (gear-system (cq/rel-vec 0.35 0.5) diametral-pitch driver-teeth driver-ratio)]
+        sys (-> (gear-system diametral-pitch driver-teeth driver-ratio)
+                (propagate-position (cq/rel-vec 0.35 0.5) t))]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
         :gear (draw-gear sys part t)
