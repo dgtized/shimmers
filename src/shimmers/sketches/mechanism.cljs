@@ -219,7 +219,8 @@
         inner (* 2.5 (dedendum driver))
         attach-radius (- radius inner)
         connecting-len (* 2.1 radius)
-        shaft-len (* 1.8 inner)
+        piston-len (* 1.8 inner)
+
         theta (rotation driver t)
         closest (v/polar (- connecting-len attach-radius) angle)
         furthest (v/polar (+ connecting-len attach-radius) angle)
@@ -232,7 +233,7 @@
     (q/stroke 0)
     (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
     (cq/circle attached-pt (* 0.3 inner))
-    (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar shaft-len angle)) (* 0.8 inner)))
+    (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
     (cq/circle socket-pt (* 0.3 inner))))
 
 ;; Add stroke shading along the teeth somehow?
