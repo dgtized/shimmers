@@ -73,17 +73,14 @@
            [0 thickness]
            [(- dedendum) thickness]])))
 
-(defn poly-at [polygon pos t]
-  (-> polygon
-      (g/rotate t)
-      (g/translate pos)
-      g/vertices))
-
-(defn gear-polygon [{:keys [radius teeth] :as gear}]
-  (->> teeth
-       (g/vertices (gc/circle (gv/vec2) radius))
-       (mapcat (partial tooth gear))
-       gp/polygon2))
+(defn gear-polygon [{:keys [pos radius teeth] :as gear} theta]
+  (as-> teeth _
+    (g/vertices (gc/circle (gv/vec2) radius) _)
+    (mapcat (partial tooth gear) _)
+    (gp/polygon2 _)
+    (g/rotate _ theta)
+    (g/translate _ pos)
+    (g/vertices _)))
 
 (defn gear [diametral-pitch teeth]
   (let [gear {:depth 0
@@ -222,7 +219,7 @@
   (let [theta (rotation gear t)]
     (q/stroke 0)
     (q/fill 1.0)
-    (cq/draw-shape (poly-at (gear-polygon gear) pos theta))
+    (cq/draw-shape (gear-polygon gear theta))
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
