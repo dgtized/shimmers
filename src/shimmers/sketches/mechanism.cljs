@@ -235,10 +235,16 @@
         [sys tr-last] (driven-by sys (gear dp2 35) tr-bottom (* 0.75 Math/PI))
         [sys tr-step] (attached-to sys (gear dp 12) tr-last inc)
         [sys ring] (driven-by sys (ring-gear dp 36) tr-step (* eq/TAU 0.25))
-        [sys below] (driven-by sys (gear dp 30) right (/ Math/PI 3))
+        [sys below] (driven-by sys (gear dp 38) right (/ Math/PI 3))
+        [sys _] (piston sys 0 below)
         [sys _] (driven-by sys (gear dp 12) ring (* eq/TAU 0.25))
         [sys _] (driven-by sys (gear dp 8) right -0.5)
-        [sys _] (driven-by sys (gear dp 128) below 0)]
+        [sys big] (driven-by sys (gear dp 128) below 0)
+        [sys small] (driven-by sys (gear dp 21) big (* 0.8 eq/TAU))
+        [sys small-a] (attached-to sys (gear dp1 32) small dec)
+        ;; FIXME: mesh-offset is wrong for rings on: non-cardinal directions,
+        ;; some diametral-pitch, and certain teeth counts
+        [sys _] (driven-by sys (ring-gear dp1 46) small-a 0)]
     sys))
 
 (comment (-> (gear-system 0.3 30 1.0)
