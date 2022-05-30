@@ -156,19 +156,24 @@
 ;;  * kinematic chain to another gear?
 (defn gear-system [center diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
+        dp1 (* 0.66 dp)
+        dp2 (* 1.25 dp)
         driver (assoc (gear dp driver-teeth) :pos center :dir 1 :ratio driver-ratio :offset 0)
-        left (driven-by (gear dp 40) driver Math/PI)
-        left2 (driven-by (gear dp 12) left Math/PI)
-        piston-driver (driven-by (gear dp 31) left (/ Math/PI 2))
+        left-step (driven-by (gear dp 20) driver (* 0.8 Math/PI))
+        left (attached-to (gear dp2 80) left-step dec)
+        left2 (driven-by (gear dp2 12) left Math/PI)
+        piston-driver (driven-by (gear dp2 25) left (/ Math/PI 2))
         right (driven-by (gear dp 25) driver 0)
         above (driven-by (gear dp 21) right (- (/ Math/PI 2)))
         top-right (driven-by (gear dp 60) above (- (/ Math/PI 3)))
-        top-right-b (attached-to (gear (* 0.75 dp) 20) top-right inc)
-        tr-left (driven-by (gear (* 0.75 dp) 40) top-right-b Math/PI)
-        tr-attach (driven-by (gear (* 0.75 dp) 20) tr-left (* 1.1 Math/PI))
-        tr-bottom (attached-to (gear (* dp 1.5) 80) tr-attach dec)
+        top-right-b (attached-to (gear dp1 20) top-right inc)
+        tr-left (driven-by (gear dp1 40) top-right-b (* 1.05 Math/PI))
+        tr-attach (driven-by (gear dp1 20) tr-left (* 1 Math/PI))
+        tr-bottom (attached-to (gear dp2 80) tr-attach dec)
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
-    [driver left
+    [driver
+     left-step
+     left
      piston-driver
      (piston (* 0.5 Math/PI) piston-driver)
      left2
@@ -179,7 +184,7 @@
      tr-left
      tr-attach
      tr-bottom
-     (driven-by (gear (* dp 1.5) 30) tr-bottom (* 0.75 Math/PI))
+     (driven-by (gear dp2 30) tr-bottom (* 0.75 Math/PI))
      below
      (driven-by (gear dp 8) right -0.5)
      (driven-by (gear dp 128) below (/ Math/PI 3))]))
