@@ -129,10 +129,9 @@
          :offset offset ;; or 0
          ))
 
-(defn piston [multiplier angle driver]
+(defn piston [angle driver]
   {:type :piston
    :depth 0
-   :multiplier multiplier
    :angle angle
    :driver driver})
 
@@ -160,7 +159,7 @@
         below (driven-by (gear dp 30) right (/ Math/PI 2))]
     [driver left
      piston-driver
-     (piston 3.5 (* 0.5 Math/PI) piston-driver)
+     (piston (* 0.5 Math/PI) piston-driver)
      (driven-by (gear dp 12) left Math/PI)
      right above
      top-right
@@ -203,11 +202,11 @@
     (q/stroke 0 0.6 0.6)
     (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
 
-(defn draw-piston [{:keys [multiplier angle driver]} t]
+(defn draw-piston [{:keys [angle driver]} t]
   (let [{:keys [pos radius]} driver
-        attach-radius (* 0.85 radius)
-        connecting-len (* 0.8 multiplier attach-radius)
-        shaft-len (* 0.2 multiplier attach-radius)
+        attach-radius (* 0.75 radius)
+        connecting-len (* 2.2 radius)
+        shaft-len (* 0.2 radius)
         theta (rotation driver t)
         attach-dir (v/polar (* 0.75 radius) theta)
         closest (v/polar (- connecting-len attach-radius) angle)
