@@ -115,6 +115,11 @@
     (let [gear-ratio (gear-ratio gear driver)]
       (-> (* gear-ratio offset)
           (+ (* (+ 1 gear-ratio) (* dir angle)))
+          (+ (if (= :ring-gear (:type gear))
+               0 ;; for angle 0
+               ;; (* angle 0.004) ;; for angle (* eq/TAU 0.40)
+               ;; (* angle 0.0025) ;; for angle (* eq/TAU 0.66)
+               0))
           ;; add a tooth width if even?
           (+ (* (mod (inc teeth) 2) (/ Math/PI teeth)))
           (mod (/ tm/TWO_PI teeth))))
