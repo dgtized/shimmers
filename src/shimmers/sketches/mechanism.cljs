@@ -290,7 +290,7 @@
 (defonce ui-state
   (ctrl/state {:mode :gears
                :running true
-               :show-angle-path true
+               :show-angle-path false
                :diametral-pitch 0.35
                :driver-teeth 42
                :driver-ratio 1.0}))
