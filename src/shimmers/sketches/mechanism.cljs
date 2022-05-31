@@ -296,7 +296,6 @@
 (defn draw-gear [sys {:keys [radius] :as gear} t]
   (let [theta (rotation gear t)
         pos (lga/attr sys gear :pos)]
-    (q/stroke 0)
     (q/fill 1.0)
     (cq/draw-shape (gear-polygon gear pos theta))
     (when (:show-angle-path @ui-state)
@@ -307,7 +306,6 @@
   (let [theta (rotation gear t)
         pos (lga/attr sys gear :pos)
         outer-r (+ radius (* 3 (addendum gear)))]
-    (q/stroke 0)
     (q/fill 1.0)
     (q/begin-shape)
     (doseq [t (range teeth)
@@ -340,7 +338,6 @@
         attached-pt (tm/+ pos (v/polar attach-radius theta))
         displacement (piston-displacement attach-radius connecting-len (- theta angle))
         socket-pt (tm/+ pos (v/polar displacement angle))]
-    (q/stroke 0)
     (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
     (cq/circle attached-pt (* 0.3 inner))
     (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
@@ -350,7 +347,12 @@
       (q/with-stroke [0 0.6 0.6]
         (q/line (tm/+ pos closest) (tm/+ pos furthest))))))
 
-(defn draw-part [sys {:keys [type] :as part} t]
+(defn draw-part [sys {:keys [type] :as part} selected-ids t]
+  (q/stroke 0)
+  (q/stroke-weight 1.0)
+  (when (contains? selected-ids (:id part))
+    (q/stroke 0.55 0.6 0.3)
+    (q/stroke-weight 1.5))
   (case type
     :gear (draw-gear sys part t)
     :ring-gear (draw-ring-gear sys part t)
@@ -384,10 +386,11 @@
         sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
                 (propagate-position origin t))
         parts (lg/nodes sys)
-        selected (selected-parts sys parts mouse)]
+        selected (selected-parts sys parts mouse)
+        selected-ids (set (map :id selected))]
     (swap! defo assoc :parts selected)
     (doseq [part (sort-by :depth parts)]
-      (draw-part sys part t))))
+      (draw-part sys part selected-ids t))))
 
 (defn ui-controls []
   [:div.flexcols
