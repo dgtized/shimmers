@@ -284,12 +284,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0})
+  {:mouse (gv/vec2)
+   :t 0})
 
 (defn update-state [state]
-  (if (:running @ui-state)
-    (update state :t + 0.01)
-    state))
+  (-> (if (:running @ui-state)
+        (update state :t + 0.01)
+        state)
+      (update :mouse cq/mouse-last-position-clicked)))
 
 (defn draw-gear [sys {:keys [radius] :as gear} t]
   (let [theta (rotation gear t)
@@ -360,17 +362,31 @@
     :ring-test [ring-test (cq/rel-vec 0.4 0.5)]
     :gears [gear-system (cq/rel-vec 0.32 0.51)]))
 
+(defn selected-parts [sys parts mouse]
+  (let [close-parts
+        (->> parts
+             (map (fn [p] (assoc p :pos (lga/attr sys p :pos))))
+             (sort-by (fn [{:keys [pos]}] (g/dist-squared pos mouse))))]
+    (if-let [closest (first close-parts)]
+      (if (< (g/dist (:pos closest) mouse) (:radius closest))
+        (take-while (fn [{:keys [pos]}] (= (:pos closest) pos)) close-parts)
+        [])
+      [])))
+
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
-(defn draw [{:keys [t]}]
+(defn draw [{:keys [t mouse]}]
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
   (let [{:keys [mode diametral-pitch driver-teeth driver-ratio]} @ui-state
         [system-graph origin] (system-mode mode)
         sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
-                (propagate-position origin t))]
-    (doseq [part (sort-by :depth (lg/nodes sys))]
+                (propagate-position origin t))
+        parts (lg/nodes sys)
+        selected (selected-parts sys parts mouse)]
+    (swap! defo assoc :parts selected)
+    (doseq [part (sort-by :depth parts)]
       (draw-part sys part t))))
 
 (defn ui-controls []
