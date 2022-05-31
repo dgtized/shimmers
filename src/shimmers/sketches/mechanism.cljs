@@ -281,8 +281,7 @@
         [g ring3] (driven-by g (ring-gear dp-b 60) in-driver (* eq/TAU 0.40))
         [g _] (driven-by g (gear dp-b 11) ring3 (* eq/TAU 0.65))
         [g _] (driven-by g (gear dp-b 15) ring3 (* eq/TAU 0.5))
-        [g _] (driven-by g (gear dp-b 18) ring3 (* eq/TAU 0.35))
-]
+        [g _] (driven-by g (gear dp-b 18) ring3 (* eq/TAU 0.35))]
     g))
 
 (defonce defo (debug/state {}))
