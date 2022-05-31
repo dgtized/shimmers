@@ -255,20 +255,29 @@
 
 (defn ring-test [diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
+        dp-a (* 1.1 dp)
         dp-b (* 0.75 dp)
         driver (assoc (gear dp driver-teeth)
                       :id 0 :dir 1 :ratio driver-ratio :offset 0)
         g (lg/add-nodes (lg/digraph) driver)
         [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
-        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.80))
+        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.7))
         [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.13))
         [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0))
         [g _] (driven-by g (gear dp (int (* 0.3 driver-teeth))) ring1 (* eq/TAU 0.25))
-        [g in-driver] (attached-to g (gear dp-b (int (* 0.33 driver-teeth))) driver inc)
-        [g ring2] (driven-by g (ring-gear dp-b 60) in-driver (* eq/TAU 0.40))
-        [g _] (driven-by g (gear dp-b 11) ring2 (* eq/TAU 0.65))
-        [g _] (driven-by g (gear dp-b 15) ring2 (* eq/TAU 0.5))
-        [g _] (driven-by g (gear dp-b 18) ring2 (* eq/TAU 0.35))]
+        [g in-driver2] (attached-to g (gear dp-a (int (* 0.7 driver-teeth))) driver inc)
+        [g ring2] (driven-by g (ring-gear dp-a 120) in-driver2 (* eq/TAU 0.66))
+        [g _] (driven-by g (gear dp-a 18) ring2 (* eq/TAU 0.45))
+        [g _] (driven-by g (gear dp-a 19) ring2 (* eq/TAU 0.55))
+        [g _] (driven-by g (gear dp-a 20) ring2 (* eq/TAU 0.66))
+        [g _] (driven-by g (gear dp-a 21) ring2 (* eq/TAU 0.76))
+        [g _] (driven-by g (gear dp-a 22) ring2 (* eq/TAU 0.87))
+        [g in-driver] (attached-to g (gear dp-b (int (* 0.33 driver-teeth))) driver (partial + 2))
+        [g ring3] (driven-by g (ring-gear dp-b 60) in-driver (* eq/TAU 0.40))
+        [g _] (driven-by g (gear dp-b 11) ring3 (* eq/TAU 0.65))
+        [g _] (driven-by g (gear dp-b 15) ring3 (* eq/TAU 0.5))
+        [g _] (driven-by g (gear dp-b 18) ring3 (* eq/TAU 0.35))
+]
     g))
 
 (defonce defo (debug/state {}))
@@ -361,7 +370,7 @@
 (def system-modes [:gears :ring-test])
 (defn system-mode [mode]
   (case mode
-    :ring-test [ring-test (cq/rel-vec 0.4 0.5)]
+    :ring-test [ring-test (cq/rel-vec 0.5 0.55)]
     :gears [gear-system (cq/rel-vec 0.32 0.51)]))
 
 (defn selected-parts [sys parts mouse]
