@@ -369,7 +369,7 @@
         (->> parts
              (map (fn [p] (assoc p :pos (lga/attr sys p :pos))))
              (sort-by (fn [{:keys [pos]}] (g/dist-squared pos mouse))))]
-    (if-let [closest (first close-parts)]
+    (if-let [closest (first (filter :radius close-parts))]
       (if (< (g/dist (:pos closest) mouse) (:radius closest))
         (take-while (fn [{:keys [pos]}] (= (:pos closest) pos)) close-parts)
         [])
