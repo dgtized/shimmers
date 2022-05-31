@@ -125,8 +125,8 @@
 
 (defn add-part [sys part driver]
   [(-> sys
-      (lg/add-nodes part)
-      (lg/add-edges [driver part]))
+       (lg/add-nodes part)
+       (lg/add-edges [driver part]))
    part])
 
 (defn driven-by
