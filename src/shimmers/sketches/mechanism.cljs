@@ -340,6 +340,12 @@
     (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
     (cq/circle socket-pt (* 0.3 inner))))
 
+(defn draw-part [sys {:keys [type] :as part} t]
+  (case type
+    :gear (draw-gear sys part t)
+    :ring-gear (draw-ring-gear sys part t)
+    :piston (draw-piston sys part t)))
+
 (def system-modes [:gears :ring-test])
 (defn system-mode [mode]
   (case mode
@@ -356,11 +362,8 @@
         [system-graph origin] (system-mode mode)
         sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
                 (propagate-position origin t))]
-    (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
-      (case type
-        :gear (draw-gear sys part t)
-        :ring-gear (draw-ring-gear sys part t)
-        :piston (draw-piston sys part t)))))
+    (doseq [part (sort-by :depth (lg/nodes sys))]
+      (draw-part sys part t))))
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
