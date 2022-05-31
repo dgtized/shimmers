@@ -254,15 +254,20 @@
 
 (defn ring-test [diametral-pitch driver-teeth driver-ratio]
   (let [dp diametral-pitch
-        dp1 (* 0.66 dp)
-        dp2 (* 1.25 dp)
+        dp-b (* 0.75 dp)
         driver (assoc (gear dp driver-teeth)
                       :id 0 :dir 1 :ratio driver-ratio :offset 0)
         g (lg/add-nodes (lg/digraph) driver)
         [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
         [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.25))
+        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.36))
         [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0.5))
-        [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.75))]
+        [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.75))
+        [g in-driver] (attached-to g (gear dp-b (int (* 0.33 driver-teeth))) driver inc)
+        [g ring2] (driven-by g (ring-gear dp-b 60) in-driver (* eq/TAU 0.40))
+        [g _] (driven-by g (gear dp-b 11) ring2 (* eq/TAU 0.15))
+        [g _] (driven-by g (gear dp-b 15) ring2 0)
+        [g _] (driven-by g (gear dp-b 18) ring2 (* eq/TAU 0.85))]
     g))
 
 ;; Visualization & User Interface
