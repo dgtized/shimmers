@@ -316,7 +316,7 @@
       (q/with-stroke [0 0.6 0.6]
         (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))))
 
-(defn draw-ring-gear [sys {:keys [radius teeth] :as gear} t]
+(defn draw-ring-gear [sys {:keys [radius teeth] :as gear} selected? t]
   (let [theta (rotation gear t)
         pos (lga/attr sys gear :pos)
         outer-r (+ radius (* 3 (addendum gear)))]
@@ -335,7 +335,16 @@
     (q/end-shape :close)
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
-        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))))
+        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+    (when selected?
+      (let [{:keys [angle]} gear
+            rp (v/polar (+ radius (* 2 (addendum gear))) (- angle Math/PI))
+            driver (driver sys gear)
+            driver-pos (lga/attr sys driver :pos)]
+        (cq/circle (tm/+ pos rp) 3)
+        (q/line (tm/+ pos rp)
+                 (tm/+ driver-pos (v/polar (:radius driver) (- angle Math/PI))))
+        ))))
 
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
 (defn draw-piston [sys {:keys [angle] :as part} t]
@@ -364,13 +373,14 @@
 (defn draw-part [sys {:keys [type] :as part} selected-ids t]
   (q/stroke 0)
   (q/stroke-weight 1.0)
-  (when (contains? selected-ids (:id part))
-    (q/stroke 0.55 0.6 0.3)
-    (q/stroke-weight 1.5))
-  (case type
-    :gear (draw-gear sys part t)
-    :ring-gear (draw-ring-gear sys part t)
-    :piston (draw-piston sys part t)))
+  (let [selected? (contains? selected-ids (:id part))]
+    (when selected?
+      (q/stroke 0.55 0.6 0.3)
+      (q/stroke-weight 1.5))
+    (case type
+      :gear (draw-gear sys part t)
+      :ring-gear (draw-ring-gear sys part selected? t)
+      :piston (draw-piston sys part t))))
 
 (def system-modes [:gears :ring-test])
 (defn system-mode [mode]
