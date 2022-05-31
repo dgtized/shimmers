@@ -138,13 +138,14 @@
                       [:ring-gear :gear]
                       [:gear :ring-gear]}
                     [gear-type driver-type])]}
-  (let [gear' (assoc gear
+  (let [angle' (if (= driver-type :ring-gear) (+ angle Math/PI) angle)
+        gear' (assoc gear
                      :id (count (lg/nodes sys))
                      :depth depth
-                     :angle angle
+                     :angle angle'
                      :dir (if (ring-gear-mesh? gear driver) dir (* -1 dir))
                      :ratio (* ratio (gear-ratio driver gear)))
-        gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle))]
+        gear' (assoc gear' :offset (meshing-interlock-angle gear' driver angle'))]
     (add-part sys gear' driver)))
 
 (defn attached-to
@@ -236,7 +237,7 @@
         [g ring] (driven-by g (ring-gear dp 36) tr-step (* eq/TAU 0.25))
         [g below] (driven-by g (gear dp 38) right (/ Math/PI 3))
         [g _] (piston g 0 below)
-        [g _] (driven-by g (gear dp 12) ring (* eq/TAU 0.75))
+        [g _] (driven-by g (gear dp 12) ring (* eq/TAU 0.25))
         [g big] (driven-by g (gear dp 128) below 0.1)
         [g s-big] (driven-by g (gear dp 20) big (* eq/TAU 0.68))
         [g _] (piston g (* eq/TAU 0.85) s-big)
@@ -258,15 +259,15 @@
                       :id 0 :dir 1 :ratio driver-ratio :offset 0)
         g (lg/add-nodes (lg/digraph) driver)
         [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
-        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.25))
-        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.36))
-        [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0.5))
-        [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.75))
+        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.75))
+        [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.13))
+        [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0))
+        [g _] (driven-by g (gear dp (int (* 0.3 driver-teeth))) ring1 (* eq/TAU 0.25))
         [g in-driver] (attached-to g (gear dp-b (int (* 0.33 driver-teeth))) driver inc)
         [g ring2] (driven-by g (ring-gear dp-b 60) in-driver (* eq/TAU 0.40))
-        [g _] (driven-by g (gear dp-b 11) ring2 (* eq/TAU 0.15))
-        [g _] (driven-by g (gear dp-b 15) ring2 0)
-        [g _] (driven-by g (gear dp-b 18) ring2 (* eq/TAU 0.85))]
+        [g _] (driven-by g (gear dp-b 11) ring2 (* eq/TAU 0.65))
+        [g _] (driven-by g (gear dp-b 15) ring2 (* eq/TAU 0.5))
+        [g _] (driven-by g (gear dp-b 18) ring2 (* eq/TAU 0.35))]
     g))
 
 ;; Visualization & User Interface
