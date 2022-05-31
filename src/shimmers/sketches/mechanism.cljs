@@ -337,12 +337,18 @@
         (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
     (when selected?
       (let [{:keys [angle]} gear
-            rp (v/polar (+ radius (* 2 (addendum gear))) (- angle Math/PI))
+            contact-pt (v/polar (+ radius (* 2 (addendum gear)))
+                                (- angle Math/PI))
+            adjust-pt (v/polar (+ radius (* 2 (addendum gear)))
+                               (+ (- angle Math/PI) (:offset gear)))
             driver (driver sys gear)
             driver-pos (lga/attr sys driver :pos)]
-        (cq/circle (tm/+ pos rp) 3)
-        (q/line (tm/+ pos rp)
-                 (tm/+ driver-pos (v/polar (:radius driver) (- angle Math/PI))))
+        (cq/circle (tm/+ pos contact-pt) 3)
+        (when false
+          (q/line (tm/+ pos adjust-pt)
+                  (tm/+ driver-pos
+                        (v/polar (:radius driver)
+                                 (+ (- angle Math/PI) (:offset driver))))))
         ))))
 
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
