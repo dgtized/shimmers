@@ -112,12 +112,12 @@
    {:keys [offset] :as driver}
    angle]
   (if driver
-    ;; mod by (/ tm/TWO_PI teeth) to keep this small
     (let [gear-ratio (gear-ratio gear driver)]
-      (+ (* gear-ratio offset)
-         (* (+ 1 gear-ratio) (* dir angle))
-         (* (mod (inc teeth) 2) (/ Math/PI teeth)) ;; add a tooth width if even?
-         ))
+      (-> (* gear-ratio offset)
+          (+ (* (+ 1 gear-ratio) (* dir angle)))
+          ;; add a tooth width if even?
+          (+ (* (mod (inc teeth) 2) (/ Math/PI teeth)))
+          (mod (/ tm/TWO_PI teeth))))
     0))
 
 (defn ring-gear-mesh? [gear driver]
