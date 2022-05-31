@@ -186,14 +186,13 @@
 
 (defn propagate-position [system origin _]
   (reduce (fn [sys {part-type :type :keys [angle] :as part}]
-            (if-let [{driver-type :type :as driver} (driver sys part)]
+            (if-let [driver (driver sys part)]
               (let [pos (lga/attr sys driver :pos)]
                 (if (and angle (not= part-type :piston))
                   (lga/add-attr sys part :pos
                                 (tm/+ pos
                                       (if (ring-gear-mesh? part driver)
-                                        (v/polar (ring-center-distance driver part)
-                                                 (if (= :ring-gear driver-type) (- angle) angle))
+                                        (v/polar (ring-center-distance driver part) angle)
                                         (v/polar (center-distance driver part) angle))))
                   (lga/add-attr sys part :pos pos)))
               (lga/add-attr sys part :pos origin)))
@@ -237,7 +236,7 @@
         [g ring] (driven-by g (ring-gear dp 36) tr-step (* eq/TAU 0.25))
         [g below] (driven-by g (gear dp 38) right (/ Math/PI 3))
         [g _] (piston g 0 below)
-        [g _] (driven-by g (gear dp 12) ring (* eq/TAU 0.25))
+        [g _] (driven-by g (gear dp 12) ring (* eq/TAU 0.75))
         [g big] (driven-by g (gear dp 128) below 0.1)
         [g s-big] (driven-by g (gear dp 20) big (* eq/TAU 0.68))
         [g _] (piston g (* eq/TAU 0.85) s-big)
