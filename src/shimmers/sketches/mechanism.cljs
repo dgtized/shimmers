@@ -260,7 +260,7 @@
                       :id 0 :dir 1 :ratio driver-ratio :offset 0)
         g (lg/add-nodes (lg/digraph) driver)
         [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
-        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.75))
+        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.80))
         [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.13))
         [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0))
         [g _] (driven-by g (gear dp (int (* 0.3 driver-teeth))) ring1 (* eq/TAU 0.25))
