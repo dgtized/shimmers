@@ -8,6 +8,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -270,6 +271,8 @@
         [g _] (driven-by g (gear dp-b 18) ring2 (* eq/TAU 0.35))]
     g))
 
+(defonce defo (debug/state {}))
+
 ;; Visualization & User Interface
 (defonce ui-state
   (ctrl/state {:mode :gears
@@ -366,12 +369,14 @@
       (draw-part sys part t))))
 
 (defn ui-controls []
-  [:div {:style {:width "20em"}}
-   (ctrl/change-mode ui-state system-modes)
-   (ctrl/checkbox ui-state "Running?" [:running])
-   (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
-   (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
-   (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])])
+  [:div.flexcols
+   [:div {:style {:width "20em"}}
+    (ctrl/change-mode ui-state system-modes)
+    (ctrl/checkbox ui-state "Running?" [:running])
+    (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
+    (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
+    (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])]
+   [:div (debug/display defo)]])
 
 (sketch/defquil mechanism
   :created-at "2021-04-19"
