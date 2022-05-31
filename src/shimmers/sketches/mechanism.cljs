@@ -277,6 +277,7 @@
 (defonce ui-state
   (ctrl/state {:mode :gears
                :running true
+               :show-angle-path true
                :diametral-pitch 0.35
                :driver-teeth 42
                :driver-ratio 1.0}))
@@ -296,8 +297,9 @@
     (q/stroke 0)
     (q/fill 1.0)
     (cq/draw-shape (gear-polygon gear pos theta))
-    (q/stroke 0 0.6 0.6)
-    (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+    (when (:show-angle-path @ui-state)
+      (q/with-stroke [0 0.6 0.6]
+        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))))
 
 (defn draw-ring-gear [sys {:keys [radius teeth] :as gear} t]
   (let [theta (rotation gear t)
@@ -317,8 +319,9 @@
       (q/vertex x y))
     (q/end-contour)
     (q/end-shape :close)
-    (q/stroke 0 0.6 0.6)
-    (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+    (when (:show-angle-path @ui-state)
+      (q/with-stroke [0 0.6 0.6]
+        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))))
 
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
 (defn draw-piston [sys {:keys [angle] :as part} t]
@@ -335,13 +338,15 @@
         attached-pt (tm/+ pos (v/polar attach-radius theta))
         displacement (piston-displacement attach-radius connecting-len (- theta angle))
         socket-pt (tm/+ pos (v/polar displacement angle))]
-    (q/stroke 0 0.6 0.6)
-    (q/line (tm/+ pos closest) (tm/+ pos furthest))
     (q/stroke 0)
     (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
     (cq/circle attached-pt (* 0.3 inner))
     (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
-    (cq/circle socket-pt (* 0.3 inner))))
+    (cq/circle socket-pt (* 0.3 inner))
+
+    (when (:show-angle-path @ui-state)
+      (q/with-stroke [0 0.6 0.6]
+        (q/line (tm/+ pos closest) (tm/+ pos furthest))))))
 
 (defn draw-part [sys {:keys [type] :as part} t]
   (case type
@@ -373,6 +378,7 @@
    [:div {:style {:width "20em"}}
     (ctrl/change-mode ui-state system-modes)
     (ctrl/checkbox ui-state "Running?" [:running])
+    (ctrl/checkbox ui-state "Show Angle/Path" [:show-angle-path])
     (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
     (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
     (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])]
