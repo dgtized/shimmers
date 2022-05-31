@@ -273,8 +273,6 @@
                :driver-teeth 42
                :driver-ratio 1.0}))
 
-(defn origin [] (cq/rel-vec 0.32 0.51))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0})
@@ -340,8 +338,8 @@
 (def system-modes [:gears :ring-test])
 (defn system-mode [mode]
   (case mode
-    :ring-test ring-test
-    :gears gear-system))
+    :ring-test [ring-test (cq/rel-vec 0.4 0.5)]
+    :gears [gear-system (cq/rel-vec 0.32 0.51)]))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
@@ -350,9 +348,9 @@
   (q/no-fill)
   (q/background 1.0)
   (let [{:keys [mode diametral-pitch driver-teeth driver-ratio]} @ui-state
-        system-graph (system-mode mode)
+        [system-graph origin] (system-mode mode)
         sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
-                (propagate-position (origin) t))]
+                (propagate-position origin t))]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
         :gear (draw-gear sys part t)
