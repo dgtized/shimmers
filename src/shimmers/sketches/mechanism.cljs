@@ -252,9 +252,23 @@
 (comment (-> (gear-system 0.3 30 1.0)
              (propagate-position (gv/vec2) 0)))
 
+(defn ring-test [diametral-pitch driver-teeth driver-ratio]
+  (let [dp diametral-pitch
+        dp1 (* 0.66 dp)
+        dp2 (* 1.25 dp)
+        driver (assoc (gear dp driver-teeth)
+                      :id 0 :dir 1 :ratio driver-ratio :offset 0)
+        g (lg/add-nodes (lg/digraph) driver)
+        [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
+        [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.25))
+        [g _] (driven-by g (gear dp (int (* 0.5 driver-teeth))) ring1 (* eq/TAU 0.5))
+        [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.75))]
+    g))
+
 ;; Visualization & User Interface
 (defonce ui-state
-  (ctrl/state {:running true
+  (ctrl/state {:mode :gears
+               :running true
                :diametral-pitch 0.35
                :driver-teeth 42
                :driver-ratio 1.0}))
@@ -323,14 +337,21 @@
     (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
     (cq/circle socket-pt (* 0.3 inner))))
 
+(def system-modes [:gears :ring-test])
+(defn system-mode [mode]
+  (case mode
+    :ring-test ring-test
+    :gears gear-system))
+
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
 (defn draw [{:keys [t]}]
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/background 1.0)
-  (let [{:keys [diametral-pitch driver-teeth driver-ratio]} @ui-state
-        sys (-> (gear-system diametral-pitch driver-teeth driver-ratio)
+  (let [{:keys [mode diametral-pitch driver-teeth driver-ratio]} @ui-state
+        system-graph (system-mode mode)
+        sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
                 (propagate-position (origin) t))]
     (doseq [{:keys [type] :as part} (sort-by :depth (lg/nodes sys))]
       (case type
@@ -340,6 +361,7 @@
 
 (defn ui-controls []
   [:div {:style {:width "20em"}}
+   (ctrl/change-mode ui-state system-modes)
    (ctrl/checkbox ui-state "Running?" [:running])
    (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
    (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
