@@ -42,6 +42,7 @@
 (defn polar-project [p theta radius]
   (tm/+ p (v/polar radius theta)))
 
+;; How to make an SDF of a blob from noise directly?
 (defn circle-blob [[cx cy] rmin rmax dt]
   (gp/polygon2
    (for [angle (sm/range-subdivided tm/TWO_PI 10)]
@@ -116,6 +117,8 @@
          (+ depth dist)
          (conj path [position dist]))))))
 
+;; in https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayMrch,
+;; section 6 mentions computing a gradient of the SDF directly.
 (defn reflect-ray-march [from angle segments]
   (loop [depth 0
          steps 0

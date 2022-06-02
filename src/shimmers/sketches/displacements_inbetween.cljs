@@ -22,6 +22,7 @@
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
+;; TODO: fix infinite? from debug?
 (defn make-line [a b controls scale]
   (let [perpendicular (tm/normalize (g/normal (tm/- b a)) scale)]
     (-> (concat [a]
