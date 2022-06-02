@@ -30,7 +30,7 @@
 (defn build-grid [seed grid-size]
   (for [loc (g/subdivide (cq/screen-rect) grid-size)
         :let [noise (dr/noise-at-point seed 0.01 (g/centroid loc))]]
-    (assoc loc :noise noise)))
+    (assoc loc :noise (Math/pow noise 1.25))))
 
 (defn to-grid-loc [{:keys [rows cols]} [x y]]
   (gv/vec2 (int (* cols (/ x (q/width))))
@@ -47,8 +47,12 @@
    (fn [loc] (neighborhood grid-size loc))
    :weight
    (fn [n1 n2]
-     (+ 2 (- (:noise (loc-grid grid-size grid n2))
-             (:noise (loc-grid grid-size grid n1)))))))
+     (let [h1 (:noise (loc-grid grid-size grid n1))
+           h2 (:noise (loc-grid grid-size grid n2))]
+       (+ 1 (if (> h2 h1)
+              (* 2.0 (- h2 h1)) ;; up-hill
+              (- 0.33 (- h1 h2)) ;; down-hill
+              ))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
