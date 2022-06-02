@@ -12,6 +12,19 @@
 
 (defonce defo (debug/state))
 
+(defn neighbors [[x y]]
+  (->> [[(inc x) y]
+        [(dec x) y]
+        [x (inc y)]
+        [x (dec y)]]
+       (map gv/vec2)))
+
+(defn in-bounds? [{:keys [rows cols]} [x y]]
+  (and (<= 0 x) (< x cols) (<= 0 y) (< y rows)))
+
+(defn neighborhood [grid-size loc]
+  (filter (partial in-bounds? grid-size) (neighbors loc)))
+
 (defn build-grid [seed grid-size]
   (for [loc (g/subdivide (cq/screen-rect) grid-size)
         :let [noise (dr/noise-at-point seed 0.01 (g/centroid loc))]]
