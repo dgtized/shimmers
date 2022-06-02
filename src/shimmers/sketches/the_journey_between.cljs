@@ -86,8 +86,7 @@
 (defn draw [{:keys [mouse grid grid-size path]}]
   (let [dest (to-grid-loc grid-size mouse)]
     (reset! defo {:destination dest
-                  :grid-cell [(loc-grid grid-size grid dest)
-                              (g/centroid (loc-grid grid-size grid dest))]})
+                  :grid-cell (loc-grid grid-size grid dest)})
     (q/no-stroke)
     (doseq [{[x y] :p [w h] :size noise :noise} grid]
       (q/fill 0.0 0.0 noise 1.0)
