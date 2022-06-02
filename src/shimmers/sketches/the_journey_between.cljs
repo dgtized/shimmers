@@ -59,25 +59,30 @@
      :grid-size grid-size
      :grid grid
      :mouse (gv/vec2)
+     :path {}
      :graph (make-flygraph grid-size grid (gv/vec2))}))
 
-(defn update-state [state]
-  (update state :mouse cq/mouse-last-position-clicked))
+(defn update-state [{:keys [mouse graph grid-size] :as state}]
+  (let [mouse' (cq/mouse-last-position-clicked mouse)
+        state' (assoc state :mouse mouse')
+        dest (to-grid-loc grid-size mouse')]
+    (if-not (= (to-grid-loc grid-size mouse)
+               dest)
+      (assoc state'
+             :path (la/astar-path graph (gv/vec2) dest (partial g/dist dest)))
+      state')))
 
 (defn backtrack [current path]
   (cons current
         (lazy-seq (when-let [parent (get path current)]
                     (backtrack parent path)))))
 
-(defn draw [{:keys [mouse grid grid-size graph]}]
-  (let [start (gv/vec2)
-        dest (to-grid-loc grid-size mouse)
-        path (la/astar-path graph start dest (partial g/dist dest))]
+(defn draw [{:keys [mouse grid grid-size path]}]
+  (let [dest (to-grid-loc grid-size mouse)]
     (reset! defo {:destination dest
                   :grid-cell [(loc-grid grid-size grid dest)
                               (g/centroid (loc-grid grid-size grid dest))]
-                  :path path
-                  :p2 (map (fn [p] (loc-grid grid-size grid p)) (backtrack dest path))})
+                  :path path})
     (q/no-stroke)
     (doseq [{[x y] :p [w h] :size noise :noise} grid]
       (q/fill 0.0 0.0 noise 1.0)
