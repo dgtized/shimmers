@@ -10,7 +10,8 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
 
@@ -62,16 +63,17 @@
     {:seed seed
      :grid-size grid-size
      :grid grid
-     :mouse (gv/vec2)
+     :mouse (tm/+ (cq/rel-vec 0.6 0.6) (dr/jitter (cq/rel-h 0.1)))
      :path {}
      :graph (make-flygraph grid-size grid (gv/vec2))}))
 
-(defn update-state [{:keys [mouse graph grid-size] :as state}]
+(defn update-state [{:keys [mouse graph grid-size path] :as state}]
   (let [mouse' (cq/mouse-last-position-clicked mouse)
         state' (assoc state :mouse mouse')
         dest (to-grid-loc grid-size mouse')]
-    (if-not (= (to-grid-loc grid-size mouse)
-               dest)
+    (if (or (not= (to-grid-loc grid-size mouse)
+                  dest)
+            (empty? path))
       (assoc state'
              :path (la/astar-path graph (gv/vec2) dest (partial g/dist dest)))
       state')))
