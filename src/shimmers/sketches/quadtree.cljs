@@ -41,16 +41,23 @@
   (update state :mouse cq/mouse-last-position-clicked (:mouse-hover @ui-state)))
 
 (defn draw-complete-tree [{:keys [tree]}]
-  (let [traversal (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
-                            (fn [t] (map #(vary-meta % assoc :depth (inc (:depth (meta t))))
-                                        (remove nil? (spatialtree/get-children t))))
-                            (vary-meta tree assoc :depth 0))]
+  (let [depth (satisfies? IMeta tree)
+        traversal
+        (if depth
+          (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
+                    (fn [t] (map #(vary-meta % assoc :depth (inc (:depth (meta t))))
+                                (remove nil? (spatialtree/get-children t))))
+                    (vary-meta tree assoc :depth 0))
+          (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
+                    (fn [t] (remove nil? (spatialtree/get-children t)))
+                    tree))]
     (doseq [n traversal]
       (q/stroke 0.5)
       (cq/rectangle (g/bounds n))
       (when-let [circle (g/get-point-data n)]
         (q/stroke 0.0)
-        (q/fill (/ 16.0 (Math/pow 2 (:depth (meta n)))) 0.1)
+        (when depth
+          (q/fill (/ 16.0 (Math/pow 2 (:depth (meta n)))) 0.1))
         (cq/rectangle (g/bounds n))
         (q/no-fill)
         (q/stroke 0.0 0.5 0.5)
