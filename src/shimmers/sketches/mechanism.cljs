@@ -355,8 +355,6 @@
         piston-len (* 1.8 inner)
 
         theta (rotation driver t)
-        closest (v/polar (- connecting-len attach-radius) angle)
-        furthest (v/polar (+ connecting-len attach-radius) angle)
         attached-pt (tm/+ pos (v/polar attach-radius theta))
         displacement (piston-displacement attach-radius connecting-len (- theta angle))
         socket-pt (tm/+ pos (v/polar displacement angle))]
@@ -367,7 +365,8 @@
 
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
-        (q/line (tm/+ pos closest) (tm/+ pos furthest))))))
+        (q/line (tm/+ pos (v/polar (- connecting-len attach-radius) angle))
+                (tm/+ pos (v/polar (+ connecting-len attach-radius) angle)))))))
 
 (defn draw-part [sys {:keys [type] :as part} selected-ids t]
   (q/stroke 0)
