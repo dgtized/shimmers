@@ -16,16 +16,22 @@
    [thi.ng.geom.vector :as gv]))
 
 (defonce defo (debug/state))
-(defonce ui-state (ctrl/state {:isec-mode :circles-overlap
+(defonce ui-state (ctrl/state {:rebuild false
+                               :isec-mode :circles-overlap
+                               :tree-mode :circletree
                                :mouse-hover true
                                :knearest 1}))
 
 (def intersect-modes {:intersect-shape g/intersect-shape
                       :circles-overlap geometry/circles-overlap?})
 
-(defn build-tree [tree points]
-  (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
-          tree points))
+(def tree-modes {:circletree saq/circletree
+                 :quadtree spatialtree/quadtree})
+
+(defn build-tree [bounds points]
+  (let [tree (get tree-modes (:tree-mode @ui-state))]
+    (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
+            (tree bounds) points)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -34,11 +40,16 @@
                                            (dr/random-int 8 32)))]
     {:bounds bounds
      :points points
-     :tree (build-tree (saq/circletree bounds) points)
+     :tree (build-tree bounds points)
      :mouse (gv/vec2)}))
 
 (defn update-state [state]
-  (update state :mouse cq/mouse-last-position-clicked (:mouse-hover @ui-state)))
+  (if (:rebuild @ui-state)
+    (do
+      (swap! ui-state update :rebuild not)
+      (let [{:keys [bounds points]} state]
+        (assoc state :tree (build-tree bounds points))))
+    (update state :mouse cq/mouse-last-position-clicked (:mouse-hover @ui-state))))
 
 (defn draw-complete-tree [{:keys [tree]}]
   (let [depth (satisfies? IMeta tree)
@@ -129,6 +140,10 @@
     (ctrl/checkbox-after ui-state "Mouse Hover" [:mouse-hover])
     (ctrl/change-mode ui-state (keys intersect-modes)
                       {:mode-key :isec-mode})
+    (ctrl/change-mode ui-state (keys tree-modes)
+                      {:mode-key :tree-mode
+                       :on-change
+                       (fn [] (swap! ui-state assoc :rebuild true))})
     (ctrl/numeric ui-state "K-nearest" [:knearest] [1 16 1])]
    [:div (debug/display defo)]])
 
