@@ -102,6 +102,10 @@
               :teeth teeth}]
     (assoc gear :radius (pitch-radius gear))))
 
+(defn ring-gear-mesh? [gear driver]
+  (or (= (:type gear) :ring-gear)
+      (= (:type driver) :ring-gear)))
+
 ;; https://stackoverflow.com/questions/13456603/calculate-offset-rotation-to-allow-gears-to-mesh-correctly/17381710
 ;; and http://kirox.de/html/Gears.html (GearView.setPos)
 (defn meshing-interlock-angle
@@ -124,10 +128,6 @@
           (+ (* (mod (inc teeth) 2) (/ Math/PI teeth)))
           (mod (/ tm/TWO_PI teeth))))
     0))
-
-(defn ring-gear-mesh? [gear driver]
-  (or (= (:type gear) :ring-gear)
-      (= (:type driver) :ring-gear)))
 
 (defn add-part [sys part driver]
   [(-> sys
