@@ -21,7 +21,7 @@
         :else 4))
 
 (defn list-sketches [sketches]
-  (into [:ul.multi-columns
+  (into [:ul.multi-column
          {:style {:column-count (column-count (count sketches))}}]
         (for [sketch sketches]
           [:li [:a {:href (view-sketch/sketch-link rfe/href (:sketch-id sketch))

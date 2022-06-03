@@ -140,6 +140,11 @@ select {
   break-inside: avoid;
 }
 
+ul.multi-column > li {
+  padding-bottom: 0.1em;
+  padding-top: 0.1em;
+}
+
 h3.tag {
   padding-left: 1em;
 }
