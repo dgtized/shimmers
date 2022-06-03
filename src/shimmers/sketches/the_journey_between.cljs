@@ -3,6 +3,7 @@
    [loom.alg :as la]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
+   [quil.sketch]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
@@ -60,23 +61,38 @@
   (let [seed (gv/vec2 (dr/random 100) (dr/random 100))
         grid-size {:cols 40 :rows 30}
         grid (build-grid seed grid-size)]
+    ;; prevent right click contextmenu on the sketch canvas so can capture right
+    ;; mouse button location without a menu
+    (.addEventListener (.-canvas (quil.sketch/current-applet))
+                       "contextmenu" (fn [e] (.preventDefault e)))
     {:seed seed
      :grid-size grid-size
      :grid grid
-     :mouse (tm/+ (cq/rel-vec 0.6 0.6) (dr/jitter (cq/rel-h 0.1)))
+     :mouse {:right (to-grid-loc grid-size (gv/vec2))
+             :left (to-grid-loc grid-size (tm/+ (cq/rel-vec 0.6 0.6) (dr/jitter (cq/rel-h 0.1))))}
      :path {}
      :graph (make-flygraph grid-size grid (gv/vec2))}))
 
+(defn mouse-button-clicked
+  [mouse grid-size]
+  (cond (q/mouse-pressed?)
+        (let [pos (cq/mouse-position)
+              button (q/mouse-button)]
+          (if (and (g/contains-point? (cq/screen-rect) pos)
+                   (#{:left :right} button))
+            (assoc mouse button (to-grid-loc grid-size pos))
+            mouse))
+        :else
+        mouse))
+
 (defn update-state [{:keys [mouse graph grid-size path] :as state}]
-  (let [mouse' (cq/mouse-last-position-clicked mouse)
-        state' (assoc state :mouse mouse')
-        dest (to-grid-loc grid-size mouse')]
-    (if (or (not= (to-grid-loc grid-size mouse)
-                  dest)
-            (empty? path))
-      (assoc state'
-             :path (la/astar-path graph (gv/vec2) dest (partial g/dist dest)))
-      state')))
+  (let [{src :right dst :left :as mouse'}
+        (mouse-button-clicked mouse grid-size)]
+    (if (or (not= mouse mouse') (empty? path))
+      (assoc state
+             :mouse mouse'
+             :path (la/astar-path graph src dst (partial g/dist dst)))
+      state)))
 
 (defn backtrack [current path]
   (cons current
@@ -84,16 +100,17 @@
                     (backtrack parent path)))))
 
 (defn draw [{:keys [mouse grid grid-size path]}]
-  (let [dest (to-grid-loc grid-size mouse)]
-    (reset! defo {:destination dest
-                  :grid-cell (loc-grid grid-size grid dest)})
+  (let [{src :right dst :left} mouse]
+    (reset! defo {:source [src :-> (loc-grid grid-size grid src)]
+                  :dest [dst :-> (loc-grid grid-size grid dst)]
+                  :path (count path)})
     (q/no-stroke)
     (doseq [{[x y] :p [w h] :size noise :noise} grid]
       (q/fill 0.0 0.0 noise 1.0)
       (q/rect x y w h))
 
     (q/stroke-weight 3.0)
-    (doseq [[i q] (map-indexed vector (backtrack dest path))]
+    (doseq [[i q] (map-indexed vector (backtrack dst path))]
       (q/stroke (/ i (count path)) 0.5 0.5)
       (when-let [p (get path q)]
         (q/line (g/centroid (loc-grid grid-size grid p))
