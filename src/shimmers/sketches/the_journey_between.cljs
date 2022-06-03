@@ -139,8 +139,8 @@
        [:h5 "Path"]
        [:div {:style {:font-size "0.75em"
                       :column-count (Math/ceil (/ (count path) 20))}}
-        (for [s path]
-          (debug/pre-edn s))]]]]))
+        (for [[i s] (map-indexed vector path)]
+          [:div {:key (str "v" i)} (debug/pre-edn s)])]]]]))
 
 (sketch/defquil the-journey-between
   :created-at "2022-06-02"
