@@ -14,8 +14,15 @@
        (filter some?)
        (str/join " ")))
 
+(defn column-count [n]
+  (cond (< n 30) 1
+        (< n 100) 2
+        (< n 150) 3
+        :else 4))
+
 (defn list-sketches [sketches]
-  (into [:ul]
+  (into [:ul.multi-columns
+         {:style {:column-count (column-count (count sketches))}}]
         (for [sketch sketches]
           [:li [:a {:href (view-sketch/sketch-link rfe/href (:sketch-id sketch))
                     :title (sketch-title sketch)}
@@ -73,15 +80,7 @@
      to give attribution in the source code."]
      (selector ::by-alphabetical)
      (filtered-terms sketches filtered terms)
-     (if (< (count filtered) 20)
-       [:div.sketch-columns
-        [:div.column [:h3 "A-Z (" (count filtered) ")"] (list-sketches filtered)]]
-       (let [[sketches-an sketches-mz]
-             (split-with (fn [sketch] (re-find #"^[a-mA-M]" (name (:sketch-id sketch))))
-                         filtered)]
-         [:div.sketch-columns
-          [:div.column [:h3 "A-M"] (list-sketches sketches-an)]
-          [:div.column [:h3 "N-Z"] (list-sketches sketches-mz)]]))]))
+     [:div (list-sketches filtered)]]))
 
 ;; https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
 (defn year-month [{:keys [created-at]}]

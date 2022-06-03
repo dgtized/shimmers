@@ -132,20 +132,6 @@ select {
   margin-bottom: 0em;
 }
 
-.sketch-columns {
-  display: flex;
-}
-
-.sketch-columns > .column {
-  width: 50%;
-  padding: 1em;
-  padding-top: 0em;
-}
-
-.sketch-columns h3 {
-  text-align: center;
-}
-
 h3.tag {
   padding-left: 1em;
 }
