@@ -132,29 +132,30 @@
   (let [mode (:mode @ui-state)]
     [:div
      [:div.canvas-frame [scene bounds @ui-state points]]
-     [:div.flexcols
-      [:div {:style {:width "20em"}}
-       (view-sketch/generate :delaunator)
-       [:h4 "Controls"]
-       (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
-       (ctrl/change-mode ui-state (keys rp/modes) {:mode-key :point-mode})
-       (ctrl/change-mode ui-state [:delaunator :d3-delaunay] {:mode-key :mode})
-       (when (= mode :delaunator)
-         (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
-       (ctrl/checkbox ui-state "Points" [:show-points])
-       (when (= mode :delaunator)
-         (ctrl/checkbox ui-state "Edges" [:show-edges]))
-       (ctrl/checkbox ui-state "Triangles" [:show-triangles])
-       (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
-       (when (= mode :delaunator)
-         (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles]))
-       (when (= mode :delaunator)
-         (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges]))
-       (ctrl/checkbox ui-state "Voronoi Polygons" [:show-polygons])
-       (ctrl/checkbox ui-state "Debug" [:debug])]
-      (when (:debug @ui-state)
-        [:div [:h4 "Debug"]
-         (debug/display defo)])]]))
+     [:div.explanation
+      [:div.flexcols
+       [:div {:style {:width "20em"}}
+        (view-sketch/generate :delaunator)
+        [:h4 "Controls"]
+        (ctrl/numeric ui-state "Generated Points" [:n-points] [2 1024 1])
+        (ctrl/change-mode ui-state (keys rp/modes) {:mode-key :point-mode})
+        (ctrl/change-mode ui-state [:delaunator :d3-delaunay] {:mode-key :mode})
+        (when (= mode :delaunator)
+          (ctrl/checkbox ui-state "Include Bounding Corners" [:include-bounding-corners]))
+        (ctrl/checkbox ui-state "Points" [:show-points])
+        (when (= mode :delaunator)
+          (ctrl/checkbox ui-state "Edges" [:show-edges]))
+        (ctrl/checkbox ui-state "Triangles" [:show-triangles])
+        (ctrl/checkbox ui-state "Circumcenters" [:show-circumcenters])
+        (when (= mode :delaunator)
+          (ctrl/checkbox ui-state "Circumcircles" [:show-circumcircles]))
+        (when (= mode :delaunator)
+          (ctrl/checkbox ui-state "Voronoi Edges" [:show-voronoi-edges]))
+        (ctrl/checkbox ui-state "Voronoi Polygons" [:show-polygons])
+        (ctrl/checkbox ui-state "Debug" [:debug])]
+       (when (:debug @ui-state)
+         [:div [:h4 "Debug"]
+          (debug/display defo)])]]]))
 
 (sketch/definition delaunator
   {:created-at "2022-03-08"
