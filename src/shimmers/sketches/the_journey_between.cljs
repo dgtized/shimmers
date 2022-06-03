@@ -90,7 +90,7 @@
         mouse))
 
 (defn update-state [{:keys [mouse graph grid-size path] :as state}]
-  (let [{src :right dst :left :as mouse'}
+  (let [{src :left dst :right :as mouse'}
         (mouse-button-clicked mouse grid-size)]
     (if (or (not= mouse mouse') (empty? path))
       (assoc state
@@ -104,7 +104,7 @@
                     (backtrack parent path)))))
 
 (defn draw [{:keys [mouse grid grid-size path]}]
-  (let [{src :right dst :left} mouse
+  (let [{src :left dst :right} mouse
         back-path (backtrack dst path)
         weight (edge-weight grid-size grid)
         costs (map (fn [[p q]] (weight p q)) (partition 2 1 back-path))]
@@ -129,7 +129,7 @@
   (let [{:keys [source dest cost path]} @defo]
     [:div
      [:p "An A* search demo, the edge weights increase if going uphill vs downhill."]
-     [:p "Select source tile with right mouse button, and destination with left."]
+     [:p "Select source tile with left mouse button, and destination with right."]
      [:div.flexcols
       [:div {:style {:width "15em"}}
        [:div [:h5 "Source"] (debug/pre-edn source {:width 40})]
