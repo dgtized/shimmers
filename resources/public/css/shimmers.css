@@ -132,6 +132,14 @@ select {
   margin-bottom: 0em;
 }
 
+.multi-column h3 {
+  margin-block-start: 0;
+}
+
+.multi-column > .month {
+  break-inside: avoid;
+}
+
 h3.tag {
   padding-left: 1em;
 }

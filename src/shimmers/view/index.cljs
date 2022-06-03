@@ -15,7 +15,7 @@
        (str/join " ")))
 
 (defn column-count [n]
-  (cond (< n 30) 1
+  (cond (< n 15) 1
         (< n 100) 2
         (< n 150) 3
         :else 4))
@@ -47,10 +47,11 @@
       (reset! text-filter term))))
 
 (defn filtered-terms [sketches filtered terms]
-  (when (seq terms)
+  (if (seq terms)
     [:p "Found " (count filtered)
      " of " (count sketches)
-     " sketches matching term \"" terms "\""]))
+     " sketches matching term \"" terms "\""]
+    [:p]))
 
 (defn selector [active]
   (let [pages {::by-alphabetical "Alphabetically"
@@ -95,11 +96,12 @@
     [:section.sketch-list
      (selector ::by-date)
      (filtered-terms sketches filtered terms)
-     (for [sketches grouped-by-month
-           :let [[year month] (year-month (first sketches))]]
-       [:div {:key (str year month)}
-        [:h3.date (str month " " year " (" (count sketches) ")")]
-        (list-sketches sketches)])]))
+     [:div.multi-column {:style {:column-count (column-count (count filtered))}}
+      (for [sketches grouped-by-month
+            :let [[year month] (year-month (first sketches))]]
+        [:div.month {:key (str year month)}
+         [:h3.date (str month " " year " (" (count sketches) ")")]
+         (list-sketches sketches)])]]))
 
 (defn all-tags [sketches]
   (apply set/union (map :tags sketches)))
@@ -111,9 +113,10 @@
     [:section.sketch-list
      (selector ::by-tag)
      (filtered-terms tagged filtered terms)
+     [:div.multi-column {:style {:column-count 2}}]
      (for [tag (sort-by name tags)
            :let [tagged-sketches (filter #(tag (:tags %)) filtered)]]
-       [:div {:key (str tag)}
+       [:div.month {:key (str tag)}
         [:h3.tag (str (str/capitalize (name tag))
                       " (" (count tagged-sketches) ")")]
         (list-sketches tagged-sketches)])]))
