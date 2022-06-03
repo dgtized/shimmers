@@ -3,10 +3,11 @@
    [loom.alg :as la]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
-   [quil.sketch]
    [quil.middleware :as m]
+   [quil.sketch]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
@@ -124,10 +125,22 @@
         (q/line (g/centroid (loc-grid grid-size grid p))
                 (g/centroid (loc-grid grid-size grid q)))))))
 
+(defn ui-controls []
+  (let [{:keys [source dest cost path]} @defo]
+    [:div.flexcols
+     [:div {:style {:width "15em"}}
+      [:div [:h5 "Source"] (debug/pre-edn source {:width 40})]
+      [:div [:h5 "Destination"] (debug/pre-edn dest {:width 40})]
+      [:div [:h5 "Cost"] (debug/pre-edn cost)]]
+     [:div
+      [:div {:style {:font-size "0.75em"}}
+       [:h5 "Path"]
+       (debug/pre-edn path)]]]))
+
 (sketch/defquil the-journey-between
   :created-at "2022-06-02"
   :size [800 600]
-  :on-mount #(debug/mount defo)
+  :on-mount #(ctrl/mount ui-controls)
   :setup setup
   :update update-state
   :draw draw
