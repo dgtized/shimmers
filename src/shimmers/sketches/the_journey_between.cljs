@@ -127,17 +127,20 @@
 
 (defn ui-controls []
   (let [{:keys [source dest cost path]} @defo]
-    [:div.flexcols
-     [:div {:style {:width "15em"}}
-      [:div [:h5 "Source"] (debug/pre-edn source {:width 40})]
-      [:div [:h5 "Destination"] (debug/pre-edn dest {:width 40})]
-      [:div [:h5 "Cost"] (debug/pre-edn cost)]]
-     [:div
-      [:h5 "Path"]
-      [:div {:style {:font-size "0.75em"
-                     :column-count (Math/ceil (/ (count path) 25))}}
-       (for [s path]
-         (debug/pre-edn s))]]]))
+    [:div
+     [:p "An A* search demo, the edge weights increase if going uphill vs downhill."]
+     [:p "Select source tile with right mouse button, and destination with left."]
+     [:div.flexcols
+      [:div {:style {:width "15em"}}
+       [:div [:h5 "Source"] (debug/pre-edn source {:width 40})]
+       [:div [:h5 "Destination"] (debug/pre-edn dest {:width 40})]
+       [:div [:h5 "Cost"] (debug/pre-edn cost)]]
+      [:div
+       [:h5 "Path"]
+       [:div {:style {:font-size "0.75em"
+                      :column-count (Math/ceil (/ (count path) 20))}}
+        (for [s path]
+          (debug/pre-edn s))]]]]))
 
 (sketch/defquil the-journey-between
   :created-at "2022-06-02"
