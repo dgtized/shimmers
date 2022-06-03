@@ -133,9 +133,11 @@
       [:div [:h5 "Destination"] (debug/pre-edn dest {:width 40})]
       [:div [:h5 "Cost"] (debug/pre-edn cost)]]
      [:div
-      [:div {:style {:font-size "0.75em"}}
-       [:h5 "Path"]
-       (debug/pre-edn path)]]]))
+      [:h5 "Path"]
+      [:div {:style {:font-size "0.75em"
+                     :column-count (Math/ceil (/ (count path) 25))}}
+       (for [s path]
+         (debug/pre-edn s))]]]))
 
 (sketch/defquil the-journey-between
   :created-at "2022-06-02"
