@@ -41,20 +41,23 @@
 (defn loc-grid [{:keys [cols]} grid [i j]]
   (nth grid (+ (* j cols) i)))
 
+(defn edge-weight [grid-size grid]
+  (let [lookup (fn [n] (:noise (loc-grid grid-size grid n)))]
+    (fn [n1 n2]
+      (let [h1 (int (* 100 (lookup n1)))
+            h2 (int (* 100 (lookup n2)))]
+        (+ 10 (if (> h2 h1)
+                (* 50 (- h2 h1)) ;; up-hill
+                (* 2 (- h1 h2)) ;; down-hill
+                ))))))
+
 (defn make-flygraph [grid-size grid start]
   (lg/fly-graph
    :start start
    :successors (fn [loc] (neighborhood grid-size loc))
    :predecessors
    (fn [loc] (neighborhood grid-size loc))
-   :weight
-   (fn [n1 n2]
-     (let [h1 (:noise (loc-grid grid-size grid n1))
-           h2 (:noise (loc-grid grid-size grid n2))]
-       (+ 1 (if (> h2 h1)
-              (* 2.0 (- h2 h1)) ;; up-hill
-              (- 0.33 (- h1 h2)) ;; down-hill
-              ))))))
+   :weight (edge-weight grid-size grid)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -91,7 +94,7 @@
     (if (or (not= mouse mouse') (empty? path))
       (assoc state
              :mouse mouse'
-             :path (la/astar-path graph src dst (partial g/dist dst)))
+             :path (la/astar-path graph src dst g/dist))
       state)))
 
 (defn backtrack [current path]
@@ -100,17 +103,22 @@
                     (backtrack parent path)))))
 
 (defn draw [{:keys [mouse grid grid-size path]}]
-  (let [{src :right dst :left} mouse]
-    (reset! defo {:source [src :-> (loc-grid grid-size grid src)]
-                  :dest [dst :-> (loc-grid grid-size grid dst)]
-                  :path (count path)})
+  (let [{src :right dst :left} mouse
+        back-path (backtrack dst path)
+        weight (edge-weight grid-size grid)
+        costs (map (fn [[p q]] (weight p q)) (partition 2 1 back-path))]
+    (reset! defo {:source [src (loc-grid grid-size grid src)]
+                  :dest [dst (loc-grid grid-size grid dst)]
+                  :cost [(count path)
+                         (reduce + costs)]
+                  :path (map vector back-path costs)})
     (q/no-stroke)
     (doseq [{[x y] :p [w h] :size noise :noise} grid]
       (q/fill 0.0 0.0 noise 1.0)
       (q/rect x y w h))
 
     (q/stroke-weight 3.0)
-    (doseq [[i q] (map-indexed vector (backtrack dst path))]
+    (doseq [[i q] (map-indexed vector back-path)]
       (q/stroke (/ i (count path)) 0.5 0.5)
       (when-let [p (get path q)]
         (q/line (g/centroid (loc-grid grid-size grid p))
