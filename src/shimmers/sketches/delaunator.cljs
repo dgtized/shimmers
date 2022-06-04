@@ -13,8 +13,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.triangle :as gt]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.triangle :as gt]))
 
 (set! *warn-on-infer* true)
 
@@ -22,8 +21,6 @@
 
 (def width 800)
 (def height 600)
-(defn rv [x y]
-  (gv/vec2 (* width x) (* height y)))
 
 ;; TODO: import and use d3-delaunay: https://github.com/d3/d3-delaunay
 ;; it handles clipping to bounds for voronoi and some other niceties
