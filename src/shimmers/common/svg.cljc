@@ -3,9 +3,13 @@
    [clojure.string :as str]
    [shimmers.common.string :as scs]
    [thi.ng.color.core :as col]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.adapter :as adapt]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.math.core :as tm]))
+
+(defn screen [width height]
+  (rect/rect 0 0 width height))
 
 (defn svg-elem
   "Replaces svg/svg, and removes warnings about xlink & react keys"

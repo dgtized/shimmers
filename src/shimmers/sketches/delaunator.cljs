@@ -11,16 +11,12 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]))
 
 (set! *warn-on-infer* true)
 
 (defonce defo (debug/state))
-
-(def width 800)
-(def height 600)
 
 ;; TODO: import and use d3-delaunay: https://github.com/d3/d3-delaunay
 ;; it handles clipping to bounds for voronoi and some other niceties
@@ -93,7 +89,7 @@
      (when (get state :show-polygons)
        (svg/group {:stroke "blue" :fill "none"} polygons))]))
 
-(defn scene [bounds state points]
+(defn scene [{[width height] :size :as bounds} state points]
   (let [diagram (case (:mode state)
                   :delaunator delaunator-diagram
                   :d3-delaunay d3-diagram)]
@@ -158,6 +154,6 @@
   {:created-at "2022-03-08"
    :type :svg
    :tags #{}}
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen 800 600)
         points (generate-points (g/scale-size bounds 0.99) ui-state)]
     (ctrl/mount #(page bounds points) "sketch-host")))
