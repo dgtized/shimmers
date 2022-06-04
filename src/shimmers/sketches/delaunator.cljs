@@ -11,7 +11,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]))
 
 (set! *warn-on-infer* true)
@@ -42,33 +41,33 @@
              :polygons polygons
              :bad-polygons (filter (fn [{:keys [points]}] (<= (count points) 2)) polygons)})
     [(when (get state :show-points)
-       (svg/group {:fill "black"}
-                  (for [p points] (gc/circle p 1.5))))
+       [:g {:fill "black"}
+        (for [p points] (gc/circle p 1.5))])
      (when (get state :show-edges)
-       (svg/group {} (map gl/line2 edges)))
+       [:g (map gl/line2 edges)])
      (when (get state :show-triangles)
-       (svg/group {:fill "none"} triangles))
+       [:g {:fill "none"} triangles])
      (when (get state :show-circumcenters)
-       (svg/group {:fill "red"}
-                  (for [{:keys [p]} circumcircles] (gc/circle p 1.5))))
+       [:g {:fill "red"}
+        (for [{:keys [p]} circumcircles] (gc/circle p 1.5))])
      (when (get state :show-circumcircles)
-       (svg/group {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles))
+       [:g {:fill "none" :stroke "red" :stroke-width 0.2} circumcircles])
      (when (get state :show-voronoi-edges)
-       (svg/group {:stroke "blue"} (map gl/line2 voronoi-edges)))
+       [:g {:stroke "blue"} (map gl/line2 voronoi-edges)])
      (when (get state :show-polygons)
-       (svg/group {}
-                  (svg/group {:stroke "blue" :fill "none"}
-                             (filter (fn [{points :points}] (> (count points) 2))
-                                     polygons))
-                  (svg/group {:fill "green" :stroke "green"}
-                             (for [{:keys [points]} (filter (fn [{points :points}] (<= (count points) 2))
-                                                            polygons)]
-                               (let [[p q] points]
-                                 (svg/group {}
-                                            (gc/circle p 3.0)
-                                            (when q (gc/circle q 3.0))
-                                            (when (= 2 (count points))
-                                              (gl/line2 p q))))))))]))
+       [:g
+        [:g {:stroke "blue" :fill "none"}
+         (filter (fn [{points :points}] (> (count points) 2))
+                 polygons)]
+        [:g {:fill "green" :stroke "green"}
+         (for [{:keys [points]} (filter (fn [{points :points}] (<= (count points) 2))
+                                        polygons)]
+           (let [[p q] points]
+             [:g
+              (gc/circle p 3.0)
+              (when q (gc/circle q 3.0))
+              (when (= 2 (count points))
+                (gl/line2 p q))]))]])]))
 
 (defn d3-diagram [bounds state points]
   (let [triangles (delvor/delaunay-triangles points)
@@ -80,14 +79,14 @@
              :circumcenters circumcenters
              :voronoi polygons})
     [(when (get state :show-points)
-       (svg/group {:fill "black"}
-                  (for [p points] (gc/circle p 1.5))))
+       [:g {:fill "black"}
+        (for [p points] (gc/circle p 1.5))])
      (when (get state :show-triangles)
-       (svg/group {:fill "none"} triangles))
+       [:g {:fill "none"} triangles])
      (when (get state :show-circumcenters)
-       (svg/group {:fill "red"} (for [c circumcenters] (gc/circle c 1.5))))
+       [:g {:fill "red"} (for [c circumcenters] (gc/circle c 1.5))])
      (when (get state :show-polygons)
-       (svg/group {:stroke "blue" :fill "none"} polygons))]))
+       [:g {:stroke "blue" :fill "none"} polygons])]))
 
 (defn scene [{[width height] :size :as bounds} state points]
   (let [diagram (case (:mode state)
