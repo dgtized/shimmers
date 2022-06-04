@@ -49,7 +49,7 @@
 (defn setup []
   (q/frame-rate 20)
   (q/color-mode :hsl 1.0)
-  {:quadtree (spatialtree/quadtree 0 0 (q/width) (q/height))
+  {:quadtree (saq/circletree (cq/screen-rect))
    :boundary (cq/screen-rect)
    :radius 2
    :scale 1.05
@@ -61,16 +61,16 @@
   (when (geometry/circles-overlap? c1 c2)
     c2))
 
-(defn add-circle [quadtree boundary search-radius radius]
+(defn add-circle [quadtree boundary radius]
   (let [r radius
         center (gv/vec2 (dr/random r (- (q/width) r))
                         (dr/random  r (- (q/height) r)))
-        circle (assoc (gc/circle center r) :color (random-color))
-        near (spatialtree/select-with-circle quadtree center search-radius)]
-    (if (and (geometry/contains-circle? boundary circle)
-             (not (some (partial intersects circle) near)))
-      circle
-      nil)))
+        circle (assoc (gc/circle center r) :color (random-color))]
+    (when (geometry/contains-circle? boundary circle)
+      (if-let [near (saq/closest-circle quadtree circle)]
+        (when (> (saq/circle-overlap near circle) 0)
+          circle)
+        circle))))
 
 (defn spatial-replace [tree {p :p :as c}]
   (saq/replace-point tree p c))
@@ -99,10 +99,10 @@
 
 ;; TODO performance from sampling cost?
 (defn fresh-circles [state n]
-  (loop [i 0 {:keys [boundary quadtree radius circles] :as state} state]
+  (loop [i 0 {:keys [boundary quadtree radius] :as state} state]
     (if (>= i n)
       state
-      (if-let [circle (add-circle quadtree boundary (max-radius circles) radius)]
+      (if-let [circle (add-circle quadtree boundary radius)]
         (recur (inc i)
                (-> state
                    (update :circles conj circle)
