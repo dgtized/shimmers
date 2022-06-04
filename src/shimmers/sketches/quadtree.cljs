@@ -91,6 +91,16 @@
                       :data (g/get-point-data n)}))
                  neighbors))))
 
+(defn show-closest-circle [tree cursor]
+  (when-let [closest (saq/closest-circle tree cursor)]
+    (q/stroke 0.45 0.5 0.5)
+    (cq/rectangle (g/bounds closest))
+
+    (swap! defo assoc :closest
+           {:circle closest
+            :center-dist (g/dist (:p cursor) (:p closest))
+            :overlap-dist (saq/circle-overlap closest cursor)})))
+
 (defn draw-path-to-selection [{:keys [points tree mouse]}]
   (let [overlap-isec (get intersect-modes (get @ui-state :isec-mode))
         cursor (gc/circle mouse 5)
@@ -102,6 +112,7 @@
     (cq/circle cursor)
 
     (list-nearest-neighbors tree k mouse)
+    (show-closest-circle tree cursor)
 
     (let [matches (->> [tree]
                        (saq/lazy-select-quad

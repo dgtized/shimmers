@@ -147,6 +147,33 @@
                           (circletree 0 0 10 10)))]
     (spatialtree/select-with-shape tree (rect/rect 10))))
 
+(defn circle-overlap [a b]
+  (- (g/dist (:p a) (:p b)) (:r a) (:r b)))
+
+(defn eligable-subtree [query n]
+  (when-let [largest (and (some? n) (g/get-point-data n))]
+    (let [distance-to-bounds
+          (tm/mag (geometry/manhattan-to-rectangle (g/bounds n) (:p query)))
+          close-as-possible
+          (- distance-to-bounds (:r query) (:r largest))]
+      (< close-as-possible (circle-overlap query largest)))))
+
+(defn closest-circle
+  [tree query]
+  (loop [queue [tree] nearest nil]
+    (if (empty? queue)
+      nearest
+      (let [node (peek queue)
+            largest (g/get-point-data node)
+            closest (if (< (circle-overlap query largest)
+                           (circle-overlap query nearest))
+                      largest
+                      nearest)]
+        (if-let [children (seq (spatialtree/get-children node))]
+          (let [eligable (filter (partial eligable-subtree query) children)]
+            (recur (into (pop queue) eligable) closest))
+          (recur (pop queue) closest))))))
+
 ;; Helpers
 (defn add-point
   "Safer add-point that throws an out of bounds exception instead of returning a nil tree"
