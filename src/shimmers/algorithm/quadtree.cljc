@@ -218,16 +218,37 @@
     {:circles circles
      :tree (add-to-circletree (circletree 0 0 16) circles)}))
 
+(defn all-data [tree]
+  (lazy-seq
+   (when-not (nil? tree)
+     (if-let [children (seq (filter some? (spatialtree/get-children tree)))]
+       (mapcat all-data children)
+       [(g/get-point-data tree)]))))
+
+(defn simple-node [node]
+  (when node
+    {:r (apply concat (vals (g/bounds node)))
+     :c (count (filter some? (spatialtree/get-children node)))
+     :d (g/get-point-data node)}))
+
+(defn simple-traversal-tree [tree]
+  (mapv
+   (fn [[p c]] (let [n (simple-node c)]
+                (if p (assoc n :pr (apply concat (vals (g/bounds p))))
+                    n)))
+   (traversal-with-parent tree)))
+
 (comment
   (let [{:keys [circles tree]} (generate-circletree 8)
-        circles' (spatialtree/select-with-shape tree (g/bounds tree))
+        circles' (all-data tree)
         example (dr/rand-nth circles)]
     {:example example
      :path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
                 (spatialtree/path-for-point tree (:p example)))
      :circles [(count circles) (count circles')]
      :diff (cd/diff (set circles) (set circles'))
-     :circles' (sort-by :p circles')})
+     :circles' (sort-by :p circles')
+     :tree (simple-traversal-tree tree)})
 
   (repeatedly 20 #(assert-greater? (:tree (generate-circletree 16))))
 
