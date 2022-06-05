@@ -214,7 +214,19 @@
 (comment
   (repeatedly 20
               (fn [] (let [circles (repeatedly 16 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6)))]
-                      (assert-greater? (add-to-circletree (circletree 0 0 16) circles))))))
+                      (assert-greater? (add-to-circletree (circletree 0 0 16) circles)))))
+
+  (repeatedly 20
+              (fn [] (let [circles (repeatedly 16 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6)))
+                          remove (dr/rand-nth circles)
+                          tree (add-to-circletree (circletree 0 0 16) circles)]
+                      [{:greater (assert-greater? tree)
+                        :nodes (count (traversal-with-parent tree))
+                        :circles (count (spatialtree/select-with-shape tree (g/bounds tree)))}
+                       (let [tree-delete (g/delete-point tree (:p remove))]
+                         {:greater (assert-greater? tree-delete)
+                          :nodes (count (traversal-with-parent tree-delete))
+                          :circles (count (spatialtree/select-with-shape tree-delete (g/bounds tree-delete)))})]))))
 
 (defn circle-overlap [a b]
   (- (g/dist (:p a) (:p b)) (:r a) (:r b)))
