@@ -2,6 +2,7 @@
   (:require [shimmers.algorithm.line-clipping-test]
             [shimmers.algorithm.lines-test]
             [shimmers.algorithm.minimum-spanning-tree-test]
+            [shimmers.algorithm.quadtree-test]
             [shimmers.algorithm.rtree-test]
             [shimmers.algorithm.space-colonization-test]
             [shimmers.algorithm.square-packing-test]
@@ -44,6 +45,7 @@
    'shimmers.algorithm.line-clipping-test
    'shimmers.algorithm.lines-test
    'shimmers.algorithm.minimum-spanning-tree-test
+   'shimmers.algorithm.quadtree-test
    'shimmers.algorithm.rtree-test
    'shimmers.algorithm.space-colonization-test
    'shimmers.algorithm.square-packing-test

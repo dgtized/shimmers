@@ -16,6 +16,25 @@
                  c)))
        (apply max-key :r)))
 
+(defn delete-point*
+  "Removes point from tree (if found) and prunes any resulting empty nodes.
+  Returns given node (root)."
+  [root p]
+  (let [[node & path] (spatialtree/path-for-point root p)]
+    (when (tm/delta= p (g/get-point node) tm/*eps*)
+      (spatialtree/set-point node nil nil)
+      (loop [path path]
+        (when path
+          (let [[node & parents] path]
+            (spatialtree/set-child node (spatialtree/child-index-for-point node p) nil)
+            (let [children (spatialtree/get-children node)]
+              (if (every? nil? children)
+                (do (spatialtree/set-children node nil)
+                    (recur parents))
+                (do (spatialtree/set-children node children)
+                    (recur parents))))))))
+    root))
+
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/
 (deftype MutableCircleTreeNode
     #?(:clj
@@ -34,7 +53,7 @@
     (when (g/contains-point? rect p)
       (spatialtree/add-point* _ p d)
       _))
-  (delete-point [_ p] (spatialtree/delete-point* _ p))
+  (delete-point [_ p] (delete-point* _ p))
   (get-point [_] (:p circle))
   (get-point-data [_] circle)
 
@@ -83,7 +102,10 @@
     (set! children (assoc children i c))
     (set! circle (largest-circle rect (mapv g/get-point-data (filter some? children))))
     _)
-  (set-children [_ c] (set! children c) _)
+  (set-children [_ c]
+    (set! children c)
+    (set! circle (largest-circle rect (mapv g/get-point-data (filter some? c))))
+    _)
   (set-point [_ _ d]
     (set! circle d)
     _)
