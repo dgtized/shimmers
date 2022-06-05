@@ -104,9 +104,9 @@
                 cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
                 r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                 c  (MutableCircleTreeNode.
-                    r nil
-                    (if add? d (largest-circle r [d circle]))
-                    nil)]
+                    r
+                    nil
+                    (if add? d (largest-circle r [d circle])))]
             (spatialtree/set-child _ idx c)
             c))))
   (split-node
@@ -220,7 +220,7 @@
 
 (defn all-data [tree]
   (lazy-seq
-   (when-not (nil? tree)
+   (when tree
      (if-let [children (seq (filter some? (spatialtree/get-children tree)))]
        (mapcat all-data children)
        [(g/get-point-data tree)]))))
