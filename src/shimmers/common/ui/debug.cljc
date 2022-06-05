@@ -107,6 +107,6 @@
   (let [tap-log (atom [])
         result (with-redefs [tap> (fn [v] (swap! tap-log conj v) true)]
                  (f))]
-    {:log @tap-log :result result}))
+    {:result result :log @tap-log}))
 
 (comment (with-tap-log (fn [] (tap> 1) (tap> 2) 3)))
