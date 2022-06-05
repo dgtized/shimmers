@@ -17,14 +17,12 @@
     (is (= [c1] (spatialtree/select-with-shape q (g/bounds q))))
     (is (= [] (spatialtree/select-with-shape (g/delete-point q (:p c1)) (g/bounds q))))
     (is (= [c1'] (spatialtree/select-with-shape (sut/replace-point q (:p c1) c1') (g/bounds q))))
-    ;; delete point is including extras?
+
     (let [q2 (reduce (fn [g c] (g/add-point g (:p c) c))
                      (sut/circletree -10 -10 20 20)
                      [c1 c2 c3 c4])]
-      (is (= [c2 ;; extra
-              c4 c1 c2 c3]
-             (spatialtree/select-with-shape q2 (g/bounds q))))
-      (is (= [c2 #_c3 c4 c1']
-             (spatialtree/select-with-shape (sut/replace-point q2 (:p c1) c1') (g/bounds q)))))))
+      (is (= (set [c1 c2 c3 c4]) (set (sut/all-data q2))))
+      (is (= (set [c1' c2 c3 c4])
+             (set (sut/all-data (sut/replace-point q2 (:p c1) c1'))))))))
 
 (comment (t/run-tests))

@@ -29,37 +29,40 @@
   (tap> [:ADD-POINT d])
   (loop [node root, p p, d d]
     (if (spatialtree/get-children node)
-      (do (tap> [:children (simple-bounds node) d (g/get-point-data node)])
-          (recur (spatialtree/make-child-for-point node p d false) p d))
+      (recur (spatialtree/make-child-for-point node p d false) p d)
       (let [point (g/get-point node)]
         (if point
           (if (tm/delta= point p tm/*eps*)
             (throw (ex-info "inserting duplicate point" {:p p :point point}))
             (let [data (g/get-point-data node)]
-              (tap> [:split (simple-bounds node) d data])
               (spatialtree/split-node node)
               (spatialtree/make-child-for-point node p d true)
               (recur node point data)))
-          (do (tap> [:set (simple-bounds node) d])
-              (spatialtree/set-point node p d)))))))
+          (spatialtree/set-point node p d))))))
 
 (defn delete-point*
   "Removes point from tree (if found) and prunes any resulting empty nodes.
   Returns given node (root)."
   [root p]
+  (tap> [:DELETE-POINT p])
   (let [[node & path] (spatialtree/path-for-point root p)]
     (when (tm/delta= p (g/get-point node) tm/*eps*)
+      (tap> [:remove-point p (count path)])
       (spatialtree/set-point node nil nil)
-      (loop [path path]
+      (loop [path path removing true]
         (when path
           (let [[node & parents] path]
-            (spatialtree/set-child node (spatialtree/child-index-for-point node p) nil)
+            (tap> [:remove-path (simple-bounds node)])
+            (when removing
+              (spatialtree/set-child node (spatialtree/child-index-for-point node p) nil))
             (let [children (spatialtree/get-children node)]
               (if (every? nil? children)
-                (do (spatialtree/set-children node nil)
-                    (recur parents))
-                (do (spatialtree/set-children node children)
-                    (recur parents))))))))
+                (do (tap> [:remove-children children])
+                    (spatialtree/set-children node nil)
+                    (recur parents true))
+                (do (tap> [:update-children])
+                    (spatialtree/set-children node children)
+                    (recur parents false))))))))
     root))
 
 ;; https://paytonturnage.com/writing/circle-packing-quad-trees/
@@ -107,7 +110,6 @@
   (make-child-for-point
     [_ p d add?]
     (let [idx (spatialtree/child-index-for-point _ p)]
-      (tap> [:make-child (simple-bounds _) p d add?])
       (let [child (or (children idx)
                       (let [{[x y] :p [w h] :size} rect
                             cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
@@ -115,9 +117,10 @@
                             r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
                             c  (MutableCircleTreeNode.
                                 r
-                                nil
-                                (if add? d nil))]
-                        (tap> [:set-child (simple-bounds _) d])
+                                nil ;; children
+                                (if add? d nil) ;; circle
+                                nil ;; meta
+                                )]
                         (spatialtree/set-child _ idx c)
                         c))]
         ;; update largest circle on the descent
@@ -262,11 +265,10 @@
 (comment
   (debug/with-tap-log
     #(let [{:keys [circles tree]} (generate-circletree 16)
-           circles' (all-data tree)
-           example (dr/rand-nth circles)]
+           example (dr/rand-nth circles)
+           tree (g/delete-point tree (:p example))
+           circles' (all-data tree)]
        {:example example
-        :path (map (fn [t] [(simple-bounds t) (g/get-point-data t)])
-                   (spatialtree/path-for-point tree (:p example)))
         :circles [(count circles) (count circles')]
         :greater (assert-greater? tree)
         :circles' (map (fn [c] [c (mapv :r (map simple-node (spatialtree/path-for-point tree (:p c))))])
