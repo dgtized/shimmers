@@ -1,6 +1,5 @@
 (ns shimmers.algorithm.quadtree
   (:require
-   [clojure.data :as cd]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
@@ -227,9 +226,12 @@
 
 (defn simple-node [node]
   (when node
-    {:r (apply concat (vals (g/bounds node)))
-     :c (count (filter some? (spatialtree/get-children node)))
-     :d (g/get-point-data node)}))
+    (let [r (g/bounds node)
+          d (g/get-point-data node)]
+      {:r (apply concat (vals r))
+       :c (count (filter some? (spatialtree/get-children node)))
+       :d d
+       :i (spatialtree/child-index-for-point node (:p d))})))
 
 (defn simple-traversal-tree [tree]
   (mapv
@@ -246,8 +248,8 @@
      :path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
                 (spatialtree/path-for-point tree (:p example)))
      :circles [(count circles) (count circles')]
-     :diff (cd/diff (set circles) (set circles'))
-     :circles' (sort-by :p circles')
+     :circles' (map (fn [c] [c (mapv :r (map simple-node (spatialtree/path-for-point tree (:p c))))])
+                    (sort-by :p circles'))
      :tree (simple-traversal-tree tree)})
 
   (repeatedly 20 #(assert-greater? (:tree (generate-circletree 16))))
