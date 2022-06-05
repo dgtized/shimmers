@@ -219,12 +219,15 @@
      :tree (add-to-circletree (circletree 0 0 16) circles)}))
 
 (comment
-  (let [{:keys [circles tree]} (generate-circletree 10)
-        circles' (spatialtree/select-with-shape tree (g/bounds tree))]
-    {:path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
-                (spatialtree/path-for-point tree (:p (first circles))))
+  (let [{:keys [circles tree]} (generate-circletree 8)
+        circles' (spatialtree/select-with-shape tree (g/bounds tree))
+        example (dr/rand-nth circles)]
+    {:example example
+     :path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
+                (spatialtree/path-for-point tree (:p example)))
      :circles [(count circles) (count circles')]
-     :diff (cd/diff (set circles) (set circles'))})
+     :diff (cd/diff (set circles) (set circles'))
+     :circles' (sort-by :p circles')})
 
   (repeatedly 20 #(assert-greater? (:tree (generate-circletree 16))))
 
