@@ -103,27 +103,30 @@
       (children (spatialtree/child-index-for-point _ p))))
   (make-child-for-point
     [_ p d add?]
-    (let [idx (spatialtree/child-index-for-point _ p)]
-      (let [child (or (children idx)
-                      (let [{[x y] :p [w h] :size} rect
-                            cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
-                            cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
-                            r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
-                            c  (MutableCircleTreeNode.
-                                r
-                                nil ;; children
-                                (if add? d nil) ;; circle
-                                nil ;; meta
-                                )]
-                        (spatialtree/set-child _ idx c)
-                        c))]
-        ;; update largest circle on the descent
-        (let [largest
-              (largest-circle rect
-                              (conj (mapv g/get-point-data (filter some? children))
-                                    d))]
-          (spatialtree/set-point _ (:p largest) largest))
-        child)))
+    (let [idx (spatialtree/child-index-for-point _ p)
+
+          child
+          (or (children idx)
+              (let [{[x y] :p [w h] :size} rect
+                    cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
+                    cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
+                    r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
+                    c  (MutableCircleTreeNode.
+                        r
+                        nil ;; children
+                        (if add? d nil) ;; circle
+                        nil ;; meta
+                        )]
+                (spatialtree/set-child _ idx c)
+                c))
+
+          largest
+          (largest-circle rect
+                          (conj (mapv g/get-point-data (filter some? children))
+                                d))]
+      ;; update largest circle on the descent
+      (spatialtree/set-point _ (:p largest) largest)
+      child))
   (split-node
     [_]
     (set! children [nil nil nil nil])

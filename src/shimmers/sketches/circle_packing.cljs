@@ -12,7 +12,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.spatialtree :as spatialtree]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
