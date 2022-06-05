@@ -19,6 +19,9 @@
                  c)))
        (apply max-key :r)))
 
+(defn simple-bounds [o]
+  (apply concat (vals (g/bounds o))))
+
 (defn add-point*
   "Associates point with data in tree, recursively creates all required intermediate nodes."
   [root p d]
@@ -199,8 +202,8 @@
             (let [p (g/get-point-data parent)
                   c (g/get-point-data child)]
               (when (< (:r p) (:r c))
-                [(g/bounds parent) p
-                 (g/bounds child) c]))))
+                [(simple-bounds parent) p
+                 (simple-bounds child) c]))))
         (traversal-with-parent root)))
 
 (defn add-to-circletree [tree circles]
@@ -228,9 +231,9 @@
 
 (defn simple-node [node]
   (when node
-    (let [r (g/bounds node)
+    (let [r (simple-bounds node)
           d (g/get-point-data node)]
-      {:r (apply concat (vals r))
+      {:r r
        :c (count (filter some? (spatialtree/get-children node)))
        :d d
        :i (spatialtree/child-index-for-point node (:p d))})))
@@ -238,7 +241,7 @@
 (defn simple-traversal-tree [tree]
   (mapv
    (fn [[p c]] (let [n (simple-node c)]
-                (if p (assoc n :pr (apply concat (vals (g/bounds p))))
+                (if p (assoc n :pr (simple-bounds p))
                     n)))
    (traversal-with-parent tree)))
 
