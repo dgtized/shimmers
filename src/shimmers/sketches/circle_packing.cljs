@@ -47,19 +47,13 @@
     (:color c1)))
 
 (defn setup []
-  (q/frame-rate 20)
+  (q/frame-rate 30)
   (q/color-mode :hsl 1.0)
   {:quadtree (saq/circletree (cq/screen-rect))
    :boundary (cq/screen-rect)
    :radius 2
    :scale 1.05
    :circles []})
-
-(defn intersects [c1 c2]
-  ;; inside or intersecting from growth
-  ;; TODO: add checkbox for allowing containment or not
-  (when (geometry/circles-overlap? c1 c2)
-    c2))
 
 (defn add-circle [quadtree boundary radius]
   (let [r radius
@@ -75,27 +69,30 @@
 (defn spatial-replace [tree {p :p :as c}]
   (saq/replace-point tree p c))
 
-(defn grow [quadtree boundary search-radius scale circle]
-  (if-not (:done circle)
-    (let [growth (assoc (g/scale-size circle scale) :color (:color circle))
-          near (remove #{circle} (spatialtree/select-with-circle quadtree (:p growth) search-radius))
-          intersecting-circle (some (partial intersects growth) near)]
-      (if (and (geometry/contains-circle? boundary growth)
-               (not intersecting-circle))
-        growth
-        (assoc circle :done true
-               :color (color-mix circle intersecting-circle))))
-    circle))
-
-(defn max-radius [circles]
-  (* 2 (apply max (map :r circles))))
-
 (defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
-  (let [search-radius (max-radius circles)
-        circles' (map (partial grow quadtree boundary search-radius scale) circles)]
-    (assoc state
-           :circles circles'
-           :quadtree (reduce spatial-replace quadtree (remove :done circles')))))
+  (loop [tree quadtree processing circles result []]
+    (let [[circle & remaining] processing]
+      (cond (empty? processing)
+            (assoc state
+                   :circles result
+                   :quadtree tree)
+            (:done circle)
+            (recur tree
+                   remaining
+                   (conj result circle))
+            :else
+            (let [growth (assoc (g/scale-size circle scale) :color (:color circle))
+                  near (saq/closest-circle (g/delete-point tree (:p circle)) growth)]
+              (if (and (geometry/contains-circle? boundary growth)
+                       (and near (> (saq/circle-overlap growth near) 0)))
+                (recur (spatial-replace tree growth)
+                       remaining
+                       (conj result growth))
+                (let [done (assoc circle :done true
+                                  :color (color-mix circle near))]
+                  (recur (spatial-replace tree done)
+                         remaining
+                         (conj result done)))))))))
 
 ;; TODO performance from sampling cost?
 (defn fresh-circles [state n]
