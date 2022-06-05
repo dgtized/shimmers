@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.quadtree
   (:require
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -163,11 +164,39 @@
   ([x y w h]
    (MutableCircleTreeNode. (rect/rect x y w h) nil nil nil)))
 
+(defn traversal-with-parent
+  [root]
+  (let [walk (fn walk [node]
+               (if-not node
+                 []
+                 (let [childs (filter some? (spatialtree/get-children node))]
+                   (lazy-cat
+                    (mapv vector (repeat node) childs)
+                    (mapcat walk childs)))))]
+    (cons [nil root] (walk root))))
+
+(defn assert-greater? [root]
+  (keep (fn [[parent child]]
+          (when parent
+            (let [p (g/get-point-data parent)
+                  c (g/get-point-data child)]
+              (when (< (:r p) (:r c))
+                [p c]))))
+        (traversal-with-parent root)))
+
+(defn add-to-circletree [tree circles]
+  (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
+          tree circles))
+
 (comment
   (let [tree (->> [(gc/circle 3 2 3) (gc/circle 8 4 4) (gc/circle 2 3 5)]
                   (reduce (fn [t {:keys [p] :as c}] (g/add-point t p c))
                           (circletree 0 0 10 10)))]
     (spatialtree/select-with-shape tree (rect/rect 10))))
+
+(comment (assert-greater?
+          (add-to-circletree (circletree 0 0 16)
+                             (repeatedly 8 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6))))))
 
 (defn circle-overlap [a b]
   (- (g/dist (:p a) (:p b)) (:r a) (:r b)))
