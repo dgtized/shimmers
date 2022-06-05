@@ -10,10 +10,12 @@
    #?(:clj [clojure.data.priority-map :as priority]
       :cljs [tailrecursion.priority-map :as priority])))
 
-(defn largest-circle [rect circles]
+(defn largest-circle [{[rx ry] :p [w h] :size} circles]
   (->> circles
        (keep (fn [c]
-               (when (and c (g/contains-point? rect (:p c)))
+               (when (and c (let [[x y] (:p c)]
+                              (and (>= x rx) (< x (+ rx w))
+                                   (>= y ry) (< y (+ ry h)))))
                  c)))
        (apply max-key :r)))
 
