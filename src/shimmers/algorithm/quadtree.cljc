@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.quadtree
   (:require
+   [clojure.data :as cd]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
@@ -211,15 +212,25 @@
                           (circletree 0 0 10 10)))]
     (spatialtree/select-with-shape tree (rect/rect 10))))
 
+(defn generate-circletree [n]
+  (let [points (take n (distinct (repeatedly (fn [] [(dr/random-int 4 12) (dr/random-int 4 12)]))))
+        circles (map #(gc/circle % (dr/random-int 1 7)) points)]
+    {:circles circles
+     :tree (add-to-circletree (circletree 0 0 16) circles)}))
+
 (comment
-  (repeatedly 20
-              (fn [] (let [circles (repeatedly 16 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6)))]
-                      (assert-greater? (add-to-circletree (circletree 0 0 16) circles)))))
+  (let [{:keys [circles tree]} (generate-circletree 10)
+        circles' (spatialtree/select-with-shape tree (g/bounds tree))]
+    {:path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
+                (spatialtree/path-for-point tree (:p (first circles))))
+     :circles [(count circles) (count circles')]
+     :diff (cd/diff (set circles) (set circles'))})
+
+  (repeatedly 20 #(assert-greater? (:tree (generate-circletree 16))))
 
   (repeatedly 20
-              (fn [] (let [circles (repeatedly 16 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6)))
-                          remove (dr/rand-nth circles)
-                          tree (add-to-circletree (circletree 0 0 16) circles)]
+              (fn [] (let [{:keys [circles tree]} (generate-circletree 16)
+                          remove (dr/rand-nth circles)]
                       [{:greater (assert-greater? tree)
                         :nodes (count (traversal-with-parent tree))
                         :circles (count (spatialtree/select-with-shape tree (g/bounds tree)))}
