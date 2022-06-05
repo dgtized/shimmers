@@ -17,6 +17,22 @@
                  c)))
        (apply max-key :r)))
 
+(defn add-point*
+  "Associates point with data in tree, recursively creates all required intermediate nodes."
+  [root p d]
+  (loop [node root, p p, d d]
+    (if (spatialtree/get-children node)
+      (do (spatialtree/set-point node p (largest-circle (g/bounds node) [d (g/get-point-data node)]))
+          (recur (spatialtree/make-child-for-point node p d false) p d))
+      (let [point (g/get-point node)]
+        (if point
+          (if-not (tm/delta= point p tm/*eps*)
+            (let [data (g/get-point-data node)]
+              (spatialtree/split-node node)
+              (spatialtree/make-child-for-point node p d true)
+              (recur node point data)))
+          (spatialtree/set-point node p d))))))
+
 (defn delete-point*
   "Removes point from tree (if found) and prunes any resulting empty nodes.
   Returns given node (root)."
@@ -52,7 +68,7 @@
   g/ISpatialTree
   (add-point [_ p d]
     (when (g/contains-point? rect p)
-      (spatialtree/add-point* _ p d)
+      (add-point* _ p d)
       _))
   (delete-point [_ p] (delete-point* _ p))
   (get-point [_] (:p circle))
@@ -181,7 +197,8 @@
             (let [p (g/get-point-data parent)
                   c (g/get-point-data child)]
               (when (< (:r p) (:r c))
-                [p c]))))
+                [(g/bounds parent) p
+                 (g/bounds child) c]))))
         (traversal-with-parent root)))
 
 (defn add-to-circletree [tree circles]
@@ -194,9 +211,10 @@
                           (circletree 0 0 10 10)))]
     (spatialtree/select-with-shape tree (rect/rect 10))))
 
-(comment (assert-greater?
-          (add-to-circletree (circletree 0 0 16)
-                             (repeatedly 8 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6))))))
+(comment
+  (repeatedly 20
+              (fn [] (let [circles (repeatedly 16 #(gc/circle (dr/random-int 4 12) (dr/random-int 4 12) (dr/random-int 2 6)))]
+                      (assert-greater? (add-to-circletree (circletree 0 0 16) circles))))))
 
 (defn circle-overlap [a b]
   (- (g/dist (:p a) (:p b)) (:r a) (:r b)))
