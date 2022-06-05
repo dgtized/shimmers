@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.quadtree
   (:require
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [thi.ng.geom.circle :as gc]
@@ -25,18 +26,22 @@
 (defn add-point*
   "Associates point with data in tree, recursively creates all required intermediate nodes."
   [root p d]
+  (tap> [:ADD-POINT d])
   (loop [node root, p p, d d]
     (if (spatialtree/get-children node)
-      (do (spatialtree/set-point node p (largest-circle (g/bounds node) [d (g/get-point-data node)]))
+      (do (tap> [:children (simple-bounds node) d (g/get-point-data node)])
           (recur (spatialtree/make-child-for-point node p d false) p d))
       (let [point (g/get-point node)]
         (if point
-          (if-not (tm/delta= point p tm/*eps*)
+          (if (tm/delta= point p tm/*eps*)
+            (throw (ex-info "inserting duplicate point" {:p p :point point}))
             (let [data (g/get-point-data node)]
+              (tap> [:split (simple-bounds node) d data])
               (spatialtree/split-node node)
               (spatialtree/make-child-for-point node p d true)
               (recur node point data)))
-          (spatialtree/set-point node p d))))))
+          (do (tap> [:set (simple-bounds node) d])
+              (spatialtree/set-point node p d)))))))
 
 (defn delete-point*
   "Removes point from tree (if found) and prunes any resulting empty nodes.
@@ -102,17 +107,26 @@
   (make-child-for-point
     [_ p d add?]
     (let [idx (spatialtree/child-index-for-point _ p)]
-      (or (children idx)
-          (let [{[x y] :p [w h] :size} rect
-                cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
-                cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
-                r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
-                c  (MutableCircleTreeNode.
-                    r
-                    nil
-                    (if add? d (largest-circle r [d circle])))]
-            (spatialtree/set-child _ idx c)
-            c))))
+      (tap> [:make-child (simple-bounds _) p d add?])
+      (let [child (or (children idx)
+                      (let [{[x y] :p [w h] :size} rect
+                            cx (if (> (bit-and idx 1) 0) (+ x (* 0.5 w)) x)
+                            cy (if (> (bit-and idx 2) 0) (+ y (* 0.5 h)) y)
+                            r  (rect/rect cx cy (* 0.5 w) (* 0.5 h))
+                            c  (MutableCircleTreeNode.
+                                r
+                                nil
+                                (if add? d nil))]
+                        (tap> [:set-child (simple-bounds _) d])
+                        (spatialtree/set-child _ idx c)
+                        c))]
+        ;; update largest circle on the descent
+        (let [largest
+              (largest-circle rect
+                              (conj (mapv g/get-point-data (filter some? children))
+                                    d))]
+          (spatialtree/set-point _ (:p largest) largest))
+        child)))
   (split-node
     [_]
     (set! children [nil nil nil nil])
@@ -246,16 +260,18 @@
    (traversal-with-parent tree)))
 
 (comment
-  (let [{:keys [circles tree]} (generate-circletree 8)
-        circles' (all-data tree)
-        example (dr/rand-nth circles)]
-    {:example example
-     :path (map (fn [t] [(g/bounds t) (g/get-point-data t)])
-                (spatialtree/path-for-point tree (:p example)))
-     :circles [(count circles) (count circles')]
-     :circles' (map (fn [c] [c (mapv :r (map simple-node (spatialtree/path-for-point tree (:p c))))])
-                    (sort-by :p circles'))
-     :tree (simple-traversal-tree tree)})
+  (debug/with-tap-log
+    #(let [{:keys [circles tree]} (generate-circletree 16)
+           circles' (all-data tree)
+           example (dr/rand-nth circles)]
+       {:example example
+        :path (map (fn [t] [(simple-bounds t) (g/get-point-data t)])
+                   (spatialtree/path-for-point tree (:p example)))
+        :circles [(count circles) (count circles')]
+        :greater (assert-greater? tree)
+        :circles' (map (fn [c] [c (mapv :r (map simple-node (spatialtree/path-for-point tree (:p c))))])
+                       (sort-by :p circles'))
+        :tree (simple-traversal-tree tree)}))
 
   (repeatedly 20 #(assert-greater? (:tree (generate-circletree 16))))
 
@@ -268,7 +284,7 @@
                        (let [tree-delete (g/delete-point tree (:p remove))]
                          {:greater (assert-greater? tree-delete)
                           :nodes (count (traversal-with-parent tree-delete))
-                          :circles (count (spatialtree/select-with-shape tree-delete (g/bounds tree-delete)))})]))))
+                          :circles (count (all-data tree-delete))})]))))
 
 (defn circle-overlap [a b]
   (- (g/dist (:p a) (:p b)) (:r a) (:r b)))
