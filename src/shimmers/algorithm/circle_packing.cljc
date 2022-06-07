@@ -17,6 +17,8 @@
   [tree {p :p :as circle}]
   (g/add-point tree p circle))
 
+;; Can spacing stay in the generation phase, any smaller circles will
+;; automatically fit, and that could remove the bounds check?
 (defn add-circle [quadtree {:keys [bounds radius spacing]}]
   (let [p (g/random-point-inside bounds)
         candidate (gc/circle p radius)]
@@ -26,6 +28,9 @@
           candidate)
         candidate))))
 
+;; FIXME: re-use circletree if provided?
+;; pass in circle generation function?
+;; return new circles so that we can detect if no circles were added and guard against that lock?
 (defn circle-pack
   "Pack a `bounds` object with `candidate` circles that do not intersect any
   circles in `circles`.
