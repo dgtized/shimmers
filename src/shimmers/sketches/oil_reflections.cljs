@@ -16,7 +16,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:bounds (cq/screen-rect 0.8)
+  {:bounds (cq/screen-rect 0.9)
    :circles []})
 
 (defn remove-middle [hatches n]
@@ -65,6 +65,7 @@
                          (reflect-hatching c))))
    circles))
 
+;; note, can block until pack succeeds if radius is too high for current region
 (defn radius-scale [n]
   (cond (<= n 6) 48.0
         (<= n 16.0) 32.0
