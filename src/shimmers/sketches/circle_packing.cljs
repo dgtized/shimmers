@@ -4,6 +4,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.quadtree :as saq]
+   [shimmers.algorithm.circle-packing :as pack]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.core :as sm]
@@ -65,9 +66,6 @@
           circle)
         circle))))
 
-(defn spatial-replace [tree {p :p :as c}]
-  (saq/replace-point tree p c))
-
 (defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
   (loop [tree quadtree processing circles result []]
     (let [[circle & remaining] processing]
@@ -84,12 +82,12 @@
                   near (saq/closest-circle (g/delete-point tree (:p circle)) growth)]
               (if (and (geometry/contains-circle? boundary growth)
                        (and near (> (saq/circle-overlap growth near) 0)))
-                (recur (spatial-replace tree growth)
+                (recur (pack/replace-circle-at tree growth)
                        remaining
                        (conj result growth))
                 (let [done (assoc circle :done true
                                   :color (color-mix circle near))]
-                  (recur (spatial-replace tree done)
+                  (recur (pack/replace-circle-at tree done)
                          remaining
                          (conj result done)))))))))
 
@@ -102,7 +100,7 @@
         (recur (inc i)
                (-> state
                    (update :circles conj circle)
-                   (update :quadtree g/add-point (:p circle) circle)))
+                   (update :quadtree pack/add-circle-at circle)))
         (recur i state)))))
 
 ;; Re-enable growth of nearby circles after cull?

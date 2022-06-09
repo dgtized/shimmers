@@ -13,9 +13,11 @@
 ;; TODO: variations from
 ;; https://sighack.com/post/circle-packing-using-stochastic-search
 
-(defn add-circle-to-tree
-  [tree {p :p :as circle}]
-  (g/add-point tree p circle))
+(defn replace-circle-at [tree {p :p :as c}]
+  (saq/replace-point tree p c))
+
+(defn add-circle-at [tree {p :p :as c}]
+  (saq/add-point tree p c))
 
 ;; Can spacing stay in the generation phase, any smaller circles will
 ;; automatically fit, and that could remove the bounds check?
@@ -39,7 +41,7 @@
   intentionally re-entrant, allowing up to `candidate` circles to be added on
   each invocation."
   [circles {:keys [bounds candidates] :as rules}]
-  (let [quadtree (reduce add-circle-to-tree
+  (let [quadtree (reduce add-circle-at
                          (saq/circletree (g/bounds bounds))
                          circles)]
     (loop [i 0 circles circles tree quadtree]
@@ -48,5 +50,5 @@
         (if-let [circle (add-circle tree rules)]
           (recur (inc i)
                  (conj circles circle)
-                 (add-circle-to-tree tree circle))
+                 (add-circle-at tree circle))
           (recur (inc i) circles tree))))))
