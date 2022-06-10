@@ -10,6 +10,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
@@ -77,7 +78,11 @@
 (defn update-state [{:keys [bounds circles] :as state}]
   (let [n (count circles)
         radius (radius-scale n)
-        pack-rules {:bounds bounds :radius radius :spacing radius :candidates 20}]
+        pack-rules {:bounds bounds
+                    :candidates 20
+                    :gen-circle
+                    (fn [] (gc/circle (g/random-point-inside bounds) radius))
+                    :spacing radius}]
     (if (>= n 160)
       state
       (-> state

@@ -2,7 +2,6 @@
   (:require
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.math.geometry :as geometry]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]))
 
 ;; Considering implementing
@@ -21,11 +20,11 @@
 
 ;; Can spacing stay in the generation phase, any smaller circles will
 ;; automatically fit, and that could remove the bounds check?
-(defn add-circle [quadtree {:keys [bounds radius spacing]}]
-  (let [p (g/random-point-inside bounds)
-        candidate (gc/circle p radius)]
+(defn legal-candidate
+  [circletree {:keys [bounds gen-circle spacing]}]
+  (let [candidate (gen-circle)]
     (when (geometry/contains-circle? bounds candidate)
-      (if-let [near (saq/closest-circle quadtree candidate)]
+      (if-let [near (saq/closest-circle circletree candidate)]
         (when (> (saq/circle-overlap near candidate) spacing)
           candidate)
         candidate))))
@@ -47,7 +46,7 @@
     (loop [i 0 circles circles tree quadtree]
       (if (>= i candidates)
         circles
-        (if-let [circle (add-circle tree rules)]
+        (if-let [circle (legal-candidate tree rules)]
           (recur (inc i)
                  (conj circles circle)
                  (add-circle-at tree circle))
