@@ -82,7 +82,7 @@
                     :candidates 20
                     :gen-circle
                     (fn [] (gc/circle (g/random-point-inside bounds) radius))
-                    :spacing radius}]
+                    :spacing (* radius 0.9)}]
     (if (>= n 160)
       state
       (-> state
