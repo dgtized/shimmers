@@ -55,16 +55,6 @@
    :scale 1.05
    :circles []})
 
-(defn add-circle [quadtree boundary radius]
-  (let [r radius
-        gen-circle
-        (fn [] (-> (gv/vec2 (dr/random r (- (q/width) r))
-                           (dr/random  r (- (q/height) r)))
-                  (gc/circle r)
-                  (assoc :color (random-color))))
-        rules {:bounds boundary :gen-circle gen-circle}]
-    (pack/legal-candidate quadtree rules)))
-
 (defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
   (loop [tree quadtree processing circles result []]
     (let [[circle & remaining] processing]
@@ -92,15 +82,18 @@
 
 ;; TODO performance from sampling cost?
 (defn fresh-circles [state n]
-  (loop [i 0 {:keys [boundary quadtree radius] :as state} state]
-    (if (>= i n)
-      state
-      (if-let [circle (add-circle quadtree boundary radius)]
-        (recur (inc i)
-               (-> state
-                   (update :circles conj circle)
-                   (update :quadtree pack/add-circle-at circle)))
-        (recur i state)))))
+  (let [{:keys [boundary quadtree radius]} state
+        r radius
+        gen-circle
+        (fn [] (-> (gv/vec2 (dr/random r (- (q/width) r))
+                           (dr/random  r (- (q/height) r)))
+                  (gc/circle r)
+                  (assoc :color (random-color))))
+        rules {:bounds boundary :gen-circle gen-circle}
+        [additions' tree'] (pack/pack-candidates quadtree n rules)]
+    (-> state
+        (update :circles into additions')
+        (assoc :quadtree tree'))))
 
 ;; Re-enable growth of nearby circles after cull?
 (defn cull-circles [{:keys [circles quadtree] :as state} p]
