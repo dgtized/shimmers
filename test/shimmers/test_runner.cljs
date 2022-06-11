@@ -29,7 +29,7 @@
 
 (defn prettier [content]
   (td/n :pre {}
-        (td/n :code {} (with-out-str (fedn/pprint content)))))
+        (td/n :code {} (with-out-str (fedn/pprint content {:width 80})))))
 
 ;; modified from https://github.com/bhauman/cljs-test-display/issues/5#issuecomment-619090019
 ;; pretty print expected vs actual with fedn/pprint
