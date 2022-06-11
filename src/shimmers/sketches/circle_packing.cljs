@@ -57,14 +57,13 @@
 
 (defn add-circle [quadtree boundary radius]
   (let [r radius
-        center (gv/vec2 (dr/random r (- (q/width) r))
-                        (dr/random  r (- (q/height) r)))
-        circle (assoc (gc/circle center r) :color (random-color))]
-    (when (geometry/contains-circle? boundary circle)
-      (if-let [near (saq/closest-circle quadtree circle)]
-        (when (> (saq/circle-overlap near circle) 0)
-          circle)
-        circle))))
+        gen-circle
+        (fn [] (-> (gv/vec2 (dr/random r (- (q/width) r))
+                           (dr/random  r (- (q/height) r)))
+                  (gc/circle r)
+                  (assoc :color (random-color))))
+        rules {:bounds boundary :gen-circle gen-circle}]
+    (pack/legal-candidate quadtree rules)))
 
 (defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
   (loop [tree quadtree processing circles result []]
