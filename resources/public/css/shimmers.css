@@ -1,3 +1,10 @@
+/* Center every sketch
+body {
+  display: flex;
+  justify-content: center;
+}
+*/
+
 .shimmer-container {
   /* https://stackoverflow.com/questions/7839164/is-there-a-css-cross-browser-value-for-width-moz-fit-content */
   width: intrinsic;           /* Safari/WebKit uses a non-standard name */
