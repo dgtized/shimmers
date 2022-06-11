@@ -30,6 +30,17 @@
           candidate)
         candidate))))
 
+(defn pack-candidates
+  [circletree n rules]
+  (loop [i 0 tree circletree circles []]
+    (if (>= i n)
+      [circles tree]
+      (if-let [circle (legal-candidate tree rules)]
+        (recur (inc i)
+               (add-circle-at tree circle)
+               (conj circles circle))
+        (recur (inc i) tree circles)))))
+
 ;; FIXME: re-use circletree if provided?
 ;; pass in circle generation function?
 ;; return new circles so that we can detect if no circles were added and guard against that lock?
@@ -43,12 +54,6 @@
   [circles {:keys [bounds candidates] :as rules}]
   (let [quadtree (reduce add-circle-at
                          (saq/circletree (g/bounds bounds))
-                         circles)]
-    (loop [i 0 circles circles tree quadtree]
-      (if (>= i candidates)
-        circles
-        (if-let [circle (legal-candidate tree rules)]
-          (recur (inc i)
-                 (conj circles circle)
-                 (add-circle-at tree circle))
-          (recur (inc i) circles tree))))))
+                         circles)
+        [circles' _] (pack-candidates quadtree candidates rules)]
+    (into circles circles')))
