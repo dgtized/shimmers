@@ -21,7 +21,8 @@
 ;; Can spacing stay in the generation phase, any smaller circles will
 ;; automatically fit, and that could remove the bounds check?
 (defn legal-candidate
-  [circletree {:keys [bounds gen-circle spacing]}]
+  [circletree
+   {:keys [bounds gen-circle spacing] :or {spacing 0}}]
   (let [candidate (gen-circle)]
     (when (geometry/contains-circle? bounds candidate)
       (if-let [near (saq/closest-circle circletree candidate)]
