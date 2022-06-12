@@ -95,3 +95,8 @@
    (col/as-css (col/hsla h s l a))))
 
 (comment (hsl 0.5 0.8 0.4 0.6))
+
+;; svg tricks to revisit:
+;; https://www.smashingmagazine.com/2019/03/svg-circle-decomposition-paths/
+;; https://www.smashingmagazine.com/2022/05/magical-svg-techniques/
+;; https://zverok.space/blog/2021-12-28-grok-shan-shui.html
