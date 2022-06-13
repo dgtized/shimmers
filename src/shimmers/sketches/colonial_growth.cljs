@@ -23,9 +23,6 @@
                  t))
              {} shapes))
 
-(defn in-bounds? [circle]
-  (g/contains-point? (cq/screen-rect) (:p circle)))
-
 (defn border-circle [shapes]
   (let [inverted-tree (child-tree shapes)
         {:keys [p r] :as parent}
@@ -39,9 +36,7 @@
                     g/as-cartesian
                     (tm/+ p))
         circle (assoc (gc/circle center radius) :parent parent)]
-    (when (and (in-bounds? circle)
-               (not (some (partial geometry/circles-overlap? circle) shapes)))
-      (assoc circle :color (update (:color parent) 2 * 1.07)))))
+    (assoc circle :color (update (:color parent) 2 * 1.07))))
 
 ;; Improve palette selection?
 (defn make-source []
@@ -66,7 +61,7 @@
 (defn update-state [{:keys [shapes circletree] :as state}]
   (let [rules {:bounds (cq/screen-rect)
                :gen-circle (partial border-circle shapes)}
-        [circles tree] (pack/pack-candidates circletree 4 rules)]
+        [circles tree] (pack/pack-candidates circletree 10 rules)]
     (assoc state :shapes (into shapes circles)
            :tree tree)))
 
