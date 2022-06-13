@@ -3,6 +3,8 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
@@ -55,19 +57,18 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes (->> [(make-source)]
-                (iterate add-non-intersecting)
-                (take (dr/random-int 1 4))
-                flatten
-                vec)})
+  (let [bounds (cq/screen-rect)
+        rules {:bounds bounds :gen-circle make-source}
+        [circles tree] (pack/pack-candidates (saq/circletree bounds) (dr/random-int 1 5) rules)]
+    {:shapes circles
+     :circletree tree}))
 
-(defn update-state [{:keys [shapes] :as state}]
-  (if-let [new-circle (->> #(border-circle shapes)
-                           (repeatedly 8)
-                           (drop-while nil?)
-                           first)]
-    (update state :shapes conj new-circle)
-    state))
+(defn update-state [{:keys [shapes circletree] :as state}]
+  (let [rules {:bounds (cq/screen-rect)
+               :gen-circle (partial border-circle shapes)}
+        [circles tree] (pack/pack-candidates circletree 4 rules)]
+    (assoc state :shapes (into shapes circles)
+           :tree tree)))
 
 (defonce ui-state (ctrl/state {:show-parent false}))
 
@@ -90,7 +91,7 @@
   :created-at "2021-05-14"
   :on-mount (fn [] (ctrl/mount ui-controls))
   :tags #{:deterministic}
-  :size [800 600]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
