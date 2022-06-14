@@ -43,8 +43,9 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
-        rules {:bounds bounds :gen-circle make-source}
-        [circles tree] (pack/pack-candidates (saq/circletree bounds) (dr/random-int 1 5) rules)]
+        [circles tree]
+        (->> {:bounds bounds :gen-circle make-source}
+             (pack/pack-candidates (saq/circletree bounds) (dr/random-int 1 5)))]
     {:shapes circles
      :circletree tree}))
 
@@ -52,7 +53,8 @@
   (let [rules {:bounds (cq/screen-rect)
                :gen-circle (partial border-circle shapes)}
         [circles tree] (pack/pack-candidates circletree 10 rules)]
-    (assoc state :shapes (into shapes circles)
+    (assoc state
+           :shapes (into shapes circles)
            :tree tree)))
 
 (defonce ui-state (ctrl/state {:show-parent false}))
