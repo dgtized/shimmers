@@ -44,12 +44,6 @@
                     (cq/rel-w 0.05))
          :color [(dr/rand-nth [0.0 0.4 0.5 0.6 0.85]) 0.35 0.4 1.0]))
 
-(defn add-non-intersecting [shapes]
-  (let [c (make-source)]
-    (if (some (partial geometry/circles-overlap? c) shapes)
-      shapes
-      (conj shapes c))))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
