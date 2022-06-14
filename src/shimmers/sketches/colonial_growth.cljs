@@ -9,11 +9,9 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry :as geometry]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn child-tree [shapes]
@@ -32,9 +30,7 @@
         angle (dr/random tm/TWO_PI)
         radius (dr/random (max (* 0.6 r) 2)
                           (min (* 1.15 r) (cq/rel-w 0.04)))
-        center (->> (gv/vec2 (+ r radius 0.1) angle)
-                    g/as-cartesian
-                    (tm/+ p))
+        center (tm/+ p (v/polar (+ r radius 0.1) angle))
         circle (assoc (gc/circle center radius) :parent parent)]
     (assoc circle :color (update (:color parent) 2 * 1.07))))
 
