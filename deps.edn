@@ -10,9 +10,10 @@
         ;; alternative SVG library
         io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
 
-        ;; vectors math and such, kinda weird as it does much of what quil does
-        thi.ng/geom {:mvn/version "1.0.0-RC5"}
-        thi.ng/shadergraph {:mvn/version "0.3.1"}
+        ;; vectors, math, polygons, svg, and such -- overlaps quil but distinct
+        thi.ng/geom {:mvn/version "1.0.0-RC5"
+                     :exclusions [org.jogamp.gluegen/gluegen-rt
+                                  org.jogamp.jogl/jogl-all]}
 
         ;; probability distributions
         kixi/stats {:mvn/version "0.5.5"}
