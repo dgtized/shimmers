@@ -19,7 +19,6 @@
 
         ;; Helper libraries
         org.clojure/core.async {:mvn/version "1.5.648"}
-        org.clojure/core.logic {:mvn/version "1.0.1"}
         org.clojure/core.match {:mvn/version "1.0.0"}
         org.clojure/math.combinatorics {:mvn/version "0.1.6"}
         instaparse/instaparse {:mvn/version "1.4.12"}
@@ -40,8 +39,9 @@
         ;; reagent keybindings element
         org.clojars.frozenlock/reagent-keybindings {:mvn/version "1.0.2"}
 
-        ;; http client
-        cljs-http/cljs-http {:mvn/version "0.1.46"}
+        ;; Future Libs
+        ;; cljs-http/cljs-http {:mvn/version "0.1.46"}
+        ;; org.clojure/core.logic {:mvn/version "1.0.1"}
 
         ;; This is not dev only because of production build
 
