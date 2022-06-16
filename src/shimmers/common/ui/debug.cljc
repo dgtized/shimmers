@@ -24,10 +24,16 @@
 (defn fixed-width
   "Format float `v` to 2 decimal places as long as it's not infinite."
   [v]
-  (if (or (integer? v) (infinite? v))
-    v
-    (let [v' (.toFixed v 2)]
-      (symbol v'))))
+  #?(:cljs
+     (if (or (integer? v) (infinite? v))
+       v
+       (symbol (.toFixed v 2)))
+     :clj
+     (if (or (integer? v)
+             (= v Double/POSITIVE_INFINITY)
+             (= v Double/NEGATIVE_INFINITY))
+       v
+       (symbol (format "%.2f" v)))))
 
 ;; Simplify IEdn output for pretty printing
 (extend-protocol IEdn
