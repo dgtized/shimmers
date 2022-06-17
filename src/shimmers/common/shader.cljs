@@ -1,7 +1,6 @@
 (ns shimmers.common.shader
   (:require [quil.core :as q :include-macros true]))
 
-;; Technically this should probably be a cljs file since set-uniform is only in cljs?
 #_{:clj-kondo/ignore [:unresolved-var]}
 (defn pass [shader [w h] uniforms]
   (q/shader shader)
