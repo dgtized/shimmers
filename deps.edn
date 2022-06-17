@@ -66,6 +66,7 @@
   {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2022.05.31"}}
    :main-opts ["-m" "clj-kondo.main"]}
 
+  ;; clj -Meastwood
   :eastwood
   {:extra-deps {jonase/eastwood {:mvn/version "1.2.4"}}
    :main-opts ["-m" "eastwood.lint" "{:source-paths,[\"src\"],:test-paths,[\"test\"]}"]}
