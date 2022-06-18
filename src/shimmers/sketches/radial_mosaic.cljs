@@ -12,8 +12,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.strf.core :as f]))
+   [thi.ng.math.core :as tm]))
 
 (def settings (ctrl/state {:dispersion false}))
 (def width 900)
@@ -35,26 +34,6 @@
 
 (comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
 
-(defn draw-segment [t0 t1 r0 r1 attribs]
-  (let [lower (v/polar r0 t0)
-        upper (v/polar r1 t1)]
-    (svg/path [[:M lower]
-               [:L (v/polar r1 t0)]
-               [:A [r1 r1] 0.0 0 1 upper]
-               [:L (v/polar r0 t1)]
-               [:A [r0 r0] 0.0 0 0 lower]
-               [:Z]]
-              (merge
-               {:fill "white"
-                :stroke-width 0.6
-                :stroke "black"}
-               attribs))))
-
-(comment
-  (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
-  (f/format [(f/float 2)] 0.21)
-  (draw-segment 0.5 1 1 2 {}))
-
 (defn segment [t0 t1 r0 r1 attribs displacement]
   (let [{:keys [arc0 arc1 percent force]} displacement
         maybe-transformed
@@ -71,7 +50,12 @@
                             (csvg/rotate rotation center)]]
             (merge attribs {:transform (apply str (interpose " " transforms))}))
           attribs)]
-    (draw-segment t0 t1 r0 r1 maybe-transformed)))
+    (csvg/arc-segment t0 t1 r0 r1
+                      (merge
+                       {:fill "white"
+                        :stroke-width 0.6
+                        :stroke "black"}
+                       maybe-transformed))))
 
 ;; First palette is more in pastel range, seems like that fits this better?
 ;; Maybe just because it's also ensuring "none" is used a lot?

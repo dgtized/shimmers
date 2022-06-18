@@ -2,11 +2,14 @@
   (:require
    [clojure.string :as str]
    [shimmers.common.string :as scs]
+   [shimmers.math.vector :as v]
    [thi.ng.color.core :as col]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.adapter :as adapt]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 (defn screen [width height]
   (rect/rect 0 0 width height))
@@ -100,3 +103,19 @@
 ;; https://www.smashingmagazine.com/2019/03/svg-circle-decomposition-paths/
 ;; https://www.smashingmagazine.com/2022/05/magical-svg-techniques/
 ;; https://zverok.space/blog/2021-12-28-grok-shan-shui.html
+
+(defn arc-segment [t0 t1 r0 r1 attribs]
+  (let [lower (v/polar r0 t0)
+        upper (v/polar r1 t1)]
+    (svg/path [[:M lower]
+               [:L (v/polar r1 t0)]
+               [:A [r1 r1] 0.0 0 1 upper]
+               [:L (v/polar r0 t1)]
+               [:A [r0 r0] 0.0 0 0 lower]
+               [:Z]]
+              attribs)))
+
+(comment
+  (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
+  (f/format [(f/float 2)] 0.21)
+  (arc-segment 0.5 1 1 2 {}))
