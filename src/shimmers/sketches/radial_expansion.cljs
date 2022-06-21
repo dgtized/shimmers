@@ -30,6 +30,11 @@
                        8 4
                        12 1})))
 
+(defn spoke [{:keys [p r]} distance theta]
+  (-> (gl/line2 (v/polar r theta)
+                (v/polar (+ r distance) theta))
+      (g/translate p)))
+
 (defn init []
   [(new-planet (rv 0.5 0.5) 64)])
 
@@ -37,16 +42,14 @@
   (let [expansions (->> shapes
                         (filter #(> (:spokes %) 0))
                         (mapcat
-                         (fn [{:keys [p r spokes]}]
+                         (fn [{:keys [p r spokes] :as planet}]
                            (let [distance (* r (dr/random 0.3 1.8))
                                  t0 (dr/random 0 1.0)]
                              (for [t (butlast (tm/norm-range spokes))
                                    :let [theta (+ (* eq/TAU t) t0)
                                          radius (* r (dr/random 0.3 0.8))]]
                                {:planet (new-planet (tm/+ p (v/polar (+ r distance radius) theta)) radius)
-                                :spoke (g/translate (gl/line2 (v/polar r theta)
-                                                              (v/polar (+ r distance) theta))
-                                                    p)})))))]
+                                :spoke (spoke planet distance theta)})))))]
     (concat (map (fn [p] (dissoc p :spokes)) shapes)
             (map :spoke expansions)
             (map :planet expansions))))
