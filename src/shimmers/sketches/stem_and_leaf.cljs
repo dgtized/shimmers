@@ -112,7 +112,7 @@
 (sketch/defquil stem-and-leaf
   :created-at "2021-07-21"
   :size [800 600]
-  :on-mount #(debug/mount defo)
+  :on-mount (debug/mount defo)
   :setup setup
   :update update-state
   :draw draw

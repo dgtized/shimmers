@@ -181,7 +181,7 @@
   :created-at "2021-03-21"
   :tags #{:static}
   :size [800 600]
-  :on-mount (fn [] (debug/mount defo))
+  :on-mount (debug/mount defo)
   :setup setup
   :update update-state
   :draw draw

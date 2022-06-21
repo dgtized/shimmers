@@ -107,7 +107,7 @@
 (sketch/defquil unit-circle
   :created-at "2021-10-28"
   :tags #{:demo}
-  :on-mount (fn [] (debug/mount defo))
+  :on-mount (debug/mount defo)
   :size [800 600]
   :setup setup
   :update update-state

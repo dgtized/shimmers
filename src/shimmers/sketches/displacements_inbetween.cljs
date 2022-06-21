@@ -157,6 +157,8 @@
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :displacements-inbetween)
-              "sketch-host")
-  #_(debug/mount defo))
+  (ctrl/mount (view-sketch/page-for
+               scene
+               :displacements-inbetween
+               #_#(debug/display defo))
+              "sketch-host"))

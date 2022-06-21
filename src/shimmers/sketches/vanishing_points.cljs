@@ -42,7 +42,7 @@
 
 (sketch/defquil vanishing-points
   :created-at "2022-03-05"
-  :on-mount (fn [] (debug/mount defo))
+  :on-mount (debug/mount defo)
   :size [800 600]
   :setup setup
   :update update-state

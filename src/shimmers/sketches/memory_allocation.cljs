@@ -82,7 +82,7 @@
 
 (sketch/defquil memory-allocation
   :created-at "2021-10-14"
-  :on-mount (fn [] (debug/mount defo))
+  :on-mount (debug/mount defo)
   :size [800 800]
   :setup setup
   :update update-state

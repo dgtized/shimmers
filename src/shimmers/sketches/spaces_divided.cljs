@@ -128,7 +128,7 @@
 (sketch/defquil spaces-divided
   :created-at "2021-12-09"
   :size [800 600]
-  :on-mount #(debug/mount defo)
+  :on-mount (debug/mount defo)
   :setup setup
   :update update-state
   :draw draw

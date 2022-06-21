@@ -106,8 +106,10 @@
        ([] (ctrl/state {}))
        ([init] (ctrl/state init)))
 
-     (defn mount [atom]
-       (ctrl/mount #(display atom) "debug-mount"))))
+     (defn mount
+       ([atom] (mount atom "interface"))
+       ([atom element]
+        (fn [] (ctrl/mount #(display atom) element))))))
 
 (defn with-tap-log [f]
   (let [tap-log (atom [])
