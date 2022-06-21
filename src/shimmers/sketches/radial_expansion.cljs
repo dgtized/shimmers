@@ -39,9 +39,9 @@
       (g/translate p)))
 
 (defn init []
-  [(-> (rv (dr/random 0.85 0.15)
-           (dr/random 0.15 0.85))
-       (new-planet (* 0.1 height) 0)
+  [(-> (rv (dr/random 0.2 0.8)
+           (dr/random 0.2 0.8))
+       (new-planet (* (dr/random 0.08 0.14) height) 0)
        (update :spokes max 3))])
 
 (defn evolve [bounds shapes]
@@ -50,11 +50,13 @@
              (filter #(> (:spokes %) 0))
              (mapcat
               (fn [{:keys [p r spokes depth] :as planet}]
-                (let [distance (* r (dr/random 0.3 2.5))
+                (let [distance (* r (dr/gaussian tm/PHI 0.3))
+                      radius (* r (dr/random 0.3 0.8))
+                      fixed-radius (dr/chance 0.2)
                       t0 (dr/random 0 1.0)]
                   (for [t (butlast (tm/norm-range spokes))
                         :let [theta (* eq/TAU (+ t t0))
-                              radius (* r (dr/random 0.3 0.8))
+                              radius (if fixed-radius radius (* radius (dr/random 0.6 1.1)))
                               new (new-planet (tm/+ p (v/polar (+ r distance radius) theta)) radius (inc depth))]
                         :when (and (geometry/contains-circle? bounds new)
                                    (not (geometry/circles-overlap? planet new)))]
@@ -77,7 +79,7 @@
              :fill "white"
              :stroke-width 0.5}
             (shapes (rect/rect 0 0 width height)
-                    (dr/random-int 2 5))))
+                    (dr/random-int 3 6))))
 
 (sketch/definition radial-expansion
   {:created-at "2022-06-21"
