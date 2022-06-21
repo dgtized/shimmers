@@ -20,8 +20,9 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn new-planet [p r]
+(defn new-planet [p r depth]
   (assoc (gc/circle p r)
+         :depth depth
          :spokes
          (dr/weighted {0 1
                        2 2
@@ -38,24 +39,23 @@
       (g/translate p)))
 
 (defn init []
-  [(vary-meta (update (new-planet (rv (dr/random 0.15 0.85)
-                                      (dr/random 0.15 0.85))
-                                  (* 0.1 height))
-                      :spokes max 3)
-              assoc :fill "black")])
+  [(-> (rv (dr/random 0.85 0.15)
+           (dr/random 0.15 0.85))
+       (new-planet (* 0.1 height) 0)
+       (update :spokes max 3))])
 
 (defn evolve [bounds shapes]
   (let [expansions
         (->> shapes
              (filter #(> (:spokes %) 0))
              (mapcat
-              (fn [{:keys [p r spokes] :as planet}]
+              (fn [{:keys [p r spokes depth] :as planet}]
                 (let [distance (* r (dr/random 0.3 2.5))
                       t0 (dr/random 0 1.0)]
                   (for [t (butlast (tm/norm-range spokes))
-                        :let [theta (+ (* eq/TAU t) t0)
+                        :let [theta (* eq/TAU (+ t t0))
                               radius (* r (dr/random 0.3 0.8))
-                              new (new-planet (tm/+ p (v/polar (+ r distance radius) theta)) radius)]
+                              new (new-planet (tm/+ p (v/polar (+ r distance radius) theta)) radius (inc depth))]
                         :when (and (geometry/contains-circle? bounds new)
                                    (not (geometry/circles-overlap? planet new)))]
                     {:planet new
@@ -65,7 +65,10 @@
             (map :planet expansions))))
 
 (defn shapes [bounds depth]
-  (nth (iterate (partial evolve bounds) (init)) depth))
+  (for [s (nth (iterate (partial evolve bounds) (init)) depth)]
+    (if (zero? (mod (:depth s) 3))
+      (vary-meta s assoc :fill "black")
+      s)))
 
 (defn scene []
   (csvg/svg {:width width
