@@ -26,10 +26,10 @@
          (dr/weighted {0 1
                        2 2
                        3 4
-                       5 3
-                       6 3
+                       5 4
+                       6 4
                        7 3
-                       8 4
+                       8 3
                        12 1})))
 
 (defn spoke [{:keys [p r]} distance theta]
