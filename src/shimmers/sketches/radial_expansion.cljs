@@ -20,7 +20,15 @@
 
 (defn new-planet [p r]
   (assoc (gc/circle p r)
-         :spokes (dr/rand-nth [3 5 6 7])))
+         :spokes
+         (dr/weighted {0 1
+                       2 2
+                       3 4
+                       5 3
+                       6 3
+                       7 3
+                       8 4
+                       12 1})))
 
 (defn init []
   [(new-planet (rv 0.5 0.5) 64)])
@@ -29,7 +37,7 @@
   (let [expansions (->> shapes
                         (filter #(> (:spokes %) 0))
                         (mapcat
-                         (fn [{:keys [p r spokes] :as e}]
+                         (fn [{:keys [p r spokes]}]
                            (let [distance (* r (dr/random 0.3 1.8))
                                  t0 (dr/random 0 1.0)]
                              (for [t (butlast (tm/norm-range spokes))
