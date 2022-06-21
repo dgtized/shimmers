@@ -6,6 +6,7 @@
    [clojure.test.check.random :as tcr]
    [kixi.stats.distribution :as ksd]
    [shimmers.common.sequence :as cs]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.math.core :as tm]
    [thi.ng.math.noise :as noise]))
@@ -181,9 +182,17 @@
   (let [[x y] (tm/+ seed (tm/* p scale))]
     (* 0.5 (+ 1.0 (noise/noise2 x y)))))
 
+(defn summary-stats [xs]
+  (let [n (count xs)
+        avg (/ (reduce + xs) n)
+        variance (/ (reduce (fn [acc x] (+ acc (eq/sqr (- x avg)))) xs) n)]
+    {:n-samples n
+     :min (apply min xs)
+     :max (apply max xs)
+     :average avg
+     :variance variance
+     :std-dev (Math/sqrt variance)}))
+
 (comment
-  (defn summary [xs]
-    {:min (apply min xs)
-     :max (apply max xs)})
-  (summary (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
-  (summary (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))
+  (summary-stats (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
+  (summary-stats (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))
