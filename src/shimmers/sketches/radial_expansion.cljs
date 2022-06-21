@@ -42,7 +42,7 @@
 (defn init []
   [(-> (rv (dr/random 0.2 0.8)
            (dr/random 0.2 0.8))
-       (new-planet (* (dr/random 0.08 0.14) height) 0 (dr/random eq/TAU))
+       (new-planet (* (dr/random 0.08 0.12) height) 0 (dr/random eq/TAU))
        (update :spokes max 3))])
 
 (defn evolve [bounds shapes]
@@ -51,11 +51,13 @@
              (filter #(> (:spokes %) 0))
              (mapcat
               (fn [{:keys [p r spokes depth spoke-theta] :as planet}]
-                (let [distance (* r (dr/gaussian tm/PHI 0.3))
-                      radius (* r (dr/random 0.3 0.8))
-                      fixed-radius (dr/chance 0.2)
+                (let [distance (* r (tm/clamp (dr/gaussian tm/PHI 0.4) 0.8 2))
                       fan (and (pos? depth) (dr/chance 0.5))
                       width (* eq/TAU (if fan (/ 1 (dr/rand-nth [1.5 2 3 4 5 6 7 8])) 1))
+                      arc-length (* 0.5 (+ r distance) (/ width spokes))
+                      radius (min (* (tm/clamp (dr/gaussian 0.5 0.3) 0.1 0.9) arc-length)
+                                  (* 1.2 r))
+                      fixed-radius (dr/chance 0.3)
                       t0 (+ spoke-theta
                             (cond fan
                                   (- (/ width 2))
