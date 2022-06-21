@@ -54,12 +54,17 @@
                 (let [distance (* r (dr/gaussian tm/PHI 0.3))
                       radius (* r (dr/random 0.3 0.8))
                       fixed-radius (dr/chance 0.2)
+                      fan (and (pos? depth) (dr/chance 0.5))
+                      width (* eq/TAU (if fan (/ 1 (dr/rand-nth [1.5 2 3 4 5 6 7 8])) 1))
                       t0 (+ spoke-theta
-                            (if (even? spokes)
-                              (* eq/TAU (/ 1 (* 2 spokes)))
-                              0))]
-                  (for [t (butlast (tm/norm-range spokes))
-                        :let [theta (+ (* eq/TAU t) t0)
+                            (cond fan
+                                  (- (/ width 2))
+                                  (even? spokes)
+                                  (* eq/TAU (/ 1 (* 2 spokes)))
+                                  :else 0))]
+                  (for [t (if fan (tm/norm-range spokes)
+                              (butlast (tm/norm-range spokes)))
+                        :let [theta (+ (* width t) t0)
                               radius (if fixed-radius radius (* radius (dr/random 0.6 1.1)))
                               center (tm/+ p (v/polar (+ r distance radius) theta))
                               new (new-planet center
