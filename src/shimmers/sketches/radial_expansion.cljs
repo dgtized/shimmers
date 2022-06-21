@@ -20,9 +20,10 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn new-planet [p r depth]
+(defn new-planet [p r depth spoke-theta]
   (assoc (gc/circle p r)
          :depth depth
+         :spoke-theta spoke-theta
          :spokes
          (dr/weighted {0 1
                        2 2
@@ -41,7 +42,7 @@
 (defn init []
   [(-> (rv (dr/random 0.2 0.8)
            (dr/random 0.2 0.8))
-       (new-planet (* (dr/random 0.08 0.14) height) 0)
+       (new-planet (* (dr/random 0.08 0.14) height) 0 (dr/random eq/TAU))
        (update :spokes max 3))])
 
 (defn evolve [bounds shapes]
@@ -49,15 +50,22 @@
         (->> shapes
              (filter #(> (:spokes %) 0))
              (mapcat
-              (fn [{:keys [p r spokes depth] :as planet}]
+              (fn [{:keys [p r spokes depth spoke-theta] :as planet}]
                 (let [distance (* r (dr/gaussian tm/PHI 0.3))
                       radius (* r (dr/random 0.3 0.8))
                       fixed-radius (dr/chance 0.2)
-                      t0 (dr/random 0 1.0)]
+                      t0 (+ spoke-theta
+                            (if (even? spokes)
+                              (* eq/TAU (/ 1 (* 2 spokes)))
+                              0))]
                   (for [t (butlast (tm/norm-range spokes))
-                        :let [theta (* eq/TAU (+ t t0))
+                        :let [theta (+ (* eq/TAU t) t0)
                               radius (if fixed-radius radius (* radius (dr/random 0.6 1.1)))
-                              new (new-planet (tm/+ p (v/polar (+ r distance radius) theta)) radius (inc depth))]
+                              center (tm/+ p (v/polar (+ r distance radius) theta))
+                              new (new-planet center
+                                              radius
+                                              (inc depth)
+                                              theta)]
                         :when (and (geometry/contains-circle? bounds new)
                                    (not (geometry/circles-overlap? planet new)))]
                     {:planet new
