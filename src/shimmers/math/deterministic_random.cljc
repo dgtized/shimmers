@@ -185,14 +185,21 @@
 (defn summary-stats [xs]
   (let [n (count xs)
         avg (/ (reduce + xs) n)
-        variance (/ (reduce (fn [acc x] (+ acc (eq/sqr (- x avg)))) xs) n)]
+        variance (/ (reduce (fn [acc x] (+ acc (eq/sqr (- x avg)))) xs) n)
+        sorted (sort xs)
+        midpoint (/ n 2)]
     {:n-samples n
      :min (apply min xs)
      :max (apply max xs)
+     :quartiles (mapv (fn [q] (nth sorted (int (* (inc n) (/ q 4))))) [1 2 3])
+     :median (if (even? n)
+               (/ (+ (nth sorted midpoint) (nth sorted (inc midpoint))) 2)
+               (nth sorted (int midpoint)))
      :average avg
      :variance variance
      :std-dev (Math/sqrt variance)}))
 
 (comment
+  (summary-stats (repeatedly 10000 #(gaussian 2 0.2)))
   (summary-stats (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
   (summary-stats (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))
