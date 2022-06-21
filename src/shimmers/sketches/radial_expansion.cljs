@@ -78,8 +78,7 @@
                     {:planet new
                      :spoke (spoke planet distance theta)})))))]
     (concat (map (fn [p] (dissoc p :spokes)) shapes)
-            (map :spoke expansions)
-            (map :planet expansions))))
+            (mapcat (fn [{:keys [planet spoke]}] [planet spoke]) expansions))))
 
 (defn shapes [bounds depth]
   (for [s (nth (iterate (partial evolve bounds) (init)) depth)]
