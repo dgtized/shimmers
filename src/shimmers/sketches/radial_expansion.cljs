@@ -81,8 +81,9 @@
             (mapcat (fn [{:keys [planet spoke]}] [planet spoke]) expansions))))
 
 (defn shapes [bounds depth]
-  (for [s (nth (iterate (partial evolve bounds) (init)) depth)]
-    (if (zero? (mod (:depth s) 3))
+  (for [s (nth (iterate (partial evolve bounds) (init)) depth)
+        :let [d (:depth s)]]
+    (if (contains? #{0 3} d)
       (vary-meta s assoc :fill "black")
       s)))
 
