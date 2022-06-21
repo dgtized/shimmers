@@ -38,7 +38,9 @@
       (g/translate p)))
 
 (defn init []
-  [(new-planet (rv 0.5 0.5) 64)])
+  [(vary-meta (new-planet (rv (dr/random 0.3 0.7)
+                              (dr/random 0.3 0.7)) 64)
+              assoc :fill "black")])
 
 (defn evolve [bounds shapes]
   (let [expansions
@@ -46,7 +48,7 @@
              (filter #(> (:spokes %) 0))
              (mapcat
               (fn [{:keys [p r spokes] :as planet}]
-                (let [distance (* r (dr/random 0.3 1.8))
+                (let [distance (* r (dr/random 0.3 2.8))
                       t0 (dr/random 0 1.0)]
                   (for [t (butlast (tm/norm-range spokes))
                         :let [theta (+ (* eq/TAU t) t0)
