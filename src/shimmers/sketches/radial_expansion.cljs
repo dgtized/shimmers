@@ -23,11 +23,10 @@
          :spokes (dr/rand-nth [3 5 6 7])))
 
 (defn init []
-  {:planets [(new-planet (rv 0.5 0.5) 64)]
-   :spokes []})
+  [(new-planet (rv 0.5 0.5) 64)])
 
-(defn evolve [{:keys [planets spokes] :as state}]
-  (let [expansions (->> planets
+(defn evolve [shapes]
+  (let [expansions (->> shapes
                         (filter #(> (:spokes %) 0))
                         (mapcat
                          (fn [{:keys [p r spokes] :as e}]
@@ -40,13 +39,12 @@
                                 :spoke (g/translate (gl/line2 (v/polar r theta)
                                                               (v/polar (+ r distance) theta))
                                                     p)})))))]
-    (assoc state
-           :planets (concat (map (fn [p] (dissoc p :spokes)) planets)
-                            (map :planet expansions))
-           :spokes (concat spokes (map :spoke expansions)))))
+    (concat (map (fn [p] (dissoc p :spokes)) shapes)
+            (map :spoke expansions)
+            (map :planet expansions))))
 
 (defn shapes [depth]
-  (apply concat (vals (nth (iterate evolve (init)) depth))))
+  (nth (iterate evolve (init)) depth))
 
 (defn scene []
   (csvg/svg {:width width
