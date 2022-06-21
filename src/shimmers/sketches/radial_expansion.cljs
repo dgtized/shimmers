@@ -56,7 +56,7 @@
                       width (* eq/TAU (if fan (/ 1 (dr/rand-nth [1.5 2 3 4 5 6 7 8])) 1))
                       arc-length (* 0.5 (+ r distance) (/ width spokes))
                       radius (min (* (tm/clamp (dr/gaussian 0.5 0.3) 0.1 0.9) arc-length)
-                                  (* 1.2 r))
+                                  r)
                       fixed-radius (dr/chance 0.3)
                       t0 (+ spoke-theta
                             (cond fan
