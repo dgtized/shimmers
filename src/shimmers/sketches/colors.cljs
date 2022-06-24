@@ -51,13 +51,15 @@
         (ctrl/numeric ui "Noise Multiplier" [:noise-mult] [0 16 0.00001])
         (ctrl/checkbox ui "Animate" [:animate])]
        :oklab
-       [:div]))))
+       [:div
+        (ctrl/slider ui (fn [v] (str "Chroma: " v)) [:chroma] [0 66 0.01])]))))
 
 (defn setup []
   (let [defaults
         {:mode :hsla
          :lightness 50
          :alpha 100
+         :chroma 10
          :saturation1 50
          :saturation2 50
          :lightness1 50
@@ -107,13 +109,14 @@
           (q/fill n 0.5 0.5 1.0)
           (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy)))))))
 
-(defn draw-oklab [_]
+(defn draw-oklab [ui]
   (q/color-mode :rgb 1.0)
   (let [dx 0.01
-        dy 0.01]
+        dy 0.01
+        chroma (* 0.01 (:chroma @ui))]
     (doseq [y (range 0 1 dy)]
       (doseq [x (range 0 1 dx)]
-        (let [[r g b] (color/oklab-lch (- 0.95 (* 0.4 y)) 0.15 (* eq/TAU x))]
+        (let [[r g b] (color/oklab-lch (- 0.95 (* 0.4 y)) chroma (* eq/TAU x))]
           (q/fill r g b 1.0)
           (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy)))))))
 
