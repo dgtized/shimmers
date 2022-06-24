@@ -7,7 +7,9 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.math.color :as color]
+   [shimmers.math.equations :as eq]))
 
 (defn random-hues []
   {:hue1 (int (* 100 (rand)))
@@ -18,7 +20,7 @@
 (defn ui-controls [ui]
   (fn []
     (ctrl/container
-     (ctrl/change-mode ui [:hsla :mix-mod :noise])
+     (ctrl/change-mode ui [:hsla :mix-mod :noise :oklab])
      (case (:mode @ui)
        :hsla
        [:div
@@ -47,10 +49,11 @@
        :noise
        [:div
         (ctrl/numeric ui "Noise Multiplier" [:noise-mult] [0 16 0.00001])
-        (ctrl/checkbox ui "Animate" [:animate])]))))
+        (ctrl/checkbox ui "Animate" [:animate])]
+       :oklab
+       [:div]))))
 
 (defn setup []
-  (q/color-mode :hsl 1.0)
   (let [defaults
         {:mode :hsla
          :lightness 50
@@ -68,6 +71,7 @@
   state)
 
 (defn draw-hsla [ui]
+  (q/color-mode :hsl 1.0)
   (let [{:keys [lightness alpha animate]} @ui
         fc (q/frame-count)
         dx 0.01
@@ -81,6 +85,7 @@
         (q/rect (cq/rel-w h) (cq/rel-h s) (cq/rel-w dx) (cq/rel-h dy))))))
 
 (defn draw-mix-mod [ui]
+  (q/color-mode :hsl 1.0)
   (let [dx 0.01
         [h1 h2] (map #(/ % 100) (vals (select-keys @ui [:hue1 :hue2])))
         [s1 s2] (map #(/ % 100) (vals (select-keys @ui [:saturation1 :saturation2])))
@@ -91,6 +96,7 @@
       (q/rect (cq/rel-w h) (cq/rel-h 0) (cq/rel-w dx) (cq/rel-h 1)))))
 
 (defn draw-noise [ui]
+  (q/color-mode :hsl 1.0)
   (let [{:keys [animate] m :noise-mult} @ui
         dx 0.01
         dy 0.01
@@ -101,13 +107,24 @@
           (q/fill n 0.5 0.5 1.0)
           (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy)))))))
 
+(defn draw-oklab [_]
+  (q/color-mode :rgb 1.0)
+  (let [dx 0.01
+        dy 0.01]
+    (doseq [y (range 0 1 dy)]
+      (doseq [x (range 0 1 dx)]
+        (let [[r g b] (color/oklab-lch (- 0.95 (* 0.4 y)) 0.15 (* eq/TAU x))]
+          (q/fill r g b 1.0)
+          (q/rect (cq/rel-w x) (cq/rel-h y) (cq/rel-w dx) (cq/rel-h dy)))))))
+
 (defn draw [{:keys [ui]}]
   (q/background 1.0)
   (q/no-stroke)
   (case (:mode @ui)
     :hsla (draw-hsla ui)
     :mix-mod (draw-mix-mod ui)
-    :noise (draw-noise ui)))
+    :noise (draw-noise ui)
+    :oklab (draw-oklab ui)))
 
 (sketch/defquil colors
   :created-at "2021-03-11"

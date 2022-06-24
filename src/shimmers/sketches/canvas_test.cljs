@@ -81,8 +81,8 @@
                (cv/clear 0 0 width height)
                (cv/composite-op "lighter")
                (cv/line-join "round")
-               (cv/shadow-blur "20")
-               (cv/line-width 6)
+               (cv/shadow-blur "50")
+               (cv/line-width 5)
                (cv/color-stroke (str "rgba(" 55 "," 240 "," 180 "," 5 ")"))
                (cv/rect-stroke x y size size))))))))
 
