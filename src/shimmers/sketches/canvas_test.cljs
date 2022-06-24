@@ -1,5 +1,6 @@
 (ns shimmers.sketches.canvas-test
   (:require
+   [goog.dom :as gdom]
    [helins.canvas :as cv]
    [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
@@ -45,12 +46,23 @@
                    :pos pos
                    :vel new-vel)))))
 
+;; https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#scaling_for_high_resolution_displays
+(defn scale-dpi [canvas [width height]]
+  (let [ctx (.getContext canvas "2d")
+        dpr (gdom/getPixelRatio)]
+    (set! (.-width canvas) (Math/floor (* dpr width)))
+    (set! (.-height canvas) (Math/floor (* dpr height)))
+    (set! (.-style.width canvas) (str width "px"))
+    (set! (.-style.height canvas) (str height "px"))
+    (.scale ctx dpr dpr)
+    ctx))
+
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
 ;; also playing with neon effect from https://codepen.io/agar3s/pen/pJpoya
 (defn draw-frame [id telemetry]
   (fn [_ canvas canvas-state]
-    (let [ctx (cv/high-dpi (.getContext canvas "2d"))
-          {:keys [width height]} @canvas-state
+    (let [{:keys [width height]} @canvas-state
+          ctx (scale-dpi canvas [width height])
           margin 10
           size 50
           box-state (atom {:size size
