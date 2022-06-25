@@ -61,8 +61,8 @@
         {:mode :hsla
          :lightness 50
          :alpha 100
-         :maxL 1
-         :minL 0
+         :maxL 0.9
+         :minL 0.4
          :chroma 10
          :saturation1 50
          :saturation2 50
