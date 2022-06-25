@@ -18,44 +18,43 @@
 ;; TODO: add hover color info for hsl values?
 ;; Limit range to show spectrum / palette somehow?
 (defn ui-controls [ui]
-  (fn []
-    (ctrl/container
-     (ctrl/change-mode ui [:hsla :mix-mod :noise :oklab])
-     (case (:mode @ui)
-       :hsla
-       [:div
-        (ctrl/checkbox ui "Animate" [:animate])
-        (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
-                     [:lightness] [0 100])
-        (ctrl/slider ui (fn [v] (str "Opacity: " (/ v 100)))
-                     [:alpha] [0 100])]
+  (ctrl/container
+   (ctrl/change-mode ui [:hsla :mix-mod :noise :oklab])
+   (case (:mode @ui)
+     :hsla
+     [:div
+      (ctrl/checkbox ui "Animate" [:animate])
+      (ctrl/slider ui (fn [v] (str "Brightness: " (/ v 100)))
+                   [:lightness] [0 100])
+      (ctrl/slider ui (fn [v] (str "Opacity: " (/ v 100)))
+                   [:alpha] [0 100])]
 
-       :mix-mod
+     :mix-mod
+     [:div
+      (ctrl/slider ui (fn [v] (str "Hue1: " v))
+                   [:hue1] [0 100])
+      (ctrl/slider ui (fn [v] (str "Hue2: " v))
+                   [:hue2] [0 100])
+      [:input {:type "button" :value "Randomize Hues"
+               :on-click #(swap! ui merge (random-hues))}]
+      (ctrl/slider ui (fn [v] (str "Saturation1: " v))
+                   [:saturation1] [0 100])
+      (ctrl/slider ui (fn [v] (str "Saturation2: " v))
+                   [:saturation2] [0 100])
+      (ctrl/slider ui (fn [v] (str "Lightness1: " v))
+                   [:lightness1] [0 100])
+      (ctrl/slider ui (fn [v] (str "Lightness2: " v))
+                   [:lightness2] [0 100])]
+     :noise
+     [:div
+      (ctrl/numeric ui "Noise Multiplier" [:noise-mult] [0 16 0.00001])
+      (ctrl/checkbox ui "Animate" [:animate])]
+     :oklab
+     (let [{:keys [maxL minL]} @ui]
        [:div
-        (ctrl/slider ui (fn [v] (str "Hue1: " v))
-                     [:hue1] [0 100])
-        (ctrl/slider ui (fn [v] (str "Hue2: " v))
-                     [:hue2] [0 100])
-        [:input {:type "button" :value "Randomize Hues"
-                 :on-click #(swap! ui merge (random-hues))}]
-        (ctrl/slider ui (fn [v] (str "Saturation1: " v))
-                     [:saturation1] [0 100])
-        (ctrl/slider ui (fn [v] (str "Saturation2: " v))
-                     [:saturation2] [0 100])
-        (ctrl/slider ui (fn [v] (str "Lightness1: " v))
-                     [:lightness1] [0 100])
-        (ctrl/slider ui (fn [v] (str "Lightness2: " v))
-                     [:lightness2] [0 100])]
-       :noise
-       [:div
-        (ctrl/numeric ui "Noise Multiplier" [:noise-mult] [0 16 0.00001])
-        (ctrl/checkbox ui "Animate" [:animate])]
-       :oklab
-       (let [{:keys [maxL minL]} @ui]
-         [:div
-          (ctrl/slider ui (fn [v] (str "Max L: " v)) [:maxL] [minL 1 0.01])
-          (ctrl/slider ui (fn [v] (str "Min L: " v)) [:minL] [0 maxL 0.01])
-          (ctrl/slider ui (fn [v] (str "Chroma: " v)) [:chroma] [0 66 0.01])])))))
+        (ctrl/slider ui (fn [v] (str "Max L: " v)) [:maxL] [minL 1 0.01])
+        (ctrl/slider ui (fn [v] (str "Min L: " v)) [:minL] [0 maxL 0.01])
+        (ctrl/slider ui (fn [v] (str "Chroma: " v)) [:chroma] [0 66 0.01])]))))
 
 (defn setup []
   (let [defaults
@@ -71,7 +70,7 @@
          :lightness2 50
          :noise-mult 0.5}
         ui (ctrl/state (merge defaults (random-hues)))]
-    (ctrl/mount (ui-controls ui))
+    (ctrl/mount #(ui-controls ui))
     {:ui ui}))
 
 (defn update-state [state]
