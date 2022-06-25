@@ -138,7 +138,7 @@
 (sketch/defquil colors
   :created-at "2021-03-11"
   :tags #{:demo}
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :update update-state
   :draw draw
