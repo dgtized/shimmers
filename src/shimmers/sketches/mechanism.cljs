@@ -182,6 +182,44 @@
                    (* (eq/sqr radius)
                       (eq/sqr (Math/sin theta)))))))
 
+;; https://en.wikipedia.org/wiki/Belt_problem
+(defn belt-phi [radius1 radius2 center-distance]
+  (Math/acos (/ (+ radius1 radius2) center-distance)))
+
+(defn pulley-phi [radius1 radius2 center-distance]
+  (Math/acos (* 2 (/ (- radius1 radius2) center-distance))))
+
+(defn belt-ratio [wheel driver]
+  (/ (:radius wheel) (:radius driver)))
+
+(defn wheel [radius]
+  {:depth 0
+   :type :wheel
+   :radius radius})
+
+(defn belt-drive-by
+  [sys
+   {wheel-type :type :as wheel}
+   {driver-type :type :keys [dir ratio depth] :as driver}
+   belt-or-pulley
+   angle
+   distance]
+  {:pre [(= driver-type :wheel)
+         (= wheel-type :wheel)]}
+  (let [wheel' (assoc wheel
+                      :id (count (lg/nodes sys))
+                      :depth depth
+                      :angle angle
+                      :distance distance
+                      :dir (if (= belt-or-pulley :belt) (* -1 dir) dir)
+                      :ratio (* ratio (belt-ratio wheel driver))
+                      :offset 0)]
+    [(-> sys
+         (lg/add-nodes wheel')
+         (lg/add-edges [driver wheel'])
+         (lga/add-attr-to-edges :drive belt-or-pulley [[driver wheel']]))
+     wheel']))
+
 (defn driver [sys part]
   (let [preds (lg/predecessors sys part)]
     (assert (<= (count preds) 1)
@@ -192,16 +230,21 @@
   (* dir (+ (/ t ratio) offset)))
 
 (defn propagate-position [system origin _]
-  (reduce (fn [sys {part-type :type :keys [angle] :as part}]
+  (reduce (fn [sys {part-type :type :keys [angle distance] :as part}]
             (if-let [driver (driver sys part)]
               (let [pos (lga/attr sys driver :pos)]
-                (if (and angle (not= part-type :piston))
-                  (lga/add-attr sys part :pos
-                                (tm/+ pos
-                                      (if (ring-gear-mesh? part driver)
-                                        (v/polar (ring-center-distance driver part) angle)
-                                        (v/polar (center-distance driver part) angle))))
-                  (lga/add-attr sys part :pos pos)))
+                (cond (and angle distance)
+                      (lga/add-attr sys part :pos
+                                    (tm/+ pos (v/polar distance angle)))
+
+                      (and angle (not= part-type :piston))
+                      (lga/add-attr sys part :pos
+                                    (tm/+ pos
+                                          (if (ring-gear-mesh? part driver)
+                                            (v/polar (ring-center-distance driver part) angle)
+                                            (v/polar (center-distance driver part) angle))))
+                      :else
+                      (lga/add-attr sys part :pos pos)))
               (lga/add-attr sys part :pos origin)))
           system
           (la/topsort system)))
@@ -222,6 +265,11 @@
         driver (assoc (gear dp driver-teeth)
                       :id 0 :dir 1 :ratio driver-ratio :offset 0)
         g (lg/add-nodes (lg/digraph) driver)
+        driver-radius (pitch-radius driver)
+        [g driver-wheel] (attached-to g (wheel (* 0.8 driver-radius)) driver inc)
+        [g dw-receiver] (belt-drive-by g (wheel (* 0.4 driver-radius)) driver-wheel
+                                       :belt (* eq/TAU 0.2) (* 3 driver-radius))
+        [g dw-gear] (attached-to g (gear dp 25) dw-receiver dec)
         [g left-step] (driven-by g (gear dp 20) driver (* 0.8 Math/PI))
         [g left] (attached-to g (gear dp2 70) left-step dec)
         [g left2] (driven-by g (gear dp2 16) left Math/PI)
@@ -235,6 +283,11 @@
         [g above] (driven-by g (gear dp 26) right (* eq/TAU 0.78))
         [g top-right] (driven-by g (gear dp 60) above (- (/ Math/PI 3)))
         [g top-right-b] (attached-to g (gear dp1 20) top-right inc)
+        tr-radius (pitch-radius top-right-b)
+        [g wheel-driver] (attached-to g (wheel (* 0.7 tr-radius)) top-right-b inc)
+        [g belt-receiver] (belt-drive-by g (wheel (* 1.2 tr-radius)) wheel-driver
+                                         :pulley (* 0.92 eq/TAU) (* 3.5 tr-radius))
+        [g belt-gear] (attached-to g (gear dp1 18) belt-receiver inc)
         [g tr-left] (driven-by g (gear dp1 38) top-right-b (* eq/TAU 0.56))
         [g tr-attach] (driven-by g (gear dp1 20) tr-left (* eq/TAU 0.47))
         [g tr-bottom] (attached-to g (gear dp2 80) tr-attach dec)
@@ -368,6 +421,32 @@
         (q/line (tm/+ pos (v/polar (- connecting-len attach-radius) angle))
                 (tm/+ pos (v/polar (+ connecting-len attach-radius) angle)))))))
 
+(defn draw-wheel [sys {:keys [radius distance] :as wheel} t]
+  (let [pos (lga/attr sys wheel :pos)
+        driver (driver sys wheel)]
+    (cq/circle pos radius)
+    (when (= (:type driver) :wheel)
+      (let [belt-or-pulley (lga/attr sys driver wheel :drive)
+            driver-pos (lga/attr sys driver :pos)
+            driver-radius (:radius driver)
+            wheel-heading (g/heading (tm/- driver-pos pos))]
+        (case belt-or-pulley
+          :belt
+          (let [phi (belt-phi radius driver-radius distance)
+                driver-heading (+ Math/PI wheel-heading)]
+            (q/line (tm/+ driver-pos (v/polar driver-radius (- driver-heading phi)))
+                    (tm/+ pos (v/polar radius (- wheel-heading phi))))
+            (q/line (tm/+ driver-pos (v/polar driver-radius (+ driver-heading phi)))
+                    (tm/+ pos (v/polar radius (+ wheel-heading phi)))))
+          :pulley
+          (let [phi (pulley-phi radius driver-radius distance)
+                driver-heading wheel-heading]
+            (q/line (tm/+ driver-pos (v/polar driver-radius (- driver-heading phi)))
+                    (tm/+ pos (v/polar radius (- wheel-heading phi))))
+            (q/line (tm/+ driver-pos (v/polar driver-radius (+ driver-heading phi)))
+                    (tm/+ pos (v/polar radius (+ wheel-heading phi)))))
+          )))))
+
 (defn draw-part [sys {:keys [type] :as part} selected-ids t]
   (q/stroke 0)
   (q/stroke-weight 1.0)
@@ -378,7 +457,8 @@
     (case type
       :gear (draw-gear sys part t)
       :ring-gear (draw-ring-gear sys part selected? t)
-      :piston (draw-piston sys part t))))
+      :piston (draw-piston sys part t)
+      :wheel (draw-wheel sys part t))))
 
 (def system-modes [:gears :ring-test])
 (defn system-mode [mode]
