@@ -187,7 +187,7 @@
   (Math/acos (/ (+ radius1 radius2) center-distance)))
 
 (defn pulley-phi [radius1 radius2 center-distance]
-  (Math/acos (* 2 (/ (- radius1 radius2) center-distance))))
+  (Math/acos (* 2 (/ (Math/abs (- radius1 radius2)) center-distance))))
 
 (defn belt-ratio [wheel driver]
   (/ (:radius wheel) (:radius driver)))
