@@ -196,6 +196,9 @@
             (q/curve-vertex (* box-size (- width x)) (* box-size y)))
           (q/end-shape))))))
 
+;; Future Idea: delta-motion, track the level change of a pixel across n frames,
+;; and show a flow field from the difference
+
 ;; TODO: tune some more, it's too jittery from video noise?
 ;; Re-purposed from deformed-spiral sketch
 (defn spiral [center dr dtheta steps noise-at t]
