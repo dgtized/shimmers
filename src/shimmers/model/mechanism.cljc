@@ -116,21 +116,17 @@
   "Calculate the initial angle for meshing with `driver` gear.
 
   `angle` is the heading of the vector between the driving gear and the connecting gear."
-  [{:keys [teeth dir] :as gear}
-   {:keys [offset] :as driver}
+  [{:keys [type teeth dir] :as gear}
+   {driver-type :type :keys [offset] :as driver}
    angle]
   (if driver
     (let [gear-ratio (gear-ratio gear driver)]
-      (-> (* gear-ratio offset)
-          (+ (* (+ 1 gear-ratio) (* dir angle)))
-          (+ (if (= :ring-gear (:type gear))
-               0 ;; for angle 0
-               ;; (* angle 0.004) ;; for angle (* eq/TAU 0.40)
-               ;; (* angle 0.0025) ;; for angle (* eq/TAU 0.66)
-               0))
-          ;; add a tooth width if even?
-          (+ (* (mod (inc teeth) 2) (/ Math/PI teeth)))
-          (mod (/ tm/TWO_PI teeth))))
+      (mod (+ (if (even? teeth) (/ Math/PI teeth) 0) ;; add a tooth width if even?
+              (if (or (= driver-type :ring-gear) (= type :ring-gear))
+                (+ (* gear-ratio (+ offset (- Math/PI angle))) angle)
+                (+ (* gear-ratio offset)
+                   (* (+ gear-ratio 1) (* dir angle)))))
+           (/ tm/TWO_PI teeth)))
     0))
 
 
