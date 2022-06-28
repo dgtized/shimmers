@@ -249,3 +249,9 @@
               (lga/add-attr sys part :pos origin)))
           system
           (la/topsort system)))
+
+(defn position [sys part]
+  (lga/attr sys part :pos))
+
+(defn drive [sys driver part]
+  (lga/attr sys driver part :drive))

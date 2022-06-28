@@ -1,6 +1,5 @@
 (ns shimmers.sketches.mechanism
   (:require
-   [loom.attr :as lga]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -132,7 +131,7 @@
 
 (defn draw-gear [sys {:keys [radius] :as gear} t]
   (let [theta (mech/rotation gear t)
-        pos (lga/attr sys gear :pos)]
+        pos (mech/position sys gear)]
     (q/fill 1.0)
     (cq/draw-shape (mech/gear-polygon gear pos theta))
     (when (:show-angle-path @ui-state)
@@ -141,7 +140,7 @@
 
 (defn draw-ring-gear [sys {:keys [radius teeth] :as gear} selected? t]
   (let [theta (mech/rotation gear t)
-        pos (lga/attr sys gear :pos)
+        pos (mech/position sys gear)
         outer-r (+ radius (* 3 (mech/addendum gear)))]
     (q/fill 1.0)
     (q/begin-shape)
@@ -172,7 +171,7 @@
 ;; TODO: correct attach-radius for ring-gear so it's outside of radius
 (defn draw-piston [sys {:keys [angle] :as part} t]
   (let [{:keys [radius] :as driver} (mech/driver sys part)
-        pos (lga/attr sys driver :pos)
+        pos (mech/position sys driver)
         inner (* 2.5 (mech/dedendum driver))
         attach-radius (- radius inner)
         connecting-len (* 2.1 radius)
@@ -193,15 +192,14 @@
                 (tm/+ pos (v/polar (+ connecting-len attach-radius) angle)))))))
 
 (defn draw-wheel [sys {:keys [radius distance] :as wheel} t]
-  (let [pos (lga/attr sys wheel :pos)
+  (let [pos (mech/position sys wheel)
         driver (mech/driver sys wheel)]
     (cq/circle pos radius)
     (when (= (:type driver) :wheel)
-      (let [belt-or-pulley (lga/attr sys driver wheel :drive)
-            driver-pos (lga/attr sys driver :pos)
+      (let [driver-pos (mech/position sys driver)
             driver-radius (:radius driver)
             wheel-heading (g/heading (tm/- driver-pos pos))]
-        (case belt-or-pulley
+        (case (mech/drive sys driver wheel)
           :belt
           (let [phi (mech/belt-phi radius driver-radius distance)
                 driver-heading (+ Math/PI wheel-heading)]
@@ -240,7 +238,7 @@
 (defn selected-parts [sys parts mouse]
   (let [close-parts
         (->> parts
-             (map (fn [p] (assoc p :pos (lga/attr sys p :pos))))
+             (map (fn [p] (assoc p :pos (mech/position sys p))))
              (sort-by (fn [{:keys [pos]}] (g/dist-squared pos mouse))))]
     (if-let [closest (first (filter :radius close-parts))]
       (if (< (g/dist (:pos closest) mouse) (:radius closest))
