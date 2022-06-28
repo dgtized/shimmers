@@ -277,7 +277,8 @@
   (lga/attr sys driver part :drive))
 
 (defn create-system [driver]
-  (lg/add-nodes (lg/digraph) (assoc driver :id 0)))
+  (let [driver' (assoc driver :id 0)]
+    [(lg/add-nodes (lg/digraph) driver') driver']))
 
 (defn components [sys]
   (lg/nodes sys))
