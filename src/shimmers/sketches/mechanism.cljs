@@ -79,14 +79,15 @@
 
 (defn gear-polygon [{:keys [radius teeth] :as gear} pos theta]
   (let [tooth (involute-tooth gear)]
-    (->> (for [v (range teeth)]
-           (let [t (+ (* eq/TAU (/ v teeth)) theta)]
-             (map (fn [[dr dt]]
-                    (->> (gv/vec2 (+ radius dr) (+ t dt))
-                         g/as-cartesian
-                         (tm/+ pos)))
-                  tooth)))
-         (apply concat))))
+    (sequence
+     (mapcat (fn [v]
+               (let [t (+ (* eq/TAU (/ v teeth)) theta)]
+                 (map (fn [[dr dt]]
+                        (->> (gv/vec2 (+ radius dr) (+ t dt))
+                             g/as-cartesian
+                             (tm/+ pos)))
+                      tooth))))
+     (range teeth))))
 
 (defn gear [diametral-pitch teeth]
   (let [gear {:depth 0
