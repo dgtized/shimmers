@@ -197,13 +197,16 @@
    :type :wheel
    :radius radius})
 
+(defn by [belt-or-pulley angle distance]
+  {:by belt-or-pulley :angle angle :distance distance})
+
 (defn belt-drive-by
   [sys
    {wheel-type :type :as wheel}
    {driver-type :type :keys [dir ratio depth] :as driver}
-   belt-or-pulley
-   angle
-   distance]
+   {belt-or-pulley :by
+    angle :angle
+    distance :distance}]
   {:pre [(= driver-type :wheel)
          (= wheel-type :wheel)]}
   (let [wheel' (assoc wheel
@@ -268,7 +271,7 @@
         driver-radius (pitch-radius driver)
         [g driver-wheel] (attached-to g (wheel (* 0.8 driver-radius)) driver inc)
         [g dw-receiver] (belt-drive-by g (wheel (* 0.4 driver-radius)) driver-wheel
-                                       :belt (* eq/TAU 0.2) (* 3 driver-radius))
+                                       (by :belt (* eq/TAU 0.2) (* 3 driver-radius)))
         [g dw-gear] (attached-to g (gear dp 25) dw-receiver dec)
         [g left-step] (driven-by g (gear dp 20) driver (* 0.8 Math/PI))
         [g left] (attached-to g (gear dp2 70) left-step dec)
@@ -286,7 +289,7 @@
         tr-radius (pitch-radius top-right-b)
         [g wheel-driver] (attached-to g (wheel (* 0.7 tr-radius)) top-right-b inc)
         [g belt-receiver] (belt-drive-by g (wheel (* 1.2 tr-radius)) wheel-driver
-                                         :pulley (* 0.92 eq/TAU) (* 3.5 tr-radius))
+                                         (by :pulley (* 0.92 eq/TAU) (* 3.5 tr-radius)))
         [g belt-gear] (attached-to g (gear dp1 18) belt-receiver inc)
         [g tr-left] (driven-by g (gear dp1 38) top-right-b (* eq/TAU 0.56))
         [g tr-attach] (driven-by g (gear dp1 20) tr-left (* eq/TAU 0.47))
