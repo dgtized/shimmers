@@ -255,3 +255,6 @@
 
 (defn drive [sys driver part]
   (lga/attr sys driver part :drive))
+
+(defn components [sys]
+  (lg/nodes sys))

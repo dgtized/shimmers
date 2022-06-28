@@ -256,7 +256,7 @@
         [system-graph origin] (system-mode mode)
         sys (-> (system-graph diametral-pitch driver-teeth driver-ratio)
                 (mech/propagate-position origin t))
-        parts (lg/nodes sys)
+        parts (mech/components sys)
         selected (selected-parts sys parts mouse)
         selected-ids (set (map :id selected))]
     (swap! defo assoc :parts selected)
