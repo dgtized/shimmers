@@ -1,6 +1,5 @@
 (ns shimmers.sketches.mechanism
   (:require
-   [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -30,9 +29,9 @@
   (let [dp diametral-pitch
         dp1 (* 0.66 dp)
         dp2 (* 1.25 dp)
-        driver (assoc (gear dp driver-teeth)
-                      :id 0 :dir 1 :ratio driver-ratio :offset 0)
-        g (lg/add-nodes (lg/digraph) driver)
+        driver (-> (gear dp driver-teeth)
+                   (assoc :ratio driver-ratio))
+        g (mech/create-system driver)
         driver-radius (mech/pitch-radius driver)
         [g driver-wheel] (attached-to g (wheel (* 0.8 driver-radius)) driver inc)
         [g dw-receiver]
@@ -85,9 +84,9 @@
   (let [dp diametral-pitch
         dp-a (* 1.1 dp)
         dp-b (* 0.75 dp)
-        driver (assoc (gear dp driver-teeth)
-                      :id 0 :dir 1 :ratio driver-ratio :offset 0)
-        g (lg/add-nodes (lg/digraph) driver)
+        driver (-> (gear dp driver-teeth)
+                   (assoc :ratio driver-ratio))
+        g (mech/create-system driver)
         [g ring1] (driven-by g (ring-gear dp (int (* 2.1 driver-teeth))) driver 0)
         [g _] (driven-by g (gear dp (int (* 0.4 driver-teeth))) ring1 (* eq/TAU 0.7))
         [g _] (driven-by g (gear dp (int (* 0.6 driver-teeth))) ring1 (* eq/TAU 0.13))

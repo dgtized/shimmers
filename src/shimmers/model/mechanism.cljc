@@ -86,14 +86,24 @@
   (let [gear {:depth 0
               :type :gear
               :diametral-pitch diametral-pitch
-              :teeth teeth}]
+              :teeth teeth
+
+              ;; defaults
+              :dir 1
+              :ratio 1
+              :offset 0}]
     (assoc gear :radius (pitch-radius gear))))
 
 (defn ring-gear [diametral-pitch teeth]
   (let [gear {:depth 0
               :type :ring-gear
               :diametral-pitch diametral-pitch
-              :teeth teeth}]
+              :teeth teeth
+
+              ;; defaults
+              :dir 1
+              :ratio 1
+              :offset 0}]
     (assoc gear :radius (pitch-radius gear))))
 
 (defn ring-gear-mesh? [gear driver]
@@ -171,7 +181,11 @@
 (defn wheel [radius]
   {:depth 0
    :type :wheel
-   :radius radius})
+   :radius radius
+   ;; defaults
+   :dir 1
+   :ratio 1
+   :offset 0})
 
 (defn belt [distance angle]
   {:drive :belt :angle angle :distance distance})
@@ -255,6 +269,9 @@
 
 (defn drive [sys driver part]
   (lga/attr sys driver part :drive))
+
+(defn create-system [driver]
+  (lg/add-nodes (lg/digraph) (assoc driver :id 0)))
 
 (defn components [sys]
   (lg/nodes sys))
