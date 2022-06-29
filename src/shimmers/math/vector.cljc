@@ -32,6 +32,9 @@
 (defn +polar [p r theta]
   (tm/+ p (polar r theta)))
 
+(defn -polar [p r theta]
+  (tm/- p (polar r theta)))
+
 (defn- unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
 

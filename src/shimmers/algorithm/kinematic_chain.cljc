@@ -1,14 +1,11 @@
 (ns shimmers.algorithm.kinematic-chain
   (:require
+   [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn project [angle length]
-  (g/as-cartesian (gv/vec2 length angle)))
-
 (defn segment-endpoint [{:keys [base angle length]}]
-  (tm/+ base (project angle length)))
+  (v/+polar base length angle))
 
 (defprotocol IKinematicChain
   (follow [_ target])
@@ -19,7 +16,7 @@
   (follow [_ target]
     (let [direction (tm/- target base)
           heading (g/heading direction)]
-      (KinematicSegment. (tm/- target (project heading length))
+      (KinematicSegment. (v/-polar target length heading)
                          heading
                          length))))
 

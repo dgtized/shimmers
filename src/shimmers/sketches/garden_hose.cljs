@@ -35,7 +35,7 @@
                     (let [diff (- b-theta a-theta)
                           change (* (/ (Math/abs diff) tm/PI) diff)
                           new-angle (+ a-theta change)
-                          new-base (clamped (tm/mix base (tm/- target (chain/project new-angle length)) pressure))]
+                          new-base (clamped (tm/mix base (v/-polar target length new-angle) pressure))]
                       (assoc a
                              :base new-base
                              :angle (g/angle-between new-base target))))
