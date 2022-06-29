@@ -39,9 +39,6 @@
         state)
       (update :mouse cq/mouse-last-position-clicked)))
 
-(defn polar-project [p radius theta]
-  (tm/+ p (v/polar radius theta)))
-
 ;; How to make an SDF of a blob from noise directly?
 (defn circle-blob [[cx cy] rmin rmax dt]
   (gp/polygon2
@@ -49,7 +46,7 @@
      (let [xoff (+ (q/cos angle) 1)
            yoff (+ (q/sin angle) 1)
            r (q/map-range (q/noise xoff yoff dt) 0 1 rmin rmax)]
-       (polar-project (gv/vec2 cx cy) r angle)))))
+       (v/+polar (gv/vec2 cx cy) r angle)))))
 
 (defn closest-intersection [ray segments]
   ;; FIXME: slow, this is all pairs
@@ -64,16 +61,16 @@
 (defn gen-shapes [theta]
   (let [r-min (cq/rel-w 0.05)
         r-max (cq/rel-w 0.18)]
-    [(circle-blob (polar-project (cq/rel-vec 0.3 0.3) (cq/rel-w 0.04) theta)
+    [(circle-blob (v/+polar (cq/rel-vec 0.3 0.3) (cq/rel-w 0.04) theta)
                   r-min r-max
                   (* theta 0.20))
-     (circle-blob (polar-project (cq/rel-vec 0.7 0.2) (cq/rel-w 0.025) (* 0.1 theta))
+     (circle-blob (v/+polar (cq/rel-vec 0.7 0.2) (cq/rel-w 0.025) (* 0.1 theta))
                   (* 0.5 r-min) (* 0.5 r-max)
                   (* theta 0.1))
-     (circle-blob (polar-project (cq/rel-vec 0.8 0.4) (cq/rel-w 0.01) (* 0.1 theta))
+     (circle-blob (v/+polar (cq/rel-vec 0.8 0.4) (cq/rel-w 0.01) (* 0.1 theta))
                   (* 0.5 r-min) (* 0.5 r-max)
                   (* theta 0.1))
-     (circle-blob (polar-project (cq/rel-vec 0.6 0.7) (cq/rel-w 0.08) (+ theta 2))
+     (circle-blob (v/+polar (cq/rel-vec 0.6 0.7) (cq/rel-w 0.08) (+ theta 2))
                   r-min r-max
                   (* theta 0.40))
      (g/translate (cq/screen-rect 0.2) (cq/rel-vec -0.35 0.35))]))
@@ -104,7 +101,7 @@
 
 (defn ray-march [from angle segments]
   (loop [depth 0 path []]
-    (let [position (polar-project from depth angle)
+    (let [position (v/+polar from depth angle)
           [close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
           dist (sdf-line position close-a close-b 1)]
       (cond
@@ -147,7 +144,7 @@
             :else
             (recur (+ depth dist)
                    (inc steps)
-                   (polar-project position dist angle)
+                   (v/+polar position dist angle)
                    angle
                    (conj path [position dist]))))))
 
@@ -188,7 +185,7 @@
     (case mode
       :closest
       (doseq [angle (sm/range-subdivided tm/TWO_PI 200)]
-        (let [ray [mouse (polar-project mouse (q/width) angle)]]
+        (let [ray [mouse (v/+polar mouse (q/width) angle)]]
           (when-let [intersection (closest-intersection ray segments)]
             (q/line mouse intersection))))
       :ray-march
@@ -212,7 +209,7 @@
         (cq/draw-path (mapv first path)))
       :visible-polygon
       (let [vertices (for [angle (sm/range-subdivided tm/TWO_PI 120)
-                           :let [ray [mouse (polar-project mouse (q/width) angle)]
+                           :let [ray [mouse (v/+polar mouse (q/width) angle)]
                                  hit (closest-intersection ray segments)]
                            :when hit]
                        hit)]

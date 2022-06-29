@@ -29,6 +29,9 @@
 (defn polar [r theta]
   (g/as-cartesian (vec2 r theta)))
 
+(defn +polar [p r theta]
+  (tm/+ p (polar r theta)))
+
 (defn- unit2-from-angle [theta]
   (vec2 (Math/cos theta) (Math/sin theta)))
 
