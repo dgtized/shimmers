@@ -414,3 +414,4 @@
 
 ;; Some other references:
 ;; https://pvigier.github.io/2019/08/04/quadtree-collision-detection.html
+;; Storing A Collection of Polygons using Quadtrees - http://www.cs.umd.edu/~hjs/pubs/SameTOG85.pdf
