@@ -245,22 +245,26 @@
 (defn rotation [{:keys [dir ratio offset]} t]
   (* dir (+ (/ t ratio) offset)))
 
+(defn component-position
+  [sys origin {part-type :type :keys [angle distance] :as part}]
+  (if-let [driver (driver sys part)]
+    (let [pos (lga/attr sys driver :pos)]
+      (cond (and angle distance)
+            (v/+polar pos distance angle)
+
+            (and angle (not= part-type :piston))
+            (if (ring-gear-mesh? part driver)
+              (v/+polar pos (ring-center-distance driver part) angle)
+              (v/+polar pos (center-distance driver part) angle))
+
+            :else pos))
+    origin))
+
 (defn propagate-position [system origin _]
-  (reduce (fn [sys {part-type :type :keys [angle distance] :as part}]
-            (if-let [driver (driver sys part)]
-              (let [pos (lga/attr sys driver :pos)]
-                (lga/add-attr sys part :pos
-                              (cond (and angle distance)
-                                    (v/+polar pos distance angle)
-
-                                    (and angle (not= part-type :piston))
-                                    (if (ring-gear-mesh? part driver)
-                                      (v/+polar pos (ring-center-distance driver part) angle)
-                                      (v/+polar pos (center-distance driver part) angle))
-
-                                    :else
-                                    pos)))
-              (lga/add-attr sys part :pos origin)))
+  (reduce (fn [sys part]
+            (->> part
+                 (component-position sys origin)
+                 (lga/add-attr sys part :pos)))
           system
           (la/topsort system)))
 
