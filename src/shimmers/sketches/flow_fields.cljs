@@ -82,7 +82,7 @@
            noise-div jitter obstacles] :as state}
    point]
   (let [dir (snap-to state point (dir-at point noise-div))
-        next-point (tm/+ point (v/polar (variance step-size step-size-variance) dir))]
+        next-point (v/+polar point (variance step-size step-size-variance) dir)]
     (tm/+ next-point
           (avoid-obstacles next-point obstacles)
           (v/jitter (tm/random jitter)))))
@@ -96,7 +96,7 @@
               [(gv/vec2 x y) (dir-at [x y] noise-div)])]
       (q/line p
               (-> p
-                  (v/add (v/polar step-size (snap-to state p dir)))
+                  (v/+polar step-size (snap-to state p dir))
                   (v/add (v/jitter (tm/random jitter))))))))
 
 (defn pointy-hexagon [r [x y]]

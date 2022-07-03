@@ -68,7 +68,7 @@
                               (butlast (tm/norm-range spokes)))
                         :let [theta (+ (* width t) t0)
                               radius (if fixed-radius radius (* radius (dr/random 0.6 1.1)))
-                              center (tm/+ p (v/polar (+ r distance radius) theta))
+                              center (v/+polar p (+ r distance radius) theta)
                               new (new-planet center
                                               radius
                                               (inc depth)

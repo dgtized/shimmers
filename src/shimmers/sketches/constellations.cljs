@@ -57,8 +57,8 @@
   FIXME: Doesn't handle completing a circle if |dtheta| >= 𝜏."
   [p r start-angle dtheta]
   (let [end-angle (+ start-angle dtheta)
-        start (tm/+ p (v/polar r start-angle))
-        end (tm/+ p (v/polar r end-angle))
+        start (v/+polar p r start-angle)
+        end (v/+polar p r end-angle)
         large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
@@ -74,8 +74,8 @@
             (let [ranges (sort ranges)
                   radial0 (radial-angle angle0 angle)
                   radial1 (radial-angle angle angle1)]
-              (into [(gl/line2 (tm/+ p (v/polar (* radius (first ranges)) angle))
-                               (tm/+ p (v/polar (* radius (last ranges)) angle)))]
+              (into [(gl/line2 (v/+polar p (* radius (first ranges)) angle)
+                               (v/+polar p (* radius (last ranges)) angle))]
                     (for [arc ranges
                           :let [[a b] (gen-angle arc angle radial0 radial1)]]
                       (relative-arc p (* radius arc) a b)))))

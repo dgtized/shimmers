@@ -31,7 +31,7 @@
 
 (defn streak [pos length step-size angle draw]
   (dotimes [j length]
-    (draw (tm/+ pos (v/polar (* j step-size) angle)))))
+    (draw (v/+polar pos (* j step-size) angle))))
 
 (defn draw [{:keys [sea sky]}]
   (q/no-stroke)

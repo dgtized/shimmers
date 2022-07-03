@@ -72,7 +72,7 @@
   (doseq [i (tm/norm-range 45)
           j (tm/norm-range 45)
           :let [p (g/unmap-point bounds (gv/vec2 i j))]]
-    (q/line p (tm/+ p (v/polar 10 (* eq/TAU (noise-at-p bounds p t)))))))
+    (q/line p (v/+polar p 10 (* eq/TAU (noise-at-p bounds p t))))))
 
 (defn draw-flow [{:keys [t particles]}]
   (doseq [{:keys [pos last-pos dt color]} particles

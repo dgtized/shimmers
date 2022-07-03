@@ -63,7 +63,7 @@
     (let [sensors (sense _ trail width height)
           delta-heading (rotate _ sensors)
           heading' (+ heading delta-heading)
-          pos' (tm/+ pos (v/polar step-size heading'))]
+          pos' (v/+polar pos step-size heading')]
       (set! heading heading')
       (set! pos (wrap-edges pos' width height))
       _)))

@@ -58,7 +58,7 @@
         dir (tm/- q p)
         len (tm/mag dir)
         angle (g/heading dir)
-        q' (tm/+ p (v/polar (+ len 0.5) angle))
+        q' (v/+polar p (+ len 0.5) angle)
         line' (gl/line2 p q')]
     (if (:complete line)
       line
@@ -71,7 +71,7 @@
 (defn spur [{[p q] :points} dir]
   (let [heading (g/heading (tm/- q p))
         angle (* dir (dr/gaussian 0.6 0.05))]
-    (gl/line2 q (tm/+ q (v/polar 1.1 (+ heading angle))))))
+    (gl/line2 q (v/+polar q 1.1 (+ heading angle)))))
 
 (defn update-state [{:keys [bounds lines] :as state}]
   (let [lines' (map (partial growth bounds lines) lines)]

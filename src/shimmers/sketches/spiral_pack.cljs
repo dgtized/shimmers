@@ -20,7 +20,7 @@
     {:t (+ t dt)
      :r (+ r (* dr' 0.1))
      :dr (* 1.03 dr')
-     :circle (gc/circle (tm/+ (rv 0.5 0.5) (v/polar (+ dr r) t))
+     :circle (gc/circle (v/+polar (rv 0.5 0.5) (+ dr r) t)
                         dr)}))
 
 (defn shapes []
