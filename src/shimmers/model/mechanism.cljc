@@ -249,17 +249,17 @@
   (reduce (fn [sys {part-type :type :keys [angle distance] :as part}]
             (if-let [driver (driver sys part)]
               (let [pos (lga/attr sys driver :pos)]
-                (cond (and angle distance)
-                      (lga/add-attr sys part :pos
-                                    (v/+polar pos distance angle))
+                (lga/add-attr sys part :pos
+                              (cond (and angle distance)
+                                    (v/+polar pos distance angle)
 
-                      (and angle (not= part-type :piston))
-                      (lga/add-attr sys part :pos
+                                    (and angle (not= part-type :piston))
                                     (if (ring-gear-mesh? part driver)
                                       (v/+polar pos (ring-center-distance driver part) angle)
-                                      (v/+polar pos (center-distance driver part) angle)))
-                      :else
-                      (lga/add-attr sys part :pos pos)))
+                                      (v/+polar pos (center-distance driver part) angle))
+
+                                    :else
+                                    pos)))
               (lga/add-attr sys part :pos origin)))
           system
           (la/topsort system)))
