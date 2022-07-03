@@ -128,6 +128,19 @@
           (mod (/ tm/TWO_PI teeth))))
     0))
 
+;; Component Graph
+(defn position [sys part]
+  (lga/attr sys part :pos))
+
+(defn drive [sys driver part]
+  (lga/attr sys driver part :drive))
+
+(defn create-system [driver]
+  (let [driver' (assoc driver :id 0)]
+    [(lg/add-nodes (lg/digraph) driver') driver']))
+
+(defn components [sys]
+  (lg/nodes sys))
 
 (defn add-part [sys part driver]
   [(-> sys
@@ -248,7 +261,7 @@
 (defn component-position
   [sys origin {part-type :type :keys [angle distance] :as part}]
   (if-let [driver (driver sys part)]
-    (let [pos (lga/attr sys driver :pos)]
+    (let [pos (position sys driver)]
       (cond (and angle distance)
             (v/+polar pos distance angle)
 
@@ -267,16 +280,3 @@
                  (lga/add-attr sys part :pos)))
           system
           (la/topsort system)))
-
-(defn position [sys part]
-  (lga/attr sys part :pos))
-
-(defn drive [sys driver part]
-  (lga/attr sys driver part :drive))
-
-(defn create-system [driver]
-  (let [driver' (assoc driver :id 0)]
-    [(lg/add-nodes (lg/digraph) driver') driver']))
-
-(defn components [sys]
-  (lg/nodes sys))
