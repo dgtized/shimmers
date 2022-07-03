@@ -21,15 +21,15 @@
 (defn spiral-points [center dr' rotations]
   (for [t (tm/norm-range (int (* 7 rotations)))
         :let [theta (* eq/TAU rotations t)]]
-    (tm/+ center (v/polar (* (* theta dr') (/ theta eq/TAU)) theta))))
+    (v/+polar center (* (* theta dr') (/ theta eq/TAU)) theta)))
 
 (defn perpindiculars [center dr' rotations width]
   (for [t (dr/density-range 0.0001 0.0005)
         :let [theta (* eq/TAU rotations (Math/sqrt t))
               dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
-    (gl/line2 (tm/+ center (v/polar (- r (* dr width)) theta))
-              (tm/+ center (v/polar (+ r (* dr width)) theta)))))
+    (gl/line2 (v/+polar center (- r (* dr width)) theta)
+              (v/+polar center (+ r (* dr width)) theta))))
 
 (defn draw-spiral [spiral]
   (svg/group {:stroke-width 0.3}
