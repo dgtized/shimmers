@@ -26,7 +26,7 @@
 (defn noise-displace [factor r t p]
   (let [[x y] (tm/* p factor)
         n (q/noise x y t)]
-    (tm/+ p (v/polar r (* tm/TWO_PI n)))))
+    (v/+polar p r (* tm/TWO_PI n))))
 
 (defn draw [_]
   (q/color-mode :hsl 1.0)

@@ -135,7 +135,7 @@
     (cq/draw-shape (mech/gear-polygon gear pos theta))
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
-        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))))
+        (q/line pos (v/+polar pos (* 0.66 radius) theta))))))
 
 (defn draw-ring-gear [sys {:keys [radius teeth] :as gear} selected? t]
   (let [theta (mech/rotation gear t)
@@ -156,7 +156,7 @@
     (q/end-shape :close)
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
-        (q/line pos (tm/+ pos (v/polar (* 0.66 radius) theta)))))
+        (q/line pos (v/+polar pos (* 0.66 radius) theta))))
     (when selected?
       (let [{:keys [angle]} gear
             r (+ radius (* 2 (mech/addendum gear)))
@@ -177,18 +177,18 @@
         piston-len (* 1.8 inner)
 
         theta (mech/rotation driver t)
-        attached-pt (tm/+ pos (v/polar attach-radius theta))
+        attached-pt (v/+polar pos attach-radius theta)
         displacement (mech/piston-displacement attach-radius connecting-len (- theta angle))
-        socket-pt (tm/+ pos (v/polar displacement angle))]
+        socket-pt (v/+polar pos displacement angle)]
     (cq/draw-shape (cq/box-line attached-pt socket-pt (* 0.2 inner)))
     (cq/circle attached-pt (* 0.3 inner))
-    (cq/draw-shape (cq/box-line socket-pt (tm/+ socket-pt (v/polar piston-len angle)) (* 0.8 inner)))
+    (cq/draw-shape (cq/box-line socket-pt (v/+polar socket-pt piston-len angle) (* 0.8 inner)))
     (cq/circle socket-pt (* 0.3 inner))
 
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
-        (q/line (tm/+ pos (v/polar (- connecting-len attach-radius) angle))
-                (tm/+ pos (v/polar (+ connecting-len attach-radius) angle)))))))
+        (q/line (v/+polar pos (- connecting-len attach-radius) angle)
+                (v/+polar pos (+ connecting-len attach-radius) angle))))))
 
 (defn draw-wheel [sys {:keys [radius distance] :as wheel} t]
   (let [pos (mech/position sys wheel)
@@ -202,17 +202,17 @@
           :belt
           (let [phi (mech/belt-phi radius driver-radius distance)
                 driver-heading (+ Math/PI wheel-heading)]
-            (q/line (tm/+ driver-pos (v/polar driver-radius (- driver-heading phi)))
-                    (tm/+ pos (v/polar radius (- wheel-heading phi))))
-            (q/line (tm/+ driver-pos (v/polar driver-radius (+ driver-heading phi)))
-                    (tm/+ pos (v/polar radius (+ wheel-heading phi)))))
+            (q/line (v/+polar driver-pos driver-radius (- driver-heading phi))
+                    (v/+polar pos radius (- wheel-heading phi)))
+            (q/line (v/+polar driver-pos driver-radius (+ driver-heading phi))
+                    (v/+polar pos radius (+ wheel-heading phi))))
           :pulley
           (let [phi (mech/pulley-phi radius driver-radius distance)
                 driver-heading wheel-heading]
-            (q/line (tm/+ driver-pos (v/polar driver-radius (- driver-heading phi)))
-                    (tm/+ pos (v/polar radius (- wheel-heading phi))))
-            (q/line (tm/+ driver-pos (v/polar driver-radius (+ driver-heading phi)))
-                    (tm/+ pos (v/polar radius (+ wheel-heading phi)))))
+            (q/line (v/+polar driver-pos driver-radius (- driver-heading phi))
+                    (v/+polar pos radius (- wheel-heading phi)))
+            (q/line (v/+polar driver-pos driver-radius (+ driver-heading phi))
+                    (v/+polar pos radius (+ wheel-heading phi))))
           )))))
 
 (defn draw-part [sys {:keys [type] :as part} selected-ids t]

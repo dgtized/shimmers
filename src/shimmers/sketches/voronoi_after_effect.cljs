@@ -29,7 +29,7 @@
 (defn kick-point [t]
   (fn [p]
     (let [[vx vy] (tm/* p 0.01)]
-      (v/wrap2d (tm/+ p (v/polar (dr/gaussian 2.0 1) (* eq/TAU (q/noise vx vy t))))
+      (v/wrap2d (v/+polar p (dr/gaussian 2.0 1) (* eq/TAU (q/noise vx vy t)))
                 (q/width)
                 (q/height)))))
 

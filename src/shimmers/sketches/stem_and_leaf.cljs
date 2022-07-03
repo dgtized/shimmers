@@ -43,8 +43,8 @@
   (let [{:keys [p r]} c1
         {p' :p r' :r} c2
         angle (+ tm/HALF_PI (g/heading (tm/- p p')))]
-    (q/line (tm/+ p (v/polar r angle)) (tm/+ p' (v/polar r' angle)))
-    (q/line (tm/- p (v/polar r angle)) (tm/- p' (v/polar r' angle)))))
+    (q/line (v/+polar p r angle) (v/+polar p' r' angle))
+    (q/line (v/-polar p r angle) (v/-polar p' r' angle))))
 
 ;; TODO: use a Cornu or clothoid spiral
 (defn tangent-curve [c1 c2]
@@ -55,12 +55,12 @@
         heading (g/heading (tm/- p1 p2))
         perp (+ tm/HALF_PI heading)]
     (swap! defo update :curves conj [c2 heading perp])
-    [(tm/+ p1 (v/polar (* (- 1.0 spiral) r1) (- perp tightness)))
-     (tm/+ p1 (v/polar r1 perp))
-     (tm/+ p1 (v/polar (* (+ 1.0 spiral) r1) (+ perp tightness)))
-     (tm/- p2 (v/polar (* (+ 1.0 spiral) r2) (+ perp tightness)))
-     (tm/- p2 (v/polar r2 perp))
-     (tm/- p2 (v/polar (* (- 1.0 spiral) r2) (- perp tightness)))]))
+    [(v/+polar p1 (* (- 1.0 spiral) r1) (- perp tightness))
+     (v/+polar p1 r1 perp)
+     (v/+polar p1 (* (+ 1.0 spiral) r1) (+ perp tightness))
+     (v/-polar p2 (* (+ 1.0 spiral) r2) (+ perp tightness))
+     (v/-polar p2 r2 perp)
+     (v/-polar p2 (* (- 1.0 spiral) r2) (- perp tightness))]))
 
 (defn draw-points [curve]
   (q/fill 0)

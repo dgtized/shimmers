@@ -37,7 +37,7 @@
     :else arg))
 
 (defn update-position [{:keys [position heading] :as bot} velocity]
-  (let [new-position (tm/+ position (v/polar velocity heading))]
+  (let [new-position (v/+polar position velocity heading)]
     (if (in-bounds? new-position 100)
       (assoc bot :position new-position)
       (assoc bot :state :halt))))

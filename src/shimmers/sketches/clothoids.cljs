@@ -60,7 +60,8 @@
     (swap! defo assoc
            :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
            :tangent-angle tangent-angle)
-    [(tm/- tangent-point (v/polar R (+ tangent-angle (* (tm/sign L) (if clockwise -1 1) 0.5 Math/PI))))
+    [(v/-polar tangent-point R
+               (+ tangent-angle (* (tm/sign L) (if clockwise -1 1) 0.5 Math/PI)))
      R]))
 
 (defn draw-animation [{:keys [t]}]
@@ -108,8 +109,8 @@
         lambda-c2 1
         phi0-c1 (* 0.0 eq/TAU)
         phi0-c2 (* 0.5 eq/TAU)
-        f1 (tm/+ (:p c1) (v/polar (:r c1) 0))
-        f2 (tm/+ (:p c2) (v/polar (:r c2) Math/PI))
+        f1 (v/+polar (:p c1) (:r c1) 0)
+        f2 (v/+polar (:p c2) (:r c2) Math/PI)
         scaled-f1 (g/scale f1 30)
         scaled-f2 (g/scale f2 30)]
     ;; TODO: solve for circle/circle connection clothoids between c1,c2

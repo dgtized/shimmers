@@ -76,7 +76,7 @@
    (fn follow-proportional [pos {:keys [p r]} t]
      (let [[x y] (tm/* pos 0.01)
            n (q/noise x y (* 0.01 t))]
-       (tm/mix pos (tm/+ p (v/polar (* 1.8 r n) (* 0.5 t)))
+       (tm/mix pos (v/+polar p (* 1.8 r n) (* 0.5 t))
                (* 0.04 n))))
    :sinusoidal
    (fn follow-sinusoidal [pos {:keys [p]} t]

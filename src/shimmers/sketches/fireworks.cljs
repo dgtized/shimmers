@@ -6,8 +6,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.math.verlet-particles :as vp]
+   [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -67,7 +67,7 @@
     (repeatedly quantity
                 #(let [f (apply tm/random force)
                        theta (tm/random (- Math/PI tm/QUARTER_PI) (+ tm/TWO_PI tm/QUARTER_PI))]
-                   (assoc (vp/make-particle (tm/+ pos (v/polar f theta)) prev weight)
+                   (assoc (vp/make-particle (v/+polar pos f theta) prev weight)
                           :type :rain
                           :hue hue
                           :max-age (int (tm/random 55 90)))))))
