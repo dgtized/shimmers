@@ -5,8 +5,6 @@
    [loom.graph :as lg]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; useful formula
@@ -76,9 +74,7 @@
      (mapcat (fn [v]
                (let [t (+ (* eq/TAU (/ v teeth)) theta)]
                  (map (fn [[dr dt]]
-                        (->> (gv/vec2 (+ radius dr) (+ t dt))
-                             g/as-cartesian
-                             (tm/+ pos)))
+                        (v/+polar pos (+ radius dr) (+ t dt)))
                       tooth))))
      (range teeth))))
 
@@ -255,14 +251,13 @@
               (let [pos (lga/attr sys driver :pos)]
                 (cond (and angle distance)
                       (lga/add-attr sys part :pos
-                                    (tm/+ pos (v/polar distance angle)))
+                                    (v/+polar pos distance angle))
 
                       (and angle (not= part-type :piston))
                       (lga/add-attr sys part :pos
-                                    (tm/+ pos
-                                          (if (ring-gear-mesh? part driver)
-                                            (v/polar (ring-center-distance driver part) angle)
-                                            (v/polar (center-distance driver part) angle))))
+                                    (if (ring-gear-mesh? part driver)
+                                      (v/+polar pos (ring-center-distance driver part) angle)
+                                      (v/+polar pos (center-distance driver part) angle)))
                       :else
                       (lga/add-attr sys part :pos pos)))
               (lga/add-attr sys part :pos origin)))
