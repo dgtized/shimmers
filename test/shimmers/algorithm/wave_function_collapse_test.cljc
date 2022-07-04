@@ -148,5 +148,30 @@
            (sut/propagate (sut/init-grid [3 3] sut/cardinal-directions #{:a :b})
                           alternating-ab (gv/vec2) #{:a})))))
 
+(deftest rules->tiles
+  (is (= {[2 2] ["BA" "AA"]
+          [0 0] ["AA" "AB"]
+          [1 0] ["AB" "BC"]
+          [1 1] ["BC" "AB"]
+          [3 0] ["AA" "BA"]
+          [0 2] ["AA" "AA"]
+          [2 0] ["BA" "CB"]
+          [3 1] ["BA" "AA"]
+          [2 1] ["CB" "BA"]
+          [1 2] ["AB" "AA"]
+          [3 2] ["AA" "AA"]
+          [0 1] ["AB" "AA"]}
+         (sut/rules->tiles (sut/str->matrix "AABAA\nABCBA\nAABAA\nAAAAA") 2)))
+  (is (= {[0 0] ["AAB" "ABC" "AAB"]
+          [0 1] ["ABC" "AAB" "AAA"]
+          [1 0] ["ABA" "BCB" "ABA"]
+          [1 1] ["BCB" "ABA" "AAA"]
+          [2 0] ["BAA" "CBA" "BAA"]
+          [2 1] ["CBA" "BAA" "AAA"]}
+         (sut/rules->tiles (sut/str->matrix "AABAA\nABCBA\nAABAA\nAAAAA") 3)))
+  (is (= {[0 0] ["AABA" "ABCB" "AABA" "AAAA"]
+          [1 0] ["ABAA" "BCBA" "ABAA" "AAAA"]}
+         (sut/rules->tiles (sut/str->matrix "AABAA\nABCBA\nAABAA\nAAAAA") 4))))
+
 (comment (t/run-tests))
 

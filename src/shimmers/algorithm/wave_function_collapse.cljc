@@ -220,3 +220,20 @@
         rt (rules (matrix->grid rule-a dirs))
         grid (init-grid [8 8] dirs (all-tiles rt))]
     (grid->matrix (solve grid rt))))
+
+(defn rules->tiles
+  "Chop up a rules matrix into `n`x`n` tiles"
+  [matrix n]
+  (let [height (count matrix)
+        width (count (first matrix))]
+    (->> (for [x (range 0 (- width (dec n)) 1)
+               y (range 0 (- height (dec n)) 1)]
+           (let [tile
+                 (for [j (range n)
+                       :let [row (nth matrix (+ y j))]]
+                   (apply str (for [i (range n)]
+                                (nth row (+ x i)))))]
+             {[x y] (vec tile)}))
+         (into {}))))
+
+(comment (rules->tiles rule-a 3))
