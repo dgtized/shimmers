@@ -143,8 +143,7 @@
              :directions sut/cardinal-directions
              (gv/vec2 0 0) #{:a} (gv/vec2 1 0) #{:b} (gv/vec2 2 0) #{:a}
              (gv/vec2 0 1) #{:b} (gv/vec2 1 1) #{:a} (gv/vec2 2 1) #{:b}
-             (gv/vec2 0 2) #{:a} (gv/vec2 1 2) #{:b} (gv/vec2 2 2) #{:a}
-             }]
+             (gv/vec2 0 2) #{:a} (gv/vec2 1 2) #{:b} (gv/vec2 2 2) #{:a}}]
            (sut/propagate (sut/init-grid [3 3] sut/cardinal-directions #{:a :b})
                           alternating-ab (gv/vec2) #{:a})))))
 
