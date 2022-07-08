@@ -114,6 +114,7 @@
    shimmers.sketches.polygrowth2
    shimmers.sketches.precipitation
    shimmers.sketches.probabilistic-automata
+   shimmers.sketches.prophecies
    shimmers.sketches.pulsing-grid
    shimmers.sketches.punchcard
    shimmers.sketches.quadtree
