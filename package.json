@@ -3,7 +3,12 @@
     "d3-delaunay": "^6.0.2",
     "delaunator": "^5.0.0",
     "p5": "^1.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "sparkles": "file:vendor/sparkles",
     "ws": "^7.4.0"
+  },
+  "devDependencies": {
+    "shadow-cljs": "2.19.5"
   }
 }

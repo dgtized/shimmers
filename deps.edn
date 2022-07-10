@@ -57,6 +57,11 @@
   {:extra-paths ["target" "test"]
    :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.18"}
                 com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
+
+  :shadow
+  {:extra-deps {thheller/shadow-cljs {:mvn/version "2.19.5"}}
+   :main-opts ["-m" "shadow.cljs.devtools.cli"]}
+
   :repl
   {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
    :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
