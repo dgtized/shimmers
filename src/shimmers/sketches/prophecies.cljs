@@ -31,6 +31,24 @@
                    (v/+polar connect size (+ angle 0.5))
                    (v/+polar connect size (- angle 0.5))])]))
 
+(defn face-point-out [shape face]
+  (let [[p q] (nth (g/edges shape) face)]
+    [(tm/mix p q 0.5)
+     (v/polar 1 (- (g/heading (tm/- q p)) tm/HALF_PI))]))
+
+(defn stem-face [base height angle]
+  (let [connect (v/+polar base height angle)
+        rect (rect/rect (tm/+ connect (gv/vec2 (* -0.5 height) (* 1.0 height)))
+                        (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]
+    (concat [(gl/line2 base connect)
+             rect]
+            (let [[mid dir] (face-point-out rect 1)]
+              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)))
+            (let [[mid dir] (face-point-out rect 2)]
+              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)))
+            (let [[mid dir] (face-point-out rect 3)]
+              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir))))))
+
 (defn shapes []
   (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
         c2 (gc/circle (rv 0.75 0.5) (* width 0.15))
@@ -40,6 +58,7 @@
     (concat [c1 c2 meridian]
             (stem (g/point-at meridian 0.33) (* width 0.05) (+ tm/HALF_PI heading))
             (stem (g/point-at meridian 0.20) (* width -0.05) (+ tm/HALF_PI heading))
+            (stem-face (g/point-at meridian 0.15) (* width 0.03) (+ tm/HALF_PI heading))
             (flyout (g/point-at meridian 0.925) (* width 0.2)
                     (* width 0.1)
                     (+ heading tm/HALF_PI))
