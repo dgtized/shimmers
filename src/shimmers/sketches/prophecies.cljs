@@ -20,11 +20,16 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn deepen [polygon n]
-  (let [scale (/ 0.75 n)]
+  (let [scale (/ 0.8 n)]
     (->> polygon
          (iterate (fn [poly]
                     (g/scale-size poly (- 1.0 scale))))
          (take (inc n)))))
+
+(defn maybe-deepen [polygon p n]
+  (if (dr/chance p)
+    (deepen polygon n)
+    []))
 
 (defn stem [base height angle]
   (let [connect (v/+polar base height angle)
@@ -32,16 +37,16 @@
                         (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]
     (concat [(gl/line2 base connect)
              rect]
-            (if (dr/chance 0.5)
-              (deepen rect (dr/random-int 3 8))
-              []))))
+            (maybe-deepen rect 0.5 (dr/random-int 3 8)))))
 
 (defn flyout [base height size angle]
-  (let [connect (v/+polar base height angle)]
-    [(gl/line2 base connect)
-     (gp/polygon2 [connect
-                   (v/+polar connect size (+ angle 0.5))
-                   (v/+polar connect size (- angle 0.5))])]))
+  (let [connect (v/+polar base height angle)
+        poly (gp/polygon2 [connect
+                           (v/+polar connect size (+ angle 0.5))
+                           (v/+polar connect size (- angle 0.5))])]
+    (concat [(gl/line2 base connect)
+             poly]
+            (maybe-deepen poly 0.5 (dr/random-int 3 8)))))
 
 (defn face-point-out [shape face]
   (let [[p q] (nth (g/edges shape) face)]
