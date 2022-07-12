@@ -275,3 +275,14 @@
     1 (column tile (dec (count (first tile))))
     2 (apply str (reverse (row tile (dec (count tile)))))
     3 (apply str (reverse (column tile 0)))))
+
+(defn cardinal-face
+  "Generate the face of a tile as a absolute cardinal ordering.
+
+  Ie rows are always left to right, and columns are top to down."
+  [tile direction]
+  (case direction
+    0 (row tile 0)
+    1 (column tile (dec (count (first tile))))
+    2 (row tile (dec (count tile)))
+    3 (column tile 0)))

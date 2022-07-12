@@ -198,5 +198,12 @@
     (is (= "ABB" (sut/clockwise-face tile 2)))
     (is (= "BAA" (sut/clockwise-face tile 3)))))
 
+(deftest cardinal-face
+  (let [tile ["AAB" "AAA" "BBA"]]
+    (is (= "AAB" (sut/cardinal-face tile 0)))
+    (is (= "BAA" (sut/cardinal-face tile 1)))
+    (is (= "BBA" (sut/cardinal-face tile 2)))
+    (is (= "AAB" (sut/cardinal-face tile 3)))))
+
 (comment (t/run-tests))
 
