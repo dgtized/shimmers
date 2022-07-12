@@ -51,19 +51,21 @@
                 (v/+polar connect size angle)
                 (v/+polar connect (* 0.5 size) (+ angle tm/HALF_PI))]))
 
-(defn hexagon [connect size angle]
-  (if (dr/chance 0.5)
-    (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
-        (gc/circle (* 0.5 size))
-        (hex/flat-hexagon->polygon))
-    (-> (v/+polar connect (* 0.5 size) angle)
-        (gc/circle (* 0.5 size))
-        (hex/pointy-hexagon->polygon))))
+(defn flat-hex [connect size angle]
+  (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
+      (gc/circle (* 0.5 size))
+      (hex/flat-hexagon->polygon)))
+
+(defn pointy-hex [connect size angle]
+  (-> (v/+polar connect (* 0.5 size) angle)
+      (gc/circle (* 0.5 size))
+      (hex/pointy-hexagon->polygon)))
 
 (def poly-shapes
   {:point point-triangle
    :edge edge-triangle
-   :hexagon hexagon})
+   :flat-hex flat-hex
+   :pointy-hex pointy-hex})
 
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)
