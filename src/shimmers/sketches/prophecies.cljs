@@ -39,11 +39,25 @@
              rect]
             (maybe-deepen rect 0.5 (dr/random-int 3 8)))))
 
+(defn point-triangle [connect size angle]
+  (gp/polygon2 [connect
+                (v/+polar connect size (+ angle 0.5))
+                (v/+polar connect size (- angle 0.5))]))
+
+(defn edge-triangle [connect size angle]
+  (gp/polygon2 [connect
+                (v/+polar connect (* 0.5 size) (- angle tm/HALF_PI))
+                (v/+polar connect size angle)
+                (v/+polar connect (* 0.5 size) (+ angle tm/HALF_PI))]))
+
+(def poly-shapes
+  {:point point-triangle
+   :edge edge-triangle})
+
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)
-        poly (gp/polygon2 [connect
-                           (v/+polar connect size (+ angle 0.5))
-                           (v/+polar connect size (- angle 0.5))])]
+        poly ((get poly-shapes (dr/rand-nth (keys poly-shapes)))
+              connect size angle)]
     (concat [(gl/line2 base connect)
              poly]
             (maybe-deepen poly 0.5 (dr/random-int 3 8)))))
