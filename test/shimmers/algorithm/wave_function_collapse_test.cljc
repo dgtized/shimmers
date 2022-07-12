@@ -191,5 +191,12 @@
              sut/str->matrix
              (sut/rules->rotated-tiles 3)))))
 
+(deftest clockwise-faces
+  (let [tile ["AAB" "AAA" "BBA"]]
+    (is (= "AAB" (sut/clockwise-face tile 0)))
+    (is (= "BAA" (sut/clockwise-face tile 1)))
+    (is (= "ABB" (sut/clockwise-face tile 2)))
+    (is (= "BAA" (sut/clockwise-face tile 3)))))
+
 (comment (t/run-tests))
 

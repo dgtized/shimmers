@@ -248,6 +248,9 @@
 (defn column [grid col]
   (str/join (map #(nth % col) grid)))
 
+(defn row [grid row]
+  (nth grid row))
+
 (defn rotate-clockwise [grid]
   (vec (for [col (range (count grid))]
          (apply str (reverse (column grid col))))))
@@ -261,3 +264,14 @@
        (mapcat rotations)
        sort
        dedupe))
+
+(defn clockwise-face
+  "Generate the face of each tile in clockwise order.
+
+  Directions are numbered north, south, east, west."
+  [tile direction]
+  (case direction
+    0 (row tile 0)
+    1 (column tile (dec (count (first tile))))
+    2 (apply str (reverse (row tile (dec (count tile)))))
+    3 (apply str (reverse (column tile 0)))))
