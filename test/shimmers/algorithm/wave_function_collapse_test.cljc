@@ -205,5 +205,16 @@
     (is (= "BBA" (sut/cardinal-face tile 2)))
     (is (= "AAB" (sut/cardinal-face tile 3)))))
 
+(deftest tile-adjacencies
+  (let [tile ["AB" "AB"]]
+    (is (= [[0 2] [2 0]] (sut/tile-adjacencies tile tile))))
+  (let [tile ["AAA" "ABA" "AAA"]]
+    (is (= [[0 2] [1 3] [2 0] [3 1]]
+           (sut/tile-adjacencies tile tile))))
+  (let [a ["AAA" "ABB" "AAA"]
+        b ["AAA" "BBA" "ABA"]]
+    (is (= [[1 3] [2 0] [3 1]]
+           (sut/tile-adjacencies a b)))))
+
 (comment (t/run-tests))
 

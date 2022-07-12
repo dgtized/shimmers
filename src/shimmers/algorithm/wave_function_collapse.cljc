@@ -286,3 +286,11 @@
     1 (column tile (dec (count (first tile))))
     2 (row tile (dec (count tile)))
     3 (column tile 0)))
+
+(defn tile-adjacencies [source adjacent]
+  (filter (fn [[face opposite]] (= (cardinal-face source face)
+                                  (cardinal-face adjacent opposite)))
+          [[0 2]
+           [1 3]
+           [2 0]
+           [3 1]]))
