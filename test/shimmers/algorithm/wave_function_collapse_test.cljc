@@ -232,5 +232,23 @@
                        (sut/rules->rotated-tiles 2)
                        sut/all-adjacencies)))))
 
+(deftest indexed-all-adjancies
+  (is (= {["AAA" "ABB" "ABB"]
+          {1 [["AAA" "BBA" "BBA"]]
+           3 [["AAA" "BBA" "BBA"] ["BBA" "BBA" "AAA"]]
+           0 [["ABB" "ABB" "AAA"] ["BBA" "BBA" "AAA"]]
+           2 [["ABB" "ABB" "AAA"]]}
+          ["AAA" "BBA" "BBA"]
+          {0 [["ABB" "ABB" "AAA"] ["BBA" "BBA" "AAA"]]
+           1 [["ABB" "ABB" "AAA"]]
+           2 [["BBA" "BBA" "AAA"]]}
+          ["ABB" "ABB" "AAA"]
+          {1 [["BBA" "BBA" "AAA"]]
+           3 [["BBA" "BBA" "AAA"]]}}
+         (-> "AAAA\nABBA\nABBA\nAAAA"
+             sut/str->matrix
+             (sut/rules->rotated-tiles 3)
+             sut/indexed-all-adjancies))))
+
 (comment (t/run-tests))
 

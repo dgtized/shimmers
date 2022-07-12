@@ -301,3 +301,15 @@
         :let [adj (tile-adjacencies a b)]
         :when (not-empty adj)]
     [[a b] adj]))
+
+(defn indexed-all-adjancies
+  "Given a `tileset`, generate an index of legal adjacencies.
+
+  Index is tile -> direction -> legal tiles."
+  [tileset]
+  (reduce (fn [index [[a b] adj]]
+            (reduce (fn [idx dir]
+                      (update-in idx [a (first dir)] (fnil conj []) b))
+                    index adj))
+          {}
+          (all-adjacencies tileset)))
