@@ -254,3 +254,10 @@
 
 (defn rotations [tile]
   (vec (dedupe (take 4 (iterate rotate-clockwise tile)))))
+
+(defn rules->rotated-tiles [matrix n]
+  (->> (rules->tiles matrix n)
+       vals
+       (mapcat rotations)
+       sort
+       dedupe))

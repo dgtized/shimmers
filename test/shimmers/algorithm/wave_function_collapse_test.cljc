@@ -182,5 +182,14 @@
           ["AAA" "AAA" "BAA"]]
          (sut/rotations ["BAA" "AAA" "AAA"]))))
 
+(deftest rules->rotated-tiles
+  (is (= [["AAA" "ABB" "ABB"]
+          ["AAA" "BBA" "BBA"]
+          ["ABB" "ABB" "AAA"]
+          ["BBA" "BBA" "AAA"]]
+         (-> "AAAA\nABBA\nABBA\nAAAA"
+             sut/str->matrix
+             (sut/rules->rotated-tiles 3)))))
+
 (comment (t/run-tests))
 
