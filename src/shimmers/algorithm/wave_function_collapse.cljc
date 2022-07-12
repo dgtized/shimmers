@@ -2,6 +2,7 @@
   (:require
    [clojure.set :as set]
    [clojure.string :as str]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.vector :as gv]
@@ -294,3 +295,9 @@
            [1 3]
            [2 0]
            [3 1]]))
+
+(defn all-adjacencies [tileset]
+  (for [[a b] (cs/all-pairs tileset)
+        :let [adj (tile-adjacencies a b)]
+        :when (not-empty adj)]
+    [[a b] adj]))

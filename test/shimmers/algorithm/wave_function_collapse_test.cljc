@@ -216,5 +216,21 @@
     (is (= [[1 3] [2 0] [3 1]]
            (sut/tile-adjacencies a b)))))
 
+(deftest all-adjaciences
+  (is (= [[[["AAA" "ABB" "ABB"] ["AAA" "BBA" "BBA"]] [[1 3] [3 1]]]
+          [[["AAA" "ABB" "ABB"] ["ABB" "ABB" "AAA"]] [[0 2] [2 0]]]
+          [[["AAA" "ABB" "ABB"] ["BBA" "BBA" "AAA"]] [[0 2] [3 1]]]
+          [[["AAA" "BBA" "BBA"] ["ABB" "ABB" "AAA"]] [[0 2] [1 3]]]
+          [[["AAA" "BBA" "BBA"] ["BBA" "BBA" "AAA"]] [[0 2] [2 0]]]
+          [[["ABB" "ABB" "AAA"] ["BBA" "BBA" "AAA"]] [[1 3] [3 1]]]]
+         (-> "AAAA\nABBA\nABBA\nAAAA"
+             sut/str->matrix
+             (sut/rules->rotated-tiles 3)
+             sut/all-adjacencies)))
+  (is (= 28 (count (-> "AAAA\nABBA\nABBA\nAAAA"
+                       sut/str->matrix
+                       (sut/rules->rotated-tiles 2)
+                       sut/all-adjacencies)))))
+
 (comment (t/run-tests))
 
