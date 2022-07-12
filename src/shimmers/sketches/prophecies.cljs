@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -18,11 +19,22 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn deepen [polygon n]
+  (let [scale (/ 0.75 n)]
+    (->> polygon
+         (iterate (fn [poly]
+                    (g/scale-size poly (- 1.0 scale))))
+         (take (inc n)))))
+
 (defn stem [base height angle]
-  (let [connect (v/+polar base height angle)]
-    [(gl/line2 base connect)
-     (rect/rect (tm/+ connect (gv/vec2 (* -0.5 height) (* 1.0 height)))
-                (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]))
+  (let [connect (v/+polar base height angle)
+        rect (rect/rect (tm/+ connect (gv/vec2 (* -0.5 height) (* 1.0 height)))
+                        (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]
+    (concat [(gl/line2 base connect)
+             rect]
+            (if (dr/chance 0.5)
+              (deepen rect (dr/random-int 3 8))
+              []))))
 
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)]
