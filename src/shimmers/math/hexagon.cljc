@@ -18,12 +18,19 @@
   (* (/ tm/SQRT3 2) r))
 
 (def ^:const flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
+(def ^:const pointy-hex-angles (mapv (partial + tm/SIXTH_PI) flat-hex-angles))
 
-(defn flat-hexagon->polygon [{:keys [p r]}]
-  (-> (for [theta flat-hex-angles]
+(defn hexagon->polygon [{:keys [p r]} angles]
+  (-> (for [theta angles]
         (v/polar r theta))
       gp/polygon2
       (g/translate p)))
+
+(defn flat-hexagon->polygon [c]
+  (hexagon->polygon c flat-hex-angles))
+
+(defn pointy-hexagon->polygon [c]
+  (hexagon->polygon c pointy-hex-angles))
 
 ;; https://www.redblobgames.com/grids/hexagons/
 (defn cube->axial [[x _ z]]

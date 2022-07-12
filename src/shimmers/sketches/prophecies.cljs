@@ -52,9 +52,13 @@
                 (v/+polar connect (* 0.5 size) (+ angle tm/HALF_PI))]))
 
 (defn hexagon [connect size angle]
-  (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
-      (gc/circle (* 0.5 size))
-      (hex/flat-hexagon->polygon)))
+  (if (dr/chance 0.5)
+    (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
+        (gc/circle (* 0.5 size))
+        (hex/flat-hexagon->polygon))
+    (-> (v/+polar connect (* 0.5 size) angle)
+        (gc/circle (* 0.5 size))
+        (hex/pointy-hexagon->polygon))))
 
 (def poly-shapes
   {:point point-triangle
