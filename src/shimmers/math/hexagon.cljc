@@ -10,6 +10,13 @@
 (defn hexagon [p r]
   (gc/circle p r))
 
+(defn apothem
+  "distance from center of each face to center
+
+  Otherwise known as the inset-circle radius."
+  [{:keys [r]}]
+  (* (/ tm/SQRT3 2) r))
+
 (def ^:const flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
 
 (defn flat-hexagon->polygon [{:keys [p r]}]
