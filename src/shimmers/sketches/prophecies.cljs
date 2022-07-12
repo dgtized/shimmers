@@ -32,13 +32,11 @@
     (deepen polygon n)
     []))
 
-(defn stem [base height angle]
-  (let [connect (v/+polar base height angle)
-        rect (rect/rect (tm/+ connect (gv/vec2 (* -0.5 height) (* 1.0 height)))
-                        (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]
-    (concat [(gl/line2 base connect)
-             rect]
-            (maybe-deepen rect 0.5 (dr/random-int 3 8)))))
+(defn square [connect size angle]
+  (-> (rect/rect size)
+      (g/center)
+      (g/rotate angle)
+      (g/translate (tm/+ connect (v/polar (* 0.5 size) angle)))))
 
 (defn point-triangle [connect size angle]
   (gp/polygon2 [connect
@@ -62,7 +60,8 @@
       (hex/pointy-hexagon->polygon)))
 
 (def poly-shapes
-  {:point point-triangle
+  {:square square
+   :point point-triangle
    :edge edge-triangle
    :flat-hex flat-hex
    :pointy-hex pointy-hex})
@@ -100,8 +99,8 @@
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
     (concat [c1 c2 meridian]
-            (stem (g/point-at meridian 0.33) (* width 0.05) (+ tm/HALF_PI heading))
-            (stem (g/point-at meridian 0.20) (* width -0.05) (+ tm/HALF_PI heading))
+            (flyout (g/point-at meridian 0.33) (* width 0.1) (* width 0.05) (+ tm/HALF_PI heading))
+            (flyout (g/point-at meridian 0.20) (* width -0.1) (* width 0.05) (- tm/HALF_PI heading))
             (stem-face (g/point-at meridian 0.15) (* width 0.03) (+ tm/HALF_PI heading))
             (flyout (g/point-at meridian 0.925) (* width 0.2)
                     (* width 0.1)
