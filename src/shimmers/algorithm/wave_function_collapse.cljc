@@ -236,4 +236,21 @@
              {[x y] (vec tile)}))
          (into {}))))
 
-(comment (rules->tiles rule-a 3))
+(def rule-b
+  (str->matrix
+   "AAAA
+    ABBA
+    ABBA
+    AAAA"))
+
+(comment (rules->tiles rule-b 3))
+
+(defn column [grid col]
+  (str/join (map #(nth % col) grid)))
+
+(defn rotate-clockwise [grid]
+  (vec (for [col (range (count grid))]
+         (apply str (reverse (column grid col))))))
+
+(defn rotations [tile]
+  (vec (dedupe (take 4 (iterate rotate-clockwise tile)))))

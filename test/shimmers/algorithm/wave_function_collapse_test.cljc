@@ -172,5 +172,15 @@
           [1 0] ["ABAA" "BCBA" "ABAA" "AAAA"]}
          (sut/rules->tiles (sut/str->matrix "AABAA\nABCBA\nAABAA\nAAAAA") 4))))
 
+(deftest rotations
+  (is (= [["A"]] (sut/rotations ["A"])))
+  (is (= [["BA" "AA"] ["AB" "AA"] ["AA" "AB"] ["AA" "BA"]]
+         (sut/rotations ["BA" "AA"])))
+  (is (= [["BAA" "AAA" "AAA"]
+          ["AAB" "AAA" "AAA"]
+          ["AAA" "AAA" "AAB"]
+          ["AAA" "AAA" "BAA"]]
+         (sut/rotations ["BAA" "AAA" "AAA"]))))
+
 (comment (t/run-tests))
 
