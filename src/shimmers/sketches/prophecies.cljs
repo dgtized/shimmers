@@ -81,16 +81,12 @@
 
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
-        rect (rect/rect (tm/+ connect (gv/vec2 (* -0.5 height) (* 1.0 height)))
-                        (tm/+ connect (gv/vec2 (* +0.5 height) 0)))]
+        rect (square connect (* 0.5 height) angle)]
     (concat [(gl/line2 base connect)
              rect]
-            (let [[mid dir] (face-point-out rect 1)]
-              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)))
-            (let [[mid dir] (face-point-out rect 2)]
-              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)))
-            (let [[mid dir] (face-point-out rect 3)]
-              (flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir))))))
+            (mapcat (fn [face] (let [[mid dir] (face-point-out rect face)]
+                                (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
+                    (range 4)))))
 
 (defn shapes []
   (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
@@ -99,9 +95,9 @@
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
     (concat [c1 c2 meridian]
+            (flyout (g/point-at meridian 0.10) (* width -0.1) (* width 0.05) (- tm/HALF_PI heading))
+            (stem-face (g/point-at meridian 0.2) (* width (dr/random 0.03 0.06)) (+ tm/HALF_PI heading))
             (flyout (g/point-at meridian 0.33) (* width 0.1) (* width 0.05) (+ tm/HALF_PI heading))
-            (flyout (g/point-at meridian 0.20) (* width -0.1) (* width 0.05) (- tm/HALF_PI heading))
-            (stem-face (g/point-at meridian 0.15) (* width 0.03) (+ tm/HALF_PI heading))
             (flyout (g/point-at meridian 0.925) (* width 0.2)
                     (* width 0.1)
                     (+ heading tm/HALF_PI))
