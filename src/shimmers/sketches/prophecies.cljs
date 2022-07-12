@@ -27,9 +27,9 @@
                     (g/scale-size poly (- 1.0 scale))))
          (take (inc n)))))
 
-(defn maybe-deepen [polygon p n]
-  (if (dr/chance p)
-    (deepen polygon n)
+(defn maybe [operation prob]
+  (if (dr/chance prob)
+    (operation)
     []))
 
 (defn square [connect size angle]
@@ -72,7 +72,7 @@
               connect size angle)]
     (concat [(gl/line2 base connect)
              poly]
-            (maybe-deepen poly 0.5 (dr/random-int 3 8)))))
+            (maybe (partial deepen poly (dr/random-int 3 8)) 0.5))))
 
 (defn face-point-out [shape face]
   (let [[p q] (nth (g/edges shape) face)]
@@ -105,6 +105,9 @@
             (flyout (g/point-at meridian 0.925) (* width 0.2)
                     (* width 0.1)
                     (+ heading tm/HALF_PI))
+            (maybe (partial stem-face (:p c2)
+                            (* width (dr/random 0.05 0.1))
+                            (+ heading tm/HALF_PI)) 0.5)
             (flyout (g/point-at meridian 0.65) (* width 0.2)
                     (* width 0.1)
                     (- heading tm/HALF_PI)))))
