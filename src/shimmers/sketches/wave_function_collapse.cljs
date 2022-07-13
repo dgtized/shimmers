@@ -63,23 +63,27 @@
             values (get grid loc)
             cell (rect/rect (* w i) (* h j) w h)
             changed? (contains? highlight loc)
-            divisions
-            (get subdivisions (count values)
-                 (let [s (Math/sqrt (count values))]
-                   {:cols (Math/ceil s) :rows (Math/ceil s)}))]
-        (->> (g/subdivide cell divisions)
-             (map (fn [value piece]
-                    (svg/group (cond-> {:class "wfc-cell"}
-                                 state
-                                 (assoc :on-click
-                                        #(cell-set state loc
-                                                   (if (= (count values) 1)
-                                                     (:tiles @state)
-                                                     #{value}))))
-                               (cell-tile value piece)))
-                  values)
-             (svg/group {:class "wfc-tile"
-                         :stroke (if changed? "red" "none")}))))))
+            options (count values)]
+        (svg/group {:class "wfc-tile"
+                    :stroke (if changed? "red" "none")}
+                   (if (<= options 16)
+                     (let [divisions
+                           (get subdivisions options
+                                (let [s (Math/sqrt options)]
+                                  {:cols (Math/ceil s) :rows (Math/ceil s)}))]
+                       (->> (g/subdivide cell divisions)
+                            (map (fn [value piece]
+                                   (svg/group (cond-> {:class "wfc-cell"}
+                                                state
+                                                (assoc :on-click
+                                                       #(cell-set state loc
+                                                                  (if (= (count values) 1)
+                                                                    (:tiles @state)
+                                                                    #{value}))))
+                                              (cell-tile value piece)))
+                                 values)))
+                     (vary-meta cell assoc :fill
+                                (csvg/hsl 0 0 (/ options (count (:tiles @state)))))))))))
 
 (def rule-a
   (wfc/str->matrix
