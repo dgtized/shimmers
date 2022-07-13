@@ -123,7 +123,7 @@
 (defn from-tileset []
   (let [tiles (wfc/rules->rotated-tiles rule-c 2)
         rules (wfc/adjacency-rules tiles)]
-    {:grid (wfc/init-grid [6 4] wfc/cardinal-directions (set tiles))
+    {:grid (wfc/init-grid [30 20] wfc/cardinal-directions (set tiles))
      :tiles tiles
      :rules rules}))
 
