@@ -133,15 +133,19 @@
      :tiles tiles
      :rules rules}))
 
-(defn init-state []
-  (merge (from-cells)
-         {:highlight #{}
-          :cancel nil}))
+(def modes {:cells from-cells
+            :tileset from-tileset})
+
+(defn init-state [mode]
+  (merge {:highlight #{}
+          :cancel nil
+          :mode mode}
+         ((get modes mode))))
 
 (defn reset [state]
   (when-let [cancel (:cancel @state)]
     (async/close! cancel))
-  (reset! state (init-state)))
+  (reset! state (init-state (:mode @state))))
 
 (defn solve [state]
   (if-let [cancel (:cancel @state)]
@@ -193,13 +197,14 @@
        (svg-tile other)])]])
 
 (defn page []
-  (let [state (ctrl/state (init-state))]
+  (let [state (ctrl/state (init-state :cells))]
     (fn []
       (let [{:keys [grid highlight cancel]} @state]
         [:div
          [:div.canvas-frame [scene state grid highlight]]
          [:div#interface
           [:div.flexcols
+           [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
            [:button.generate {:on-click #(reset state)} "Reset"]
            [:button.generate {:on-click #(solve-one state)} "Solve One"]
            [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
