@@ -209,10 +209,10 @@
 (defn tile-set [tiles]
   [:div
    [:h4 (str "Tiles (" (count tiles) ")")]
-   [:div {:style {:column-count 8}}]
-   (for [[idx tile] (map-indexed vector tiles)]
-     [:span {:key (str "ts-" idx) :style {:margin-right "5px"}}
-      (svg-tile tile)])])
+   [:div {:style {:column-count 12}}
+    (for [[idx tile] (map-indexed vector tiles)]
+      [:div {:key (str "ts-" idx)}
+       (svg-tile tile)])]])
 
 (def direction-name
   (zipmap wfc/directions-8
