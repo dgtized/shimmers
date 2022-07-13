@@ -46,7 +46,6 @@
   (and (>= i 0) (< i cols)
        (>= j 0) (< j rows)))
 
-
 (def north (gv/vec2 0 -1))
 (def east (gv/vec2 1 0))
 (def south (gv/vec2 0 1))
@@ -326,6 +325,9 @@
   (->> tileset
        all-adjacencies
        (mapcat (fn [[[a b] adj]]
-                 (mapv (fn [dir] [a (nth cardinal-directions (first dir)) b]) adj)))
+                 (mapcat (fn [dir]
+                           [[a (nth cardinal-directions (first dir)) b]
+                            [b (nth cardinal-directions (second dir)) a]])
+                         adj)))
        (sort-by (juxt first second))
        (into [])))
