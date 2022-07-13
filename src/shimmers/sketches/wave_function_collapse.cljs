@@ -53,9 +53,8 @@
                 (vary-meta cell assoc :fill (get color-map pixel)))
               (seq (apply str value))))))
 
-(defn grid->cells [state grid highlight]
+(defn grid->cells [[width height] state grid highlight]
   (let [[cols rows] (:dims grid)
-        tiles (:tiles @state)
         w (/ width cols)
         h (/ height rows)]
     (for [j (range rows)
@@ -70,10 +69,13 @@
                    {:cols (Math/ceil s) :rows (Math/ceil s)}))]
         (->> (g/subdivide cell divisions)
              (map (fn [value piece]
-                    (svg/group {:class "wfc-cell"
-                                :on-click #(cell-set state loc (if (= (count values) 1)
-                                                                 tiles
-                                                                 #{value}))}
+                    (svg/group (cond-> {:class "wfc-cell"}
+                                 state
+                                 (assoc :on-click
+                                        #(cell-set state loc
+                                                   (if (= (count values) 1)
+                                                     (:tiles @state)
+                                                     #{value}))))
                                (cell-tile value piece)))
                   values)
              (svg/group {:class "wfc-tile"
@@ -113,25 +115,30 @@
     AAAAAAAA
     AAAAAAAA"))
 
-(defn scene [state grid highlight]
+(defn scene [[width height] state grid highlight]
   (csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "none"}
-            (grid->cells state grid highlight)))
+            (grid->cells [width height] state grid highlight)))
 
 (defn from-tileset []
-  (let [tiles (wfc/rules->rotated-tiles rule-c 2)
+  (let [matrix rule-c
+        pattern (wfc/matrix->grid matrix wfc/cardinal-directions)
+        tiles (wfc/rules->rotated-tiles matrix 2)
         rules (wfc/adjacency-rules tiles)]
     {:grid (wfc/init-grid [30 20] wfc/cardinal-directions (set tiles))
+     :pattern pattern
      :tiles tiles
      :rules rules}))
 
 (defn from-cells []
   (let [directions wfc/directions-8
-        rules (wfc/rules (wfc/matrix->grid rule-c directions))
+        pattern (wfc/matrix->grid rule-c directions)
+        rules (wfc/rules pattern)
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [30 20] directions tiles)
+     :pattern pattern
      :tiles tiles
      :rules rules}))
 
@@ -206,12 +213,17 @@
        [:code (get direction-name dir (str " unknown " dir))]
        (svg-tile other)])]])
 
+(defn pattern-editor [pattern]
+  [:div
+   [:h4 "Pattern"]
+   (scene [150 150] nil pattern #{})])
+
 (defn page []
   (let [state (ctrl/state (init-state :cells))]
     (fn []
       (let [{:keys [grid highlight cancel]} @state]
         [:div
-         [:div.canvas-frame [scene state grid highlight]]
+         [:div.canvas-frame [scene [width height] state grid highlight]]
          [:div#interface
           [:div.flexcols
            [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
@@ -221,9 +233,11 @@
           [:p.readable
            "Click on a cell to collapse it to a specific tile, or to expand it to
          the set of all legal tiles."]
-          (let [{:keys [tiles rules]} @state]
+          (let [{:keys [pattern tiles rules]} @state]
             [:div
-             [tile-set tiles]
+             [:div.flexcols
+              [pattern-editor pattern]
+              [tile-set tiles]]
              [rule-set rules]])]]))))
 
 (sketch/definition wave-function-collapse
