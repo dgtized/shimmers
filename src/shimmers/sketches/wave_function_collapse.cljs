@@ -70,12 +70,14 @@
                    {:cols (Math/ceil s) :rows (Math/ceil s)}))]
         (->> (g/subdivide cell divisions)
              (map (fn [value piece]
-                    (svg/group {:on-click #(cell-set state loc (if (= (count values) 1)
+                    (svg/group {:class "wfc-cell"
+                                :on-click #(cell-set state loc (if (= (count values) 1)
                                                                  tiles
                                                                  #{value}))}
                                (cell-tile value piece)))
                   values)
-             (svg/group {:stroke (if changed? "red" "none")}))))))
+             (svg/group {:class "wfc-tile"
+                         :stroke (if changed? "red" "none")}))))))
 
 (def rule-a
   (wfc/str->matrix

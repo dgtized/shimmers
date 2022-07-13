@@ -214,3 +214,10 @@ dl.instruction-set {
   flex-grow: 1;
   margin: 0;
 }
+
+g.wfc-tile {
+}
+
+.wfc-cell:hover {
+  opacity: 0.8;
+}
