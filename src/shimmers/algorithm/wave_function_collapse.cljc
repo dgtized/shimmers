@@ -46,11 +46,18 @@
   (and (>= i 0) (< i cols)
        (>= j 0) (< j rows)))
 
+
+(def north (gv/vec2 0 -1))
+(def east (gv/vec2 1 0))
+(def south (gv/vec2 0 1))
+(def west (gv/vec2 -1 0))
+
 (def cardinal-directions
-  [(gv/vec2 1 0) (gv/vec2 -1 0) (gv/vec2 0 1) (gv/vec2 0 -1)])
+  [north east south west])
 
 (def diagonal-directions
-  [(gv/vec2 1 -1) (gv/vec2 -1 -1) (gv/vec2 -1 1) (gv/vec2 1 1)])
+  [(tm/+ north east) (tm/+ south east)
+   (tm/+ south west) (tm/+ north west)])
 
 (def directions-8
   (concat cardinal-directions diagonal-directions))
@@ -73,13 +80,14 @@
 (defn rules [amatrix]
   (let [{:keys [dims directions]} amatrix
         [w h] dims]
-    (for [j (range h)
-          i (range w)
-          dir directions
-          :let [pos (gv/vec2 i j)
-                neighbor (tm/+ pos dir)]
-          :when (valid-neighbor? dims neighbor)]
-      [(get amatrix pos) dir (get amatrix neighbor)])))
+    (sort
+     (for [j (range h)
+           i (range w)
+           dir directions
+           :let [pos (gv/vec2 i j)
+                 neighbor (tm/+ pos dir)]
+           :when (valid-neighbor? dims neighbor)]
+       [(get amatrix pos) dir (get amatrix neighbor)]))))
 
 (defn all-tiles [rules]
   (set (map first rules)))

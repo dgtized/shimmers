@@ -7,40 +7,29 @@
    [thi.ng.math.core :as tm]))
 
 (deftest rules-from-example
-  (is (= [["A" (gv/vec2 1 0) "A"]
-          ["A" (gv/vec2 0 1) "A"]
-          ["A" (gv/vec2 -1 0) "A"]
-          ["A" (gv/vec2 0 1) "B"]
-          ["A" (gv/vec2 1 0) "B"]
+  (is (= [["A" (gv/vec2 -1 0) "A"]
           ["A" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 0 1) "B"]
+          ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 1 0) "B"]
           ["B" (gv/vec2 -1 0) "A"]
           ["B" (gv/vec2 0 -1) "A"]]
          (sut/rules (sut/matrix->grid (sut/str->matrix "AA\nAB")
                                       sut/cardinal-directions))))
-  (is (= [["A" (gv/vec2 1 0) "A"]
-          ["A" (gv/vec2 0 1) "A"]
-          ["A" (gv/vec2 1 0) "A"]
-          ["A" (gv/vec2 -1 0) "A"]
-          ["A" (gv/vec2 0 1) "B"]
-          ["A" (gv/vec2 -1 0) "A"]
-          ["A" (gv/vec2 0 1) "A"]
-          ["A" (gv/vec2 1 0) "B"]
-          ["A" (gv/vec2 0 1) "A"]
-          ["A" (gv/vec2 0 -1) "A"]
-          ["B" (gv/vec2 1 0) "A"]
-          ["B" (gv/vec2 -1 0) "A"]
-          ["B" (gv/vec2 0 1) "A"]
-          ["B" (gv/vec2 0 -1) "A"]
-          ["A" (gv/vec2 -1 0) "B"]
-          ["A" (gv/vec2 0 1) "A"]
-          ["A" (gv/vec2 0 -1) "A"]
-          ["A" (gv/vec2 1 0) "A"]
-          ["A" (gv/vec2 0 -1) "A"]
-          ["A" (gv/vec2 1 0) "A"]
-          ["A" (gv/vec2 -1 0) "A"]
-          ["A" (gv/vec2 0 -1) "B"]
-          ["A" (gv/vec2 -1 0) "A"]
-          ["A" (gv/vec2 0 -1) "A"]]
+
+  (is (= [["A" (gv/vec2 -1 0) "A"] ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 -1 0) "A"] ["A" (gv/vec2 -1 0) "A"]
+          ["A" (gv/vec2 -1 0) "B"] ["A" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 0 -1) "A"] ["A" (gv/vec2 0 -1) "A"]
+          ["A" (gv/vec2 0 -1) "A"] ["A" (gv/vec2 0 -1) "B"]
+          ["A" (gv/vec2 0 1) "A"] ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 0 1) "A"] ["A" (gv/vec2 0 1) "A"]
+          ["A" (gv/vec2 0 1) "B"] ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 1 0) "A"] ["A" (gv/vec2 1 0) "A"]
+          ["A" (gv/vec2 1 0) "A"] ["A" (gv/vec2 1 0) "B"]
+          ["B" (gv/vec2 -1 0) "A"] ["B" (gv/vec2 0 -1) "A"]
+          ["B" (gv/vec2 0 1) "A"] ["B" (gv/vec2 1 0) "A"]]
          (sut/rules (sut/matrix->grid (sut/str->matrix "AAA\nABA\nAAA")
                                       sut/cardinal-directions)))))
 
@@ -269,4 +258,3 @@
              sut/adjacency-rules))))
 
 (comment (t/run-tests))
-
