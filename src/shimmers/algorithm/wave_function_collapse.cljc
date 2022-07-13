@@ -313,3 +313,11 @@
                     index adj))
           {}
           (all-adjacencies tileset)))
+
+(defn adjacency-rules [tileset]
+  (->> tileset
+       all-adjacencies
+       (mapcat (fn [[[a b] adj]]
+                 (mapv (fn [dir] [a (first dir) b]) adj)))
+       (sort-by (juxt first second))
+       (into [])))
