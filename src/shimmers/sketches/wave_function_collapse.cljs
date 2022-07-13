@@ -170,6 +170,28 @@
            :grid grid'
            :highlight changes)))
 
+(defn svg-tile [tile]
+  (csvg/svg {:width 20
+             :height 20
+             :stroke "none"
+             :fill "none"}
+            [(cell-tile tile (rect/rect 20))]))
+
+(def direction-name
+  (zipmap wfc/directions-8
+          [" N  " " E  " " S  " " W  "
+           " NE " " SE " " SW " " NW "]))
+
+(defn rule-set [rules]
+  [:div
+   [:h4 "Rules"]
+   [:div {:style {:column-count 8}}
+    (for [[idx [tile dir other]] (map-indexed vector rules)]
+      [:div {:key (str "rule-" idx)}
+       (svg-tile tile)
+       [:code (get direction-name dir (str " unknown " dir))]
+       (svg-tile other)])]])
+
 (defn page []
   (let [state (ctrl/state (init-state))]
     (fn []
@@ -183,7 +205,8 @@
            [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
           [:p.readable
            "Click on a cell to collapse it to a specific tile, or to expand it to
-         the set of all legal tiles."]]]))))
+         the set of all legal tiles."]
+          [rule-set (:rules @state)]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
