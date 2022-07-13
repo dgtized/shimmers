@@ -40,7 +40,22 @@
                    6 {:cols 3 :rows 2}
                    7 {:cols 3 :rows 3}
                    8 {:cols 3 :rows 3}
-                   9 {:cols 3 :rows 3}})
+                   9 {:cols 3 :rows 3}
+                   10 {:cols 4 :rows 3}
+                   11 {:cols 4 :rows 3}
+                   12 {:cols 4 :rows 3}
+                   13 {:cols 4 :rows 4}
+                   14 {:cols 4 :rows 4}
+                   15 {:cols 4 :rows 4}
+                   16 {:cols 4 :rows 4}})
+
+(defn cell-tile [value piece]
+  (if (string? value)
+    (vary-meta piece assoc :fill (get color-map value))
+    (->> (g/subdivide piece {:cols (count (first value)) :rows (count value)})
+         (map (fn [pixel cell]
+                (vary-meta cell assoc :fill (get color-map pixel)))
+              (seq (apply str value))))))
 
 (defn grid->cells [state grid highlight]
   (let [[cols rows] (:dims grid)
@@ -55,11 +70,10 @@
             changed? (contains? highlight loc)]
         (->> (g/subdivide cell (get subdivisions (count values)))
              (map (fn [value piece]
-                    (vary-meta piece assoc
-                               :fill (get color-map value)
-                               :on-click #(cell-set state loc (if (= (count values) 1)
-                                                                tiles
-                                                                #{value}))))
+                    (svg/group {:on-click #(cell-set state loc (if (= (count values) 1)
+                                                                 tiles
+                                                                 #{value}))}
+                               (cell-tile value piece)))
                   values)
              (svg/group {:stroke (if changed? "red" "none")}))))))
 
@@ -104,15 +118,25 @@
              :fill "none"}
             (grid->cells state grid highlight)))
 
-(defn init-state []
+(defn from-tileset []
+  (let [tiles (wfc/rules->rotated-tiles rule-c 2)
+        rules (wfc/adjacency-rules tiles)]
+    {:grid (wfc/init-grid [6 4] wfc/cardinal-directions (set tiles))
+     :tiles tiles
+     :rules rules}))
+
+(defn from-cells []
   (let [directions wfc/directions-8
         rules (wfc/rules (wfc/matrix->grid rule-c directions))
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [30 20] directions tiles)
-     :highlight #{}
-     :cancel nil
      :tiles tiles
      :rules rules}))
+
+(defn init-state []
+  (merge (from-cells)
+         {:highlight #{}
+          :cancel nil}))
 
 (defn reset [state]
   (when-let [cancel (:cancel @state)]
