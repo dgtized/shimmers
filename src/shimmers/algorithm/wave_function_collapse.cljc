@@ -326,6 +326,6 @@
   (->> tileset
        all-adjacencies
        (mapcat (fn [[[a b] adj]]
-                 (mapv (fn [dir] [a (first dir) b]) adj)))
+                 (mapv (fn [dir] [a (nth cardinal-directions (first dir)) b]) adj)))
        (sort-by (juxt first second))
        (into [])))

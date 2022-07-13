@@ -240,18 +240,18 @@
              sut/indexed-all-adjancies))))
 
 (deftest adjacency-rules
-  (is (= [[["AAA" "ABB" "ABB"] 0 ["ABB" "ABB" "AAA"]]
-          [["AAA" "ABB" "ABB"] 0 ["BBA" "BBA" "AAA"]]
-          [["AAA" "ABB" "ABB"] 1 ["AAA" "BBA" "BBA"]]
-          [["AAA" "ABB" "ABB"] 2 ["ABB" "ABB" "AAA"]]
-          [["AAA" "ABB" "ABB"] 3 ["AAA" "BBA" "BBA"]]
-          [["AAA" "ABB" "ABB"] 3 ["BBA" "BBA" "AAA"]]
-          [["AAA" "BBA" "BBA"] 0 ["ABB" "ABB" "AAA"]]
-          [["AAA" "BBA" "BBA"] 0 ["BBA" "BBA" "AAA"]]
-          [["AAA" "BBA" "BBA"] 1 ["ABB" "ABB" "AAA"]]
-          [["AAA" "BBA" "BBA"] 2 ["BBA" "BBA" "AAA"]]
-          [["ABB" "ABB" "AAA"] 1 ["BBA" "BBA" "AAA"]]
-          [["ABB" "ABB" "AAA"] 3 ["BBA" "BBA" "AAA"]]]
+  (is (= [[["AAA" "ABB" "ABB"] (gv/vec2 -1 0) ["AAA" "BBA" "BBA"]]
+          [["AAA" "ABB" "ABB"] (gv/vec2 -1 0) ["BBA" "BBA" "AAA"]]
+          [["AAA" "ABB" "ABB"] (gv/vec2 0 -1) ["ABB" "ABB" "AAA"]]
+          [["AAA" "ABB" "ABB"] (gv/vec2 0 -1) ["BBA" "BBA" "AAA"]]
+          [["AAA" "ABB" "ABB"] (gv/vec2 0 1) ["ABB" "ABB" "AAA"]]
+          [["AAA" "ABB" "ABB"] (gv/vec2 1 0) ["AAA" "BBA" "BBA"]]
+          [["AAA" "BBA" "BBA"] (gv/vec2 0 -1) ["ABB" "ABB" "AAA"]]
+          [["AAA" "BBA" "BBA"] (gv/vec2 0 -1) ["BBA" "BBA" "AAA"]]
+          [["AAA" "BBA" "BBA"] (gv/vec2 0 1) ["BBA" "BBA" "AAA"]]
+          [["AAA" "BBA" "BBA"] (gv/vec2 1 0) ["ABB" "ABB" "AAA"]]
+          [["ABB" "ABB" "AAA"] (gv/vec2 -1 0) ["BBA" "BBA" "AAA"]]
+          [["ABB" "ABB" "AAA"] (gv/vec2 1 0) ["BBA" "BBA" "AAA"]]]
          (-> "AAAA\nABBA\nABBA\nAAAA"
              sut/str->matrix
              (sut/rules->rotated-tiles 3)
