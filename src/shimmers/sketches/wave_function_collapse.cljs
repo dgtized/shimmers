@@ -181,6 +181,14 @@
              :fill "none"}
             [(cell-tile tile (rect/rect 20))]))
 
+(defn tile-set [tiles]
+  [:div
+   [:h4 (str "Tiles (" (count tiles) ")")]
+   [:div {:style {:column-count 8}}]
+   (for [[idx tile] (map-indexed vector tiles)]
+     [:span {:key (str "ts-" idx) :style {:margin-right "5px"}}
+      (svg-tile tile)])])
+
 (def direction-name
   (zipmap wfc/directions-8
           [" N  " " E  " " S  " " W  "
@@ -188,7 +196,7 @@
 
 (defn rule-set [rules]
   [:div
-   [:h4 "Rules"]
+   [:h4 (str "Rules (" (count rules) ")")]
    [:div {:style {:column-count 8}}
     (for [[idx [tile dir other]] (map-indexed vector rules)]
       [:div {:key (str "rule-" idx)}
@@ -211,7 +219,10 @@
           [:p.readable
            "Click on a cell to collapse it to a specific tile, or to expand it to
          the set of all legal tiles."]
-          [rule-set (:rules @state)]]]))))
+          (let [{:keys [tiles rules]} @state]
+            [:div
+             [tile-set tiles]
+             [rule-set rules]])]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
