@@ -234,10 +234,19 @@
    [:h4 "Pattern"]
    (scene [150 150] nil pattern #{})])
 
+(defn display-patterns [state]
+  (let [{:keys [pattern tiles rules]} state]
+    [:div
+     [:div.flexcols
+      [pattern-editor pattern]
+      [tile-set tiles]]
+     [rule-set rules]]))
+
 (defn page []
   (let [state (ctrl/state (init-state :cells))]
     (fn []
-      (let [{:keys [grid highlight cancel]} @state]
+      (let [{:keys [grid highlight cancel]} @state
+            pattern-set (select-keys @state [:pattern :tiles :rules :mode])]
         [:div
          [:div.canvas-frame [scene [width height] state grid highlight]]
          [:div#interface
@@ -249,12 +258,7 @@
           [:p.readable
            "Click on a cell to collapse it to a specific tile, or to expand it to
          the set of all legal tiles."]
-          (let [{:keys [pattern tiles rules]} @state]
-            [:div
-             [:div.flexcols
-              [pattern-editor pattern]
-              [tile-set tiles]]
-             [rule-set rules]])]]))))
+          [display-patterns pattern-set]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
