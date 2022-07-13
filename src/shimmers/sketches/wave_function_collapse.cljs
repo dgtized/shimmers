@@ -43,11 +43,7 @@
                    9 {:cols 3 :rows 3}
                    10 {:cols 4 :rows 3}
                    11 {:cols 4 :rows 3}
-                   12 {:cols 4 :rows 3}
-                   13 {:cols 4 :rows 4}
-                   14 {:cols 4 :rows 4}
-                   15 {:cols 4 :rows 4}
-                   16 {:cols 4 :rows 4}})
+                   12 {:cols 4 :rows 3}})
 
 (defn cell-tile [value piece]
   (if (string? value)
@@ -67,8 +63,12 @@
       (let [loc (gv/vec2 i j)
             values (get grid loc)
             cell (rect/rect (* w i) (* h j) w h)
-            changed? (contains? highlight loc)]
-        (->> (g/subdivide cell (get subdivisions (count values)))
+            changed? (contains? highlight loc)
+            divisions
+            (get subdivisions (count values)
+                 (let [s (Math/sqrt (count values))]
+                   {:cols (Math/ceil s) :rows (Math/ceil s)}))]
+        (->> (g/subdivide cell divisions)
              (map (fn [value piece]
                     (svg/group {:on-click #(cell-set state loc (if (= (count values) 1)
                                                                  tiles
