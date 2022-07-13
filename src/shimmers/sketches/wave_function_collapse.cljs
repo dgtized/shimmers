@@ -115,6 +115,18 @@
     AAAAAAAA
     AAAAAAAA"))
 
+(def rule-e
+  (wfc/str->matrix
+   "AAAAAAAAA
+    AAAAAAAAA
+    AABBBBBAA
+    AABCCCBAA
+    AABCCCBAA
+    AABCCCBAA
+    AABBBBBAA
+    AAAAAAAAA
+    AAAAAAAAA"))
+
 (defn scene [[width height] state grid highlight]
   (csvg/svg {:width width
              :height height
@@ -123,9 +135,9 @@
             (grid->cells [width height] state grid highlight)))
 
 (defn from-tileset []
-  (let [matrix rule-c
+  (let [matrix rule-e
         pattern (wfc/matrix->grid matrix wfc/cardinal-directions)
-        tiles (wfc/rules->rotated-tiles matrix 2)
+        tiles (wfc/rules->rotated-tiles matrix 3)
         rules (wfc/adjacency-rules tiles)]
     {:grid (wfc/init-grid [30 20] wfc/cardinal-directions (set tiles))
      :pattern pattern
@@ -134,7 +146,7 @@
 
 (defn from-cells []
   (let [directions wfc/directions-8
-        pattern (wfc/matrix->grid rule-c directions)
+        pattern (wfc/matrix->grid rule-d directions)
         rules (wfc/rules pattern)
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [30 20] directions tiles)
