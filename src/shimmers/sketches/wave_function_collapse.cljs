@@ -170,22 +170,23 @@
            :grid grid'
            :highlight changes)))
 
-(defn page [state]
-  (fn []
-    (let [{:keys [grid highlight cancel]} @state]
-      [:div
-       [:div.canvas-frame [scene state grid highlight]]
-       [:div#interface
-        [:div.flexcols
-         [:button.generate {:on-click #(reset state)} "Reset"]
-         [:button.generate {:on-click #(solve-one state)} "Solve One"]
-         [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
-        [:p.readable
-         "Click on a cell to collapse it to a specific tile, or to expand it to
-         the set of all legal tiles."]]])))
+(defn page []
+  (let [state (ctrl/state (init-state))]
+    (fn []
+      (let [{:keys [grid highlight cancel]} @state]
+        [:div
+         [:div.canvas-frame [scene state grid highlight]]
+         [:div#interface
+          [:div.flexcols
+           [:button.generate {:on-click #(reset state)} "Reset"]
+           [:button.generate {:on-click #(solve-one state)} "Solve One"]
+           [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
+          [:p.readable
+           "Click on a cell to collapse it to a specific tile, or to expand it to
+         the set of all legal tiles."]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount (page (ctrl/state (init-state))) "sketch-host"))
+  (ctrl/mount page "sketch-host"))
