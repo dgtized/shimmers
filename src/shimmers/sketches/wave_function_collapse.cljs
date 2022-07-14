@@ -9,7 +9,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.vector :as gv])
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm])
   (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
 (def width 900)
@@ -206,6 +207,38 @@
              :fill "none"}
             [(cell-tile tile (rect/rect 20))]))
 
+(def direction-name
+  (zipmap wfc/directions-8
+          [" N  " " E  " " S  " " W  "
+           " NE " " SE " " SW " " NW "]))
+
+(defn svg-adjacency [tile direction other]
+  (let [d 20
+        [x y] direction
+        orient (cond (= 0 y) :horizontal
+                     (= 0 x) :vertical
+                     :else :diagonal)
+        [w h] (case orient
+                :horizontal [(* 2 d) d]
+                :vertical [d (* 2 d)]
+                :diagonal [(* 2 d) (* 2 d)])
+        base (case orient
+               :horizontal (gv/vec2 (if (> x 0) 0 d) 0)
+               :vertical (gv/vec2 0 (if (> y 0) 0 d))
+               :diagonal (gv/vec2 (if (> x 0) 0 d) (if (> y 0) 0 d)))
+        r1 (g/translate (rect/rect d) base)
+        r2 (g/translate
+            (rect/rect d)
+            (tm/+ base (tm/* direction d)))]
+    (csvg/svg {:width w
+               :height h
+               :stroke "none"
+               :fill "none"}
+              [[:title (get direction-name direction)]
+               (cell-tile tile r1)
+               (cell-tile other r2)
+               (vary-meta r2 assoc :opacity 0.25 :fill "white")])))
+
 (defn tile-set [tiles]
   [:div
    [:h4 (str "Tiles (" (count tiles) ")")]
@@ -214,20 +247,13 @@
       [:div {:key (str "ts-" idx)}
        (svg-tile tile)])]])
 
-(def direction-name
-  (zipmap wfc/directions-8
-          [" N  " " E  " " S  " " W  "
-           " NE " " SE " " SW " " NW "]))
-
 (defn rule-set [rules]
   [:div
    [:h4 (str "Rules (" (count rules) ")")]
    [:div {:style {:column-count 8}}
     (for [[idx [tile dir other]] (map-indexed vector rules)]
       [:div {:key (str "rule-" idx)}
-       (svg-tile tile)
-       [:code (get direction-name dir (str " unknown " dir))]
-       (svg-tile other)])]])
+       (svg-adjacency tile dir other)])]])
 
 (defn pattern-editor [pattern]
   [:div
