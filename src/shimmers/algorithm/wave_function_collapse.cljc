@@ -154,7 +154,10 @@
               [legal-tiles legal-rules] (legal-at-location grid rules pos)]
           (tap> [:p pos])
           (cond (empty? legal-tiles)
-                (throw [:no-legal-tiles pos legal-rules])
+                (throw (ex-info "No Legal Tiles"
+                                {:pos pos
+                                 :legal-tiles legal-tiles
+                                 :legal-rules (count legal-rules)}))
                 (or (= legal-tiles (get grid pos))
                     (collapsed? grid pos))
                 (recur remaining changes grid)

@@ -28,7 +28,9 @@
 (defn cancel-active! [state]
   (when-let [cancel (:cancel @state)]
     (async/close! cancel)
-    (swap! state assoc :cancel nil)))
+    (swap! state assoc
+           :message nil
+           :cancel nil)))
 
 (defn set-cell! [state loc value]
   (cancel-active! state)
@@ -184,12 +186,17 @@
   (reset! state (init-state (:mode @state) (wfc/grid->matrix (:pattern @state)))))
 
 (defn solve-step [state]
-  (let [{:keys [grid rules]} @state
-        [changes grid'] (wfc/solve-one grid rules)]
-    (swap! state assoc
-           :grid grid'
-           :highlight changes)
-    changes))
+  (try
+    (let [{:keys [grid rules]} @state
+          [changes grid'] (wfc/solve-one grid rules)]
+      (swap! state assoc
+             :message nil
+             :grid grid'
+             :highlight changes)
+      changes)
+    (catch :default e
+      (cancel-active! state)
+      (swap! state assoc :message e))))
 
 (defn solve [state]
   (if-let [cancel (:cancel @state)]
@@ -295,7 +302,9 @@
          [:div#interface
           [:div.flexcols
            [:div [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
-            (when message (debug/pre-edn message))]
+            (when message
+              [:div {:style {:color "red"}}
+               (debug/pre-edn message)])]
            [:button.generate {:on-click #(reset state)} "Reset"]
            [:button.generate {:on-click #(solve-one state)} "Solve One"]
            [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
