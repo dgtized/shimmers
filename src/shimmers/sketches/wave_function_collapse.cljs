@@ -251,9 +251,13 @@
   [:div
    [:h4 (str "Rules (" (count rules) ")")]
    [:div {:style {:column-count 8}}
-    (for [[idx [tile dir other]] (map-indexed vector rules)]
-      [:div {:key (str "rule-" idx)}
-       (svg-adjacency tile dir other)])]])
+    (let [simplified (sort-by first (group-by identity rules))
+          numbered (some (fn [[_ e]] (> (count e) 1)) simplified)]
+      (for [[idx [[tile dir other] examples]] (map-indexed vector simplified)]
+        [:div {:key (str "rule-" idx)}
+         (when numbered
+           [:span (count examples) ": "])
+         (svg-adjacency tile dir other)]))]])
 
 (defn pattern-editor [pattern]
   [:div
