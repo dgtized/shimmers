@@ -30,11 +30,16 @@
     (async/close! cancel)
     (swap! state assoc :cancel nil)))
 
-(defn cell-set [state loc values]
+(defn set-cell! [state loc value]
   (cancel-active! state)
-  (let [{:keys [grid rules]} @state
+  (let [{:keys [tiles grid rules]} @state
+        values (if (= (get grid loc) 1)
+                 tiles
+                 #{value})
+
         [legal-tiles _] (wfc/legal-at-location grid rules loc)
-        [changes grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
+        allowed-tiles  (set/intersection legal-tiles values)
+        [changes grid'] (wfc/propagate grid rules loc allowed-tiles)]
     (swap! state assoc
            :highlight (conj changes loc)
            :grid grid')))
@@ -59,14 +64,6 @@
          (map (fn [pixel cell]
                 (vary-meta cell assoc :fill (get color-map pixel)))
               (seq (apply str value))))))
-
-(defn click [state loc value]
-  (let [{:keys [tiles grid]} @state
-        values (get grid loc)]
-    (cell-set state loc
-              (if (= (count values) 1)
-                tiles
-                #{value}))))
 
 (defn grid->cells [[width height] grid
                    {:keys [highlight n-tiles on-click]
@@ -294,7 +291,7 @@
          [:div.canvas-frame [scene [width height] grid
                              :highlight highlight
                              :n-tiles (count (:tiles @state))
-                             :on-click (partial click state)]]
+                             :on-click (partial set-cell! state)]]
          [:div#interface
           [:div.flexcols
            [:div [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
