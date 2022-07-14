@@ -265,16 +265,13 @@
            [:span (count examples) ": "])
          (svg-adjacency tile dir other)]))]])
 
-(defn pattern-editor [pattern]
-  [:div
-   [:h4 "Pattern"]
-   (scene [150 150] pattern)])
-
 (defn display-patterns [state]
   (let [{:keys [pattern tiles rules]} state]
     [:div
      [:div.flexcols
-      [pattern-editor pattern]
+      [:div
+       [:h4 "Pattern"]
+       (scene [150 150] pattern)]
       [tile-set tiles]]
      [rule-set rules]]))
 
