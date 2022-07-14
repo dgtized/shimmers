@@ -145,19 +145,19 @@
              :fill "none"}
             (grid->cells [width height] grid args)))
 
-(defn from-tileset []
-  (let [matrix rule-e
-        pattern (wfc/matrix->grid matrix wfc/cardinal-directions)
+(defn generate-tileset [matrix]
+  (let [directions wfc/cardinal-directions
+        pattern (wfc/matrix->grid matrix directions)
         tiles (wfc/rules->rotated-tiles matrix 3)
         rules (wfc/adjacency-rules tiles)]
-    {:grid (wfc/init-grid [30 20] wfc/cardinal-directions (set tiles))
+    {:grid (wfc/init-grid [30 20] directions (set tiles))
      :pattern pattern
      :tiles tiles
      :rules rules}))
 
-(defn from-cells []
+(defn generate-cellset [matrix]
   (let [directions wfc/directions-8
-        pattern (wfc/matrix->grid rule-d directions)
+        pattern (wfc/matrix->grid matrix directions)
         rules (wfc/rules pattern)
         tiles (wfc/all-tiles rules)]
     {:grid (wfc/init-grid [30 20] directions tiles)
@@ -165,19 +165,19 @@
      :tiles tiles
      :rules rules}))
 
-(def modes {:cells from-cells
-            :tileset from-tileset})
+(def modes {:cells generate-cellset
+            :tileset generate-tileset})
 
-(defn init-state [mode]
+(defn init-state [mode matrix]
   (merge {:highlight #{}
           :cancel nil
           :mode mode}
-         ((get modes mode))))
+         ((get modes mode) matrix)))
 
 (defn reset [state]
   (when-let [cancel (:cancel @state)]
     (async/close! cancel))
-  (reset! state (init-state (:mode @state))))
+  (reset! state (init-state (:mode @state) (wfc/grid->matrix (:pattern @state)))))
 
 (defn solve [state]
   (if-let [cancel (:cancel @state)]
@@ -276,7 +276,7 @@
      [rule-set rules]]))
 
 (defn page []
-  (let [state (ctrl/state (init-state :cells))]
+  (let [state (ctrl/state (init-state :cells rule-e))]
     (fn []
       (let [{:keys [grid highlight cancel]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode])]
