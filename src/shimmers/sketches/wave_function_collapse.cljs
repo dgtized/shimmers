@@ -25,9 +25,13 @@
    "B" "#cdcd00"
    "C" "#228b22"})
 
-(defn cell-set [state loc values]
+(defn cancel-active! [state]
   (when-let [cancel (:cancel @state)]
-    (async/close! cancel))
+    (async/close! cancel)
+    (swap! state assoc :cancel nil)))
+
+(defn cell-set [state loc values]
+  (cancel-active! state)
   (let [{:keys [grid rules]} @state
         [legal-tiles _] (wfc/legal-at-location grid rules loc)
         [changes grid'] (wfc/propagate grid rules loc (set/intersection legal-tiles values))]
@@ -179,8 +183,7 @@
          ((get modes mode) matrix)))
 
 (defn reset [state]
-  (when-let [cancel (:cancel @state)]
-    (async/close! cancel))
+  (cancel-active! state)
   (reset! state (init-state (:mode @state) (wfc/grid->matrix (:pattern @state)))))
 
 (defn solve [state]
@@ -202,8 +205,7 @@
             (swap! state assoc :cancel nil)))))))
 
 (defn solve-one [state]
-  (when-let [cancel (:cancel @state)]
-    (async/close! cancel))
+  (cancel-active! state)
   (let [{:keys [grid rules]} @state
         [changes grid'] (wfc/solve-one grid rules)]
     (swap! state assoc
