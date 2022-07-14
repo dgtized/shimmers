@@ -172,7 +172,8 @@
 (defn init-state [mode matrix]
   (merge {:highlight #{}
           :cancel nil
-          :mode mode}
+          :mode mode
+          :show-rules false}
          ((get modes mode) matrix)))
 
 (defn reset [state]
@@ -254,33 +255,37 @@
       [:div {:key (str "ts-" idx)}
        (svg-tile tile)])]])
 
-(defn rule-set [rules]
+(defn rule-set [rules show-rules toggle-rules]
   [:div
-   [:h4 (str "Rules (" (count rules) ")")]
-   [:div {:style {:column-count 8}}
-    (let [simplified (sort-by first (group-by identity rules))
-          numbered (some (fn [[_ e]] (> (count e) 1)) simplified)]
-      (for [[idx [[tile dir other] examples]] (map-indexed vector simplified)]
-        [:div {:key (str "rule-" idx)}
-         (when numbered
-           [:span (count examples) ": "])
-         (svg-adjacency tile dir other)]))]])
+   [:h4 (str "Rules (" (count rules) ")  ")
+    [:a {:on-click toggle-rules
+         :href "javascript:void(0)"}
+     (if show-rules "(hide)" "(show)")]]
+   (when show-rules
+     [:div {:style {:column-count 8}}
+      (let [simplified (sort-by first (group-by identity rules))
+            numbered (some (fn [[_ e]] (> (count e) 1)) simplified)]
+        (for [[idx [[tile dir other] examples]] (map-indexed vector simplified)]
+          [:div {:key (str "rule-" idx)}
+           (when numbered
+             [:span (count examples) ": "])
+           (svg-adjacency tile dir other)]))])])
 
-(defn display-patterns [state edit-click]
-  (let [{:keys [pattern tiles rules]} state]
+(defn display-patterns [state edit-click toggle-rules]
+  (let [{:keys [pattern tiles rules show-rules]} state]
     [:div
      [:div.flexcols
       [:div
        [:h4 "Pattern"]
        (scene [150 150] pattern :on-click edit-click)]
       [tile-set tiles]]
-     [rule-set rules]]))
+     [rule-set rules show-rules toggle-rules]]))
 
 (defn page []
   (let [state (ctrl/state (init-state :tileset rule-e))]
     (fn []
       (let [{:keys [grid highlight cancel]} @state
-            pattern-set (select-keys @state [:pattern :tiles :rules :mode])]
+            pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules])]
         [:div
          [:div.canvas-frame [scene [width height] grid
                              :highlight highlight
@@ -299,7 +304,9 @@
           [display-patterns pattern-set
            (fn [loc _]
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
-             (reset state))]]]))))
+             (reset state))
+           (fn []
+             (swap! state update :show-rules not))]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
