@@ -54,7 +54,17 @@
                 (vary-meta cell assoc :fill (get color-map pixel)))
               (seq (apply str value))))))
 
-(defn grid->cells [[width height] state grid highlight]
+(defn click [state loc value]
+  (let [{:keys [tiles grid]} @state
+        values (get grid loc)]
+    (cell-set state loc
+              (if (= (count values) 1)
+                tiles
+                #{value}))))
+
+(defn grid->cells [[width height] grid
+                   {:keys [highlight n-tiles on-click]
+                    :or {highlight #{} n-tiles 10000}}]
   (let [[cols rows] (:dims grid)
         w (/ width cols)
         h (/ height rows)]
@@ -75,16 +85,12 @@
                        (->> (g/subdivide cell divisions)
                             (map (fn [value piece]
                                    (svg/group (cond-> {:class "wfc-cell"}
-                                                state
-                                                (assoc :on-click
-                                                       #(cell-set state loc
-                                                                  (if (= (count values) 1)
-                                                                    (:tiles @state)
-                                                                    #{value}))))
+                                                on-click
+                                                (assoc :on-click (partial on-click loc value)))
                                               (cell-tile value piece)))
                                  values)))
                      (vary-meta cell assoc :fill
-                                (csvg/hsl 0 0 (/ options (count (:tiles @state)))))))))))
+                                (csvg/hsl 0 0 (/ options n-tiles)))))))))
 
 (def rule-a
   (wfc/str->matrix
@@ -132,12 +138,12 @@
     AAAAAAAAA
     AAAAAAAAA"))
 
-(defn scene [[width height] state grid highlight]
+(defn scene [[width height] grid & args]
   (csvg/svg {:width width
              :height height
              :stroke "none"
              :fill "none"}
-            (grid->cells [width height] state grid highlight)))
+            (grid->cells [width height] grid args)))
 
 (defn from-tileset []
   (let [matrix rule-e
@@ -262,7 +268,7 @@
 (defn pattern-editor [pattern]
   [:div
    [:h4 "Pattern"]
-   (scene [150 150] nil pattern #{})])
+   (scene [150 150] pattern)])
 
 (defn display-patterns [state]
   (let [{:keys [pattern tiles rules]} state]
@@ -278,7 +284,10 @@
       (let [{:keys [grid highlight cancel]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode])]
         [:div
-         [:div.canvas-frame [scene [width height] state grid highlight]]
+         [:div.canvas-frame [scene [width height] grid
+                             :highlight highlight
+                             :n-tiles (count (:tiles @state))
+                             :on-click (partial click state)]]
          [:div#interface
           [:div.flexcols
            [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
