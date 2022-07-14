@@ -171,14 +171,14 @@
           ["AAA" "AAA" "BAA"]]
          (sut/rotations ["BAA" "AAA" "AAA"]))))
 
-(deftest rules->rotated-tiles
+(deftest pattern->rotated-tiles
   (is (= [["AAA" "ABB" "ABB"]
           ["AAA" "BBA" "BBA"]
           ["ABB" "ABB" "AAA"]
           ["BBA" "BBA" "AAA"]]
          (-> "AAAA\nABBA\nABBA\nAAAA"
              sut/str->matrix
-             (sut/rules->rotated-tiles 3)))))
+             (sut/pattern->rotated-tiles 3)))))
 
 (deftest clockwise-faces
   (let [tile ["AAB" "AAA" "BBA"]]
@@ -214,11 +214,11 @@
           [[["ABB" "ABB" "AAA"] ["BBA" "BBA" "AAA"]] [[1 3] [3 1]]]]
          (-> "AAAA\nABBA\nABBA\nAAAA"
              sut/str->matrix
-             (sut/rules->rotated-tiles 3)
+             (sut/pattern->rotated-tiles 3)
              sut/all-adjacencies)))
   (is (= 28 (count (-> "AAAA\nABBA\nABBA\nAAAA"
                        sut/str->matrix
-                       (sut/rules->rotated-tiles 2)
+                       (sut/pattern->rotated-tiles 2)
                        sut/all-adjacencies)))))
 
 (deftest indexed-all-adjancies
@@ -236,7 +236,7 @@
            3 [["BBA" "BBA" "AAA"]]}}
          (-> "AAAA\nABBA\nABBA\nAAAA"
              sut/str->matrix
-             (sut/rules->rotated-tiles 3)
+             (sut/pattern->rotated-tiles 3)
              sut/indexed-all-adjancies))))
 
 (deftest adjacency-rules
@@ -266,7 +266,7 @@
           [["BBA" "BBA" "AAA"] (gv/vec2 1 0) ["ABB" "ABB" "AAA"]]]
          (-> "AAAA\nABBA\nABBA\nAAAA"
              sut/str->matrix
-             (sut/rules->rotated-tiles 3)
+             (sut/pattern->rotated-tiles 3)
              sut/adjacency-rules))))
 
 (comment (t/run-tests))

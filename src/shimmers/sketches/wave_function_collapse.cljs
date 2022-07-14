@@ -153,7 +153,7 @@
 (defn generate-tileset [matrix rotations]
   (let [directions wfc/cardinal-directions
         pattern (wfc/matrix->grid matrix directions)
-        tiles ((if rotations wfc/rules->rotated-tiles
+        tiles ((if rotations wfc/pattern->rotated-tiles
                    wfc/pattern->oriented-tiles)
                matrix 3)
         rules (wfc/adjacency-rules tiles)]

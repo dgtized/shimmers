@@ -275,7 +275,7 @@
        sort
        dedupe))
 
-(defn rules->rotated-tiles [matrix n]
+(defn pattern->rotated-tiles [matrix n]
   (->> (rules->tiles matrix n)
        vals
        (mapcat rotations)
