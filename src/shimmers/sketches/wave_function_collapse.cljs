@@ -35,7 +35,7 @@
 (defn set-cell! [state loc value]
   (cancel-active! state)
   (let [{:keys [tiles grid rules]} @state
-        values (if (= (get grid loc) 1)
+        values (if (= (count (get grid loc)) 1)
                  tiles
                  #{value})
 
