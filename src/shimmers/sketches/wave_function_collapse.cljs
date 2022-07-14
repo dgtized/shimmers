@@ -277,7 +277,7 @@
      [rule-set rules]]))
 
 (defn page []
-  (let [state (ctrl/state (init-state :cells rule-e))]
+  (let [state (ctrl/state (init-state :tileset rule-e))]
     (fn []
       (let [{:keys [grid highlight cancel]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode])]
@@ -293,8 +293,9 @@
            [:button.generate {:on-click #(solve-one state)} "Solve One"]
            [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
           [:p.readable
-           "Click on a cell to collapse it to a specific tile, or to expand it to
-         the set of all legal tiles."]
+           "Click on a cell above to collapse it to a specific tile, or to
+         expand it to the set of all legal tiles. Click on a cell in the pattern
+         below to derive new tiles and rules."]
           [display-patterns pattern-set
            (fn [loc _]
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
