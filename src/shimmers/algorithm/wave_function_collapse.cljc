@@ -269,6 +269,12 @@
 (defn rotations [tile]
   (vec (dedupe (take 4 (iterate rotate-clockwise tile)))))
 
+(defn pattern->oriented-tiles [matrix n]
+  (->> (rules->tiles matrix n)
+       vals
+       sort
+       dedupe))
+
 (defn rules->rotated-tiles [matrix n]
   (->> (rules->tiles matrix n)
        vals

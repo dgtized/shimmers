@@ -150,10 +150,12 @@
              :fill "none"}
             (grid->cells [width height] grid args)))
 
-(defn generate-tileset [matrix]
+(defn generate-tileset [matrix rotations]
   (let [directions wfc/cardinal-directions
         pattern (wfc/matrix->grid matrix directions)
-        tiles (wfc/rules->rotated-tiles matrix 3)
+        tiles ((if rotations wfc/rules->rotated-tiles
+                   wfc/pattern->oriented-tiles)
+               matrix 3)
         rules (wfc/adjacency-rules tiles)]
     {:grid (wfc/init-grid [30 20] directions (set tiles))
      :pattern pattern
@@ -173,17 +175,19 @@
 (def modes {:cells generate-cellset
             :tileset generate-tileset})
 
-(defn init-state [mode matrix]
+(defn init-state [mode matrix rotations]
   (merge {:highlight #{}
           :cancel nil
           :message nil
           :mode mode
+          :rotations rotations
           :show-rules false}
-         ((get modes mode) matrix)))
+         ((get modes mode) matrix rotations)))
 
 (defn reset [state]
   (cancel-active! state)
-  (reset! state (init-state (:mode @state) (wfc/grid->matrix (:pattern @state)))))
+  (let [{:keys [mode pattern rotations]} @state]
+    (reset! state (init-state mode (wfc/grid->matrix pattern) rotations))))
 
 (defn solve-step [state]
   (try
@@ -279,21 +283,28 @@
              [:span (count examples) ": "])
            (svg-adjacency tile dir other)]))])])
 
-(defn display-patterns [state edit-click toggle-rules]
-  (let [{:keys [pattern tiles rules show-rules]} state]
+(defn display-patterns [state edit-click toggle-rules toggle-rotations]
+  (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
     [:div
      [:div.flexcols
       [:div
        [:h4 "Pattern"]
        (scene [150 150] pattern :on-click edit-click)]
+      (when (= mode :tileset)
+        [:div
+         [:h4 "Settings"]
+         [:div.label-set {:key "Include Rotations"}
+          [:input {:type "checkbox" :checked rotations
+                   :on-change toggle-rotations}]
+          [:label "Include Rotations"]]])
       [tile-set tiles]]
      [rule-set rules show-rules toggle-rules]]))
 
 (defn page []
-  (let [state (ctrl/state (init-state :tileset rule-e))]
+  (let [state (ctrl/state (init-state :tileset rule-e true))]
     (fn []
       (let [{:keys [grid highlight cancel message]} @state
-            pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules])]
+            pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules :rotations])]
         [:div
          [:div.canvas-frame [scene [width height] grid
                              :highlight highlight
@@ -318,7 +329,10 @@
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
              (reset state))
            (fn []
-             (swap! state update :show-rules not))]]]))))
+             (swap! state update :show-rules not))
+           (fn []
+             (swap! state update-in [:rotations] not)
+             (reset state))]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
