@@ -183,6 +183,14 @@
   (cancel-active! state)
   (reset! state (init-state (:mode @state) (wfc/grid->matrix (:pattern @state)))))
 
+(defn solve-step [state]
+  (let [{:keys [grid rules]} @state
+        [changes grid'] (wfc/solve-one grid rules)]
+    (swap! state assoc
+           :grid grid'
+           :highlight changes)
+    changes))
+
 (defn solve [state]
   (if-let [cancel (:cancel @state)]
     (async/close! cancel)
@@ -191,11 +199,7 @@
       (go-loop [state state]
         (let [[_ c] (async/alts! [new-cancel (async/timeout 1)])]
           (if-not (= c new-cancel)
-            (let [{:keys [grid rules]} @state
-                  [changes grid'] (wfc/solve-one grid rules)]
-              (swap! state assoc
-                     :grid grid'
-                     :highlight changes)
+            (let [changes (solve-step state)]
               (if (seq changes)
                 (recur state)
                 (swap! state assoc :cancel nil)))
@@ -203,11 +207,7 @@
 
 (defn solve-one [state]
   (cancel-active! state)
-  (let [{:keys [grid rules]} @state
-        [changes grid'] (wfc/solve-one grid rules)]
-    (swap! state assoc
-           :grid grid'
-           :highlight changes)))
+  (solve-step state))
 
 (defn svg-tile [tile]
   (csvg/svg {:width 20
