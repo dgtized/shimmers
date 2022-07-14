@@ -3,6 +3,7 @@
    [cljs.core.async :as async :include-macros true]
    [clojure.set :as set]
    [shimmers.algorithm.wave-function-collapse :as wfc]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
@@ -265,13 +266,13 @@
            [:span (count examples) ": "])
          (svg-adjacency tile dir other)]))]])
 
-(defn display-patterns [state]
+(defn display-patterns [state edit-click]
   (let [{:keys [pattern tiles rules]} state]
     [:div
      [:div.flexcols
       [:div
        [:h4 "Pattern"]
-       (scene [150 150] pattern)]
+       (scene [150 150] pattern :on-click edit-click)]
       [tile-set tiles]]
      [rule-set rules]]))
 
@@ -294,7 +295,10 @@
           [:p.readable
            "Click on a cell to collapse it to a specific tile, or to expand it to
          the set of all legal tiles."]
-          [display-patterns pattern-set]]]))))
+          [display-patterns pattern-set
+           (fn [loc _]
+             (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
+             (reset state))]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
