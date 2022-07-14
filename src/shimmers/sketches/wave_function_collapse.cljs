@@ -6,6 +6,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -172,6 +173,7 @@
 (defn init-state [mode matrix]
   (merge {:highlight #{}
           :cancel nil
+          :message nil
           :mode mode
           :show-rules false}
          ((get modes mode) matrix)))
@@ -284,7 +286,7 @@
 (defn page []
   (let [state (ctrl/state (init-state :tileset rule-e))]
     (fn []
-      (let [{:keys [grid highlight cancel]} @state
+      (let [{:keys [grid highlight cancel message]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules])]
         [:div
          [:div.canvas-frame [scene [width height] grid
@@ -293,7 +295,8 @@
                              :on-click (partial click state)]]
          [:div#interface
           [:div.flexcols
-           [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
+           [:div [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
+            (when message (debug/pre-edn message))]
            [:button.generate {:on-click #(reset state)} "Reset"]
            [:button.generate {:on-click #(solve-one state)} "Solve One"]
            [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
@@ -301,6 +304,7 @@
            "Click on a cell above to collapse it to a specific tile, or to
          expand it to the set of all legal tiles. Click on a cell in the pattern
          below to derive new tiles and rules."]
+          [:p.readable "Does not yet support backtracking."]
           [display-patterns pattern-set
            (fn [loc _]
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
