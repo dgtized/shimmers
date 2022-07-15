@@ -67,9 +67,26 @@
                 (vary-meta cell assoc :fill (get color-map pixel)))
               (seq (apply str value))))))
 
+(defn cell-subdivisions
+  [cell loc values {:keys [tiles on-click]}]
+  (let [options (count values)
+        divisions (get subdivisions options
+                       (let [s (Math/sqrt options)]
+                         {:cols (Math/ceil s) :rows (Math/ceil s)}))]
+    (->> (g/subdivide cell divisions)
+         (map (fn [value piece]
+                (let [tile (if (integer? value)
+                             (nth tiles value)
+                             value)]
+                  (svg/group (cond-> {:class "wfc-cell"}
+                               on-click
+                               (assoc :on-click (partial on-click loc value)))
+                             (cell-tile tile piece))))
+              values))))
+
 (defn grid->cells [[width height] grid
-                   {:keys [highlight on-click tiles]
-                    :or {highlight #{} tiles []}}]
+                   {:keys [highlight tiles]
+                    :or {highlight #{} tiles []} :as args}]
   (let [[cols rows] (:dims grid)
         w (/ width cols)
         h (/ height rows)
@@ -84,20 +101,7 @@
         (svg/group {:class "wfc-tile"
                     :stroke (if changed? "red" "none")}
                    (if (<= options 16)
-                     (let [divisions
-                           (get subdivisions options
-                                (let [s (Math/sqrt options)]
-                                  {:cols (Math/ceil s) :rows (Math/ceil s)}))]
-                       (->> (g/subdivide cell divisions)
-                            (map (fn [value piece]
-                                   (let [tile (if (integer? value)
-                                                (nth tiles value)
-                                                value)]
-                                     (svg/group (cond-> {:class "wfc-cell"}
-                                                  on-click
-                                                  (assoc :on-click (partial on-click loc value)))
-                                                (cell-tile tile piece))))
-                                 values)))
+                     (cell-subdivisions cell loc values args)
                      (vary-meta cell assoc :fill
                                 (csvg/hsl 0 0 (/ options n-tiles)))))))))
 
