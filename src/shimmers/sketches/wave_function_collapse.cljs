@@ -157,20 +157,24 @@
                    wfc/pattern->oriented-tiles)
                matrix 3)
         rules (wfc/adjacency-rules tiles)]
-    {:grid (wfc/init-grid [30 20] directions (set tiles))
-     :pattern pattern
-     :tiles tiles
-     :rules rules}))
+    (wfc/build-state
+     {:dims [30 20]
+      :directions directions
+      :pattern pattern
+      :tiles tiles
+      :rules rules})))
 
 (defn generate-cellset [matrix]
   (let [directions wfc/directions-8
         pattern (wfc/matrix->grid matrix directions)
         rules (wfc/rules pattern)
         tiles (wfc/all-tiles rules)]
-    {:grid (wfc/init-grid [30 20] directions tiles)
-     :pattern pattern
-     :tiles tiles
-     :rules rules}))
+    (wfc/build-state
+     {:dims [30 20]
+      :directions directions
+      :pattern pattern
+      :tiles tiles
+      :rules rules})))
 
 (def modes {:cells generate-cellset
             :tileset generate-tileset})

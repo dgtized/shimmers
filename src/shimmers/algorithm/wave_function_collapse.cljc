@@ -340,3 +340,13 @@
                          adj)))
        (sort-by (juxt first second))
        (into [])))
+
+(defn build-state [{:keys [dims directions pattern tiles rules]}]
+  (let [t-index (range (count tiles))
+        tile->index (zipmap tiles t-index)]
+    {:pattern pattern
+     :grid (init-grid dims directions (set tiles))
+     :tiles tiles
+     :tile->index tile->index
+     :index-rules (mapv (fn [[a dir b]] [(tile->index a) dir (tile->index b)]) rules)
+     :rules rules}))
