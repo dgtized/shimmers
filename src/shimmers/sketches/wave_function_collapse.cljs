@@ -199,11 +199,12 @@
 
 (defn solve-step [state]
   (try
-    (let [{:keys [grid rules]} @state
-          [changes grid'] (wfc/solve-one grid rules)]
+    (let [{:keys [grid rules positions]} @state
+          [changes grid' positions'] (wfc/solve-one grid rules positions)]
       (swap! state assoc
              :message nil
              :grid grid'
+             :positions positions'
              :highlight changes)
       changes)
     (catch :default e
