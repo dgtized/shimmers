@@ -197,6 +197,39 @@
   (let [{:keys [mode pattern rotations]} @state]
     (reset! state (init-state mode (wfc/grid->matrix pattern) rotations))))
 
+(defn action-dispatch [state event]
+  (case event
+    :pattern-edit-click
+    (fn [loc _]
+      (cancel-active! state)
+      (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
+      (reset state))
+    :clear
+    (fn []
+      (cancel-active! state)
+      (swap! state update :pattern
+             (fn [{[cols rows] :dims :as pattern}]
+               (merge pattern
+                      (into {}
+                            (for [i (range cols)
+                                  j (range rows)]
+                              {(gv/vec2 i j) "A"})))))
+      (reset state))
+    :reset
+    (fn []
+      (cancel-active! state)
+      (swap! state assoc :pattern
+             (wfc/matrix->grid rule-e wfc/cardinal-directions))
+      (reset state))
+    :toggle-rotations
+    (fn []
+      (cancel-active! state)
+      (swap! state update-in [:rotations] not)
+      (reset state))
+    :toggle-show-rules
+    (fn []
+      (swap! state update :show-rules not))))
+
 (defn solve-step [state]
   (try
     (let [{:keys [grid rules positions]} @state
@@ -310,39 +343,6 @@
           [:label "Include Rotations"]]])
       [tile-set tiles]]
      [rule-set rules tiles show-rules emit]]))
-
-(defn action-dispatch [state event]
-  (case event
-    :pattern-edit-click
-    (fn [loc _]
-      (cancel-active! state)
-      (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
-      (reset state))
-    :clear
-    (fn []
-      (cancel-active! state)
-      (swap! state update :pattern
-             (fn [{[cols rows] :dims :as pattern}]
-               (merge pattern
-                      (into {}
-                            (for [i (range cols)
-                                  j (range rows)]
-                              {(gv/vec2 i j) "A"})))))
-      (reset state))
-    :reset
-    (fn []
-      (cancel-active! state)
-      (swap! state assoc :pattern
-             (wfc/matrix->grid rule-e wfc/cardinal-directions))
-      (reset state))
-    :toggle-rotations
-    (fn []
-      (cancel-active! state)
-      (swap! state update-in [:rotations] not)
-      (reset state))
-    :toggle-show-rules
-    (fn []
-      (swap! state update :show-rules not))))
 
 (defn page []
   (let [state (ctrl/state (init-state :tileset rule-e true))
