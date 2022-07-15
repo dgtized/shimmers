@@ -26,11 +26,17 @@
 ;; and (svg {} [el el] [el]) work,
 ;; but (svg {} el) and (svg {} el el) do not.
 (defn svg
+  {:style/indent [:defn]}
   [attribs & body]
   (-> (svg-elem attribs)
       (into (apply concat body))
       adapt/all-as-svg
       adapt/inject-element-attribs))
+
+(defn group
+  {:style/indent [:defn]}
+  [attribs & body]
+  (into [:g (svg/svg-attribs attribs nil)] body))
 
 (defn rotate
   ([angle]

@@ -78,32 +78,11 @@
                 (let [tile (if (integer? value)
                              (nth tiles value)
                              value)]
-                  (svg/group (cond-> {:class "wfc-cell"}
-                               on-click
-                               (assoc :on-click (partial on-click loc value)))
-                             (cell-tile tile piece))))
+                  (csvg/group (cond-> {:class "wfc-cell"}
+                                on-click
+                                (assoc :on-click (partial on-click loc value)))
+                    (cell-tile tile piece))))
               values))))
-
-(defn grid->cells [[width height] grid
-                   {:keys [highlight tiles]
-                    :or {highlight #{} tiles []} :as args}]
-  (let [[cols rows] (:dims grid)
-        w (/ width cols)
-        h (/ height rows)
-        n-tiles (count tiles)]
-    (for [j (range rows)
-          i (range cols)]
-      (let [loc (gv/vec2 i j)
-            values (get grid loc)
-            cell (rect/rect (* w i) (* h j) w h)
-            changed? (contains? highlight loc)
-            options (count values)]
-        (svg/group {:class "wfc-tile"
-                    :stroke (if changed? "red" "none")}
-                   (if (<= options 16)
-                     (cell-subdivisions cell loc values args)
-                     (vary-meta cell assoc :fill
-                                (csvg/hsl 0 0 (/ options n-tiles)))))))))
 
 (def rule-a
   (wfc/str->matrix
@@ -151,12 +130,33 @@
     AAAAAAAAA
     AAAAAAAAA"))
 
-(defn scene [[width height] grid & args]
-  (csvg/svg {:width width
-             :height height
-             :stroke "none"
-             :fill "none"}
-            (grid->cells [width height] grid args)))
+(defn scene
+  [[width height]
+   grid
+   & {:keys [highlight tiles]
+      :or {highlight #{} tiles []}
+      :as args}]
+  (let [[cols rows] (:dims grid)
+        w (/ width cols)
+        h (/ height rows)
+        n-tiles (count tiles)]
+    (csvg/svg {:width width
+               :height height
+               :stroke "none"
+               :fill "none"}
+      (for [j (range rows)
+            i (range cols)]
+        (let [loc (gv/vec2 i j)
+              values (get grid loc)
+              cell (rect/rect (* w i) (* h j) w h)
+              changed? (contains? highlight loc)
+              options (count values)]
+          (csvg/group {:class "wfc-tile"
+                       :stroke (if changed? "red" "none")}
+            (if (<= options 16)
+              (cell-subdivisions cell loc values args)
+              (vary-meta cell assoc :fill
+                         (csvg/hsl 0 0 (/ options n-tiles))))))))))
 
 (defn generate-tileset [matrix rotations]
   (let [directions wfc/cardinal-directions
@@ -271,7 +271,7 @@
              :height 20
              :stroke "none"
              :fill "none"}
-            [(cell-tile tile (rect/rect 20))]))
+    [(cell-tile tile (rect/rect 20))]))
 
 (def direction-name
   (zipmap wfc/directions-8
@@ -300,10 +300,10 @@
                :height h
                :stroke "none"
                :fill "none"}
-              [[:title (get direction-name direction)]
-               (cell-tile tile r1)
-               (cell-tile other r2)
-               (vary-meta r2 assoc :opacity 0.25 :fill "white")])))
+      [[:title (get direction-name direction)]
+       (cell-tile tile r1)
+       (cell-tile other r2)
+       (vary-meta r2 assoc :opacity 0.25 :fill "white")])))
 
 (defn tile-set [tiles]
   [:div
