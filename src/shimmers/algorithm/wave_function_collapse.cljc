@@ -128,11 +128,12 @@
   [rules check-dirs]
   ;; Map is {dir #{tiles}}
   (let [surroundings
-        (->> rules
-             (group-by second)
-             (reduce-kv (fn [m k v] (assoc m k (set (mapv first v))))
-                        {}))]
-    (reduce (fn [acc dir] (set/intersection acc (get surroundings dir #{})))
+        (reduce (fn [m [a dir _]]
+                  (update m dir (fnil conj #{}) a))
+                {}
+                rules)]
+    (reduce (fn [acc dir]
+              (set/intersection acc (get surroundings dir #{})))
             (first (vals surroundings))
             check-dirs)))
 
