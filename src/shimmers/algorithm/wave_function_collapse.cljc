@@ -117,10 +117,8 @@
   "Calculate subset of legal rules given current `grid` and a `position`."
   [grid rules position]
   (let [{:keys [dims]} grid]
-    (filter (fn [rule]
-              (let [dir (nth rule 1)
-                    tile (nth rule 2)
-                    neighbor (tm/+ position dir)]
+    (filter (fn [[_ dir tile]]
+              (let [neighbor (tm/+ position dir)]
                 (and (valid-neighbor? dims neighbor)
                      (contains? (get grid neighbor) tile))))
             rules)))
