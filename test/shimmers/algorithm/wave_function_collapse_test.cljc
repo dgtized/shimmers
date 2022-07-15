@@ -37,6 +37,7 @@
   (is (= [[:a (gv/vec2 0 1) :b]
           [:b (gv/vec2 1 0) :c]]
          (sut/legal-rules {:dims [2 2]
+                           :directions sut/cardinal-directions
                            (gv/vec2 0 0) #{:a :b :c} (gv/vec2 1 0) #{:a :c}
                            (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b :c}}
                           [[:a (gv/vec2 1 0) :b]
@@ -48,6 +49,7 @@
           [:a (gv/vec2 0 1) :a]
           [:b (gv/vec2 0 1) :b]]
          (sut/legal-rules {:dims [2 2]
+                           :directions sut/cardinal-directions
                            (gv/vec2 0 0) #{:a :b} (gv/vec2 1 0) #{:a}
                            (gv/vec2 0 1) #{:a :b} (gv/vec2 1 1) #{:a :b}}
                           [[:a (gv/vec2 1 0) :a]

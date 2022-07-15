@@ -116,11 +116,16 @@
 (defn legal-rules
   "Calculate subset of legal rules given current `grid` and a `position`."
   [grid rules position]
-  (let [{:keys [dims]} grid]
+  (let [{:keys [dims directions]} grid
+        ;; build the local neighborhoodcontaining immediate valid directions
+        ;; mapped to the set of tiles at that location in the grid.
+        locale (into {}
+                     (for [dir directions
+                           :let [neighbor (tm/+ position dir)]
+                           :when (valid-neighbor? dims neighbor)]
+                       {dir (get grid neighbor)}))]
     (filter (fn [[_ dir tile]]
-              (let [neighbor (tm/+ position dir)]
-                (and (valid-neighbor? dims neighbor)
-                     (contains? (get grid neighbor) tile))))
+              (contains? (get locale dir #{}) tile))
             rules)))
 
 (defn tiles-from-rules
