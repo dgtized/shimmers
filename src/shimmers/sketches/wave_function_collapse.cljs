@@ -292,13 +292,13 @@
              [:span (count examples) ": "])
            (svg-adjacency (nth tiles tile-idx) dir (nth tiles other-idx))]))])])
 
-(defn display-patterns [state edit-click emit]
+(defn display-patterns [state emit]
   (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
     [:div
      [:div.flexcols
       [:div
        [:h4 "Pattern"]
-       (scene [150 150] pattern :on-click edit-click)]
+       (scene [150 150] pattern :on-click (emit :pattern-edit-click))]
       (when (= mode :tileset)
         [:div
          [:h4 "Settings"]
@@ -313,6 +313,11 @@
 
 (defn action-dispatch [state event]
   (case event
+    :pattern-edit-click
+    (fn [loc _]
+      (cancel-active! state)
+      (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
+      (reset state))
     :clear
     (fn []
       (cancel-active! state)
@@ -364,12 +369,7 @@
          expand it to the set of all legal tiles. Click on a cell in the pattern
          below to derive new tiles and rules."]
           [:p.readable "Does not yet support backtracking."]
-          [display-patterns pattern-set
-           (fn [loc _]
-             (cancel-active! state)
-             (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
-             (reset state))
-           emit]]]))))
+          [display-patterns pattern-set emit]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
