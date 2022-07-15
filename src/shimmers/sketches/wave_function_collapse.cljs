@@ -292,7 +292,7 @@
              [:span (count examples) ": "])
            (svg-adjacency (nth tiles tile-idx) dir (nth tiles other-idx))]))])])
 
-(defn display-patterns [state edit-click clear reset toggle-rules toggle-rotations]
+(defn display-patterns [state edit-click emit toggle-rules]
   (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
     [:div
      [:div.flexcols
@@ -302,17 +302,43 @@
       (when (= mode :tileset)
         [:div
          [:h4 "Settings"]
-         [:div [:button {:on-click clear} "Clear Pattern"]]
-         [:div [:button {:on-click reset} "Reset Pattern"]]
+         [:div [:button {:on-click (emit :clear)} "Clear Pattern"]]
+         [:div [:button {:on-click (emit :reset)} "Reset Pattern"]]
          [:div.label-set {:key "Include Rotations"}
           [:input {:type "checkbox" :checked rotations
-                   :on-change toggle-rotations}]
+                   :on-change (emit :toggle-rotations)}]
           [:label "Include Rotations"]]])
       [tile-set tiles]]
      [rule-set rules tiles show-rules toggle-rules]]))
 
+(defn action-dispatch [state event]
+  (case event
+    :clear
+    (fn []
+      (cancel-active! state)
+      (swap! state update :pattern
+             (fn [{[cols rows] :dims :as pattern}]
+               (merge pattern
+                      (into {}
+                            (for [i (range cols)
+                                  j (range rows)]
+                              {(gv/vec2 i j) "A"})))))
+      (reset state))
+    :reset
+    (fn []
+      (cancel-active! state)
+      (swap! state assoc :pattern
+             (wfc/matrix->grid rule-e wfc/cardinal-directions))
+      (reset state))
+    :toggle-rotations
+    (fn []
+      (cancel-active! state)
+      (swap! state update-in [:rotations] not)
+      (reset state))))
+
 (defn page []
-  (let [state (ctrl/state (init-state :tileset rule-e true))]
+  (let [state (ctrl/state (init-state :tileset rule-e true))
+        emit (partial action-dispatch state)]
     (fn []
       (let [{:keys [tiles grid highlight cancel message]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules :rotations])]
@@ -340,27 +366,9 @@
              (cancel-active! state)
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
              (reset state))
+           emit
            (fn []
-             (cancel-active! state)
-             (swap! state update :pattern
-                    (fn [{[cols rows] :dims :as pattern}]
-                      (merge pattern
-                             (into {}
-                                   (for [i (range cols)
-                                         j (range rows)]
-                                     {(gv/vec2 i j) "A"})))))
-             (reset state))
-           (fn []
-             (cancel-active! state)
-             (swap! state assoc :pattern
-                    (wfc/matrix->grid rule-e wfc/cardinal-directions))
-             (reset state))
-           (fn []
-             (swap! state update :show-rules not))
-           (fn []
-             (cancel-active! state)
-             (swap! state update-in [:rotations] not)
-             (reset state))]]]))))
+             (swap! state update :show-rules not))]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
