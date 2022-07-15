@@ -93,8 +93,8 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (shapes (rect/rect 0 0 width height)
-                    (dr/random-int 3 6))))
+    (shapes (rect/rect 0 0 width height)
+            (dr/random-int 3 6))))
 
 (sketch/definition radial-expansion
   {:created-at "2022-06-21"

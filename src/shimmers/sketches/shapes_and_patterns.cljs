@@ -1,18 +1,17 @@
 (ns shimmers.sketches.shapes-and-patterns
   (:require
+   [shimmers.algorithm.markov :as markov]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.algorithm.markov :as markov]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -25,7 +24,7 @@
 (defmulti svg-row :type)
 
 (defmethod svg-row :blank [_]
-  (svg/group {}))
+  (csvg/group {}))
 
 (defmethod svg-row :circle [{:keys [v row-height]}]
   (let [diameter row-height
@@ -154,7 +153,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 1.0}
-            (shapes (dr/rand-nth [17 23]))))
+    (shapes (dr/rand-nth [17 23]))))
 
 (sketch/definition shapes-and-patterns
   {:created-at "2022-02-19"

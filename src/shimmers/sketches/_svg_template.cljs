@@ -20,7 +20,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition svg-template
   {:created-at "2022-"

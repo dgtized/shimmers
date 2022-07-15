@@ -94,7 +94,7 @@
                :stroke "black"
                :fill "black"
                :stroke-width 0.5}
-              shapes)))
+      shapes)))
 
 (defn ui-controls [state]
   [:div

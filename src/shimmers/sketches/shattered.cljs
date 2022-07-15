@@ -2,11 +2,11 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.geometry :as geometry]))
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -26,7 +26,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition shattered
   {:created-at "2022-01-01"

@@ -114,7 +114,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition prophecies
   {:created-at "2022-07-08"

@@ -61,7 +61,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.8}
-            (grid)))
+    (grid)))
 
 (sketch/definition cube-rotations
   {:created-at "2022-01-09"

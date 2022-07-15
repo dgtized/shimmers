@@ -37,8 +37,8 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (for [[i shape] (map-indexed vector (shapes))]
-              (vary-meta shape assoc :key (str "l" i)))))
+    (for [[i shape] (map-indexed vector (shapes))]
+      (vary-meta shape assoc :key (str "l" i)))))
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"

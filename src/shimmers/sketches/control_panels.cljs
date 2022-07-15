@@ -11,7 +11,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -34,13 +33,13 @@
         slider (rect/rect (g/unmap-point slider0 (gv/vec2 0.15 0))
                           (g/unmap-point slider0 (gv/vec2 0.85 1)))
         inner (g/scale-size slider 0.95)]
-    (svg/group {}
-               slider
-               (for [t (range 0 1 0.1)]
-                 (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
-                           (g/unmap-point slider (gv/vec2 0.1 t))))
-               (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct 0.01)))
-                          (g/unmap-point inner (gv/vec2 0.9 (+ pct 0.01)))))))
+    (csvg/group {}
+      slider
+      (for [t (range 0 1 0.1)]
+        (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
+                  (g/unmap-point slider (gv/vec2 0.1 t))))
+      (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct 0.01)))
+                 (g/unmap-point inner (gv/vec2 0.9 (+ pct 0.01)))))))
 
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
@@ -50,52 +49,52 @@
         upper (* 0.9 r)
         lower (* 0.8 r)
         theta (tm/mix* t0 t1 pct)]
-    (svg/group {}
-               (csvg/path [[:M (rpv p r t0)]
-                           [:A [r r] 0 0 1 (rpv p r t1)]
-                           [:L (rpv p inner t1)]
-                           [:A [inner inner] 0 0 0 (rpv p inner t0)]
-                           [:Z]])
-               (for [t (map #(+ % 0.05) (range t0 t1 0.1))]
-                 (gl/line2 (rpv p lower t) (rpv p upper t)))
-               (gl/line2 (rpv p (* 0.5 r) theta)
-                         (rpv p (* 0.95 r) theta))
-               ;; bounding box
-               (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.5 r)))
-                                     (tm/+ center (gv/vec2 (+ r) (* 0.5 r))))
-                 {:rx 10}))))
+    (csvg/group {}
+      (csvg/path [[:M (rpv p r t0)]
+                  [:A [r r] 0 0 1 (rpv p r t1)]
+                  [:L (rpv p inner t1)]
+                  [:A [inner inner] 0 0 0 (rpv p inner t0)]
+                  [:Z]])
+      (for [t (map #(+ % 0.05) (range t0 t1 0.1))]
+        (gl/line2 (rpv p lower t) (rpv p upper t)))
+      (gl/line2 (rpv p (* 0.5 r) theta)
+                (rpv p (* 0.95 r) theta))
+      ;; bounding box
+      (with-meta (rect/rect (tm/+ center (gv/vec2 (- r) (* -0.5 r)))
+                            (tm/+ center (gv/vec2 (+ r) (* 0.5 r))))
+        {:rx 10}))))
 
 (defn oscilliscope [center r]
   (let [rect (g/center (rect/rect (* 2 r)) center)]
-    (svg/group {}
-               (with-meta rect
-                 {:rx 25})
-               (for [t (range 0.1 0.9 0.2)]
-                 (gl/line2 (g/unmap-point rect (gv/vec2 t 0.025))
-                           (g/unmap-point rect (gv/vec2 t 0.975))))
-               (for [t (range 0.1 0.9 0.2)]
-                 (gl/line2 (g/unmap-point rect (gv/vec2 0.025 t))
-                           (g/unmap-point rect (gv/vec2 0.975 t)))))))
+    (csvg/group {}
+      (with-meta rect
+        {:rx 25})
+      (for [t (range 0.1 0.9 0.2)]
+        (gl/line2 (g/unmap-point rect (gv/vec2 t 0.025))
+                  (g/unmap-point rect (gv/vec2 t 0.975))))
+      (for [t (range 0.1 0.9 0.2)]
+        (gl/line2 (g/unmap-point rect (gv/vec2 0.025 t))
+                  (g/unmap-point rect (gv/vec2 0.975 t)))))))
 
 (defn plug [p r]
-  (svg/group {}
-             (gc/circle p (* 0.75 r))
-             (gc/circle p r)))
+  (csvg/group {}
+    (gc/circle p (* 0.75 r))
+    (gc/circle p r)))
 
 (defn knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
         w 0.08]
-    (svg/group {}
-               (gc/circle p (* 0.9 r))
-               (for [t (range 0 1 0.1)]
-                 (gl/line2 (rpv p (* 0.90 r) (mapper t))
-                           (rpv p (* 1.00 r) (mapper t))))
-               (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
-                                         (gv/vec2 (* 1.025 r) (* w r)))
-                              (g/rotate theta)
-                              (g/translate p))
-                 {:rx 10 :fill "white"}))))
+    (csvg/group {}
+      (gc/circle p (* 0.9 r))
+      (for [t (range 0 1 0.1)]
+        (gl/line2 (rpv p (* 0.90 r) (mapper t))
+                  (rpv p (* 1.00 r) (mapper t))))
+      (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
+                                (gv/vec2 (* 1.025 r) (* w r)))
+                     (g/rotate theta)
+                     (g/translate p))
+        {:rx 10 :fill "white"}))))
 
 (defn divide-panels [{[w h] :size :as bounds}]
   (let [area-ratio (/ (g/area bounds) (g/area screen))
@@ -176,7 +175,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.75}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition control-panels
   {:created-at "2022-02-07"

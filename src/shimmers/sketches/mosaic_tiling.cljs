@@ -8,7 +8,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   thi.ng.geom.svg.core
+   [thi.ng.geom.svg.core]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
    [thi.ng.strf.core :as f]))
@@ -147,18 +147,18 @@
         cell (/ width (count palette))
         rect (rect/rect 0 0 cell height)]
     (csvg/svg {:width width :height height}
-              (for [[idx color] (map-indexed vector palette)]
-                (-> rect
-                    (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
-                    (with-meta {:fill (str color)}))))))
+      (for [[idx color] (map-indexed vector palette)]
+        (-> rect
+            (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
+            (with-meta {:fill (str color)}))))))
 
 (defn svg-tile [size cell-size cells]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
     (csvg/svg {:width size :height size :stroke "black"}
-              (for [{:keys [pos fill]} cells]
-                (-> rect
-                    (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
-                    (with-meta {:fill fill}))))))
+      (for [{:keys [pos fill]} cells]
+        (-> rect
+            (g/translate (tm/* pos (gv/vec2 cell-size cell-size)))
+            (with-meta {:fill fill}))))))
 
 ;; FIXME: something is still off sometimes about the initial square
 ;; I think at least one operation is transposing or something instead of what it's supposed to do

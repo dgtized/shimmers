@@ -67,13 +67,13 @@
         ;; TODO: stay out of the road, vary shapes or multiple buildings, and build on both sides
         houses (mapcat (generate-houses road) (partition 2 1 (map first rows)))]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.5}
-              [(svg/polyline (g/sample-uniform road 10 true)
-                             {:stroke-width 5})]
-              (for [[_ row] rows]
-                (svg/polyline (g/sample-uniform row 10 true)))
-              (for [{:keys [pos heading]} houses]
-                (svg/group {:transform (csvg/rotate heading pos)}
-                           (svg/rect pos 5 5))))))
+      [(svg/polyline (g/sample-uniform road 10 true)
+                     {:stroke-width 5})]
+      (for [[_ row] rows]
+        (svg/polyline (g/sample-uniform row 10 true)))
+      (for [{:keys [pos heading]} houses]
+        (csvg/group {:transform (csvg/rotate heading pos)}
+          (svg/rect pos 5 5))))))
 
 (sketch/definition clustered-farmlands
   {:created-at "2021-05-10"

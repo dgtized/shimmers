@@ -366,7 +366,7 @@
                :stroke "black"
                :fill "none"
                :stroke-width 0.8}
-              (scene-fn bounds))))
+      (scene-fn bounds))))
 
 (defn ui-controls []
   [:div

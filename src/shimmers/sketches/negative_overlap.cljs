@@ -115,13 +115,14 @@
   (let [palette (dr/rand-nth palettes)
         additions (random-additions 7)
         shapes (reduce add-split-shapes [base-shape] additions)]
-    [(svg/group {} shapes)
+    [(csvg/group {} shapes)
      (when (#{:mixed :color} mode)
-       (svg/group {} (map (partial fill-shape mode palette) shapes)))
+       (csvg/group {} (map (partial fill-shape mode palette) shapes)))
      (when (#{:mixed :hatch} mode)
-       (svg/group {:stroke-width 0.5} (mapcat (partial hatch-shapes mode) shapes)))
-     (svg/group {:stroke-width 2.0 :fill "#000"}
-                (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
+       (csvg/group {:stroke-width 0.5}
+         (mapcat (partial hatch-shapes mode) shapes)))
+     (csvg/group {:stroke-width 2.0 :fill "#000"}
+       (mapcat (fn [r] (map #(svg/circle % 2) (g/vertices r))) additions))]))
 
 (def modes [:color :mixed :hatch])
 (defonce ui-state (ctrl/state {:mode :color}))
@@ -132,7 +133,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 2.0}
-            (shapes (:mode @ui-state))))
+    (shapes (:mode @ui-state))))
 
 ;; TODO: embed this in the url somehow?
 (defn ui-controls []

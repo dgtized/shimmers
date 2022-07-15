@@ -52,17 +52,17 @@
         ;; TODO: remove duplicates
         connections (gen-connections sources destinations 12)]
     (csvg/svg {:width width :height height :stroke "black"}
-              (for [[i src] (map-indexed vector sources)]
-                (svg/line src (gv/vec2 (:x src) (* height 0.1))
-                          {:stroke (color (+ color-base i))
-                           :stroke-width (dr/random 0.5 3.0)}))
-              (for [[a b] connections
-                    :let [p (nth sources a)
-                          q (nth destinations b)
-                          isec (gv/vec2 (:x p) (:y q))]]
-                (svg/group {}
-                           (svg/circle isec 2.5)
-                           (svg/line isec q))))))
+      (for [[i src] (map-indexed vector sources)]
+        (svg/line src (gv/vec2 (:x src) (* height 0.1))
+                  {:stroke (color (+ color-base i))
+                   :stroke-width (dr/random 0.5 3.0)}))
+      (for [[a b] connections
+            :let [p (nth sources a)
+                  q (nth destinations b)
+                  isec (gv/vec2 (:x p) (:y q))]]
+        (csvg/group {}
+          (svg/circle isec 2.5)
+          (svg/line isec q))))))
 
 (sketch/definition circuit-intersections
   {:created-at "2021-11-08"

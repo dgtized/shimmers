@@ -51,7 +51,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition triangle-gradient
   {:created-at "2022-01-07"

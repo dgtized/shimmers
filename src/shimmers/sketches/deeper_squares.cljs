@@ -8,7 +8,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -41,9 +40,9 @@
     (for [x (range (int (/ width w)))
           y (range (int (/ height h)))
           :let [depth (/ (mod (fx x y) repetition) repetition)]]
-      (svg/group {:transform (str "translate(" (+ edge-margin-w (* x w)) "," (+ edge-margin-h (* y h)) ")")}
-                 (rotations (take (tm/map-interval depth [0 1] [min-depth max-depth])
-                                  (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
+      (csvg/group {:transform (str "translate(" (+ edge-margin-w (* x w)) "," (+ edge-margin-h (* y h)) ")")}
+        (rotations (take (tm/map-interval depth [0 1] [min-depth max-depth])
+                         (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
 
 (defn scene []
   (csvg/svg {:width width
@@ -51,14 +50,14 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.8}
-            (let [fx (dr/weighted {- 1
-                                   + 1
-                                   * 1})
-                  rules (dr/weighted {[fx 30 6 8] 1
-                                      [fx 72 8 8] 2
-                                      [fx 30 8 12] 1
-                                      [fx 30 8 16] 1})]
-              (apply shapes rules))))
+    (let [fx (dr/weighted {- 1
+                           + 1
+                           * 1})
+          rules (dr/weighted {[fx 30 6 8] 1
+                              [fx 72 8 8] 2
+                              [fx 30 8 12] 1
+                              [fx 30 8 16] 1})]
+      (apply shapes rules))))
 
 (defn ui-controls []
   [:div

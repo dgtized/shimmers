@@ -30,7 +30,7 @@
   (csvg/svg {:width width
              :height height
              :stroke "none"}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition color-mapping
   {:created-at "2022-05-02"

@@ -40,7 +40,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition angle-of-ascent
   {:created-at "2022-01-31"

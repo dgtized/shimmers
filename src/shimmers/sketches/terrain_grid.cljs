@@ -56,17 +56,17 @@
           :neighbors (neighbors index axial)))
 
 (defn hexagon [show-coords {:keys [p axial] :as hex} click]
-  (svg/group {:on-click click}
-             (hex/flat-hexagon->polygon hex)
-             (when show-coords
-               (svg/text p
-                         (apply str (interpose "," axial))
-                         {:font-weight "normal"
-                          :font-size "0.66em"
-                          :stroke "none"
-                          :fill "black"
-                          :alignment-baseline "middle"
-                          :text-anchor "middle"}))))
+  (csvg/group {:on-click click}
+    (hex/flat-hexagon->polygon hex)
+    (when show-coords
+      (svg/text p
+                (apply str (interpose "," axial))
+                {:font-weight "normal"
+                 :font-size "0.66em"
+                 :stroke "none"
+                 :fill "black"
+                 :alignment-baseline "middle"
+                 :text-anchor "middle"}))))
 
 (defonce ui-state (ctrl/state {:size "16x10"
                                :debug {:coords true}}))
@@ -94,7 +94,7 @@
              :stroke-width 1.0
              ;; required for on-click to fire on pointer events within group/polygon clip path
              :style {:pointer-events "fill"}}
-            (shapes)))
+    (shapes)))
 
 (defn ui-controls []
   [:div.flexcols

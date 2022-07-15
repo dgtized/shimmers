@@ -97,7 +97,7 @@
                :stroke "black"
                :fill "white"
                :stroke-width 0.5}
-              (diagram bounds state points))))
+      (diagram bounds state points))))
 
 (defonce ui-state
   (ctrl/state {:mode :d3-delaunay

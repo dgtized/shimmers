@@ -15,7 +15,6 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.spatialtree :as spatialtree]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -155,13 +154,13 @@
 
         joined-grid (vec (join-grid region quadtree separated-grid radius))]
     ;; FIXME: missing react key error?
-    [(svg/group {:stroke "black"}
-                (for [cell joined-grid]
-                  (-> cell
-                      (vary-meta assoc :on-click #(debug-info cell))
-                      (vary-meta dissoc :error :combine :zone))))
-     (svg/group {:stroke "red"} (apply list roads))
-     (svg/group {:stroke "black"} (apply list closest-links))]))
+    [(csvg/group {:stroke "black"}
+       (for [cell joined-grid]
+         (-> cell
+             (vary-meta assoc :on-click #(debug-info cell))
+             (vary-meta dissoc :error :combine :zone))))
+     (csvg/group {:stroke "red"} (apply list roads))
+     (csvg/group {:stroke "black"} (apply list closest-links))]))
 
 (defn scene []
   (reset! defo {})
@@ -170,7 +169,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (landscape (rect/rect 0 0 width height))))
+    (landscape (rect/rect 0 0 width height))))
 
 (defn ui-controls []
   (let [debug @defo]

@@ -72,7 +72,7 @@
               :stroke "black"
               :fill "white"
               :stroke-width 0.05}
-             shapes)
+     shapes)
    [:details
     [:summary "Given/Results"]
     (edn-list given)

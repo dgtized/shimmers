@@ -151,7 +151,7 @@
                :stroke "black"
                :stroke-opacity 0.8
                :stroke-width 1.0}
-              shapes)))
+      shapes)))
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"

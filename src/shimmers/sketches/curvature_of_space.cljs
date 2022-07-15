@@ -92,15 +92,18 @@
            :branch-points (count branch-points)
            :leaves (count leaves)
            :paths (count paths))
-    (svg/group {}
-               (svg/group {} (for [path paths]
-                               (-> (gl/linestrip2 path)
-                                   (lines/simplify-line 0.5)
-                                   point-path)))
-               (svg/group {} (map #(svg/circle (:position %) 2) branch-points))
-               (svg/group {} (map #(svg/circle (:position %) 2) leaves))
-               (svg/group {}
-                          (map #(g/translate (rect/rect 3) %) points)))))
+    (csvg/group {}
+      (csvg/group {}
+        (for [path paths]
+          (-> (gl/linestrip2 path)
+              (lines/simplify-line 0.5)
+              point-path)))
+      (csvg/group {}
+        (map #(svg/circle (:position %) 2) branch-points))
+      (csvg/group {}
+        (map #(svg/circle (:position %) 2) leaves))
+      (csvg/group {}
+        (map #(g/translate (rect/rect 3) %) points)))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
@@ -109,7 +112,7 @@
                :stroke "black"
                :fill "white"
                :stroke-width 0.8}
-              (shapes bounds))))
+      (shapes bounds))))
 
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"

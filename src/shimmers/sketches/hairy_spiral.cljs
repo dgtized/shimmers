@@ -9,7 +9,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -32,32 +31,33 @@
               (v/+polar center (+ r (* dr width)) theta))))
 
 (defn draw-spiral [spiral]
-  (svg/group {:stroke-width 0.3}
-             (->> (for [p spiral] [:T p])
-                  (into [[:M (first spiral)]])
-                  (csvg/path))))
+  (csvg/group {:stroke-width 0.3}
+    (->> (for [p spiral] [:T p])
+         (into [[:M (first spiral)]])
+         (csvg/path))))
 
 ;; can we make std-dev smoothly transition across both spirals?
 (defn draw-perps [perps std-dev-a std-dev-b]
-  (svg/group {} (for [[i line] (map-indexed vector perps)]
-                  (let [c (g/centroid line)
-                        t (/ i (count perps))]
-                    (-> line
-                        g/center
-                        (g/rotate (dr/gaussian (* 3 eq/TAU t)
-                                               (tm/mix* std-dev-a std-dev-b t)))
-                        (g/translate c))))))
+  (csvg/group {}
+    (for [[i line] (map-indexed vector perps)]
+      (let [c (g/centroid line)
+            t (/ i (count perps))]
+        (-> line
+            g/center
+            (g/rotate (dr/gaussian (* 3 eq/TAU t)
+                                   (tm/mix* std-dev-a std-dev-b t)))
+            (g/translate c))))))
 
 (defn shapes []
   (let [spiral (spiral-points (rv 0.2428 0.525) 0.25 11)
         spiral2 (spiral-points (rv 0.74 0.525) 0.25 11.5)
         perps (perpindiculars (rv 0.2428 0.525) 0.25 11 0.75)
         perps2 (perpindiculars (rv 0.74 0.525) 0.25 11.5 0.75)]
-    (svg/group {}
-               (draw-spiral spiral)
-               (draw-spiral spiral2)
-               (draw-perps perps 0 0.12)
-               (draw-perps (reverse perps2) 0.12 0.3))))
+    (csvg/group {}
+      (draw-spiral spiral)
+      (draw-spiral spiral2)
+      (draw-perps perps 0 0.12)
+      (draw-perps (reverse perps2) 0.12 0.3))))
 
 ;; TODO: add automatic timing to csvg/svg?
 (defn scene []
@@ -66,7 +66,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.8}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition hairy-spiral
   {:created-at "2022-01-25"

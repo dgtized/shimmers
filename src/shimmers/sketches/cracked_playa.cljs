@@ -50,7 +50,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (defonce sink (debug/state []))
 (defn profile-summary [sink]

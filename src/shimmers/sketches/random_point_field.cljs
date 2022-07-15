@@ -10,7 +10,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -37,11 +36,11 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            [(svg/group {:fill "black"}
-                        (map (fn [p] (gc/circle p 1.5)) points))
-             (when mst
-               (svg/group {:fill "none"}
-                          (circle-between-closest points)))]))
+    [(csvg/group {:fill "black"}
+       (map (fn [p] (gc/circle p 1.5)) points))
+     (when mst
+       (csvg/group {:fill "none"}
+         (circle-between-closest points)))]))
 
 (defn page []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)

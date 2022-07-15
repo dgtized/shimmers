@@ -6,8 +6,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -37,7 +36,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition spiral-pack
   {:created-at "2022-03-13"

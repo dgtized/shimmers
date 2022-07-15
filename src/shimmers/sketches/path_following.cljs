@@ -30,20 +30,20 @@
                      gl/linestrip2
                      (g/translate (r 0.0 0.5)))]
     (csvg/svg {:width width :height height}
-              [(svg/polyline (:points original)
-                             {:stroke "#efc020"
-                              :stroke-width 10.0})]
-              (for [v (range 0.0 1.0 0.1)]
-                (svg/polyline (:points (g/translate (lines/dampen original v)
-                                                    (r 0.0 (+ 0.07 (* 0.3 v)))))
-                              {:stroke "#3a3421"
-                               :stroke-width (* 3.0 (- 1.0 v))}))
-              (let [factors [1.0 2.0 4.0 8.0 12.0 14.0]]
-                (for [[i eps] (map-indexed vector factors)]
-                  (svg/polyline (:points (g/translate (lines/simplify-line original eps)
-                                                      (r 0.0 (- -0.07 (* 0.05 i)))))
-                                {:stroke "#da3b29"
-                                 :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))}))))))
+      [(svg/polyline (:points original)
+                     {:stroke "#efc020"
+                      :stroke-width 10.0})]
+      (for [v (range 0.0 1.0 0.1)]
+        (svg/polyline (:points (g/translate (lines/dampen original v)
+                                            (r 0.0 (+ 0.07 (* 0.3 v)))))
+                      {:stroke "#3a3421"
+                       :stroke-width (* 3.0 (- 1.0 v))}))
+      (let [factors [1.0 2.0 4.0 8.0 12.0 14.0]]
+        (for [[i eps] (map-indexed vector factors)]
+          (svg/polyline (:points (g/translate (lines/simplify-line original eps)
+                                              (r 0.0 (- -0.07 (* 0.05 i)))))
+                        {:stroke "#da3b29"
+                         :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))}))))))
 
 (sketch/definition path-following
   {:created-at "2021-11-12"

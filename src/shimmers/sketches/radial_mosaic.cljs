@@ -10,7 +10,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -104,9 +103,9 @@
                               (cycle row-palette))]
                      (segment (+ t0 spacing) t1 r0 r1 {:fill color}
                               displacement)))))
-       (svg/group {:transform (csvg/translate origin)}
-                  (with-meta (gc/circle (gv/vec2) (first radius))
-                    {:fill (dr/rand-nth palette)}))))
+       (csvg/group {:transform (csvg/translate origin)}
+         (with-meta (gc/circle (gv/vec2) (first radius))
+           {:fill (dr/rand-nth palette)}))))
 
 (defn mosaic-params []
   (->> [{:origin (r (dr/rand-nth [0.4 0.5 0.6]) 0.5)
@@ -124,7 +123,7 @@
 
 (defn frame []
   (csvg/svg {:width width :height height}
-            [(scene (mosaic-params))]))
+    [(scene (mosaic-params))]))
 
 (defn page []
   [:div

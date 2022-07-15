@@ -105,7 +105,7 @@
              :height height
              :stroke "black"
              :stroke-width 0.7}
-            (grow-lines)))
+    (grow-lines)))
 
 (sketch/definition wood-grain
   {:created-at "2021-11-14"

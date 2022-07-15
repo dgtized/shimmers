@@ -9,7 +9,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -50,10 +49,12 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         dipoles (repeatedly (dr/random-int 2 5) (partial random-dipole bounds))]
-    [(svg/group {} (for [{:keys [p strength]} dipoles]
-                     (with-meta (gc/circle p (Math/abs strength))
-                       {:fill (if (> strength 0) "none" "black")})))
-     (svg/group {} (repeatedly 100 #(line bounds dipoles)))]))
+    [(csvg/group {}
+       (for [{:keys [p strength]} dipoles]
+         (with-meta (gc/circle p (Math/abs strength))
+           {:fill (if (> strength 0) "none" "black")})))
+     (csvg/group {}
+       (repeatedly 100 #(line bounds dipoles)))]))
 
 (defn scene []
   (csvg/svg {:width width
@@ -61,7 +62,7 @@
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition magnetic-fields
   {:created-at "2022-02-27"

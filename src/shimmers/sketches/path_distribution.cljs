@@ -46,16 +46,16 @@
         line2 (gl/line2 (r 0.1 0.75) (r 0.9 0.75))
         bisector2 (scaled-bisector line2 d)]
     (csvg/svg {:width width :height height :stroke "black" :stroke-width 0.2}
-              (concat [(with-meta line1 {:stroke "blue"})
-                       (with-meta (gc/circle (g/point-at line1 0.5)
-                                             (* d 0.5 (apply g/dist (g/vertices line1))))
-                         {:stroke "blue" :fill "none"})]
-                      (for [_ (range 20)]
-                        (svg/polyline (displace-line line1 d)))
-                      [(with-meta line2 {:stroke "blue"})
-                       (with-meta bisector2 {:stroke "blue"})]
-                      (for [_ (range 20)]
-                        (svg/polyline (displace-at-bisector line2 d)))))))
+      (concat [(with-meta line1 {:stroke "blue"})
+               (with-meta (gc/circle (g/point-at line1 0.5)
+                                     (* d 0.5 (apply g/dist (g/vertices line1))))
+                 {:stroke "blue" :fill "none"})]
+              (for [_ (range 20)]
+                (svg/polyline (displace-line line1 d)))
+              [(with-meta line2 {:stroke "blue"})
+               (with-meta bisector2 {:stroke "blue"})]
+              (for [_ (range 20)]
+                (svg/polyline (displace-at-bisector line2 d)))))))
 
 (defn page []
   (let [d 0.3]

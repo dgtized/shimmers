@@ -9,7 +9,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.utils.subdiv :as gsd]
    [thi.ng.geom.vector :as gv]))
@@ -49,9 +48,9 @@
         dh (/ (- height hm hm) rows)]
     (for [i (range wm (- width wm) dw)
           j (range hm (- height hm) dh)]
-      (svg/group {:transform (str "translate(" i "," j ")")}
-                 (gu/fit-all-into-bounds (rect/rect 0 0 (* 0.9 dw) (* 0.9 dh))
-                                         (glyph))))))
+      (csvg/group {:transform (str "translate(" i "," j ")")}
+        (gu/fit-all-into-bounds (rect/rect 0 0 (* 0.9 dw) (* 0.9 dh))
+                                (glyph))))))
 
 (defn scene []
   (csvg/svg {:width width
@@ -59,7 +58,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-            (shapes)))
+    (shapes)))
 
 (sketch/definition glyphs
   {:created-at "2022-01-08"
