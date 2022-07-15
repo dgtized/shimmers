@@ -276,10 +276,10 @@
       [:div {:key (str "ts-" idx)}
        (svg-tile tile)])]])
 
-(defn rule-set [rules tiles show-rules toggle-rules]
+(defn rule-set [rules tiles show-rules emit]
   [:div
    [:h4 (str "Rules (" (count rules) ")  ")
-    [:a {:on-click toggle-rules
+    [:a {:on-click (emit :toggle-show-rules)
          :href "javascript:void(0)"}
      (if show-rules "(hide)" "(show)")]]
    (when show-rules
@@ -292,7 +292,7 @@
              [:span (count examples) ": "])
            (svg-adjacency (nth tiles tile-idx) dir (nth tiles other-idx))]))])])
 
-(defn display-patterns [state edit-click emit toggle-rules]
+(defn display-patterns [state edit-click emit]
   (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
     [:div
      [:div.flexcols
@@ -309,7 +309,7 @@
                    :on-change (emit :toggle-rotations)}]
           [:label "Include Rotations"]]])
       [tile-set tiles]]
-     [rule-set rules tiles show-rules toggle-rules]]))
+     [rule-set rules tiles show-rules emit]]))
 
 (defn action-dispatch [state event]
   (case event
@@ -334,7 +334,10 @@
     (fn []
       (cancel-active! state)
       (swap! state update-in [:rotations] not)
-      (reset state))))
+      (reset state))
+    :toggle-show-rules
+    (fn []
+      (swap! state update :show-rules not))))
 
 (defn page []
   (let [state (ctrl/state (init-state :tileset rule-e true))
@@ -366,9 +369,7 @@
              (cancel-active! state)
              (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
              (reset state))
-           emit
-           (fn []
-             (swap! state update :show-rules not))]]]))))
+           emit]]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"
