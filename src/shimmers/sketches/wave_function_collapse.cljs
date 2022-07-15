@@ -68,11 +68,12 @@
               (seq (apply str value))))))
 
 (defn grid->cells [[width height] grid
-                   {:keys [highlight n-tiles on-click]
-                    :or {highlight #{} n-tiles 10000}}]
+                   {:keys [highlight on-click tiles]
+                    :or {highlight #{} tiles []}}]
   (let [[cols rows] (:dims grid)
         w (/ width cols)
-        h (/ height rows)]
+        h (/ height rows)
+        n-tiles (count tiles)]
     (for [j (range rows)
           i (range cols)]
       (let [loc (gv/vec2 i j)
@@ -89,10 +90,13 @@
                                   {:cols (Math/ceil s) :rows (Math/ceil s)}))]
                        (->> (g/subdivide cell divisions)
                             (map (fn [value piece]
-                                   (svg/group (cond-> {:class "wfc-cell"}
-                                                on-click
-                                                (assoc :on-click (partial on-click loc value)))
-                                              (cell-tile value piece)))
+                                   (let [tile (if (integer? value)
+                                                (nth tiles value)
+                                                value)]
+                                     (svg/group (cond-> {:class "wfc-cell"}
+                                                  on-click
+                                                  (assoc :on-click (partial on-click loc value)))
+                                                (cell-tile tile piece))))
                                  values)))
                      (vary-meta cell assoc :fill
                                 (csvg/hsl 0 0 (/ options n-tiles)))))))))
@@ -168,7 +172,7 @@
   (let [directions wfc/directions-8
         pattern (wfc/matrix->grid matrix directions)
         rules (wfc/rules pattern)
-        tiles (wfc/all-tiles rules)]
+        tiles (vec (wfc/all-tiles rules))]
     (wfc/build-state
      {:dims [30 20]
       :directions directions
@@ -271,7 +275,7 @@
       [:div {:key (str "ts-" idx)}
        (svg-tile tile)])]])
 
-(defn rule-set [rules show-rules toggle-rules]
+(defn rule-set [rules tiles show-rules toggle-rules]
   [:div
    [:h4 (str "Rules (" (count rules) ")  ")
     [:a {:on-click toggle-rules
@@ -281,11 +285,11 @@
      [:div {:style {:column-count 8}}
       (let [simplified (sort-by first (group-by identity rules))
             numbered (some (fn [[_ e]] (> (count e) 1)) simplified)]
-        (for [[idx [[tile dir other] examples]] (map-indexed vector simplified)]
+        (for [[idx [[tile-idx dir other-idx] examples]] (map-indexed vector simplified)]
           [:div {:key (str "rule-" idx)}
            (when numbered
              [:span (count examples) ": "])
-           (svg-adjacency tile dir other)]))])])
+           (svg-adjacency (nth tiles tile-idx) dir (nth tiles other-idx))]))])])
 
 (defn display-patterns [state edit-click toggle-rules toggle-rotations]
   (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
@@ -302,17 +306,17 @@
                    :on-change toggle-rotations}]
           [:label "Include Rotations"]]])
       [tile-set tiles]]
-     [rule-set rules show-rules toggle-rules]]))
+     [rule-set rules tiles show-rules toggle-rules]]))
 
 (defn page []
   (let [state (ctrl/state (init-state :tileset rule-e true))]
     (fn []
-      (let [{:keys [grid highlight cancel message]} @state
+      (let [{:keys [tiles grid highlight cancel message]} @state
             pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules :rotations])]
         [:div
          [:div.canvas-frame [scene [width height] grid
+                             :tiles tiles
                              :highlight highlight
-                             :n-tiles (count (:tiles @state))
                              :on-click (partial set-cell! state)]]
          [:div#interface
           [:div.flexcols

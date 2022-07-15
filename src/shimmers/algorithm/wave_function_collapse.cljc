@@ -229,7 +229,7 @@
 (comment
   (let [dirs cardinal-directions
         rt (rules (matrix->grid rule-a dirs))
-        grid (init-grid [8 8] dirs (all-tiles rt))]
+        grid (init-grid [8 8] dirs (set (all-tiles rt)))]
     (grid->matrix (solve grid rt))))
 
 (defn rules->tiles
@@ -342,11 +342,11 @@
        (into [])))
 
 (defn build-state [{:keys [dims directions pattern tiles rules]}]
-  (let [t-index (range (count tiles))
-        tile->index (zipmap tiles t-index)]
+  (let [tile-indices (range (count tiles))
+        tile->index (zipmap tiles tile-indices)]
     {:pattern pattern
-     :grid (init-grid dims directions (set tiles))
+     :grid (init-grid dims directions (set tile-indices))
      :tiles tiles
      :tile->index tile->index
-     :index-rules (mapv (fn [[a dir b]] [(tile->index a) dir (tile->index b)]) rules)
-     :rules rules}))
+     ;; :full-rules rules
+     :rules (mapv (fn [[a dir b]] [(tile->index a) dir (tile->index b)]) rules)}))
