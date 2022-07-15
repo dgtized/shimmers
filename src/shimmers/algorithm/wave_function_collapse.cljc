@@ -358,6 +358,4 @@
     {:pattern pattern
      :grid (init-grid dims directions (set tile-indices))
      :tiles tiles
-     :tile->index tile->index
-     ;; :full-rules rules
      :rules (mapv (fn [[a dir b]] [(tile->index a) dir (tile->index b)]) rules)}))
