@@ -219,13 +219,13 @@
                                 changes))
                      grid'))))))))
 
-(defn solve-one [grid {:keys [rules ranked-positions]}]
+(defn solve-one [grid {:keys [rules ranked-positions] :as state}]
   (let [weights (tile-weights rules)]
     (loop [ranked-positions (or ranked-positions
                                 (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
       (if (empty? ranked-positions)
-        [#{} grid ranked-positions]
+        [#{} grid state]
         (let [pos (first (peek ranked-positions))]
           (if (collapsed? grid pos)
             (recur (pop ranked-positions) grid)
@@ -233,9 +233,11 @@
                   choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               [changes grid'
-               (into (pop ranked-positions)
-                     (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
-                          changes))])))))))
+               (assoc state
+                      :ranked-positions
+                      (into (pop ranked-positions)
+                            (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
+                                 changes)))])))))))
 
 (def rule-a
   (str->matrix
