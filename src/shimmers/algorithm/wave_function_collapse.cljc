@@ -219,22 +219,22 @@
                                 changes))
                      grid'))))))))
 
-(defn solve-one [grid rules positions]
+(defn solve-one [grid {:keys [rules ranked-positions]}]
   (let [weights (tile-weights rules)]
-    (loop [positions (if positions
-                       positions
-                       (into (priority/priority-map) (cells-with-entropy grid weights)))
+    (loop [ranked-positions (if ranked-positions
+                              ranked-positions
+                              (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
-      (if (empty? positions)
-        [#{} grid positions]
-        (let [pos (first (peek positions))]
+      (if (empty? ranked-positions)
+        [#{} grid ranked-positions]
+        (let [pos (first (peek ranked-positions))]
           (if (collapsed? grid pos)
-            (recur (pop positions) grid)
+            (recur (pop ranked-positions) grid)
             (let [[legal-tiles legal-rules] (legal-at-location grid rules pos)
                   choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
               [changes grid'
-               (into (pop positions)
+               (into (pop ranked-positions)
                      (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                           changes))])))))))
 
