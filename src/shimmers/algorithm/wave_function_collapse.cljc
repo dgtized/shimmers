@@ -195,6 +195,13 @@
           :when (not (collapsed? grid loc))]
       [loc (entropy grid weights loc)])))
 
+;; TODO: backtracking.
+;;
+;; If propagate fails then we should first try a different random choice at the
+;; current min-weight tile (after removing case just tired) OR try again from an
+;; early branch in history.
+;;
+;; TODO: unify solve and solve one
 (defn solve [grid rules]
   (let [weights (tile-weights rules)]
     (loop [positions (into (priority/priority-map) (cells-with-entropy grid weights))
