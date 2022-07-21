@@ -221,9 +221,8 @@
 
 (defn solve-one [grid {:keys [rules ranked-positions]}]
   (let [weights (tile-weights rules)]
-    (loop [ranked-positions (if ranked-positions
-                              ranked-positions
-                              (into (priority/priority-map) (cells-with-entropy grid weights)))
+    (loop [ranked-positions (or ranked-positions
+                                (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
       (if (empty? ranked-positions)
         [#{} grid ranked-positions]
