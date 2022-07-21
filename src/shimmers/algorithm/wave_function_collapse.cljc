@@ -219,8 +219,14 @@
                                 changes))
                      grid'))))))))
 
+(defn cached-or-create [s k make-value]
+  (if-let [value (get-in s k)]
+    [value s]
+    (let [value (make-value)]
+      [value (assoc-in s k value)])))
+
 (defn solve-one [grid {:keys [rules ranked-positions] :as state}]
-  (let [weights (tile-weights rules)]
+  (let [[weights state] (cached-or-create state [:weights] #(tile-weights rules))]
     (loop [ranked-positions (or ranked-positions
                                 (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
