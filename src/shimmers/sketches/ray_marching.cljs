@@ -12,6 +12,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -170,6 +171,33 @@
               :let [mid (tm/mix a b 0.5)]]
         (q/line mid (tm/+ mid (tm/normalize (g/normal (tm/- a b)) 3)))))))
 
+(defn closest-segment [ray segments]
+  ;; FIXME: slow, this is all pairs
+  (->> segments
+       ;; FIXME: why does segment-intersect order matter?
+       (keep (fn [segment] (let [hit (isec/segment-intersect segment ray)]
+                            [hit segment])))
+       (sort-by (fn [[[sx sy] _]]
+                  (let [[x y] (first ray)]
+                    (q/dist x y sx sy))))
+       first))
+
+;; FIXME: it's not clipping visible segments of a wall correctly
+;; particularly on the bounding box.
+(defn visible-regions [position segments]
+  (let [hit-segments (for [angle (sm/range-subdivided tm/TWO_PI 60)
+                           :let [ray [position (v/+polar position (q/width) angle)]
+                                 [hit segment] (closest-segment ray segments)]
+                           :when hit]
+                       segment)
+        points (->> hit-segments
+                    (apply concat)
+                    (sort-by (fn [p] (g/heading (tm/- p position))))
+                    dedupe)]
+    (->> (cons (last points) points)
+         (partition 2 1)
+         (map (fn [[p q]] (gt/triangle2 position p q))))))
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/ellipse-mode :radius)
   (q/background 1.0)
@@ -219,6 +247,17 @@
         (cq/draw-shape vertices)
         (q/no-stroke)
         (q/fill 0.155 0.6 0.6 1.0)
+        (cq/circle mouse 3.0))
+      :visible-regions
+      (let [regions (visible-regions mouse segments)]
+        (q/background 0.8)
+        (q/stroke 0.6)
+        (q/stroke-weight 0.8)
+        (q/fill 1.0)
+        (doseq [region regions]
+          (cq/draw-polygon region))
+        (q/no-stroke)
+        (q/fill 0.155 0.6 0.6 1.0)
         (cq/circle mouse 3.0)))
 
     (when visible-shapes
@@ -236,10 +275,13 @@
    [:p "In " [:em "visible-polygon"] " mode, draws the polygon re-constructed from all the closest segment hits from a omnidirectional sweep."]
    [:p "Click inside the canvas to place the ray origin."]])
 
+(def modes [:ray-march :reflect-ray-march :closest
+            :visible-polygon :visible-regions])
+
 (defn ui-controls []
   (ctrl/container
    (ctrl/checkbox ui-state "Animated" [:animated])
-   (ctrl/change-mode ui-state [:ray-march :reflect-ray-march :closest :visible-polygon])
+   (ctrl/change-mode ui-state modes)
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
    (let [{:keys [mode]} @ui-state]
