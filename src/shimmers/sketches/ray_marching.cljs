@@ -182,16 +182,18 @@
                     (q/dist x y sx sy))))
        first))
 
+(defn sweep-segment-hits [position segments]
+  (->> (for [angle (sm/range-subdivided tm/TWO_PI 60)
+             :let [ray [position (v/+polar position (q/width) angle)]
+                   [hit segment] (closest-segment ray segments)]
+             :when hit]
+         [hit segment])
+       (sort-by (fn [[hit _]] (g/heading (tm/- hit position))))))
+
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
 (defn visible-regions [position segments]
-  (let [hit-segments (->> (for [angle (sm/range-subdivided tm/TWO_PI 60)
-                                :let [ray [position (v/+polar position (q/width) angle)]
-                                      [hit segment] (closest-segment ray segments)]
-                                :when hit]
-                            [hit segment])
-                          (sort-by (fn [[hit _]] (g/heading (tm/- hit position)))))
-        points (->> hit-segments
+  (let [points (->> (sweep-segment-hits position segments)
                     (partition-by second)
                     (mapcat (fn [group]
                               (map first [(first group) (last group)]))))]
