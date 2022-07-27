@@ -185,15 +185,16 @@
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
 (defn visible-regions [position segments]
-  (let [hit-segments (for [angle (sm/range-subdivided tm/TWO_PI 60)
-                           :let [ray [position (v/+polar position (q/width) angle)]
-                                 [hit segment] (closest-segment ray segments)]
-                           :when hit]
-                       segment)
+  (let [hit-segments (->> (for [angle (sm/range-subdivided tm/TWO_PI 60)
+                                :let [ray [position (v/+polar position (q/width) angle)]
+                                      [hit segment] (closest-segment ray segments)]
+                                :when hit]
+                            [hit segment])
+                          (sort-by (fn [[hit _]] (g/heading (tm/- hit position)))))
         points (->> hit-segments
-                    (apply concat)
-                    (sort-by (fn [p] (g/heading (tm/- p position))))
-                    dedupe)]
+                    (partition-by second)
+                    (mapcat (fn [group]
+                              (map first [(first group) (last group)]))))]
     (->> (cons (last points) points)
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
