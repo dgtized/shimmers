@@ -190,7 +190,7 @@
         (q/line (v/+polar pos (- connecting-len attach-radius) angle)
                 (v/+polar pos (+ connecting-len attach-radius) angle))))))
 
-(defn draw-wheel [sys {:keys [radius distance] :as wheel} t]
+(defn draw-wheel [sys {:keys [radius distance] :as wheel} _t]
   (let [pos (mech/position sys wheel)
         driver (mech/driver sys wheel)]
     (cq/circle pos radius)
