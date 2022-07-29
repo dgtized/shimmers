@@ -207,7 +207,7 @@
     (let [value (make-value)]
       [value (assoc-in s k value)])))
 
-(defn solve-one [grid {:keys [rules ranked-positions] :as state}]
+(defn solve-one [{:keys [grid rules ranked-positions] :as state}]
   (let [[weights state] (cached-or-create state [:weights] #(tile-weights rules))]
     (loop [ranked-positions (or ranked-positions
                                 (into (priority/priority-map) (cells-with-entropy grid weights)))
@@ -227,8 +227,8 @@
                             (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                                  changes)))])))))))
 
-(defn solve-stepper [{:keys [grid] :as state}]
-  (let [[changes grid' state'] (solve-one grid state)]
+(defn solve-stepper [state]
+  (let [[changes grid' state'] (solve-one state)]
     (assoc state'
            :changes changes
            :grid grid')))

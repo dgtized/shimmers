@@ -236,7 +236,9 @@
 (defn solve-step [state]
   (try
     (let [{:keys [grid rules wfc-state]} @state
-          [changes grid' wfc-state'] (wfc/solve-one grid (or wfc-state {:rules rules}))]
+          wfc-state (if (contains? state :wfc-state) wfc-state
+                        {:grid grid :rules rules})
+          [changes grid' wfc-state'] (wfc/solve-one wfc-state)]
       (swap! state assoc
              :message nil
              :grid grid'
