@@ -213,7 +213,7 @@
                                 (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
       (if (empty? ranked-positions)
-        [#{} state]
+        [#{} (assoc state :ranked-positions ranked-positions)]
         (let [pos (first (peek ranked-positions))]
           (if (collapsed? grid pos)
             (recur (pop ranked-positions) grid)
@@ -236,8 +236,8 @@
   (->> {:grid grid :rules rules}
        (iterate solve-stepper)
        (drop 1)
-       (drop-while (fn [{:keys [changes]}]
-                     (seq changes)))
+       (drop-while (fn [{:keys [ranked-positions]}]
+                     (seq ranked-positions)))
        first))
 
 (def rule-a
