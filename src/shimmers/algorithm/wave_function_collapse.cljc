@@ -200,24 +200,6 @@
 ;; If propagate fails then we should first try a different random choice at the
 ;; current min-weight tile (after removing case just tired) OR try again from an
 ;; early branch in history.
-;;
-;; TODO: unify solve and solve one
-(defn solve [grid rules]
-  (let [weights (tile-weights rules)]
-    (loop [positions (into (priority/priority-map) (cells-with-entropy grid weights))
-           grid grid]
-      (if (empty? positions)
-        grid
-        (let [pos (first (peek positions))]
-          (if (collapsed? grid pos)
-            (recur (pop positions) grid)
-            (let [[legal-tiles legal-rules] (legal-at-location grid rules pos)
-                  choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
-                  [changes grid'] (propagate grid rules pos (set [choice]))]
-              (recur (into (pop positions)
-                           (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
-                                changes))
-                     grid'))))))))
 
 (defn cached-or-create [s k make-value]
   (if-let [value (get-in s k)]
@@ -245,6 +227,20 @@
                             (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                                  changes)))])))))))
 
+(defn solve-stepper [{:keys [grid] :as state}]
+  (let [[changes grid' state'] (solve-one grid state)]
+    (assoc state'
+           :changes changes
+           :grid grid')))
+
+(defn solve [grid rules]
+  (->> {:grid grid :rules rules}
+       (iterate solve-stepper)
+       (drop 1)
+       (drop-while (fn [{:keys [changes]}]
+                     (seq changes)))
+       first))
+
 (def rule-a
   (str->matrix
    "AAAAA
@@ -255,7 +251,7 @@
   (let [dirs cardinal-directions
         rt (rules (matrix->grid rule-a dirs))
         grid (init-grid [8 8] dirs (set (all-tiles rt)))]
-    (grid->matrix (solve grid rt))))
+    (grid->matrix (:grid (solve grid rt)))))
 
 (defn rules->tiles
   "Chop up a rules matrix into `n`x`n` tiles"
