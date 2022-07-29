@@ -213,25 +213,24 @@
                                 (into (priority/priority-map) (cells-with-entropy grid weights)))
            grid grid]
       (if (empty? ranked-positions)
-        [#{} grid state]
+        [#{} state]
         (let [pos (first (peek ranked-positions))]
           (if (collapsed? grid pos)
             (recur (pop ranked-positions) grid)
             (let [[legal-tiles legal-rules] (legal-at-location grid rules pos)
                   choice (dr/weighted (select-keys (tile-weights legal-rules) legal-tiles))
                   [changes grid'] (propagate grid rules pos (set [choice]))]
-              [changes grid'
+              [changes
                (assoc state
+                      :grid grid'
                       :ranked-positions
                       (into (pop ranked-positions)
                             (map (fn [pos] [(gv/vec2 pos) (entropy grid' weights pos)])
                                  changes)))])))))))
 
 (defn solve-stepper [state]
-  (let [[changes grid' state'] (solve-one state)]
-    (assoc state'
-           :changes changes
-           :grid grid')))
+  (let [[changes state'] (solve-one state)]
+    (assoc state' :changes changes)))
 
 (defn solve [grid rules]
   (->> {:grid grid :rules rules}
