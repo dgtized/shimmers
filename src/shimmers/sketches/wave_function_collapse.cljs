@@ -238,7 +238,7 @@
     (let [{:keys [grid rules wfc-state]} @state
           wfc-state (if (contains? state :wfc-state) wfc-state
                         {:grid grid :rules rules})
-          [changes wfc-state'] (wfc/solve-one wfc-state)]
+          {:keys [changes] :as wfc-state'} (wfc/solve-one wfc-state)]
       (swap! state assoc
              :message nil
              :grid (:grid wfc-state')
