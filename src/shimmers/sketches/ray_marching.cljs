@@ -204,6 +204,10 @@
 
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
+;; references:
+;; https://www.redblobgames.com/articles/visibility/
+;; https://web.archive.org/web/20211002142937/https://sszczep.github.io/ray-casting-in-2d-game-engines/
+;; http://www.dgp.toronto.edu/~ghali/publications/thesis/html/node9.html
 (defn visible-regions [position segments]
   (let [points (->> (segment-hits position segments)
                     (partition-by second)
