@@ -244,10 +244,11 @@
              :grid (:grid wfc-state')
              :wfc-state wfc-state'
              :highlight changes)
-      changes)
+      true)
     (catch :default e
       (cancel-active! state)
-      (swap! state assoc :message e))))
+      (swap! state assoc :message e)
+      false)))
 
 (defn solve [state]
   (if-let [cancel (:cancel @state)]
@@ -256,11 +257,8 @@
       (swap! state assoc :cancel new-cancel)
       (go-loop [state state]
         (let [[_ c] (async/alts! [new-cancel (async/timeout 1)])]
-          (if-not (= c new-cancel)
-            (let [changes (solve-step state)]
-              (if (seq changes)
-                (recur state)
-                (swap! state assoc :cancel nil)))
+          (if (and (not= c new-cancel) (solve-step state))
+            (recur state)
             (swap! state assoc :cancel nil)))))))
 
 (defn solve-one [state]
