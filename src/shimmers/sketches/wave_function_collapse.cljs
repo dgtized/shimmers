@@ -225,12 +225,16 @@
             (recur state)
             (swap! state assoc :cancel nil)))))))
 
-(defn solve-one [state]
-  (cancel-active! state)
-  (solve-step state))
-
 (defn action-dispatch [state event]
   (case event
+    :reset
+    (fn [] (reset state))
+    :solve
+    (fn [] (solve state))
+    :solve-one
+    (fn []
+      (cancel-active! state)
+      (solve-step state))
     :pattern-edit-click
     (fn [loc _]
       (cancel-active! state)
@@ -359,13 +363,13 @@
                              :on-click (partial set-cell! state)]]
          [:div#interface
           [:div.flexcols
-           [:div [ctrl/change-mode state (keys modes) {:on-change #(reset state)}]
+           [:div [ctrl/change-mode state (keys modes) {:on-change (emit :reset)}]
             (when message
               [:div {:style {:color "red"}}
                (debug/pre-edn message)])]
-           [:button.generate {:on-click #(reset state)} "Reset"]
-           [:button.generate {:on-click #(solve-one state)} "Solve One"]
-           [:button.generate {:on-click #(solve state)} (if cancel "Stop" "Solve")]]
+           [:button.generate {:on-click (emit :reset)} "Reset"]
+           [:button.generate {:on-click (emit :solve-one)} "Solve One"]
+           [:button.generate {:on-click (emit :solve)} (if cancel "Stop" "Solve")]]
           [:p.readable
            "Click on a cell above to collapse it to a specific tile, or to
          expand it to the set of all legal tiles. Click on a cell in the pattern
