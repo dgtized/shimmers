@@ -208,7 +208,7 @@
       (cancel-active! state)
       (swap! state update-in [:wfc-state :pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
       (reset state))
-    :clear
+    :pattern-clear
     (fn []
       (cancel-active! state)
       (swap! state update-in [:wfc-state :pattern]
@@ -219,7 +219,7 @@
                                   j (range rows)]
                               {(gv/vec2 i j) "A"})))))
       (reset state))
-    :reset
+    :pattern-reset
     (fn []
       (cancel-active! state)
       (swap! state assoc-in [:wfc-state :pattern]
@@ -336,8 +336,8 @@
       (when (= mode :tileset)
         [:div
          [:h4 "Settings"]
-         [:div [:button {:on-click (emit :clear)} "Clear Pattern"]]
-         [:div [:button {:on-click (emit :reset)} "Reset Pattern"]]
+         [:div [:button {:on-click (emit :pattern-clear)} "Clear Pattern"]]
+         [:div [:button {:on-click (emit :pattern-reset)} "Reset Pattern"]]
          [:div.label-set {:key "Include Rotations"}
           [:input {:type "checkbox" :checked rotations
                    :on-change (emit :toggle-rotations)}]
