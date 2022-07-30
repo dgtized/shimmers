@@ -33,7 +33,8 @@
 
 (defn set-cell! [state loc value]
   (cancel-active! state)
-  (let [{:keys [tiles grid rules]} @state
+  (let [{:keys [wfc-state]} @state
+        {:keys [tiles grid rules]} wfc-state
         values (if (= (count (get grid loc)) 1)
                  tiles
                  #{value})
@@ -43,7 +44,7 @@
         [changes grid'] (wfc/propagate grid rules loc allowed-tiles)]
     (swap! state assoc
            :highlight (conj changes loc)
-           :grid grid')))
+           :wfc-state (assoc wfc-state :grid grid'))))
 
 (def subdivisions {1 {:cols 1 :rows 1}
                    2 {:cols 1 :rows 2}
@@ -187,17 +188,17 @@
             :tileset generate-tileset})
 
 (defn init-state [mode matrix rotations]
-  (merge {:highlight #{}
-          :cancel nil
-          :message nil
-          :mode mode
-          :rotations rotations
-          :show-rules false}
-         ((get modes mode) matrix rotations)))
+  {:highlight #{}
+   :cancel nil
+   :message nil
+   :mode mode
+   :rotations rotations
+   :show-rules false
+   :wfc-state ((get modes mode) matrix rotations)})
 
 (defn reset [state]
   (cancel-active! state)
-  (let [{:keys [mode pattern rotations]} @state]
+  (let [{:keys [mode rotations] {:keys [pattern]} :wfc-state} @state]
     (reset! state (init-state mode (wfc/grid->matrix pattern) rotations))))
 
 (defn action-dispatch [state event]
@@ -205,12 +206,12 @@
     :pattern-edit-click
     (fn [loc _]
       (cancel-active! state)
-      (swap! state update-in [:pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
+      (swap! state update-in [:wfc-state :pattern loc] (partial cs/cycle-next ["A" "B" "C"]))
       (reset state))
     :clear
     (fn []
       (cancel-active! state)
-      (swap! state update :pattern
+      (swap! state update-in [:wfc-state :pattern]
              (fn [{[cols rows] :dims :as pattern}]
                (merge pattern
                       (into {}
@@ -221,7 +222,7 @@
     :reset
     (fn []
       (cancel-active! state)
-      (swap! state assoc :pattern
+      (swap! state assoc-in [:wfc-state :pattern]
              (wfc/matrix->grid rule-e wfc/cardinal-directions))
       (reset state))
     :toggle-rotations
@@ -235,14 +236,10 @@
 
 (defn solve-step [state]
   (try
-    (let [{:keys [grid rules wfc-state]} @state
-          wfc-state (if (contains? state :wfc-state) wfc-state
-                        {:grid grid :rules rules})
-          {:keys [changes] :as wfc-state'} (wfc/solve-one wfc-state)]
+    (let [{:keys [changes] :as wfc-state} (wfc/solve-one (:wfc-state @state))]
       (swap! state assoc
              :message nil
-             :grid (:grid wfc-state')
-             :wfc-state wfc-state'
+             :wfc-state wfc-state
              :highlight changes)
       true)
     (catch :default e
@@ -329,7 +326,8 @@
            (svg-adjacency (nth tiles tile-idx) dir (nth tiles other-idx))]))])])
 
 (defn display-patterns [state emit]
-  (let [{:keys [pattern tiles rules mode show-rules rotations]} state]
+  (let [{:keys [wfc-state mode show-rules rotations]} state
+        {:keys [pattern tiles rules]} wfc-state]
     [:div
      [:div.flexcols
       [:div
@@ -351,8 +349,9 @@
   (let [state (ctrl/state (init-state :tileset rule-e true))
         emit (partial action-dispatch state)]
     (fn []
-      (let [{:keys [tiles grid highlight cancel message]} @state
-            pattern-set (select-keys @state [:pattern :tiles :rules :mode :show-rules :rotations])]
+      (let [{:keys [wfc-state highlight cancel message]} @state
+            {:keys [grid tiles]} wfc-state
+            pattern-set (select-keys @state [:wfc-state :mode :show-rules :rotations])]
         [:div
          [:div.canvas-frame [scene [width height] grid
                              :tiles tiles
