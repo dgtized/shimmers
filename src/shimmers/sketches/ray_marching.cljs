@@ -117,6 +117,8 @@
 
 ;; in https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayMrch,
 ;; section 6 mentions computing a gradient of the SDF directly.
+;; other notes: https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
+;; https://antoinefortin.ca/uncategorized/simple-ray-marching-reflection/
 (defn reflect-ray-march [from angle segments]
   (loop [depth 0
          steps 0
