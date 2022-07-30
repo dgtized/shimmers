@@ -215,6 +215,18 @@ dl.instruction-set {
   margin: 0;
 }
 
+button.link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: blue;
+}
+
+button.link:hover {
+  text-decoration: underline;
+  color: black;
+}
+
 g.wfc-tile {
 }
 

@@ -316,8 +316,7 @@
 (defn rule-set [rules tiles show-rules emit]
   [:div
    [:h4 (str "Rules (" (count rules) ")  ")
-    [:a {:on-click (emit :toggle-show-rules)
-         :href "javascript:void(0)"}
+    [:button.link {:on-click (emit :toggle-show-rules)}
      (if show-rules "(hide)" "(show)")]]
    (when show-rules
      [:div {:style {:column-count 8}}
