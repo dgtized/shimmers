@@ -35,8 +35,10 @@
   (cancel-active! state)
   (let [{:keys [wfc-state]} @state
         {:keys [tiles grid rules]} wfc-state
+        ;; reset won't work if it's the only current legal tile
+        ;; maybe need to track "dependents" and unset those too?
         values (if (= (count (get grid loc)) 1)
-                 tiles
+                 (set (range (count tiles)))
                  #{value})
 
         [legal-tiles _] (wfc/legal-at-location grid rules loc)
