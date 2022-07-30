@@ -201,6 +201,34 @@
   (let [{:keys [mode rotations] {:keys [pattern]} :wfc-state} @state]
     (reset! state (init-state mode (wfc/grid->matrix pattern) rotations))))
 
+(defn solve-step [state]
+  (try
+    (let [{:keys [changes] :as wfc-state} (wfc/solve-one (:wfc-state @state))]
+      (swap! state assoc
+             :message nil
+             :wfc-state wfc-state
+             :highlight changes)
+      true)
+    (catch :default e
+      (cancel-active! state)
+      (swap! state assoc :message e)
+      false)))
+
+(defn solve [state]
+  (if-let [cancel (:cancel @state)]
+    (async/close! cancel)
+    (let [new-cancel (async/chan 1)]
+      (swap! state assoc :cancel new-cancel)
+      (go-loop [state state]
+        (let [[_ c] (async/alts! [new-cancel (async/timeout 1)])]
+          (if (and (not= c new-cancel) (solve-step state))
+            (recur state)
+            (swap! state assoc :cancel nil)))))))
+
+(defn solve-one [state]
+  (cancel-active! state)
+  (solve-step state))
+
 (defn action-dispatch [state event]
   (case event
     :pattern-edit-click
@@ -233,34 +261,6 @@
     :toggle-show-rules
     (fn []
       (swap! state update :show-rules not))))
-
-(defn solve-step [state]
-  (try
-    (let [{:keys [changes] :as wfc-state} (wfc/solve-one (:wfc-state @state))]
-      (swap! state assoc
-             :message nil
-             :wfc-state wfc-state
-             :highlight changes)
-      true)
-    (catch :default e
-      (cancel-active! state)
-      (swap! state assoc :message e)
-      false)))
-
-(defn solve [state]
-  (if-let [cancel (:cancel @state)]
-    (async/close! cancel)
-    (let [new-cancel (async/chan 1)]
-      (swap! state assoc :cancel new-cancel)
-      (go-loop [state state]
-        (let [[_ c] (async/alts! [new-cancel (async/timeout 1)])]
-          (if (and (not= c new-cancel) (solve-step state))
-            (recur state)
-            (swap! state assoc :cancel nil)))))))
-
-(defn solve-one [state]
-  (cancel-active! state)
-  (solve-step state))
 
 (defn svg-tile [tile]
   (csvg/svg {:width 20
