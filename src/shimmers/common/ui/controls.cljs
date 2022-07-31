@@ -37,17 +37,20 @@
 (defn change-mode
   ([ui-state modes]
    (change-mode ui-state modes {:mode-key :mode}))
-  ([ui-state modes {:keys [mode-key on-change]
-                    :or {mode-key :mode
-                         on-change (fn [])}}]
+  ([ui-state modes
+    {:keys [button-value mode-desc mode-key on-change]
+     :or {button-value "Cycle Mode"
+          mode-desc "Mode: "
+          mode-key :mode
+          on-change (fn [])}}]
    (let [mode (mode-key @ui-state)
          cycle-mode #(do (swap! ui-state update mode-key
                                 (partial cs/cycle-next modes))
                          (on-change))]
      [:div
-      [:input {:type "button" :value "Cycle Mode"
+      [:input {:type "button" :value button-value
                :on-click cycle-mode}]
-      [:span {:style {:padding-left "1em"}} "Mode: " (name mode)]])))
+      [:span {:style {:padding-left "1em"}} mode-desc (name mode)]])))
 
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}

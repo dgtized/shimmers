@@ -24,6 +24,7 @@
 (defonce ui-state
   (ctrl/state {:animated true
                :mode :ray-march
+               :scene :shapes
                :bounding-rectangle true
                :omnidirectional true
                :visible-shapes true
@@ -75,6 +76,11 @@
                   r-min r-max
                   (* theta 0.40))
      (g/translate (cq/screen-rect 0.2) (cq/rel-vec -0.35 0.35))]))
+
+(defn gen-boxes [_]
+  [(g/translate (cq/screen-rect 0.3) (cq/rel-vec 0.1 -0.2))
+   (g/translate (cq/screen-rect 0.2) (cq/rel-vec -0.25 0.1))
+   (g/translate (cq/screen-rect 0.15) (cq/rel-vec 0.2 0.2))])
 
 ;; https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 (defn sdf-line [p a b r]
@@ -220,14 +226,17 @@
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
 
+(def scenes {:shapes gen-shapes
+             :boxes gen-boxes})
+
 (defn draw-state [{:keys [theta mouse]}]
   (q/ellipse-mode :radius)
   (q/background 1.0)
   (q/stroke 0.0)
   (q/stroke-weight 0.75)
   (q/no-fill)
-  (let [{:keys [mode omnidirectional bounding-rectangle visible-shapes] :as ui-mode} @ui-state
-        shapes (let [s (gen-shapes theta)]
+  (let [{:keys [mode scene omnidirectional bounding-rectangle visible-shapes] :as ui-mode} @ui-state
+        shapes (let [s ((get scenes scene) theta)]
                  (if bounding-rectangle
                    (conj s (cq/screen-rect 1.1))
                    s))
@@ -304,6 +313,10 @@
   (ctrl/container
    (ctrl/checkbox ui-state "Animated" [:animated])
    (ctrl/change-mode ui-state modes)
+   (ctrl/change-mode ui-state (keys scenes)
+                     {:button-value "Cycle Scene"
+                      :mode-desc "Scene: "
+                      :mode-key :scene})
    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
    (let [{:keys [mode]} @ui-state]
