@@ -224,10 +224,19 @@
        (sort-by (fn [[p _]] (g/heading (tm/- p position))))))
 
 (defn visibility-tree [position point-segments segments]
-  (for [[p segment] point-segments
-        :let [[hit hit-seg] (closest-segment (ray-from position p) segments)]
-        :when hit]
-    hit))
+  (loop [point-segments point-segments active-segment nil points []]
+    (if-not (seq point-segments)
+      points
+      (let [[p segment] (first point-segments)
+            [hit hit-seg] (closest-segment (ray-from position p) segments)]
+        (cond (not hit)
+              (recur (rest point-segments) nil points)
+              (not active-segment)
+              (recur (rest point-segments) hit-seg (conj points hit))
+              (and active-segment (not= hit-seg active-segment))
+              (recur (rest point-segments) hit-seg (conj points hit))
+              :else
+              (recur (rest point-segments) active-segment points))))))
 
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
