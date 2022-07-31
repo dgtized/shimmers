@@ -179,6 +179,9 @@
               :let [mid (tm/mix a b 0.5)]]
         (q/line mid (tm/+ mid (tm/normalize (g/normal (tm/- a b)) 3)))))))
 
+(defn ray-from [position p]
+  [position (tm/+ position (tm/* (tm/normalize (tm/- p position)) (q/width)))])
+
 (defn closest-segment [ray segments]
   ;; FIXME: slow, this is all pairs
   (->> segments
@@ -202,7 +205,7 @@
   (->> segments
        (mapcat (fn [segment]
                  (for [p segment
-                       :let [ray [position (tm/* (tm/normalize (tm/- p position)) (q/width))]
+                       :let [ray (ray-from position p)
                              [hit hit-seg] (closest-segment ray segments)]
                        :when hit]
                    [hit hit-seg])))
@@ -214,6 +217,18 @@
        (mapcat (fn [group]
                  (map first [(first group) (last group)])))))
 
+(defn ordered-points [position segments]
+  (->> segments
+       (mapcat (fn [segment]
+                 (let [[a b] segment] [[a segment] [b segment]])))
+       (sort-by (fn [[p _]] (g/heading (tm/- p position))))))
+
+(defn visibility-tree [position point-segments segments]
+  (for [[p segment] point-segments
+        :let [[hit hit-seg] (closest-segment (ray-from position p) segments)]
+        :when hit]
+    hit))
+
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
 ;; references:
@@ -221,7 +236,7 @@
 ;; https://web.archive.org/web/20211002142937/https://sszczep.github.io/ray-casting-in-2d-game-engines/
 ;; http://www.dgp.toronto.edu/~ghali/publications/thesis/html/node9.html
 (defn visible-regions [position segments]
-  (let [points (grouped-segment-hits position segments)]
+  (let [points (visibility-tree position (ordered-points position segments) segments)]
     (->> (cons (last points) points)
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
