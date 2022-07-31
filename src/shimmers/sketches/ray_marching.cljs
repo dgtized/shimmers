@@ -223,6 +223,11 @@
                  (let [[a b] segment] [[a segment] [b segment]])))
        (sort-by (fn [[p _]] (g/heading (tm/- p position))))))
 
+;; keep as polygons not segments
+;; find first clockwise point, and then compare endpoint of segment in the same direction with next point.
+;; If next clockwise point is before endpoint, check closer/further and change current polygon if need be
+;; otherwise, next point clockwise is endpoint so presumably visible?
+;; maybe need to assume clockwise polygons, counter clockwise points?
 (defn visibility-tree [position point-segments segments]
   (loop [point-segments point-segments active-segment nil points []]
     (if-not (seq point-segments)
