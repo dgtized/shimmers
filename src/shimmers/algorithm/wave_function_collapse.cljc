@@ -366,3 +366,12 @@
      :grid (init-grid dims directions (set tile-indices))
      :tiles tiles
      :rules (mapv (fn [[a dir b]] [(tile->index a) dir (tile->index b)]) rules)}))
+
+;; TODO: track dependents and retract those assertions
+(defn set-cell [{:keys [grid rules] :as wfc-state} loc values]
+  (let [[legal-tiles _] (legal-at-location grid rules loc)
+        allowed-tiles (set/intersection legal-tiles values)
+        [changes grid'] (propagate grid rules loc allowed-tiles)]
+    (assoc wfc-state
+           :changes changes
+           :grid grid')))

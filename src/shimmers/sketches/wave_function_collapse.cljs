@@ -34,19 +34,18 @@
 (defn set-cell! [state loc value]
   (cancel-active! state)
   (let [{:keys [wfc-state]} @state
-        {:keys [tiles grid rules]} wfc-state
+        {:keys [tiles grid]} wfc-state
         ;; reset won't work if it's the only current legal tile
         ;; maybe need to track "dependents" and unset those too?
         values (if (= (count (get grid loc)) 1)
                  (set (range (count tiles)))
                  #{value})
 
-        [legal-tiles _] (wfc/legal-at-location grid rules loc)
-        allowed-tiles  (set/intersection legal-tiles values)
-        [changes grid'] (wfc/propagate grid rules loc allowed-tiles)]
+        {:keys [changes] :as wfc-state'}
+        (wfc/set-cell wfc-state loc values)]
     (swap! state assoc
            :highlight (conj changes loc)
-           :wfc-state (assoc wfc-state :grid grid'))))
+           :wfc-state wfc-state')))
 
 (def subdivisions {1 {:cols 1 :rows 1}
                    2 {:cols 1 :rows 2}
