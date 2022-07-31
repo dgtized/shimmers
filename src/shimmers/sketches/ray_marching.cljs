@@ -202,6 +202,12 @@
                    [hit hit-seg])))
        (sort-by (fn [[hit _]] (g/heading (tm/- hit position))))))
 
+(defn grouped-segment-hits [position segments]
+  (->> (segment-hits position segments)
+       (partition-by second)
+       (mapcat (fn [group]
+                 (map first [(first group) (last group)])))))
+
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
 ;; references:
@@ -209,10 +215,7 @@
 ;; https://web.archive.org/web/20211002142937/https://sszczep.github.io/ray-casting-in-2d-game-engines/
 ;; http://www.dgp.toronto.edu/~ghali/publications/thesis/html/node9.html
 (defn visible-regions [position segments]
-  (let [points (->> (segment-hits position segments)
-                    (partition-by second)
-                    (mapcat (fn [group]
-                              (map first [(first group) (last group)]))))]
+  (let [points (grouped-segment-hits position segments)]
     (->> (cons (last points) points)
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
