@@ -4,7 +4,7 @@
           :source-paths ["src"]
           :test-paths ["test"]
           ;; :cljs/repl-env cljs.repl.node/repl-env ; this is the default
-          ;; :cljs/repl-env cljs.repl.browser/repl-env
+          :cljs/repl-env cljs.repl.browser/repl-env
 
           :cljs/timeout 45000 ;; github ci needs more timeout?
           :cljs/compiler-options

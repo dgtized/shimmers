@@ -49,4 +49,6 @@ jobs:
         run: bin/lint
 
       - name: Test
-        run: bin/kaocha
+        run: |
+          /usr/bin/google-chrome-stable --headless --no-first-run &
+          bin/kaocha
