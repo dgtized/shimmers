@@ -232,7 +232,7 @@
   (loop [point-segments point-segments active-segment nil points []]
     (if-not (seq point-segments)
       points
-      (let [[p segment] (first point-segments)
+      (let [[p _segment] (first point-segments)
             [hit hit-seg] (closest-segment (ray-from position p) segments)]
         (cond (not hit)
               (recur (rest point-segments) nil points)
