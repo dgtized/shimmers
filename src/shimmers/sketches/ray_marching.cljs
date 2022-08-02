@@ -249,8 +249,9 @@
 ;; https://www.redblobgames.com/articles/visibility/
 ;; https://web.archive.org/web/20211002142937/https://sszczep.github.io/ray-casting-in-2d-game-engines/
 ;; http://www.dgp.toronto.edu/~ghali/publications/thesis/html/node9.html
-(defn visible-regions [position segments]
-  (let [points (visibility-tree position (ordered-points position segments) segments)]
+(defn visible-regions [position polygons]
+  (let [segments (mapcat g/edges polygons)
+        points (visibility-tree position (ordered-points position segments) segments)]
     (->> (cons (last points) points)
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
@@ -309,7 +310,7 @@
         (q/fill 0.155 0.6 0.6 1.0)
         (cq/circle mouse 3.0))
       :visible-regions
-      (let [regions (visible-regions mouse segments)]
+      (let [regions (visible-regions mouse shapes)]
         (q/background 0.8)
         (q/stroke 0.6)
         (q/stroke-weight 0.8)
