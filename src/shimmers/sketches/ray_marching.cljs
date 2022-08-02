@@ -228,20 +228,16 @@
 ;; If next clockwise point is before endpoint, check closer/further and change current polygon if need be
 ;; otherwise, next point clockwise is endpoint so presumably visible?
 ;; maybe need to assume clockwise polygons, counter clockwise points?
-(defn visibility-tree [position point-segments segments]
-  (loop [point-segments point-segments active-segment nil points []]
-    (if-not (seq point-segments)
+(defn visibility-tree [position polygon-edges]
+  (loop [polygon-edges polygon-edges points []]
+    (if (empty? polygon-edges)
       points
-      (let [[p _segment] (first point-segments)
-            [hit hit-seg] (closest-segment (ray-from position p) segments)]
-        (cond (not hit)
-              (recur (rest point-segments) nil points)
-              (not active-segment)
-              (recur (rest point-segments) hit-seg (conj points hit))
-              (and active-segment (not= hit-seg active-segment))
-              (recur (rest point-segments) hit-seg (conj points hit))
+      (let [[p q _] (first polygon-edges)
+            orient (tm/signum (v/orient2d position p q) 0.01)]
+        (cond (neg? orient)
+              (recur (rest polygon-edges) points)
               :else
-              (recur (rest point-segments) active-segment points))))))
+              (recur (rest polygon-edges) (conj points p)))))))
 
 ;; FIXME: it's not clipping visible segments of a wall correctly
 ;; particularly on the bounding box.
@@ -250,8 +246,11 @@
 ;; https://web.archive.org/web/20211002142937/https://sszczep.github.io/ray-casting-in-2d-game-engines/
 ;; http://www.dgp.toronto.edu/~ghali/publications/thesis/html/node9.html
 (defn visible-regions [position polygons]
-  (let [segments (mapcat g/edges polygons)
-        points (visibility-tree position (ordered-points position segments) segments)]
+  (let [polygon-edges (->> (for [poly polygons
+                                 [p q] (g/edges poly)]
+                             [p q poly])
+                           (sort-by (fn [[p _ _]] (- eq/TAU (g/heading (tm/- p position))))))
+        points (visibility-tree position polygon-edges)]
     (->> (cons (last points) points)
          (partition 2 1)
          (map (fn [[p q]] (gt/triangle2 position p q))))))
