@@ -56,7 +56,7 @@
                       :θ (debug/fixed-width (g/heading p))
                       :d (int (g/dist (gv/vec2) p))})))
         turns (for [[a b c] (partition 3 1 segments)]
-                (assoc b :dir (v/orientation (:p b) (:p a) (:p c))))]
+                (assoc b :dir (v/orient2d (:p a) (:p b) (:p c))))]
     (concat (take 1 segments) turns (take-last 1 segments))))
 
 (defn radial-points [points heading]

@@ -64,3 +64,8 @@
   (let [val (- (* (- qy py) (- rx qx))
                (* (- qx px) (- ry qy)))]
     (tm/sign val)))
+
+;; TODO: use https://github.com/mourner/robust-predicates
+(defn orient2d [[ax ay] [bx by] [cx cy]]
+  (- (* (- ay cy) (- bx cx))
+     (* (- ax cx) (- by cy))))
