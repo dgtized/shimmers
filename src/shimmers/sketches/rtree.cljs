@@ -15,7 +15,8 @@
   (ctrl/state {:shapes 1000
                :lower 3.0
                :upper 3.0
-               :max-children 10}))
+               :max-children 10
+               :show-circles true}))
 
 (defonce defo (debug/state))
 
@@ -49,13 +50,15 @@
   (q/no-fill)
   (q/stroke-weight 1.0)
   (let [tree (tree-walk-with-depth rtree)
-        max-depth (apply max (map :depth tree))]
+        max-depth (apply max (map :depth tree))
+        show-circles (:show-circles @ui-state)]
     (doseq [{:keys [bounds data depth]} tree]
       (q/stroke (/ depth (inc max-depth)))
       (cq/rectangle bounds)
-      (when-let [circle data]
-        (q/stroke 0.0 0.6 0.6 1.0)
-        (cq/circle circle)))
+      (when show-circles
+        (when-let [circle data]
+          (q/stroke 0.0 0.6 0.6 1.0)
+          (cq/circle circle))))
 
     (q/stroke-weight 1.5)
     (q/stroke 0.6 0.4 0.5)
@@ -73,6 +76,7 @@
       (ctrl/numeric ui-state "Upper" [:upper] [(max 1.0 lower) 16 1.0])]
      [:h4 "On Demand"]
      [:div (ctrl/slider ui-state (fn [v] (str "Max Children " v)) [:max-children] [2 32 1])]
+     [:div (ctrl/checkbox ui-state "Show Circles" [:show-circles])]
      ;; Debug output on hit path and mouse location
      (debug/display defo))))
 
