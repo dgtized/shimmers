@@ -1,6 +1,8 @@
 (ns shimmers.sketches.triangle-gradient
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
@@ -46,12 +48,14 @@
          (gu/fit-all-into-bounds (rect/rect 0 0 width height)))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.5}
-    (shapes)))
+  [:div [kb/kb-action "alt-s" #(svg-export/download "scene" "triangle-gradient")]
+   (csvg/svg {:id "scene"
+              :width width
+              :height height
+              :stroke "black"
+              :fill "none"
+              :stroke-width 0.5}
+     (shapes))])
 
 (sketch/definition triangle-gradient
   {:created-at "2022-01-07"
