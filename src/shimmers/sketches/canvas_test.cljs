@@ -14,15 +14,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn set-size! [canvas-state width height]
-  (swap! canvas-state assoc :width width :height height))
-
 ;; TODO: not quite updating the canvas size dynamically?
 (defn toggle-size [canvas-state]
-  (let [{:keys [width]} @canvas-state]
-    (if (= width 200)
-      (set-size! canvas-state 300 300)
-      (set-size! canvas-state 200 200))))
+  (let [{:keys [width]} @canvas-state
+        [w h] (if (= width 200) [300 300] [200 200])]
+    (swap! canvas-state assoc :width w :height h)))
 
 (defn update-box [state bounds]
   (let [{:keys [pos vel size]} state
