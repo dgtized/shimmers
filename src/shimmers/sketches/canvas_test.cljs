@@ -53,18 +53,19 @@
     (.scale ctx dpr dpr)
     ctx))
 
+(defn make-box-state [width height margin size]
+  (atom {:size size
+         :pos (gv/vec2 (dr/random-int margin (- width size margin))
+                       (dr/random-int margin (- height size margin)))
+         :vel (tm/normalize (gv/randvec2) 2.0)}))
+
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
 ;; also playing with neon effect from https://codepen.io/agar3s/pen/pJpoya
 (defn draw-frame [id telemetry]
   (fn [_ canvas canvas-state]
     (let [{:keys [width height]} @canvas-state
           ctx (scale-dpi canvas [width height])
-          margin 10
-          size 50
-          box-state (atom {:size size
-                           :pos (gv/vec2 (dr/random-int margin (- width size margin))
-                                         (dr/random-int margin (- height size margin)))
-                           :vel (tm/normalize (gv/randvec2) 2.0)})]
+          box-state (make-box-state width height 10 50)]
       (cv/on-frame
        (fn [_]
          (let [{:keys [width height]} @canvas-state
