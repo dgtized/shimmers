@@ -88,7 +88,8 @@
           next-pt (select-point cycle vertex candidates)]
       (cond (empty? candidates)
             []
-            (and (> (count cycle') 2) (identical? next-pt start))
+            ;; identical? *should* work but sometimes fails, so use tm/delta=
+            (and (> (count cycle') 2) (tm/delta= next-pt start))
             cycle'
             :else
             (recur cycle' next-pt)))))
