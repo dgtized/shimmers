@@ -137,7 +137,7 @@
     (spatialtree/select-with-shape qt region)))
 
 (defn landscape [region]
-  (let [grid (make-grid 16 12)
+  (let [grid (make-grid 8 6)
         roads (make-roads region)
         separated-grid (separate-with-roads region grid roads)
         quadtree (build-tree separated-grid)
