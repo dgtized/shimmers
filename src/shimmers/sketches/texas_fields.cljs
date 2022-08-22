@@ -1,5 +1,6 @@
 (ns shimmers.sketches.texas-fields
   (:require
+   [reagent.core :as r]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.svg :as csvg]
@@ -136,13 +137,17 @@
                         (mark-error shape [:no-closest]))))
       (spatialtree/select-with-shape qt region))))
 
-(defn landscape [region]
-  (let [grid (make-grid 8 6)
-        roads (make-roads region)
+(defn grid+roads [region]
+  {:region region
+   :grid (make-grid 8 6)
+   :roads (make-roads region)})
+
+(defn landscape [state]
+  (let [{:keys [grid roads region]} (:landscape @state)
         separated-grid (separate-with-roads region grid roads)
         quadtree (build-tree separated-grid)
         radius (let [x (first grid)]
-                 (* 1.2 (max (g/width x) (g/height x))))
+                 (* 1.5 (max (g/width x) (g/height x))))
         closest-links
         (vec (mapcat (fn [shape]
                        (if-let [closest (find-closest quadtree shape radius)]
@@ -160,24 +165,33 @@
              (vary-meta assoc :on-click #(debug-info cell))
              (vary-meta dissoc :error :combine :zone))))
      (csvg/group {:stroke "red"} (apply list roads))
-     (csvg/group {:stroke "black"} (apply list closest-links))]))
+     (csvg/group {:stroke "black"}
+       (when (get-in @state [:show :closest])
+         (apply list closest-links)))]))
 
-(defn scene []
+(defn scene [state]
   (reset! defo {})
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 0.5}
-    (landscape (rect/rect 0 0 width height))))
+    (landscape state)))
 
-(defn ui-controls []
-  (let [debug @defo]
-    (debug/pre-edn debug)))
+(defn ui-controls [state]
+  [:div
+   (ctrl/checkbox state "Show Closest" [:show :closest])
+   (debug/display defo)])
+
+(defn page []
+  (let [state (r/atom {:show {:closest true}
+                       :landscape (grid+roads (rect/rect 0 0 width height))})]
+    (view-sketch/page-for (partial scene state)
+                          :texas-fields
+                          (partial ui-controls state))))
 
 (sketch/definition texas-fields
   {:created-at "2022-04-24"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :texas-fields ui-controls)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
