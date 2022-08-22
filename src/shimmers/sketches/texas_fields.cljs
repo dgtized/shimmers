@@ -117,24 +117,24 @@
                       (g/dist-squared p q))
                     0))))))
 
-(defn join-grid [region quadtree grid radius]
-  (let [qt (reduce (fn [qt shape]
-                     (let [closest (find-closest qt shape radius)]
-                       (if closest
-                         (if-let [joined (lines/join-polygons shape closest)]
-                           (-> qt
-                               (g/delete-point (g/centroid closest))
-                               (replace-shape shape (with-meta joined (dissoc (meta shape) :combine))))
-                           (replace-shape qt shape
-                                          (mark-error shape [:unable-to-join closest])))
-                         (replace-shape qt shape
-                                        (mark-error shape [:no-closest])))))
-                   quadtree
-                   ;; this is fishy could have already removed this shape, and
-                   ;; not double checked. Maybe need to first find shape in tree
-                   ;; & then find closest?
-                   (filter (comp :combine meta) grid))]
-    (spatialtree/select-with-shape qt region)))
+;; iterate on quadtree shapes until nothing to combine without an error
+(defn join-grid [region quadtree radius]
+  (loop [qt quadtree]
+    (if-let [shape (some (fn [s] (when (let [{:keys [combine error]} (meta s)]
+                                        (and combine (not error)))
+                                  s))
+                         (spatialtree/select-with-shape qt region))]
+      (recur
+       (if-let [closest (find-closest qt shape radius)]
+         (if-let [joined (lines/join-polygons shape closest)]
+           (-> qt
+               (g/delete-point (g/centroid closest))
+               (replace-shape shape (with-meta joined (dissoc (meta shape) :combine))))
+           (replace-shape qt shape
+                          (mark-error shape [:unable-to-join closest])))
+         (replace-shape qt shape
+                        (mark-error shape [:no-closest]))))
+      (spatialtree/select-with-shape qt region))))
 
 (defn landscape [region]
   (let [grid (make-grid 8 6)
@@ -152,7 +152,7 @@
                          [(gc/circle (g/centroid shape) 3.0)]))
                      (filter (comp :combine meta) separated-grid)))
 
-        joined-grid (vec (join-grid region quadtree separated-grid radius))]
+        joined-grid (vec (join-grid region quadtree radius))]
     ;; FIXME: missing react key error?
     [(csvg/group {:stroke "black"}
        (for [cell joined-grid]
