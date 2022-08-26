@@ -45,7 +45,7 @@
 
 (defn hex-palette->hsla
   [palette]
-  (mapv hex->hsla palette))
+  (mapv (comp vec hex->hsla) palette))
 
 (defn cube [n] (* n n n))
 

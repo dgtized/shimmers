@@ -38,7 +38,7 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/f3d69b-573c28-c59d60"
         "https://artsexperiments.withgoogle.com/artpalette/colors/2a5e5e-2c2a39-86725e"]
        palette/from-urls
-       (map color/hex-palette->hsla)
+       (mapv color/hex-palette->hsla)
        (into [[[0.99 0.5 0.5 0.6]
                [0.6 0.8 0.5 0.9]
                [0.0 0.8 0.25 0.3]]])))
@@ -51,7 +51,7 @@
         theta (dr/random 0.6 1.2)
         [color-a color-b color-c]
         (mapv (fn [c alpha] (assoc c 3 alpha))
-              (dr/shuffle (map #(into [] %) (dr/rand-nth palettes)))
+              (dr/shuffle (dr/rand-nth palettes))
               (vec (dr/shuffle [0.7 0.9 0.5])))]
     {:grids [{:grid (dr/random-sample 0.85 (g/subdivide region {:rows 17 :cols 19}))
               :stroke-weight 0.6
