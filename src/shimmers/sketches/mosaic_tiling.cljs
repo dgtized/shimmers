@@ -1,8 +1,8 @@
 (ns shimmers.sketches.mosaic-tiling
   (:require
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -32,8 +32,7 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/f1af3a-0e0c0a-e2e1dd-7e4e06-64746c"
         ;; https://htmlcolors.com/palette/1111/sunflowers
         "https://artsexperiments.withgoogle.com/artpalette/colors/d1ae68-2e363c-71493e-e7dfd5-b37a29"]
-       (map color/url->colors)
-       (map (partial map (partial str "#")))
+       palette/from-urls
        (concat [eulbink-7 citrink-8])))
 
 (defn seed-rect [rows cols palette]

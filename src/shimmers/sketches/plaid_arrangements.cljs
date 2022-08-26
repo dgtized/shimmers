@@ -5,6 +5,7 @@
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.palette :as palette]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
@@ -36,7 +37,8 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/cbe4c5-3b7c4a-c1776c"
         "https://artsexperiments.withgoogle.com/artpalette/colors/f3d69b-573c28-c59d60"
         "https://artsexperiments.withgoogle.com/artpalette/colors/2a5e5e-2c2a39-86725e"]
-       (map color/url->palette)
+       palette/from-urls
+       (map color/hex-palette->hsla)
        (into [[[0.99 0.5 0.5 0.6]
                [0.6 0.8 0.5 0.9]
                [0.0 0.8 0.25 0.3]]])))

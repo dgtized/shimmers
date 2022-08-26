@@ -1,11 +1,11 @@
 (ns shimmers.sketches.displacements-inbetween
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.common.palette :as palette]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug :include-macros true]
-   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -133,15 +133,14 @@
 
 ;; TODO: improve palette selection
 (def palettes
-  (into [["maroon" "gold" "black"]]
-        (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/395054-0c0c15-a35192-3ca6a8-d8ead8" ;; pink/teal
-              "https://artsexperiments.withgoogle.com/artpalette/colors/f2bc46-95968d-304e5a-633e15-bd8036" ;; yellow/blue/brown
-              "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67" ;; red/yellow
-              "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982" ;; blue/tan
-              "https://artsexperiments.withgoogle.com/artpalette/colors/4f8e98-53ad74-aa93b7-e2eae9-415e98" ;; cyan/green/purple/blue
-              ]
-             (map color/url->colors)
-             (map (partial map (partial str "#"))))))
+  (->> ["https://artsexperiments.withgoogle.com/artpalette/colors/395054-0c0c15-a35192-3ca6a8-d8ead8" ;; pink/teal
+        "https://artsexperiments.withgoogle.com/artpalette/colors/f2bc46-95968d-304e5a-633e15-bd8036" ;; yellow/blue/brown
+        "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67" ;; red/yellow
+        "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982" ;; blue/tan
+        "https://artsexperiments.withgoogle.com/artpalette/colors/4f8e98-53ad74-aa93b7-e2eae9-415e98" ;; cyan/green/purple/blue
+        ]
+       palette/from-urls
+       (concat [["maroon" "gold" "black"]])))
 
 (defn scene []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)

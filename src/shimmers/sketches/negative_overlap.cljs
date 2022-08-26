@@ -2,9 +2,9 @@
   (:require
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.square-packing :as square]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -109,7 +109,7 @@
         "https://artsexperiments.withgoogle.com/artpalette/colors/e4ddc8-c8657a-5d554d-c7af9f"
         "https://artsexperiments.withgoogle.com/artpalette/colors/d4d1ce-715439-a9895e-cfb08a"
         "https://artsexperiments.withgoogle.com/artpalette/colors/edece8-94928b-4f5963-94655f"]
-       (mapv color/url->hex-colors)))
+       palette/from-urls))
 
 (defn shapes [mode]
   (let [palette (dr/rand-nth palettes)
