@@ -149,6 +149,7 @@
         shapes (->> (lines palette)
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
+    (swap! defo assoc :palette palette)
     (csvg/svg {:width width
                :height height
                :stroke "black"
