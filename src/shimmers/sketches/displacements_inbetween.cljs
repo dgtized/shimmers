@@ -104,7 +104,13 @@
 (defn lines [palette]
   (let [lines (->> (base-lines)
                    #_(debug/time-it defo [:time :base-lines]))
-        pairs (partition 2 1 lines)]
+        pairs (partition 2 1 lines)
+        percent-color (dr/weighted {0.01 1.0
+                                    0.05 3.0
+                                    0.10 2.0
+                                    0.15 1.0
+                                    0.20 1.0})]
+    (swap! defo assoc :percent-color percent-color)
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
                                   lines)
@@ -114,9 +120,7 @@
                  (dr/random-sample 0.85)
                  #_(debug/time-it defo [:time :spacing]))
             (->> pairs
-                 (dr/random-sample (dr/weighted {0.01 1.0
-                                                 0.05 3.0
-                                                 0.10 2.0}))
+                 (dr/random-sample percent-color)
                  (mapcat (partial color-strip palette))
                  #_(debug/time-it defo [:time :color-strip])))))
 
@@ -145,7 +149,6 @@
         shapes (->> (lines palette)
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
-    ;; why is manual key needed?
     (csvg/svg {:width width
                :height height
                :stroke "black"
