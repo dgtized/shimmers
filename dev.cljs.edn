@@ -1,6 +1,6 @@
 ^{:css-dirs ["resources/public/css"]
   :watch-dirs ["src" "test"]
-  :extra-main-files {:tests {:main shimmers.test-runner}}
+  :extra-main-files {:tests {:main shimmers.figwheel-runner}}
 
   :open-file-command "emacsclient"
   ;; Define handler to enable clientside SPA routing
