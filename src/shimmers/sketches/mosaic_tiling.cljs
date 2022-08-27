@@ -31,7 +31,10 @@
         ;; https://htmlcolors.com/palette/1268/egg
         "https://artsexperiments.withgoogle.com/artpalette/colors/f1af3a-0e0c0a-e2e1dd-7e4e06-64746c"
         ;; https://htmlcolors.com/palette/1111/sunflowers
-        "https://artsexperiments.withgoogle.com/artpalette/colors/d1ae68-2e363c-71493e-e7dfd5-b37a29"]
+        "https://artsexperiments.withgoogle.com/artpalette/colors/d1ae68-2e363c-71493e-e7dfd5-b37a29"
+        ;; orange blue
+        "https://artsexperiments.withgoogle.com/artpalette/colors/db9003-332f2e-20778c-d8cdb9-ba3a29"
+        "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8"]
        palette/from-urls
        (concat [eulbink-7 citrink-8])))
 
