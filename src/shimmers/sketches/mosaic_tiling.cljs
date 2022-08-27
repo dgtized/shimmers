@@ -44,7 +44,7 @@
   (map #(update % :pos g/translate pos) cells))
 
 (defn column [cells col]
-  (filter (fn [cell] (= col (get-in cell [:pos 0]))) cells))
+  (filterv (fn [cell] (= col (get-in cell [:pos 0]))) cells))
 
 (defn max-height [cells]
   (inc (apply max (map #(get-in % [:pos 1]) cells))))
@@ -139,6 +139,14 @@
      :seed seed
      :depth depth
      :operations operations}))
+
+(comment
+  (let [seed [{:pos [0 0] :fill "a"}
+              {:pos [1 0] :fill "b"}
+              {:pos [1 1] :fill "c"}
+              {:pos [0 1] :fill "d"}]]
+    {:right (take 4 (iterate rotate-r seed))
+     :left (take 4 (iterate rotate-l seed))}))
 
 (defn svg-tile [size cell-size cells]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
