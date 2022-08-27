@@ -168,11 +168,23 @@
               (/ size (* n (Math/pow 2 depth)))
               ((apply comp (map transformations (take depth operations))) seed))))
 
+(defn examples [seed]
+  (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
+    [:div {:style {:column-count 3}}
+     (for [example [(rotate-group-l clockwise seed)
+                    (rotate-group-l counter-clockwise seed)
+                    (rotate-group-r clockwise seed)
+                    (rotate-group-r counter-clockwise seed)
+                    (mirror-xy-group seed)
+                    (mirror-yx-group seed)]]
+       [:div [svg-tile 256 16 example]])]))
+
 ;; TODO: add dropdowns/sliders to control n,square,depth?
 (defn page []
   (let [{:keys [seed n palette operations] :as config} (scene-options)]
     [:div
      [:div.canvas-frame (time (scene 1024 config))]
+     ;; [examples seed]
      [:p.center (view-sketch/generate :mosaic-tiling)]
      [:div.explanation.readable-width
       [:p
