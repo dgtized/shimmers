@@ -120,15 +120,20 @@
                ;; width and displace more the closer the piece is to theta?
                :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))
 
-(defn frame []
+(defn frame [params]
   (csvg/svg {:width width :height height}
-    [(scene (mosaic-params))]))
+    [(scene params)]))
 
 (defn page []
-  [:div
-   [:div.canvas-frame [frame]]
-   [:p.center (view-sketch/generate :radial-mosaic)]
-   #_(ctrl/checkbox settings "Dispersion" [:dispersion])])
+  (let [{:keys [palette] :as params} (mosaic-params)]
+    [:div
+     [:div.canvas-frame [frame params]]
+     [:p.center (view-sketch/generate :radial-mosaic)]
+     [palette/as-svg {:class "center"
+                      :width (* 40 (count palette))
+                      :height 30}
+      palette]
+     #_(ctrl/checkbox settings "Dispersion" [:dispersion])]))
 
 (sketch/definition radial-mosaic
   {:created-at "2021-05-15"
