@@ -156,6 +156,15 @@
                :stroke-width 1.0}
       shapes)))
 
+(defn ui-controls []
+  (let [info @defo
+        palette (get info :palette)]
+    [:div
+     "Palette"
+     (palette/as-svg {:width (* 60 (count palette)) :height 40}
+                     palette)
+     #_(debug/pre-edn (dissoc info :palette))]))
+
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
@@ -163,5 +172,5 @@
   (ctrl/mount (view-sketch/page-for
                scene
                :displacements-inbetween
-               #_#(debug/display defo))
+               ui-controls)
               "sketch-host"))

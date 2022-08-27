@@ -233,3 +233,12 @@ g.wfc-tile {
 .wfc-cell:hover {
   opacity: 0.8;
 }
+
+svg.palette {
+  border: 1px solid black;
+}
+
+svg.center {
+  display: block;
+  margin: auto;
+}

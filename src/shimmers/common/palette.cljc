@@ -19,11 +19,13 @@
        (map (partial map (partial str "#")))))
 
 (defn as-svg
-  [{:keys [width height] :or {width 400 height 30}}
+  [{:keys [width height class]
+    :or {width 400 height 30
+         class "palette"}}
    palette]
   (let [cell (/ width (count palette))
         rect (rect/rect 0 0 cell height)]
-    (csvg/svg {:width width :height height}
+    (csvg/svg {:class class :width width :height height}
       (for [[idx color] (map-indexed vector palette)]
         (-> rect
             (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))

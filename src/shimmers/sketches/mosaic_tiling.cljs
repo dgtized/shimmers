@@ -169,7 +169,10 @@
    operations on an initial seed pattern. For the pattern above the seed was"]
       [:div.center (svg-tile 128 (/ 128 n) seed)]
       [:p "The pattern was generated randomly from the following palette:"]
-      [:div.center (palette/as-svg {:width (* 60 (count palette)) :height 30} palette)]
+      [:div (palette/as-svg {:class "center"
+                             :width (* 60 (count palette))
+                             :height 30}
+                            palette)]
       (ctrl/details "Operations applied to seed in sequence"
                     [:ol
                      (for [[i op] (map-indexed vector operations)]
