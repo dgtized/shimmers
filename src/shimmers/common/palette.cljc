@@ -1,6 +1,11 @@
 (ns shimmers.common.palette
   (:require
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [shimmers.common.svg :as csvg]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn url->colors [url]
   (-> url
@@ -12,3 +17,14 @@
   (->> urls
        (map url->colors)
        (map (partial map (partial str "#")))))
+
+(defn as-svg
+  [{:keys [width height] :or {width 400 height 30}}
+   palette]
+  (let [cell (/ width (count palette))
+        rect (rect/rect 0 0 cell height)]
+    (csvg/svg {:width width :height height}
+      (for [[idx color] (map-indexed vector palette)]
+        (-> rect
+            (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
+            (with-meta {:fill (str color)}))))))

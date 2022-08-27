@@ -140,17 +140,6 @@
      :depth depth
      :operations operations}))
 
-(defn svg-palette [palette]
-  (let [width 400
-        height 30
-        cell (/ width (count palette))
-        rect (rect/rect 0 0 cell height)]
-    (csvg/svg {:width width :height height}
-      (for [[idx color] (map-indexed vector palette)]
-        (-> rect
-            (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
-            (with-meta {:fill (str color)}))))))
-
 (defn svg-tile [size cell-size cells]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
     (csvg/svg {:width size :height size :stroke "black"}
@@ -180,7 +169,7 @@
    operations on an initial seed pattern. For the pattern above the seed was"]
       [:div.center (svg-tile 128 (/ 128 n) seed)]
       [:p "The pattern was generated randomly from the following palette:"]
-      [:div.center (svg-palette palette)]
+      [:div.center (palette/as-svg {:width (* 60 (count palette)) :height 30} palette)]
       (ctrl/details "Operations applied to seed in sequence"
                     [:ol
                      (for [[i op] (map-indexed vector operations)]
