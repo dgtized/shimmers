@@ -104,29 +104,32 @@
            (update-in cell [:pos 1] (fn [y] (- h y 1))))
          seed)))
 
-(defn mirror-x-group [seed]
-  (concat seed
-          (-> (flip-x seed)
-              (translate (gv/vec2 (max-width seed) 0)))))
+(defn mirror [dir seed]
+  (case dir
+    :left
+    (concat (flip-x seed) (translate seed (gv/vec2 (max-width seed) 0)))
+    :right
+    (concat seed (translate (flip-x seed) (gv/vec2 (max-width seed) 0)))
+    :up
+    (concat (flip-y seed) (translate seed (gv/vec2 0 (max-height seed))))
+    :down
+    (concat seed (translate (flip-y seed) (gv/vec2 0 (max-height seed))))))
 
-(defn mirror-y-group [seed]
-  (concat seed
-          (-> (flip-y seed)
-              (translate (gv/vec2 0 (max-height seed))))))
-
-(defn mirror-xy-group [seed]
-  ((comp mirror-x-group mirror-y-group) seed))
-
-(defn mirror-yx-group [seed]
-  ((comp mirror-y-group mirror-x-group) seed))
+(defn mirror-group [a b]
+  (fn [seed]
+    (->> seed
+         (mirror a)
+         (mirror b))))
 
 (def transformations
   {:rotate-rc (partial rotate-group-r clockwise)
    :rotate-rcc (partial rotate-group-r counter-clockwise)
    :rotate-lc (partial rotate-group-l clockwise)
    :rotate-lcc (partial rotate-group-l counter-clockwise)
-   :mirror-xy mirror-xy-group
-   :mirror-yx mirror-yx-group})
+   :mirror-ru (mirror-group :right :up)
+   :mirror-rd (mirror-group :right :down)
+   :mirror-lu (mirror-group :left :up)
+   :mirror-ld (mirror-group :left :down)})
 
 (defn random-operations [depth]
   (repeatedly depth #(dr/rand-nth (keys transformations))))
