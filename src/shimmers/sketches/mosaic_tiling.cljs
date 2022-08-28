@@ -178,7 +178,7 @@
 
 (defn examples [seed]
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
-    [:div {:style {:column-count 3 :margin "2em"}}
+    [:div {:style {:column-count 2 :margin "2em"}}
      (for [[title transform] transformations]
        [:div {:key title}
         [svg-tile 200 (/ 200 (* 2 (Math/sqrt (count seed))))
