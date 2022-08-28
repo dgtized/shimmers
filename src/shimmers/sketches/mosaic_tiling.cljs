@@ -73,14 +73,6 @@
      :depth depth
      :operations operations}))
 
-(comment
-  (let [seed [{:pos [0 0] :fill "a"}
-              {:pos [1 0] :fill "b"}
-              {:pos [1 1] :fill "c"}
-              {:pos [0 1] :fill "d"}]]
-    {:right (take 4 (iterate mosaic/rotate-r seed))
-     :left (take 4 (iterate mosaic/rotate-l seed))}))
-
 (defn svg-tile [size cell-size cells title]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
     (csvg/svg {:width size :height size :stroke "black"}
