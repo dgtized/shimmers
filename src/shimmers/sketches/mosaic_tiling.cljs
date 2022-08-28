@@ -46,49 +46,11 @@
         j (range cols)]
     {:pos (gv/vec2 i j) :fill (dr/rand-nth palette)}))
 
-(defn column [cells col]
-  (filterv (fn [cell] (= col (get-in cell [:pos 0]))) cells))
-
-(defn rotate-r [cells]
-  (mapcat (fn [col]
-            (map-indexed
-             (fn [j cell] (assoc cell :pos (gv/vec2 j col)))
-             (reverse (column cells col))))
-          (range (mosaic/max-width cells))))
-
-(defn rotate-l [cells]
-  (let [height (mosaic/max-height cells)]
-    (mapcat (fn [row]
-              (map-indexed
-               (fn [i cell] (assoc cell :pos (gv/vec2 i (- height row 1))))
-               (column cells row)))
-            (reverse (range (mosaic/max-width cells))))))
-
-(defn clockwise [w h]
-  [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])
-
-(defn counter-clockwise [w h]
-  [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])
-
-(defn rotate-group-r [dir seed]
-  (let [w (mosaic/max-width seed)
-        h (mosaic/max-height seed)]
-    (mapcat mosaic/translate
-            (iterate rotate-r seed)
-            (dir w h))))
-
-(defn rotate-group-l [dir seed]
-  (let [w (mosaic/max-width seed)
-        h (mosaic/max-height seed)]
-    (mapcat mosaic/translate
-            (iterate rotate-l seed)
-            (dir w h))))
-
 (def transformations
-  {:rotate-rc (partial rotate-group-r clockwise)
-   :rotate-rcc (partial rotate-group-r counter-clockwise)
-   :rotate-lc (partial rotate-group-l clockwise)
-   :rotate-lcc (partial rotate-group-l counter-clockwise)
+  {:rotate-rc (partial mosaic/rotate-group-r mosaic/clockwise)
+   :rotate-rcc (partial mosaic/rotate-group-r mosaic/counter-clockwise)
+   :rotate-lc (partial mosaic/rotate-group-l mosaic/clockwise)
+   :rotate-lcc (partial mosaic/rotate-group-l mosaic/counter-clockwise)
    :mirror-ru (mosaic/mirror-group :right :up)
    :mirror-rd (mosaic/mirror-group :right :down)
    :mirror-lu (mosaic/mirror-group :left :up)
@@ -116,8 +78,8 @@
               {:pos [1 0] :fill "b"}
               {:pos [1 1] :fill "c"}
               {:pos [0 1] :fill "d"}]]
-    {:right (take 4 (iterate rotate-r seed))
-     :left (take 4 (iterate rotate-l seed))}))
+    {:right (take 4 (iterate mosaic/rotate-r seed))
+     :left (take 4 (iterate mosaic/rotate-l seed))}))
 
 (defn svg-tile [size cell-size cells title]
   (let [rect (rect/rect 0 0 cell-size cell-size)]
