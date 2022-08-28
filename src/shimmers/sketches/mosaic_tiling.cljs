@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mosaic-tiling
   (:require
+   [shimmers.algorithm.mosaic :as mosaic]
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -45,32 +46,23 @@
         j (range cols)]
     {:pos (gv/vec2 i j) :fill (dr/rand-nth palette)}))
 
-(defn translate [cells pos]
-  (map #(update % :pos g/translate pos) cells))
-
 (defn column [cells col]
   (filterv (fn [cell] (= col (get-in cell [:pos 0]))) cells))
-
-(defn max-height [cells]
-  (inc (apply max (map #(get-in % [:pos 1]) cells))))
-
-(defn max-width [cells]
-  (inc (apply max (map #(get-in % [:pos 0]) cells))))
 
 (defn rotate-r [cells]
   (mapcat (fn [col]
             (map-indexed
              (fn [j cell] (assoc cell :pos (gv/vec2 j col)))
              (reverse (column cells col))))
-          (range (max-width cells))))
+          (range (mosaic/max-width cells))))
 
 (defn rotate-l [cells]
-  (let [height (max-height cells)]
+  (let [height (mosaic/max-height cells)]
     (mapcat (fn [row]
               (map-indexed
                (fn [i cell] (assoc cell :pos (gv/vec2 i (- height row 1))))
                (column cells row)))
-            (reverse (range (max-width cells))))))
+            (reverse (range (mosaic/max-width cells))))))
 
 (defn clockwise [w h]
   [(gv/vec2 0 0) (gv/vec2 w 0) (gv/vec2 w h) (gv/vec2 0 h)])
@@ -79,57 +71,28 @@
   [(gv/vec2 0 0) (gv/vec2 0 h) (gv/vec2 w h) (gv/vec2 w 0)])
 
 (defn rotate-group-r [dir seed]
-  (let [w (max-width seed)
-        h (max-height seed)]
-    (mapcat translate
+  (let [w (mosaic/max-width seed)
+        h (mosaic/max-height seed)]
+    (mapcat mosaic/translate
             (iterate rotate-r seed)
             (dir w h))))
 
 (defn rotate-group-l [dir seed]
-  (let [w (max-width seed)
-        h (max-height seed)]
-    (mapcat translate
+  (let [w (mosaic/max-width seed)
+        h (mosaic/max-height seed)]
+    (mapcat mosaic/translate
             (iterate rotate-l seed)
             (dir w h))))
-
-(defn flip-x [seed]
-  (let [w (max-width seed)]
-    (map (fn [cell]
-           (update-in cell [:pos 0] (fn [x] (- w x 1))))
-         seed)))
-
-(defn flip-y [seed]
-  (let [h (max-height seed)]
-    (map (fn [cell]
-           (update-in cell [:pos 1] (fn [y] (- h y 1))))
-         seed)))
-
-(defn mirror [dir seed]
-  (case dir
-    :left
-    (concat (flip-x seed) (translate seed (gv/vec2 (max-width seed) 0)))
-    :right
-    (concat seed (translate (flip-x seed) (gv/vec2 (max-width seed) 0)))
-    :up
-    (concat (flip-y seed) (translate seed (gv/vec2 0 (max-height seed))))
-    :down
-    (concat seed (translate (flip-y seed) (gv/vec2 0 (max-height seed))))))
-
-(defn mirror-group [a b]
-  (fn [seed]
-    (->> seed
-         (mirror a)
-         (mirror b))))
 
 (def transformations
   {:rotate-rc (partial rotate-group-r clockwise)
    :rotate-rcc (partial rotate-group-r counter-clockwise)
    :rotate-lc (partial rotate-group-l clockwise)
    :rotate-lcc (partial rotate-group-l counter-clockwise)
-   :mirror-ru (mirror-group :right :up)
-   :mirror-rd (mirror-group :right :down)
-   :mirror-lu (mirror-group :left :up)
-   :mirror-ld (mirror-group :left :down)})
+   :mirror-ru (mosaic/mirror-group :right :up)
+   :mirror-rd (mosaic/mirror-group :right :down)
+   :mirror-lu (mosaic/mirror-group :left :up)
+   :mirror-ld (mosaic/mirror-group :left :down)})
 
 (defn random-operations [depth]
   (repeatedly depth #(dr/rand-nth (keys transformations))))
