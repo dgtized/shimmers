@@ -68,7 +68,7 @@
 
   ;; clj -Meastwood
   :eastwood
-  {:extra-deps {jonase/eastwood {:mvn/version "1.2.4"}}
+  {:extra-deps {jonase/eastwood {:mvn/version "1.2.5"}}
    :main-opts ["-m" "eastwood.lint" "{:source-paths,[\"src\"],:test-paths,[\"test\"]}"]}
 
   ;; clj -Mformat check
