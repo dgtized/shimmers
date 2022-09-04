@@ -127,17 +127,18 @@
 
 (defn page []
   (let [{:keys [palette] :as params} (mosaic-params)]
-    [:div
-     [:div.canvas-frame
-      (csvg/svg {:width width
-                 :height height}
-        [(scene params)])]
-     [:p.center (view-sketch/generate :radial-mosaic)]
-     [palette/as-svg {:class "center"
-                      :width (* 40 (count palette))
-                      :height 30}
-      palette]
-     #_(ctrl/checkbox settings "Dispersion" [:dispersion])]))
+    (fn []
+      [:div
+       [:div.canvas-frame
+        (csvg/svg {:width width
+                   :height height}
+          [(scene params)])]
+       [:p.center (view-sketch/generate :radial-mosaic)]
+       [palette/as-svg {:class "center"
+                        :width (* 40 (count palette))
+                        :height 30}
+        palette]
+       #_(ctrl/checkbox settings "Dispersion" [:dispersion])])))
 
 (sketch/definition radial-mosaic
   {:created-at "2021-05-15"
