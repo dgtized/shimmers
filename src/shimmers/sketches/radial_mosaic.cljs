@@ -1,8 +1,10 @@
 (ns shimmers.sketches.radial-mosaic
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.palette :as palette]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -130,9 +132,11 @@
     (fn []
       [:div
        [:div.canvas-frame
-        (csvg/svg {:width width
+        (csvg/svg {:id "scene"
+                   :width width
                    :height height}
-          [(scene params)])]
+          [(scene params)])
+        [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-mosaic")]]
        [:p.center (view-sketch/generate :radial-mosaic)]
        [palette/as-svg {:class "center"
                         :width (* 40 (count palette))
