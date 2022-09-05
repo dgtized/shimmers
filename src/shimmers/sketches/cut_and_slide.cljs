@@ -21,7 +21,9 @@
 
 (defn displacement-force [angle]
   (let [force (/ 1 (dr/random 4 32))]
-    (v/polar force angle)))
+    (v/polar force (if (dr/chance 0.2)
+                     (+ angle tm/HALF_PI)
+                     angle))))
 
 (defn slide [line force shape]
   (if (> (g/classify-point line (g/centroid shape)) 0)
