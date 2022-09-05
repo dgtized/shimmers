@@ -6,16 +6,18 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
 
-(defn cutting-line []
-  (let [[a b c d] (g/edges (cq/screen-rect 1.0))
-        [[p1 q1] [p2 q2]] (dr/rand-nth [[a c] [b d] [c a] [d b]])]
-    (gl/line2 (tm/mix p1 q1 (dr/random 0.1 0.9))
-              (tm/mix p2 q2 (dr/random 0.1 0.9)))))
+(defn cutting-line [angle]
+  (let [start (g/random-point-inside (cq/screen-rect 0.66))
+        dir (v/polar 1000 angle)]
+    (first (lines/clip-line (gl/line2 (tm/- start dir) (tm/+ start dir))
+                            (cq/screen-rect)))))
 
 (defn slide [line force shape]
   (let [{[p q] :points} line
@@ -28,20 +30,22 @@
   (q/color-mode :hsl 1.0)
   {:action :init})
 
-(defn update-state [{:keys [shapes lines action force time] :as state}]
+(defn update-state [{:keys [shapes angle lines action force time] :as state}]
   (case action
     :init
     {:shapes [(cq/screen-rect 0.66)]
      :lines []
+     :angle (dr/random eq/TAU)
      :action :cut
      :time 0}
     :cut
-    (let [line (cutting-line)]
+    (let [line (cutting-line angle)]
       (if (> (count shapes) 800)
         (assoc state :action :init)
         (assoc state
                :shapes (mapcat (fn [s] (lines/cut-polygon s line)) shapes)
                :lines (conj lines line)
+               :angle (+ (* angle tm/PHI) (dr/random 0.1))
                :time (q/frame-count)
                :force (/ 1 (dr/random 3000 15000))
                :action :slide)))
