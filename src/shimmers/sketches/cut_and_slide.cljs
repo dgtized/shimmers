@@ -26,20 +26,24 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(cq/screen-rect 0.66)]
-   :lines []
-   :action :cut
-   :time 0})
+  {:action :init})
 
 (defn update-state [{:keys [shapes lines action time] :as state}]
   (case action
+    :init
+    {:shapes [(cq/screen-rect 0.66)]
+     :lines []
+     :action :cut
+     :time 0}
     :cut
     (let [line (cutting-line)]
-      (assoc state
-             :shapes (mapcat (fn [s] (lines/cut-polygon s line)) shapes)
-             :lines (conj lines line)
-             :time (q/frame-count)
-             :action :slide))
+      (if (> (count shapes) 800)
+        (assoc state :action :init)
+        (assoc state
+               :shapes (mapcat (fn [s] (lines/cut-polygon s line)) shapes)
+               :lines (conj lines line)
+               :time (q/frame-count)
+               :action :slide)))
     :slide
     (if (> (- (q/frame-count) time) 100)
       (assoc state
