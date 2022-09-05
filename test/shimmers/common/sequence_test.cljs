@@ -82,7 +82,9 @@
   (is (= [[0] [1 2] [3]]
          (sut/partition-chunks [1 2 3] (range 4))))
   (is (= [[0] [1 2] [3 4 5] [6 7]]
-         (sut/partition-chunks [1 2 3] (range 8)))))
+         (sut/partition-chunks [1 2 3] (range 8))))
+  (is (= [[0] [1 2] [3 4 5] [6] [7 8] [9]]
+         (sut/partition-chunks (cycle [1 2 3]) (range 10)))))
 
 (deftest collapsable
   (t/are [in out] (= out (sut/collapse = + in))

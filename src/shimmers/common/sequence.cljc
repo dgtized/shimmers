@@ -132,7 +132,7 @@
   (partition-chunks [1 2] (range 4)) => ((0) (1 2) (3))"
   [chunks coll]
   (lazy-seq
-   (if-let [s (seq chunks)]
+   (if-let [s (and (seq coll) (seq chunks))]
      (let [n (first s)]
        (cons (take n coll)
              (partition-chunks (rest s) (drop n coll))))
