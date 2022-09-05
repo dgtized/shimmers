@@ -17,9 +17,9 @@
     (gl/line2 (tm/mix p1 q1 (dr/random 0.1 0.9))
               (tm/mix p2 q2 (dr/random 0.1 0.9)))))
 
-(defn slide [line shape]
+(defn slide [line force shape]
   (let [{[p q] :points} line
-        slope (tm/* (tm/- q p) 0.0002)]
+        slope (tm/* (tm/- q p) force)]
     (if (> (g/classify-point line (g/centroid shape)) 0)
       (g/translate shape slope)
       shape)))
@@ -28,7 +28,7 @@
   (q/color-mode :hsl 1.0)
   {:action :init})
 
-(defn update-state [{:keys [shapes lines action time] :as state}]
+(defn update-state [{:keys [shapes lines action force time] :as state}]
   (case action
     :init
     {:shapes [(cq/screen-rect 0.66)]
@@ -43,6 +43,7 @@
                :shapes (mapcat (fn [s] (lines/cut-polygon s line)) shapes)
                :lines (conj lines line)
                :time (q/frame-count)
+               :force (/ 1 (dr/random 3000 15000))
                :action :slide)))
     :slide
     (if (> (- (q/frame-count) time) 100)
@@ -50,7 +51,7 @@
              :time (q/frame-count)
              :action :cut)
       (assoc state
-             :shapes (map (partial slide (last lines)) shapes)))))
+             :shapes (map (partial slide (last lines) force) shapes)))))
 
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
