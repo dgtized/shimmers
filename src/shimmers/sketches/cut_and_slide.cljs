@@ -19,10 +19,9 @@
     (first (lines/clip-line (gl/line2 (tm/- start dir) (tm/+ start dir))
                             (cq/screen-rect)))))
 
-(defn displacement-force [line]
-  (let [{[p q] :points} line
-        force (/ 1 (dr/random 3000 15000))]
-    (tm/* (tm/- q p) force)))
+(defn displacement-force [angle]
+  (let [force (/ 1 (dr/random 4 32))]
+    (v/polar force angle)))
 
 (defn slide [line force shape]
   (if (> (g/classify-point line (g/centroid shape)) 0)
@@ -50,7 +49,7 @@
                :lines (conj lines line)
                :angle (+ (* angle tm/PHI) (dr/random 0.1))
                :time (q/frame-count)
-               :force (displacement-force line)
+               :force (displacement-force angle)
                :action :slide)))
     :slide
     (if (> (- (q/frame-count) time) 100)
