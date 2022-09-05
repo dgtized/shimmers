@@ -19,12 +19,15 @@
     (first (lines/clip-line (gl/line2 (tm/- start dir) (tm/+ start dir))
                             (cq/screen-rect)))))
 
-(defn slide [line force shape]
+(defn displacement-force [line]
   (let [{[p q] :points} line
-        slope (tm/* (tm/- q p) force)]
-    (if (> (g/classify-point line (g/centroid shape)) 0)
-      (g/translate shape slope)
-      shape)))
+        force (/ 1 (dr/random 3000 15000))]
+    (tm/* (tm/- q p) force)))
+
+(defn slide [line force shape]
+  (if (> (g/classify-point line (g/centroid shape)) 0)
+    (g/translate shape force)
+    shape))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -47,7 +50,7 @@
                :lines (conj lines line)
                :angle (+ (* angle tm/PHI) (dr/random 0.1))
                :time (q/frame-count)
-               :force (/ 1 (dr/random 3000 15000))
+               :force (displacement-force line)
                :action :slide)))
     :slide
     (if (> (- (q/frame-count) time) 100)
