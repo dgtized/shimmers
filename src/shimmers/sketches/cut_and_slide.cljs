@@ -18,8 +18,8 @@
 (defn random-color []
   [(dr/random)
    (dr/random 0.1 0.6)
-   (dr/random 0.25 0.66)
-   (dr/random 0.1 0.4)])
+   (dr/random 0.33 0.66)
+   (dr/random 0.1 0.5)])
 
 (defn cutting-line [angle]
   (let [start (g/random-point-inside (cq/screen-rect 0.75))
@@ -33,12 +33,17 @@
                      (+ angle tm/HALF_PI)
                      angle))))
 
-(defn cut [line shape]
+(defn cut [line mix-color shape]
   (let [polygons (lines/cut-polygon shape line)
         color (:color shape)]
-    (map #(assoc % :color (if (> (count polygons) 1)
-                            (color/mixer color (random-color) (dr/random 0.2))
-                            color))
+    (map (fn [s]
+           (let [side (> (g/classify-point line (g/centroid s)) 0)]
+             (assoc s :color (if (and (> (count polygons) 1) side)
+                               (color/mixer color mix-color
+                                            (if (< (/ (g/area s) (g/area shape)) 0.5)
+                                              0.30
+                                              0.15))
+                               color))))
          polygons)))
 
 (defn slide [line force shape]
@@ -61,11 +66,12 @@
      :action :cut
      :time 0}
     :cut
-    (let [line (cutting-line angle)]
+    (let [line (cutting-line angle)
+          mix-color (random-color)]
       (if (> (count shapes) 800)
         (assoc state :action :init)
         (assoc state
-               :shapes (mapcat (partial cut line) shapes)
+               :shapes (mapcat (partial cut line mix-color) shapes)
                :lines (conj lines line)
                :angle (+ (* angle tm/PHI) (dr/random 0.1))
                :time (q/frame-count)
@@ -82,6 +88,7 @@
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/fill 1.0)
+  (q/stroke-weight 0.5)
   (let [{:keys [show-colors]} @ui-state]
     (doseq [s shapes]
       (when-let [color (and show-colors (:color s))]
