@@ -31,7 +31,8 @@
           ;; proportional radius, ie if equal size use 0.5, otherwise weight
           ;; interpolation by color of larger radius
           t (/ r2 (+ r1 r2))
-          mixed (color/mixer (:color c1) (:color c2) t)]
+          mixed (color/jitter (color/mixer (:color c1) (:color c2) t)
+                              #(* 0.05 (dr/gaussian 0 1)))]
       mixed)
     (:color c1)))
 

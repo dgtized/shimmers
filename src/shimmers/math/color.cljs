@@ -26,16 +26,17 @@
     [(q/red color) (q/green color) (q/blue color) 32]))
 
 (defn mixer
-  "Mix two color vectors with some random displacement by `t`"
+  "Mix two color vectors by `t`"
   [[c1 & v1] [c2 & v2] t]
-  (into [(-> (sm/mix-mod c1 c2 t)
-             (+ (* (dr/gaussian 0 1) 0.05))
-             (mod 1.0))]
-        (mapv (fn [a b]
-                (-> (tm/mix* a b t)
-                    (+ (* (dr/gaussian 0 1) 0.05))
-                    (tm/clamp 0 1)))
+  (into [(mod (sm/mix-mod c1 c2 t) 1.0)]
+        (mapv (fn [a b] (tm/clamp01 (tm/mix* a b t)))
               v1 v2)))
+
+(defn jitter
+  "Add `amount-fn` jitter to each component of an HSLA color vector."
+  [[h & r] amount-fn]
+  (into [(mod (+ h (amount-fn)) 1.0)]
+        (mapv (fn [v] (tm/clamp01 (+ v (amount-fn)))) r)))
 
 (defn as-vector [color]
   (map (fn [x] (float (* x 255)))
