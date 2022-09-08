@@ -4,9 +4,12 @@
   Gradients borrowed from https://github.com/thi-ng/color/blob/master/src/gradients.org"
   (:require
    [quil.core :as q :include-macros true]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
    [thi.ng.color.core :as col]
    [thi.ng.color.gradients :as grad]
-   [thi.ng.dstruct.streams :as streams]))
+   [thi.ng.dstruct.streams :as streams]
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: https://hugodaniel.com/posts/minimal-color-swatches/
 
@@ -21,6 +24,18 @@
 (defn random-lerp [from to]
   (let [color (q/lerp-color from to (rand))]
     [(q/red color) (q/green color) (q/blue color) 32]))
+
+(defn mixer
+  "Mix two color vectors with some random displacement by `t`"
+  [[c1 & v1] [c2 & v2] t]
+  (into [(-> (sm/mix-mod c1 c2 t)
+             (+ (* (dr/gaussian 0 1) 0.05))
+             (mod 1.0))]
+        (mapv (fn [a b]
+                (-> (tm/mix* a b t)
+                    (+ (* (dr/gaussian 0 1) 0.05))
+                    (tm/clamp 0 1)))
+              v1 v2)))
 
 (defn as-vector [color]
   (map (fn [x] (float (* x 255)))

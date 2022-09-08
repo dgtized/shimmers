@@ -3,18 +3,17 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [shimmers.algorithm.quadtree :as saq]
    [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.core :as sm]
+   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 ;; TODO: represent circles as polygons and grow individual points until it
 ;; intersects a neighbor and only mark the individual vertex as "done".
@@ -26,23 +25,13 @@
    (dr/random 0.25 0.8)
    (dr/random 0.25 0.8)])
 
-(defn mixv [[c1 & v1] [c2 & v2] t]
-  (into [(-> (sm/mix-mod c1 c2 t)
-             (+ (* (dr/gaussian 0 1) 0.05))
-             (mod 1.0))]
-        (mapv (fn [a b]
-                (-> (tm/mix* a b t)
-                    (+ (* (dr/gaussian 0 1) 0.05))
-                    (tm/clamp 0 1)))
-              v1 v2)))
-
 (defn color-mix [c1 c2]
   (if c2
     (let [[r1 r2] [(:r c1) (:r c2)]
           ;; proportional radius, ie if equal size use 0.5, otherwise weight
           ;; interpolation by color of larger radius
           t (/ r2 (+ r1 r2))
-          mixed (mixv (:color c1) (:color c2) t)]
+          mixed (color/mixer (:color c1) (:color c2) t)]
       mixed)
     (:color c1)))
 
