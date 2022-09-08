@@ -5,6 +5,7 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -12,6 +13,12 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
+
+(defn random-color []
+  [(dr/random)
+   (dr/random 0.2 0.6)
+   (dr/random 0.25 0.75)
+   (dr/random 0.25 0.75)])
 
 (defn cutting-line [angle]
   (let [start (g/random-point-inside (cq/screen-rect 0.66))
@@ -25,9 +32,17 @@
                      (+ angle tm/HALF_PI)
                      angle))))
 
+(defn cut [line shape]
+  (let [polygons (lines/cut-polygon shape line)
+        color (:color shape)]
+    (map #(assoc % :color (if (> (count polygons) 1)
+                            (color/mixer color (random-color) 0.2)
+                            color))
+         polygons)))
+
 (defn slide [line force shape]
   (if (> (g/classify-point line (g/centroid shape)) 0)
-    (g/translate shape force)
+    (assoc (g/translate shape force) :color (:color shape))
     shape))
 
 (defn setup []
@@ -37,7 +52,7 @@
 (defn update-state [{:keys [shapes angle lines action force time] :as state}]
   (case action
     :init
-    {:shapes [(cq/screen-rect 0.66)]
+    {:shapes [(assoc (cq/screen-rect 0.66) :color (random-color))]
      :lines []
      :angle (dr/random eq/TAU)
      :action :cut
@@ -47,7 +62,7 @@
       (if (> (count shapes) 800)
         (assoc state :action :init)
         (assoc state
-               :shapes (mapcat (fn [s] (lines/cut-polygon s line)) shapes)
+               :shapes (mapcat (partial cut line) shapes)
                :lines (conj lines line)
                :angle (+ (* angle tm/PHI) (dr/random 0.1))
                :time (q/frame-count)
@@ -64,6 +79,8 @@
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (doseq [s shapes]
+    (when-let [color (and (:color s) nil)]
+      (apply q/fill color))
     (cq/draw-polygon s)))
 
 (sketch/defquil cut-and-slide
