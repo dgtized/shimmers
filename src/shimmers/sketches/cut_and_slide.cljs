@@ -17,9 +17,9 @@
 
 (defn random-color []
   [(dr/random)
-   (dr/random 0.2 0.6)
-   (dr/random 0.25 0.75)
-   (dr/random 0.25 0.75)])
+   (dr/random 0.1 0.6)
+   (dr/random 0.25 0.66)
+   (dr/random 0.1 0.4)])
 
 (defn cutting-line [angle]
   (let [start (g/random-point-inside (cq/screen-rect 0.75))
@@ -37,7 +37,7 @@
   (let [polygons (lines/cut-polygon shape line)
         color (:color shape)]
     (map #(assoc % :color (if (> (count polygons) 1)
-                            (color/mixer color (random-color) 0.2)
+                            (color/mixer color (random-color) (dr/random 0.2))
                             color))
          polygons)))
 
