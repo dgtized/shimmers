@@ -5,6 +5,7 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -45,6 +46,8 @@
     (assoc (g/translate shape force) :color (:color shape))
     shape))
 
+(defonce ui-state (ctrl/state {:show-colors true}))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:action :init})
@@ -78,13 +81,20 @@
 
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
-  (doseq [s shapes]
-    (when-let [color (and (:color s) nil)]
-      (apply q/fill color))
-    (cq/draw-polygon s)))
+  (q/fill 1.0)
+  (let [{:keys [show-colors]} @ui-state]
+    (doseq [s shapes]
+      (when-let [color (and show-colors (:color s))]
+        (apply q/fill color))
+      (cq/draw-polygon s))))
+
+(defn ui-controls []
+  [:div
+   (ctrl/checkbox ui-state "Show Colors" [:show-colors])])
 
 (sketch/defquil cut-and-slide
   :created-at "2022-09-05"
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
