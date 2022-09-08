@@ -21,7 +21,7 @@
    (dr/random 0.25 0.75)])
 
 (defn cutting-line [angle]
-  (let [start (g/random-point-inside (cq/screen-rect 0.66))
+  (let [start (g/random-point-inside (cq/screen-rect 0.75))
         dir (v/polar 1000 angle)]
     (first (lines/clip-line (gl/line2 (tm/- start dir) (tm/+ start dir))
                             (cq/screen-rect)))))
