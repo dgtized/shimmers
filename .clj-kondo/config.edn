@@ -1,4 +1,5 @@
 {:lint-as {shimmers.sketch/defquil clj-kondo.lint-as/def-catch-all
            shimmers.sketch/definition clj-kondo.lint-as/def-catch-all}
  ;; c-for defines loop variables for a specific range
- :linters {:unresolved-symbol {:exclude [(shimmers.macros.loop/c-for)]}}}
+ :linters {:unresolved-symbol {:exclude [(shimmers.macros.loop/c-for)]}
+           :unknown-require-option {:level :off}}}

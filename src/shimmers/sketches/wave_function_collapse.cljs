@@ -1,7 +1,6 @@
 (ns shimmers.sketches.wave-function-collapse
   (:require
    [cljs.core.async :as async :include-macros true]
-   [clojure.set :as set]
    [shimmers.algorithm.wave-function-collapse :as wfc]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]

@@ -5,7 +5,6 @@
   (:require
    [quil.core :as q :include-macros true]
    [shimmers.math.core :as sm]
-   [shimmers.math.deterministic-random :as dr]
    [thi.ng.color.core :as col]
    [thi.ng.color.gradients :as grad]
    [thi.ng.dstruct.streams :as streams]
