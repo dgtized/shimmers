@@ -101,7 +101,7 @@
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
     (concat [c1 c2 meridian]
-            (flyout (g/point-at meridian 0.10) (* width -0.1) (* width 0.05) (right heading))
+            (flyout (g/point-at meridian 0.10) (* width 0.1) (* width 0.05) (left heading))
             (stem-face (g/point-at meridian 0.2) (* width (dr/random 0.03 0.06)) (right heading))
             (flyout (g/point-at meridian 0.33) (* width 0.1) (* width 0.05) (right heading))
             (flyout (g/point-at meridian 0.925) (* width 0.2)
