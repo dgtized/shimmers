@@ -88,6 +88,12 @@
                                 (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
                     (range 4)))))
 
+(defn right [angle]
+  (+ angle tm/HALF_PI))
+
+(defn left [angle]
+  (- angle tm/HALF_PI))
+
 (defn shapes []
   (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
         c2 (gc/circle (rv 0.75 0.5) (* width 0.15))
@@ -95,18 +101,17 @@
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
     (concat [c1 c2 meridian]
-            (flyout (g/point-at meridian 0.10) (* width -0.1) (* width 0.05) (+ heading tm/HALF_PI))
-            (stem-face (g/point-at meridian 0.2) (* width (dr/random 0.03 0.06)) (+ tm/HALF_PI heading))
-            (flyout (g/point-at meridian 0.33) (* width 0.1) (* width 0.05) (+ tm/HALF_PI heading))
+            (flyout (g/point-at meridian 0.10) (* width -0.1) (* width 0.05) (right heading))
+            (stem-face (g/point-at meridian 0.2) (* width (dr/random 0.03 0.06)) (right heading))
+            (flyout (g/point-at meridian 0.33) (* width 0.1) (* width 0.05) (right heading))
             (flyout (g/point-at meridian 0.925) (* width 0.2)
-                    (* width 0.1)
-                    (+ heading tm/HALF_PI))
+                    (* width 0.1) (right heading))
             (maybe (partial stem-face (:p c2)
                             (* width (dr/random 0.05 0.1))
-                            (+ heading tm/HALF_PI)) 0.5)
+                            (right heading)) 0.5)
             (flyout (g/point-at meridian 0.65) (* width 0.2)
                     (* width 0.1)
-                    (- heading tm/HALF_PI)))))
+                    (left heading)))))
 
 (defn scene []
   (csvg/svg {:width width
