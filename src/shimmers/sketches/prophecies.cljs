@@ -95,12 +95,15 @@
                         (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
                     (range 4)))))
 
+(defn meridian [c1 c2]
+  (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
+    (gl/line2 (tm/- (:p c1) (tm/* dir (:r c1)))
+              (tm/+ (:p c2) (tm/* dir (:r c2))))))
+
 (defn shapes []
   (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
         c2 (gc/circle (rv 0.75 0.5) (* width 0.15))
-        path (tm/normalize (tm/- (:p c2) (:p c1)))
-        meridian (gl/line2 (tm/- (:p c1) (tm/* path (:r c1)))
-                           (tm/+ (:p c2) (tm/* path (:r c2))))
+        meridian (meridian c1 c2)
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
     (concat [c1 c2 meridian]
