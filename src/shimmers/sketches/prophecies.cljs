@@ -20,6 +20,12 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn right [angle]
+  (+ angle tm/HALF_PI))
+
+(defn left [angle]
+  (- angle tm/HALF_PI))
+
 (defn deepen [polygon n]
   (let [scale (/ 0.8 n)]
     (->> polygon
@@ -45,9 +51,9 @@
 
 (defn edge-triangle [connect size angle]
   (gp/polygon2 [connect
-                (v/+polar connect (* 0.5 size) (- angle tm/HALF_PI))
+                (v/+polar connect (* 0.5 size) (left angle))
                 (v/+polar connect size angle)
-                (v/+polar connect (* 0.5 size) (+ angle tm/HALF_PI))]))
+                (v/+polar connect (* 0.5 size) (right angle))]))
 
 (defn flat-hex [connect size angle]
   (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
@@ -77,22 +83,17 @@
 (defn face-point-out [shape face]
   (let [[p q] (nth (g/edges shape) face)]
     [(tm/mix p q 0.5)
-     (v/polar 1 (- (g/heading (tm/- q p)) tm/HALF_PI))]))
+     (v/polar 1 (left (g/heading (tm/- q p))))]))
 
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
         rect (square connect (* 0.5 height) angle)]
     (concat [(gl/line2 base connect)
              rect]
-            (mapcat (fn [face] (let [[mid dir] (face-point-out rect face)]
-                                (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
+            (mapcat (fn [face]
+                      (let [[mid dir] (face-point-out rect face)]
+                        (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
                     (range 4)))))
-
-(defn right [angle]
-  (+ angle tm/HALF_PI))
-
-(defn left [angle]
-  (- angle tm/HALF_PI))
 
 (defn shapes []
   (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
