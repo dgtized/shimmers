@@ -15,6 +15,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+;; side-effect extend-type to Line2
+(require 'shimmers.math.geometry.line)
+
 (def width 800)
 (def height 600)
 (defn rv [x y]
@@ -108,8 +111,7 @@
         c1 (gc/circle c1-p (* d (- 1 cut)))
         c2 (gc/circle c2-p (* d cut))
         meridian (meridian c1 c2)
-        [p q] (g/vertices meridian)
-        heading (g/heading (tm/- q p))]
+        heading (g/heading meridian)]
     (concat [c1 c2 meridian]
             (flyout (g/point-at meridian 0.10) (* width 0.1) (* width 0.05) (left heading))
             (stem-face (g/point-at meridian 0.2) (* width (dr/random 0.03 0.06)) (right heading))
