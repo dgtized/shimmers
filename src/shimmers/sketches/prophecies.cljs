@@ -101,8 +101,12 @@
               (tm/+ (:p c2) (tm/* dir (:r c2))))))
 
 (defn shapes []
-  (let [c1 (gc/circle (rv 0.35 0.5) (* width 0.25))
-        c2 (gc/circle (rv 0.75 0.5) (* width 0.15))
+  (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
+        c1-p (rv (dr/random 0.35 0.35) 0.5)
+        c2-p (rv (dr/random 0.7 0.75) 0.5)
+        d (g/dist c1-p c2-p)
+        c1 (gc/circle c1-p (* d (- 1 cut)))
+        c2 (gc/circle c2-p (* d cut))
         meridian (meridian c1 c2)
         [p q] (g/vertices meridian)
         heading (g/heading (tm/- q p))]
