@@ -3,6 +3,8 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   ;; side-effect extend-type to Line2
+   [shimmers.math.geometry.line]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -14,9 +16,6 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
-;; side-effect extend-type to Line2
-(require 'shimmers.math.geometry.line)
 
 (def width 800)
 (def height 600)
