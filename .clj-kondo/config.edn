@@ -1,8 +1,13 @@
-{:lint-as {shimmers.sketch/defquil clj-kondo.lint-as/def-catch-all
-           shimmers.sketch/definition clj-kondo.lint-as/def-catch-all}
- ;; c-for defines loop variables for a specific range
- :linters {:unresolved-symbol {:exclude [(shimmers.macros.loop/c-for)]}
-           :unknown-require-option {:level :off}
-           :unused-namespace
-           {:exclude [shimmers.math.geometry.line ;; extend-type to Line2
-                      ]}}}
+{:lint-as
+ {shimmers.sketch/defquil clj-kondo.lint-as/def-catch-all
+  shimmers.sketch/definition clj-kondo.lint-as/def-catch-all}
+
+ :linters
+ {:unresolved-symbol
+  ;; c-for defines loop variables for a specific range
+  {:exclude [(shimmers.macros.loop/c-for)]}
+
+  :unused-namespace
+  {:exclude
+   [shimmers.math.geometry.line ;; extend-type to Line2
+    ]}}}
