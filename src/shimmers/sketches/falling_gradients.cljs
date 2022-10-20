@@ -20,9 +20,9 @@
   (for [x (tm/norm-range slices)]
     [x (* scale (q/noise (* x phase) offset))]))
 
-(defn random-triangle-at [pos rotation scale]
-  (geometry/shape-at (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
-                     rotation scale pos))
+(let [triangle (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])]
+  (defn random-triangle-at [pos rotation scale]
+    (geometry/shape-at triangle rotation scale pos)))
 
 (defn draw []
   (q/background 1.0)

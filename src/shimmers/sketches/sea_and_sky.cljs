@@ -15,9 +15,9 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.math.core :as tm]))
 
-(defn random-triangle-at [pos rotation scale]
-  (geometry/shape-at (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])
-                     rotation scale pos))
+(let [triangle (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])]
+  (defn random-triangle-at [pos rotation scale]
+    (geometry/shape-at triangle rotation scale pos)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
