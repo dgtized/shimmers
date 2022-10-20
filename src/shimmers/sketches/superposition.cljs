@@ -111,7 +111,7 @@
   (let [curve (* 0.8 (p/happensity 0.4))
         last-orbit (last orbit)
         random-point-from
-        (dr/weighted {g/random-point-inside 8
+        (dr/weighted {g/random-point-inside 10
                       g/random-point 1})
         brushes' (->> brushes
                       (map-indexed
