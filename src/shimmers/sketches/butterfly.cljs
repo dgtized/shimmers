@@ -39,7 +39,7 @@
   ;; (q/shininess 100)
   ;; (q/specular 200)
   (q/rotate-y angle)
-  (q/begin-shape)
+  (q/begin-shape :lines)
   (doseq [[x y] wing-shape]
     (if (zero? x)
       (q/curve-vertex x y 0)
