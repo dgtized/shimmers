@@ -129,10 +129,11 @@
                                 palette)]
           (ctrl/details "Operations applied to seed in sequence"
                         [:ol
-                         (for [[i op] (map-indexed vector operations)]
-                           [:li {:key i}
-                            [:div op]
-                            (scene 192 (assoc config :depth (inc i)))])])]]))))
+                         (doall
+                          (for [[i op] (map-indexed vector operations)]
+                            [:li {:key (str "step-" i)}
+                             [:div op]
+                             (scene 192 (assoc config :depth (inc i)))]))])]]))))
 
 (sketch/definition mosaic-tiling
   {:created-at "2021-04-09"
