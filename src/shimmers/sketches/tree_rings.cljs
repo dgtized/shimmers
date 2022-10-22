@@ -24,7 +24,7 @@
            (mapv (fn [p] [:L p]) (rest points)))))
 
 (defn ring [seed r n]
-  (let [split-chance (dr/random 0.5 1.0)
+  (let [split-chance (dr/noise-at-point-01 seed 0.01 (gv/vec2 0.0 r))
         base-t (dr/random eq/TAU)
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
