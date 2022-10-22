@@ -182,6 +182,10 @@
   (let [[x y] (tm/+ seed (tm/* p scale))]
     (* 0.5 (+ 1.0 (noise/noise2 x y)))))
 
+(defn noise-at-point-01 [seed scale p]
+  (let [[x y] (tm/+ seed (tm/* p scale))]
+    (+ 0.5 (noise/noise2 x y))))
+
 (defn summary-stats [xs]
   (let [n (count xs)
         avg (/ (reduce + xs) n)

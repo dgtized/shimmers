@@ -8,7 +8,8 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.math.noise :as noise]))
 
 ;; inspired by https://gorillasun.de/blog/radial-perlin-noise-and-generative-tree-rings
 
@@ -24,9 +25,10 @@
 
 (defn ring [seed r n]
   (let [split-chance (dr/random 0.5 1.0)
+        base-t (dr/random eq/TAU)
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
-                 (let [p (g/as-cartesian (gv/vec2 r t))
-                       noise (dr/noise-at-point seed 0.005 p)]
+                 (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
+                       noise (dr/noise-at-point-01 seed 0.001 p)]
                    (tm/+ p (g/as-cartesian (gv/vec2 (* r 0.05) (* eq/TAU noise))))))]
     (->> points
          (partition-by (fn [_] (dr/chance split-chance)))
@@ -40,7 +42,7 @@
               (ring seed
                     (* r radius)
                     (int (Math/pow 30 (+ 1 r)))))
-            (dr/density-range 0.0075 0.05))))
+            (dr/density-range 0.0075 0.045))))
 
 (defn scene []
   (csvg/svg {:width width
