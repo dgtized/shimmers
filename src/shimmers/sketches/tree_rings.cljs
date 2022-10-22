@@ -28,12 +28,11 @@
              [[:Z]]))))
 
 (defn shapes []
-  (let [radius (int (/ height 2.03))
-        rings 20
+  (let [radius (int (/ height 2.05))
         points 60
         seed (gv/vec2 (dr/random 100) (dr/random 100))]
-    (for [r (drop 1 (range 0 radius (/ radius rings)))]
-      (ring seed r points))))
+    (for [r (dr/density-range 0.0075 0.05)]
+      (ring seed (* r radius) points))))
 
 (defn scene []
   (csvg/svg {:width width
