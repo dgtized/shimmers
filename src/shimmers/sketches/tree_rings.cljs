@@ -56,6 +56,6 @@
 (sketch/definition tree-rings
   {:created-at "2022-10-22"
    :type :svg
-   :tags #{}}
+   :tags #{:static :deterministic}}
   (ctrl/mount (view-sketch/page-for scene :tree-rings)
               "sketch-host"))
