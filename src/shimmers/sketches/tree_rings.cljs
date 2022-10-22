@@ -33,18 +33,20 @@
                  (let [p (g/as-cartesian (gv/vec2 r t))
                        noise (dr/noise-at-point seed 0.005 p)]
                    (tm/+ p (g/as-cartesian (gv/vec2 (* r 0.05) (* eq/TAU noise))))))]
-    (if (dr/chance 0.5)
+    (if (dr/chance 0.4)
       [(path-ring points)]
       (->> points
-           (partition-by (fn [_] (dr/chance 0.75)))
+           (partition-by (fn [_] (dr/chance 0.8)))
            (filter #(> (count %) 1))
            (mapv path-segment)))))
 
 (defn shapes []
   (let [radius (int (/ height 2.05))
-        points 60
         seed (gv/vec2 (dr/random 100) (dr/random 100))]
-    (mapcat (fn [r] (ring seed (* r radius) points))
+    (mapcat (fn [r]
+              (ring seed
+                    (* r radius)
+                    (int (Math/pow 20 (+ 1 (* 0.75 r))))))
             (dr/density-range 0.0075 0.05))))
 
 (defn scene []
