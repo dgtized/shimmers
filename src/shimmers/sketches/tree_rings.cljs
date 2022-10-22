@@ -2,11 +2,13 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; inspired by https://gorillasun.de/blog/radial-perlin-noise-and-generative-tree-rings
 
@@ -15,9 +17,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn ring [r n]
+(defn ring [seed r n]
   (let [points (for [t (range 0 eq/TAU (/ eq/TAU n))]
-                 (g/as-cartesian (gv/vec2 r t)))]
+                 (let [p (g/as-cartesian (gv/vec2 r t))
+                       noise (dr/noise-at-point seed 0.005 p)]
+                   (tm/+ p (g/as-cartesian (gv/vec2 (* r 0.05) (* eq/TAU noise))))))]
     (csvg/path
      (concat [[:M (first points)]]
              (mapv (fn [p] [:L p]) (rest points))
@@ -26,9 +30,10 @@
 (defn shapes []
   (let [radius (int (/ height 2.03))
         rings 20
-        points 60]
+        points 60
+        seed (gv/vec2 (dr/random 100) (dr/random 100))]
     (for [r (drop 1 (range 0 radius (/ radius rings)))]
-      (ring r points))))
+      (ring seed r points))))
 
 (defn scene []
   (csvg/svg {:width width
