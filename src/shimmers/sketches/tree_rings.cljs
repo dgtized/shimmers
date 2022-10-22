@@ -22,13 +22,13 @@
    (concat [[:M (first points)]]
            (mapv (fn [p] [:L p]) (rest points)))))
 
-(defn ring [seed r n]
+(defn ring [seed r n displace]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.035 (gv/vec2 0.0 r))))
         base-t (dr/random eq/TAU)
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
                        noise (dr/noise-at-point-01 seed 0.0015 p)]
-                   (tm/+ p (g/as-cartesian (gv/vec2 (* r 0.05) (* eq/TAU noise))))))]
+                   (tm/+ p (g/as-cartesian (gv/vec2 displace (* eq/TAU noise))))))]
     (->> points
          (partition-by (fn [_] (dr/chance split-chance)))
          (filter #(> (count %) 1))
@@ -40,7 +40,8 @@
     (mapcat (fn [r]
               (ring seed
                     (* r radius)
-                    (int (Math/pow 30 (+ 1 r)))))
+                    (int (Math/pow 30 (+ 1 r)))
+                    (Math/ceil (* radius 0.025 (+ 1 r)))))
             (dr/density-range 0.008 0.04))))
 
 (defn scene []
