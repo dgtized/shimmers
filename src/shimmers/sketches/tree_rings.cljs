@@ -15,16 +15,20 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn ring [r n]
+  (let [points (for [t (range 0 eq/TAU (/ eq/TAU n))]
+                 (g/as-cartesian (gv/vec2 r t)))]
+    (csvg/path
+     (concat [[:M (first points)]]
+             (mapv (fn [p] [:L p]) (rest points))
+             [[:Z]]))))
+
 (defn shapes []
   (let [radius (int (/ height 2.03))
         rings 20
         points 60]
     (for [r (drop 1 (range 0 radius (/ radius rings)))]
-      (csvg/path
-       (concat [[:M (g/as-cartesian (gv/vec2 r 0))]]
-               (for [t (drop 1 (range 0 eq/TAU (/ eq/TAU points)))]
-                 [:L (g/as-cartesian (gv/vec2 r t))])
-               [[:Z]])))))
+      (ring r points))))
 
 (defn scene []
   (csvg/svg {:width width
