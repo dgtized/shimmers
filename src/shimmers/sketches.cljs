@@ -160,6 +160,7 @@
    shimmers.sketches.texas-fields
    shimmers.sketches.tilt
    shimmers.sketches.traffic-intersection
+   shimmers.sketches.tree-rings
    shimmers.sketches.triangle-flow
    shimmers.sketches.triangle-gradient
    shimmers.sketches.triangulating-subdivisions
