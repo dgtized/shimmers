@@ -196,6 +196,9 @@
         (let [edge (first pending)
               [p q] edge
               cycle (cycle-clockwise-from-edge g p q)]
+          ;; FIXME: disjoin is sometimes not removing a cycle
+          ;; probably due to floating point precision errors on match
+          #_(println cycle (and (seq cycle) (clockwise-polygon? cycle)))
           (if (and (seq cycle) (clockwise-polygon? cycle))
             (recur (reduce disj pending (conj (partition 2 1 cycle) [(last cycle) (first cycle)]))
                    (conj polygons cycle))
