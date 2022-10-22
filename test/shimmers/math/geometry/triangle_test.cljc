@@ -2,6 +2,7 @@
   (:require [shimmers.math.geometry.triangle :as sut]
             #?(:clj [clojure.test :as t :refer [deftest is]]
                :cljs [cljs.test :as t :refer [deftest is] :include-macros true])
+            [thi.ng.geom.core :as g]
             [thi.ng.geom.triangle :as gt]
             [thi.ng.geom.vector :as gv]))
 
@@ -27,5 +28,13 @@
            (sut/decompose t {:mode :trisect
                              :sample-low (fn [] 0.2)
                              :sample-high (fn [] 0.8)})))))
+
+(deftest area
+  (let [t (gt/triangle2 [0 0] [2 0] [0 2])]
+    (is (= 2 (g/area t)))
+    (is (= 2 (sut/signed-area t))))
+  (let [t (gt/triangle2 [2 0] [0 0] [0 2])]
+    (is (= 2 (g/area t)))
+    (is (= -2 (sut/signed-area t)))))
 
 (comment (t/run-tests))

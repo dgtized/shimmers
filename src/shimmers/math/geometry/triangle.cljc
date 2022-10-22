@@ -8,9 +8,14 @@
    #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Triangle2]]))
   #?(:clj (:import [thi.ng.geom.types Triangle2])))
 
+(defprotocol ISignedArea
+  (signed-area [_]))
+
 (extend-type Triangle2
   g/IArea
-  (area [_] (Math/abs (apply gu/tri-area2 (get _ :points)))))
+  (area [_] (Math/abs (apply gu/tri-area2 (get _ :points))))
+  ISignedArea
+  (signed-area [_] (apply gu/tri-area2 (get _ :points))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
