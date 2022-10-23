@@ -38,4 +38,15 @@
           [:rect {:x "0.00", :y "0.00", :width "15.00", :height "15.00"}]]
          (remove-keys (sut/svg {} [(rect/rect 5) (rect/rect 10)] [(rect/rect 15)])))))
 
+(deftest create-group
+  (is (= [:g {}] (sut/group {})))
+  (is (= [:g {} (rect/rect 5)] (sut/group {} (rect/rect 5))))
+  (is (= [:g {} (rect/rect 5)] (sut/group {} [(rect/rect 5)])))
+  (is (= [:g {} (rect/rect 5) (rect/rect 10)]
+         (sut/group {} (rect/rect 5) (rect/rect 10))))
+  (is (= [:g {} (rect/rect 5) (rect/rect 10)]
+         (sut/group {} [(rect/rect 5) (rect/rect 10)])))
+  (is (= [:g {} (rect/rect 5) (rect/rect 10) (rect/rect 15)]
+         (sut/group {} [(rect/rect 5) (rect/rect 10)] [(rect/rect 15)]))))
+
 (comment (t/run-tests))

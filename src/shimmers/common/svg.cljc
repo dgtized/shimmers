@@ -22,20 +22,24 @@
     attribs
     {:xmlns "http://www.w3.org/2000/svg"})])
 
+(defn maybe-lift-sequential [xs]
+  (if (and (sequential? xs) (sequential? (first xs)))
+    (apply concat xs)
+    xs))
+
 (defn svg
   {:style/indent [:defn]}
   [attribs & body]
   (-> (svg-elem attribs)
-      (into (if (and (sequential? body) (sequential? (first body)))
-              (apply concat body)
-              body))
+      (into (maybe-lift-sequential body))
       adapt/all-as-svg
       adapt/inject-element-attribs))
 
 (defn group
   {:style/indent [:defn]}
   [attribs & body]
-  (into [:g (svg/svg-attribs attribs nil)] body))
+  (into [:g (svg/svg-attribs attribs {})]
+        (maybe-lift-sequential body)))
 
 (defn rotate
   ([angle]
