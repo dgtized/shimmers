@@ -50,8 +50,8 @@
              :stroke "black"
              :fill "none"
              :stroke-width 1.0}
-    [[:g {:transform (csvg/translate (rv 0.5 0.5))}
-      (shapes)]]))
+    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+      (shapes))))
 
 (sketch/definition tree-rings
   {:created-at "2022-10-22"

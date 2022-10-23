@@ -22,8 +22,13 @@
     attribs
     {:xmlns "http://www.w3.org/2000/svg"})])
 
-(defn maybe-lift-sequential [xs]
-  (if (and (sequential? xs) (sequential? (first xs)))
+(defn maybe-lift-sequential
+  "Lifts nested sequentials into a flat sequential, as long as the nested sequence
+  is not a reagent vector with a keyword as first element."
+  [xs]
+  (if (and (sequential? xs)
+           (sequential? (first xs))
+           (not (keyword? (ffirst xs))))
     (apply concat xs)
     xs))
 
