@@ -14,6 +14,7 @@
    [shimmers.automata.memory-test]
    [shimmers.automata.simplify-test]
    [shimmers.common.sequence-test]
+   [shimmers.common.svg-test]
    [shimmers.math.core-test]
    [shimmers.math.geometry-test]
    [shimmers.math.geometry.ellipse-test]

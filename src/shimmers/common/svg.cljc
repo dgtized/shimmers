@@ -22,14 +22,13 @@
     attribs
     {:xmlns "http://www.w3.org/2000/svg"})])
 
-;; still not quite right, (svg {} [el el ...]) works, but
-;; and (svg {} [el el] [el]) work,
-;; but (svg {} el) and (svg {} el el) do not.
 (defn svg
   {:style/indent [:defn]}
   [attribs & body]
   (-> (svg-elem attribs)
-      (into (apply concat body))
+      (into (if (and (sequential? body) (sequential? (first body)))
+              (apply concat body)
+              body))
       adapt/all-as-svg
       adapt/inject-element-attribs))
 
