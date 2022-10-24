@@ -19,23 +19,23 @@
   (is (= [:svg {:fill "red" :xmlns "http://www.w3.org/2000/svg"}]
          (remove-keys (sut/svg {:fill "red"}))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
-          [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]
+          [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]
          (remove-keys (sut/svg {} (rect/rect 10)))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
-          [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]
+          [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]
          (remove-keys (sut/svg {} [(rect/rect 10)]))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
-          [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-          [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]
+          [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+          [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]
          (remove-keys (sut/svg {} (rect/rect 5) (rect/rect 10)))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
-          [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-          [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]
+          [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+          [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]
          (remove-keys (sut/svg {} [(rect/rect 5) (rect/rect 10)]))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
-          [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-          [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]
-          [:rect {:x "0.00", :y "0.00", :width "15.00", :height "15.00"}]]
+          [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+          [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]
+          [:rect {:x "0.00" :y "0.00" :width "15.00" :height "15.00"}]]
          (remove-keys (sut/svg {} [(rect/rect 5) (rect/rect 10)] [(rect/rect 15)])))))
 
 (deftest create-group
@@ -52,26 +52,26 @@
 (deftest svg-with-group
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
           [:g {}
-           [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]]]
+           [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]]]
          (remove-keys (sut/svg {} (sut/group {} (rect/rect 5))))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
           [:g {}
-           [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]]]
+           [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]]]
          (remove-keys (sut/svg {} (sut/group {} [(rect/rect 5)])))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
           [:g {}
-           [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-           [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]]
+           [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+           [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]]
          (remove-keys (sut/svg {} (sut/group {} (rect/rect 5) (rect/rect 10))))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
           [:g {}
-           [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-           [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]]
+           [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+           [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]]
          (remove-keys (sut/svg {} (sut/group {} [(rect/rect 5) (rect/rect 10)])))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
           [:g {}
-           [:rect {:x "0.00", :y "0.00", :width "5.00", :height "5.00"}]
-           [:rect {:x "0.00", :y "0.00", :width "10.00", :height "10.00"}]]]
+           [:rect {:x "0.00" :y "0.00" :width "5.00" :height "5.00"}]
+           [:rect {:x "0.00" :y "0.00" :width "10.00" :height "10.00"}]]]
          (remove-keys (sut/svg {} (sut/group {} [(rect/rect 5)] [(rect/rect 10)]))))))
 
 (comment (t/run-tests))
