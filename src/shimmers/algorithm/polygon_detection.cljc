@@ -182,6 +182,16 @@
   [points]
   (pos? (shoelace-area points)))
 
+(defn disjoin-carefully [pending cycle-edges]
+  (->> pending
+       (remove (fn [[p q]]
+                 (when (some (fn [[a b]]
+                               (when (and (tm/delta= a p) (tm/delta= b q))
+                                 true))
+                             cycle-edges)
+                   true)))
+       set))
+
 ;; TODO: inline cycle-clockwise-from-edge and keep track of a single list of
 ;; seen edges
 (defn simple-polygons
@@ -200,8 +210,12 @@
           ;; probably due to floating point precision errors on match
           #_(println cycle (and (seq cycle) (clockwise-polygon? cycle)))
           (if (and (seq cycle) (clockwise-polygon? cycle))
-            (recur (reduce disj pending (conj (partition 2 1 cycle) [(last cycle) (first cycle)]))
-                   (conj polygons cycle))
+            (let [cycle-edges (conj (partition 2 1 cycle) [(last cycle) (first cycle)])
+                  pending' (reduce disj pending cycle-edges)]
+              (recur (if-not (= (count pending') (count pending))
+                       pending'
+                       (disjoin-carefully pending cycle-edges))
+                     (conj polygons cycle)))
             (recur (disj pending edge) polygons)))))))
 
 ;; TODO: detect all simple chordless polygons in plane
