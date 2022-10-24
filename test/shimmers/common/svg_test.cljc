@@ -15,7 +15,7 @@
 
 (deftest create-svg
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}]
-         (remove-keys (sut/svg))))
+         (remove-keys (sut/svg {}))))
   (is (= [:svg {:fill "red" :xmlns "http://www.w3.org/2000/svg"}]
          (remove-keys (sut/svg {:fill "red"}))))
   (is (= [:svg {:xmlns "http://www.w3.org/2000/svg"}
