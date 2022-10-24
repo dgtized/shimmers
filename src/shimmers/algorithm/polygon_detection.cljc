@@ -259,8 +259,9 @@
 
 (defn convex?
   [polygon]
-  (every? (fn [[a b c]] (< (g/angle-between (tm/- c b) (tm/- a b)) Math/PI))
-          (partition 3 1 (g/vertices polygon))))
+  (let [vertices (g/vertices polygon)]
+    (every? (fn [[a b c]] (< (g/angle-between (tm/- c b) (tm/- a b)) Math/PI))
+            (partition 3 1 (into vertices (take 2 vertices))))))
 
 (defn concave?
   [polygon]
