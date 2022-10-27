@@ -35,6 +35,10 @@
                     (g/scale-size poly (- 1.0 scale))))
          (take (inc n)))))
 
+(defn nested [polygon n]
+  (->> (range 0.0 0.8 (/ 0.8 n))
+       (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
+
 (defn maybe [operation prob]
   (if (dr/chance prob)
     (operation)
@@ -77,10 +81,11 @@
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)
         poly ((get poly-shapes (dr/rand-nth (keys poly-shapes)))
-              connect size angle)]
+              connect size angle)
+        operator (dr/rand-nth [deepen nested])]
     (concat [(gl/line2 base connect)
              poly]
-            (maybe (partial deepen poly (dr/random-int 3 8)) 0.5))))
+            (maybe (partial operator poly (dr/random-int 3 8)) 0.5))))
 
 (defn face-point-out [shape face]
   (let [[p q] (nth (g/edges shape) face)]
