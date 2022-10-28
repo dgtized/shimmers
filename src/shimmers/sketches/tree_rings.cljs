@@ -7,6 +7,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -16,11 +17,6 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
-
-(defn path-segment [points]
-  (csvg/path
-   (concat [[:M (first points)]]
-           (mapv (fn [p] [:L p]) (rest points)))))
 
 (defn ring [seed r n displace]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.035 (gv/vec2 0.0 r))))
@@ -32,7 +28,7 @@
     (->> points
          (partition-by (fn [_] (dr/chance split-chance)))
          (filter #(> (count %) 1))
-         (mapv path-segment))))
+         (mapv svg/polyline))))
 
 (defn shapes []
   (let [radius (int (/ height 2.1))
