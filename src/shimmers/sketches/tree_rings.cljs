@@ -23,7 +23,7 @@
         base-t (dr/random eq/TAU)
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
-                       noise (dr/noise-at-point-01 seed 0.0015 p)]
+                       noise (dr/noise-at-point-01 seed 0.002 p)]
                    (tm/+ p (g/as-cartesian (gv/vec2 displace (* eq/TAU noise))))))]
     (->> points
          (partition-by (fn [_] (dr/chance split-chance)))
