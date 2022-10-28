@@ -1,5 +1,6 @@
 (ns shimmers.sketches.magnetic-fields
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -7,7 +8,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -33,12 +33,6 @@
           force-at-point (reduce tm/+ (gv/vec2) forces)]
       (tm/+ pos (tm/normalize force-at-point 8)))))
 
-(defn split-lines [split-pct points]
-  (->> points
-       (partition-by (fn [_] (dr/chance split-pct)))
-       (filter #(> (count %) 1))
-       (mapv gl/linestrip2)))
-
 (defn line [bounds dipoles]
   (let [start (random-point-inside (g/scale-size bounds 0.8))
         split-chance (dr/weighted {1.0 5
@@ -49,7 +43,7 @@
     (->> start
          (iterate (line-step dipoles))
          (take 100)
-         (split-lines split-chance))))
+         (lines/split-segments split-chance))))
 
 (defn random-dipole [bounds]
   (let [strength (dr/random 2 6)]

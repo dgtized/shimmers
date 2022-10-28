@@ -2,6 +2,7 @@
   (:require
    [loom.graph :as lg]
    [shimmers.algorithm.polygon-detection :as poly-detect]
+   [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
@@ -29,6 +30,12 @@
   {:pre [(pos-int? n)]}
   (for [[a b] (partition 2 1 (tm/norm-range n))]
     (gl/line2 (tm/mix p q a) (tm/mix p q b))))
+
+(defn split-segments [split-pct points]
+  (->> points
+       (partition-by (fn [_] (dr/chance split-pct)))
+       (filter #(> (count %) 1))
+       (mapv gl/linestrip2)))
 
 ;; https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
 (defn perpendicular-distance [[x1 y1] [x2 y2] [x0 y0]]

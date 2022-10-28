@@ -1,5 +1,6 @@
 (ns shimmers.sketches.tree-rings
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -7,7 +8,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -25,10 +25,7 @@
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
                        noise (dr/noise-at-point-01 seed 0.002 p)]
                    (tm/+ p (g/as-cartesian (gv/vec2 displace (* eq/TAU noise))))))]
-    (->> points
-         (partition-by (fn [_] (dr/chance split-chance)))
-         (filter #(> (count %) 1))
-         (mapv svg/polyline))))
+    (lines/split-segments split-chance points)))
 
 (defn shapes []
   (let [radius (int (/ height 2.1))
