@@ -33,13 +33,23 @@
           force-at-point (reduce tm/+ (gv/vec2) forces)]
       (tm/+ pos (tm/normalize force-at-point 8)))))
 
+(defn split-lines [split-pct points]
+  (->> points
+       (partition-by (fn [_] (dr/chance split-pct)))
+       (filter #(> (count %) 1))
+       (mapv gl/linestrip2)))
+
 (defn line [bounds dipoles]
-  (let [start (random-point-inside (g/scale-size bounds 0.8))]
+  (let [start (random-point-inside (g/scale-size bounds 0.8))
+        split-chance (dr/weighted {1.0 5
+                                   0.95 3
+                                   0.9 2
+                                   0.85 1
+                                   0.6 1})]
     (->> start
          (iterate (line-step dipoles))
-         #_(take-while (fn [p] (g/contains-point? bounds p)))
          (take 100)
-         gl/linestrip2)))
+         (split-lines split-chance))))
 
 (defn random-dipole [bounds]
   (let [strength (dr/random 2 6)]
@@ -54,14 +64,14 @@
          (with-meta (gc/circle p (Math/abs strength))
            {:fill (if (> strength 0) "none" "black")})))
      (csvg/group {}
-       (repeatedly 100 #(line bounds dipoles)))]))
+       (apply concat (repeatedly 200 #(line bounds dipoles))))]))
 
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "white"
-             :stroke-width 0.5}
+             :stroke-width 0.75}
     (shapes)))
 
 (sketch/definition magnetic-fields
