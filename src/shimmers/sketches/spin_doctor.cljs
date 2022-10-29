@@ -36,10 +36,12 @@
     (q/noise x y (* t scale))))
 
 (defn draw [{:keys [center radius t]}]
+  (q/stroke-weight 0.5)
+  (q/fill 1.0 0.5)
   ;; (cq/circle center radius)
-  (let [expansion (+ 0.1 (* 2 (Math/sin (* 6 eq/TAU (noise-at t 0.002 center)))))
-        rotation (* 4 eq/TAU (noise-at t 0.001 center))
-        rotate-center (* 3 eq/TAU (noise-at t 0.01 center))]
+  (let [expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
+        rotation (* 13 eq/TAU (noise-at t 0.0002 center))
+        rotate-center (* 29 eq/TAU (noise-at t 0.0001 center))]
     (doseq [triangle (g/tessellate (gc/circle center radius) 10)]
       (-> triangle
           (g/translate (tm/* (tm/- (g/centroid triangle) center) expansion))
