@@ -5,6 +5,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -24,18 +26,23 @@
         (assoc
          :center p
          :destination (if (< (g/dist destination p) 10.0)
-                        (cq/rel-vec (dr/random 0.2 0.8)
-                                    (dr/random 0.2 0.8))
+                        (cq/rel-vec (dr/random 0.3 0.7)
+                                    (dr/random 0.3 0.7))
                         destination))
-        (update :t + (dr/random 0.1 0.2)))))
+        (update :t + (dr/random 0.05 0.1)))))
+
+(defn noise-at [t scale p]
+  (let [[x y] (tm/* p scale)]
+    (q/noise x y (* t scale))))
 
 (defn draw [{:keys [center radius t]}]
-  (q/background 1.0 0.05)
-  (cq/circle center radius)
+  ;; (cq/circle center radius)
   (doseq [triangle (g/tessellate (gc/circle center radius) 10)]
     (-> triangle
         (g/translate (tm/* (tm/- (g/centroid triangle) center)
                            (+ 0.1 (* 2 (Math/sin (* t 0.5))))))
+        (geometry/rotate-around center (* 4 eq/TAU (noise-at t 0.001 center)))
+        (geometry/rotate-around-centroid (* 3 eq/TAU (noise-at t 0.01 center)))
         cq/draw-polygon)))
 
 (sketch/defquil spin-doctor
