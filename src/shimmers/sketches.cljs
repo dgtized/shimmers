@@ -147,6 +147,7 @@
    shimmers.sketches.spaces-divided
    shimmers.sketches.space-filling-curves
    shimmers.sketches.sphere
+   shimmers.sketches.spin-doctor
    shimmers.sketches.spiral-distance
    shimmers.sketches.spiral-pack
    shimmers.sketches.square-packing
