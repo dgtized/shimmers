@@ -63,7 +63,7 @@
               (+ 0.45 (* 0.5 (noise-at t 0.009 (tm/+ center (gv/vec2 40 10)))))
               (+ 0.01 (* 4 weight)))
       (q/fill 1.0 0.5)))
-  (let [size (+ 0.75 (* 1.5 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
+  (let [size (+ 0.75 (* 1.25 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
         expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
         rotate-center (* 23 eq/TAU (noise-at t 0.0001 center))
