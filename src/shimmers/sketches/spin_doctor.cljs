@@ -27,7 +27,7 @@
    :t 0})
 
 (defn update-state [{:keys [center radius destination] :as state}]
-  (let [dt (dr/random 0.5 1.8)
+  (let [dt (dr/random 0.5 2.5)
         p (tm/mix center destination (* dt 0.01))]
     (-> state
         (assoc
@@ -43,7 +43,7 @@
     (q/noise x y (* t scale))))
 
 (defn draw [{:keys [center radius t]}]
-  (q/stroke-weight 0.5)
+  (q/stroke-weight (+ 0.1 (* 0.4 (eq/unit-cos (* 7 eq/TAU (noise-at t 0.001 center))))))
   (q/fill 1.0 0.5)
   ;; (cq/circle center radius)
   (let [expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
