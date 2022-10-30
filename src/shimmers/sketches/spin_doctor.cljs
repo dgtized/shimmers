@@ -22,19 +22,19 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:center (cq/rel-vec 0.5 0.5)
-   :radius (cq/rel-h 0.15)
+   :radius (cq/rel-h 0.05)
    :destination (cq/rel-vec 0.8 0.3)
    :t 0})
 
 (defn update-state [{:keys [center radius destination] :as state}]
-  (let [dt (dr/random 0.5 2.0)
+  (let [dt (dr/random 0.5 1.8)
         p (tm/mix center destination (* dt 0.01))]
     (-> state
         (assoc
          :center p
          :destination (if (< (g/dist destination p) (* radius 0.5))
-                        (cq/rel-vec (dr/random 0.2 0.8)
-                                    (dr/random 0.2 0.8))
+                        (cq/rel-vec (dr/random 0.15 0.85)
+                                    (dr/random 0.15 0.85))
                         destination))
         (update :t + (* dt 0.1)))))
 
@@ -48,10 +48,16 @@
   ;; (cq/circle center radius)
   (let [expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
-        rotate-center (* 29 eq/TAU (noise-at t 0.0001 center))]
-    (doseq [triangle (g/tessellate (gc/circle center radius) 10)]
-      (let [tri (displaced-triangle triangle center expansion rotation rotate-center)]
-        (cq/draw-polygon tri)))))
+        rotate-center (* 29 eq/TAU (noise-at t 0.0001 center))
+        exp-2 (* 2 (Math/sin (* 7 eq/TAU (noise-at (+ t 20) 0.0004 center))))
+        rot-2 (* 17 eq/TAU (noise-at (+ t 5) 0.00025 center))
+        rot-center-2 (* 29 eq/TAU (noise-at (+ t 15) 0.00015 center))]
+    (doseq [triangle (g/tessellate (gc/circle center radius) 8)]
+      (let [d-triangle (displaced-triangle triangle center expansion rotation rotate-center)]
+        (doseq [tri (g/subdivide d-triangle)]
+          (-> tri
+              (displaced-triangle (g/centroid d-triangle) exp-2 rot-2 rot-center-2)
+              cq/draw-polygon))))))
 
 (sketch/defquil spin-doctor
   :created-at "2022-10-29"
