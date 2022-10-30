@@ -19,24 +19,29 @@
       (geometry/rotate-around center rotation)
       (geometry/rotate-around-centroid rotate-center)))
 
+(defn new-destination []
+  (cq/rel-vec (dr/random 0.1 0.9)
+              (dr/random 0.1 0.9)))
+
 (defn setup []
+  (q/noise-seed (dr/random-int 10000))
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:center (cq/rel-vec 0.5 0.5)
    :radius (cq/rel-h 0.05)
-   :destination (cq/rel-vec 0.8 0.3)
+   :destination (new-destination)
    :t 0})
 
 (defn update-state [{:keys [center radius destination] :as state}]
   (let [dt (dr/random 0.5 2.5)
-        p (tm/mix center destination (* dt 0.01))]
+        p (tm/mix center destination (* dt 0.01))
+        dest (if (< (g/dist destination p) (* radius 0.5))
+               (new-destination)
+               destination)]
     (-> state
         (assoc
          :center p
-         :destination (if (< (g/dist destination p) (* radius 0.5))
-                        (cq/rel-vec (dr/random 0.1 0.9)
-                                    (dr/random 0.1 0.9))
-                        destination))
+         :destination dest)
         (update :t + (* dt 0.1)))))
 
 (defn noise-at [t scale p]
