@@ -20,16 +20,17 @@
    :destination (cq/rel-vec 0.8 0.3)
    :t 0})
 
-(defn update-state [{:keys [center destination] :as state}]
-  (let [p (tm/mix center destination 0.01)]
+(defn update-state [{:keys [center radius destination] :as state}]
+  (let [dt (dr/random 0.5 2.0)
+        p (tm/mix center destination (* dt 0.01))]
     (-> state
         (assoc
          :center p
-         :destination (if (< (g/dist destination p) 10.0)
+         :destination (if (< (g/dist destination p) (* radius 0.5))
                         (cq/rel-vec (dr/random 0.3 0.7)
                                     (dr/random 0.3 0.7))
                         destination))
-        (update :t + (dr/random 0.05 0.1)))))
+        (update :t + (* dt 0.1)))))
 
 (defn noise-at [t scale p]
   (let [[x y] (tm/* p scale)]
