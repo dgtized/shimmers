@@ -27,8 +27,8 @@
         (assoc
          :center p
          :destination (if (< (g/dist destination p) (* radius 0.5))
-                        (cq/rel-vec (dr/random 0.3 0.7)
-                                    (dr/random 0.3 0.7))
+                        (cq/rel-vec (dr/random 0.2 0.8)
+                                    (dr/random 0.2 0.8))
                         destination))
         (update :t + (* dt 0.1)))))
 
