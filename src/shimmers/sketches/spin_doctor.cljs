@@ -44,13 +44,13 @@
     (q/noise x y (* t scale))))
 
 (defn draw [{:keys [center radius t]}]
-  (let [weight (eq/unit-cos (* 7 eq/TAU (noise-at t 0.0005 (tm/+ center (gv/vec2 5 2)))))]
+  (let [weight (eq/unit-cos (* 7 eq/TAU (noise-at t 0.0002 (tm/+ center (gv/vec2 5 2)))))]
     (q/stroke-weight (* 0.5 weight))
     (if (< weight 0.12)
       (q/fill (mod (* 3.0 (noise-at (* t 2) 0.0005 (tm/+ center (gv/vec2 30 40)))) 1.0)
               (+ 0.4 (* 0.5 (noise-at t 0.008 (tm/+ center (gv/vec2 30 20)))))
               (+ 0.45 (* 0.5 (noise-at t 0.009 (tm/+ center (gv/vec2 40 10)))))
-              (+ 0.01 (* 2 weight)))
+              (+ 0.01 (* 4 weight)))
       (q/fill 1.0 0.5)))
   (let [size (+ 0.75 (* 1.5 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
         expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
