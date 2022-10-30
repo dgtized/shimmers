@@ -12,6 +12,12 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+(defn displaced-triangle [triangle center expansion rotation rotate-center]
+  (-> triangle
+      (g/translate (tm/* (tm/- (g/centroid triangle) center) expansion))
+      (geometry/rotate-around center rotation)
+      (geometry/rotate-around-centroid rotate-center)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
@@ -44,11 +50,8 @@
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
         rotate-center (* 29 eq/TAU (noise-at t 0.0001 center))]
     (doseq [triangle (g/tessellate (gc/circle center radius) 10)]
-      (-> triangle
-          (g/translate (tm/* (tm/- (g/centroid triangle) center) expansion))
-          (geometry/rotate-around center rotation)
-          (geometry/rotate-around-centroid rotate-center)
-          cq/draw-polygon))))
+      (let [tri (displaced-triangle triangle center expansion rotation rotate-center)]
+        (cq/draw-polygon tri)))))
 
 (sketch/defquil spin-doctor
   :created-at "2022-10-29"
