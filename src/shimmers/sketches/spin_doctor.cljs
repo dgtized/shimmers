@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -12,6 +13,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:running true :frame-limit 2500}))
 
 (defn displaced-triangle [triangle center expansion rotation rotate-center]
   (-> triangle
@@ -39,9 +42,8 @@
                (new-destination)
                destination)]
     (-> state
-        (assoc
-         :center p
-         :destination dest)
+        (assoc :center p
+               :destination dest)
         (update :t + (* dt 0.1)))))
 
 (defn update-state-stencils [state]
@@ -54,7 +56,7 @@
   (let [[x y] (tm/* p scale)]
     (q/noise x y (* t scale))))
 
-(defn draw [{:keys [center radius t]}]
+(defn draw-frame [{:keys [center radius t]}]
   (let [weight (eq/unit-cos (* 7 eq/TAU (noise-at t 0.0002 (tm/+ center (gv/vec2 5 2)))))]
     (q/stroke-weight (* 0.5 weight))
     (if (< weight 0.12)
@@ -77,9 +79,20 @@
               (displaced-triangle (g/centroid d-triangle) exp-2 rot-2 rot-center-2)
               cq/draw-polygon))))))
 
+(defn draw [state]
+  (let [{:keys [running frame-limit]} @ui-state]
+    (when (and running (or (= 0 frame-limit) (< (q/frame-count) frame-limit)))
+      (draw-frame state))))
+
+(defn ui-controls []
+  [:div
+   (ctrl/checkbox-after ui-state "Running" [:running])
+   (ctrl/numeric ui-state "Frame Limit" [:frame-limit] [0 100000 1000])])
+
 (sketch/defquil spin-doctor
   :created-at "2022-10-29"
   :size [900 600]
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
   :update update-state
   :draw draw
@@ -88,6 +101,7 @@
 (sketch/defquil spin-doctor-stencils
   :created-at "2022-10-30"
   :size [900 600]
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
   :update update-state-stencils
   :draw draw
