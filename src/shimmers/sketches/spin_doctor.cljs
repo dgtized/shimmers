@@ -44,6 +44,12 @@
          :destination dest)
         (update :t + (* dt 0.1)))))
 
+(defn update-state-stencils [state]
+  (let [dt (dr/random 0.5 2.5)]
+    (-> state
+        (assoc :center (new-destination))
+        (update :t + (* dt 0.1)))))
+
 (defn noise-at [t scale p]
   (let [[x y] (tm/* p scale)]
     (q/noise x y (* t scale))))
@@ -76,5 +82,13 @@
   :size [900 600]
   :setup setup
   :update update-state
+  :draw draw
+  :middleware [m/fun-mode framerate/mode])
+
+(sketch/defquil spin-doctor-stencils
+  :created-at "2022-10-30"
+  :size [900 600]
+  :setup setup
+  :update update-state-stencils
   :draw draw
   :middleware [m/fun-mode framerate/mode])
