@@ -10,6 +10,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn displaced-triangle [triangle center expansion rotation rotate-center]
@@ -33,8 +34,8 @@
         (assoc
          :center p
          :destination (if (< (g/dist destination p) (* radius 0.5))
-                        (cq/rel-vec (dr/random 0.15 0.85)
-                                    (dr/random 0.15 0.85))
+                        (cq/rel-vec (dr/random 0.1 0.9)
+                                    (dr/random 0.1 0.9))
                         destination))
         (update :t + (* dt 0.1)))))
 
@@ -48,10 +49,10 @@
   (let [size (+ 0.75 (* 1.5 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
         expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
-        rotate-center (* 29 eq/TAU (noise-at t 0.0001 center))
-        exp-2 (* 2 (Math/sin (* 7 eq/TAU (noise-at (+ t 20) 0.0004 center))))
-        rot-2 (* 17 eq/TAU (noise-at (+ t 5) 0.00025 center))
-        rot-center-2 (* 29 eq/TAU (noise-at (+ t 15) 0.00015 center))]
+        rotate-center (* 23 eq/TAU (noise-at t 0.0001 center))
+        exp-2 (* 2 (Math/sin (* 11 eq/TAU (noise-at (+ t 20) 0.0004 (tm/+ center (gv/vec2 2.0 0.5))))))
+        rot-2 (* 29 eq/TAU (noise-at t 0.00025 (tm/+ center (gv/vec2 5.0 1.0))))
+        rot-center-2 (* 23 eq/TAU (noise-at t 0.00015 (tm/* center 1.5)))]
     (doseq [triangle (g/tessellate (gc/circle center (* size radius)) 8)]
       (let [d-triangle (displaced-triangle triangle center expansion rotation rotate-center)]
         (doseq [tri (g/subdivide d-triangle)]
