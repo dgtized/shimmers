@@ -23,14 +23,14 @@
       (geometry/rotate-around-centroid rotate-center)))
 
 (defn new-destination []
-  (cq/rel-vec (dr/random 0.1 0.9)
-              (dr/random 0.1 0.9)))
+  (cq/rel-vec (dr/random 0.15 0.85)
+              (dr/random 0.15 0.85)))
 
 (defn setup []
   (q/noise-seed (dr/random-int 10000))
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:center (cq/rel-vec 0.5 0.5)
+  {:center (new-destination)
    :radius (cq/rel-h 0.05)
    :destination (new-destination)
    :velocity (gv/vec2)
