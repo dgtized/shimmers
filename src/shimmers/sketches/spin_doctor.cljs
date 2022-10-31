@@ -37,11 +37,11 @@
    :t 0})
 
 (defn update-state [{:keys [center radius destination velocity] :as state}]
-  (let [dt (dr/random 0.5 2.5)
+  (let [dt (dr/random 0.1 3)
         direction (tm/- destination center)
-        dv (tm/* direction (/ dt (tm/mag direction)))
+        dv (tm/* direction (/ (* 250 dt) (tm/mag-squared direction)))
         vel (tm/* (tm/+ velocity dv) 0.98)
-        pos (tm/+ center (tm/* vel (* 0.03 dt)))
+        pos (tm/+ center (tm/* vel (* 0.01 dt)))
         dest (if (< (g/dist destination pos) radius)
                (new-destination)
                destination)]
