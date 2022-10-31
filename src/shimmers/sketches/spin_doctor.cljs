@@ -33,17 +33,22 @@
   {:center (cq/rel-vec 0.5 0.5)
    :radius (cq/rel-h 0.05)
    :destination (new-destination)
+   :velocity (gv/vec2)
    :t 0})
 
-(defn update-state [{:keys [center radius destination] :as state}]
+(defn update-state [{:keys [center radius destination velocity] :as state}]
   (let [dt (dr/random 0.5 2.5)
-        p (tm/mix center destination (* dt 0.01))
-        dest (if (< (g/dist destination p) (* radius 0.5))
+        direction (tm/- destination center)
+        acceleration (tm/* direction (/ dt (tm/mag direction)))
+        vel (tm/* (tm/+ velocity acceleration) 0.98)
+        p (tm/+ center (tm/* vel (* 0.03 dt)))
+        dest (if (< (g/dist destination p) radius)
                (new-destination)
                destination)]
     (-> state
         (assoc :center p
-               :destination dest)
+               :destination dest
+               :velocity vel)
         (update :t + (* dt 0.1)))))
 
 (defn update-state-stencils [state]
