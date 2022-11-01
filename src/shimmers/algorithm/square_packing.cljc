@@ -83,7 +83,7 @@
   Depending on the placement and size of the square, some of the surrounding
   rectangles may have length or width zero."
   [{p :p [width height] :size :as outer} size [percent-x percent-y] split]
-  (let [pos (gv/vec2 [(* percent-x (- width size)) (* percent-y (- height size))])
+  (let [pos (gv/vec2 (* percent-x (- width size)) (* percent-y (- height size)))
         inner (rect/rect pos size size)]
     (mapv (fn [s] (g/translate s p))
           (into [inner] (surrounding-panes outer inner split)))))
