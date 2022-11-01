@@ -59,6 +59,7 @@
    shimmers.sketches.gossamer-coils
    shimmers.sketches.gravity-well
    shimmers.sketches.grid-variations
+   shimmers.sketches.grid-exclusion
    shimmers.sketches.hairy-spiral
    shimmers.sketches.harsh-lines
    shimmers.sketches.hatched-rectangles
