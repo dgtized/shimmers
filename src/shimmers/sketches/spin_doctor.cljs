@@ -61,15 +61,17 @@
   (let [[x y] (tm/* p scale)]
     (q/noise x y (* t scale))))
 
-(defn draw-frame [{:keys [center radius t]}]
-  (let [weight (eq/unit-cos (* 7 eq/TAU (noise-at t 0.0002 (tm/+ center (gv/vec2 5 2)))))]
+(defn set-color [pos t]
+  (let [weight (eq/unit-cos (* 7 eq/TAU (noise-at t 0.0002 (tm/+ pos (gv/vec2 5 2)))))]
     (q/stroke-weight (* 0.5 weight))
     (if (< weight 0.12)
-      (q/fill (mod (* 3.0 (noise-at (* t 2) 0.0005 (tm/+ center (gv/vec2 30 40)))) 1.0)
-              (+ 0.4 (* 0.5 (noise-at t 0.008 (tm/+ center (gv/vec2 30 20)))))
-              (+ 0.45 (* 0.5 (noise-at t 0.009 (tm/+ center (gv/vec2 40 10)))))
+      (q/fill (mod (* 3.0 (noise-at (* t 2) 0.0005 (tm/+ pos (gv/vec2 30 40)))) 1.0)
+              (+ 0.4 (* 0.5 (noise-at t 0.008 (tm/+ pos (gv/vec2 30 20)))))
+              (+ 0.45 (* 0.5 (noise-at t 0.009 (tm/+ pos (gv/vec2 40 10)))))
               (+ 0.01 (* 4 weight)))
-      (q/fill 1.0 0.5)))
+      (q/fill 1.0 0.5))))
+
+(defn draw-frame [{:keys [center radius t]}]
   (let [size (+ 0.75 (* 1.25 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
         expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
@@ -80,9 +82,9 @@
     (doseq [triangle (g/tessellate (gc/circle center (* size radius)) 8)]
       (let [d-triangle (displaced-triangle triangle center expansion rotation rotate-center)]
         (doseq [tri (g/subdivide d-triangle)]
-          (-> tri
-              (displaced-triangle (g/centroid d-triangle) exp-2 rot-2 rot-center-2)
-              cq/draw-polygon))))))
+          (let [vane (displaced-triangle tri (g/centroid d-triangle) exp-2 rot-2 rot-center-2)]
+            (set-color (g/centroid vane) t)
+            (cq/draw-polygon vane)))))))
 
 (defn draw [state]
   (let [{:keys [running frame-limit]} @ui-state]
