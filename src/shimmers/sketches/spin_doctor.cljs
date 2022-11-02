@@ -23,8 +23,8 @@
       (geometry/rotate-around-centroid rotate-center)))
 
 (defn new-destination []
-  (cq/rel-vec (dr/random 0.15 0.85)
-              (dr/random 0.15 0.85)))
+  (cq/rel-vec (dr/random 0.18 0.82)
+              (dr/random 0.18 0.82)))
 
 (defn setup []
   (q/noise-seed (dr/random-int 10000))
