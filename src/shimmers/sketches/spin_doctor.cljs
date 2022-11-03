@@ -73,10 +73,10 @@
 
 (defn draw-frame [{:keys [center radius t]}]
   (let [size (+ 0.75 (* 1.25 (eq/unit-sin (* eq/TAU (noise-at (+ t 7) 0.0007 center)))))
-        expansion (+ 0.1 (* 2 (Math/sin (* 14 eq/TAU (noise-at t 0.0003 center)))))
+        expansion (+ 0.1 (* 2 (Math/sin (* 7 eq/TAU (noise-at t 0.0003 center)))))
         rotation (* 13 eq/TAU (noise-at t 0.0002 center))
         rotate-center (* 23 eq/TAU (noise-at t 0.0001 center))
-        exp-2 (* 2 (Math/sin (* 11 eq/TAU (noise-at (+ t 20) 0.0004 (tm/+ center (gv/vec2 2.0 0.5))))))
+        exp-2 (* 2 (Math/sin (* 9 eq/TAU (noise-at (+ t 20) 0.0004 (tm/+ center (gv/vec2 2.0 0.5))))))
         rot-2 (* 29 eq/TAU (noise-at t 0.00025 (tm/+ center (gv/vec2 5.0 1.0))))
         rot-center-2 (* 23 eq/TAU (noise-at t 0.00015 (tm/* center 1.5)))]
     (doseq [triangle (g/tessellate (gc/circle center (* size radius)) 8)]
