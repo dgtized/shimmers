@@ -19,14 +19,13 @@
 (defn shapes []
   (let [center (rv 0.5 0.5)
         radius (* 0.4 height)
-        points (g/vertices (gc/circle center radius) 13)]
+        points (g/vertices (gc/circle center radius) (dr/random-int 15 23))]
     (conj (for [p points]
             (gl/line2 center p))
           (gl/linestrip2
-           (for [g (dr/density-range 0.05 0.1)
-                 point points]
-             (let [p (tm/mix center point g)]
-               p))))))
+           (map (fn [point r] (tm/mix center point r))
+                (cycle points)
+                (drop 16 (dr/density-range 0.0005 0.003)))))))
 
 (defn scene []
   (csvg/svg {:width width
