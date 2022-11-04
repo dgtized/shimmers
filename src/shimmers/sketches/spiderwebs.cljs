@@ -22,14 +22,16 @@
         radius (* 0.4 height)
         points (mapv (fn [p] (tm/+ p (dr/jitter (* 0.08 radius))))
                      (g/vertices (gc/circle center radius) (dr/random-int 15 23)))
-        center-r 0.02]
-    (conj (for [p points]
-            (gl/line2 (tm/mix center p center-r) p))
-          (gp/polygon2 (map #(tm/mix center % center-r) points))
-          (gl/linestrip2
-           (map (fn [point r] (tm/mix center point r))
-                (cycle points)
-                (drop-while #(< % center-r) (dr/density-range 0.0001 0.0025)))))))
+        center-r 0.02
+        radial-lines (map (fn [p] (gl/line2 (tm/mix center p center-r) p)) points)
+        center-circle (gp/polygon2 (map #(tm/mix center % center-r) points))
+        spiral (gl/linestrip2
+                (map (fn [point r] (tm/mix center point r))
+                     (cycle points)
+                     (drop-while #(< % center-r) (dr/density-range 0.0001 0.0025))))]
+    (conj radial-lines
+          center-circle
+          spiral)))
 
 (defn scene []
   (csvg/svg {:width width
