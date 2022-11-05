@@ -50,5 +50,6 @@ jobs:
 
       - name: Test
         run: |
-          /usr/bin/google-chrome-stable --headless --no-first-run &
+          # /usr/bin/google-chrome-stable --headless --no-first-run &
+          jobs
           bin/kaocha
