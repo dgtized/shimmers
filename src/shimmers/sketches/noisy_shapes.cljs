@@ -28,7 +28,7 @@
 
 (defn random-brush []
   (let [brushes [#(small-rectangle (q/random 0.4 1.1))
-                 #(right-angle (q/random 0.4 1.1))
+                 #(right-angle (q/random 0.66 1.75))
                  #(tc/circle (q/random 3 8))]]
     ((rand-nth brushes))))
 
@@ -65,7 +65,6 @@
   (q/background 255)
   (q/no-stroke)
   ;; (q/no-loop)
-  ;; (q/background 255 0.1)
   (let [w (q/width)
         h (q/height)
         shapes [{:shape (rect/rect (* 0.1 w) (* 0.15 h) (* 0.3 w) (* 0.4 h))
@@ -81,7 +80,7 @@
 
 (sketch/defquil noisy-shapes
   :created-at "2021-03-03"
-  :size [600 400]
+  :size [800 600]
   :setup setup
   :draw draw
   :middleware [m/fun-mode framerate/mode])
