@@ -50,6 +50,11 @@
       (g/rotate angle)
       (g/translate (tm/+ connect (v/polar (* 0.5 size) angle)))))
 
+(defn circle [connect size angle]
+  (-> connect
+      (tm/+ (v/polar (* 0.5 size) angle))
+      (gc/circle size)))
+
 (defn point-triangle [connect size angle]
   (gp/polygon2 [connect
                 (v/+polar connect size (+ angle 0.5))
@@ -72,6 +77,7 @@
 
 (def poly-shapes
   {:square square
+   :circle circle
    :point point-triangle
    :edge edge-triangle
    :flat-hex flat-hex
