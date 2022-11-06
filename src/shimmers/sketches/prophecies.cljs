@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    ;; side-effect extend-type to Line2
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.line]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
@@ -75,11 +76,37 @@
       (gc/circle (* 0.5 size))
       (hex/pointy-hexagon->polygon)))
 
+(defn flat-pentagon [connect size angle]
+  (let [size (* 0.66 size)
+        r (/ 1 (* 2 (Math/sqrt (- 5 (Math/sqrt 20)))))
+        R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
+        center (v/+polar connect (* r size) angle)
+        r72 (tm/radians 72)]
+    (gp/polygon2 (v/+polar center (* R size) (+ angle (* r72 0)))
+                 (v/+polar center (* R size) (+ angle (* r72 1)))
+                 (v/+polar center (* R size) (+ angle (* r72 2)))
+                 (v/+polar center (* R size) (+ angle (* r72 3)))
+                 (v/+polar center (* R size) (+ angle (* r72 4))))))
+
+(defn pointy-pentagon [connect size angle]
+  (let [size (* 0.66 size)
+        R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
+        center (v/+polar connect (* R size) angle)
+        r72 (tm/radians 72)
+        angle (- angle (* 0.5 r72))]
+    (gp/polygon2 (v/+polar center (* R size) (+ angle (* r72 0)))
+                 (v/+polar center (* R size) (+ angle (* r72 1)))
+                 (v/+polar center (* R size) (+ angle (* r72 2)))
+                 (v/+polar center (* R size) (+ angle (* r72 3)))
+                 (v/+polar center (* R size) (+ angle (* r72 4))))))
+
 (def poly-shapes
   {:square square
    :circle circle
    :point point-triangle
    :edge edge-triangle
+   :flat-pentagon flat-pentagon
+   :pointy-pentagon pointy-pentagon
    :flat-hex flat-hex
    :pointy-hex pointy-hex})
 
