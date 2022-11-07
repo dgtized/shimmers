@@ -68,14 +68,20 @@
                 (v/+polar connect (* 0.5 size) (right angle))]))
 
 (defn flat-hex [connect size angle]
-  (-> (v/+polar connect (hex/apothem {:r (* 0.5 size)}) angle)
-      (gc/circle (* 0.5 size))
-      (hex/flat-hexagon->polygon)))
+  (let [r (* 0.5 size)
+        center (v/+polar connect (hex/apothem {:r r}) angle)]
+    (-> (gc/circle r)
+        (hex/flat-hexagon->polygon)
+        (g/rotate (+ angle (/ Math/PI 6)))
+        (g/translate center))))
 
 (defn pointy-hex [connect size angle]
-  (-> (v/+polar connect (* 0.5 size) angle)
-      (gc/circle (* 0.5 size))
-      (hex/pointy-hexagon->polygon)))
+  (let [r (* 0.5 size)
+        center (v/+polar connect r angle)]
+    (-> (gc/circle r)
+        (hex/pointy-hexagon->polygon)
+        (g/rotate (+ angle (/ Math/PI 6)))
+        (g/translate center))))
 
 ;; https://en.wikipedia.org/wiki/Pentagon
 (defn flat-pentagon [connect size angle]
