@@ -155,7 +155,8 @@
   (let [direction ((dr/rand-nth [right left]) heading)
         new-shapes ((dr/weighted {#(flyout vertex (* width 0.1) (* width 0.05) direction) 3
                                   #(flyout vertex (* width 0.1) (* width 0.1) direction) 1}))]
-    (when (not-any? (fn [s] (collide/overlaps? s (second new-shapes))) shapes)
+    (when (and (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes)
+               (not-any? (fn [s] (collide/overlaps? s (second new-shapes))) shapes))
       new-shapes)))
 
 (defn add-shapes [shapes vertices heading n]

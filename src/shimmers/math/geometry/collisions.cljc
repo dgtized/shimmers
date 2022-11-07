@@ -46,12 +46,18 @@
   [a b]
   (geometry/circles-overlap? a b))
 
+;; consider a triangle overlapping a square, with one point of triangle in
+;; square, but no points of square in triangle
+;; FIXME: still not handling if overlap point is on an edge
 (defmethod overlaps?
   [Polygon2 Polygon2]
   [a b]
-  (when (some (fn [point] (g/contains-point? b point)) (g/vertices a))
+  (when (or (some (fn [point] (g/contains-point? b point)) (g/vertices a))
+            (some (fn [point] (g/contains-point? a point)) (g/vertices b)))
     true))
 
+;; FIXME: it's possible for a circle to contain no points but have a line of the
+;; polygon overlap the circle
 (defmethod overlaps?
   [Polygon2 Circle2]
   [poly circle]
