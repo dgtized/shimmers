@@ -1,4 +1,4 @@
-(ns shimmers.math.geometry.overlap
+(ns shimmers.math.geometry.collisions
   (:require [shimmers.math.geometry.intersection :as intersect]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as g]
