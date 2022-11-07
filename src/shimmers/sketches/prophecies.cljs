@@ -139,6 +139,23 @@
     (gl/line2 (tm/- (:p c1) (tm/* dir (:r c1)))
               (tm/+ (:p c2) (tm/* dir (:r c2))))))
 
+(defn overlaps? [_ _] false)
+
+(defn make-shape [vertex heading shapes]
+  (let [direction ((dr/rand-nth [right left]) heading)
+        new-shapes ((dr/weighted {#(flyout vertex (* width 0.1) (* width 0.05) direction) 3
+                                  #(flyout vertex (* width 0.1) (* width 0.1) direction) 1}))]
+    (when (not-any? (fn [s] (overlaps? (second new-shapes) s)) shapes)
+      new-shapes)))
+
+(defn add-shapes [vertices heading n]
+  (loop [n n vertices vertices shapes []]
+    (if (zero? n)
+      [shapes vertices]
+      (if-let [new-shapes (make-shape (first vertices) heading shapes)]
+        (recur (dec n) (rest vertices) (concat shapes new-shapes))
+        (recur n vertices shapes)))))
+
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
         c1-p (rv (dr/random 0.35 0.35) 0.5)
@@ -152,19 +169,14 @@
                       (g/vertices meridian)
                       (drop-last 1)
                       (drop 1)
-                      dr/shuffle)]
+                      dr/shuffle)
+        [shapes vertices] (add-shapes vertices heading 4)]
     (concat [c1 c2 meridian]
-            (flyout (nth vertices 0) (* width 0.1) (* width 0.05) (left heading))
-            (stem-face (nth vertices 1) (* width (dr/random 0.03 0.06)) (right heading))
-            (flyout (nth vertices 2) (* width 0.1) (* width 0.05) (right heading))
-            (flyout (nth vertices 3) (* width 0.2)
-                    (* width 0.1) (right heading))
-            (maybe (partial stem-face (nth vertices 4)
+            shapes
+            (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) (right heading))
+            (maybe (partial stem-face (nth vertices 1)
                             (* width (dr/random 0.05 0.1))
-                            (right heading)) 0.5)
-            (flyout (nth vertices 5) (* width 0.2)
-                    (* width 0.1)
-                    (left heading)))))
+                            (right heading)) 0.5))))
 
 (defn scene []
   (csvg/svg {:width width
