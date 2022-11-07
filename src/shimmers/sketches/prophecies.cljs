@@ -130,10 +130,11 @@
 
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
-        rect (square connect (* 0.5 height) angle)]
+        shape ((dr/rand-nth (vals (dissoc poly-shapes :circle)))
+               connect (* 0.5 height) angle)]
     (concat [(gl/line2 base connect)
-             rect]
-            (->> (g/edges rect)
+             shape]
+            (->> (g/edges shape)
                  (remove (fn [[p q]] (point-on-segment? connect p q)))
                  (mapcat (fn [face]
                            (let [[mid dir] (face-point-out face)]
