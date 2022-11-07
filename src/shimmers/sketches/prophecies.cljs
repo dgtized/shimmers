@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
+   [shimmers.math.geometry.overlap :refer [overlaps?]]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -139,13 +140,11 @@
     (gl/line2 (tm/- (:p c1) (tm/* dir (:r c1)))
               (tm/+ (:p c2) (tm/* dir (:r c2))))))
 
-(defn overlaps? [_ _] false)
-
 (defn make-shape [vertex heading shapes]
   (let [direction ((dr/rand-nth [right left]) heading)
         new-shapes ((dr/weighted {#(flyout vertex (* width 0.1) (* width 0.05) direction) 3
                                   #(flyout vertex (* width 0.1) (* width 0.1) direction) 1}))]
-    (when (not-any? (fn [s] (overlaps? (second new-shapes) s)) shapes)
+    (when (not-any? (fn [s] (overlaps? s (second new-shapes))) shapes)
       new-shapes)))
 
 (defn add-shapes [vertices heading n]
