@@ -15,6 +15,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -120,20 +121,23 @@
              poly]
             (maybe (partial operator poly (dr/random-int 3 8)) 0.5))))
 
-(defn face-point-out [shape face]
-  (let [[p q] (nth (g/edges shape) face)]
-    [(tm/mix p q 0.5)
-     (v/polar 1 (left (g/heading (tm/- q p))))]))
+(defn point-on-segment? [point p q]
+  (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
+
+(defn face-point-out [[p q]]
+  [(tm/mix p q 0.5)
+   (v/polar 1 (left (g/heading (tm/- q p))))])
 
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
         rect (square connect (* 0.5 height) angle)]
     (concat [(gl/line2 base connect)
              rect]
-            (mapcat (fn [face]
-                      (let [[mid dir] (face-point-out rect face)]
-                        (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5)))
-                    (range 4)))))
+            (->> (g/edges rect)
+                 (remove (fn [[p q]] (point-on-segment? connect p q)))
+                 (mapcat (fn [face]
+                           (let [[mid dir] (face-point-out face)]
+                             (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5))))))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
