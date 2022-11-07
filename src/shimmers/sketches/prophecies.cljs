@@ -59,8 +59,8 @@
 
 (defn point-triangle [connect size angle]
   (gp/polygon2 [connect
-                (v/+polar connect size (+ angle 0.5))
-                (v/+polar connect size (- angle 0.5))]))
+                (v/+polar connect size (- angle 0.5))
+                (v/+polar connect size (+ angle 0.5))]))
 
 (defn edge-triangle [connect size angle]
   (gp/polygon2 [(v/+polar connect (* 0.5 size) (left angle))
