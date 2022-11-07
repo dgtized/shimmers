@@ -158,8 +158,8 @@
     (when (not-any? (fn [s] (collide/overlaps? s (second new-shapes))) shapes)
       new-shapes)))
 
-(defn add-shapes [vertices heading n]
-  (loop [n n vertices vertices shapes []]
+(defn add-shapes [shapes vertices heading n]
+  (loop [n n vertices vertices shapes shapes]
     (if (zero? n)
       [shapes vertices]
       (if-let [new-shapes (make-shape (first vertices) heading shapes)]
@@ -180,13 +180,13 @@
                       (drop-last 1)
                       (drop 1)
                       dr/shuffle)
-        [shapes vertices] (add-shapes vertices heading 4)]
+        stems (concat (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) ((dr/rand-nth [left right]) heading))
+                      (maybe (partial stem-face (nth vertices 1)
+                                      (* width (dr/random 0.05 0.1))
+                                      ((dr/rand-nth [left right]) heading)) 0.5))
+        [shapes _] (add-shapes stems (drop 2 vertices) heading 4)]
     (concat [c1 c2 meridian]
-            shapes
-            (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) ((dr/rand-nth [left right]) heading))
-            (maybe (partial stem-face (nth vertices 1)
-                            (* width (dr/random 0.05 0.1))
-                            ((dr/rand-nth [left right]) heading)) 0.5))))
+            shapes)))
 
 (defn scene []
   (csvg/svg {:width width
