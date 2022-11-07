@@ -183,10 +183,10 @@
         [shapes vertices] (add-shapes vertices heading 4)]
     (concat [c1 c2 meridian]
             shapes
-            (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) (right heading))
+            (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) ((dr/rand-nth [left right]) heading))
             (maybe (partial stem-face (nth vertices 1)
                             (* width (dr/random 0.05 0.1))
-                            (right heading)) 0.5))))
+                            ((dr/rand-nth [left right]) heading)) 0.5))))
 
 (defn scene []
   (csvg/svg {:width width
