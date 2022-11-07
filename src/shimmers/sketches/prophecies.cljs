@@ -54,7 +54,7 @@
 
 (defn circle [connect size angle]
   (-> connect
-      (tm/+ (v/polar (* 0.25 size) angle))
+      (v/+polar (* 0.5 size) angle)
       (gc/circle (* 0.5 size))))
 
 (defn point-triangle [connect size angle]
