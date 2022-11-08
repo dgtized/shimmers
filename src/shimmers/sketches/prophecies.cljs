@@ -160,20 +160,30 @@
                    0.05 4})
      width))
 
-(defn make-shape [vertex heading shapes]
-  (let [new-shapes (flyout vertex (gen-size) (gen-size) (gen-direction heading))
+(defn make-shape [connector shapes]
+  (let [{:keys [vertex direction]} connector
+        new-shapes (flyout vertex (gen-size) (gen-size) direction)
         primary (g/scale-size (second new-shapes) 1.1)]
     (when (and (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes)
                (not-any? (fn [s] (collide/overlaps? s primary)) shapes))
       new-shapes)))
 
-(defn add-shapes [shapes connectors heading n]
+(defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
     (if (or (zero? n) (zero? attempts))
       [shapes connectors]
-      (if-let [new-shapes (make-shape (first connectors) heading shapes)]
+      (if-let [new-shapes (make-shape (first connectors) shapes)]
         (recur (dec n) (rest connectors) (concat shapes new-shapes) (dec attempts))
         (recur n connectors shapes (dec attempts))))))
+
+(defn gen-connectors [meridian n heading]
+  (for [vertex (->> (g/vertices meridian n)
+                    (drop-last 1)
+                    (drop 1)
+                    dr/shuffle)
+        direction [left right]]
+    {:vertex vertex
+     :direction (direction heading)}))
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
@@ -187,17 +197,15 @@
         meridian (meridian c1 c2)
         skew (if (dr/chance 0.8) 0 (* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)])))
         heading (+ (g/heading meridian) skew)
-        connectors (->> (dr/random-int 8 16)
-                        (g/vertices meridian)
-                        (drop-last 1)
-                        (drop 1)
-                        dr/shuffle)
-        stems (concat (stem-face (nth connectors 0) (* width (dr/random 0.03 0.06))
-                                 (gen-direction heading))
-                      (maybe 0.5 (partial stem-face (nth connectors 1)
-                                          (* width (dr/random 0.05 0.1))
-                                          (gen-direction heading))))
-        [shapes _] (add-shapes stems (drop 2 connectors) heading (dr/random-int 3 (min 7 (- (count connectors) 2))))]
+        connectors (gen-connectors meridian (dr/random-int 8 16) heading)
+        stems
+        (concat (let [{:keys [vertex direction]} (nth connectors 0)]
+                  (stem-face vertex (* width (dr/random 0.03 0.06)) direction))
+                (let [{:keys [vertex direction]} (nth connectors 1)]
+                  (maybe 0.5 (partial stem-face vertex
+                                      (* width (dr/random 0.05 0.1))
+                                      direction))))
+        [shapes _] (add-shapes stems (drop 2 connectors) (dr/random-int 3 (min 7 (- (count connectors) 2))))]
     (concat [c1 c2 meridian]
             shapes)))
 
