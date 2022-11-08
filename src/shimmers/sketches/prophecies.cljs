@@ -15,6 +15,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -132,19 +133,13 @@
   [(tm/mix p q 0.5)
    (v/polar 1 (left (g/heading (tm/- q p))))])
 
-(defn face-shapes [connect shape size]
+(defn face-connectors [connect shape]
   (->> (g/edges shape)
        (remove (fn [[p q]] (point-on-segment? connect p q)))
-       (mapcat (fn [face]
-                 (let [[mid dir] (face-point-out face)]
-                   (maybe 0.5 (partial flyout mid size size (g/heading dir))))))))
-
-(defn stem-face [base height angle]
-  (let [connect (v/+polar base height angle)
-        shape ((dr/rand-nth (vals (dissoc poly-shapes :circle)))
-               connect (* 0.5 height) angle)]
-    (concat [(gl/line2 base connect) shape]
-            (face-shapes connect shape (* 0.5 height)))))
+       (map (fn [face]
+              (let [[mid dir] (face-point-out face)]
+                {:vertex mid
+                 :direction (g/heading dir)})))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
@@ -164,17 +159,27 @@
   (let [{:keys [vertex direction]} connector
         new-shapes (flyout vertex (gen-size) (gen-size) direction)
         primary (g/scale-size (second new-shapes) 1.1)]
-    (when (and (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes)
-               (not-any? (fn [s] (collide/overlaps? s primary)) shapes))
+    (when (and (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
+               (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes))
       new-shapes)))
 
 (defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
-    (if (or (zero? n) (zero? attempts))
+    (if (or (zero? n) (zero? attempts) (empty? connectors))
       [shapes connectors]
-      (if-let [new-shapes (make-shape (first connectors) shapes)]
-        (recur (dec n) (rest connectors) (concat shapes new-shapes) (dec attempts))
-        (recur n connectors shapes (dec attempts))))))
+      (let [connector (dr/weighted connectors)]
+        (if-let [new-shapes (make-shape connector shapes)]
+          (let [{[_ connect ] :points} (first new-shapes)
+                shape (second new-shapes)
+                faces (if (instance? Circle2 shape)
+                        []
+                        (face-connectors connect shape))]
+            (recur (dec n)
+                   (merge (dissoc connectors connector)
+                          (zipmap faces (repeat 1)))
+                   (concat shapes new-shapes)
+                   (dec attempts)))
+          (recur n connectors shapes (dec attempts)))))))
 
 (defn gen-connectors [meridian n heading]
   (for [vertex (->> (g/vertices meridian n)
@@ -203,15 +208,9 @@
                  (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
                                (- (g/heading meridian))]))
         heading (+ (g/heading meridian) skew)
-        connectors (dr/shuffle (gen-connectors meridian (dr/random-int 8 16) heading))
-        stems
-        (concat (let [{:keys [vertex direction]} (nth connectors 0)]
-                  (stem-face vertex (* width (dr/random 0.03 0.06)) direction))
-                (let [{:keys [vertex direction]} (nth connectors 1)]
-                  (maybe 0.5 (partial stem-face vertex
-                                      (* width (dr/random 0.05 0.1))
-                                      direction))))
-        [shapes _] (add-shapes stems (drop 2 connectors) (dr/random-int 3 (min 7 (- (count connectors) 2))))]
+        connectors (zipmap (gen-connectors meridian (dr/random-int 8 16) heading)
+                           (repeat 2))
+        [shapes _] (add-shapes [] connectors (dr/random-int 8 15))]
     (concat [c1 c2 meridian]
             shapes)))
 
