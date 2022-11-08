@@ -120,11 +120,9 @@
 
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)
-        poly ((get poly-shapes (dr/rand-nth (keys poly-shapes)))
-              connect size angle)
+        poly ((dr/rand-nth (vals poly-shapes)) connect size angle)
         operator (dr/rand-nth [deepen nested])]
-    (concat [(gl/line2 base connect)
-             poly]
+    (concat [(gl/line2 base connect) poly]
             (maybe (partial operator poly (dr/random-int 3 8)) 0.5))))
 
 (defn point-on-segment? [point p q]
