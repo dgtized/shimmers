@@ -186,15 +186,22 @@
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
-        slant (if (dr/chance 0.85) 0.0
-                  (* (dr/rand-nth [-1 1]) (dr/rand-nth [0.15 0.1])))
+        slant
+        (if (dr/chance 0.80) 0.0
+            (* (dr/rand-nth [-1 1])
+               (dr/weighted {0.20 1
+                             0.15 1
+                             0.1 3
+                             0.05 2})))
         c1-p (rv (dr/random 0.35 0.35) 0.5)
         c2-p (rv (dr/random 0.7 0.75) (+ 0.5 slant))
         d (g/dist c1-p c2-p)
         c1 (gc/circle c1-p (* d (- 1 cut)))
         c2 (gc/circle c2-p (* d cut))
         meridian (meridian c1 c2)
-        skew (if (dr/chance 0.8) 0 (* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)])))
+        skew (if (dr/chance 0.75) 0.0
+                 (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
+                               (- (g/heading meridian))]))
         heading (+ (g/heading meridian) skew)
         connectors (dr/shuffle (gen-connectors meridian (dr/random-int 8 16) heading))
         stems
