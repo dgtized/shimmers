@@ -151,14 +151,17 @@
     (gl/line2 (tm/- (:p c1) (tm/* dir (:r c1)))
               (tm/+ (:p c2) (tm/* dir (:r c2))))))
 
+(defn gen-direction [heading]
+  ((dr/rand-nth [right left]) heading))
+
 (defn gen-size []
-  (dr/weighted {(* width 0.15) 1
-                (* width 0.1)  2
-                (* width 0.05) 4}))
+  (* (dr/weighted {0.15 1
+                   0.1  2
+                   0.05 4})
+     width))
 
 (defn make-shape [vertex heading shapes]
-  (let [direction ((dr/rand-nth [right left]) heading)
-        new-shapes (flyout vertex (gen-size) (gen-size) direction)
+  (let [new-shapes (flyout vertex (gen-size) (gen-size) (gen-direction heading))
         primary (g/scale-size (second new-shapes) 1.1)]
     (when (and (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes)
                (not-any? (fn [s] (collide/overlaps? s primary)) shapes))
@@ -186,11 +189,12 @@
                       (drop-last 1)
                       (drop 1)
                       dr/shuffle)
-        stems (concat (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06)) ((dr/rand-nth [left right]) heading))
+        stems (concat (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06))
+                                 (gen-direction heading))
                       (maybe (partial stem-face (nth vertices 1)
                                       (* width (dr/random 0.05 0.1))
-                                      ((dr/rand-nth [left right]) heading)) 0.5))
-        [shapes _] (add-shapes stems (drop 2 vertices) heading 4)]
+                                      (gen-direction heading)) 0.5))
+        [shapes _] (add-shapes stems (drop 2 vertices) heading (dr/random-int 3 (min 7 (- (count vertices) 2))))]
     (concat [c1 c2 meridian]
             shapes)))
 
