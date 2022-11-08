@@ -151,10 +151,14 @@
     (gl/line2 (tm/- (:p c1) (tm/* dir (:r c1)))
               (tm/+ (:p c2) (tm/* dir (:r c2))))))
 
+(defn gen-size []
+  (dr/weighted {(* width 0.15) 1
+                (* width 0.1)  2
+                (* width 0.05) 4}))
+
 (defn make-shape [vertex heading shapes]
   (let [direction ((dr/rand-nth [right left]) heading)
-        new-shapes ((dr/weighted {#(flyout vertex (* width 0.1) (* width 0.05) direction) 3
-                                  #(flyout vertex (* width 0.1) (* width 0.1) direction) 1}))
+        new-shapes (flyout vertex (gen-size) (gen-size) direction)
         primary (g/scale-size (second new-shapes) 1.1)]
     (when (and (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes)
                (not-any? (fn [s] (collide/overlaps? s primary)) shapes))
