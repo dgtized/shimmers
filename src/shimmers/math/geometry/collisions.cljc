@@ -28,11 +28,11 @@
 (defmethod overlaps?
   [Line2 Circle2]
   [line circle]
-  (when (intersect/circle-segment-intersection circle line)
+  (when (intersect/circle-line-intersection circle line)
     true))
 
 (defmethod overlaps? [Circle2 Line2] [circle line]
-  (when (intersect/circle-segment-intersection circle line)
+  (when (intersect/circle-line-intersection circle line)
     true))
 
 (defmethod overlaps?
@@ -48,24 +48,27 @@
 
 ;; consider a triangle overlapping a square, with one point of triangle in
 ;; square, but no points of square in triangle
-;; FIXME: still not handling if overlap point is on an edge
 (defmethod overlaps?
   [Polygon2 Polygon2]
   [a b]
   (when (or (some (fn [point] (g/contains-point? b point)) (g/vertices a))
-            (some (fn [point] (g/contains-point? a point)) (g/vertices b)))
+            (some (fn [point] (g/contains-point? a point)) (g/vertices b))
+            (some (fn [[p q]] (isec/intersect-line2-edges? p q (g/edges b)))
+                  (g/edges a)))
     true))
 
-;; FIXME: it's possible for a circle to contain no points but have a line of the
-;; polygon overlap the circle
 (defmethod overlaps?
   [Polygon2 Circle2]
   [poly circle]
-  (when (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
+  (when (or (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
+            (some (fn [[p q]] (intersect/circle-segment-intersection circle p q))
+                  (g/edges poly)))
     true))
 
 (defmethod overlaps?
   [Circle2 Polygon2]
   [circle poly]
-  (when (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
+  (when (or (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
+            (some (fn [[p q]] (intersect/circle-segment-intersection circle p q))
+                  (g/edges poly)))
     true))
