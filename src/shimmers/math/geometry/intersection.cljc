@@ -31,7 +31,7 @@
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
 (defn circle-segment-intersection
-  [{:keys [c r]} {[p q] :points}]
+  [{:keys [c r]} p q]
   (let [d (tm/- q p)
         f (tm/- p c)
         a (tm/dot d d)
@@ -44,3 +44,7 @@
             t1 (* (- (- b) root-disc) reciprocal)
             t2 (* (+ (- b) root-disc) reciprocal)]
         [t1 t2 (tm/+ p (tm/* d t1)) (tm/+ p (tm/* d t2))]))))
+
+(defn circle-line-intersection
+  [circle {[p q] :points}]
+  (circle-segment-intersection circle p q))
