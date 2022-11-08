@@ -167,13 +167,13 @@
                (not-any? (fn [s] (collide/overlaps? s primary)) shapes))
       new-shapes)))
 
-(defn add-shapes [shapes vertices heading n]
-  (loop [n n vertices vertices shapes shapes]
+(defn add-shapes [shapes connectors heading n]
+  (loop [n n connectors connectors shapes shapes]
     (if (zero? n)
-      [shapes vertices]
-      (if-let [new-shapes (make-shape (first vertices) heading shapes)]
-        (recur (dec n) (rest vertices) (concat shapes new-shapes))
-        (recur n vertices shapes)))))
+      [shapes connectors]
+      (if-let [new-shapes (make-shape (first connectors) heading shapes)]
+        (recur (dec n) (rest connectors) (concat shapes new-shapes))
+        (recur n connectors shapes)))))
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
@@ -187,17 +187,17 @@
         meridian (meridian c1 c2)
         skew (if (dr/chance 0.8) 0 (* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)])))
         heading (+ (g/heading meridian) skew)
-        vertices (->> (dr/random-int 8 16)
-                      (g/vertices meridian)
-                      (drop-last 1)
-                      (drop 1)
-                      dr/shuffle)
-        stems (concat (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06))
+        connectors (->> (dr/random-int 8 16)
+                        (g/vertices meridian)
+                        (drop-last 1)
+                        (drop 1)
+                        dr/shuffle)
+        stems (concat (stem-face (nth connectors 0) (* width (dr/random 0.03 0.06))
                                  (gen-direction heading))
-                      (maybe 0.5 (partial stem-face (nth vertices 1)
+                      (maybe 0.5 (partial stem-face (nth connectors 1)
                                           (* width (dr/random 0.05 0.1))
                                           (gen-direction heading))))
-        [shapes _] (add-shapes stems (drop 2 vertices) heading (dr/random-int 3 (min 7 (- (count vertices) 2))))]
+        [shapes _] (add-shapes stems (drop 2 connectors) heading (dr/random-int 3 (min 7 (- (count connectors) 2))))]
     (concat [c1 c2 meridian]
             shapes)))
 
