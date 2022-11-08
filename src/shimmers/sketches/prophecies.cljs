@@ -177,13 +177,16 @@
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
+        slant (if (dr/chance 0.85) 0.0
+                  (* (dr/rand-nth [-1 1]) (dr/rand-nth [0.15 0.1])))
         c1-p (rv (dr/random 0.35 0.35) 0.5)
-        c2-p (rv (dr/random 0.7 0.75) 0.5)
+        c2-p (rv (dr/random 0.7 0.75) (+ 0.5 slant))
         d (g/dist c1-p c2-p)
         c1 (gc/circle c1-p (* d (- 1 cut)))
         c2 (gc/circle c2-p (* d cut))
         meridian (meridian c1 c2)
-        heading (g/heading meridian)
+        skew (if (dr/chance 0.8) 0 (* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)])))
+        heading (+ (g/heading meridian) skew)
         vertices (->> (dr/random-int 8 16)
                       (g/vertices meridian)
                       (drop-last 1)
