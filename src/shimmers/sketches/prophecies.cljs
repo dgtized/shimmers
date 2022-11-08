@@ -168,12 +168,12 @@
       new-shapes)))
 
 (defn add-shapes [shapes connectors heading n]
-  (loop [n n connectors connectors shapes shapes]
-    (if (zero? n)
+  (loop [n n connectors connectors shapes shapes attempts (* n 5)]
+    (if (or (zero? n) (zero? attempts))
       [shapes connectors]
       (if-let [new-shapes (make-shape (first connectors) heading shapes)]
-        (recur (dec n) (rest connectors) (concat shapes new-shapes))
-        (recur n connectors shapes)))))
+        (recur (dec n) (rest connectors) (concat shapes new-shapes) (dec attempts))
+        (recur n connectors shapes (dec attempts))))))
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
