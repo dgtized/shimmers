@@ -179,8 +179,7 @@
 (defn gen-connectors [meridian n heading]
   (for [vertex (->> (g/vertices meridian n)
                     (drop-last 1)
-                    (drop 1)
-                    dr/shuffle)
+                    (drop 1))
         direction [left right]]
     {:vertex vertex
      :direction (direction heading)}))
@@ -197,7 +196,7 @@
         meridian (meridian c1 c2)
         skew (if (dr/chance 0.8) 0 (* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)])))
         heading (+ (g/heading meridian) skew)
-        connectors (gen-connectors meridian (dr/random-int 8 16) heading)
+        connectors (dr/shuffle (gen-connectors meridian (dr/random-int 8 16) heading))
         stems
         (concat (let [{:keys [vertex direction]} (nth connectors 0)]
                   (stem-face vertex (* width (dr/random 0.03 0.06)) direction))
