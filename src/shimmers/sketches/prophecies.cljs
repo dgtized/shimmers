@@ -41,7 +41,7 @@
   (->> (range 0.0 0.8 (/ 0.8 n))
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
-(defn maybe [operation prob]
+(defn maybe [prob operation]
   (if (dr/chance prob)
     (operation)
     []))
@@ -123,7 +123,7 @@
         poly ((dr/rand-nth (vals poly-shapes)) connect size angle)
         operator (dr/rand-nth [deepen nested])]
     (concat [(gl/line2 base connect) poly]
-            (maybe (partial operator poly (dr/random-int 3 8)) 0.5))))
+            (maybe 0.5 (partial operator poly (dr/random-int 3 8))))))
 
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
@@ -137,7 +137,7 @@
        (remove (fn [[p q]] (point-on-segment? connect p q)))
        (mapcat (fn [face]
                  (let [[mid dir] (face-point-out face)]
-                   (maybe (partial flyout mid size size (g/heading dir)) 0.5))))))
+                   (maybe 0.5 (partial flyout mid size size (g/heading dir))))))))
 
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
@@ -194,9 +194,9 @@
                       dr/shuffle)
         stems (concat (stem-face (nth vertices 0) (* width (dr/random 0.03 0.06))
                                  (gen-direction heading))
-                      (maybe (partial stem-face (nth vertices 1)
-                                      (* width (dr/random 0.05 0.1))
-                                      (gen-direction heading)) 0.5))
+                      (maybe 0.5 (partial stem-face (nth vertices 1)
+                                          (* width (dr/random 0.05 0.1))
+                                          (gen-direction heading))))
         [shapes _] (add-shapes stems (drop 2 vertices) heading (dr/random-int 3 (min 7 (- (count vertices) 2))))]
     (concat [c1 c2 meridian]
             shapes)))
