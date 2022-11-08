@@ -202,7 +202,7 @@
   (csvg/svg {:width width
              :height height
              :stroke "black"
-             :fill "none"
+             :fill "white"
              :stroke-width 1.0}
     (shapes)))
 
