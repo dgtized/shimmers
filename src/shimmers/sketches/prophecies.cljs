@@ -133,13 +133,14 @@
   [(tm/mix p q 0.5)
    (v/polar 1 (left (g/heading (tm/- q p))))])
 
-(defn face-connectors [connect shape]
+(defn face-connectors [connect shape scale]
   (->> (g/edges shape)
        (remove (fn [[p q]] (point-on-segment? connect p q)))
        (map (fn [face]
               (let [[mid dir] (face-point-out face)]
                 {:vertex mid
-                 :direction (g/heading dir)})))))
+                 :direction (g/heading dir)
+                 :scale scale})))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
@@ -156,8 +157,8 @@
      width))
 
 (defn make-shape [connector shapes]
-  (let [{:keys [vertex direction]} connector
-        new-shapes (flyout vertex (gen-size) (gen-size) direction)
+  (let [{:keys [vertex direction scale]} connector
+        new-shapes (flyout vertex (* scale (gen-size)) (* scale (gen-size)) direction)
         primary (g/scale-size (second new-shapes) 1.1)]
     (when (and (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
                (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes))
@@ -167,16 +168,16 @@
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
     (if (or (zero? n) (zero? attempts) (empty? connectors))
       [shapes connectors]
-      (let [connector (dr/weighted connectors)]
+      (let [{:keys [scale] :as connector} (dr/weighted connectors)]
         (if-let [new-shapes (make-shape connector shapes)]
           (let [{[_ connect ] :points} (first new-shapes)
                 shape (second new-shapes)
                 faces (if (instance? Circle2 shape)
                         []
-                        (face-connectors connect shape))]
+                        (face-connectors connect shape 0.5))]
             (recur (dec n)
                    (merge (dissoc connectors connector)
-                          (zipmap faces (repeat 1)))
+                          (zipmap faces (repeat (* scale 5))))
                    (concat shapes new-shapes)
                    (dec attempts)))
           (recur n connectors shapes (dec attempts)))))))
@@ -187,7 +188,8 @@
                     (drop 1))
         direction [left right]]
     {:vertex vertex
-     :direction (direction heading)}))
+     :direction (direction heading)
+     :scale 1.0}))
 
 (defn shapes []
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
@@ -209,7 +211,7 @@
                                (- (g/heading meridian))]))
         heading (+ (g/heading meridian) skew)
         connectors (zipmap (gen-connectors meridian (dr/random-int 8 16) heading)
-                           (repeat 2))
+                           (repeat 5))
         [shapes _] (add-shapes [] connectors (dr/random-int 8 15))]
     (concat [c1 c2 meridian]
             shapes)))
