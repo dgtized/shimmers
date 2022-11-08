@@ -134,17 +134,19 @@
   [(tm/mix p q 0.5)
    (v/polar 1 (left (g/heading (tm/- q p))))])
 
+(defn face-shapes [connect shape size]
+  (->> (g/edges shape)
+       (remove (fn [[p q]] (point-on-segment? connect p q)))
+       (mapcat (fn [face]
+                 (let [[mid dir] (face-point-out face)]
+                   (maybe (partial flyout mid size size (g/heading dir)) 0.5))))))
+
 (defn stem-face [base height angle]
   (let [connect (v/+polar base height angle)
         shape ((dr/rand-nth (vals (dissoc poly-shapes :circle)))
                connect (* 0.5 height) angle)]
-    (concat [(gl/line2 base connect)
-             shape]
-            (->> (g/edges shape)
-                 (remove (fn [[p q]] (point-on-segment? connect p q)))
-                 (mapcat (fn [face]
-                           (let [[mid dir] (face-point-out face)]
-                             (maybe (partial flyout mid (* 0.5 height) (* 0.5 height) (g/heading dir)) 0.5))))))))
+    (concat [(gl/line2 base connect) shape]
+            (face-shapes connect shape (* 0.5 height)))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
