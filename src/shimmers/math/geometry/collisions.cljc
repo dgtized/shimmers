@@ -33,7 +33,7 @@
 (defmethod overlaps?
   [Line2 Line2]
   [a b]
-  (contains? #{:intesect :coincident}
+  (contains? #{:intersect :coincident}
              (:type (g/intersect-line a b))))
 
 (defmethod overlaps?
