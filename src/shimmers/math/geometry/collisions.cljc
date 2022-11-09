@@ -25,12 +25,10 @@
 (defmethod overlaps?
   [Line2 Circle2]
   [line circle]
-  (when (intersect/circle-line-intersection circle line)
-    true))
+  (overlaps? circle line))
 
 (defmethod overlaps? [Circle2 Line2] [circle line]
-  (when (intersect/circle-line-intersection circle line)
-    true))
+  (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
   [Line2 Line2]
@@ -62,5 +60,5 @@
 (defmethod overlaps?
   [Circle2 Polygon2]
   [circle poly]
-  (some (fn [[p q]] (intersect/circle-segment-overlap circle p q))
+  (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
         (g/edges poly)))

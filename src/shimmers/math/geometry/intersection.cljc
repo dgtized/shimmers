@@ -30,7 +30,7 @@
 
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
-(defn circle-ray-intersection
+(defn circle-ray
   [{:keys [p r]} origin dest]
   (let [dir (tm/- dest origin)
         f (tm/- origin p)
@@ -62,16 +62,20 @@
                   :else
                   {:type :inside :isec [] :points [hit0 hit1]})))))
 
-(defn circle-segment-intersection
+(defn circle-segment-intersect?
   [circle p q]
-  (when-let [{:keys [type]} (circle-ray-intersection circle p q)]
+  (when-let [{:keys [type]} (circle-ray circle p q)]
     (contains? #{:tangent :poke :exit :impale} type)))
 
-(defn circle-segment-overlap
+(defn circle-segment-overlap?
   [circle p q]
-  (when-let [{:keys [type]} (circle-ray-intersection circle p q)]
+  (when-let [{:keys [type]} (circle-ray circle p q)]
     (contains? #{:tangent :poke :exit :impale :inside} type)))
 
-(defn circle-line-intersection
+(defn circle-line-intersect?
   [circle {[p q] :points}]
-  (circle-segment-intersection circle p q))
+  (circle-segment-intersect? circle p q))
+
+(defn circle-line-overlap?
+  [circle {[p q] :points}]
+  (circle-segment-overlap? circle p q))
