@@ -82,3 +82,26 @@
   [bounds line]
   (every? (fn [p] (g/contains-point? bounds p))
           (g/vertices line)))
+
+(defmethod bounded?
+  [Circle2 Polygon2]
+  [bounds polygon]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices polygon)))
+
+(defmethod bounded?
+  [Circle2 Line2]
+  [bounds {[p q] :points}]
+  (and (g/contains-point? bounds p)
+       (g/contains-point? bounds q)))
+
+(defmethod bounded?
+  [Circle2 Rect2]
+  [bounds rect]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices rect)))
+
+(defmethod bounded?
+  [Circle2 Circle2]
+  [{c :p radius :r} {:keys [p r]}]
+  (<= (g/dist c p) (- radius r)))
