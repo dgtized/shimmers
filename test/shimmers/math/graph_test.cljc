@@ -1,10 +1,9 @@
 (ns shimmers.math.graph-test
-  (:require #?(:clj [clojure.test :as t :refer [deftest is]]
-               :cljs [cljs.test :as t :include-macros true
-                      :refer [deftest is]])
-            [shimmers.math.graph :as sut]
-            [thi.ng.geom.vector :as gv]
-            [loom.graph :as lg]))
+  (:require
+   [clojure.test :as t :refer [deftest is] :include-macros true]
+   [loom.graph :as lg]
+   [shimmers.math.graph :as sut]
+   [thi.ng.geom.vector :as gv]))
 
 ;; a - b   f
 ;;  \

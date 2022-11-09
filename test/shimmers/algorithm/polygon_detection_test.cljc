@@ -1,13 +1,13 @@
 (ns shimmers.algorithm.polygon-detection-test
-  (:require #?(:clj [clojure.test :as t :refer [deftest is are]]
-               :cljs [cljs.test :as t :refer-macros [deftest is are] :include-macros true])
-            [loom.graph :as lg]
-            [shimmers.algorithm.polygon-detection :as sut]
-            [shimmers.math.vector :as v]
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.polygon :as gp]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.test :as t :refer-macros [are deftest is] :include-macros true]
+   [loom.graph :as lg]
+   [shimmers.algorithm.polygon-detection :as sut]
+   [shimmers.math.vector :as v]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (deftest ordered-points
   (let [[origin v01 v02 v11]

@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.line-clipping-test
   (:require
-   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
    [shimmers.algorithm.line-clipping :as sut]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]

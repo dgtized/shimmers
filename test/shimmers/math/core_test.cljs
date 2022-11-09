@@ -1,8 +1,7 @@
 (ns shimmers.math.core-test
   (:require
+   [clojure.test :as t :refer [deftest is testing] :include-macros true]
    [shimmers.math.core :as sut]
-   [cljs.test :as t :include-macros true
-    :refer-macros [deftest is run-tests testing]]
    [thi.ng.math.core :as tm]))
 
 (deftest mod-mixing
@@ -69,4 +68,4 @@
   (is (= [0 1] (sut/range-subdivided 2 2)))
   (is (= [0 1 2] (sut/range-subdivided 3 3))))
 
-(comment (run-tests))
+(comment (t/run-tests))

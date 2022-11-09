@@ -1,7 +1,6 @@
 (ns shimmers.automata.simplify-test
   (:require
-   [cljs.test :as t :include-macros true
-    :refer-macros [deftest is run-tests]]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.automata.simplify :as sut]))
 
 (deftest collapse-trivial-one-of
@@ -77,4 +76,4 @@
                                       [:halt 0]]]
                             [:halt 0]])))
 
-(comment (run-tests))
+(comment (t/run-tests))

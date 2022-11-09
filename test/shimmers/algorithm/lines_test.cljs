@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.lines-test
   (:require
-   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
    [shimmers.algorithm.lines :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]

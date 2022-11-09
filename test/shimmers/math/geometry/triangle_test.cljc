@@ -1,10 +1,10 @@
 (ns shimmers.math.geometry.triangle-test
-  (:require [shimmers.math.geometry.triangle :as sut]
-            #?(:clj [clojure.test :as t :refer [deftest is]]
-               :cljs [cljs.test :as t :refer [deftest is] :include-macros true])
-            [thi.ng.geom.core :as g]
-            [thi.ng.geom.triangle :as gt]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.geometry.triangle :as sut]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]))
 
 (deftest decomposition
   (let [t (gt/triangle2 [0 0] [0 1] [1 0])]

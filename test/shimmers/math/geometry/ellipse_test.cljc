@@ -1,8 +1,6 @@
 (ns shimmers.math.geometry.ellipse-test
   (:require
-   #?(:clj [clojure.test :as t :refer [deftest is testing]]
-      :cljs [cljs.test :as t :include-macros true
-             :refer [deftest is testing]])
+   [clojure.test :as t :refer [deftest is testing] :include-macros true]
    [shimmers.math.geometry.ellipse :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]

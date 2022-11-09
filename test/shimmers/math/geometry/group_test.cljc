@@ -1,8 +1,6 @@
 (ns shimmers.math.geometry.group-test
   (:require
-   #?(:clj [clojure.test :refer [deftest testing is]]
-      :cljs [cljs.test :as t :include-macros true
-             :refer [deftest testing is]])
+   [clojure.test :as t :refer [deftest is testing] :include-macros true]
    [shimmers.math.geometry.group :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]

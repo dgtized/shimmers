@@ -1,9 +1,8 @@
 (ns shimmers.math.hexagon-test
-  (:require #?(:clj [clojure.test :as t :refer [deftest is]]
-               :cljs [cljs.test :as t :include-macros true
-                      :refer [deftest is]])
-            [shimmers.math.hexagon :as hex]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.hexagon :as hex]
+   [thi.ng.geom.vector :as gv]))
 
 (deftest neighborhood
   (is (= [-1 0 1] (hex/cube-neighbor (gv/vec3) 4)))

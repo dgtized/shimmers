@@ -1,10 +1,9 @@
 (ns shimmers.math.geometry.intersection-test
-  (:require #?(:clj [clojure.test :refer [deftest is]]
-               :cljs [cljs.test :as t :include-macros true
-                      :refer [deftest is]])
-            [shimmers.math.geometry.intersection :as sut]
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.geometry.intersection :as sut]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.vector :as gv]))
 
 (deftest circle-segment-isec
   (is (sut/circle-segment-intersect? (gc/circle [1 1] 1) (gv/vec2 1 1) (gv/vec2 2 2)))

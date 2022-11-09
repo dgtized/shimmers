@@ -1,6 +1,6 @@
 (ns shimmers.math.geometry-test
   (:require
-   [cljs.test :as t
+   [clojure.test :as t
     :refer-macros [deftest is run-tests]
     :include-macros true]
    [shimmers.math.geometry :as sut]

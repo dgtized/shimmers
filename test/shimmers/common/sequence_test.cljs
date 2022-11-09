@@ -1,8 +1,7 @@
 (ns shimmers.common.sequence-test
   (:require
-   [shimmers.common.sequence :as sut]
-   [cljs.test :as t :include-macros true
-    :refer-macros [deftest is]]))
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.common.sequence :as sut]))
 
 (t/deftest rotate
   (t/is (= [1 2 3] (sut/rotate 0 [1 2 3])))

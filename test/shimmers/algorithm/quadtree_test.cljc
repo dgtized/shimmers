@@ -1,10 +1,10 @@
 (ns shimmers.algorithm.quadtree-test
-  (:require [shimmers.algorithm.quadtree :as sut]
-            #?(:clj [clojure.test :as t :refer [deftest is]]
-               :cljs [cljs.test :as t :refer-macros [deftest is] :include-macros true])
-            [thi.ng.geom.circle :as gc]
-            [thi.ng.geom.spatialtree :as spatialtree]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.algorithm.quadtree :as sut]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.spatialtree :as spatialtree]))
 
 (deftest deletion
   (let [c1 (gc/circle 0 0 1)

@@ -1,7 +1,8 @@
 (ns shimmers.algorithm.minimum-spanning-tree-test
-  (:require [shimmers.algorithm.minimum-spanning-tree :as sut]
-            [cljs.test :as t :refer-macros [deftest is] :include-macros true]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [shimmers.algorithm.minimum-spanning-tree :as sut]
+   [thi.ng.geom.vector :as gv]))
 
 (deftest kruskals
   (is (= [[:a :b] [:b :c] [:c :d]]

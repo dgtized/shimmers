@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.square-packing-test
   (:require
-   [cljs.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
    [shimmers.algorithm.square-packing :as sut]
    [thi.ng.geom.rect :as rect]))
 
