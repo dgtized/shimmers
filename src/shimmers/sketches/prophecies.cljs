@@ -211,7 +211,7 @@
                  (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
                                (- (g/heading meridian))]))
         heading (+ (g/heading meridian) skew)
-        connectors (zipmap (gen-connectors meridian (dr/random-int 8 16) heading)
+        connectors (zipmap (gen-connectors meridian (dr/random-int 8 24) heading)
                            (repeat 5))
         [shapes _] (add-shapes [] connectors (dr/random-int 8 15))]
     (concat [c1 c2 meridian]
