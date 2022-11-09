@@ -30,20 +30,47 @@
 
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-sphere-intersection
+(defn circle-ray-intersection
+  [{:keys [p r]} origin dest]
+  (let [dir (tm/- dest origin)
+        f (tm/- origin p)
+        A (tm/dot dir dir)
+        B (* 2 (tm/dot f dir))
+        C (- (tm/dot f f) (* r r))
+        discriminant (- (* B B) (* 4 A C))]
+    (cond (= discriminant 0)
+          (let [t (/ (- B) (* 2 A))
+                hit (tm/+ origin (tm/* dir t))]
+            {:type :tangent :isec [hit] :points [hit]})
+          (> discriminant 0)
+          (let [root-disc (Math/sqrt discriminant)
+                t0 (/ (- (- B) root-disc) (* 2 A))
+                t1 (/ (+ (- B) root-disc) (* 2 A))
+                [t0 t1] (if (< t0 t1) [t0 t1] [t1 t0])
+                hit0 (tm/+ origin (tm/* dir t0))
+                hit1 (tm/+ origin (tm/* dir t1))]
+            (cond (<= 0 t0 1)
+                  (if (> t1 1)
+                    {:type :poke :isec [hit0] :points [hit0 hit1]}
+                    {:type :impale :isec [hit0 hit1] :points [hit0 hit1]})
+                  (<= 0 t1 1)
+                  {:type :exit :isec [hit1] :points [hit0 hit1]}
+                  (and (< t0 0) (< t1 0))
+                  {:type :past :isec [] :points [hit0 hit1]}
+                  (and (> t0 1) (> t1 1))
+                  {:type :before :isec [] :points [hit0 hit1]}
+                  :else
+                  {:type :inside :isec [] :points [hit0 hit1]})))))
+
 (defn circle-segment-intersection
-  [{:keys [c r]} p q]
-  (let [d (tm/- q p)
-        f (tm/- p c)
-        a (tm/dot d d)
-        b (* 2 (tm/dot f d))
-        c (- (tm/dot f f) (* r r))
-        discriminant (- (* b b) (* 4 a c))]
-    (when (>= discriminant 0)
-      (let [root-disc (Math/sqrt discriminant)
-            reciprocal (/ 1 (* 2 a))
-            t1 (* (- (- b) root-disc) reciprocal)
-            t2 (* (+ (- b) root-disc) reciprocal)]
-        [t1 t2 (tm/+ p (tm/* d t1)) (tm/+ p (tm/* d t2))]))))
+  [circle p q]
+  (when-let [{:keys [type]} (circle-ray-intersection circle p q)]
+    (contains? #{:tangent :poke :exit :impale} type)))
+
+(defn circle-segment-overlap
+  [circle p q]
+  (when-let [{:keys [type]} (circle-ray-intersection circle p q)]
+    (contains? #{:tangent :poke :exit :impale :inside} type)))
 
 (defn circle-line-intersection
   [circle {[p q] :points}]
