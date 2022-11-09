@@ -159,8 +159,9 @@
 (defn make-shape [connector shapes]
   (let [{:keys [vertex direction scale]} connector
         new-shapes (flyout vertex (* scale (gen-size)) (* scale (gen-size)) direction)
-        primary (g/scale-size (second new-shapes) 1.1)]
-    (when (and (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
+        primary (g/scale-size (second new-shapes) 1.2)]
+    (when (and (collide/bounded? (rect/rect width height) primary)
+               (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
                (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes))
       new-shapes)))
 

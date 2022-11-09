@@ -4,8 +4,8 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.utils.intersect :as isec]
             #?(:clj [thi.ng.geom.types]
-               :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2]]))
-  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Polygon2])))
+               :cljs [thi.ng.geom.types :refer [Circle2 Line2 Rect2 Polygon2]]))
+  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Rect2 Polygon2])))
 
 (defmulti overlaps? (fn [a b] [(type a) (type b)]))
 
@@ -62,3 +62,23 @@
   [circle poly]
   (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
         (g/edges poly)))
+
+;; TODO: handle cases where bounds is not a rectangle
+(defmulti bounded? (fn [bounds shape] [(type bounds) (type shape)]))
+
+(defmethod bounded?
+  [Rect2 Polygon2]
+  [bounds poly]
+  (every? (fn [p] (g/contains-point? bounds p)) (g/vertices poly)))
+
+(defmethod bounded?
+  [Rect2 Circle2]
+  [bounds circle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices (g/bounds circle))))
+
+(defmethod bounded?
+  [Rect2 Line2]
+  [bounds line]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices line)))
