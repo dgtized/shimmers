@@ -11,11 +11,8 @@
 
 (defmethod overlaps?
   [Line2 Polygon2]
-  [{[p q] :points} polygon]
-  (or (g/contains-point? polygon p)
-      (g/contains-point? polygon q)
-      (when (isec/intersect-line2-edges? p q (g/edges polygon))
-        true)))
+  [line polygon]
+  (overlaps? polygon line))
 
 (defmethod overlaps?
   [Polygon2 Line2]
@@ -60,15 +57,10 @@
 (defmethod overlaps?
   [Polygon2 Circle2]
   [poly circle]
-  (when (or (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
-            (some (fn [[p q]] (intersect/circle-segment-intersection circle p q))
-                  (g/edges poly)))
-    true))
+  (overlaps? circle poly))
 
 (defmethod overlaps?
   [Circle2 Polygon2]
   [circle poly]
-  (when (or (some (fn [point] (g/contains-point? circle point)) (g/vertices poly))
-            (some (fn [[p q]] (intersect/circle-segment-intersection circle p q))
-                  (g/edges poly)))
-    true))
+  (some (fn [[p q]] (intersect/circle-segment-overlap circle p q))
+        (g/edges poly)))
