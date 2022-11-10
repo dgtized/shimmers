@@ -123,10 +123,8 @@
 
 (defn flyout [base height size angle]
   (let [connect (v/+polar base height angle)
-        poly ((dr/rand-nth (vals poly-shapes)) connect size angle)
-        operator (dr/rand-nth [deepen nested])]
-    (concat [(gl/line2 base connect) poly]
-            (maybe 0.5 (partial operator poly (dr/random-int 3 8))))))
+        poly ((dr/rand-nth (vals poly-shapes)) connect size angle)]
+    [(gl/line2 base connect) poly]))
 
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
@@ -167,7 +165,9 @@
     (when (and (collide/bounded? (rect/rect width height) primary)
                (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
                (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes))
-      new-shapes)))
+      (concat new-shapes
+              (maybe 0.5 (partial (dr/rand-nth [deepen nested]) (second new-shapes)
+                                  (dr/random-int 3 8)))))))
 
 (defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
