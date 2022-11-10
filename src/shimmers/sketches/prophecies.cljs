@@ -121,11 +121,6 @@
    :flat-hex flat-hex
    :pointy-hex pointy-hex})
 
-(defn flyout [base height size angle]
-  (let [connect (v/+polar base height angle)
-        poly ((dr/rand-nth (vals poly-shapes)) connect size angle)]
-    [(gl/line2 base connect) poly]))
-
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
 
@@ -159,14 +154,18 @@
      width))
 
 (defn make-shape [connector shapes]
-  (let [{:keys [vertex direction scale]} connector
-        new-shapes (flyout vertex (* scale (gen-size)) (* scale (gen-size)) direction)
-        primary (g/scale-size (second new-shapes) 1.2)]
-    (when (and (collide/bounded? (rect/rect width height) primary)
-               (not-any? (fn [s] (collide/overlaps? s primary)) shapes)
-               (not-any? (fn [s] (collide/overlaps? s (first new-shapes))) shapes))
-      (concat new-shapes
-              (maybe 0.5 (partial (dr/rand-nth [deepen nested]) (second new-shapes)
+  (let [{:keys [vertex scale] angle :direction} connector
+        len (* scale (gen-size))
+        size (* scale (gen-size))
+        connect (v/+polar vertex len angle)
+        shape ((dr/rand-nth (vals poly-shapes)) connect size angle)
+        line (gl/line2 vertex connect)
+        padded (g/scale-size shape 1.2)]
+    (when (and (collide/bounded? (rect/rect width height) padded)
+               (not-any? (fn [s] (collide/overlaps? s padded)) shapes)
+               (not-any? (fn [s] (collide/overlaps? s line)) shapes))
+      (concat [line shape]
+              (maybe 0.5 (partial (dr/rand-nth [deepen nested]) shape
                                   (dr/random-int 3 8)))))))
 
 (defn add-shapes [shapes connectors n]
