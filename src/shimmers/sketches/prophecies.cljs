@@ -142,7 +142,9 @@
               (let [[mid dir] (face-point-out face)]
                 {:vertex mid
                  :direction (g/heading dir)
-                 :scale scale})))))
+                 :scale (dr/weighted {scale 6
+                                      1.1 2
+                                      1.25 1})})))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
