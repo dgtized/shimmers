@@ -1,11 +1,13 @@
 (ns shimmers.sketches.prophecies
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
-   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -218,16 +220,23 @@
             shapes)))
 
 (defn scene []
-  (csvg/svg {:width width
+  (csvg/svg {:id "scene"
+             :width width
              :height height
              :stroke "black"
              :fill "white"
              :stroke-width 1.0}
     (shapes)))
 
+
+(defn ui-controls []
+  [:div
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "prophecies")]])
+
 (sketch/definition prophecies
   {:created-at "2022-07-08"
    :type :svg
-   :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :prophecies)
-              "sketch-host"))
+   :tags #{:deterministic}}
+  (-> scene
+      (view-sketch/page-for :prophecies ui-controls)
+      (ctrl/mount "sketch-host")))
