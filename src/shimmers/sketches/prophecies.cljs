@@ -177,10 +177,15 @@
                 shape (second new-shapes)
                 faces (if (instance? Circle2 shape)
                         []
-                        (face-connectors connect shape 0.5))]
+                        (face-connectors connect shape 0.5))
+                connector-prob (* (dr/weighted {6 6
+                                                8 3
+                                                12 1
+                                                24 1})
+                                  scale)]
             (recur (dec n)
                    (merge (dissoc connectors connector)
-                          (zipmap faces (repeat (* scale 5))))
+                          (zipmap faces (repeat connector-prob)))
                    (concat shapes new-shapes)
                    (dec attempts)))
           (recur n connectors shapes (dec attempts)))))))
