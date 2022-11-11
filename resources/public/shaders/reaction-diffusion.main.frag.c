@@ -17,15 +17,15 @@ uniform float deltaT;
 vec2 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
   vec2 ab = vec2(0.0,0.0);
 
-  ab += texture2D(tex, pos + vec2(-1.0,-1.0)*texelSize).xy * 0.05;
-  ab += texture2D(tex, pos + vec2( 0.0,-1.0)*texelSize).xy * 0.2;
-  ab += texture2D(tex, pos + vec2( 1.0,-1.0)*texelSize).xy * 0.05;
-  ab += texture2D(tex, pos + vec2(-1.0, 0.0)*texelSize).xy * 0.2;
-  ab += texture2D(tex, pos + vec2( 0.0, 0.0)*texelSize).xy * -1.0;
-  ab += texture2D(tex, pos + vec2( 1.0, 0.0)*texelSize).xy * 0.2;
-  ab += texture2D(tex, pos + vec2(-1.0, 1.0)*texelSize).xy * 0.05;
-  ab += texture2D(tex, pos + vec2( 0.0, 1.0)*texelSize).xy * 0.2;
-  ab += texture2D(tex, pos + vec2( 1.0, 1.0)*texelSize).xy * 0.05;
+  ab += texture2D(tex, pos + vec2(-1,-1)*texelSize).xy * 0.05;
+  ab += texture2D(tex, pos + vec2( 0,-1)*texelSize).xy * 0.2;
+  ab += texture2D(tex, pos + vec2( 1,-1)*texelSize).xy * 0.05;
+  ab += texture2D(tex, pos + vec2(-1, 0)*texelSize).xy * 0.2;
+  ab += texture2D(tex, pos + vec2( 0, 0)*texelSize).xy * -1.0;
+  ab += texture2D(tex, pos + vec2( 1, 0)*texelSize).xy * 0.2;
+  ab += texture2D(tex, pos + vec2(-1, 1)*texelSize).xy * 0.05;
+  ab += texture2D(tex, pos + vec2( 0, 1)*texelSize).xy * 0.2;
+  ab += texture2D(tex, pos + vec2( 1, 1)*texelSize).xy * 0.05;
 
   return ab;
 }
