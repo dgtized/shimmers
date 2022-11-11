@@ -15,7 +15,7 @@ uniform float deltaT;
 
 // Translated from https://ciphrd.com/2019/08/24/reaction-diffusion-on-shader/
 vec3 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
-  vec3 ab = vec3(0,0,0);
+  vec3 ab = vec3(0.0,0.0,0.0);
 
   ab += texture2D(tex, pos + vec2(-1.0,-1.0)*texelSize).rgb * 0.05;
   ab += texture2D(tex, pos + vec2(-0.0,-1.0)*texelSize).rgb * 0.2;
@@ -32,8 +32,7 @@ vec3 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
 
 void main() {
   vec2 pos = vTexCoord.xy;
-
-  vec2 texelSize = vec2(1.0/resolution.x,1.0/resolution.y);
+  vec2 texelSize = 1.0 / resolution;
 
   vec4 current = texture2D(concentrations, pos);
   float a = current.r;
