@@ -6,7 +6,7 @@
   (q/shader shader)
   (doseq [[key value] uniforms]
     (q/set-uniform shader key value))
-  (q/rect (* -0.5 w) (* -0.5 h) w h))
+  (q/rect 0 0 w h))
 
 (defn transform
   [shader buffer image [w h] uniforms]
