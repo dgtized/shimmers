@@ -30,6 +30,7 @@ vec2 laplacian(sampler2D tex, vec2 pos, vec2 texelSize) {
   return ab;
 }
 
+// Why is this drifting from right to left?
 void main() {
   vec2 pos = vTexCoord.xy;
   vec2 texelSize = 1.0 / resolution;
