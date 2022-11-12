@@ -40,8 +40,10 @@ void main() {
   float b = current.y;
   vec2 lp = laplacian(concentrations, pos, texelSize);
 
-  float a2 = clamp(a + (diffusionA*lp.x - a*b*b + feed*(1.0-a)) * deltaT, 0.0, 1.0);
-  float b2 = clamp(b + (diffusionB*lp.y + a*b*b - (kill + feed)*b) * deltaT, 0.0, 1.0);
+  float da = diffusionA*lp.x - a*b*b + feed*(1.0-a);
+  float db = diffusionB*lp.y + a*b*b - (kill + feed)*b;
 
-  gl_FragColor = vec4(a2,b2,0.0,1.0);
+  vec2 ab = current.xy + vec2(da, db) * deltaT;
+
+  gl_FragColor = vec4(ab.xy,0.0,1.0);
 }
