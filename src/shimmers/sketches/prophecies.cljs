@@ -124,19 +124,16 @@
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
 
-(defn face-point-out [[p q]]
-  [(tm/mix p q 0.5)
-   (v/polar 1 (left (g/heading (tm/- q p))))])
-
 (defn face-connectors [connect shape scale]
   (zipmap (if (instance? Circle2 shape)
             []
             (->> (g/edges shape)
                  (remove (fn [[p q]] (point-on-segment? connect p q)))
-                 (map (fn [face]
-                        (let [[mid dir] (face-point-out face)]
-                          {:vertex mid
-                           :direction (g/heading dir)
+                 (map (fn [[p q]]
+                        (let [midpoint (tm/mix p q 0.5)
+                              angle (left (g/heading (tm/- q p)))]
+                          {:vertex midpoint
+                           :direction angle
                            :scale (dr/weighted {scale 6
                                                 1.1 2
                                                 1.25 1})})))))
