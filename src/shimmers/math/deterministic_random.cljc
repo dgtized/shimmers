@@ -204,6 +204,7 @@
      :std-dev (Math/sqrt variance)}))
 
 (comment
+  (summary-stats (range 0 1 0.001))
   (summary-stats (repeatedly 10000 #(gaussian 2 0.2)))
   (summary-stats (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
   (summary-stats (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))
@@ -216,8 +217,8 @@
   ;; value at 90% percent?
   (ksd/quantile (ksd/pareto {:scale 1 :shape 7.5}) 0.9)
   (ksd/quantile (ksd/pareto {:scale 1 :shape 1}) 0.9)
-  (mapv (fn [x] (let [p (* 1.0 (Math/pow x (/ -1 8)))]
-                 [x p]))
-        (range 0 1 0.02))
-  (summary-stats (ksd/sample 1000 (ksd/pareto {:scale 0.8 :shape 8})))
+  (summary-stats (mapv (fn [x] (let [p (* 1.0 (Math/pow x (/ -1 8)))]
+                                p))
+                       (rest (range 0 1 0.01))))
+  (summary-stats (ksd/sample 1000 (ksd/pareto {:scale 1.0 :shape 4})))
   (summary-stats (ksd/sample 1000 (ksd/log-normal {:mu 0.0 :sd 0.8}))))
