@@ -34,7 +34,7 @@
   (- angle tm/HALF_PI))
 
 (defn deepen [polygon n]
-  (let [scale (/ 0.8 n)]
+  (let [scale (/ 0.8 (inc n))]
     (->> polygon
          (iterate (fn [poly]
                     (g/scale-size poly (- 1.0 scale))))
