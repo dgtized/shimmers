@@ -107,6 +107,24 @@
         angle (- angle (* 0.5 (tm/radians 72)))]
     (pentagon center (* R size) angle)))
 
+(defn heptagon [center radius angle]
+  (-> (gc/circle radius)
+      (g/as-polygon 7)
+      (g/rotate angle)
+      (g/translate center)))
+
+(defn flat-heptagon [connect size angle]
+  (let [R (* 0.66 size)
+        apothem (* R (Math/cos (/ Math/PI 7)))
+        center (v/+polar connect apothem angle)]
+    (heptagon center R angle)))
+
+(defn pointy-heptagon [connect size angle]
+  (let [R (* 0.66 size)
+        center (v/+polar connect R angle)
+        angle (+ angle (tm/radians (+ 128 (/ 4 7))))]
+    (heptagon center R angle)))
+
 (def poly-shapes
   {:square square
    :circle circle
@@ -115,7 +133,10 @@
    :flat-pentagon flat-pentagon
    :pointy-pentagon pointy-pentagon
    :flat-hex flat-hex
-   :pointy-hex pointy-hex})
+   :pointy-hex pointy-hex
+   :flat-heptagon flat-heptagon
+   :pointy-heptagon pointy-heptagon
+   })
 
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
