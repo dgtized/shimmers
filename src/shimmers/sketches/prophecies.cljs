@@ -244,19 +244,24 @@
     (concat [c1 c2 meridian]
             shapes)))
 
+(defonce ui-state (ctrl/state {:filled true}))
+
 (defn scene []
-  (csvg/svg {:id "scene"
-             :width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 1.0}
-    (shapes)))
+  (let [shapes (shapes)]
+    (fn []
+      (csvg/svg {:id "scene"
+                 :width width
+                 :height height
+                 :stroke "black"
+                 :fill (if (:filled @ui-state) "white" "none")
+                 :stroke-width 1.0}
+        shapes))))
 
 
 (defn ui-controls []
   [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "prophecies")]])
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "prophecies")]
+   [ctrl/checkbox ui-state "Filled" [:filled]]])
 
 (sketch/definition prophecies
   {:created-at "2022-07-08"
