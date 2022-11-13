@@ -231,13 +231,19 @@
                  (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
                                (- (g/heading meridian))]))
         heading (+ (g/heading meridian) skew)
-        connectors (zipmap (gen-connectors meridian (dr/random-int 8 24) heading)
-                           (repeat 5))
-        [shapes _] (add-shapes [] connectors (dr/weighted
-                                              {(dr/random-int 6 12) 4
-                                               (dr/random-int 8 15) 10
-                                               (dr/random-int 12 24) 4
-                                               (dr/random-int 20 30) 1}))]
+
+        n-shapes
+        (dr/weighted
+         {(dr/random-int 8 16) 12
+          (dr/random-int 12 20) 4
+          (dr/random-int 16 30) 1})
+
+        connectors
+        (zipmap (gen-connectors meridian (dr/random-int 8 24) heading)
+                (repeat 5))
+
+        [shapes _]
+        (add-shapes [] connectors n-shapes)]
     (concat [c1 c2 meridian]
             shapes)))
 
