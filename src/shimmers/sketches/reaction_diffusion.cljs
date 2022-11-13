@@ -109,6 +109,7 @@
   :on-mount (fn [] (ctrl/mount ui-controls))
   :size [900 600]
   :renderer :p3d
+  :settings #(q/pixel-density 1)
   :setup setup
   :update update-state
   :draw draw
