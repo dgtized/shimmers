@@ -151,7 +151,7 @@
                               angle (left (g/heading (tm/- q p)))]
                           {:vertex midpoint
                            :direction angle
-                           :scale (dr/weighted {scale 6
+                           :scale (dr/weighted {scale 8
                                                 1.1 2
                                                 1.25 1})})))))
           (repeatedly #(* (dr/weighted {6 6
