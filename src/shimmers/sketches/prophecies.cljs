@@ -119,6 +119,20 @@
         angle (+ angle (tm/radians (+ 128 (/ 4 7))))]
     (n-gon 7 center R angle)))
 
+(defn flat-octagon [connect size angle]
+  (let [a (* 0.33 size)
+        R (* (/ (Math/sqrt (+ 4 (* 2 (Math/sqrt 2)))) 2) a)
+        r (* (/ (+ 1 (Math/sqrt 2)) 2) a)
+        center (v/+polar connect r angle)
+        angle (+ angle (* 0.5 (tm/radians 135)))]
+    (n-gon 8 center R angle)))
+
+(defn pointy-octagon [connect size angle]
+  (let [a (* 0.33 size)
+        R (* (/ (Math/sqrt (+ 4 (* 2 (Math/sqrt 2)))) 2) a)
+        center (v/+polar connect R angle)]
+    (n-gon 8 center R angle)))
+
 (def poly-shapes
   {:square square
    :circle circle
@@ -130,6 +144,8 @@
    :pointy-hex pointy-hex
    :flat-heptagon flat-heptagon
    :pointy-heptagon pointy-heptagon
+   :flat-octagon flat-octagon
+   :pointy-octagon pointy-octagon
    })
 
 (defn point-on-segment? [point p q]
