@@ -86,44 +86,38 @@
         (g/rotate (+ angle (/ Math/PI 6)))
         (g/translate center))))
 
-;; https://en.wikipedia.org/wiki/Pentagon
-(defn pentagon [center radius angle]
+(defn n-gon [n center radius angle]
   (-> (gc/circle radius)
-      (g/as-polygon 5)
+      (g/as-polygon n)
       (g/rotate angle)
       (g/translate center)))
 
+;; https://en.wikipedia.org/wiki/Pentagon
 (defn flat-pentagon [connect size angle]
   (let [size (* 0.66 size)
         r (/ 1 (* 2 (Math/sqrt (- 5 (Math/sqrt 20)))))
         R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
         center (v/+polar connect (* r size) angle)]
-    (pentagon center (* R size) angle)))
+    (n-gon 5 center (* R size) angle)))
 
 (defn pointy-pentagon [connect size angle]
   (let [size (* 0.66 size)
         R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
         center (v/+polar connect (* R size) angle)
         angle (- angle (* 0.5 (tm/radians 72)))]
-    (pentagon center (* R size) angle)))
-
-(defn heptagon [center radius angle]
-  (-> (gc/circle radius)
-      (g/as-polygon 7)
-      (g/rotate angle)
-      (g/translate center)))
+    (n-gon 5 center (* R size) angle)))
 
 (defn flat-heptagon [connect size angle]
   (let [R (* 0.66 size)
         apothem (* R (Math/cos (/ Math/PI 7)))
         center (v/+polar connect apothem angle)]
-    (heptagon center R angle)))
+    (n-gon 7 center R angle)))
 
 (defn pointy-heptagon [connect size angle]
   (let [R (* 0.66 size)
         center (v/+polar connect R angle)
         angle (+ angle (tm/radians (+ 128 (/ 4 7))))]
-    (heptagon center R angle)))
+    (n-gon 7 center R angle)))
 
 (def poly-shapes
   {:square square
