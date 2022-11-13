@@ -151,9 +151,12 @@
                               angle (left (g/heading (tm/- q p)))]
                           {:vertex midpoint
                            :direction angle
-                           :scale (dr/weighted {scale 8
-                                                1.1 2
-                                                1.25 1})})))))
+                           :scale (* (dr/weighted {1 8
+                                                   1.1 4
+                                                   1.25 2
+                                                   1.5 1
+                                                   2.0 1})
+                                     scale)})))))
           (repeatedly #(* (dr/weighted {6 6
                                         8 3
                                         12 1
@@ -193,10 +196,10 @@
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
     (if (or (zero? n) (zero? attempts) (empty? connectors))
       [shapes connectors]
-      (let [connector (dr/weighted connectors)]
+      (let [{:keys [scale] :as connector} (dr/weighted connectors)]
         (if-let [new-shapes (make-shape connector shapes)]
           (let [{[_ connect ] :points} (first new-shapes)
-                faces (face-connectors connect (second new-shapes) 0.5)]
+                faces (face-connectors connect (second new-shapes) (* 0.66 scale))]
             (recur (dec n)
                    (merge (dissoc connectors connector) faces)
                    (concat shapes new-shapes)
