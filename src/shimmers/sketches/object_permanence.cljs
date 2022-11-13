@@ -3,24 +3,24 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
-  {:looking-at (v/vec2 0 0)})
+  {:looking-at (gv/vec2)})
 
 (defn mouse-position []
   (let [hx (/ (q/width) 2)
         hy (/ (q/height) 2)]
-    (v/vec2 (/ (- (q/mouse-x) hx) hx)
-            (/ (- (q/mouse-y) hy) hy))))
+    (gv/vec2 (/ (- (q/mouse-x) hx) hx)
+             (/ (- (q/mouse-y) hy) hy))))
 
 (defn update-state [state]
   (let [mouse (mouse-position)]
     ;; (q/print-every-n-millisec 100 [state mouse])
-    (update state :looking-at #(tm/normalize (v/add % (g/scale mouse 0.15))))))
+    (update state :looking-at #(tm/normalize (tm/+ % (g/scale mouse 0.15))))))
 
 (defn draw-eye [x y looking-at]
   (q/ellipse x y 20 16)
