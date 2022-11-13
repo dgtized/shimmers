@@ -233,7 +233,11 @@
         heading (+ (g/heading meridian) skew)
         connectors (zipmap (gen-connectors meridian (dr/random-int 8 24) heading)
                            (repeat 5))
-        [shapes _] (add-shapes [] connectors (dr/random-int 8 15))]
+        [shapes _] (add-shapes [] connectors (dr/weighted
+                                              {(dr/random-int 6 12) 4
+                                               (dr/random-int 8 15) 10
+                                               (dr/random-int 12 24) 4
+                                               (dr/random-int 20 30) 1}))]
     (concat [c1 c2 meridian]
             shapes)))
 
