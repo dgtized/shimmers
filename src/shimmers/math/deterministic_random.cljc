@@ -125,6 +125,13 @@
    (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (Math/abs sd))})
              {:seed (random-int MAX-INT)})))
 
+(comment
+  ;; pareto is λ X^(-1/κ) where X is a uniform rng
+  (ksd/sample 100 (ksd/pareto {:scale 0.1 :shape 0.9}))
+  (mapv (fn [x] (let [p (* 1.0 (Math/pow x (/ -1 8)))]
+                 [x p]))
+        (range 0 1 0.02)))
+
 (defn var-range
   [n]
   {:pre [(pos-int? n)]}
