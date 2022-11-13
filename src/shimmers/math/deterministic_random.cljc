@@ -220,5 +220,6 @@
   (summary-stats (mapv (fn [x] (let [p (* 1.0 (Math/pow x (/ -1 8)))]
                                 p))
                        (rest (range 0 1 0.01))))
-  (summary-stats (ksd/sample 1000 (ksd/pareto {:scale 1.0 :shape 4})))
-  (summary-stats (ksd/sample 1000 (ksd/log-normal {:mu 0.0 :sd 0.8}))))
+  (summary-stats (map #(min % 2) (ksd/sample 1000 (ksd/pareto {:scale 0.75 :shape 8}))))
+  (summary-stats (ksd/sample 1000 (ksd/log-normal {:mu 0.0 :sd 0.2})))
+  (summary-stats (ksd/sample 1000 (ksd/normal {:mu 0.0 :sd 0.2}))))
