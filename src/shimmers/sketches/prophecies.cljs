@@ -133,6 +133,13 @@
         center (v/+polar connect R angle)]
     (n-gon 8 center R angle)))
 
+(defn inner-angle-n-gon [n]
+  (let [sum-of-internal (* (- n 2) 180)]
+    (/ sum-of-internal n)))
+
+;; Why does this work for 6,7,8 but not 5?
+(comment (inner-angle-n-gon 3))
+
 (def poly-shapes
   {:square square
    :circle circle
