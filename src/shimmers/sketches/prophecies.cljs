@@ -129,15 +129,22 @@
    (v/polar 1 (left (g/heading (tm/- q p))))])
 
 (defn face-connectors [connect shape scale]
-  (->> (g/edges shape)
-       (remove (fn [[p q]] (point-on-segment? connect p q)))
-       (map (fn [face]
-              (let [[mid dir] (face-point-out face)]
-                {:vertex mid
-                 :direction (g/heading dir)
-                 :scale (dr/weighted {scale 6
-                                      1.1 2
-                                      1.25 1})})))))
+  (zipmap (if (instance? Circle2 shape)
+            []
+            (->> (g/edges shape)
+                 (remove (fn [[p q]] (point-on-segment? connect p q)))
+                 (map (fn [face]
+                        (let [[mid dir] (face-point-out face)]
+                          {:vertex mid
+                           :direction (g/heading dir)
+                           :scale (dr/weighted {scale 6
+                                                1.1 2
+                                                1.25 1})})))))
+          (repeatedly #(* (dr/weighted {6 6
+                                        8 3
+                                        12 1
+                                        24 1})
+                          scale))))
 
 (defn meridian [c1 c2]
   (let [dir (tm/normalize (tm/- (:p c2) (:p c1)))]
@@ -172,21 +179,12 @@
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
     (if (or (zero? n) (zero? attempts) (empty? connectors))
       [shapes connectors]
-      (let [{:keys [scale] :as connector} (dr/weighted connectors)]
+      (let [connector (dr/weighted connectors)]
         (if-let [new-shapes (make-shape connector shapes)]
           (let [{[_ connect ] :points} (first new-shapes)
-                shape (second new-shapes)
-                faces (if (instance? Circle2 shape)
-                        []
-                        (face-connectors connect shape 0.5))
-                connector-prob (* (dr/weighted {6 6
-                                                8 3
-                                                12 1
-                                                24 1})
-                                  scale)]
+                faces (face-connectors connect (second new-shapes) 0.5)]
             (recur (dec n)
-                   (merge (dissoc connectors connector)
-                          (zipmap faces (repeat connector-prob)))
+                   (merge (dissoc connectors connector) faces)
                    (concat shapes new-shapes)
                    (dec attempts)))
           (recur n connectors shapes (dec attempts)))))))
