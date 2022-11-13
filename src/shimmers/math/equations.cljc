@@ -87,7 +87,7 @@
 ;; inner point of spiral is fixed at origin, and the spiral extends around it, ending with angle `phi0`.
 (def clothoid-from (generalized-clothoid tm/- reverse))
 
-(comment (clothoid 17.32 60 1000 -1 0 (gv/vec2 0 0)))
+(comment (clothoid 17.32 60 1000 -1 0 (gv/vec2)))
 
 (defn clothoid-tangent [A lambda s phi0]
   (+ (* lambda (/ (* s s) (* 2 A A)))
