@@ -201,13 +201,15 @@
         connect (v/+polar vertex len angle)
         shape ((dr/rand-nth (vals poly-shapes)) connect size angle)
         line (gl/line2 vertex connect)
-        padded (g/scale-size shape 1.2)]
+        padded (g/scale-size shape 1.2)
+        p-area (/ (g/area shape) width)]
     (when (and (collide/bounded? (rect/rect width height) padded)
                (not-any? (fn [s] (collide/overlaps? s padded)) shapes)
                (not-any? (fn [s] (collide/overlaps? s line)) shapes))
       (concat [line shape]
               (maybe 0.5 (partial (dr/rand-nth [deepen nested]) shape
-                                  (dr/random-int 3 8)))))))
+                                  (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
+                                          (dr/random-int 3 9)))))))))
 
 (defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
