@@ -33,6 +33,7 @@
    shimmers.sketches.cut-and-slide
    shimmers.sketches.decaying-foundations
    shimmers.sketches.deeper-squares
+   shimmers.sketches.deeply-askew
    shimmers.sketches.deformed-spirals
    shimmers.sketches.delaunator
    shimmers.sketches.delaunay-voronoi
