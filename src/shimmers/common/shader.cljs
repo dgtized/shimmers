@@ -1,7 +1,6 @@
 (ns shimmers.common.shader
   (:require [quil.core :as q :include-macros true]))
 
-#_{:clj-kondo/ignore [:unresolved-var]}
 (defn pass [shader [w h] uniforms]
   (q/shader shader)
   (doseq [[key value] uniforms]
