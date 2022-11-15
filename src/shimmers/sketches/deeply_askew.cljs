@@ -11,8 +11,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def width 800)
-(def height 600)
+(def width 1000)
+(def height 700)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
