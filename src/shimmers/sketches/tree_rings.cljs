@@ -38,13 +38,14 @@
             (dr/gaussian-range 0.015 0.012))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 1.0}
-    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (shapes))))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "none"
+              :stroke-width 1.0}
+     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+       (shapes)))))
 
 (sketch/definition tree-rings
   {:created-at "2022-10-22"

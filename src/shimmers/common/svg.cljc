@@ -9,7 +9,8 @@
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.strf.core :as f]))
+   [thi.ng.strf.core :as f]
+   #?(:cljs [goog.dom :as dom])))
 
 (defn screen [width height]
   (rect/rect 0 0 width height))
@@ -133,3 +134,18 @@
   (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
   (f/format [(f/float 2)] 0.21)
   (arc-segment 0.5 1 1 2 {}))
+
+(defn display [value]
+  #?(:cljs
+     (when-let [node (dom/getElement "framerate")]
+       (dom/setTextContent node value))
+     :clj (prn value)))
+
+(defmacro timed [expr]
+  `(let [start# (cljs.core/system-time)
+         ret# ~expr]
+     (-> (- (cljs.core/system-time) start#)
+         (.toFixed 1)
+         (cljs.core/str " ms")
+         display)
+     ret#))
