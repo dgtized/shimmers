@@ -20,18 +20,19 @@
   (let [bounds (g/scale-size (csvg/screen width height) 0.9)
         seed (gv/vec2 (dr/random 100) (dr/random 100))
         point-noise (fn [p] (tm/clamp (Math/pow (dr/noise-at-point seed 0.005 p) 2) 0.1 1.0))
-        points (pds/generate-dynamic bounds 15 [6 128] point-noise)
+        points (pds/generate-dynamic bounds 15 [6 160] point-noise)
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
                    (let [centered (g/center cell)
                          centroid (g/centroid cell)
-                         sign (dr/rand-nth [1 -1])]
+                         sign (dr/rand-nth [1 -1])
+                         drift (dr/jitter 3.0)]
                      (mapv (fn [scale]
                              (-> centered
                                  (g/scale-size (- 1.0 scale))
-                                 (g/rotate (* sign 0.5 scale))
-                                 (g/translate centroid)))
+                                 (g/rotate (* sign 0.66 scale))
+                                 (g/translate (tm/+ centroid (tm/* drift scale)))))
                            (range 0.03 0.9 0.15))))))))
 
 (defn scene []
