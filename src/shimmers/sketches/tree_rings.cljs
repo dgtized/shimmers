@@ -1,7 +1,9 @@
 (ns shimmers.sketches.tree-rings
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -39,7 +41,8 @@
 
 (defn scene []
   (csvg/timed
-   (csvg/svg {:width width
+   (csvg/svg {:id "scene"
+              :width width
               :height height
               :stroke "black"
               :fill "none"
@@ -47,9 +50,13 @@
      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
        (shapes)))))
 
+(defn ui-controls []
+  [:div [kb/kb-action "alt-s" #(svg-export/download "scene" "tree-rings")]])
+
 (sketch/definition tree-rings
   {:created-at "2022-10-22"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :tree-rings)
-              "sketch-host"))
+  (-> scene
+      (view-sketch/page-for :tree-rings ui-controls)
+      (ctrl/mount "sketch-host")))
