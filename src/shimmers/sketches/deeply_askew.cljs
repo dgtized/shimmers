@@ -8,8 +8,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -17,10 +17,10 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.9)
+  (let [bounds (g/scale-size (csvg/screen width height) 0.9)
         seed (gv/vec2 (dr/random 100) (dr/random 100))
-        points (pds/generate-dynamic bounds 10 [32 96] (partial dr/noise-at-point seed 0.1))
-        points (remove (fn [_] (dr/chance 0.8)) points)
+        point-noise (fn [p] (tm/clamp (Math/pow (dr/noise-at-point seed 0.005 p) 2) 0.1 1.0))
+        points (pds/generate-dynamic bounds 15 [6 128] point-noise)
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
          (mapcat (fn [cell]
