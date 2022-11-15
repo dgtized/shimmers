@@ -35,7 +35,7 @@
                     (* r radius)
                     (int (Math/pow 30 (+ 1 r)))
                     (Math/ceil (* radius 0.025 (+ 1 r)))))
-            (dr/gaussian-range 0.015 0.012))))
+            (dr/gaussian-range 0.01 0.015))))
 
 (defn scene []
   (csvg/timed
@@ -43,7 +43,7 @@
               :height height
               :stroke "black"
               :fill "none"
-              :stroke-width 1.0}
+              :stroke-width 0.66}
      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
        (shapes)))))
 
