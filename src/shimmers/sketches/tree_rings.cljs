@@ -35,7 +35,7 @@
                     (* r radius)
                     (int (Math/pow 30 (+ 1 r)))
                     (Math/ceil (* radius 0.025 (+ 1 r)))))
-            (dr/density-range 0.008 0.04))))
+            (dr/gaussian-range 0.015 0.012))))
 
 (defn scene []
   (csvg/svg {:width width
