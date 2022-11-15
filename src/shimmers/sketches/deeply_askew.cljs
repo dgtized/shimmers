@@ -5,6 +5,8 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -27,7 +29,8 @@
                    (let [centered (g/center cell)
                          centroid (g/centroid cell)
                          sign (dr/rand-nth [1 -1])
-                         drift (dr/jitter 3.0)]
+                         drift (v/polar (* 4 (point-noise (tm/+ centroid (gv/vec2 100 100))))
+                                        (* eq/TAU (point-noise centroid)))]
                      (mapv (fn [scale]
                              (-> centered
                                  (g/scale-size (- 1.0 scale))
