@@ -15,6 +15,7 @@
   (fn [a b] [(type a) (type b)]))
 
 ;; Circle2, Line2, Polygon2, Rect2, Triangle2
+;; TODO: Vec2?
 
 ;; Circle2
 (defmethod overlaps?
@@ -133,6 +134,7 @@
   (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
 
 ;; TODO: handle cases where bounds is not a rectangle, circle / convex
+;; TODO: Add Triangle2 support since it's convex
 (defmulti bounded? (fn [bounds shape] [(type bounds) (type shape)]))
 
 (defmethod bounded?
