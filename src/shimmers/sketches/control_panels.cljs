@@ -114,24 +114,26 @@
         ridges 15
         d (* 0.03 r)
         w (/ Math/PI (* 2 ridges))
-        width 0.08]
+        width 0.1
+        ridged (gp/polygon2 (sequence (mapcat (fn [v]
+                                                (let [t (+ (* eq/TAU (/ v ridges)) theta)]
+                                                  (map (fn [[dr dt]]
+                                                         (v/+polar p (+ (* 0.8 r) dr) (+ t dt)))
+                                                       [[(- d) (- w)]
+                                                        [0 0]
+                                                        [d w]]))))
+                                      (range ridges)))]
     (csvg/group {}
-      (gp/polygon2 (sequence (mapcat (fn [v]
-                                       (let [t (+ (* eq/TAU (/ v ridges)) theta)]
-                                         (map (fn [[dr dt]]
-                                                (v/+polar p (+ (* 0.8 r) dr) (+ t dt)))
-                                              [[(- d) (- w)]
-                                               [0 0]
-                                               [d w]]))))
-                             (range ridges)))
+      ridged
+      (g/scale-size ridged 0.85)
       (for [t (range 0 1 0.1)]
         (gl/line2 (rpv p (* 0.90 r) (mapper t))
                   (rpv p (* 1.00 r) (mapper t))))
-      (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- width) r))
-                                (gv/vec2 (* 1.025 r) (* width r)))
+      (with-meta (-> (rect/rect (gv/vec2 (* 0.3 r) (* (- width) r))
+                                (gv/vec2 (* 0.85 r) (* width r)))
                      (g/rotate theta)
                      (g/translate p))
-        {:rx 10 :fill "white"}))))
+        {:rx 10 :fill "white" :stroke-width 0.5}))))
 
 (defn divide-panels [{[w h] :size :as bounds}]
   (let [area-ratio (/ (g/area bounds) (g/area screen))
