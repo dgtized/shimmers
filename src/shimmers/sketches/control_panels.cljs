@@ -91,7 +91,12 @@
      (rect/rect 0 0 (* 2 r) (* 2 r))
      g/center
      (g/translate p)
-     (with-meta {:rx 5}))))
+     (with-meta {:rx 5}))
+    (->
+     (rect/rect 0 0 (* 1.75 r) (* 1.75 r))
+     g/center
+     (g/translate p)
+     (with-meta {:rx 3}))))
 
 (defn smooth-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
