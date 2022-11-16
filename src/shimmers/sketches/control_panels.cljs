@@ -80,10 +80,15 @@
         (gl/line2 (g/unmap-point rect (gv/vec2 0.025 t))
                   (g/unmap-point rect (gv/vec2 0.975 t)))))))
 
-(defn plug [p r]
+(defn plug [p r label]
   (csvg/group {}
-    (gc/circle p (* 0.75 r))
-    (gc/circle p r)))
+    (when label
+      (-> (rect/rect 0 0 (* 2.3 r) (* 2.6 r))
+          (g/center)
+          (g/translate (tm/+ p (gv/vec2 0 (* 0.18 r))))
+          (with-meta {:rx 2})))
+    (gc/circle p (* 0.65 r))
+    (gc/circle p (* 0.95 r))))
 
 (defn button [p r]
   (csvg/group {}
@@ -202,9 +207,10 @@
       :oscilliscope
       (oscilliscope (g/centroid bounds) (* 0.45 min-edge))
       :plugs
-      (let [size (* 0.05 (min width height))]
+      (let [size (* 0.05 (min width height))
+            label (dr/chance 0.33)]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
-          (plug (g/centroid s) (* 0.3 size))))
+          (plug (g/centroid s) (* 0.3 size) label)))
       :button
       (let [size (* 0.08 (min width height))]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
