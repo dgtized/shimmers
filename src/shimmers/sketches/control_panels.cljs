@@ -81,6 +81,14 @@
     (gc/circle p (* 0.75 r))
     (gc/circle p r)))
 
+(defn button [p r]
+  (csvg/group {}
+    (->
+     (rect/rect 0 0 (* 2 r) (* 2 r))
+     g/center
+     (g/translate p)
+     (with-meta {:rx 5}))))
+
 (defn knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
@@ -124,6 +132,7 @@
         weights {:sliders 1
                  :vu-meter 1
                  :knobs 2
+                 :button 1
                  :plugs (if (< area-ratio 0.1)
                           0.8
                           0)
@@ -159,6 +168,10 @@
       (let [size (* 0.05 (min width height))]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
           (plug (g/centroid s) (* 0.3 size))))
+      :button
+      (let [size (* 0.08 (min width height))]
+        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+          (button (g/centroid s) (* 0.3 size))))
       :circles
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
         (gc/circle (g/centroid s) (* 0.12 min-edge))))))
