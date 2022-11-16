@@ -272,15 +272,16 @@
 (defonce ui-state (ctrl/state {:filled true}))
 
 (defn scene []
-  (let [shapes (shapes)]
-    (fn []
-      (csvg/svg {:id "scene"
-                 :width width
-                 :height height
-                 :stroke "black"
-                 :fill (if (:filled @ui-state) "white" "none")
-                 :stroke-width 1.0}
-        shapes))))
+  (csvg/timed
+   (let [shapes (shapes)]
+     (fn []
+       (csvg/svg {:id "scene"
+                  :width width
+                  :height height
+                  :stroke "black"
+                  :fill (if (:filled @ui-state) "white" "none")
+                  :stroke-width 1.0}
+         shapes)))))
 
 
 (defn ui-controls []
