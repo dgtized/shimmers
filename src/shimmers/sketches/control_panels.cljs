@@ -162,7 +162,9 @@
             divisions {(div [0.3 0.0] [0.7 1.0]) (if (> w h) 1 0)
                        (div [0.4 0.0] [1.0 0.5]) 1
                        (div [0.0 0.0] [0.6 0.5]) 1
-                       (div [0.0 0.0] [0.5 0.3]) 1}
+                       (div [0.0 0.0] [0.5 0.3]) 1
+                       (div [0.2 0.0] [0.8 0.8]) (if (> w h) 1 0)
+                       (div [0.2 0.2] [0.8 1.0]) (if (> w h) 1 0)}
             region ((dr/weighted divisions) bounds)]
         (mapcat (fn [s] (divide-panels s))
                 (apply square/punch-out-relative bounds region))))))
