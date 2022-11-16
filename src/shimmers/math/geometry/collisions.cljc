@@ -10,7 +10,11 @@
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Rect2 Polygon2]
                    [thi.ng.geom.vector Vec2])))
 
-(defmulti overlaps? (fn [a b] [(type a) (type b)]))
+(defmulti overlaps?
+  "Test if two shapes overlap, either at edges or if one contains the other."
+  (fn [a b] [(type a) (type b)]))
+
+;; Line2, Rect2, Polygon2, Circle2
 
 (defmethod overlaps?
   [Line2 Polygon2]
@@ -30,7 +34,9 @@
   [line circle]
   (overlaps? circle line))
 
-(defmethod overlaps? [Circle2 Line2] [circle line]
+(defmethod overlaps?
+  [Circle2 Line2]
+  [circle line]
   (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
@@ -43,6 +49,41 @@
   [Circle2 Circle2]
   [a b]
   (geometry/circles-overlap? a b))
+
+(defmethod overlaps?
+  [Rect2 Rect2]
+  [a b]
+  (isec/intersect-rect-rect? a b))
+
+(defmethod overlaps?
+  [Rect2 Circle2]
+  [r c]
+  (isec/intersect-rect-circle? r c))
+
+(defmethod overlaps?
+  [Circle2 Rect2]
+  [c r]
+  (isec/intersect-rect-circle? r c))
+
+(defmethod overlaps?
+  [Polygon2 Rect2]
+  [poly rect]
+  (overlaps? poly (g/as-polygon rect)))
+
+(defmethod overlaps?
+  [Rect2 Polygon2]
+  [rect poly]
+  (overlaps? poly (g/as-polygon rect)))
+
+(defmethod overlaps?
+  [Rect2 Line2]
+  [rect line]
+  (overlaps? (g/as-polygon rect) line))
+
+(defmethod overlaps?
+  [Line2 Rect2]
+  [line rect]
+  (overlaps? (g/as-polygon rect) line))
 
 ;; consider a triangle overlapping a square, with one point of triangle in
 ;; square, but no points of square in triangle
