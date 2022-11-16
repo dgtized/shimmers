@@ -35,14 +35,15 @@
   (let [slider0 (g/scale-size rect 0.9)
         slider (rect/rect (g/unmap-point slider0 (gv/vec2 0.15 0))
                           (g/unmap-point slider0 (gv/vec2 0.85 1)))
-        inner (g/scale-size slider 0.95)]
+        inner (g/scale-size slider 0.95)
+        slider-height 0.02]
     (csvg/group {}
       slider
       (for [t (range 0 1 0.1)]
         (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
                   (g/unmap-point slider (gv/vec2 0.1 t))))
-      (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct 0.01)))
-                 (g/unmap-point inner (gv/vec2 0.9 (+ pct 0.01)))))))
+      (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct slider-height)))
+                 (g/unmap-point inner (gv/vec2 0.9 (+ pct slider-height)))))))
 
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
