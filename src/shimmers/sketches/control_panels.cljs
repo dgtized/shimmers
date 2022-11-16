@@ -211,7 +211,7 @@
           (button (g/centroid s) (* 0.3 size))))
       :circles
       (for [s (g/subdivide bounds {:rows 4 :cols 2})]
-        (gc/circle (g/centroid s) (* 0.12 min-edge))))))
+        (gc/circle (g/centroid s) (* 0.1 min-edge))))))
 
 (defn shapes []
   (let [bounds (g/scale-size screen 0.975)
