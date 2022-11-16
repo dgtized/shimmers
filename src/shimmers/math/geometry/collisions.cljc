@@ -61,7 +61,10 @@
   (overlaps? (g/as-polygon triangle) line))
 
 ;; Polygon2
-;; missing Polygon2 Circle2?
+(defmethod overlaps?
+  [Polygon2 Circle2] [poly circle]
+  (overlaps? circle poly))
+
 (defmethod overlaps?
   [Polygon2 Line2] [polygon {[p q] :points}]
   (or (g/contains-point? polygon p)
