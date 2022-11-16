@@ -37,7 +37,7 @@
                     (* r radius)
                     (int (Math/pow 30 (+ 1 r)))
                     (Math/ceil (* radius 0.025 (+ 1 r)))))
-            (dr/gaussian-range 0.01 0.015))))
+            (dr/gaussian-range 0.01 0.012))))
 
 (defn scene []
   (csvg/timed
