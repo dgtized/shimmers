@@ -4,17 +4,17 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.utils.intersect :as isec]
             #?(:clj [thi.ng.geom.types]
-               :cljs [thi.ng.geom.types :refer [Circle2 Line2 Rect2 Polygon2]])
+               :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2 Rect2 Triangle2]])
             #?(:clj [thi.ng.geom.vector]
                :cljs [thi.ng.geom.vector :refer [Vec2]]))
-  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Rect2 Polygon2]
+  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2]
                    [thi.ng.geom.vector Vec2])))
 
 (defmulti overlaps?
   "Test if two shapes overlap, either at edges or if one contains the other."
   (fn [a b] [(type a) (type b)]))
 
-;; Line2, Rect2, Polygon2, Circle2
+;; Circle2, Line2, Polygon2, Rect2, Triangle2
 
 (defmethod overlaps?
   [Line2 Polygon2] [line polygon]
@@ -36,6 +36,14 @@
   (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
+  [Line2 Triangle2] [line triangle]
+  (overlaps? (g/as-polygon triangle) line))
+
+(defmethod overlaps?
+  [Triangle2 Line2] [triangle line]
+  (overlaps? (g/as-polygon triangle) line))
+
+(defmethod overlaps?
   [Line2 Line2] [a b]
   (contains? #{:intersect :coincident}
              (:type (g/intersect-line a b))))
@@ -43,6 +51,34 @@
 (defmethod overlaps?
   [Circle2 Circle2] [a b]
   (geometry/circles-overlap? a b))
+
+(defmethod overlaps?
+  [Triangle2 Circle2] [triangle circle]
+  (overlaps? (g/as-polygon triangle) circle))
+
+(defmethod overlaps?
+  [Circle2 Triangle2] [circle triangle]
+  (overlaps? (g/as-polygon triangle) circle))
+
+(defmethod overlaps?
+  [Rect2 Triangle2] [rect triangle]
+  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Rect2] [triangle rect]
+  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Polygon2 Triangle2] [polygon triangle]
+  (overlaps? polygon (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Polygon2] [triangle polygon]
+  (overlaps? polygon (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Triangle2] [a b]
+  (overlaps? (g/as-polygon a) (g/as-polygon b)))
 
 (defmethod overlaps?
   [Rect2 Rect2] [a b]
@@ -91,7 +127,7 @@
   (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
         (g/edges poly)))
 
-;; TODO: handle cases where bounds is not a rectangle
+;; TODO: handle cases where bounds is not a rectangle, circle / convex
 (defmulti bounded? (fn [bounds shape] [(type bounds) (type shape)]))
 
 (defmethod bounded?
