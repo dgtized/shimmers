@@ -24,7 +24,8 @@
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [-3 2] [5 3])) "line crosses rectangle")))
 
 (deftest bounded
-  (is (sut/bounded? (gc/circle 2) (gv/vec2)))
+  (is (sut/bounded? (gc/circle 2) (gv/vec2)) "inside")
+  (is (sut/bounded? (gc/circle 2) (gv/vec2 2 0)) "on radius")
   (is (not (sut/bounded? (gc/circle 2) (gv/vec2 4 4))))
   (is (sut/bounded? (gc/circle 2) (gc/circle 1)))
   (is (sut/bounded? (gc/circle 2) (gc/circle 2)))
