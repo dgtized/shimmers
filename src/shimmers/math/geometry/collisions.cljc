@@ -16,32 +16,32 @@
 
 ;; Circle2, Line2, Polygon2, Rect2, Triangle2
 
+;; Circle2
 (defmethod overlaps?
-  [Line2 Polygon2] [line polygon]
-  (overlaps? polygon line))
-
-(defmethod overlaps?
-  [Polygon2 Line2] [polygon {[p q] :points}]
-  (or (g/contains-point? polygon p)
-      (g/contains-point? polygon q)
-      (when (isec/intersect-line2-edges? p q (g/edges polygon))
-        true)))
-
-(defmethod overlaps?
-  [Line2 Circle2] [line circle]
-  (overlaps? circle line))
+  [Circle2 Circle2] [a b]
+  (geometry/circles-overlap? a b))
 
 (defmethod overlaps?
   [Circle2 Line2] [circle line]
   (intersect/circle-line-overlap? circle line))
 
 (defmethod overlaps?
-  [Line2 Triangle2] [line triangle]
-  (overlaps? (g/as-polygon triangle) line))
+  [Circle2 Polygon2] [circle poly]
+  (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
+        (g/edges poly)))
 
 (defmethod overlaps?
-  [Triangle2 Line2] [triangle line]
-  (overlaps? (g/as-polygon triangle) line))
+  [Circle2 Rect2] [c r]
+  (isec/intersect-rect-circle? r c))
+
+(defmethod overlaps?
+  [Circle2 Triangle2] [circle triangle]
+  (overlaps? (g/as-polygon triangle) circle))
+
+;; Line2
+(defmethod overlaps?
+  [Line2 Circle2] [line circle]
+  (overlaps? circle line))
 
 (defmethod overlaps?
   [Line2 Line2] [a b]
@@ -49,64 +49,25 @@
              (:type (g/intersect-line a b))))
 
 (defmethod overlaps?
-  [Circle2 Circle2] [a b]
-  (geometry/circles-overlap? a b))
-
-(defmethod overlaps?
-  [Triangle2 Circle2] [triangle circle]
-  (overlaps? (g/as-polygon triangle) circle))
-
-(defmethod overlaps?
-  [Circle2 Triangle2] [circle triangle]
-  (overlaps? (g/as-polygon triangle) circle))
-
-(defmethod overlaps?
-  [Rect2 Triangle2] [rect triangle]
-  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
-
-(defmethod overlaps?
-  [Triangle2 Rect2] [triangle rect]
-  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
-
-(defmethod overlaps?
-  [Polygon2 Triangle2] [polygon triangle]
-  (overlaps? polygon (g/as-polygon triangle)))
-
-(defmethod overlaps?
-  [Triangle2 Polygon2] [triangle polygon]
-  (overlaps? polygon (g/as-polygon triangle)))
-
-(defmethod overlaps?
-  [Triangle2 Triangle2] [a b]
-  (overlaps? (g/as-polygon a) (g/as-polygon b)))
-
-(defmethod overlaps?
-  [Rect2 Rect2] [a b]
-  (isec/intersect-rect-rect? a b))
-
-(defmethod overlaps?
-  [Rect2 Circle2] [r c]
-  (isec/intersect-rect-circle? r c))
-
-(defmethod overlaps?
-  [Circle2 Rect2] [c r]
-  (isec/intersect-rect-circle? r c))
-
-(defmethod overlaps?
-  [Polygon2 Rect2] [poly rect]
-  (overlaps? poly (g/as-polygon rect)))
-
-(defmethod overlaps?
-  [Rect2 Polygon2] [rect poly]
-  (overlaps? poly (g/as-polygon rect)))
-
-(defmethod overlaps?
-  [Rect2 Line2] [rect line]
-  (overlaps? (g/as-polygon rect) line))
+  [Line2 Polygon2] [line polygon]
+  (overlaps? polygon line))
 
 (defmethod overlaps?
   [Line2 Rect2] [line rect]
   (overlaps? (g/as-polygon rect) line))
+
+(defmethod overlaps?
+  [Line2 Triangle2] [line triangle]
+  (overlaps? (g/as-polygon triangle) line))
+
+;; Polygon2
+;; missing Polygon2 Circle2?
+(defmethod overlaps?
+  [Polygon2 Line2] [polygon {[p q] :points}]
+  (or (g/contains-point? polygon p)
+      (g/contains-point? polygon q)
+      (when (isec/intersect-line2-edges? p q (g/edges polygon))
+        true)))
 
 ;; consider a triangle overlapping a square, with one point of triangle in
 ;; square, but no points of square in triangle
@@ -119,13 +80,54 @@
     true))
 
 (defmethod overlaps?
-  [Polygon2 Circle2] [poly circle]
-  (overlaps? circle poly))
+  [Polygon2 Rect2] [poly rect]
+  (overlaps? poly (g/as-polygon rect)))
 
 (defmethod overlaps?
-  [Circle2 Polygon2] [circle poly]
-  (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
-        (g/edges poly)))
+  [Polygon2 Triangle2] [polygon triangle]
+  (overlaps? polygon (g/as-polygon triangle)))
+
+;; Triangle2
+(defmethod overlaps?
+  [Triangle2 Circle2] [triangle circle]
+  (overlaps? (g/as-polygon triangle) circle))
+
+(defmethod overlaps?
+  [Triangle2 Line2] [triangle line]
+  (overlaps? (g/as-polygon triangle) line))
+
+(defmethod overlaps?
+  [Triangle2 Polygon2] [triangle polygon]
+  (overlaps? polygon (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Rect2] [triangle rect]
+  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
+
+(defmethod overlaps?
+  [Triangle2 Triangle2] [a b]
+  (overlaps? (g/as-polygon a) (g/as-polygon b)))
+
+;; Rectangle
+(defmethod overlaps?
+  [Rect2 Circle2] [r c]
+  (isec/intersect-rect-circle? r c))
+
+(defmethod overlaps?
+  [Rect2 Line2] [rect line]
+  (overlaps? (g/as-polygon rect) line))
+
+(defmethod overlaps?
+  [Rect2 Polygon2] [rect poly]
+  (overlaps? poly (g/as-polygon rect)))
+
+(defmethod overlaps?
+  [Rect2 Rect2] [a b]
+  (isec/intersect-rect-rect? a b))
+
+(defmethod overlaps?
+  [Rect2 Triangle2] [rect triangle]
+  (overlaps? (g/as-polygon rect) (g/as-polygon triangle)))
 
 ;; TODO: handle cases where bounds is not a rectangle, circle / convex
 (defmulti bounded? (fn [bounds shape] [(type bounds) (type shape)]))
