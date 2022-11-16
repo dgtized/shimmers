@@ -4,12 +4,15 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -89,7 +92,7 @@
      (g/translate p)
      (with-meta {:rx 5}))))
 
-(defn knob [p r pct]
+(defn smooth-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
         w 0.08]
@@ -100,6 +103,31 @@
                   (rpv p (* 1.00 r) (mapper t))))
       (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
                                 (gv/vec2 (* 1.025 r) (* w r)))
+                     (g/rotate theta)
+                     (g/translate p))
+        {:rx 10 :fill "white"}))))
+
+(defn ridged-knob [p r pct]
+  (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
+        theta (mapper pct)
+        ridges 15
+        d (* 0.03 r)
+        w (/ Math/PI (* 2 ridges))
+        width 0.08]
+    (csvg/group {}
+      (gp/polygon2 (sequence (mapcat (fn [v]
+                                       (let [t (+ (* eq/TAU (/ v ridges)) theta)]
+                                         (map (fn [[dr dt]]
+                                                (v/+polar p (+ (* 0.8 r) dr) (+ t dt)))
+                                              [[(- d) (- w)]
+                                               [0 0]
+                                               [d w]]))))
+                             (range ridges)))
+      (for [t (range 0 1 0.1)]
+        (gl/line2 (rpv p (* 0.90 r) (mapper t))
+                  (rpv p (* 1.00 r) (mapper t))))
+      (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- width) r))
+                                (gv/vec2 (* 1.025 r) (* width r)))
                      (g/rotate theta)
                      (g/translate p))
         {:rx 10 :fill "white"}))))
@@ -152,8 +180,9 @@
       (for [s (g/subdivide bounds {:rows 1 :cols (dr/random-int 2 5)})]
         (vertical-slider s (dr/random)))
       :knobs
-      (for [s (g/subdivide bounds {:rows (dr/random-int 2 6) :cols (dr/random-int 3 5)})]
-        (knob (g/centroid s) (* 0.08 min-edge) (dr/random)))
+      (let [knob (dr/rand-nth [smooth-knob ridged-knob])]
+        (for [s (g/subdivide bounds {:rows (dr/random-int 2 6) :cols (dr/random-int 3 5)})]
+          (knob (g/centroid s) (* 0.08 min-edge) (dr/random))))
       :vu-meter
       (for [{[w1 h1] :size :as s}
             (let [n (dr/random-int 2 4)
