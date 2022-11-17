@@ -203,13 +203,12 @@
         (for [s (subdivide-to-cells bounds size)]
           (knob (g/centroid s) (* 0.33 size) (dr/random))))
       :vu-meter
-      (for [{[w1 h1] :size :as s}
-            (let [n (dr/random-int 2 4)
-                  opts (cond (> w (* 2 h)) {:rows 1 :cols n}
-                             (> h (* 2 w)) {:rows n :cols 1}
-                             :else {:rows 1 :cols 1})]
-              (g/subdivide bounds opts))]
-        (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random)))
+      (let [n (dr/random-int 2 4)
+            opts (cond (> w (* 2 h)) {:rows 1 :cols n}
+                       (> h (* 2 w)) {:rows n :cols 1}
+                       :else {:rows 1 :cols 1})]
+        (for [{[w1 h1] :size :as s} (g/subdivide bounds opts)]
+          (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random))))
       :oscilliscope
       (oscilliscope (g/centroid bounds) (* 0.45 min-edge))
       :plugs
