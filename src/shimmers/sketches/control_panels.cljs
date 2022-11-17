@@ -169,6 +169,9 @@
         (mapcat (fn [s] (divide-panels s))
                 (apply square/punch-out-relative bounds region))))))
 
+(defn subdivide-to-cells [{[w h] :size :as bounds} size]
+  (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))}))
+
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
@@ -197,7 +200,7 @@
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge) (* 0.06 (min width height)))
             knob (dr/rand-nth [smooth-knob ridged-knob])]
-        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+        (for [s (subdivide-to-cells bounds size)]
           (knob (g/centroid s) (* 0.33 size) (dr/random))))
       :vu-meter
       (for [{[w1 h1] :size :as s}
@@ -212,15 +215,15 @@
       :plugs
       (let [size (* (dr/rand-nth [0.05 0.066 0.08]) (min width height))
             label (dr/chance 0.33)]
-        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+        (for [s (subdivide-to-cells bounds size)]
           (plug (g/centroid s) (* 0.3 size) label)))
       :button
       (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))]
-        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+        (for [s (subdivide-to-cells bounds size)]
           (button (g/centroid s) (* 0.3 size))))
       :circles
       (let [size (max (* (dr/rand-nth [0.5 0.33 1.0]) min-edge) 50)]
-        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+        (for [s (subdivide-to-cells bounds size)]
           (gc/circle (g/centroid s) (* 0.33 size)))))))
 
 (defn shapes []
