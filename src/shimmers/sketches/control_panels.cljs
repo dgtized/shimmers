@@ -169,8 +169,15 @@
         (mapcat (fn [s] (divide-panels s))
                 (apply square/punch-out-relative bounds region))))))
 
-(defn subdivide-to-cells [{[w h] :size :as bounds} size]
-  (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))}))
+(defn subdivision-dims [{[w h] :size} size]
+  {:rows (int (/ h size)) :cols (int (/ w size))})
+
+(defn subdivision-count [bounds size]
+  (let [{:keys [rows cols]} (subdivision-dims bounds size)]
+    (* rows cols)))
+
+(defn subdivide-to-cells [bounds size]
+  (g/subdivide bounds (subdivision-dims bounds size)))
 
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
@@ -208,7 +215,14 @@
         (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
           (vertical-slider s (dr/random))))
       :knobs
-      (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge) (* 0.06 (min width height)))
+      (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
+                      (* 0.06 (min width height)))
+            cnt (subdivision-count bounds size)
+            size (min (cond (> cnt 40) (* size 4)
+                            (> cnt 32) (* size 3)
+                            (> cnt 16) (* size 2)
+                            :else size)
+                      min-edge)
             knob (dr/rand-nth [smooth-knob ridged-knob])]
         (for [s (subdivide-to-cells bounds size)]
           (knob (g/centroid s) (* 0.33 size) (dr/random))))
