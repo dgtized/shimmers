@@ -183,7 +183,12 @@
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
         weights {:sliders 1
-                 :vu-meter 1
+                 :vu-meter (cond (< min-edge 40)
+                                 0
+                                 (> area-ratio 0.2)
+                                 1.5
+                                 :else
+                                 0.5)
                  :knobs (if (> area-ratio 0.2)
                           0.1
                           2)
@@ -196,11 +201,11 @@
                               0.5
                               :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
-                                        (> area-ratio 0.2)) 1 0.0)
+                                        (> area-ratio 0.2)) 3.0 0.0)
                  :circles 0.5
                  :subdivide (cond (< area-ratio 0.1) 0
                                   (> area-ratio 0.3) 5
-                                  :else 2)}]
+                                  :else 3)}]
     (case (dr/weighted weights)
       :subdivide
       (mapcat assign-pane
