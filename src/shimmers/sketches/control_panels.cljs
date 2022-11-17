@@ -183,9 +183,11 @@
                  :button (if (> area-ratio 0.2)
                            0.1
                            1)
-                 :plugs (if (< area-ratio 0.1)
-                          0.8
-                          0)
+                 :plugs (cond (< area-ratio 0.05)
+                              1
+                              (< area-ratio 0.1)
+                              0.5
+                              :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                         (> area-ratio 0.2)) 1 0.0)
                  :circles 0.5
@@ -201,7 +203,7 @@
                   (g/subdivide bounds {:rows 1 :cols splits})
                   (g/subdivide bounds {:rows splits :cols 1}))))
       :sliders
-      (let [n (dr/random-int 2 5)
+      (let [n (dr/random-int 2 6)
             size (max (int (/ w n)) 30)]
         (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
           (vertical-slider s (dr/random))))
