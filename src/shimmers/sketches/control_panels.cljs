@@ -195,9 +195,10 @@
       (for [s (g/subdivide bounds {:rows 1 :cols (dr/random-int 2 5)})]
         (vertical-slider s (dr/random)))
       :knobs
-      (let [knob (dr/rand-nth [smooth-knob ridged-knob])]
-        (for [s (g/subdivide bounds {:rows (dr/random-int 2 6) :cols (dr/random-int 3 5)})]
-          (knob (g/centroid s) (* 0.08 min-edge) (dr/random))))
+      (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge) (* 0.06 (min width height)))
+            knob (dr/rand-nth [smooth-knob ridged-knob])]
+        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+          (knob (g/centroid s) (* 0.33 size) (dr/random))))
       :vu-meter
       (for [{[w1 h1] :size :as s}
             (let [n (dr/random-int 2 4)
@@ -209,17 +210,18 @@
       :oscilliscope
       (oscilliscope (g/centroid bounds) (* 0.45 min-edge))
       :plugs
-      (let [size (* 0.05 (min width height))
+      (let [size (* (dr/rand-nth [0.05 0.066 0.08]) (min width height))
             label (dr/chance 0.33)]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
           (plug (g/centroid s) (* 0.3 size) label)))
       :button
-      (let [size (* 0.08 (min width height))]
+      (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
           (button (g/centroid s) (* 0.3 size))))
       :circles
-      (for [s (g/subdivide bounds {:rows 4 :cols 2})]
-        (gc/circle (g/centroid s) (* 0.1 min-edge))))))
+      (let [size (max (* (dr/rand-nth [0.5 0.33 1.0]) min-edge) 50)]
+        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols (int (/ w size))})]
+          (gc/circle (g/centroid s) (* 0.33 size)))))))
 
 (defn shapes []
   (let [bounds (g/scale-size screen 0.975)
