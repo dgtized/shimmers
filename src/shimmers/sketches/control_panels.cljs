@@ -228,7 +228,7 @@
                               :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                         (> area-ratio 0.2)) 3.0 0.0)
-                 :circles 0.5
+                 :circles 0.3
                  :subdivide (cond (< area-ratio 0.1) 0
                                   (> area-ratio 0.3) 5
                                   :else 3)}]
@@ -264,7 +264,7 @@
           (knob (g/centroid s) (* 0.33 size) (dr/random))))
       :vu-meter
       (let [n (dr/random-int 2 4)
-            opts (cond (> w (* 2 h)) {:rows 1 :cols n}
+            opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
                        (> h (* 2 w)) {:rows n :cols 1}
                        :else {:rows 1 :cols 1})]
         (for [{[w1 h1] :size :as s} (g/subdivide bounds opts)]
