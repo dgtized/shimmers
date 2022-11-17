@@ -188,7 +188,7 @@
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
-        weights {:sliders 1
+        weights {:sliders (if (< h (* 0.12 height)) 0 1)
                  :indicator-light (cond (< min-edge 60) 3
                                         (< area-ratio 0.03) 2
                                         :else 0)
