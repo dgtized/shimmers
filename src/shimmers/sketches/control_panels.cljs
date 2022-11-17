@@ -46,6 +46,21 @@
                             (g/unmap-point inner (gv/vec2 0.9 (+ pct slider-height))))
         {:rx 3}))))
 
+(defn horizontal-slider [rect pct]
+  (let [slider0 (g/scale-size rect 0.9)
+        slider (rect/rect (g/unmap-point slider0 (gv/vec2 0 0.15))
+                          (g/unmap-point slider0 (gv/vec2 1 0.85)))
+        inner (g/scale-size slider 0.95)
+        slider-width 0.02]
+    (csvg/group {}
+      slider
+      (for [t (range 0 1 0.1)]
+        (gl/line2 (g/unmap-point slider (gv/vec2 t 1.0))
+                  (g/unmap-point slider (gv/vec2 t 0.9))))
+      (with-meta (rect/rect (g/unmap-point inner (gv/vec2 (- pct slider-width) 0.1))
+                            (g/unmap-point inner (gv/vec2 (+ pct slider-width) 0.9)))
+        {:rx 3}))))
+
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
         t0 (* (/ 7 6) Math/PI)
@@ -189,7 +204,8 @@
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
-        weights {:sliders (if (< h (* 0.12 height)) 0 1)
+        weights {:vertical-sliders (if (< h (* 0.12 height)) 0 1)
+                 :horizontal-sliders (if (< w (* 0.12 width)) 0 1)
                  :indicator-light (cond (< min-edge 60) 3
                                         (< area-ratio 0.03) 2
                                         :else 0)
@@ -224,11 +240,16 @@
                 (if (> w h)
                   (g/subdivide bounds {:rows 1 :cols splits})
                   (g/subdivide bounds {:rows splits :cols 1}))))
-      :sliders
+      :vertical-sliders
       (let [n (dr/random-int 2 6)
             size (min (max (int (/ w n)) (* 0.05 width)) (* 0.12 width))]
         (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
           (vertical-slider s (dr/random))))
+      :horizontal-sliders
+      (let [n (dr/random-int 1 4)
+            size (min (max (int (/ h n)) (* 0.05 height)) (* 0.12 height))]
+        (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols 1})]
+          (horizontal-slider s (dr/random))))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
