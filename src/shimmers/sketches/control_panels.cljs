@@ -42,8 +42,9 @@
       (for [t (range 0 1 0.1)]
         (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
                   (g/unmap-point slider (gv/vec2 0.1 t))))
-      (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct slider-height)))
-                 (g/unmap-point inner (gv/vec2 0.9 (+ pct slider-height)))))))
+      (with-meta (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct slider-height)))
+                            (g/unmap-point inner (gv/vec2 0.9 (+ pct slider-height))))
+        {:rx 3}))))
 
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
