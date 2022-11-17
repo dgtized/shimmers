@@ -226,7 +226,7 @@
                   (g/subdivide bounds {:rows splits :cols 1}))))
       :sliders
       (let [n (dr/random-int 2 6)
-            size (max (int (/ w n)) 40)]
+            size (min (max (int (/ w n)) (* 0.05 width)) (* 0.12 width))]
         (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
           (vertical-slider s (dr/random))))
       :knobs
