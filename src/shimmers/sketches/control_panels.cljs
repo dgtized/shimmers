@@ -195,8 +195,10 @@
                   (g/subdivide bounds {:rows 1 :cols splits})
                   (g/subdivide bounds {:rows splits :cols 1}))))
       :sliders
-      (for [s (g/subdivide bounds {:rows 1 :cols (dr/random-int 2 5)})]
-        (vertical-slider s (dr/random)))
+      (let [n (dr/random-int 2 5)
+            size (max (int (/ w n)) 30)]
+        (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
+          (vertical-slider s (dr/random))))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge) (* 0.06 (min width height)))
             knob (dr/rand-nth [smooth-knob ridged-knob])]
