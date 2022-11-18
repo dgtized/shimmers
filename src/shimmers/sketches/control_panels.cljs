@@ -219,7 +219,7 @@
                  :indicator-light (cond (< min-edge 60) 3
                                         (< area-ratio 0.03) 2
                                         :else 0)
-                 :vu-meter (cond (< min-edge 40)
+                 :vu-meter (cond (< min-edge (* 0.08 width))
                                  0
                                  (> area-ratio 0.2)
                                  1.5
