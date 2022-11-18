@@ -161,15 +161,16 @@
                      (g/translate p))
         {:rx 10 :fill "white" :stroke-width 0.5}))))
 
-(defn toggle-switch [p r on]
+(defn toggle-switch [p r vertical on]
   (let [dir (gv/vec2 0 (if on -1 1))]
-    (csvg/group {:fill "white"}
+    (csvg/group {:fill "white"
+                 :transform (csvg/transform (csvg/translate p)
+                                            (csvg/rotate (if vertical 0 (/ Math/PI 2))))}
       (-> (gc/circle (* r 0.55))
           (g/as-polygon 6)
-          (g/rotate (/ eq/TAU 12))
-          (g/translate p))
-      (gc/circle p (* 0.12 r))
-      (gc/circle (g/translate p (tm/* (gv/vec2 0 (* 0.25 r)) dir)) (* 0.175 r)))))
+          (g/rotate (/ eq/TAU 12)))
+      (gc/circle (gv/vec2) (* 0.12 r))
+      (gc/circle (tm/* (gv/vec2 0 (* 0.25 r)) dir) (* 0.175 r)))))
 
 (defn indicator-light [p r on]
   (csvg/group {}
@@ -283,9 +284,10 @@
                             (> cnt 32) (* size 3)
                             (> cnt 16) (* size 2)
                             :else size)
-                      min-edge)]
+                      min-edge)
+            vertical (dr/chance 0.5)]
         (for [s (subdivide-to-cells bounds size)]
-          (toggle-switch (g/centroid s) (* 0.5 size) (dr/chance 0.5))))
+          (toggle-switch (g/centroid s) (* 0.5 size) vertical (dr/chance 0.5))))
       :vu-meter
       (let [n (dr/random-int 2 4)
             opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
