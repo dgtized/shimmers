@@ -31,34 +31,27 @@
 ;; Alternative short name might be +pv, as in plus polar vector.
 (def rpv relative-polar-vector)
 
-(defn vertical-slider [rect pct]
-  (let [slider0 (g/scale-size rect 0.9)
-        slider (rect/rect (g/unmap-point slider0 (gv/vec2 0.15 0))
-                          (g/unmap-point slider0 (gv/vec2 0.85 1)))
+(defn slider [bounds vertical percent]
+  (let [slider-box (g/scale-size bounds 0.9)
+        [low high] (if vertical
+                     [(gv/vec2 0.15 0) (gv/vec2 0.85 1)]
+                     [(gv/vec2 0 0.15) (gv/vec2 1 0.85)])
+        slider (rect/rect (g/unmap-point slider-box low)
+                          (g/unmap-point slider-box high))
         inner (g/scale-size slider 0.95)
-        slider-height 0.02]
+        spacer 0.02]
     (csvg/group {}
       slider
       (for [t (range 0 1 0.1)]
-        (gl/line2 (g/unmap-point slider (gv/vec2 0.0 t))
-                  (g/unmap-point slider (gv/vec2 0.1 t))))
-      (with-meta (rect/rect (g/unmap-point inner (gv/vec2 0.1 (- pct slider-height)))
-                            (g/unmap-point inner (gv/vec2 0.9 (+ pct slider-height))))
-        {:rx 3}))))
-
-(defn horizontal-slider [rect pct]
-  (let [slider0 (g/scale-size rect 0.9)
-        slider (rect/rect (g/unmap-point slider0 (gv/vec2 0 0.15))
-                          (g/unmap-point slider0 (gv/vec2 1 0.85)))
-        inner (g/scale-size slider 0.95)
-        slider-width 0.02]
-    (csvg/group {}
-      slider
-      (for [t (range 0 1 0.1)]
-        (gl/line2 (g/unmap-point slider (gv/vec2 t 1.0))
-                  (g/unmap-point slider (gv/vec2 t 0.9))))
-      (with-meta (rect/rect (g/unmap-point inner (gv/vec2 (- pct slider-width) 0.1))
-                            (g/unmap-point inner (gv/vec2 (+ pct slider-width) 0.9)))
+        (gl/line2 (g/unmap-point slider (if vertical (gv/vec2 0.0 t) (gv/vec2 t 1.0)))
+                  (g/unmap-point slider (if vertical (gv/vec2 0.1 t) (gv/vec2 t 0.9)))))
+      (with-meta
+        (rect/rect (g/unmap-point inner (if vertical
+                                          (gv/vec2 0.1 (- percent spacer))
+                                          (gv/vec2 (- percent spacer) 0.1)))
+                   (g/unmap-point inner (if vertical
+                                          (gv/vec2 0.9 (+ percent spacer))
+                                          (gv/vec2 (+ percent spacer) 0.9))))
         {:rx 3}))))
 
 (defn vu-meter [center r pct]
@@ -258,12 +251,12 @@
       (let [n (dr/random-int 2 6)
             size (min (max (int (/ w n)) (* 0.05 width)) (* 0.12 width))]
         (for [s (g/subdivide bounds {:rows 1 :cols (int (/ w size))})]
-          (vertical-slider s (dr/random))))
+          (slider s true (dr/random))))
       :horizontal-sliders
       (let [n (dr/random-int 1 4)
             size (min (max (int (/ h n)) (* 0.05 height)) (* 0.12 height))]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols 1})]
-          (horizontal-slider s (dr/random))))
+          (slider s false (dr/random))))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
