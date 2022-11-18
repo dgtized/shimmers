@@ -161,6 +161,16 @@
                      (g/translate p))
         {:rx 10 :fill "white" :stroke-width 0.5}))))
 
+(defn toggle-switch [p r on]
+  (let [dir (gv/vec2 0 (if on -1 1))]
+    (csvg/group {:fill "white"}
+      (-> (gc/circle (* r 0.55))
+          (g/as-polygon 6)
+          (g/rotate (/ eq/TAU 12))
+          (g/translate p))
+      (gc/circle p (* 0.12 r))
+      (gc/circle (g/translate p (tm/* (gv/vec2 0 (* 0.25 r)) dir)) (* 0.175 r)))))
+
 (defn indicator-light [p r on]
   (csvg/group {}
     (gc/circle p (* 0.6 r))
@@ -221,6 +231,9 @@
                  :button (if (> area-ratio 0.2)
                            0.1
                            1)
+                 :toggle-switch (if (> area-ratio 0.2)
+                                  0.1
+                                  1)
                  :plugs (cond (< area-ratio 0.05)
                               1
                               (< area-ratio 0.1)
@@ -262,6 +275,17 @@
             knob (dr/rand-nth [smooth-knob ridged-knob])]
         (for [s (subdivide-to-cells bounds size)]
           (knob (g/centroid s) (* 0.33 size) (dr/random))))
+      :toggle-switch
+      (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
+                      (* 0.06 (min width height)))
+            cnt (subdivision-count bounds size)
+            size (min (cond (> cnt 40) (* size 4)
+                            (> cnt 32) (* size 3)
+                            (> cnt 16) (* size 2)
+                            :else size)
+                      min-edge)]
+        (for [s (subdivide-to-cells bounds size)]
+          (toggle-switch (g/centroid s) (* 0.5 size) (dr/chance 0.5))))
       :vu-meter
       (let [n (dr/random-int 2 4)
             opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
