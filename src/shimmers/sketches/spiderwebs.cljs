@@ -25,10 +25,11 @@
         center-r 0.02
         radial-lines (map (fn [p] (gl/line2 (tm/mix center p center-r) p)) points)
         center-circle (gp/polygon2 (map #(tm/mix center % center-r) points))
-        spiral (gl/linestrip2
-                (map (fn [point r] (tm/mix center point r))
-                     (cycle points)
-                     (drop-while #(< % center-r) (dr/density-range 0.0001 0.0025))))]
+        spiral (->> (dr/gaussian-range 0.0015 0.0015)
+                    (drop-while #(< % center-r))
+                    (map (fn [point r] (tm/mix center point r))
+                         (cycle points))
+                    gl/linestrip2)]
     (conj radial-lines
           center-circle
           spiral)))
