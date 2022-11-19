@@ -272,8 +272,10 @@
                             :else size)
                       min-edge)
             opts {:surface (dr/rand-nth [:smooth :ridged])
-                  :dedants (dr/weighted {[(* 0.5 eq/TAU) (* 1.25 eq/TAU)] 1
-                                         [(* 0.4 eq/TAU) (* 1.1 eq/TAU)] 1})}]
+                  :dedants (dr/weighted {[(* 0.5 eq/TAU) (* 1.25 eq/TAU)] 2
+                                         [(* 0.4 eq/TAU) (* 1.1 eq/TAU)] 2
+                                         [(* 0.35 eq/TAU) (* 1.15 eq/TAU)] 1
+                                         [(* 0.3 eq/TAU) (* 1.2 eq/TAU)] 1})}]
         (for [s (subdivide-to-cells bounds size)]
           (knob (g/centroid s) (* 0.33 size) (dr/random) opts)))
       :toggle-switch
