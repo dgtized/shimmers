@@ -131,14 +131,17 @@
                  (g/translate p))
     {:rx 10 :fill "white" :stroke-width 0.66}))
 
+(defn radial-tick-lines [p r mapper]
+  (for [t (range 0 1 0.1)]
+    (gl/line2 (rpv p (* 0.90 r) (mapper t))
+              (rpv p (* 1.00 r) (mapper t)))))
+
 (defn smooth-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)]
     (csvg/group {}
       (gc/circle p (* 0.9 r))
-      (for [t (range 0 1 0.1)]
-        (gl/line2 (rpv p (* 0.90 r) (mapper t))
-                  (rpv p (* 1.00 r) (mapper t))))
+      (radial-tick-lines p r mapper)
       (indicator-line
        {:p p :r r :r0 0.4 :r1 1.025 :width 0.08 :theta theta}))))
 
@@ -149,9 +152,7 @@
     (csvg/group {}
       ridged
       (g/scale-size ridged 0.85)
-      (for [t (range 0 1 0.1)]
-        (gl/line2 (rpv p (* 0.90 r) (mapper t))
-                  (rpv p (* 1.00 r) (mapper t))))
+      (radial-tick-lines p r mapper)
       (indicator-line
        {:p p :r r :r0 0.3 :r1 0.85 :width 0.1 :theta theta}))))
 
