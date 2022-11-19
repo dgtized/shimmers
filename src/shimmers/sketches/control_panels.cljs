@@ -151,13 +151,13 @@
                    [ridged
                     (g/scale-size ridged 0.85)]))
        [(radial-tick-lines p r mapper ticks)
-        (case surface
-          :smooth
-          (indicator-line
-           {:p p :r r :r0 0.4 :r1 1.025 :width 0.08 :theta theta})
-          :ridged
-          (indicator-line
-           {:p p :r r :r0 0.3 :r1 0.85 :width 0.1 :theta theta}))]))))
+        (indicator-line
+         (merge {:p p :r r :theta theta}
+                (case surface
+                  :smooth
+                  {:r0 0.4 :r1 1.025 :width 0.08}
+                  :ridged
+                  {:r0 0.3 :r1 0.85 :width 0.1})))]))))
 
 (defn toggle-switch [p r vertical on]
   (let [dir (gv/vec2 0 (if on -1 1))]
