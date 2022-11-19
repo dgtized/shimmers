@@ -124,25 +124,27 @@
                                              [d w]]))))
                            (range ridges)))))
 
+(defn indicator-line [{:keys [p r r0 r1 width theta]}]
+  (with-meta (-> (rect/rect (gv/vec2 (* r0 r) (* (- width) r))
+                            (gv/vec2 (* r1 r) (* width r)))
+                 (g/rotate theta)
+                 (g/translate p))
+    {:rx 10 :fill "white" :stroke-width 0.66}))
+
 (defn smooth-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
-        theta (mapper pct)
-        w 0.08]
+        theta (mapper pct)]
     (csvg/group {}
       (gc/circle p (* 0.9 r))
       (for [t (range 0 1 0.1)]
         (gl/line2 (rpv p (* 0.90 r) (mapper t))
                   (rpv p (* 1.00 r) (mapper t))))
-      (with-meta (-> (rect/rect (gv/vec2 (* 0.4 r) (* (- w) r))
-                                (gv/vec2 (* 1.025 r) (* w r)))
-                     (g/rotate theta)
-                     (g/translate p))
-        {:rx 10 :fill "white"}))))
+      (indicator-line
+       {:p p :r r :r0 0.4 :r1 1.025 :width 0.08 :theta theta}))))
 
 (defn ridged-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
-        width 0.1
         ridged (ridged p r 15 theta)]
     (csvg/group {}
       ridged
@@ -150,11 +152,8 @@
       (for [t (range 0 1 0.1)]
         (gl/line2 (rpv p (* 0.90 r) (mapper t))
                   (rpv p (* 1.00 r) (mapper t))))
-      (with-meta (-> (rect/rect (gv/vec2 (* 0.3 r) (* (- width) r))
-                                (gv/vec2 (* 0.85 r) (* width r)))
-                     (g/rotate theta)
-                     (g/translate p))
-        {:rx 10 :fill "white" :stroke-width 0.5}))))
+      (indicator-line
+       {:p p :r r :r0 0.3 :r1 0.85 :width 0.1 :theta theta}))))
 
 (defn toggle-switch [p r vertical on]
   (let [dir (gv/vec2 0 (if on -1 1))]
