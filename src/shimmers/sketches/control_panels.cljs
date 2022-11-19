@@ -136,8 +136,11 @@
     (gl/line2 (rpv p (* 0.90 r) (mapper t))
               (rpv p (* 1.00 r) (mapper t)))))
 
-(defn knob [p r pct {:keys [surface]}]
-  (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
+(defn knob [p r pct
+            {:keys [surface dedants]
+             :or {surface :smooth
+                  dedants [(* 0.5 eq/TAU) (* 1.25 eq/TAU)]}}]
+  (let [mapper (fn [t] (tm/map-interval t [0 1] dedants))
         theta (mapper pct)]
     (csvg/group {}
       (concat
@@ -267,9 +270,11 @@
                             (> cnt 16) (* size 2)
                             :else size)
                       min-edge)
-            surface (dr/rand-nth [:smooth :ridged])]
+            opts {:surface (dr/rand-nth [:smooth :ridged])
+                  :dedants (dr/weighted {[(* 0.5 eq/TAU) (* 1.25 eq/TAU)] 1
+                                         [(* 0.4 eq/TAU) (* 1.1 eq/TAU)] 1})}]
         (for [s (subdivide-to-cells bounds size)]
-          (knob (g/centroid s) (* 0.33 size) (dr/random) {:surface surface})))
+          (knob (g/centroid s) (* 0.33 size) (dr/random) opts)))
       :toggle-switch
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
