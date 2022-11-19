@@ -131,14 +131,15 @@
                  (g/translate p))
     {:rx 10 :fill "white" :stroke-width 0.66}))
 
-(defn radial-tick-lines [p r mapper]
-  (for [t (range 0 1 0.1)]
+(defn radial-tick-lines [p r mapper ticks]
+  (for [t (range 0 1 (/ 1 ticks))]
     (gl/line2 (rpv p (* 0.90 r) (mapper t))
               (rpv p (* 1.00 r) (mapper t)))))
 
 (defn knob [p r pct
-            {:keys [surface dedants]
+            {:keys [surface ticks dedants]
              :or {surface :smooth
+                  ticks 10
                   dedants [(* 0.5 eq/TAU) (* 1.25 eq/TAU)]}}]
   (let [mapper (fn [t] (tm/map-interval t [0 1] dedants))
         theta (mapper pct)]
@@ -149,7 +150,7 @@
          :ridged (let [ridged (ridged p r 15 theta)]
                    [ridged
                     (g/scale-size ridged 0.85)]))
-       [(radial-tick-lines p r mapper)
+       [(radial-tick-lines p r mapper ticks)
         (case surface
           :smooth
           (indicator-line
