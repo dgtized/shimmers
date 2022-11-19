@@ -100,27 +100,28 @@
     (gc/circle p (* 0.65 r))
     (gc/circle p (* 0.95 r))))
 
-(defn button [p r label]
+(defn square-button [p r rx]
+  (->
+   (rect/rect 0 0 r r)
+   g/center
+   (g/translate p)
+   (with-meta {:rx rx})))
+
+(defn button [p r style label]
   (csvg/group {}
-    (->
-     (rect/rect 0 0 (* 2 r) (* 2 r))
-     g/center
-     (g/translate p)
-     (with-meta {:rx 5}))
-    (->
-     (rect/rect 0 0 (* 1.75 r) (* 1.75 r))
-     g/center
-     (g/translate p)
-     (with-meta {:rx 3}))
-    (when label
-      (println r)
-      (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
-        (svg/text p label
-                  {:text-anchor "middle"
-                   :alignment-baseline "middle"
-                   :style {:font (str "normal " text-size "px sans-serif")
-                           :font-weight "lighter"}
-                   :fill "black"})))))
+    (conj (case style
+            :circle [(gc/circle p (* 1.15 r))
+                     (gc/circle p (* 1 r))]
+            :square [(square-button p (* 2 r) 5)
+                     (square-button p (* 1.75 r) 3)])
+          (when label
+            (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
+              (svg/text p label
+                        {:text-anchor "middle"
+                         :alignment-baseline "middle"
+                         :style {:font (str "normal " text-size "px sans-serif")
+                                 :font-weight "lighter"}
+                         :fill "black"}))))))
 
 (defn ridged [p r ridges theta]
   (let [d (* 0.03 r)
@@ -261,7 +262,6 @@
                               :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                         (> area-ratio 0.2)) 3.0 0.0)
-                 :circles 0.3
                  :subdivide (cond (< area-ratio 0.1) 0
                                   (> area-ratio 0.3) 5
                                   :else 3)}]
@@ -327,13 +327,10 @@
         (for [s (subdivide-to-cells bounds size)]
           (plug (g/centroid s) (* 0.3 size) label)))
       :button
-      (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))]
+      (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))
+            style (dr/rand-nth [:square :circle])]
         (for [s (subdivide-to-cells bounds size)]
-          (button (g/centroid s) (* 0.3 size) (random-label))))
-      :circles
-      (let [size (max (* (dr/rand-nth [0.5 0.33 1.0]) min-edge) 50)]
-        (for [s (subdivide-to-cells bounds size)]
-          (gc/circle (g/centroid s) (* 0.33 size))))
+          (button (g/centroid s) (* 0.3 size) style (random-label))))
       :indicator-light
       (let [size (* 0.05 (min width height))]
         (for [s (subdivide-to-cells bounds size)]
