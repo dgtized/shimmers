@@ -222,9 +222,13 @@
   (g/subdivide bounds (subdivision-dims bounds size)))
 
 (defn random-label []
-  (let [characters (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  (let [latin (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        lycian (map (fn [p] (js/String.fromCodePoint p)) (range 0x10280 0x1029D))
+        coptic (map (fn [p] (js/String.fromCodePoint p)) (range 0x2C80 0x2CB1 2))
+        runic (map (fn [p] (js/String.fromCodePoint p)) (range 0x16A0 0x16EA))
+        bamum (map (fn [p] (js/String.fromCodePoint p)) (range 0xA6A0 0xA6EF))
         numbers (map str (range 0 10))
-        pool (concat characters characters numbers)]
+        pool (concat latin latin coptic runic lycian bamum numbers)]
     (when (dr/chance 0.75)
       (apply str
              (repeatedly (dr/weighted {1 1
