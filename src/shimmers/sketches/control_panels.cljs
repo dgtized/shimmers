@@ -14,6 +14,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -99,7 +100,7 @@
     (gc/circle p (* 0.65 r))
     (gc/circle p (* 0.95 r))))
 
-(defn button [p r]
+(defn button [p r label]
   (csvg/group {}
     (->
      (rect/rect 0 0 (* 2 r) (* 2 r))
@@ -110,7 +111,16 @@
      (rect/rect 0 0 (* 1.75 r) (* 1.75 r))
      g/center
      (g/translate p)
-     (with-meta {:rx 3}))))
+     (with-meta {:rx 3}))
+    (when label
+      (println r)
+      (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
+        (svg/text p label
+                  {:text-anchor "middle"
+                   :alignment-baseline "middle"
+                   :style {:font (str "normal " text-size "px sans-serif")
+                           :font-weight "lighter"}
+                   :fill "black"})))))
 
 (defn ridged [p r ridges theta]
   (let [d (* 0.03 r)
@@ -210,6 +220,17 @@
 (defn subdivide-to-cells [bounds size]
   (g/subdivide bounds (subdivision-dims bounds size)))
 
+(defn random-label []
+  (let [characters (seq "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+        numbers (map str (range 0 10))
+        pool (concat characters characters numbers)]
+    (when (dr/chance 0.75)
+      (apply str
+             (repeatedly (dr/weighted {1 1
+                                       2 3
+                                       3 1})
+                         #(dr/rand-nth pool))))))
+
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
@@ -273,6 +294,7 @@
                       min-edge)
             opts {:surface (dr/rand-nth [:smooth :ridged])
                   :dedants (dr/weighted {[(* 0.5 eq/TAU) (* 1.25 eq/TAU)] 2
+                                         [(* 0.25 eq/TAU) (* 1.0 eq/TAU)] 1
                                          [(* 0.4 eq/TAU) (* 1.1 eq/TAU)] 2
                                          [(* 0.35 eq/TAU) (* 1.15 eq/TAU)] 1
                                          [(* 0.3 eq/TAU) (* 1.2 eq/TAU)] 1})}]
@@ -307,7 +329,7 @@
       :button
       (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))]
         (for [s (subdivide-to-cells bounds size)]
-          (button (g/centroid s) (* 0.3 size))))
+          (button (g/centroid s) (* 0.3 size) (random-label))))
       :circles
       (let [size (max (* (dr/rand-nth [0.5 0.33 1.0]) min-edge) 50)]
         (for [s (subdivide-to-cells bounds size)]
