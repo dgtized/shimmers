@@ -136,25 +136,24 @@
     (gl/line2 (rpv p (* 0.90 r) (mapper t))
               (rpv p (* 1.00 r) (mapper t)))))
 
-(defn smooth-knob [p r pct]
+(defn knob [p r pct {:keys [surface]}]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)]
     (csvg/group {}
-      (gc/circle p (* 0.9 r))
-      (radial-tick-lines p r mapper)
-      (indicator-line
-       {:p p :r r :r0 0.4 :r1 1.025 :width 0.08 :theta theta}))))
-
-(defn ridged-knob [p r pct]
-  (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
-        theta (mapper pct)
-        ridged (ridged p r 15 theta)]
-    (csvg/group {}
-      ridged
-      (g/scale-size ridged 0.85)
-      (radial-tick-lines p r mapper)
-      (indicator-line
-       {:p p :r r :r0 0.3 :r1 0.85 :width 0.1 :theta theta}))))
+      (concat
+       (case surface
+         :smooth [(gc/circle p (* 0.9 r))]
+         :ridged (let [ridged (ridged p r 15 theta)]
+                   [ridged
+                    (g/scale-size ridged 0.85)]))
+       [(radial-tick-lines p r mapper)
+        (case surface
+          :smooth
+          (indicator-line
+           {:p p :r r :r0 0.4 :r1 1.025 :width 0.08 :theta theta})
+          :ridged
+          (indicator-line
+           {:p p :r r :r0 0.3 :r1 0.85 :width 0.1 :theta theta}))]))))
 
 (defn toggle-switch [p r vertical on]
   (let [dir (gv/vec2 0 (if on -1 1))]
@@ -268,9 +267,9 @@
                             (> cnt 16) (* size 2)
                             :else size)
                       min-edge)
-            knob (dr/rand-nth [smooth-knob ridged-knob])]
+            surface (dr/rand-nth [:smooth :ridged])]
         (for [s (subdivide-to-cells bounds size)]
-          (knob (g/centroid s) (* 0.33 size) (dr/random))))
+          (knob (g/centroid s) (* 0.33 size) (dr/random) {:surface surface})))
       :toggle-switch
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
