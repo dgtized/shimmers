@@ -112,6 +112,18 @@
      (g/translate p)
      (with-meta {:rx 3}))))
 
+(defn ridged [p r ridges theta]
+  (let [d (* 0.03 r)
+        w (/ Math/PI (* 2 ridges))]
+    (gp/polygon2 (sequence (mapcat (fn [v]
+                                     (let [t (+ (* eq/TAU (/ v ridges)) theta)]
+                                       (map (fn [[dr dt]]
+                                              (v/+polar p (+ (* 0.8 r) dr) (+ t dt)))
+                                            [[(- d) (- w)]
+                                             [0 0]
+                                             [d w]]))))
+                           (range ridges)))))
+
 (defn smooth-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
@@ -130,18 +142,8 @@
 (defn ridged-knob [p r pct]
   (let [mapper (fn [t] (tm/map-interval t [0 1] [Math/PI (* 2.5 Math/PI)]))
         theta (mapper pct)
-        ridges 15
-        d (* 0.03 r)
-        w (/ Math/PI (* 2 ridges))
         width 0.1
-        ridged (gp/polygon2 (sequence (mapcat (fn [v]
-                                                (let [t (+ (* eq/TAU (/ v ridges)) theta)]
-                                                  (map (fn [[dr dt]]
-                                                         (v/+polar p (+ (* 0.8 r) dr) (+ t dt)))
-                                                       [[(- d) (- w)]
-                                                        [0 0]
-                                                        [d w]]))))
-                                      (range ridges)))]
+        ridged (ridged p r 15 theta)]
     (csvg/group {}
       ridged
       (g/scale-size ridged 0.85)
