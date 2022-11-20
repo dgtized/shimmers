@@ -114,14 +114,13 @@
                      (gc/circle p (* 1 r))]
             :square [(square-button p (* 2 r) 5)
                      (square-button p (* 1.75 r) 3)])
-          (when label
-            (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
-              (svg/text p label
-                        {:text-anchor "middle"
-                         :alignment-baseline "middle"
-                         :style {:font (str "normal " text-size "px sans-serif")
-                                 :font-weight "lighter"}
-                         :fill "black"}))))))
+          (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
+            (svg/text p label
+                      {:text-anchor "middle"
+                       :alignment-baseline "middle"
+                       :style {:font (str "normal " text-size "px sans-serif")
+                               :font-weight "lighter"}
+                       :stroke-weight 0.25})))))
 
 (defn ridged [p r ridges theta]
   (let [d (* 0.03 r)
@@ -229,12 +228,12 @@
         bamum (map (fn [p] (js/String.fromCodePoint p)) (range 0xA6A0 0xA6EF))
         numbers (map str (range 0 10))
         pool (concat latin latin coptic runic lycian bamum numbers)]
-    (when (dr/chance 0.75)
-      (apply str
-             (repeatedly (dr/weighted {1 1
-                                       2 3
-                                       3 1})
-                         #(dr/rand-nth pool))))))
+    (apply str
+           (repeatedly (dr/weighted {0 1
+                                     1 2
+                                     2 4
+                                     3 2})
+                       #(dr/rand-nth pool)))))
 
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
