@@ -169,16 +169,25 @@
                   :ridged
                   {:r0 0.3 :r1 0.85 :width 0.1})))]))))
 
-(defn toggle-switch [p r vertical on]
+(defn toggle-switch [p r vertical dip on]
   (let [dir (gv/vec2 0 (if on -1 1))]
-    (csvg/group {:fill "white"
-                 :transform (csvg/transform (csvg/translate p)
-                                            (csvg/rotate (if vertical 0 (/ Math/PI 2))))}
-      (-> (gc/circle (* r 0.55))
-          (g/as-polygon 6)
-          (g/rotate (/ eq/TAU 12)))
-      (gc/circle (gv/vec2) (* 0.12 r))
-      (gc/circle (tm/* (gv/vec2 0 (* 0.25 r)) dir) (* 0.175 r)))))
+    (if dip
+      (csvg/group {}
+        (-> (rect/rect 0 0 (* 1.5 r) r)
+            (g/center)
+            (g/translate p))
+        (-> (rect/rect 0 0 (* 0.66 r) (* 0.95 r))
+            (g/center)
+            (g/translate (tm/+ p (gv/vec2 (if on (* 0.1 r) (* 0.4 r)) 0)))
+            (with-meta {:rx 5})))
+      (csvg/group {:fill "white"
+                   :transform (csvg/transform (csvg/translate p)
+                                              (csvg/rotate (if vertical 0 (/ Math/PI 2))))}
+        (-> (gc/circle (* r 0.55))
+            (g/as-polygon 6)
+            (g/rotate (/ eq/TAU 12)))
+        (gc/circle (gv/vec2) (* 0.12 r))
+        (gc/circle (tm/* (gv/vec2 0 (* 0.25 r)) dir) (* 0.175 r))))))
 
 (defn indicator-light [p r on]
   (csvg/group {}
@@ -314,7 +323,7 @@
                       min-edge)
             vertical (dr/chance 0.5)]
         (for [s (subdivide-to-cells bounds size)]
-          (toggle-switch (g/centroid s) (* 0.5 size) vertical (dr/chance 0.5))))
+          (toggle-switch (g/centroid s) (* 0.5 size) vertical (dr/chance 0.5) (dr/chance 0.5))))
       :vu-meter
       (let [n (dr/random-int 2 4)
             opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
