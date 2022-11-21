@@ -327,9 +327,10 @@
                             (> cnt 16) (* size 2)
                             :else size)
                       min-edge)
-            vertical (dr/chance 0.5)]
+            vertical (dr/chance 0.5)
+            dip (dr/chance 0.5)]
         (for [s (subdivide-to-cells bounds size)]
-          (toggle-switch (g/centroid s) (* 0.5 size) vertical (dr/chance 0.5) (dr/chance 0.5))))
+          (toggle-switch (g/centroid s) (* 0.5 size) vertical dip (dr/chance 0.5))))
       :vu-meter
       (let [n (dr/random-int 2 4)
             opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
