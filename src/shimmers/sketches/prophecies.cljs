@@ -1,7 +1,7 @@
 (ns shimmers.sketches.prophecies
   (:require
    [reagent-keybindings.keyboard :as kb]
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
