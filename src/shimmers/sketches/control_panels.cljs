@@ -177,10 +177,11 @@
               (rect/rect 0 0 r (* 1.25 r))
               (rect/rect 0 0 (* 1.25 r) r))
             (g/center)
-            (g/translate p))
+            (g/translate p)
+            (with-meta {:rx 3}))
         (-> (if vertical
-              (rect/rect 0 0 (* 0.95 r) (* 0.66 r))
-              (rect/rect 0 0 (* 0.66 r) (* 0.95 r)))
+              (rect/rect 0 0 (* 0.90 r) (* 0.66 r))
+              (rect/rect 0 0 (* 0.66 r) (* 0.90 r)))
             (g/center)
             (g/translate (tm/+ p (if vertical
                                    (gv/vec2 0 (if on (* -0.25 r) (* 0.25 r)))
