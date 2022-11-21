@@ -173,12 +173,18 @@
   (let [dir (gv/vec2 0 (if on -1 1))]
     (if dip
       (csvg/group {}
-        (-> (rect/rect 0 0 (* 1.5 r) r)
+        (-> (if vertical
+              (rect/rect 0 0 r (* 1.25 r))
+              (rect/rect 0 0 (* 1.25 r) r))
             (g/center)
             (g/translate p))
-        (-> (rect/rect 0 0 (* 0.66 r) (* 0.95 r))
+        (-> (if vertical
+              (rect/rect 0 0 (* 0.95 r) (* 0.66 r))
+              (rect/rect 0 0 (* 0.66 r) (* 0.95 r)))
             (g/center)
-            (g/translate (tm/+ p (gv/vec2 (if on (* 0.1 r) (* 0.4 r)) 0)))
+            (g/translate (tm/+ p (if vertical
+                                   (gv/vec2 0 (if on (* -0.25 r) (* 0.25 r)))
+                                   (gv/vec2 (if on (* -0.25 r) (* 0.25 r)) 0))))
             (with-meta {:rx 5})))
       (csvg/group {:fill "white"
                    :transform (csvg/transform (csvg/translate p)
