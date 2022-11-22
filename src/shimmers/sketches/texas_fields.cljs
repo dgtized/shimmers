@@ -164,10 +164,10 @@
          (-> cell
              (vary-meta assoc :on-click #(debug-info cell))
              (vary-meta dissoc :error :combine :zone))))
-     (csvg/group {:stroke "red"} (apply list roads))
+     (csvg/group {:stroke "red"} roads)
      (csvg/group {:stroke "black"}
        (when (get-in @state [:show :closest])
-         (apply list closest-links)))]))
+         closest-links))]))
 
 (defn scene [state]
   (reset! defo {})
