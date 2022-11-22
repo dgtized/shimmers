@@ -158,14 +158,13 @@
                      (filter (comp :combine meta) separated-grid)))
 
         joined-grid (vec (join-grid region quadtree radius))]
-    ;; FIXME: missing react key error?
-    [(csvg/group {:stroke "black"}
+    [(csvg/group {:stroke "#339"}
        (for [cell joined-grid]
          (-> cell
              (vary-meta assoc :on-click #(debug-info cell))
              (vary-meta dissoc :error :combine :zone))))
-     (csvg/group {:stroke "red"} roads)
-     (csvg/group {:stroke "black"}
+     (csvg/group {:stroke "#333" :stroke-width 2} roads)
+     (csvg/group {:stroke "#555"}
        (when (get-in @state [:show :closest])
          closest-links))]))
 
