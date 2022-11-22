@@ -254,8 +254,8 @@
 (defn assign-pane [{[w h] :size :as bounds}]
   (let [min-edge (min w h)
         area-ratio (/ (g/area bounds) (g/area screen))
-        weights {:vertical-sliders (if (< h (* 0.12 height)) 0 1)
-                 :horizontal-sliders (if (< w (* 0.12 width)) 0 1)
+        weights {:vertical-sliders (if (< h (* 0.12 height)) 0 0.8)
+                 :horizontal-sliders (if (< w (* 0.12 width)) 0 0.8)
                  :indicator-light (cond (< min-edge 60) 3
                                         (< area-ratio 0.03) 2
                                         :else 0)
@@ -264,16 +264,18 @@
                                  (> area-ratio 0.2)
                                  1.5
                                  :else
-                                 0.5)
-                 :knobs (if (> area-ratio 0.2)
-                          0.1
-                          2)
+                                 0.33)
+                 :knobs (cond (> area-ratio 0.20)
+                              0.33
+                              (> area-ratio 0.15)
+                              0.66
+                              :else 2)
                  :button (if (> area-ratio 0.2)
                            0.1
-                           1)
+                           1.5)
                  :toggle-switch (if (> area-ratio 0.2)
                                   0.1
-                                  1)
+                                  1.5)
                  :plugs (cond (< area-ratio 0.05)
                               1
                               (< area-ratio 0.1)
@@ -281,7 +283,9 @@
                               :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                         (> area-ratio 0.2)) 3.0 0.0)
-                 :subdivide (cond (< area-ratio 0.1) 0
+                 :subdivide (cond (< area-ratio 0.06) 0.0
+                                  (< area-ratio 0.1) 0.2
+                                  (< area-ratio 0.2) 1
                                   (> area-ratio 0.3) 5
                                   :else 3)}]
     (case (dr/weighted weights)
