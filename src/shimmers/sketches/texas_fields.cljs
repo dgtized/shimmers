@@ -147,7 +147,7 @@
         separated-grid (separate-with-roads region grid roads)
         quadtree (build-tree separated-grid)
         radius (let [x (first grid)]
-                 (* 1.5 (max (g/width x) (g/height x))))
+                 (* 2.0 (max (g/width x) (g/height x))))
         closest-links
         (vec (mapcat (fn [shape]
                        (if-let [closest (find-closest quadtree shape radius)]
