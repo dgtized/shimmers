@@ -276,10 +276,12 @@
                  :toggle-switch (if (> area-ratio 0.2)
                                   0.1
                                   1.5)
-                 :plugs (cond (< area-ratio 0.05)
+                 :plugs (cond (< area-ratio 0.02)
+                              2
+                              (< area-ratio 0.05)
                               1
                               (< area-ratio 0.1)
-                              0.5
+                              0.25
                               :else 0)
                  :oscilliscope (if (and (tm/delta= w h (* 0.33 min-edge))
                                         (> area-ratio 0.2)) 3.0 0.0)
