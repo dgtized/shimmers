@@ -30,15 +30,14 @@
        (mapv #(g/translate % (rv 0.5 0.5)))))
 
 ;; FIXME: handle large gaps and overlapping lines
-;; also why is manual key needed?
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
-    (for [[i shape] (map-indexed vector (shapes))]
-      (vary-meta shape assoc :key (str "l" i)))))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.5}
+     (shapes))))
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
