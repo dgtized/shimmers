@@ -15,12 +15,13 @@
   [])
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
-    (shapes)))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.5}
+     (shapes))))
 
 (sketch/definition svg-template
   {:created-at "2022-"
