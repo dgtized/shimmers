@@ -361,7 +361,7 @@
           (indicator-light (g/centroid s) (* 0.33 size) (dr/chance 0.5)))))))
 
 (defn shapes []
-  (let [bounds (g/scale-size screen 0.975)
+  (let [bounds (g/scale-size screen 0.99)
         panels (mapv (fn [s] (with-meta (geometry/inset-rectangle s 3) {:rx 10}))
                      (divide-panels bounds))]
     (concat panels (mapcat assign-pane panels))))
