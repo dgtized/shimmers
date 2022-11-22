@@ -84,13 +84,14 @@
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.8}
-    (for [shape (shapes)]
-      (vary-meta shape assoc :stroke-width (:width shape)))))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.8}
+     (for [shape (shapes)]
+       (vary-meta shape assoc :stroke-width (:width shape))))))
 
 (sketch/definition morse-patterns
   {:created-at "2021-12-02"

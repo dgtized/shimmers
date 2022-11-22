@@ -61,12 +61,13 @@
 
 ;; TODO: add automatic timing to csvg/svg?
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.8}
-    (shapes)))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.8}
+     (shapes))))
 
 (sketch/definition hairy-spiral
   {:created-at "2022-01-25"

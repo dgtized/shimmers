@@ -43,7 +43,7 @@
 ;; curve the field rows with dampened displacement along the path?
 ;; Break up the field rows occasionally and sometimes match the rows above and below
 ;; Add varying green levels per row
-(defn scene []
+(defn shapes []
   (let [spacing 0.05
         road (bezier/auto-spline2 [(r (dr/gaussian 0.5 0.1) (- (* 2 spacing)))
                                    (r (dr/gaussian 0.5 0.01) 0.3)
@@ -74,6 +74,9 @@
       (for [{:keys [pos heading]} houses]
         (csvg/group {:transform (csvg/rotate heading pos)}
           (svg/rect pos 5 5))))))
+
+(defn scene []
+  (csvg/timed (shapes)))
 
 (sketch/definition clustered-farmlands
   {:created-at "2021-05-10"

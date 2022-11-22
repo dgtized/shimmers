@@ -90,10 +90,11 @@
 ;; and then the error compounds?
 (defn scene [size {:keys [n depth seed operations]}]
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
-    (svg-tile size
-              (/ size (* n (Math/pow 2 depth)))
-              ((apply comp (map transformations (take depth operations))) seed)
-              "Scene")))
+    (csvg/timed
+     (svg-tile size
+               (/ size (* n (Math/pow 2 depth)))
+               ((apply comp (map transformations (take depth operations))) seed)
+               "Scene"))))
 
 (defn examples [seed]
   (binding [thi.ng.geom.svg.core/*ff* (f/float 1)]
