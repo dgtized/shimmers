@@ -118,15 +118,19 @@
                       (g/dist-squared p q))
                     0))))))
 
+(defn search-radius [shape]
+  (apply + (:size (g/bounds shape))))
+
 ;; iterate on quadtree shapes until nothing to combine without an error
-(defn join-grid [region quadtree radius]
+(defn join-grid [region quadtree]
   (loop [qt quadtree]
     (if-let [shape (some (fn [s] (when (let [{:keys [combine error]} (meta s)]
                                         (and combine (not error)))
                                   s))
-                         (spatialtree/select-with-shape qt region))]
+                         (sort-by (fn [s] (Math/abs (g/area s)))
+                                  (spatialtree/select-with-shape qt region)))]
       (recur
-       (if-let [closest (find-closest qt shape radius)]
+       (if-let [closest (find-closest qt shape (search-radius shape))]
          (if-let [joined (lines/join-polygons shape closest)]
            (-> qt
                (g/delete-point (g/centroid closest))
@@ -146,18 +150,16 @@
   (let [{:keys [grid roads region]} (:landscape @state)
         separated-grid (separate-with-roads region grid roads)
         quadtree (build-tree separated-grid)
-        radius (let [x (first grid)]
-                 (* 2.0 (max (g/width x) (g/height x))))
         closest-links
         (vec (mapcat (fn [shape]
-                       (if-let [closest (find-closest quadtree shape radius)]
+                       (if-let [closest (find-closest quadtree shape (search-radius shape))]
                          [(gc/circle (g/centroid shape) 1.0)
                           (gl/line2 (g/centroid shape)
                                     (g/centroid closest))]
                          [(gc/circle (g/centroid shape) 3.0)]))
                      (filter (comp :combine meta) separated-grid)))
 
-        joined-grid (vec (join-grid region quadtree radius))]
+        joined-grid (vec (join-grid region quadtree))]
     [(csvg/group {:stroke "#339"}
        (for [cell joined-grid]
          (-> cell
