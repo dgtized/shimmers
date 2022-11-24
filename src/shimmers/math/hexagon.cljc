@@ -88,15 +88,17 @@
 
 (defn cube-rotate-cw
   "Rotate cube `pos` around `center` 60 degrees clockwise."
-  [center pos]
-  (let [[x y z] (tm/- pos center)]
-    (tm/+ center (gv/vec3 (- z) (- x) (- y)))))
+  ([pos] (cube-rotate-cw (gv/vec3) pos))
+  ([center pos]
+   (let [[x y z] (tm/- pos center)]
+     (tm/+ center (gv/vec3 (- z) (- x) (- y))))))
 
 (defn cube-rotate-ccw
   "Rotate cube `pos` around `center` 60 degrees counter-clockwise."
-  [center pos]
-  (let [[x y z] (tm/- pos center)]
-    (tm/+ center (gv/vec3 (- y) (- z) (- x)))))
+  ([pos] (cube-rotate-ccw (gv/vec3) pos))
+  ([center pos]
+   (let [[x y z] (tm/- pos center)]
+     (tm/+ center (gv/vec3 (- y) (- z) (- x))))))
 
 (defn cube-reflect-x
   "Reflect cube `pos` over the x-axis through `center`."
