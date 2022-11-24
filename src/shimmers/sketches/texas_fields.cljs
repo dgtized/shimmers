@@ -2,6 +2,7 @@
   (:require
    [reagent.core :as r]
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -69,7 +70,9 @@
 (defonce defo (debug/state))
 
 (defn debug-info [cell]
-  (reset! defo (dissoc (merge {:cell cell} (meta cell))
+  (reset! defo (dissoc (merge {:cell cell
+                               :convex (poly-detect/convex? cell)}
+                              (meta cell))
                        :on-click)))
 
 (defn separate-with-roads [region grid roads]
