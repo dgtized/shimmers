@@ -23,7 +23,7 @@
         (csvg/group {}
           poly
           (svg/text (:p circle)
-                    (str idx)
+                    (str idx "\n" hex)
                     {:font-weight "normal"
                      :font-size "0.66em"
                      :stroke "none"
