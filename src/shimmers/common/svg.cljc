@@ -130,6 +130,14 @@
                [:Z]]
               attribs)))
 
+(defn center-label [p label attribs]
+  (let [defaults {:font-weight "normal"
+                  :fill "black"
+                  :stroke "none"
+                  :alignment-baseline "middle"
+                  :text-anchor "middle"}]
+    (svg/text p label (merge defaults attribs))))
+
 (comment
   (f/format (:A svg/path-segment-formats) (gv/vec2 0.5 0.1) 1.0 1.0 1.0 (gv/vec2 1.0 0.5))
   (f/format [(f/float 2)] 0.21)

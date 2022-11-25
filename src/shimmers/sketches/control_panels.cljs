@@ -14,7 +14,6 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -115,12 +114,8 @@
             :square [(square-button p (* 2 r) 5)
                      (square-button p (* 1.75 r) 3)])
           (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
-            (svg/text p label
-                      {:text-anchor "middle"
-                       :alignment-baseline "middle"
-                       :style {:font (str "normal " text-size "px sans-serif")
-                               :font-weight "lighter"}
-                       :stroke-weight 0.25})))))
+            (csvg/center-label p label
+                               {:style {:font (str "bold " text-size "px sans-serif")}})))))
 
 (defn ridged [p r ridges theta]
   (let [d (* 0.03 r)

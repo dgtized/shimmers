@@ -8,7 +8,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -59,14 +58,9 @@
   (csvg/group {:on-click click}
     (hex/flat-hexagon->polygon hex)
     (when show-coords
-      (svg/text p
-                (apply str (interpose "," axial))
-                {:font-weight "normal"
-                 :font-size "0.66em"
-                 :stroke "none"
-                 :fill "black"
-                 :alignment-baseline "middle"
-                 :text-anchor "middle"}))))
+      (csvg/center-label p
+                         (apply str (interpose "," axial))
+                         {:font-size "0.66em"}))))
 
 (defonce ui-state (ctrl/state {:size "16x10"
                                :debug {:coords true}}))

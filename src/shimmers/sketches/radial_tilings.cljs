@@ -5,7 +5,6 @@
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]))
 
 (def width 900)
@@ -24,14 +23,9 @@
             poly (hex/flat-hexagon->polygon circle)]
         (csvg/group {}
           (vary-meta poly assoc :fill (csvg/hsl (/ idx (count hexes)) 0.8 0.8 1.0))
-          (svg/text (:p circle)
-                    (str idx "\n" hex)
-                    {:font-weight "normal"
-                     :font-size "0.5em"
-                     :stroke "none"
-                     :fill "black"
-                     :alignment-baseline "middle"
-                     :text-anchor "middle"}))))))
+          (csvg/center-label (:p circle)
+                             (str idx "\n" hex)
+                             {:font-size "0.5em"}))))))
 
 (defn scene []
   (csvg/timed
