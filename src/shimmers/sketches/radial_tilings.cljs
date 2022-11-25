@@ -16,10 +16,11 @@
 (defn hexagons []
   (let [radius (* 0.95 height)
         revolutions 6
+        hex-radius (/ radius (* 3 (+ revolutions 2.5)))
         hexes (hex/cube-spiral (gv/vec3) revolutions)]
     (for [[idx hex] (map-indexed vector hexes)]
       (let [circle (-> hex
-                       (hex/cube-hexagon (/ radius (* 3 (+ revolutions 2.5)))))
+                       (hex/cube-hexagon hex-radius))
             poly (hex/flat-hexagon->polygon circle)]
         (csvg/group {}
           (vary-meta poly assoc :fill (csvg/hsl (/ idx (count hexes)) 0.8 0.8 1.0))
