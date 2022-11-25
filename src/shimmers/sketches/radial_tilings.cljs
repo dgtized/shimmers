@@ -15,17 +15,18 @@
 
 (defn hexagons []
   (let [radius (* 0.95 height)
-        revolutions 4]
-    (for [[idx hex] (map-indexed vector (hex/cube-spiral (gv/vec3) revolutions))]
+        revolutions 6
+        hexes (hex/cube-spiral (gv/vec3) revolutions)]
+    (for [[idx hex] (map-indexed vector hexes)]
       (let [circle (-> hex
-                       (hex/cube-hexagon (/ radius (* 2 (+ revolutions 3.5)))))
+                       (hex/cube-hexagon (/ radius (* 3 (+ revolutions 2.5)))))
             poly (hex/flat-hexagon->polygon circle)]
         (csvg/group {}
-          poly
+          (vary-meta poly assoc :fill (csvg/hsl (/ idx (count hexes)) 0.8 0.8 1.0))
           (svg/text (:p circle)
                     (str idx "\n" hex)
                     {:font-weight "normal"
-                     :font-size "0.66em"
+                     :font-size "0.5em"
                      :stroke "none"
                      :fill "black"
                      :alignment-baseline "middle"
