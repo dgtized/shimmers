@@ -26,11 +26,6 @@
                          (str idx "\n" coord)
                          {:font-size "0.5em"}))))
 
-(defn vertex+midpoints [poly]
-  (let [vertices (g/vertices poly)
-        midpoints (map (fn [[p q]] (tm/mix p q 0.5)) (g/edges poly))]
-    (concat vertices midpoints)))
-
 (defn cut [poly]
   (let [vertices (g/vertices poly)
         idx-a (dr/random-int (count vertices))
@@ -57,7 +52,7 @@
 
 (defn hexagons []
   (let [radius (* 0.95 height)
-        revolutions 6
+        revolutions 12
         hex-radius (/ radius (* 3 (+ revolutions 2.5)))
         hexes (mapv (fn [hex]
                       (assoc (hex/cube-hexagon hex hex-radius)
