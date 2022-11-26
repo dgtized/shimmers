@@ -59,4 +59,11 @@
           [2 0] [2 -1] [2 -2]]
          (hex/axial-range 2))))
 
+(deftest distance
+  (is (= 0 (hex/cube-distance (gv/vec3) (gv/vec3))))
+  (is (every? (fn [p] (= 1 (hex/cube-distance (gv/vec3) p)))
+              (hex/cube-ring (gv/vec3) 1)))
+  (is (every? (fn [p] (= 2 (hex/cube-distance (gv/vec3) p)))
+              (hex/cube-ring (gv/vec3) 2))))
+
 (comment (t/run-tests))

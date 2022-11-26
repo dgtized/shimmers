@@ -133,6 +133,14 @@
        (take (* 6 radius))
        (map first)))
 
+(defn cube-distance
+  [a b]
+  (let [[q r s] (tm/- b a)]
+    (/ (+ (Math/abs q)
+          (Math/abs r)
+          (Math/abs s))
+       2)))
+
 (defn cube-spiral
   "Generate all cube coordinates spiraling out counter-clockwise from `center` to up to `radius`"
   [center radius]
