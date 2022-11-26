@@ -30,11 +30,6 @@
 
 (comment (radial-range 14 0.05))
 
-(defn factors [n k]
-  (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
-
-(comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
-
 (defn segment [t0 t1 r0 r1 attribs displacement]
   (let [{:keys [arc0 arc1 percent force]} displacement
         maybe-transformed
@@ -79,7 +74,7 @@
     "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8"]))
 
 (defn palette-sequence [palette segments]
-  (let [multiple (let [m (factors segments 10)]
+  (let [multiple (let [m (sm/factors segments 10)]
                    (if (empty? m)
                      1
                      (dr/rand-nth m)))

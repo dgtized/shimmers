@@ -105,3 +105,8 @@
 (comment
   (take 10 primes)
   (primes-between 10 50))
+
+(defn factors [n k]
+  (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
+
+(comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
