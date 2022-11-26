@@ -5,7 +5,8 @@
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 900)
 (def height 600)
@@ -16,15 +17,17 @@
   (let [radius (* 0.95 height)
         revolutions 6
         hex-radius (/ radius (* 3 (+ revolutions 2.5)))
-        hexes (hex/cube-spiral (gv/vec3) revolutions)]
-    (for [[idx hex] (map-indexed vector hexes)]
-      (let [circle (-> hex
-                       (hex/cube-hexagon hex-radius))
-            poly (hex/flat-hexagon->polygon circle)]
+        hexes (mapv (fn [hex]
+                      (assoc (hex/cube-hexagon hex hex-radius)
+                             :coord hex
+                             :ring (hex/cube-distance (gv/vec3) hex)))
+                    (hex/cube-spiral (gv/vec3) revolutions))]
+    (for [[idx {:keys [ring coord] :as hex}] (map-indexed vector hexes)]
+      (let [poly (hex/flat-hexagon->polygon hex)]
         (csvg/group {}
-          (vary-meta poly assoc :fill (csvg/hsl (/ idx (count hexes)) 0.8 0.8 1.0))
-          (csvg/center-label (:p circle)
-                             (str idx "\n" hex)
+          (vary-meta poly assoc :fill (csvg/hsl (* ring tm/PHI) 0.8 0.8 1.0))
+          (csvg/center-label (:p hex)
+                             (str idx "\n" coord)
                              {:font-size "0.5em"}))))))
 
 (defn scene []
