@@ -2,6 +2,8 @@
   (:require
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -21,6 +23,15 @@
                          (str idx "\n" coord)
                          {:font-size "0.5em"}))))
 
+(defn split-hex [freq idx {:keys [ring coord] :as hex}]
+  (let [i (mod idx freq)
+        poly (hex/flat-hexagon->polygon hex)]
+    (csvg/group {}
+      (vary-meta poly assoc :fill (csvg/hsl (* i tm/PHI) 0.8 0.8 1.0))
+      (csvg/center-label (:p hex)
+                         (str idx "\n" coord)
+                         {:font-size "0.5em"}))))
+
 (defn hexagons []
   (let [radius (* 0.95 height)
         revolutions 6
@@ -32,7 +43,12 @@
                     (hex/cube-spiral (gv/vec3) revolutions))]
     #_(map-indexed individual hexes)
     (->> (partition-by :ring hexes)
-         (mapcat (fn [ring] (map-indexed individual ring))))))
+         (mapcat (fn [ring]
+                   (let [n (count ring)
+                         freq (if (= n 1)
+                                1
+                                (dr/rand-nth (sm/factors n 12)))]
+                     (map-indexed (partial split-hex freq) ring)))))))
 
 (defn scene []
   (csvg/timed
