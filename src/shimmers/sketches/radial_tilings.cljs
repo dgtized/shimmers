@@ -33,9 +33,10 @@
     (if (and (not= idx-a idx-b)
              (not (or (= idx-b (mod (inc idx-a) (count vertices)))
                       (= idx-b (mod (dec idx-a) (count vertices))))))
-      (lines/cut-polygon poly
-                         (gl/line2 (nth vertices idx-a)
-                                   (nth vertices idx-b)))
+      (let [cut-line (gl/line2 (nth vertices idx-a)
+                               (nth vertices idx-b))]
+        (conj (lines/cut-polygon poly cut-line)
+              (vary-meta cut-line assoc :stroke-width 2.0)))
       (recur poly))))
 
 (defn slice-hex [operator freq idx {:keys [ring coord] :as hex}]
