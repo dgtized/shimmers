@@ -13,6 +13,14 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn individual [idx {:keys [ring coord] :as hex}]
+  (let [poly (hex/flat-hexagon->polygon hex)]
+    (csvg/group {}
+      (vary-meta poly assoc :fill (csvg/hsl (* ring tm/PHI) 0.8 0.8 1.0))
+      (csvg/center-label (:p hex)
+                         (str idx "\n" coord)
+                         {:font-size "0.5em"}))))
+
 (defn hexagons []
   (let [radius (* 0.95 height)
         revolutions 6
@@ -22,13 +30,9 @@
                              :coord hex
                              :ring (hex/cube-distance (gv/vec3) hex)))
                     (hex/cube-spiral (gv/vec3) revolutions))]
-    (for [[idx {:keys [ring coord] :as hex}] (map-indexed vector hexes)]
-      (let [poly (hex/flat-hexagon->polygon hex)]
-        (csvg/group {}
-          (vary-meta poly assoc :fill (csvg/hsl (* ring tm/PHI) 0.8 0.8 1.0))
-          (csvg/center-label (:p hex)
-                             (str idx "\n" coord)
-                             {:font-size "0.5em"}))))))
+    #_(map-indexed individual hexes)
+    (->> (partition-by :ring hexes)
+         (mapcat (fn [ring] (map-indexed individual ring))))))
 
 (defn scene []
   (csvg/timed
