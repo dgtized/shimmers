@@ -26,16 +26,31 @@
                          (str idx "\n" coord)
                          {:font-size "0.5em"}))))
 
-(defn cut [poly]
+(defn same-or-adjacent? [n-vertices idx-a idx-b]
+  (or (= idx-a idx-b)
+      (= idx-b (mod (inc idx-a) n-vertices))
+      (= idx-b (mod (dec idx-a) n-vertices))))
+
+(defn random-cut [poly i]
   (let [vertices (g/vertices poly)
         idx-a (dr/random-int (count vertices))
         idx-b (dr/random-int (count vertices))]
-    (if (or (= idx-a idx-b)
-            (= idx-b (mod (inc idx-a) (count vertices)))
-            (= idx-b (mod (dec idx-a) (count vertices))))
-      (recur poly)
+    (if (same-or-adjacent? (count vertices) idx-a idx-b)
+      (recur poly i)
       (let [cut-line (gl/line2 (nth vertices idx-a)
                                (nth vertices idx-b))]
+        (conj (lines/cut-polygon poly cut-line)
+              (vary-meta cut-line assoc :stroke-width 2.0))))))
+
+(defn seq-cut [poly base dist]
+  (let [vertices (g/vertices poly)
+        idx-a base
+        idx-b (+ base dist)
+        n-vertices (count vertices)]
+    (if (same-or-adjacent? n-vertices idx-a idx-b)
+      (recur poly base (inc dist))
+      (let [cut-line (gl/line2 (nth vertices (mod idx-a n-vertices))
+                               (nth vertices (mod idx-b n-vertices)))]
         (conj (lines/cut-polygon poly cut-line)
               (vary-meta cut-line assoc :stroke-width 2.0))))))
 
@@ -44,7 +59,7 @@
         poly (hex/flat-hexagon->polygon hex)]
     (if true
       (csvg/group {}
-        (operator poly))
+        (operator poly i))
       (csvg/group {}
         (vary-meta poly assoc :fill (csvg/hsl (* i tm/PHI) 0.8 0.8 1.0))
         (csvg/center-label (:p hex)
@@ -67,7 +82,7 @@
                          freq (if (= n 1)
                                 1
                                 (dr/rand-nth (sm/factors n 12)))
-                         rule (dr/rand-nth [cut])]
+                         rule (dr/rand-nth [(fn [p i] (seq-cut p i (dr/random-int 2 4)))])]
                      (map-indexed (partial slice-hex rule freq) ring)))))))
 
 (defn scene []
