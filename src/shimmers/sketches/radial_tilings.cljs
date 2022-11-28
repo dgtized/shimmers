@@ -89,6 +89,15 @@
       (rule poly i)
       poly)))
 
+(defn polyrythm [rule-a rule-b freq]
+  (let [half-freq (int (/ freq 2))]
+    (fn [poly i]
+      (cond (zero? i)
+            (rule-a poly i)
+            (= i half-freq)
+            (rule-b poly i)
+            :else poly))))
+
 (defn change-hex [operator freq idx hex]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
@@ -115,6 +124,9 @@
                                 (dr/weighted {inset-rectangle 1
                                               (on-zeros inset-circle) 1
                                               (on-zeros inset-pointy) 1
+                                              (polyrythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
+                                              (polyrythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
+                                              (polyrythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
                                               (fn [p i] (seq-cut p i freq)) 1}))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
