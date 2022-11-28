@@ -60,7 +60,7 @@
       (let [cut-line (gl/line2 (nth vertices (mod idx-a n-vertices))
                                (nth vertices (mod idx-b n-vertices)))]
         (conj (lines/cut-polygon poly cut-line)
-              (vary-meta cut-line assoc :stroke-width 1.5))))))
+              (vary-meta cut-line assoc :stroke-width 1))))))
 
 (defn inset-circle [poly i]
   (let [p (g/centroid poly)
@@ -93,9 +93,8 @@
     (csvg/group {}
       (operator poly i))))
 
-(defn hexagons []
+(defn hexagons [revolutions]
   (let [radius (* 0.95 height)
-        revolutions 12
         hex-radius (/ radius (* 3 (+ revolutions 2.5)))
         hexes (mapv (fn [hex]
                       (assoc (hex/cube-hexagon hex hex-radius)
@@ -123,9 +122,9 @@
               :height height
               :stroke "black"
               :fill "white"
-              :stroke-width 0.5}
+              :stroke-width 0.66}
      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-       (hexagons)))))
+       (hexagons 13)))))
 
 (sketch/definition radial-tilings
   {:created-at "2022-11-24"
