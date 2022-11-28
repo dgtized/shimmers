@@ -55,24 +55,25 @@
         (conj (lines/cut-polygon poly cut-line)
               (vary-meta cut-line assoc :stroke-width 2.0))))))
 
-(defn inset [poly i]
-  (if (zero? i)
-    (let [p (g/centroid poly)
-          [a b] (first (g/edges poly))]
-      (gc/circle p (g/dist p (tm/mix a b 0.5))))
-    poly))
+(defn inset [poly _i]
+  (let [p (g/centroid poly)
+        [a b] (first (g/edges poly))]
+    (gc/circle p (g/dist p (tm/mix a b 0.5)))))
 
-(defn slice-hex [operator freq idx {:keys [ring coord] :as hex}]
+(defn coord-label [poly idx {:keys [p coord]}]
+  (csvg/group {}
+    (vary-meta poly assoc :fill (csvg/hsl (* idx tm/PHI) 0.8 0.8 1.0))
+    (csvg/center-label p
+                       (str idx "\n" coord)
+                       {:font-size "0.5em"})))
+
+(defn slice-hex [operator freq idx hex]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
-    (if true
+    (if (zero? i)
       (csvg/group {}
         (operator poly i))
-      (csvg/group {}
-        (vary-meta poly assoc :fill (csvg/hsl (* i tm/PHI) 0.8 0.8 1.0))
-        (csvg/center-label (:p hex)
-                           (str idx "\n" coord)
-                           {:font-size "0.5em"})))))
+      poly)))
 
 (defn hexagons []
   (let [radius (* 0.95 height)
@@ -90,7 +91,7 @@
                          freq (if (= n 1)
                                 1
                                 (dr/rand-nth (sm/factors n 12)))
-                         rule (dr/rand-nth [inset (fn [p i] (seq-cut p i (dr/random-int 2 4)))])]
+                         rule (dr/rand-nth [inset (fn [p i] (seq-cut p i (dr/random-int 2 5)))])]
                      (map-indexed (partial slice-hex rule freq) ring)))))))
 
 (defn scene []
