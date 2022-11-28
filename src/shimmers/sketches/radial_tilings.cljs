@@ -48,17 +48,22 @@
         idx-a base
         idx-b (+ base dist)
         n-vertices (count vertices)]
-    (if (same-or-adjacent? n-vertices idx-a idx-b)
+    (cond
+      (> base dist) poly
+      (same-or-adjacent? n-vertices idx-a idx-b)
       (recur poly base (inc dist))
+      :else
       (let [cut-line (gl/line2 (nth vertices (mod idx-a n-vertices))
                                (nth vertices (mod idx-b n-vertices)))]
         (conj (lines/cut-polygon poly cut-line)
-              (vary-meta cut-line assoc :stroke-width 2.0))))))
+              (vary-meta cut-line assoc :stroke-width 1.5))))))
 
-(defn inset [poly _i]
+(defn inset [poly i]
   (let [p (g/centroid poly)
         [a b] (first (g/edges poly))]
-    (gc/circle p (g/dist p (tm/mix a b 0.5)))))
+    (if (zero? i)
+      (gc/circle p (g/dist p (tm/mix a b 0.5)))
+      poly)))
 
 (defn coord-label [poly idx {:keys [p coord]}]
   (csvg/group {}
@@ -70,10 +75,8 @@
 (defn slice-hex [operator freq idx hex]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
-    (if (zero? i)
-      (csvg/group {}
-        (operator poly i))
-      poly)))
+    (csvg/group {}
+      (operator poly i))))
 
 (defn hexagons []
   (let [radius (* 0.95 height)
