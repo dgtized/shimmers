@@ -8,6 +8,7 @@
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -54,6 +55,13 @@
         (conj (lines/cut-polygon poly cut-line)
               (vary-meta cut-line assoc :stroke-width 2.0))))))
 
+(defn inset [poly i]
+  (if (zero? i)
+    (let [p (g/centroid poly)
+          [a b] (first (g/edges poly))]
+      (gc/circle p (g/dist p (tm/mix a b 0.5))))
+    poly))
+
 (defn slice-hex [operator freq idx {:keys [ring coord] :as hex}]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
@@ -82,7 +90,7 @@
                          freq (if (= n 1)
                                 1
                                 (dr/rand-nth (sm/factors n 12)))
-                         rule (dr/rand-nth [(fn [p i] (seq-cut p i (dr/random-int 2 4)))])]
+                         rule (dr/rand-nth [inset (fn [p i] (seq-cut p i (dr/random-int 2 4)))])]
                      (map-indexed (partial slice-hex rule freq) ring)))))))
 
 (defn scene []
