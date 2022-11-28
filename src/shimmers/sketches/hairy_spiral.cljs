@@ -1,6 +1,6 @@
 (ns shimmers.sketches.hairy-spiral
   (:require
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]

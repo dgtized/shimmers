@@ -1,6 +1,6 @@
 (ns shimmers.sketches.radial-wings
   (:require
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]

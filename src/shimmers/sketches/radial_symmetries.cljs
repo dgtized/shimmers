@@ -2,7 +2,7 @@
   (:require
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]

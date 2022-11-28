@@ -1,7 +1,7 @@
 (ns shimmers.sketches.morse-patterns
   (:require
    [shimmers.algorithm.line-clipping :as clip]
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]

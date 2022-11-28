@@ -2,7 +2,7 @@
   (:require
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.poisson-disc-sampling :as pds]
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]

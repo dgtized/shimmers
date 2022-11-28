@@ -2,7 +2,7 @@
   (:require
    [shimmers.algorithm.mosaic :as mosaic]
    [shimmers.common.palette :as palette]
-   [shimmers.common.svg :as csvg]
+   [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
