@@ -140,7 +140,7 @@
                                               (polyrythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
                                               (polyrythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
                                               (polyrythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
-                                              (fn [p i] (seq-cut p i freq)) 1}))]
+                                              (fn [p i] (seq-cut p i freq)) 4}))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
 (defn scene []
