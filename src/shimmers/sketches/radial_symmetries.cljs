@@ -1,4 +1,4 @@
-(ns shimmers.sketches.radial-tilings
+(ns shimmers.sketches.radial-symmetries
   (:require
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
@@ -153,9 +153,9 @@
      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
        (hexagons 17)))))
 
-(sketch/definition radial-tilings
+(sketch/definition radial-symmetries
   {:created-at "2022-11-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :radial-tilings)
+  (ctrl/mount (view-sketch/page-for scene :radial-symmetries)
               "sketch-host"))

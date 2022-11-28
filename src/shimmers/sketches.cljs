@@ -124,7 +124,7 @@
    shimmers.sketches.radar
    shimmers.sketches.radial-expansion
    shimmers.sketches.radial-mosaic
-   shimmers.sketches.radial-tilings
+   shimmers.sketches.radial-symmetries
    shimmers.sketches.radial-wings
    shimmers.sketches.random-point-field
    shimmers.sketches.random-walk
