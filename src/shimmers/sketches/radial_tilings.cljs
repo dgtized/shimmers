@@ -1,6 +1,7 @@
 (ns shimmers.sketches.radial-tilings
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
@@ -11,6 +12,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -58,12 +60,16 @@
         (conj (lines/cut-polygon poly cut-line)
               (vary-meta cut-line assoc :stroke-width 1.5))))))
 
-(defn inset [poly i]
+(defn inset-circle [poly i]
   (let [p (g/centroid poly)
         [a b] (first (g/edges poly))]
     (if (zero? i)
       (gc/circle p (g/dist p (tm/mix a b 0.5)))
       poly)))
+
+(defn inset-rectangle [poly i]
+  (let [[a b _ d e _] (cs/rotate i (g/vertices poly))]
+    (gp/polygon2 a b d e)))
 
 (defn coord-label [poly idx {:keys [p coord]}]
   (csvg/group {}
@@ -72,7 +78,7 @@
                        (str idx "\n" coord)
                        {:font-size "0.5em"})))
 
-(defn slice-hex [operator freq idx hex]
+(defn change-hex [operator freq idx hex]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
     (csvg/group {}
@@ -94,8 +100,10 @@
                          freq (if (= n 1)
                                 1
                                 (dr/rand-nth (sm/factors n 12)))
-                         rule (dr/rand-nth [inset (fn [p i] (seq-cut p i (dr/random-int 2 5)))])]
-                     (map-indexed (partial slice-hex rule freq) ring)))))))
+                         rule (dr/weighted {inset-rectangle 1
+                                            inset-circle 1
+                                            (fn [p i] (seq-cut p i (dr/random-int 2 5))) 1})]
+                     (map-indexed (partial change-hex rule freq) ring)))))))
 
 (defn scene []
   (csvg/timed
