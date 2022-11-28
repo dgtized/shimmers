@@ -62,23 +62,19 @@
         (conj (lines/cut-polygon poly cut-line)
               (vary-meta cut-line assoc :stroke-width 1))))))
 
-(defn inset-circle [poly i]
+(defn inset-circle [poly _i]
   (let [p (g/centroid poly)
         [a b] (first (g/edges poly))]
-    (if (zero? i)
-      (gc/circle p (g/dist p (tm/mix a b 0.5)))
-      poly)))
+    (gc/circle p (g/dist p (tm/mix a b 0.5)))))
 
 (defn inset-rectangle [poly i]
   (let [[a b _ d e _] (cs/rotate i (g/vertices poly))]
     (gp/polygon2 a b d e)))
 
-(defn inset-pointy [poly i]
-  (if (zero? i)
-    (-> poly
-        (geometry/rotate-around-centroid (/ eq/TAU 12))
-        (g/scale-size (/ tm/SQRT3 2)))
-    poly))
+(defn inset-pointy [poly _i]
+  (-> poly
+      (geometry/rotate-around-centroid (/ eq/TAU 12))
+      (g/scale-size (/ tm/SQRT3 2))))
 
 (defn coord-label [poly idx {:keys [p coord]}]
   (csvg/group {}
@@ -86,6 +82,12 @@
     (csvg/center-label p
                        (str idx "\n" coord)
                        {:font-size "0.5em"})))
+
+(defn on-zeros [rule]
+  (fn [poly i]
+    (if (zero? i)
+      (rule poly i)
+      poly)))
 
 (defn change-hex [operator freq idx hex]
   (let [i (mod idx freq)
@@ -111,8 +113,8 @@
                          rule (if (= n 1)
                                 identity
                                 (dr/weighted {inset-rectangle 1
-                                              inset-circle 1
-                                              inset-pointy 1
+                                              (on-zeros inset-circle) 1
+                                              (on-zeros inset-pointy) 1
                                               (fn [p i] (seq-cut p i freq)) 1}))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
@@ -124,7 +126,7 @@
               :fill "white"
               :stroke-width 0.66}
      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-       (hexagons 13)))))
+       (hexagons 17)))))
 
 (sketch/definition radial-tilings
   {:created-at "2022-11-24"
