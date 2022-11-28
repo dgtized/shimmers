@@ -107,7 +107,7 @@
                    (let [n (count ring)
                          freq (if (= n 1)
                                 1
-                                (dr/rand-nth (sm/factors n 6)))
+                                (dr/rand-nth (butlast (sm/factors n 11))))
                          rule (if (= n 1)
                                 identity
                                 (dr/weighted {inset-rectangle 1
