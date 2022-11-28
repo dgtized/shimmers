@@ -98,6 +98,15 @@
             (rule-b poly i)
             :else poly))))
 
+(defn deeper [rule freq]
+  (let [dir (dr/rand-nth [(fn [i] (inc (- freq i)))
+                          identity])]
+    (fn [poly i]
+      (let [polygon (rule poly i)]
+        (csvg/group {}
+          (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
+            (g/scale-size polygon (- 1.0 s))))))))
+
 (defn change-hex [operator freq idx hex]
   (let [i (mod idx freq)
         poly (hex/flat-hexagon->polygon hex)]
@@ -125,6 +134,9 @@
                                               identity 1
                                               (on-zeros inset-circle) 1
                                               (on-zeros inset-pointy) 1
+                                              (deeper inset-circle freq) (if (<= freq 8) 1 0)
+                                              (deeper inset-pointy freq) (if (<= freq 8) 1 0)
+                                              (deeper identity freq) (if (<= freq 8) 1 0)
                                               (polyrythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
                                               (polyrythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
                                               (polyrythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
