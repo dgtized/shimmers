@@ -60,7 +60,7 @@
       (let [cut-line (gl/line2 (nth vertices (mod idx-a n-vertices))
                                (nth vertices (mod idx-b n-vertices)))]
         (conj (lines/cut-polygon poly cut-line)
-              (vary-meta cut-line assoc :stroke-width 1))))))
+              #_(vary-meta cut-line assoc :stroke-width 1))))))
 
 (defn inset-circle [poly _i]
   (let [p (g/centroid poly)
@@ -122,6 +122,7 @@
                          rule (if (= n 1)
                                 identity
                                 (dr/weighted {inset-rectangle 1
+                                              identity 1
                                               (on-zeros inset-circle) 1
                                               (on-zeros inset-pointy) 1
                                               (polyrythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
