@@ -99,8 +99,8 @@
             :else poly))))
 
 (defn deeper [rule freq]
-  (let [dir (dr/rand-nth [(fn [i] (inc (- freq i)))
-                          identity])]
+  (let [dir (dr/rand-nth [(fn [i] (- freq i))
+                          inc])]
     (fn [poly i]
       (let [polygon (rule poly i)]
         (csvg/group {}
