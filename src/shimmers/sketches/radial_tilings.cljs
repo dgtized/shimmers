@@ -108,11 +108,13 @@
                    (let [n (count ring)
                          freq (if (= n 1)
                                 1
-                                (dr/rand-nth (sm/factors n 12)))
-                         rule (dr/weighted {inset-rectangle 1
-                                            inset-circle 1
-                                            inset-pointy 1
-                                            (fn [p i] (seq-cut p i (dr/random-int 2 5))) 1})]
+                                (dr/rand-nth (sm/factors n 6)))
+                         rule (if (= n 1)
+                                identity
+                                (dr/weighted {inset-rectangle 1
+                                              inset-circle 1
+                                              inset-pointy 1
+                                              (fn [p i] (seq-cut p i freq)) 1}))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
 (defn scene []
