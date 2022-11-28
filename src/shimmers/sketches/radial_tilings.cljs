@@ -6,6 +6,8 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -71,6 +73,13 @@
   (let [[a b _ d e _] (cs/rotate i (g/vertices poly))]
     (gp/polygon2 a b d e)))
 
+(defn inset-pointy [poly i]
+  (if (zero? i)
+    (-> poly
+        (geometry/rotate-around-centroid (/ eq/TAU 12))
+        (g/scale-size (/ tm/SQRT3 2)))
+    poly))
+
 (defn coord-label [poly idx {:keys [p coord]}]
   (csvg/group {}
     (vary-meta poly assoc :fill (csvg/hsl (* idx tm/PHI) 0.8 0.8 1.0))
@@ -102,6 +111,7 @@
                                 (dr/rand-nth (sm/factors n 12)))
                          rule (dr/weighted {inset-rectangle 1
                                             inset-circle 1
+                                            inset-pointy 1
                                             (fn [p i] (seq-cut p i (dr/random-int 2 5))) 1})]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
