@@ -15,6 +15,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -70,6 +71,11 @@
 (defn inset-rectangle [poly i]
   (let [[a b _ d e _] (cs/rotate i (g/vertices poly))]
     (gp/polygon2 a b d e)))
+
+(defn inset-triangles [poly i]
+  (let [c (g/centroid poly)]
+    (map (fn [[a b]] (gt/triangle2 a b c))
+         (g/edges poly))))
 
 (defn inset-pointy [poly _i]
   (-> poly
@@ -132,6 +138,7 @@
                                 identity
                                 (dr/weighted {inset-rectangle 1
                                               identity 1
+                                              (on-zeros inset-triangles) 1
                                               (on-zeros inset-circle) 1
                                               (on-zeros inset-pointy) 1
                                               (deeper inset-circle freq) (if (<= freq 8) 1 0)
