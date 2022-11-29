@@ -42,7 +42,7 @@
    shimmers.sketches.dispersion
    shimmers.sketches.displacements-inbetween
    shimmers.sketches.dithering
-   ;; shimmers.sketches.dreamcatcher
+   shimmers.sketches.dreamcatcher
    shimmers.sketches.emitters
    shimmers.sketches.epicenter-of-impact
    shimmers.sketches.falling-gradients

@@ -6,6 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -15,36 +16,28 @@
 (defonce defo (debug/state))
 
 (defn setup []
-  (q/frame-rate 1.0)
   (q/color-mode :hsl 1.0)
   (let [shape (gc/circle (cq/rel-h 0.4))
         points (g/vertices shape 12)]
     {:shape shape
-     :points (conj points (first points))}))
+     :points (cons (first points) (reverse points))}))
 
 (defn between-pair? [last-angle]
   (fn [[a b]]
-    (sm/radians-between? (g/heading b) (g/heading a) last-angle)))
+    (when (sm/radians-between? (g/heading a) (g/heading b) last-angle)
+      [a b])))
 
-(defn next-point [points]
-  (let [[last-point & preceding] (reverse points)
+(defn next-row [points]
+  (let [[last-point & preceding] points
         angle (g/heading last-point)
-        pairs (drop 1 (partition 2 1 preceding))
-        pair (first (filter (between-pair? angle) pairs))
-        [a b] (or (seq pair) (last pairs))
-        point (tm/mix (tm/mix a b 0.5) (gv/vec2) 0.2)]
-    (reset! defo {:angle angle
-                  :pairs (map (fn [p] [((between-pair? angle) p) (map g/heading p)]) pairs)
-                  :pair (seq pair)
-                  :last (last pairs)})
-    (if (tm/delta= point last-point)
-      a
-      point)))
+        preceding (take-while (fn [p] (<= (g/heading p) (+ eq/TAU angle))) preceding)]
+    (mapcat (fn [[a b]] [a (tm/mix (tm/mix a b 0.5) (gv/vec2) 0.2) b])
+            (partition 2 1 (conj preceding last-point)))))
 
 (defn update-state [{:keys [points] :as state}]
-  (let [point (next-point points)]
-    (if (not (tm/delta= point (last points)))
-      (update state :points conj point)
+  (let [row (next-row points)]
+    (if (< (count points) 1000)
+      (update state :points concat row)
       state)))
 
 (defn draw [{:keys [points]}]
