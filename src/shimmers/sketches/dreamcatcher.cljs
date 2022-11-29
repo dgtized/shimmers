@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -32,17 +33,20 @@
 
 (defn update-state []
   (let [shape (gc/circle (cq/rel-h 0.48))
-        points (g/vertices shape 16)]
+        points (g/vertices shape 16)
+        fc (q/frame-count)]
     (dreamloop {:points points
                 :row points
                 :limit 1000
-                :decay (+ 0.08 (* 0.04 (Math/sin (/ (q/frame-count) 120))))})))
+                :rotation (* eq/TAU (Math/sin (/ fc 400)))
+                :decay (+ 0.08 (* 0.05 (Math/sin (/ fc 160))))})))
 
-(defn draw [{:keys [points]}]
+(defn draw [{:keys [points rotation]}]
   (q/background 1.0)
   (q/no-fill)
   (q/with-translation (cq/rel-vec 0.5 0.5)
-    (cq/draw-path points)))
+    (q/with-rotation [rotation]
+      (cq/draw-path points))))
 
 (sketch/defquil dreamcatcher
   :created-at "2021-10-11"
