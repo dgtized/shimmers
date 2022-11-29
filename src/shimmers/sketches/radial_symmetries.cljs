@@ -126,6 +126,25 @@
     (csvg/group {}
       (operator poly i))))
 
+(defn generate-rule [n]
+  (let [freq (dr/rand-nth (butlast (sm/factors n 11)))]
+    (if (= n 1)
+      [1 identity]
+      [freq
+       (dr/weighted {inset-rectangle 1
+                     identity 1
+                     (on-zeros inset-triangles) 1
+                     (on-zeros inset-circle) 1
+                     (on-zeros inset-pointy) 1
+                     (deeper inset-circle freq) (if (<= freq 8) 1 0)
+                     (deeper inset-pointy freq) (if (<= freq 8) 1 0)
+                     (deeper identity freq) (if (<= freq 8) 1 0)
+                     (pair-rythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
+                     (pair-rythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
+                     (pair-rythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
+                     (polyrythm freq) 2
+                     (fn [p i] (seq-cut p i freq)) 4})])))
+
 (defn hexagons [revolutions]
   (let [radius (* 0.95 height)
         hex-radius (/ radius (* 3 (+ revolutions 2.5)))
@@ -137,25 +156,7 @@
     #_(map-indexed individual hexes)
     (->> (partition-by :ring hexes)
          (mapcat (fn [ring]
-                   (let [n (count ring)
-                         freq (if (= n 1)
-                                1
-                                (dr/rand-nth (butlast (sm/factors n 11))))
-                         rule (if (= n 1)
-                                identity
-                                (dr/weighted {inset-rectangle 1
-                                              identity 1
-                                              (on-zeros inset-triangles) 1
-                                              (on-zeros inset-circle) 1
-                                              (on-zeros inset-pointy) 1
-                                              (deeper inset-circle freq) (if (<= freq 8) 1 0)
-                                              (deeper inset-pointy freq) (if (<= freq 8) 1 0)
-                                              (deeper identity freq) (if (<= freq 8) 1 0)
-                                              (pair-rythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
-                                              (pair-rythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
-                                              (pair-rythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
-                                              (polyrythm freq) 2
-                                              (fn [p i] (seq-cut p i freq)) 4}))]
+                   (let [[freq rule] (generate-rule (count ring))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
 (defn scene []
