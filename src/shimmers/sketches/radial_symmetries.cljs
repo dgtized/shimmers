@@ -95,7 +95,9 @@
       (rule poly i)
       poly)))
 
-(defn polyrythm [rule-a rule-b freq]
+(def shape-rules [identity inset-pointy inset-circle inset-triangles inset-rectangle])
+
+(defn pair-rythm [rule-a rule-b freq]
   (let [half-freq (int (/ freq 2))]
     (fn [poly i]
       (cond (zero? i)
@@ -103,6 +105,11 @@
             (= i half-freq)
             (rule-b poly i)
             :else poly))))
+
+(defn polyrythm [freq]
+  (let [patterns (repeatedly freq #(dr/rand-nth shape-rules))]
+    (fn [poly i]
+      ((nth patterns i) poly i))))
 
 (defn deeper [rule freq]
   (let [dir (dr/rand-nth [(fn [i] (- freq i))
@@ -144,9 +151,10 @@
                                               (deeper inset-circle freq) (if (<= freq 8) 1 0)
                                               (deeper inset-pointy freq) (if (<= freq 8) 1 0)
                                               (deeper identity freq) (if (<= freq 8) 1 0)
-                                              (polyrythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
-                                              (polyrythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
-                                              (polyrythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
+                                              (pair-rythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
+                                              (pair-rythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
+                                              (pair-rythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
+                                              (polyrythm freq) 2
                                               (fn [p i] (seq-cut p i freq)) 4}))]
                      (map-indexed (partial change-hex rule freq) ring)))))))
 
