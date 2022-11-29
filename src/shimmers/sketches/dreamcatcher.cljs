@@ -15,10 +15,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [shape (gc/circle (cq/rel-h 0.48))
-        points (g/vertices shape 16)]
-    {:points points
-     :row points}))
+  {})
 
 (defn next-row [row decay]
   (map (fn [[a b]] [(tm/mix (tm/mix a b 0.5) (gv/vec2) decay) b])
@@ -33,10 +30,13 @@
                  (assoc :row (mapv first added-row)))))
     state))
 
-(defn update-state [state]
-  (dreamloop (assoc state
-                    :limit 1000
-                    :decay 0.05)))
+(defn update-state []
+  (let [shape (gc/circle (cq/rel-h 0.48))
+        points (g/vertices shape 16)]
+    (dreamloop {:points points
+                :row points
+                :limit 1000
+                :decay (+ 0.08 (* 0.04 (Math/sin (/ (q/frame-count) 120))))})))
 
 (defn draw [{:keys [points]}]
   (q/background 1.0)
