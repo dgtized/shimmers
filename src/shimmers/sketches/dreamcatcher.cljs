@@ -17,25 +17,28 @@
   (q/color-mode :hsl 1.0)
   (let [shape (gc/circle (cq/rel-h 0.48))
         points (g/vertices shape 16)]
-    {:shape shape
-     :points points
+    {:points points
      :row points}))
 
-(defn next-row [row]
-  (map (fn [[a b]] [(tm/mix (tm/mix a b 0.5) (gv/vec2) 0.1) b])
+(defn next-row [row decay]
+  (map (fn [[a b]] [(tm/mix (tm/mix a b 0.5) (gv/vec2) decay) b])
        (partition 2 1 (conj row (first row)))))
 
-(defn update-state [{:keys [points row] :as state}]
-  (if (< (count points) 1000)
-    (let [added-row (next-row row)]
-      (-> state
-          (update :points concat
-                  (cons (last (last added-row)) (mapcat identity added-row)))
-          (assoc :row (mapv first added-row))))
-    state)
-  )
+(defn dreamloop [{:keys [points row limit decay] :as state}]
+  (if (< (count points) limit)
+    (let [added-row (next-row row decay)]
+      (recur (-> state
+                 (update :points concat
+                         (cons (last (last added-row)) (mapcat identity added-row)))
+                 (assoc :row (mapv first added-row)))))
+    state))
 
-(defn draw [{:keys [points row]}]
+(defn update-state [state]
+  (dreamloop (assoc state
+                    :limit 1000
+                    :decay 0.05)))
+
+(defn draw [{:keys [points]}]
   (q/background 1.0)
   (q/no-fill)
   (q/with-translation (cq/rel-vec 0.5 0.5)
