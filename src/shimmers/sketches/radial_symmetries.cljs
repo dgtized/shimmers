@@ -72,10 +72,14 @@
   (let [[a b _ d e _] (cs/rotate i (g/vertices poly))]
     (gp/polygon2 a b d e)))
 
-(defn inset-triangles [poly i]
+(defn inset-triangles [poly _i]
   (let [c (g/centroid poly)]
     (map (fn [[a b]] (gt/triangle2 a b c))
          (g/edges poly))))
+
+(defn deeper-triangles [scale]
+  (fn [poly i]
+    (mapcat (fn [s] [s (g/scale-size s scale)]) (inset-triangles poly i))))
 
 (defn inset-pointy [poly _i]
   (-> poly
@@ -95,7 +99,9 @@
       (rule poly i)
       poly)))
 
-(def shape-rules [identity inset-pointy inset-circle inset-triangles inset-rectangle])
+(def shape-rules [identity inset-pointy inset-circle inset-triangles inset-rectangle
+                  (deeper-triangles 0.4)
+                  (deeper-triangles 0.5)])
 
 (defn pair-rythm [rule-a rule-b freq]
   (let [half-freq (int (/ freq 2))]
@@ -136,6 +142,8 @@
                      (on-zeros inset-triangles) 1
                      (on-zeros inset-circle) 1
                      (on-zeros inset-pointy) 1
+                     (on-zeros (deeper-triangles 0.4)) 1
+                     (on-zeros (deeper-triangles 0.5)) 1
                      (deeper inset-circle freq) (if (<= freq 8) 1 0)
                      (deeper inset-pointy freq) (if (<= freq 8) 1 0)
                      (deeper identity freq) (if (<= freq 8) 1 0)
