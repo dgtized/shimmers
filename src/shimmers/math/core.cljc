@@ -44,7 +44,7 @@
   (mix-mod a b t tm/TWO_PI))
 
 (defn mod-between?
-  "Check if `a` < `t` < `b` in a modular space `m`."
+  "Check if `a` < `t` <= `b` in a modular space `m`."
   ([a b t] (mod-between? 1.0 a b t))
   ([m a b t]
    (let [a' (mod a m)
@@ -52,10 +52,10 @@
          t' (mod t m)]
      (if (< a' b')
        (< a' t' b')
-       (or (< a' t') (< t' b'))))))
+       (or (< a' t') (<= t' b'))))))
 
 (defn radians-between?
-  "Check if `a` < `t` < `b` in a modular space 2π. Used to see if angle `t` is
+  "Check if `a` < `t` <= `b` in a modular space 2π. Used to see if angle `t` is
   between `a` and `b` as ordered."
   [a b t]
   (mod-between? tm/TWO_PI a b t))
