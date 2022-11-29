@@ -15,22 +15,23 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [shape (gc/circle (cq/rel-h 0.4))
-        points (g/vertices shape 12)]
+  (let [shape (gc/circle (cq/rel-h 0.48))
+        points (g/vertices shape 16)]
     {:shape shape
-     :points (conj points (first points))
-     :row (conj points (first points))}))
+     :points points
+     :row points}))
 
 (defn next-row [row]
-  (map (fn [[a b]] [a (tm/mix (tm/mix a b 0.5) (gv/vec2) 0.1) b])
+  (map (fn [[a b]] [(tm/mix (tm/mix a b 0.5) (gv/vec2) 0.1) b])
        (partition 2 1 (conj row (first row)))))
 
 (defn update-state [{:keys [points row] :as state}]
   (if (< (count points) 1000)
     (let [added-row (next-row row)]
       (-> state
-          (update :points concat (mapcat identity added-row))
-          (assoc :row (mapv second added-row))))
+          (update :points concat
+                  (cons (last (last added-row)) (mapcat identity added-row)))
+          (assoc :row (mapv first added-row))))
     state)
   )
 
