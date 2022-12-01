@@ -99,9 +99,14 @@
       (rule poly i)
       poly)))
 
-(def shape-rules [identity inset-pointy inset-circle inset-triangles inset-rectangle
-                  (deeper-triangles 0.4)
-                  (deeper-triangles 0.5)])
+(def shape-rules
+  [identity
+   inset-pointy
+   inset-circle
+   inset-triangles
+   inset-rectangle
+   (deeper-triangles 0.4)
+   (deeper-triangles 0.5)])
 
 (defn pair-rythm [rule-a rule-b freq]
   (let [half-freq (int (/ freq 2))]
