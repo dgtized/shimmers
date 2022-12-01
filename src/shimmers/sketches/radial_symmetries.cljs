@@ -153,9 +153,9 @@
                      (deeper inset-circle freq) (if (<= freq 8) 1 0)
                      (deeper inset-pointy freq) (if (<= freq 8) 1 0)
                      (deeper identity freq) (if (<= freq 8) 1 0)
-                     (pair-rythm inset-circle inset-pointy freq) (if (> freq 1) 1 0)
-                     (pair-rythm inset-circle inset-rectangle freq) (if (> freq 1) 1 0)
-                     (pair-rythm inset-pointy inset-rectangle freq) (if (> freq 1) 1 0)
+                     (pair-rythm inset-circle inset-pointy freq) 1
+                     (pair-rythm inset-circle inset-rectangle freq) 1
+                     (pair-rythm inset-pointy inset-rectangle freq) 1
                      (polyrythm freq) 2
                      (fn [p i] (seq-cut p i freq)) 4})])))
 
