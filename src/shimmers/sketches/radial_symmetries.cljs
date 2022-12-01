@@ -132,6 +132,7 @@
     (csvg/group {}
       (operator poly i))))
 
+;; FIXME: not deterministic from initial seed except at reload?
 (defn generate-rule [n]
   (let [freq (dr/rand-nth (butlast (sm/factors n 11)))]
     (if (= n 1)
