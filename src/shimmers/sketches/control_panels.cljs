@@ -154,7 +154,12 @@
          :smooth [(gc/circle p (* 0.9 r))]
          :ridged (let [ridged (ridged p r 15 theta)]
                    [ridged
-                    (g/scale-size ridged 0.85)]))
+                    (g/scale-size ridged 0.85)])
+         :hex [(gc/circle p (* 0.9 r))
+               (-> (gc/circle (* 0.75 r))
+                   (g/as-polygon 6)
+                   (g/rotate (+ theta (/ eq/TAU 12)))
+                   (g/translate p))])
        [(radial-tick-lines p r mapper ticks)
         (indicator-line
          (merge {:p p :r r :theta theta}
@@ -162,7 +167,9 @@
                   :smooth
                   {:r0 0.4 :r1 1.025 :width 0.08}
                   :ridged
-                  {:r0 0.3 :r1 0.85 :width 0.1})))]))))
+                  {:r0 0.3 :r1 0.85 :width 0.1}
+                  :hex
+                  {:r0 0.2 :r1 0.7 :width 0.1})))]))))
 
 (defn toggle-switch [p r vertical dip on]
   (let [dir (gv/vec2 0 (if on -1 1))]
@@ -312,7 +319,7 @@
                             (> cnt 16) (* size 2)
                             :else size)
                       min-edge)
-            opts {:surface (dr/rand-nth [:smooth :ridged])
+            opts {:surface (dr/rand-nth [:smooth :ridged :hex])
                   :dedants (dr/weighted {[(* 0.5 eq/TAU) (* 1.25 eq/TAU)] 2
                                          [(* 0.25 eq/TAU) (* 1.0 eq/TAU)] 1
                                          [(* 0.4 eq/TAU) (* 1.1 eq/TAU)] 2
