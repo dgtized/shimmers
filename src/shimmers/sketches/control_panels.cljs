@@ -105,29 +105,27 @@
     (gc/circle p (* 0.65 r))
     (gc/circle p (* 0.95 r))))
 
-(defn square-button [p r rx]
-  (->
-   (rect/rect 0 0 r r)
-   g/center
-   (g/translate p)
-   (with-meta {:rx rx})))
+(defn rect-button
+  ([p r rx] (rect-button p r r rx))
+  ([p w h rx]
+   (->
+    (rect/rect 0 0 w h)
+    g/center
+    (g/translate p)
+    (with-meta {:rx rx}))))
 
 (defn button [p r style label on]
   (csvg/group {}
     (conj (case style
             :circle [(gc/circle p (* 1.15 r))
                      (gc/circle p (* 1 r))]
-            :square [(square-button p (* 2 r) 5)
-                     (square-button p (* 1.75 r) 3)]
+            :square [(rect-button p (* 2 r) 5)
+                     (rect-button p (* 1.75 r) 3)]
             :indicator-toggle
-            [(-> (rect/rect 0 0 (* 1.4 r) (* 1.75 r))
-                 g/center
-                 (g/translate (tm/+ p (gv/vec2 0 (* 0.25 r))))
-                 (with-meta {:rx 3}))
-             (-> (rect/rect 0 0 (* 1.33 r) (* 0.95 r))
-                 g/center
-                 (g/translate (tm/+ p (gv/vec2 0 (* 0.66 r))))
-                 (with-meta {:rx 3}))
+            [(rect-button (tm/+ p (gv/vec2 0 (* 0.25 r)))
+                          (* 1.4 r) (* 1.75 r) 3)
+             (rect-button (tm/+ p (gv/vec2 0 (* 0.66 r)))
+                          (* 1.33 r) (* 0.95 r) 3)
              (indicator-light (tm/- p (gv/vec2 0 (* 0.2 r))) (* 0.3 r) on)])
           (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
             (csvg/center-label (if (= style :indicator-toggle)
