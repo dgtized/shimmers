@@ -89,6 +89,12 @@
         (gl/line2 (g/unmap-point rect (gv/vec2 0.025 t))
                   (g/unmap-point rect (gv/vec2 0.975 t)))))))
 
+(defn indicator-light [p r on]
+  (csvg/group {}
+    (gc/circle p (* 0.6 r))
+    (with-meta (gc/circle p (* 0.4 r))
+      {:fill (if on "black" "white")})))
+
 (defn plug [p r label]
   (csvg/group {}
     (when label
@@ -197,12 +203,6 @@
             (g/rotate (/ eq/TAU 12)))
         (gc/circle (gv/vec2) (* 0.12 r))
         (gc/circle (tm/* (gv/vec2 0 (* 0.25 r)) dir) (* 0.175 r))))))
-
-(defn indicator-light [p r on]
-  (csvg/group {}
-    (gc/circle p (* 0.6 r))
-    (with-meta (gc/circle p (* 0.4 r))
-      {:fill (if on "black" "white")})))
 
 (defn divide-panels [{[w h] :size :as bounds}]
   (let [area-ratio (/ (g/area bounds) (g/area screen))
