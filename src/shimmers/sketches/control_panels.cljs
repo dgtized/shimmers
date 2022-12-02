@@ -112,15 +112,28 @@
    (g/translate p)
    (with-meta {:rx rx})))
 
-(defn button [p r style label]
+(defn button [p r style label on]
   (csvg/group {}
     (conj (case style
             :circle [(gc/circle p (* 1.15 r))
                      (gc/circle p (* 1 r))]
             :square [(square-button p (* 2 r) 5)
-                     (square-button p (* 1.75 r) 3)])
+                     (square-button p (* 1.75 r) 3)]
+            :indicator-toggle
+            [(-> (rect/rect 0 0 (* 1.4 r) (* 1.75 r))
+                 g/center
+                 (g/translate (tm/+ p (gv/vec2 0 (* 0.25 r))))
+                 (with-meta {:rx 3}))
+             (-> (rect/rect 0 0 (* 1.33 r) (* 0.95 r))
+                 g/center
+                 (g/translate (tm/+ p (gv/vec2 0 (* 0.66 r))))
+                 (with-meta {:rx 3}))
+             (indicator-light (tm/- p (gv/vec2 0 (* 0.2 r))) (* 0.3 r) on)])
           (let [text-size (int (tm/map-interval-clamped (max (- r 12) 0) [0 30] [8 16]))]
-            (csvg/center-label p label
+            (csvg/center-label (if (= style :indicator-toggle)
+                                 (tm/- p 0 (* 0.9 r))
+                                 p)
+                               label
                                {:style {:font (str "bold " text-size "px sans-serif")}})))))
 
 (defn ridged [p r ridges theta]
@@ -355,10 +368,13 @@
         (for [s (subdivide-to-cells bounds size)]
           (plug (g/centroid s) (* 0.3 size) label)))
       :button
-      (let [size (* (dr/rand-nth [0.08 0.12 0.16]) (min width height))
-            style (dr/rand-nth [:square :circle])]
+      (let [scale (dr/rand-nth [0.08 0.12 0.16])
+            size (* scale (min width height))
+            style (dr/weighted {:square 1
+                                :circle 1
+                                :indicator-toggle (if (> scale 0.09) 1 0)})]
         (for [s (subdivide-to-cells bounds size)]
-          (button (g/centroid s) (* 0.3 size) style (random-label))))
+          (button (g/centroid s) (* 0.3 size) style (random-label) (dr/chance 0.5))))
       :indicator-light
       (let [size (* 0.05 (min width height))]
         (for [s (subdivide-to-cells bounds size)]
