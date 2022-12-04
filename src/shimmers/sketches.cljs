@@ -15,6 +15,7 @@
    shimmers.sketches.butterfly
    shimmers.sketches.canvas-test
    shimmers.sketches.chaikin-demo
+   shimmers.sketches.chaos-cuts
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
    shimmers.sketches.circuit-intersections
