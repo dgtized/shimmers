@@ -8,14 +8,16 @@
    [thi.ng.geom.line :as gl]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.geom.core :as g]
+   [shimmers.math.deterministic-random :as dr]
+   [thi.ng.geom.circle :as gc]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.8)]
     {:bounds bounds
      :shapes []
-     :lines [(gl/line2 (cq/rel-vec 0 0) (cq/rel-vec 1 1))]}))
+     :t 0}))
 
 (defn cut [line shape]
   (->> (lines/cut-polygon shape line)
@@ -24,12 +26,25 @@
                       poly-detect/split-self-intersection
                       (filter (fn [inset] (> (g/area inset) 100))))))))
 
-(defn update-state [{:keys [bounds lines] :as state}]
-  (assoc state :shapes
-         (reduce (fn [polygons line]
-                   (mapcat (fn [poly] (cut line poly)) polygons))
-                 [bounds]
-                 lines)))
+(defn gen-lines [t]
+  (let [a (gc/circle (cq/rel-vec 0.5 -2) (cq/rel-h 0.4))
+        b (gc/circle (cq/rel-vec 0.5 2) (cq/rel-h 0.35))
+        c (gc/circle (cq/rel-vec -2 0.5) (cq/rel-h 0.35))
+        d (gc/circle (cq/rel-vec 2 0.5) (cq/rel-h 0.35))]
+    [(gl/line2 (g/point-at a (* t 0.01))
+               (g/point-at b (* t 0.02)))
+     (gl/line2 (g/point-at c (* t 0.03))
+               (g/point-at d (* t 0.05)))]))
+
+(defn update-state [{:keys [t bounds] :as state}]
+  (let [lines (gen-lines t)]
+    (-> state
+        (update :t + (dr/random 0.01 0.1))
+        (assoc :shapes
+               (reduce (fn [polygons line]
+                         (mapcat (fn [poly] (cut line poly)) polygons))
+                       [bounds]
+                       lines)))))
 
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
