@@ -2,15 +2,15 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.quil :as cq]
-   [thi.ng.geom.line :as gl]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
-   [thi.ng.geom.core :as g]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
-   [thi.ng.geom.circle :as gc]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
