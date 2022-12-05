@@ -26,15 +26,15 @@
                       poly-detect/split-self-intersection
                       (filter (fn [inset] (> (g/area inset) 100))))))))
 
+(defn cline [p0 r0 p1 r1 t0 t1]
+  (let [a (gc/circle (apply cq/rel-vec p0) (cq/rel-h r0))
+        b (gc/circle (apply cq/rel-vec p1) (cq/rel-h r1))]
+    (gl/line2 (g/point-at a t0)
+              (g/point-at b t1))))
+
 (defn gen-lines [t]
-  (let [a (gc/circle (cq/rel-vec 0.5 -2) (cq/rel-h 0.4))
-        b (gc/circle (cq/rel-vec 0.5 2) (cq/rel-h 0.35))
-        c (gc/circle (cq/rel-vec -2 0.5) (cq/rel-h 0.35))
-        d (gc/circle (cq/rel-vec 2 0.5) (cq/rel-h 0.35))]
-    [(gl/line2 (g/point-at a (* t 0.01))
-               (g/point-at b (* t 0.02)))
-     (gl/line2 (g/point-at c (* t 0.03))
-               (g/point-at d (* t 0.05)))]))
+  [(cline [0.5 -2] 0.4 [0.5 2] 0.35 (* 0.01 t) (* 0.02 t))
+   (cline [-2 0.5] 0.35 [2 0.5] 0.35 (* 0.03 t) (* 0.05 t))])
 
 (defn update-state [{:keys [t bounds] :as state}]
   (let [lines (gen-lines t)]
