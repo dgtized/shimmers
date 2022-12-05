@@ -33,11 +33,11 @@
               (g/point-at b t1))))
 
 (defn gen-lines [t]
-  [(cline [0.5 -3] 1.3
-          [0.5 4] 1.6
+  [(cline [0.5 -3] 1.2
+          [0.5 4] 1.3
           (+ 1 (* 0.01 t)) (+ 2 (* 0.02 t)))
-   (cline [0.5 -3] 1.5
-          [0.5 4] 1.33
+   (cline [0.5 -3] 1.4
+          [0.5 4] 1.1
           (* 0.025 t) (* 0.015 t))
    (cline [-3 0.5] 0.8
           [2.5 0.5] 1.1
@@ -49,7 +49,7 @@
 (defn update-state [{:keys [t bounds] :as state}]
   (let [lines (gen-lines t)]
     (-> state
-        (update :t + (* 0.2 (Math/abs (dr/gaussian 0 0.1))))
+        (update :t + (* 0.1 (Math/abs (dr/gaussian 0 0.2))))
         (assoc :shapes
                (reduce (fn [polygons line]
                          (mapcat (fn [poly] (cut line poly)) polygons))
