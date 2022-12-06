@@ -46,6 +46,7 @@
    shimmers.sketches.dreamcatcher
    shimmers.sketches.emitters
    shimmers.sketches.epicenter-of-impact
+   shimmers.sketches.epicycles
    shimmers.sketches.falling-gradients
    shimmers.sketches.fire
    shimmers.sketches.fireworks
