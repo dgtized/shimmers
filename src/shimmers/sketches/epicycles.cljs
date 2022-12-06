@@ -12,6 +12,7 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:n 6
+                               :persistent true
                                :show-chain true}))
 
 (defn rotate-chainlinks [chain base dt]
@@ -38,18 +39,24 @@
   (update state :chain rotate-chainlinks (gv/vec2) 0.02))
 
 (defn draw [{:keys [chain]}]
-  ;; (println chain)
-  (q/background 1.0)
+  (q/no-fill)
   (q/with-translation (cq/rel-vec 0.5 0.5)
-    (let [{:keys [show-chain]}@ui-state]
+    (let [{:keys [show-chain persistent]} @ui-state]
+      (if persistent
+        (do
+          (q/stroke 0.0 0.05))
+        (do
+          (q/stroke 0.0 1.0)
+          (q/background 1.0)))
       (when show-chain
         (doseq [[p q] (g/edges chain)]
-          (q/line p q))))
-    (doseq [p (g/vertices chain)]
-      (cq/circle p 5))))
+          (q/line p q)))
+      (doseq [p (g/vertices chain)]
+        (cq/circle p 5)))))
 
 (defn ui-controls []
   [:div.ui-controls
+   (ctrl/checkbox ui-state "Persistent" [:persistent])
    (ctrl/numeric ui-state "Chain Links" [:n] [2 16 1])
    (ctrl/checkbox ui-state "Show Chain" [:show-chain])])
 
