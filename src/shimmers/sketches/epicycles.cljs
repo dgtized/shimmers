@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -14,33 +15,41 @@
 (defonce ui-state (ctrl/state {:n 6
                                :persistent true
                                :show-chain true
-                               :odd-even true}))
+                               :odd-even true
+                               :stretchy true}))
 
-(defn rotate-chainlinks [chain base dt]
-  (let [{:keys [odd-even]} @ui-state
+(defn rotate-chainlinks [chain base length dt t]
+  (let [{:keys [odd-even stretchy]} @ui-state
         n (count (:segments chain))]
     (-> chain
         (update :segments
                 (partial
                  map-indexed
                  (fn [i segment]
-                   (update segment :angle +
-                           (* (if odd-even (if (odd? i) -1 1) 1)
-                              (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt)))))
+                   (-> segment
+                       (update :angle +
+                               (* (if odd-even (if (odd? i) -1 1) 1)
+                                  (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt))
+                       (assoc :length (+ length (* (if stretchy 0.33 0)
+                                                   (/ (- n i) n) length (Math/sin t))))))))
         (chain/propagate base))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [n (:n @ui-state)
         length (cq/rel-h (/ 0.45 n))]
-    {:chain (chain/->KinematicChain
+    {:t 0
+     :length length
+     :chain (chain/->KinematicChain
              (for [i (range n)]
                (chain/->KinematicSegment (tm/+ (gv/vec2) (tm/* (gv/vec2 length 0) i))
                                          0
                                          length)))}))
 
-(defn update-state [state]
-  (update state :chain rotate-chainlinks (gv/vec2) 0.02))
+(defn update-state [{:keys [length t] :as state}]
+  (-> state
+      (update :chain rotate-chainlinks (gv/vec2) length 0.02 t)
+      (update :t + (Math/abs (dr/gaussian 0 0.02)))))
 
 (defn draw [{:keys [chain]}]
   (q/no-fill)
@@ -63,7 +72,8 @@
    (ctrl/checkbox ui-state "Persistent" [:persistent])
    (ctrl/numeric ui-state "Chain Links" [:n] [2 16 1])
    (ctrl/checkbox ui-state "Show Chain" [:show-chain])
-   (ctrl/checkbox ui-state "Odd Even" [:odd-even])])
+   (ctrl/checkbox ui-state "Odd Even" [:odd-even])
+   (ctrl/checkbox ui-state "Stretchy" [:stretchy])])
 
 (sketch/defquil epicycles
   :created-at "2022-12-06"
