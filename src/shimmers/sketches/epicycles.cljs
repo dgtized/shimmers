@@ -5,26 +5,28 @@
    [shimmers.algorithm.kinematic-chain :as chain]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:n 6
+                               :show-chain true}))
 
 (defn rotate-chainlinks [chain base dt]
   (-> chain
       (update :segments
               (fn [s] (map-indexed (fn [i segment]
                                     (update segment :angle +
-                                            (* (if (odd? i)
-                                                 -1
-                                                 1)
-                                               (/ (inc i) 10) (* (inc i) dt))))
+                                            (* (if (odd? i) -1 1)
+                                               (/ (inc i) 16) (* (inc i) dt))))
                                   s)))
       (chain/propagate base)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [n 6
+  (let [n (:n @ui-state)
         length (cq/rel-h (/ 0.45 n))]
     {:chain (chain/->KinematicChain
              (for [i (range n)]
@@ -39,14 +41,22 @@
   ;; (println chain)
   (q/background 1.0)
   (q/with-translation (cq/rel-vec 0.5 0.5)
-    (doseq [[p q] (g/edges chain)]
-      (q/line p q))
+    (let [{:keys [show-chain]}@ui-state]
+      (when show-chain
+        (doseq [[p q] (g/edges chain)]
+          (q/line p q))))
     (doseq [p (g/vertices chain)]
       (cq/circle p 5))))
+
+(defn ui-controls []
+  [:div.ui-controls
+   (ctrl/numeric ui-state "Chain Links" [:n] [2 16 1])
+   (ctrl/checkbox ui-state "Show Chain" [:show-chain])])
 
 (sketch/defquil epicycles
   :created-at "2022-12-06"
   :size [800 600]
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
   :update update-state
   :draw draw
