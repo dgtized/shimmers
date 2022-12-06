@@ -17,15 +17,16 @@
                                :odd-even true}))
 
 (defn rotate-chainlinks [chain base dt]
-  (let [{:keys [odd-even]} @ui-state]
+  (let [{:keys [odd-even]} @ui-state
+        n (count (:segments chain))]
     (-> chain
         (update :segments
-                (fn [s] (map-indexed (fn [i segment]
-                                      (update segment :angle +
-                                              (* (if odd-even (if (odd? i) -1 1)
-                                                     1)
-                                                 (/ (inc i) 16) (* (inc i) dt))))
-                                    s)))
+                (partial
+                 map-indexed
+                 (fn [i segment]
+                   (update segment :angle +
+                           (* (if odd-even (if (odd? i) -1 1) 1)
+                              (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt)))))
         (chain/propagate base))))
 
 (defn setup []
