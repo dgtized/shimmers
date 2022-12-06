@@ -13,17 +13,20 @@
 
 (defonce ui-state (ctrl/state {:n 6
                                :persistent true
-                               :show-chain true}))
+                               :show-chain true
+                               :odd-even true}))
 
 (defn rotate-chainlinks [chain base dt]
-  (-> chain
-      (update :segments
-              (fn [s] (map-indexed (fn [i segment]
-                                    (update segment :angle +
-                                            (* (if (odd? i) -1 1)
-                                               (/ (inc i) 16) (* (inc i) dt))))
-                                  s)))
-      (chain/propagate base)))
+  (let [{:keys [odd-even]} @ui-state]
+    (-> chain
+        (update :segments
+                (fn [s] (map-indexed (fn [i segment]
+                                      (update segment :angle +
+                                              (* (if odd-even (if (odd? i) -1 1)
+                                                     1)
+                                                 (/ (inc i) 16) (* (inc i) dt))))
+                                    s)))
+        (chain/propagate base))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -58,7 +61,8 @@
   [:div.ui-controls
    (ctrl/checkbox ui-state "Persistent" [:persistent])
    (ctrl/numeric ui-state "Chain Links" [:n] [2 16 1])
-   (ctrl/checkbox ui-state "Show Chain" [:show-chain])])
+   (ctrl/checkbox ui-state "Show Chain" [:show-chain])
+   (ctrl/checkbox ui-state "Odd Even" [:odd-even])])
 
 (sketch/defquil epicycles
   :created-at "2022-12-06"
