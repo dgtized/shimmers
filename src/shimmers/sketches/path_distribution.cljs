@@ -61,11 +61,12 @@
   (let [d 0.3]
     [:div
      [:div.canvas-frame (scene d)]
-     [:h4 "Two approaches for adding random curvature to a line between p and q"]
-     [:p "Both are using a displacement factor " d ", multiplied by
-     half the distance from " [:b "p"]  " to " [:b "q"]
-      ". The upper example is drawing a curved line through a random point in
-      the circle. The lower example picks a random point on the bisector."]]))
+     [:div.contained
+      [:h4 "Two approaches for adding random curvature to a line between p and q"]
+      [:p "Both are using a displacement factor " d ", multiplied by half the
+     distance from " [:b "p"] " to " [:b "q"] ". "
+       "The upper example is drawing a curved line through a random point in the
+      circle. The lower example picks a random point on the bisector."]]]))
 
 (sketch/definition path-distribution
   {:created-at "2021-04-29"

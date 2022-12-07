@@ -90,7 +90,7 @@
         {:class "canvas-frame"
          :style {:background "#000000"}}]
     (fn []
-      [:div
+      [:div.contained
        [:div.flexcols
         [:div
          [:h4 "Frame 1"]

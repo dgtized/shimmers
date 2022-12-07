@@ -18,16 +18,20 @@
   </head>
   <body>
     <main class="shimmer-container">
-      <header id="shimmer-mount"></header>
+      <div class="contained">
+        <header id="shimmer-mount"></header>
+      </div>
       <section id="sketch-host"></section>
-      <section id="interface"></section>
-      <footer class="footer">
-        <span>© 2020-2022 Charles L.G. Comstock</span>
-        <a href="https://github.com/dgtized/shimmers">(github)</a>
-        <span id="revision"><code>rev:abcdef12</code></span>
-      </footer>
-      <section id="route-debug-mount"></section>
-      <section id="debug-mount"></section>
+      <div class="contained">
+        <section id="interface"></section>
+        <footer class="footer">
+          <span>© 2020-2022 Charles L.G. Comstock</span>
+          <a href="https://github.com/dgtized/shimmers">(github)</a>
+          <span id="revision"><code>rev:abcdef12</code></span>
+        </footer>
+        <section id="route-debug-mount"></section>
+        <section id="debug-mount"></section>
+      </section>
     </section>
     <canvas style="display: none;" id="favicon-canvas"></canvas>
     <script src="cljs-out/dev-main.js"></script>

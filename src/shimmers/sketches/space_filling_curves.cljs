@@ -162,7 +162,7 @@
   (let [{:keys [rule-system depth curved]} @ui-state]
     [:div
      [:div.canvas-frame [scene rule-system depth curved]]
-     [:div.flexcols
+     [:div.flexcols.contained
       [:div#interface [controls]]
       (debug/pre-edn (dissoc (by-name rule-system) :start))]]))
 

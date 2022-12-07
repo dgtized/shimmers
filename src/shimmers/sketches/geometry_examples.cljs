@@ -82,7 +82,7 @@
      [:p description])])
 
 (defn page []
-  [:div.explanation {:style {:width "800px"}}
+  [:div.contained.explanation
    [:div
     [:h2 "Cut Polygon with a Line"]
     [:p.readable-width "Visual test cases for cutting a polygon with a line, and

@@ -124,7 +124,7 @@
   (let [mode (:mode @ui-state)]
     [:div
      [:div.canvas-frame [scene bounds @ui-state points]]
-     [:div.explanation
+     [:div.explanation.contained
       [:div.flexcols
        [:div {:style {:width "20em"}}
         (view-sketch/generate :delaunator)

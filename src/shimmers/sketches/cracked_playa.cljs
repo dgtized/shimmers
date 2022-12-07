@@ -71,7 +71,7 @@
 (defn page []
   [:div
    [:div.canvas-frame [scene]]
-   [:div.explanation
+   [:div.explanation.contained
     [:div.flexcols
      [:div [view-sketch/generate :cracked-playa]]
      #_[profile-summary sink]]]])

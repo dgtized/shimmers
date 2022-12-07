@@ -29,7 +29,7 @@
 
 ;; TODO: adjusting width/height dynamically?
 (defn page []
-  [:div
+  [:div.contained
    [:p.explanation.readable-width
     "Experimenting with wrapping Quil sketches in a Reagent Component"]
    (sketch/component

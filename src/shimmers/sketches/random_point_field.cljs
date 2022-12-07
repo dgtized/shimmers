@@ -49,7 +49,7 @@
         points (point-cloud bounds (or n-points 1))]
     [:div
      [:div.canvas-frame [scene points mst]]
-     [:div.explanation
+     [:div.explanation.contained
       [:div.flexcols
        [:div {:style {:width "40%"}}
         [view-sketch/generate :random-point-field]
