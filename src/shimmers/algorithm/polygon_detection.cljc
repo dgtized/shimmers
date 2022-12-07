@@ -199,24 +199,32 @@
 
   They should be simple cycles without any internal edges/chords."
   [graph]
-  (let [g (lg/digraph graph)]
-    (loop [pending (set (lg/edges g)) polygons []]
-      (if (empty? pending)
-        polygons
+  (let [g (lg/digraph graph)
+        all-edges (set (lg/edges g))]
+    ;; FIXME: limit is a guard to avoid infinite loops if cycles cannot be
+    ;; removed from pending. Something is causing cycles to get added repeatedly
+    ;; instead of only once, so this safe-guards against.
+    (loop [pending all-edges polygons [] limit (/ (count all-edges) 2)]
+      (if (or (empty? pending) (zero? limit))
+        (do (when (zero? limit)
+              (println "halted after " (count polygons) " polygons"))
+            polygons)
         (let [edge (first pending)
               [p q] edge
               cycle (cycle-clockwise-from-edge g p q)]
           ;; FIXME: disjoin is sometimes not removing a cycle
           ;; probably due to floating point precision errors on match
-          #_(println cycle (and (seq cycle) (clockwise-polygon? cycle)))
+          ;; (println i cycle (and (seq cycle) (clockwise-polygon? cycle)))
           (if (and (seq cycle) (clockwise-polygon? cycle))
             (let [cycle-edges (conj (partition 2 1 cycle) [(last cycle) (first cycle)])
                   pending' (reduce disj pending cycle-edges)]
               (recur (if-not (= (count pending') (count pending))
                        pending'
                        (disjoin-carefully pending cycle-edges))
-                     (conj polygons cycle)))
-            (recur (disj pending edge) polygons)))))))
+                     (conj polygons cycle)
+                     (dec limit)))
+            (recur (disj pending edge) polygons
+                   (dec limit))))))))
 
 ;; TODO: detect all simple chordless polygons in plane
 ;; polygon isomorphism?
