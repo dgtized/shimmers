@@ -50,7 +50,7 @@
 (defn update-state [{:keys [t bounds] :as state}]
   (let [lines (gen-lines t)]
     (-> state
-        (update :t + (* 0.1 (Math/abs (dr/gaussian 0 0.2))))
+        (update :t + (* 0.1 (Math/abs (dr/gaussian 0.08 0.1))))
         (assoc :shapes
                (reduce (fn [polygons line]
                          (mapcat (fn [poly] (cut line poly)) polygons))
