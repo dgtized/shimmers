@@ -138,24 +138,26 @@ footer {
   margin-bottom: 0em;
 }
 
+.multi-column {
+  min-width: 500px;
+  column-width: 14em;
+  line-height: 1.4em;
+}
+
+.multi-column ul {
+  margin-block-start: 0;
+}
+
 .multi-column h3 {
   margin-block-start: 0;
 }
 
-.multi-column > .month {
+.multi-column .group {
   break-inside: avoid;
 }
 
-ul.multi-column > li {
-  padding-bottom: 0.1em;
-  padding-top: 0.1em;
-}
-
-h3.tag {
-  padding-left: 1em;
-}
-
-h3.date {
+.group h3 {
+  font-size: 0.8em;
   padding-left: 1em;
 }
 

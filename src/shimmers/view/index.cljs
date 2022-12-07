@@ -14,15 +14,8 @@
        (filter some?)
        (str/join " ")))
 
-(defn column-count [n]
-  (cond (< n 15) 1
-        (< n 100) 2
-        (< n 150) 3
-        :else 4))
-
 (defn list-sketches [sketches]
-  (into [:ul.multi-column
-         {:style {:column-count (column-count (count sketches))}}]
+  (into [:ul]
         (for [sketch sketches]
           [:li [:a {:href (view-sketch/sketch-link rfe/href (:sketch-id sketch))
                     :title (sketch-title sketch)}
@@ -81,7 +74,8 @@
      to give attribution in the source code."]
      (selector ::by-alphabetical)
      (filtered-terms sketches filtered terms)
-     [:div (list-sketches filtered)]]))
+     [:div.multi-column
+      (list-sketches filtered)]]))
 
 ;; https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat
 (defn year-month [{:keys [created-at]}]
@@ -96,11 +90,11 @@
     [:section.sketch-list
      (selector ::by-date)
      (filtered-terms sketches filtered terms)
-     [:div.multi-column {:style {:column-count (column-count (count filtered))}}
+     [:div.multi-column
       (for [sketches grouped-by-month
             :let [[year month] (year-month (first sketches))]]
-        [:div.month {:key (str year month)}
-         [:h3.date (str month " " year " (" (count sketches) ")")]
+        [:div.group {:key (str year month)}
+         [:h3 (str month " " year " (" (count sketches) ")")]
          (list-sketches sketches)])]]))
 
 (defn all-tags [sketches]
@@ -113,10 +107,10 @@
     [:section.sketch-list
      (selector ::by-tag)
      (filtered-terms tagged filtered terms)
-     [:div.multi-column {:style {:column-count 2}}]
-     (for [tag (sort-by name tags)
-           :let [tagged-sketches (filter #(tag (:tags %)) filtered)]]
-       [:div.month {:key (str tag)}
-        [:h3.tag (str (str/capitalize (name tag))
-                      " (" (count tagged-sketches) ")")]
-        (list-sketches tagged-sketches)])]))
+     [:div.multi-column
+      (for [tag (sort-by name tags)
+            :let [tagged-sketches (filter #(tag (:tags %)) filtered)]]
+        [:div.group {:key (str tag)}
+         [:h3 (str (str/capitalize (name tag))
+                   " (" (count tagged-sketches) ")")]
+         (list-sketches tagged-sketches)])]]))
