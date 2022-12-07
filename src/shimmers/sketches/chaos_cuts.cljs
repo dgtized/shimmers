@@ -7,6 +7,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -56,10 +57,13 @@
                        [bounds]
                        lines)))))
 
-(defn draw [{:keys [shapes]}]
+(defn draw [{:keys [bounds shapes]}]
   (q/background 1.0)
   (q/fill 1.0)
   (doseq [polygon shapes]
+    (if (collide/bounded? bounds polygon)
+      (q/stroke 0)
+      (q/stroke 0 0.5 0.5))
     (cq/draw-polygon polygon)))
 
 (sketch/defquil chaos-cuts
