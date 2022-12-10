@@ -119,13 +119,13 @@ select {
 footer {
   font-size: 0.8em;
   opacity: 0.8;
-  padding-left: 1.5em;
+  padding-left: 2em;
   padding-top: 1em;
 }
 
 .sketch-list p {
   padding-left: 2em;
-  width: 50em;
+  width: 75ch;
 }
 
 .sketch-list .selector {
@@ -133,14 +133,13 @@ footer {
 }
 
 .sketch-list h1 {
-  text-align: left;
   padding-left: 3em;
   margin-bottom: 0em;
 }
 
 .multi-column {
   min-width: 500px;
-  column-width: 14em;
+  column-width: 26ch;
   line-height: 1.4em;
 }
 
