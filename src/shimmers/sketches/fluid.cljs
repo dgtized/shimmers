@@ -4,11 +4,12 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.macros.loop :as loop :include-macros true]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]
-   [thi.ng.ndarray.core :as nd]))
+   [thi.ng.ndarray.core :as nd]
+   [thi.ng.geom.vector :as gv]))
+
 
 ;; other reading:
 ;; https://shahriyarshahrabi.medium.com/gentle-introduction-to-fluid-simulation-for-programmers-and-technical-artists-7c0045c40bac
@@ -16,15 +17,15 @@
 ;; From https://en.wikipedia.org/wiki/Lattice_Boltzmann_methods &
 ;; https://www.math.nyu.edu/~billbao/report930.pdf
 (def directions
-  [(v/vec2 0 0) ;; 0 staying
-   (v/vec2 1 0) ;; 1 east
-   (v/vec2 0 1) ;; 2 north
-   (v/vec2 -1 0) ;; 3 west
-   (v/vec2 0 -1) ;; 4 south
-   (v/vec2 1 1) ;; 5 north-east
-   (v/vec2 -1 1) ;; 6 north-west
-   (v/vec2 -1 -1) ;; 7 south-west
-   (v/vec2 1 -1) ;; 8 south-east
+  [(gv/vec2 0 0) ;; 0 staying
+   (gv/vec2 1 0) ;; 1 east
+   (gv/vec2 0 1) ;; 2 north
+   (gv/vec2 -1 0) ;; 3 west
+   (gv/vec2 0 -1) ;; 4 south
+   (gv/vec2 1 1) ;; 5 north-east
+   (gv/vec2 -1 1) ;; 6 north-west
+   (gv/vec2 -1 -1) ;; 7 south-west
+   (gv/vec2 1 -1) ;; 8 south-east
    ])
 
 (defn make-lattice [width height]

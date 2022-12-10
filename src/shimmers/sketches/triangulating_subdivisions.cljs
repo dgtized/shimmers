@@ -8,9 +8,9 @@
    [shimmers.common.quil :as cq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn new-color []
@@ -70,26 +70,26 @@
     :triangle-limit triangle-limit}))
 
 (defn one-triangle [w h]
-  (let [top (v/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
-        left (v/vec2 (* 0.1 w) (* 0.9 h))
-        right (v/vec2 (* 0.9 w) (* 0.9 h))]
+  (let [top (gv/vec2 (* (q/random 0.1 0.9) w) (* 0.1 h))
+        left (gv/vec2 (* 0.1 w) (* 0.9 h))
+        right (gv/vec2 (* 0.9 w) (* 0.9 h))]
     (initialize-shape
      [(make-triangle top left right :color (new-color) :max-depth 10)])))
 
 (defn split-rectangle [w h]
-  (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
-        b (v/vec2 (* 0.95 w) (* 0.05 h))
-        c (v/vec2 (* 0.05 w) (* 0.95 h))
-        d (v/vec2 (* 0.95 w) (* 0.95 h))]
+  (let [a (gv/vec2 (* 0.05 w) (* 0.05 h))
+        b (gv/vec2 (* 0.95 w) (* 0.05 h))
+        c (gv/vec2 (* 0.05 w) (* 0.95 h))
+        d (gv/vec2 (* 0.95 w) (* 0.95 h))]
     (initialize-shape
      [(make-triangle a b c :color [0.55 0.70 0.35 0.9] :max-depth 9)
       (make-triangle c d b :color [0.01 0.85 0.30 0.7] :max-depth 9)])))
 
 (defn empty-rectangle [w h]
-  (let [a (v/vec2 (* 0.05 w) (* 0.05 h))
-        b (v/vec2 (* 0.95 w) (* 0.05 h))
-        c (v/vec2 (* 0.05 w) (* 0.95 h))
-        d (v/vec2 (* 0.95 w) (* 0.95 h))]
+  (let [a (gv/vec2 (* 0.05 w) (* 0.05 h))
+        b (gv/vec2 (* 0.95 w) (* 0.05 h))
+        c (gv/vec2 (* 0.05 w) (* 0.95 h))
+        d (gv/vec2 (* 0.95 w) (* 0.95 h))]
     (initialize-shape
      [(make-triangle a b d)
       (make-triangle a c d)]
@@ -98,22 +98,22 @@
 (defn subset-rectangle [w h]
   (initialize-shape
    (concat
-    (let [a (v/vec2 (* 0.10 w) (* 0.10 h))
-          b (v/vec2 (* 0.90 w) (* 0.10 h))
-          c (v/vec2 (* 0.10 w) (* 0.50 h))
-          d (v/vec2 (* 0.90 w) (* 0.50 h))]
+    (let [a (gv/vec2 (* 0.10 w) (* 0.10 h))
+          b (gv/vec2 (* 0.90 w) (* 0.10 h))
+          c (gv/vec2 (* 0.10 w) (* 0.50 h))
+          d (gv/vec2 (* 0.90 w) (* 0.50 h))]
       [(make-triangle a b d)
        (make-triangle a c d :max-depth 8)])
-    (let [a (v/vec2 (* 0.10 w) (* 0.50 h))
-          b (v/vec2 (* 0.50 w) (* 0.50 h))
-          c (v/vec2 (* 0.10 w) (* 0.90 h))
-          d (v/vec2 (* 0.50 w) (* 0.90 h))]
+    (let [a (gv/vec2 (* 0.10 w) (* 0.50 h))
+          b (gv/vec2 (* 0.50 w) (* 0.50 h))
+          c (gv/vec2 (* 0.10 w) (* 0.90 h))
+          d (gv/vec2 (* 0.50 w) (* 0.90 h))]
       [(make-triangle a b c)
        (make-triangle d b c)])
-    (let [a (v/vec2 (* 0.52 w) (* 0.52 h))
-          b (v/vec2 (* 0.92 w) (* 0.52 h))
-          c (v/vec2 (* 0.52 w) (* 0.92 h))
-          d (v/vec2 (* 0.92 w) (* 0.92 h))]
+    (let [a (gv/vec2 (* 0.52 w) (* 0.52 h))
+          b (gv/vec2 (* 0.92 w) (* 0.52 h))
+          c (gv/vec2 (* 0.52 w) (* 0.92 h))
+          d (gv/vec2 (* 0.92 w) (* 0.92 h))]
       [(make-triangle a b d :color [0.55 0.35 0.35 1.0] :max-depth 7)
        (make-triangle a c d :color [0.39 0.40 0.35 1.0] :max-depth 4)]))))
 

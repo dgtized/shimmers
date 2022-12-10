@@ -5,29 +5,29 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def vec2 gv/vec2)
-(def vec3 gv/vec3)
+(def v2 gv/vec2)
+(def v3 gv/vec3)
 
-(def ^:const up (vec3 0 1 0))
-(def ^:const down (vec3 0 -1 0))
-(def ^:const left (vec3 -1 0 0))
-(def ^:const right (vec3 1 0 0))
-(def ^:const forward (vec3 0 0 1))
-(def ^:const back (vec3 0 0 -1))
+(def ^:const up (v3 0 1 0))
+(def ^:const down (v3 0 -1 0))
+(def ^:const left (v3 -1 0 0))
+(def ^:const right (v3 1 0 0))
+(def ^:const forward (v3 0 0 1))
+(def ^:const back (v3 0 0 -1))
 
 (defn add [v1 v2]
   (tm/+ v1 v2))
 
 (defn wrap2d [[x y] xmax ymax]
-  (vec2 (tm/wrap-range x xmax)
-        (tm/wrap-range y ymax)))
+  (v2 (tm/wrap-range x xmax)
+      (tm/wrap-range y ymax)))
 
 (defn clamp-bounds [bounds [x y]]
-  (vec2 (tm/clamp x (rect/left bounds) (rect/right bounds))
-        (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
+  (v2 (tm/clamp x (rect/left bounds) (rect/right bounds))
+      (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
 (defn polar [r theta]
-  (g/as-cartesian (vec2 r theta)))
+  (g/as-cartesian (v2 r theta)))
 
 (defn +polar [p r theta]
   (tm/+ p (polar r theta)))
@@ -36,7 +36,7 @@
   (tm/- p (polar r theta)))
 
 (defn- unit2-from-angle [theta]
-  (vec2 (Math/cos theta) (Math/sin theta)))
+  (v2 (Math/cos theta) (Math/sin theta)))
 
 (defn jitter
   "Create a random unit vector and then scale it by `amount` to use as noise."
@@ -55,10 +55,10 @@
     dir))
 
 (defn turn-right [[x y]]
-  (vec2 y (- x)))
+  (v2 y (- x)))
 
 (defn turn-left [[x y]]
-  (vec2 (- y) x))
+  (v2 (- y) x))
 
 (defn orientation [[px py] [qx qy] [rx ry]]
   (let [val (- (* (- qy py) (- rx qx))

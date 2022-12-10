@@ -4,7 +4,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   quil.sketch
+   [quil.sketch]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.particle-system :as particles]
    [shimmers.common.quil :as cq]
@@ -12,7 +12,9 @@
    [shimmers.math.core :as sm]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; random distribution between 1 and 20 units of mass
 (def mass-range [1.0 20.0])
@@ -21,8 +23,8 @@
   (let [initial-pos (cq/rel-vec (rand) (rand))]
     {:last-pos initial-pos
      :position initial-pos
-     :velocity (v/vec2 0 0)
-     :acceleration (v/vec2 0 0)
+     :velocity (gv/vec2 0 0)
+     :acceleration (gv/vec2 0 0)
      :mass (apply q/random mass-range)
      ;; :color (color/random)
      :color (color/random-gradient :blue-cyan)}))
@@ -31,7 +33,7 @@
   "Viscous resistance is a negative force proportional to velocity.
   From https://en.wikipedia.org/wiki/Drag_(physics)"
   [velocity]
-  ;; (v/add velocity (g/scale velocity -0.1))
+  ;; (tm/+ velocity (g/scale velocity -0.1))
   (g/scale velocity 0.90))
 
 ;; Because of discontinuity when noise wraps around, there were often competing
@@ -45,7 +47,7 @@
         n (q/noise (/ rx factor) (/ ry factor)
                    (/ (q/frame-count) 2000))
         r (* 4 Math/PI n)]
-    (v/vec2 (q/cos r) (q/sin r))))
+    (gv/vec2 (q/cos r) (q/sin r))))
 
 (defn acceleration-at-point [{:keys [position mass]}]
   (let [;; Pretending that wind-force at a position is inversely proportional to
@@ -55,13 +57,13 @@
         wind (g/scale (force-at-position position) (/ 1 mass))
         ;; Arbitrarily making additional random hops in some small direction
         ;; inversely proportional to mass.
-        brownian (g/scale (v/vec2 (q/random-2d)) (/ 0.1 mass))]
-    (v/add wind brownian)))
+        brownian (g/scale (gv/vec2 (q/random-2d)) (/ 0.1 mass))]
+    (tm/+ wind brownian)))
 
 (defn update-particle
   [{:keys [position velocity acceleration] :as particle}]
-  (let [new-velocity (stokes-drag (v/add velocity acceleration))
-        new-position (v/add position new-velocity)
+  (let [new-velocity (stokes-drag (tm/+ velocity acceleration))
+        new-position (tm/+ position new-velocity)
         wrapped-position (v/wrap2d new-position (q/width) (q/height))]
     (assoc particle
            :last-pos (if (= wrapped-position new-position) position wrapped-position)
@@ -100,8 +102,8 @@
     (doseq [x (range 0 (q/width) cols)
             y (range 0 (q/height) cols)
             :let [force (force-at-position [x y])
-                  from (v/add (v/vec2 x y) (v/vec2 hcols hcols))]]
-      (q/line from (v/add from (g/scale force len))))))
+                  from (tm/+ (gv/vec2 x y) (gv/vec2 hcols hcols))]]
+      (q/line from (tm/+ from (g/scale force len))))))
 
 (defn draw [{:keys [particles ui particle-graphics]}]
   (let [opacity (:opacity @ui)]
