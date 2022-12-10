@@ -142,13 +142,10 @@
        palette/from-urls
        (concat [["maroon" "gold" "black"]])))
 
-(defn scene []
-  (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
-        palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))
-        shapes (->> (lines palette)
+(defn scene [screen palette]
+  (let [shapes (->> (lines palette)
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
-    (swap! defo assoc :palette palette)
     (csvg/svg {:width width
                :height height
                :stroke "black"
@@ -156,21 +153,23 @@
                :stroke-width 1.0}
       shapes)))
 
-(defn ui-controls []
-  (let [info @defo
-        palette (get info :palette)]
-    [:div
-     "Palette"
-     (palette/as-svg {:width (* 60 (count palette)) :height 40}
-                     palette)
-     #_(debug/pre-edn (dissoc info :palette))]))
+(defn ui-controls [palette]
+  [:div
+   "Palette"
+   (palette/as-svg {:width (* 60 (count palette)) :height 40}
+                   palette)
+   #_(debug/pre-edn @defo)])
+
+(defn page []
+  (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
+        palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))]
+    (view-sketch/page-for
+     (fn [] (csvg/timed (scene screen palette)))
+     :displacements-inbetween
+     (partial ui-controls palette))))
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for
-               scene
-               :displacements-inbetween
-               ui-controls)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
