@@ -360,13 +360,14 @@
   (let [bounds (rect/rect 0 0 width height)
         scene-fn (get modes (:mode @ui-state))]
     (reset! defo {})
-    (csvg/svg {:id "scene"
-               :width width
-               :height height
-               :stroke "black"
-               :fill "none"
-               :stroke-width 0.8}
-      (scene-fn bounds))))
+    (csvg/timed
+     (csvg/svg {:id "scene"
+                :width width
+                :height height
+                :stroke "black"
+                :fill "none"
+                :stroke-width 0.8}
+       (scene-fn bounds)))))
 
 (defn ui-controls []
   [:div

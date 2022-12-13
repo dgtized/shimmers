@@ -61,12 +61,13 @@
        (apply concat (repeatedly 200 #(line bounds dipoles))))]))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.75}
-    (shapes)))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "white"
+              :stroke-width 0.75}
+     (shapes))))
 
 (sketch/definition magnetic-fields
   {:created-at "2022-02-27"

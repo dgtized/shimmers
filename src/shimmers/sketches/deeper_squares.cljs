@@ -45,19 +45,20 @@
                          (iterate deepen (rect/rect o o (- w o) (- h o)))))))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.8}
-    (let [fx (dr/weighted {- 1
-                           + 1
-                           * 1})
-          rules (dr/weighted {[fx 30 6 8] 1
-                              [fx 72 8 8] 2
-                              [fx 30 8 12] 1
-                              [fx 30 8 16] 1})]
-      (apply shapes rules))))
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "none"
+              :stroke-width 0.8}
+     (let [fx (dr/weighted {- 1
+                            + 1
+                            * 1})
+           rules (dr/weighted {[fx 30 6 8] 1
+                               [fx 72 8 8] 2
+                               [fx 30 8 12] 1
+                               [fx 30 8 16] 1})]
+       (apply shapes rules)))))
 
 (defn ui-controls []
   [:div

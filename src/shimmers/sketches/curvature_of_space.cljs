@@ -107,12 +107,13 @@
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :fill "white"
-               :stroke-width 0.8}
-      (shapes bounds))))
+    (csvg/timed
+     (csvg/svg {:width width
+                :height height
+                :stroke "black"
+                :fill "white"
+                :stroke-width 0.8}
+       (shapes bounds)))))
 
 (sketch/definition curvature-of-space
   {:created-at "2022-01-18"
