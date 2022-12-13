@@ -4,6 +4,7 @@
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.spatialtree :as spatialtree]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; Ideas:
@@ -34,7 +35,7 @@
 
 (defn average-attraction
   ([branch attractors]
-   (average-attraction branch attractors 0 (v/vec2)))
+   (average-attraction branch attractors 0 (gv/vec2)))
   ([{:keys [position]} attractors snap-theta jitter]
    (-> (reduce (fn [acc attractor]
                  (tm/+ acc (tm/normalize (tm/- attractor position))))
@@ -107,7 +108,7 @@
                      branch branches]
                  [branch bud]))]
     (grow-branch branch (get branch-index branch)
-                 (average-attraction branch [attractor] snap-theta (v/vec2))
+                 (average-attraction branch [attractor] snap-theta (gv/vec2))
                  (max segment-distance
                       (/ (branch-distance attractor branch) 2)))))
 

@@ -9,7 +9,8 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]))
+   [thi.ng.math.noise :as noise]
+   [thi.ng.geom.vector :as gv]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
@@ -112,11 +113,11 @@
     [x (+ y ry)]))
 
 (defn random-vertex []
-  (v/vec2 (random-double) (random-double)))
+  (gv/vec2 (random-double) (random-double)))
 
 (defn randvec2
-  ([] (tm/normalize (v/vec2 (random -1 1) (random -1 1))))
-  ([n] (tm/normalize (v/vec2 (random -1 1) (random -1 1)) n)))
+  ([] (tm/normalize (gv/vec2 (random -1 1) (random -1 1))))
+  ([n] (tm/normalize (gv/vec2 (random -1 1) (random -1 1)) n)))
 
 (def ^:constant MAX-INT (Math/pow 2 32))
 (defn gaussian
