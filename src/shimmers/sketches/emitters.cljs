@@ -6,9 +6,9 @@
    [shimmers.common.particle-system :as particles]
    [shimmers.common.sequence :refer [map-kv]]
    [shimmers.math.probability :as p]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
 (defrecord Particle [source last-pos position velocity acceleration color lifespan])
 
@@ -26,7 +26,7 @@
     :last-pos position
     :position position
     :velocity velocity
-    :acceleration (v/vec2 0 0)
+    :acceleration (gv/vec2 0 0)
     :color [0 0 0 128]
     :lifespan (rand-int 1000)}))
 
@@ -38,17 +38,17 @@
 (defn setup []
   (let [size 50
         n 256]
-    {:emitters [(create-emitter (v/vec2 size size) n)
-                (create-emitter (v/vec2 size (- size)) n)
-                (create-emitter (v/vec2 (- size) size) n)
-                (create-emitter (v/vec2 (- size) (- size)) n)]
+    {:emitters [(create-emitter (gv/vec2 size size) n)
+                (create-emitter (gv/vec2 size (- size)) n)
+                (create-emitter (gv/vec2 (- size) size) n)
+                (create-emitter (gv/vec2 (- size) (- size)) n)]
      :particles []}))
 
 (defn update-particle
   [particle]
   (-> particle
       (update :lifespan dec)
-      (assoc :acceleration (g/scale (v/vec2 (q/random-2d)) 0.01))
+      (assoc :acceleration (g/scale (gv/vec2 (q/random-2d)) 0.01))
       particles/step))
 
 (defn update-state [{:keys [particles emitters] :as state}]
@@ -57,7 +57,7 @@
         emissions (for [{:keys [probability position max-particles] :as emitter} emitters
                         :when (and (< (get particles-by-source emitter 0) max-particles)
                                    (p/chance probability))]
-                    (make-particle emitter position (g/scale (v/vec2 (q/random-2d)) 0.001)))]
+                    (make-particle emitter position (g/scale (gv/vec2 (q/random-2d)) 0.001)))]
     (assoc state :particles (map update-particle (concat active-particles emissions)))))
 
 (defn draw [{:keys [particles]}]

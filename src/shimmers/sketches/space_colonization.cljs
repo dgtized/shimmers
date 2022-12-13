@@ -15,12 +15,12 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state))
@@ -64,7 +64,7 @@
 
 (defn gen-root [{[w h] :size} roots]
   (mapv (fn [base]
-          (colonize/make-root (v/vec2 (* w base) (- h 10))))
+          (colonize/make-root (gv/vec2 (* w base) (- h 10))))
         (cs/centered-range roots)))
 
 (defn generate-tree

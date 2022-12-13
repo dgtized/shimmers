@@ -8,7 +8,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
 (defn turn-right [dir] (+ dir (/ Math/PI 2)))
 (defn turn-left [dir] (- dir (/ Math/PI 2)))
@@ -16,13 +17,8 @@
 (comment
   ;; Would like to use non-floating point coords but it appears to break
   ;; the "unzipping" event, not sure how to find that otherwise.
-  (def north (v/vec2 0 1))
-  (def south (v/vec2 0 -1))
-  (def east (v/vec2 1 0))
-  (def west (v/vec2 -1 0))
-
-  (defn turn-right [[x y]] (v/vec2 y (- x)))
-  (defn turn-left [[x y]] (v/vec2 (- y) x)))
+  (defn turn-right [[x y]] (gv/vec2 y (- x)))
+  (defn turn-left [[x y]] (gv/vec2 (- y) x)))
 
 (def default-grid-cell false)
 
@@ -31,15 +27,15 @@
 
 (defn setup []
   {:grid {}
-   :ants [(create-ant (v/vec2 0 0) (/ Math/PI 2))
-          (create-ant (v/vec2 2 0) 0)]})
+   :ants [(create-ant (gv/vec2 0 0) (/ Math/PI 2))
+          (create-ant (gv/vec2 2 0) 0)]})
 
 (defn move-ant [grid {:keys [position direction] :as ant}]
   (let [pixel (get grid (:position ant) default-grid-cell)
         new-dir ((if pixel turn-right turn-left) direction)
         ;; FIXME: possible propagating floating point error?
-        new-pos (v/add position (v/vec2 (Math/cos new-dir)
-                                        (Math/sin new-dir)))]
+        new-pos (v/add position (gv/vec2 (Math/cos new-dir)
+                                         (Math/sin new-dir)))]
     [(assoc grid position (not pixel))
      (assoc ant :position new-pos :direction new-dir)]))
 
@@ -62,7 +58,7 @@
   (q/fill 0)
   (q/rect-mode :center)
   (let [{[x0 x1] :x [y0 y1] :y} (grid-range grid)
-        center (v/vec2 (/ (q/width) 2) (/ (q/height) 2))
+        center (gv/vec2 (/ (q/width) 2) (/ (q/height) 2))
         r (/ (+ (q/width) (q/height))
              (+ 20 (* 2 (+ (- x1 x0) (- y1 y0)))))]
     (doseq [[position value] grid]

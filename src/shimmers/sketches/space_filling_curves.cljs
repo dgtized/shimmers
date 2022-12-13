@@ -8,7 +8,8 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.vector :as gv]))
 
 ;; TODO: space-filling-curves can be used to offset map into a texture with
 ;; interesting locality properties. It can map a 2d coordinate to the closest
@@ -44,7 +45,7 @@
     :start (fn [depth]
              (let [divider (Math/pow 2 depth)
                    length (/ width divider)]
-               {:pos (v/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
+               {:pos (gv/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
                 :length length}))}
 
    {:name "Hilbert Curve"
@@ -55,7 +56,7 @@
     :start (fn [depth]
              (let [divider (Math/pow 2 depth)
                    length (/ width divider)]
-               {:pos (v/vec2 (- width (/ length 2)) (/ length 2))
+               {:pos (gv/vec2 (- width (/ length 2)) (/ length 2))
                 :length length}))}
 
    {:name "Sierpinsky Square"
@@ -65,7 +66,7 @@
     :start (fn [depth]
              (let [divider (Math/pow 2 depth)
                    length (/ width divider)]
-               {:pos (v/vec2 (* (/ (Math/sqrt 2) 3) length) (- height length))
+               {:pos (gv/vec2 (* (/ (Math/sqrt 2) 3) length) (- height length))
                 :length (/ length (Math/sqrt 2))}))}])
 
 (defn by-name [n]

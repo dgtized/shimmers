@@ -8,13 +8,14 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.vector :as gv]))
 
 (defn blob [base r0 r1]
   (let [seed (* base 0.05)]
     {:position
-     (tm/- (v/vec2 (q/noise seed 5) (q/noise seed 10))
-           (v/vec2 0.5 0.5))
+     (tm/- (gv/vec2 (q/noise seed 5) (q/noise seed 10))
+           (gv/vec2 0.5 0.5))
      :shape
      (for [theta (sm/range-subdivided tm/TWO_PI 10)
            :let [xoff (+ 1 (q/cos theta))

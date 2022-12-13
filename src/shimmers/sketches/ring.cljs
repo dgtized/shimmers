@@ -4,7 +4,10 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
+
 
 (defn setup []
   {:theta 0.0})
@@ -22,8 +25,8 @@
         y (* radius (q/sin theta))]
     (q/stroke-weight (+ 0.8 radial-noise))
     (q/line [x y]
-            (v/add (v/vec2 x y)
-                   (v/polar (* radial-noise 32) (+ theta radial-noise))))))
+            (tm/+ (gv/vec2 x y)
+                  (v/polar (* radial-noise 32) (+ theta radial-noise))))))
 
 (sketch/defquil ring
   :created-at "2020-12-27"

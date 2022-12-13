@@ -4,9 +4,9 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.particle-system :as particles]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defrecord Body
@@ -16,8 +16,8 @@
   (map->Body
    {:last-pos position
     :position position
-    :velocity (v/vec2 0 0)
-    :acceleration (v/vec2 0 0)
+    :velocity (gv/vec2 0 0)
+    :acceleration (gv/vec2 0 0)
     :mass mass
     :color color}))
 
@@ -26,8 +26,8 @@
 
 (defn make-random-body []
   (let [r (* 0.4 (q/height))]
-    (make-body (v/vec2 (q/random (- r) r)
-                       (q/random (- r) r))
+    (make-body (gv/vec2 (q/random (- r) r)
+                        (q/random (- r) r))
                (q/random 1e3 1e4)
                [0 0 0 96])))
 
@@ -41,7 +41,7 @@
           (tm/normalize (tm/- (:position body) position)
                         (/ (* gravity (:mass body) mass)
                            (max d2 2))))]
-    (tm/div (reduce v/add (v/vec2 0 0) forces)
+    (tm/div (reduce tm/+ (gv/vec2 0 0) forces)
             (count bodies))))
 
 (defn update-body
@@ -52,7 +52,7 @@
       particles/step))
 
 (defn visible? [body]
-  (< (g/dist (:position body) (v/vec2 0 0)) (q/height)))
+  (< (g/dist (:position body) (gv/vec2 0 0)) (q/height)))
 
 (defn restart-sim? [{:keys [start-frame bodies]} frame-count]
   (let [age (- frame-count start-frame)
@@ -66,9 +66,9 @@
      :bodies (into (repeatedly 100 make-random-body)
                    (rand-nth
                     [[]
-                     [(make-sun (v/vec2 0 0))]
-                     [(make-sun (v/vec2 (- w) 0))
-                      (make-sun (v/vec2 w 0))]]))}))
+                     [(make-sun (gv/vec2 0 0))]
+                     [(make-sun (gv/vec2 (- w) 0))
+                      (make-sun (gv/vec2 w 0))]]))}))
 
 (defn update-state [state]
   (if (restart-sim? state (q/frame-count))

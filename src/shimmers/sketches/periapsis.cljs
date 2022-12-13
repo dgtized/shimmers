@@ -6,8 +6,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.probability :as p]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; Math cobbled together from:
@@ -27,8 +27,8 @@
                         speed theta0]} t]
   (let [dt (if (> (Math/abs speed) 0) speed 1)
         theta (+ theta0 (/ t dt))]
-    (v/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
-            (* semi-minor (Math/sin theta)))))
+    (gv/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
+             (* semi-minor (Math/sin theta)))))
 
 (defn orbital-period [semi-major mass]
   (let [G 30000.0]

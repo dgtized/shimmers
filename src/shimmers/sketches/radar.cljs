@@ -6,7 +6,8 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.vector :as gv]))
 
 (defrecord Particle [position velocity])
 
@@ -23,12 +24,12 @@
         radius (* 0.45 (q/height))]
     (q/background 0)
     {:theta 0.0
-     :center (v/vec2 hw hh)
+     :center (gv/vec2 hw hh)
      :radius radius
-     :particles [(->Particle (v/vec2 0 60) (v/vec2 0.15 0.02))
-                 (->Particle (v/vec2 (* 2 hw) 60) (v/vec2 -0.2 0.02))
-                 (->Particle (v/vec2 hw 0) (v/vec2 -0.02 0.1))
-                 (->Particle (v/vec2 120 0) (v/vec2 -0.05 0.15))]
+     :particles [(->Particle (gv/vec2 0 60) (gv/vec2 0.15 0.02))
+                 (->Particle (gv/vec2 (* 2 hw) 60) (gv/vec2 -0.2 0.02))
+                 (->Particle (gv/vec2 hw 0) (gv/vec2 -0.02 0.1))
+                 (->Particle (gv/vec2 120 0) (gv/vec2 -0.05 0.15))]
      :contacts []}))
 
 (defn contact-hit [{:keys [theta radius center]} point]
@@ -37,7 +38,7 @@
         mtheta (mod theta (* 2 Math/PI))
         delta (- heading mtheta)
         tolerance 0.01]
-    (when (and (< (g/dist (v/vec2 0 0) translated-point) radius)
+    (when (and (< (g/dist (gv/vec2 0 0) translated-point) radius)
                (< (- tolerance) delta tolerance))
       ;; (println [heading mtheta delta translated-point])
       {:position translated-point :lifespan 200})))
