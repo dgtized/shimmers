@@ -3,22 +3,22 @@
    [clojure.test :as t :refer-macros [deftest is] :include-macros true]
    [shimmers.algorithm.space-colonization :as sut]
    [shimmers.math.equations :as eq]
-   [shimmers.math.vector :as v]))
+   [thi.ng.geom.vector :as gv]))
 
 (deftest closest
-  (is (= {:position (v/vec2 2 1)}
-         (sut/closest-branch (v/vec2 1 1)
-                             [{:position (v/vec2 3 3)}
-                              {:position (v/vec2 2 2)}
-                              {:position (v/vec2 2 1)}]))))
+  (is (= {:position (gv/vec2 2 1)}
+         (sut/closest-branch (gv/vec2 1 1)
+                             [{:position (gv/vec2 3 3)}
+                              {:position (gv/vec2 2 2)}
+                              {:position (gv/vec2 2 1)}]))))
 
 (deftest average-attraction
-  (is (= (v/vec2 eq/SQRT2_2 eq/SQRT2_2)
-         (sut/average-attraction (sut/->Branch nil (v/vec2))
-                                 [(v/vec2 2 2) (v/vec2 2 2)])))
-  (let [branch (sut/->Branch nil (v/vec2))
-        attractors [(v/vec2 1 0) (v/vec2 0 -1) (v/vec2 [1 -1])]]
-    (is (= (v/vec2 eq/SQRT2_2 (- eq/SQRT2_2))
+  (is (= (gv/vec2 eq/SQRT2_2 eq/SQRT2_2)
+         (sut/average-attraction (sut/->Branch nil (gv/vec2))
+                                 [(gv/vec2 2 2) (gv/vec2 2 2)])))
+  (let [branch (sut/->Branch nil (gv/vec2))
+        attractors [(gv/vec2 1 0) (gv/vec2 0 -1) (gv/vec2 [1 -1])]]
+    (is (= (gv/vec2 eq/SQRT2_2 (- eq/SQRT2_2))
            (sut/average-attraction branch attractors)))))
 
 (comment (t/run-tests))
