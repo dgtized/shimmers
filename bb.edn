@@ -5,11 +5,11 @@
   clean
   {:task (do (println "Remove target directory")
              (fs/delete-tree "target"))}
-  build
+  compile
   {:depends [clean]
    :task (do (shell "npm install")
              (clojure "-Mdev -m figwheel.main -bo release"))}
-  build-static-site
+  create-static-site
   {:task (t/build-static-site
           :build-dir "target/public/cljs-out/"
           :from "resources/public"
@@ -26,11 +26,12 @@
   github-publish
   {:task (t/github-publish :dir "static-site"
                            :repo "git@github.com:dgtized/shimmers.git")}
+
+  build
+  {:depends [compile create-static-site rewrite-index]}
+
   publish
-  {:depends [build
-             build-static-site
-             rewrite-index
-             github-publish]}
+  {:depends [build github-publish]}
 
   view
   {:task (shell "xdg-open static-site/index.html")}}}
