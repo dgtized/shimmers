@@ -225,7 +225,7 @@
   (summary-stats (range 0 1 0.001))
   (summary-stats (repeatedly 10000 #(gaussian 2 0.2)))
   (summary-stats (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
-  (summary-stats (repeatedly 10000 #(noise-at-point (v/vec2 0 0) 0.5 (v/vec2 (random 1000) (random 1000))))))
+  (summary-stats (repeatedly 10000 #(noise-at-point (gv/vec2) 0.5 (gv/vec2 (random 1000) (random 1000))))))
 
 (comment
   ;; pareto is λ X^(-1/κ) where X is a uniform rng

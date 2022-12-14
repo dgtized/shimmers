@@ -56,8 +56,7 @@
   (q/with-translation (cq/rel-vec 0.5 0.5)
     (let [{:keys [show-chain persistent]} @ui-state]
       (if persistent
-        (do
-          (q/stroke 0.0 0.05))
+        (q/stroke 0.0 0.05)
         (do
           (q/stroke 0.0 1.0)
           (q/background 1.0)))

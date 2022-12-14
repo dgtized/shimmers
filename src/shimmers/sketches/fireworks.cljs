@@ -132,7 +132,7 @@
   (vp/timestep system 2)
   state)
 
-(defn draw-particle [{:keys [age pos hue type]}]
+(defn draw-particle [{:keys [age pos hue type max-age]}]
   (case type
     :bottle
     (let [scale (tm/random 2.0 18.0)]
