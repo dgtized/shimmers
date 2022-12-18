@@ -54,6 +54,27 @@
                                           (gv/vec2 (+ percent spacer) 0.9))))
         {:rx 3}))))
 
+(defn order-on [axis]
+  (fn [{:keys [p]}] (axis p)))
+
+(defn level-meter [bounds levels]
+  (let [[tier0 tier1 coord dir]
+        (if (> (g/width bounds) (g/height bounds))
+          [{:cols (count levels) :rows 1} {:cols 1 :rows 10} (order-on :y) >]
+          [{:cols 1 :rows (count levels)} {:cols 10 :rows 1} (order-on :x) <])
+        level-sets (g/subdivide (g/scale-size bounds 0.95) tier0)]
+    (csvg/group {}
+      (mapcat (fn [level indicator-line]
+                (for [[i cell] (->> tier1
+                                    (g/subdivide (g/scale-size indicator-line 0.9))
+                                    (sort-by coord dir)
+                                    (map-indexed vector))
+                      :let [cell (g/scale-size cell 0.85)]]
+                  (if (<= i level)
+                    (vary-meta cell assoc :fill "#555")
+                    cell)))
+              levels level-sets))))
+
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
         t0 (* (/ 7 6) Math/PI)
@@ -278,6 +299,10 @@
                                  1.5
                                  :else
                                  0.33)
+                 :level-meter
+                 (cond (> area-ratio 0.25)
+                       0.66
+                       :else 0.33)
                  :knobs (cond (> area-ratio 0.20)
                               0.33
                               (> area-ratio 0.15)
@@ -321,6 +346,8 @@
             size (min (max (int (/ h n)) (* 0.05 height)) (* 0.12 height))]
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols 1})]
           (slider s false (dr/random))))
+      :level-meter
+      (level-meter bounds (repeatedly (dr/rand-nth [3 5 8 10]) #(dr/random-int 10)))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
