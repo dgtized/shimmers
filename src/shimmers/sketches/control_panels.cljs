@@ -59,7 +59,7 @@
 
 (defn level-meter [bounds levels]
   (let [[tier0 tier1 coord dir]
-        (if (> (g/width bounds) (g/height bounds))
+        (if (or (> (g/width bounds) (* 1.5 (g/height bounds))) (<= (count levels) 3))
           [{:cols (count levels) :rows 1} {:cols 1 :rows 10} (order-on :y) >]
           [{:cols 1 :rows (count levels)} {:cols 10 :rows 1} (order-on :x) <])
         level-sets (g/subdivide (g/scale-size bounds 0.95) tier0)]
