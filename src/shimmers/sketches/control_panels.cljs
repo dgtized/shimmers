@@ -305,7 +305,9 @@
                  :level-meter
                  (cond (> area-ratio 0.25)
                        0.66
-                       :else 0.33)
+                       (< area-ratio 0.05)
+                       0.05
+                       :else 0.5)
                  :knobs (cond (> area-ratio 0.20)
                               0.33
                               (> area-ratio 0.15)
