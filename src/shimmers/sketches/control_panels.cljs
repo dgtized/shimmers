@@ -71,7 +71,8 @@
                                     (map-indexed vector))
                       :let [cell (g/scale-size cell 0.85)]]
                   (if (<= i level)
-                    (vary-meta cell assoc :fill "#555")
+                    (csvg/group {}
+                      [cell (geometry/inset-rectangle cell 3)])
                     cell)))
               levels level-sets))))
 
