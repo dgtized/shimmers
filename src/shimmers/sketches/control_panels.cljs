@@ -58,10 +58,12 @@
   (fn [{:keys [p]}] (axis p)))
 
 (defn level-meter [bounds levels]
-  (let [[tier0 tier1 coord dir]
-        (if (or (> (g/width bounds) (* 1.5 (g/height bounds))) (<= (count levels) 3))
-          [{:cols (count levels) :rows 1} {:cols 1 :rows 10} (order-on :y) >]
-          [{:cols 1 :rows (count levels)} {:cols 10 :rows 1} (order-on :x) <])
+  (let [[tier0 tier1 coord dir scale]
+        (if (> (g/width bounds) (g/height bounds))
+          (let [s 10]
+            [{:cols (count levels) :rows 1} {:cols 1 :rows s} (order-on :y) > (/ 10 s)])
+          (let [s 10]
+            [{:cols 1 :rows (count levels)} {:cols s :rows 1} (order-on :x) < (/ 10 s)]))
         level-sets (g/subdivide (geometry/inset-rectangle bounds 4) tier0)]
     (csvg/group {}
       (mapcat (fn [level indicator-line]
@@ -70,7 +72,7 @@
                                     (sort-by coord dir)
                                     (map-indexed vector))
                       :let [cell (geometry/inset-rectangle cell 3)]]
-                  (if (<= i level)
+                  (if (<= (* i scale) level)
                     (csvg/group {}
                       [cell (geometry/inset-rectangle cell 3)])
                     cell)))
