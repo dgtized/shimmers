@@ -62,14 +62,14 @@
         (if (or (> (g/width bounds) (* 1.5 (g/height bounds))) (<= (count levels) 3))
           [{:cols (count levels) :rows 1} {:cols 1 :rows 10} (order-on :y) >]
           [{:cols 1 :rows (count levels)} {:cols 10 :rows 1} (order-on :x) <])
-        level-sets (g/subdivide (g/scale-size bounds 0.95) tier0)]
+        level-sets (g/subdivide (geometry/inset-rectangle bounds 4) tier0)]
     (csvg/group {}
       (mapcat (fn [level indicator-line]
                 (for [[i cell] (->> tier1
                                     (g/subdivide (g/scale-size indicator-line 0.9))
                                     (sort-by coord dir)
                                     (map-indexed vector))
-                      :let [cell (g/scale-size cell 0.85)]]
+                      :let [cell (geometry/inset-rectangle cell 3)]]
                   (if (<= i level)
                     (csvg/group {}
                       [cell (geometry/inset-rectangle cell 3)])
