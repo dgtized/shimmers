@@ -347,7 +347,8 @@
         (for [s (g/subdivide bounds {:rows (int (/ h size)) :cols 1})]
           (slider s false (dr/random))))
       :level-meter
-      (level-meter bounds (repeatedly (dr/rand-nth [3 5 8 10]) #(dr/random-int 10)))
+      (let [n (dr/weighted {2 2 3 2 5 2 6 3 8 2 10 1})]
+        (level-meter bounds (repeatedly n #(dr/random-int 10))))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
                       (* 0.06 (min width height)))
