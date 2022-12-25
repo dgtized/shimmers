@@ -235,20 +235,22 @@
      :scale 1.0}))
 
 (defn shapes []
-  (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5)])
+  (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5) (/ 1 5)])
+        cut (if (dr/chance 0.5) (- 1 cut) cut)
         slant
-        (if (dr/chance 0.80) 0.0
+        (if (dr/chance 0.10) 0.0
             (* (dr/rand-nth [-1 1])
                (dr/weighted {0.20 1
                              0.15 1
                              0.1 3
                              0.05 2})))
-        c1-p (rv (dr/random 0.35 0.35) 0.5)
-        c2-p (rv (dr/random 0.7 0.75) (+ 0.5 slant))
-        d (g/dist c1-p c2-p)
-        c1 (gc/circle c1-p (* d (- 1 cut)))
-        c2 (gc/circle c2-p (* d cut))
-        meridian (meridian c1 c2)
+        y-pos (+ 0.5 (/ slant 2))
+        left-p (rv 0.35 (- 1 y-pos))
+        right-p (rv 0.65 y-pos)
+        d (g/dist left-p right-p)
+        c-left (gc/circle left-p (* d (- 1 cut)))
+        c-right (gc/circle right-p (* d cut))
+        meridian (meridian c-left c-right)
         skew (if (dr/chance 0.75) 0.0
                  (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
                                (- (g/heading meridian))]))
@@ -266,7 +268,7 @@
 
         [shapes _]
         (add-shapes [] connectors n-shapes)]
-    (concat [c1 c2 meridian]
+    (concat [c-left c-right meridian]
             shapes)))
 
 (defonce ui-state (ctrl/state {:filled true}))
