@@ -12,11 +12,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:n 6
+(defonce ui-state (ctrl/state {:n 3
                                :persistent true
                                :show-chain true
                                :odd-even true
-                               :stretchy true}))
+                               :stretchy false}))
 
 (defn rotate-chainlinks [chain base length dt t]
   (let [{:keys [odd-even stretchy]} @ui-state
