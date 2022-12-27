@@ -268,18 +268,38 @@
 ;; circle is `1-cut/2`, radius of small circle is `cut/2`. The maximum radius of
 ;; large circle is 1/2 height, so it's x-coordinate must be at last `(1-cut)/2`.
 ;;
+(defn closest-dist [bounds point]
+  (g/dist point (g/closest-point bounds point)))
+
 (defn max-circle-in-bounds [bounds point]
-  (let [p (g/unmap-point bounds point)
-        closest-pt (g/closest-point bounds p)
-        d (g/dist closest-pt p)]
-    (gc/circle p d)))
+  (let [p (g/unmap-point bounds point)]
+    (gc/circle p (closest-dist bounds p))))
+
+(defn scale-fit [bounds l r cut]
+  (loop [{[p q] :points :as line} (gl/line2 l r)]
+    (let [d (g/dist p q)
+          dl (closest-dist bounds p)
+          dr (closest-dist bounds q)
+          r (max (* d cut) (* d (- 1 cut)))
+          max-r (max dl dr)]
+      (cond (< r (* 0.95 max-r))
+            (recur (g/scale-size line (dr/random 1.00 1.1)))
+            (> r max-r)
+            (recur (g/scale-size line (dr/random 0.9 1.00)))
+            :else
+            [p q]))))
+
+(defonce ui-state (ctrl/state {:filled true}))
 
 (defn shapes []
-  (let [cut (cut-percent)
+  (let [bounds (rect/rect 0 0 width height)
+        cut (cut-percent)
         slant (slant-grade)
         y-pos (+ 0.5 (/ slant 2))
-        left-p (rv 0.35 (- 1 y-pos))
-        right-p (rv 0.65 y-pos)
+        [left-p right-p] (scale-fit bounds
+                                    (rv 0.4 (- 1 y-pos))
+                                    (rv 0.6 y-pos)
+                                    cut)
         d (g/dist left-p right-p)
         c-left (gc/circle left-p (* d (- 1 cut)))
         c-right (gc/circle right-p (* d cut))
@@ -300,9 +320,11 @@
         [shapes _]
         (add-shapes [] connectors n-shapes)]
     (concat [c-left c-right meridian]
-            shapes)))
-
-(defonce ui-state (ctrl/state {:filled true}))
+            shapes
+            (if-not (:filled @ui-state)
+              [(gc/circle left-p 3.0)
+               (gc/circle right-p 3.0)]
+              []))))
 
 (defn scene []
   (csvg/timed
