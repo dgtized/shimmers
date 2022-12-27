@@ -324,24 +324,24 @@
 
         [shapes _]
         (add-shapes [] connectors n-shapes)]
-    (concat [c-left c-right meridian]
-            shapes
-            (if-not (:filled @ui-state)
-              [(gc/circle left-p 3.0)
-               (gc/circle right-p 3.0)]
-              []))))
+    {:shapes (concat [c-left c-right meridian] shapes)
+     :debug [(gc/circle left-p 3.0)
+             (gc/circle right-p 3.0)]}))
 
 (defn scene []
   (csvg/timed
-   (let [shapes (shapes)]
+   (let [{:keys [shapes debug]} (shapes)]
      (fn []
-       (csvg/svg {:id "scene"
-                  :width width
-                  :height height
-                  :stroke "black"
-                  :fill (if (:filled @ui-state) "white" "none")
-                  :stroke-width 1.0}
-         shapes)))))
+       (let [{:keys [filled]} @ui-state]
+         (csvg/svg {:id "scene"
+                    :width width
+                    :height height
+                    :stroke "black"
+                    :fill (if filled "white" "none")
+                    :stroke-width 1.0}
+           (if filled
+             shapes
+             (concat shapes debug))))))))
 
 
 (defn ui-controls []
