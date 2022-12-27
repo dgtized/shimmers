@@ -246,6 +246,28 @@
                        0.1 3
                        0.05 2}))))
 
+;; Suppose a rectangle of width W, with a horizontal line at center. Two circles
+;; with a particular size relation `cut` need to fit on that center line such
+;; that neither extend beyond the bounds of the rectangle. If ignoring the top
+;; and bottom bounds, then one circle has diameter `cut` and the other `1-cut`.
+;; As example, a `cut` of 1/4 means the larger circle should have 3/4 the
+;; diameter and the small should have 1/4.
+;;
+;; If we constrain on height as well, then the center point may need to approach
+;; the center, such that the radius of the larger circle `cut/2` is less than
+;; 1/2 the height. In this case the center points would need to be spaced closer
+;; to ensure radius is reduced to adjust for height.
+;;
+;; Let `d` be the distance between the two circle centers. Radius of large
+;; circle is `1-cut/2`, radius of small circle is `cut/2`. The maximum radius of
+;; large circle is 1/2 height, so it's x-coordinate must be at last `(1-cut)/2`.
+;;
+(defn max-circle-in-bounds [bounds point]
+  (let [p (g/unmap-point bounds point)
+        closest-pt (g/closest-point bounds p)
+        d (g/dist closest-pt p)]
+    (gc/circle p d)))
+
 (defn shapes []
   (let [cut (cut-percent)
         slant (slant-grade)
