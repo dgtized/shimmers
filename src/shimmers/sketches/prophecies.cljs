@@ -246,6 +246,12 @@
                        0.1 3
                        0.05 2}))))
 
+(defn random-skew [meridian]
+  (if (dr/chance 0.75) 0.0
+      (dr/rand-nth [(* (dr/rand-nth [1 -1])
+                       (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
+                    (- (g/heading meridian))])))
+
 ;; Suppose a rectangle of width W, with a horizontal line at center. Two circles
 ;; with a particular size relation `cut` need to fit on that center line such
 ;; that neither extend beyond the bounds of the rectangle. If ignoring the top
@@ -253,10 +259,10 @@
 ;; As example, a `cut` of 1/4 means the larger circle should have 3/4 the
 ;; diameter and the small should have 1/4.
 ;;
-;; If we constrain on height as well, then the center point may need to approach
-;; the center, such that the radius of the larger circle `cut/2` is less than
-;; 1/2 the height. In this case the center points would need to be spaced closer
-;; to ensure radius is reduced to adjust for height.
+;; If we constrain on height `H` as well, then the center point may need to
+;; approach the center, such that the radius of the larger circle `cut/2` is
+;; less than 1/2 the height. In this case the center points would need to be
+;; spaced closer to ensure radius is reduced to adjust for height.
 ;;
 ;; Let `d` be the distance between the two circle centers. Radius of large
 ;; circle is `1-cut/2`, radius of small circle is `cut/2`. The maximum radius of
@@ -278,9 +284,7 @@
         c-left (gc/circle left-p (* d (- 1 cut)))
         c-right (gc/circle right-p (* d cut))
         meridian (meridian c-left c-right)
-        skew (if (dr/chance 0.75) 0.0
-                 (dr/rand-nth [(* (dr/rand-nth [1 -1]) (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
-                               (- (g/heading meridian))]))
+        skew (random-skew meridian)
         heading (+ (g/heading meridian) skew)
 
         n-shapes
