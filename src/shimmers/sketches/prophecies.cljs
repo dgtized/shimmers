@@ -282,12 +282,16 @@
           dr (closest-dist bounds q)
           r (max (* d cut) (* d (- 1 cut)))
           max-r (max dl dr)]
-      (cond (< r (* 0.95 max-r))
+      (cond (< r (* 0.975 max-r))
             (recur (g/scale-size line (dr/random 1.00 1.1)))
             (> r max-r)
             (recur (g/scale-size line (dr/random 0.9 1.00)))
             :else
-            [p q]))))
+            (let [x (* 0.5
+                       (if (> (- 1 cut) cut)
+                         (- (g/width bounds) (* cut d) (:x q))
+                         (- (- (:x p) (* (- 1 cut) d)))))]
+              (g/translate line (gv/vec2 x (* x (g/slope-xy line)))))))))
 
 (defonce ui-state (ctrl/state {:filled true}))
 
@@ -296,10 +300,11 @@
         cut (cut-percent)
         slant (slant-grade)
         y-pos (+ 0.5 (/ slant 2))
-        [left-p right-p] (scale-fit bounds
-                                    (rv 0.4 (- 1 y-pos))
-                                    (rv 0.6 y-pos)
-                                    cut)
+        {[left-p right-p] :points}
+        (scale-fit bounds
+                   (rv 0.4 (- 1 y-pos))
+                   (rv 0.6 y-pos)
+                   cut)
         d (g/dist left-p right-p)
         c-left (gc/circle left-p (* d (- 1 cut)))
         c-right (gc/circle right-p (* d cut))
