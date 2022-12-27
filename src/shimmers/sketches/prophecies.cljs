@@ -238,7 +238,7 @@
   (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5) (/ 1 5)])
         cut (if (dr/chance 0.5) (- 1 cut) cut)
         slant
-        (if (dr/chance 0.10) 0.0
+        (if (dr/chance 0.50) 0.0
             (* (dr/rand-nth [-1 1])
                (dr/weighted {0.20 1
                              0.15 1
