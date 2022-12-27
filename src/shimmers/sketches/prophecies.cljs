@@ -234,16 +234,21 @@
      :direction (direction heading)
      :scale 1.0}))
 
+(defn cut-percent []
+  (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5) (/ 1 5)])]
+    (if (dr/chance 0.5) (- 1 cut) cut)))
+
+(defn slant-grade []
+  (if (dr/chance 0.50) 0.0
+      (* (dr/rand-nth [-1 1])
+         (dr/weighted {0.20 1
+                       0.15 1
+                       0.1 3
+                       0.05 2}))))
+
 (defn shapes []
-  (let [cut (dr/rand-nth [(/ 1 3) (/ 1 4) (/ 2 5) (/ 1 5)])
-        cut (if (dr/chance 0.5) (- 1 cut) cut)
-        slant
-        (if (dr/chance 0.50) 0.0
-            (* (dr/rand-nth [-1 1])
-               (dr/weighted {0.20 1
-                             0.15 1
-                             0.1 3
-                             0.05 2})))
+  (let [cut (cut-percent)
+        slant (slant-grade)
         y-pos (+ 0.5 (/ slant 2))
         left-p (rv 0.35 (- 1 y-pos))
         right-p (rv 0.65 y-pos)
