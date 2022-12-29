@@ -114,6 +114,12 @@
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
          (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
 
+;; Idea for polygon hatch: hatch the bounding rectangle and then for each line,
+;; intersect with polygon and connect first hit with second, third with 4th,
+;; etc. However need to account for coincident segments by eliding those
+;; segments. I *think* this covers concave polygons, though not those with
+;; holes.
+
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; Note this is probably broken if segment is entirely inside circle
 (defn clip-circle

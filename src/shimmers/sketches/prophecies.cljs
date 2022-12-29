@@ -202,6 +202,7 @@
     (when (and (collide/bounded? (rect/rect width height) padded)
                (not-any? (fn [s] (collide/overlaps? s padded)) shapes)
                (not-any? (fn [s] (collide/overlaps? s line)) shapes))
+      ;; TODO: add hatching here, but not supporting polygons yet
       (let [shading
             (if (dr/chance 0.5)
               ((dr/rand-nth [deepen nested])
