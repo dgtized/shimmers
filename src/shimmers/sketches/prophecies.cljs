@@ -44,11 +44,6 @@
   (->> (range 0.0 0.8 (/ 0.8 n))
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
-(defn maybe [prob operation]
-  (if (dr/chance prob)
-    (operation)
-    []))
-
 (defn square [connect size angle]
   (-> (rect/rect size)
       (g/center)
@@ -199,17 +194,22 @@
         len (* scale (gen-size))
         size (* scale (gen-size))
         connect (v/+polar vertex len angle)
-        shape ((dr/rand-nth (vals poly-shapes)) connect size angle)
+        [shape-name shape-fn] (dr/rand-nth (seq poly-shapes))
+        shape (shape-fn connect size angle)
         line (gl/line2 vertex connect)
         padded (g/scale-size shape 1.2)
         p-area (/ (g/area shape) width)]
     (when (and (collide/bounded? (rect/rect width height) padded)
                (not-any? (fn [s] (collide/overlaps? s padded)) shapes)
                (not-any? (fn [s] (collide/overlaps? s line)) shapes))
-      (concat [line shape]
-              (maybe 0.5 (partial (dr/rand-nth [deepen nested]) shape
-                                  (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
-                                          (dr/random-int 3 9)))))))))
+      (let [shading
+            (if (dr/chance 0.5)
+              ((dr/rand-nth [deepen nested])
+               shape
+               (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
+                       (dr/random-int 3 9))))
+              [])]
+        (concat [line shape] shading)))))
 
 (defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
