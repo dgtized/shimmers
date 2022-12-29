@@ -194,7 +194,7 @@
         len (* scale (gen-size))
         size (* scale (gen-size))
         connect (v/+polar vertex len angle)
-        [shape-name shape-fn] (dr/rand-nth (seq poly-shapes))
+        [_shape-name shape-fn] (dr/rand-nth (seq poly-shapes))
         shape (shape-fn connect size angle)
         line (gl/line2 vertex connect)
         padded (g/scale-size shape 1.2)
