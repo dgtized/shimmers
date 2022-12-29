@@ -118,7 +118,10 @@
 ;; intersect with polygon and connect first hit with second, third with 4th,
 ;; etc. However need to account for coincident segments by eliding those
 ;; segments. I *think* this covers concave polygons, though not those with
-;; holes.
+;; holes. Correct algorithm is probably to
+;; https://en.wikipedia.org/wiki/Polygon_triangulation, and then hatch each
+;; triangle. This may still require hatching the bounding rectangle to provide
+;; the initial lines to intersect each triangle.
 
 ;; https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm
 ;; Note this is probably broken if segment is entirely inside circle
