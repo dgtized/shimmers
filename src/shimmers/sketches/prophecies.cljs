@@ -143,8 +143,8 @@
 (def poly-shapes
   {:square square
    :circle circle
-   :point point-triangle
-   :edge edge-triangle
+   :point-triangle point-triangle
+   :edge-triangle edge-triangle
    :flat-pentagon flat-pentagon
    :pointy-pentagon pointy-pentagon
    :flat-hex flat-hex
