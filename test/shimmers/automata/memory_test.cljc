@@ -1,6 +1,6 @@
 (ns shimmers.automata.memory-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.automata.memory :as sut]))
 
 (def pages 8)
