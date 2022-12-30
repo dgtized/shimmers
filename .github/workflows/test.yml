@@ -49,4 +49,4 @@ jobs:
         run: bin/lint
 
       - name: Test
-        run: bin/kaocha
+        run: bin/kaocha unit-cljc
