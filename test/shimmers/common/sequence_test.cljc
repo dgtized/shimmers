@@ -1,6 +1,6 @@
 (ns shimmers.common.sequence-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.common.sequence :as sut]))
 
 (t/deftest rotate

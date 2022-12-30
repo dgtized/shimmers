@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.minimum-spanning-tree-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.algorithm.minimum-spanning-tree :as sut]
    [thi.ng.geom.vector :as gv]))
 

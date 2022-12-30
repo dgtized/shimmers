@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.quadtree-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.algorithm.quadtree :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]

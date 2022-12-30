@@ -1,8 +1,6 @@
 (ns shimmers.math.geometry-test
   (:require
-   [clojure.test :as t
-    :refer-macros [deftest is run-tests]
-    :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.math.geometry :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -38,4 +36,4 @@
     (is (not (g/intersect-shape c1 (g/translate c2 (gv/vec2 2.0001 0))))
         "outside of range, return no intersection")))
 
-(comment (run-tests))
+(comment (t/run-tests))

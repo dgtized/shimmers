@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.space-colonization-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.algorithm.space-colonization :as sut]
    [shimmers.math.equations :as eq]
    [thi.ng.geom.vector :as gv]))

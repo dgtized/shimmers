@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.polygon-detection-test
   (:require
-   [clojure.test :as t :refer-macros [are deftest is] :include-macros true]
+   [clojure.test :as t :refer [are deftest is] :include-macros true]
    [loom.graph :as lg]
    [shimmers.algorithm.polygon-detection :as sut]
    [shimmers.math.vector :as v]

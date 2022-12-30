@@ -1,6 +1,6 @@
 (ns shimmers.algorithm.wave-function-collapse-test
   (:require
-   [clojure.test :as t :refer-macros [deftest is] :include-macros true]
+   [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.algorithm.wave-function-collapse :as sut]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
