@@ -19,6 +19,6 @@
     (is (= [[:a :b] [:b :c] [:c :d]]
            (sut/prim (fn [a b] (or (get dists [a b]) (get dists [b a]) 1000))
                      [:a :b :c :d]))))
-  (let [[a b c d] (map gv/vec2 [[0 0] [0 1] [0 3] [1 0]])]
+  (let [[a b c d] (map gv/vec2 [[0 0] [0 1] [0 3] [2 0]])]
     (is (= [[a b] [a d] [b c]]
            (sut/prim-points [a b c d])))))

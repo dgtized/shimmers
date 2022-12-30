@@ -21,7 +21,7 @@
   (->> s
        str/split-lines
        (map str/trim)
-       (mapv vec)))
+       (mapv (comp vec str))))
 
 (defn dims [grid]
   [(count (first grid))
@@ -32,7 +32,7 @@
     (->>
      (for [j (range h)
            i (range w)]
-       [(gv/vec2 i j) (nth (nth matrix j) i)])
+       [(gv/vec2 i j) (str (nth (nth matrix j) i))])
      (into {:dims [w h]
             :directions directions}))))
 

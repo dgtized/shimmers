@@ -22,8 +22,11 @@
                           {:file "node_modules/d3-delaunay/dist/d3-delaunay.js"
                            :file-min "node_modules/d3-delaunay/dist/d3-delaunay.min.js"
                            :provides ["d3-delaunay"]}]}
-          :infer-externs true
-          }]
+          :infer-externs true}
+         {:id :unit-cljc
+          :type :kaocha.type/clojure.test
+          :source-paths  ["src"]
+          :test-paths    ["test"]}]
  ;; :capture-output? false
  ;; :bindings {kaocha.type.cljs/*debug* true}
  :reporter [kaocha.report/documentation]

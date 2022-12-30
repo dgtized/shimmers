@@ -54,11 +54,14 @@
   (when (seq outbound)
     (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
-        (apply max-key
-               (fn [v] (let [p (tm/- v vertex)]
-                        [(g/angle-between p from-vertex)
-                         (/ 1.0 (tm/mag-squared p))]))
-               points))
+        (->> points
+             (map (fn [v] (let [p (tm/- v vertex)]
+                           [[(g/angle-between p from-vertex)
+                             (/ 1.0 (tm/mag-squared p))]
+                            v])))
+             (sort-by first)
+             last
+             second))
       from)))
 
 (defn counter-clockwise-point
@@ -68,11 +71,14 @@
   (when (seq outbound)
     (if-let [points (seq (remove #{from} outbound))]
       (let [from-vertex (tm/- from vertex)]
-        (apply min-key
-               (fn [v] (let [p (tm/- v vertex)]
-                        [(- (g/angle-between p from-vertex))
-                         (tm/mag-squared p)]))
-               points))
+        (->> points
+             (map (fn [v] (let [p (tm/- v vertex)]
+                           [[(- (g/angle-between p from-vertex))
+                             (/ 1.0 (tm/mag-squared p))]
+                            v])))
+             (sort-by first)
+             last
+             second))
       from)))
 
 (defn find-cycle

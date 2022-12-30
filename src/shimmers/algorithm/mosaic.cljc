@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.mosaic
-  (:require [thi.ng.geom.vector :as gv]
-            [thi.ng.geom.core :as g]))
+  (:require
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]))
 
 (defn translate [cells pos]
   (map #(update % :pos g/translate pos) cells))
@@ -8,11 +9,12 @@
 (defn max-height [cells]
   (inc (apply max (map #(get-in % [:pos 1]) cells))))
 
+;; FIXME: fix for test crash in cljc unit tests
 (defn max-width [cells]
   (inc (apply max (map #(get-in % [:pos 0]) cells))))
 
 (defn column [cells col]
-  (filterv (fn [cell] (= col (get-in cell [:pos 0]))) cells))
+  (filterv (fn [cell] (= col (int (get-in cell [:pos 0])))) cells))
 
 (defn rotate-r [cells]
   (mapcat (fn [col]

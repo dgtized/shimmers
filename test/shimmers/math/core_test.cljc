@@ -63,9 +63,9 @@
   (is (tm/delta= 1 (sut/radial-distance 0 (+ tm/TWO_PI 1)))))
 
 (deftest range-subdivided
-  (is (= [0] (sut/range-subdivided 2 0)))
-  (is (= [0] (sut/range-subdivided 2 1)))
-  (is (= [0 1] (sut/range-subdivided 2 2)))
-  (is (= [0 1 2] (sut/range-subdivided 3 3))))
+  (is (tm/delta= [0] (sut/range-subdivided 2 0)))
+  (is (tm/delta= [0] (sut/range-subdivided 2 1)))
+  (is (tm/delta= [0 1] (sut/range-subdivided 2 2)))
+  (is (tm/delta= [0 1 2] (sut/range-subdivided 3 3))))
 
 (comment (t/run-tests))

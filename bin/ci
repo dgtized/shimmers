@@ -1,4 +1,4 @@
 #!/bin/bash
 
 bin/lint
-bin/kaocha
+bin/kaocha unit-cljc

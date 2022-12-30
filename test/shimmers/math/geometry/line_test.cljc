@@ -27,7 +27,7 @@
   (is (tm/delta= (g/heading-xz (gl/line3 [0 0 0] [0 0 1])) tm/HALF_PI))
   (is (tm/delta= (g/heading-yz (gl/line3 [0 0 0] [0 2 0])) 0))
   (is (tm/delta= (g/heading-yz (gl/line3 [0 0 0] [0 0 1])) tm/HALF_PI))
-  (is (tm/delta= (g/angle-between (gl/line3 [0 0 0] [1 1 1]) [1 1 1]) 0.0 1e-3))
+  (is (tm/delta= (g/angle-between (gl/line3 [0 0 0] [1 0 1]) [1 0 1]) 0.0 1e-3))
   (is (tm/delta= (g/angle-between (gl/line3 [0 0 0] [1 0 0]) [0 1 0]) tm/HALF_PI))
   (is (tm/delta= (g/slope-xy (gl/line3 [0 0 0] [2 0 0])) 0))
   (is (tm/delta= (g/slope-xy (gl/line3 [0 0 0] [1 1 0])) 1))

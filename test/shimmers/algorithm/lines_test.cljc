@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.lines-test
   (:require
    [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.geometry.line]
    [shimmers.algorithm.lines :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -17,40 +18,45 @@
             (gl/line2 [3 1] [2 2])])
 
 (deftest points->lines
-  (is (= lines (sut/points->lines points))))
+  (is (tm/delta= lines (sut/points->lines points))))
 
 (deftest lines->points
-  (is (= points (sut/lines->points lines))))
+  (is (tm/delta= points (sut/lines->points lines))))
 
 (deftest segment-at
-  (is (= [(gl/line2 0 0 1 1)
-          (gl/line2 1 1 2 2)]
-         (sut/segment-at (gl/line2 0 0 2 2))))
-  (is (= [(gl/line2 0 0 0.5 0.5)
-          (gl/line2 0.5 0.5 4 4)]
-         (sut/segment-at (gl/line2 0 0 4 4) 0.125))))
+  (is (tm/delta= [(gl/line2 0 0 1 1)
+                  (gl/line2 1 1 2 2)]
+                 (sut/segment-at (gl/line2 0 0 2 2))))
+  (is (tm/delta= [(gl/line2 0 0 0.5 0.5)
+                  (gl/line2 0.5 0.5 4 4)]
+                 (sut/segment-at (gl/line2 0 0 4 4) 0.125))))
 
 (deftest segmented
-  (is (= [(gl/line2 0 0 0 5) (gl/line2 0 5 0 10)]
-         (sut/segmented (gl/line2 0 0 0 10) 2)))
-  (is (= [(gl/line2 0 0 1 3) (gl/line2 1 3 2 6) (gl/line2 2 6 3 9)]
-         (sut/segmented (gl/line2 0 0 3 9) 3)))
-  (is (thrown-with-msg? js/Error #"pos-int"
-                        (sut/segmented (gl/line2 0 0 1 0) 1.1))))
+  (is (tm/delta= [(gl/line2 0 0 0 5) (gl/line2 0 5 0 10)]
+                 (sut/segmented (gl/line2 0 0 0 10) 2)))
+  (is (tm/delta= [(gl/line2 0 0 1 3) (gl/line2 1 3 2 6) (gl/line2 2 6 3 9)]
+                 (sut/segmented (gl/line2 0 0 3 9) 3)))
+  #?(:cljs
+     (is (thrown-with-msg? js/Error #"pos-int"
+                           (sut/segmented (gl/line2 0 0 1 0) 1.1)))))
 
 (deftest points-between
   (let [line (gl/line2 0 0 100 100)
         diagonal-pts (map (fn [p] (gv/vec2 (map int p))) (g/sample-uniform line 10 true))]
-    (is (= [[14 14] [21 21] [28 28]]
-           (sut/points-between diagonal-pts 0.1 0.3)))
+    (is (tm/delta=
+         [[14 14] [21 21] [28 28]]
+         (sut/points-between diagonal-pts 0.1 0.3)))
     (is (= []
            (sut/points-between diagonal-pts 0.5 0.5)))
-    (is (thrown-with-msg? js/Error #"<= t0 t1"
-                          (sut/points-between diagonal-pts 1.0 0.0)))
-    (is (= [[0 0] [7 7]]
-           (sut/points-between diagonal-pts 0.0 0.1)))
-    (is (= [[91 91] [98 98] [100 100]]
-           (sut/points-between diagonal-pts 0.9 1.0)))))
+    #?(:cljs
+       (is (thrown-with-msg? js/Error #"<= t0 t1"
+                             (sut/points-between diagonal-pts 1.0 0.0))))
+    (is (tm/delta=
+         [[0 0] [7 7]]
+         (sut/points-between diagonal-pts 0.0 0.1)))
+    (is (tm/delta=
+         [[91 91] [98 98] [100 100]]
+         (sut/points-between diagonal-pts 0.9 1.0)))))
 
 (deftest clip-line
   (is (= [] (sut/clip-line (gl/line2 0 0 10 10) (rect/rect 10 2 5 5)))
@@ -121,12 +127,13 @@
          (sut/remove-coincident-segments (gp/polygon2 [1 1] [2 2] [3 3] [5 5] [5 4] [5 3] [5 0] [4 0] [0 0])))
       "coincident vertices on multiple edges and loop-back vertex"))
 
-(defn roughly-same-polygon [a b]
-  (let [as (g/vertices a)
-        bs (g/vertices b)]
-    (and (= (count as) (count bs))
-         (every? (fn [[p q]] (tm/delta= p q))
-                 (map vector as bs)))))
+(defn isecs= [expected actual]
+  (->> (map (fn [e a]
+              (and (tm/delta= (:edge e) (:edge a))
+                   (tm/delta= (:p e) (:p a))
+                   (tm/delta= (:pair e) (:pair a))))
+            expected actual)
+       (every? true?)))
 
 (deftest find-paired-intersections-for-cut
   (let [triangle (gp/polygon2 [0 0] [10 0] [0 10])]
@@ -136,42 +143,56 @@
     (is (empty? (sut/find-paired-intersections triangle
                                                (gl/line2 [-5 5] [5 -5])))
         "glancing intersection at one vertex")
-    (is (= [{:edge [[0 0] [10 0]] :p [0 0] :pair [5 5]}
-            {:edge [[10 0] [0 10]] :p [5 5] :pair [0 0]}]
-           (sut/find-paired-intersections triangle (gl/line2 [0 0] [10 10])))
+    (is (isecs=
+         [{:edge [[0 0] [10 0]] :p [0 0] :pair [5 5]}
+          {:edge [[10 0] [0 10]] :p [5 5] :pair [0 0]}]
+         (sut/find-paired-intersections triangle (gl/line2 [0 0] [10 10])))
         "intersection with vertex & edge"))
   (let [square (rect/rect [0 0] [10 10])]
-    (is (= [{:edge [[0 0] [10 0]] :p [0 0] :pair [10 10]}
-            {:edge [[10 10] [0 10]] :p [10 10] :pair [0 0]}]
-           (sut/find-paired-intersections square (gl/line2 [0 0] [10 10])))
+    (is (isecs=
+         [{:edge [[0 0] [10 0]] :p [0 0] :pair [10 10]}
+          {:edge [[10 10] [0 10]] :p [10 10] :pair [0 0]}]
+         (sut/find-paired-intersections square (gl/line2 [0 0] [10 10])))
         "intersection at two vertices")
-    (is (= [{:edge [[0 10] [0 0]] :p [0 5] :pair [10 5]}
-            {:edge [[10 0] [10 10]] :p [10 5] :pair [0 5]}]
-           (sut/find-paired-intersections square (gl/line2 [0 5] [10 5])))
+    (is (isecs=
+         [{:edge [[0 10] [0 0]] :p [0 5] :pair [10 5]}
+          {:edge [[10 0] [10 10]] :p [10 5] :pair [0 5]}]
+         (sut/find-paired-intersections square (gl/line2 [0 5] [10 5])))
         "intersection at two edges"))
   (let [convex-poly (gp/polygon2 [0 0] [10 0] [10 10] [8 10] [8 4] [2 4] [2 10] [0 10])]
-    (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
-            {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
-           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [2 4])))
+    (is (isecs=
+         [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
+          {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
+         (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [2 4])))
         "clip left tail")
-    (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
-            {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
-           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [8 4])))
+    (is (isecs=
+         [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
+          {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}]
+         (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [8 4])))
         "clip left tail with coincident segment removed")
-    (is (= [{:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
-            {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
-           (sut/find-paired-intersections convex-poly (gl/line2 [8 4] [10 4])))
+    (is (isecs=
+         [{:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
+          {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
+         (sut/find-paired-intersections convex-poly (gl/line2 [8 4] [10 4])))
         "clip right tail")
     #_(is (= [{:edge [[8 10] [8 4]] :p [8 4] :pair [10 4]}
               {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
              (sut/find-paired-intersections convex-poly (gl/line2 [2 4] [10 4])))
           "clip right tail with coincident segment removed")
-    (is (= [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
-            {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}
-            {:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
-            {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
-           (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [10 4])))
+    (is (isecs=
+         [{:edge [[0 10] [0 0]] :p [0 4] :pair [2 4]}
+          {:edge [[2 4] [2 10]] :p [2 4] :pair [0 4]}
+          {:edge [[8 4] [2 4]] :p [8 4] :pair [10 4]}
+          {:edge [[10 0] [10 10]] :p [10 4] :pair [8 4]}]
+         (sut/find-paired-intersections convex-poly (gl/line2 [0 4] [10 4])))
         "coincident in middle")))
+
+(defn roughly-same-polygon [a b]
+  (let [as (g/vertices a)
+        bs (g/vertices b)]
+    (and (= (count as) (count bs))
+         (every? (fn [[p q]] (tm/delta= p q))
+                 (map vector as bs)))))
 
 (deftest cut-polygon
   (let [poly (gp/polygon2 [0 0] [10 0] [0 10])
@@ -364,22 +385,33 @@
            (sut/join-polygons (rect/rect 1 1 8 8) (rect/rect 10)))
         "b contains a"))
 
+(defn edges= [expected actual]
+  (->> (map (fn [e a]
+              (and (tm/delta= (:segment e) (:segment a))
+                   (tm/delta= (:edge-a e) (:edge-a a))
+                   (tm/delta= (:edge-b e) (:edge-b a))))
+            expected actual)
+       (every? true?)))
+
 (deftest coincident-edges
-  (is (= [{:segment [[10 0] [0 10]] :edge-a [[10 0] [0 10]] :edge-b [[10 0] [0 10]]}]
-         (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [0 10])
-                               (gp/polygon2 [10 0] [0 10] [10 10])))
+  (is (edges=
+       [{:segment [[10 0] [0 10]] :edge-a [[10 0] [0 10]] :edge-b [[10 0] [0 10]]}]
+       (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [0 10])
+                             (gp/polygon2 [10 0] [0 10] [10 10])))
       "exact coincident edge")
-  (is (= [{:segment [[10 5] [10 0]] :edge-a [[10 0] [10 10]] :edge-b [[10 5] [10 0]]}]
-         (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
-                               (gp/polygon2 [10 0] [15 0] [15 5] [10 5])))
+  (is (edges=
+       [{:segment [[10 5] [10 0]] :edge-a [[10 0] [10 10]] :edge-b [[10 5] [10 0]]}]
+       (sut/coincident-edges (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+                             (gp/polygon2 [10 0] [15 0] [15 5] [10 5])))
       "partial coincident edge")
   (is (empty? (sut/coincident-edges (rect/rect 10) (rect/rect 15 15 1 1)))
       "no coincident edges")
-  (is (= [{:segment [[0 0] [10 0]] :edge-a [[0 0] [10 0]] :edge-b [[0 0] [10 0]]}
-          {:segment [[10 0] [10 10]] :edge-a [[10 0] [10 10]] :edge-b [[10 0] [10 10]]}
-          {:segment [[10 10] [0 10]] :edge-a [[10 10] [0 10]] :edge-b [[10 10] [0 10]]}
-          {:segment [[0 10] [0 0]] :edge-a [[0 10] [0 0]] :edge-b [[0 10] [0 0]]}]
-         (sut/coincident-edges (rect/rect 10) (rect/rect 10)))
+  (is (edges=
+       [{:segment [[0 0] [10 0]] :edge-a [[0 0] [10 0]] :edge-b [[0 0] [10 0]]}
+        {:segment [[10 0] [10 10]] :edge-a [[10 0] [10 10]] :edge-b [[10 0] [10 10]]}
+        {:segment [[10 10] [0 10]] :edge-a [[10 10] [0 10]] :edge-b [[10 10] [0 10]]}
+        {:segment [[0 10] [0 0]] :edge-a [[0 10] [0 0]] :edge-b [[0 10] [0 0]]}]
+       (sut/coincident-edges (rect/rect 10) (rect/rect 10)))
       "identity, all edges are coincident"))
 
 (comment (t/run-tests))
