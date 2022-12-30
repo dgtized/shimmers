@@ -1,5 +1,6 @@
 (ns shimmers.automata.simplify
-  (:require [cljs.core.match :refer-macros [match]]
+  (:require #?(:clj [clojure.core.match :refer [match]]
+               :cljs [cljs.core.match :refer [match] :include-macros true])
             [shimmers.common.sequence :as cs]))
 
 (defn expand-possible-instructions
