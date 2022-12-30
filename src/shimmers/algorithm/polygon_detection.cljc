@@ -73,11 +73,11 @@
       (let [from-vertex (tm/- from vertex)]
         (->> points
              (map (fn [v] (let [p (tm/- v vertex)]
-                           [[(- (g/angle-between p from-vertex))
-                             (/ 1.0 (tm/mag-squared p))]
+                           [[(g/angle-between p from-vertex)
+                             (tm/mag-squared p)]
                             v])))
              (sort-by first)
-             last
+             first
              second))
       from)))
 
