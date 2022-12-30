@@ -10,12 +10,13 @@
 
 (extend-type Line2
   tm/IDeltaEquals
-  (delta= [_ line] (tm/delta= _ line tm/*eps*))
-  (delta= [{[a b] :points} line eps]
-    (if (instance? Line2 line)
-      (let [{[c d] :points} line]
-        (and (tm/delta= a c eps) (tm/delta= b d eps)))
-      false))
+  (delta=
+    ([_ line] (tm/delta= _ line tm/*eps*))
+    ([{[a b] :points} line eps]
+     (if (instance? Line2 line)
+       (let [{[c d] :points} line]
+         (and (tm/delta= a c eps) (tm/delta= b d eps)))
+       false)))
   g/IHeading
   (heading [{[p q] :points}]
     (g/heading (tm/- q p)))
