@@ -62,9 +62,8 @@
                              (keep (partial convey bounds (tm/* velocity dt)))
                              (add-shape bounds))))))
 
-(defn draw [{:keys [shapes bounds]}]
+(defn draw [{:keys [shapes]}]
   (q/background 1.0)
-  #_(qdg/draw bounds)
   (doseq [s shapes]
     (qdg/draw s)))
 
