@@ -14,10 +14,9 @@
   (mapv (fn [p] (g/translate (tm/* p scale) pos))
         points))
 
-(defn plot [r points]
+(defn plot [points]
   (q/begin-shape)
   (doseq [[x y] points]
-    #_(cq/circle x y r)
     (q/vertex x y))
   (q/end-shape))
 
@@ -66,13 +65,13 @@
     (doseq [base (butlast (tm/norm-range 5))]
       (q/with-rotation [(* base eq/TAU)]
         (q/stroke 0.0)
-        (plot 2 inner)
+        (plot inner)
         (q/stroke 0.2)
-        (plot 2 left)
-        (plot 2 right)
+        (plot left)
+        (plot right)
         (q/stroke 0.4)
-        (plot 2 big-left)
-        (plot 2 big-right)))))
+        (plot big-left)
+        (plot big-right)))))
 
 (sketch/defquil unwinding
   :created-at "2023-01-01"
