@@ -44,7 +44,7 @@
   (q/color-mode :hsl 1.0)
   (let [width (q/width)
         height (q/height)
-        bounds (rect/rect 0 (* 0.4 height) width (* 0.2 height))]
+        bounds (rect/rect 0 (/ height 3) width (/ height 3))]
     {:t 0
      :velocity (gv/vec2 (- (/ width 200)) 0)
      :bounds bounds
