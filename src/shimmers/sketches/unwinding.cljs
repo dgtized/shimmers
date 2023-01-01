@@ -45,9 +45,11 @@
         back (mapv (comp (fn [p] (g/translate p (last outer)))
                          (scaled 4))
                    (eq/clothoid-from 10 length-back 50 1 (- eq/TAU angle2) (gv/vec2)))]
-    (plot 2 inner)
-    (plot 2 outer)
-    (plot 2 back)))
+    (doseq [base (butlast (tm/norm-range 5))]
+      (q/with-rotation [(* base eq/TAU)]
+        (plot 2 inner)
+        (plot 2 outer)
+        (plot 2 back)))))
 
 (sketch/defquil unwinding
   :created-at "2023-01-01"
