@@ -5,6 +5,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -14,10 +16,16 @@
    [thi.ng.math.core :as tm]))
 
 (defn generate-shape [{[_ y] :p [w h] :size}]
-  (let [x-entry (* 0.9 w)
+  (let [x-entry (* w 0.95)
         radius (dr/random (* 0.1 h) (* 0.5 h))
-        y-pos (+ y radius (dr/random (- h (* 2 radius))))]
-    (gc/circle x-entry y-pos (* radius 0.95))))
+        y-pos (+ y radius (dr/random (- h (* 2 radius))))
+        circle (gc/circle x-entry y-pos (* radius 0.95))]
+    ((dr/weighted
+      {(fn [] circle) 1
+       (fn [] (g/scale-size circle 0.5)) 1
+       (fn [] (geometry/rotate-around-centroid
+              (g/bounds (g/scale-size circle 0.4))
+              (dr/random eq/TAU))) 1}))))
 
 (defn convey [bounds dx shape]
   (let [shape' (g/translate shape dx)]

@@ -28,8 +28,9 @@
 
 (defmethod overlaps?
   [Circle2 Polygon2] [circle poly]
-  (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
-        (g/edges poly)))
+  (or (g/contains-point? poly (:p circle))
+      (some (fn [[p q]] (intersect/circle-segment-overlap? circle p q))
+            (g/edges poly))))
 
 (defmethod overlaps?
   [Circle2 Rect2] [c r]
