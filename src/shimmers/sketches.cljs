@@ -177,6 +177,7 @@
    shimmers.sketches.undulating-figures
    shimmers.sketches.uniform-distribution
    shimmers.sketches.unit-circle
+   shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
    shimmers.sketches.verlet-brushes
    shimmers.sketches.video-shader
