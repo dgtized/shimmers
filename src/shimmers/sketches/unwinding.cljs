@@ -35,11 +35,14 @@
   (q/translate (cq/rel-vec 0.5 0.5))
   (q/scale 1 -1)
   (q/stroke-weight 2)
-  (let [length-inner (+ 20 (* 15 (Math/sin (+ t Math/PI))))
-        scaled (fn [s] (fn [p] (tm/* p s)))
-        inner (mapv (scaled 7)
-                    (eq/clothoid-from 7 length-inner 50 -1 t (gv/vec2)))
+  (let [scaled (fn [s] (fn [p] (tm/* p s)))
+        inner
+        (mapv (scaled 7)
+              (eq/clothoid-from 9
+                                (+ 25 (* 15 (Math/cos t)))
+                                50 -1 t (gv/vec2)))
         angle (g/heading (apply tm/- (reverse (take-last 2 inner))))
+
         left
         (remap-from (last inner) 7
                     (eq/clothoid 10
