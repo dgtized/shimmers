@@ -34,8 +34,9 @@
 
 (defn add-shape [bounds shapes]
   (let [new-shape (generate-shape bounds)]
-    (if (or (> (count shapes) 200)
-            (some (partial collide/overlaps? new-shape) (take 20 shapes)))
+    (if (or (> (count shapes) 500)
+            (some (partial collide/overlaps? (g/scale-size new-shape 1.25))
+                  (take 20 shapes)))
       shapes
       (conj shapes new-shape))))
 
