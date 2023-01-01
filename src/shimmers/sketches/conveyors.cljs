@@ -40,7 +40,7 @@
        (fn [] (square circle (dr/random eq/TAU))) 1
        (fn [] (gp/polygon2
               (take 3 (:points (square h-circle (dr/random eq/TAU)))))) 0.5
-       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 2
+       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 1
        (fn [] (-> (g/scale-size circle 0.75)
                  (g/as-polygon (dr/rand-nth [5 6 7 8]))
                  (geometry/rotate-around-centroid (dr/random eq/TAU)))) 6}))))
@@ -73,6 +73,8 @@
     (update state :shapes
             (fn [shapes] (->> shapes
                              (keep (partial convey bounds (tm/* velocity dt)))
+                             (add-shape bounds)
+                             (add-shape bounds)
                              (add-shape bounds))))))
 
 (defn draw [{:keys [shapes]}]
