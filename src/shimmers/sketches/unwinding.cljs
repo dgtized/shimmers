@@ -10,6 +10,10 @@
    [thi.ng.math.core :as tm]
    [thi.ng.geom.core :as g]))
 
+(defn remap-from [pos scale points]
+  (mapv (fn [p] (g/translate (tm/* p scale) pos))
+        points))
+
 (defn plot [r points]
   (q/begin-shape)
   (doseq [[x y] points]
@@ -36,29 +40,27 @@
         inner (mapv (scaled 7)
                     (eq/clothoid-from 7 length-inner 50 -1 t (gv/vec2)))
         angle (g/heading (apply tm/- (reverse (take-last 2 inner))))
-        left (mapv (comp (fn [p] (g/translate p (last inner)))
-                         (scaled 11))
-                   (eq/clothoid (+ 10 (* 3 (Math/sin (+ t (/ Math/PI 6)))))
-                                (+ 30 (* 20 (Math/sin (+ t (/ Math/PI 3)))))
-                                70
-                                -1 angle (gv/vec2)))
-        right (mapv (comp (fn [p] (g/translate p (last inner)))
-                          (scaled 7))
+        left
+        (remap-from (last inner) 11
+                    (eq/clothoid (+ 10 (* 3 (Math/sin (+ t (/ Math/PI 6)))))
+                                 (+ 30 (* 20 (Math/sin (+ t (/ Math/PI 3)))))
+                                 70
+                                 -1 angle (gv/vec2)))
+        right
+        (remap-from (last inner) 7
                     (eq/clothoid 14
                                  (+ 40 (* 20 (Math/sin t)))
                                  70 1 angle (gv/vec2)))
         big-left
-        (mapv (comp (fn [p] (g/translate p (last inner)))
-                    (scaled 13))
-              (eq/clothoid (+ 9 (* 4 (Math/sin (+ t (/ Math/PI 4))))) 20
-                           60
-                           -1 angle (gv/vec2)))
+        (remap-from (last inner) 13
+                    (eq/clothoid (+ 9 (* 4 (Math/sin (+ t (/ Math/PI 4))))) 20
+                                 60
+                                 -1 angle (gv/vec2)))
         big-right
-        (mapv (comp (fn [p] (g/translate p (last inner)))
-                    (scaled 13))
-              (eq/clothoid (+ 11 (* 6 (Math/sin (+ t (/ Math/PI 2))))) 25
-                           50
-                           1 angle (gv/vec2)))]
+        (remap-from (last inner) 13
+                    (eq/clothoid (+ 11 (* 6 (Math/sin (+ t (/ Math/PI 2))))) 25
+                                 50
+                                 1 angle (gv/vec2)))]
     (doseq [base (butlast (tm/norm-range 5))]
       (q/with-rotation [(* base eq/TAU)]
         (plot 2 inner)
