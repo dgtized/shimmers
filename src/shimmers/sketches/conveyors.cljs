@@ -11,6 +11,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -25,7 +26,11 @@
        (fn [] (g/scale-size circle 0.5)) 1
        (fn [] (geometry/rotate-around-centroid
               (g/bounds (g/scale-size circle 0.4))
-              (dr/random eq/TAU))) 1}))))
+              (dr/random eq/TAU))) 1
+       (fn [] (gp/polygon2
+              (take 3 (:points (geometry/rotate-around-centroid
+                                (g/bounds (g/scale-size circle 0.4))
+                                (dr/random eq/TAU)))))) 1}))))
 
 (defn convey [bounds dx shape]
   (let [shape' (g/translate shape dx)]
