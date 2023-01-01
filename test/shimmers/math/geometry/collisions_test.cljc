@@ -1,8 +1,10 @@
 (ns shimmers.math.geometry.collisions-test
   (:require
    [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as sut]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
@@ -15,6 +17,11 @@
   (t/testing "Rect2 Circle2"
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2)) "overlap")
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2 2 1)) "contains"))
+  (t/testing "Polygon2 Circle2"
+    (is (sut/overlaps? (g/rotate (g/center (rect/rect 4)) (* 0.25 eq/TAU))
+                       (gc/circle 1)) "polygon contains")
+    (is (sut/overlaps? (g/rotate (g/center (rect/rect 1)) (* 0.25 eq/TAU))
+                       (gc/circle 4)) "circle contains"))
   (t/testing "Rect2 Line2"
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [4 4] [5 4])) "line starts at vertex")
     (is (sut/overlaps? (rect/rect 4) (gl/line2 [3 5] [5 3])) "line crosses corner")
