@@ -41,28 +41,33 @@
                     (eq/clothoid-from 7 length-inner 50 -1 t (gv/vec2)))
         angle (g/heading (apply tm/- (reverse (take-last 2 inner))))
         left
-        (remap-from (last inner) 11
-                    (eq/clothoid (+ 10 (* 3 (Math/sin (+ t (/ Math/PI 6)))))
-                                 (+ 30 (* 20 (Math/sin (+ t (/ Math/PI 3)))))
+        (remap-from (last inner) 9
+                    (eq/clothoid 9
+                                 (+ 35 (* 20 (Math/sin t)))
                                  60 -1 angle (gv/vec2)))
         right
         (remap-from (last inner) 7
-                    (eq/clothoid 14
-                                 (+ 40 (* 20 (Math/sin t)))
+                    (eq/clothoid 7
+                                 (+ 40 (* 15 (Math/sin (- eq/TAU t))))
                                  60 1 angle (gv/vec2)))
         big-left
-        (remap-from (last inner) 13
-                    (eq/clothoid (+ 9 (* 4 (Math/sin (+ t (/ Math/PI 4))))) 20
+        (remap-from (last inner) 11
+                    (eq/clothoid (+ 9 (* 5 (Math/sin (+ t (/ Math/PI 3)))))
+                                 20
                                  60 -1 angle (gv/vec2)))
         big-right
         (remap-from (last inner) 13
-                    (eq/clothoid (+ 11 (* 6 (Math/sin (+ t (/ Math/PI 2))))) 25
+                    (eq/clothoid (+ 11 (* 6 (Math/sin (- eq/TAU (+ t (/ Math/PI 3))))))
+                                 20
                                  60 1 angle (gv/vec2)))]
     (doseq [base (butlast (tm/norm-range 5))]
       (q/with-rotation [(* base eq/TAU)]
+        (q/stroke 0.0)
         (plot 2 inner)
+        (q/stroke 0.2)
         (plot 2 left)
         (plot 2 right)
+        (q/stroke 0.4)
         (plot 2 big-left)
         (plot 2 big-right)))))
 
