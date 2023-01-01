@@ -30,27 +30,42 @@
   (q/no-fill)
   (q/translate (cq/rel-vec 0.5 0.5))
   (q/scale 1 -1)
-  (q/stroke-weight 3)
-  (let [length (+ 40 (* 20 (Math/sin t)))
-        length-out (+ 30 (* 15 (Math/sin (+ t 1.0))))
+  (q/stroke-weight 2)
+  (let [length-inner (+ 20 (* 15 (Math/sin (+ t Math/PI))))
         scaled (fn [s] (fn [p] (tm/* p s)))
-        inner (mapv (scaled 7) (eq/clothoid 15 length 75 1 t (gv/vec2)))
+        inner (mapv (scaled 7)
+                    (eq/clothoid-from 7 length-inner 50 -1 t (gv/vec2)))
         angle (g/heading (apply tm/- (reverse (take-last 2 inner))))
-        outer (mapv (comp (fn [p] (g/translate p (last inner)))
-                          (scaled 5))
-                    (eq/clothoid (+ 10 (* 2 (Math/sin t))) length-out
-                                 (int (+ 40 (* 20 (Math/sin t))))
-                                 -1 angle (gv/vec2)))
-        length-back (+ 40 (* 10 (Math/sin (+ t Math/PI))))
-        angle2 (g/heading (apply tm/- (reverse (take-last 2 outer))))
-        back (mapv (comp (fn [p] (g/translate p (last outer)))
-                         (scaled 4))
-                   (eq/clothoid-from 10 length-back 50 1 (- eq/TAU angle2) (gv/vec2)))]
+        left (mapv (comp (fn [p] (g/translate p (last inner)))
+                         (scaled 11))
+                   (eq/clothoid (+ 10 (* 3 (Math/sin (+ t (/ Math/PI 6)))))
+                                (+ 30 (* 20 (Math/sin (+ t (/ Math/PI 3)))))
+                                70
+                                -1 angle (gv/vec2)))
+        right (mapv (comp (fn [p] (g/translate p (last inner)))
+                          (scaled 7))
+                    (eq/clothoid 14
+                                 (+ 40 (* 20 (Math/sin t)))
+                                 70 1 angle (gv/vec2)))
+        big-left
+        (mapv (comp (fn [p] (g/translate p (last inner)))
+                    (scaled 13))
+              (eq/clothoid (+ 9 (* 4 (Math/sin (+ t (/ Math/PI 4))))) 20
+                           60
+                           -1 angle (gv/vec2)))
+        big-right
+        (mapv (comp (fn [p] (g/translate p (last inner)))
+                    (scaled 13))
+              (eq/clothoid (+ 11 (* 6 (Math/sin (+ t (/ Math/PI 2))))) 25
+                           50
+                           1 angle (gv/vec2)))]
     (doseq [base (butlast (tm/norm-range 5))]
       (q/with-rotation [(* base eq/TAU)]
         (plot 2 inner)
-        (plot 2 outer)
-        (plot 2 back)))))
+        (plot 2 left)
+        (plot 2 right)
+        (plot 2 big-left)
+        (plot 2 big-right)))))
 
 (sketch/defquil unwinding
   :created-at "2023-01-01"
