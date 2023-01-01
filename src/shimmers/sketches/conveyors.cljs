@@ -28,8 +28,14 @@
                 (v/+polar p r angle)
                 (v/+polar p r (+ angle (/ eq/TAU 3)))))
 
+(defn rod [{:keys [p r]} angle]
+  (gp/polygon2 (v/+polar p r (- angle (/ eq/TAU 3)))
+               (v/+polar p r (- angle (/ eq/TAU 6)))
+               (v/+polar p r (+ angle (/ eq/TAU 6)))
+               (v/+polar p r (+ angle (/ eq/TAU 3)))))
+
 (defn generate-shape [{[_ y] :p [w h] :size}]
-  (let [x-entry (* w 0.95)
+  (let [x-entry (* w 0.99)
         radius (dr/random (* 0.2 h) (* 0.5 h))
         y-pos (+ y radius (dr/random (- h (* 2 radius))))
         circle (gc/circle x-entry y-pos (* radius 0.95))
@@ -40,7 +46,8 @@
        (fn [] (square circle (dr/random eq/TAU))) 1
        (fn [] (gp/polygon2
               (take 3 (:points (square h-circle (dr/random eq/TAU)))))) 0.5
-       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 1
+       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 2
+       (fn [] (rod h-circle (dr/random eq/TAU))) 1
        (fn [] (-> (g/scale-size circle 0.75)
                  (g/as-polygon (dr/rand-nth [5 6 7 8]))
                  (geometry/rotate-around-centroid (dr/random eq/TAU)))) 6}))))
