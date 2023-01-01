@@ -30,16 +30,20 @@
 
 (defn generate-shape [{[_ y] :p [w h] :size}]
   (let [x-entry (* w 0.95)
-        radius (dr/random (* 0.1 h) (* 0.5 h))
+        radius (dr/random (* 0.2 h) (* 0.5 h))
         y-pos (+ y radius (dr/random (- h (* 2 radius))))
-        circle (gc/circle x-entry y-pos (* radius 0.95))]
+        circle (gc/circle x-entry y-pos (* radius 0.95))
+        h-circle (g/scale-size circle 0.5)]
     ((dr/weighted
       {(fn [] circle) 1
-       (fn [] (g/scale-size circle 0.5)) 1
+       (fn [] h-circle) 4
        (fn [] (square circle (dr/random eq/TAU))) 1
        (fn [] (gp/polygon2
-              (take 3 (:points (square circle (dr/random eq/TAU)))))) 1
-       (fn [] (inscribed-triangle circle (dr/random eq/TAU))) 1}))))
+              (take 3 (:points (square h-circle (dr/random eq/TAU)))))) 0.5
+       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 2
+       (fn [] (-> (g/scale-size circle 0.75)
+                 (g/as-polygon (dr/rand-nth [5 6 7 8]))
+                 (geometry/rotate-around-centroid (dr/random eq/TAU)))) 6}))))
 
 (defn convey [bounds dx shape]
   (let [shape' (g/translate shape dx)]
