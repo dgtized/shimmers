@@ -16,6 +16,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn square [circle angle]
+  (geometry/rotate-around-centroid
+   (g/bounds (g/scale-size circle 0.4))
+   angle))
+
 (defn generate-shape [{[_ y] :p [w h] :size}]
   (let [x-entry (* w 0.95)
         radius (dr/random (* 0.1 h) (* 0.5 h))
@@ -24,13 +29,10 @@
     ((dr/weighted
       {(fn [] circle) 1
        (fn [] (g/scale-size circle 0.5)) 1
-       (fn [] (geometry/rotate-around-centroid
-              (g/bounds (g/scale-size circle 0.4))
-              (dr/random eq/TAU))) 1
+       (fn [] (square circle (dr/random eq/TAU))) 1
        (fn [] (gp/polygon2
-              (take 3 (:points (geometry/rotate-around-centroid
-                                (g/bounds (g/scale-size circle 0.4))
-                                (dr/random eq/TAU)))))) 1}))))
+              (take 3 (:points (square circle (dr/random eq/TAU))))))
+       (fn [] ())1}))))
 
 (defn convey [bounds dx shape]
   (let [shape' (g/translate shape dx)]
