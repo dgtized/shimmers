@@ -13,7 +13,7 @@
 (defn plot [r points]
   (q/begin-shape)
   (doseq [[x y] points]
-    (cq/circle x y r)
+    #_(cq/circle x y r)
     (q/vertex x y))
   (q/end-shape))
 
@@ -30,6 +30,7 @@
   (q/no-fill)
   (q/translate (cq/rel-vec 0.5 0.5))
   (q/scale 1 -1)
+  (q/stroke-weight 3)
   (let [length (+ 40 (* 20 (Math/sin t)))
         length-out (+ 30 (* 15 (Math/sin (+ t 1.0))))
         scaled (fn [s] (fn [p] (tm/* p s)))
