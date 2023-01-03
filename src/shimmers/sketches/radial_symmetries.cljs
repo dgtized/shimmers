@@ -78,8 +78,9 @@
          (g/edges poly))))
 
 (defn deeper-triangles [scale]
-  (fn [poly i]
-    (mapcat (fn [s] [s (g/scale-size s scale)]) (inset-triangles poly i))))
+  (fn [poly idx]
+    (mapcat (fn [s] [s (g/scale-size s scale)])
+            (inset-triangles poly idx))))
 
 (defn inset-pointy [poly _i]
   (-> poly
@@ -93,12 +94,6 @@
                        (str idx "\n" coord)
                        {:font-size "0.5em"})))
 
-(defn on-zeros [rule]
-  (fn [poly i]
-    (if (zero? i)
-      (rule poly i)
-      poly)))
-
 (def shape-rules
   [identity
    inset-pointy
@@ -108,22 +103,32 @@
    (deeper-triangles 0.4)
    (deeper-triangles 0.5)])
 
+(defn on-zeros [rule freq]
+  (fn [poly idx]
+    (let [i (mod idx freq)]
+      (if (zero? i)
+        (rule poly i)
+        poly))))
+
 (defn pair-rythm [rule-a rule-b freq]
   (let [half-freq (int (/ freq 2))]
-    (fn [poly i]
-      (cond (zero? i)
-            (rule-a poly i)
-            (= i half-freq)
-            (rule-b poly i)
-            :else poly))))
+    (fn [poly idx]
+      (let [i (mod idx freq)]
+        (cond (zero? i)
+              (rule-a poly i)
+              (= i half-freq)
+              (rule-b poly i)
+              :else poly)))))
 
-(defn polyrythm [pattern]
-  (fn [poly i]
-    ((nth pattern i) poly i)))
+(defn polyrythm [pattern freq]
+  (fn [poly idx]
+    (let [i (mod idx freq)]
+      ((nth pattern i) poly i))))
 
 (defn deeper [rule dir freq]
-  (fn [poly i]
-    (let [polygon (rule poly i)]
+  (fn [poly idx]
+    (let [i (mod idx freq)
+          polygon (rule poly i)]
       (csvg/group {}
         (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
           (g/scale-size polygon (- 1.0 s)))))))
@@ -131,33 +136,32 @@
 ;; FIXME: not deterministic from initial seed except at reload?
 (defn generate-rule [n]
   (if (= n 1)
-    [1 identity]
-    (let [freq (dr/rand-nth (butlast (sm/factors n 11)))
+    identity
+    (let [factors (sm/factors n 11)
+          freq (if (empty? factors) 1 (dr/rand-nth factors))
           dir (dr/rand-nth [(fn [i] (- freq i)) inc])
-          pattern (repeatedly freq #(dr/rand-nth shape-rules))]
-      [freq
-       (dr/weighted {inset-rectangle 1
-                     identity 1
-                     (on-zeros inset-triangles) 1
-                     (on-zeros inset-circle) 1
-                     (on-zeros inset-pointy) 1
-                     (on-zeros (deeper-triangles 0.4)) 1
-                     (on-zeros (deeper-triangles 0.5)) 1
-                     (deeper inset-circle dir freq) (if (<= freq 8) 1 0)
-                     (deeper inset-pointy dir freq) (if (<= freq 8) 1 0)
-                     (deeper identity dir freq) (if (<= freq 8) 1 0)
-                     (pair-rythm inset-circle inset-pointy freq) 1
-                     (pair-rythm inset-circle inset-rectangle freq) 1
-                     (pair-rythm inset-pointy inset-rectangle freq) 1
-                     (polyrythm pattern) 2
-                     (fn [p i] (seq-cut p i freq)) 4})])))
+          pattern (into [] (repeatedly freq #(dr/rand-nth shape-rules)))]
+      (dr/weighted {inset-rectangle 1
+                    identity 1
+                    (on-zeros inset-triangles freq) 1
+                    (on-zeros inset-circle freq) 1
+                    (on-zeros inset-pointy freq) 1
+                    (on-zeros (deeper-triangles 0.4) freq) 1
+                    (on-zeros (deeper-triangles 0.5) freq) 1
+                    (deeper inset-circle dir freq) (if (<= freq 8) 1 0)
+                    (deeper inset-pointy dir freq) (if (<= freq 8) 1 0)
+                    (deeper identity dir freq) (if (<= freq 8) 1 0)
+                    (pair-rythm inset-circle inset-pointy freq) 1
+                    (pair-rythm inset-circle inset-rectangle freq) 1
+                    (pair-rythm inset-pointy inset-rectangle freq) 1
+                    (polyrythm pattern freq) 2
+                    (fn [p i] (seq-cut p i freq)) 4}))))
 
 (defn change-hexes [ring]
-  (let [[freq rule] (generate-rule (count ring))]
+  (let [rule (generate-rule (count ring))]
     (map-indexed (fn change-hex [idx hex]
-                   (let [i (mod idx freq)
-                         poly (hex/flat-hexagon->polygon hex)]
-                     (csvg/group {} (rule poly i))))
+                   (let [poly (hex/flat-hexagon->polygon hex)]
+                     (csvg/group {} (rule poly idx))))
                  ring)))
 
 (defn hexagons [revolutions]
