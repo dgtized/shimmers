@@ -5,12 +5,11 @@
   (:require
    [clojure.test.check.random :as tcr]
    [kixi.stats.distribution :as ksd]
-   [shimmers.common.sequence :as cs]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.math.noise :as noise]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.math.noise :as noise]))
 
 (defonce shared-rng (atom (tcr/make-random)))
 
