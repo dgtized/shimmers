@@ -131,12 +131,6 @@
           (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
             (g/scale-size polygon (- 1.0 s))))))))
 
-(defn change-hex [operator freq idx hex]
-  (let [i (mod idx freq)
-        poly (hex/flat-hexagon->polygon hex)]
-    (csvg/group {}
-      (operator poly i))))
-
 ;; FIXME: not deterministic from initial seed except at reload?
 (defn generate-rule [n]
   (let [freq (dr/rand-nth (butlast (sm/factors n 11)))]
@@ -159,6 +153,14 @@
                      (polyrythm freq) 2
                      (fn [p i] (seq-cut p i freq)) 4})])))
 
+(defn change-hexes [ring]
+  (let [[freq rule] (generate-rule (count ring))]
+    (map-indexed (fn change-hex [idx hex]
+                   (let [i (mod idx freq)
+                         poly (hex/flat-hexagon->polygon hex)]
+                     (csvg/group {} (rule poly i))))
+                 ring)))
+
 (defn hexagons [revolutions]
   (let [radius (* 0.95 height)
         hex-radius (/ radius (* 3 (+ revolutions 2.5)))
@@ -169,9 +171,7 @@
                     (hex/cube-spiral (gv/vec3) revolutions))]
     #_(map-indexed individual hexes)
     (->> (partition-by :ring hexes)
-         (mapcat (fn [ring]
-                   (let [[freq rule] (generate-rule (count ring))]
-                     (map-indexed (partial change-hex rule freq) ring)))))))
+         (mapcat change-hexes))))
 
 (defn scene []
   (csvg/timed
