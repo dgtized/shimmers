@@ -78,7 +78,7 @@
          (g/edges poly))))
 
 (defn deeper-triangles [scale]
-  (fn [poly idx]
+  (fn triangles [poly idx]
     (mapcat (fn [s] [s (g/scale-size s scale)])
             (inset-triangles poly idx))))
 
@@ -104,7 +104,7 @@
    (deeper-triangles 0.5)])
 
 (defn on-zeros [rule freq]
-  (fn [poly idx]
+  (fn on-zero [poly idx]
     (let [i (mod idx freq)]
       (if (zero? i)
         (rule poly i)
@@ -112,7 +112,7 @@
 
 (defn pair-rythm [rule-a rule-b freq]
   (let [half-freq (int (/ freq 2))]
-    (fn [poly idx]
+    (fn pair-rythm [poly idx]
       (let [i (mod idx freq)]
         (cond (zero? i)
               (rule-a poly i)
@@ -126,12 +126,16 @@
       ((nth pattern i) poly i))))
 
 (defn deeper [rule dir freq]
-  (fn [poly idx]
+  (fn deeper [poly idx]
     (let [i (mod idx freq)
           polygon (rule poly i)]
       (csvg/group {}
         (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
           (g/scale-size polygon (- 1.0 s)))))))
+
+(defn sequence-cut [freq]
+  (fn seq-cut' [poly idx]
+    (seq-cut poly idx freq)))
 
 ;; FIXME: not deterministic from initial seed except at reload?
 (defn generate-rule [n]
@@ -155,7 +159,7 @@
                     (pair-rythm inset-circle inset-rectangle freq) 1
                     (pair-rythm inset-pointy inset-rectangle freq) 1
                     (polyrythm pattern freq) 2
-                    (fn [p i] (seq-cut p i freq)) 4}))))
+                    (sequence-cut freq) 4}))))
 
 (defn change-hexes [ring]
   (let [rule (generate-rule (count ring))]
