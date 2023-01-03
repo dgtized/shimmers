@@ -58,13 +58,17 @@
   (< (random-double) prob))
 
 (defn weighted
-  "Given a mapping of values to weights, randomly choose a value biased by weight.
+  "Given a pairing of values to weights, randomly choose a value biased by weight.
 
   With two arguments, use `v` to specify a specific element as a percent of the
-  total weight."
+  total weight.
+
+  Warning: if weights are a map and keys are anonymous functions this may not be
+  deterministic as the sort order of the map may change ordering of weights. In
+  that case use an ordered sequence of (choice, weight) pairs."
   ([weights] (weighted weights (random-double)))
   ([weights v]
-   (let [sample (* v (apply + (vals weights)))]
+   (let [sample (* v (apply + (map second weights)))]
      (loop [cumulative 0.0
             [[choice weight] & remaining] weights]
        (when weight
@@ -77,7 +81,7 @@
   "Given a sequence of values `xs`, weight each value by a function `f` and return
   a weighted random selection."
   [f xs]
-  (weighted (cs/mapping f xs)))
+  (weighted (mapv (fn [v] [v (f v)]) xs)))
 
 (defn random-sample
   "Returns items from coll with probability of prob (0.0 - 1.0)."

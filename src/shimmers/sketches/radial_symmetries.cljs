@@ -145,21 +145,22 @@
           freq (if (empty? factors) 1 (dr/rand-nth factors))
           dir (dr/rand-nth [(fn [i] (- freq i)) inc])
           pattern (into [] (repeatedly freq #(dr/rand-nth shape-rules)))]
-      (dr/weighted {inset-rectangle 1
-                    identity 1
-                    (on-zeros inset-triangles freq) 1
-                    (on-zeros inset-circle freq) 1
-                    (on-zeros inset-pointy freq) 1
-                    (on-zeros (deeper-triangles 0.4) freq) 1
-                    (on-zeros (deeper-triangles 0.5) freq) 1
-                    (deeper inset-circle dir freq) (if (<= freq 8) 1 0)
-                    (deeper inset-pointy dir freq) (if (<= freq 8) 1 0)
-                    (deeper identity dir freq) (if (<= freq 8) 1 0)
-                    (pair-rythm inset-circle inset-pointy freq) 1
-                    (pair-rythm inset-circle inset-rectangle freq) 1
-                    (pair-rythm inset-pointy inset-rectangle freq) 1
-                    (polyrythm pattern freq) 2
-                    (sequence-cut freq) 4}))))
+      (dr/weighted
+       [[inset-rectangle 1]
+        [identity 1]
+        [(on-zeros inset-triangles freq) 1]
+        [(on-zeros inset-circle freq) 1]
+        [(on-zeros inset-pointy freq) 1]
+        [(on-zeros (deeper-triangles 0.4) freq) 1]
+        [(on-zeros (deeper-triangles 0.5) freq) 1]
+        [(deeper inset-circle dir freq) (if (<= freq 8) 1 0)]
+        [(deeper inset-pointy dir freq) (if (<= freq 8) 1 0)]
+        [(deeper identity dir freq) (if (<= freq 8) 1 0)]
+        [(pair-rythm inset-circle inset-pointy freq) 1]
+        [(pair-rythm inset-circle inset-rectangle freq) 1]
+        [(pair-rythm inset-pointy inset-rectangle freq) 1]
+        [(polyrythm pattern freq) 2]
+        [(sequence-cut freq) 4]]))))
 
 (defn change-hexes [ring rule]
   (map-indexed (fn change-hex [idx hex]
