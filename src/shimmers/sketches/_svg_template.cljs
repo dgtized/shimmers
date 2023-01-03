@@ -24,7 +24,7 @@
      (shapes))))
 
 (sketch/definition svg-template
-  {:created-at "2022-"
+  {:created-at "2023-"
    :type :svg
    :tags #{}}
   (ctrl/mount (view-sketch/page-for scene :svg-template)
