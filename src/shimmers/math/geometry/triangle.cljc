@@ -19,11 +19,13 @@
   ISignedArea
   (signed-area [_] (apply gu/tri-area2 (get _ :points))))
 
-(defn inscribed-equilateral [{:keys [p r]} angle]
-  (gt/triangle2
-   (v/+polar p r (- angle (/ eq/TAU 3)))
-   (v/+polar p r angle)
-   (v/+polar p r (+ angle (/ eq/TAU 3)))))
+(defn inscribed-equilateral
+  ([{:keys [p r]} angle] (inscribed-equilateral p r angle))
+  ([p r angle]
+   (gt/triangle2
+    (v/+polar p r (- angle (/ eq/TAU 3)))
+    (v/+polar p r angle)
+    (v/+polar p r (+ angle (/ eq/TAU 3))))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
