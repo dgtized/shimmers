@@ -24,7 +24,7 @@
                 (v/+polar p r (+ angle (/ eq/TAU 3)))))
 
 (def shape-seq
-  (let [circle (gc/circle (gv/vec2) (* 0.08 height))]
+  (let [circle (gc/circle (gv/vec2) (* 0.05 height))]
     [circle
      (g/as-polygon circle 5)
      (g/bounds circle)
@@ -34,11 +34,11 @@
   (g/point-at (gc/circle (rv 0.5 0.5) (* height 0.4)) t))
 
 (defn morph [from to t]
-  (for [v (butlast (tm/norm-range 128))]
+  (for [v (butlast (tm/norm-range 32))]
     (tm/mix (g/point-at from v) (g/point-at to v) t)))
 
 (defn shapes []
-  (for [t (butlast (tm/norm-range 12))]
+  (for [t (butlast (tm/norm-range 24))]
     (let [base (int (* t (count shape-seq)))]
       (g/translate (gp/polygon2 (morph (nth shape-seq base)
                                        (nth shape-seq (mod (inc base) (count shape-seq)))
