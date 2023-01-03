@@ -117,25 +117,24 @@
             (rule-b poly i)
             :else poly))))
 
-(defn polyrythm [freq]
-  (let [patterns (repeatedly freq #(dr/rand-nth shape-rules))]
-    (fn [poly i]
-      ((nth patterns i) poly i))))
+(defn polyrythm [pattern]
+  (fn [poly i]
+    ((nth pattern i) poly i)))
 
-(defn deeper [rule freq]
-  (let [dir (dr/rand-nth [(fn [i] (- freq i))
-                          inc])]
-    (fn [poly i]
-      (let [polygon (rule poly i)]
-        (csvg/group {}
-          (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
-            (g/scale-size polygon (- 1.0 s))))))))
+(defn deeper [rule dir freq]
+  (fn [poly i]
+    (let [polygon (rule poly i)]
+      (csvg/group {}
+        (for [s (take (dir i) (range 0.0 0.8 (/ 1.0 freq)))]
+          (g/scale-size polygon (- 1.0 s)))))))
 
 ;; FIXME: not deterministic from initial seed except at reload?
 (defn generate-rule [n]
-  (let [freq (dr/rand-nth (butlast (sm/factors n 11)))]
-    (if (= n 1)
-      [1 identity]
+  (if (= n 1)
+    [1 identity]
+    (let [freq (dr/rand-nth (butlast (sm/factors n 11)))
+          dir (dr/rand-nth [(fn [i] (- freq i)) inc])
+          pattern (repeatedly freq #(dr/rand-nth shape-rules))]
       [freq
        (dr/weighted {inset-rectangle 1
                      identity 1
@@ -144,13 +143,13 @@
                      (on-zeros inset-pointy) 1
                      (on-zeros (deeper-triangles 0.4)) 1
                      (on-zeros (deeper-triangles 0.5)) 1
-                     (deeper inset-circle freq) (if (<= freq 8) 1 0)
-                     (deeper inset-pointy freq) (if (<= freq 8) 1 0)
-                     (deeper identity freq) (if (<= freq 8) 1 0)
+                     (deeper inset-circle dir freq) (if (<= freq 8) 1 0)
+                     (deeper inset-pointy dir freq) (if (<= freq 8) 1 0)
+                     (deeper identity dir freq) (if (<= freq 8) 1 0)
                      (pair-rythm inset-circle inset-pointy freq) 1
                      (pair-rythm inset-circle inset-rectangle freq) 1
                      (pair-rythm inset-pointy inset-rectangle freq) 1
-                     (polyrythm freq) 2
+                     (polyrythm pattern) 2
                      (fn [p i] (seq-cut p i freq)) 4})])))
 
 (defn change-hexes [ring]
