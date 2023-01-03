@@ -2,14 +2,12 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.equations :as eq]
-   [shimmers.math.vector :as v]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -18,17 +16,12 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn inscribed-triangle [{:keys [p r]} angle]
-  (gt/triangle2 (v/+polar p r (- angle (/ eq/TAU 3)))
-                (v/+polar p r angle)
-                (v/+polar p r (+ angle (/ eq/TAU 3)))))
-
 (def shape-seq
   (let [circle (gc/circle (gv/vec2) (* 0.05 height))]
     [circle
      (g/as-polygon circle 5)
      (g/bounds circle)
-     (inscribed-triangle circle 0.0)]))
+     (triangle/inscribed-equilateral circle 0.0)]))
 
 (defn path [t]
   (g/point-at (gc/circle (rv 0.5 0.5) (* height 0.4)) t))

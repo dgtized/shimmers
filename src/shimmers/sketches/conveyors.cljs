@@ -8,13 +8,13 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -22,11 +22,6 @@
   (geometry/rotate-around-centroid
    (g/bounds (g/scale-size circle 0.4))
    angle))
-
-(defn inscribed-triangle [{:keys [p r]} angle]
-  (gt/triangle2 (v/+polar p r (- angle (/ eq/TAU 3)))
-                (v/+polar p r angle)
-                (v/+polar p r (+ angle (/ eq/TAU 3)))))
 
 (defn rod [{:keys [p r]} angle]
   (gp/polygon2 (v/+polar p r (- angle (/ eq/TAU 3)))
@@ -46,7 +41,7 @@
        (fn [] (square circle (dr/random eq/TAU))) 1
        (fn [] (gp/polygon2
               (take 3 (:points (square h-circle (dr/random eq/TAU)))))) 0.5
-       (fn [] (inscribed-triangle h-circle (dr/random eq/TAU))) 2
+       (fn [] (triangle/inscribed-equilateral h-circle (dr/random eq/TAU))) 2
        (fn [] (rod h-circle (dr/random eq/TAU))) 1
        (fn [] (-> (g/scale-size circle 0.75)
                  (g/as-polygon (dr/rand-nth [5 6 7 8]))

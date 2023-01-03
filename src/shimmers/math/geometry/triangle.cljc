@@ -1,6 +1,8 @@
 (ns shimmers.math.geometry.triangle
   (:require
+   [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
+   [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
@@ -16,6 +18,12 @@
   (area [_] (Math/abs (apply gu/tri-area2 (get _ :points))))
   ISignedArea
   (signed-area [_] (apply gu/tri-area2 (get _ :points))))
+
+(defn inscribed-equilateral [{:keys [p r]} angle]
+  (gt/triangle2
+   (v/+polar p r (- angle (/ eq/TAU 3)))
+   (v/+polar p r angle)
+   (v/+polar p r (+ angle (/ eq/TAU 3)))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
