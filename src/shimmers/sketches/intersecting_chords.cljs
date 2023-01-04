@@ -6,14 +6,16 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn make-circle [{p :p [w h] :size}]
-  (let [r (dr/gaussian 30 10)]
+  (let [r (dr/gaussian (/ h 10) (/ h 20))]
     (gc/circle (tm/+ p (gv/vec2 (dr/random r (- w r))
                                 (dr/random r (- h r))))
                r)))
@@ -34,11 +36,13 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (doseq [c (saq/all-data circletree)]
-    (cq/circle c)
-    (doseq [nearby (saq/k-nearest-neighbors circletree 3 (:p c))]
+  (doseq [{p :p :as circle} (saq/all-data circletree)]
+    (cq/circle circle)
+    (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
       (when-let [neighbor (g/get-point-data nearby)]
-        (q/line (:p c) (:p neighbor))))))
+        (when (collide/overlaps? circle neighbor)
+          (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
+            (apply q/line isecs)))))))
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
