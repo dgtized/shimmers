@@ -87,12 +87,14 @@
     (q/stroke 0.66)
     (cq/circle circle)
     (q/stroke-weight 1.0)
-    (q/stroke 0.0)
     (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
       (when-let [neighbor (g/get-point-data nearby)]
-        (when (collide/overlaps? circle neighbor)
+        (if (collide/overlaps? circle neighbor)
           (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
-            (apply q/line isecs)))))))
+            (q/stroke 0.0)
+            (apply q/line isecs))
+          (do (q/stroke 0.0 0.5 0.25)
+              (q/line (:p circle) (:p neighbor))))))))
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
