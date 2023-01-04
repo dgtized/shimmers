@@ -47,20 +47,36 @@
                    (fn [tree]
                      (legal-candidate
                       tree
-                      {:bounds bounds
+                      {:bounds (g/scale-size bounds 0.95)
                        :gen-circle (partial make-circle bounds)
                        :min-spacing (- (* 0.1 (min w h)))
                        :max-spacing (* 0.05 (min w h))}))
                    n))
 
+(defn rebuild-tree [bounds circles]
+  (reduce (fn [t c] (saq/add-point t (:p c) c))
+          (saq/circletree bounds)
+          circles))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect 0.95)]
+  (let [bounds (cq/screen-rect)]
     {:bounds bounds
-     :circletree (circle-pack bounds 16)}))
+     :circletree (circle-pack bounds 20)}))
 
-(defn update-state [state]
-  state)
+(defn move [bounds circle]
+  (if-let [v (:v circle)]
+    (let [circle' (update circle :p tm/+ v)]
+      (if (geometry/contains-circle? bounds circle')
+        circle'
+        (assoc circle :v (dr/randvec2 2))))
+    (assoc circle :v (dr/randvec2 2))))
+
+(defn update-state [{:keys [bounds circletree] :as state}]
+  (let [circles (->> circletree
+                     saq/all-data
+                     (map (partial move (g/scale-size bounds 0.95))))]
+    (assoc state :circletree (rebuild-tree bounds circles))))
 
 (defn draw [{:keys [circletree]}]
   (q/background 1.0)
@@ -68,7 +84,7 @@
   (q/no-fill)
   (doseq [{p :p :as circle} (saq/all-data circletree)]
     (q/stroke-weight 0.66)
-    (q/stroke 0.4)
+    (q/stroke 0.66)
     (cq/circle circle)
     (q/stroke-weight 1.0)
     (q/stroke 0.0)
