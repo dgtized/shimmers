@@ -2,11 +2,13 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -18,19 +20,25 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect 0.95)]
+  (let [bounds (cq/screen-rect 0.95)
+        circles (repeatedly 32 #(make-circle bounds))]
     {:bounds bounds
-     :circles (repeatedly 32 #(make-circle bounds))}))
+     :circletree (reduce (fn [t c] (saq/add-point t (:p c) c))
+                         (saq/circletree bounds)
+                         circles)}))
 
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [circles]}]
+(defn draw [{:keys [bounds circletree]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
-  (doseq [c circles]
-    (cq/circle c)))
+  (doseq [c (saq/all-data circletree)]
+    (cq/circle c)
+    (doseq [nearby (saq/k-nearest-neighbors circletree 3 (:p c))]
+      (when-let [neighbor (g/get-point-data nearby)]
+        (q/line (:p c) (:p neighbor))))))
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
