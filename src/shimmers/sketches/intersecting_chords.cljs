@@ -32,12 +32,16 @@
 (defn update-state [state]
   state)
 
-(defn draw [{:keys [bounds circletree]}]
+(defn draw [{:keys [circletree]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
   (doseq [{p :p :as circle} (saq/all-data circletree)]
+    (q/stroke-weight 0.66)
+    (q/stroke 0.4)
     (cq/circle circle)
+    (q/stroke-weight 1.0)
+    (q/stroke 0.0)
     (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
       (when-let [neighbor (g/get-point-data nearby)]
         (when (collide/overlaps? circle neighbor)
