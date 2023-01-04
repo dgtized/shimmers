@@ -75,6 +75,7 @@
    shimmers.sketches.impressions-of-open-space
    shimmers.sketches.inconsequential-drift
    shimmers.sketches.integer-circles
+   shimmers.sketches.intersecting-chords
    shimmers.sketches.interstitial-transitions
    shimmers.sketches.intertwined
    shimmers.sketches.isometric
