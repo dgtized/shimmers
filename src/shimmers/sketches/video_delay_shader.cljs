@@ -30,6 +30,7 @@
      :camera (video/capture w h)
      :shader (q/load-shader "shaders/video-delay-shader.frag.c"
                             "shaders/video-shader.vert.c")
+     :buffer (q/create-image w h)
      :frames (vec (repeatedly history #(q/create-image w h)))}))
 
 (defn update-state [{:keys [dims camera] :as state}]
@@ -38,19 +39,19 @@
     (update-in state [:frames (mod fc history)]
                (partial video/copy-frame camera w h))))
 
-(defn draw [{:keys [dims shader frames]}]
+(defn draw [{:keys [dims shader buffer frames]}]
   (let [[w h] dims
-        fc (q/frame-count)
-        frame (q/create-image w h)]
-    (when (and (q/loaded? shader) (> fc 1))
-      (q/copy (nth frames (mod fc history)) frame [0 0 w h] [0 0 w h])
+        fc (q/frame-count)]
+    (when (and (q/loaded? shader) (> fc 4))
+      ;; not clear why copy is required but it is -- otherwise every frame is black
+      (q/copy (nth frames (mod fc history)) buffer [0 0 w h] [0 0 w h])
       (shader/pass shader [w h]
                    {"u_resolution" (array w h)
                     "u_time" (/ (q/millis) 1000.0)
                     "u_mode" (cs/index-of modes (:mode @ui-state))
-                    "frame" frame
-                    "frame10" (if (> fc 10) (nth frames (mod (- fc 10) history)) frame)
-                    "frame25" (if (> fc 10) (nth frames (mod (- fc 25) history)) frame)
+                    "frame" (nth frames (mod (- fc 1) history))
+                    "frame10" (if (> fc 10) (nth frames (mod (- fc 10) history)) buffer)
+                    "frame25" (if (> fc 25) (nth frames (mod (- fc 25) history)) buffer)
                     }))))
 
 ;; out of memories after N seconds sometimes?
