@@ -10,7 +10,7 @@
 (def history 26)
 
 (defn setup []
-  (let [[w h] [640 480]]
+  (let [[w h] [320 240]]
     {:dims [w h]
      :camera (video/capture w h)
      :shader (q/load-shader "shaders/video-delay-shader.frag.c"
