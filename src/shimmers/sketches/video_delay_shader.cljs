@@ -14,8 +14,12 @@
 (def modes
   [:color-delay
    :change-is-color
-   :color-mix
-   :edge-detection])
+   :color-mix-ghost
+   :color-mix-glitch
+   :color-edge-detection
+   :edge-detection-length
+   :edge-detection-length-div
+   :edge-detection-length-mix])
 
 (defonce ui-state (ctrl/state {:mode :color-delay}))
 
