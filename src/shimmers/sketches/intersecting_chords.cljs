@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
@@ -62,20 +63,42 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
-     :circletree (circle-pack bounds 20)}))
+     :circletree (circle-pack bounds 20)
+     :t 0.0}))
+
+(defn rescale [bounds t {:keys [r] :as circle}]
+  (or (when-let [{:keys [R dr t0 dt]} (:R circle)]
+        (let [circle' (assoc circle :r (+ R (* dr (Math/sin (+ (* t dt) t0)))))]
+          (if (geometry/contains-circle? bounds circle')
+            circle'
+            (update circle' :p
+                    (fn [p]
+                      (let [contact (g/closest-point bounds p)
+                            dist (g/dist p contact)]
+                        ;; shove point away from wall by distance between radius
+                        ;; and contact point distance
+                        (tm/+ p (tm/normalize (tm/- p contact) (- (:r circle') dist)))))))))
+      (assoc circle :R {:R r
+                        :dr (dr/random (* 0.05 r) (* 0.5 r))
+                        :t0 (dr/random eq/TAU)
+                        :dt (dr/gaussian 1 0.1)})))
 
 (defn move [bounds circle]
   (or (when-let [v (:v circle)]
         (let [circle' (update circle :p tm/+ v)]
           (when (geometry/contains-circle? bounds circle')
             circle')))
-      (assoc circle :v (dr/randvec2 1))))
+      (assoc circle :v (dr/randvec2 0.5))))
 
-(defn update-state [{:keys [bounds circletree] :as state}]
-  (let [circles (->> circletree
+(defn update-state [{:keys [bounds circletree t] :as state}]
+  (let [bounds' (g/scale-size bounds 0.95)
+        circles (->> circletree
                      saq/all-data
-                     (map (partial move (g/scale-size bounds 0.95))))]
-    (assoc state :circletree (rebuild-tree bounds circles))))
+                     (map (partial rescale bounds' t))
+                     (map (partial move bounds')))]
+    (-> state
+        (assoc :circletree (rebuild-tree bounds circles))
+        (update :t + 0.01))))
 
 (defn draw [{:keys [circletree]}]
   (q/background 1.0)
