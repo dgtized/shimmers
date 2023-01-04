@@ -181,6 +181,7 @@
    shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
    shimmers.sketches.verlet-brushes
+   shimmers.sketches.video-delay-shader
    shimmers.sketches.video-shader
    shimmers.sketches.voronoi-after-effect
    shimmers.sketches.yin-yang
