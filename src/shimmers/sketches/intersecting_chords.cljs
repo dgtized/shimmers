@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -15,19 +16,48 @@
    [thi.ng.math.core :as tm]))
 
 (defn make-circle [{p :p [w h] :size}]
-  (let [r (dr/gaussian (/ h 10) (/ h 20))]
+  (let [r (dr/gaussian (/ h 12) (/ h 20))]
     (gc/circle (tm/+ p (gv/vec2 (dr/random r (- w r))
                                 (dr/random r (- h r))))
                r)))
 
+(defn legal-candidate
+  [circletree
+   {:keys [bounds gen-circle min-spacing max-spacing]}]
+  (let [candidate (gen-circle)]
+    (when (geometry/contains-circle? bounds candidate)
+      (if-let [near (saq/closest-circle circletree candidate)]
+        (let [d (saq/circle-overlap near candidate)]
+          (when (and (not (collide/bounded? near candidate))
+                     (< min-spacing d max-spacing))
+            candidate))
+        candidate))))
+
+(defn pack-candidates
+  [circletree legal-candidate n]
+  (loop [i 0 tree circletree]
+    (if (>= i n)
+      tree
+      (if-let [circle (legal-candidate tree)]
+        (recur (inc i) (saq/add-point tree (:p circle) circle))
+        (recur i tree)))))
+
+(defn circle-pack [{[w h] :size :as bounds} n]
+  (pack-candidates (saq/circletree bounds)
+                   (fn [tree]
+                     (legal-candidate
+                      tree
+                      {:bounds bounds
+                       :gen-circle (partial make-circle bounds)
+                       :min-spacing (- (* 0.1 (min w h)))
+                       :max-spacing (* 0.05 (min w h))}))
+                   n))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [bounds (cq/screen-rect 0.95)
-        circles (repeatedly 32 #(make-circle bounds))]
+  (let [bounds (cq/screen-rect 0.95)]
     {:bounds bounds
-     :circletree (reduce (fn [t c] (saq/add-point t (:p c) c))
-                         (saq/circletree bounds)
-                         circles)}))
+     :circletree (circle-pack bounds 16)}))
 
 (defn update-state [state]
   state)
