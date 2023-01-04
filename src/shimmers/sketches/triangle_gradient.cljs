@@ -5,6 +5,7 @@
    [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -28,7 +29,10 @@
 
 (defn shapes []
   (let [circle (gc/circle (* width 0.5) (* height 0.5) (* width 0.45))
-        template (g/center (gt/triangle2 [0 0] [40 40] [30 5]))
+        r (* width 0.05)
+        template (dr/rand-nth [(triangle/inscribed-equilateral (gc/circle r) 0)
+                               (g/center (gt/triangle2 [0 0] [r 0] [0 r]))
+                               (g/center (gt/triangle2 [0 0] [r r] [(* r 0.75) (* r 0.125)]))])
         scale (dr/random 0.1 0.6)
         dir-s (dr/weighted {invert 1
                             identity 3
