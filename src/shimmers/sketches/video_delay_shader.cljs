@@ -5,13 +5,24 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.shader :as shader]
    [shimmers.common.video :as video]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.sequence :as cs]))
 
 (def history 26)
 
+(def modes
+  [:color-delay
+   :change-is-color
+   :color-mix
+   :edge-detection])
+
+(defonce ui-state (ctrl/state {:mode :color-delay}))
+
 (defn setup []
   (let [[w h] [320 240]]
-    {:dims [w h]
+    {:mode :color-delay
+     :dims [w h]
      :camera (video/capture w h)
      :shader (q/load-shader "shaders/video-delay-shader.frag.c"
                             "shaders/video-shader.vert.c")
@@ -32,6 +43,7 @@
       (shader/pass shader [w h]
                    {"u_resolution" (array w h)
                     "u_time" (/ (q/millis) 1000.0)
+                    "u_mode" (cs/index-of modes (:mode @ui-state))
                     "frame" frame
                     "frame10" (if (> fc 10) (nth frames (mod (- fc 10) history)) frame)
                     "frame25" (if (> fc 10) (nth frames (mod (- fc 25) history)) frame)
@@ -41,6 +53,7 @@
 (sketch/defquil video-delay-shader
   :created-at "2023-01-03"
   :tags #{:camera :shader :genuary2023}
+  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state modes)))
   :size [640 480]
   :renderer :p3d
   :setup setup
