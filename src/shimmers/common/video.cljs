@@ -1,5 +1,6 @@
 (ns shimmers.common.video
-  (:require [quil.sketch]))
+  (:require [quil.core :as q :include-macros true]
+            [quil.sketch]))
 
 ;; TODO: use faceMode constraints to add controls to flip between "user"
 ;; and "environment" for mobile use. See documentation @
@@ -11,3 +12,10 @@
     (.hide capture)
     capture))
 
+(defn copy-frame [capture width height dest]
+  (if capture
+    (do (q/copy capture dest
+                [0 0 width height]
+                [0 0 width height])
+        dest)
+    dest))
