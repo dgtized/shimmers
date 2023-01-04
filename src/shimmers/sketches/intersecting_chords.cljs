@@ -69,8 +69,8 @@
     (let [circle' (update circle :p tm/+ v)]
       (if (geometry/contains-circle? bounds circle')
         circle'
-        (assoc circle :v (dr/randvec2 2))))
-    (assoc circle :v (dr/randvec2 2))))
+        (assoc circle :v (dr/randvec2 1))))
+    (assoc circle :v (dr/randvec2 1))))
 
 (defn update-state [{:keys [bounds circletree] :as state}]
   (let [circles (->> circletree
