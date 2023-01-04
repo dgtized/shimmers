@@ -65,12 +65,11 @@
      :circletree (circle-pack bounds 20)}))
 
 (defn move [bounds circle]
-  (if-let [v (:v circle)]
-    (let [circle' (update circle :p tm/+ v)]
-      (if (geometry/contains-circle? bounds circle')
-        circle'
-        (assoc circle :v (dr/randvec2 1))))
-    (assoc circle :v (dr/randvec2 1))))
+  (or (when-let [v (:v circle)]
+        (let [circle' (update circle :p tm/+ v)]
+          (when (geometry/contains-circle? bounds circle')
+            circle')))
+      (assoc circle :v (dr/randvec2 1))))
 
 (defn update-state [{:keys [bounds circletree] :as state}]
   (let [circles (->> circletree
