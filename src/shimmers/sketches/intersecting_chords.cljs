@@ -57,6 +57,7 @@
     {:bounds bounds
      :background (q/create-graphics (q/width) (q/height))
      :circletree (circle-pack bounds 15)
+     :hue (dr/rand-nth [0.0 0.38 0.6 0.8])
      :t 0.0}))
 
 (defn rescale [bounds t {:keys [r] :as circle}]
@@ -106,7 +107,7 @@
                :show-background true
                :add-eraser true}))
 
-(defn draw [{:keys [t circletree background]}]
+(defn draw [{:keys [t circletree background hue]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
@@ -148,7 +149,7 @@
                 (q/line (:p circle) (:p neighbor)))
               (when (< d (* 2.0 (:r circle)))
                 (q/with-graphics background
-                  (q/stroke 0.0 0.35 (* 0.5 (eq/unit-cos t)) 0.15)
+                  (q/stroke hue 0.35 (* 0.5 (eq/unit-cos t)) 0.15)
                   (q/line p q))))))))))
 
 (defn ui-controls []
@@ -164,10 +165,10 @@
     [:p "Prompt: Genuary2023 Day 4 - Intersections"]
     [:p "For the closest three neighbors of a circle, if they intersect, draw
     the chord between the intersection points of the two circles in monochrome.
-    Otherwise, draw the connecting line to the neighbor in red if the distance
-    is less than the diameter of the circle. Time modulates the radius of each
-    circle, and the brightness of each line. The speed of each circle changes
-    everytime it bounces off the canvas boundary"]
+    Otherwise, draw the connecting line to the neighbor in a pre-selected color
+    if the distance is less than the diameter of the circle. Time modulates the
+    radius of each circle, and the brightness of each line. The speed of each
+    circle changes everytime it bounces off the canvas boundary"]
     [:p "Finally, one circle is labeled the eraser, and returns the canvas to
     emptiness to keep some negative space."]
     [:p "This is a variation on Casey Reas' technique of drawing a line between
