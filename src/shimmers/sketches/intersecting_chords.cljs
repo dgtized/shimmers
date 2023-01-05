@@ -90,7 +90,7 @@
         (let [circle' (update circle :p tm/+ v)]
           (when (geometry/contains-circle? bounds circle')
             circle')))
-      (assoc circle :v (dr/randvec2 0.5))))
+      (assoc circle :v (dr/randvec2 0.4))))
 
 (defn update-state [{:keys [bounds circletree t] :as state}]
   (let [bounds' (g/scale-size bounds 0.95)
@@ -144,7 +144,7 @@
                 (q/line (:p circle) (:p neighbor)))
               (when (< d (* 2.0 (:r circle)))
                 (q/with-graphics background
-                  (q/stroke 0.0 0.5 (* 0.5 (eq/unit-cos t)) 0.15)
+                  (q/stroke 0.0 0.35 (* 0.5 (eq/unit-cos t)) 0.15)
                   (q/line p q))))))))))
 
 (defn ui-controls []
