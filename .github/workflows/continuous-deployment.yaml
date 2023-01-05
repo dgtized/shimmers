@@ -1,11 +1,11 @@
-name: Publish
+name: Continuous Deployment
 
 on:
-  workflow_dispatch:
-  workflow_run:
-    workflows: [ CI ]
+  push:
     branches: [ main ]
-    types: [ completed ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,9 +17,53 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  test:
+    name: Test
     runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache deps.edn dependencies
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-maven
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Setup Java 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Setup Clojure
+        uses: DeLaGuardo/setup-clojure@9.3
+        with:
+          cli: latest
+          bb: latest
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: bin/lint
+
+      - name: Test
+        run: bin/kaocha unit-cljc
+
+  publish:
+    name: Publish
+    needs: test
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
