@@ -10,6 +10,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -41,7 +42,10 @@
     (if (>= i n)
       tree
       (if-let [circle (legal-candidate tree)]
-        (recur (inc i) (saq/add-point tree (:p circle) circle))
+        (recur (inc i) (saq/add-point tree (:p circle)
+                                      (if (= i 0)
+                                        (assoc circle :eraser true)
+                                        circle)))
         (recur i tree)))))
 
 (defn circle-pack [{[w h] :size :as bounds} n]
@@ -106,7 +110,8 @@
   (ctrl/state {:show-circles false
                :show-closest false
                :show-chords false
-               :show-background true}))
+               :show-background true
+               :add-eraser true}))
 
 (defn draw [{:keys [t circletree background]}]
   (q/background 1.0)
@@ -117,7 +122,7 @@
     (q/no-fill)
     (q/stroke-weight 0.5)
     (q/stroke (eq/unit-sin t) 0.2))
-  (let [{:keys [show-circles show-closest show-chords show-background]} @ui-state]
+  (let [{:keys [show-circles show-closest show-chords show-background add-eraser]} @ui-state]
     (when show-background
       (q/image background 0 0))
     (doseq [{p :p :as circle} (saq/all-data circletree)]
@@ -125,6 +130,13 @@
         (q/stroke-weight 0.66)
         (q/stroke 0.66)
         (cq/circle circle))
+      (when (and add-eraser (:eraser circle))
+        (q/with-graphics background
+          (let [triangle (triangle/inscribed-equilateral circle 0.0)]
+            (q/no-stroke)
+            (q/fill 1.0 1.0)
+            (cq/draw-triangle (g/vertices triangle))
+            (q/no-fill))))
       (q/stroke-weight 1.0)
       (doseq [nearby (saq/k-nearest-neighbors circletree 4 p)]
         (when-let [neighbor (g/get-point-data nearby)]
@@ -152,13 +164,14 @@
    (ctrl/checkbox ui-state "Show Circles" [:show-circles])
    (ctrl/checkbox ui-state "Show Closest" [:show-closest])
    (ctrl/checkbox ui-state "Show Chords" [:show-chords])
-   (ctrl/checkbox ui-state "Show Background" [:show-background])])
+   (ctrl/checkbox ui-state "Show Background" [:show-background])
+   (ctrl/checkbox ui-state "Add Eraser" [:add-eraser])])
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
   :tags #{:genuary2023}
   :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
