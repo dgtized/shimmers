@@ -51,11 +51,6 @@
        :max-spacing (* 0.05 (min w h))}))
    n))
 
-(defn rebuild-tree [bounds circles]
-  (reduce (fn [t c] (saq/add-point t (:p c) c))
-          (saq/circletree bounds)
-          circles))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
@@ -94,13 +89,14 @@
                      saq/all-data
                      (map (partial rescale bounds' t))
                      (map (partial move bounds')))
-        circles-with-eraser
+        with-eraser
         (if (some (fn [c] (:eraser c)) circles)
           circles
           (let [k (int (* 0.6 (count circles)))]
             (assoc-in (vec (sort-by :r circles)) [k :eraser] true)))]
     (-> state
-        (assoc :circletree (rebuild-tree bounds circles-with-eraser))
+        (assoc :circletree
+               (saq/add-to-circletree (saq/circletree bounds) with-eraser))
         (update :t + 0.01))))
 
 (defonce ui-state
