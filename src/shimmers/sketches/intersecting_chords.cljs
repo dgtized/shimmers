@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.circle-packing :as pack]
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
@@ -38,28 +39,17 @@
             candidate))
         candidate))))
 
-(defn pack-candidates
-  [circletree legal-candidate n]
-  (loop [i 0 tree circletree]
-    (if (>= i n)
-      tree
-      (if-let [circle (legal-candidate tree)]
-        (recur (inc i) (saq/add-point tree (:p circle)
-                                      (if (= i 0)
-                                        (assoc circle :eraser true)
-                                        circle)))
-        (recur i tree)))))
-
 (defn circle-pack [{[w h] :size :as bounds} n]
-  (pack-candidates (saq/circletree bounds)
-                   (fn [tree]
-                     (legal-candidate
-                      tree
-                      {:bounds (g/scale-size bounds 0.95)
-                       :gen-circle (partial make-circle bounds)
-                       :min-spacing (- (* 0.1 (min w h)))
-                       :max-spacing (* 0.05 (min w h))}))
-                   n))
+  (pack/add-circles
+   (saq/circletree bounds)
+   (fn [tree]
+     (legal-candidate
+      tree
+      {:bounds (g/scale-size bounds 0.95)
+       :gen-circle (partial make-circle bounds)
+       :min-spacing (- (* 0.1 (min w h)))
+       :max-spacing (* 0.05 (min w h))}))
+   n))
 
 (defn rebuild-tree [bounds circles]
   (reduce (fn [t c] (saq/add-point t (:p c) c))
@@ -103,9 +93,14 @@
         circles (->> circletree
                      saq/all-data
                      (map (partial rescale bounds' t))
-                     (map (partial move bounds')))]
+                     (map (partial move bounds')))
+        circles-with-eraser
+        (if (some (fn [c] (:eraser c)) circles)
+          circles
+          (let [k (int (* 0.6 (count circles)))]
+            (assoc-in (vec (sort-by :r circles)) [k :eraser] true)))]
     (-> state
-        (assoc :circletree (rebuild-tree bounds circles))
+        (assoc :circletree (rebuild-tree bounds circles-with-eraser))
         (update :t + 0.01))))
 
 (defonce ui-state

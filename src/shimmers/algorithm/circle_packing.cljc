@@ -57,3 +57,12 @@
                          circles)
         [circles' _] (pack-candidates quadtree candidates rules)]
     (into circles circles')))
+
+(defn add-circles [circletree legal-candidate n]
+  (loop [i 0 tree circletree]
+    (if (>= i n)
+      tree
+      (if-let [circle (legal-candidate tree)]
+        (recur (inc i)
+               (saq/add-point tree (:p circle) circle))
+        (recur i tree)))))
