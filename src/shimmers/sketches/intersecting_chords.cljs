@@ -19,7 +19,9 @@
    [thi.ng.math.core :as tm]))
 
 (defn make-circle [{p :p [w h] :size}]
-  (let [r (dr/gaussian (/ h 12) (/ h 20))]
+  (let [r (-> (dr/gaussian (/ h 16) (/ h 20))
+              (max (/ h 30))
+              (min (/ h 3)))]
     (gc/circle (tm/+ p (gv/vec2 (dr/random r (- w r))
                                 (dr/random r (- h r))))
                r)))
@@ -69,7 +71,7 @@
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :background (q/create-graphics (q/width) (q/height))
-     :circletree (circle-pack bounds 12)
+     :circletree (circle-pack bounds 15)
      :t 0.0}))
 
 (defn rescale [bounds t {:keys [r] :as circle}]
@@ -85,7 +87,7 @@
                         ;; and contact point distance
                         (tm/+ p (tm/normalize (tm/- p contact) (- (:r circle') dist)))))))))
       (assoc circle :R {:R r
-                        :dr (dr/random (* 0.05 r) (* 0.5 r))
+                        :dr (dr/random (* 0.2 r) (* 0.4 r))
                         :t0 (dr/random eq/TAU)
                         :dt (dr/gaussian 1 0.1)})))
 
@@ -94,7 +96,7 @@
         (let [circle' (update circle :p tm/+ v)]
           (when (geometry/contains-circle? bounds circle')
             circle')))
-      (assoc circle :v (dr/randvec2 0.4))))
+      (assoc circle :v (dr/randvec2 (max 0.1 (dr/gaussian 0.35 0.06))))))
 
 (defn update-state [{:keys [bounds circletree t] :as state}]
   (let [bounds' (g/scale-size bounds 0.95)
