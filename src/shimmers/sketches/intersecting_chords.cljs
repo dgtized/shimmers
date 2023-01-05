@@ -105,7 +105,19 @@
                :show-closest false
                :show-chords false
                :show-background true
-               :add-eraser true}))
+               :show-eraser false
+               :add-eraser true
+               :jagged-eraser true}))
+
+(defn draw-eraser [circle jagged]
+  (q/no-stroke)
+  (q/fill 1.0 0.1)
+  (let [triangle (if jagged
+                   (-> (triangle/inscribed-equilateral circle (dr/random eq/TAU))
+                       (g/translate (dr/randvec2 (* 0.66 (:r circle)))))
+                   (triangle/inscribed-equilateral circle 0))]
+    (cq/draw-triangle (g/vertices triangle)))
+  (q/no-fill))
 
 (defn draw [{:keys [t circletree background hue]}]
   (q/background 1.0)
@@ -116,7 +128,9 @@
     (q/no-fill)
     (q/stroke-weight 0.5)
     (q/stroke (eq/unit-sin t) 0.2))
-  (let [{:keys [show-circles show-closest show-chords show-background add-eraser]} @ui-state]
+  (let [{:keys [show-circles show-closest show-chords show-background
+                show-eraser add-eraser jagged-eraser]}
+        @ui-state]
     (when show-background
       (q/image background 0 0))
     (doseq [{p :p :as circle} (saq/all-data circletree)]
@@ -125,12 +139,12 @@
         (q/stroke 0.66)
         (cq/circle circle))
       (when (and add-eraser (:eraser circle))
+        (when show-eraser
+          (q/stroke 0.66)
+          (q/stroke-weight 0.66)
+          (cq/draw-triangle (g/vertices (triangle/inscribed-equilateral circle 0))))
         (q/with-graphics background
-          (let [triangle (triangle/inscribed-equilateral circle 0.0)]
-            (q/no-stroke)
-            (q/fill 1.0 1.0)
-            (cq/draw-triangle (g/vertices triangle))
-            (q/no-fill))))
+          (draw-eraser circle jagged-eraser)))
       (q/stroke-weight 1.0)
       (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
         (when-let [neighbor (g/get-point-data nearby)]
@@ -160,7 +174,9 @@
     (ctrl/checkbox ui-state "Show Closest" [:show-closest])
     (ctrl/checkbox ui-state "Show Chords" [:show-chords])
     (ctrl/checkbox ui-state "Show Background" [:show-background])
-    (ctrl/checkbox ui-state "Add Eraser" [:add-eraser])]
+    (ctrl/checkbox ui-state "Add Eraser" [:add-eraser])
+    (ctrl/checkbox ui-state "Show Eraser" [:show-eraser])
+    (ctrl/checkbox ui-state "Jagged Eraser" [:jagged-eraser])]
    [:div {:style {:width "75ch"}}
     [:p "Prompt: Genuary2023 Day 4 - Intersections"]
     [:p "For the closest three neighbors of a circle, if they intersect, draw
