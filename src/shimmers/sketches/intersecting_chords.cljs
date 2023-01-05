@@ -150,8 +150,7 @@
               (q/with-graphics background
                 (q/stroke (eq/unit-sin t) 0.2)
                 (apply q/line isecs)))
-            (let [p (:p circle)
-                  q (:p neighbor)
+            (let [q (:p neighbor)
                   d (g/dist p q)]
               (when show-closest
                 (q/stroke 0.0 0.5 0.25)
