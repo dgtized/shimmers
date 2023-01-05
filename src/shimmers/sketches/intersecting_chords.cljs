@@ -134,10 +134,18 @@
                 (q/stroke 0.0)
                 (apply q/line isecs))
               (q/with-graphics background
+                (q/stroke (eq/unit-sin t) 0.2)
                 (apply q/line isecs)))
-            (when show-closest
-              (q/stroke 0.0 0.5 0.25)
-              (q/line (:p circle) (:p neighbor)))))))))
+            (let [p (:p circle)
+                  q (:p neighbor)
+                  d (g/dist p q)]
+              (when show-closest
+                (q/stroke 0.0 0.5 0.25)
+                (q/line (:p circle) (:p neighbor)))
+              (when (< d (* 2.0 (:r circle)))
+                (q/with-graphics background
+                  (q/stroke 0.0 0.5 (* 0.5 (eq/unit-cos t)) 0.15)
+                  (q/line p q))))))))))
 
 (defn ui-controls []
   [:div
