@@ -63,6 +63,7 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
+     :background (q/create-graphics (q/width) (q/height))
      :circletree (circle-pack bounds 20)
      :t 0.0}))
 
@@ -100,21 +101,29 @@
         (assoc :circletree (rebuild-tree bounds circles))
         (update :t + 0.01))))
 
-(defn draw [{:keys [circletree]}]
+(defn draw [{:keys [t circletree background]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/no-fill)
+  (q/with-graphics background
+    (q/color-mode :hsl 1.0)
+    (q/no-fill)
+    (q/stroke-weight 0.5)
+    (q/stroke (eq/unit-sin t) 0.1))
+  (q/image background 0 0)
   (doseq [{p :p :as circle} (saq/all-data circletree)]
     (q/stroke-weight 0.66)
     (q/stroke 0.66)
     (cq/circle circle)
     (q/stroke-weight 1.0)
-    (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
+    (doseq [nearby (saq/k-nearest-neighbors circletree 4 p)]
       (when-let [neighbor (g/get-point-data nearby)]
         (if (collide/overlaps? circle neighbor)
           (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
             (q/stroke 0.0)
-            (apply q/line isecs))
+            (apply q/line isecs)
+            (q/with-graphics background
+              (apply q/line isecs)))
           (do (q/stroke 0.0 0.5 0.25)
               (q/line (:p circle) (:p neighbor))))))))
 
