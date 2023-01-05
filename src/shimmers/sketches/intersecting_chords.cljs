@@ -140,7 +140,7 @@
             (cq/draw-triangle (g/vertices triangle))
             (q/no-fill))))
       (q/stroke-weight 1.0)
-      (doseq [nearby (saq/k-nearest-neighbors circletree 4 p)]
+      (doseq [nearby (saq/k-nearest-neighbors circletree 3 p)]
         (when-let [neighbor (g/get-point-data nearby)]
           (if (collide/overlaps? circle neighbor)
             (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
