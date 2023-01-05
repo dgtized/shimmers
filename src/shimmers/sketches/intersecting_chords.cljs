@@ -161,12 +161,26 @@
                   (q/line p q))))))))))
 
 (defn ui-controls []
-  [:div
-   (ctrl/checkbox ui-state "Show Circles" [:show-circles])
-   (ctrl/checkbox ui-state "Show Closest" [:show-closest])
-   (ctrl/checkbox ui-state "Show Chords" [:show-chords])
-   (ctrl/checkbox ui-state "Show Background" [:show-background])
-   (ctrl/checkbox ui-state "Add Eraser" [:add-eraser])])
+  [:div.flexcols
+   [:div {:style {:width "20ch"}}
+    [:p]
+    (ctrl/checkbox ui-state "Show Circles" [:show-circles])
+    (ctrl/checkbox ui-state "Show Closest" [:show-closest])
+    (ctrl/checkbox ui-state "Show Chords" [:show-chords])
+    (ctrl/checkbox ui-state "Show Background" [:show-background])
+    (ctrl/checkbox ui-state "Add Eraser" [:add-eraser])]
+   [:div {:style {:width "75ch"}}
+    [:p "Prompt: Genuary2023 Day 4 - Intersections"]
+    [:p "For the closest three neighbors of a circle, if they intersect, draw
+    the chord between the intersection points of the two circles in monochrome.
+    Otherwise, draw the connecting line to the neighbor in red if the distance
+    is less than the diameter of the circle. Time modulates the radius of each
+    circle, and the brightness of each line. The speed of each circle changes
+    everytime it bounces off the canvas boundary"]
+    [:p "Finally, one circle is labeled the eraser, and returns the canvas to
+    emptiness to keep some negative space."]
+    [:p "This is a variation on Casey Reas' technique of drawing a line between
+    two circles if they intersect."]]])
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
