@@ -103,9 +103,9 @@
         (update :t + 0.01))))
 
 (defonce ui-state
-  (ctrl/state {:show-circles true
+  (ctrl/state {:show-circles false
                :show-closest false
-               :show-chords true
+               :show-chords false
                :show-background true}))
 
 (defn draw [{:keys [t circletree background]}]
