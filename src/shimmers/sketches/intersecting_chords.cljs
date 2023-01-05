@@ -5,6 +5,7 @@
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -101,6 +102,11 @@
         (assoc :circletree (rebuild-tree bounds circles))
         (update :t + 0.01))))
 
+(def ui-state (ctrl/state {:show-circles true
+                           :show-closest false
+                           :show-chords true
+                           :show-background true}))
+
 (defn draw [{:keys [t circletree background]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -109,27 +115,40 @@
     (q/color-mode :hsl 1.0)
     (q/no-fill)
     (q/stroke-weight 0.5)
-    (q/stroke (eq/unit-sin t) 0.1))
-  (q/image background 0 0)
-  (doseq [{p :p :as circle} (saq/all-data circletree)]
-    (q/stroke-weight 0.66)
-    (q/stroke 0.66)
-    (cq/circle circle)
-    (q/stroke-weight 1.0)
-    (doseq [nearby (saq/k-nearest-neighbors circletree 4 p)]
-      (when-let [neighbor (g/get-point-data nearby)]
-        (if (collide/overlaps? circle neighbor)
-          (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
-            (q/stroke 0.0)
-            (apply q/line isecs)
-            (q/with-graphics background
-              (apply q/line isecs)))
-          (do (q/stroke 0.0 0.5 0.25)
-              (q/line (:p circle) (:p neighbor))))))))
+    (q/stroke (eq/unit-sin t) 0.2))
+  (let [{:keys [show-circles show-closest show-chords show-background]} @ui-state]
+    (when show-background
+      (q/image background 0 0))
+    (doseq [{p :p :as circle} (saq/all-data circletree)]
+      (when show-circles
+        (q/stroke-weight 0.66)
+        (q/stroke 0.66)
+        (cq/circle circle))
+      (q/stroke-weight 1.0)
+      (doseq [nearby (saq/k-nearest-neighbors circletree 4 p)]
+        (when-let [neighbor (g/get-point-data nearby)]
+          (if (collide/overlaps? circle neighbor)
+            (when-let [isecs (isec/intersect-circle-circle? circle neighbor)]
+              (when show-chords
+                (q/stroke 0.0)
+                (apply q/line isecs))
+              (q/with-graphics background
+                (apply q/line isecs)))
+            (when show-closest
+              (q/stroke 0.0 0.5 0.25)
+              (q/line (:p circle) (:p neighbor)))))))))
+
+(defn ui-controls []
+  [:div
+   (ctrl/checkbox ui-state "Show Circles" [:show-circles])
+   (ctrl/checkbox ui-state "Show Closest" [:show-closest])
+   (ctrl/checkbox ui-state "Show Chords" [:show-chords])
+   (ctrl/checkbox ui-state "Show Background" [:show-background])])
 
 (sketch/defquil intersecting-chords
   :created-at "2023-01-04"
   :tags #{:genuary2023}
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
