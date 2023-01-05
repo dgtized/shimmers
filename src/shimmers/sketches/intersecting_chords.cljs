@@ -65,7 +65,7 @@
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :background (q/create-graphics (q/width) (q/height))
-     :circletree (circle-pack bounds 20)
+     :circletree (circle-pack bounds 12)
      :t 0.0}))
 
 (defn rescale [bounds t {:keys [r] :as circle}]
