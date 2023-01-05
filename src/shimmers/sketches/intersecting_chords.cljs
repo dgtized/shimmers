@@ -102,10 +102,11 @@
         (assoc :circletree (rebuild-tree bounds circles))
         (update :t + 0.01))))
 
-(def ui-state (ctrl/state {:show-circles true
-                           :show-closest false
-                           :show-chords true
-                           :show-background true}))
+(defonce ui-state
+  (ctrl/state {:show-circles true
+               :show-closest false
+               :show-chords true
+               :show-background true}))
 
 (defn draw [{:keys [t circletree background]}]
   (q/background 1.0)
