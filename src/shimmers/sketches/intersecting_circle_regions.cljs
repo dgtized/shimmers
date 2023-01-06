@@ -15,7 +15,9 @@
    [thi.ng.math.core :as tm]))
 
 (defn arc [circle t0 t1 res]
-  (for [t (range t0 (if (< t0 t1) t1 (+ t1 eq/TAU)) res)]
+  (for [t (if (pos? res)
+            (range t0 (if (< t0 t1) t1 (+ t1 eq/TAU)) res)
+            (range t0 (if (> t0 t1) t1 (- t1 eq/TAU)) res))]
     (g/point-at circle (/ t eq/TAU))))
 
 (defn half-moon [{p :p :as a} {q :p :as b} up down res]
@@ -24,11 +26,10 @@
                 (g/heading (tm/- up p))
                 (g/heading (tm/- down p))
                 res)
-           [down]
-           (reverse (arc b
-                         (g/heading (tm/- up q))
-                         (g/heading (tm/- down q))
-                         res)))))
+           (arc b
+                (g/heading (tm/- down q))
+                (g/heading (tm/- up q))
+                (- res)))))
 
 (defn intersection [{p :p :as a} {q :p :as b} up down res]
   (gp/polygon2
