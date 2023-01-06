@@ -80,10 +80,11 @@
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode]) ;; TODO: optionally hide framerate somehow?
-   [:p.explanation.readable-width
-    "Continuous layering of low opacity, random triangle streaks create an
+   [:div.contained
+    [:p.explanation.readable-width
+     "Continuous layering of low opacity, random triangle streaks create an
     impression of a red morning sunrise over a whitecapped sea. Inspired by Mark
-    Rothko."]])
+    Rothko."]]])
 
 (sketch/definition sea-and-sky
   {:created-at "2021-07-06"
