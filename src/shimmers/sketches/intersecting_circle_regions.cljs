@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
@@ -82,9 +83,19 @@
     (q/fill (mod (* tm/PHI i) 1.0) 0.5 0.5 0.1)
     (qdg/draw region)))
 
+;; TODO: https://hogg.io/writings/circle-intersections for constructing regions
+;; from N intersecting circles by converting to graphs. Also, need to add a
+;; CompositePath / CompositePolygon type to allow line segments or arc segments.
+(defn ui-controls []
+  [:div
+   [:p "Genuary 2023 Day 5 - Debug View"]
+   [:p "Shows the disjoint polygon regions constructed from two circles
+   intersecting eachother."]])
+
 (sketch/defquil intersecting-circle-regions
   :created-at "2023-01-05"
   :tags #{:genuary2023}
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
