@@ -54,13 +54,18 @@
         [b]))
     [a b]))
 
+(defn make-circles [t]
+  [(gc/circle (cq/rel-vec (+ 0.4 (* 0.1 (Math/sin t))) 0.5) (cq/rel-h 0.4))
+   (gc/circle (cq/rel-vec (- 0.6 (* 0.3 (Math/sin t))) 0.5) (cq/rel-h 0.3))])
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:circles [(gc/circle (cq/rel-vec 0.35 0.5) (cq/rel-h 0.4))
-             (gc/circle (cq/rel-vec 0.65 0.5) (cq/rel-h 0.3))]})
+  {:circles (make-circles 0.0)})
 
-(defn update-state [state]
-  state)
+(defn update-state [{:keys [t] :as state}]
+  (-> state
+      (update :t + 0.01)
+      (assoc :circles (make-circles t))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
