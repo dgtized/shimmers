@@ -31,7 +31,7 @@
                 (g/heading (tm/- up pb))
                 (- res)))))
 
-(defn intersection [{p :p :as a} {q :p :as b} up down res]
+(defn intersect-moon [{p :p :as a} {q :p :as b} up down res]
   (gp/polygon2
    (concat
     (arc a
@@ -48,7 +48,7 @@
     (if-let [contacts (isec/intersect-circle-circle? a b)]
       (let [[up down] contacts]
         [(half-moon a b up down res)
-         (intersection a b up down res)
+         (intersect-moon a b up down res)
          (half-moon b a down up res)])
       (if (< ra rb)
         [(qdg/contour-polygon b [a]) a]
