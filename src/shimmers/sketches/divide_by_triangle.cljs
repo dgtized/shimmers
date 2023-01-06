@@ -1,4 +1,4 @@
-(ns shimmers.sketches.brush-occlusions
+(ns shimmers.sketches.divide-by-triangle
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -86,7 +86,7 @@
      "CodeAndWood's sketch"] ". Experimenting with varying the density of
      rectangle brushes and the compositional frame."]])
 
-(sketch/defquil brush-occlusions
+(sketch/defquil divide-by-triangle
   :created-at "2023-01-06"
   :on-mount (fn [] (ctrl/mount ui-controls))
   :tags #{:genuary2023}

@@ -10,7 +10,6 @@
    shimmers.sketches.ascendance
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
-   shimmers.sketches.brush-occlusions
    shimmers.sketches.brush-sweep
    shimmers.sketches.breathing-hexes
    shimmers.sketches.bubbles
@@ -46,6 +45,7 @@
    shimmers.sketches.dispersion
    shimmers.sketches.displacements-inbetween
    shimmers.sketches.dithering
+   shimmers.sketches.divide-by-triangle
    shimmers.sketches.dreamcatcher
    shimmers.sketches.emitters
    shimmers.sketches.epicenter-of-impact
