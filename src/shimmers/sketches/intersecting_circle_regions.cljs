@@ -81,15 +81,23 @@
   (q/stroke 0.0)
   (q/stroke-weight 1.0)
   (doseq [circle circles]
-    (cq/circle circle))
+    (cq/circle circle)
+    (cq/circle (:p circle) 2.0))
 
-  (doseq [contact (contact-points (first circles) (second circles))]
-    (cq/circle contact 4.0))
+  (let [[a b] circles]
+    (doseq [contact (contact-points a b)]
+      (q/stroke 0.0 0.5 0.5)
+      (q/stroke-weight 2.0)
+      (cq/circle contact 4.0)
+      (q/stroke 0.6 0.5 0.5)
+      (q/stroke-weight 0.5)
+      (q/line (:p a) contact)
+      (q/line (:p b) contact))
 
-  (q/stroke 0.5)
-  (doseq [[i region] (map-indexed vector (regions (first circles) (second circles) (/ eq/TAU 12)))]
-    (q/fill (mod (* tm/PHI i) 1.0) 0.5 0.5 0.1)
-    (qdg/draw region)))
+    (q/stroke 0.5)
+    (doseq [[i region] (map-indexed vector (regions a b (/ eq/TAU 12)))]
+      (q/fill (mod (* tm/PHI i) 1.0) 0.5 0.5 0.1)
+      (qdg/draw region))))
 
 ;; TODO: https://hogg.io/writings/circle-intersections for constructing regions
 ;; from N intersecting circles by converting to graphs. Also, need to add a
