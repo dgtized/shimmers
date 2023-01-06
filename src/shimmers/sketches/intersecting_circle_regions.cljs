@@ -15,12 +15,10 @@
    [thi.ng.math.core :as tm]))
 
 (defn arc [circle t0 t1 res]
-  (println t0 t1)
   (for [t (range t0 (if (< t0 t1) t1 (+ t1 eq/TAU)) res)]
     (g/point-at circle (/ t eq/TAU))))
 
 (defn half-moon [{p :p :as a} {q :p :as b} up down res]
-  (println a b)
   (gp/polygon2
    (concat (arc a
                 (g/heading (tm/- up p))
@@ -58,9 +56,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/no-loop)
   {:circles [(gc/circle (cq/rel-vec 0.35 0.5) (cq/rel-h 0.4))
-             (gc/circle (cq/rel-vec 0.65 0.5) (cq/rel-h 0.4))]})
+             (gc/circle (cq/rel-vec 0.65 0.5) (cq/rel-h 0.3))]})
 
 (defn update-state [state]
   state)
@@ -75,7 +72,7 @@
     (cq/circle circle))
 
   (q/stroke 0.5)
-  (doseq [[i region] (map-indexed vector (regions (first circles) (second circles) (/ eq/TAU 10)))]
+  (doseq [[i region] (map-indexed vector (regions (first circles) (second circles) (/ eq/TAU 12)))]
     (q/fill (mod (* tm/PHI i) 1.0) 0.5 0.5 0.1)
     (qdg/draw region)))
 
