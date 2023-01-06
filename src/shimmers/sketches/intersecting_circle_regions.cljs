@@ -26,16 +26,30 @@
                 (g/heading (tm/- up p))
                 (g/heading (tm/- down p))
                 res)
+           [down]
            (reverse (arc b
                          (g/heading (tm/- up q))
                          (g/heading (tm/- down q))
                          res)))))
+
+(defn intersection [{p :p :as a} {q :p :as b} up down res]
+  (gp/polygon2
+   (concat
+    (arc a
+         (g/heading (tm/- down p))
+         (g/heading (tm/- up p))
+         res)
+    (arc b
+         (g/heading (tm/- up q))
+         (g/heading (tm/- down q))
+         res))))
 
 (defn regions [{ra :r :as a} {rb :r :as b} res]
   (if (collide/overlaps? a b)
     (if-let [contacts (isec/intersect-circle-circle? a b)]
       (let [[up down] contacts]
         [(half-moon a b up down res)
+         (intersection a b up down res)
          (half-moon b a down up res)])
       (if (< ra rb)
         [a]
