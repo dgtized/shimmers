@@ -50,8 +50,8 @@
          (intersection a b up down res)
          (half-moon b a down up res)])
       (if (< ra rb)
-        [a]
-        [b]))
+        [(qdg/contour-polygon b [a]) a]
+        [(qdg/contour-polygon a [b]) b]))
     [a b]))
 
 (defn make-circles [t]
