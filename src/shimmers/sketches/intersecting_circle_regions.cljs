@@ -20,15 +20,15 @@
             (range t0 (if (> t0 t1) t1 (- t1 eq/TAU)) res))]
     (g/point-at circle (/ t eq/TAU))))
 
-(defn half-moon [{p :p :as a} {q :p :as b} up down res]
+(defn half-moon [{pa :p :as a} {pb :p :as b} up down res]
   (gp/polygon2
    (concat (arc a
-                (g/heading (tm/- up p))
-                (g/heading (tm/- down p))
+                (g/heading (tm/- up pa))
+                (g/heading (tm/- down pa))
                 res)
            (arc b
-                (g/heading (tm/- down q))
-                (g/heading (tm/- up q))
+                (g/heading (tm/- down pb))
+                (g/heading (tm/- up pb))
                 (- res)))))
 
 (defn intersection [{p :p :as a} {q :p :as b} up down res]
