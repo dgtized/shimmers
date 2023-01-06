@@ -44,6 +44,11 @@
          (g/heading (tm/- down q))
          res))))
 
+(defn contact-points [a b]
+  (when (collide/overlaps? a b)
+    (when-let [contacts (isec/intersect-circle-circle? a b)]
+      contacts)))
+
 (defn regions [{ra :r :as a} {rb :r :as b} res]
   (if (collide/overlaps? a b)
     (if-let [contacts (isec/intersect-circle-circle? a b)]
@@ -77,6 +82,9 @@
   (q/stroke-weight 1.0)
   (doseq [circle circles]
     (cq/circle circle))
+
+  (doseq [contact (contact-points (first circles) (second circles))]
+    (cq/circle contact 4.0))
 
   (q/stroke 0.5)
   (doseq [[i region] (map-indexed vector (regions (first circles) (second circles) (/ eq/TAU 12)))]
