@@ -17,6 +17,7 @@
 
 (sketch/defquil template
   :created-at "2023-"
+  :tags #{}
   :size [800 600]
   :setup setup
   :update update-state
