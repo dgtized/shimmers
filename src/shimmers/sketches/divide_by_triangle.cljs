@@ -64,7 +64,13 @@
     (q/fill 0.6 0.5 0.4 1.0)
     (q/no-stroke)
     (qdg/draw rect)
-    (q/fill 0.0 0.6 0.45 1.0)
+    (let [color (dr/rand-nth [[0.0 0.6 0.45 1.0]
+                              [0.1 0.8 0.55 1.0]
+                              [0.16 0.7 0.55 1.0]
+                              [0.33 0.65 0.35 1.0]
+                              [0.85 0.4 0.4 1.0]])]
+      (apply q/fill color))
+
     (let [sx (dr/rand-nth [-1 1])
           dh (gv/vec2 (* sx (cq/rel-h 0.03)) (cq/rel-h 0.15))
           r (cq/rel-h 0.08)
