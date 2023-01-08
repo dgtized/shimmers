@@ -14,14 +14,14 @@
           ctx (canvas/scale-dpi canvas [w h])]
       (.drawImage ctx image 0 0 sw sh 0 0 w h))))
 
-(defn set-image-cb [!upload !canvas _]
+(defn set-image-cb [!upload !canvas width _]
   (when-let [upload @!upload]
     (when-let [file (first (.-files upload))]
       (.then (js/createImageBitmap file)
              (fn [image]
-               (draw-canvas !canvas 800 image))))))
+               (draw-canvas !canvas width image))))))
 
-(defn page []
+(defn page [width]
   (let [!canvas (atom nil)
         !upload (atom nil)]
     (fn []
@@ -29,6 +29,7 @@
        [:div
         [:canvas
          {:class "canvas-frame"
+          :width width
           :ref #(reset! !canvas %)}]]
        [:div.contained
         [:label {:for "still"} "Select an image: "]
@@ -37,10 +38,10 @@
                  :ref #(reset! !upload %)
                  :name "still"
                  :accept "image/png, image/jpg"
-                 :on-change (partial set-image-cb !upload !canvas)}]]])))
+                 :on-change (partial set-image-cb !upload !canvas width)}]]])))
 
 (sketch/definition paletteable
   {:created-at "2023-06-07"
    :type :canvas
    :tags #{:genuary2023}}
-  (ctrl/mount (page) "sketch-host"))
+  (ctrl/mount (page 800) "sketch-host"))
