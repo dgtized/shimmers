@@ -21,6 +21,9 @@
              (fn [image]
                (draw-canvas !canvas width image))))))
 
+;; See https://presumably.de/reagent-mysteries-part-3-manipulating-the-dom.html
+;; and https://ericnormand.me/guide/reagent#form-3 for further discussion on
+;; using the ref pattern.
 (defn page [width]
   (let [!canvas (atom nil)
         !upload (atom nil)]
