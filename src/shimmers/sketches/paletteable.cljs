@@ -27,6 +27,7 @@
     (.scale ctx dpr dpr)
     ctx))
 
+;; This is rendering at 60 fps, can we draw canvas on image load?
 (defn draw-canvas [_ canvas state]
   (cv/on-frame
    (fn [_]
