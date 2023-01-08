@@ -106,11 +106,15 @@
                      (eq/sqr (- pay (* bay h)))))
        r)))
 
-(defn ray-march [from angle segments]
+(defn world-map [segments]
+  (fn [position]
+    (let [[close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)]
+      (sdf-line position close-a close-b 1))))
+
+(defn ray-march [from angle world]
   (loop [depth 0 path []]
     (let [position (v/+polar from depth angle)
-          [close-a close-b] (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
-          dist (sdf-line position close-a close-b 1)]
+          dist (world position)]
       (cond
         (> depth 1000)
         [nil path]
@@ -277,13 +281,14 @@
           (when-let [intersection (closest-intersection ray segments)]
             (q/line mouse intersection))))
       :ray-march
-      (if omnidirectional
-        (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
-                :let [[hit path] (ray-march mouse angle segments)]]
-          (draw-ray mouse hit path ui-mode))
-        (let [angle (* theta 0.5)
-              [hit path] (ray-march mouse angle segments)]
-          (draw-ray mouse hit path ui-mode)))
+      (let [world (world-map segments)]
+        (if omnidirectional
+          (doseq [angle (sm/range-subdivided tm/TWO_PI 45)
+                  :let [[hit path] (ray-march mouse angle world)]]
+            (draw-ray mouse hit path ui-mode))
+          (let [angle (* theta 0.5)
+                [hit path] (ray-march mouse angle world)]
+            (draw-ray mouse hit path ui-mode))))
       :reflect-ray-march
       (let [angle (* theta 0.5)
             [_ path] (reflect-ray-march mouse angle segments)]
