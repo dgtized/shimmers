@@ -125,25 +125,29 @@
          (+ depth dist)
          (conj path [position dist]))))))
 
+(defn estimate-normal [world epsilon position]
+  (tm/normalize
+   (gv/vec2 (- (world (tm/+ position (gv/vec2 epsilon 0)))
+               (world (tm/- position (gv/vec2 epsilon 0))))
+            (- (world (tm/+ position (gv/vec2 0 epsilon)))
+               (world (tm/- position (gv/vec2 0 epsilon)))))))
+
 ;; in https://graphicscodex.courses.nvidia.com/app.html?page=_rn_rayMrch,
 ;; section 6 mentions computing a gradient of the SDF directly.
 ;; other notes: https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
 ;; https://antoinefortin.ca/uncategorized/simple-ray-marching-reflection/
-(defn reflect-ray-march [from angle segments]
+(defn reflect-ray-march [from angle world]
   (loop [depth 0
          steps 0
          position from
          angle angle
          path []]
-    (let [[close-a close-b]
-          (apply min-key (fn [[a b]] (sdf-line position a b 1)) segments)
-          dist (sdf-line position close-a close-b 1)]
+    (let [epsilon 0.01
+          dist (world position)]
       (cond (or (> depth (q/width)) (> steps 64))
             [position path]
-            (<= dist 0.01)
-            (let [facing-normal
-                  (tm/normalize (g/normal (tm/- close-a close-b))
-                                (v/orientation close-a close-b position))
+            (<= dist epsilon)
+            (let [facing-normal (estimate-normal world epsilon position)
                   reflection (g/reflect (v/polar 1 angle) facing-normal)
                   ;; not sure why normal is needed here. *something* is needed
                   ;; to keep it from reflecting immediately, but this adjust the
@@ -290,8 +294,9 @@
                 [hit path] (ray-march mouse angle world)]
             (draw-ray mouse hit path ui-mode))))
       :reflect-ray-march
-      (let [angle (* theta 0.5)
-            [_ path] (reflect-ray-march mouse angle segments)]
+      (let [world (world-map segments)
+            angle (* theta 0.5)
+            [_ path] (reflect-ray-march mouse angle world)]
         (when (:show-path ui-mode)
           (q/stroke-weight 0.4)
           (q/stroke 0.0 0.5 0.5)
