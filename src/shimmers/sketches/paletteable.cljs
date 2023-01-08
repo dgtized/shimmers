@@ -10,7 +10,12 @@
   (let [el (dom/getElement "still")]
     (when-let [file (first (.-files el))]
       (.then (js/createImageBitmap file)
-             (fn [image] (swap! ui-state assoc :image image))))))
+             (fn [image]
+               (swap! ui-state update
+                      :image
+                      (fn [existing]
+                        (when existing (.close existing))
+                        image)))))))
 
 (defn scale-dpi [canvas [width height]]
   (let [ctx (.getContext canvas "2d")
