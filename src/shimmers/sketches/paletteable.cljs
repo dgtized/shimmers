@@ -26,19 +26,19 @@
         !upload (atom nil)]
     (fn []
       [:div
-       [:div
-        [:canvas
-         {:class "canvas-frame"
-          :width width
-          :ref #(reset! !canvas %)}]]
+       [:canvas
+        {:class "canvas-frame"
+         :width width
+         :ref #(reset! !canvas %)}]
        [:div.contained
-        [:label {:for "still"} "Select an image: "]
-        [:input {:type "file"
-                 :id "still"
-                 :ref #(reset! !upload %)
-                 :name "still"
-                 :accept "image/png, image/jpg"
-                 :on-change (partial set-image-cb !upload !canvas width)}]]])))
+        [:div.explanation
+         [:label {:for "still"} "Select an image: "]
+         [:input {:type "file"
+                  :id "still"
+                  :ref #(reset! !upload %)
+                  :name "still"
+                  :accept "image/png, image/jpg"
+                  :on-change (partial set-image-cb !upload !canvas width)}]]]])))
 
 (sketch/definition paletteable
   {:created-at "2023-06-07"
