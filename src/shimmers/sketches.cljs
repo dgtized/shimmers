@@ -108,6 +108,7 @@
    shimmers.sketches.oil-reflections
    shimmers.sketches.overlapping-polygons
    shimmers.sketches.particles
+   shimmers.sketches.paletteable
    shimmers.sketches.path-distribution
    shimmers.sketches.path-following
    shimmers.sketches.path-morph
