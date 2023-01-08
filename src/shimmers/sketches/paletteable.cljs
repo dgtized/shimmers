@@ -41,7 +41,13 @@
                   :ref #(reset! !upload %)
                   :name "still"
                   :accept "image/png, image/jpg"
-                  :on-change (partial set-image-cb !upload !canvas width)}]]]])))
+                  :on-change (partial set-image-cb !upload !canvas width)}]
+         [:p "Genuary 2023 Day 7: Sample a color palette from a movie/album cover"]
+         [:p.readable-width "WIP: Was looking at combining this with the debug
+         view prompt again, and allow file selection of a local image and then
+         show debug output of palettes from that image. Considering just using
+         basic k-means clustering using cos-similarity for palette discrimation,
+         but still need to implement that."]]]])))
 
 (sketch/definition paletteable
   {:created-at "2023-06-07"
