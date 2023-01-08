@@ -147,25 +147,22 @@
          path []]
     (let [epsilon 0.01
           dist (world position)]
-      (cond (or (> depth (q/width)) (> steps 64))
+      (cond (or (> depth (q/width)) (> steps 128))
             [position path]
             (<= dist epsilon)
             (let [facing-normal (estimate-normal world epsilon position)
-                  reflection (g/reflect (v/polar 1 angle) facing-normal)
-                  ;; not sure why normal is needed here. *something* is needed
-                  ;; to keep it from reflecting immediately, but this adjust the
-                  ;; angle of reflection and not sure it's always quite right.
-                  dir (tm/- facing-normal reflection)]
+                  reflection (g/reflect (tm/- (v/polar 1 angle)) facing-normal)
+                  angle' (g/heading reflection)]
               (swap! defo update :reflection (fnil conj [])
                      {:p position
                       :dist dist
-                      :dir (v/polar 1 angle)
+                      :ray (v/polar 1 angle)
                       :normal facing-normal
                       :reflect reflection})
               (recur (+ depth dist)
                      (inc steps)
-                     (tm/+ position (tm/* dir dist))
-                     (g/heading dir)
+                     (v/+polar position epsilon angle')
+                     angle'
                      (conj path [position dist])))
             :else
             (recur (+ depth dist)
