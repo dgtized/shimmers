@@ -6,22 +6,25 @@
 
 (defonce ui-state (ctrl/state {:image nil}))
 
+(defn set-image-cb [_]
+  (let [el (dom/getElement "still")]
+    (when-let [file (first (.-files el))]
+      (let [reader (new js/FileReader)]
+        (set! (.-onload reader)
+              (fn [e]
+                (let [result (-> e .-target .-result)]
+                  (swap! ui-state assoc :image result))))
+        (.readAsDataURL reader file)))))
+
 (defn page []
-  [:div.contained
-   [:label {:for "still"} "Select an image: "]
-   [:input {:type "file"
-            :id "still"
-            :name "still"
-            :accept "image/png, image/jpg"
-            :on-change (fn [_]
-                         (let [el (dom/getElement "still")]
-                           (when-let [file (first (.-files el))]
-                             (let [reader (new js/FileReader)]
-                               (set! (.-onload reader)
-                                     (fn [e]
-                                       (let [result (-> e .-target .-result)]
-                                         (swap! ui-state assoc :image result))))
-                               (.readAsDataURL reader file)))))}]
+  [:div
+   [:div.contained
+    [:label {:for "still"} "Select an image: "]
+    [:input {:type "file"
+             :id "still"
+             :name "still"
+             :accept "image/png, image/jpg"
+             :on-change set-image-cb}]]
    [:div
     [:img {:id "preview"
            :src (if-let [image (:image @ui-state)]
