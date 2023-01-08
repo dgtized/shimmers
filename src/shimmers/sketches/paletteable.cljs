@@ -1,18 +1,9 @@
 (ns shimmers.sketches.paletteable
   (:require
    [goog.dom :as dom]
+   [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
-
-(defn scale-dpi [canvas [width height]]
-  (let [ctx (.getContext canvas "2d")
-        dpr (dom/getPixelRatio)]
-    (set! (.-width canvas) (Math/floor (* dpr width)))
-    (set! (.-height canvas) (Math/floor (* dpr height)))
-    (set! (.-style.width canvas) (str width "px"))
-    (set! (.-style.height canvas) (str height "px"))
-    (.scale ctx dpr dpr)
-    ctx))
 
 (defn draw-canvas [!canvas width image]
   (when-let [canvas @!canvas]
@@ -21,7 +12,7 @@
           ratio (/ sh (float sw))
           w width
           h (int (* w ratio))
-          ctx (scale-dpi canvas [w h])]
+          ctx (canvas/scale-dpi canvas [w h])]
       (.drawImage ctx image 0 0 sw sh 0 0 w h))))
 
 (defn set-image-cb [!canvas _]

@@ -1,5 +1,6 @@
 (ns shimmers.common.ui.canvas
   (:require
+   [goog.dom :as dom]
    [reagent.core :as r]
    [reagent.dom :as rdom]))
 
@@ -9,6 +10,17 @@
       (merge {:width width :height height})
       (assoc-in [:style :width] (str width "px"))
       (assoc-in [:style :height] (str width "px"))))
+
+;; https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#scaling_for_high_resolution_displays
+(defn scale-dpi [canvas [width height]]
+  (let [ctx (.getContext canvas "2d")
+        dpr (dom/getPixelRatio)]
+    (set! (.-width canvas) (Math/floor (* dpr width)))
+    (set! (.-height canvas) (Math/floor (* dpr height)))
+    (set! (.-style.width canvas) (str width "px"))
+    (set! (.-style.height canvas) (str height "px"))
+    (.scale ctx dpr dpr)
+    ctx))
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?

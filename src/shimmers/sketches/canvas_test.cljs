@@ -1,6 +1,5 @@
 (ns shimmers.sketches.canvas-test
   (:require
-   [goog.dom :as gdom]
    [helins.canvas :as cv]
    [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
@@ -42,17 +41,6 @@
                    :pos pos
                    :vel new-vel)))))
 
-;; https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#scaling_for_high_resolution_displays
-(defn scale-dpi [canvas [width height]]
-  (let [ctx (.getContext canvas "2d")
-        dpr (gdom/getPixelRatio)]
-    (set! (.-width canvas) (Math/floor (* dpr width)))
-    (set! (.-height canvas) (Math/floor (* dpr height)))
-    (set! (.-style.width canvas) (str width "px"))
-    (set! (.-style.height canvas) (str height "px"))
-    (.scale ctx dpr dpr)
-    ctx))
-
 (defn make-box-state [width height margin size]
   (atom {:size size
          :pos (gv/vec2 (dr/random-int margin (- width size margin))
@@ -64,7 +52,7 @@
 (defn draw-frame [id telemetry]
   (fn [_ canvas canvas-state]
     (let [{:keys [width height]} @canvas-state
-          ctx (scale-dpi canvas [width height])
+          ctx (canvas/scale-dpi canvas [width height])
           box-state (make-box-state width height 10 50)]
       (cv/on-frame
        (fn [_]
