@@ -25,13 +25,16 @@
 (defn draw-canvas [_ canvas state]
   (cv/on-frame
    (fn [_]
-     (let [{:keys [width height]} @state
-           ctx (scale-dpi canvas [width height])]
-       (when-let [image (:image @state)]
-         (let [sw (.-width image)
-               sh (.-height image)]
-           (.drawImage ctx image 0 0 sw sh 0 0 width height)))
-       true))))
+     (when-let [image (:image @state)]
+       (let [sw (.-width image)
+             sh (.-height image)
+             ratio (/ sh (float sw))
+             {:keys [width]} @state
+             w width
+             h (int (* w ratio))
+             ctx (scale-dpi canvas [w h])]
+         (.drawImage ctx image 0 0 sw sh 0 0 w h)))
+     true)))
 
 (defn page []
   (let [ui-state (ctrl/state {:width 800
