@@ -27,12 +27,11 @@
    (fn [_]
      (let [{:keys [width height]} @state
            ctx (scale-dpi canvas [width height])]
-       (if-let [image (:image @state)]
+       (when-let [image (:image @state)]
          (let [sw (.-width image)
                sh (.-height image)]
-           (.drawImage ctx image 0 0 sw sh 0 0 width height)
-           false)
-         true)))))
+           (.drawImage ctx image 0 0 sw sh 0 0 width height)))
+       true))))
 
 (defn page []
   (let [ui-state (ctrl/state {:width 800
