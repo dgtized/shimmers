@@ -139,15 +139,15 @@
 ;; section 6 mentions computing a gradient of the SDF directly.
 ;; other notes: https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
 ;; https://antoinefortin.ca/uncategorized/simple-ray-marching-reflection/
-(defn reflect-ray-march [from angle world]
-  (loop [depth 0
+(defn reflect-ray-march [max-distance max-steps from angle world]
+  (loop [distance 0
          steps 0
          position from
          angle angle
          path []]
     (let [epsilon 0.01
           dist (world position)]
-      (cond (or (> depth (q/width)) (> steps 128))
+      (cond (or (> distance max-distance) (> steps max-steps))
             [position path]
             (<= dist epsilon)
             (let [facing-normal (estimate-normal world epsilon position)
@@ -159,13 +159,13 @@
                       :ray (v/polar 1 angle)
                       :normal facing-normal
                       :reflect reflection})
-              (recur (+ depth dist)
+              (recur (+ distance epsilon)
                      (inc steps)
                      (v/+polar position epsilon angle')
                      angle'
                      (conj path [position dist])))
             :else
-            (recur (+ depth dist)
+            (recur (+ distance dist)
                    (inc steps)
                    (v/+polar position dist angle)
                    angle
@@ -303,7 +303,7 @@
       :reflect-ray-march
       (let [world (world-map segments)
             angle (* theta 0.5)
-            [_ path] (reflect-ray-march mouse angle world)]
+            [_ path] (reflect-ray-march (* 4 (q/width)) 100 mouse angle world)]
         (when (:show-path ui-mode)
           (q/stroke-weight 0.4)
           (q/stroke 0.0 0.5 0.5)
