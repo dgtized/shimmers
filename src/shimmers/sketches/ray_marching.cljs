@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.intersection :as isec]
@@ -29,6 +30,8 @@
                :omnidirectional true
                :visible-shapes true
                :show-path false}))
+
+(def defo (ctrl/state {}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -153,6 +156,12 @@
                   ;; to keep it from reflecting immediately, but this adjust the
                   ;; angle of reflection and not sure it's always quite right.
                   dir (tm/- facing-normal reflection)]
+              (swap! defo update :reflection (fnil conj [])
+                     {:p position
+                      :dist dist
+                      :dir (v/polar 1 angle)
+                      :normal facing-normal
+                      :reflect reflection})
               (recur (+ depth dist)
                      (inc steps)
                      (tm/+ position (tm/* dir dist))
@@ -272,6 +281,7 @@
   (q/stroke 0.0)
   (q/stroke-weight 0.75)
   (q/no-fill)
+  (reset! defo {})
   (let [{:keys [mode scene omnidirectional bounding-rectangle visible-shapes] :as ui-mode} @ui-state
         shapes (let [s ((get scenes scene) theta)]
                  (if bounding-rectangle
@@ -349,22 +359,24 @@
             :visible-polygon :visible-regions])
 
 (defn ui-controls []
-  (ctrl/container
-   (ctrl/checkbox ui-state "Animated" [:animated])
-   (ctrl/change-mode ui-state modes)
-   (ctrl/change-mode ui-state (keys scenes)
-                     {:button-value "Cycle Scene"
-                      :mode-desc "Scene: "
-                      :mode-key :scene})
-   (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
-   (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
-   (let [{:keys [mode]} @ui-state]
-     (when (#{:ray-march :reflect-ray-march} mode)
-       [:div
-        (when (= :ray-march mode)
-          (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional]))
-        (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])]))
-   [explanation]))
+  [:div.flexcols
+   (ctrl/container
+    (ctrl/checkbox ui-state "Animated" [:animated])
+    (ctrl/change-mode ui-state modes)
+    (ctrl/change-mode ui-state (keys scenes)
+                      {:button-value "Cycle Scene"
+                       :mode-desc "Scene: "
+                       :mode-key :scene})
+    (ctrl/checkbox ui-state "Include Bounding Rectangle in Shapes" [:bounding-rectangle])
+    (ctrl/checkbox ui-state "Show Shapes" [:visible-shapes])
+    (let [{:keys [mode]} @ui-state]
+      (when (#{:ray-march :reflect-ray-march} mode)
+        [:div
+         (when (= :ray-march mode)
+           (ctrl/checkbox ui-state "Omnidirectional" [:omnidirectional]))
+         (ctrl/checkbox ui-state "Closest Surface Radius" [:show-path])]))
+    [explanation])
+   (debug/display defo)])
 
 (sketch/defquil ray-marching
   :created-at "2020-08-24"
