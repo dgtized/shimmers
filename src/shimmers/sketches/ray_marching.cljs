@@ -145,7 +145,7 @@
          position from
          angle angle
          path []]
-    (let [epsilon 0.01
+    (let [epsilon 0.1
           dist (world position)]
       (cond (or (> distance max-distance) (> steps max-steps))
             [position path]
