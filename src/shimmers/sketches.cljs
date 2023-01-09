@@ -55,6 +55,7 @@
    shimmers.sketches.fireworks
    shimmers.sketches.flocking-brushes
    shimmers.sketches.flow-fields
+   shimmers.sketches.flower-petals
    shimmers.sketches.folding-triangles
    ;; shimmers.sketches.fluid
    shimmers.sketches.future-cities
