@@ -71,10 +71,10 @@
 (defn draw [{:keys [bounds cells actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  (q/stroke-weight 1.0)
-  (cq/draw-polygon bounds)
-  (doseq [cell cells]
-    (cq/draw-polygon cell))
+  ;; (q/stroke-weight 1.0)
+  ;; (cq/draw-polygon bounds)
+  ;; (doseq [cell cells]
+  ;;   (cq/draw-polygon cell))
 
   (q/stroke-weight 2.0)
   (doseq [{:keys [position actions]} actors]
