@@ -29,18 +29,18 @@
   {:type :wait
    :move position
    :t0 t
-   :t1 (+ t (inc (dr/random-int 8)))})
+   :t1 (+ t (inc (dr/random-int 4)))})
 
 (defn action-slide [size {:keys [position]} t]
   (let [move (dr/rand-nth (legal-moves size position))]
     {:type :slide
      :move (tm/+ position move)
      :t0 t
-     :t1 (+ t (inc (dr/random-int 8)))}))
+     :t1 (+ t (inc (dr/random-int 4)))}))
 
 (defn make-action [size actor t]
   ((dr/weighted
-    {action-wait 1
+    {action-wait 2
      action-slide 1})
    size actor t))
 
@@ -78,7 +78,7 @@
 
 (defn update-state [{:keys [t size] :as state}]
   (-> state
-      (update :t + 0.05)
+      (update :t + (/ 1 32))
       (update :actors update-actors t size)))
 
 (defn draw [{:keys [bounds cells actors t]}]
