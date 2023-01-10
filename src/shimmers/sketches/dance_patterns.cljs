@@ -49,14 +49,18 @@
 
 (defn update-actors [actors t size]
   (mapcat (fn [{:keys [actions] :as actor}]
-            [(if (empty? actions)
-               (update actor :actions conj (make-action size actor t))
-               (let [{:keys [move t1]} (first actions)]
-                 (if (>= t t1)
-                   (-> actor
+            (if (empty? actions)
+              (let [actor' (update actor :actions conj (make-action size actor t))]
+                (if (and (< (count actors) 12) (dr/chance 0.33))
+                  [actor'
+                   (update actor :actions conj (make-action size actor t))]
+                  [actor']))
+              (let [{:keys [move t1]} (first actions)]
+                (if (>= t t1)
+                  [(-> actor
                        (assoc :position move)
-                       (update :actions rest))
-                   actor)))])
+                       (update :actions rest))]
+                  [actor]))))
           actors))
 
 (defn update-state [{:keys [t size] :as state}]
