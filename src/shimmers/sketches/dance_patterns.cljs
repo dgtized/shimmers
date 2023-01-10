@@ -26,18 +26,22 @@
     dir))
 
 (defn action-wait [size {:keys [position]} t]
-  {:move position
+  {:type :wait
+   :move position
    :t0 t
    :t1 (+ t (inc (dr/random-int 8)))})
 
-(defn action-move [size {:keys [position]} t]
+(defn action-slide [size {:keys [position]} t]
   (let [move (dr/rand-nth (legal-moves size position))]
-    {:move (tm/+ position move)
+    {:type :slide
+     :move (tm/+ position move)
      :t0 t
      :t1 (+ t (inc (dr/random-int 8)))}))
 
 (defn make-action [size actor t]
-  ((dr/rand-nth [action-wait action-move])
+  ((dr/weighted
+    {action-wait 1
+     action-slide 1})
    size actor t))
 
 (defn make-cell [pos]
