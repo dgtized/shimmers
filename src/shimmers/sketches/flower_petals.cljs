@@ -10,20 +10,33 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  {:t 0.0})
 
 (defn update-state [state]
-  state)
+  (update state :t + 0.005))
 
-(defn draw [state]
+(defn r-pos [r0 r blades theta]
+  (+ r0 (* r (Math/cos (* blades theta)))))
+
+(defn draw [{:keys [t]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/stroke 0.0)
-  (q/begin-shape)
-  (doseq [theta (range 0 eq/TAU 0.05)]
-    (let [r (cq/rel-h 0.4)
-          p (v/+polar (cq/rel-vec 0.5 0.5) (* r (Math/cos (* 5 theta))) theta)
-          [x y] p]
-      (q/curve-vertex x y)))
+  (let [center (cq/rel-vec 0.5 0.5)
+        r0 (+ (cq/rel-h 0.1) (* (cq/rel-h 0.05) (Math/sin t)))
+        r (cq/rel-h 0.35)
+        blades (+ 5 (* 4 (Math/cos (* 0.1 t))))
+        dt 0.05]
+    (q/fill 0.0 0.3 0.3)
+    ;; (cq/circle (v/+polar center (r-pos r0 r blades t) t) 3)
+    (q/no-fill)
+    (q/begin-shape)
+    (doseq [theta (range 0 (* (inc blades) eq/TAU) dt)]
+      (let [p (v/+polar center
+                        (r-pos r0 r blades theta)
+                        (- t theta))
+            [x y] p]
+        (q/curve-vertex x y))))
   (q/end-shape))
 
 (sketch/defquil flower-petals
