@@ -25,11 +25,20 @@
                    (<= 0 y (dec size)))]
     dir))
 
-(defn make-action [size {:keys [position]} t]
+(defn action-wait [size {:keys [position]} t]
+  {:move position
+   :t0 t
+   :t1 (+ t (inc (dr/random-int 8)))})
+
+(defn action-move [size {:keys [position]} t]
   (let [move (dr/rand-nth (legal-moves size position))]
     {:move (tm/+ position move)
      :t0 t
      :t1 (+ t (inc (dr/random-int 8)))}))
+
+(defn make-action [size actor t]
+  ((dr/rand-nth [action-wait action-move])
+   size actor t))
 
 (defn make-cell [pos]
   {:position pos
