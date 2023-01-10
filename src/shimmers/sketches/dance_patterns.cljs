@@ -25,7 +25,7 @@
                    (<= 0 y (dec size)))]
     dir))
 
-(defn action-wait [size {:keys [position]} t]
+(defn action-wait [_size {:keys [position]} t]
   {:type :wait
    :move position
    :t0 t
@@ -81,11 +81,10 @@
       (update :t + (/ 1 32))
       (update :actors update-actors t size)))
 
-(defn draw [{:keys [bounds cells actors t]}]
+(defn draw [{:keys [cells actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   ;; (q/stroke-weight 1.0)
-  ;; (cq/draw-polygon bounds)
   ;; (doseq [cell cells]
   ;;   (cq/draw-polygon cell))
 
