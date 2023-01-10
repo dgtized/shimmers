@@ -64,7 +64,7 @@
   (mapcat (fn [{:keys [actions] :as actor}]
             (if (empty? actions)
               (let [actor' (update actor :actions conj (make-action size actor t))]
-                (if (and (< (count actors) 12) (dr/chance 0.33))
+                (if (and (< (count actors) 21) (dr/chance 0.33))
                   [actor'
                    (update actor :actions conj (make-action size actor t))]
                   [actor']))
