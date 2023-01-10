@@ -34,6 +34,7 @@
    shimmers.sketches.cube-rotations
    shimmers.sketches.curvature-of-space
    shimmers.sketches.cut-and-slide
+   shimmers.sketches.dance-patterns
    shimmers.sketches.decaying-foundations
    shimmers.sketches.deeper-squares
    shimmers.sketches.deeply-askew
