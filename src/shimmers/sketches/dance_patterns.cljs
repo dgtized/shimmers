@@ -67,19 +67,22 @@
      :actors [(make-cell (gv/vec2 (int (/ size 2)) (int (/ size 2))))]}))
 
 (defn update-actors [actors t size]
-  (mapcat (fn [{:keys [actions] :as actor}]
+  (reduce (fn [actors' {:keys [actions] :as actor}]
             (if (empty? actions)
-              (let [actor' (update actor :actions conj (make-action size actors actor t))]
+              (let [actor' (update actor :actions conj (make-action size (into actors actors') actor t))]
                 (if (and (< (count actors) 21) (dr/chance 0.33))
-                  [actor'
-                   (update actor :actions conj (action-wait size actors actor t))]
-                  [actor']))
+                  (conj actors'
+                        actor'
+                        (update actor :actions conj (action-wait size actors actor t)))
+                  (conj actors' actor')))
               (let [{:keys [move t1]} (first actions)]
-                (if (>= t t1)
-                  [(-> actor
-                       (assoc :position move)
-                       (update :actions rest))]
-                  [actor]))))
+                (conj actors'
+                      (if (>= t t1)
+                        (-> actor
+                            (assoc :position move)
+                            (update :actions rest))
+                        actor)))))
+          []
           actors))
 
 (defn update-state [{:keys [t size] :as state}]
