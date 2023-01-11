@@ -1,5 +1,6 @@
 (ns shimmers.sketches.dance-patterns
   (:require
+   [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -25,24 +26,30 @@
                    (<= 0 y (dec size)))]
     dir))
 
-(defn action-wait [_size {:keys [position]} t]
+(defn action-wait [_size _actors {:keys [position]} t]
   {:type :wait
    :move position
    :t0 t
    :t1 (+ t (inc (dr/random-int 4)))})
 
-(defn action-slide [size {:keys [position]} t]
-  (let [move (dr/rand-nth (legal-moves size position))]
-    {:type :slide
-     :move (tm/+ position move)
-     :t0 t
-     :t1 (+ t (inc (dr/random-int 4)))}))
+(defn action-slide [size actors {:keys [position] :as actor} t]
+  (let [current (set (map :position actors))
+        next (set (keep (comp :move first :actions) actors))
+        moves (->> position
+                   (legal-moves size)
+                   (remove (set/union current next)))]
+    (if (seq moves)
+      {:type :slide
+       :move (tm/+ position (dr/rand-nth moves))
+       :t0 t
+       :t1 (+ t (inc (dr/random-int 4)))}
+      (action-wait size actors actor t))))
 
-(defn make-action [size actor t]
+(defn make-action [size actors actor t]
   ((dr/weighted
     {action-wait 2
      action-slide 1})
-   size actor t))
+   size actors actor t))
 
 (defn make-cell [pos]
   {:position pos
@@ -62,10 +69,10 @@
 (defn update-actors [actors t size]
   (mapcat (fn [{:keys [actions] :as actor}]
             (if (empty? actions)
-              (let [actor' (update actor :actions conj (make-action size actor t))]
+              (let [actor' (update actor :actions conj (make-action size actors actor t))]
                 (if (and (< (count actors) 21) (dr/chance 0.33))
                   [actor'
-                   (update actor :actions conj (make-action size actor t))]
+                   (update actor :actions conj (action-wait size actors actor t))]
                   [actor']))
               (let [{:keys [move t1]} (first actions)]
                 (if (>= t t1)
