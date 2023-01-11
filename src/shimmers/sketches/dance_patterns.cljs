@@ -45,11 +45,18 @@
        :t1 (+ t (inc (dr/random-int 4)))}
       (action-wait size actors actor t))))
 
+(defn action-duplicate [_size _actors {:keys [position]} t]
+  {:type :duplicate
+   :move position
+   :t0 t
+   :t1 (+ t (inc (dr/random-int 4)))})
+
 (defn make-action [size actors actor t]
-  ((dr/weighted
-    {action-wait 2
-     action-slide 1})
-   size actors actor t))
+  (let [actions
+        {action-wait 3
+         action-slide 2
+         action-duplicate (if (< (count actors) 21) 1 0)}]
+    ((dr/weighted actions) size actors actor t)))
 
 (defn make-cell [pos]
   {:position pos
@@ -69,19 +76,16 @@
 (defn update-actors [actors t size]
   (reduce (fn [actors' {:keys [actions] :as actor}]
             (if (empty? actions)
-              (let [actor' (update actor :actions conj (make-action size (into actors actors') actor t))]
-                (if (and (< (count actors) 21) (dr/chance 0.33))
-                  (conj actors'
-                        actor'
-                        (update actor :actions conj (action-wait size actors actor t)))
-                  (conj actors' actor')))
-              (let [{:keys [move t1]} (first actions)]
-                (conj actors'
-                      (if (>= t t1)
-                        (-> actor
-                            (assoc :position move)
-                            (update :actions rest))
-                        actor)))))
+              (conj actors'
+                    (update actor :actions conj
+                            (make-action size (into actors actors') actor t)))
+              (let [{:keys [type move t1]} (peek actions)]
+                (if (>= t t1)
+                  (let [actor' (update actor :actions pop)]
+                    (if (= type :duplicate)
+                      (conj actors' actor' actor')
+                      (conj actors' (assoc actor' :position move))))
+                  (conj actors' actor)))))
           []
           actors))
 
