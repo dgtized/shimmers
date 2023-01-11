@@ -24,7 +24,7 @@
               [x y] pos']
         :when (and (<= 0 x (dec size))
                    (<= 0 y (dec size)))]
-    dir))
+    pos'))
 
 (defn action-wait [_size _actors {:keys [position]} t]
   {:type :wait
@@ -40,7 +40,7 @@
                    (remove (set/union current next)))]
     (if (seq moves)
       {:type :slide
-       :move (tm/+ position (dr/rand-nth moves))
+       :move (dr/rand-nth moves)
        :t0 t
        :t1 (+ t (inc (dr/random-int 4)))}
       (action-wait size actors actor t))))
