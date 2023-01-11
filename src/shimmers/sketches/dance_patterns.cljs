@@ -57,7 +57,6 @@
     {:bounds bounds
      :size size
      :t 0
-     :cells (g/subdivide bounds {:rows size :cols size})
      :actors [(make-cell (gv/vec2 (int (/ size 2)) (int (/ size 2))))]}))
 
 (defn update-actors [actors t size]
@@ -81,20 +80,20 @@
       (update :t + (/ 1 32))
       (update :actors update-actors t size)))
 
-(defn draw [{:keys [cells actors t]}]
+(defn draw [{:keys [bounds size actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  ;; (q/stroke-weight 1.0)
-  ;; (doseq [cell cells]
-  ;;   (cq/draw-polygon cell))
 
-  (q/stroke-weight 2.0)
-  (doseq [{:keys [position actions]} actors]
-    (let [pos (if (empty? actions)
-                position
-                (let [{:keys [move t0 t1]} (first actions)]
-                  (tm/mix position move (/ (- t t0) (- t1 t0)))))]
-      (cq/draw-polygon (g/translate (first cells) (tm/* pos (g/width (first cells))))))))
+  (let [{[x y] :p [w _] :size} bounds
+        side (/ w size)
+        cell (rect/rect x y side side)]
+    (q/stroke-weight 2.0)
+    (doseq [{:keys [position actions]} actors]
+      (let [pos (if (empty? actions)
+                  position
+                  (let [{:keys [move t0 t1]} (first actions)]
+                    (tm/mix position move (/ (- t t0) (- t1 t0)))))]
+        (cq/draw-polygon (g/translate cell (tm/* pos side)))))))
 
 (sketch/defquil dance-patterns
   :created-at "2023-01-10"
