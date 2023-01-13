@@ -53,10 +53,12 @@
    :t1 (+ t (inc (dr/random-int 4)))})
 
 (defn make-action [size actors actor t]
-  (let [actions
+  (let [max-count (* 0.125 size size)
+        n (count actors)
+        actions
         {action-wait 3
          action-slide 2
-         action-duplicate (if (< (count actors) 21) 1 0)}]
+         action-duplicate (if (< n max-count) (/ (- max-count n) max-count) 0)}]
     ((dr/weighted actions) size actors actor t)))
 
 (defn make-cell [pos]
@@ -68,7 +70,7 @@
   (let [bounds (-> (rect/rect (q/height))
                    (g/center (cq/rel-vec 0.5 0.5))
                    (g/scale-size 0.9))
-        size 7]
+        size 47]
     {:bounds bounds
      :size size
      :t 0
