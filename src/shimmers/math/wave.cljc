@@ -20,3 +20,9 @@
   [p t]
   (let [f (Math/floor (+ (/ (* 2 t) p) 0.5))]
     (* (/ 4 p) (- t (* (/ p 2) f)) (Math/pow -1 f))))
+
+(defn triangle01 [p t]
+  (* 2 (abs (- (/ t p) (Math/floor (+ (/ t p) (/ 1 2)))))))
+
+(comment
+  (map (fn [t] [t (triangle01 1 t)]) (range -1 1 0.1)))
