@@ -115,6 +115,7 @@
   (q/stroke 0.0)
   (let [{base :p [w _] :size} bounds
         side (/ w size)
+        base (tm/+ base (tm/* (gv/vec2 0.5 0.5) side))
         cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
       (cq/draw-polygon
