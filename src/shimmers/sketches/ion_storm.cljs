@@ -11,7 +11,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -29,11 +30,15 @@
                radius)))
 
 (defn flash-storm [t]
-  {:region (random-circle (dr/gaussian 0.15 0.05) 0.8)
-   :vel (let [s (min (q/width) (q/height))]
-          (dr/randvec2 (dr/gaussian (/ s 30) (/ s 90))))
-   :t0 t
-   :t1 (+ t (dr/random 0.5 1.5))})
+  (let [s (min (q/width) (q/height))
+        region (random-circle (dr/gaussian 0.15 0.05) 0.8)]
+    {:region region
+     :vel (dr/randvec2 (dr/gaussian (/ s 30) (/ s 90)))
+     :acc (tm/* (tm/- (cq/rel-vec (dr/random 0.1 0.9) (dr/random 0.1 0.9))
+                      (:p region))
+                (/ 8 s))
+     :t0 t
+     :t1 (+ t (dr/random 0.5 2.0))}))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state
@@ -41,25 +46,27 @@
               (fn [storms]
                 (let [storms' (->> storms
                                    (remove (fn [{:keys [t1]}] (>= t t1)))
-                                   (map (fn [{:keys [vel] :as storm}]
-                                          (update storm :region g/translate vel))))]
-                  (if (dr/chance 0.15)
+                                   (map (fn [{:keys [vel acc] :as storm}]
+                                          (-> storm
+                                              (update :vel (fn [vel] (tm/* (tm/+ vel acc) 0.95)))
+                                              (update :region g/translate vel)))))]
+                  (if (dr/chance 0.1)
                     (conj storms' (flash-storm t))
                     storms'))))
-      (update :t + (dr/random 0.1))))
+      (update :t + (dr/random 0.05))))
 
-(defn draw [{:keys [storms]}]
-  (q/background 1.0 0.1)
+(defn draw [{:keys [storms t]}]
+  (q/background 1.0 (+ 0.1 (* 0.05 (Math/cos t))))
   (q/ellipse-mode :radius)
   (q/stroke 0.0)
   (q/stroke-weight 3.0)
 
   (q/fill 0.0 0.25)
-  (dotimes [_ 3]
+  (dotimes [_ 2]
     (cq/circle (random-circle (dr/gaussian 0.3 0.1) 0.5)))
 
-  (q/fill 1.0 0.2)
-  (dotimes [_ 6]
+  (q/fill 1.0 0.25)
+  (dotimes [_ 3]
     (let [c (random-circle (dr/gaussian 0.05 0.1) 0.3)]
       (cq/draw-triangle (:points (triangle/inscribed-equilateral c (dr/random eq/TAU))))))
 
