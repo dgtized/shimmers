@@ -27,16 +27,17 @@
                    (<= 0 y (dec size)))]
     pos'))
 
-(defn action-wait [_size _actors {:keys [position]} t]
+(defn action-wait [{:keys [actor t]}]
   {:type :wait
-   :move position
+   :move (:position actor)
    :t0 t
    :t1 (+ t (inc (dr/random-int 4)))})
 
-(defn action-slide [size actors {:keys [position] :as actor} t]
+(defn action-slide [{:keys [size actors actor t] :as action-state}]
   (let [current (set (map :position actors))
         next (set (keep (comp :move first :actions) actors))
-        moves (->> position
+        moves (->> actor
+                   :position
                    (legal-moves size)
                    (remove (set/union current next)))]
     (if (seq moves)
@@ -44,11 +45,11 @@
        :move (dr/rand-nth moves)
        :t0 t
        :t1 (+ t (inc (dr/random-int 4)))}
-      (action-wait size actors actor t))))
+      (action-wait action-state))))
 
-(defn action-duplicate [_size _actors {:keys [position]} t]
+(defn action-duplicate [{:keys [actor t]}]
   {:type :duplicate
-   :move position
+   :move (:position actor)
    :t0 t
    :t1 (+ t (inc (dr/random-int 4)))})
 
@@ -59,7 +60,7 @@
         {action-wait 3
          action-slide 2
          action-duplicate (if (< n max-count) (/ (- max-count n) max-count) 0)}]
-    ((dr/weighted actions) size actors actor t)))
+    ((dr/weighted actions) {:size size :actors actors :actor actor :t t})))
 
 (defn make-cell [pos]
   {:position pos
