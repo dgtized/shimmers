@@ -95,6 +95,18 @@
       (update :t + (/ 1 32))
       (update :actors update-actors t size)))
 
+(defn rotation-corner [dir]
+  (case dir
+    [1 0] (gv/vec2 0.5 0.5)
+    [-1 0] (gv/vec2 -0.5 -0.5)
+    [0 1] (gv/vec2 -0.5 0.5)
+    [0 -1] (gv/vec2 0.5 -0.5)
+    [1 1] (gv/vec2 0.5 0.5)
+    [-1 -1] (gv/vec2 -0.5 -0.5)
+    [-1 1] (gv/vec2 -0.5 0.5)
+    [1 -1] (gv/vec2 0.5 -0.5)
+    (gv/vec2 0 0)))
+
 (defn draw [{:keys [bounds size actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -115,16 +127,7 @@
                    diagonal (case (apply + (map abs dir))
                               1 false
                               2 true)
-                   corner (case dir
-                            [1 0] (gv/vec2 0.5 0.5)
-                            [-1 0] (gv/vec2 -0.5 -0.5)
-                            [0 1] (gv/vec2 -0.5 0.5)
-                            [0 -1] (gv/vec2 0.5 -0.5)
-                            [1 1] (gv/vec2 0.5 0.5)
-                            [-1 -1] (gv/vec2 -0.5 -0.5)
-                            [-1 1] (gv/vec2 -0.5 0.5)
-                            [1 -1] (gv/vec2 0.5 -0.5)
-                            (gv/vec2 0 0))]
+                   corner (rotation-corner dir)]
                (-> cell
                    (g/translate (tm/* corner side))
                    (g/rotate (if diagonal
