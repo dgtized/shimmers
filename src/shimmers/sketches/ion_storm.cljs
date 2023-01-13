@@ -13,19 +13,22 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/frame-rate 12)
   {:t 0})
 
 (defn update-state [state]
   (update state :t + 0.01))
 
 (defn draw [{:keys [t]}]
-  (q/background (eq/unit-cos t))
+  (q/background 1.0 0.3)
   (q/ellipse-mode :radius)
+  (q/stroke 0.0)
+  (q/stroke-weight 3.0)
 
   (let [R (min (q/height) (q/width))]
     (q/fill 0.0 0.1)
     (dotimes [_ 2]
-      (let [r (max (min (dr/gaussian 0.35 0.1) 0.5) 0.0)
+      (let [r (max (min (dr/gaussian 0.3 0.1) 0.5) 0.0)
             radius (* R r)
             hr (* radius 0.5)]
         (cq/circle
@@ -34,8 +37,8 @@
                     radius))))
 
     (q/fill 1.0 0.2)
-    (dotimes [_ 8]
-      (let [r (max (min (dr/gaussian 0.1 0.1) 0.3) 0.0)
+    (dotimes [_ 6]
+      (let [r (max (min (dr/gaussian 0.05 0.1) 0.3) 0.0)
             radius (* R r)
             hr (* radius 0.5)
             c (gc/circle (gv/vec2 (dr/random hr (- (q/width) hr))
