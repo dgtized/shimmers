@@ -110,6 +110,11 @@
     [1 -1] (gv/vec2 0.5 -0.5)
     (gv/vec2 0 0)))
 
+(defn draw-cell [cell base side position]
+  (-> cell
+      (g/translate (tm/+ base (tm/* position side)))
+      cq/draw-polygon))
+
 (defn draw [{:keys [bounds size actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -121,24 +126,23 @@
         base (tm/+ base (tm/* (gv/vec2 0.5 0.5) side))
         cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
-      (cq/draw-polygon
-       (if (empty? actions)
-         (g/translate cell (tm/+ base (tm/* position side)))
-         (let [{:keys [type move t0 t1]} (peek actions)
-               v (/ (- t t0) (- t1 t0))]
-           (if (= type :rotate)
-             (let [dir (tm/- move position)
-                   diagonal (case (apply + (map abs dir))
-                              1 false
-                              2 true)
-                   corner (rotation-corner dir)]
-               (-> cell
-                   (g/translate (tm/* corner side))
-                   (g/rotate (if diagonal
-                               (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
-                               (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
-                   (g/translate (tm/+ base (tm/* (tm/+ corner position) side)))))
-             (g/translate cell (tm/+ base (tm/* (tm/mix position move v) side))))))))))
+      (if (empty? actions)
+        (draw-cell cell base side position)
+        (let [{:keys [type move t0 t1]} (peek actions)
+              v (/ (- t t0) (- t1 t0))]
+          (if (= type :rotate)
+            (let [dir (tm/- move position)
+                  diagonal (case (apply + (map abs dir))
+                             1 false
+                             2 true)
+                  corner (rotation-corner dir)]
+              (-> cell
+                  (g/translate (tm/* corner side))
+                  (g/rotate (if diagonal
+                              (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
+                              (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
+                  (draw-cell base side (tm/+ corner position))))
+            (draw-cell cell base side (tm/mix position move v))))))))
 
 (sketch/defquil dance-patterns
   :created-at "2023-01-10"
