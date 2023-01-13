@@ -78,12 +78,14 @@
      :t 0
      :actors [(make-cell (gv/vec2 (int (/ size 2)) (int (/ size 2))))]}))
 
+(defn add-action [actor action]
+  (update actor :actions conj action))
+
 (defn update-actors [actors t size]
   (reduce (fn [actors' {:keys [actions] :as actor}]
             (if (empty? actions)
-              (conj actors'
-                    (update actor :actions conj
-                            (make-action size (into actors actors') actor t)))
+              (let [action (make-action size (into actors actors') actor t)]
+                (conj actors' (add-action actor action)))
               (let [{:keys [type move t1]} (peek actions)]
                 (if (>= t t1)
                   (let [actor' (update actor :actions pop)]
