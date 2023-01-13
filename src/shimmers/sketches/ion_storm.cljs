@@ -10,6 +10,7 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
 (defn setup []
@@ -29,6 +30,7 @@
 
 (defn flash-storm [t]
   {:region (random-circle (dr/gaussian 0.2 0.1) 0.5)
+   :vel (dr/randvec2 (/ (min (q/width) (q/height)) 50))
    :t0 t
    :t1 (+ t (dr/random 0.5 1.5))})
 
@@ -36,7 +38,10 @@
   (-> state
       (update :storms
               (fn [storms]
-                (let [storms' (remove (fn [{:keys [t1]}] (>= t t1)) storms)]
+                (let [storms' (->> storms
+                                   (remove (fn [{:keys [t1]}] (>= t t1)))
+                                   (map (fn [{:keys [vel] :as storm}]
+                                          (update storm :region g/translate vel))))]
                   (if (dr/chance 0.1)
                     (conj storms' (flash-storm t))
                     storms'))))
@@ -61,7 +66,7 @@
   (q/no-stroke)
   (doseq [{:keys [region]} storms]
     (let [{:keys [p r]} region]
-      (dotimes [_ 64]
+      (dotimes [_ 48]
         (let [radius (* (max (min (dr/gaussian 0.2 0.1) 0.95) 0.0) r)
               c (rp/inside-circle (gc/circle p (- r radius)) dr/random)]
           (cq/draw-triangle
