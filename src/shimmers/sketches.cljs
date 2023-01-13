@@ -82,6 +82,7 @@
    shimmers.sketches.intersecting-chords
    shimmers.sketches.interstitial-transitions
    shimmers.sketches.intertwined
+   shimmers.sketches.ion-storm
    shimmers.sketches.isometric
    shimmers.sketches.iterative-displacement
    shimmers.sketches.kd-tree
