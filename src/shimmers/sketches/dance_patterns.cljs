@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -39,7 +40,7 @@
                    (legal-moves size)
                    (remove (set/union current next)))]
     (if (seq moves)
-      {:type :slide
+      {:type (if (dr/chance 0.5) :rotate :slide)
        :move (dr/rand-nth moves)
        :t0 t
        :t1 (+ t (inc (dr/random-int 4)))}
@@ -98,16 +99,39 @@
   (q/background 1.0)
   (q/ellipse-mode :radius)
 
-  (let [{[x y] :p [w _] :size} bounds
+  (q/stroke-weight 2.0)
+  (q/stroke 0.0)
+  (let [{base :p [w _] :size} bounds
         side (/ w size)
-        cell (rect/rect x y side side)]
-    (q/stroke-weight 2.0)
+        cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
-      (let [pos (if (empty? actions)
-                  position
-                  (let [{:keys [move t0 t1]} (first actions)]
-                    (tm/mix position move (/ (- t t0) (- t1 t0)))))]
-        (cq/draw-polygon (g/translate cell (tm/* pos side)))))))
+      (cq/draw-polygon
+       (if (empty? actions)
+         (g/translate cell (tm/+ base (tm/* position side)))
+         (let [{:keys [type move t0 t1]} (peek actions)
+               v (/ (- t t0) (- t1 t0))]
+           (if (= type :rotate)
+             (let [dir (tm/- move position)
+                   diagonal (case (apply + (map abs dir))
+                              1 false
+                              2 true)
+                   corner (case dir
+                            [1 0] (gv/vec2 0.5 0.5)
+                            [-1 0] (gv/vec2 -0.5 -0.5)
+                            [0 1] (gv/vec2 -0.5 0.5)
+                            [0 -1] (gv/vec2 0.5 -0.5)
+                            [1 1] (gv/vec2 0.5 0.5)
+                            [-1 -1] (gv/vec2 -0.5 -0.5)
+                            [-1 1] (gv/vec2 -0.5 0.5)
+                            [1 -1] (gv/vec2 0.5 -0.5)
+                            (gv/vec2 0 0))]
+               (-> cell
+                   (g/translate (tm/* corner side))
+                   (g/rotate (if diagonal
+                               (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
+                               (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
+                   (g/translate (tm/+ base (tm/* (tm/+ corner position) side)))))
+             (g/translate cell (tm/+ base (tm/* (tm/mix position move v) side))))))))))
 
 (sketch/defquil dance-patterns
   :created-at "2023-01-10"
