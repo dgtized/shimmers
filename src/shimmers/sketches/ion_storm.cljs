@@ -29,8 +29,9 @@
                radius)))
 
 (defn flash-storm [t]
-  {:region (random-circle (dr/gaussian 0.2 0.1) 0.5)
-   :vel (dr/randvec2 (/ (min (q/width) (q/height)) 50))
+  {:region (random-circle (dr/gaussian 0.15 0.05) 0.8)
+   :vel (let [s (min (q/width) (q/height))]
+          (dr/randvec2 (dr/gaussian (/ s 30) (/ s 90))))
    :t0 t
    :t1 (+ t (dr/random 0.5 1.5))})
 
@@ -42,10 +43,10 @@
                                    (remove (fn [{:keys [t1]}] (>= t t1)))
                                    (map (fn [{:keys [vel] :as storm}]
                                           (update storm :region g/translate vel))))]
-                  (if (dr/chance 0.1)
+                  (if (dr/chance 0.15)
                     (conj storms' (flash-storm t))
                     storms'))))
-      (update :t + 0.1)))
+      (update :t + (dr/random 0.1))))
 
 (defn draw [{:keys [storms]}]
   (q/background 1.0 0.1)
