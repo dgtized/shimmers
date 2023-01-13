@@ -50,13 +50,13 @@
                                           (-> storm
                                               (update :vel (fn [vel] (tm/* (tm/+ vel acc) 0.95)))
                                               (update :region g/translate vel)))))]
-                  (if (dr/chance 0.1)
+                  (if (dr/chance 0.08)
                     (conj storms' (flash-storm t))
                     storms'))))
       (update :t + (dr/random 0.05))))
 
 (defn draw [{:keys [storms t]}]
-  (q/background 1.0 (+ 0.1 (* 0.05 (Math/cos t))))
+  (q/background 1.0 (+ 0.08 (* 0.05 (Math/cos t))))
   (q/ellipse-mode :radius)
   (q/stroke 0.0)
   (q/stroke-weight 3.0)
