@@ -143,9 +143,13 @@
                   (g/rotate (if diagonal
                               (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
                               (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
-                  (draw-cell base side (- 2.0 (wave/triangle01 1 v)) (tm/+ corner position))))
+                  (draw-cell base side
+                             (- 2.0 (* 1.25 (wave/triangle01 1 v)))
+                             (tm/+ corner position))))
             :slide
-            (draw-cell cell base side (- 2.0 (wave/triangle01 1 v)) (tm/mix position move v))
+            (draw-cell cell base side
+                       (- 2.0 (* 1.25 (wave/triangle01 1 v)))
+                       (tm/mix position move v))
             :wait
             (draw-cell cell base side 2.0 (tm/mix position move v))
             :duplicate
