@@ -40,19 +40,22 @@
      :t0 t
      :t1 (+ t (dr/random 0.5 2.0))}))
 
+(defn move-storm [{:keys [vel acc] :as storm}]
+  (-> storm
+      (update :vel (fn [vel] (tm/* (tm/+ vel acc) 0.95)))
+      (update :region g/translate vel)))
+
+(defn update-storms [storms t]
+  (let [storms' (->> storms
+                     (remove (fn [{:keys [t1]}] (>= t t1)))
+                     (map move-storm))]
+    (if (dr/chance 0.08)
+      (conj storms' (flash-storm t))
+      storms')))
+
 (defn update-state [{:keys [t] :as state}]
   (-> state
-      (update :storms
-              (fn [storms]
-                (let [storms' (->> storms
-                                   (remove (fn [{:keys [t1]}] (>= t t1)))
-                                   (map (fn [{:keys [vel acc] :as storm}]
-                                          (-> storm
-                                              (update :vel (fn [vel] (tm/* (tm/+ vel acc) 0.95)))
-                                              (update :region g/translate vel)))))]
-                  (if (dr/chance 0.08)
-                    (conj storms' (flash-storm t))
-                    storms'))))
+      (update :storms update-storms t)
       (update :t + (dr/random 0.05))))
 
 (defn draw [{:keys [storms t]}]
