@@ -111,11 +111,12 @@
     [1 -1] (gv/vec2 0.5 -0.5)
     (gv/vec2 0 0)))
 
-(defn draw-cell [cell base side weight position]
-  (q/stroke-weight weight)
-  (-> cell
-      (g/translate (tm/+ base (tm/* position side)))
-      cq/draw-polygon))
+(defn render-cell [base side]
+  (fn [cell weight position]
+    (q/stroke-weight weight)
+    (-> cell
+        (g/translate (tm/+ base (tm/* position side)))
+        cq/draw-polygon)))
 
 (defn draw [{:keys [bounds size actors t]}]
   (q/background 1.0)
@@ -124,11 +125,13 @@
   (q/stroke 0.0)
   (let [{base :p [w _] :size} bounds
         side (/ w size)
-        base (tm/+ base (tm/* (gv/vec2 0.5 0.5) side))
+        draw-cell (-> base
+                      (tm/+ (tm/* (gv/vec2 0.5 0.5) side))
+                      (render-cell side))
         cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
       (if (empty? actions)
-        (draw-cell cell base side 2.0 position)
+        (draw-cell cell 2.0 position)
         (let [{:keys [type move t0 t1]} (peek actions)
               v (/ (- t t0) (- t1 t0))]
           (case type
@@ -143,17 +146,16 @@
                   (g/rotate (if diagonal
                               (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
                               (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
-                  (draw-cell base side
-                             (- 2.0 (* 1.25 (wave/triangle01 1 v)))
+                  (draw-cell (- 2.0 (* 1.25 (wave/triangle01 1 v)))
                              (tm/+ corner position))))
             :slide
-            (draw-cell cell base side
+            (draw-cell cell
                        (- 2.0 (* 1.25 (wave/triangle01 1 v)))
                        (tm/mix position move v))
             :wait
-            (draw-cell cell base side 2.0 (tm/mix position move v))
+            (draw-cell cell 2.0 (tm/mix position move v))
             :duplicate
-            (draw-cell cell base side 3.0 position)))))))
+            (draw-cell cell 3.0 position)))))))
 
 (sketch/defquil dance-patterns
   :created-at "2023-01-10"
