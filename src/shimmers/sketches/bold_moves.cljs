@@ -9,7 +9,9 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.equations :as eq]))
 
 (def width 800)
 (def height 600)
@@ -21,6 +23,16 @@
     (for [c [(gc/circle (rv pos 0.0) (* height 0.4))
              (gc/circle (rv (- 1.0 pos) 1.0) (* height 0.4))]]
       (csvg/group {:fill (csvg/hsl 0.0 0.3 0.4 1.0)} c))))
+
+(defn triangles []
+  (let [n (dr/rand-nth [2 3 4 5])]
+    (for [_ (range n)]
+      (csvg/group
+        {:fill (csvg/hsl 0.35 0.4 0.4 1.0)}
+        (-> (rv (dr/random 0.2 0.8)
+                (dr/random 0.2 0.8))
+            (gc/circle (* 0.15 height))
+            (triangle/inscribed-equilateral (dr/random eq/TAU)))))))
 
 (defn columns []
   (let [n (dr/rand-nth [5 7 9 11])
@@ -38,6 +50,7 @@
 (defn shapes []
   (dr/shuffle
    (concat (circles)
+           (triangles)
            (columns))))
 
 (defn scene []
