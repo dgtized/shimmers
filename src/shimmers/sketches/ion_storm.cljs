@@ -18,7 +18,8 @@
   (q/color-mode :hsl 1.0)
   (q/frame-rate 10)
   {:t 0
-   :storms []})
+   :storms []
+   :paused 0})
 
 (defn random-circle [r-param max-r]
   (let [R (min (q/height) (q/width))
@@ -53,12 +54,19 @@
       (conj storms' (flash-storm t))
       storms')))
 
-(defn update-state [{:keys [t] :as state}]
+(defn update-state [{:keys [paused t] :as state}]
   (-> state
+      (assoc :paused
+             (if (<= t paused)
+               paused
+               (let [dt (- t paused)]
+                 (if (dr/chance (- 0.0 (/ 1 (inc dt))))
+                   (+ t (dr/gaussian 0.5 0.1))
+                   paused))))
       (update :storms update-storms t)
       (update :t + (dr/random 0.05))))
 
-(defn draw [{:keys [storms t]}]
+(defn draw-frame [{:keys [storms t]}]
   (q/background 1.0 (+ 0.08 (* 0.05 (Math/cos t))))
   (q/ellipse-mode :radius)
   (q/stroke 0.0)
@@ -84,6 +92,10 @@
            (:points (triangle/inscribed-equilateral
                      (gc/circle c radius)
                      (dr/random eq/TAU)))))))))
+
+(defn draw [{:keys [paused t] :as state}]
+  (when (> t paused)
+    (draw-frame state)))
 
 (sketch/defquil ion-storm
   :created-at "2023-01-13"
