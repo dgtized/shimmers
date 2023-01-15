@@ -83,7 +83,6 @@
    shimmers.sketches.intersecting-chords
    shimmers.sketches.interstitial-transitions
    shimmers.sketches.intertwined
-   shimmers.sketches.ion-storm
    shimmers.sketches.isometric
    shimmers.sketches.iterative-displacement
    shimmers.sketches.kd-tree
@@ -183,6 +182,7 @@
    shimmers.sketches.triangulating-subdivisions
    shimmers.sketches.tunnel-flight
    shimmers.sketches.typography
+   shimmers.sketches.under-the-surface
    shimmers.sketches.undulating-figures
    shimmers.sketches.uniform-distribution
    shimmers.sketches.unit-circle

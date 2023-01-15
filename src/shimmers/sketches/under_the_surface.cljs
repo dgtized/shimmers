@@ -1,4 +1,4 @@
-(ns shimmers.sketches.ion-storm
+(ns shimmers.sketches.under-the-surface
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -97,7 +97,7 @@
   (when (> t paused)
     (draw-frame state)))
 
-(sketch/defquil ion-storm
+(sketch/defquil under-the-surface
   :created-at "2023-01-13"
   :tags #{}
   :size [800 600]
