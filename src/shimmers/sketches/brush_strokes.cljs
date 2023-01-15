@@ -27,7 +27,7 @@
       (for [[a b] (partition 2 (dr/gaussian-range 0.08 0.03 true))]
         (let [c (+ a (* 0.5 (- b a)))]
           (triangle/inscribed-equilateral
-           (gc/circle (g/point-at line c) (* len (- b a)))
+           (gc/circle (g/point-at line c) (* 1.5 len (- b a)))
            (dr/random eq/TAU)))))}))
 
 (defn translate-brush [brush p]
@@ -46,13 +46,13 @@
 (defn follow [{:keys [point facing vel angle-vel] :as brush} target dt]
   (let [dir (tm/- target point)
         dv (tm/* dir (/ (* 200 dt) (tm/mag-squared dir)))
-        vel' (tm/* (tm/+ vel dv) 0.98)
+        vel' (tm/* (tm/+ vel dv) 0.97)
         pos' (tm/+ point (tm/* vel dt))
         delta-angle (let [delta (- (g/heading dir) (g/heading facing))]
                       (cond (< delta (- Math/PI)) (+ delta eq/TAU)
                             (> delta Math/PI) (- delta eq/TAU)
                             :else delta))
-        c0 0.005
+        c0 0.0001
         c1 (* 2 (Math/sqrt c0))
         angle-acc (* dt (- (* c0 delta-angle) (* c1 angle-vel)))
         angle-vel' (+ angle-vel angle-acc)]
@@ -82,7 +82,7 @@
 
 (defn draw [{:keys [brush]}]
   (q/no-stroke)
-  (q/fill 0.0 0.1)
+  (q/fill 0.0 0.05)
   (doseq [hair (:bristles brush)]
     (cq/draw-polygon hair)))
 
