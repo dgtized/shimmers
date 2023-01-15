@@ -12,6 +12,7 @@
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
    shimmers.sketches.brush-sweep
+   shimmers.sketches.brush-strokes
    shimmers.sketches.breathing-hexes
    shimmers.sketches.bubbles
    shimmers.sketches.butterfly
