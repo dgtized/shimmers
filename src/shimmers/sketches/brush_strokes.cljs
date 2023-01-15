@@ -17,8 +17,11 @@
 
 (defn generate-brush [line]
   (let [len (tm/mag line)]
-    {:line line
+    {:point (g/centroid line)
+     :line line
      :facing (gv/vec2 1 0)
+     :vel (gv/vec2 1 0)
+     :angle-vel 0.0
      :bristles
      (vec
       (for [[a b] (partition 2 (dr/gaussian-range 0.08 0.03 true))]
@@ -29,29 +32,47 @@
 
 (defn translate-brush [brush p]
   (-> brush
+      (update :point g/translate p)
       (update :line g/translate p)
       (update :bristles (partial mapv (fn [b] (g/translate b p))))))
 
-(defn rotate-brush [{:keys [line] :as brush} t]
-  (let [c (g/centroid line)]
+(defn rotate-brush [{:keys [point] :as brush} t]
+  (-> brush
+      (update :facing g/rotate t)
+      (update :line geometry/rotate-around point t)
+      (update :bristles (partial mapv (fn [b] (geometry/rotate-around b point t))))))
+
+(defn follow [{:keys [point facing vel angle-vel] :as brush} target dt]
+  (let [dir (tm/- target point)
+        dv (tm/* dir (/ (* 200 dt) (tm/mag-squared dir)))
+        vel' (tm/* (tm/+ vel dv) 0.98)
+        pos' (tm/+ point (tm/* vel dt))]
+    ;; (println point pos' (tm/- pos' point))
     (-> brush
-        (update :line geometry/rotate-around-centroid t)
-        (update :facing g/rotate t)
-        (update :bristles (partial mapv (fn [b] (geometry/rotate-around b c t)))))))
+        (translate-brush (tm/- pos' point))
+        (assoc :vel vel'))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t 0
+   :destination (cq/rel-vec 0.9 0.5)
    :brush (generate-brush
            (gl/line2 (cq/rel-vec 0.05 0.45)
                      (cq/rel-vec 0.05 0.55)))})
 
-(defn update-state [state]
-  (update state :brush translate-brush (gv/vec2 0.5 0.0)))
+(defn update-state [{:keys [brush destination] :as state}]
+  (let [dt 0.25
+        destination (if (< (g/dist destination (:point brush)) (cq/rel-h 0.1))
+                      (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
+                      destination)]
+    (-> state
+        (assoc :destination destination)
+        (update :t + dt)
+        (update :brush follow destination dt))))
 
 (defn draw [{:keys [brush]}]
   (q/no-stroke)
-  (q/fill 0.0 0.05)
+  (q/fill 0.0 0.1)
   (doseq [hair (:bristles brush)]
     (cq/draw-polygon hair)))
 
