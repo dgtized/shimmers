@@ -50,13 +50,18 @@
 
 (defn sketch-lines []
   (let [h-disp 0.03
+        t-disp 0.04
         theta (dr/random -0.3 0.3)
-        r (rect/rect (rv 0.6 0.6) (rv 0.9 0.85))]
+        [x y] (apply rv (dr/weighted {[0.1 0.1] 1
+                                      [0.6 0.6] 2
+                                      [0.1 0.6] 1
+                                      [0.6 0.1] 1}))
+        r (rect/rect x y (* width 0.3) (* height 0.3))]
     (csvg/group {:stroke-width 10.0 :stroke "black"}
       (map (fn [l] (-> l
-                      (geometry/rotate-around-centroid (+ theta (dr/random -0.05 0.05)))
+                      (geometry/rotate-around-centroid (+ theta (dr/random (- t-disp) t-disp)))
                       (g/translate (gv/vec2 (* width (dr/random (- h-disp) h-disp)) 0))))
-           (clip/hatch-rectangle r (/ height 20) 0)))))
+           (clip/hatch-rectangle r (/ height (dr/random 16 26)) 0)))))
 
 (defn shapes []
   (conj
