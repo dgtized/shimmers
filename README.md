@@ -1,6 +1,6 @@
 # shimmers
 
-[![CI](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yml/badge.svg?branch=main)](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yml)
+[![CI](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yaml/badge.svg?branch=main)](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yaml)
 
 Shimmering quil sketches; a few particle simulations, video processing
 experiments, randomly generated L-systems, 3d transformations, and cellular
