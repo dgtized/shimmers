@@ -11,6 +11,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
 
@@ -58,10 +59,20 @@
                                       [0.6 0.1] 1}))
         r (rect/rect x y (* width 0.3) (* height 0.3))]
     (csvg/group {:stroke-width 10.0 :stroke "black"}
-      (map (fn [l] (-> l
-                      (geometry/rotate-around-centroid (+ theta (dr/random (- t-disp) t-disp)))
-                      (g/translate (gv/vec2 (* width (dr/random (- h-disp) h-disp)) 0))))
-           (clip/hatch-rectangle r (/ height (dr/random 16 26)) 0)))))
+      (->> (clip/hatch-rectangle r (/ height (dr/random 16 26)) 0)
+           (map
+            (fn [l] (-> l
+                       (geometry/rotate-around-centroid (+ theta (dr/random (- t-disp) t-disp)))
+                       (g/translate (gv/vec2 (* width (dr/random (- h-disp) h-disp)) 0)))))
+           (mapcat
+            (fn [l]
+              (if (dr/chance 0.75)
+                [l]
+                (let [t (dr/random 0.2 0.7)]
+                  [(gl/line2 (g/point-at l 0.0)
+                             (g/point-at l t))
+                   (gl/line2 (g/point-at l (+ t (dr/random 0.02 0.15)))
+                             (g/point-at l 1.0))]))))))))
 
 (defn shapes []
   (conj
