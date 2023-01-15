@@ -1,5 +1,6 @@
 (ns shimmers.sketches.bold-moves
   (:require
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -47,11 +48,23 @@
             (g/translate (gv/vec2 0.0 (dr/gaussian 0.0 (/ width 30))))
             (geometry/rotate-around-centroid dir))))))
 
+(defn sketch-lines []
+  (let [h-disp 0.03
+        theta (dr/random -0.3 0.3)
+        r (rect/rect (rv 0.6 0.6) (rv 0.9 0.85))]
+    (csvg/group {:stroke-width 10.0 :stroke "black"}
+      (map (fn [l] (-> l
+                      (geometry/rotate-around-centroid (+ theta (dr/random -0.05 0.05)))
+                      (g/translate (gv/vec2 (* width (dr/random (- h-disp) h-disp)) 0))))
+           (clip/hatch-rectangle r (/ height 20) 0)))))
+
 (defn shapes []
-  (dr/shuffle
-   (concat (circles)
-           (triangles)
-           (columns))))
+  (conj
+   (vec (dr/shuffle
+         (concat (circles)
+                 (triangles)
+                 (columns))))
+   (sketch-lines)))
 
 (defn scene []
   (csvg/timed
