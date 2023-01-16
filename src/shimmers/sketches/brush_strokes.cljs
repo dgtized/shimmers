@@ -79,7 +79,7 @@
     (v/+polar center (* dr (/ theta tm/TWO_PI)) theta)))
 
 (defn generate-spiral []
-  (vec (reverse (spiral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.08) 0.5 64))))
+  (vec (reverse (spiral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.08) 0.4 80))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
