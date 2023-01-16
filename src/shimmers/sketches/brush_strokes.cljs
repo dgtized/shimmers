@@ -42,6 +42,10 @@
       (update :line geometry/rotate-around point t)
       (update :bristles (partial mapv (fn [b] (geometry/rotate-around b point t))))))
 
+(defn rotate-bristles [brush t]
+  (-> brush
+      (update :bristles (partial mapv (fn [b] (geometry/rotate-around-centroid b t))))))
+
 ;; see also https://gamedev.stackexchange.com/questions/1885/target-tracking-when-to-accelerate-and-decelerate-a-rotating-turret
 (defn follow [{:keys [point facing vel angle-vel] :as brush} target dt]
   (let [dir (tm/- target point)
@@ -59,6 +63,7 @@
     (-> brush
         (translate-brush (tm/- pos' point))
         (rotate-brush angle-vel)
+        (rotate-bristles (* angle-vel (/ 1 3)))
         (assoc :vel vel'
                :angle-vel angle-vel'))))
 
