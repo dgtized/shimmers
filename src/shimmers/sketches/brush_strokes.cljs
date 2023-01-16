@@ -56,9 +56,9 @@
                       (cond (< delta (- Math/PI)) (+ delta eq/TAU)
                             (> delta Math/PI) (- delta eq/TAU)
                             :else delta))
-        c0 0.0001
-        c1 (* 2 (Math/sqrt c0))
-        angle-acc (* dt (- (* c0 delta-angle) (* c1 angle-vel)))
+        angle-control 0.0001
+        angle-acc (* dt (- (* angle-control delta-angle)
+                           (* (* 2 (Math/sqrt angle-control)) angle-vel)))
         angle-vel' (+ angle-vel angle-acc)]
     (-> brush
         (translate-brush (tm/- pos' point))
