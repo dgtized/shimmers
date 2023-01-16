@@ -6,6 +6,7 @@ main {
 
 .contained {
   margin: 0 auto;
+  min-width: 5pp00px;
   max-width: 1000px;
 }
 
@@ -20,7 +21,7 @@ main {
 
 .interface-controls button {
   font-size: 18px;
-  margin-left: 1em;
+  margin-left: 1ch;
 }
 
 .canvas-frame {
