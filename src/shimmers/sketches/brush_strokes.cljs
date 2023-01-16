@@ -81,10 +81,15 @@
 (defn generate-spiral []
   (vec (reverse (spiral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.08) 0.4 80))))
 
+(defn generate-spiral-pair []
+  (vec (reverse (concat (spiral (cq/rel-vec 0.25 0.5) (cq/rel-h 0.08) 0.4 50)
+                        (spiral (cq/rel-vec 0.7 0.5) (cq/rel-h 0.08) 0.5 60)))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [path ((dr/weighted {generate-scribble 1
-                            generate-spiral 1}))
+                            generate-spiral 1
+                            generate-spiral-pair 1}))
         next-pt (peek path)
         h (cq/rel-vec 0.0 0.05)]
     {:t 0
