@@ -67,29 +67,39 @@
         (assoc :vel vel'
                :angle-vel angle-vel'))))
 
+(defn generate-path []
+  (vec (reverse (into [(cq/rel-vec 0.05 0.5)
+                       (cq/rel-vec 0.85 0.5)]
+                      (repeatedly 14 #(cq/rel-vec (dr/random 0.15 0.85)
+                                                  (dr/random 0.15 0.85)))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0
-   :destination (cq/rel-vec 0.9 0.5)
-   :brush (generate-brush
-           (gl/line2 (cq/rel-vec 0.05 0.45)
-                     (cq/rel-vec 0.05 0.55)))})
+  (let [path (generate-path)
+        next-pt (peek path)
+        h (cq/rel-vec 0.0 0.05)]
+    {:t 0
+     :path (pop path)
+     :brush (generate-brush
+             (gl/line2 (tm/- next-pt h) (tm/+ next-pt h)))}))
 
-(defn update-state [{:keys [brush destination] :as state}]
+(defn update-state [{:keys [brush path] :as state}]
   (let [dt 0.25
-        destination (if (< (g/dist destination (:point brush)) (cq/rel-h 0.1))
-                      (cq/rel-vec (dr/random 0.2 0.8) (dr/random 0.2 0.8))
-                      destination)]
-    (-> state
-        (assoc :destination destination)
-        (update :t + dt)
-        (update :brush follow destination dt))))
+        next-pt (peek path)]
+    (if next-pt
+      (-> (if (< (g/dist next-pt (:point brush)) (cq/rel-h 0.05))
+            (update state :path pop)
+            state)
+          (update :t + dt)
+          (update :brush follow next-pt dt))
+      state)))
 
-(defn draw [{:keys [brush]}]
-  (q/no-stroke)
-  (q/fill 0.0 0.05)
-  (doseq [hair (:bristles brush)]
-    (cq/draw-polygon hair)))
+(defn draw [{:keys [brush path]}]
+  (when (seq path)
+    (q/no-stroke)
+    (q/fill 0.0 0.05)
+    (doseq [hair (:bristles brush)]
+      (cq/draw-polygon hair))))
 
 (sketch/defquil brush-strokes
   :created-at "2023-01-15"
