@@ -24,7 +24,7 @@
      :angle-vel 0.0
      :bristles
      (vec
-      (for [[a b] (partition 2 (dr/gaussian-range 0.08 0.03 true))]
+      (for [[a b] (partition 2 (dr/gaussian-range 0.12 0.03 true))]
         (let [c (+ a (* 0.5 (- b a)))]
           (triangle/inscribed-equilateral
            (gc/circle (g/point-at line c) (* 1.5 len (- b a)))
