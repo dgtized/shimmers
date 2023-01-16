@@ -79,7 +79,18 @@
     (v/+polar center (* dr (/ theta tm/TWO_PI)) theta)))
 
 (defn generate-spiral []
-  (vec (reverse (spiral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.08) 0.4 80))))
+  (let [path (spiral (cq/rel-vec 0.5 0.5)
+                     (cq/rel-h (dr/random 0.07 0.11))
+                     (dr/random 0.35 0.45)
+                     (dr/random-int 64 82))]
+    (vec (case (dr/weighted {:connect 1
+                             :outside 1
+                             :connect-outside-in 1
+                             :outside-in 1})
+           :outside-in path
+           :connect-outside-in (concat path (take 1 path))
+           :connect (cons (first path) (reverse path))
+           :outside (reverse path)))))
 
 (defn generate-spiral-pair []
   (vec (reverse (concat (spiral (cq/rel-vec 0.25 0.5) (cq/rel-h 0.08) 0.4 50)
