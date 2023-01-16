@@ -3,24 +3,25 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.quil :as cq]
-   [thi.ng.geom.line :as gl]
    [shimmers.math.deterministic-random :as dr]
-   [thi.ng.math.core :as tm]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [shimmers.math.geometry.triangle :as triangle]
-   [shimmers.math.equations :as eq]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [shimmers.math.geometry :as geometry]))
+   [thi.ng.math.core :as tm]))
 
 (defn generate-brush [line]
   (let [len (tm/mag line)]
     {:point (g/centroid line)
      :line line
      :facing (gv/vec2 1 0)
-     :vel (gv/vec2 1 0)
+     :vel (gv/vec2 0 0)
      :angle-vel 0.0
      :bristles
      (vec
@@ -49,8 +50,8 @@
 ;; see also https://gamedev.stackexchange.com/questions/1885/target-tracking-when-to-accelerate-and-decelerate-a-rotating-turret
 (defn follow [{:keys [point facing vel angle-vel] :as brush} target dt]
   (let [dir (tm/- target point)
-        dv (tm/* dir (/ (* 200 dt) (tm/mag-squared dir)))
-        vel' (tm/* (tm/+ vel dv) 0.97)
+        dv (tm/* dir (/ (* 0.2 dt) (tm/mag dir)))
+        vel' (tm/* (tm/+ vel dv) 0.99)
         pos' (tm/+ point (tm/* vel dt))
         delta-angle (let [delta (- (g/heading dir) (g/heading facing))]
                       (cond (< delta (- Math/PI)) (+ delta eq/TAU)
@@ -67,15 +68,23 @@
         (assoc :vel vel'
                :angle-vel angle-vel'))))
 
-(defn generate-path []
+(defn generate-scribble []
   (vec (reverse (into [(cq/rel-vec 0.05 0.5)
                        (cq/rel-vec 0.85 0.5)]
                       (repeatedly 14 #(cq/rel-vec (dr/random 0.15 0.85)
                                                   (dr/random 0.15 0.85)))))))
 
+(defn spiral [center dr dtheta steps]
+  (for [theta (range 0 (* steps dtheta) dtheta)]
+    (v/+polar center (* dr (/ theta tm/TWO_PI)) theta)))
+
+(defn generate-spiral []
+  (vec (reverse (spiral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.08) 0.5 64))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [path (generate-path)
+  (let [path ((dr/weighted {generate-scribble 1
+                            generate-spiral 1}))
         next-pt (peek path)
         h (cq/rel-vec 0.0 0.05)]
     {:t 0
@@ -87,7 +96,7 @@
   (let [dt 0.25
         next-pt (peek path)]
     (if next-pt
-      (-> (if (< (g/dist next-pt (:point brush)) (cq/rel-h 0.05))
+      (-> (if (< (g/dist next-pt (:point brush)) (cq/rel-h 0.03))
             (update state :path pop)
             state)
           (update :t + dt)
@@ -99,7 +108,10 @@
     (q/no-stroke)
     (q/fill 0.0 0.05)
     (doseq [hair (:bristles brush)]
-      (cq/draw-polygon hair))))
+      (cq/draw-polygon hair))
+    #_(q/stroke 0.0 1.0)
+    #_(doseq [p path]
+        (apply q/point p))))
 
 (sketch/defquil brush-strokes
   :created-at "2023-01-15"
