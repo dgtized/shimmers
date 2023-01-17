@@ -14,6 +14,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -106,21 +107,40 @@
     ((if (dr/chance 0.5) reverse identity)
      (concat path (take 1 path)))))
 
+(defn gen-rectangle []
+  (let [width (q/width)
+        height (q/height)
+        w (dr/random 0.3 0.6)
+        h (dr/random 0.3 0.6)
+        points (g/vertices
+                (rect/rect (* width (dr/random 0.1 (- 0.9 w)))
+                           (* height (dr/random 0.1 (- 0.9 h)))
+                           (* w width) (* h height)))
+        path (cs/rotate (dr/random-int (count points)) points)]
+    ((if (dr/chance 0.5) reverse identity)
+     (concat path (take 1 path)))))
+
 (defn gen-scene []
-  (->> (fn [] ((dr/weighted {gen-circle 1 gen-spiral 1})))
-       (repeatedly (dr/weighted {2 4
+  (->> (fn [] ((dr/weighted {gen-circle 1
+                            gen-spiral 1
+                            gen-rectangle 1})))
+       (repeatedly (dr/weighted {2 2
                                  3 1}))
        (apply concat)
        vec))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [path (->> ((dr/weighted {generate-scribble 1
-                                 gen-spiral 1
-                                 generate-spiral-pair 1
-                                 gen-circle 1
-                                 gen-scene 1}))
-                  (drop (if (dr/chance 0.5) 0 (dr/random-int 10)))
+  (let [scene ((dr/weighted {generate-scribble 1
+                             gen-spiral 1
+                             generate-spiral-pair 1
+                             gen-circle 1
+                             gen-rectangle 1
+                             gen-scene 4}))
+        path (->> scene
+                  (drop (if (or (dr/chance 0.5) (< (count scene) 15))
+                          0
+                          (dr/random-int 10)))
                   vec)
         next-pt (peek path)
         h (cq/rel-vec 0.0 0.05)]
