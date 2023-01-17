@@ -79,7 +79,7 @@
   (for [theta (range 0 (* steps dtheta) dtheta)]
     (v/+polar center (* dr (/ theta tm/TWO_PI)) theta)))
 
-(defn generate-spiral []
+(defn gen-spiral []
   (let [path (spiral (cq/rel-vec 0.5 0.5)
                      (cq/rel-h (dr/random 0.07 0.11))
                      (dr/random 0.35 0.45)
@@ -106,10 +106,9 @@
     ((if (dr/chance 0.5) reverse identity)
      (concat path (take 1 path)))))
 
-(defn gen-circles []
-  (->> gen-circle
-       (repeatedly (dr/weighted {1 2
-                                 2 4
+(defn gen-scene []
+  (->> (fn [] ((dr/weighted {gen-circle 1 gen-spiral 1})))
+       (repeatedly (dr/weighted {2 4
                                  3 1}))
        (apply concat)
        vec))
@@ -117,9 +116,10 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [path (->> ((dr/weighted {generate-scribble 1
-                                 generate-spiral 1
+                                 gen-spiral 1
                                  generate-spiral-pair 1
-                                 gen-circles 1}))
+                                 gen-circle 1
+                                 gen-scene 1}))
                   (drop (if (dr/chance 0.5) 0 (dr/random-int 10)))
                   vec)
         next-pt (peek path)
