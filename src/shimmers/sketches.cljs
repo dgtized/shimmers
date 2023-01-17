@@ -143,6 +143,7 @@
    shimmers.sketches.ray-marching
    shimmers.sketches.reaction-diffusion
    shimmers.sketches.reagent-quil-component
+   shimmers.sketches.reflections
    shimmers.sketches.ring
    shimmers.sketches.ripples
    shimmers.sketches.rolling-shapes
