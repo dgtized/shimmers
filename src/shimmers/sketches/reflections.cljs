@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -43,8 +44,10 @@
   (q/ellipse-mode :radius)
   (let [height (q/height)
         width (q/width)
-        circle (gc/circle (cq/rel-vec 0.5 0.5) (* height 0.2))
-        [rx ry] (g/point-at circle t)
+        ref-shape (-> (cq/rel-vec 0.5 0.5)
+                      (gc/circle (* 0.25 height))
+                      (triangle/inscribed-equilateral (/ t 12)))
+        [rx ry] (g/point-at ref-shape (mod t 1.0))
         box (rect/rect 0 0 rx ry)
         reflections [[reflect-identity box]
                      [reflect-x (rect/rect rx 0 (- width rx) ry)]
