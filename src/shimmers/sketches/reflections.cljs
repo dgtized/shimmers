@@ -40,18 +40,21 @@
   (let [height (q/height)
         width (q/width)
         box (rect/rect 0 0 (/ width 2) (/ height 2))
+        reflections [(partial reflect-identity box)
+                     (partial reflect-x box)
+                     (partial reflect-y box)
+                     (partial reflect-xy box)]
         h (g/height box)]
     (doseq [s shapes]
       (cond (instance? Circle2 s)
             (let [{:keys [p r]} s]
-              (doseq [point ((juxt reflect-identity reflect-x reflect-y reflect-xy)
-                             box (g/unmap-point box p))]
+              (doseq [point ((apply juxt reflections) (g/unmap-point box p))]
                 (cq/circle point (* r h))))
             :else
-            (doseq [view [reflect-identity reflect-x reflect-y reflect-xy]]
+            (doseq [rmap reflections]
               (q/begin-shape)
               (doseq [v (g/vertices s)]
-                (apply q/vertex (view box (g/unmap-point box v))))
+                (apply q/vertex (rmap (g/unmap-point box v))))
               (q/end-shape))))))
 
 (sketch/defquil reflections
