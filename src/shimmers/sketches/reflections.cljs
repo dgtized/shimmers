@@ -12,49 +12,51 @@
    [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.vector :as gv]))
 
-(defn reflect-identity [_ p]
-  p)
+(defn reflect-identity [box p]
+  (g/unmap-point box p))
 
-(defn reflect-x [{[width _height] :size} [x y]]
-  (gv/vec2 (+ width (- width x)) y))
+(defn reflect-x [box [x y]]
+  (g/unmap-point box (gv/vec2 (- 1.0 x) y)))
 
-(defn reflect-y [{[_width height] :size} [x y]]
-  (gv/vec2 x (+ height (- height y))))
+(defn reflect-y [box [x y]]
+  (g/unmap-point box (gv/vec2 x (- 1.0 y))))
 
-(defn reflect-xy [box p]
-  (reflect-y box (reflect-x box p)))
+(defn reflect-xy [box [x y]]
+  (g/unmap-point box (gv/vec2 (- 1.0 x) (- 1.0 y))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes [(gc/circle 0.6 0.4 0.2)
+  {:t 0
+   :shapes [(gc/circle 0.6 0.4 0.2)
             (gc/circle 0.4 0.3 0.1)
             (gl/line2 (gv/vec2 0.1 0.1) (gv/vec2 0.9 0.1))
             (gl/line2 (gv/vec2 0.1 0.5) (gv/vec2 0.9 0.9))]})
 
 (defn update-state [state]
-  state)
+  (update state :t + 0.005))
 
-(defn draw [{:keys [shapes]}]
+(defn draw [{:keys [t shapes]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (let [height (q/height)
         width (q/width)
-        box (rect/rect 0 0 (/ width 2) (/ height 2))
-        reflections [(partial reflect-identity box)
-                     (partial reflect-x box)
-                     (partial reflect-y box)
-                     (partial reflect-xy box)]
-        h (g/height box)]
+        circle (gc/circle (cq/rel-vec 0.5 0.5) (* height 0.2))
+        [rx ry] (g/point-at circle t)
+        box (rect/rect 0 0 rx ry)
+        reflections [[reflect-identity box]
+                     [reflect-x (rect/rect rx 0 (- width rx) ry)]
+                     [reflect-y (rect/rect 0 ry rx (- height ry))]
+                     [reflect-xy (rect/rect rx ry (- width rx) (- height ry))]]]
     (doseq [s shapes]
       (cond (instance? Circle2 s)
             (let [{:keys [p r]} s]
-              (doseq [point ((apply juxt reflections) (g/unmap-point box p))]
-                (cq/circle point (* r h))))
+              (doseq [[reflect box] reflections]
+                (cq/circle (reflect box p) (* r (g/height box)))))
             :else
-            (doseq [rmap reflections]
+            (doseq [[reflect box] reflections]
               (q/begin-shape)
               (doseq [v (g/vertices s)]
-                (apply q/vertex (rmap (g/unmap-point box v))))
+                (apply q/vertex (reflect box v)))
               (q/end-shape))))))
 
 (sketch/defquil reflections
