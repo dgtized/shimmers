@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -24,18 +25,20 @@
 (defn reflect-xy [box [x y]]
   (g/unmap-point box (gv/vec2 (- 1.0 x) (- 1.0 y))))
 
+(defn shapes [t]
+  [(gc/circle (+ 0.5 (* 0.2 (Math/sin (* 3 t)))) 0.4 0.2)
+   (g/translate (gc/circle 0.5 0.5 0.1) (v/polar 0.3 (* 4 t)))
+   (gl/line2 (gv/vec2 0.1 0.1) (gv/vec2 0.9 (+ 0.3 (* 0.2 (Math/sin (* 2.5 t))))))
+   (gl/line2 (gv/vec2 0.1 0.5) (gv/vec2 0.9 0.9))])
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0
-   :shapes [(gc/circle 0.6 0.4 0.2)
-            (gc/circle 0.4 0.3 0.1)
-            (gl/line2 (gv/vec2 0.1 0.1) (gv/vec2 0.9 0.1))
-            (gl/line2 (gv/vec2 0.1 0.5) (gv/vec2 0.9 0.9))]})
+  {:t 0})
 
 (defn update-state [state]
   (update state :t + 0.005))
 
-(defn draw [{:keys [t shapes]}]
+(defn draw [{:keys [t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (let [height (q/height)
@@ -47,7 +50,7 @@
                      [reflect-x (rect/rect rx 0 (- width rx) ry)]
                      [reflect-y (rect/rect 0 ry rx (- height ry))]
                      [reflect-xy (rect/rect rx ry (- width rx) (- height ry))]]]
-    (doseq [s shapes]
+    (doseq [s (shapes t)]
       (cond (instance? Circle2 s)
             (let [{:keys [p r]} s]
               (doseq [[reflect box] reflections]
