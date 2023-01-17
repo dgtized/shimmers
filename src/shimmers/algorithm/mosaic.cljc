@@ -52,15 +52,15 @@
             (dir w h))))
 
 (defn flip-x [seed]
-  (let [w (max-width seed)]
+  (let [w (dec (max-width seed))]
     (map (fn [cell]
-           (update-in cell [:pos 0] (fn [x] (- w x 1))))
+           (update-in cell [:pos 0] (fn [x] (- w x))))
          seed)))
 
 (defn flip-y [seed]
-  (let [h (max-height seed)]
+  (let [h (dec (max-height seed))]
     (map (fn [cell]
-           (update-in cell [:pos 1] (fn [y] (- h y 1))))
+           (update-in cell [:pos 1] (fn [y] (- h y))))
          seed)))
 
 (defn mirror [dir seed]
