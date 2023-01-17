@@ -27,12 +27,12 @@
   (g/unmap-point box (gv/vec2 (- 1.0 x) (- 1.0 y))))
 
 (defn shapes [t]
-  (let [dt 0.005]
+  (let [dt 0.01]
     [(gc/circle (+ 0.5 (* 0.2 (Math/sin (* 3 t)))) 0.4 0.2)
      (gc/circle (+ 0.5 (* 0.2 (Math/sin (* 3 (+ t dt))))) 0.4 0.2)
-     (g/translate (gc/circle 0.5 0.5 0.1) (v/polar 0.3 (* 4 (- t dt))))
-     (g/translate (gc/circle 0.5 0.5 0.1) (v/polar 0.3 (* 4 t)))
-     (g/translate (gc/circle 0.5 0.5 0.1) (v/polar 0.3 (* 4 (+ t dt))))
+     (g/translate (gc/circle 0.5 0.5 0.12) (v/polar 0.3 (* 4 (- t dt))))
+     (g/translate (gc/circle 0.5 0.5 0.11) (v/polar 0.3 (* 4 t)))
+     (g/translate (gc/circle 0.5 0.5 0.10) (v/polar 0.3 (* 4 (+ t dt))))
      (gl/line2 (gv/vec2 0.1 0.1) (gv/vec2 0.9 (+ 0.3 (* 0.2 (Math/sin (* 2.5 t))))))
      (gl/line2 (gv/vec2 0.1 0.1) (gv/vec2 0.9 (+ 0.3 (* 0.2 (Math/sin (* 2.5 (+ t dt)))))))
      (gl/line2 (gv/vec2 0.1 0.5) (gv/vec2 0.9 0.9))
@@ -46,7 +46,7 @@
   {:t 0})
 
 (defn update-state [state]
-  (update state :t + 0.005))
+  (update state :t + 0.0025))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
