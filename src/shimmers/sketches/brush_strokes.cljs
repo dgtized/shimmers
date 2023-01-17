@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -96,11 +97,30 @@
   (vec (reverse (concat (spiral (cq/rel-vec 0.25 0.5) (cq/rel-h 0.08) 0.4 50)
                         (spiral (cq/rel-vec 0.7 0.5) (cq/rel-h 0.08) 0.5 60)))))
 
+(defn gen-circle []
+  (let [points (g/vertices (gc/circle (cq/rel-vec (dr/rand-nth [0.35 0.4 0.5 0.6 0.65])
+                                                  (dr/rand-nth [0.45 0.5 0.55]))
+                                      (cq/rel-h (dr/random 0.25 0.35)))
+                           24)
+        path (cs/rotate (dr/random-int (count points)) points)]
+    ((if (dr/chance 0.5) reverse identity)
+     (concat path (take 1 path)))))
+
+(defn gen-circles []
+  (->> gen-circle
+       (repeatedly (dr/weighted {1 2
+                                 2 4
+                                 3 1}))
+       (apply concat)
+       (drop-last (dr/random-int 8))
+       vec))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [path ((dr/weighted {generate-scribble 1
                             generate-spiral 1
-                            generate-spiral-pair 1}))
+                            generate-spiral-pair 1
+                            gen-circles 1}))
         next-pt (peek path)
         h (cq/rel-vec 0.0 0.05)]
     {:t 0
