@@ -112,15 +112,16 @@
                                  2 4
                                  3 1}))
        (apply concat)
-       (drop-last (dr/random-int 8))
        vec))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [path ((dr/weighted {generate-scribble 1
-                            generate-spiral 1
-                            generate-spiral-pair 1
-                            gen-circles 1}))
+  (let [path (->> ((dr/weighted {generate-scribble 1
+                                 generate-spiral 1
+                                 generate-spiral-pair 1
+                                 gen-circles 1}))
+                  (drop (if (dr/chance 0.5) 0 (dr/random-int 10)))
+                  vec)
         next-pt (peek path)
         h (cq/rel-vec 0.0 0.05)]
     {:t 0
