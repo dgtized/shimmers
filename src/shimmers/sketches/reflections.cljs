@@ -16,14 +16,13 @@
   p)
 
 (defn reflect-x [{[width _height] :size} [x y]]
-  (gv/vec2 (- width (- x width)) y))
+  (gv/vec2 (+ width (- width x)) y))
 
 (defn reflect-y [{[_width height] :size} [x y]]
   (gv/vec2 x (+ height (- height y))))
 
-(defn reflect-xy [{[width height] :size} [x y]]
-  (gv/vec2 (- width (- x width))
-           (+ height (- height y))))
+(defn reflect-xy [box p]
+  (reflect-y box (reflect-x box p)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -38,15 +37,16 @@
 (defn draw [{:keys [shapes]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
-  (let [height (/ (q/height) 2)
-        width (/ (q/width) 2)
-        box (rect/rect width 0 width height)]
+  (let [height (q/height)
+        width (q/width)
+        box (rect/rect 0 0 (/ width 2) (/ height 2))
+        h (g/height box)]
     (doseq [s shapes]
       (cond (instance? Circle2 s)
             (let [{:keys [p r]} s]
               (doseq [point ((juxt reflect-identity reflect-x reflect-y reflect-xy)
                              box (g/unmap-point box p))]
-                (cq/circle point (* r height))))
+                (cq/circle point (* r h))))
             :else
             (doseq [view [reflect-identity reflect-x reflect-y reflect-xy]]
               (q/begin-shape)
