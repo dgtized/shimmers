@@ -50,6 +50,7 @@
               (str/replace-first "<span id=\"revision\"><code>rev:abcdef12</code></span>"
                                  (revision-span timestamp revision))))))
 
+;; deprecated
 (defn github-publish [& {:keys [dir repo fake]}]
   (letfn [(xsh [& cmd]
             (println (apply str "+ " (interpose " " cmd)))

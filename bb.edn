@@ -21,17 +21,8 @@
                           :base-href "https://dgtized.github.io/shimmers/")}
   ;; For routing to page handler after not using fragments
   ;; ln -sf index.html 404.html
-  ;; TODO: consider fetching repo from .git/config?
-  ;; TODO: add circle ci exclusion for gh-pages?
-  github-publish
-  {:task (t/github-publish :dir "static-site"
-                           :repo "git@github.com:dgtized/shimmers.git")}
-
   build
   {:depends [compile create-static-site rewrite-index]}
-
-  publish
-  {:depends [build github-publish]}
 
   view
   {:task (shell "xdg-open static-site/index.html")}}}
