@@ -17,7 +17,7 @@
 
 (defn update-barcode [codes new-code speed chance dt]
   (let [codes' (mapv (fn [s] (g/translate s (tm/* speed dt))) codes)]
-    (->> (if (and (< (+ (if-let [c (peek codes')] (rect/right c) 0) 1.0)
+    (->> (if (and (< (+ (if-let [c (peek codes')] (rect/right c) 0) 0.1)
                      (q/width))
                   (dr/chance chance))
            (conj codes' (new-code))
@@ -38,7 +38,7 @@
                    (partial code
                             (cq/rel-h (+ (+ (* 0.5 height) (* i height))
                                          (* chaos (* 0.01 (dr/random)))))
-                            (cq/rel-w (dr/random 0.001 0.01))
+                            (cq/rel-w (Math/abs (dr/gaussian 0.005 0.002)))
                             (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))
         differential (+ 1.66 (* 0.3 chaos))]
     (-> state
