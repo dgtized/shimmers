@@ -37,7 +37,7 @@
                    (partial code
                             (cq/rel-h (+ (* 0.5 height) (* i height)))
                             (cq/rel-w (dr/random 0.001 0.01))
-                            (cq/rel-h (* 0.8 height))))]
+                            (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))]
     (-> state
         (update :t + dt)
         (update :barcodes
