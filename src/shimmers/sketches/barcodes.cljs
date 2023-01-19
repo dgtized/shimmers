@@ -15,11 +15,11 @@
 (defn code [y w h]
   (rect/rect (q/width) y w h))
 
-(defn update-barcode [codes new-code speed dt]
+(defn update-barcode [codes new-code speed chance dt]
   (let [codes' (mapv (fn [s] (g/translate s (tm/* speed dt))) codes)]
-    (->> (if (and (< (if-let [c (peek codes')] (rect/right c) 0)
+    (->> (if (and (< (+ (if-let [c (peek codes')] (rect/right c) 0) 1.0)
                      (q/width))
-                  (dr/chance 0.03))
+                  (dr/chance chance))
            (conj codes' (new-code))
            codes')
          (filter (fn [s] (> (rect/right s) 0))))))
@@ -45,7 +45,8 @@
                          (fn [i codes]
                            (update-barcode codes
                                            (new-code i)
-                                           (gv/vec2 (* (inc i) -1.5) 0.0)
+                                           (gv/vec2 (- (Math/pow 1.5 (+ i 2))) 0.0)
+                                           (* 0.03 (Math/pow 1.5 i))
                                            dt)))))))
 
 (defn draw [{:keys [barcodes]}]
