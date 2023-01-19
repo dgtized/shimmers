@@ -8,7 +8,6 @@
    shimmers.sketches.all-the-shapes-in-between
    shimmers.sketches.angle-of-ascent
    shimmers.sketches.ascendance
-   shimmers.sketches.baubles
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
@@ -192,6 +191,7 @@
    shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
    shimmers.sketches.verlet-brushes
+   shimmers.sketches.vertex-curves
    shimmers.sketches.video-delay-shader
    shimmers.sketches.video-shader
    shimmers.sketches.voronoi-after-effect

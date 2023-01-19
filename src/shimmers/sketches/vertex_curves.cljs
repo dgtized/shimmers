@@ -1,4 +1,4 @@
-(ns shimmers.sketches.baubles
+(ns shimmers.sketches.vertex-curves
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -58,7 +58,7 @@
    default curve-vertex will use every 2nd vertex as a control point, but it
    leaves a straight line at the start."]])
 
-(sketch/defquil baubles
+(sketch/defquil vertex-curves
   :created-at "2023-01-18"
   :on-mount (fn [] (ctrl/mount ui-controls))
   :tags #{}
