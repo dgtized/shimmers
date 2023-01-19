@@ -39,7 +39,8 @@
                             (cq/rel-h (+ (+ (* 0.5 height) (* i height))
                                          (* chaos (* 0.01 (dr/random)))))
                             (cq/rel-w (dr/random 0.001 0.01))
-                            (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))]
+                            (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))
+        differential (+ 1.66 (* 0.3 chaos))]
     (-> state
         (update :t + dt)
         (update :barcodes
@@ -47,8 +48,8 @@
                          (fn [i codes]
                            (update-barcode codes
                                            (new-code i)
-                                           (gv/vec2 (- (Math/pow 1.5 (+ i 2))) 0.0)
-                                           (* 0.05 (Math/pow 1.5 i))
+                                           (gv/vec2 (- (Math/pow differential (+ i 2))) 0.0)
+                                           (* 0.05 (Math/pow differential i))
                                            dt)))))))
 
 (defn draw [{:keys [barcodes]}]
