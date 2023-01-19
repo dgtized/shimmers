@@ -8,6 +8,7 @@
    shimmers.sketches.all-the-shapes-in-between
    shimmers.sketches.angle-of-ascent
    shimmers.sketches.ascendance
+   shimmers.sketches.barcodes
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
