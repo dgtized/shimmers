@@ -30,7 +30,7 @@
    :barcodes [[] [] []]})
 
 (defn update-state [state]
-  (let [dt 0.1
+  (let [dt 0.15
         n (count (:barcodes state))
         height (/ 1.0 (inc n))
         new-code (fn [i]
@@ -46,7 +46,7 @@
                            (update-barcode codes
                                            (new-code i)
                                            (gv/vec2 (- (Math/pow 1.5 (+ i 2))) 0.0)
-                                           (* 0.03 (Math/pow 1.5 i))
+                                           (* 0.05 (Math/pow 1.5 i))
                                            dt)))))))
 
 (defn draw [{:keys [barcodes]}]
