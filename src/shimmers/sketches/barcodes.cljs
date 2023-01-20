@@ -34,7 +34,7 @@
   (let [dt 0.15
         n (count (:barcodes state))
         height (/ 1.0 (inc n))
-        chaos (tm/smoothstep* -0.2 0.6 (Math/sin (* t 0.01)))
+        chaos (tm/smoothstep* 0.1 0.8 (Math/sin (* t 0.01)))
         new-code (fn [i]
                    (partial code
                             (cq/rel-h (+ (+ (* 0.5 height) (* i height))
