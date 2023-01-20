@@ -3,14 +3,15 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.deterministic-random :as dr]
-   [shimmers.common.quil :as cq]
    [thi.ng.geom.rect :as rect]
-   [shimmers.common.quil-draws-geom :as qdg]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn code [y w h]
   (rect/rect (q/width) y w h))
@@ -60,9 +61,14 @@
           r codes]
     (qdg/draw r)))
 
+(defn explanation []
+  [:div
+   [:p "Genuary 2023 Day 19 - Black & White"]])
+
 (sketch/defquil barcodes
   :created-at "2023-01-19"
-  :tags #{}
+  :tags #{:genuary2023}
+  :on-mount (fn [] (ctrl/mount explanation))
   :size [800 600]
   :setup setup
   :update update-state
