@@ -65,8 +65,8 @@
       (g/rotate (/ Math/PI 8))))
 
 (defn gen-shape []
-  (dr/weighted [[m-square 3]
-                [m-triangle 3]
+  (dr/weighted [[m-triangle 3]
+                [m-square 3]
                 [(partial m-rectangle 0) 3]
                 [(partial m-rectangle tm/HALF_PI) 2]
                 [m-pentagon 1]
