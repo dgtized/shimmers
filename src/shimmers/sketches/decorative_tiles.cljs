@@ -38,13 +38,19 @@
 (defn m-square [size]
   (g/center (rect/rect size)))
 
+(defn m-rectangle [angle size]
+  (g/rotate (g/center (rect/rect 0 0 size (* tm/PHI size)))
+            angle))
+
 (defn m-triangle [size]
   (triangle/inscribed-equilateral (gc/circle (* (/ (Math/sqrt 5) 2)
                                                 (* 0.5 size))) 0))
 
 (defn gen-shape []
   (dr/weighted [[m-square 1]
-                [m-triangle 1]]))
+                [m-triangle 1]
+                [(partial m-rectangle 0) 1]
+                [(partial m-rectangle tm/HALF_PI) 1]]))
 
 (defn layers [seed n]
   (loop [i n layer [seed] shapes [seed]]
