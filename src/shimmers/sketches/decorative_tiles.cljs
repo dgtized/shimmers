@@ -63,10 +63,11 @@
       shapes
       (let [connects
             (->> layer
-                 (mapcat (fn [s]
-                           (connections s
-                                        (when-let [parent (:parent s)]
-                                          (tm/- (g/centroid s) (g/centroid parent)))))))
+                 (mapcat
+                  (fn [s]
+                    (let [dir (when-let [parent (:parent s)]
+                                (tm/- (g/centroid s) (g/centroid parent)))]
+                      (connections s dir)))))
             m-shape (gen-shape)]
         (recur
          (dec i)
