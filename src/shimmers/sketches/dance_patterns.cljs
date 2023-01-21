@@ -120,6 +120,7 @@
         (g/translate (tm/+ base (tm/* position side)))
         cq/draw-polygon)))
 
+;; TODO: add size scaling to zoom out as the actor quantity increases?
 (defn draw [{:keys [bounds size actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
