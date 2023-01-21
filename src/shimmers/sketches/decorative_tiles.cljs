@@ -57,7 +57,7 @@
                 [(partial m-rectangle tm/HALF_PI) 1]
                 [m-pentagon 1]]))
 
-(defn layers [seed n]
+(defn layers [seed size n]
   (loop [i n layer [seed] shapes [seed]]
     (if (= i 0)
       shapes
@@ -74,7 +74,7 @@
          (for [[shape connect] connects]
            (let [dir (tm/- connect (g/centroid shape))
                  angle (g/heading dir)
-                 addition (g/rotate (m-shape 50) angle)
+                 addition (g/rotate (m-shape size) angle)
                  connect-pt (connection-pt addition dir)]
              (-> addition
                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
@@ -82,8 +82,11 @@
          (into shapes layer))))))
 
 (defn shapes []
-  (layers (g/translate ((gen-shape) 50) (rv 0.5 0.5))
-          (dr/random-int 3 6)))
+  (let [n-layers (dr/random-int 3 6)
+        size 50]
+    (layers (g/translate ((gen-shape) size) (rv 0.5 0.5))
+            size
+            n-layers)))
 
 (defn scene []
   (csvg/timed
