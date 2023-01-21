@@ -4,7 +4,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -42,13 +41,13 @@
   (g/rotate (g/center (rect/rect 0 0 size (* tm/PHI size)))
             angle))
 
+;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
 (defn m-triangle [size]
-  (triangle/inscribed-equilateral
-   (gc/circle (* (/ (Math/sqrt 5) 2)
-                 (* 0.5 size))) 0))
+  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 3)))))
+      (g/as-polygon 3)))
 
 (defn m-pentagon [size]
-  (-> (gc/circle (* size (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))))
+  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 5)))))
       (g/as-polygon 5)))
 
 (defn m-hexagon [size]
@@ -58,11 +57,11 @@
 
 (defn gen-shape []
   (dr/weighted [[m-square 1]
-                [m-triangle 1]
+                [m-triangle 2]
                 [(partial m-rectangle 0) 1]
                 [(partial m-rectangle tm/HALF_PI) 1]
                 [m-pentagon 1]
-                [m-hexagon 4]]))
+                [m-hexagon 1]]))
 
 (defn layers [seed size n]
   (loop [i n layer [seed] shapes [seed]]
