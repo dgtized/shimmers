@@ -84,13 +84,16 @@
                     (let [dir (when-let [parent (:parent s)]
                                 (tm/- (g/centroid s) (g/centroid parent)))]
                       (connections s dir)))))
+            mult (dr/weighted {1 5
+                               0.5 1
+                               (/ 1 tm/PHI) 1})
             m-shape (gen-shape)]
         (recur
          (dec i)
          (for [[shape connect] connects]
            (let [dir (tm/- connect (g/centroid shape))
                  angle (g/heading dir)
-                 addition (g/rotate (m-shape size) angle)
+                 addition (g/rotate (m-shape (* size mult)) angle)
                  connect-pt (connection-pt addition dir)]
              (-> addition
                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
@@ -98,7 +101,7 @@
          (into shapes layer))))))
 
 (defn shapes []
-  (let [n-layers (dr/random-int 3 5)
+  (let [n-layers (dr/random-int 3 7)
         size 40]
     (layers (g/translate ((gen-shape) size) (rv 0.5 0.5))
             size
