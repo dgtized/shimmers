@@ -43,19 +43,26 @@
             angle))
 
 (defn m-triangle [size]
-  (triangle/inscribed-equilateral (gc/circle (* (/ (Math/sqrt 5) 2)
-                                                (* 0.5 size))) 0))
+  (triangle/inscribed-equilateral
+   (gc/circle (* (/ (Math/sqrt 5) 2)
+                 (* 0.5 size))) 0))
 
 (defn m-pentagon [size]
   (-> (gc/circle (* size (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))))
       (g/as-polygon 5)))
+
+(defn m-hexagon [size]
+  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 6)))))
+      (g/as-polygon 6)
+      (g/rotate (/ Math/PI 6))))
 
 (defn gen-shape []
   (dr/weighted [[m-square 1]
                 [m-triangle 1]
                 [(partial m-rectangle 0) 1]
                 [(partial m-rectangle tm/HALF_PI) 1]
-                [m-pentagon 1]]))
+                [m-pentagon 1]
+                [m-hexagon 4]]))
 
 (defn layers [seed size n]
   (loop [i n layer [seed] shapes [seed]]
