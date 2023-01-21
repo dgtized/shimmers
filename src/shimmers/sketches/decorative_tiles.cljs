@@ -81,14 +81,16 @@
          (into shapes layer))))))
 
 (defn shapes []
-  (layers (g/translate ((gen-shape) 50) (rv 0.5 0.5)) 4))
+  (layers (g/translate ((gen-shape) 50) (rv 0.5 0.5))
+          (dr/random-int 3 6)))
 
 (defn scene []
   (csvg/timed
    (csvg/svg {:width width
               :height height
               :stroke "black"
-              :fill "none"
+              :fill-opacity "5%"
+              :fill "black"
               :stroke-width 1.0}
      (shapes))))
 
