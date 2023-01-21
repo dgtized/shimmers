@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
@@ -23,14 +24,14 @@
         :let [mid (tm/mix a b 0.5)
               am (tm/- (tm/- mid (g/centroid shape)))]
         :when (or (not dir)
-                  (not (tm/delta= (g/heading am) (g/heading dir) 0.1)))]
+                  (> (sm/radial-distance (g/heading am) (g/heading dir)) 0.1))]
     [shape mid]))
 
 (defn connection-pt [shape dir]
   (some (fn [[a b]]
           (let [mid (tm/mix a b 0.5)
                 am (tm/- (tm/- mid (g/centroid shape)))]
-            (when (tm/delta= (g/heading am) (g/heading dir) 0.1)
+            (when (< (sm/radial-distance (g/heading am) (g/heading dir)) 0.1)
               am)))
         (g/edges shape)))
 
@@ -64,7 +65,6 @@
                  addition (g/rotate (m-shape 50) angle)
                  connect-pt (connection-pt addition dir)]
              (-> addition
-                 ;; (g/rotate angle)
                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
                  (assoc :parent shape))))
          (into shapes layer))))))
