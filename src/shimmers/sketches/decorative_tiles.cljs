@@ -55,13 +55,23 @@
       (g/as-polygon 6)
       (g/rotate (/ Math/PI 6))))
 
+(defn m-heptagon [size]
+  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 7)))))
+      (g/as-polygon 7)))
+
+(defn m-octagon [size]
+  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 8)))))
+      (g/as-polygon 8)
+      (g/rotate (/ Math/PI 8))))
+
 (defn gen-shape []
-  (dr/weighted [[m-square 1]
-                [m-triangle 2]
-                [(partial m-rectangle 0) 1]
-                [(partial m-rectangle tm/HALF_PI) 1]
+  (dr/weighted [[m-square 3]
+                [m-triangle 3]
+                [(partial m-rectangle 0) 3]
+                [(partial m-rectangle tm/HALF_PI) 2]
                 [m-pentagon 1]
-                [m-hexagon 1]]))
+                [m-heptagon 1]
+                [m-octagon 1]]))
 
 (defn layers [seed size n]
   (loop [i n layer [seed] shapes [seed]]
@@ -88,8 +98,8 @@
          (into shapes layer))))))
 
 (defn shapes []
-  (let [n-layers (dr/random-int 3 6)
-        size 50]
+  (let [n-layers (dr/random-int 3 5)
+        size 40]
     (layers (g/translate ((gen-shape) size) (rv 0.5 0.5))
             size
             n-layers)))
