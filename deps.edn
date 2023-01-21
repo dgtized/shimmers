@@ -73,7 +73,7 @@
 
   ;; clj -Mformat check
   :format
-  {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.0"}}
+  {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.2"}}
    :main-opts ["-m" "cljfmt.main"]}
 
   :test
