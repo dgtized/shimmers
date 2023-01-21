@@ -42,36 +42,26 @@
             angle))
 
 ;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
-(defn m-triangle [size]
-  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 3)))))
-      (g/as-polygon 3)))
-
-(defn m-pentagon [size]
-  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 5)))))
-      (g/as-polygon 5)))
-
-(defn m-hexagon [size]
-  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 6)))))
-      (g/as-polygon 6)
-      (g/rotate (/ Math/PI 6))))
-
-(defn m-heptagon [size]
-  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 7)))))
-      (g/as-polygon 7)))
-
-(defn m-octagon [size]
-  (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI 8)))))
-      (g/as-polygon 8)
-      (g/rotate (/ Math/PI 8))))
+(defn n-gon
+  "Construct a regular polygon with n faces from a circle, and rotate to a flat
+  edge at angle zero."
+  [n]
+  (fn [size]
+    (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
+                (g/as-polygon n))]
+      (if (even? n)
+        (g/rotate s (/ Math/PI n))
+        s))))
 
 (defn gen-shape []
-  (dr/weighted [[m-triangle 3]
-                [m-square 3]
+  (dr/weighted [[(n-gon 3) 4]
+                [m-square 4]
                 [(partial m-rectangle 0) 3]
                 [(partial m-rectangle tm/HALF_PI) 2]
-                [m-pentagon 1]
-                [m-heptagon 1]
-                [m-octagon 1]]))
+                [(n-gon 5) 2]
+                [(n-gon 6) 1]
+                [(n-gon 7) 1]
+                [(n-gon 8) 1]]))
 
 (defn layers [seed size n]
   (loop [i n layer [seed] shapes [seed]]
