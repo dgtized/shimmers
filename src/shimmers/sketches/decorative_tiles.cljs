@@ -17,6 +17,10 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defonce ui-state
+  (ctrl/state
+   {:recursion-depth 4}))
+
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
   (for [[a b] (g/edges shape)
@@ -54,19 +58,24 @@
         s))))
 
 (defn gen-shape []
-  (dr/weighted [[(n-gon 3) 4]
-                [m-square 4]
-                [(partial m-rectangle 0) 3]
-                [(partial m-rectangle tm/HALF_PI) 2]
-                [(n-gon 5) 2]
-                [(n-gon 6) 1]
-                [(n-gon 7) 1]
-                [(n-gon 8) 1]]))
+  [(dr/weighted
+    [[(n-gon 3) 4]
+     [m-square 4]
+     [(partial m-rectangle 0) 3]
+     [(partial m-rectangle tm/HALF_PI) 2]
+     [(n-gon 5) 2]
+     [(n-gon 6) 1]
+     [(n-gon 7) 1]
+     [(n-gon 8) 1]])
+   (dr/weighted
+    {1 5
+     0.5 1
+     (/ 1 tm/PHI) 1})])
 
-(defn layers [seed size n]
-  (loop [i n layer [seed] shapes [seed]]
-    (if (= i 0)
-      shapes
+(defn layers [seed plan size]
+  (loop [plan plan layer [seed] shapes []]
+    (if (empty? plan)
+      (into shapes layer)
       (let [connects
             (->> layer
                  (mapcat
@@ -74,12 +83,9 @@
                     (let [dir (when-let [parent (:parent s)]
                                 (tm/- (g/centroid s) (g/centroid parent)))]
                       (connections s dir)))))
-            mult (dr/weighted {1 5
-                               0.5 1
-                               (/ 1 tm/PHI) 1})
-            m-shape (gen-shape)]
+            [m-shape mult] (first plan)]
         (recur
-         (dec i)
+         (rest plan)
          (for [[shape connect] connects]
            (let [dir (tm/- connect (g/centroid shape))
                  angle (g/heading dir)
@@ -90,14 +96,14 @@
                  (assoc :parent shape))))
          (into shapes layer))))))
 
-(defn shapes []
-  (let [n-layers (dr/random-int 3 7)
-        size 40]
-    (layers (g/translate ((gen-shape) size) (rv 0.5 0.5))
-            size
-            n-layers)))
+(defn shapes [plan]
+  (let [size 40
+        [m-shape mult] (first plan)]
+    (layers (g/translate (m-shape (* mult size)) (rv 0.5 0.5))
+            (rest plan)
+            size)))
 
-(defn scene []
+(defn scene [plan]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -105,11 +111,20 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (shapes))))
+     (shapes plan))))
+
+(defn page []
+  (let [plan (vec (repeatedly 11 gen-shape))]
+    (fn []
+      [:div
+       [:div.canvas-frame [scene (take (:recursion-depth @ui-state) plan)]]
+       [:div.contained
+        [:p.center "Recursively layer regular polygons on each outward face."]
+        [:p.center (view-sketch/generate :decorative-tiles)]
+        (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])]])))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :decorative-tiles)
-              "sketch-host"))
+  (ctrl/mount page "sketch-host"))
