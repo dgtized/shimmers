@@ -22,6 +22,7 @@
 (defonce ui-state
   (ctrl/state
    {:recursion-depth 4
+    :auto-scale true
     :base-size 40
     :spacing-size 4
     :variable-size true
@@ -137,7 +138,7 @@
             max-overlap
             spacing-size)))
 
-(defn scene [plan base-size max-overlap spacing-size]
+(defn scene [plan auto-scale base-size max-overlap spacing-size]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -145,19 +146,30 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (let [tiles (shapes plan base-size max-overlap spacing-size)]
-       (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+     (let [tiles (shapes plan base-size max-overlap spacing-size)
+           radial-height (max (* 0.25 height)
+                              (apply max (map (comp rect/top :bounds) tiles)))
+           scale (/ height (* 2 (+ radial-height 2)))]
+       (csvg/group {:transform
+                    (str (csvg/translate (rv 0.5 0.5))
+                         " "
+                         (if auto-scale
+                           (csvg/scale scale scale)
+                           ""))}
          (map :shape tiles))))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
     (fn []
-      (let [{:keys [recursion-depth base-size
+      (let [{:keys [recursion-depth
+                    auto-scale base-size
                     limit-overlap max-overlap
                     spacing-size]}
             @ui-state]
         [:div
-         [:div.canvas-frame [scene (take recursion-depth plan) base-size
+         [:div.canvas-frame [scene (take recursion-depth plan)
+                             auto-scale
+                             base-size
                              (when limit-overlap max-overlap)
                              spacing-size]]
          [:div.contained
@@ -168,7 +180,9 @@
             (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
             (when limit-overlap
               (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
-            (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])
+            (ctrl/checkbox ui-state "Auto Scaling" [:auto-scale])
+            (when-not auto-scale
+              (ctrl/numeric ui-state "Base Size" [:base-size] [20 100 1]))
             (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size]))
            [:div
