@@ -2,10 +2,11 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.algorithm.hand-drawn :as hand-drawn]
    [thi.ng.geom.line :as gl]))
 
 (defn rel-line [{[p q] :points}]
@@ -29,9 +30,14 @@
   (doseq [{[p q] :points} lines]
     (hand-drawn/line p q)))
 
+(defn ui-controls []
+  [:div
+   [:p "Demonstration of simulated hand drawn lines in various orientations."]])
+
 (sketch/defquil squiggle-line
   :created-at "2021-11-05"
   :tags #{:demo}
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
