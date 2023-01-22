@@ -83,22 +83,22 @@
 
 (defn excess-overlap [max-overlap new-shape existing-shapes]
   (let [new-bounds (g/bounds new-shape)]
-    (when max-overlap
-      (loop [overlaps 0 shapes existing-shapes]
-        (when (seq shapes)
-          (let [{:keys [shape bounds]} (first shapes)]
-            (if (and (isec/intersect-rect-rect? bounds new-bounds)
-                     (collide/overlaps? shape new-shape))
-              (if (> (inc overlaps) max-overlap)
-                true
-                (recur (inc overlaps) (rest shapes)))
-              (recur overlaps (rest shapes)))))))))
+    (loop [overlaps 0 shapes existing-shapes]
+      (when (seq shapes)
+        (let [{:keys [shape bounds]} (first shapes)]
+          (if (and (isec/intersect-rect-rect? bounds new-bounds)
+                   (collide/overlaps? shape new-shape))
+            (if (> (inc overlaps) max-overlap)
+              true
+              (recur (inc overlaps) (rest shapes)))
+            (recur overlaps (rest shapes))))))))
 
 (defn shape-wrapper [s]
   {:shape s
    :bounds (g/bounds s)})
 
-(defn layers [seed plan size max-overlap spacing-size]
+(defn layers
+  [seed plan {:keys [base-size limit-overlap max-overlap spacing-size]}]
   (loop [plan plan layer [seed] shapes []]
     (let [shapes' (into shapes (map shape-wrapper layer))]
       (if (empty? plan)
@@ -120,25 +120,23 @@
             (for [[shape connect] connects]
               (let [dir (tm/- connect (g/centroid shape))
                     angle (g/heading dir)
-                    addition (g/rotate (m-shape (* size scale)) angle)
+                    addition (g/rotate (m-shape (* base-size scale)) angle)
                     connect-pt (connection-pt addition dir)]
                 (-> addition
                     (g/translate (tm/+ connect connect-pt
                                        (tm/normalize connect-pt spacing-size)))
                     (assoc :parent shape))))
-            (remove (fn [shape] (excess-overlap max-overlap shape shapes'))))
+            (remove (fn [shape] (when limit-overlap
+                                 (excess-overlap max-overlap shape shapes')))))
            shapes'))))))
 
-(defn shapes [plan base-size max-overlap spacing-size]
-  (let [size base-size
-        [m-shape mult] (first plan)]
-    (layers (m-shape (* mult size))
+(defn shapes [plan {:keys [base-size] :as settings}]
+  (let [[m-shape mult] (first plan)]
+    (layers (m-shape (* mult base-size))
             (rest plan)
-            size
-            max-overlap
-            spacing-size)))
+            settings)))
 
-(defn scene [plan auto-scale base-size max-overlap spacing-size]
+(defn scene [plan {:keys [auto-scale] :as settings}]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -146,7 +144,7 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (let [tiles (shapes plan base-size max-overlap spacing-size)
+     (let [tiles (shapes plan settings)
            radial-height (max (* 0.25 height)
                               (apply max (map (comp rect/top :bounds) tiles)))
            scale (/ height (* 2 (+ radial-height 2)))]
@@ -161,17 +159,10 @@
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
     (fn []
-      (let [{:keys [recursion-depth
-                    auto-scale base-size
-                    limit-overlap max-overlap
-                    spacing-size]}
-            @ui-state]
+      (let [settings @ui-state
+            {:keys [recursion-depth auto-scale limit-overlap]} settings]
         [:div
-         [:div.canvas-frame [scene (take recursion-depth plan)
-                             auto-scale
-                             base-size
-                             (when limit-overlap max-overlap)
-                             spacing-size]]
+         [:div.canvas-frame [scene (take recursion-depth plan) settings]]
          [:div.contained
           [:div.flexcols
            (ctrl/container
