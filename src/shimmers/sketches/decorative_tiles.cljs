@@ -93,37 +93,40 @@
                 (recur (inc overlaps) (rest shapes)))
               (recur overlaps (rest shapes)))))))))
 
+(defn shape-wrapper [s]
+  {:shape s
+   :bounds (g/bounds s)})
+
 (defn layers [seed plan size max-overlap spacing-size]
   (loop [plan plan layer [seed] shapes []]
-    (if (empty? plan)
-      (into shapes layer)
-      (let [connects
-            (->> layer
-                 (mapcat
-                  (fn [s]
-                    (let [dir (when-let [parent (:parent s)]
-                                (tm/- (g/centroid s) (g/centroid parent)))]
-                      (connections s dir)))))
-            [m-shape mult] (first plan)
-            scale (if (:variable-size @ui-state)
-                    mult
-                    1)
-            shapes' (into shapes layer)
-            bounded-shapes (map (fn [s] {:bounds (g/bounds s) :shape s}) shapes')]
-        (recur
-         (rest plan)
-         (->>
-          (for [[shape connect] connects]
-            (let [dir (tm/- connect (g/centroid shape))
-                  angle (g/heading dir)
-                  addition (g/rotate (m-shape (* size scale)) angle)
-                  connect-pt (connection-pt addition dir)]
-              (-> addition
-                  (g/translate (tm/+ connect connect-pt
-                                     (tm/normalize connect-pt spacing-size)))
-                  (assoc :parent shape))))
-          (remove (fn [shape] (excess-overlap max-overlap shape bounded-shapes))))
-         shapes')))))
+    (let [shapes' (into shapes (map shape-wrapper layer))]
+      (if (empty? plan)
+        shapes'
+        (let [connects
+              (->> layer
+                   (mapcat
+                    (fn [s]
+                      (let [dir (when-let [parent (:parent s)]
+                                  (tm/- (g/centroid s) (g/centroid parent)))]
+                        (connections s dir)))))
+              [m-shape mult] (first plan)
+              scale (if (:variable-size @ui-state)
+                      mult
+                      1)]
+          (recur
+           (rest plan)
+           (->>
+            (for [[shape connect] connects]
+              (let [dir (tm/- connect (g/centroid shape))
+                    angle (g/heading dir)
+                    addition (g/rotate (m-shape (* size scale)) angle)
+                    connect-pt (connection-pt addition dir)]
+                (-> addition
+                    (g/translate (tm/+ connect connect-pt
+                                       (tm/normalize connect-pt spacing-size)))
+                    (assoc :parent shape))))
+            (remove (fn [shape] (excess-overlap max-overlap shape shapes'))))
+           shapes'))))))
 
 (defn shapes [plan base-size max-overlap spacing-size]
   (let [size base-size
@@ -144,7 +147,7 @@
               :stroke-width 1.0}
      (let [tiles (shapes plan base-size max-overlap spacing-size)]
        (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-         tiles)))))
+         (map :shape tiles))))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
