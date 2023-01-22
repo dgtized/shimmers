@@ -128,7 +128,7 @@
 (defn shapes [plan base-size max-overlap spacing-size]
   (let [size base-size
         [m-shape mult] (first plan)]
-    (layers (g/translate (m-shape (* mult size)) (rv 0.5 0.5))
+    (layers (m-shape (* mult size))
             (rest plan)
             size
             max-overlap
@@ -142,7 +142,9 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (shapes plan base-size max-overlap spacing-size))))
+     (let [tiles (shapes plan base-size max-overlap spacing-size)]
+       (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+         tiles)))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
