@@ -10,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -79,15 +80,17 @@
      (/ 1 tm/PHI) 1})])
 
 (defn excess-overlap [max-overlap new-shape existing-shapes]
-  (when max-overlap
-    (loop [overlaps 0 shapes existing-shapes]
-      (when (seq shapes)
-        (let [es (first shapes)]
-          (if (collide/overlaps? es new-shape)
-            (if (> (inc overlaps) max-overlap)
-              true
-              (recur (inc overlaps) (rest shapes)))
-            (recur overlaps (rest shapes))))))))
+  (let [new-bounds (g/bounds new-shape)]
+    (when max-overlap
+      (loop [overlaps 0 shapes existing-shapes]
+        (when (seq shapes)
+          (let [{:keys [shape bounds]} (first shapes)]
+            (if (and (isec/intersect-rect-rect? bounds new-bounds)
+                     (collide/overlaps? shape new-shape))
+              (if (> (inc overlaps) max-overlap)
+                true
+                (recur (inc overlaps) (rest shapes)))
+              (recur overlaps (rest shapes)))))))))
 
 (defn layers [seed plan size max-overlap spacing-size]
   (loop [plan plan layer [seed] shapes []]
@@ -104,7 +107,8 @@
             scale (if (:variable-size @ui-state)
                     mult
                     1)
-            shapes' (into shapes layer)]
+            shapes' (into shapes layer)
+            bounded-shapes (map (fn [s] {:bounds (g/bounds s) :shape s}) shapes')]
         (recur
          (rest plan)
          (->>
@@ -117,7 +121,7 @@
                   (g/translate (tm/+ connect connect-pt
                                      (tm/normalize connect-pt spacing-size)))
                   (assoc :parent shape))))
-          (remove (fn [shape] (excess-overlap max-overlap shape shapes'))))
+          (remove (fn [shape] (excess-overlap max-overlap shape bounded-shapes))))
          shapes')))))
 
 (defn shapes [plan base-size max-overlap spacing-size]
