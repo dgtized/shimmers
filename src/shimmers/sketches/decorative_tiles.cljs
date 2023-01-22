@@ -22,6 +22,7 @@
   (ctrl/state
    {:recursion-depth 4
     :base-size 40
+    :spacing-size 4
     :variable-size true
     :limit-overlap true
     :max-overlap 0}))
@@ -88,7 +89,7 @@
               (recur (inc overlaps) (rest shapes)))
             (recur overlaps (rest shapes))))))))
 
-(defn layers [seed plan size max-overlap]
+(defn layers [seed plan size max-overlap spacing-size]
   (loop [plan plan layer [seed] shapes []]
     (if (empty? plan)
       (into shapes layer)
@@ -113,20 +114,22 @@
                   addition (g/rotate (m-shape (* size scale)) angle)
                   connect-pt (connection-pt addition dir)]
               (-> addition
-                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
+                  (g/translate (tm/+ connect connect-pt
+                                     (tm/normalize connect-pt spacing-size)))
                   (assoc :parent shape))))
           (remove (fn [shape] (excess-overlap max-overlap shape shapes'))))
          shapes')))))
 
-(defn shapes [plan base-size max-overlap]
+(defn shapes [plan base-size max-overlap spacing-size]
   (let [size base-size
         [m-shape mult] (first plan)]
     (layers (g/translate (m-shape (* mult size)) (rv 0.5 0.5))
             (rest plan)
             size
-            max-overlap)))
+            max-overlap
+            spacing-size)))
 
-(defn scene [plan base-size max-overlap]
+(defn scene [plan base-size max-overlap spacing-size]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -134,14 +137,19 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (shapes plan base-size max-overlap))))
+     (shapes plan base-size max-overlap spacing-size))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
     (fn []
-      (let [{:keys [recursion-depth base-size limit-overlap max-overlap]} @ui-state]
+      (let [{:keys [recursion-depth base-size
+                    limit-overlap max-overlap
+                    spacing-size]}
+            @ui-state]
         [:div
-         [:div.canvas-frame [scene (take recursion-depth plan) base-size (when limit-overlap max-overlap)]]
+         [:div.canvas-frame [scene (take recursion-depth plan) base-size
+                             (when limit-overlap max-overlap)
+                             spacing-size]]
          [:div.contained
           [:div.flexcols
            (ctrl/container
@@ -151,6 +159,7 @@
             (when limit-overlap
               (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
             (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])
+            (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size]))
            [:div
             [:p.center (view-sketch/generate :decorative-tiles)]
