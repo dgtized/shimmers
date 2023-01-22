@@ -20,7 +20,8 @@
 (defonce ui-state
   (ctrl/state
    {:recursion-depth 4
-    :base-size 40}))
+    :base-size 40
+    :variable-size true}))
 
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
@@ -84,13 +85,16 @@
                     (let [dir (when-let [parent (:parent s)]
                                 (tm/- (g/centroid s) (g/centroid parent)))]
                       (connections s dir)))))
-            [m-shape mult] (first plan)]
+            [m-shape mult] (first plan)
+            scale (if (:variable-size @ui-state)
+                    mult
+                    1)]
         (recur
          (rest plan)
          (for [[shape connect] connects]
            (let [dir (tm/- connect (g/centroid shape))
                  angle (g/heading dir)
-                 addition (g/rotate (m-shape (* size mult)) angle)
+                 addition (g/rotate (m-shape (* size scale)) angle)
                  connect-pt (connection-pt addition dir)]
              (-> addition
                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
@@ -125,7 +129,8 @@
            (ctrl/container
             [:p]
             (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
-            (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1]))
+            (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])
+            (ctrl/checkbox ui-state "Variable Size" [:variable-size]))
            [:div
             [:p.center (view-sketch/generate :decorative-tiles)]
             [:p.center "Recursively layer regular polygons on each outward face."]]]]]))))
