@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -21,7 +22,9 @@
   (ctrl/state
    {:recursion-depth 4
     :base-size 40
-    :variable-size true}))
+    :variable-size true
+    :limit-overlap true
+    :max-overlap 0}))
 
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
@@ -74,7 +77,18 @@
      0.5 1
      (/ 1 tm/PHI) 1})])
 
-(defn layers [seed plan size]
+(defn excess-overlap [max-overlap new-shape existing-shapes]
+  (when max-overlap
+    (loop [overlaps 0 shapes existing-shapes]
+      (when (seq shapes)
+        (let [es (first shapes)]
+          (if (collide/overlaps? es new-shape)
+            (if (> (inc overlaps) max-overlap)
+              true
+              (recur (inc overlaps) (rest shapes)))
+            (recur overlaps (rest shapes))))))))
+
+(defn layers [seed plan size max-overlap]
   (loop [plan plan layer [seed] shapes []]
     (if (empty? plan)
       (into shapes layer)
@@ -88,27 +102,31 @@
             [m-shape mult] (first plan)
             scale (if (:variable-size @ui-state)
                     mult
-                    1)]
+                    1)
+            shapes' (into shapes layer)]
         (recur
          (rest plan)
-         (for [[shape connect] connects]
-           (let [dir (tm/- connect (g/centroid shape))
-                 angle (g/heading dir)
-                 addition (g/rotate (m-shape (* size scale)) angle)
-                 connect-pt (connection-pt addition dir)]
-             (-> addition
-                 (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
-                 (assoc :parent shape))))
-         (into shapes layer))))))
+         (->>
+          (for [[shape connect] connects]
+            (let [dir (tm/- connect (g/centroid shape))
+                  angle (g/heading dir)
+                  addition (g/rotate (m-shape (* size scale)) angle)
+                  connect-pt (connection-pt addition dir)]
+              (-> addition
+                  (g/translate (tm/+ connect (tm/* connect-pt 1.1)))
+                  (assoc :parent shape))))
+          (remove (fn [shape] (excess-overlap max-overlap shape shapes'))))
+         shapes')))))
 
-(defn shapes [plan base-size]
+(defn shapes [plan base-size max-overlap]
   (let [size base-size
         [m-shape mult] (first plan)]
     (layers (g/translate (m-shape (* mult size)) (rv 0.5 0.5))
             (rest plan)
-            size)))
+            size
+            max-overlap)))
 
-(defn scene [plan base-size]
+(defn scene [plan base-size max-overlap]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -116,19 +134,22 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (shapes plan base-size))))
+     (shapes plan base-size max-overlap))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
     (fn []
-      (let [{:keys [recursion-depth base-size]} @ui-state]
+      (let [{:keys [recursion-depth base-size limit-overlap max-overlap]} @ui-state]
         [:div
-         [:div.canvas-frame [scene (take recursion-depth plan) base-size]]
+         [:div.canvas-frame [scene (take recursion-depth plan) base-size (when limit-overlap max-overlap)]]
          [:div.contained
           [:div.flexcols
            (ctrl/container
             [:p]
             (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
+            (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
+            (when limit-overlap
+              (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
             (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size]))
            [:div
