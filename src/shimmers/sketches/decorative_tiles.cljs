@@ -19,7 +19,8 @@
 
 (defonce ui-state
   (ctrl/state
-   {:recursion-depth 4}))
+   {:recursion-depth 4
+    :base-size 40}))
 
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
@@ -96,14 +97,14 @@
                  (assoc :parent shape))))
          (into shapes layer))))))
 
-(defn shapes [plan]
-  (let [size 40
+(defn shapes [plan base-size]
+  (let [size base-size
         [m-shape mult] (first plan)]
     (layers (g/translate (m-shape (* mult size)) (rv 0.5 0.5))
             (rest plan)
             size)))
 
-(defn scene [plan]
+(defn scene [plan base-size]
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -111,17 +112,19 @@
               :fill-opacity "5%"
               :fill "black"
               :stroke-width 1.0}
-     (shapes plan))))
+     (shapes plan base-size))))
 
 (defn page []
   (let [plan (vec (repeatedly 11 gen-shape))]
     (fn []
-      [:div
-       [:div.canvas-frame [scene (take (:recursion-depth @ui-state) plan)]]
-       [:div.contained
-        [:p.center "Recursively layer regular polygons on each outward face."]
-        [:p.center (view-sketch/generate :decorative-tiles)]
-        (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])]])))
+      (let [{:keys [recursion-depth base-size]} @ui-state]
+        [:div
+         [:div.canvas-frame [scene (take recursion-depth plan) base-size]]
+         [:div.contained
+          [:p.center "Recursively layer regular polygons on each outward face."]
+          [:p.center (view-sketch/generate :decorative-tiles)]
+          (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
+          (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])]]))))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
