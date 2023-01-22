@@ -76,8 +76,9 @@
      [(n-gon 8) 1]])
    (dr/weighted
     {1 5
-     0.5 1
-     (/ 1 tm/PHI) 1})])
+     (/ 1 tm/PHI) 2
+     0.5 2
+     (/ 1 3) 1})])
 
 (defn excess-overlap [max-overlap new-shape existing-shapes]
   (let [new-bounds (g/bounds new-shape)]
