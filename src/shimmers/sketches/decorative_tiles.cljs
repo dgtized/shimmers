@@ -121,10 +121,14 @@
         [:div
          [:div.canvas-frame [scene (take recursion-depth plan) base-size]]
          [:div.contained
-          [:p.center "Recursively layer regular polygons on each outward face."]
-          [:p.center (view-sketch/generate :decorative-tiles)]
-          (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
-          (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1])]]))))
+          [:div.flexcols
+           (ctrl/container
+            [:p]
+            (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
+            (ctrl/numeric ui-state "Base Size" [:base-size] [30 60 1]))
+           [:div
+            [:p.center (view-sketch/generate :decorative-tiles)]
+            [:p.center "Recursively layer regular polygons on each outward face."]]]]]))))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
