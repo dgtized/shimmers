@@ -178,9 +178,10 @@
         plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
-            {:keys [recursion-depth auto-scale limit-overlap color-tiles]} settings]
+            {:keys [recursion-depth auto-scale limit-overlap color-tiles]} settings
+            depth (min (if limit-overlap recursion-depth 9) recursion-depth)]
         [:div
-         [:div.canvas-frame [scene (take recursion-depth plan) settings]]
+         [:div.canvas-frame [scene (take depth plan) settings]]
          [:div.contained
           [:div.flexcols
            (ctrl/container
