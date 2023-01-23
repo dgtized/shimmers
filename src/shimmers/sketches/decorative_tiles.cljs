@@ -23,7 +23,7 @@
 
 (defonce ui-state
   (ctrl/state
-   {:recursion-depth 4
+   {:recursion-depth 7
     :auto-scale true
     :base-size 40
     :spacing-size 4
@@ -181,7 +181,7 @@
           [:div.flexcols
            (ctrl/container
             [:p]
-            (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 9 1])
+            (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 16 1])
             (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
             (when limit-overlap
               (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
