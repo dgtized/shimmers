@@ -113,12 +113,21 @@
     [1 -1] (gv/vec2 0.5 -0.5)
     (gv/vec2 0 0)))
 
-(defn render-cell [base side]
+(defn render-cell [base side size]
   (fn [cell weight position]
     (q/stroke-weight weight)
     (-> cell
-        (g/translate (tm/+ base (tm/* position side)))
+        (g/translate (tm/+ base (tm/* (tm/- position (gv/vec2 (/ size 2) (/ size 2)))
+                                      side)))
         cq/draw-polygon)))
+
+(defn scaled-side [{[w h] :size} size actors]
+  (let [min-x (apply min (map (comp :x :position) actors))
+        max-x (apply max (map (comp :x :position) actors))
+        min-y (apply min (map (comp :y :position) actors))
+        max-y (apply max (map (comp :y :position) actors))]
+    (min (/ w (min size (- (+ max-x 3) (- min-x 3))))
+         (/ h (min size (- (+ max-y 3) (- min-y 3)))))))
 
 ;; TODO: add size scaling to zoom out as the actor quantity increases?
 (defn draw [{:keys [bounds size actors t]}]
@@ -126,11 +135,9 @@
   (q/ellipse-mode :radius)
 
   (q/stroke 0.0)
-  (let [{base :p [w _] :size} bounds
-        side (/ w size)
-        draw-cell (-> base
-                      (tm/+ (tm/* (gv/vec2 0.5 0.5) side))
-                      (render-cell side))
+  (q/translate (cq/rel-vec 0.5 0.5))
+  (let [side (scaled-side bounds size actors)
+        draw-cell (render-cell (tm/* (gv/vec2 0.5 0.5) side) side size)
         cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
       (if (empty? actions)
