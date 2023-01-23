@@ -137,6 +137,10 @@
                  (if color-tiles
                    (map (fn [s c] (vary-meta s assoc :fill c))
                         layer-remaining
+                        ;; TODO figure out how to cycle mover more then one
+                        ;; color per layer and maintain symmetry needs to be
+                        ;; symmetric for outbound connections from parent and
+                        ;; then replicated across each shape in that layer?
                         (cycle (take 1 palette)))
                    layer-remaining)
                  shapes'))))))
