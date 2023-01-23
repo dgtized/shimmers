@@ -1,11 +1,13 @@
 (ns shimmers.sketches.decorative-tiles
   (:require
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.sketches.radial-mosaic :as radial-mosaic]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -27,7 +29,8 @@
     :spacing-size 4
     :variable-size true
     :limit-overlap true
-    :max-overlap 0}))
+    :max-overlap 0
+    :color-tiles true}))
 
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
@@ -65,21 +68,23 @@
         (g/rotate s (/ Math/PI n))
         s))))
 
-(defn gen-shape []
-  [(dr/weighted
-    [[(n-gon 3) 4]
-     [m-square 4]
-     [(partial m-rectangle 0) 3]
-     [(partial m-rectangle tm/HALF_PI) 2]
-     [(n-gon 5) 2]
-     [(n-gon 6) 1]
-     [(n-gon 7) 1]
-     [(n-gon 8) 1]])
-   (dr/weighted
-    {1 5
-     (/ 1 tm/PHI) 2
-     0.5 2
-     (/ 1 3) 1})])
+(defn gen-shape [palette]
+  (fn []
+    [(dr/weighted
+      [[(n-gon 3) 4]
+       [m-square 4]
+       [(partial m-rectangle 0) 3]
+       [(partial m-rectangle tm/HALF_PI) 2]
+       [(n-gon 5) 2]
+       [(n-gon 6) 1]
+       [(n-gon 7) 1]
+       [(n-gon 8) 1]])
+     (dr/weighted
+      {1 5
+       (/ 1 tm/PHI) 2
+       0.5 2
+       (/ 1 3) 1})
+     (vec (repeatedly 10 #(dr/rand-nth palette)))]))
 
 (defn excess-overlap [max-overlap new-shape existing-shapes]
   (let [new-bounds (g/bounds new-shape)]
@@ -98,7 +103,7 @@
    :bounds (g/bounds s)})
 
 (defn layers
-  [seed plan {:keys [base-size limit-overlap max-overlap spacing-size]}]
+  [seed plan {:keys [base-size limit-overlap max-overlap spacing-size color-tiles]}]
   (loop [plan plan layer [seed] shapes []]
     (let [shapes' (into shapes (map shape-wrapper layer))]
       (if (empty? plan)
@@ -110,25 +115,31 @@
                       (let [dir (when-let [parent (:parent s)]
                                   (tm/- (g/centroid s) (g/centroid parent)))]
                         (connections s dir)))))
-              [m-shape mult] (first plan)
+              [m-shape mult palette] (first plan)
               scale (if (:variable-size @ui-state)
                       mult
-                      1)]
-          (recur
-           (rest plan)
-           (->>
-            (for [[shape connect] connects]
-              (let [dir (tm/- connect (g/centroid shape))
-                    angle (g/heading dir)
-                    addition (g/rotate (m-shape (* base-size scale)) angle)
-                    connect-pt (connection-pt addition dir)]
-                (-> addition
-                    (g/translate (tm/+ connect connect-pt
-                                       (tm/normalize connect-pt spacing-size)))
-                    (assoc :parent shape))))
-            (remove (fn [shape] (when limit-overlap
-                                 (excess-overlap max-overlap shape shapes')))))
-           shapes'))))))
+                      1)
+              layer'
+              (for [[shape connect] connects]
+                (let [dir (tm/- connect (g/centroid shape))
+                      angle (g/heading dir)
+                      addition (g/rotate (m-shape (* base-size scale)) angle)
+                      connect-pt (connection-pt addition dir)]
+                  (-> addition
+                      (g/translate (tm/+ connect connect-pt
+                                         (tm/normalize connect-pt spacing-size)))
+                      (assoc :parent shape))))
+              layer-remaining
+              (remove (fn [shape] (when limit-overlap
+                                   (excess-overlap max-overlap shape shapes')))
+                      layer')]
+          (recur (rest plan)
+                 (if color-tiles
+                   (map (fn [s c] (vary-meta s assoc :fill c))
+                        layer-remaining
+                        (cycle (take 1 palette)))
+                   layer-remaining)
+                 shapes'))))))
 
 (defn shapes [plan {:keys [base-size] :as settings}]
   (let [[m-shape mult] (first plan)]
@@ -136,12 +147,14 @@
             (rest plan)
             settings)))
 
-(defn scene [plan {:keys [auto-scale] :as settings}]
+(defn scene [plan {:keys [auto-scale color-tiles max-overlap] :as settings}]
   (csvg/timed
    (csvg/svg {:width width
               :height height
               :stroke "black"
-              :fill-opacity "5%"
+              :fill-opacity (if color-tiles
+                              (/ 2 (+ max-overlap 3))
+                              "5%")
               :fill "black"
               :stroke-width 1.0}
      (let [tiles (shapes plan settings)
@@ -157,10 +170,11 @@
          (map :shape tiles))))))
 
 (defn page []
-  (let [plan (vec (repeatedly 11 gen-shape))]
+  (let [palette (dr/rand-nth radial-mosaic/palettes)
+        plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
-            {:keys [recursion-depth auto-scale limit-overlap]} settings]
+            {:keys [recursion-depth auto-scale limit-overlap color-tiles]} settings]
         [:div
          [:div.canvas-frame [scene (take recursion-depth plan) settings]]
          [:div.contained
@@ -175,10 +189,14 @@
             (when-not auto-scale
               (ctrl/numeric ui-state "Base Size" [:base-size] [20 100 1]))
             (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
-            (ctrl/checkbox ui-state "Variable Size" [:variable-size]))
+            (ctrl/checkbox ui-state "Variable Size" [:variable-size])
+            (ctrl/checkbox ui-state "Color Tiles" [:color-tiles]))
            [:div
             [:p.center (view-sketch/generate :decorative-tiles)]
-            [:p.center "Recursively layer regular polygons on each outward face."]]]]]))))
+            [:p.center "Recursively layer regular polygons on each outward face."]
+            (when color-tiles
+              [palette/as-svg {:class "center" :width (* 40 (count palette)) :height 30}
+               palette])]]]]))))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
