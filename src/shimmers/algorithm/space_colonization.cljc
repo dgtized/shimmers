@@ -35,14 +35,12 @@
   (apply min-key (partial branch-distance attractor) branches))
 
 (defn average-attraction
-  ([branch attractors]
-   (average-attraction branch attractors 0 (gv/vec2)))
-  ([{:keys [position]} attractors snap-theta jitter]
-   (-> (reduce (fn [acc attractor]
-                 (tm/+ acc (tm/normalize (tm/- attractor position))))
-               jitter attractors)
-       tm/normalize
-       (v/snap-to snap-theta))))
+  [{:keys [position]} attractors snap-theta jitter]
+  (-> (reduce (fn [acc attractor]
+                (tm/+ acc (tm/normalize (tm/- attractor position))))
+              jitter attractors)
+      tm/normalize
+      (v/snap-to snap-theta)))
 
 ;; Approach borrowed from
 ;; https://github.com/jasonwebb/2d-space-colonization-experiments/blob/master/core/Network.js#L108-L114

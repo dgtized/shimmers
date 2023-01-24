@@ -15,10 +15,11 @@
 (deftest average-attraction
   (is (= (gv/vec2 eq/SQRT2_2 eq/SQRT2_2)
          (sut/average-attraction (sut/->Branch nil (gv/vec2))
-                                 [(gv/vec2 2 2) (gv/vec2 2 2)])))
+                                 [(gv/vec2 2 2) (gv/vec2 2 2)]
+                                 0 (gv/vec2))))
   (let [branch (sut/->Branch nil (gv/vec2))
         attractors [(gv/vec2 1 0) (gv/vec2 0 -1) (gv/vec2 [1 -1])]]
     (is (= (gv/vec2 eq/SQRT2_2 (- eq/SQRT2_2))
-           (sut/average-attraction branch attractors)))))
+           (sut/average-attraction branch attractors 0 (gv/vec2))))))
 
 (comment (t/run-tests))
