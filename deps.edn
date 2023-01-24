@@ -11,7 +11,7 @@
         io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
 
         ;; vectors, math, polygons, svg, and such -- overlaps quil but distinct
-        thi.ng/geom {:mvn/version "1.0.0-RC5"
+        thi.ng/geom {:mvn/version "1.0.0"
                      :exclusions [org.jogamp.gluegen/gluegen-rt
                                   org.jogamp.jogl/jogl-all]}
 
