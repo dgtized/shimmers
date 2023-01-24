@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.space-colonization
   (:require
    [clojure.set :as set]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.spatialtree :as spatialtree]
@@ -157,7 +158,7 @@
    :prune-distance prune-distance
    :segment-distance segment-distance
    :snap-theta snap-theta
-   :jitter (partial v/jitter 0.33)
+   :jitter (partial dr/jitter 0.33)
    :attractors attractors
    :branches branches
    :weights (update-weights {} branches branches)
