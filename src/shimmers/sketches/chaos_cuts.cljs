@@ -13,6 +13,10 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]))
 
+;; alternative idea for future: use multiple layers, ie have a pendulum or shape
+;; with edges cut the top polygon, cut out a pane, only to reveal another
+;; polygon being cut by new lines/pendulums
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect 0.8)]
