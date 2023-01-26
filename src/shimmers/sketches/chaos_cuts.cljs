@@ -24,7 +24,8 @@
   (->> (lines/cut-polygon shape line)
        (mapcat (fn [poly]
                  (->> (poly-detect/inset-polygon poly 4)
-                      poly-detect/split-self-intersection
+                      #_poly-detect/split-self-intersection
+                      poly-detect/self-intersection-polygons
                       (filter (fn [inset] (> (Math/abs (g/area inset)) 100))))))))
 
 (defn cline [p0 r0 p1 r1 t0 t1]

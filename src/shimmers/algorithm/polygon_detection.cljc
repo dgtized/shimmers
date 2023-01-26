@@ -366,3 +366,41 @@
                        b
                        false)))))
     [polygon]))
+
+;; FIXME: improve distinct filter & see if can apply this in one pass with below
+(defn self-intersections
+  "Returns all self-intersecting coordinate of an edge that intersects another edge in a polygon.
+
+  Excludes intersections at overlapping vertices, to ensure the intersection is
+  at some point in the middle of an edge."
+  [polygon]
+  (->> polygon
+       g/edges
+       cs/all-pairs
+       (keep (fn [[[p0 q0] [p1 q1]]]
+               (let [{type :type isec :p} (isec/intersect-line2-line2? p0 q0 p1 q1)]
+                 (when (and (= :intersect type)
+                            (not (tm/delta= isec p0))
+                            (not (tm/delta= isec q0)))
+                   isec))))
+       distinct))
+
+(defn self-intersection-polygons
+  [polygon]
+  (if-let [intersections (self-intersections polygon)]
+    (->> polygon
+         g/edges
+         (reduce
+          (fn [g [a b]]
+            (let [line-isecs (keep (fn [p] (when (point-on-line? a b p) p))
+                                   intersections)]
+              (apply lg/add-edges g
+                     (if (empty? line-isecs)
+                       [[a b (g/dist a b)]]
+                       (let [isecs (sort-by #(g/dist a %) line-isecs)]
+                         (for [[p q] (partition 2 1 (concat [a] isecs [b]))]
+                           [p q (g/dist p q)]))))))
+          (lg/weighted-graph))
+         simple-polygons
+         (map gp/polygon2))
+    [polygon]))
