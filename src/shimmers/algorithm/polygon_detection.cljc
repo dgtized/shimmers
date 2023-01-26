@@ -212,7 +212,7 @@
     ;; instead of only once, so this safe-guards against.
     (loop [pending all-edges polygons [] limit (/ (count all-edges) 2)]
       (if (or (empty? pending) (zero? limit))
-        (do (when (zero? limit)
+        (do (when (and (zero? limit) (> (count polygons) 2))
               (println "halted after " (count polygons) " polygons"))
             polygons)
         (let [edge (first pending)
