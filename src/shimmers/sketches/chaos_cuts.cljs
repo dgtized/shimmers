@@ -64,6 +64,9 @@
     (if (collide/bounded? bounds polygon)
       (q/stroke 0)
       (q/stroke 0 0.5 0.5))
+    (if (poly-detect/clockwise-polygon? (g/vertices polygon))
+      (q/fill 1.0)
+      (q/fill 0.0))
     (cq/draw-polygon polygon)))
 
 (sketch/defquil chaos-cuts
