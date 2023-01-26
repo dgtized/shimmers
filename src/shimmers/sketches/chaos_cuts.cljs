@@ -25,7 +25,7 @@
        (mapcat (fn [poly]
                  (->> (poly-detect/inset-polygon poly 4)
                       poly-detect/split-self-intersection
-                      (filter (fn [inset] (> (g/area inset) 100))))))))
+                      (filter (fn [inset] (> (Math/abs (g/area inset)) 100))))))))
 
 (defn cline [p0 r0 p1 r1 t0 t1]
   (let [a (gc/circle (apply cq/rel-vec p0) (cq/rel-h r0))
