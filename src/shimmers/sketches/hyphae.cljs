@@ -34,8 +34,13 @@
     branches))
 
 (defn add-branch-tree [tree {:keys [position] :as branch}]
-  (saq/add-point tree position
-                 (assoc (gc/circle position 1) :branch branch)))
+  (let [neighbor (saq/nearest-neighbor-node tree position)]
+    (when (or (not neighbor)
+              (let [nearby (g/get-point-data neighbor)]
+                (or (not nearby)
+                    (> (g/dist (:p nearby) position) 1.0))))
+      (saq/add-point tree position
+                     (assoc (gc/circle position 0.5) :branch branch)))))
 
 (comment
   (add-branch (add-root [] (gv/vec2 0 0)) 0 (gv/vec2 1 0)))
@@ -60,7 +65,9 @@
                                                   length))
                   b' (add-branch b idx growth-pos)
                   new-branch (peek b')]
-              [b' (add-branch-tree bt new-branch)]))
+              (if-let [bt' (add-branch-tree bt new-branch)]
+                [b' bt']
+                [b bt])))
           [branches branches-tree]
           influenced))
 
