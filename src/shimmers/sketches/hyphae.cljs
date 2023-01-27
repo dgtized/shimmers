@@ -92,17 +92,23 @@
                  :branches branches'
                  :branches-tree tree'))))))
 
-(defn attractors-builder [center]
+(defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
                              (cq/rel-h (Math/sqrt (dr/random 0.125 0.2)))
                              (dr/random eq/TAU))
+                   (cq/rel-h (dr/random 0.01 0.05)))))
+
+(defn attractor-line [a b]
+  (fn [] (gc/circle (tm/+ (tm/mix a b (dr/random)) (dr/randvec2 (dr/random (cq/rel-h 0.05))))
                    (cq/rel-h (dr/random 0.01 0.05)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
         center (cq/rel-vec 0.5 0.5)
-        attractors (repeatedly 128 (attractors-builder center))
+        attractors (concat (repeatedly 150 (attractors-circle center))
+                           (repeatedly 50 (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)))
+                           (repeatedly 50 (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95))))
         branches (add-root [] (tm/+ (:p (dr/rand-nth attractors)) (dr/randvec2 8)))]
     {:bounds bounds
      :attractors attractors
