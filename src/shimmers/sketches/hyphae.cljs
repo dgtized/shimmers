@@ -101,7 +101,7 @@
           (some (fn [depth]
                   (when-let [s (seq (influenced-branches state (Math/pow 2 depth)))]
                     [depth s]))
-                [1 2 4])]
+                [0 1 2 4])]
       (if (empty? influenced)
         (assoc state :steady-state true)
         (let [[branches' tree' buds] (grow-branches state influenced)]
@@ -115,15 +115,18 @@
                  :branches (update-weights branches' buds)
                  :branches-tree tree'))))))
 
+(defn attractor-size []
+  (cq/rel-h (dr/random 0.05 0.2)))
+
 (defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
                              (cq/rel-h (Math/sqrt (dr/random 0.08 0.2)))
                              (dr/random eq/TAU))
-                   (cq/rel-h (dr/random 0.03 0.08)))))
+                   (attractor-size))))
 
 (defn attractor-line [a b]
   (fn [] (gc/circle (tm/+ (tm/mix a b (dr/random)) (dr/randvec2 (dr/random (cq/rel-h 0.05))))
-                   (cq/rel-h (dr/random 0.03 0.08)))))
+                   (attractor-size))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
