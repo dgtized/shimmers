@@ -61,7 +61,7 @@
 
 (defn grow-branches [{:keys [branches branches-tree]} influenced]
   (reduce (fn [[b bt] [{:keys [idx position]} attractors]]
-            (let [length (dr/random 1.5 3.0)
+            (let [length (dr/random 1.0 3.0)
                   growth-pos (tm/+ position (tm/* (average-attraction position attractors)
                                                   length))
                   b' (add-branch b idx growth-pos)
@@ -102,13 +102,13 @@
 
 (defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
-                             (cq/rel-h (Math/sqrt (dr/random 0.125 0.2)))
+                             (cq/rel-h (Math/sqrt (dr/random 0.08 0.2)))
                              (dr/random eq/TAU))
-                   (cq/rel-h (dr/random 0.02 0.08)))))
+                   (cq/rel-h (dr/random 0.03 0.08)))))
 
 (defn attractor-line [a b]
   (fn [] (gc/circle (tm/+ (tm/mix a b (dr/random)) (dr/randvec2 (dr/random (cq/rel-h 0.05))))
-                   (cq/rel-h (dr/random 0.02 0.08)))))
+                   (cq/rel-h (dr/random 0.03 0.08)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
