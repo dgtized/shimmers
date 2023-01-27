@@ -20,7 +20,7 @@
    :parent-idx parent
    :position pos
    :children []
-   :weight 0.5})
+   :downstream 0})
 
 (defn add-root [branches pos]
   (conj branches (make-branch nil (count branches) pos)))
@@ -84,8 +84,7 @@
 (defn propagate-weight [branches idx]
   (if-let [{:keys [parent-idx]} (nth branches idx)]
     (if parent-idx
-      (recur (update-in branches [parent-idx :weight]
-                        (fn [w] (min 5.0 (+ w 0.005))))
+      (recur (update-in branches [parent-idx :downstream] inc)
              parent-idx)
       branches)
     branches))
@@ -148,13 +147,15 @@
   (q/background 1.0)
   (q/no-fill)
   (q/stroke 0.4 0.5 0.5 0.5)
+  (q/stroke-weight 0.5)
   (doseq [a attractors]
     (cq/circle a))
 
   (q/stroke 0.0)
-  (doseq [{:keys [parent-idx position weight]} branches]
+  (doseq [{:keys [parent-idx position downstream]} branches]
     (when-let [{parent :position} (and parent-idx (nth branches parent-idx nil))]
-      (q/stroke-weight weight)
+      (let [weight (min (max 0.2 (* 5.0 (/ downstream 1000))) 6.0)]
+        (q/stroke-weight weight))
       (q/line parent position))))
 
 (sketch/defquil hyphae
