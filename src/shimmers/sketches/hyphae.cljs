@@ -12,7 +12,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn make-branch [parent index pos]
   {:idx index
@@ -32,6 +33,10 @@
           (conj (make-branch parent-idx idx pos))))
     branches))
 
+(defn add-branch-tree [tree {:keys [position] :as branch}]
+  (saq/add-point tree position
+                 (assoc (gc/circle position 1) :branch branch)))
+
 (comment
   (add-branch (add-root [] (gv/vec2 0 0)) 0 (gv/vec2 1 0)))
 
@@ -39,16 +44,45 @@
   (apply merge-with set/union
          (for [{:keys [p r] :as attractor} attractors
                :let [neighbor (saq/nearest-neighbor-node branches-tree p)]
-               :when (and neighbor (< (:distance neighbor) r))]
-           {(g/get-point-data (:node neighbor)) #{attractor}})))
+               :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* 3 r)))]
+           {(:branch (g/get-point-data neighbor)) #{attractor}})))
 
-#_(defn grow [{:keys [attractors branches-tree]} :as state]
-    (if (empty? attractors)
-      (assoc state :steady-state true)
-      (let [influenced (influenced-branches branches-tree attractors)]
-        (if (empty? influenced)
-          (assoc state :steady-state true)
-          state))))
+(defn average-attraction [position attractors]
+  (-> (reduce (fn [acc {:keys [p]}]
+                (tm/+ acc (tm/normalize (tm/- p position))))
+              (gv/vec2) attractors)
+      tm/normalize))
+
+(defn grow-branches [{:keys [branches branches-tree]} influenced]
+  (reduce (fn [[b bt] [{:keys [idx position]} attractors]]
+            (let [length (dr/random 1.5 3.0)
+                  growth-pos (tm/+ position (tm/* (average-attraction position attractors)
+                                                  length))
+                  b' (add-branch b idx growth-pos)
+                  new-branch (peek b')]
+              [b' (add-branch-tree bt new-branch)]))
+          [branches branches-tree]
+          influenced))
+
+(defn pruned [tree influenced attractors]
+  (let [considered (apply set/union (vals influenced))
+        pruning (filter (fn [{:keys [p r]}]
+                          (when-let [neighbor (saq/nearest-neighbor-node tree p)]
+                            (< (g/dist (:p (g/get-point-data neighbor)) p) (* 0.33 r))))
+                        considered)]
+    (remove (set pruning) attractors)))
+
+(defn grow [{:keys [attractors branches-tree] :as state}]
+  (if (empty? attractors)
+    (assoc state :steady-state true)
+    (let [influenced (influenced-branches branches-tree attractors)]
+      (if (empty? influenced)
+        (assoc state :steady-state true)
+        (let [[branches' tree'] (grow-branches state influenced)]
+          (assoc state
+                 :attractors (pruned tree' influenced attractors)
+                 :branches branches'
+                 :branches-tree tree'))))))
 
 (defn attractors-builder [center]
   (fn [] (gc/circle (v/+polar center
@@ -61,23 +95,26 @@
   (let [bounds (cq/screen-rect)
         center (cq/rel-vec 0.5 0.5)
         attractors (repeatedly 128 (attractors-builder center))
-        branches (add-branch (add-root [] center) 0 (cq/rel-vec 0.4 0.5))]
+        branches (add-root [] (tm/+ (:p (dr/rand-nth attractors)) (dr/randvec2 8)))]
     {:bounds bounds
      :attractors attractors
      :branches branches
-     :branches-tree (reduce (fn [t {:keys [idx position]}]
-                              (saq/add-point t position idx))
-                            (saq/circletree bounds) branches)}))
+     :branches-tree (reduce add-branch-tree (saq/circletree bounds) branches)}))
 
 (defn update-state [state]
-  state)
+  (when-not (:steady-state state)
+    (println {:branches (count (:branches state))
+              :attractors (count (:attractors state))}))
+  (grow state))
 
 (defn draw [{:keys [attractors branches]}]
   (q/background 1.0)
   (q/no-fill)
+  (q/stroke 0.4 0.5 0.5 0.5)
   (doseq [a attractors]
     (cq/circle a))
 
+  (q/stroke 0.0)
   (doseq [{:keys [parent-idx position weight]} branches]
     (when-let [{parent :position} (and parent-idx (nth branches parent-idx nil))]
       (q/stroke-weight weight)
