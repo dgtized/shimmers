@@ -33,24 +33,25 @@
           (conj (make-branch parent-idx idx pos))))
     branches))
 
-(defn add-branch-tree [tree {:keys [position] :as branch}]
+(defn add-branch-tree [tree {:keys [position idx]}]
   (let [neighbor (saq/nearest-neighbor-node tree position)]
     (when (or (not neighbor)
               (let [{:keys [p r] :as nearby} (g/get-point-data neighbor)]
                 (or (not nearby)
                     (> (g/dist p position) r))))
       (saq/add-point tree position
-                     (assoc (gc/circle position 0.5) :branch branch)))))
+                     (assoc (gc/circle position 0.5) :branch-idx idx)))))
 
 (comment
   (add-branch (add-root [] (gv/vec2 0 0)) 0 (gv/vec2 1 0)))
 
-(defn influenced-branches [branches-tree attractors]
+(defn influenced-branches [branches branches-tree attractors]
   (apply merge-with set/union
          (for [{:keys [p r] :as attractor} attractors
                :let [neighbor (saq/nearest-neighbor-node branches-tree p)]
                :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* 4 r)))]
-           {(:branch (g/get-point-data neighbor)) #{attractor}})))
+           (let [branch (nth branches (:branch-idx (g/get-point-data neighbor)))]
+             {branch #{attractor}}))))
 
 (defn average-attraction [position attractors]
   (-> (reduce (fn [acc {:keys [p]}]
@@ -79,10 +80,10 @@
                         considered)]
     (remove (set pruning) attractors)))
 
-(defn grow [{:keys [attractors branches-tree] :as state}]
+(defn grow [{:keys [attractors branches branches-tree] :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
-    (let [influenced (influenced-branches branches-tree attractors)]
+    (let [influenced (influenced-branches branches branches-tree attractors)]
       (if (empty? influenced)
         (assoc state :steady-state true)
         (let [[branches' tree'] (grow-branches state influenced)]
