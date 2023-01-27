@@ -36,9 +36,9 @@
 (defn add-branch-tree [tree {:keys [position] :as branch}]
   (let [neighbor (saq/nearest-neighbor-node tree position)]
     (when (or (not neighbor)
-              (let [nearby (g/get-point-data neighbor)]
+              (let [{:keys [p r] :as nearby} (g/get-point-data neighbor)]
                 (or (not nearby)
-                    (> (g/dist (:p nearby) position) 1.0))))
+                    (> (g/dist p position) r))))
       (saq/add-point tree position
                      (assoc (gc/circle position 0.5) :branch branch)))))
 
