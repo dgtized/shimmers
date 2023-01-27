@@ -20,7 +20,7 @@
    :parent-idx parent
    :position pos
    :children []
-   :weight 1})
+   :weight 0.5})
 
 (defn add-root [branches pos]
   (conj branches (make-branch nil (count branches) pos)))
@@ -60,25 +60,39 @@
       tm/normalize))
 
 (defn grow-branches [{:keys [branches branches-tree]} influenced]
-  (reduce (fn [[b bt] [{:keys [idx position]} attractors]]
+  (reduce (fn [[b bt buds] [{:keys [idx position]} attractors]]
             (let [length (dr/random 1.0 3.0)
                   growth-pos (tm/+ position (tm/* (average-attraction position attractors)
                                                   length))
                   b' (add-branch b idx growth-pos)
                   new-branch (peek b')]
               (if-let [bt' (add-branch-tree bt new-branch)]
-                [b' bt']
-                [b bt])))
-          [branches branches-tree]
+                [b' bt' (conj buds new-branch)]
+                [b bt buds])))
+          [branches branches-tree []]
           influenced))
 
 (defn pruned [tree influenced attractors]
   (let [considered (apply set/union (vals influenced))
         pruning (filter (fn [{:keys [p r]}]
                           (when-let [neighbor (saq/nearest-neighbor-node tree p)]
-                            (< (g/dist (:p (g/get-point-data neighbor)) p) (* 0.33 r))))
+                            (< (g/dist (:p (g/get-point-data neighbor)) p)
+                               (max (* 0.02 r) 1.0))))
                         considered)]
     (remove (set pruning) attractors)))
+
+(defn propagate-weight [branches idx]
+  (if-let [{:keys [parent-idx]} (nth branches idx)]
+    (if parent-idx
+      (recur (update-in branches [parent-idx :weight]
+                        (fn [w] (min 5.0 (+ w 0.005))))
+             parent-idx)
+      branches)
+    branches))
+
+(defn update-weights [branches buds]
+  (reduce (fn [branches bud]
+            (propagate-weight branches (:idx bud))) branches buds))
 
 (defn grow [{:keys [attractors branches] :as state}]
   (if (empty? attractors)
@@ -90,14 +104,15 @@
                 [1 2 4])]
       (if (empty? influenced)
         (assoc state :steady-state true)
-        (let [[branches' tree'] (grow-branches state influenced)]
+        (let [[branches' tree' buds] (grow-branches state influenced)]
           (println {:depth depth
                     :influenced (count influenced)
+                    :buds (count buds)
                     :branches (count branches)
                     :attractors (count attractors)})
           (assoc state
                  :attractors (pruned tree' influenced attractors)
-                 :branches branches'
+                 :branches (update-weights branches' buds)
                  :branches-tree tree'))))))
 
 (defn attractors-circle [center]
