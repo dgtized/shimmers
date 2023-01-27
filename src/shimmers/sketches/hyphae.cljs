@@ -49,13 +49,13 @@
   (apply merge-with set/union
          (for [{:keys [p r] :as attractor} attractors
                :let [neighbor (saq/nearest-neighbor-node branches-tree p)]
-               :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* 3 r)))]
+               :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* 4 r)))]
            {(:branch (g/get-point-data neighbor)) #{attractor}})))
 
 (defn average-attraction [position attractors]
   (-> (reduce (fn [acc {:keys [p]}]
                 (tm/+ acc (tm/normalize (tm/- p position))))
-              (gv/vec2) attractors)
+              (dr/randvec2 0.66) attractors)
       tm/normalize))
 
 (defn grow-branches [{:keys [branches branches-tree]} influenced]
