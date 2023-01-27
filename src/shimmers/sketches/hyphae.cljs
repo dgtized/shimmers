@@ -45,11 +45,11 @@
 (comment
   (add-branch (add-root [] (gv/vec2 0 0)) 0 (gv/vec2 1 0)))
 
-(defn influenced-branches [branches branches-tree attractors]
+(defn influenced-branches [branches branches-tree attractors multiple]
   (apply merge-with set/union
          (for [{:keys [p r] :as attractor} attractors
                :let [neighbor (saq/nearest-neighbor-node branches-tree p)]
-               :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* 4 r)))]
+               :when (and neighbor (< (g/dist (:p (g/get-point-data neighbor)) p) (* multiple r)))]
            (let [branch (nth branches (:branch-idx (g/get-point-data neighbor)))]
              {branch #{attractor}}))))
 
@@ -83,10 +83,18 @@
 (defn grow [{:keys [attractors branches branches-tree] :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
-    (let [influenced (influenced-branches branches branches-tree attractors)]
+    (let [[depth influenced]
+          (some (fn [depth]
+                  (when-let [s (seq (influenced-branches branches branches-tree attractors (Math/pow 2 depth)))]
+                    [depth s]))
+                [1 2 4])]
       (if (empty? influenced)
         (assoc state :steady-state true)
         (let [[branches' tree'] (grow-branches state influenced)]
+          (println {:depth depth
+                    :influenced (count influenced)
+                    :branches (count branches)
+                    :attractors (count attractors)})
           (assoc state
                  :attractors (pruned tree' influenced attractors)
                  :branches branches'
@@ -96,11 +104,11 @@
   (fn [] (gc/circle (v/+polar center
                              (cq/rel-h (Math/sqrt (dr/random 0.125 0.2)))
                              (dr/random eq/TAU))
-                   (cq/rel-h (dr/random 0.01 0.05)))))
+                   (cq/rel-h (dr/random 0.02 0.08)))))
 
 (defn attractor-line [a b]
   (fn [] (gc/circle (tm/+ (tm/mix a b (dr/random)) (dr/randvec2 (dr/random (cq/rel-h 0.05))))
-                   (cq/rel-h (dr/random 0.01 0.05)))))
+                   (cq/rel-h (dr/random 0.02 0.08)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -116,9 +124,6 @@
      :branches-tree (reduce add-branch-tree (saq/circletree bounds) branches)}))
 
 (defn update-state [state]
-  (when-not (:steady-state state)
-    (println {:branches (count (:branches state))
-              :attractors (count (:attractors state))}))
   (grow state))
 
 (defn draw [{:keys [attractors branches]}]
