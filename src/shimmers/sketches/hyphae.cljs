@@ -77,7 +77,7 @@
         pruning (filter (fn [{:keys [p r]}]
                           (when-let [neighbor (saq/nearest-neighbor-node tree p)]
                             (< (g/dist (:p (g/get-point-data neighbor)) p)
-                               (max (* 0.02 r) 1.0))))
+                               (max (* 0.01 r) 1.0))))
                         considered)]
     (remove (set pruning) attractors)))
 
@@ -100,7 +100,7 @@
           (some (fn [depth]
                   (when-let [s (seq (influenced-branches state (Math/pow 2 depth)))]
                     [depth s]))
-                [0 1 2 4])]
+                [0 2 4])]
       (if (empty? influenced)
         (assoc state :steady-state true)
         (let [[branches' tree' buds] (grow-branches state influenced)]
@@ -131,10 +131,11 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
         center (cq/rel-vec 0.5 0.5)
-        attractors (concat (repeatedly 150 (attractors-circle center))
-                           (repeatedly 50 (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)))
-                           (repeatedly 50 (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95))))
-        branches (add-root [] (tm/+ (:p (dr/rand-nth attractors)) (dr/randvec2 8)))]
+        attractors
+        (concat (repeatedly 150 (attractors-circle center))
+                (repeatedly 50 (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)))
+                (repeatedly 50 (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95))))
+        branches (add-root [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
     {:bounds bounds
      :attractors attractors
      :branches branches
@@ -154,7 +155,7 @@
   (q/stroke 0.0)
   (doseq [{:keys [parent-idx position downstream]} branches]
     (when-let [{parent :position} (and parent-idx (nth branches parent-idx nil))]
-      (let [weight (min (max 0.2 (* 5.0 (/ downstream 1000))) 6.0)]
+      (let [weight (min (max 0.2 (* 5.0 (/ downstream 1000))) 5.0)]
         (q/stroke-weight weight))
       (q/line parent position))))
 
