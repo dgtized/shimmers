@@ -45,7 +45,7 @@
 (comment
   (add-branch (add-root [] (gv/vec2 0 0)) 0 (gv/vec2 1 0)))
 
-(defn influenced-branches [branches branches-tree attractors multiple]
+(defn influenced-branches [{:keys [branches branches-tree attractors]} multiple]
   (apply merge-with set/union
          (for [{:keys [p r] :as attractor} attractors
                :let [neighbor (saq/nearest-neighbor-node branches-tree p)]
@@ -80,12 +80,12 @@
                         considered)]
     (remove (set pruning) attractors)))
 
-(defn grow [{:keys [attractors branches branches-tree] :as state}]
+(defn grow [{:keys [attractors branches] :as state}]
   (if (empty? attractors)
     (assoc state :steady-state true)
     (let [[depth influenced]
           (some (fn [depth]
-                  (when-let [s (seq (influenced-branches branches branches-tree attractors (Math/pow 2 depth)))]
+                  (when-let [s (seq (influenced-branches state (Math/pow 2 depth)))]
                     [depth s]))
                 [1 2 4])]
       (if (empty? influenced)
