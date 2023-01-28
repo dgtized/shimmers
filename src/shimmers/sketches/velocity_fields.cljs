@@ -102,7 +102,7 @@
               :stroke-width 0.5}
      (let [seed (tm/abs (dr/randvec2 100))
            scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
-           offset (dr/weighted {0 2 10 2 15 1 20 1})
+           offset (dr/weighted {0 2 10 2 15 1})
            n (dr/rand-nth [600 900 1200])]
        (mapcat (fn [bounds i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                                      scale
