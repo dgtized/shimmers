@@ -86,6 +86,13 @@
         (update :hose hose-pressure-midpoint (partial v/clamp-bounds bounds) 0.02)
         (update :hose chain/chain-update first-pos last-pos))))
 
+(defn alt-draw [{:keys [hose]}]
+  (q/stroke 0.0 0.025)
+  (q/no-fill)
+  (doseq [[i [p q]] (map-indexed vector (g/edges hose))]
+    (q/stroke (mod (* i tm/PHI 0.005) 1.0) 0.5 0.3 0.025)
+    (q/line p q)))
+
 (defn draw [{:keys [hose]}]
   (q/background 1.0 0.2)
   (q/no-fill)
