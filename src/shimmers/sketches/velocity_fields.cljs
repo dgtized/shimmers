@@ -34,9 +34,10 @@
                (take (lifespan))
                (map first)
                (take-while (fn [p] (g/contains-point? bounds p))))]
-      (csvg/path
-       (into [[:M start]]
-             (map (fn [p] [:L p]) path))))))
+      (when (seq path)
+        (csvg/path
+         (into [[:M start]]
+               (map (fn [p] [:L p]) path)))))))
 
 (defn boundaries []
   (dr/rand-nth [(rect/rect 0 0 width height)
@@ -62,7 +63,10 @@
                                (constantly 80) 1
                                (constantly 60) 1
                                (fn [] (dr/random-int 60 100)) 1})]
-    (repeatedly n (make-path bounds seed scale lifespan))))
+    (->> (make-path bounds seed scale lifespan)
+         repeatedly
+         (keep identity)
+         (take (max 100 (int (* n (/ (g/area bounds) (* width height)))))))))
 
 ;; interesting pattern with big circle left, small circle right, flow field heading right
 ;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
