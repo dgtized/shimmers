@@ -39,6 +39,15 @@
          (into [[:M start]]
                (map (fn [p] [:L p]) path)))))))
 
+(defn triplet []
+  (let [center (rv 0.5 0.5)]
+    (map (fn [angle i]
+           (let [p (v/+polar center (* 0.33 height) angle)]
+             (gc/circle p (min (* 0.25 height (/ 1 (inc i)))
+                               (g/dist p (g/closest-point (rect/rect 0 0 width height) p))))))
+         (take 3 (iterate (fn [angle] (* 1.1 (+ angle tm/PHI))) (dr/random eq/TAU)))
+         (range))))
+
 (defn boundaries []
   (dr/rand-nth [(rect/rect 0 0 width height)
                 (g/scale-size (rect/rect 0 0 width height) 0.8)
@@ -54,7 +63,8 @@
                 (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
 
 (defn shape-plan []
-  (let [gen (dr/weighted {(fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1})]
+  (let [gen (dr/weighted {(fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1
+                          (fn [] (triplet)) 1})]
     (gen)))
 
 ;; exclude full rectangle if first shape?
@@ -81,12 +91,12 @@
            scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
            offset (dr/weighted {0 2 10 2 15 1 20 1})
            n (dr/rand-nth [600 900 1200])]
-       (mapcat (fn [i bounds] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
+       (mapcat (fn [bounds i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                                      scale
                                      bounds
                                      (+ n (* i 600))))
-               (range)
-               (shape-plan))))))
+               (shape-plan)
+               (range))))))
 
 (defn ui-controls []
   [:div
