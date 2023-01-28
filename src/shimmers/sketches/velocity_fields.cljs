@@ -56,7 +56,8 @@
                                   (constantly 80) 1
                                   (constantly 60) 1
                                   (fn [] (dr/random-int 60 100)) 1})]
-       (repeatedly 600 (make-path bounds seed scale lifespan))))))
+       (repeatedly (dr/rand-nth [600 900 1200])
+                   (make-path bounds seed scale lifespan))))))
 
 (sketch/definition velocity-fields
   {:created-at "2023-01-27"
