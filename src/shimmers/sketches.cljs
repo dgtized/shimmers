@@ -193,6 +193,7 @@
    shimmers.sketches.unit-circle
    shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
+   shimmers.sketches.velocity-fields
    shimmers.sketches.verlet-brushes
    shimmers.sketches.vertex-curves
    shimmers.sketches.video-delay-shader
