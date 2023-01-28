@@ -136,10 +136,11 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)
         center (cq/rel-vec 0.5 0.5)
-        attractors
-        (concat (repeatedly 150 (attractors-circle center))
-                (repeatedly 50 (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)))
-                (repeatedly 50 (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95))))
+        weights {(attractors-circle center) 3
+                 (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)) 1
+                 (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95)) 1}
+        attractors (repeatedly (dr/random-int 20 200)
+                               (fn [] ((dr/weighted weights))))
         branches (add-root [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
     {:bounds bounds
      :attractors attractors
