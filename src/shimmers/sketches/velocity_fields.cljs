@@ -65,9 +65,22 @@
        (mapcat (fn [_] (shapes seed scale))
                (range (dr/weighted {1 2 2 1})))))))
 
+(defn ui-controls []
+  [:div
+   [:div.readable-width
+    [:p
+     "Flow fields generated using a simple physics engine, applying a fixed
+      acceleration at each point in the direction of the noise field and then
+      keeping velocity in check by applying a drag coefficent."]
+    [:p
+     "Some outputs apply the algorithm twice using two bounding shapes but
+     idential noise scale and seed, which varies the density and adds some
+     interesting edges."]]])
+
 (sketch/definition velocity-fields
   {:created-at "2023-01-27"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :velocity-fields)
+  (ctrl/mount (view-sketch/page-for scene :velocity-fields
+                                    ui-controls)
               "sketch-host"))
