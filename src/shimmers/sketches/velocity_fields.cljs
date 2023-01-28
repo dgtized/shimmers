@@ -37,6 +37,20 @@
        (into [[:M start]]
              (map (fn [p] [:L p]) path))))))
 
+(defn shapes [seed scale]
+  (let [bounds (dr/rand-nth [(rect/rect 0 0 width height)
+                             (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
+                             (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+                                 (gc/circle (* 0.6 height))
+                                 (triangle/inscribed-equilateral (dr/random eq/TAU)))
+                             (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))])
+        lifespan (dr/weighted {(constantly 100) 1
+                               (constantly 80) 1
+                               (constantly 60) 1
+                               (fn [] (dr/random-int 60 100)) 1})]
+    (repeatedly (dr/rand-nth [600 900 1200])
+                (make-path bounds seed scale lifespan))))
+
 (defn scene []
   (csvg/timed
    (csvg/svg {:width width
@@ -45,19 +59,9 @@
               :fill "none"
               :stroke-width 0.5}
      (let [seed (tm/abs (dr/randvec2 100))
-           bounds (dr/rand-nth [(rect/rect 0 0 width height)
-                                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
-                                (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
-                                    (gc/circle (* 0.6 height))
-                                    (triangle/inscribed-equilateral (dr/random eq/TAU)))
-                                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))])
-           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
-           lifespan (dr/weighted {(constantly 100) 1
-                                  (constantly 80) 1
-                                  (constantly 60) 1
-                                  (fn [] (dr/random-int 60 100)) 1})]
-       (repeatedly (dr/rand-nth [600 900 1200])
-                   (make-path bounds seed scale lifespan))))))
+           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])]
+       (mapcat (fn [_] (shapes seed scale))
+               (range (dr/weighted {1 2 2 1})))))))
 
 (sketch/definition velocity-fields
   {:created-at "2023-01-27"
