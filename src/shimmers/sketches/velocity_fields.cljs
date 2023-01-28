@@ -39,6 +39,9 @@
          (into [[:M start]]
                (map (fn [p] [:L p]) path)))))))
 
+(defn screen-rect []
+  (rect/rect 0 0 width height))
+
 (defn triplet []
   (let [center (rv 0.5 0.5)
         base-angle (dr/random eq/TAU)
@@ -57,8 +60,7 @@
          (range 3))))
 
 (defn boundaries []
-  (dr/rand-nth [(rect/rect 0 0 width height)
-                (g/scale-size (rect/rect 0 0 width height) 0.8)
+  (dr/rand-nth [(g/scale-size (rect/rect 0 0 width height) 0.8)
                 (g/translate
                  (geometry/rotate-around-centroid
                   (g/scale-size (rect/rect 0 0 width height) 0.66)
@@ -71,8 +73,11 @@
                 (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
 
 (defn shape-plan []
-  (let [gen (dr/weighted {(fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1
-                          (fn [] (triplet)) 1})]
+  (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
+                          (fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1
+                          (fn [] (into [(screen-rect)] (repeatedly (dr/weighted {1 1 2 1}) boundaries))) 1
+                          (fn [] (triplet)) 1
+                          (fn [] (into [(screen-rect)] (triplet))) 1})]
     (gen)))
 
 ;; exclude full rectangle if first shape?
