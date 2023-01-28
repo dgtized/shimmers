@@ -75,7 +75,7 @@
 (defn shape-plan []
   (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
                           (fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1
-                          (fn [] (into [(screen-rect)] (repeatedly (dr/weighted {1 1 2 1}) boundaries))) 1
+                          (fn [] [(screen-rect) (boundaries)]) 1
                           (fn [] (triplet)) 1
                           (fn [] (into [(screen-rect)] (triplet))) 1})]
     (gen)))
