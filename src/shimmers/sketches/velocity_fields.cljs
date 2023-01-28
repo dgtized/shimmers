@@ -52,6 +52,10 @@
                     (triangle/inscribed-equilateral (dr/random eq/TAU)))
                 (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
 
+(defn shape-plan []
+  (let [gen (dr/weighted {(fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1})]
+    (gen)))
+
 ;; exclude full rectangle if first shape?
 (defn shapes [seed scale bounds n]
   (let [lifespan (dr/weighted {(constantly 100) 1
@@ -77,8 +81,8 @@
                                      scale
                                      bounds
                                      (+ n (* i 600))))
-               (range (dr/weighted {1 1 2 1}))
-               (repeatedly boundaries))))))
+               (range)
+               (shape-plan))))))
 
 (defn ui-controls []
   [:div
