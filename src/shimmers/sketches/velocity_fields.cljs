@@ -43,9 +43,11 @@
 (defn shapes [seed scale n]
   (let [bounds (dr/rand-nth [(rect/rect 0 0 width height)
                              (g/scale-size (rect/rect 0 0 width height) 0.8)
-                             (geometry/rotate-around-centroid
-                              (g/scale-size (rect/rect 0 0 width height) 0.66)
-                              (dr/random -0.5 0.5))
+                             (g/translate
+                              (geometry/rotate-around-centroid
+                               (g/scale-size (rect/rect 0 0 width height) 0.66)
+                               (dr/random -0.5 0.5))
+                              (dr/randvec2 (* 0.1 height)))
                              (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
                              (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
                                  (gc/circle (* 0.6 height))
