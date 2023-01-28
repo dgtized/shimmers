@@ -23,7 +23,7 @@
 
 (defonce ui-state
   (ctrl/state
-   {:recursion-depth 7
+   {:recursion-depth 10
     :auto-scale true
     :base-size 40
     :spacing-size 4
