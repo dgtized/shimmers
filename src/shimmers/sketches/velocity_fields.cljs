@@ -41,12 +41,19 @@
 
 (defn triplet []
   (let [center (rv 0.5 0.5)
-        base-angle (dr/random eq/TAU)]
+        base-angle (dr/random eq/TAU)
+        triangles (dr/chance 0.5)]
     (map (fn [i]
            (let [angle (+ base-angle (* i 1.1 tm/PHI))
-                 p (v/+polar center (* 0.33 height) angle)]
-             (gc/circle p (min (* 0.25 height (/ 1 (inc i)))
-                               (g/dist p (g/closest-point (rect/rect 0 0 width height) p))))))
+                 p (v/+polar center (* 0.33 height) angle)
+                 max-radius (g/dist p (g/closest-point (screen-rect) p))
+                 circle (gc/circle p (min (* 0.33 height (/ 1 (inc i)))
+                                          max-radius))]
+             (if triangles
+               circle
+               (triangle/inscribed-equilateral
+                circle
+                (- eq/TAU angle)))))
          (range 3))))
 
 (defn boundaries []
