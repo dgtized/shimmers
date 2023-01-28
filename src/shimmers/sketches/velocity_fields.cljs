@@ -10,6 +10,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -37,8 +38,10 @@
        (into [[:M start]]
              (map (fn [p] [:L p]) path))))))
 
-(defn shapes [seed scale]
+;; exclude full rectangle if first shape?
+(defn shapes [seed scale n]
   (let [bounds (dr/rand-nth [(rect/rect 0 0 width height)
+                             (g/scale-size (rect/rect 0 0 width height) 0.8)
                              (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
                              (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
                                  (gc/circle (* 0.6 height))
@@ -48,7 +51,7 @@
                                (constantly 80) 1
                                (constantly 60) 1
                                (fn [] (dr/random-int 60 100)) 1})]
-    (repeatedly (dr/rand-nth [600 900 1200])
+    (repeatedly n
                 (make-path bounds seed scale lifespan))))
 
 ;; interesting pattern with big circle left, small circle right, flow field heading right
@@ -62,8 +65,11 @@
               :stroke-width 0.5}
      (let [seed (tm/abs (dr/randvec2 100))
            scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
-           offset (dr/weighted {0 2 10 2 15 1 20 1})]
-       (mapcat (fn [i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale))) scale))
+           offset (dr/weighted {0 2 10 2 15 1 20 1})
+           n (dr/rand-nth [600 900 1200])]
+       (mapcat (fn [i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
+                              scale
+                              (+ n (* i 600))))
                (range (dr/weighted {1 1 2 1})))))))
 
 (defn ui-controls []
