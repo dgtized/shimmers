@@ -5,13 +5,14 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -44,7 +45,12 @@
               :fill "none"
               :stroke-width 0.5}
      (let [seed (tm/abs (dr/randvec2 100))
-           bounds (rect/rect 0 0 width height)
+           bounds (dr/rand-nth [(rect/rect 0 0 width height)
+                                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
+                                (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+                                    (gc/circle (* 0.6 height))
+                                    (triangle/inscribed-equilateral (dr/random eq/TAU)))
+                                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))])
            scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
            lifespan (dr/weighted {(constantly 100) 1
                                   (constantly 80) 1
