@@ -74,10 +74,12 @@
 
 (defn shape-plan []
   (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
-                          (fn [] (repeatedly (dr/weighted {1 1 2 1}) boundaries)) 1
-                          (fn [] [(screen-rect) (boundaries)]) 1
-                          (fn [] (triplet)) 1
-                          (fn [] (into [(screen-rect)] (triplet))) 1})]
+                          (fn [] (repeatedly 1 boundaries)) 2
+                          (fn [] (repeatedly 2 boundaries)) 2
+                          (fn [] (repeatedly 3 boundaries)) 1
+                          (fn [] [(screen-rect) (boundaries)]) 2
+                          (fn [] (triplet)) 2
+                          (fn [] (into [(screen-rect)] (triplet))) 3})]
     (gen)))
 
 ;; exclude full rectangle if first shape?
