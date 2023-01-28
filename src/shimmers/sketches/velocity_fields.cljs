@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
@@ -42,6 +43,9 @@
 (defn shapes [seed scale n]
   (let [bounds (dr/rand-nth [(rect/rect 0 0 width height)
                              (g/scale-size (rect/rect 0 0 width height) 0.8)
+                             (geometry/rotate-around-centroid
+                              (g/scale-size (rect/rect 0 0 width height) 0.66)
+                              (dr/random -0.5 0.5))
                              (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
                              (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
                                  (gc/circle (* 0.6 height))

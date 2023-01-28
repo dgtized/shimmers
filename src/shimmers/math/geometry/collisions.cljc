@@ -212,3 +212,7 @@
 (defmethod bounded?
   [Circle2 Circle2] [{c :p radius :r} {:keys [p r]}]
   (<= (g/dist c p) (- radius r)))
+
+(defmethod bounded?
+  [Polygon2 Vec2] [bounds point]
+  (g/contains-point? bounds point))
