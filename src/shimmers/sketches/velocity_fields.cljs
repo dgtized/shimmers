@@ -38,26 +38,27 @@
        (into [[:M start]]
              (map (fn [p] [:L p]) path))))))
 
+(defn boundaries []
+  (dr/rand-nth [(rect/rect 0 0 width height)
+                (g/scale-size (rect/rect 0 0 width height) 0.8)
+                (g/translate
+                 (geometry/rotate-around-centroid
+                  (g/scale-size (rect/rect 0 0 width height) 0.66)
+                  (dr/random -0.5 0.5))
+                 (dr/randvec2 (* 0.1 height)))
+                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
+                (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+                    (gc/circle (* 0.6 height))
+                    (triangle/inscribed-equilateral (dr/random eq/TAU)))
+                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
+
 ;; exclude full rectangle if first shape?
-(defn shapes [seed scale n]
-  (let [bounds (dr/rand-nth [(rect/rect 0 0 width height)
-                             (g/scale-size (rect/rect 0 0 width height) 0.8)
-                             (g/translate
-                              (geometry/rotate-around-centroid
-                               (g/scale-size (rect/rect 0 0 width height) 0.66)
-                               (dr/random -0.5 0.5))
-                              (dr/randvec2 (* 0.1 height)))
-                             (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
-                             (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
-                                 (gc/circle (* 0.6 height))
-                                 (triangle/inscribed-equilateral (dr/random eq/TAU)))
-                             (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))])
-        lifespan (dr/weighted {(constantly 100) 1
+(defn shapes [seed scale bounds n]
+  (let [lifespan (dr/weighted {(constantly 100) 1
                                (constantly 80) 1
                                (constantly 60) 1
                                (fn [] (dr/random-int 60 100)) 1})]
-    (repeatedly n
-                (make-path bounds seed scale lifespan))))
+    (repeatedly n (make-path bounds seed scale lifespan))))
 
 ;; interesting pattern with big circle left, small circle right, flow field heading right
 ;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
@@ -72,10 +73,12 @@
            scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
            offset (dr/weighted {0 2 10 2 15 1 20 1})
            n (dr/rand-nth [600 900 1200])]
-       (mapcat (fn [i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
-                              scale
-                              (+ n (* i 600))))
-               (range (dr/weighted {1 1 2 1})))))))
+       (mapcat (fn [i bounds] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
+                                     scale
+                                     bounds
+                                     (+ n (* i 600))))
+               (range (dr/weighted {1 1 2 1}))
+               (repeatedly boundaries))))))
 
 (defn ui-controls []
   [:div
