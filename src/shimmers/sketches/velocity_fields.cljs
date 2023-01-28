@@ -51,6 +51,8 @@
     (repeatedly (dr/rand-nth [600 900 1200])
                 (make-path bounds seed scale lifespan))))
 
+;; interesting pattern with big circle left, small circle right, flow field heading right
+;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
 (defn scene []
   (csvg/timed
    (csvg/svg {:width width
