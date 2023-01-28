@@ -136,7 +136,41 @@
 
 ;; TODO: handle cases where bounds is not a rectangle, circle / convex
 ;; TODO: Add Triangle2 support since it's convex
-(defmulti bounded? (fn [bounds shape] [(type bounds) (type shape)]))
+;; TODO: support rect2/rect2, circle2/circle2, etc
+(defmulti bounded?
+  "A `shape` or point is completely contained within `bounds`."
+  (fn [bounds shape] [(type bounds) (type shape)]))
+
+(defmethod bounded?
+  [Triangle2 Vec2] [bounds point]
+  (g/contains-point? bounds point))
+
+(defmethod bounded?
+  [Triangle2 Line2] [bounds {[p q] :points}]
+  (and (g/contains-point? bounds p)
+       (g/contains-point? bounds q)))
+
+(defmethod bounded?
+  [Triangle2 Triangle2] [bounds triangle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices triangle)))
+
+(defmethod bounded?
+  [Triangle2 Rect2] [bounds rectangle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices rectangle)))
+
+(defmethod bounded?
+  [Triangle2 Polygon2] [bounds polygon]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices polygon)))
+
+;; FIXME: this works for a subset of circles in triangles but will exclude some
+;; bounded circles
+(defmethod bounded?
+  [Triangle2 Circle2] [bounds circle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices (g/bounds circle))))
 
 (defmethod bounded?
   [Rect2 Vec2] [bounds point]
