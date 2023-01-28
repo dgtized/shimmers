@@ -5,7 +5,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
-   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -34,7 +33,7 @@
                     [(tm/+ p v) v'])))
                (take (lifespan))
                (map first)
-               (take-while (fn [p] (collide/bounded? bounds p))))]
+               (take-while (fn [p] (g/contains-point? bounds p))))]
       (csvg/path
        (into [[:M start]]
              (map (fn [p] [:L p]) path))))))
