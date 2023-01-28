@@ -40,13 +40,14 @@
                (map (fn [p] [:L p]) path)))))))
 
 (defn triplet []
-  (let [center (rv 0.5 0.5)]
-    (map (fn [angle i]
-           (let [p (v/+polar center (* 0.33 height) angle)]
+  (let [center (rv 0.5 0.5)
+        base-angle (dr/random eq/TAU)]
+    (map (fn [i]
+           (let [angle (+ base-angle (* i 1.1 tm/PHI))
+                 p (v/+polar center (* 0.33 height) angle)]
              (gc/circle p (min (* 0.25 height (/ 1 (inc i)))
                                (g/dist p (g/closest-point (rect/rect 0 0 width height) p))))))
-         (take 3 (iterate (fn [angle] (* 1.1 (+ angle tm/PHI))) (dr/random eq/TAU)))
-         (range))))
+         (range 3))))
 
 (defn boundaries []
   (dr/rand-nth [(rect/rect 0 0 width height)
