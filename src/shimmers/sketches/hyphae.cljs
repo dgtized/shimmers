@@ -53,17 +53,22 @@
            (let [branch (nth branches (:branch-idx (g/get-point-data neighbor)))]
              {branch #{attractor}}))))
 
-(defn average-attraction [position attractors]
-  (-> (reduce (fn [acc {:keys [p]}]
-                (tm/+ acc (tm/normalize (tm/- p position))))
-              (dr/randvec2 0.66) attractors)
+(defn average-attraction [parent position attractors]
+  (-> (reduce (fn [acc {:keys [p r]}]
+                (let [dir (tm/- p position)]
+                  (tm/+ acc (tm/normalize dir (/ r (tm/mag-squared dir))))))
+              (tm/+ (dr/randvec2) (tm/normalize (tm/- position parent)))
+              attractors)
       tm/normalize))
 
 (defn grow-branches [{:keys [branches branches-tree]} influenced]
-  (reduce (fn [[b bt buds] [{:keys [idx position]} attractors]]
-            (let [length (dr/random 1.0 3.0)
-                  growth-pos (tm/+ position (tm/* (average-attraction position attractors)
-                                                  length))
+  (reduce (fn [[b bt buds]
+              [{:keys [idx parent-idx position]} attractors]]
+            (let [length (dr/random 1.0 5.0)
+                  parent (or (and parent-idx (:position (nth branches parent-idx)))
+                             position)
+                  dir (average-attraction parent position attractors)
+                  growth-pos (tm/+ position (tm/* dir length))
                   b' (add-branch b idx growth-pos)
                   new-branch (peek b')]
               (if-let [bt' (add-branch-tree bt new-branch)]
