@@ -33,15 +33,24 @@
     :color-tiles true
     :single-layer-color false}))
 
-;; FIXME: sort connections so that they are ordered clockwise, but starting from
-;; the parent direction instead of order from original shape.
-(defn connections [shape dir]
-  (for [[a b] (g/edges shape)
-        :let [mid (tm/mix a b 0.5)
-              am (tm/- (g/centroid shape) mid)]
-        :when (or (not dir)
-                  (> (sm/radial-distance (g/heading am) (g/heading dir)) 0.1))]
-    mid))
+(defn connections
+  "Outbound connection points on the midpoint of each face of a shape.
+
+  If `in-dir` is specified, the face that `in-dir` passes through is removed and
+  connections are arrayed in edge order after the removed face."
+  [shape in-dir]
+  (let [edges (g/edges shape)]
+    (for [[a b]
+          (if in-dir
+            (let [inbound-angle (g/heading in-dir)
+                  lead (take-while (fn [[a b]]
+                                     (let [am (tm/- (g/centroid shape) (tm/mix a b 0.5))]
+                                       (> (sm/radial-distance (g/heading am) inbound-angle) 0.1)))
+                                   edges)]
+              (concat (drop (inc (count lead)) edges)
+                      (take (count lead) edges)))
+            edges)]
+      (tm/mix a b 0.5))))
 
 (defn connection-pt [shape dir]
   (some (fn [[a b]]
@@ -53,6 +62,18 @@
 
 (defn m-square [size]
   (g/center (rect/rect size)))
+
+(comment
+  (map (fn [dir]
+         (let [conns (connections (m-square 10) (tm/- dir))]
+           {:dir [dir (tm/- dir)]
+            :angle [(g/heading dir) (g/heading (tm/- dir))]
+            :conns conns
+            :angles (map g/heading conns)}))
+       [(gv/vec2 1 0)
+        (gv/vec2 0 1)
+        (gv/vec2 -1 0)
+        (gv/vec2 0 -1)]))
 
 (defn m-rectangle [angle size]
   (g/rotate (g/center (rect/rect 0 0 size (* tm/PHI size)))
