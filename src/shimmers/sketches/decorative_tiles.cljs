@@ -39,7 +39,7 @@
               am (tm/- (tm/- mid (g/centroid shape)))]
         :when (or (not dir)
                   (> (sm/radial-distance (g/heading am) (g/heading dir)) 0.1))]
-    [shape mid]))
+    mid))
 
 (defn connection-pt [shape dir]
   (some (fn [[a b]]
@@ -108,27 +108,27 @@
     (let [shapes' (into shapes (map shape-wrapper layer))]
       (if (empty? plan)
         shapes'
-        (let [connects
-              (->> layer
-                   (mapcat
-                    (fn [s]
-                      (let [dir (when-let [parent (:parent s)]
-                                  (tm/- (g/centroid s) (g/centroid parent)))]
-                        (connections s dir)))))
-              [m-shape mult palette] (first plan)
+        (let [[m-shape mult palette] (first plan)
               scale (if (:variable-size @ui-state)
                       mult
                       1)
               layer'
-              (for [[shape connect] connects]
-                (let [dir (tm/- connect (g/centroid shape))
-                      angle (g/heading dir)
-                      addition (g/rotate (m-shape (* base-size scale)) angle)
-                      connect-pt (connection-pt addition dir)]
-                  (-> addition
-                      (g/translate (tm/+ connect connect-pt
-                                         (tm/normalize connect-pt (or spacing-size 4))))
-                      (assoc :parent shape))))
+              (->> layer
+                   (mapcat
+                    (fn [shape]
+                      (let [parent-dir (when-let [parent (:parent shape)]
+                                         (tm/- (g/centroid shape) (g/centroid parent)))]
+                        (for [connect (connections shape parent-dir)]
+                          (let [dir (tm/- connect (g/centroid shape))
+                                angle (g/heading dir)
+                                addition (g/rotate (m-shape (* base-size scale)) angle)
+                                connect-pt (connection-pt addition dir)]
+                            (-> addition
+                                (g/translate (tm/+ connect connect-pt
+                                                   (tm/normalize connect-pt (or spacing-size 4))))
+                                (assoc :parent shape))))))))
+
+
               layer-remaining
               (remove (fn [shape] (when limit-overlap
                                    (excess-overlap max-overlap shape shapes')))
