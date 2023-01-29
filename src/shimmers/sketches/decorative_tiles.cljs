@@ -33,11 +33,10 @@
     :color-tiles true
     :single-layer-color false}))
 
-;; something is wrong with the facing signs
 (defn connections [shape dir]
   (for [[a b] (g/edges shape)
         :let [mid (tm/mix a b 0.5)
-              am (tm/- (tm/- mid (g/centroid shape)))]
+              am (tm/- (g/centroid shape) mid)]
         :when (or (not dir)
                   (> (sm/radial-distance (g/heading am) (g/heading dir)) 0.1))]
     mid))
@@ -45,7 +44,7 @@
 (defn connection-pt [shape dir]
   (some (fn [[a b]]
           (let [mid (tm/mix a b 0.5)
-                am (tm/- (tm/- mid (g/centroid shape)))]
+                am (tm/- (g/centroid shape) mid)]
             (when (< (sm/radial-distance (g/heading am) (g/heading dir)) 0.1)
               am)))
         (g/edges shape)))
