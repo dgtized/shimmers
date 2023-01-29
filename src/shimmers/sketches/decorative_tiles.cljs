@@ -102,33 +102,33 @@
   {:shape s
    :bounds (g/bounds s)})
 
+(defn extend-shape
+  [{:keys [base-size spacing-size]} [m-shape mult _] shape]
+  (let [scale (if (:variable-size @ui-state)
+                mult
+                1)
+        parent-dir (when-let [parent (:parent shape)]
+                     (tm/- (g/centroid shape) (g/centroid parent)))]
+    (for [connect (connections shape parent-dir)]
+      (let [dir (tm/- connect (g/centroid shape))
+            angle (g/heading dir)
+            addition (g/rotate (m-shape (* base-size scale)) angle)
+            connect-pt (connection-pt addition dir)]
+        (-> addition
+            (g/translate (tm/+ connect connect-pt
+                               (tm/normalize connect-pt (or spacing-size 4))))
+            (assoc :parent shape))))))
+
 (defn layers
-  [seed plan {:keys [base-size limit-overlap max-overlap spacing-size color-tiles]}]
+  [seed plan {:keys [limit-overlap max-overlap color-tiles]
+              :as settings}]
   (loop [plan plan layer [seed] shapes []]
     (let [shapes' (into shapes (map shape-wrapper layer))]
       (if (empty? plan)
         shapes'
-        (let [[m-shape mult palette] (first plan)
-              scale (if (:variable-size @ui-state)
-                      mult
-                      1)
+        (let [[_ _ palette] (first plan)
               layer'
-              (->> layer
-                   (mapcat
-                    (fn [shape]
-                      (let [parent-dir (when-let [parent (:parent shape)]
-                                         (tm/- (g/centroid shape) (g/centroid parent)))]
-                        (for [connect (connections shape parent-dir)]
-                          (let [dir (tm/- connect (g/centroid shape))
-                                angle (g/heading dir)
-                                addition (g/rotate (m-shape (* base-size scale)) angle)
-                                connect-pt (connection-pt addition dir)]
-                            (-> addition
-                                (g/translate (tm/+ connect connect-pt
-                                                   (tm/normalize connect-pt (or spacing-size 4))))
-                                (assoc :parent shape))))))))
-
-
+              (mapcat (partial extend-shape settings (first plan)) layer)
               layer-remaining
               (remove (fn [shape] (when limit-overlap
                                    (excess-overlap max-overlap shape shapes')))
