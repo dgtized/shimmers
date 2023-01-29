@@ -104,8 +104,15 @@
   {:shape s
    :bounds (g/bounds s)})
 
-(defn mirror [middle i]
-  (if (< i middle) (- middle i) (- i middle)))
+(defn mirror [n i]
+  (let [mid (Math/floor (/ n 2))]
+    (if (even? n)
+      (cond (< i mid) (- (dec mid) i)
+            :else (- i mid))
+      (if (< i mid) (- mid i) (- i mid)))))
+
+(comment (map (partial mirror 7) (range 7))
+         (map (partial mirror 8) (range 8)))
 
 (defn extend-shape
   [{:keys [base-size spacing-size color-tiles single-layer-color]}
@@ -129,7 +136,7 @@
             color (if color-tiles
                     (if (or (not parent-dir) single-layer-color)
                       (first palette)
-                      (nth palette (mirror (/ (count connects) 2) i)))
+                      (nth palette (mirror (count connects) i)))
                     "black")]
         (-> addition
             (g/translate (tm/+ connect connect-pt
