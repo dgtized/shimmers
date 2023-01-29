@@ -33,6 +33,8 @@
     :color-tiles true
     :single-layer-color false}))
 
+;; FIXME: sort connections so that they are ordered clockwise, but starting from
+;; the parent direction instead of order from original shape.
 (defn connections [shape dir]
   (for [[a b] (g/edges shape)
         :let [mid (tm/mix a b 0.5)
@@ -102,6 +104,9 @@
   {:shape s
    :bounds (g/bounds s)})
 
+(defn mirror [middle i]
+  (if (< i middle) (- middle i) (- i middle)))
+
 (defn extend-shape
   [{:keys [base-size spacing-size color-tiles single-layer-color]}
    [m-shape mult palette]
@@ -124,7 +129,7 @@
             color (if color-tiles
                     (if (or (not parent-dir) single-layer-color)
                       (first palette)
-                      (nth palette i))
+                      (nth palette (mirror (/ (count connects) 2) i)))
                     "black")]
         (-> addition
             (g/translate (tm/+ connect connect-pt
