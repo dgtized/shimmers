@@ -30,7 +30,8 @@
     :variable-size true
     :limit-overlap true
     :max-overlap 0
-    :color-tiles true}))
+    :color-tiles true
+    :single-layer-color false}))
 
 ;; something is wrong with the facing signs
 (defn connections [shape dir]
@@ -103,15 +104,16 @@
    :bounds (g/bounds s)})
 
 (defn extend-shape
-  [{:keys [base-size spacing-size color-tiles]}
+  [{:keys [base-size spacing-size color-tiles single-layer-color]}
    [m-shape mult palette]
    shape]
   (let [scale (if (:variable-size @ui-state)
                 mult
                 1)
         parent-dir (when-let [parent (:parent shape)]
-                     (tm/- (g/centroid shape) (g/centroid parent)))]
-    (for [connect (connections shape parent-dir)]
+                     (tm/- (g/centroid shape) (g/centroid parent)))
+        connects (connections shape parent-dir)]
+    (for [[i connect] (map-indexed vector connects)]
       (let [dir (tm/- connect (g/centroid shape))
             angle (g/heading dir)
             addition (g/rotate (m-shape (* base-size scale)) angle)
@@ -120,7 +122,11 @@
             ;; color per layer and maintain symmetry needs to be
             ;; symmetric for outbound connections from parent and
             ;; then replicated across each shape in that layer?
-            color (if color-tiles (first palette) "black")]
+            color (if color-tiles
+                    (if (or (not parent-dir) single-layer-color)
+                      (first palette)
+                      (nth palette i))
+                    "black")]
         (-> addition
             (g/translate (tm/+ connect connect-pt
                                (tm/normalize connect-pt (or spacing-size 4))))
@@ -197,7 +203,8 @@
               (ctrl/numeric ui-state "Base Size" [:base-size] [20 100 1]))
             (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size])
-            (ctrl/checkbox ui-state "Color Tiles" [:color-tiles]))
+            (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
+            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))
            [:div
             [:p.center (view-sketch/generate :decorative-tiles)]
             [:p.center "Recursively layer regular polygons on each outward face."]
