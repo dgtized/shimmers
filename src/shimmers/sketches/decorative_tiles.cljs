@@ -127,7 +127,7 @@
                       connect-pt (connection-pt addition dir)]
                   (-> addition
                       (g/translate (tm/+ connect connect-pt
-                                         (tm/normalize connect-pt spacing-size)))
+                                         (tm/normalize connect-pt (or spacing-size 4))))
                       (assoc :parent shape))))
               layer-remaining
               (remove (fn [shape] (when limit-overlap
@@ -157,7 +157,7 @@
               :height height
               :stroke "black"
               :fill-opacity (if color-tiles
-                              (/ 2 (+ max-overlap 3))
+                              (/ 2 (+ (or max-overlap 4) 3))
                               "5%")
               :fill "black"
               :stroke-width 1.0}
@@ -173,13 +173,20 @@
                            ""))}
          (map :shape tiles))))))
 
+(defn sanitize-depth [{:keys [limit-overlap recursion-depth]}]
+  (let [depth (if (number? recursion-depth)
+                recursion-depth
+                8)]
+    (min (if limit-overlap depth 9)
+         depth)))
+
 (defn page []
   (let [palette (dr/rand-nth radial-mosaic/palettes)
         plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
-            {:keys [recursion-depth auto-scale limit-overlap color-tiles]} settings
-            depth (min (if limit-overlap recursion-depth 9) recursion-depth)]
+            {:keys [auto-scale limit-overlap color-tiles]} settings
+            depth (sanitize-depth settings)]
         [:div
          [:div.canvas-frame [scene (take depth plan) settings]]
          [:div.contained
