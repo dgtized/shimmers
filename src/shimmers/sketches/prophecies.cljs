@@ -5,6 +5,7 @@
    [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
@@ -49,6 +50,14 @@
       (g/center)
       (g/rotate angle)
       (g/translate (tm/+ connect (v/polar (* 0.5 size) angle)))))
+
+(defn diamond [connect size angle]
+  (let [r (-> (rect/rect size)
+              g/center
+              (g/rotate (+ angle (/ eq/TAU 8))))]
+    (g/translate r
+                 (v/+polar connect (tm/mag (first (g/vertices r)))
+                           angle))))
 
 (defn circle [connect size angle]
   (-> connect
@@ -131,6 +140,7 @@
 
 (def poly-shapes
   {:square square
+   :diamond diamond
    :circle circle
    :point-triangle point-triangle
    :edge-triangle edge-triangle
