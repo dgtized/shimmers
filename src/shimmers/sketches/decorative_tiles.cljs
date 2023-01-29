@@ -128,21 +128,20 @@
         shapes'
         (let [[_ _ palette] (first plan)
               layer'
-              (mapcat (partial extend-shape settings (first plan)) layer)
-              layer-remaining
-              (remove (fn [shape] (when limit-overlap
-                                   (excess-overlap max-overlap shape shapes')))
-                      layer')]
+              (->> (mapcat (partial extend-shape settings (first plan)) layer)
+                   (remove (fn [shape]
+                             (when limit-overlap
+                               (excess-overlap max-overlap shape shapes')))))]
           (recur (rest plan)
                  (if color-tiles
                    (map (fn [s c] (vary-meta s assoc :fill c))
-                        layer-remaining
+                        layer'
                         ;; TODO figure out how to cycle mover more then one
                         ;; color per layer and maintain symmetry needs to be
                         ;; symmetric for outbound connections from parent and
                         ;; then replicated across each shape in that layer?
                         (cycle (take 1 palette)))
-                   layer-remaining)
+                   layer')
                  shapes'))))))
 
 (defn shapes [plan {:keys [base-size] :as settings}]
