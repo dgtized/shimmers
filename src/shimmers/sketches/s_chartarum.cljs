@@ -43,13 +43,24 @@
             (> radius max-radius))
           spots))
 
+(defn position-on-radius [spots]
+  (let [candidates (remove (fn [{:keys [radius]}] (< radius (cq/rel-h 0.03))) spots)
+        bounds (cq/screen-rect 0.9)]
+    (->> (fn []
+           (if (and (dr/chance 0.2) (seq candidates))
+             (let [{:keys [pos radius]} (dr/rand-nth candidates)]
+               (v/+polar pos radius (dr/random eq/TAU)))
+             (g/random-point-inside bounds)))
+         repeatedly
+         (some (fn [p] (when (g/contains-point? bounds p) p))))))
+
 (defn add-spots [spots]
   (if (and (< (count spots) 64) (dr/chance 0.12))
     (conj spots
-          (let [max-radius (cq/rel-h (tm/clamp (+ (dr/pareto 0.02 1.25)
-                                                  (dr/gaussian 0.0 0.05))
-                                               0.01 0.3))]
-            (make-spot (cq/rel-vec (dr/random) (dr/random))
+          (let [max-radius (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 1.3)
+                                                  (dr/gaussian 0.01 0.06))
+                                               0.01 0.25))]
+            (make-spot (position-on-radius spots)
                        max-radius
                        (dr/random 2.0 5.0)
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
