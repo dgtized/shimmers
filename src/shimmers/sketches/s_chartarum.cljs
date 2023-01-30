@@ -62,10 +62,13 @@
 (defn add-spots [spots]
   (if (and (< (count spots) 64) (dr/chance 0.12))
     (conj spots
-          (let [max-radius (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 1.3)
-                                                  (dr/gaussian 0.01 0.06))
-                                               0.01 0.2))]
-            (make-spot (position-on-radius spots)
+          (let [position (position-on-radius spots)
+                max-radius
+                (min (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 1.3)
+                                            (dr/gaussian 0.01 0.06))
+                                         0.01 0.2))
+                     (g/dist position (g/closest-point (cq/screen-rect 0.92) position)))]
+            (make-spot position
                        max-radius
                        (max 1.0 (dr/gaussian 3.0 1.0))
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
