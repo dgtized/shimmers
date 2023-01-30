@@ -153,6 +153,7 @@
    shimmers.sketches.rose
    shimmers.sketches.rtree
    shimmers.sketches.sand-strokes
+   shimmers.sketches.s-charatarum
    shimmers.sketches.scintillation
    shimmers.sketches.sea-and-sky
    shimmers.sketches.sediment
