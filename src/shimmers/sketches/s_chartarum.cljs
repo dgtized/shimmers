@@ -11,14 +11,19 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.math.core :as tm]))
 
 (defn make-spot [pos max-radius growth slide]
-  {:pos pos
-   :radius 0.01
-   :max-radius max-radius
-   :growth growth
-   :slide slide})
+  (let [r 1.0]
+    {:pos pos
+     :radius r
+     :max-radius max-radius
+     :growth growth
+     :slide slide
+     :crinkle (let [c (dr/pareto 0.05 1.1)]
+                (if (> c 0.9) 0 c))
+     :points (vec (g/vertices (gc/circle r) 64))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -26,13 +31,28 @@
    :t 0
    :lifespan 100})
 
+(defn similarity
+  "Distance between two normalized vectors"
+  [a b]
+  (let [na (tm/normalize a)
+        nb (tm/normalize b)]
+    (* (g/dist na nb) 0.5)))
+
 (defn update-spots [dt spots]
-  (map (fn [{:keys [radius max-radius growth slide] :as spot}]
+  (map (fn [{:keys [radius max-radius growth crinkle slide] :as spot}]
          (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))
-               dr (+ (* dt growth slow) (dr/gaussian 0.0 0.2))]
+               dr (+ (* dt growth slow) (dr/gaussian 0.0 0.1))]
            (-> spot
                (update :pos (fn [pos] (tm/+ pos (tm/* slide dt))))
-               (update :radius + dr))))
+               (update :radius + dr)
+               (update :points
+                       (fn [points]
+                         (mapv (fn [p]
+                                 (let [factor (- 1.0 (similarity p slide))
+                                       variance (* crinkle (tm/smoothstep* -0.2 0.75 factor))
+                                       directional (dr/gaussian (+ dr (* 0.15 variance)) (* 0.25 variance))]
+                                   (tm/+ p (tm/normalize p directional))))
+                               points))))))
        spots))
 
 (defn remove-dead [spots]
@@ -89,24 +109,30 @@
 
 (defn draw [{:keys [lifespan spots t]}]
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos radius max-radius]} spots]
+  (doseq [{:keys [pos radius max-radius points]} spots]
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
-      (if (dr/chance 0.5)
-        (do
-          (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
-          (if (dr/chance (* p-radius 0.1))
-            (q/fill 1.0 0.03)
-            (q/no-fill))
-          (cq/circle pos radius))
-        (do (q/fill 0.0 0.1)
-            (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
-            (dotimes [_ (int (* 28 sqrt-r))]
-              (-> (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.005) 1.0))))
-                  (triangle/inscribed-equilateral (dr/random eq/TAU))
-                  (g/translate (v/+polar pos radius (dr/random eq/TAU)))
-                  cq/draw-polygon))))))
+      (cond (dr/chance 0.33)
+            (do (q/no-fill)
+                (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
+                (cq/draw-curve-shape (map (fn [p] (tm/+ pos p)) points)))
+            (dr/chance 0.2)
+            (do
+              (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
+              (if (dr/chance (* p-radius 0.05))
+                (q/fill 1.0 0.03)
+                (q/no-fill))
+              (cq/circle pos radius))
+            :else
+            (do (q/fill 0.0 0.1)
+                (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
+                (let [polygon (gp/polygon2 points)]
+                  (dotimes [_ (int (* 28 sqrt-r))]
+                    (-> (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.005) 1.0))))
+                        (triangle/inscribed-equilateral (dr/random eq/TAU))
+                        (g/translate (tm/+ pos (g/point-at polygon (dr/random))))
+                        cq/draw-polygon)))))))
   (when (> t lifespan)
     (q/no-loop)))
 
