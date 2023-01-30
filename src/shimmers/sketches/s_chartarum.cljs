@@ -1,4 +1,4 @@
-(ns shimmers.sketches.s-charatarum
+(ns shimmers.sketches.s-chartarum
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -112,7 +112,7 @@
   (when (> t lifespan)
     (q/no-loop)))
 
-(sketch/defquil s-charatarum
+(sketch/defquil s-chartarum
   :created-at "2023-01-30"
   :tags #{}
   :size [900 600]
