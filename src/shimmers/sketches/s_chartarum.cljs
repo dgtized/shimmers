@@ -86,7 +86,7 @@
       (if (dr/chance 0.5)
         (do
           (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
-          (if (dr/chance (* p-radius 0.15))
+          (if (dr/chance (* p-radius 0.1))
             (q/fill 1.0 0.03)
             (q/no-fill))
           (cq/circle pos radius))
