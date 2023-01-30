@@ -5,7 +5,12 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
 (defn make-spot [pos max-radius growth]
@@ -57,19 +62,29 @@
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.5)
   (doseq [{:keys [pos radius max-radius]} spots]
-    (let [p-radius (/ radius max-radius)]
-      (if (dr/chance (* p-radius 0.33))
-        (q/fill 1.0 0.01)
-        (q/no-fill))
-      (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
-      (cq/circle pos radius)))
+    (let [p-radius (/ radius max-radius)
+          sqrt-r (Math/sqrt p-radius)]
+      (if (dr/chance 0.5)
+        (do
+          (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
+          (if (dr/chance (* p-radius 0.33))
+            (q/fill 1.0 0.01)
+            (q/no-fill))
+          (cq/circle pos radius))
+        (do (q/fill 0.0 0.1)
+            (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
+            (dotimes [_ (dr/random-int (int (* 48 sqrt-r)))]
+              (-> (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.005) 1.0))))
+                  (triangle/inscribed-equilateral (dr/random eq/TAU))
+                  (g/translate (v/+polar pos radius (dr/random eq/TAU)))
+                  cq/draw-polygon))))))
   (when (> t lifespan)
     (q/no-loop)))
 
 (sketch/defquil s-charatarum
   :created-at "2023-01-30"
   :tags #{}
-  :size [800 600]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
