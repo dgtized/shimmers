@@ -129,6 +129,9 @@
    (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (Math/abs sd))})
              {:seed (random-int MAX-INT)})))
 
+(defn pareto [scale shape]
+  (/ scale (Math/pow (random) (/ 1 shape))))
+
 (defn var-range
   [n]
   {:pre [(pos-int? n)]}

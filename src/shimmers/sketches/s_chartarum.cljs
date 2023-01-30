@@ -3,9 +3,9 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
 (defn make-spot [pos max-radius growth]
@@ -15,7 +15,7 @@
   (q/color-mode :hsl 1.0)
   {:spots []
    :t 0
-   :lifespan 150})
+   :lifespan 100})
 
 (defn update-spots [dt spots]
   (map (fn [{:keys [max-radius growth] :as spot}]
@@ -36,11 +36,9 @@
   (if (and (< (count spots) 64) (dr/chance 0.1))
     (conj spots
           (make-spot (cq/rel-vec (dr/random) (dr/random))
-                     (cq/rel-h
-                      (dr/gaussian 0.05 0.2)
-                      (if (dr/chance 0.4)
-                        (dr/random 0.08 0.2)
-                        (dr/random 0.01 0.12)))
+                     (cq/rel-h (tm/clamp (+ (dr/pareto 0.02 1.25)
+                                            (dr/gaussian 0.0 0.05))
+                                         0.01 0.3))
                      (dr/random 2.0 5.0)))
     spots))
 
