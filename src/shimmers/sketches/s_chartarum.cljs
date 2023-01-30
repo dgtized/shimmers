@@ -54,10 +54,14 @@
                           (fn [{:keys [radius max-radius]}]
                             (tm/smoothstep* 0.66 1.0 (/ radius max-radius)))
                           candidates))]
-             (v/+polar pos radius (dr/random eq/TAU))
+             (v/+polar pos (* 1.05 radius) (dr/random eq/TAU))
              (g/random-point-inside bounds)))
          repeatedly
-         (some (fn [p] (when (g/contains-point? bounds p) p))))))
+         (some (fn [p] (when (and (g/contains-point? bounds p)
+                                 (not-any? (fn [{:keys [pos radius]}]
+                                             (< (g/dist pos p) (* 0.9 radius)))
+                                           spots))
+                        p))))))
 
 (defn add-spots [spots]
   (if (and (< (count spots) 64) (dr/chance 0.12))
