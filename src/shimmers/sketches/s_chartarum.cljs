@@ -27,15 +27,12 @@
    :lifespan 100})
 
 (defn update-spots [dt spots]
-  (map (fn [{:keys [max-radius growth slide] :as spot}]
-         (-> spot
-             (update :pos (fn [pos] (tm/+ pos (tm/* slide dt))))
-             (update :radius
-                     (fn [radius]
-                       (if (< radius max-radius)
-                         (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))]
-                           (+ radius (* dt growth slow) (dr/gaussian 0.0 0.2)))
-                         radius)))))
+  (map (fn [{:keys [radius max-radius growth slide] :as spot}]
+         (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))
+               dr (+ (* dt growth slow) (dr/gaussian 0.0 0.2))]
+           (-> spot
+               (update :pos (fn [pos] (tm/+ pos (tm/* slide dt))))
+               (update :radius + dr))))
        spots))
 
 (defn remove-dead [spots]
