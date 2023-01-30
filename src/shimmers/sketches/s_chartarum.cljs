@@ -21,8 +21,8 @@
      :max-radius max-radius
      :growth growth
      :slide slide
-     :crinkle (let [c (dr/pareto 0.05 1.1)]
-                (if (> c 0.9) 0 c))
+     :crinkle (let [c (dr/pareto 0.025 1.1)]
+                (tm/clamp (if (< c 0.03) 0 c) 0 1.25))
      :points (vec (g/vertices (gc/circle r) 64))}))
 
 (defn setup []
@@ -49,8 +49,8 @@
                        (fn [points]
                          (mapv (fn [p]
                                  (let [factor (- 1.0 (similarity p slide))
-                                       variance (* crinkle (tm/smoothstep* -0.2 0.75 factor))
-                                       directional (dr/gaussian (+ dr (* 0.15 variance)) (* 0.25 variance))]
+                                       variance (* crinkle (tm/smoothstep* -0.1 0.75 factor))
+                                       directional (dr/gaussian (+ dr (* 0.15 variance)) (* 0.3 variance))]
                                    (tm/+ p (tm/normalize p directional))))
                                points))))))
        spots))
