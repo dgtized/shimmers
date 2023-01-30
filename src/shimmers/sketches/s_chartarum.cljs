@@ -79,10 +79,10 @@
 
 (defn draw [{:keys [lifespan spots t]}]
   (q/ellipse-mode :radius)
-  (q/stroke-weight 0.5)
   (doseq [{:keys [pos radius max-radius]} spots]
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
+      (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
       (if (dr/chance 0.5)
         (do
           (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
