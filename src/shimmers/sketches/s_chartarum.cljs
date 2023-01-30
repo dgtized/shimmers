@@ -13,8 +13,12 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
-(defn make-spot [pos max-radius growth]
-  {:pos pos :radius 0.01 :max-radius max-radius :growth growth})
+(defn make-spot [pos max-radius growth slide]
+  {:pos pos
+   :radius 0.01
+   :max-radius max-radius
+   :growth growth
+   :slide slide})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -23,13 +27,15 @@
    :lifespan 100})
 
 (defn update-spots [dt spots]
-  (map (fn [{:keys [max-radius growth] :as spot}]
-         (update spot :radius
-                 (fn [radius]
-                   (if (< radius max-radius)
-                     (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))]
-                       (+ radius (* dt growth slow) (dr/gaussian 0.0 0.2)))
-                     radius))))
+  (map (fn [{:keys [max-radius growth slide] :as spot}]
+         (-> spot
+             (update :pos (fn [pos] (tm/+ pos (tm/* slide dt))))
+             (update :radius
+                     (fn [radius]
+                       (if (< radius max-radius)
+                         (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))]
+                           (+ radius (* dt growth slow) (dr/gaussian 0.0 0.2)))
+                         radius)))))
        spots))
 
 (defn remove-dead [spots]
@@ -38,13 +44,15 @@
           spots))
 
 (defn add-spots [spots]
-  (if (and (< (count spots) 64) (dr/chance 0.1))
+  (if (and (< (count spots) 64) (dr/chance 0.12))
     (conj spots
-          (make-spot (cq/rel-vec (dr/random) (dr/random))
-                     (cq/rel-h (tm/clamp (+ (dr/pareto 0.02 1.25)
-                                            (dr/gaussian 0.0 0.05))
-                                         0.01 0.3))
-                     (dr/random 2.0 5.0)))
+          (let [max-radius (cq/rel-h (tm/clamp (+ (dr/pareto 0.02 1.25)
+                                                  (dr/gaussian 0.0 0.05))
+                                               0.01 0.3))]
+            (make-spot (cq/rel-vec (dr/random) (dr/random))
+                       max-radius
+                       (dr/random 2.0 5.0)
+                       (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
 (defn update-state [{:keys [t lifespan] :as state}]
