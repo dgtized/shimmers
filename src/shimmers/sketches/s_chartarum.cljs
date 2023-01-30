@@ -126,13 +126,15 @@
               (cq/circle pos radius))
             :else
             (do (q/fill 0.0 0.1)
-                (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
+                (q/stroke 0.0 (+ 0.1 (* 0.15 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (let [polygon (gp/polygon2 points)]
-                  (dotimes [_ (int (* 28 sqrt-r))]
-                    (-> (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.005) 1.0))))
-                        (triangle/inscribed-equilateral (dr/random eq/TAU))
-                        (g/translate (tm/+ pos (g/point-at polygon (dr/random))))
-                        cq/draw-polygon)))))))
+                  (dotimes [_ (int (* 24 sqrt-r))]
+                    (let [c (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.0025) 1.2))))]
+                      (-> (if (dr/chance 0.5)
+                            (triangle/inscribed-equilateral c (dr/random eq/TAU))
+                            c)
+                          (g/translate (tm/+ pos (g/point-at polygon (dr/random))))
+                          cq/draw-polygon))))))))
   (when (> t lifespan)
     (q/no-loop)))
 
