@@ -104,7 +104,7 @@
           (cq/circle pos radius))
         (do (q/fill 0.0 0.1)
             (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
-            (dotimes [_ (dr/random-int (int (* 48 sqrt-r)))]
+            (dotimes [_ (int (* 28 sqrt-r))]
               (-> (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.005) 1.0))))
                   (triangle/inscribed-equilateral (dr/random eq/TAU))
                   (g/translate (v/+polar pos radius (dr/random eq/TAU)))
