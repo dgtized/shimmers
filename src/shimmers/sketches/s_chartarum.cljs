@@ -14,14 +14,16 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:spots []
-   :t 0})
+   :t 0
+   :lifespan 150})
 
 (defn update-spots [dt spots]
   (map (fn [{:keys [max-radius growth] :as spot}]
          (update spot :radius
                  (fn [radius]
                    (if (< radius max-radius)
-                     (+ radius (* dt growth))
+                     (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))]
+                       (+ radius (* dt growth slow) (dr/gaussian 0.0 0.2)))
                      radius))))
        spots))
 
@@ -31,16 +33,20 @@
           spots))
 
 (defn add-spots [spots]
-  (if (and (< (count spots) 32) (dr/chance 0.05))
+  (if (and (< (count spots) 64) (dr/chance 0.1))
     (conj spots
           (make-spot (cq/rel-vec (dr/random) (dr/random))
-                     (cq/rel-h (dr/random 0.025 0.2))
-                     (dr/random 2.0 4.0)))
+                     (cq/rel-h
+                      (dr/gaussian 0.05 0.2)
+                      (if (dr/chance 0.4)
+                        (dr/random 0.08 0.2)
+                        (dr/random 0.01 0.12)))
+                     (dr/random 2.0 5.0)))
     spots))
 
-(defn update-state [{:keys [t] :as state}]
-  (let [dt (dr/random 0.03 0.15)]
-    (if (< t 100)
+(defn update-state [{:keys [t lifespan] :as state}]
+  (let [dt (dr/random 0.05 0.20)]
+    (if (< t lifespan)
       (-> state
           (update :t + dt)
           (update :spots (comp
@@ -49,13 +55,18 @@
                           (partial update-spots dt))))
       state)))
 
-(defn draw [{:keys [spots]}]
+(defn draw [{:keys [lifespan spots t]}]
   (q/ellipse-mode :radius)
-  (q/no-fill)
   (q/stroke-weight 0.5)
   (doseq [{:keys [pos radius max-radius]} spots]
-    (q/stroke 0.0 (+ 0.1 (* 0.3 (tm/smoothstep* 0.2 0.95 (/ radius max-radius)))))
-    (cq/circle pos radius)))
+    (let [p-radius (/ radius max-radius)]
+      (if (dr/chance (* p-radius 0.33))
+        (q/fill 1.0 0.01)
+        (q/no-fill))
+      (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
+      (cq/circle pos radius)))
+  (when (> t lifespan)
+    (q/no-loop)))
 
 (sketch/defquil s-charatarum
   :created-at "2023-01-30"
