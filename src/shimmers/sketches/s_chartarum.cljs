@@ -64,7 +64,7 @@
     (conj spots
           (let [max-radius (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 1.3)
                                                   (dr/gaussian 0.01 0.06))
-                                               0.01 0.25))]
+                                               0.01 0.2))]
             (make-spot (position-on-radius spots)
                        max-radius
                        (max 1.0 (dr/gaussian 3.0 1.0))
