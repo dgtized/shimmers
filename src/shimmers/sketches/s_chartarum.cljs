@@ -62,7 +62,7 @@
                                                0.01 0.25))]
             (make-spot (position-on-radius spots)
                        max-radius
-                       (dr/random 2.0 5.0)
+                       (max 1.0 (dr/gaussian 3.0 1.0))
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
@@ -86,8 +86,8 @@
       (if (dr/chance 0.5)
         (do
           (q/stroke 0.0 (+ 0.15 (* 0.4 (tm/smoothstep* 0.4 1.0 p-radius))))
-          (if (dr/chance (* p-radius 0.33))
-            (q/fill 1.0 0.01)
+          (if (dr/chance (* p-radius 0.15))
+            (q/fill 1.0 0.03)
             (q/no-fill))
           (cq/circle pos radius))
         (do (q/fill 0.0 0.1)
