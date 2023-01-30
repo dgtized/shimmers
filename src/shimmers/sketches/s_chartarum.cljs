@@ -47,9 +47,14 @@
   (let [candidates (remove (fn [{:keys [radius]}] (< radius (cq/rel-h 0.03))) spots)
         bounds (cq/screen-rect 0.9)]
     (->> (fn []
-           (if (and (dr/chance 0.2) (seq candidates))
-             (let [{:keys [pos radius]} (dr/rand-nth candidates)]
-               (v/+polar pos radius (dr/random eq/TAU)))
+           (if-let [{:keys [pos radius]}
+                    (and (dr/chance 0.4)
+                         (seq candidates)
+                         (dr/weighted-by
+                          (fn [{:keys [radius max-radius]}]
+                            (tm/smoothstep* 0.66 1.0 (/ radius max-radius)))
+                          candidates))]
+             (v/+polar pos radius (dr/random eq/TAU))
              (g/random-point-inside bounds)))
          repeatedly
          (some (fn [p] (when (g/contains-point? bounds p) p))))))
