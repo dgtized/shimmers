@@ -55,7 +55,8 @@
                             (tm/smoothstep* 0.66 1.0 (/ radius max-radius)))
                           candidates))]
              (v/+polar pos (* 1.05 radius) (dr/random eq/TAU))
-             (g/random-point-inside bounds)))
+             (let [{p :p [x y] :size} bounds]
+               (tm/+ p (dr/random x) (dr/random y)))))
          repeatedly
          (some (fn [p] (when (and (g/contains-point? bounds p)
                                  (not-any? (fn [{:keys [pos radius]}]
@@ -114,7 +115,7 @@
 
 (sketch/defquil s-chartarum
   :created-at "2023-01-30"
-  :tags #{}
+  :tags #{:deterministic}
   :size [900 600]
   :setup setup
   :update update-state
