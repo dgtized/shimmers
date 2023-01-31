@@ -25,7 +25,7 @@
                 (tm/clamp (if (< c 0.032)
                             0
                             (+ c (dr/gaussian 0 0.05)))
-                          0 1.25))
+                          0 1))
      :crinkle-wdith (dr/weighted {0 1
                                   0.25 1
                                   0.5 1
@@ -93,7 +93,7 @@
                         p))))))
 
 (defn add-spots [spots]
-  (if (and (< (count spots) 64) (dr/chance 0.135))
+  (if (and (< (count spots) 64) (dr/chance 0.125))
     (conj spots
           (let [position (position-on-radius spots)
                 max-radius
