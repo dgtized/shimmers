@@ -62,7 +62,8 @@
 
 (defn position-on-radius [spots]
   (let [candidates (remove (fn [{:keys [radius]}] (< radius (cq/rel-h 0.03))) spots)
-        bounds (cq/screen-rect 0.9)]
+        bounds (cq/screen-rect 0.9)
+        inner (cq/screen-rect 0.8)]
     (->> (fn []
            (if-let [{:keys [pos radius]}
                     (and (dr/chance 0.4)
@@ -72,7 +73,7 @@
                             (tm/smoothstep* 0.66 1.0 (/ radius max-radius)))
                           candidates))]
              (v/+polar pos (* 1.05 radius) (dr/random eq/TAU))
-             (let [{p :p [x y] :size} bounds]
+             (let [{p :p [x y] :size} inner]
                (tm/+ p (dr/random x) (dr/random y)))))
          repeatedly
          (some (fn [p] (when (and (g/contains-point? bounds p)
