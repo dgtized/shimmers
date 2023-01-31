@@ -31,7 +31,8 @@
                                   0.5 1
                                   0.66 2
                                   0.75 2})
-     :points (vec (g/vertices (gc/circle r) (dr/random-int 20 80)))}))
+     :points (vec (g/vertices (gc/circle r) (dr/random-int 20 80)))
+     :spores (dr/chance 0.4)}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -119,7 +120,7 @@
 
 (defn draw [{:keys [lifespan spots t]}]
   (q/ellipse-mode :radius)
-  (doseq [{:keys [pos radius max-radius points]} spots]
+  (doseq [{:keys [pos radius max-radius points spores]} spots]
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
@@ -138,12 +139,16 @@
             (do (q/fill 0.0 0.1)
                 (q/stroke 0.0 (+ 0.1 (* 0.15 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (let [polygon (gp/polygon2 points)]
-                  (dotimes [_ (int (* 24 sqrt-r))]
-                    (let [c (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.0025) 1.2))))]
+                  (dotimes [_ (int (* 30 sqrt-r))]
+                    (let [c (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.0025) 1.2))))
+                          sample (g/point-at polygon (dr/random))
+                          ext (if spores
+                                (+ 0.94 (dr/pareto 0.05 tm/PHI))
+                                1.0)]
                       (-> (if (dr/chance 0.5)
                             (triangle/inscribed-equilateral c (dr/random eq/TAU))
                             c)
-                          (g/translate (tm/+ pos (g/point-at polygon (dr/random))))
+                          (g/translate (tm/+ pos (tm/* sample ext)))
                           cq/draw-polygon))))))))
   (when (> t lifespan)
     (q/no-loop)))
