@@ -93,7 +93,7 @@
                      (g/dist position (g/closest-point (cq/screen-rect 0.92) position)))]
             (make-spot position
                        max-radius
-                       (max 1.0 (dr/gaussian 3.0 1.0))
+                       (max 1.0 (dr/gaussian 3.0 1.5))
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
