@@ -24,7 +24,7 @@
      :crinkle (let [c (dr/pareto 0.025 1.05)]
                 (tm/clamp (if (< c 0.032)
                             0
-                            (+ c (dr/gaussian 0 0.05)))
+                            (+ c (dr/gaussian 0 0.1)))
                           0 1))
      :crinkle-wdith (dr/weighted {0 1
                                   0.25 1
@@ -60,7 +60,8 @@
                                  (let [factor (- 1.0 (similarity p slide))
                                        variance (* (tm/smoothstep* -0.1 crinkle-width factor)
                                                    crinkle)
-                                       directional (dr/gaussian (+ dr (* 0.15 variance)) (* 0.3 variance))]
+                                       directional (dr/gaussian (+ dr 0.01)
+                                                                (* 0.3 variance))]
                                    (tm/+ p (tm/normalize p directional))))
                                points))))))
        spots))
