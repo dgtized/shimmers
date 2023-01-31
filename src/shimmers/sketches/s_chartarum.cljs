@@ -38,6 +38,7 @@
   (q/color-mode :hsl 1.0)
   {:spots []
    :t 0
+   :rate 0.75
    :lifespan 100})
 
 (defn similarity
@@ -47,13 +48,13 @@
         nb (tm/normalize b)]
     (* (g/dist na nb) 0.5)))
 
-(defn update-spots [dt spots]
+(defn update-spots [dt rate spots]
   (map (fn [{:keys [radius max-radius growth crinkle crinkle-width slide] :as spot}]
          (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))
                dr (+ (* dt growth slow) (dr/gaussian 0.0 0.1))]
            (-> spot
-               (update :pos (fn [pos] (tm/+ pos (tm/* slide dt))))
-               (update :radius + dr)
+               (update :pos (fn [pos] (tm/+ pos (tm/* slide (* rate dt)))))
+               (update :radius + (* rate dr))
                (update :points
                        (fn [points]
                          (mapv (fn [p]
@@ -107,7 +108,7 @@
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
-(defn update-state [{:keys [t lifespan] :as state}]
+(defn update-state [{:keys [t rate lifespan] :as state}]
   (let [dt (dr/random 0.05 0.20)]
     (if (< t lifespan)
       (-> state
@@ -115,16 +116,16 @@
           (update :spots (comp
                           remove-dead
                           add-spots
-                          (partial update-spots dt))))
+                          (partial update-spots dt rate))))
       state)))
 
-(defn draw [{:keys [lifespan spots t]}]
+(defn draw [{:keys [lifespan spots rate t]}]
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos radius max-radius points spores]} spots]
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
-      (cond (dr/chance 0.1)
+      (cond (dr/chance (* 0.5 (- 1.0 rate)))
             nil
             (dr/chance 0.33)
             (do (q/no-fill)
