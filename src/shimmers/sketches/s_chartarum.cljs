@@ -123,7 +123,9 @@
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
-      (cond (dr/chance 0.33)
+      (cond (dr/chance 0.1)
+            nil
+            (dr/chance 0.33)
             (do (q/no-fill)
                 (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (cq/draw-curve-shape (map (fn [p] (tm/+ pos p)) points)))
