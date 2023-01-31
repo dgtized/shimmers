@@ -88,7 +88,7 @@
          repeatedly
          (some (fn [p] (when (and (g/contains-point? bounds p)
                                  (not-any? (fn [{:keys [pos radius]}]
-                                             (< (g/dist pos p) (* 0.9 radius)))
+                                             (< (g/dist pos p) (* 1.1 radius)))
                                            spots))
                         p))))))
 
