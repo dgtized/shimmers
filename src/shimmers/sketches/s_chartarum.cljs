@@ -100,8 +100,8 @@
     (conj spots
           (let [position (position-on-radius spots)
                 max-radius
-                (min (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 1.3)
-                                            (dr/gaussian 0.01 0.06))
+                (min (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 tm/PHI)
+                                            (dr/gaussian 0.02 0.06))
                                          0.01 0.2))
                      (g/dist position (g/closest-point (cq/screen-rect 0.92) position)))]
             (make-spot position
