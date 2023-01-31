@@ -12,6 +12,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn make-spot [pos max-radius slide]
@@ -49,22 +50,22 @@
     (* (g/dist na nb) 0.5)))
 
 (defn update-spots [dt rate spots]
-  (map (fn [{:keys [radius max-radius growth crinkle crinkle-width slide] :as spot}]
+  (map (fn [{:keys [radius max-radius growth crinkle crinkle-width slide points] :as spot}]
          (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))
-               dr (+ (* dt growth slow) (dr/gaussian 0.0 0.1))]
+               dr (+ (* dt growth slow) (dr/gaussian 0.0 0.1))
+               points' (mapv (fn [p]
+                               (let [factor (- 1.0 (similarity p slide))
+                                     variance (* (tm/smoothstep* -0.1 crinkle-width factor)
+                                                 crinkle)
+                                     directional (dr/gaussian (+ dr 0.01)
+                                                              (* 0.3 variance))]
+                                 (tm/+ p (tm/normalize p directional))))
+                             points)
+               radius' (max radius (apply max (map (partial g/dist (gv/vec2)) points')))]
            (-> spot
                (update :pos (fn [pos] (tm/+ pos (tm/* slide (* rate dt)))))
-               (update :radius + (* rate dr))
-               (update :points
-                       (fn [points]
-                         (mapv (fn [p]
-                                 (let [factor (- 1.0 (similarity p slide))
-                                       variance (* (tm/smoothstep* -0.1 crinkle-width factor)
-                                                   crinkle)
-                                       directional (dr/gaussian (+ dr 0.01)
-                                                                (* 0.3 variance))]
-                                   (tm/+ p (tm/normalize p directional))))
-                               points))))))
+               (assoc :points points'
+                      :radius radius'))))
        spots))
 
 (defn remove-dead [spots]
@@ -131,11 +132,11 @@
             (do (q/no-fill)
                 (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (cq/draw-curve-shape (map (fn [p] (tm/+ pos p)) points)))
-            (dr/chance 0.1)
+            (dr/chance 0.05)
             (do
               (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
               (if (dr/chance (* p-radius 0.05))
-                (q/fill 1.0 0.03)
+                (q/fill 1.0 0.04)
                 (q/no-fill))
               (cq/circle pos radius))
             :else
