@@ -21,9 +21,9 @@
      :max-radius max-radius
      :growth growth
      :slide slide
-     :crinkle (let [c (dr/pareto 0.025 1.1)]
+     :crinkle (let [c (dr/pareto 0.025 1.05)]
                 (tm/clamp (if (< c 0.03) 0 c) 0 1.25))
-     :points (vec (g/vertices (gc/circle r) 64))}))
+     :points (vec (g/vertices (gc/circle r) (dr/random-int 20 80)))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
