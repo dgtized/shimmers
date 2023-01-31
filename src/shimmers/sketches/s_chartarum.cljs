@@ -83,7 +83,7 @@
                         p))))))
 
 (defn add-spots [spots]
-  (if (and (< (count spots) 64) (dr/chance 0.12))
+  (if (and (< (count spots) 64) (dr/chance 0.15))
     (conj spots
           (let [position (position-on-radius spots)
                 max-radius
