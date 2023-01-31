@@ -15,7 +15,7 @@
    [thi.ng.math.core :as tm]))
 
 (defn make-spot [pos max-radius slide]
-  (let [r (dr/random 1.0 8.0)]
+  (let [r (dr/random 1.0 5.0)]
     {:pos pos
      :radius r
      :max-radius max-radius
