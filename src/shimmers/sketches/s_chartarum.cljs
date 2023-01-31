@@ -22,7 +22,15 @@
      :growth growth
      :slide slide
      :crinkle (let [c (dr/pareto 0.025 1.05)]
-                (tm/clamp (if (< c 0.03) 0 c) 0 1.25))
+                (tm/clamp (if (< c 0.032)
+                            0
+                            (+ c (dr/gaussian 0 0.05)))
+                          0 1.25))
+     :crinkle-wdith (dr/weighted {0 1
+                                  0.25 1
+                                  0.5 1
+                                  0.66 2
+                                  0.75 2})
      :points (vec (g/vertices (gc/circle r) (dr/random-int 20 80)))}))
 
 (defn setup []
@@ -39,7 +47,7 @@
     (* (g/dist na nb) 0.5)))
 
 (defn update-spots [dt spots]
-  (map (fn [{:keys [radius max-radius growth crinkle slide] :as spot}]
+  (map (fn [{:keys [radius max-radius growth crinkle crinkle-width slide] :as spot}]
          (let [slow (- 1.0 (tm/smoothstep* 0.75 1.5 (/ radius max-radius)))
                dr (+ (* dt growth slow) (dr/gaussian 0.0 0.1))]
            (-> spot
@@ -49,7 +57,8 @@
                        (fn [points]
                          (mapv (fn [p]
                                  (let [factor (- 1.0 (similarity p slide))
-                                       variance (* crinkle (tm/smoothstep* -0.1 0.75 factor))
+                                       variance (* (tm/smoothstep* -0.1 crinkle-width factor)
+                                                   crinkle)
                                        directional (dr/gaussian (+ dr (* 0.15 variance)) (* 0.3 variance))]
                                    (tm/+ p (tm/normalize p directional))))
                                points))))))
