@@ -14,13 +14,13 @@
    [thi.ng.geom.polygon :as gp]
    [thi.ng.math.core :as tm]))
 
-(defn make-spot [pos max-radius growth slide]
+(defn make-spot [pos max-radius slide]
   (let [r (dr/random 1.0 8.0)]
     {:pos pos
      :radius r
      :max-radius max-radius
-     :growth growth
      :slide slide
+     :growth (max 1.0 (dr/gaussian 3.5 1.8))
      :crinkle (let [c (dr/pareto 0.025 1.05)]
                 (tm/clamp (if (< c 0.032)
                             0
@@ -103,7 +103,6 @@
                      (g/dist position (g/closest-point (cq/screen-rect 0.92) position)))]
             (make-spot position
                        max-radius
-                       (max 1.0 (dr/gaussian 3.0 1.5))
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
