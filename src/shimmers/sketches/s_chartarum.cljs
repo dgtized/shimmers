@@ -76,13 +76,13 @@
         inner (cq/screen-rect 0.8)]
     (->> (fn []
            (if-let [{:keys [pos radius]}
-                    (and (dr/chance 0.4)
+                    (and (dr/chance 0.66)
                          (seq candidates)
                          (dr/weighted-by
                           (fn [{:keys [radius max-radius]}]
-                            (tm/smoothstep* 0.66 1.0 (/ radius max-radius)))
+                            (* max-radius (tm/smoothstep* 0.66 1.0 (/ radius max-radius))))
                           candidates))]
-             (v/+polar pos (* 1.05 radius) (dr/random eq/TAU))
+             (v/+polar pos (* (+ 1 (dr/gaussian 0.4 0.1)) radius) (dr/random eq/TAU))
              (let [{p :p [x y] :size} inner]
                (tm/+ p (dr/random x) (dr/random y)))))
          repeatedly
