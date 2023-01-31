@@ -69,7 +69,7 @@
 
 (defn remove-dead [spots]
   (remove (fn [{:keys [radius max-radius]}]
-            (> radius max-radius))
+            (and (> radius max-radius) (dr/chance 0.2)))
           spots))
 
 (defn position-on-radius [spots]
@@ -125,13 +125,13 @@
     (let [p-radius (/ radius max-radius)
           sqrt-r (Math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
-      (cond (dr/chance (* 0.5 (- 1.0 rate)))
+      (cond (or (> p-radius 1.0) (dr/chance (* 0.5 (- 1.0 rate))))
             nil
-            (dr/chance 0.33)
+            (dr/chance 0.4)
             (do (q/no-fill)
                 (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (cq/draw-curve-shape (map (fn [p] (tm/+ pos p)) points)))
-            (dr/chance 0.2)
+            (dr/chance 0.1)
             (do
               (q/stroke 0.0 (+ 0.1 (* 0.2 (tm/smoothstep* 0.4 1.0 p-radius))))
               (if (dr/chance (* p-radius 0.05))
