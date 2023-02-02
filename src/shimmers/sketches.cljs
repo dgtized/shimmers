@@ -194,6 +194,7 @@
    shimmers.sketches.undulating-figures
    shimmers.sketches.uniform-distribution
    shimmers.sketches.unit-circle
+   shimmers.sketches.unraveling
    shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
    shimmers.sketches.velocity-fields
