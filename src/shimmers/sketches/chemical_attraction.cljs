@@ -15,7 +15,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def size 24)
+(def size 18)
+(def limit 150)
 
 (defn n-gon
   [size n]
@@ -98,7 +99,7 @@
 
 (defn update-state [{:keys [structure shapes] :as state}]
   (let [addition
-        (if (or (> (count structure) 128) (> (count shapes) 0) (dr/chance 0.5))
+        (if (or (> (count structure) limit) (> (count shapes) 0) (dr/chance 0.5))
           []
           [(add-shape structure)])]
     (-> state
@@ -107,15 +108,18 @@
 
 (defn draw [{:keys [structure shapes]}]
   (q/background 1.0)
-  (q/stroke 0.0 0.5 0.5)
+  (q/stroke 0.0)
   (doseq [s structure]
     (qdg/draw s))
 
-  (q/stroke 0.6 0.5 0.5)
+  (q/stroke 0.0 0.5 0.5)
   (doseq [s shapes]
     (qdg/draw s)
     (let [{:keys [structure face]} (:debug (meta s))]
-      (q/line structure face))))
+      (q/line structure face)))
+
+  (when (> (count structure) limit)
+    (q/no-loop)))
 
 (sketch/defquil chemical-attraction
   :created-at "2023-02-01"
