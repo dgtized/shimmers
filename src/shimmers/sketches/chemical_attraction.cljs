@@ -68,7 +68,7 @@
 
 (defn attract-and-bind [{:keys [structure shapes] :as state}]
   (let [faces (mapcat g/edges structure)
-        control 0.01
+        control 0.1
         shapes'
         (for [{:keys [vel angle-vel] :as shape} shapes]
           (let [center (g/centroid shape)
@@ -98,7 +98,7 @@
 
 (defn update-state [{:keys [structure shapes] :as state}]
   (let [addition
-        (if (or (dr/chance 0.95) (> (count structure) 30) (> (count shapes) 0))
+        (if (or (> (count structure) 64) (> (count shapes) 0) (dr/chance 0.5))
           []
           [(add-shape structure)])]
     (-> state
