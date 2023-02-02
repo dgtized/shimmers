@@ -76,10 +76,8 @@
   (let [faces (mapcat g/edges structure)
         control 0.1
         shapes'
-        (for [{:keys [vel angle-vel] :as shape} shapes]
+        (for [{:keys [vel angle-vel lifespan] :as shape} shapes]
           (let [center (g/centroid shape)
-                vel (or vel (gv/vec2))
-                angle-vel (or angle-vel 0.0)
                 [close-p close-q] (closest-pair center faces)
                 mid-structure (tm/mix close-p close-q 0.5)
                 [face-p face-q] (closest-pair mid-structure (g/edges shape))
@@ -89,17 +87,19 @@
                 radial-dist (sm/radial-distance facing-angle structure-angle)
                 angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
                 acc (force-accel mid-face mid-structure control vel)
-                angle-jitter (* (dr/random (- angle-vel) angle-vel) 0.1)
-                vel-jitter (tm/* (dr/randvec2 (tm/mag vel)) 0.1)]
+
+                jitter (dr/chance (tm/smoothstep* 50 200 (mod lifespan 180)))
+                angle-jitter (* (dr/random (- angle-vel) angle-vel) (if jitter 2.0 0.1))
+                vel-jitter (dr/randvec2 (if jitter 6.0 0.1))]
             (if (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
               (assoc shape :bonded true)
               (-> shape
                   (g/translate (tm/- center))
-                  (g/rotate angle-vel)
-                  (g/translate (tm/+ center vel))
-                  (assoc :angle-vel (+ angle-vel angle-acc angle-jitter)
-                         :vel (tm/+ vel (tm/+ acc vel-jitter)))
-                  (update :lifespan inc)
+                  (g/rotate (+ angle-vel angle-jitter))
+                  (g/translate (tm/+ center (tm/+ vel vel-jitter)))
+                  (assoc :angle-vel (+ angle-vel angle-acc)
+                         :vel (tm/+ vel acc)
+                         :lifespan (if (and jitter (dr/chance 0.3)) 0.0 (inc lifespan)))
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
         (update :structure concat (filter :bonded shapes'))
@@ -107,7 +107,7 @@
 
 (defn update-state [{:keys [structure shapes] :as state}]
   (let [addition
-        (if (or (> (count structure) limit) (> (count shapes) 2) (dr/chance 0.75))
+        (if (or (> (count structure) limit) (> (count shapes) 3) (dr/chance 0.75))
           []
           [(create-shape (safe-position structure))])]
     (-> state
