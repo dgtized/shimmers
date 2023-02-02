@@ -15,7 +15,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def size 32)
+(def size 24)
 
 (defn n-gon
   [size n]
@@ -98,7 +98,7 @@
 
 (defn update-state [{:keys [structure shapes] :as state}]
   (let [addition
-        (if (or (> (count structure) 64) (> (count shapes) 0) (dr/chance 0.5))
+        (if (or (> (count structure) 128) (> (count shapes) 0) (dr/chance 0.5))
           []
           [(add-shape structure)])]
     (-> state
