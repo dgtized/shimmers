@@ -126,7 +126,7 @@
     (let [{:keys [structure face]} (:debug (meta s))]
       (q/line structure face)))
 
-  (when (> (count structure) limit)
+  (when (and (> (count structure) limit) (empty? shapes))
     (q/no-loop)))
 
 (sketch/defquil chemical-attraction
