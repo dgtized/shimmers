@@ -102,7 +102,7 @@
                   (update :lifespan inc)
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
-        (update :structure concat (map (fn [s] (dissoc s :bonded)) (filter :bonded shapes')))
+        (update :structure concat (filter :bonded shapes'))
         (assoc :shapes (remove :bonded shapes')))))
 
 (defn update-state [{:keys [structure shapes] :as state}]
