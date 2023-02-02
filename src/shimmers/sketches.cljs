@@ -20,6 +20,7 @@
    shimmers.sketches.canvas-test
    shimmers.sketches.chaikin-demo
    shimmers.sketches.chaos-cuts
+   shimmers.sketches.chemical-attraction
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
    shimmers.sketches.circuit-intersections

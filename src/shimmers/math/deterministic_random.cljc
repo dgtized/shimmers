@@ -34,6 +34,9 @@
   ([n] (Math/floor (random n)))
   ([a b] (Math/floor (random a b))))
 
+(defn random-tau []
+  (random eq/TAU))
+
 (defn rand-nth [coll]
   (nth coll (random-int (count coll))))
 
