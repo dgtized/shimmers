@@ -26,20 +26,25 @@
       (g/rotate s (/ Math/PI n))
       s)))
 
-(defn add-shape [structure]
+(defn safe-position [structure]
   (let [bounds (cq/screen-rect 1.1)
-        bonded (g/scale-size (gu/bounding-rect (mapcat g/vertices structure)) 1.02)
-        pos (->> #(g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))
-                 repeatedly
-                 (some (fn [p] (when-not (g/contains-point? bonded p)
-                                p))))]
-    (-> (n-gon size (dr/weighted {3 3 4 1 5 1}))
-        (g/rotate (dr/random-tau))
-        (g/translate pos))))
+        bonded (g/scale-size (gu/bounding-rect (mapcat g/vertices structure)) 1.02)]
+    (->> #(g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))
+         repeatedly
+         (some (fn [p] (when-not (g/contains-point? bonded p)
+                        p))))))
+
+(defn create-shape [pos]
+  (-> (n-gon size (dr/weighted {3 3 4 1 5 1}))
+      (g/rotate (dr/random-tau))
+      (g/translate pos)
+      (assoc :lifespan 0
+             :vel (gv/vec2)
+             :angle-vel 0.0)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:structure [(g/translate (n-gon size 3) (cq/rel-vec 0.5 0.5))]
+  {:structure [(create-shape (cq/rel-vec 0.5 0.5))]
    :shapes []})
 
 (defn closest-pair [point pairs]
@@ -94,6 +99,7 @@
                   (g/translate (tm/+ center vel))
                   (assoc :angle-vel (+ angle-vel angle-acc angle-jitter)
                          :vel (tm/+ vel (tm/+ acc vel-jitter)))
+                  (update :lifespan inc)
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
         (update :structure concat (map (fn [s] (dissoc s :bonded)) (filter :bonded shapes')))
@@ -101,9 +107,9 @@
 
 (defn update-state [{:keys [structure shapes] :as state}]
   (let [addition
-        (if (or (> (count structure) limit) (> (count shapes) 0) (dr/chance 0.5))
+        (if (or (> (count structure) limit) (> (count shapes) 2) (dr/chance 0.75))
           []
-          [(add-shape structure)])]
+          [(create-shape (safe-position structure))])]
     (-> state
         (update :shapes concat addition)
         attract-and-bind)))
