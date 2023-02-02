@@ -15,8 +15,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def size 18)
-(def limit 150)
+(def size 16)
+(def limit 256)
 
 (defn n-gon
   [size n]
@@ -88,6 +88,7 @@
                 angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
                 acc (force-accel mid-face mid-structure control vel)
                 close-to-bond? (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
+                ;; TODO: actually do collision to avoid internal shapes?
                 bonding? (and close-to-bond? (not-any? (fn [s] (g/contains-point? s center)) structure))
 
                 jitter (dr/chance (tm/smoothstep* 50 200 (mod lifespan 180)))
