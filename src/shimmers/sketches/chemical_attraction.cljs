@@ -89,8 +89,8 @@
                   (g/translate (tm/- center))
                   (g/rotate angle-vel)
                   (g/translate (tm/+ center vel))
-                  (assoc :angle-vel (+ angle-vel angle-acc)
-                         :vel (tm/+ vel acc))
+                  (assoc :angle-vel (+ angle-vel angle-acc (* 0.1 (dr/random (- angle-acc) angle-acc)))
+                         :vel (tm/+ vel (tm/+ acc (dr/randvec2 (tm/mag acc)))))
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
         (update :structure concat (map (fn [s] (dissoc s :bonded)) (filter :bonded shapes')))
