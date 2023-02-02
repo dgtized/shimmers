@@ -120,7 +120,7 @@
                  :branches-tree tree'))))))
 
 (defn attractor-size []
-  (cq/rel-h (dr/random 0.05 0.2)))
+  (cq/rel-h (dr/random 0.01 0.2)))
 
 (defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
@@ -139,7 +139,7 @@
         weights {(attractors-circle center) 3
                  (attractor-line (cq/rel-vec 0.05 0.5) (cq/rel-vec 0.95 0.5)) 1
                  (attractor-line (cq/rel-vec 0.5 0.05) (cq/rel-vec 0.5 0.95)) 1}
-        attractors (repeatedly (dr/random-int 20 200)
+        attractors (repeatedly (dr/random-int 20 300)
                                (fn [] ((dr/weighted weights))))
         branches (add-root [] (cq/rel-vec (dr/random 0.3 0.7) (dr/random 0.3 0.7)))]
     {:bounds bounds
