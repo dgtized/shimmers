@@ -83,15 +83,17 @@
                 facing-angle (g/heading (tm/- (outward-face face-p face-q)))
                 radial-dist (sm/radial-distance facing-angle structure-angle)
                 angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
-                acc (force-accel mid-face mid-structure control vel)]
+                acc (force-accel mid-face mid-structure control vel)
+                angle-jitter (* (dr/random (- angle-vel) angle-vel) 0.1)
+                vel-jitter (tm/* (dr/randvec2 (tm/mag vel)) 0.1)]
             (if (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
               (assoc shape :bonded true)
               (-> shape
                   (g/translate (tm/- center))
                   (g/rotate angle-vel)
                   (g/translate (tm/+ center vel))
-                  (assoc :angle-vel (+ angle-vel angle-acc (* 0.1 (dr/random (- angle-acc) angle-acc)))
-                         :vel (tm/+ vel (tm/+ acc (dr/randvec2 (* (dr/random 1.33) (tm/mag acc))))))
+                  (assoc :angle-vel (+ angle-vel angle-acc angle-jitter)
+                         :vel (tm/+ vel (tm/+ acc vel-jitter)))
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
         (update :structure concat (map (fn [s] (dissoc s :bonded)) (filter :bonded shapes')))
