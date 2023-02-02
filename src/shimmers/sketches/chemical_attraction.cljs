@@ -11,7 +11,6 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -35,9 +34,7 @@
 (defn closest-pair [point pairs]
   (apply min-key
          (fn [[p q]]
-           (->> point
-                (g/closest-point (gl/line2 p q))
-                (g/dist-squared point)))
+           (g/dist-squared point (tm/mix p q 0.5)))
          pairs))
 
 (defn outward-face [p q]
@@ -76,7 +73,6 @@
                 radial-dist (sm/radial-distance facing-angle structure-angle)
                 angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
                 acc (force-accel mid-face mid-structure control vel)]
-            (println [force angle-acc])
             (if (and (< (g/dist mid-face mid-structure) 1.0) (< radial-dist 0.2))
               (assoc shape :bonded true)
               (-> shape
