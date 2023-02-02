@@ -8,14 +8,22 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (def size 32)
+
+(defn n-gon
+  [size n]
+  (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
+              (g/as-polygon n))]
+    (if (even? n)
+      (g/rotate s (/ Math/PI n))
+      s)))
 
 (defn add-shape [structure]
   (let [bounds (cq/screen-rect 1.1)
@@ -24,11 +32,13 @@
                  repeatedly
                  (some (fn [p] (when-not (g/contains-point? bonded p)
                                 p))))]
-    (triangle/inscribed-equilateral pos size (dr/random-tau))))
+    (-> (n-gon size (dr/weighted {3 3 4 1 5 1}))
+        (g/rotate (dr/random-tau))
+        (g/translate pos))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:structure [(triangle/inscribed-equilateral (cq/rel-vec 0.5 0.5) size (dr/random-tau))]
+  {:structure [(g/translate (n-gon size 3) (cq/rel-vec 0.5 0.5))]
    :shapes []})
 
 (defn closest-pair [point pairs]
