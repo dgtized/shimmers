@@ -87,11 +87,17 @@
                 radial-dist (sm/radial-distance facing-angle structure-angle)
                 angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
                 acc (force-accel mid-face mid-structure control vel)
+                close-to-bond? (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
+                bonding? (and close-to-bond? (not-any? (fn [s] (g/contains-point? s center)) structure))
 
                 jitter (dr/chance (tm/smoothstep* 50 200 (mod lifespan 180)))
                 angle-jitter (* (dr/random (- angle-vel) angle-vel) (if jitter 2.0 0.1))
-                vel-jitter (dr/randvec2 (if jitter 6.0 0.1))]
-            (if (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
+                vel-jitter (dr/randvec2 (cond
+                                          (and close-to-bond? (not bonding?))
+                                          32.0
+                                          jitter 8.0
+                                          :else 0.1))]
+            (if bonding?
               (assoc shape :bonded true)
               (-> shape
                   (g/translate (tm/- center))
