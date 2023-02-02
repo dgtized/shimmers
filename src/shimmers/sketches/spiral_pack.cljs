@@ -22,7 +22,7 @@
      :circle (gc/circle (v/+polar (rv 0.5 0.5) (+ dr r) t)
                         dr)}))
 
-(defn shapes []
+(defn spiral-surrounding []
   (let [radius (* height 0.05)
         circle (gc/circle (rv 0.5 0.5) radius)]
     (->> {:circle circle :t 0 :r radius :dr (* 0.3 radius)}
@@ -36,7 +36,7 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-    (shapes)))
+    (spiral-surrounding)))
 
 (sketch/definition spiral-pack
   {:created-at "2022-03-13"
