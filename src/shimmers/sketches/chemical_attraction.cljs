@@ -4,16 +4,17 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.utils :as gu]
-   [shimmers.common.quil-draws-geom :as qdg]
    [thi.ng.geom.line :as gl]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.core :as sm]))
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def size 32)
 
@@ -42,24 +43,48 @@
 (defn outward-face [p q]
   (g/normal (tm/- q p)))
 
+(defn angular-delta [angle target]
+  (let [delta (- target angle)]
+    (cond (< delta (- Math/PI)) (+ delta eq/TAU)
+          (> delta Math/PI) (- delta eq/TAU)
+          :else delta)))
+
+(defn angular-acceleration [angle target control angle-vel]
+  (let [delta (angular-delta angle target)]
+    (- (* control delta)
+       (* (* 2 (Math/sqrt control)) angle-vel))))
+
+(defn force-accel [pos target control velocity]
+  (let [dir (tm/- target pos)]
+    (tm/- (tm/* dir control)
+          (tm/* velocity (* 2 (Math/sqrt control))))))
+
 (defn attract-and-bind [{:keys [structure shapes] :as state}]
   (let [faces (mapcat g/edges structure)
+        control 0.01
         shapes'
-        (for [shape shapes]
+        (for [{:keys [vel angle-vel] :as shape} shapes]
           (let [center (g/centroid shape)
+                vel (or vel (gv/vec2))
+                angle-vel (or angle-vel 0.0)
                 [close-p close-q] (closest-pair center faces)
                 mid-structure (tm/mix close-p close-q 0.5)
                 [face-p face-q] (closest-pair mid-structure (g/edges shape))
                 mid-face (tm/mix face-p face-q 0.5)
                 structure-angle (g/heading (outward-face close-p close-q))
-                facing-angle (g/heading (outward-face face-p face-q))
-                radial-dist (sm/radial-distance facing-angle structure-angle)]
+                facing-angle (g/heading (tm/- (outward-face face-p face-q)))
+                radial-dist (sm/radial-distance facing-angle structure-angle)
+                angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
+                acc (force-accel mid-face mid-structure control vel)]
+            (println [force angle-acc])
             (if (and (< (g/dist mid-face mid-structure) 1.0) (< radial-dist 0.2))
               (assoc shape :bonded true)
               (-> shape
                   (g/translate (tm/- center))
-                  (g/rotate (- (sm/radial-mix facing-angle structure-angle 0.01) facing-angle))
-                  (g/translate (tm/mix center mid-structure 0.01))
+                  (g/rotate angle-vel)
+                  (g/translate (tm/+ center vel))
+                  (assoc :angle-vel (+ angle-vel angle-acc)
+                         :vel (tm/+ vel acc))
                   (vary-meta assoc :debug {:structure mid-structure :face mid-face})))))]
     (-> state
         (update :structure concat (map (fn [s] (dissoc s :bonded)) (filter :bonded shapes')))
