@@ -6,10 +6,10 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.sketches.radial-mosaic :as radial-mosaic]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
@@ -79,17 +79,8 @@
   (g/rotate (g/center (rect/rect 0 0 size (* tm/PHI size)))
             angle))
 
-;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
-(defn n-gon
-  "Construct a regular polygon with n faces from a circle, and rotate to a flat
-  edge at angle zero."
-  [n]
-  (fn [size]
-    (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
-                (g/as-polygon n))]
-      (if (even? n)
-        (g/rotate s (/ Math/PI n))
-        s))))
+(defn n-gon [n]
+  (partial poly/regular-n-gon n))
 
 (defn gen-shape [palette]
   (fn []
