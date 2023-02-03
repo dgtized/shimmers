@@ -27,12 +27,14 @@
                         p))))))
 
 (defn create-shape [pos]
-  (-> (poly/regular-n-gon (dr/weighted {3 3 4 1 5 1}) size)
-      (g/rotate (dr/random-tau))
-      (g/translate pos)
-      (assoc :lifespan 0
-             :vel (gv/vec2)
-             :angle-vel 0.0)))
+  (let [n (dr/weighted {3 3 4 1 5 1})
+        R (poly/circumradius-side-length n size)]
+    (-> (poly/regular-n-gon n R)
+        (g/rotate (dr/random-tau))
+        (g/translate pos)
+        (assoc :lifespan 0
+               :vel (gv/vec2)
+               :angle-vel 0.0))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

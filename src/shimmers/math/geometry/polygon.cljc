@@ -65,13 +65,21 @@
   [n inradius]
   (/ inradius (Math/cos (/ Math/PI n))))
 
+(defn side-length-inradius
+  [n inradius]
+  (* 2 inradius (Math/tan (/ Math/PI n))))
+
+(defn side-length-circumradius
+  [n circumradius]
+  (* 2 circumradius (Math/sin (/ Math/PI n))))
+
 ;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
 (defn regular-n-gon
-  "regular polygon with `n` sides, where each face is `side-length`
+  "regular polygon of `circumradius` and `n` sides.
 
   Polygon is rotated to ensure a flat edge is at angle 0."
-  [n side-length]
-  (let [s (-> (gc/circle (circumradius-side-length n side-length))
+  [n circumradius]
+  (let [s (-> (gc/circle circumradius)
               (g/as-polygon n))]
     (if (even? n)
       (g/rotate s (/ Math/PI n))

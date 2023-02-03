@@ -45,24 +45,22 @@
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
 (defn flat-polygon [n]
-  (fn [connect side-length angle]
-    (let [r (poly/apothem-side-length n side-length)]
-      (-> (poly/regular-n-gon n side-length)
+  (fn [connect circumradius angle]
+    (let [r (poly/apothem-circumradius n circumradius)]
+      (-> (poly/regular-n-gon n circumradius)
           (g/rotate angle)
           (g/translate (v/+polar connect r angle))))))
 
 (defn point-polygon [n]
-  (fn [connect side-length angle]
-    (let [R (poly/circumradius-side-length n side-length)]
-      (-> (poly/regular-n-gon n side-length)
-          (g/rotate (+ angle (/ eq/TAU (* 2 n))))
-          (g/translate (v/+polar connect R angle))))))
+  (fn [connect circumradius angle]
+    (-> (poly/regular-n-gon n circumradius)
+        (g/rotate (+ angle (/ eq/TAU (* 2 n))))
+        (g/translate (v/+polar connect circumradius angle)))))
 
-(defn circle [connect side-length angle]
-  (let [r (* 0.66 (poly/apothem-side-length 20 side-length))]
-    (-> connect
-        (v/+polar r angle)
-        (gc/circle r))))
+(defn circle [connect radius angle]
+  (-> connect
+      (v/+polar radius angle)
+      (gc/circle radius)))
 
 (defn inner-angle-n-gon [n]
   (let [sum-of-internal (* (- n 2) 180)]
@@ -120,10 +118,10 @@
 (defn make-shape [connector shapes]
   (let [{:keys [vertex scale] angle :direction} connector
         len (* scale (gen-size))
-        size (* scale (gen-size))
+        radius (* scale (/ 1 tm/PHI) (gen-size))
         connect (v/+polar vertex len angle)
         {:keys [shape-fn]} (dr/rand-nth poly-shapes)
-        shape (shape-fn connect size angle)
+        shape (shape-fn connect radius angle)
         line (gl/line2 vertex connect)
         padded (g/scale-size shape 1.2)
         p-area (/ (g/area shape) width)]

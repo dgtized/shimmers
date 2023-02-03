@@ -80,7 +80,10 @@
             angle))
 
 (defn n-gon [n]
-  (partial poly/regular-n-gon n))
+  (fn [side-length]
+    (->> side-length
+         (poly/circumradius-side-length n)
+         (poly/regular-n-gon n))))
 
 (defn gen-shape [palette]
   (fn []
