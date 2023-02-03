@@ -87,13 +87,6 @@
     (n-gon 6 center r angle)))
 
 ;; https://en.wikipedia.org/wiki/Pentagon
-(defn flat-pentagon [connect size angle]
-  (let [size (* 0.66 size)
-        r (/ 1 (* 2 (Math/sqrt (- 5 (Math/sqrt 20)))))
-        R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
-        center (v/+polar connect (* r size) angle)]
-    (n-gon 5 center (* R size) angle)))
-
 (defn pointy-pentagon [connect size angle]
   (let [size (* 0.66 size)
         R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
@@ -140,7 +133,7 @@
    :circle circle
    :point-triangle point-triangle
    :edge-triangle (flat-polygon 3)
-   :flat-pentagon flat-pentagon
+   :flat-pentagon (flat-polygon 5)
    :pointy-pentagon pointy-pentagon
    :flat-hex flat-hex
    :pointy-hex pointy-hex
