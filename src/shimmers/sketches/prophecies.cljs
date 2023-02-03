@@ -10,7 +10,6 @@
    ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
    [shimmers.math.geometry.polygon :as poly]
-   [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -76,11 +75,6 @@
                 (v/+polar connect size (- angle 0.5))
                 (v/+polar connect size (+ angle 0.5))]))
 
-(defn flat-hex [connect size angle]
-  (let [r (* 0.5 size)
-        center (v/+polar connect (hex/apothem {:r r}) angle)]
-    (n-gon 6 center r (+ angle (/ Math/PI 6)))))
-
 (defn pointy-hex [connect size angle]
   (let [r (* 0.5 size)
         center (v/+polar connect r angle)]
@@ -135,7 +129,7 @@
    :edge-triangle (flat-polygon 3)
    :flat-pentagon (flat-polygon 5)
    :pointy-pentagon pointy-pentagon
-   :flat-hex flat-hex
+   :flat-hex (flat-polygon 6)
    :pointy-hex pointy-hex
    :flat-heptagon flat-heptagon
    :pointy-heptagon pointy-heptagon
