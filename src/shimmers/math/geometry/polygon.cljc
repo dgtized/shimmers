@@ -84,3 +84,19 @@
     (if (even? n)
       (g/rotate s (/ Math/PI n))
       s)))
+
+(defn sum-interior-angles-regular-polygon
+  [n]
+  {:pre [(> n 2)]}
+  (* (- n 2) Math/PI))
+
+(defn interior-angle-regular-polygon
+  [n]
+  {:pre [(> n 2)]}
+  (/ (sum-interior-angles-regular-polygon n) n))
+
+(comment
+  (for [n (range 3 10)]
+    [n
+     (sum-interior-angles-regular-polygon n)
+     (interior-angle-regular-polygon n)]))
