@@ -88,25 +88,11 @@
         angle (- angle (* 0.5 (tm/radians 72)))]
     (n-gon 5 center (* R size) angle)))
 
-(defn flat-heptagon [connect size angle]
-  (let [R (* 0.66 size)
-        apothem (* R (Math/cos (/ Math/PI 7)))
-        center (v/+polar connect apothem angle)]
-    (n-gon 7 center R angle)))
-
 (defn pointy-heptagon [connect size angle]
   (let [R (* 0.66 size)
         center (v/+polar connect R angle)
         angle (+ angle (tm/radians (+ 128 (/ 4 7))))]
     (n-gon 7 center R angle)))
-
-(defn flat-octagon [connect size angle]
-  (let [a (* 0.33 size)
-        R (* (/ (Math/sqrt (+ 4 (* 2 (Math/sqrt 2)))) 2) a)
-        r (* (/ (+ 1 (Math/sqrt 2)) 2) a)
-        center (v/+polar connect r angle)
-        angle (+ angle (* 0.5 (tm/radians 135)))]
-    (n-gon 8 center R angle)))
 
 (defn pointy-octagon [connect size angle]
   (let [a (* 0.33 size)
@@ -131,9 +117,9 @@
    :pointy-pentagon pointy-pentagon
    :flat-hex (flat-polygon 6)
    :pointy-hex pointy-hex
-   :flat-heptagon flat-heptagon
+   :flat-heptagon (flat-polygon 7)
    :pointy-heptagon pointy-heptagon
-   :flat-octagon flat-octagon
+   :flat-octagon (flat-polygon 8)
    :pointy-octagon pointy-octagon
    })
 
