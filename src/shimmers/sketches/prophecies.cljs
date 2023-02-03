@@ -46,17 +46,19 @@
   (->> (range 0.0 0.8 (/ 0.8 n))
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
-(defn square [connect size angle]
-  (let [r (poly/apothem-side-length 4 size)]
-    (-> (poly/regular-n-gon 4 size)
-        (g/rotate angle)
-        (g/translate (v/+polar connect r angle)))))
+(defn flat-polygon [n]
+  (fn [connect side-length angle]
+    (let [r (poly/apothem-side-length n side-length)]
+      (-> (poly/regular-n-gon n side-length)
+          (g/rotate angle)
+          (g/translate (v/+polar connect r angle))))))
 
-(defn diamond [connect size angle]
-  (let [R (poly/circumradius-side-length 4 size)]
-    (-> (poly/regular-n-gon 4 size)
-        (g/rotate (+ angle (/ eq/TAU 8)))
-        (g/translate (v/+polar connect R angle)))))
+(defn point-polygon [n]
+  (fn [connect side-length angle]
+    (let [R (poly/circumradius-side-length n side-length)]
+      (-> (poly/regular-n-gon n side-length)
+          (g/rotate (+ angle (/ eq/TAU (* 2 n))))
+          (g/translate (v/+polar connect R angle))))))
 
 (defn circle [connect size angle]
   (-> connect
@@ -138,8 +140,8 @@
 (comment (inner-angle-n-gon 3))
 
 (def poly-shapes
-  {:square square
-   :diamond diamond
+  {:square (flat-polygon 4)
+   :diamond (point-polygon 4)
    :circle circle
    :point-triangle point-triangle
    :edge-triangle edge-triangle
