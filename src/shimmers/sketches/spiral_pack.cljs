@@ -46,8 +46,9 @@
     (->> {:circle circle :t (dr/random-tau) :r radius}
          (iterate
           (fn [{:keys [circle t r]}]
-            (let [r' (* 0.98 r)]
-              {:circle (gc/circle (v/+polar (g/point-at circle (/ t eq/TAU)) r' (+ t Math/PI)) r')
+            (let [r' (* 0.98 r)
+                  radial-pt (g/point-at circle (/ t eq/TAU))]
+              {:circle (gc/circle (v/+polar radial-pt r' (- t Math/PI)) r')
                :t (+ t dt)
                :r r'})))
          (take-while (fn [{:keys [r]}] (> r 4.0)))
