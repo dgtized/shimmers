@@ -76,11 +76,6 @@
                 (v/+polar connect size (- angle 0.5))
                 (v/+polar connect size (+ angle 0.5))]))
 
-(defn edge-triangle [connect size angle]
-  (gp/polygon2 [(v/+polar connect (* 0.5 size) (left angle))
-                (v/+polar connect size angle)
-                (v/+polar connect (* 0.5 size) (right angle))]))
-
 (defn flat-hex [connect size angle]
   (let [r (* 0.5 size)
         center (v/+polar connect (hex/apothem {:r r}) angle)]
@@ -144,7 +139,7 @@
    :diamond (point-polygon 4)
    :circle circle
    :point-triangle point-triangle
-   :edge-triangle edge-triangle
+   :edge-triangle (flat-polygon 3)
    :flat-pentagon flat-pentagon
    :pointy-pentagon pointy-pentagon
    :flat-hex flat-hex
