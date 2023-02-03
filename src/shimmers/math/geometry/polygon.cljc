@@ -24,11 +24,11 @@
 
 ;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
 (defn regular-n-gon
-  "regular polygon with `n` sides normalized to length `size` for each face
+  "regular polygon with `n` sides, where each face is `side-length`
 
   Polygon is rotated to ensure a flat edge is at angle 0."
-  [n size]
-  (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
+  [n side-length]
+  (let [s (-> (gc/circle (/ side-length (* 2 (Math/sin (/ Math/PI n)))))
               (g/as-polygon n))]
     (if (even? n)
       (g/rotate s (/ Math/PI n))
