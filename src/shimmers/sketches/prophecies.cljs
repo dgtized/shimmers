@@ -70,22 +70,6 @@
 ;; Why does this work for 6,7,8 but not 5?
 (comment (inner-angle-n-gon 3))
 
-(def poly-shapes
-  {:square (flat-polygon 4)
-   :diamond (point-polygon 4)
-   :circle circle
-   :point-triangle (point-polygon 3)
-   :edge-triangle (flat-polygon 3)
-   :flat-pentagon (flat-polygon 5)
-   :pointy-pentagon (point-polygon 5)
-   :flat-hex (flat-polygon 6)
-   :pointy-hex (point-polygon 6)
-   :flat-heptagon (flat-polygon 7)
-   :pointy-heptagon (point-polygon 7)
-   :flat-octagon (flat-polygon 8)
-   :pointy-octagon (point-polygon 8)
-   })
-
 (defn point-on-segment? [point p q]
   (< (g/dist-squared point (gu/closest-point-on-segment point p q)) 1))
 
@@ -125,12 +109,19 @@
                    0.05 4})
      width))
 
+(def poly-shapes
+  (into [{:sides 20 :shape-fn circle}]
+        (mapcat (fn [sides]
+                  [{:sides sides :shape-fn (flat-polygon sides)}
+                   {:sides sides :shape-fn (point-polygon sides)}])
+                (range 3 9))))
+
 (defn make-shape [connector shapes]
   (let [{:keys [vertex scale] angle :direction} connector
         len (* scale (gen-size))
         size (* scale (gen-size))
         connect (v/+polar vertex len angle)
-        [_shape-name shape-fn] (dr/rand-nth (seq poly-shapes))
+        {:keys [shape-fn]} (dr/rand-nth poly-shapes)
         shape (shape-fn connect size angle)
         line (gl/line2 vertex connect)
         padded (g/scale-size shape 1.2)
