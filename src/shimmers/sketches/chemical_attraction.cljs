@@ -8,8 +8,8 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -17,14 +17,6 @@
 
 (def size 16)
 (def limit 256)
-
-(defn n-gon
-  [size n]
-  (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
-              (g/as-polygon n))]
-    (if (even? n)
-      (g/rotate s (/ Math/PI n))
-      s)))
 
 (defn safe-position [structure]
   (let [bounds (cq/screen-rect 1.1)
@@ -35,7 +27,7 @@
                         p))))))
 
 (defn create-shape [pos]
-  (-> (n-gon size (dr/weighted {3 3 4 1 5 1}))
+  (-> (poly/regular-n-gon (dr/weighted {3 3 4 1 5 1}) size)
       (g/rotate (dr/random-tau))
       (g/translate pos)
       (assoc :lifespan 0

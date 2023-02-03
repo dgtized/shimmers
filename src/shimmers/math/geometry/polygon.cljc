@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.polygon
   (:require
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]
    #?(:clj [thi.ng.geom.types]
@@ -20,4 +21,16 @@
                            vs
                            other-vs))))
        false))))
+
+;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
+(defn regular-n-gon
+  "regular polygon with `n` sides normalized to length `size` for each face
+
+  Polygon is rotated to ensure a flat edge is at angle 0."
+  [n size]
+  (let [s (-> (gc/circle (/ size (* 2 (Math/sin (/ Math/PI n)))))
+              (g/as-polygon n))]
+    (if (even? n)
+      (g/rotate s (/ Math/PI n))
+      s)))
 
