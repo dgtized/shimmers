@@ -226,7 +226,8 @@
           [:div.flexcols
            (ctrl/container
             [:p]
-            (ctrl/numeric ui-state "Recursion Depth" [:recursion-depth] [1 16 1])
+            (ctrl/slider ui-state (fn [x] (str "Recursion Depth " x))
+                         [:recursion-depth] [1 20 1])
             (ctrl/checkbox ui-state "Limit Overlap" [:limit-overlap])
             (when limit-overlap
               (ctrl/numeric ui-state "Max Overlap with Prior Layer" [:max-overlap] [0 100 1]))
