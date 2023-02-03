@@ -23,18 +23,6 @@
                            other-vs))))
        false))))
 
-;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
-(defn regular-n-gon
-  "regular polygon with `n` sides, where each face is `side-length`
-
-  Polygon is rotated to ensure a flat edge is at angle 0."
-  [n side-length]
-  (let [s (-> (gc/circle (/ side-length (* 2 (Math/sin (/ Math/PI n)))))
-              (g/as-polygon n))]
-    (if (even? n)
-      (g/rotate s (/ Math/PI n))
-      s)))
-
 ;; Apothem and inradius are synonyms
 (defn apothem-side-length
   "Distance from center of a regular polygon with `n` sides of `side-length` to
@@ -77,3 +65,14 @@
   [n inradius]
   (/ inradius (Math/cos (/ Math/PI n))))
 
+;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
+(defn regular-n-gon
+  "regular polygon with `n` sides, where each face is `side-length`
+
+  Polygon is rotated to ensure a flat edge is at angle 0."
+  [n side-length]
+  (let [s (-> (gc/circle (circumradius-side-length n side-length))
+              (g/as-polygon n))]
+    (if (even? n)
+      (g/rotate s (/ Math/PI n))
+      s)))
