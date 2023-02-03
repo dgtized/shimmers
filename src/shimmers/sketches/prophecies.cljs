@@ -9,6 +9,7 @@
    [shimmers.math.geometry.collisions :as collide]
    ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -46,18 +47,16 @@
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
 (defn square [connect size angle]
-  (-> (rect/rect size)
-      (g/center)
-      (g/rotate angle)
-      (g/translate (tm/+ connect (v/polar (* 0.5 size) angle)))))
+  (let [r (poly/apothem-side-length 4 size)]
+    (-> (poly/regular-n-gon 4 size)
+        (g/rotate angle)
+        (g/translate (v/+polar connect r angle)))))
 
 (defn diamond [connect size angle]
-  (let [r (-> (rect/rect size)
-              g/center
-              (g/rotate (+ angle (/ eq/TAU 8))))]
-    (g/translate r
-                 (v/+polar connect (tm/mag (first (g/vertices r)))
-                           angle))))
+  (let [R (poly/circumradius-side-length 4 size)]
+    (-> (poly/regular-n-gon 4 size)
+        (g/rotate (+ angle (/ eq/TAU 8)))
+        (g/translate (v/+polar connect R angle)))))
 
 (defn circle [connect size angle]
   (-> connect

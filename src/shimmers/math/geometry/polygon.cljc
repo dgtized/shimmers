@@ -69,3 +69,11 @@
   [n circumradius]
   (* 2 circumradius (eq/sqr (Math/sin (/ Math/PI (* 2 n))))))
 
+(defn circumradius-side-length
+  [n side-length]
+  (/ (* side-length (/ 1 (Math/cos (/ Math/PI n)))) 2))
+
+(defn circumradius-inradius
+  [n inradius]
+  (/ inradius (Math/sin (/ Math/PI n))))
+
