@@ -58,10 +58,11 @@
           (g/rotate (+ angle (/ eq/TAU (* 2 n))))
           (g/translate (v/+polar connect R angle))))))
 
-(defn circle [connect size angle]
-  (-> connect
-      (v/+polar (* 0.5 size) angle)
-      (gc/circle (* 0.5 size))))
+(defn circle [connect side-length angle]
+  (let [r (* 0.66 (poly/apothem-side-length 20 side-length))]
+    (-> connect
+        (v/+polar r angle)
+        (gc/circle r))))
 
 (defn inner-angle-n-gon [n]
   (let [sum-of-internal (* (- n 2) 180)]
