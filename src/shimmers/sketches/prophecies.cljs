@@ -16,7 +16,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.utils :as gu]
@@ -64,42 +63,6 @@
       (v/+polar (* 0.5 size) angle)
       (gc/circle (* 0.5 size))))
 
-(defn n-gon [n center radius angle]
-  (-> (gc/circle radius)
-      (g/as-polygon n)
-      (g/rotate angle)
-      (g/translate center)))
-
-(defn point-triangle [connect size angle]
-  (gp/polygon2 [connect
-                (v/+polar connect size (- angle 0.5))
-                (v/+polar connect size (+ angle 0.5))]))
-
-(defn pointy-hex [connect size angle]
-  (let [r (* 0.5 size)
-        center (v/+polar connect r angle)]
-    (n-gon 6 center r angle)))
-
-;; https://en.wikipedia.org/wiki/Pentagon
-(defn pointy-pentagon [connect size angle]
-  (let [size (* 0.66 size)
-        R (Math/sqrt (/ (+ 5 (Math/sqrt 5)) 10))
-        center (v/+polar connect (* R size) angle)
-        angle (- angle (* 0.5 (tm/radians 72)))]
-    (n-gon 5 center (* R size) angle)))
-
-(defn pointy-heptagon [connect size angle]
-  (let [R (* 0.66 size)
-        center (v/+polar connect R angle)
-        angle (+ angle (tm/radians (+ 128 (/ 4 7))))]
-    (n-gon 7 center R angle)))
-
-(defn pointy-octagon [connect size angle]
-  (let [a (* 0.33 size)
-        R (* (/ (Math/sqrt (+ 4 (* 2 (Math/sqrt 2)))) 2) a)
-        center (v/+polar connect R angle)]
-    (n-gon 8 center R angle)))
-
 (defn inner-angle-n-gon [n]
   (let [sum-of-internal (* (- n 2) 180)]
     (/ sum-of-internal n)))
@@ -111,16 +74,16 @@
   {:square (flat-polygon 4)
    :diamond (point-polygon 4)
    :circle circle
-   :point-triangle point-triangle
+   :point-triangle (point-polygon 3)
    :edge-triangle (flat-polygon 3)
    :flat-pentagon (flat-polygon 5)
-   :pointy-pentagon pointy-pentagon
+   :pointy-pentagon (point-polygon 5)
    :flat-hex (flat-polygon 6)
-   :pointy-hex pointy-hex
+   :pointy-hex (point-polygon 6)
    :flat-heptagon (flat-polygon 7)
-   :pointy-heptagon pointy-heptagon
+   :pointy-heptagon (point-polygon 7)
    :flat-octagon (flat-polygon 8)
-   :pointy-octagon pointy-octagon
+   :pointy-octagon (point-polygon 8)
    })
 
 (defn point-on-segment? [point p q]

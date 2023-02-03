@@ -71,9 +71,9 @@
 
 (defn circumradius-side-length
   [n side-length]
-  (/ (* side-length (/ 1 (Math/cos (/ Math/PI n)))) 2))
+  (/ side-length (* 2 (Math/sin (/ Math/PI n)))))
 
 (defn circumradius-inradius
   [n inradius]
-  (/ inradius (Math/sin (/ Math/PI n))))
+  (/ inradius (Math/cos (/ Math/PI n))))
 
