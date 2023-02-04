@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -55,29 +56,27 @@
          (take-while (fn [{:keys [r]}] (> r 4.0)))
          (map :circle))))
 
-(defn box-pack []
-  (let [size (* height 0.95)
-        scale 0.9
-        base (-> (rect/rect size)
-                 (g/center)
+;; triangles have too much overlap?
+;; squares should be larger than cirumradius?
+(defn poly-pack []
+  (let [sides (dr/weighted {4 3
+                            5 2
+                            6 2
+                            7 1
+                            8 1})
+        scale (dr/random 0.9 0.99)
+        dt (dr/random 0.01 0.1)
+        base (-> (poly/regular-n-gon sides (* 0.49 height))
                  (g/translate (rv 0.5 0.5)))]
-    (->> {:r base :i 0}
+    (->> {:r base :t (dr/random)}
          (iterate
-          (fn [{:keys [r i] :as s}]
-            (let [{p :p} r
-                  r' (g/scale-size r scale)
-                  {p' :p} r'
-                  move-ul (tm/- p p')
-                  move-lr (tm/- p' p)
-                  move
-                  (case (mod i 4)
-                    0 move-ul
-                    1 (gv/vec2 (:x move-lr) (:y move-ul))
-                    2 move-lr
-                    3 (gv/vec2 (:x move-ul) (:y move-lr)))]
+          (fn [{:keys [r t] :as s}]
+            (let [r' (g/scale-size r scale)
+                  pr (g/point-at r (mod t 1.0))
+                  pr' (g/point-at r' (mod t 1.0))]
               (-> s
-                  (assoc :r (g/translate r' (tm/* move 0.66)))
-                  (update :i inc)))))
+                  (assoc :r (g/translate r' (tm/- pr' pr)))
+                  (update :t + dt)))))
          (take-while (fn [{:keys [r]}] (> (g/area r) 10.0)))
          (map :r))))
 
@@ -87,9 +86,9 @@
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-    ((dr/weighted {spiral-inside 3
+    ((dr/weighted {spiral-inside 1
                    spiral-surrounding 1
-                   box-pack 1}))))
+                   poly-pack 1}))))
 
 (sketch/definition spiral-pack
   {:created-at "2022-03-13"
