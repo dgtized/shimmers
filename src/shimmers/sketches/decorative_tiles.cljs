@@ -207,8 +207,19 @@
     (min (if limit-overlap depth 9)
          depth)))
 
+(def palettes
+  (->> (palette/from-urls
+        ["https://artsexperiments.withgoogle.com/artpalette/colors/f8ce32-525456-f4f3f3-66debf-d51f07"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/2cb4c8-e7b9a6-5b463c-dc6031-a4bfc1"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/abb6ba-803f37-e0a964-355b83-b37958"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/4585b3-cec69a-479186-cc989d-5dacaa"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/ece39f-f1a39e-8aaccd-5fa6aa-cddcd3"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/150d0a-e8dfda-ca202a-420f11-99292f"
+         "https://artsexperiments.withgoogle.com/artpalette/colors/69d4d3-ccf5ee-020804-0b4736-389b84"])
+       (into radial-mosaic/palettes)))
+
 (defn page []
-  (let [palette (dr/rand-nth radial-mosaic/palettes)
+  (let [palette (dr/rand-nth palettes)
         plan (vec (repeatedly 11 (gen-shape palette)))]
     (fn []
       (let [settings @ui-state
