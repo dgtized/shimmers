@@ -11,7 +11,8 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -54,14 +55,41 @@
          (take-while (fn [{:keys [r]}] (> r 4.0)))
          (map :circle))))
 
+(defn box-pack []
+  (let [size (* height 0.95)
+        scale 0.9
+        base (-> (rect/rect size)
+                 (g/center)
+                 (g/translate (rv 0.5 0.5)))]
+    (->> {:r base :i 0}
+         (iterate
+          (fn [{:keys [r i] :as s}]
+            (let [{p :p} r
+                  r' (g/scale-size r scale)
+                  {p' :p} r'
+                  move-ul (tm/- p p')
+                  move-lr (tm/- p' p)
+                  move
+                  (case (mod i 4)
+                    0 move-ul
+                    1 (gv/vec2 (:x move-lr) (:y move-ul))
+                    2 move-lr
+                    3 (gv/vec2 (:x move-ul) (:y move-lr)))]
+              (-> s
+                  (assoc :r (g/translate r' (tm/* move 0.66)))
+                  (update :i inc)))))
+         (take-while (fn [{:keys [r]}] (> (g/area r) 10.0)))
+         (map :r))))
+
 (defn scene []
   (csvg/svg {:width width
              :height height
              :stroke "black"
              :fill "none"
              :stroke-width 0.5}
-    ((dr/weighted {spiral-inside 2
-                   spiral-surrounding 1}))))
+    ((dr/weighted {spiral-inside 3
+                   spiral-surrounding 1
+                   box-pack 1}))))
 
 (sketch/definition spiral-pack
   {:created-at "2022-03-13"
