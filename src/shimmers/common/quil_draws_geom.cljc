@@ -9,14 +9,14 @@
      [thi.ng.geom.types])
     (:import
      (shimmers.math.geometry.group Group)
-     (thi.ng.geom.types Circle2 Polygon2 Rect2 Triangle2))]
+     (thi.ng.geom.types Line2 Circle2 Polygon2 Rect2 Triangle2))]
    :cljs
    [(:require
      [quil.core :as q :include-macros true]
      [shimmers.common.quil :as cq]
      [shimmers.math.geometry.group :refer [Group]]
      [thi.ng.geom.core :as g]
-     [thi.ng.geom.types :refer [Circle2 Polygon2 Rect2 Triangle2]])]))
+     [thi.ng.geom.types :refer [Line2 Circle2 Polygon2 Rect2 Triangle2]])]))
 
 (defprotocol QuilDrawGeom
   (draw [s])
@@ -38,6 +38,10 @@
   QuilDrawGeom
   (draw [s] (cq/rectangle s))
   (contour-draw [s] (draw-contour (g/vertices s))))
+
+(extend-type Line2
+  QuilDrawGeom
+  (draw [s] (apply q/line (g/vertices s))))
 
 (extend-type Triangle2
   QuilDrawGeom
