@@ -38,6 +38,7 @@
    shimmers.sketches.cube-rotations
    shimmers.sketches.curvature-of-space
    shimmers.sketches.cut-and-slide
+   shimmers.sketches.cutouts
    shimmers.sketches.dance-patterns
    shimmers.sketches.decaying-foundations
    shimmers.sketches.decorative-tiles
