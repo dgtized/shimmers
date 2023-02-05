@@ -16,9 +16,9 @@
 (defn shapes []
   (mapcat (fn [[x0 x1]]
             (map (fn [[y0 y1]]
-                   (let [sx (dr/random 0.005 0.015)
-                         sy (dr/random 0.005 0.01)
-                         r (dr/random 4.0)]
+                   (let [sx (dr/random 0.005 (* 0.33 (- x1 x0)))
+                         sy (dr/random 0.005 (* 0.2 (- y1 y0)))
+                         r (dr/random 8.0)]
                      (vary-meta (rect/rect (rv (+ x0 sx) (+ y0 sy))
                                            (rv (- x1 sx) (- y1 sy)))
                                 assoc :rx r :ry r)))
