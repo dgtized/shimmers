@@ -72,10 +72,10 @@
          (iterate
           (fn [{:keys [r t] :as s}]
             (let [r' (g/scale-size r scale)
-                  pr (g/point-at r (mod t 1.0))
-                  pr' (g/point-at r' (mod t 1.0))]
+                  move (tm/- (g/point-at r' (mod t 1.0))
+                             (g/point-at r (mod t 1.0)))]
               (-> s
-                  (assoc :r (g/translate r' (tm/- pr' pr)))
+                  (assoc :r (g/translate r' move))
                   (update :t + dt)))))
          (take-while (fn [{:keys [r]}] (> (g/area r) 10.0)))
          (map :r))))
