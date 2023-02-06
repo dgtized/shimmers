@@ -29,10 +29,30 @@
                     gl/linestrip2)]
     {:turrets [(generate-turret (g/point-at ground (dr/random 0.05 0.45)))
                (generate-turret (g/point-at ground (dr/random 0.55 0.95)))]
+     :projectiles []
      :ground ground}))
 
-(defn update-state [state]
-  state)
+(defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
+  (if (and (< (count projectiles) 5) (dr/chance 0.05))
+    (let [{:keys [pos dir]} (dr/rand-nth turrets)]
+      (update state :projectiles conj
+              (->Shell (tm/+ pos (tm/* dir 4.0))
+                       (tm/* dir (dr/random 6 11))
+                       3.0)))
+    state))
+
+(defn update-projectile [ground dt {:keys [pos vel] :as projectile}]
+  (if (> (:y pos) (:y (g/point-at ground (/ (:x pos) (q/width)))))
+    nil
+    (-> projectile
+        (update :pos tm/+ vel)
+        (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99))))))
+
+(defn update-state [{:keys [ground] :as state}]
+  (let [dt 0.01]
+    (-> state
+        maybe-add-projectile
+        (update :projectiles (partial keep (partial update-projectile ground dt))))))
 
 (defn turret-shapes [{:keys [pos dir]}]
   (let [s (cq/rel-h 0.015)]
@@ -41,8 +61,9 @@
          (g/translate pos))
      (gl/line2 pos (tm/+ pos (tm/* dir (* 1.1 s))))]))
 
-(defn draw [{:keys [ground turrets]}]
+(defn draw [{:keys [ground turrets projectiles]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
 
   (let [verts (g/vertices ground)]
     (cq/draw-curve-path
@@ -52,7 +73,10 @@
 
   (doseq [turret turrets]
     (doseq [s (turret-shapes turret)]
-      (qdg/draw s))))
+      (qdg/draw s)))
+
+  (doseq [{:keys [pos mass]} projectiles]
+    (cq/circle pos mass)))
 
 (sketch/defquil ballistics
   :created-at "2023-02-05"
