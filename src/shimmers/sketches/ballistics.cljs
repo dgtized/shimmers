@@ -46,12 +46,21 @@
                        3.0)))
     state))
 
-(defn update-projectile [ground dt {:keys [pos vel] :as projectile}]
-  (if (> (:y pos) (:y (g/point-at ground (/ (:x pos) (q/width)))))
-    nil
-    (-> projectile
-        (update :pos tm/+ vel)
-        (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99))))))
+(defn update-projectile [ground dt {:keys [pos vel flash mass] :as projectile}]
+  (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))]
+    (cond (and flash (<= flash 0))
+          nil
+          (and flash (> flash 0))
+          (update projectile :flash dec)
+          (> (:y (tm/+ pos vel)) (:y ground-point))
+          (-> projectile
+              (assoc :vel (gv/vec2)
+                     :pos (gv/vec2 (:x pos) (- (:y ground-point) (* 0.9 mass)))
+                     :flash (dr/random-int 4 7)))
+          :else
+          (-> projectile
+              (update :pos tm/+ vel)
+              (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))))
 
 (defn update-directions [_dt turrets]
   (map (fn [{:keys [dir target angle-vel] :as turret}]
@@ -95,8 +104,11 @@
     (doseq [s (turret-shapes turret)]
       (qdg/draw s)))
 
-  (doseq [{:keys [pos mass]} projectiles]
-    (cq/circle pos mass)))
+  (doseq [{:keys [pos mass flash]} projectiles]
+    (cq/circle pos
+               (if (> flash 0)
+                 (dr/random (* 0.8 mass) (* 2.5 mass))
+                 mass))))
 
 (sketch/defquil ballistics
   :created-at "2023-02-05"
