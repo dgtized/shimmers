@@ -5,7 +5,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.control :as control]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -13,13 +17,14 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defrecord Turret [pos dir])
+(defrecord Turret [pos dir target angle-vel])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
-  (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))]
-    (->Turret p (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p)))))
+  (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
+        dir (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p))]
+    (->Turret p dir dir 0.0)))
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
@@ -33,7 +38,7 @@
      :ground ground}))
 
 (defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
-  (if (and (< (count projectiles) 5) (dr/chance 0.05))
+  (if (and (< (count projectiles) 10) (dr/chance 0.02))
     (let [{:keys [pos dir]} (dr/rand-nth turrets)]
       (update state :projectiles conj
               (->Shell (tm/+ pos (tm/* dir 4.0))
@@ -48,11 +53,26 @@
         (update :pos tm/+ vel)
         (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99))))))
 
+(defn update-directions [dt turrets]
+  (map (fn [{:keys [dir target angle-vel] :as turret}]
+         (let [adir (g/heading dir)
+               atarget (g/heading target)]
+           (if (< (sm/radial-distance adir atarget) 0.01)
+             (if (dr/chance 0.99)
+               turret
+               (assoc turret :target (v/polar 1.0 (dr/random Math/PI eq/TAU))))
+             (let [angle-acc (control/angular-acceleration adir atarget 0.05 angle-vel)]
+               (-> turret
+                   (assoc :angle-vel (+ angle-vel angle-acc))
+                   (update :dir g/rotate (* 0.25 angle-vel)))))))
+       turrets))
+
 (defn update-state [{:keys [ground] :as state}]
   (let [dt 0.01]
     (-> state
         maybe-add-projectile
-        (update :projectiles (partial keep (partial update-projectile ground dt))))))
+        (update :projectiles (partial keep (partial update-projectile ground dt)))
+        (update :turrets (partial update-directions dt)))))
 
 (defn turret-shapes [{:keys [pos dir]}]
   (let [s (cq/rel-h 0.015)]
