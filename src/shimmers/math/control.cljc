@@ -8,6 +8,7 @@
           (> delta Math/PI) (- delta eq/TAU)
           :else delta)))
 
+;; see also https://gamedev.stackexchange.com/questions/1885/target-tracking-when-to-accelerate-and-decelerate-a-rotating-turret
 (defn angular-acceleration [angle target control angle-vel]
   (let [delta (angular-delta angle target)]
     (- (* control delta)

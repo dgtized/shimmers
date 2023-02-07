@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -49,19 +50,15 @@
   (-> brush
       (update :bristles (partial mapv (fn [b] (geometry/rotate-around-centroid b t))))))
 
-;; see also https://gamedev.stackexchange.com/questions/1885/target-tracking-when-to-accelerate-and-decelerate-a-rotating-turret
 (defn follow [{:keys [point facing vel angle-vel] :as brush} target dt]
   (let [dir (tm/- target point)
         dv (tm/* dir (/ (* 0.2 dt) (tm/mag dir)))
         vel' (tm/* (tm/+ vel dv) 0.99)
         pos' (tm/+ point (tm/* vel dt))
-        delta-angle (let [delta (- (g/heading dir) (g/heading facing))]
-                      (cond (< delta (- Math/PI)) (+ delta eq/TAU)
-                            (> delta Math/PI) (- delta eq/TAU)
-                            :else delta))
-        angle-control 0.0001
-        angle-acc (* dt (- (* angle-control delta-angle)
-                           (* (* 2 (Math/sqrt angle-control)) angle-vel)))
+        angle-acc
+        (* (control/angular-acceleration (g/heading dir) (g/heading facing)
+                                         0.0001 angle-vel)
+           dt)
         angle-vel' (+ angle-vel angle-acc)]
     (-> brush
         (translate-brush (tm/- pos' point))
