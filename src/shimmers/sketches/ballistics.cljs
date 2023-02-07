@@ -53,7 +53,7 @@
         (update :pos tm/+ vel)
         (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99))))))
 
-(defn update-directions [dt turrets]
+(defn update-directions [_dt turrets]
   (map (fn [{:keys [dir target angle-vel] :as turret}]
          (let [adir (g/heading dir)
                atarget (g/heading target)]
