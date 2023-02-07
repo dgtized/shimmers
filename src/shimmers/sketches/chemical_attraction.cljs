@@ -5,9 +5,9 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.math.control :as control]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -50,22 +50,6 @@
 (defn outward-face [p q]
   (g/normal (tm/- q p)))
 
-(defn angular-delta [angle target]
-  (let [delta (- target angle)]
-    (cond (< delta (- Math/PI)) (+ delta eq/TAU)
-          (> delta Math/PI) (- delta eq/TAU)
-          :else delta)))
-
-(defn angular-acceleration [angle target control angle-vel]
-  (let [delta (angular-delta angle target)]
-    (- (* control delta)
-       (* (* 2 (Math/sqrt control)) angle-vel))))
-
-(defn force-accel [pos target control velocity]
-  (let [dir (tm/- target pos)]
-    (tm/- (tm/* dir control)
-          (tm/* velocity (* 2 (Math/sqrt control))))))
-
 (defn attract-and-bind [{:keys [structure shapes] :as state}]
   (let [faces (mapcat g/edges structure)
         control 0.1
@@ -79,8 +63,8 @@
                 structure-angle (g/heading (outward-face close-p close-q))
                 facing-angle (g/heading (tm/- (outward-face face-p face-q)))
                 radial-dist (sm/radial-distance facing-angle structure-angle)
-                angle-acc (angular-acceleration facing-angle structure-angle control angle-vel)
-                acc (force-accel mid-face mid-structure control vel)
+                angle-acc (control/angular-acceleration facing-angle structure-angle control angle-vel)
+                acc (control/force-accel mid-face mid-structure control vel)
                 close-to-bond? (and (< (g/dist mid-face mid-structure) 0.5) (< radial-dist 0.1))
                 ;; TODO: actually do collision to avoid internal shapes?
                 bonding? (and close-to-bond? (not-any? (fn [s] (g/contains-point? s center)) structure))
