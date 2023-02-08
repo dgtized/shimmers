@@ -26,14 +26,20 @@
         dir (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p))]
     (->Turret p dir dir 0.0)))
 
+(defn make-turrets [ground n]
+  (let [margin 0.02]
+    (for [i (range n)
+          :let [p (dr/random (+ (/ (float i) n) margin)
+                             (- (/ (float (inc i)) n) margin))]]
+      (generate-turret (g/point-at ground p)))))
+
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
   (let [ground (->> (concat [0.0] (dr/gaussian-range 0.03 0.01) [1.0])
                     (mapv (fn [x] (cq/rel-vec x (- 1.0 (* 0.4 (q/noise (* 4 x) 0.5))))))
                     gl/linestrip2)]
-    {:turrets [(generate-turret (g/point-at ground (dr/random 0.05 0.45)))
-               (generate-turret (g/point-at ground (dr/random 0.55 0.95)))]
+    {:turrets (make-turrets ground (dr/random-int 2 7))
      :projectiles []
      :ground ground}))
 
