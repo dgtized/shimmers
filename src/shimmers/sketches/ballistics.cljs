@@ -134,7 +134,8 @@
            length (* 1.25 s (tm/mag dir))]
        (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
            (g/rotate (g/heading dir))
-           (g/translate pos)))
+           (g/translate pos)
+           (assoc :fill 1.0)))
      (-> (rect/rect (* -0.5 health-w) (* 0.8 s) health-w (* 0.4 s))
          (g/translate pos)
          (assoc :fill 1.0))
