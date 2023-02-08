@@ -27,7 +27,7 @@
     (->Turret p dir dir 0.0)))
 
 (defn make-turrets [ground n]
-  (let [margin 0.02]
+  (let [margin (* 0.08 (/ 1.0 n))]
     (for [i (range n)
           :let [p (dr/random (+ (/ (float i) n) margin)
                              (- (/ (float (inc i)) n) margin))]]
