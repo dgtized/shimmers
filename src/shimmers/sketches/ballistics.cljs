@@ -17,14 +17,14 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defrecord Turret [health pos dir target angle-vel])
+(defrecord Turret [health pos dir angle-target angle-vel])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
         dir (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p dir dir 0.0)))
+    (->Turret 1.0 p dir (g/heading dir) 0.0)))
 
 (defn make-turrets [ground n]
   (let [margin (* 0.08 (/ 1.0 n))]
@@ -94,21 +94,21 @@
           exploding))
 
 (defn update-directions [_dt exploding turrets]
-  (keep (fn [{:keys [pos dir target angle-vel health] :as turret}]
-          (let [adir (g/heading dir)
-                atarget (g/heading target)
+  (keep (fn [{:keys [pos dir angle-target angle-vel health] :as turret}]
+          (let [angle-dir (g/heading dir)
                 damage (exploding-damage pos exploding)]
             (cond (< health 0.0)
                   nil
                   (> damage 0)
                   (update turret :health - damage)
                   :else
-                  (if (< (sm/radial-distance adir atarget) 0.01)
+                  (if (< (sm/radial-distance angle-dir angle-target) 0.01)
                     (if (dr/chance 0.95)
                       turret
                       (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
-                        (assoc turret :target (v/polar 1.0 angle))))
-                    (let [angle-acc (control/angular-acceleration adir atarget 0.05 angle-vel)]
+                        (assoc turret :angle-target angle)))
+                    (let [angle-acc (control/angular-acceleration angle-dir angle-target
+                                                                  0.05 angle-vel)]
                       (-> turret
                           (assoc :angle-vel (+ angle-vel angle-acc))
                           (update :dir g/rotate (* 0.25 angle-vel))))))))
