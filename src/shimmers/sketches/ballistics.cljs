@@ -25,14 +25,14 @@
 (defn explode-dist [mass]
   (* 5.0 mass))
 
-(defrecord Turret [health pos dir angle-target angle-vel])
+(defrecord Turret [health pos dir angle-target angle-vel target])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
         dir (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p dir (g/heading dir) 0.0)))
+    (->Turret 1.0 p dir (g/heading dir) 0.0 nil)))
 
 (defn make-turrets [ground n]
   (let [margin (* 0.08 (/ 1.0 n))]
@@ -91,8 +91,8 @@
            seq
            dr/rand-nth))
 
-(defn firing-range [margin {:keys [pos] :as turret} turrets]
-  (when-let [target (pick-target turret turrets)]
+(defn firing-range [margin {:keys [pos target]}]
+  (when target
     (let [target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
                                  (* 0.5 eq/TAU) eq/TAU)]
       (if (> target-angle (* eq/TAU 0.75))
@@ -119,10 +119,11 @@
           (> damage 0)
           (update turret :health - damage)
           (< (sm/radial-distance angle-dir angle-target) 0.01)
-          (if (dr/chance 0.95)
-            turret
-            (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
-              (assoc turret :angle-target angle)))
+          (let [turret (assoc turret :target (pick-target turret turrets))]
+            (if (dr/chance 0.95)
+              turret
+              (let [angle (apply dr/random (firing-range 0.02 turret))]
+                (assoc turret :angle-target angle))))
           :else
           (let [angle-acc (control/angular-acceleration angle-dir angle-target
                                                         0.6 angle-vel)]
