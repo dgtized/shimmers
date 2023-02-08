@@ -113,17 +113,17 @@
                   nil
                   (> damage 0)
                   (update turret :health - damage)
+                  (< (sm/radial-distance angle-dir angle-target) 0.01)
+                  (if (dr/chance 0.95)
+                    turret
+                    (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
+                      (assoc turret :angle-target angle)))
                   :else
-                  (if (< (sm/radial-distance angle-dir angle-target) 0.01)
-                    (if (dr/chance 0.95)
-                      turret
-                      (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
-                        (assoc turret :angle-target angle)))
-                    (let [angle-acc (control/angular-acceleration angle-dir angle-target
-                                                                  0.6 angle-vel)]
-                      (-> turret
-                          (assoc :angle-vel (+ angle-vel angle-acc))
-                          (update :dir g/rotate (* dt angle-vel))))))))
+                  (let [angle-acc (control/angular-acceleration angle-dir angle-target
+                                                                0.6 angle-vel)]
+                    (-> turret
+                        (assoc :angle-vel (+ angle-vel angle-acc))
+                        (update :dir g/rotate (* dt angle-vel)))))))
         turrets))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
