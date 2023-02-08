@@ -67,12 +67,12 @@
                        mass)))
     state))
 
-(defn update-projectile [ground turrets dt {:keys [pos vel flash mass] :as projectile}]
+(defn update-projectile [ground turrets dt {:keys [pos vel explode mass] :as projectile}]
   (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))]
-    (cond (and flash (<= flash 0))
+    (cond (and explode (<= explode 0))
           nil
-          (and flash (> flash 0))
-          (update projectile :flash dec)
+          (and explode (> explode 0))
+          (update projectile :explode dec)
           (or (> (:y (tm/+ pos vel)) (:y ground-point))
               (some (fn [{turret :pos}]
                       (< (g/dist turret pos) (contact-dist mass)))
@@ -80,7 +80,7 @@
           (-> projectile
               (assoc :vel (gv/vec2)
                      ;; :pos (gv/vec2 (:x pos) (- (:y ground-point) (* 0.9 mass)))
-                     :flash (dr/random-int 4 8)))
+                     :explode (dr/random-int 4 8)))
           :else
           (-> projectile
               (update :pos tm/+ vel)
@@ -129,7 +129,7 @@
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
-        exploding (filter (fn [{:keys [flash]}] (> flash 0)) projectiles)]
+        exploding (filter (fn [{:keys [explode]}] (> explode 0)) projectiles)]
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
       (-> state
@@ -175,9 +175,9 @@
       (qdg/draw s)))
 
   (q/fill 0.25)
-  (doseq [{:keys [pos mass flash]} projectiles]
+  (doseq [{:keys [pos mass explode]} projectiles]
     (cq/circle pos
-               (if (> flash 0)
+               (if (> explode 0)
                  (dr/random (* 0.5 mass) (* 3.0 mass))
                  mass))))
 
