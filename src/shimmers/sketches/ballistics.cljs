@@ -16,6 +16,15 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn start-dist [mass]
+  (* 2.0 mass))
+
+(defn contact-dist [mass]
+  (* 1.5 mass))
+
+(defn explode-dist [mass]
+  (* 5.0 mass))
+
 (defrecord Turret [health pos dir angle-target angle-vel])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
@@ -48,11 +57,14 @@
 (defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
   (if (and (< (count projectiles) 12) (dr/chance 0.03))
     (let [{:keys [pos dir]} (dr/rand-nth turrets)
-          muzzle-velocity (tm/* dir (dr/random-int 4 13))]
+          muzzle-velocity (tm/* dir (dr/random-int 4 13))
+          mass (dr/weighted {3.0 2.0
+                             3.5 1.5
+                             4.0 1.0})]
       (update state :projectiles conj
-              (->Shell (tm/+ pos (tm/* dir 5.0))
+              (->Shell (tm/+ pos (tm/* dir (start-dist mass)))
                        muzzle-velocity
-                       3.0)))
+                       mass)))
     state))
 
 (defn update-projectile [ground turrets dt {:keys [pos vel flash mass] :as projectile}]
@@ -62,10 +74,12 @@
           (and flash (> flash 0))
           (update projectile :flash dec)
           (or (> (:y (tm/+ pos vel)) (:y ground-point))
-              (some (fn [{turret :pos}] (< (g/dist turret pos) (* 1.5 mass))) turrets))
+              (some (fn [{turret :pos}]
+                      (< (g/dist turret pos) (contact-dist mass)))
+                    turrets))
           (-> projectile
               (assoc :vel (gv/vec2)
-                     :pos (gv/vec2 (:x pos) (- (:y ground-point) (* 0.9 mass)))
+                     ;; :pos (gv/vec2 (:x pos) (- (:y ground-point) (* 0.9 mass)))
                      :flash (dr/random-int 4 8)))
           :else
           (-> projectile
@@ -86,7 +100,7 @@
 (defn exploding-damage [turret-pos exploding]
   (reduce (fn [tot {:keys [pos mass]}]
             (let [dist (g/dist turret-pos pos)]
-              (if (< dist (* 5.0 mass))
+              (if (< dist (explode-dist mass))
                 (+ tot (/ mass (* dist dist)))
                 tot)))
           0.0
@@ -164,7 +178,7 @@
   (doseq [{:keys [pos mass flash]} projectiles]
     (cq/circle pos
                (if (> flash 0)
-                 (dr/random (* 0.8 mass) (* 2.5 mass))
+                 (dr/random (* 0.5 mass) (* 3.0 mass))
                  mass))))
 
 (sketch/defquil ballistics
