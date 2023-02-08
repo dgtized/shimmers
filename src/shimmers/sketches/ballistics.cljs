@@ -79,7 +79,6 @@
                     turrets))
           (-> projectile
               (assoc :vel (gv/vec2)
-                     ;; :pos (gv/vec2 (:x pos) (- (:y ground-point) (* 0.9 mass)))
                      :explode (dr/random-int 4 8)))
           :else
           (-> projectile
