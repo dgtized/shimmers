@@ -105,26 +105,26 @@
           0.0
           exploding))
 
-(defn update-directions [dt exploding turrets]
-  (keep (fn [{:keys [pos dir angle-target angle-vel health] :as turret}]
-          (let [angle-dir (g/heading dir)
-                damage (exploding-damage pos exploding)]
-            (cond (< health 0.0)
-                  nil
-                  (> damage 0)
-                  (update turret :health - damage)
-                  (< (sm/radial-distance angle-dir angle-target) 0.01)
-                  (if (dr/chance 0.95)
-                    turret
-                    (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
-                      (assoc turret :angle-target angle)))
-                  :else
-                  (let [angle-acc (control/angular-acceleration angle-dir angle-target
-                                                                0.6 angle-vel)]
-                    (-> turret
-                        (assoc :angle-vel (+ angle-vel angle-acc))
-                        (update :dir g/rotate (* dt angle-vel)))))))
-        turrets))
+(defn update-turret
+  [exploding turrets dt
+   {:keys [pos dir angle-target angle-vel health] :as turret}]
+  (let [angle-dir (g/heading dir)
+        damage (exploding-damage pos exploding)]
+    (cond (< health 0.0)
+          nil
+          (> damage 0)
+          (update turret :health - damage)
+          (< (sm/radial-distance angle-dir angle-target) 0.01)
+          (if (dr/chance 0.95)
+            turret
+            (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
+              (assoc turret :angle-target angle)))
+          :else
+          (let [angle-acc (control/angular-acceleration angle-dir angle-target
+                                                        0.6 angle-vel)]
+            (-> turret
+                (assoc :angle-vel (+ angle-vel angle-acc))
+                (update :dir g/rotate (* dt angle-vel)))))))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
@@ -134,7 +134,7 @@
       (-> state
           maybe-add-projectile
           (update :projectiles (partial keep (partial update-projectile ground turrets dt)))
-          (update :turrets (partial update-directions dt exploding))))))
+          (update :turrets (partial keep (partial update-turret exploding turrets dt)))))))
 
 (defn turret-shapes [{:keys [pos dir health]}]
   (let [s (cq/rel-h 0.015)
