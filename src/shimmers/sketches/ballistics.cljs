@@ -38,11 +38,11 @@
      :ground ground}))
 
 (defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
-  (if (and (< (count projectiles) 10) (dr/chance 0.02))
+  (if (and (< (count projectiles) 12) (dr/chance 0.03))
     (let [{:keys [pos dir]} (dr/rand-nth turrets)
           muzzle-velocity (tm/* dir (dr/random-int 4 13))]
       (update state :projectiles conj
-              (->Shell pos
+              (->Shell (tm/+ pos (tm/* dir 3.0))
                        muzzle-velocity
                        3.0)))
     state))
