@@ -89,7 +89,11 @@
     [(-> (rect/rect 0 0 (* tm/PHI s) s)
          g/center
          (g/translate pos))
-     (gl/line2 pos (tm/+ pos (tm/* dir (* 1.1 s))))]))
+     (let [barrel-width (* 0.33 s)
+           length (* 1.25 s (tm/mag dir))]
+       (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
+           (g/rotate (g/heading dir))
+           (g/translate pos)))]))
 
 (defn draw [{:keys [ground turrets projectiles]}]
   (q/background 1.0)
