@@ -20,7 +20,7 @@
   (* 2.0 mass))
 
 (defn contact-dist [mass]
-  (* 1.5 mass))
+  (* tm/PHI mass))
 
 (defn explode-dist [mass]
   (* 5.0 mass))
@@ -100,7 +100,7 @@
   (reduce (fn [tot {:keys [pos mass]}]
             (let [dist (g/dist turret-pos pos)]
               (if (< dist (explode-dist mass))
-                (+ tot (/ mass (* dist dist)))
+                (+ tot (/ (* 3 mass) (* dist dist)))
                 tot)))
           0.0
           exploding))
