@@ -85,16 +85,20 @@
               (update :pos tm/+ vel)
               (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))))
 
-(defn firing-range [margin {:keys [pos]} turrets]
-  (let [candidates (remove (fn [other] (< (g/dist pos (:pos other)) 1.0)) turrets)]
-    (if (seq candidates)
-      (let [target (dr/rand-nth candidates)
-            target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
-                                   (* 0.5 eq/TAU) eq/TAU)]
-        (if (> target-angle (* eq/TAU 0.75))
-          [(+ (* eq/TAU 0.75) margin) target-angle]
-          [target-angle (- (* eq/TAU 0.75) margin)]))
-      [(* 0.5 eq/TAU) eq/TAU])))
+(defn pick-target [{:keys [pos]} turrets]
+  (some->> turrets
+           (remove (fn [other] (< (g/dist pos (:pos other)) 1.0)))
+           seq
+           dr/rand-nth))
+
+(defn firing-range [margin {:keys [pos] :as turret} turrets]
+  (when-let [target (pick-target turret turrets)]
+    (let [target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
+                                 (* 0.5 eq/TAU) eq/TAU)]
+      (if (> target-angle (* eq/TAU 0.75))
+        [(+ (* eq/TAU 0.75) margin) target-angle]
+        [target-angle (- (* eq/TAU 0.75) margin)]))
+    [(* 0.5 eq/TAU) eq/TAU]))
 
 (defn exploding-damage [turret-pos exploding]
   (reduce (fn [tot {:keys [pos mass]}]
