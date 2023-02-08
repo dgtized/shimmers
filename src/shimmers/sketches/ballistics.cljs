@@ -63,14 +63,24 @@
               (update :pos tm/+ vel)
               (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))))
 
+(defn firing-range [margin {:keys [pos]} turrets]
+  (let [candidates (remove (fn [other] (< (g/dist pos (:pos other)) 1.0)) turrets)
+        target (dr/rand-nth candidates)
+        target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
+                               (* 0.5 eq/TAU) eq/TAU)]
+    (if (> target-angle (* eq/TAU 0.75))
+      [(+ (* eq/TAU 0.75) margin) target-angle]
+      [target-angle (- (* eq/TAU 0.75) margin)])))
+
 (defn update-directions [_dt turrets]
   (map (fn [{:keys [dir target angle-vel] :as turret}]
          (let [adir (g/heading dir)
                atarget (g/heading target)]
            (if (< (sm/radial-distance adir atarget) 0.01)
-             (if (dr/chance 0.99)
+             (if (dr/chance 0.95)
                turret
-               (assoc turret :target (v/polar 1.0 (dr/random Math/PI eq/TAU))))
+               (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
+                 (assoc turret :target (v/polar 1.0 angle))))
              (let [angle-acc (control/angular-acceleration adir atarget 0.05 angle-vel)]
                (-> turret
                    (assoc :angle-vel (+ angle-vel angle-acc))
