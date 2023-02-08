@@ -93,7 +93,7 @@
           0.0
           exploding))
 
-(defn update-directions [_dt exploding turrets]
+(defn update-directions [dt exploding turrets]
   (keep (fn [{:keys [pos dir angle-target angle-vel health] :as turret}]
           (let [angle-dir (g/heading dir)
                 damage (exploding-damage pos exploding)]
@@ -108,10 +108,10 @@
                       (let [angle (apply dr/random (firing-range 0.02 turret turrets))]
                         (assoc turret :angle-target angle)))
                     (let [angle-acc (control/angular-acceleration angle-dir angle-target
-                                                                  0.05 angle-vel)]
+                                                                  0.6 angle-vel)]
                       (-> turret
                           (assoc :angle-vel (+ angle-vel angle-acc))
-                          (update :dir g/rotate (* 0.25 angle-vel))))))))
+                          (update :dir g/rotate (* dt angle-vel))))))))
         turrets))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
