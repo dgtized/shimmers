@@ -55,7 +55,7 @@
   (initial-state))
 
 (defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
-  (if (and (< (count projectiles) 12) (dr/chance 0.03))
+  (if (and (< (count projectiles) 12) (seq turrets) (dr/chance 0.03))
     (let [{:keys [pos dir]} (dr/rand-nth turrets)
           muzzle-velocity (tm/* dir (dr/random-int 4 13))
           mass (dr/weighted {3.0 2.0
