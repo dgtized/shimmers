@@ -219,14 +219,12 @@
           (g/translate pos)
           (assoc :fill 0.0))]
      (if (< health 0.0)
-       (repeatedly (dr/random-int 3)
-                   #(assoc
-                     (if (dr/chance 0.33)
-                       (gc/circle pos (dr/random 5.0 15.0))
-                       (gc/circle (v/+polar pos (tm/clamp (dr/gaussian (* 2.0 s) s) s (* 9 s))
-                                            (dr/random (* 0.5 eq/TAU) eq/TAU))
-                                  (dr/random 2.0 4.0)))
-                     :fill (if (dr/chance 0.33) 0.0 1.0)))
+       (repeatedly (dr/random-int 5)
+                   #(let [r (tm/clamp (dr/gaussian 5.0 3.0) 2.0 12.0)
+                          dist (tm/clamp (dr/gaussian (- (* 2.0 s) r) s) 0 (* 8 s))]
+                      (assoc
+                       (gc/circle (v/+polar pos dist (dr/random (* 0.48 eq/TAU) (* 1.02 eq/TAU))) r)
+                       :fill (if (dr/chance 0.33) 0.0 1.0))))
        []))))
 
 (defn draw [{:keys [ground turrets projectiles]}]
