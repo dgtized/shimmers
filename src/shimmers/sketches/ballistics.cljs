@@ -54,18 +54,15 @@
   (q/color-mode :hsl 1.0)
   (initial-state))
 
-(defn maybe-add-projectile [{:keys [projectiles turrets] :as state}]
-  (if (and (< (count projectiles) 12) (seq turrets) (dr/chance 0.03))
-    (let [{:keys [pos dir]} (dr/rand-nth turrets)
-          muzzle-velocity (tm/* dir (dr/random-int 4 13))
-          mass (dr/weighted {3.0 2.0
-                             3.5 1.5
-                             4.0 1.0})]
-      (update state :projectiles conj
-              (->Shell (tm/+ pos (tm/* dir (start-dist mass)))
-                       muzzle-velocity
-                       mass)))
-    state))
+(defn fire-projectile [state {:keys [pos dir]}]
+  (let [muzzle-velocity (tm/* dir (dr/random-int 4 13))
+        mass (dr/weighted {3.0 2.0
+                           3.5 1.5
+                           4.0 1.0})]
+    (update state :projectiles conj
+            (->Shell (tm/+ pos (tm/* dir (start-dist mass)))
+                     muzzle-velocity
+                     mass))))
 
 (defn update-projectile [ground turrets dt {:keys [pos vel explode mass] :as projectile}]
   (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))]
@@ -118,10 +115,10 @@
 
 (defn rotate-turret [{:keys [angle-target angle-vel] :as turret} angle-dir dt]
   (let [angle-acc (control/angular-acceleration angle-dir angle-target
-                                                0.6 angle-vel)]
+                                                (* 0.2 dt) angle-vel)]
     (-> turret
         (assoc :angle-vel (+ angle-vel angle-acc))
-        (update :dir g/rotate (* dt angle-vel)))))
+        (update :dir g/rotate angle-vel))))
 
 (defn adjust-angle [turret]
   (let [angle (apply dr/random (firing-range 0.02 turret))]
@@ -144,20 +141,24 @@
               (rotate-turret angle-dir dt)
               new-target?
               (assoc :target (pick-target turret turrets))
-              (or new-target? (dr/chance 0.05))
+              (or new-target? (dr/chance 0.005))
               (adjust-angle))]
-        (update state :turrets conj turret')))))
+        (cond-> state
+          true (update :turrets conj turret')
+          (and (not (or rotating? new-target?))
+               (< (count (:projectiles state)) 16)
+               (dr/chance 0.03))
+          (fire-projectile turret))))))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
         exploding (filter (fn [{:keys [explode]}] (> explode 0)) projectiles)]
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
-      (let [state' (-> state
-                       maybe-add-projectile
-                       (update :projectiles (partial keep (partial update-projectile ground turrets dt))))]
+      (as-> state state
+        (update state :projectiles (partial keep (partial update-projectile ground turrets dt)))
         (reduce (update-turret exploding turrets dt)
-                (assoc state' :turrets [])
+                (assoc state :turrets [])
                 turrets)))))
 
 (defn turret-shapes [{:keys [pos dir health]}]
