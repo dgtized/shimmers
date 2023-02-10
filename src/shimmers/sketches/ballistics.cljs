@@ -110,36 +110,39 @@
           exploding))
 
 (defn update-turret
-  [exploding turrets dt
-   {:keys [pos dir angle-target angle-vel health] :as turret}]
-  (let [angle-dir (g/heading dir)
-        damage (exploding-damage pos exploding)]
-    (cond (< health 0.0)
-          nil
-          (> damage 0)
-          (update turret :health - damage)
-          (< (sm/radial-distance angle-dir angle-target) 0.01)
-          (let [turret (assoc turret :target (pick-target turret turrets))]
-            (if (dr/chance 0.95)
-              turret
-              (let [angle (apply dr/random (firing-range 0.02 turret))]
-                (assoc turret :angle-target angle))))
-          :else
-          (let [angle-acc (control/angular-acceleration angle-dir angle-target
-                                                        0.6 angle-vel)]
-            (-> turret
-                (assoc :angle-vel (+ angle-vel angle-acc))
-                (update :dir g/rotate (* dt angle-vel)))))))
+  [exploding turrets dt]
+  (fn [state {:keys [pos dir angle-target angle-vel health] :as turret}]
+    (if (< health 0.0)
+      state
+      (let [angle-dir (g/heading dir)
+            damage (exploding-damage pos exploding)
+            turret' (cond (> damage 0)
+                          (update turret :health - damage)
+                          (< (sm/radial-distance angle-dir angle-target) 0.01)
+                          (let [turret (assoc turret :target (pick-target turret turrets))]
+                            (if (dr/chance 0.95)
+                              turret
+                              (let [angle (apply dr/random (firing-range 0.02 turret))]
+                                (assoc turret :angle-target angle))))
+                          :else
+                          (let [angle-acc (control/angular-acceleration angle-dir angle-target
+                                                                        0.6 angle-vel)]
+                            (-> turret
+                                (assoc :angle-vel (+ angle-vel angle-acc))
+                                (update :dir g/rotate (* dt angle-vel)))))]
+        (update state :turrets conj turret')))))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
         exploding (filter (fn [{:keys [explode]}] (> explode 0)) projectiles)]
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
-      (-> state
-          maybe-add-projectile
-          (update :projectiles (partial keep (partial update-projectile ground turrets dt)))
-          (update :turrets (partial keep (partial update-turret exploding turrets dt)))))))
+      (let [state' (-> state
+                       maybe-add-projectile
+                       (update :projectiles (partial keep (partial update-projectile ground turrets dt))))]
+        (reduce (update-turret exploding turrets dt)
+                (assoc state' :turrets [])
+                turrets)))))
 
 (defn turret-shapes [{:keys [pos dir health]}]
   (let [s (cq/rel-h 0.015)
