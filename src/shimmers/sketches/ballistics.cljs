@@ -137,11 +137,16 @@
           damage (exploding-damage pos exploding)
           rotating? (> (sm/radial-distance angle angle-target) 0.01)
           new-target? (no-target? target turrets)
-          firing? (and alive?
-                       (<= firing-cycle 0.0)
-                       (not (or rotating? new-target?))
-                       (< (count (:projectiles state)) 16)
-                       (dr/chance 0.25))
+          can-fire? (and alive?
+                         (<= firing-cycle 0.0)
+                         (not (or rotating? new-target?))
+                         (< (count (:projectiles state)) 16))
+          firing? (and can-fire? (dr/chance 0.25))
+          status (->> [(when rotating? :rotating)
+                       (when new-target? :new-target)
+                       (when can-fire? :can-fire)]
+                      (keep identity)
+                      set)
           turret'
           (cond-> turret
             (> damage 0)
@@ -157,7 +162,7 @@
             firing?
             (assoc :firing-cycle (dr/random 0.15 0.4)))]
       (cond-> state
-        alive? (update :turrets conj turret')
+        alive? (update :turrets conj (assoc turret' :status status))
         firing? (fire-projectile turret)))))
 
 (defn debug! [{:keys [turrets] :as state}]
