@@ -145,7 +145,7 @@
                          (<= firing-cycle 0.0)
                          (not (or rotating? new-target?))
                          (< (count (:projectiles state)) 16))
-          firing? (and can-fire? (dr/chance 0.15))
+          firing? (and can-fire? (dr/chance 0.1))
           status (->> [(when alive? :alive)
                        (when rotating? :rotating)
                        (when new-target? :new-target)
