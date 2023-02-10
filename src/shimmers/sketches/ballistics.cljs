@@ -132,33 +132,32 @@
 (defn update-turret
   [exploding turrets dt]
   (fn [state {:keys [pos angle angle-target target health firing-cycle] :as turret}]
-    (if (< health 0.0)
-      state
-      (let [damage (exploding-damage pos exploding)
-            rotating? (> (sm/radial-distance angle angle-target) 0.01)
-            new-target? (no-target? target turrets)
-            firing? (and (<= firing-cycle 0.0)
-                         (not (or rotating? new-target?))
-                         (< (count (:projectiles state)) 16)
-                         (dr/chance 0.25))
-            turret'
-            (cond-> turret
-              (> damage 0)
-              (update :health - damage)
-              (> firing-cycle 0)
-              (update :firing-cycle - dt)
-              rotating?
-              (rotate-turret angle dt)
-              new-target?
-              (assoc :target (pick-target turret turrets))
-              (or new-target? (dr/chance 0.005))
-              (adjust-angle)
-              firing?
-              (assoc :firing-cycle (dr/random 0.15 0.4)))]
-        (cond-> state
-          true (update :turrets conj turret')
-          firing?
-          (fire-projectile turret))))))
+    (let [alive? (> health 0.0)
+          damage (exploding-damage pos exploding)
+          rotating? (> (sm/radial-distance angle angle-target) 0.01)
+          new-target? (no-target? target turrets)
+          firing? (and alive?
+                       (<= firing-cycle 0.0)
+                       (not (or rotating? new-target?))
+                       (< (count (:projectiles state)) 16)
+                       (dr/chance 0.25))
+          turret'
+          (cond-> turret
+            (> damage 0)
+            (update :health - damage)
+            (> firing-cycle 0)
+            (update :firing-cycle - dt)
+            rotating?
+            (rotate-turret angle dt)
+            new-target?
+            (assoc :target (pick-target turret turrets))
+            (or new-target? (dr/chance 0.005))
+            (adjust-angle)
+            firing?
+            (assoc :firing-cycle (dr/random 0.15 0.4)))]
+      (cond-> state
+        alive? (update :turrets conj turret')
+        firing? (fire-projectile turret)))))
 
 (defn debug! [{:keys [turrets] :as state}]
   (reset! defo {})
