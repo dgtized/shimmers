@@ -29,14 +29,14 @@
 (defn explode-dist [mass]
   (* 5.0 mass))
 
-(defrecord Turret [health pos angle angle-target angle-vel target])
+(defrecord Turret [health pos angle angle-target angle-vel target firing-cycle])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
         angle (g/heading (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p angle angle 0.0 nil)))
+    (->Turret 1.0 p angle angle 0.0 nil 0.1)))
 
 (defn make-turrets [ground n]
   (let [margin (* 0.08 (/ 1.0 n))]
@@ -131,27 +131,33 @@
 
 (defn update-turret
   [exploding turrets dt]
-  (fn [state {:keys [pos angle angle-target target health] :as turret}]
+  (fn [state {:keys [pos angle angle-target target health firing-cycle] :as turret}]
     (if (< health 0.0)
       state
       (let [damage (exploding-damage pos exploding)
             rotating? (> (sm/radial-distance angle angle-target) 0.01)
             new-target? (no-target? target turrets)
+            firing? (and (<= firing-cycle 0.0)
+                         (not (or rotating? new-target?))
+                         (< (count (:projectiles state)) 16)
+                         (dr/chance 0.25))
             turret'
             (cond-> turret
               (> damage 0)
               (update :health - damage)
+              (> firing-cycle 0)
+              (update :firing-cycle - dt)
               rotating?
               (rotate-turret angle dt)
               new-target?
               (assoc :target (pick-target turret turrets))
               (or new-target? (dr/chance 0.005))
-              (adjust-angle))]
+              (adjust-angle)
+              firing?
+              (assoc :firing-cycle (dr/random 0.15 0.4)))]
         (cond-> state
           true (update :turrets conj turret')
-          (and (not (or rotating? new-target?))
-               (< (count (:projectiles state)) 16)
-               (dr/chance 0.03))
+          firing?
           (fire-projectile turret))))))
 
 (defn debug! [{:keys [turrets] :as state}]
