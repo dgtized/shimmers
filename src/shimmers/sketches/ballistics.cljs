@@ -101,7 +101,7 @@
               turrets)))
 
 (defn firing-range [margin {:keys [pos target]}]
-  (when target
+  (if target
     (let [up (* eq/TAU 0.75)
           target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
                                  (* 0.5 eq/TAU) eq/TAU)]
@@ -162,7 +162,8 @@
             firing?
             (assoc :firing-cycle (dr/random 0.15 0.4)))]
       (cond-> state
-        alive? (update :turrets conj (assoc turret' :status status))
+        alive? (update :turrets conj
+                       (assoc turret' :status status))
         firing? (fire-projectile turret)))))
 
 (defn debug! [{:keys [turrets] :as state}]
