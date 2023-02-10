@@ -118,7 +118,7 @@
           0.0
           exploding))
 
-(defn rotate-turret [{:keys [angle-target angle-vel] :as turret} angle dt]
+(defn rotate-turret [{:keys [angle angle-target angle-vel] :as turret} dt]
   (let [angle-acc (control/angular-acceleration angle angle-target
                                                 (* 0.2 dt) angle-vel)]
     (-> turret
@@ -148,7 +148,7 @@
             (> firing-cycle 0)
             (update :firing-cycle - dt)
             rotating?
-            (rotate-turret angle dt)
+            (rotate-turret dt)
             new-target?
             (assoc :target (pick-target turret turrets))
             (or new-target? (dr/chance 0.005))
