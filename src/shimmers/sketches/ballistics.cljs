@@ -161,7 +161,7 @@
             (or new-target? (dr/chance 0.005))
             (adjust-angle)
             firing?
-            (assoc :firing-cycle (dr/random 0.15 0.4)))]
+            (assoc :firing-cycle (dr/random 0.15 0.5)))]
       (cond-> state
         alive? (update :turrets conj
                        (assoc turret' :status status))
