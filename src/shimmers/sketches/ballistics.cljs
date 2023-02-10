@@ -130,19 +130,21 @@
       state
       (let [angle-dir (g/heading dir)
             damage (exploding-damage pos exploding)
+            rotating? (> (sm/radial-distance angle-dir angle-target) 0.01)
+            new-target? (no-target? target turrets)
             turret'
             (cond-> turret
               (> damage 0)
               (update :health - damage)
-              (> (sm/radial-distance angle-dir angle-target) 0.01)
+              rotating?
               (rotate-turret angle-dir dt)
-              (no-target? target turrets)
+              new-target?
               (assoc :target (pick-target turret turrets)))]
         (update state :turrets conj
-                (if (dr/chance 0.95)
-                  turret'
+                (if (or new-target? (dr/chance 0.05))
                   (let [angle (apply dr/random (firing-range 0.02 turret'))]
-                    (assoc turret' :angle-target angle))))))))
+                    (assoc turret' :angle-target angle))
+                  turret'))))))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
