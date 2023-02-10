@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.control :as control]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -15,6 +16,8 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn start-dist [mass]
   (* 2.0 mass))
@@ -150,6 +153,13 @@
                (dr/chance 0.03))
           (fire-projectile turret))))))
 
+(defn debug! [{:keys [turrets] :as state}]
+  (reset! defo {})
+  (swap! defo assoc :turrets
+         (for [t turrets]
+           (into {} (update t :target :pos))))
+  state)
+
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
         exploding (filter (fn [{:keys [explode]}] (> explode 0)) projectiles)]
@@ -159,7 +169,8 @@
         (update state :projectiles (partial keep (partial update-projectile ground turrets dt)))
         (reduce (update-turret exploding turrets dt)
                 (assoc state :turrets [])
-                turrets)))))
+                turrets)
+        (debug! state)))))
 
 (defn turret-shapes [{:keys [pos dir health]}]
   (let [s (cq/rel-h 0.015)
@@ -209,6 +220,7 @@
   :created-at "2023-02-05"
   :tags #{}
   :size [800 600]
+  :on-mount (debug/mount defo)
   :setup setup
   :update update-state
   :draw draw
