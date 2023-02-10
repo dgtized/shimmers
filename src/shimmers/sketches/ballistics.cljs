@@ -12,6 +12,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -96,8 +97,9 @@
 (defn no-target? [target turrets]
   (if (nil? target)
     true
-    (not-any? (fn [{:keys [pos]}]
-                (< (g/dist (:pos target) pos) 1.0))
+    (not-any? (fn [{:keys [pos health]}]
+                (and (> health 0.0)
+                     (< (g/dist (:pos target) pos) 1.0)))
               turrets)))
 
 (defn firing-range [margin {:keys [pos target]}]
@@ -135,15 +137,17 @@
   [exploding turrets dt]
   (fn [state {:keys [pos angle angle-target target health firing-cycle] :as turret}]
     (let [alive? (> health 0.0)
+          dead? (< health 0.0)
           damage (exploding-damage pos exploding)
-          rotating? (> (sm/radial-distance angle angle-target) 0.01)
-          new-target? (no-target? target turrets)
+          rotating? (and alive? (> (sm/radial-distance angle angle-target) 0.01))
+          new-target? (and alive? (no-target? target turrets))
           can-fire? (and alive?
                          (<= firing-cycle 0.0)
                          (not (or rotating? new-target?))
                          (< (count (:projectiles state)) 16))
           firing? (and can-fire? (dr/chance 0.15))
-          status (->> [(when rotating? :rotating)
+          status (->> [(when alive? :alive)
+                       (when rotating? :rotating)
                        (when new-target? :new-target)
                        (when can-fire? :can-fire)]
                       (keep identity)
@@ -152,6 +156,8 @@
           (cond-> turret
             (> damage 0)
             (update :health - damage)
+            dead?
+            (update :health - (dr/random 0.01 0.1))
             (> firing-cycle 0)
             (update :firing-cycle - dt)
             rotating?
@@ -163,8 +169,8 @@
             firing?
             (assoc :firing-cycle (dr/random 0.15 0.5)))]
       (cond-> state
-        alive? (update :turrets conj
-                       (assoc turret' :status status))
+        (> health -3.0) (update :turrets conj
+                                (assoc turret' :status status))
         firing? (fire-projectile turret)))))
 
 (defn debug! [{:keys [turrets] :as state}]
@@ -194,21 +200,32 @@
 (defn turret-shapes [{:keys [pos angle health]}]
   (let [s (cq/rel-h 0.015)
         health-w (* 1.33 s)]
-    [(-> (rect/rect 0 0 (* tm/PHI s) s)
-         g/center
-         (g/translate pos))
-     (let [barrel-width (* 0.33 s)
-           length (* 1.25 s)]
-       (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
-           (g/rotate angle)
-           (g/translate pos)
-           (assoc :fill 1.0)))
-     (-> (rect/rect (* -0.5 health-w) (* 0.8 s) health-w (* 0.4 s))
-         (g/translate pos)
-         (assoc :fill 1.0))
-     (-> (rect/rect (* -0.5 health-w) (* 0.8 s) (* health-w health) (* 0.4 s))
-         (g/translate pos)
-         (assoc :fill 0.0))]))
+    (into
+     [(-> (rect/rect 0 0 (* tm/PHI s) s)
+          g/center
+          (g/translate pos))
+      (let [barrel-width (* 0.33 s)
+            length (* 1.25 s)]
+        (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
+            (g/rotate angle)
+            (g/translate pos)
+            (assoc :fill 1.0)))
+      (-> (rect/rect (* -0.5 health-w) (* 0.8 s) health-w (* 0.4 s))
+          (g/translate pos)
+          (assoc :fill 1.0))
+      (-> (rect/rect (* -0.5 health-w) (* 0.8 s) (* health-w (tm/clamp01 health)) (* 0.4 s))
+          (g/translate pos)
+          (assoc :fill 0.0))]
+     (if (< health 0.0)
+       (repeatedly (dr/random-int 3)
+                   #(assoc
+                     (if (dr/chance 0.33)
+                       (gc/circle pos (dr/random 5.0 15.0))
+                       (gc/circle (v/+polar pos (tm/clamp (dr/gaussian (* 2.0 s) s) s (* 9 s))
+                                            (dr/random (* 0.5 eq/TAU) eq/TAU))
+                                  (dr/random 2.0 4.0)))
+                     :fill (if (dr/chance 0.33) 0.0 1.0)))
+       []))))
 
 (defn draw [{:keys [ground turrets projectiles]}]
   (q/background 1.0)
