@@ -164,7 +164,12 @@
   (reset! defo {})
   (swap! defo assoc :turrets
          (for [t turrets]
-           (into {} (update t :target :pos))))
+           (->>
+            (update t :target
+                    (fn [{:keys [pos] :as target}]
+                      (when target
+                        [pos (g/heading (tm/- pos (:pos t)))])))
+            (into {}))))
   state)
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
