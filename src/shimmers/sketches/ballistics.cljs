@@ -123,6 +123,10 @@
         (assoc :angle-vel (+ angle-vel angle-acc))
         (update :dir g/rotate (* dt angle-vel)))))
 
+(defn adjust-angle [turret]
+  (let [angle (apply dr/random (firing-range 0.02 turret))]
+    (assoc turret :angle-target angle)))
+
 (defn update-turret
   [exploding turrets dt]
   (fn [state {:keys [pos dir angle-target target health] :as turret}]
@@ -139,12 +143,10 @@
               rotating?
               (rotate-turret angle-dir dt)
               new-target?
-              (assoc :target (pick-target turret turrets)))]
-        (update state :turrets conj
-                (if (or new-target? (dr/chance 0.05))
-                  (let [angle (apply dr/random (firing-range 0.02 turret'))]
-                    (assoc turret' :angle-target angle))
-                  turret'))))))
+              (assoc :target (pick-target turret turrets))
+              (or new-target? (dr/chance 0.05))
+              (adjust-angle))]
+        (update state :turrets conj turret')))))
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
   (let [dt 0.01
