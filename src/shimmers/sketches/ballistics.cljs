@@ -103,11 +103,12 @@
 (defn firing-range [margin {:keys [pos target]}]
   (if target
     (let [up (* eq/TAU 0.75)
-          target-angle (tm/clamp (g/heading (tm/- (:pos target) pos))
+          heading (g/heading (tm/- (:pos target) pos))
+          target-angle (tm/clamp (+ (control/angular-delta up heading) up)
                                  (* 0.5 eq/TAU) eq/TAU)]
       (if (>= target-angle up)
-        [(+ up margin) (- target-angle margin)]
-        [(+ target-angle margin) (- up margin)]))
+        [(+ up (* 2 margin)) (- target-angle margin)]
+        [(+ target-angle margin) (- up (* 2 margin))]))
     [(* 0.5 eq/TAU) eq/TAU]))
 
 (defn exploding-damage [turret-pos exploding]
