@@ -10,6 +10,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -28,14 +29,14 @@
 (defn explode-dist [mass]
   (* 5.0 mass))
 
-(defrecord Turret [health pos dir angle-target angle-vel target])
+(defrecord Turret [health pos angle angle-target angle-vel target])
 (defrecord Shell [pos vel mass])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
   (let [p (tm/+ ground-pos (cq/rel-vec 0.0 -0.01))
-        dir (tm/normalize (tm/- (cq/rel-vec 0.5 0.0) p))]
-    (->Turret 1.0 p dir (g/heading dir) 0.0 nil)))
+        angle (g/heading (tm/- (cq/rel-vec 0.5 0.0) p))]
+    (->Turret 1.0 p angle angle 0.0 nil)))
 
 (defn make-turrets [ground n]
   (let [margin (* 0.08 (/ 1.0 n))]
@@ -57,8 +58,9 @@
   (q/color-mode :hsl 1.0)
   (initial-state))
 
-(defn fire-projectile [state {:keys [pos dir]}]
-  (let [muzzle-velocity (tm/* dir (dr/random-int 4 13))
+(defn fire-projectile [state {:keys [pos angle]}]
+  (let [dir (v/polar 1.0 angle)
+        muzzle-velocity (tm/* dir (dr/random-int 4 13))
         mass (dr/weighted {3.0 2.0
                            3.5 1.5
                            4.0 1.0})]
@@ -116,12 +118,12 @@
           0.0
           exploding))
 
-(defn rotate-turret [{:keys [angle-target angle-vel] :as turret} angle-dir dt]
-  (let [angle-acc (control/angular-acceleration angle-dir angle-target
+(defn rotate-turret [{:keys [angle-target angle-vel] :as turret} angle dt]
+  (let [angle-acc (control/angular-acceleration angle angle-target
                                                 (* 0.2 dt) angle-vel)]
     (-> turret
         (assoc :angle-vel (+ angle-vel angle-acc))
-        (update :dir g/rotate angle-vel))))
+        (update :angle + angle-vel))))
 
 (defn adjust-angle [turret]
   (let [angle (apply dr/random (firing-range 0.02 turret))]
@@ -129,19 +131,18 @@
 
 (defn update-turret
   [exploding turrets dt]
-  (fn [state {:keys [pos dir angle-target target health] :as turret}]
+  (fn [state {:keys [pos angle angle-target target health] :as turret}]
     (if (< health 0.0)
       state
-      (let [angle-dir (g/heading dir)
-            damage (exploding-damage pos exploding)
-            rotating? (> (sm/radial-distance angle-dir angle-target) 0.01)
+      (let [damage (exploding-damage pos exploding)
+            rotating? (> (sm/radial-distance angle angle-target) 0.01)
             new-target? (no-target? target turrets)
             turret'
             (cond-> turret
               (> damage 0)
               (update :health - damage)
               rotating?
-              (rotate-turret angle-dir dt)
+              (rotate-turret angle dt)
               new-target?
               (assoc :target (pick-target turret turrets))
               (or new-target? (dr/chance 0.005))
@@ -172,16 +173,16 @@
                 turrets)
         (debug! state)))))
 
-(defn turret-shapes [{:keys [pos dir health]}]
+(defn turret-shapes [{:keys [pos angle health]}]
   (let [s (cq/rel-h 0.015)
         health-w (* 1.33 s)]
     [(-> (rect/rect 0 0 (* tm/PHI s) s)
          g/center
          (g/translate pos))
      (let [barrel-width (* 0.33 s)
-           length (* 1.25 s (tm/mag dir))]
+           length (* 1.25 s)]
        (-> (rect/rect 0 (* -0.5 barrel-width) length barrel-width)
-           (g/rotate (g/heading dir))
+           (g/rotate angle)
            (g/translate pos)
            (assoc :fill 1.0)))
      (-> (rect/rect (* -0.5 health-w) (* 0.8 s) health-w (* 0.4 s))
