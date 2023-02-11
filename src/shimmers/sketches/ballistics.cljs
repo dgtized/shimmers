@@ -31,7 +31,8 @@
   (* 5.0 mass))
 
 (defrecord Turret [health pos angle angle-target angle-vel target firing-cycle])
-(defrecord Shell [pos vel mass])
+(defrecord Shell [pos vel mass flight-time])
+(defrecord Cluster [pos vel mass flight-time])
 (defrecord Missile [pos vel mass fuel])
 
 (defn generate-turret [ground-pos]
@@ -66,22 +67,31 @@
        (- (* x (Math/sin (* 2 angle)))
           (* 2 y (eq/sqr (Math/cos angle))))))))
 
+;; need to account for vertical height of target?
+(defn time-of-flight [angle v0 x]
+  (Math/abs (/ x (* v0 (Math/cos angle)))))
+
 (defn fire-projectile [state {:keys [pos angle target]} dt]
   (let [dir (v/polar 1.0 angle)
         [x y] (tm/abs (tm/- (:pos target) pos))
         ;; v0 is ignoring drag
         v0 (initial-velocity angle [x y] dt)
-        muzzle-velocity (tm/* dir (dr/random (* 1.0 v0) (* 1.66 v0)))
+        v0' (dr/random (* 1.0 v0) (* 1.66 v0))
+        muzzle-velocity (tm/* dir v0')
         mass (dr/weighted {3.0 2.0
                            3.5 1.5
-                           4.0 1.0})]
-    (update state :projectiles conj
-            (->Shell (tm/+ pos (tm/* dir (start-dist mass)))
-                     muzzle-velocity
-                     mass))))
+                           4.0 1.0})
+        initial-pos (tm/+ pos (tm/* dir (start-dist mass)))
+        flight-time (* dt 1.1 (time-of-flight angle v0' x))
+        projectile (if (dr/chance 0.8)
+                     (->Shell initial-pos muzzle-velocity mass
+                              flight-time)
+                     (->Cluster initial-pos muzzle-velocity mass
+                                (* (dr/gaussian 1.0 0.1) flight-time)))]
+    (update state :projectiles conj projectile)))
 
 (defn update-projectile [ground turrets dt]
-  (fn [state {:keys [pos vel explode mass] :as projectile}]
+  (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
     (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
           proj' (cond (and explode (<= explode 0))
                       nil
@@ -94,12 +104,28 @@
                       (-> projectile
                           (assoc :vel (gv/vec2)
                                  :explode (dr/random-int 4 8)))
+                      (and (instance? Cluster projectile)
+                           (< flight-time 0.0))
+                      (-> projectile
+                          (assoc :vel (gv/vec2)
+                                 :burst (dr/random-int 3 12)
+                                 :explode (dr/random-int 2 5)))
                       :else
                       (-> projectile
                           (update :pos tm/+ vel)
-                          (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))]
+                          (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))
+          burst (get proj' :burst 0)]
       (cond-> state
-        proj' (update :projectiles conj proj')))))
+        proj'
+        (update :projectiles conj (update (dissoc proj' :burst) :flight-time - dt))
+        (> burst 0)
+        (update :projectiles into
+                (repeatedly burst
+                            (fn []
+                              (->Shell pos (tm/+ vel (gv/vec2 (dr/gaussian 0.0 0.33)
+                                                              0.0))
+                                       (* 2.0 (/ mass burst))
+                                       1.0))))))))
 
 (defn pick-target [{:keys [pos]} turrets]
   (some->> turrets
