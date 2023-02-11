@@ -102,17 +102,23 @@
                      (< (g/dist (:pos target) pos) 1.0)))
               turrets)))
 
+;; https://en.wikipedia.org/wiki/Projectile_motion
 (defn firing-range [margin {:keys [pos target]}]
   (if target
-    (let [up (* eq/TAU 0.75)
+    (let [zenith (* eq/TAU 0.75)
           target-angle
           (as-> (g/heading (tm/- (:pos target) pos)) heading
-            ;; up to quarter tau is right, not left facing
+            ;; zenith to quarter tau is right, not left facing
             (if (< heading (* 0.25 eq/TAU)) (+ heading eq/TAU) heading)
-            (tm/clamp heading (* 0.5 eq/TAU) eq/TAU))]
-      (if (>= target-angle up)
-        [(+ up (* 2 margin)) (- target-angle margin)]
-        [(+ target-angle margin) (- up (* 2 margin))]))
+            (tm/clamp heading (* 0.5 eq/TAU) eq/TAU))
+          ;; this is the lowest energy angle to fire at
+          halfway-angle (/ (+ zenith target-angle) 2.0)]
+      (if (dr/chance 0.66)
+        (let [error (dr/random margin (* 3 margin))]
+          [(- halfway-angle error) (+ halfway-angle error)])
+        (if (>= target-angle zenith)
+          [(+ zenith (* 2 margin)) (- target-angle margin)]
+          [(+ target-angle margin) (- zenith (* 2 margin))])))
     [(* 0.5 eq/TAU) eq/TAU]))
 
 (defn exploding-damage [turret-pos exploding]
