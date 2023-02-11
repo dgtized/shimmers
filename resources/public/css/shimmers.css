@@ -92,6 +92,10 @@ input, select {
   box-sizing: border-box;
 }
 
+select {
+  min-width: 5em;
+}
+
 input[type=number] {
   width: 5em;
 }
