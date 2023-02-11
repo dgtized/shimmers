@@ -181,9 +181,11 @@
                                 (assoc turret' :status status))
         firing? (fire-projectile turret)))))
 
-(defn debug! [{:keys [turrets] :as state}]
+(defn debug! [{:keys [turrets projectiles] :as state}]
   (reset! defo {})
-  (swap! defo assoc :turrets
+  (swap! defo assoc
+         :projectiles (count projectiles)
+         :turrets
          (for [t turrets]
            (->>
             (update t :target
