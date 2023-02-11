@@ -80,23 +80,26 @@
                      muzzle-velocity
                      mass))))
 
-(defn update-projectile [ground turrets dt {:keys [pos vel explode mass] :as projectile}]
-  (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))]
-    (cond (and explode (<= explode 0))
-          nil
-          (and explode (> explode 0))
-          (update projectile :explode dec)
-          (or (> (:y (tm/+ pos vel)) (:y ground-point))
-              (some (fn [{turret :pos}]
-                      (< (g/dist turret pos) (contact-dist mass)))
-                    turrets))
-          (-> projectile
-              (assoc :vel (gv/vec2)
-                     :explode (dr/random-int 4 8)))
-          :else
-          (-> projectile
-              (update :pos tm/+ vel)
-              (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))))
+(defn update-projectile [ground turrets dt]
+  (fn [state {:keys [pos vel explode mass] :as projectile}]
+    (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
+          proj' (cond (and explode (<= explode 0))
+                      nil
+                      (and explode (> explode 0))
+                      (update projectile :explode dec)
+                      (or (> (:y (tm/+ pos vel)) (:y ground-point))
+                          (some (fn [{turret :pos}]
+                                  (< (g/dist turret pos) (contact-dist mass)))
+                                turrets))
+                      (-> projectile
+                          (assoc :vel (gv/vec2)
+                                 :explode (dr/random-int 4 8)))
+                      :else
+                      (-> projectile
+                          (update :pos tm/+ vel)
+                          (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))]
+      (cond-> state
+        proj' (update :projectiles conj proj')))))
 
 (defn pick-target [{:keys [pos]} turrets]
   (some->> turrets
@@ -211,7 +214,9 @@
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
       (as-> state state
-        (update state :projectiles (partial keep (partial update-projectile ground turrets dt)))
+        (reduce (update-projectile ground turrets dt)
+                (assoc state :projectiles [])
+                projectiles)
         (reduce (update-turret exploding turrets dt)
                 (assoc state :turrets [])
                 turrets)
