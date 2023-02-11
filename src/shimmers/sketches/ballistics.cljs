@@ -59,9 +59,19 @@
   (q/color-mode :hsl 1.0)
   (initial-state))
 
-(defn fire-projectile [state {:keys [pos angle]}]
+(defn initial-velocity [angle [x y] dt]
+  (Math/sqrt
+   (Math/abs
+    (/ (* (eq/sqr x) (* 9.8 dt))
+       (- (* x (Math/sin (* 2 angle)))
+          (* 2 y (eq/sqr (Math/cos angle))))))))
+
+(defn fire-projectile [state {:keys [pos angle target]} dt]
   (let [dir (v/polar 1.0 angle)
-        muzzle-velocity (tm/* dir (dr/random-int 4 13))
+        [x y] (tm/abs (tm/- (:pos target) pos))
+        ;; v0 is ignoring drag
+        v0 (initial-velocity angle [x y] dt)
+        muzzle-velocity (tm/* dir (dr/random (* 1.0 v0) (* 1.66 v0)))
         mass (dr/weighted {3.0 2.0
                            3.5 1.5
                            4.0 1.0})]
@@ -179,7 +189,7 @@
       (cond-> state
         (> health -3.0) (update :turrets conj
                                 (assoc turret' :status status))
-        firing? (fire-projectile turret)))))
+        firing? (fire-projectile turret dt)))))
 
 (defn debug! [{:keys [turrets projectiles] :as state}]
   (reset! defo {})
