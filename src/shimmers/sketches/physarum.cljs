@@ -1,21 +1,25 @@
 (ns shimmers.sketches.physarum
   "Implementation of behavior described in https://sagejenson.com/physarum."
-  (:require [quil.core :as q :include-macros true]
-            [quil.middleware :as m]
-            [shimmers.common.framerate :as framerate]
-            [shimmers.common.quil :as cq]
-            [shimmers.common.shader :as shader]
-            [shimmers.common.ui.controls :as ctrl]
-            [shimmers.math.vector :as v]
-            [shimmers.sketch :as sketch :include-macros true]
-            [thi.ng.geom.vector :as gv]
-            [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.edn :as edn]
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.shader :as shader]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; Parameters tuned from: Jones, J. (2010) Characteristics of pattern formation
 ;; and evolution in approximations of physarum transport networks.
 ;; ref:https://uwe-repository.worktribe.com/output/980579.
 (defonce ui-state
-  (ctrl/state {:sensor-angle 22.5
+  (ctrl/state {:size "200"
+               :particles "1024"
+               :sensor-angle 22.5
                :sensor-distance 9.0
                :rotation 45.0
                :step-size 1.0
@@ -23,12 +27,25 @@
 
 (defn ui-controls []
   (ctrl/container
-   [:h3 "Particle Parameters (after restart)"]
+   [:h3 "Simulation Parameters"]
+   (ctrl/dropdown ui-state "Grid Size" [:size]
+                  {100 "100"
+                   200 "200"
+                   300 "300"
+                   400 "400"})
+   (ctrl/dropdown ui-state "Particles" [:particles]
+                  {256 "256"
+                   512 "512"
+                   1024 "1024"
+                   2048 "2048"
+                   4096 "4096"})
+   [:h3 "Particle Parameters"]
    (ctrl/numeric ui-state "Sensor Angle" [:sensor-angle] [0.1 360.0 0.1])
    (ctrl/numeric ui-state "Sensor Distance" [:sensor-distance] [0.1 32.0 0.1])
    (ctrl/numeric ui-state "Rotation" [:rotation] [0.1 360.0 0.1])
    (ctrl/numeric ui-state "Step Size" [:step-size] [0.1 32.0 0.1])
-   (ctrl/numeric ui-state "Deposit" [:deposit] [0.1 1.0 0.1])))
+   (ctrl/numeric ui-state "Deposit" [:deposit] [0.1 1.0 0.1])
+   [:p [:i "Parameters update after restart"]]))
 
 (defn wrap-edges [[x y] width height]
   (gv/vec2 (int (tm/roundto (tm/wrap-range x width) 1.0))
@@ -97,17 +114,17 @@
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (let [width 200
-        height 200
-        n-particles 1024]
-    {:trail (make-trail width height)
-     :buffer (q/create-graphics width height :p3d)
+  (let [{:keys [size particles]} @ui-state
+        size (edn/read-string size)]
+    {:trail (make-trail size size)
+     :buffer (q/create-graphics size size :p3d)
      :shader (q/load-shader "shaders/physarum.frag.c"
                             "shaders/physarum.vert.c")
-     :width width
-     :height height
+     :width size
+     :height size
      :particles
-     (repeatedly n-particles #(make-particle (cq/rel-vec (rand) (rand))))}))
+     (repeatedly (edn/read-string particles)
+                 #(make-particle (cq/rel-vec (rand) (rand))))}))
 
 (defn update-state
   [{:keys [particles trail buffer shader width height] :as state}]
