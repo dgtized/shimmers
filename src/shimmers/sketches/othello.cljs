@@ -9,15 +9,18 @@
 
 (defn draw-frame [ctx width height t]
   (let [cols 16
-        rows 12
-        gap 0.2]
+        rows 12]
     (-> ctx
         (cv/clear 0 0 width height)
         (cv/color-fill "#000"))
     (dotimes [i cols]
       (dotimes [j rows]
         (let [a0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.45 t))))
-              a1 (+ a0 gap (* (- eq/TAU (* 1.5 gap)) (eq/unit-sin (+ (/ 1.0 (inc i)) (/ 1.0 (inc j)) (* 0.25 t)))))]
+              a1 (+ a0
+                    (* eq/TAU
+                       (eq/unit-sin (+ (/ 1.0 (inc i))
+                                       (/ 1.0 (inc j))
+                                       (* 0.25 t)))))]
           (cv/arc (cv/begin ctx)
                   (+ (* (/ width cols) (+ i 0.5)))
                   (* (/ height rows) (+ j 0.5))
