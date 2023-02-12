@@ -11,6 +11,7 @@
   (let [cols 16
         rows 12]
     (cv/clear ctx 0 0 width height)
+    (cv/line-width ctx 5.0)
     (dotimes [i cols]
       (dotimes [j rows]
         (let [x (* (/ width cols) (+ i 0.5))
@@ -20,8 +21,14 @@
               a1 (+ a0
                     (* eq/TAU
                        (eq/unit-sin (+ (/ 1.0 (inc i))
-                                       (- 1.0 (/ 1.0 (inc j)))
+                                       (/ 1.0 (inc j))
                                        (* 0.25 t)))))
+              d0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.53 t))))
+              d1 (+ d0
+                    (* eq/TAU
+                       (eq/unit-sin (+ (/ 1.0 (inc i))
+                                       (- 1.0 (/ 1.0 (inc j)))
+                                       (* 0.31 t)))))
               b0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.4 t))))
               b1 (+ b0
                     (* eq/TAU
@@ -35,15 +42,18 @@
                     (* eq/TAU
                        (eq/unit-sin (+ (- 1.0 (/ 1.0 x))
                                        (- 1.0 (/ 1.0 y))
-                                       (* 0.33 t)))))]
-          (cv/arc (cv/begin ctx) x y r a0 a1 false)
-          (cv/color-fill ctx "rgba(192,0,32,0.5)")
-          (cv/fill ctx)
+                                       (* 0.37 t)))))]
+          (cv/arc (cv/begin ctx) x y (* 0.75 r) a0 a1 false)
+          (cv/color-stroke ctx "rgba(0,0,0,0.66)")
+          (cv/stroke ctx)
           (cv/arc (cv/begin ctx) x y r b0 b1 false)
-          (cv/color-fill ctx "rgba(0.0,64,200,0.5)")
+          (cv/color-fill ctx "rgba(240,0,240,0.25)")
           (cv/fill ctx)
           (cv/arc (cv/begin ctx) x y r c0 c1 false)
-          (cv/color-fill ctx "rgba(240,240,0,0.5)")
+          (cv/color-fill ctx "rgba(0.0,240,240,0.25)")
+          (cv/fill ctx)
+          (cv/arc (cv/begin ctx) x y r d0 d1 false)
+          (cv/color-fill ctx "rgba(240,240,0,0.25)")
           (cv/fill ctx))))
     ctx))
 
