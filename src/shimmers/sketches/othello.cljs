@@ -12,24 +12,25 @@
   (let [path (cv/begin ctx)]
     (cv/arc path x y radius angle0 angle1 anti-clockwise?)
     (cv/fill ctx)
-    (cv/close ctx)
     ctx))
 
 (defn draw-frame [ctx width height t]
-  (let [cols 12
-        rows 9]
+  (let [cols 16
+        rows 12
+        gap 0.2]
     (-> ctx
         (cv/clear 0 0 width height)
         (cv/color-fill "#000"))
     (dotimes [i cols]
       (dotimes [j rows]
-        (let [a0 (* eq/TAU (eq/unit-cos (* 0.33 t)) (/ 1.0 j))]
+        (let [a0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.45 t))))
+              a1 (+ a0 gap (* (- eq/TAU (* 1.5 gap)) (eq/unit-sin (+ (/ 1.0 (inc i)) (/ 1.0 (inc j)) (* 0.25 t)))))]
           (arc ctx
-               (* (/ width cols) i)
-               (* (/ height rows) j)
-               (* (/ height rows) 0.45)
+               (+ (* (/ width cols) (+ i 0.5)))
+               (* (/ height rows) (+ j 0.5))
+               (* (/ width cols) 0.45)
                a0
-               (+ a0 0.1 (* (- eq/TAU 0.1) (eq/unit-sin (+ (/ 1.0 i) (* 0.1 t)))))
+               a1
                false))))
     ctx))
 
@@ -39,8 +40,7 @@
           ctx (canvas/scale-dpi canvas [width height])]
       (cv/on-frame
        (fn [t]
-         (let [{:keys [width height]} @canvas-state]
-           (draw-frame ctx width height (* 0.001 t))))))))
+         (draw-frame ctx width height (* 0.001 t)))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 800 :height 600})
