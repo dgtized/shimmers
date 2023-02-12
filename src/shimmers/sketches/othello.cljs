@@ -16,14 +16,22 @@
     ctx))
 
 (defn draw-frame [ctx width height t]
-  (let [a0 (* eq/TAU (eq/unit-cos (* 0.5 t)))]
+  (let [cols 12
+        rows 9]
     (-> ctx
         (cv/clear 0 0 width height)
-        (cv/color-fill "#000")
-        (arc (* width 0.5) (* height 0.5) (* height 0.45)
-             a0
-             (+ a0 (* eq/TAU (eq/unit-sin (* 0.8 t))))
-             true))))
+        (cv/color-fill "#000"))
+    (dotimes [i cols]
+      (dotimes [j rows]
+        (let [a0 (* eq/TAU (eq/unit-cos (* 0.33 t)) (/ 1.0 j))]
+          (arc ctx
+               (* (/ width cols) i)
+               (* (/ height rows) j)
+               (* (/ height rows) 0.45)
+               a0
+               (+ a0 0.1 (* (- eq/TAU 0.1) (eq/unit-sin (+ (/ 1.0 i) (* 0.1 t)))))
+               false))))
+    ctx))
 
 (defn do-frame []
   (fn [_ canvas canvas-state]
@@ -35,7 +43,7 @@
            (draw-frame ctx width height (* 0.001 t))))))))
 
 (defn page []
-  (let [canvas-state (r/atom {:width 600 :height 600})
+  (let [canvas-state (r/atom {:width 800 :height 600})
         attributes {:class "canvas-frame"}]
     (fn []
       [:div.contained
