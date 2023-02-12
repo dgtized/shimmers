@@ -22,7 +22,7 @@
                                        (/ 1.0 (inc j))
                                        (* 0.25 t)))))]
           (cv/arc (cv/begin ctx)
-                  (+ (* (/ width cols) (+ i 0.5)))
+                  (* (/ width cols) (+ i 0.5))
                   (* (/ height rows) (+ j 0.5))
                   (* (/ width cols) 0.45)
                   a0
