@@ -5,18 +5,22 @@
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn draw-frame [ctx width height t]
   (let [r 35
-        cols (int (/ width (* 2.2 r)))
-        rows (int (/ height (* 2.2 r)))]
+        cols (int (/ width (* 2.5 r)))
+        rows (int (/ height (* 2.5 r)))]
     (cv/clear ctx 0 0 width height)
-    (cv/line-width ctx 5.0)
+    (cv/line-width ctx (/ r 3))
     (dotimes [i cols]
       (dotimes [j rows]
         (let [x (* (/ width cols) (+ i 0.5))
               y (* (/ height rows) (+ j 0.5))
+              offset (* 0.33 r)
+              dx (* offset (/ (Math/sqrt 3) 2))
+              dy offset
               a0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.45 t))))
               a1 (+ a0
                     (* eq/TAU
@@ -43,17 +47,19 @@
                        (eq/unit-sin (+ (- 1.0 (/ 1.0 x))
                                        (- 1.0 (/ 1.0 y))
                                        (* 0.37 t)))))]
-          (cv/arc (cv/begin ctx) x y (* 0.75 r) a0 a1 false)
+          (cv/arc (cv/begin ctx) x y (* 0.5 tm/SQRT2 r) a0 a1 false)
           (cv/color-stroke ctx "rgba(0,0,0,0.66)")
           (cv/stroke ctx)
-          (cv/arc (cv/begin ctx) x y r b0 b1 false)
-          (cv/color-fill ctx "rgba(240,0,240,0.25)")
+          (cv/arc (cv/begin ctx) x (- y dy) r b0 b1 false)
+          (cv/color-fill ctx "rgba(240,0,240,0.4)")
           (cv/fill ctx)
-          (cv/arc (cv/begin ctx) x y r c0 c1 false)
-          (cv/color-fill ctx "rgba(0.0,240,240,0.25)")
+          (cv/arc (cv/begin ctx) (- x dx) (+ y (* 0.5 dy))
+                  r c0 c1 false)
+          (cv/color-fill ctx "rgba(0.0,240,240,0.4)")
           (cv/fill ctx)
-          (cv/arc (cv/begin ctx) x y r d0 d1 false)
-          (cv/color-fill ctx "rgba(240,240,0,0.25)")
+          (cv/arc (cv/begin ctx) (+ x dx) (+ y (* 0.5 dy))
+                  r d0 d1 false)
+          (cv/color-fill ctx "rgba(240,240,0,0.4)")
           (cv/fill ctx))))
     ctx))
 
