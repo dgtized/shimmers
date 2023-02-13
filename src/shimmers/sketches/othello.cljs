@@ -8,15 +8,15 @@
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn draw-frame [ctx width height t]
-  (let [cols 16
-        rows 12]
+  (let [r 35
+        cols (int (/ width (* 2.2 r)))
+        rows (int (/ height (* 2.2 r)))]
     (cv/clear ctx 0 0 width height)
     (cv/line-width ctx 5.0)
     (dotimes [i cols]
       (dotimes [j rows]
         (let [x (* (/ width cols) (+ i 0.5))
               y (* (/ height rows) (+ j 0.5))
-              r (* (/ width cols) 0.45)
               a0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.45 t))))
               a1 (+ a0
                     (* eq/TAU
@@ -66,7 +66,7 @@
          (draw-frame ctx width height (* 0.001 t)))))))
 
 (defn page []
-  (let [canvas-state (r/atom {:width 800 :height 600})
+  (let [canvas-state (r/atom {:width 900 :height 600})
         attributes {:class "canvas-frame"}]
     (fn []
       [:div.contained
