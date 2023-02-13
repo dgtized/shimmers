@@ -60,10 +60,10 @@
   (q/color-mode :hsl 1.0)
   (initial-state))
 
-(defn initial-velocity [angle [x y] dt]
+(defn initial-velocity [angle [x y]]
   (Math/sqrt
    (Math/abs
-    (/ (* (eq/sqr x) (* 9.8 dt))
+    (/ (* (eq/sqr x) 9.8)
        (- (* x (Math/sin (* 2 angle)))
           (* 2 y (eq/sqr (Math/cos angle))))))))
 
@@ -71,33 +71,34 @@
 (defn time-of-flight [angle v0 x]
   (Math/abs (/ x (* v0 (Math/cos angle)))))
 
-(defn fire-projectile [state {:keys [pos angle target]} dt]
+(defn fire-projectile [state {:keys [pos angle target]}]
   (let [dir (v/polar 1.0 angle)
         [x y] (tm/abs (tm/- (:pos target) pos))
         ;; v0 is ignoring drag
-        v0 (initial-velocity angle [x y] dt)
-        v0' (dr/random (* 1.0 v0) (* 1.66 v0))
+        v0 (initial-velocity angle [x y])
+        v0' (* v0 (dr/gaussian 1.0 0.12))
         muzzle-velocity (tm/* dir v0')
         mass (dr/weighted {3.0 2.0
                            3.5 1.5
                            4.0 1.0})
         initial-pos (tm/+ pos (tm/* dir (start-dist mass)))
-        flight-time (* dt 1.1 (time-of-flight angle v0' x))
+        flight-time (time-of-flight angle v0' x)
         projectile (if (dr/chance 0.8)
                      (->Shell initial-pos muzzle-velocity mass
                               flight-time)
                      (->Cluster initial-pos muzzle-velocity mass
-                                (* (dr/gaussian 1.0 0.1) flight-time)))]
+                                (* (dr/gaussian 0.75 0.08) flight-time)))]
     (update state :projectiles conj projectile)))
 
 (defn update-projectile [ground turrets dt]
   (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
     (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
+          pos' (tm/+ pos (tm/* vel dt))
           proj' (cond (and explode (<= explode 0))
                       nil
                       (and explode (> explode 0))
                       (update projectile :explode dec)
-                      (or (> (:y (tm/+ pos vel)) (:y ground-point))
+                      (or (> (:y pos') (:y ground-point))
                           (some (fn [{turret :pos}]
                                   (< (g/dist turret pos) (contact-dist mass)))
                                 turrets))
@@ -111,9 +112,11 @@
                                  :burst (dr/random-int 3 12)
                                  :explode (dr/random-int 2 5)))
                       :else
-                      (-> projectile
-                          (update :pos tm/+ vel)
-                          (update :vel (fn [v] (tm/* (tm/+ v (gv/vec2 0 (* dt 9.8))) 0.99)))))
+                      (let [drag (- 1.0 (eq/sqr (* 1.1 dt)))
+                            gravity (gv/vec2 0 (* dt 9.8))]
+                        (-> projectile
+                            (assoc :pos pos')
+                            (update :vel (fn [v] (tm/* (tm/+ v gravity) drag))))))
           burst (get proj' :burst 0)]
       (cond-> state
         proj'
@@ -122,8 +125,8 @@
         (update :projectiles into
                 (repeatedly burst
                             (fn []
-                              (->Shell pos (tm/+ vel (gv/vec2 (dr/gaussian 0.0 0.33)
-                                                              0.0))
+                              (->Shell pos
+                                       (tm/+ vel (tm/* (gv/vec2 (dr/gaussian 0.0 3.0) 0.0)))
                                        (* 2.0 (/ mass burst))
                                        1.0))))))))
 
@@ -171,10 +174,10 @@
 
 (defn rotate-turret [{:keys [angle angle-target angle-vel] :as turret} dt]
   (let [angle-acc (control/angular-acceleration angle angle-target
-                                                (* 0.2 dt) angle-vel)]
+                                                (/ 0.33 dt) angle-vel)]
     (-> turret
-        (assoc :angle-vel (+ angle-vel angle-acc))
-        (update :angle + angle-vel))))
+        (assoc :angle-vel (+ angle-vel (* angle-acc dt)))
+        (update :angle + (* angle-vel dt)))))
 
 (defn adjust-angle [turret]
   (let [angle (apply dr/random (firing-range 0.02 turret))]
@@ -214,11 +217,11 @@
             (or new-target? (dr/chance 0.005))
             (adjust-angle)
             firing?
-            (assoc :firing-cycle (dr/random 0.15 0.5)))]
+            (assoc :firing-cycle (dr/random 0.8 3.5)))]
       (cond-> state
         (> health -3.0) (update :turrets conj
                                 (assoc turret' :status status))
-        firing? (fire-projectile turret dt)))))
+        firing? (fire-projectile turret)))))
 
 (defn debug! [{:keys [turrets projectiles] :as state}]
   (reset! defo {})
@@ -235,7 +238,7 @@
   state)
 
 (defn update-state [{:keys [ground projectiles turrets] :as state}]
-  (let [dt 0.01
+  (let [dt (/ 1 20)
         exploding (filter (fn [{:keys [explode]}] (> explode 0)) projectiles)]
     (if (and (empty? projectiles) (<= (count turrets) 1))
       (initial-state)
