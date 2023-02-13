@@ -21,32 +21,14 @@
               offset (* 0.33 r)
               dx (* offset (/ (Math/sqrt 3) 2))
               dy offset
-              a0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.45 t))))
-              a1 (+ a0
-                    (* eq/TAU
-                       (eq/unit-sin (+ (/ 1.0 (inc i))
-                                       (/ 1.0 (inc j))
-                                       (* 0.25 t)))))
-              d0 (* eq/TAU (eq/unit-cos (+  (/ j rows) (/ i cols) (* 0.53 t))))
-              d1 (+ d0
-                    (* eq/TAU
-                       (eq/unit-sin (+ (/ 1.0 (inc i))
-                                       (- 1.0 (/ 1.0 (inc j)))
-                                       (* 0.31 t)))))
-              b0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.4 t))))
-              b1 (+ b0
-                    (* eq/TAU
-                       (eq/unit-sin (+ (/ 1.0 x)
-                                       (/ 1.0 y)
-                                       (* 0.2 t)))))
-              c0 (* eq/TAU (eq/unit-cos (+  (- 1.0 (/ x width))
-                                       (- 1.0 (/ y height))
-                                       (* 0.66 t))))
-              c1 (+ c0
-                    (* eq/TAU
-                       (eq/unit-sin (+ (- 1.0 (/ 1.0 x))
-                                       (- 1.0 (/ 1.0 y))
-                                       (* 0.37 t)))))]
+              a0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.45 t))))
+              a1 (+ a0 (* eq/TAU (eq/unit-sin (+ (- 1.0 (/ 1.0 x)) (/ 1.0 y) (* 0.25 t)))))
+              b0 (* eq/TAU (eq/unit-cos (+  (/ x width) (- 1.0 (/ y height)) (* 0.41 t))))
+              b1 (+ b0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (/ 1.0 y) (* 0.23 t)))))
+              c0 (* eq/TAU (eq/unit-cos (+  (- 1.0 (/ x width)) (- 1.0 (/ y height)) (* 0.66 t))))
+              c1 (+ c0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (/ 1.0 y) (* 0.37 t)))))
+              d0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.37 t))))
+              d1 (+ d0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (- 1.0 (/ 1.0 y)) (* 0.27 t)))))]
           (cv/arc (cv/begin ctx) x y (* 0.5 tm/SQRT2 r) a0 a1 false)
           (cv/color-stroke ctx "rgba(0,0,0,0.66)")
           (cv/stroke ctx)
