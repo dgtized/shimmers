@@ -51,9 +51,13 @@
   (let [start' (tm/+ start (forward size))
         end' (tm/- end (forward size))
         steps (->> [start start']
-                   (iterate (fn [[l p]] [p (next-pos start size l p) [:L p]]))
+                   (iterate (fn [[l p]] (let [p' (next-pos start size l p)]
+                                         [p p'
+                                          (if (and (> (tm/mag p') size) (dr/chance 0.5))
+                                            [:Q (gv/vec2 (:x p') (:y p)) p']
+                                            [:L p'])])))
                    rest
-                   (take-while (fn [[_ p _]] (> (vertical-dist p end) size)))
+                   (take-while (fn [[_ p _]] (>= (vertical-dist p end) size)))
                    (mapv (fn [[_ _ cmd]] cmd)))]
     (->> (concat [[:M start]
                   [:L start']]
