@@ -20,7 +20,7 @@
 (defn vertical-dist [[_ y0] [_ y1]]
   (- y1 y0))
 
-(defn dir [start size p]
+(defn dir [start size _ p]
   (let [right-bound? (< (horizontal-dist p start) size)
         left-bound? (> (horizontal-dist p start) (- size))]
     (dr/weighted {(gv/vec2 size 0.0) (if right-bound? 1 0)
@@ -33,12 +33,13 @@
   (let [steps (- (int (/ (g/dist start end) size)) 2)]
     (csvg/path (concat [[:M start]
                         [:L (tm/+ start (gv/vec2 0.0 size))]]
-                       (->> (tm/+ start (gv/vec2 0.0 size))
+                       (->> [start
+                             (tm/+ start (gv/vec2 0.0 size))]
                             (iterate
-                             (fn [p] (tm/+ p (dir start size p))))
+                             (fn [[l p]] [p (tm/+ p (dir start size l p))]))
                             rest
-                            (take-while (fn [p] (> (vertical-dist p end) size)))
-                            (mapv (fn [p] [:L p])))
+                            (take-while (fn [[_ p]] (> (vertical-dist p end) size)))
+                            (mapv (fn [[_ p]] [:L p])))
                        [[:L (tm/- end (gv/vec2 0.0 size))]
                         [:L end]]))))
 
