@@ -2,12 +2,11 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -34,16 +33,19 @@
       (recur start size l p))))
 
 (defn deco-path [start end size]
-  (let [steps (- (int (/ (g/dist start end) size)) 2)]
-    (csvg/path (concat [[:M start]
-                        [:L (tm/+ start (gv/vec2 0.0 size))]]
-                       (->> [start (tm/+ start (gv/vec2 0.0 size))]
-                            (iterate (fn [[l p]] [p (next-pos start size l p)]))
-                            rest
-                            (take-while (fn [[_ p]] (> (vertical-dist p end) size)))
-                            (mapv (fn [[_ p]] [:L p])))
-                       [[:L (tm/- end (gv/vec2 0.0 size))]
-                        [:L end]]))))
+  (let [start' (tm/+ start (gv/vec2 0.0 size))
+        end' (tm/- end (gv/vec2 0.0 size))
+        steps (->> [start start']
+                   (iterate (fn [[l p]] [p (next-pos start size l p)]))
+                   rest
+                   (take-while (fn [[_ p]] (> (vertical-dist p end) size)))
+                   (mapv (fn [[_ p]] [:L p])))]
+    (->> (concat [[:M start]
+                  [:L start']]
+                 steps
+                 [[:L end']
+                  [:L end]])
+         csvg/path)))
 
 (defn shapes [n]
   (mapv (fn [i]
