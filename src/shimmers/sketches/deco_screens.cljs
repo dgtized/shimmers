@@ -21,33 +21,39 @@
   (- y1 y0))
 
 (defn dir [start size p]
-  (dr/weighted {(gv/vec2 size 0.0)
-                (if (< (horizontal-dist p start) size) 1 0)
-                (gv/vec2 (- size 0.0) 0.0)
-                (if (> (horizontal-dist p start) (- size)) 1 0)
-                (gv/vec2 0.0 size) 2}))
+  (let [right-bound? (< (horizontal-dist p start) size)
+        left-bound? (> (horizontal-dist p start) (- size))]
+    (dr/weighted {(gv/vec2 size 0.0) (if right-bound? 1 0)
+                  (gv/vec2 (- size 0.0) 0.0) (if left-bound?  1 0)
+                  (gv/vec2 0.0 size) 1
+                  (gv/vec2 size size) (if left-bound? 1 0)
+                  (gv/vec2 (- size) size) (if right-bound?  1 0)})))
 
 (defn deco-path [start end size]
-  (let [steps (dec (int (/ (g/dist start end) size)))]
-    (csvg/path (concat [[:M start]]
-                       (->> start
+  (let [steps (- (int (/ (g/dist start end) size)) 2)]
+    (csvg/path (concat [[:M start]
+                        [:L (tm/+ start (gv/vec2 0.0 size))]]
+                       (->> (tm/+ start (gv/vec2 0.0 size))
                             (iterate
                              (fn [p] (tm/+ p (dir start size p))))
                             rest
                             (take steps)
                             (mapv (fn [p] [:L p])))
-                       [[:L end]]))))
+                       [[:L (tm/- end (gv/vec2 0.0 size))]
+                        [:L end]]))))
 
 (defn shapes []
-  [(deco-path (rv 0.5 0.0) (rv 0.5 1.0) (* 0.1 width))])
+  [(deco-path (rv 0.25 0.0) (rv 0.25 1.0) (* 0.1 height))
+   (deco-path (rv 0.5 0.0) (rv 0.5 1.0) (* 0.1 height))
+   (deco-path (rv 0.75 0.0) (rv 0.75 1.0) (* 0.1 height))])
 
 (defn scene []
   (csvg/timed
    (csvg/svg {:width width
               :height height
               :stroke "black"
-              :fill "white"
-              :stroke-width 0.5}
+              :fill "none"
+              :stroke-width 2.0}
      (shapes))))
 
 (sketch/definition deco-screens
