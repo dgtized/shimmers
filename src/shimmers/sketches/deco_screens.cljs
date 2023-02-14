@@ -35,13 +35,16 @@
   (tm/+ (right size) (forward size)))
 
 (defn next-pos [start size l p]
-  (let [right-bound? (< (horizontal-dist p start) size)
-        left-bound? (> (horizontal-dist p start) (- size))
+  (let [h-dist (horizontal-dist p start)
+        right-bound? (< h-dist size)
+        left-bound? (> h-dist (- size))
         d (dr/weighted {(left size) (if right-bound? 1 0)
                         (right size) (if left-bound?  1 0)
                         (forward size) 1
-                        (right-diag size) (if left-bound? 1 0)
-                        (left-diag size) (if right-bound?  1 0)})
+                        (right-diag size) (if left-bound? 2 0)
+                        (left-diag size) (if right-bound?  2 0)
+                        (right-diag (* 2 size)) (if (tm/delta= h-dist size) 1 0)
+                        (left-diag (* 2 size)) (if (tm/delta= h-dist (- size)) 1 0)})
         p' (tm/+ p d)]
     (if-not (tm/delta= l p')
       p'
@@ -53,7 +56,8 @@
         steps (->> [start start']
                    (iterate (fn [[l p]] (let [p' (next-pos start size l p)]
                                          [p p'
-                                          (if (and (> (tm/mag p') size) (dr/chance 0.5))
+                                          (if (or (> (tm/mag p') (* 2 size))
+                                                  (and (> (tm/mag p') size) (dr/chance 0.5)))
                                             [:Q (gv/vec2 (:x p') (:y p)) p']
                                             [:L p'])])))
                    rest
