@@ -20,23 +20,25 @@
 (defn vertical-dist [[_ y0] [_ y1]]
   (- y1 y0))
 
-(defn dir [start size _ p]
+(defn next-pos [start size l p]
   (let [right-bound? (< (horizontal-dist p start) size)
-        left-bound? (> (horizontal-dist p start) (- size))]
-    (dr/weighted {(gv/vec2 size 0.0) (if right-bound? 1 0)
-                  (gv/vec2 (- size 0.0) 0.0) (if left-bound?  1 0)
-                  (gv/vec2 0.0 size) 1
-                  (gv/vec2 size size) (if left-bound? 1 0)
-                  (gv/vec2 (- size) size) (if right-bound?  1 0)})))
+        left-bound? (> (horizontal-dist p start) (- size))
+        d (dr/weighted {(gv/vec2 size 0.0) (if right-bound? 1 0)
+                        (gv/vec2 (- size 0.0) 0.0) (if left-bound?  1 0)
+                        (gv/vec2 0.0 size) 1
+                        (gv/vec2 size size) (if left-bound? 1 0)
+                        (gv/vec2 (- size) size) (if right-bound?  1 0)})
+        p' (tm/+ p d)]
+    (if-not (tm/delta= l p')
+      p'
+      (recur start size l p))))
 
 (defn deco-path [start end size]
   (let [steps (- (int (/ (g/dist start end) size)) 2)]
     (csvg/path (concat [[:M start]
                         [:L (tm/+ start (gv/vec2 0.0 size))]]
-                       (->> [start
-                             (tm/+ start (gv/vec2 0.0 size))]
-                            (iterate
-                             (fn [[l p]] [p (tm/+ p (dir start size l p))]))
+                       (->> [start (tm/+ start (gv/vec2 0.0 size))]
+                            (iterate (fn [[l p]] [p (next-pos start size l p)]))
                             rest
                             (take-while (fn [[_ p]] (> (vertical-dist p end) size)))
                             (mapv (fn [[_ p]] [:L p])))
