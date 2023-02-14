@@ -37,15 +37,17 @@
                             (iterate
                              (fn [p] (tm/+ p (dir start size p))))
                             rest
-                            (take steps)
+                            (take-while (fn [p] (> (vertical-dist p end) size)))
                             (mapv (fn [p] [:L p])))
                        [[:L (tm/- end (gv/vec2 0.0 size))]
                         [:L end]]))))
 
-(defn shapes []
-  [(deco-path (rv 0.25 0.0) (rv 0.25 1.0) (* 0.1 height))
-   (deco-path (rv 0.5 0.0) (rv 0.5 1.0) (* 0.1 height))
-   (deco-path (rv 0.75 0.0) (rv 0.75 1.0) (* 0.1 height))])
+(defn shapes [n]
+  (mapv (fn [i]
+          (let [s (/ 1.0 (inc n))
+                x (* s (inc i))]
+            (deco-path (rv x 0.0) (rv x 1.0) (/ height (* 2 (inc n))))))
+        (range n)))
 
 (defn scene []
   (csvg/timed
@@ -54,7 +56,7 @@
               :stroke "black"
               :fill "none"
               :stroke-width 2.0}
-     (shapes))))
+     (shapes 5))))
 
 (sketch/definition deco-screens
   {:created-at "2023-02-13"
