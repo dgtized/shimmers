@@ -43,6 +43,7 @@
    shimmers.sketches.dance-patterns
    shimmers.sketches.decaying-foundations
    shimmers.sketches.decorative-tiles
+   shimmers.sketches.deco-screens
    shimmers.sketches.deeper-squares
    shimmers.sketches.deeply-askew
    shimmers.sketches.deformed-spirals
