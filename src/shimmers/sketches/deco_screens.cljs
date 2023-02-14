@@ -51,10 +51,10 @@
   (let [start' (tm/+ start (forward size))
         end' (tm/- end (forward size))
         steps (->> [start start']
-                   (iterate (fn [[l p]] [p (next-pos start size l p)]))
+                   (iterate (fn [[l p]] [p (next-pos start size l p) [:L p]]))
                    rest
-                   (take-while (fn [[_ p]] (> (vertical-dist p end) size)))
-                   (mapv (fn [[_ p]] [:L p])))]
+                   (take-while (fn [[_ p _]] (> (vertical-dist p end) size)))
+                   (mapv (fn [[_ _ cmd]] cmd)))]
     (->> (concat [[:M start]
                   [:L start']]
                  steps
