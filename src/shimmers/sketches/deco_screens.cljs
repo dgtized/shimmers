@@ -19,22 +19,37 @@
 (defn vertical-dist [[_ y0] [_ y1]]
   (- y1 y0))
 
+(defn left [size]
+  (gv/vec2 (- size) 0))
+
+(defn right [size]
+  (gv/vec2 size 0))
+
+(defn forward [size]
+  (gv/vec2 0 size))
+
+(defn left-diag [size]
+  (tm/+ (left size) (forward size)))
+
+(defn right-diag [size]
+  (tm/+ (right size) (forward size)))
+
 (defn next-pos [start size l p]
   (let [right-bound? (< (horizontal-dist p start) size)
         left-bound? (> (horizontal-dist p start) (- size))
-        d (dr/weighted {(gv/vec2 size 0.0) (if right-bound? 1 0)
-                        (gv/vec2 (- size 0.0) 0.0) (if left-bound?  1 0)
-                        (gv/vec2 0.0 size) 1
-                        (gv/vec2 size size) (if left-bound? 1 0)
-                        (gv/vec2 (- size) size) (if right-bound?  1 0)})
+        d (dr/weighted {(left size) (if right-bound? 1 0)
+                        (right size) (if left-bound?  1 0)
+                        (forward size) 1
+                        (right-diag size) (if left-bound? 1 0)
+                        (left-diag size) (if right-bound?  1 0)})
         p' (tm/+ p d)]
     (if-not (tm/delta= l p')
       p'
       (recur start size l p))))
 
 (defn deco-path [start end size]
-  (let [start' (tm/+ start (gv/vec2 0.0 size))
-        end' (tm/- end (gv/vec2 0.0 size))
+  (let [start' (tm/+ start (forward size))
+        end' (tm/- end (forward size))
         steps (->> [start start']
                    (iterate (fn [[l p]] [p (next-pos start size l p)]))
                    rest
