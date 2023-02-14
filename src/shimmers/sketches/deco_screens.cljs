@@ -80,7 +80,7 @@
               :stroke "black"
               :fill "none"
               :stroke-width 2.0}
-     (shapes 5))))
+     (shapes 7))))
 
 (sketch/definition deco-screens
   {:created-at "2023-02-13"
