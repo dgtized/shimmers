@@ -2,6 +2,7 @@
   (:require
    [helins.canvas :as cv]
    [reagent.core :as r]
+   [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -48,10 +49,15 @@
 (defn do-frame []
   (fn [_ canvas canvas-state]
     (let [{:keys [width height]} @canvas-state
+          frame-rate (atom {:frames '(0) :t 0})
           ctx (canvas/scale-dpi canvas [width height])]
       (cv/on-frame
        (fn [t]
-         (draw-frame ctx width height (* 0.001 t)))))))
+         (let [{lt :t :keys [frames]} @frame-rate]
+           (draw-frame ctx width height (* 0.001 t))
+           (swap! frame-rate assoc :t t :frames (conj (take 5 frames) (- t lt)))
+           (framerate/display "framerate" (/ (apply + frames) (count frames)))
+           ctx))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 900 :height 600})
