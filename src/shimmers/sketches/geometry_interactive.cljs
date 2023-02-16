@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
@@ -49,10 +50,18 @@
            :union union
            :intersection intersect)))
 
+(defn ui-controls []
+  [:div
+   [:p.readable-width "Interactive test for computing rectangle differences
+    between two rectangles. Left click with the mouse will place the upper left
+    corner of the second rectangle and show the resulting rectangles in the
+    difference, union and intersection."]
+   (debug/display defo)])
+
 (sketch/defquil geometry-interactive
   :created-at "2023-02-16"
-  :tags #{}
-  :on-mount (debug/mount defo)
+  :tags #{:demo}
+  :on-mount (fn [] (ctrl/mount ui-controls))
   :size [800 600]
   :setup setup
   :update update-state
