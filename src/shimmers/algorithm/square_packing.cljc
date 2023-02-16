@@ -173,7 +173,9 @@
   intersection, returns an empty vector."
   [{[ax ay] :p [aw ah] :size :as a}
    {[bx by] :p [bw bh] :size :as b}]
-  (if (or (nil? a) (nil? b) (not (isec/intersect-rect-rect? a b)))
+  (if (or (nil? a) (nil? b)
+          (not (isec/intersect-rect-rect? a b))
+          (collide/bounded? b a))
     []
     (let [top-height (- by ay)
           bottom-y (+ by bh)
