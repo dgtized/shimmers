@@ -166,11 +166,14 @@
 
 ;; From https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Rectangle_difference
 (defn difference
+  "Finds row-major rectangles in `a` which are not intersecting `b`.
+
+  Returns up to 4 row-major rectangles (top, bottom, left, right), which are not
+  in the intersection region from `b`. If `a` or `b` are nil or do not
+  intersection, returns an empty vector."
   [{[ax ay] :p [aw ah] :size :as a}
    {[bx by] :p [bw bh] :size :as b}]
-  (if (or (nil? a) (nil? b)
-          (not (isec/intersect-rect-rect? a b))
-          (collide/bounded? a b))
+  (if (or (nil? a) (nil? b) (not (isec/intersect-rect-rect? a b)))
     []
     (let [top-height (- by ay)
           bottom-y (+ by bh)
