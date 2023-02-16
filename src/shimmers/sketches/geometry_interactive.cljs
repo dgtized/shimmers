@@ -2,13 +2,14 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
-   [shimmers.algorithm.square-packing :as square]))
+   [thi.ng.math.core :as tm]))
 
 (defonce defo (debug/state {}))
 
@@ -25,14 +26,28 @@
   (q/stroke 0.0)
   (let [a (cq/screen-rect 0.4)
         b (assoc (cq/screen-rect 0.3) :p position)
-        diffs (square/difference a b)]
+        diffs (square/difference a b)
+        intersect (tm/intersection a b)
+        union (tm/union a b)]
     (qdg/draw a)
     (qdg/draw b)
     (q/stroke 0.0 0.5 0.5)
     (q/fill 0.0 0.1)
     (doseq [s diffs]
       (qdg/draw s))
-    (swap! defo assoc :differences diffs)))
+
+    (q/stroke 0.33 0.5 0.5)
+    (q/fill 0.0 0.33)
+    (when intersect
+      (qdg/draw intersect))
+
+    (q/fill 0.0 0.05)
+    (q/stroke 0.0 0.1)
+    (qdg/draw union)
+    (swap! defo assoc
+           :differences diffs
+           :union union
+           :intersection intersect)))
 
 (sketch/defquil geometry-interactive
   :created-at "2023-02-16"
