@@ -6,8 +6,7 @@
             #?(:clj [thi.ng.geom.types]
                :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2 Rect2 Triangle2]])
             #?(:clj [thi.ng.geom.vector]
-               :cljs [thi.ng.geom.vector :refer [Vec2]])
-            [thi.ng.math.core :as tm])
+               :cljs [thi.ng.geom.vector :refer [Vec2]]))
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2]
                    [thi.ng.geom.vector Vec2])))
 
