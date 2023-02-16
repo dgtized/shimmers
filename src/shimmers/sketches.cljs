@@ -70,6 +70,7 @@
    shimmers.sketches.future-cities
    shimmers.sketches.garden-hose
    shimmers.sketches.geometry-examples
+   shimmers.sketches.geometry-interactive
    shimmers.sketches.gl-cube
    shimmers.sketches.glyphs
    shimmers.sketches.gossamer-coils

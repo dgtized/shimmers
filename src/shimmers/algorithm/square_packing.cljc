@@ -1,7 +1,9 @@
 (ns shimmers.algorithm.square-packing
   (:require
+   [shimmers.math.geometry.collisions :as collide]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -161,3 +163,32 @@
 
 ;; (defn rect-clip [a b clip-poly])
 ;; (defn rect-remainder [a b clip-poly])
+
+;; From https://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Rectangle_difference
+(defn difference
+  [{[ax ay] :p [aw ah] :size :as a}
+   {[bx by] :p [bw bh] :size :as b}]
+  (if (or (nil? a) (nil? b)
+          (not (isec/intersect-rect-rect? a b))
+          (collide/bounded? a b))
+    []
+    (let [top-height (- by ay)
+          bottom-y (+ by bh)
+          bottom-height (- ah (- bottom-y ay))
+          ay+height (+ ay ah)
+          y1 (max by ay)
+          y2 (min bottom-y ay+height)
+          mid-height (- y2 y1)
+          left-width (- bx ax)
+          right-x (+ bx bw)
+          right-width (- aw (- right-x ax))]
+      (cond-> []
+        (> top-height 0.0)
+        (conj (rect/rect ax ay aw top-height))
+        (and (> bottom-height 0.0)
+             (< bottom-y (+ ay ah)))
+        (conj (rect/rect ax bottom-y aw bottom-height))
+        (and (> left-width 0.0) (> mid-height 0.0))
+        (conj (rect/rect ax y1 left-width mid-height))
+        (> right-width 0.0)
+        (conj (rect/rect right-x y1 right-width mid-height))))))

@@ -6,7 +6,8 @@
             #?(:clj [thi.ng.geom.types]
                :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2 Rect2 Triangle2]])
             #?(:clj [thi.ng.geom.vector]
-               :cljs [thi.ng.geom.vector :refer [Vec2]]))
+               :cljs [thi.ng.geom.vector :refer [Vec2]])
+            [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2]
                    [thi.ng.geom.vector Vec2])))
 
@@ -189,6 +190,12 @@
   [Rect2 Line2] [bounds line]
   (every? (fn [p] (g/contains-point? bounds p))
           (g/vertices line)))
+
+(defmethod bounded?
+  [Rect2 Rect2] [{[x y] :p [w h] :size} {[rx ry] :p [rw rh] :size}]
+  (and (>= rx x) (>= ry y)
+       (<= (+ rx rw) (+ x w))
+       (<= (+ ry rh) (+ y h))))
 
 (defmethod bounded?
   [Circle2 Vec2] [bounds point]
