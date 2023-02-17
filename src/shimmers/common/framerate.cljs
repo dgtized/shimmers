@@ -20,3 +20,14 @@
                      (apply draw args)
                      (display host (q/current-frame-rate)))]
     (assoc options :draw timed-draw)))
+
+(defn sampler
+  ([] (sampler {}))
+  ([{:keys [host] :or {host "framerate"}}]
+   (let [frame-rate (atom {:frames '(1) :t 0})]
+     (fn [t]
+       (let [{lt :t :keys [frames]} @frame-rate
+             rate (* 1000 (/ (count frames) (apply + frames)))]
+         (swap! frame-rate assoc :t t :frames (conj (take 4 frames) (- t lt)))
+         (display host rate)
+         rate)))))

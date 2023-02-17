@@ -49,15 +49,12 @@
 (defn do-frame []
   (fn [_ canvas canvas-state]
     (let [{:keys [width height]} @canvas-state
-          frame-rate (atom {:frames '(1) :t 0})
+          measure-frames! (framerate/sampler)
           ctx (canvas/scale-dpi canvas [width height])]
       (cv/on-frame
        (fn [t]
-         (let [{lt :t :keys [frames]} @frame-rate]
-           (draw-frame ctx width height (* 0.001 t))
-           (swap! frame-rate assoc :t t :frames (conj (take 4 frames) (- t lt)))
-           (framerate/display "framerate" (* 1000 (/ (count frames) (apply + frames))))
-           ctx))))))
+         (measure-frames! t)
+         (draw-frame ctx width height (* 0.001 t)))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 900 :height 600})
