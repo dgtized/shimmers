@@ -40,3 +40,22 @@
 
 (defn canvas-frame [attrs canvas-state render-frame-fn]
   [animated-canvas canvas-state attrs render-frame-fn])
+
+(defn on-animated-frame
+  [{:keys [delay]} f]
+  (let [cancel-id (volatile! nil)
+        start (js/performance.now)
+        periodic (volatile! (+ start delay))
+        animation (gensym "on-animated-frame")]
+    ((fn frame [timestamp]
+       (when (and (> delay 0) (> timestamp @periodic))
+         (vreset! periodic (+ timestamp delay))
+         (println animation timestamp))
+       (when (f timestamp)
+         (vreset! cancel-id (js/requestAnimationFrame frame))))
+     start)
+    (fn cancel []
+      (when (> delay 0)
+        (println "cancel" animation))
+      (js/cancelAnimationFrame @cancel-id)
+      nil)))

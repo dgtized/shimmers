@@ -51,7 +51,8 @@
     (let [{:keys [width height]} @canvas-state
           measure-frames! (framerate/sampler)
           ctx (canvas/scale-dpi canvas [width height])]
-      (cv/on-frame
+      (canvas/on-animated-frame
+       {:delay 0}
        (fn [t]
          (measure-frames! t)
          (draw-frame ctx width height (* 0.001 t)))))))
