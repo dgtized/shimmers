@@ -48,13 +48,13 @@
         start (js/performance.now)
         periodic (volatile! (+ start delay))
         animation (gensym "on-animated-frame")]
-    ((fn frame [timestamp]
-       (when (and (> delay 0) (> timestamp @periodic))
-         (vreset! periodic (+ timestamp delay))
-         (println animation timestamp))
-       (when (f timestamp)
-         (vreset! cancel-id (js/requestAnimationFrame frame))))
-     start)
+    (letfn [(frame [timestamp]
+              (when (and (> delay 0) (> timestamp @periodic))
+                (vreset! periodic (+ timestamp delay))
+                (println animation timestamp))
+              (when (f timestamp)
+                (vreset! cancel-id (js/requestAnimationFrame frame))))]
+      (frame start))
     (fn cancel []
       (when (> delay 0)
         (println "cancel" animation))
