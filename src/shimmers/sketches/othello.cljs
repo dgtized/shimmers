@@ -10,9 +10,9 @@
    [thi.ng.math.core :as tm]))
 
 (defn draw-frame [ctx width height t]
-  (let [r 35
-        cols (int (/ width (* 2.5 r)))
-        rows (int (/ height (* 2.5 r)))]
+  (let [r (max 30 (int (/ (min width height) 16)))
+        cols (int (/ width (* 2.66 r)))
+        rows (int (/ height (* 2.66 r)))]
     (cv/clear ctx 0 0 width height)
     (cv/line-width ctx (/ r 3))
     (dotimes [i cols]
@@ -48,22 +48,25 @@
 
 (defn do-frame []
   (fn [canvas-el canvas-state]
-    (let [{:keys [width height]} @canvas-state
-          measure-frames! (framerate/sampler)
-          ctx (canvas/scale-dpi canvas-el [width height])]
+    (let [measure-frames! (framerate/sampler)]
       (canvas/on-animated-frame
        {:delay 0}
        (fn [t]
          (measure-frames! t)
-         (draw-frame ctx width height (* 0.001 t)))))))
+         (let [{:keys [width height]} @canvas-state
+               ctx (canvas/scale-dpi canvas-el [width height])]
+           (draw-frame ctx width height (* 0.001 t))))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 900 :height 600})
         attributes {:class "canvas-frame"}]
     (fn []
-      [:div.contained
-       [canvas/canvas-frame attributes canvas-state
-        (do-frame)]])))
+      [:div
+       [canvas/canvas-frame attributes canvas-state (do-frame)]
+       [:div.contained
+        [:div.center
+         [:button {:on-click (fn [] (canvas/toggle-full-screen! canvas-state))}
+          "Toggle Fullscreen"]]]])))
 
 (sketch/definition othello
   {:created-at "2023-02-11"

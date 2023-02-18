@@ -21,6 +21,24 @@
     (.scale ctx dpr dpr)
     ctx))
 
+(defn toggle-full-screen! [canvas-state]
+  (let [{:keys [full-screen original width height]} @canvas-state]
+    (if full-screen
+      (let [{ow :width oh :height} original]
+        ;; (println [ow oh (/ ow oh)])
+        (swap! canvas-state assoc
+               :width ow :height oh :full-screen false))
+      (let [fw (* 80 (int (/ (.-innerWidth js/window) 100)))
+            fh (* 100 (int (/ (.-innerHeight js/window) 100)))
+            aspect (/ width height)
+            [w h] (if (> fw fh)
+                    [fw (/ fw aspect)]
+                    [(* fh aspect) fh])]
+        ;; (println [fw fh w h aspect])
+        (swap! canvas-state assoc
+               :width w :height h :full-screen true
+               :original {:width width :height height})))))
+
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
 (defn animated-canvas [canvas-state attributes render-frame-fn]
