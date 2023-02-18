@@ -54,7 +54,8 @@
     (let [{:keys [width height]} @canvas-state
           ctx (canvas/scale-dpi canvas-el [width height])
           box-state (make-box-state width height 10 50)]
-      (cv/on-frame
+      (canvas/on-animated-frame
+       {:delay 0}
        (fn [_]
          (let [{:keys [width height]} @canvas-state
                bounds (rect/rect 0 0 width height)
