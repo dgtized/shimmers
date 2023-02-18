@@ -1,28 +1,28 @@
 (ns shimmers.common.ui.quil
   (:require
    [quil.core :as q :include-macros true]
-   [reagent.core :as r]
-   [reagent.dom :as rdom]))
+   [reagent.core :as r]))
 
 ;; Amalgamation of:
 ;; https://github.com/quil/quil/issues/320#issuecomment-534859573
 ;; https://github.com/simon-katz/nomisdraw/blob/for-quil-api-request/src/cljs/nomisdraw/utils/nomis_quil_on_reagent.cljs
 
 (defn sketch-component [sketch-args]
-  (let [performance-id (name (gensym "performance_"))
+  (let [!dom-node (atom nil)
+        performance-id (name (gensym "performance_"))
         options (assoc sketch-args :performance-id performance-id)]
     [r/create-class
      {:component-did-mount
-      (fn [component]
-        (let [node (rdom/dom-node component)]
-          (apply q/sketch (apply concat (assoc options :host node)))))
+      (fn []
+        (apply q/sketch (apply concat (assoc options :host @!dom-node))))
       :component-will-unmount
-      (fn [component]
-        (when-let [div-host (rdom/dom-node component)]
+      (fn []
+        (when-let [div-host @!dom-node]
           (q/with-sketch (.-processing-obj div-host) (q/exit))))
       :render
       (fn []
-        [:div.canvas-frame {:style {:position "relative"}}
+        [:div.canvas-frame {:style {:position "relative"}
+                            :ref (fn [el] (reset! !dom-node el))}
          [:div.performance
           {:id performance-id
            :style {:position "absolute"

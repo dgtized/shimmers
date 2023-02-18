@@ -50,9 +50,9 @@
 ;; TODO: Can the boxes bounce into the other canvas without sharing state?
 ;; also playing with neon effect from https://codepen.io/agar3s/pen/pJpoya
 (defn draw-frame [id telemetry]
-  (fn [_ canvas canvas-state]
+  (fn [canvas-el canvas-state]
     (let [{:keys [width height]} @canvas-state
-          ctx (canvas/scale-dpi canvas [width height])
+          ctx (canvas/scale-dpi canvas-el [width height])
           box-state (make-box-state width height 10 50)]
       (cv/on-frame
        (fn [_]

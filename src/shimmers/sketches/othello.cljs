@@ -47,10 +47,10 @@
     ctx))
 
 (defn do-frame []
-  (fn [_ canvas canvas-state]
+  (fn [canvas-el canvas-state]
     (let [{:keys [width height]} @canvas-state
           measure-frames! (framerate/sampler)
-          ctx (canvas/scale-dpi canvas [width height])]
+          ctx (canvas/scale-dpi canvas-el [width height])]
       (canvas/on-animated-frame
        {:delay 0}
        (fn [t]
