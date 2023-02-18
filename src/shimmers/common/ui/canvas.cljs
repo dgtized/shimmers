@@ -28,7 +28,8 @@
         ;; (println [ow oh (/ ow oh)])
         (swap! canvas-state assoc
                :width ow :height oh :full-screen false))
-      (let [fw (* 80 (int (/ (.-innerWidth js/window) 100)))
+      ;; FIXME 70% of width is *arbitrary* for the sketch using this
+      (let [fw (* 70 (int (/ (.-innerWidth js/window) 100)))
             fh (* 100 (int (/ (.-innerHeight js/window) 100)))
             aspect (/ width height)
             [w h] (if (> fw fh)
