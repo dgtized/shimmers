@@ -25,7 +25,10 @@
        (take-while (fn [{:keys [r]}] (> r 3.0)))
        (map :circle)))
 
-(defn update-state [{:keys [t] :as state}]
+(defn initial-state []
+  {:t 0})
+
+(defn update-state [_dims {:keys [t] :as state}]
   (update state :t + (+ 0.003 (* 0.017 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
 
 (defn circle [ctx {[x y] :p r :r}]
@@ -34,7 +37,7 @@
     (.arc x y r 0 eq/TAU false)
     .stroke))
 
-(defn draw-frame [ctx width height {:keys [t]}]
+(defn draw-frame [ctx [width height] {:keys [t]}]
   (.clearRect ctx 0 0 width height)
   (set! (.-line-width ctx) (/ 1 tm/PHI))
   (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
@@ -45,8 +48,8 @@
     (circle ctx c))
   ctx)
 
-(defn do-frame []
-  (let [frame-state (atom {:t 0})]
+(defn animate-frame []
+  (let [frame-state (atom (initial-state))]
     (fn [canvas-el canvas-state]
       (let [measure-frames! (framerate/sampler)]
         (canvas/on-animated-frame
@@ -54,9 +57,10 @@
          (fn [t]
            (measure-frames! t)
            (let [{:keys [width height]} @canvas-state
-                 ctx (canvas/scale-dpi canvas-el [width height])]
-             (swap! frame-state update-state)
-             (draw-frame ctx width height @frame-state))))))))
+                 screen-dims [width height]
+                 ctx (canvas/scale-dpi canvas-el screen-dims)]
+             (swap! frame-state (partial update-state screen-dims))
+             (draw-frame ctx screen-dims @frame-state))))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 800 :height 600})
@@ -66,7 +70,8 @@
                     :on-double-click toggle-fs}]
     (fn []
       [:div
-       [canvas/canvas-frame attributes canvas-state (do-frame)]])))
+       [canvas/canvas-frame attributes canvas-state
+        (animate-frame)]])))
 
 (sketch/definition unraveling
   {:created-at "2023-02-02"
