@@ -4,15 +4,12 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.ui.debug :as debug]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
-(defonce defo (debug/state))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -50,7 +47,6 @@
 
 (sketch/defquil dreamcatcher
   :created-at "2021-10-11"
-  :on-mount (debug/mount defo)
   :size [800 600]
   :setup setup
   :update update-state
