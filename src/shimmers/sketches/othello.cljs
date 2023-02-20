@@ -59,16 +59,14 @@
 
 (defn page []
   (let [canvas-state (r/atom {:width 900 :height 600})
-        attributes {:class "canvas-frame"}]
+        attributes {:class "canvas-frame"}
+        toggle-fullscreen
+        (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.7}))]
     (fn []
       [:div
-       [canvas/canvas-frame attributes canvas-state (do-frame)]
-       [:div.contained
-        [:div.center
-         [:button
-          {:on-click (fn [] (canvas/toggle-full-screen!
-                            canvas-state {:width-pct 0.7}))}
-          "Toggle Fullscreen"]]]])))
+       [canvas/canvas-frame
+        (assoc attributes :on-double-click toggle-fullscreen)
+        canvas-state (do-frame)]])))
 
 (sketch/definition othello
   {:created-at "2023-02-11"
