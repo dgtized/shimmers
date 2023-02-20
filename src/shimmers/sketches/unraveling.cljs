@@ -45,16 +45,18 @@
     (circle ctx c))
   ctx)
 
-(defn do-frame [frame-state canvas-el canvas-state]
-  (let [measure-frames! (framerate/sampler)]
-    (canvas/on-animated-frame
-     {:delay 0}
-     (fn [t]
-       (measure-frames! t)
-       (let [{:keys [width height]} @canvas-state
-             ctx (canvas/scale-dpi canvas-el [width height])]
-         (swap! frame-state update-state)
-         (draw-frame ctx width height @frame-state))))))
+(defn do-frame []
+  (let [frame-state (atom {:t 0})]
+    (fn [canvas-el canvas-state]
+      (let [measure-frames! (framerate/sampler)]
+        (canvas/on-animated-frame
+         {:delay 0}
+         (fn [t]
+           (measure-frames! t)
+           (let [{:keys [width height]} @canvas-state
+                 ctx (canvas/scale-dpi canvas-el [width height])]
+             (swap! frame-state update-state)
+             (draw-frame ctx width height @frame-state))))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 800 :height 600})
@@ -64,7 +66,7 @@
                     :on-double-click toggle-fs}]
     (fn []
       [:div
-       [canvas/canvas-frame attributes canvas-state (partial do-frame (atom {:t 0}))]])))
+       [canvas/canvas-frame attributes canvas-state (do-frame)]])))
 
 (sketch/definition unraveling
   {:created-at "2023-02-02"
