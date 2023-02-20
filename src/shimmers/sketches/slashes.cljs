@@ -3,11 +3,11 @@
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -17,14 +17,14 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         hatch (partial clip/variable-hatching bounds)]
-    (concat (hatch (tm/random 5.0 6.0) 0
-                   (int (tm/random 6 16)) (constantly 10) (constantly 1))
-            (hatch (tm/random 5.0 6.0) (* width 0.8)
-                   10 #(tm/random 5 15) #(tm/random 0.8 6))
-            (hatch (tm/random 3.5 4.5) (* width 0.4)
-                   (int (tm/random 4 16)) #(tm/random 5 15) #(tm/random 0.5 4))
-            (hatch (tm/random 3.5 4.5) (* width 1.3)
-                   8 #(tm/random 5 15) #(tm/random 0.5 2)))))
+    (concat (hatch (dr/random 5.0 6.0) 0
+                   (int (dr/random 6 16)) (constantly 10) (constantly 1))
+            (hatch (dr/random 5.0 6.0) (* width 0.8)
+                   10 #(dr/random 5 15) #(dr/random 0.8 6))
+            (hatch (dr/random 3.5 4.5) (* width 0.4)
+                   (int (dr/random 4 16)) #(dr/random 5 15) #(dr/random 0.5 4))
+            (hatch (dr/random 3.5 4.5) (* width 1.3)
+                   8 #(dr/random 5 15) #(dr/random 0.5 2)))))
 
 (defn scene []
   (csvg/timed
@@ -40,6 +40,6 @@
 (sketch/definition slashes
   {:created-at "2021-08-20"
    :type :svg
-   :tags #{}}
+   :tags #{:deterministic}}
   (ctrl/mount (view-sketch/page-for scene :slashes)
               "sketch-host"))
