@@ -65,7 +65,9 @@
        [canvas/canvas-frame attributes canvas-state (do-frame)]
        [:div.contained
         [:div.center
-         [:button {:on-click (fn [] (canvas/toggle-full-screen! canvas-state))}
+         [:button
+          {:on-click (fn [] (canvas/toggle-full-screen!
+                            canvas-state {:width-pct 0.7}))}
           "Toggle Fullscreen"]]]])))
 
 (sketch/definition othello

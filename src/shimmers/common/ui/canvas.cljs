@@ -21,16 +21,18 @@
     (.scale ctx dpr dpr)
     ctx))
 
-(defn toggle-full-screen! [canvas-state]
+(defn round100 [n]
+  (* 100 (int (/ n 100))))
+
+(defn toggle-full-screen! [canvas-state {:keys [width-pct]}]
   (let [{:keys [full-screen original width height]} @canvas-state]
     (if full-screen
       (let [{ow :width oh :height} original]
         ;; (println [ow oh (/ ow oh)])
         (swap! canvas-state assoc
                :width ow :height oh :full-screen false))
-      ;; FIXME 70% of width is *arbitrary* for the sketch using this
-      (let [fw (* 70 (int (/ (.-innerWidth js/window) 100)))
-            fh (* 100 (int (/ (.-innerHeight js/window) 100)))
+      (let [fw (round100 (* width-pct (.-innerWidth js/window)))
+            fh (round100 (.-innerHeight js/window))
             aspect (/ width height)
             [w h] (if (> fw fh)
                     [fw (/ fw aspect)]
