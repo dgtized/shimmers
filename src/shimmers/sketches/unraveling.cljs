@@ -48,19 +48,18 @@
     (circle ctx c))
   ctx)
 
-(defn animate-frame []
-  (let [frame-state (atom (initial-state))]
-    (fn [canvas-el canvas-state]
-      (let [measure-frames! (framerate/sampler)]
-        (canvas/on-animated-frame
-         {:delay 0}
-         (fn [t]
-           (measure-frames! t)
-           (let [{:keys [width height]} @canvas-state
-                 screen-dims [width height]
-                 ctx (canvas/scale-dpi canvas-el screen-dims)]
-             (swap! frame-state (partial update-state screen-dims))
-             (draw-frame ctx screen-dims @frame-state))))))))
+(defn animate-frame [canvas-el canvas-state]
+  (let [measure-frames! (framerate/sampler)
+        frame-state (atom (initial-state))]
+    (canvas/on-animated-frame
+     {:delay 0}
+     (fn [t]
+       (measure-frames! t)
+       (let [{:keys [width height]} @canvas-state
+             screen-dims [width height]
+             ctx (canvas/scale-dpi canvas-el screen-dims)]
+         (swap! frame-state (partial update-state screen-dims))
+         (draw-frame ctx screen-dims @frame-state))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 800 :height 600})
@@ -70,8 +69,7 @@
                     :on-double-click toggle-fs}]
     (fn []
       [:div
-       [canvas/canvas-frame attributes canvas-state
-        (animate-frame)]])))
+       [canvas/canvas-frame attributes canvas-state animate-frame]])))
 
 (sketch/definition unraveling
   {:created-at "2023-02-02"
