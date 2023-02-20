@@ -39,7 +39,7 @@
 
 (defn draw-frame [ctx [width height] {:keys [t]}]
   (.clearRect ctx 0 0 width height)
-  (set! (.-line-width ctx) (/ 1 tm/PHI))
+  (set! (.-lineWidth ctx) (/ 1.0 tm/PHI))
   (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                       (* 0.48 height))
                            (* tm/PHI t)
