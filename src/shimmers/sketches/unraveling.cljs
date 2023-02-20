@@ -58,7 +58,8 @@
 
 (defn page []
   (let [canvas-state (r/atom {:width 800 :height 600})
-        toggle-fs (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.6}))
+        toggle-fs (fn [] (canvas/toggle-full-screen! canvas-state
+                                                    {:height-pct 0.9}))
         attributes {:class "canvas-frame"
                     :on-double-click toggle-fs}]
     (fn []
