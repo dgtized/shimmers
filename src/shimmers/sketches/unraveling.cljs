@@ -1,6 +1,5 @@
 (ns shimmers.sketches.unraveling
   (:require
-   [helins.canvas :as cv]
    [reagent.core :as r]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.canvas :as canvas]
@@ -30,15 +29,14 @@
   (update state :t + (+ 0.003 (* 0.017 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
 
 (defn circle [ctx {[x y] :p r :r}]
-  (-> ctx
-      cv/begin
-      (cv/arc x y r 0 eq/TAU)
-      (cv/stroke)))
+  (doto ctx
+    .beginPath
+    (.arc x y r 0 eq/TAU false)
+    .stroke))
 
 (defn draw-frame [ctx width height {:keys [t]}]
-  (-> ctx
-      (cv/clear 0 0 width height)
-      (cv/line-width (/ 1.5 tm/PHI)))
+  (.clearRect ctx 0 0 width height)
+  (set! (.-line-width ctx) (/ 1 tm/PHI))
   (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                       (* 0.48 height))
                            (* tm/PHI t)
