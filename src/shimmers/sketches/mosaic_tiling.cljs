@@ -111,7 +111,7 @@
       (let [{:keys [show-scene]} @ui-settings]
         [:div
          (if show-scene
-           [:div.canvas-frame (time (scene 1024 config))]
+           [:div.canvas-frame (scene 1024 config)]
            [examples seed])
          [:div.contained
           [:div.flexcols
