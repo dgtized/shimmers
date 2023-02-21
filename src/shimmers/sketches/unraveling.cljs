@@ -28,7 +28,7 @@
   {:t 0})
 
 (defn update-state [_dims {:keys [t] :as state}]
-  (update state :t + (+ 0.003 (* 0.017 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
+  (update state :t + (+ 0.002 (* 0.018 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
 
 (defn circle [ctx {[x y] :p r :r}]
   (doto ctx
