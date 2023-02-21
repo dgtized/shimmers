@@ -2,15 +2,15 @@
   (:require
    [helins.canvas :as cv]
    [reagent.core :as r]
-   [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
-(defn draw-frame [ctx width height t]
-  (let [r (max 30 (int (/ (min width height) 16)))
+(defn draw [_ ctx [width height] ms]
+  (let [t (* 0.001 ms)
+        r (max 30 (int (/ (min width height) 16)))
         cols (int (/ width (* 2.66 r)))
         rows (int (/ height (* 2.66 r)))]
     (cv/clear ctx 0 0 width height)
@@ -46,27 +46,18 @@
           (cv/fill ctx))))
     ctx))
 
-(defn do-frame []
-  (fn [canvas-el canvas-state]
-    (let [measure-frames! (framerate/sampler)]
-      (canvas/on-animated-frame
-       {:delay 0}
-       (fn [t]
-         (measure-frames! t)
-         (let [{:keys [width height]} @canvas-state
-               ctx (canvas/scale-dpi canvas-el [width height])]
-           (draw-frame ctx width height (* 0.001 t))))))))
-
 (defn page []
-  (let [canvas-state (r/atom {:width 900 :height 600})
-        attributes {:class "canvas-frame"}
-        toggle-fullscreen
-        (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.7}))]
+  (let [canvas-state
+        (r/atom {:width 900
+                 :height 600
+                 :draw #'draw})
+        toggle-fs
+        (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.7}))
+        attributes {:class "canvas-frame"
+                    :on-double-click toggle-fs}]
     (fn []
       [:div
-       [canvas/canvas-frame
-        (assoc attributes :on-double-click toggle-fullscreen)
-        canvas-state (do-frame)]])))
+       [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))
 
 (sketch/definition othello
   {:created-at "2023-02-11"

@@ -99,11 +99,11 @@
         frame-state (atom (setup @canvas-state))]
     (on-animated-frame
      {:delay 0}
-     (fn [t]
-       (measure-frames! t)
+     (fn [ms]
+       (measure-frames! ms)
        (let [{:keys [width height] :as cv} @canvas-state
              screen-dims [width height]
              ctx (scale-dpi canvas-el screen-dims)
              update-state (get cv :update (fn [_sd fs] fs))]
-         (swap! frame-state update-state screen-dims t)
-         ((:draw cv) @frame-state ctx screen-dims t))))))
+         (swap! frame-state update-state screen-dims ms)
+         ((:draw cv) @frame-state ctx screen-dims ms))))))
