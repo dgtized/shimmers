@@ -95,8 +95,8 @@
   updated at runtime."
   [canvas-el canvas-state]
   (let [measure-frames! (framerate/sampler)
-        init (get @canvas-state :initial (fn [] {}))
-        frame-state (atom (init))]
+        setup (get @canvas-state :setup (fn [] {}))
+        frame-state (atom (setup))]
     (on-animated-frame
      {:delay 0}
      (fn [t]

@@ -24,7 +24,7 @@
        (take-while (fn [{:keys [r]}] (> r 3.0)))
        (map :circle)))
 
-(defn initial-state []
+(defn setup []
   {:t 0})
 
 (defn update-state [_dims {:keys [t] :as state}]
@@ -36,7 +36,7 @@
     (.arc x y r 0 eq/TAU false)
     .stroke))
 
-(defn draw-frame [ctx [width height] {:keys [t]}]
+(defn draw [ctx [width height] {:keys [t]}]
   (.clearRect ctx 0 0 width height)
   (set! (.-lineWidth ctx) (+ (/ 1.0 tm/PHI) (* 0.25 (Math/cos (* 1.33 (+ 0.5 t))))))
   (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
@@ -50,9 +50,9 @@
 (defn page []
   (let [canvas-state
         (r/atom {:width 800 :height 600
-                 :initial #'initial-state
+                 :setup #'setup
                  :update #'update-state
-                 :draw #'draw-frame})
+                 :draw #'draw})
         toggle-fs (fn [] (canvas/toggle-full-screen! canvas-state
                                                     {:height-pct 0.9}))
         attributes {:class "canvas-frame"
