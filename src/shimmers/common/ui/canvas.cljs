@@ -1,7 +1,8 @@
 (ns shimmers.common.ui.canvas
   (:require
    [goog.dom :as dom]
-   [reagent.core :as r]))
+   [reagent.core :as r]
+   [shimmers.common.framerate :as framerate]))
 
 ;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
 (defn sizing-attributes [width height attributes]
@@ -84,3 +85,25 @@
         (println "cancel" animation))
       (js/cancelAnimationFrame @cancel-id)
       nil)))
+
+(defn animate-frame
+  "Lifecycle function for rendering a canvas.
+
+  Expects `canvas-state` to have :width, :height, :initial, :update, and :draw
+  specified. The latter three are for initializing, updating, and drawing the
+  frame-state. Recommend specifying the function values with #' to ensure they can be
+  updated at runtime."
+  [canvas-el canvas-state]
+  (let [measure-frames! (framerate/sampler)
+        init (get @canvas-state :initial (fn [] {}))
+        frame-state (atom (init))]
+    (on-animated-frame
+     {:delay 0}
+     (fn [t]
+       (measure-frames! t)
+       (let [{:keys [width height] :as cv} @canvas-state
+             screen-dims [width height]
+             ctx (scale-dpi canvas-el screen-dims)
+             update-state (get cv :update (fn [_sd fs] fs))]
+         (swap! frame-state (partial update-state screen-dims))
+         ((:draw cv) ctx screen-dims @frame-state))))))

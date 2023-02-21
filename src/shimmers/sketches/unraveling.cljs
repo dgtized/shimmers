@@ -1,7 +1,6 @@
 (ns shimmers.sketches.unraveling
   (:require
    [reagent.core :as r]
-   [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -48,28 +47,19 @@
     (circle ctx c))
   ctx)
 
-(defn animate-frame [canvas-el canvas-state]
-  (let [measure-frames! (framerate/sampler)
-        frame-state (atom (initial-state))]
-    (canvas/on-animated-frame
-     {:delay 0}
-     (fn [t]
-       (measure-frames! t)
-       (let [{:keys [width height]} @canvas-state
-             screen-dims [width height]
-             ctx (canvas/scale-dpi canvas-el screen-dims)]
-         (swap! frame-state (partial update-state screen-dims))
-         (draw-frame ctx screen-dims @frame-state))))))
-
 (defn page []
-  (let [canvas-state (r/atom {:width 800 :height 600})
+  (let [canvas-state
+        (r/atom {:width 800 :height 600
+                 :initial #'initial-state
+                 :update #'update-state
+                 :draw #'draw-frame})
         toggle-fs (fn [] (canvas/toggle-full-screen! canvas-state
                                                     {:height-pct 0.9}))
         attributes {:class "canvas-frame"
                     :on-double-click toggle-fs}]
     (fn []
       [:div
-       [canvas/canvas-frame attributes canvas-state animate-frame]])))
+       [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))
 
 (sketch/definition unraveling
   {:created-at "2023-02-02"
