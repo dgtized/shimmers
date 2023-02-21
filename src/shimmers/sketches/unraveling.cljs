@@ -24,10 +24,10 @@
        (take-while (fn [{:keys [r]}] (> r 3.0)))
        (map :circle)))
 
-(defn setup []
+(defn setup [_]
   {:t 0})
 
-(defn update-state [_dims {:keys [t] :as state}]
+(defn update-state [{:keys [t] :as state} _dims _time]
   (update state :t + (+ 0.002 (* 0.018 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
 
 (defn circle [ctx {[x y] :p r :r}]
@@ -36,7 +36,7 @@
     (.arc x y r 0 eq/TAU false)
     .stroke))
 
-(defn draw [ctx [width height] {:keys [t]}]
+(defn draw [ {:keys [t]} ctx [width height] _time]
   (.clearRect ctx 0 0 width height)
   (set! (.-lineWidth ctx) (+ (/ 1.0 tm/PHI) (* 0.25 (Math/cos (* 1.33 (+ 0.5 t))))))
   (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))

@@ -95,8 +95,8 @@
   updated at runtime."
   [canvas-el canvas-state]
   (let [measure-frames! (framerate/sampler)
-        setup (get @canvas-state :setup (fn [] {}))
-        frame-state (atom (setup))]
+        setup (get @canvas-state :setup (fn [_] {}))
+        frame-state (atom (setup @canvas-state))]
     (on-animated-frame
      {:delay 0}
      (fn [t]
@@ -105,5 +105,5 @@
              screen-dims [width height]
              ctx (scale-dpi canvas-el screen-dims)
              update-state (get cv :update (fn [_sd fs] fs))]
-         (swap! frame-state (partial update-state screen-dims))
-         ((:draw cv) ctx screen-dims @frame-state))))))
+         (swap! frame-state update-state screen-dims t)
+         ((:draw cv) @frame-state ctx screen-dims t))))))
