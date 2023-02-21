@@ -2,7 +2,8 @@
   (:require
    [goog.dom :as dom]
    [reagent.core :as r]
-   [shimmers.common.framerate :as framerate]))
+   [shimmers.common.framerate :as framerate]
+   [shimmers.math.equations :as eq]))
 
 ;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
 (defn sizing-attributes [width height attributes]
@@ -107,3 +108,20 @@
              update-state (get cv :update (fn [_sd fs] fs))]
          (swap! frame-state update-state screen-dims ms)
          ((:draw cv) @frame-state ctx screen-dims ms))))))
+
+(defn circle [ctx {[x y] :p r :r}]
+  (doto ctx
+    .beginPath
+    (.arc x y r 0 eq/TAU false)))
+
+(defn stroke [ctx]
+  (.stroke ctx)
+  ctx)
+
+(defn fill
+  ([ctx]
+   (.fill ctx)
+   ctx)
+  ([ctx fill-rule]
+   (.fill ctx fill-rule)
+   ctx))

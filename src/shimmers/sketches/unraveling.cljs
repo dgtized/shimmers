@@ -30,12 +30,6 @@
 (defn update-state [{:keys [t] :as state} _dims _time]
   (update state :t + (+ 0.002 (* 0.018 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
 
-(defn circle [ctx {[x y] :p r :r}]
-  (doto ctx
-    .beginPath
-    (.arc x y r 0 eq/TAU false)
-    .stroke))
-
 (defn draw [ {:keys [t]} ctx [width height] _time]
   (.clearRect ctx 0 0 width height)
   (set! (.-lineWidth ctx) (+ (/ 1.0 tm/PHI) (* 0.25 (Math/cos (* 1.33 (+ 0.5 t))))))
@@ -44,7 +38,9 @@
                            (* tm/PHI t)
                            (+ 0.79 (* 0.175 (eq/unit-cos t)))
                            (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))]
-    (circle ctx c))
+    (-> ctx
+        (canvas/circle c)
+        canvas/stroke))
   ctx)
 
 (defn page []
