@@ -175,6 +175,10 @@ button.generate {
   text-align: center;
 }
 
+.centered {
+  margin: 0 auto;
+}
+
 .readable-width {
   min-width: 25em;
   max-width: 40em;
