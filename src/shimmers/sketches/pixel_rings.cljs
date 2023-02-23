@@ -9,14 +9,8 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]))
 
-(defn setup []
+(defn draw [_]
   (q/color-mode :hsl 1.0)
-  {})
-
-(defn update-state [state]
-  state)
-
-(defn draw [state]
   (q/fill 0)
   (q/no-stroke)
   (let [center (cq/rel-vec 0.15 0.4)]
@@ -41,7 +35,5 @@
   :created-at "2023-02-23"
   :tags #{}
   :size [900 600]
-  :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
