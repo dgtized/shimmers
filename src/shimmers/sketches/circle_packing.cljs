@@ -37,12 +37,11 @@
     (:color c1)))
 
 (defn setup []
-  (q/frame-rate 30)
   (q/color-mode :hsl 1.0)
   {:quadtree (saq/circletree (cq/screen-rect))
    :boundary (cq/screen-rect)
    :radius 2
-   :scale 1.05
+   :scale 1.025
    :circles []})
 
 (defn grow-circles [{:keys [boundary quadtree circles scale] :as state}]
@@ -93,11 +92,11 @@
 
 (defn update-state [state]
   (let [c (count (:circles state))
-        pct (max 0 (- 1.0 (/ c 1600)))]
+        pct (max 0 (- 1.0 (/ c 4000)))]
     (-> state
         grow-circles
         (fresh-circles (q/round (* (mod (+ c (q/frame-count)) 4) (dr/random) pct)))
-        (cull-circles 0.00005))))
+        (cull-circles 0.00002))))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
