@@ -1,5 +1,6 @@
 (ns shimmers.sketches.clustered-farmlands
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -16,8 +17,8 @@
 (defn r [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn random-offsets-spaced [lower upper spacing]
-  (for [o (range lower upper spacing)]
+(defn random-offsets-spaced [spacing]
+  (for [o (cs/midsection (range 0 1 spacing))]
     (+ o (* spacing (dr/gaussian 0 0.1)))))
 
 (defn generate-houses
@@ -52,7 +53,7 @@
         ;; Trying to make them line up, but to be fields I think they have to be
         ;; separate to fill later
         road-start (g/point-at road 0.0)
-        rows (for [y (random-offsets-spaced 0.01 0.99 spacing)
+        rows (for [y (random-offsets-spaced spacing)
                    :let [mid (g/point-at road y)]
                    :when mid]
                (let [normal (-> (tm/- road-start mid)
