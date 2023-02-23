@@ -40,7 +40,7 @@
   (q/color-mode :hsl 1.0)
   {:quadtree (saq/circletree (cq/screen-rect))
    :boundary (cq/screen-rect)
-   :radius 2
+   :radius 3
    :scale 1.025
    :circles []})
 
