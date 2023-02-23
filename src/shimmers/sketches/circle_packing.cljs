@@ -91,12 +91,10 @@
            :quadtree (reduce g/delete-point quadtree (map :p culled)))))
 
 (defn update-state [state]
-  (let [c (count (:circles state))
-        pct (max 0 (- 1.0 (/ c 4000)))]
-    (-> state
-        grow-circles
-        (fresh-circles (q/round (* (mod (+ c (q/frame-count)) 4) (dr/random) pct)))
-        (cull-circles 0.00002))))
+  (-> state
+      grow-circles
+      (fresh-circles (dr/random-int 3))
+      (cull-circles 0.00002)))
 
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
