@@ -196,7 +196,7 @@
     [:li "Chain draws the lines between each link of the chain."]
     [:li "Brushes draws triangles at each vertex of the chain, spinning them
      proportional to distance from the head of the chain."]]
-   [:p.flexmodes
+   [:div.flexmodes
     (when (= (:draw-mode @ui-state) :equilateral-links)
       (ctrl/checkbox ui-state "Color Patches" [:color]))
     (when (and (= (:draw-mode @ui-state) :equilateral-links)
@@ -204,6 +204,7 @@
       (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
     (when (= (:draw-mode @ui-state) :equilateral-links)
       (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
+   [:p]
    (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})
    [:ul
     [:li "Sinusoidal chooses a winding path towards each target locations."]
