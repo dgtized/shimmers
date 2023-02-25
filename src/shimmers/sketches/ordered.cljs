@@ -44,16 +44,16 @@
 (defn pick-side [bounds parent polygon last-cut]
   (let [angle (when last-cut (g/heading last-cut))]
     (dr/weighted
-     (for [[p q] (concat (g/edges polygon)
-                         (g/edges parent)
-                         (g/edges bounds)
-                         [[(rv 0 0) (rv 1 1)]
-                          [(rv 1 0) (rv 0 1)]])
-           :let [side (gl/line2 p q)]]
-       [side
-        (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
-          0.2
-          1)]))))
+     (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.33]
+            [(gl/line2 (rv 1 0) (rv 0 1)) 0.33]]
+           (for [[p q] (concat (g/edges polygon)
+                               (g/edges parent)
+                               (g/edges bounds))
+                 :let [side (gl/line2 p q)]]
+             [side
+              (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
+                0.2
+                1)])))))
 
 (defn cuts [polygon side n power]
   (let [lower (closest-vertex-to-line polygon side)
