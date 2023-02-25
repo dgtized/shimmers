@@ -1,19 +1,20 @@
 (ns shimmers.sketches.ordered
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
-   [shimmers.math.equations :as eq]
    [thi.ng.geom.line :as gl]
-   [shimmers.algorithm.lines :as lines]
-   [shimmers.math.deterministic-random :as dr]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.vector :as v]
-   [shimmers.math.core :as sm]))
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -85,14 +86,17 @@
               (slice shape (cuts shape side n-cuts power))))))
 
 (defn base-shape []
-  (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
-      g/center
-      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
-      (g/translate (rv 0.5 0.5))))
+  (let [[pw ph] (dr/weighted {[0.5 0.75] 1
+                              [0.33 0.66] 1
+                              [0.66 0.33] 1})]
+    (-> (rect/rect 0 0 (* pw width) (* ph height))
+        g/center
+        (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
+        (g/translate (rv 0.5 0.5)))))
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        shape (base-shape)]
+        shape (first (gu/fit-all-into-bounds bounds [(base-shape)]))]
     (recurse-shapes bounds bounds shape nil 0)))
 
 (defn scene []
