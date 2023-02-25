@@ -19,12 +19,6 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn base-shape []
-  (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
-      g/center
-      (g/rotate (* eq/TAU 0.13))
-      (g/translate (rv 0.5 0.5))))
-
 (defn distance-to-closest-point [shape p]
   (-> shape
       (g/closest-point p)
@@ -82,6 +76,12 @@
               (slice shape (cuts shape
                                  (pick-side parent shape)
                                  n-cuts))))))
+
+(defn base-shape []
+  (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
+      g/center
+      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6)])))
+      (g/translate (rv 0.5 0.5))))
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
