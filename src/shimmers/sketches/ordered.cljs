@@ -1,6 +1,7 @@
 (ns shimmers.sketches.ordered
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
@@ -84,9 +85,14 @@
                                6 1})
           power (dr/weighted {1 1
                               tm/PHI 1
-                              2 1})]
+                              2 1})
+          shape' (if (contains? #{1 2} depth)
+                   (->> (poly-detect/inset-polygon shape 3)
+                        poly-detect/split-self-intersection
+                        (apply max-key g/area))
+                   shape)]
       (mapcat (fn [s] (recurse-shapes bounds shape s side (inc depth)))
-              (slice shape (cuts shape side n-cuts power))))))
+              (slice shape' (cuts shape side n-cuts power))))))
 
 (defn rectangle []
   (let [[pw ph] (dr/weighted {[0.5 0.75] 1
