@@ -76,8 +76,7 @@
                                3 2
                                4 2
                                5 1
-                               6 1
-                               7 1})]
+                               6 1})]
       (mapcat (fn [s] (recurse-shapes shape s (inc depth)))
               (slice shape (cuts shape
                                  (pick-side parent shape)
