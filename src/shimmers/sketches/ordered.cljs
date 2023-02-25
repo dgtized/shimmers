@@ -20,7 +20,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn base-shape []
-  (-> (rect/rect 0 0 (* 0.4 width) (* 0.66 height))
+  (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
       g/center
       (g/rotate (* eq/TAU 0.13))
       (g/translate (rv 0.5 0.5))))
@@ -67,22 +67,26 @@
             (mapcat (fn [poly] (lines/cut-polygon poly line)) polygons))
           [polygon] lines))
 
+(defn recurse-shapes [parent shape depth]
+  (if (= depth 4)
+    [shape]
+    (let [n-cuts (dr/weighted {0 4
+                               1 2
+                               2 2
+                               3 2
+                               4 2
+                               5 1
+                               6 1
+                               7 1})]
+      (mapcat (fn [s] (recurse-shapes shape s (inc depth)))
+              (slice shape (cuts shape
+                                 (pick-side parent shape)
+                                 n-cuts))))))
+
 (defn shapes []
-  (let [shape (base-shape)
-        bounds (rect/rect 0 0 width height)
-        lines (cuts shape (pick-side bounds shape)
-                    (dr/random-int 3 12))]
-    (mapcat (fn [shape']
-              (slice shape' (cuts shape' (pick-side bounds shape')
-                                  (dr/weighted {0 4
-                                                1 2
-                                                2 2
-                                                3 2
-                                                4 2
-                                                5 1
-                                                6 1
-                                                7 1}))))
-            (slice shape lines))))
+  (let [bounds (rect/rect 0 0 width height)
+        shape (base-shape)]
+    (recurse-shapes bounds shape 0)))
 
 (defn scene []
   (csvg/timed
