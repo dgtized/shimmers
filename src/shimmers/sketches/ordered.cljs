@@ -87,7 +87,7 @@
 (defn base-shape []
   (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
       g/center
-      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6)])))
+      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
       (g/translate (rv 0.5 0.5))))
 
 (defn shapes []
