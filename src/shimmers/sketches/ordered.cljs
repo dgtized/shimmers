@@ -55,7 +55,9 @@
                                     (v/+polar lower len theta))
         {[up uq] :points} (gl/line2 (v/-polar upper len theta)
                                     (v/+polar upper len theta))]
-    (for [pct (map (fn [x] (Math/pow x tm/PHI))
+    (for [pct (map (fn [x] (Math/pow x (dr/weighted {1 1
+                                                    tm/PHI 1
+                                                    2 1})))
                    (tm/norm-range n))]
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
