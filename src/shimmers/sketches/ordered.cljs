@@ -34,9 +34,10 @@
          (partial distance-to-closest-point line)
          (g/vertices shape)))
 
-(defn pick-side [bounds polygon]
+(defn pick-side [bounds parent polygon]
   (dr/weighted
    (for [[p q] (concat (g/edges polygon)
+                       (g/edges parent)
                        (g/edges bounds))]
      [(gl/line2 p q) 1])))
 
@@ -62,20 +63,19 @@
                                       (lines/cut-polygon poly line))) polygons))
           [polygon] lines))
 
-(defn recurse-shapes [parent shape depth]
-  (if (> depth 5)
+(defn recurse-shapes [bounds parent shape depth]
+  (if (> depth 6)
     [shape]
-    (let [n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
+    (let [side (pick-side bounds parent shape)
+          n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
                                1 8
                                2 2
                                3 2
                                4 2
                                5 1
                                6 1})]
-      (mapcat (fn [s] (recurse-shapes shape s (inc depth)))
-              (slice shape (cuts shape
-                                 (pick-side parent shape)
-                                 n-cuts))))))
+      (mapcat (fn [s] (recurse-shapes bounds shape s (inc depth)))
+              (slice shape (cuts shape side n-cuts))))))
 
 (defn base-shape []
   (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
@@ -86,7 +86,7 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         shape (base-shape)]
-    (recurse-shapes bounds shape 0)))
+    (recurse-shapes bounds bounds shape 0)))
 
 (defn scene []
   (csvg/timed
