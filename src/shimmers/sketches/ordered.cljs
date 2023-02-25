@@ -6,6 +6,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -85,7 +86,7 @@
       (mapcat (fn [s] (recurse-shapes bounds shape s side (inc depth)))
               (slice shape (cuts shape side n-cuts power))))))
 
-(defn base-shape []
+(defn rectangle []
   (let [[pw ph] (dr/weighted {[0.5 0.75] 1
                               [0.33 0.66] 1
                               [0.66 0.33] 1})]
@@ -94,9 +95,16 @@
         (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
         (g/translate (rv 0.5 0.5)))))
 
+(defn n-gon [n]
+  (fn []
+    (-> (poly/regular-n-gon n (* 0.49 height))
+        (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
+        (g/translate (rv 0.5 0.5)))))
+
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        shape (first (gu/fit-all-into-bounds bounds [(base-shape)]))]
+        s ((dr/rand-nth [rectangle (n-gon 5) (n-gon 6) (n-gon 8)]))
+        shape (first (gu/fit-all-into-bounds bounds [s]))]
     (recurse-shapes bounds bounds shape nil 0)))
 
 (defn scene []
