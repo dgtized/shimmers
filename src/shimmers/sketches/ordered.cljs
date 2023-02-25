@@ -75,8 +75,8 @@
     (let [side (pick-side bounds parent shape last-side)
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
                                1 8
-                               2 2
-                               3 2
+                               2 3
+                               3 3
                                4 2
                                5 1
                                6 1})]
