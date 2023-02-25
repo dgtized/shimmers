@@ -47,7 +47,7 @@
           0.2
           1)]))))
 
-(defn cuts [polygon side n]
+(defn cuts [polygon side n power]
   (let [lower (closest-vertex-to-line polygon side)
         upper (furthest-vertex-to-line polygon side)
         theta (g/heading side)
@@ -56,9 +56,7 @@
                                     (v/+polar lower len theta))
         {[up uq] :points} (gl/line2 (v/-polar upper len theta)
                                     (v/+polar upper len theta))]
-    (for [pct (map (fn [x] (Math/pow x (dr/weighted {1 1
-                                                    tm/PHI 1
-                                                    2 1})))
+    (for [pct (map (fn [x] (Math/pow x power))
                    (tm/norm-range n))]
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
@@ -79,9 +77,12 @@
                                3 3
                                4 2
                                5 1
-                               6 1})]
+                               6 1})
+          power (dr/weighted {1 1
+                              tm/PHI 1
+                              2 1})]
       (mapcat (fn [s] (recurse-shapes bounds shape s side (inc depth)))
-              (slice shape (cuts shape side n-cuts))))))
+              (slice shape (cuts shape side n-cuts power))))))
 
 (defn base-shape []
   (-> (rect/rect 0 0 (* 0.5 width) (* 0.75 height))
