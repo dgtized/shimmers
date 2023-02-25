@@ -64,7 +64,8 @@
 
 (defn slice [polygon lines]
   (reduce (fn [polygons line]
-            (mapcat (fn [poly] (lines/cut-polygon poly line)) polygons))
+            (mapcat (fn [poly] (filter #(> (count (:points %)) 0)
+                                      (lines/cut-polygon poly line))) polygons))
           [polygon] lines))
 
 (defn recurse-shapes [parent shape depth]
