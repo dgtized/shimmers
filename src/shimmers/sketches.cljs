@@ -118,6 +118,7 @@
    shimmers.sketches.object-permanence
    shimmers.sketches.offsetting-arcs
    shimmers.sketches.oil-reflections
+   shimmers.sketches.ordered
    shimmers.sketches.othello
    shimmers.sketches.overlapping-polygons
    shimmers.sketches.particles

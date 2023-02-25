@@ -1,0 +1,98 @@
+(ns shimmers.sketches.ordered
+  (:require
+   [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [shimmers.math.equations :as eq]
+   [thi.ng.geom.line :as gl]
+   [shimmers.algorithm.lines :as lines]
+   [shimmers.math.deterministic-random :as dr]
+   [thi.ng.math.core :as tm]
+   [shimmers.math.vector :as v]))
+
+(def width 800)
+(def height 600)
+(defn rv [x y]
+  (gv/vec2 (* width x) (* height y)))
+
+(defn base-shape []
+  (-> (rect/rect 0 0 (* 0.4 width) (* 0.66 height))
+      g/center
+      (g/rotate (* eq/TAU 0.13))
+      (g/translate (rv 0.5 0.5))))
+
+(defn distance-to-closest-point [shape p]
+  (-> shape
+      (g/closest-point p)
+      (g/dist p)))
+
+(defn closest-vertex-to-line [shape line]
+  (apply min-key
+         (partial distance-to-closest-point line)
+         (g/vertices shape)))
+
+(defn furthest-vertex-to-line [shape line]
+  (apply max-key
+         (partial distance-to-closest-point line)
+         (g/vertices shape)))
+
+(defn pick-side [bounds polygon]
+  (dr/weighted
+   (for [[p q] (concat (g/edges polygon)
+                       (g/edges bounds))]
+     [(gl/line2 p q) 1])))
+
+(defn cuts [polygon side n]
+  (let [lower (closest-vertex-to-line polygon side)
+        upper (furthest-vertex-to-line polygon side)
+        theta (g/heading side)
+        len (max (g/width polygon) (g/height polygon))
+        {[lp lq] :points} (gl/line2 (v/-polar lower len theta)
+                                    (v/+polar lower len theta))
+        {[up uq] :points} (gl/line2 (v/-polar upper len theta)
+                                    (v/+polar upper len theta))]
+    (for [pct (map (fn [x] (Math/pow x tm/PHI))
+                   (tm/norm-range n))]
+      (gl/line2 (tm/mix lp up pct)
+                (tm/mix lq uq pct)))))
+
+(defn slice [polygon lines]
+  (reduce (fn [polygons line]
+            (mapcat (fn [poly] (lines/cut-polygon poly line)) polygons))
+          [polygon] lines))
+
+(defn shapes []
+  (let [shape (base-shape)
+        bounds (rect/rect 0 0 width height)
+        lines (cuts shape (pick-side bounds shape)
+                    (dr/random-int 3 12))]
+    (mapcat (fn [shape']
+              (slice shape' (cuts shape' (pick-side bounds shape')
+                                  (dr/weighted {0 4
+                                                1 2
+                                                2 2
+                                                3 2
+                                                4 2
+                                                5 1
+                                                6 1
+                                                7 1}))))
+            (slice shape lines))))
+
+(defn scene []
+  (csvg/timed
+   (csvg/svg {:width width
+              :height height
+              :stroke "black"
+              :fill "none"}
+     (shapes))))
+
+(sketch/definition ordered
+  {:created-at "2023-02-24"
+   :type :svg
+   :tags #{}}
+  (ctrl/mount (view-sketch/page-for scene :ordered)
+              "sketch-host"))
