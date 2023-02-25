@@ -88,8 +88,7 @@
 
 (defn rectangle []
   (let [[pw ph] (dr/weighted {[0.5 0.75] 1
-                              [0.33 0.66] 1
-                              [0.66 0.33] 1})]
+                              [0.33 0.66] 1})]
     (-> (rect/rect 0 0 (* pw width) (* ph height))
         g/center
         (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
