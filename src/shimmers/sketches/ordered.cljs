@@ -12,7 +12,8 @@
    [shimmers.algorithm.lines :as lines]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.math.core :as tm]
-   [shimmers.math.vector :as v]))
+   [shimmers.math.vector :as v]
+   [shimmers.math.core :as sm]))
 
 (def width 800)
 (def height 600)
@@ -34,12 +35,17 @@
          (partial distance-to-closest-point line)
          (g/vertices shape)))
 
-(defn pick-side [bounds parent polygon]
-  (dr/weighted
-   (for [[p q] (concat (g/edges polygon)
-                       (g/edges parent)
-                       (g/edges bounds))]
-     [(gl/line2 p q) 1])))
+(defn pick-side [bounds parent polygon last-cut]
+  (let [angle (when last-cut (g/heading last-cut))]
+    (dr/weighted
+     (for [[p q] (concat (g/edges polygon)
+                         (g/edges parent)
+                         (g/edges bounds))
+           :let [side (gl/line2 p q)]]
+       [side
+        (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
+          0.2
+          1)]))))
 
 (defn cuts [polygon side n]
   (let [lower (closest-vertex-to-line polygon side)
@@ -63,10 +69,10 @@
                                       (lines/cut-polygon poly line))) polygons))
           [polygon] lines))
 
-(defn recurse-shapes [bounds parent shape depth]
+(defn recurse-shapes [bounds parent shape last-side depth]
   (if (> depth 6)
     [shape]
-    (let [side (pick-side bounds parent shape)
+    (let [side (pick-side bounds parent shape last-side)
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
                                1 8
                                2 2
@@ -74,7 +80,7 @@
                                4 2
                                5 1
                                6 1})]
-      (mapcat (fn [s] (recurse-shapes bounds shape s (inc depth)))
+      (mapcat (fn [s] (recurse-shapes bounds shape s side (inc depth)))
               (slice shape (cuts shape side n-cuts))))))
 
 (defn base-shape []
@@ -86,7 +92,7 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         shape (base-shape)]
-    (recurse-shapes bounds bounds shape 0)))
+    (recurse-shapes bounds bounds shape nil 0)))
 
 (defn scene []
   (csvg/timed
