@@ -4,6 +4,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -17,6 +18,8 @@
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state {}))
 
 (def width 800)
 (def height 600)
@@ -113,10 +116,18 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         s ((dr/rand-nth [rectangle (n-gon 5) (n-gon 6) (n-gon 8)]))
-        shape (first (gu/fit-all-into-bounds bounds [s]))]
-    (recurse-shapes bounds bounds shape nil 0)))
+        shape (first (gu/fit-all-into-bounds bounds [s]))
+        split-shapes (recurse-shapes bounds bounds shape nil 0)]
+    (swap! defo update :shapes conj (count split-shapes))
+    ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
+    ;; copies of the origin shape, and not because it didn't split enough, so
+    ;; maybe a bug in split generation or the cut-polygon routine?
+    (if (< (count split-shapes) 32)
+      (recur)
+      split-shapes)))
 
 (defn scene []
+  (reset! defo {:shapes []})
   (csvg/timed
    (csvg/svg {:width width
               :height height
@@ -124,9 +135,13 @@
               :fill "none"}
      (shapes))))
 
+(defn ui-controls []
+  [:div
+   (debug/display defo)])
+
 (sketch/definition ordered
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :ordered)
+  (ctrl/mount (view-sketch/page-for scene :ordered ui-controls)
               "sketch-host"))
