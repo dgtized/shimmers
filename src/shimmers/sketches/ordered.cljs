@@ -69,10 +69,10 @@
           [polygon] lines))
 
 (defn recurse-shapes [parent shape depth]
-  (if (= depth 4)
+  (if (> depth 5)
     [shape]
-    (let [n-cuts (dr/weighted {0 4
-                               1 2
+    (let [n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
+                               1 8
                                2 2
                                3 2
                                4 2
