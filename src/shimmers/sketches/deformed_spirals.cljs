@@ -16,7 +16,7 @@
     (let [pos (v/polar (* dr (/ theta tm/TWO_PI)) (+ theta (* 1.5 t)))
           [nx ny] (tm/div pos 192)
           n (q/noise nx ny t)]
-      (tm/+ center pos (v/polar 40 (* n tm/TWO_PI))))))
+      (tm/+ center (tm/+ pos (v/polar 40 (* n tm/TWO_PI)))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
