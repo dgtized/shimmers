@@ -18,14 +18,8 @@
           n (q/noise nx ny t)]
       (tm/+ center (tm/+ pos (v/polar 40 (* n tm/TWO_PI)))))))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {})
-
-(defn update-state [state]
-  state)
-
 (defn draw [_]
+  (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/stroke-weight 0.8)
   (q/no-fill)
@@ -36,7 +30,5 @@
 (sketch/defquil deformed-spirals
   :created-at "2021-10-10"
   :size [800 600]
-  :setup setup
-  :update update-state
   :draw draw
   :middleware [m/fun-mode framerate/mode])
