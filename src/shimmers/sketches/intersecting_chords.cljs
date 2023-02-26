@@ -119,6 +119,10 @@
     (cq/draw-triangle (g/vertices triangle)))
   (q/no-fill))
 
+;; Idea: Assign circles as chord or radius type at creation. Then adjust the
+;; draw routine to connect chord/chord and radius/radius as expected. For
+;; chord/radius, draw the line from the center to one or both intersecting
+;; point?
 (defn draw [{:keys [t circletree background hue]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
