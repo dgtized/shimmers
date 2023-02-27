@@ -16,10 +16,13 @@
 (defn sketch-polygon [inset]
   (let [poly (gp/polygon2 (rv 0.2 0.2)
                           (rv 0.7 0.5)
-                          (rv 0.5 0.8)
-                          (rv 0.1 0.7))]
+                          (rv 0.5 0.7)
+                          (rv 0.1 0.6))
+        inset (poly-detect/inset-polygon poly inset)]
     {:polygon poly
-     :inset (poly-detect/inset-polygon poly inset)}))
+     :inset inset
+     :self-intersect (poly-detect/self-intersecting? inset)
+     :self-intersection-polygons (poly-detect/self-intersection-polygons inset)}))
 
 (defn shapes [ui-state]
   (let [{:keys [polygon inset]} (sketch-polygon (:inset @ui-state))]
