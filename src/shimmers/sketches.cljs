@@ -87,6 +87,7 @@
    ;; shimmers.sketches.imperfect-curves
    shimmers.sketches.impressions-of-open-space
    shimmers.sketches.inconsequential-drift
+   shimmers.sketches.inset-polygon
    shimmers.sketches.integer-circles
    shimmers.sketches.intersecting-circle-regions
    shimmers.sketches.intersecting-chords
