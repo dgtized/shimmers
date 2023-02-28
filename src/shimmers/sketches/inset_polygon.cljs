@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]))
 
@@ -22,7 +23,9 @@
     {:polygon poly
      :inset inset
      :self-intersect (poly-detect/self-intersecting? inset)
-     :self-intersection-polygons (poly-detect/self-intersection-polygons inset)}))
+     :self-intersection-polygons
+     (mapv (fn [poly] [poly :clockwise (poly-detect/clockwise-polygon? (g/vertices poly))])
+           (poly-detect/self-intersection-polygons inset))}))
 
 (defn shapes [ui-state]
   (let [{:keys [polygon inset]} (sketch-polygon (:inset @ui-state))]
@@ -38,7 +41,7 @@
              (shapes ui-state))))
 
 (defn page []
-  (let [ui-state (ctrl/state {:inset 20})]
+  (let [ui-state (ctrl/state {:inset 100})]
     (fn []
       [:div
        [:div.canvas-frame [(partial scene ui-state)]]
