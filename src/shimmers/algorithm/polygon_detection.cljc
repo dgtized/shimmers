@@ -311,6 +311,7 @@
             next (tm/+ next i2)]
         (if (tm/delta= c1 c2)
           c1
+          ;; IDEA: check if c1 is still clockwise from c2 otherwise handle self-intersect?
           (get (isec/intersect-line2-line2? prev c1 c2 next) :p)))
       curr)))
 
