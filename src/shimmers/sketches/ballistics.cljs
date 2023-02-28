@@ -90,6 +90,7 @@
                                 (* (dr/gaussian 0.75 0.08) flight-time)))]
     (update state :projectiles conj projectile)))
 
+;; TODO: check projectile/projectile collisions?
 (defn update-projectile [ground turrets dt]
   (fn [state {:keys [pos vel explode mass flight-time] :as projectile}]
     (let [ground-point (g/point-at ground (/ (:x pos) (q/width)))
