@@ -4,7 +4,6 @@
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
    [shimmers.math.vector :as v]
-   [thi.ng.dstruct.core :as d]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.utils :as gu]
@@ -322,9 +321,9 @@
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
   [{:keys [points]} d]
-  (->> (d/wrap-seq points [(last points)] [(first points)])
+  (->> (concat [(last points)] points [(first points)])
        (partition 3 1)
-       (mapv (fn [[p c n]] (inset-corner n c p d)))
+       (mapv (fn [[p c n]] (inset-corner p c n (- d))))
        gp/polygon2))
 
 (defn point-on-line?
