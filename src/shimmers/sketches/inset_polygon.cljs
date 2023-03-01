@@ -14,7 +14,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn sketch-polygon [inset]
+(defn polygon-state [inset]
   (let [poly (gp/polygon2 (rv 0.2 0.2)
                           (rv 0.7 0.5)
                           (rv 0.5 0.7)
@@ -27,30 +27,27 @@
      (mapv (fn [poly] [poly :clockwise (poly-detect/clockwise-polygon? (g/vertices poly))])
            (poly-detect/self-intersection-polygons inset))}))
 
-(defn shapes [ui-state]
-  (let [{:keys [polygon inset]} (sketch-polygon (:inset @ui-state))]
-    [(csvg/group {:stroke "blue"} polygon)
-     (csvg/group {:stroke "red"} inset)]))
-
-(defn scene [ui-state]
+(defn scene [{:keys [polygon inset]}]
   (csvg/timed
    (csvg/svg {:width width
               :height height
               :stroke "black"
               :fill "none"}
-             (shapes ui-state))))
+     [(csvg/group {:stroke "blue"} polygon)
+      (csvg/group {:stroke "red"} inset)])))
 
 (defn page []
   (let [ui-state (ctrl/state {:inset 100})]
     (fn []
-      [:div
-       [:div.canvas-frame [(partial scene ui-state)]]
-       [:div.explanation.contained
+      (let [state (polygon-state (:inset @ui-state))]
         [:div
-         [:div.ui-controls
-          (ctrl/slider ui-state (fn [x] (str "Inset " x)) [:inset] [-100 200 1])]
-         [:div
-          (debug/pre-edn (sketch-polygon (:inset @ui-state)))]]]])))
+         [:div.canvas-frame [(partial scene state)]]
+         [:div.explanation.contained
+          [:div
+           [:div.ui-controls
+            (ctrl/slider ui-state (fn [x] (str "Inset " x)) [:inset] [-100 200 1])]
+           [:div
+            (debug/pre-edn state)]]]]))))
 
 (sketch/definition inset-polygon
   {:created-at "2023-02-27"
