@@ -9,6 +9,7 @@
    shimmers.sketches.angle-of-ascent
    shimmers.sketches.ascendance
    shimmers.sketches.ballistics
+   shimmers.sketches.balloon
    shimmers.sketches.barcodes
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
