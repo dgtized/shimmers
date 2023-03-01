@@ -4,15 +4,24 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+
+;; all negatives indicate clockwise, but a mix probably means a switch back with
+;; a counter-clockwise loop
+(defn orientation [points]
+  (->> (concat [(last points)] points [(first points)])
+       (partition 3 1)
+       (mapv (fn [[a b c]] (tm/sign (v/orient2d a b c))))))
 
 (defn polygon-state [inset]
   (let [poly (gp/polygon2 (rv 0.2 0.2)
@@ -25,7 +34,9 @@
      :self-intersect (poly-detect/self-intersecting? inset)
      :self-intersection-polygons
      (mapv (fn [poly] [poly :clockwise (poly-detect/clockwise-polygon? (g/vertices poly))])
-           (poly-detect/self-intersection-polygons inset))}))
+           (poly-detect/self-intersection-polygons inset))
+     :orient-poly (orientation (g/vertices poly))
+     :orient-inset (orientation (g/vertices inset))}))
 
 (defn scene [{:keys [polygon inset]}]
   (csvg/timed
