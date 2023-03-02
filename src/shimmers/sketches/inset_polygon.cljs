@@ -1,6 +1,7 @@
 (ns shimmers.sketches.inset-polygon
   (:require
    [shimmers.algorithm.polygon-detection :as poly-detect]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -19,8 +20,8 @@
 ;; all negatives indicate clockwise, but a mix probably means a switch back with
 ;; a counter-clockwise loop
 (defn orientation [points]
-  (->> (concat [(last points)] points [(first points)])
-       (partition 3 1)
+  (->> points
+       cs/triplet-cycle
        (mapv (fn [[a b c]] (tm/sign (v/orient2d a b c))))))
 
 (defn polygon-state [inset]

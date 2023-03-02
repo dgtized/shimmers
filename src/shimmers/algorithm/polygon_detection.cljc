@@ -321,8 +321,8 @@
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
   [{:keys [points]} d]
-  (->> (concat [(last points)] points [(first points)])
-       (partition 3 1)
+  (->> points
+       cs/triplet-cycle
        (mapv (fn [[p c n]] (inset-corner p c n (- d))))
        gp/polygon2))
 

@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -34,8 +35,8 @@
                          (assoc p :force (tm/- (tm/* gravity mass)
                                                (tm/* gravity (* density volume)))))
                        balloon)]
-      (->> (concat [(last points)] points [(first points)])
-           (partition 3 1)
+      (->> points
+           cs/triplet-cycle
            (map (fn [[prev current next]]
                   (let [pprev (:pos prev)
                         pnext (:pos next)
