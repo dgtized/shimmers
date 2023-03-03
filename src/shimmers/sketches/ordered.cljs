@@ -76,7 +76,10 @@
           [polygon] lines))
 
 (defn recurse-shapes [bounds parent shape last-side depth]
-  (if (or (> depth 6) (< (g/area shape) 10))
+  (if (or (> depth 8)
+          (< (g/area shape) 8)
+          (some (fn [[p q]] (< (g/dist p q) 4))
+                (g/edges shape)))
     [shape]
     (let [side (pick-side bounds parent shape last-side)
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
@@ -121,9 +124,9 @@
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
     ;; maybe a bug in split generation or the cut-polygon routine?
-    (if (< (count split-shapes) 100)
-      (recur)
-      split-shapes)))
+    (if (< 150 (count split-shapes) 750)
+      split-shapes
+      (recur))))
 
 (defn scene []
   (reset! defo {:shapes []})
