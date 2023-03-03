@@ -108,16 +108,15 @@
         (g/translate (rv 0.5 0.5)))))
 
 (defn n-gon [n]
-  (fn []
-    (-> (poly/regular-n-gon n (* 0.49 height))
-        (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
-        (g/translate (rv 0.5 0.5)))))
+  (-> (poly/regular-n-gon n (* 0.49 height))
+      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
+      (g/translate (rv 0.5 0.5))))
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        s ((dr/rand-nth [rectangle (n-gon 5) (n-gon 6) (n-gon 8)]))
+        s (dr/rand-nth [bounds (rectangle) (n-gon 5) (n-gon 6) (n-gon 8)])
         shape (first (gu/fit-all-into-bounds bounds [s]))
-        split-shapes (recurse-shapes bounds bounds shape nil 0)]
+        split-shapes (recurse-shapes bounds (if (= s bounds) (n-gon 6) bounds) shape nil 0)]
     (swap! defo update :shapes conj (count split-shapes))
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
