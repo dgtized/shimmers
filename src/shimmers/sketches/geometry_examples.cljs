@@ -96,5 +96,5 @@
 (sketch/definition geometry-examples
   {:created-at "2022-05-05"
    :type :svg
-   :tags #{}}
+   :tags #{:demo}}
   (ctrl/mount page "sketch-host"))

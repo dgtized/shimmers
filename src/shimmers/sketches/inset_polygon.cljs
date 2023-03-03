@@ -64,5 +64,5 @@
 (sketch/definition inset-polygon
   {:created-at "2023-02-27"
    :type :svg
-   :tags #{}}
+   :tags #{:demo}}
   (ctrl/mount (page) "sketch-host"))
