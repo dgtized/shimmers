@@ -18,20 +18,20 @@
                                :odd-even true
                                :stretchy false}))
 
+(defn link-update [n length t dt]
+  (let [{:keys [odd-even stretchy]} @ui-state]
+    (fn [i segment]
+      (-> segment
+          (update :angle +
+                  (* (if odd-even (if (odd? i) -1 1) 1)
+                     (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt))
+          (assoc :length (+ length (* (if stretchy 0.33 0)
+                                      (/ (- n i) n) length (Math/sin t))))))))
+
 (defn rotate-chainlinks [chain base length dt t]
-  (let [{:keys [odd-even stretchy]} @ui-state
-        n (count (:segments chain))]
+  (let [n (count (:segments chain))]
     (-> chain
-        (update :segments
-                (partial
-                 map-indexed
-                 (fn [i segment]
-                   (-> segment
-                       (update :angle +
-                               (* (if odd-even (if (odd? i) -1 1) 1)
-                                  (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt))
-                       (assoc :length (+ length (* (if stretchy 0.33 0)
-                                                   (/ (- n i) n) length (Math/sin t))))))))
+        (update :segments (partial map-indexed (link-update n length t dt)))
         (chain/propagate base))))
 
 (defn setup []
