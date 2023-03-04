@@ -116,8 +116,8 @@
         s (dr/rand-nth [bounds (rectangle) (n-gon 5) (n-gon 6) (n-gon 8)])
         shape (first (gu/fit-all-into-bounds bounds [s]))
         sides
-        (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.33]
-               [(gl/line2 (rv 1 0) (rv 0 1)) 0.33]]
+        (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.1]
+               [(gl/line2 (rv 1 0) (rv 0 1)) 0.1]]
               (for [[p q] (->> [bounds
                                 (when (= s bounds) (n-gon 6))
                                 shape]
