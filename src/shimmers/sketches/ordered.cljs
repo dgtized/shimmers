@@ -41,19 +41,15 @@
          (partial distance-to-closest-point line)
          (g/vertices shape)))
 
-(defn pick-side [bounds parent polygon last-cut]
+(defn pick-side [sides last-cut]
   (let [angle (when last-cut (g/heading last-cut))]
     (dr/weighted
-     (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.33]
-            [(gl/line2 (rv 1 0) (rv 0 1)) 0.33]]
-           (for [[p q] (concat (g/edges polygon)
-                               (g/edges parent)
-                               (g/edges bounds))
-                 :let [side (gl/line2 p q)]]
-             [side
-              (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
-                0.2
-                1)])))))
+     (for [[side prob] sides]
+       [side
+        (* (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
+             0.2
+             1)
+           prob)]))))
 
 (defn cuts [polygon side n power]
   (let [lower (closest-vertex-to-line polygon side)
@@ -75,13 +71,13 @@
                                       (lines/cut-polygon poly line))) polygons))
           [polygon] lines))
 
-(defn recurse-shapes [bounds parent shape last-side depth]
+(defn recurse-shapes [sides shape last-side depth]
   (if (or (> depth 8)
           (< (g/area shape) 8)
           (some (fn [[p q]] (< (g/dist p q) 4))
                 (g/edges shape)))
     [shape]
-    (let [side (pick-side bounds parent shape last-side)
+    (let [side (pick-side sides last-side)
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
                                1 8
                                2 3
@@ -99,7 +95,7 @@
                         poly-detect/split-self-intersection
                         (apply max-key g/area))
                    shape)]
-      (mapcat (fn [s] (recurse-shapes bounds shape s side (inc depth)))
+      (mapcat (fn [s] (recurse-shapes sides s side (inc depth)))
               (slice shape' (cuts shape' side n-cuts power))))))
 
 (defn rectangle []
@@ -119,7 +115,16 @@
   (let [bounds (rect/rect 0 0 width height)
         s (dr/rand-nth [bounds (rectangle) (n-gon 5) (n-gon 6) (n-gon 8)])
         shape (first (gu/fit-all-into-bounds bounds [s]))
-        split-shapes (recurse-shapes bounds (if (= s bounds) (n-gon 6) bounds) shape nil 0)]
+        sides
+        (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.33]
+               [(gl/line2 (rv 1 0) (rv 0 1)) 0.33]]
+              (for [[p q] (->> [bounds
+                                (when (= s bounds) (n-gon 6))
+                                shape]
+                               (filter some?)
+                               (mapcat g/edges))]
+                [(gl/line2 p q) 1.0]))
+        split-shapes (recurse-shapes sides shape nil 0)]
     (swap! defo update :shapes conj (count split-shapes))
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
