@@ -111,20 +111,20 @@
       (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
       (g/translate (rv 0.5 0.5))))
 
+(defn sides-distribution [shapes]
+  (for [[p q] (->> shapes
+                   (filter some?)
+                   (mapcat g/edges))]
+    [(gl/line2 p q) 1.0]))
+
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         s (dr/rand-nth [bounds (rectangle) (n-gon 5) (n-gon 6) (n-gon 8)])
         shape (first (gu/fit-all-into-bounds bounds [s]))
-        sides
-        (into [[(gl/line2 (rv 0 0) (rv 1 1)) 0.1]
-               [(gl/line2 (rv 1 0) (rv 0 1)) 0.1]]
-              (for [[p q] (->> [bounds
-                                (when (= s bounds) (n-gon 6))
-                                shape]
-                               (filter some?)
-                               (mapcat g/edges))]
-                [(gl/line2 p q) 1.0]))
-        split-shapes (recurse-shapes sides shape nil 0)]
+        side-shapes [bounds
+                     (when (= s bounds) (n-gon 6))
+                     shape]
+        split-shapes (recurse-shapes (sides-distribution side-shapes) shape nil 0)]
     (swap! defo update :shapes conj (count split-shapes))
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
