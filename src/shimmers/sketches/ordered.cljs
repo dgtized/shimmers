@@ -79,12 +79,14 @@
     [shape]
     (let [side (pick-side sides last-side)
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
-                               1 8
-                               2 3
-                               3 3
-                               4 2
-                               5 1
-                               6 1})
+                               1 5
+                               2 5
+                               3 4
+                               4 3
+                               5 2
+                               6 1
+                               7 1
+                               8 1})
           power (dr/weighted {1 1
                               tm/PHI 1
                               2 1})
