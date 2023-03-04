@@ -47,7 +47,7 @@
      (for [[side prob] sides]
        [side
         (* (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
-             0.2
+             0.25
              1)
            prob)]))))
 
