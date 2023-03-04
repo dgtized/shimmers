@@ -119,7 +119,12 @@
 
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        s (dr/rand-nth [bounds (rectangle) (n-gon 5) (n-gon 6) (n-gon 8)])
+        s (dr/weighted
+           [[bounds 2.0]
+            [(rectangle) 2.0]
+            [(n-gon 5) 1.0]
+            [(n-gon 6) 2.0]
+            [(n-gon 8) 1.0]])
         shape (first (gu/fit-all-into-bounds bounds [s]))
         side-shapes [bounds
                      (when (= s bounds) (n-gon 6))
