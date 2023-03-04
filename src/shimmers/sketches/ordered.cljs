@@ -90,6 +90,7 @@
           power (dr/weighted {1 1
                               tm/PHI 1
                               2 1})
+          stripes? (and (> n-cuts 1) (odd? n-cuts))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
           shape' (if (contains? layers depth)
@@ -97,8 +98,12 @@
                         poly-detect/split-self-intersection
                         (apply max-key g/area))
                    shape)]
-      (mapcat (fn [s] (recurse-shapes sides s side (inc depth)))
-              (slice shape' (cuts shape' side n-cuts power))))))
+      (mapcat (fn [s i]
+                (if  (and stripes? (odd? i))
+                  [s]
+                  (recurse-shapes sides s side (inc depth))))
+              (slice shape' (cuts shape' side n-cuts power))
+              (range)))))
 
 (defn rectangle []
   (let [[pw ph] (dr/weighted {[0.5 0.75] 1
