@@ -46,7 +46,7 @@
     (dr/weighted
      (for [[side prob] sides]
        [side
-        (* (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.1))
+        (* (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.05))
              0.25
              1)
            prob)]))))
@@ -74,7 +74,7 @@
 (defn recurse-shapes [sides shape last-side depth]
   (if (or (> depth 8)
           (< (g/area shape) 8)
-          (some (fn [[p q]] (< (g/dist p q) 4))
+          (some (fn [[p q]] (< (g/dist p q) 3))
                 (g/edges shape)))
     [shape]
     (let [side (pick-side sides last-side)
@@ -120,10 +120,10 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         s (dr/weighted
-           [[bounds 2.0]
+           [[bounds 3.0]
             [(rectangle) 2.0]
             [(n-gon 5) 1.0]
-            [(n-gon 6) 2.0]
+            [(n-gon 6) 3.0]
             [(n-gon 8) 1.0]])
         shape (first (gu/fit-all-into-bounds bounds [s]))
         side-shapes [bounds
