@@ -87,9 +87,10 @@
                                6 1
                                7 1
                                8 1})
-          power (dr/weighted {1 1
-                              tm/PHI 1
-                              2 1})
+          power (dr/weighted {1 2
+                              tm/PHI 4
+                              2 2
+                              3 1})
           stripes? (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
