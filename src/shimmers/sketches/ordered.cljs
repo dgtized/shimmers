@@ -51,7 +51,7 @@
              1)
            prob)]))))
 
-(defn cuts [polygon side n power]
+(defn cuts [polygon side offsets]
   (let [lower (closest-vertex-to-line polygon side)
         upper (furthest-vertex-to-line polygon side)
         theta (g/heading side)
@@ -60,8 +60,7 @@
                                     (v/+polar lower len theta))
         {[up uq] :points} (gl/line2 (v/-polar upper len theta)
                                     (v/+polar upper len theta))]
-    (for [pct (map (fn [x] (Math/pow x power))
-                   (tm/norm-range n))]
+    (for [pct offsets]
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
@@ -91,6 +90,8 @@
                               tm/PHI 4
                               2 2
                               3 1})
+          offsets (map (fn [x] (Math/pow x power))
+                       (tm/norm-range n-cuts))
           stripes? (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
@@ -103,7 +104,7 @@
                 (if  (and stripes? (odd? i))
                   [s]
                   (recurse-shapes sides s side (inc depth))))
-              (slice shape' (cuts shape' side n-cuts power))
+              (slice shape' (cuts shape' side offsets))
               (range)))))
 
 (defn rectangle []
