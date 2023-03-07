@@ -47,7 +47,7 @@
      (for [[side prob] sides]
        [side
         (* (if (and last-cut (< (sm/radial-distance angle (g/heading side)) 0.05))
-             0.25
+             0.1
              1)
            prob)]))))
 
@@ -72,7 +72,7 @@
           [polygon] lines))
 
 (defn recurse-shapes [sides shape last-side depth]
-  (if (or (> depth 8)
+  (if (or (> depth 6)
           (< (g/area shape) 8)
           (some (fn [[p q]] (< (g/dist p q) 3))
                 (g/edges shape)))
