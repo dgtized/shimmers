@@ -5,7 +5,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
@@ -20,9 +19,8 @@
   (for [x (tm/norm-range slices)]
     [x (* scale (q/noise (* x phase) offset))]))
 
-(let [triangle (triangle/inscribed-equilateral {:r 1.0} 0)]
-  (defn random-triangle-at [pos rotation scale]
-    (geometry/shape-at triangle rotation scale pos)))
+(defn random-triangle-at [pos rotation scale]
+  (triangle/inscribed-equilateral {:p pos :r scale} rotation))
 
 (defn draw []
   (q/background 1.0)
@@ -39,7 +37,7 @@
         (doseq [s (range 400)
                 :let [d (* depth (Math/pow Math/E (* f s)))]]
           (q/fill 0.2 0.008)
-          (-> (cq/rel-pos x1 (+ y1 d))
+          (-> (cq/rel-vec x1 (+ y1 d))
               (random-triangle-at (+ theta (* 2 Math/PI d))
                                   slice-width)
               cq/draw-polygon))))))
