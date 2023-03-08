@@ -9,8 +9,10 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -39,8 +41,21 @@
             []
             (range n))))
 
+(defn gen-chords [circle]
+  (let [inner (vary-meta (g/scale-size circle (/ 1 tm/PHI))
+                         assoc :stroke-width 2.0)]
+    (->> (fn []
+           (let [t (dr/random)]
+             (gl/line2 (g/point-at inner t)
+                       (g/point-at circle (+ t (* (dr/rand-nth [1 -1])
+                                                  (dr/random 0.1 0.2)))))))
+         (repeatedly (* 25 (/ (:r circle) 50)))
+         (into [inner] ))))
+
 (defn shapes [bounds]
-  (pack-overlap-circles bounds 11))
+  (let [circles (pack-overlap-circles bounds 11)
+        chords (mapcat gen-chords circles)]
+    (concat circles chords)))
 
 (defn scene []
   (csvg/timed
