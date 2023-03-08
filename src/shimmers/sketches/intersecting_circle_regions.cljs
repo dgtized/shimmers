@@ -6,7 +6,9 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -74,6 +76,8 @@
       (update :t + 0.01)
       (assoc :circles (make-circles t))))
 
+(defonce defo (debug/state {:percent-overlap 0.0}))
+
 (defn draw [{:keys [circles]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
@@ -85,6 +89,7 @@
     (cq/circle (:p circle) 2.0))
 
   (let [[a b] circles]
+    (swap! defo assoc :percent-overlap (geometry/percent-circle-overlap a b))
     (doseq [contact (contact-points a b)]
       (q/stroke 0.0 0.5 0.5)
       (q/stroke-weight 2.0)
@@ -106,7 +111,8 @@
   [:div
    [:p "Genuary 2023 Day 5 - Debug View"]
    [:p "Shows the disjoint polygon regions constructed from two circles
-   intersecting eachother."]])
+   intersecting eachother."]
+   (debug/display defo)])
 
 (sketch/defquil intersecting-circle-regions
   :created-at "2023-01-05"

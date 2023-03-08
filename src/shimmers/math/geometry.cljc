@@ -3,6 +3,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
    [thi.ng.geom.core :as g]
@@ -145,3 +146,28 @@
   (manhattan-to-rectangle (rect/rect 1 3 3 2) (gv/vec2 4 6))
   (manhattan-to-rectangle (rect/rect 1 3 3 2) (gv/vec2 5 5))
   (manhattan-to-rectangle (rect/rect -3 -3 2 1) (gv/vec2)))
+
+;; cribbed from https://gist.github.com/jphastings/316058
+(defn percent-circle-overlap [{pa :p ra :r} {pb :p rb :r}]
+  (let [d (g/dist pa pb)
+        r-small (min ra rb)
+        r-big (max ra rb)]
+    (cond (>= d (+ ra rb))
+          0.0
+          (>= r-big (+ d r-small))
+          1.0
+          :else
+          (let [x1 (/ (+ (eq/sqr d)
+                         (- (eq/sqr r-small))
+                         (eq/sqr r-big))
+                      (* 2 d))
+                x2 (Math/abs (- d x1))
+                y (Math/sqrt (- (eq/sqr r-big) (eq/sqr x1)))
+                a-big (- (* (eq/sqr r-big) (Math/acos (/ x1 r-big)))
+                         (* x1 y))
+                a-small (- (* (eq/sqr r-small) (Math/acos (/ x2 r-small)))
+                           (* x2 y))
+                a-small (if (> x1 d) (- (* Math/PI (eq/sqr r-small)) a-small) a-small)
+                overlap-area (+ a-small a-big)
+                total-area (- (* Math/PI (+ (eq/sqr r-big) (eq/sqr r-small))) overlap-area)]
+            (/ overlap-area total-area)))))
