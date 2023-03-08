@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
@@ -31,12 +32,12 @@
         depth-curve (map second (discrete-curve slices 5 1.0 50000))
         slice-width (cq/rel-w (/ 1.0 slices))]
     (doseq [[[x1 y1] depth] (map vector curve depth-curve)
-            :let [theta (* 2 Math/PI (dr/random-double))]]
+            :let [theta (dr/random-tau)]]
       (let [f (dr/random -0.0075 -0.0125)]
         (doseq [s (range 400)
                 :let [d (* depth (Math/pow Math/E (* f s)))]]
           (-> (cq/rel-vec x1 (+ y1 d))
-              (random-triangle-at (+ theta (* 2 Math/PI d))
+              (random-triangle-at (+ theta (* eq/TAU d))
                                   slice-width)
               cq/draw-polygon))))))
 
