@@ -20,17 +20,17 @@
   (for [x (tm/norm-range slices)]
     [x (* scale (q/noise (* x phase) offset))]))
 
-(let [triangle (triangle/inscribed-equilateral {:r (/ 1 tm/PHI)} 0)]
+(let [triangle (triangle/inscribed-equilateral {:r 1.0} 0)]
   (defn random-triangle-at [pos rotation scale]
     (geometry/shape-at triangle rotation scale pos)))
 
 (defn draw []
   (q/background 1.0)
   (q/no-fill)
-  (let [slices 100
+  (let [slices (dr/random-int 64 256)
         curve (discrete-curve slices 2 0.4 1000)
         depth-curve (map second (discrete-curve slices 5 1.0 50000))
-        slice-width (cq/rel-w (/ 1 slices))]
+        slice-width (cq/rel-w (/ 1.0 slices))]
     (q/stroke-weight (/ 50 slices))
     (doseq [[[x1 y1] depth] (map vector curve depth-curve)
             :let [theta (* 2 Math/PI (dr/random-double))]]
@@ -41,7 +41,7 @@
           (q/fill 0.2 0.008)
           (-> (cq/rel-pos x1 (+ y1 d))
               (random-triangle-at (+ theta (* 2 Math/PI d))
-                                  (* 2 slice-width))
+                                  slice-width)
               cq/draw-polygon))))))
 
 (sketch/defquil falling-gradients
