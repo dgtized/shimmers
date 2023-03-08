@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
@@ -41,10 +42,18 @@
                                   slice-width)
               cq/draw-polygon))))))
 
-(sketch/defquil falling-gradients
-  :created-at "2021-05-04"
-  :tags #{:static :deterministic}
-  :size [800 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    [:p.explanation.readable-width
+     "Layer triangles as they slowly rotate and fall to a specific depth."]]])
+
+(sketch/definition falling-gradients
+  {:created-at "2021-05-04"
+   :tags #{:static :deterministic}}
+  (ctrl/mount page "sketch-host"))
