@@ -24,19 +24,17 @@
 
 (defn draw []
   (q/background 1.0)
-  (q/no-fill)
-  (let [slices (dr/random-int 64 256)
+  (q/fill 0.2 0.008)
+  (q/no-stroke)
+  (let [slices (dr/random-int 64 192)
         curve (discrete-curve slices 2 0.4 1000)
         depth-curve (map second (discrete-curve slices 5 1.0 50000))
         slice-width (cq/rel-w (/ 1.0 slices))]
-    (q/stroke-weight (/ 50 slices))
     (doseq [[[x1 y1] depth] (map vector curve depth-curve)
             :let [theta (* 2 Math/PI (dr/random-double))]]
-      (q/no-stroke)
       (let [f (dr/random -0.0075 -0.0125)]
         (doseq [s (range 400)
                 :let [d (* depth (Math/pow Math/E (* f s)))]]
-          (q/fill 0.2 0.008)
           (-> (cq/rel-vec x1 (+ y1 d))
               (random-triangle-at (+ theta (* 2 Math/PI d))
                                   slice-width)
