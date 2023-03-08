@@ -6,8 +6,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.triangle :as gt]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
@@ -20,7 +20,7 @@
   (for [x (tm/norm-range slices)]
     [x (* scale (q/noise (* x phase) offset))]))
 
-(let [triangle (gt/triangle2 [0 0] [0.2 0.8] [1.0 0.1])]
+(let [triangle (triangle/inscribed-equilateral {:r (/ 1 tm/PHI)} 0)]
   (defn random-triangle-at [pos rotation scale]
     (geometry/shape-at triangle rotation scale pos)))
 

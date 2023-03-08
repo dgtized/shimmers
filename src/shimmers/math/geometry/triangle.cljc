@@ -6,6 +6,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
    #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Triangle2]]))
   #?(:clj (:import [thi.ng.geom.types Triangle2])))
@@ -20,7 +21,8 @@
   (signed-area [_] (apply gu/tri-area2 (get _ :points))))
 
 (defn inscribed-equilateral
-  ([{:keys [p r]} angle] (inscribed-equilateral p r angle))
+  ([{:keys [p r] :or {p (gv/vec2) r 1.0}} angle]
+   (inscribed-equilateral p r angle))
   ([p r angle]
    (gt/triangle2
     (v/+polar p r (- angle (/ eq/TAU 3)))
