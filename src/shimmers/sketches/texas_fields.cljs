@@ -8,7 +8,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -32,7 +31,7 @@
 
 (defn make-roads [region]
   (let [{:keys [p r]} (gc/circle (rv 0.5 0.5) (* 0.1 width))
-        theta (dr/random eq/TAU)
+        theta (dr/random-tau)
         tangent-dir (v/polar r theta)
         tangent-pt (tm/+ p tangent-dir)
         direction (v/polar width (+ theta tm/HALF_PI))

@@ -7,7 +7,6 @@
    [shimmers.common.sequence :as cs]
    [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
@@ -32,7 +31,7 @@
         (let [c (+ a (* 0.5 (- b a)))]
           (triangle/inscribed-equilateral
            (gc/circle (g/point-at line c) (* 1.5 len (- b a)))
-           (dr/random eq/TAU)))))}))
+           (dr/random-tau)))))}))
 
 (defn translate-brush [brush p]
   (-> brush

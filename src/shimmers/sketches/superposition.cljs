@@ -8,7 +8,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -59,7 +58,7 @@
             :let [position (brush-at brush orbit tween)
                   theta (if spin
                           (* spin tween)
-                          (dr/random eq/TAU))]]
+                          (dr/random-tau))]]
       (doseq [p points]
         (apply q/vertex
                (-> p
@@ -72,7 +71,7 @@
   (let [s (dr/random 0.15 0.5)
         r [0.2 0.8]]
     (-> (gt/triangle2 [0 0] [0 (rel-h s)] [(rel-w s) 0])
-        (geometry/rotate-around-centroid (dr/random eq/TAU))
+        (geometry/rotate-around-centroid (dr/random-tau))
         (g/translate (cq/rel-pos (apply dr/random r)
                                  (apply dr/random r))))))
 
@@ -82,7 +81,7 @@
     (-> (rect/rect (rel-w (* (- 1 w) (dr/random-double)))
                    (rel-h (* (- 1 h) (dr/random-double)))
                    (rel-w w) (rel-h h))
-        (geometry/rotate-around-centroid (dr/random eq/TAU)))))
+        (geometry/rotate-around-centroid (dr/random-tau)))))
 
 (defn random-circle []
   (let [r (dr/random 0.05 0.35)]

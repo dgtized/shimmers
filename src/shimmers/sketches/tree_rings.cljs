@@ -22,7 +22,7 @@
 
 (defn ring [seed r n displace]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.035 (gv/vec2 0.0 r))))
-        base-t (dr/random eq/TAU)
+        base-t (dr/random-tau)
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
                        noise (dr/noise-at-point-01 seed 0.002 p)]

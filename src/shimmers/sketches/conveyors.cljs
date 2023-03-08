@@ -38,14 +38,14 @@
     ((dr/weighted
       {(fn [] circle) 1
        (fn [] h-circle) 4
-       (fn [] (square circle (dr/random eq/TAU))) 1
+       (fn [] (square circle (dr/random-tau))) 1
        (fn [] (gp/polygon2
-              (take 3 (:points (square h-circle (dr/random eq/TAU)))))) 0.5
-       (fn [] (triangle/inscribed-equilateral h-circle (dr/random eq/TAU))) 2
-       (fn [] (rod h-circle (dr/random eq/TAU))) 1
+              (take 3 (:points (square h-circle (dr/random-tau)))))) 0.5
+       (fn [] (triangle/inscribed-equilateral h-circle (dr/random-tau))) 2
+       (fn [] (rod h-circle (dr/random-tau))) 1
        (fn [] (-> (g/scale-size circle 0.75)
                  (g/as-polygon (dr/rand-nth [5 6 7 8]))
-                 (geometry/rotate-around-centroid (dr/random eq/TAU)))) 6}))))
+                 (geometry/rotate-around-centroid (dr/random-tau)))) 6}))))
 
 (defn convey [bounds dx shape]
   (let [shape' (g/translate shape dx)]

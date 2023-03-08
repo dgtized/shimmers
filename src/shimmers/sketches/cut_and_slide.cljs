@@ -8,7 +8,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -62,7 +61,7 @@
     :init
     {:shapes [(assoc (cq/screen-rect 0.66) :color (random-color))]
      :lines []
-     :angle (dr/random eq/TAU)
+     :angle (dr/random-tau)
      :action :cut
      :time 0}
     :cut

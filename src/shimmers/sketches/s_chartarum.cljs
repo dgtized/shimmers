@@ -5,7 +5,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -85,7 +84,7 @@
                           (fn [{:keys [radius max-radius]}]
                             (* max-radius (tm/smoothstep* 0.66 1.0 (/ radius max-radius))))
                           candidates))]
-             (v/+polar pos (* (+ 1 (dr/gaussian 0.4 0.1)) radius) (dr/random eq/TAU))
+             (v/+polar pos (* (+ 1 (dr/gaussian 0.4 0.1)) radius) (dr/random-tau))
              (let [{p :p [x y] :size} inner]
                (tm/+ p (dr/random x) (dr/random y)))))
          repeatedly
@@ -150,7 +149,7 @@
                                 (+ 0.94 (dr/pareto 0.05 tm/PHI))
                                 1.0)]
                       (-> (if (dr/chance 0.5)
-                            (triangle/inscribed-equilateral c (dr/random eq/TAU))
+                            (triangle/inscribed-equilateral c (dr/random-tau))
                             c)
                           (g/translate (tm/+ pos (tm/* sample ext)))
                           cq/draw-polygon))))))))

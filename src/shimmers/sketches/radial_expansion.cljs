@@ -42,7 +42,7 @@
 (defn init []
   [(-> (rv (dr/random 0.2 0.8)
            (dr/random 0.2 0.8))
-       (new-planet (* (dr/random 0.08 0.12) height) 0 (dr/random eq/TAU))
+       (new-planet (* (dr/random 0.08 0.12) height) 0 (dr/random-tau))
        (update :spokes max 3))])
 
 (defn evolve [bounds shapes]

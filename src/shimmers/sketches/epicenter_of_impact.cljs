@@ -20,7 +20,7 @@
   (->> [(rp/inside-circle (gc/circle (g/unmap-point bounds (gv/vec2 0.5 0.5))  radius) dr/random)]
        (iterate (fn [points] (let [p (tm/+ (dr/rand-nth points)
                                           (v/polar (* radius (Math/sqrt (dr/random 0.7 0.9)))
-                                                   (dr/random eq/TAU)))]
+                                                   (dr/random-tau)))]
                               (if (and (g/contains-point? bounds p)
                                        (not (some (fn [o] (< (g/dist o p) (* 0.6 radius))) points)))
                                 (conj points p)

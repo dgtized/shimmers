@@ -6,7 +6,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -79,7 +78,7 @@
   (q/fill 1.0 0.25)
   (dotimes [_ 3]
     (let [c (random-circle (dr/gaussian 0.05 0.1) 0.3)]
-      (cq/draw-triangle (:points (triangle/inscribed-equilateral c (dr/random eq/TAU))))))
+      (cq/draw-triangle (:points (triangle/inscribed-equilateral c (dr/random-tau))))))
 
   (q/fill 0.6 0.1 0.9 0.08)
   (q/no-stroke)
@@ -91,7 +90,7 @@
           (cq/draw-triangle
            (:points (triangle/inscribed-equilateral
                      (gc/circle c radius)
-                     (dr/random eq/TAU)))))))))
+                     (dr/random-tau)))))))))
 
 (defn draw [{:keys [paused t] :as state}]
   (when (> t paused)

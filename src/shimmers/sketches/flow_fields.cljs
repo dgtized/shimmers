@@ -164,7 +164,7 @@
     (doseq [[p q] (partition 2 1 points)
             :let [theta (if align-triangles
                           (g/heading (tm/- q p))
-                          (dr/random eq/TAU))]]
+                          (dr/random-tau))]]
       (apply cq/draw-triangle
              (-> triangle
                  (g/rotate theta)

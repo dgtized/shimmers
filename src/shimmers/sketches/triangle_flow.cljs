@@ -27,7 +27,7 @@
   {:pos pos
    :last-pos (tm/- pos velocity)
    :color (dr/random 0.66)
-   :dt (dr/random eq/TAU)})
+   :dt (dr/random-tau)})
 
 (defn update-particle [bounds t {:keys [pos last-pos dt] :as particle}]
   (let [n (noise-at-p bounds pos t)
@@ -52,7 +52,7 @@
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :t 0
-     :particles (map (fn [p] (make-particle p (v/polar 3 (dr/random eq/TAU))))
+     :particles (map (fn [p] (make-particle p (v/polar 3 (dr/random-tau))))
                      (rp/random-points (g/scale-size bounds 0.8) 12))}))
 
 (defn update-state [{:keys [bounds t] :as state}]

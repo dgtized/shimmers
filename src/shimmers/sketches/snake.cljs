@@ -35,7 +35,7 @@
         direction (if (dr/chance 0.66)
                     (+ (g/heading dir-center)
                        (dr/gaussian 0 0.8))
-                    (dr/random eq/TAU))
+                    (dr/random-tau))
         size (Math/abs (dr/gaussian 20 6))]
     (chain/->KinematicSegment base direction size)))
 
@@ -65,7 +65,7 @@
   (let [start (gv/vec2 (g/point-at (cq/screen-rect 0.85) (dr/random)))]
     {:t 0.0
      :target (gen-target)
-     :chain (->> (chain/->KinematicSegment start (dr/random eq/TAU) 8)
+     :chain (->> (chain/->KinematicSegment start (dr/random-tau) 8)
                  (iterate gen-segment)
                  (take 32)
                  chain/->KinematicChain)

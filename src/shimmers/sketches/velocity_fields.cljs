@@ -44,7 +44,7 @@
 
 (defn triplet []
   (let [center (rv 0.5 0.5)
-        base-angle (dr/random eq/TAU)
+        base-angle (dr/random-tau)
         triangles (dr/chance 0.5)]
     (map (fn [i]
            (let [angle (+ base-angle (* i 1.1 tm/PHI))
@@ -69,7 +69,7 @@
                 (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
                 (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
                     (gc/circle (* 0.6 height))
-                    (triangle/inscribed-equilateral (dr/random eq/TAU)))
+                    (triangle/inscribed-equilateral (dr/random-tau)))
                 (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
 
 (defn shape-plan []

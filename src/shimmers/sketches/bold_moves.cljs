@@ -4,7 +4,6 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
@@ -34,7 +33,7 @@
         (-> (rv (dr/random 0.2 0.8)
                 (dr/random 0.2 0.8))
             (gc/circle (* 0.15 height))
-            (triangle/inscribed-equilateral (dr/random eq/TAU)))))))
+            (triangle/inscribed-equilateral (dr/random-tau)))))))
 
 (defn columns []
   (let [n (dr/rand-nth [5 7 9 11])

@@ -74,7 +74,7 @@
                         (tm/+ p (tm/normalize (tm/- p contact) (- (:r circle') dist)))))))))
       (assoc circle :R {:R r
                         :dr (dr/random (* 0.2 r) (* 0.4 r))
-                        :t0 (dr/random eq/TAU)
+                        :t0 (dr/random-tau)
                         :dt (dr/gaussian 1 0.1)})))
 
 (defn move [bounds circle]
@@ -113,7 +113,7 @@
   (q/no-stroke)
   (q/fill 1.0 0.1)
   (let [triangle (if jagged
-                   (-> (triangle/inscribed-equilateral circle (dr/random eq/TAU))
+                   (-> (triangle/inscribed-equilateral circle (dr/random-tau))
                        (g/translate (dr/randvec2 (* 0.66 (:r circle)))))
                    (triangle/inscribed-equilateral circle 0))]
     (cq/draw-triangle (g/vertices triangle)))

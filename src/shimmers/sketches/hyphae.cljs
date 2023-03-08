@@ -7,7 +7,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -125,7 +124,7 @@
 (defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
                              (cq/rel-h (Math/sqrt (dr/random 0.08 0.2)))
-                             (dr/random eq/TAU))
+                             (dr/random-tau))
                    (attractor-size))))
 
 (defn attractor-line [a b]
