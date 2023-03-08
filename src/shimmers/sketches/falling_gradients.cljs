@@ -45,7 +45,7 @@
 (defn page []
   [:div
    (sketch/component
-    :size [800 600]
+    :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
