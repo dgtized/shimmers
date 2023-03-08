@@ -5,14 +5,14 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.intersection :as isec]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -42,13 +42,20 @@
             (range n))))
 
 (defn gen-chords [circle]
-  (let [inner (vary-meta (g/scale-size circle (/ 1 tm/PHI))
-                         assoc :stroke-width 2.0)]
+  (let [c (g/scale-size circle (dr/random 0.5 0.8))
+        r-diff (- (:r circle) (:r c))
+        inner (g/translate c (dr/jitter (dr/random r-diff)))]
     (->> (fn []
-           (let [t (dr/random)]
-             (gl/line2 (g/point-at inner t)
-                       (g/point-at circle (+ t (* (dr/rand-nth [1 -1])
-                                                  (dr/random 0.1 0.2)))))))
+           (cs/retry 20
+                     (fn []
+                       (let [t (dr/random)
+                             p (g/point-at inner t)
+                             q (g/point-at circle
+                                           (+ t (* (dr/rand-nth [1 1 1 -1])
+                                                   (dr/random 0.08 0.2))))
+                             line (gl/line2 p q)]
+                         (when-not (isec/circle-line-intersect? inner line)
+                           line)))))
          (repeatedly (* 25 (/ (:r circle) 50)))
          (into [inner] ))))
 
