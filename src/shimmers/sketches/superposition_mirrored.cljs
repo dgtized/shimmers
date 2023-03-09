@@ -32,7 +32,8 @@
 
 (defn generate-shapes
   ([scale] (generate-shapes
-            (dr/weighted {:center-circle 1
+            (dr/weighted {:bounds 0.5
+                          :center-circle 1
                           :center-square 1
                           :quad-square 1
                           :lr-in-triangles 1
@@ -43,6 +44,8 @@
   ([kind scale]
    (let [r (cq/rel-h scale)]
      (case kind
+       :bounds
+       [(cq/screen-rect 0.95)]
        :center-circle
        [(gc/circle (cq/rel-vec 0.5 0.5) r)]
        :center-square
