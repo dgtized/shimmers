@@ -94,17 +94,18 @@
      (count particles)))
 
 (defn setup []
+  (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
   (let [shapes (generate-shapes 0.2)]
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
-     :particles (make-particles shapes 32)
+     :particles (make-particles shapes 128)
      :t 0.0}))
 
 (defn update-state [{:keys [particles] :as state}]
-  (let [dt 0.01]
+  (let [dt (dr/random 0.001 0.01)]
     (if (< (affinity particles) (cq/rel-h 0.01))
-      (let [targets (generate-shapes (dr/random 0.1 0.4))]
+      (let [targets (generate-shapes (dr/random 0.05 0.45))]
         (-> state
             (update :t + dt)
             (assoc :shapes targets)
@@ -115,13 +116,19 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn draw [{:keys [image shapes particles]}]
-  (q/with-graphics image
-    (q/color-mode :hsl 1.0)
-    (q/stroke 0.0 0.03)
-    (q/fill 0.9 0.02)
-    (doseq [{:keys [pos angle]} particles]
-      (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))))
+(defn draw [{:keys [image shapes particles t]}]
+  (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
+        scale (+ 0.002 (* 0.25 (Math/pow (q/noise (* t 0.1) 100.0) 3.5)))]
+    (q/with-graphics image
+      (q/color-mode :hsl 1.0)
+      (doseq [{:keys [pos angle]} particles]
+        (let [r (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal)]
+          (q/fill (mod (* tm/PHI (apply q/noise (tm/* (gv/vec2 t r) 0.02))) 1.0)
+                  (+ 0.4 (* 0.6 (apply q/noise (tm/+ (tm/* (gv/vec2 (+ t r) r) 0.1) (gv/vec2 50.0 100.0)))))
+                  (+ 0.45 (* 0.55 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.02) (gv/vec2 100.0 50.0)))))
+                  (+ 0.001 (* 0.04 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.005) (gv/vec2 200.0 200.0))))))
+          (q/stroke (mod (* 2 (apply q/noise (tm/* (gv/vec2 r (+ t r)) 0.5))) 1.0) 0.05)
+          (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle))))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
