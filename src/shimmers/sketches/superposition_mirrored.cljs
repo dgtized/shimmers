@@ -140,9 +140,9 @@
       (q/fill 1.0 0.1)
       (q/stroke 0.0 0.1)
       (doseq [{:keys [pos angle]} particles]
-        (let [r (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal)]
+        (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))]
           (when color
-            (q/fill (mod (* tm/PHI (apply q/noise (tm/* (gv/vec2 t r) 0.03))) 1.0)
+            (q/fill (mod (* 3 (apply q/noise (tm/* (gv/vec2 t r) 0.01))) 1.0)
                     (+ 0.4 (* 0.6 (apply q/noise (tm/+ (tm/* (gv/vec2 (+ t r) r) 0.05) (gv/vec2 50.0 100.0)))))
                     (+ 0.45 (* 0.55 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.02) (gv/vec2 100.0 50.0)))))
                     (+ 0.001 (* 0.04 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.006) (gv/vec2 200.0 200.0))))))
