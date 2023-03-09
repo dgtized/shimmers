@@ -135,7 +135,7 @@
       (doseq [{:keys [pos angle]} particles]
         (let [r (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal)]
           (when color
-            (q/fill (mod (* tm/PHI (apply q/noise (tm/* (gv/vec2 t r) 0.02))) 1.0)
+            (q/fill (mod (* tm/PHI (apply q/noise (tm/* (gv/vec2 t r) 0.03))) 1.0)
                     (+ 0.4 (* 0.6 (apply q/noise (tm/+ (tm/* (gv/vec2 (+ t r) r) 0.1) (gv/vec2 50.0 100.0)))))
                     (+ 0.45 (* 0.55 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.02) (gv/vec2 100.0 50.0)))))
                     (+ 0.001 (* 0.04 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.003) (gv/vec2 200.0 200.0))))))
