@@ -19,9 +19,11 @@
 (defrecord Particle [pos angle vel angle-vel dest])
 
 (defn distribute-particles [shapes n]
-  (->> (fn []
-         (g/random-point-inside (dr/rand-nth shapes)))
-       (repeatedly n)))
+  (let [random-point (dr/weighted {g/random-point 1
+                                   g/random-point-inside 8})]
+    (->> (fn []
+           (random-point (dr/rand-nth shapes)))
+         (repeatedly n))))
 
 (defn make-particles [shapes n]
   (let [points (distribute-particles shapes n)
