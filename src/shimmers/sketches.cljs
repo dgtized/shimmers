@@ -189,6 +189,7 @@
    shimmers.sketches.substrate
    shimmers.sketches.string-lights
    shimmers.sketches.superposition
+   shimmers.sketches.superposition-mirrored
    shimmers.sketches.terrain-grid
    shimmers.sketches.the-journey-between
    shimmers.sketches.texas-fields
