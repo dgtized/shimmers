@@ -79,9 +79,9 @@
 
 (defn update-positions [particles t dt]
   (mapv (move dt
-              (+ 0.001 (* 1.5 (q/noise (* t dt 0.007) 10.0)))
-              (+ 0.001 (* 1.5 (q/noise 10.0 (* t dt 0.006))))
-              (+ 0.0 (* 20.0 (q/noise 20.0 (* t dt 0.008)))))
+              (+ 0.001 (* 2.0 (q/noise (* t dt 0.007) 10.0)))
+              (+ 0.001 (* 2.0 (q/noise 10.0 (* t dt 0.006))))
+              (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
         particles))
 
 (defn update-destinations [particles targets]
@@ -108,7 +108,7 @@
 
 (defn update-state [{:keys [particles t] :as state}]
   (let [dt (dr/random 0.001 0.01)]
-    (if (< (affinity particles) (cq/rel-h 0.01))
+    (if (< (affinity particles) (cq/rel-h 0.005))
       (let [targets (generate-shapes (dr/random 0.05 0.45))]
         (-> state
             (update :t + dt)
