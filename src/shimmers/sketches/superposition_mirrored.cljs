@@ -85,7 +85,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [shapes (generate-shapes)]
-    {:shapes shapes
+    {:image (q/create-graphics (q/width) (q/height))
+     :shapes shapes
      :particles (make-particles shapes 32)
      :t 0.0}))
 
@@ -101,14 +102,27 @@
           (update :t + dt)
           (update :particles update-positions dt)))))
 
-(defn draw [{:keys [shapes particles]}]
-  (q/background 1.0)
-  (doseq [poly shapes]
-    (cq/draw-polygon poly))
+(defonce ui-state (ctrl/state {:debug false}))
 
-  (doseq [{:keys [pos angle dest]} particles]
-    (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))
-    (q/line pos dest)))
+(defn draw [{:keys [image shapes particles]}]
+  (q/with-graphics image
+    (q/color-mode :hsl 1.0)
+    (q/stroke 0.0 0.03)
+    (q/fill 0.9 0.02)
+    (doseq [{:keys [pos angle]} particles]
+      (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))))
+
+  (q/color-mode :hsl 1.0)
+  (q/background 1.0)
+  (q/image image 0 0)
+
+  (when (:debug @ui-state)
+    (doseq [poly shapes]
+      (cq/draw-polygon poly))
+
+    (doseq [{:keys [pos angle dest]} particles]
+      (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))
+      (q/line pos dest))))
 
 (defn page []
   [:div
@@ -118,9 +132,11 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained
-    [:p.explanation.readable-width
-     "Variation on superposition with more intentional shape placement."]]])
+   [:div.contained.explanation
+    [:p.readable-width
+     "Variation on superposition with more intentional shape placement."]
+    [:div.ui-controls
+     (ctrl/checkbox ui-state "Debug" [:debug])]]])
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"
