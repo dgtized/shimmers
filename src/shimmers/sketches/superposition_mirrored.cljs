@@ -38,6 +38,7 @@
             (dr/weighted {:bounds 0.5
                           :center-circle 1
                           :center-square 1
+                          :center-hexagon 1
                           :quad-square 1
                           :lr-in-triangles 1
                           :lr-out-triangles 1
@@ -53,6 +54,8 @@
        [(gc/circle (cq/rel-vec 0.5 0.5) r)]
        :center-square
        [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
+       :center-hexagon
+       [(g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) r) 6)]
        :quad-square
        (let [rect (rect/rect (* 1.5 r))]
          [(g/center rect (cq/rel-vec 0.25 0.25))
