@@ -51,16 +51,17 @@
        :center-square
        [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
        :quad-square
-       [(g/center (rect/rect r) (cq/rel-vec 0.25 0.25))
-        (g/center (rect/rect r) (cq/rel-vec 0.75 0.25))
-        (g/center (rect/rect r) (cq/rel-vec 0.75 0.75))
-        (g/center (rect/rect r) (cq/rel-vec 0.25 0.75))]
+       (let [rect (rect/rect (* 1.5 r))]
+         [(g/center rect (cq/rel-vec 0.25 0.25))
+          (g/center rect (cq/rel-vec 0.75 0.25))
+          (g/center rect (cq/rel-vec 0.75 0.75))
+          (g/center rect (cq/rel-vec 0.25 0.75))])
        :ud-in-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.25 scale)) :r r} (* eq/TAU 0.25))
-        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.25 scale))) :r r} (* eq/TAU 0.75))]
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.25))
+        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.75))]
        :ud-out-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.25 scale)) :r r} (* eq/TAU 0.75))
-        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.25 scale))) :r r} (* eq/TAU 0.25))]
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.75))
+        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.25))]
        :lr-in-triangles
        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} 0)
         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} Math/PI)]
@@ -112,7 +113,7 @@
 (defn update-state [{:keys [particles t] :as state}]
   (let [dt (dr/random 0.001 0.01)]
     (if (< (affinity particles) (cq/rel-h 0.005))
-      (let [targets (generate-shapes (dr/random 0.05 0.45))]
+      (let [targets (generate-shapes (dr/random 0.05 0.49))]
         (-> state
             (update :t + dt)
             (assoc :shapes targets)
