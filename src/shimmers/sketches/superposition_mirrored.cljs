@@ -30,6 +30,7 @@
            (->Particle p (dr/random-tau) (gv/vec2) 0 d))
          points dests)))
 
+;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
   ([scale] (generate-shapes
             (dr/weighted {:bounds 0.5
@@ -75,13 +76,15 @@
           angle-target (g/heading (tm/- dest pos))
           angle-acc (if (< angle-c 90)
                       (control/angular-acceleration angle angle-target angle-c angle-vel)
-                      (- angle-c 90))]
+                      (* 2 (- angle-c 90)))
+          drag-c (- 1.0 (eq/sqr (* drag dt)))]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
            :angle (+ angle (* angle-vel dt))
-           :vel (tm/* (tm/+ vel (tm/* force dt)) (- 1.0 (eq/sqr (* drag dt))))
-           :angle-vel (+ angle-vel (* angle-acc dt)))))))
+           :vel (tm/limit (tm/* (tm/+ vel (tm/* force dt)) drag-c)
+                          (+ (* 3 pos-c) (/ 1.0 dt)))
+           :angle-vel (* (+ angle-vel (* angle-acc dt)) drag-c))))))
 
 (defn update-positions [particles t dt]
   (mapv (move dt
