@@ -12,6 +12,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -30,29 +31,39 @@
          points dests)))
 
 (defn generate-shapes
-  ([] (generate-shapes
-       (dr/weighted {:center-circle 1
-                     :lr-in-triangles 1
-                     :lr-out-triangles 1
-                     :ud-in-triangles 1
-                     :ud-out-triangles 1})
-       0.2))
+  ([scale] (generate-shapes
+            (dr/weighted {:center-circle 1
+                          :center-square 1
+                          :quad-square 1
+                          :lr-in-triangles 1
+                          :lr-out-triangles 1
+                          :ud-in-triangles 1
+                          :ud-out-triangles 1})
+            scale))
   ([kind scale]
-   (case kind
-     :center-circle
-     [(gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h scale))]
-     :ud-in-triangles
-     [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 0.2) :r (cq/rel-h scale)} (* eq/TAU 0.25))
-      (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 0.8) :r (cq/rel-h scale)} (* eq/TAU 0.75))]
-     :ud-out-triangles
-     [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 0.2) :r (cq/rel-h scale)} (* eq/TAU 0.75))
-      (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 0.8) :r (cq/rel-h scale)} (* eq/TAU 0.25))]
-     :lr-in-triangles
-     [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.15 0.5) :r (cq/rel-h scale)} 0)
-      (triangle/inscribed-equilateral {:p (cq/rel-vec 0.85 0.5) :r (cq/rel-h scale)} Math/PI)]
-     :lr-out-triangles
-     [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.15 0.5) :r (cq/rel-h scale)} Math/PI)
-      (triangle/inscribed-equilateral {:p (cq/rel-vec 0.85 0.5) :r (cq/rel-h scale)} 0)])))
+   (let [r (cq/rel-h scale)]
+     (case kind
+       :center-circle
+       [(gc/circle (cq/rel-vec 0.5 0.5) r)]
+       :center-square
+       [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
+       :quad-square
+       [(g/center (rect/rect r) (cq/rel-vec 0.25 0.25))
+        (g/center (rect/rect r) (cq/rel-vec 0.75 0.25))
+        (g/center (rect/rect r) (cq/rel-vec 0.75 0.75))
+        (g/center (rect/rect r) (cq/rel-vec 0.25 0.75))]
+       :ud-in-triangles
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.25 scale)) :r r} (* eq/TAU 0.25))
+        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.25 scale))) :r r} (* eq/TAU 0.75))]
+       :ud-out-triangles
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.25 scale)) :r r} (* eq/TAU 0.75))
+        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.25 scale))) :r r} (* eq/TAU 0.25))]
+       :lr-in-triangles
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} 0)
+        (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} Math/PI)]
+       :lr-out-triangles
+       [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
+        (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)]))))
 
 (defn move [dt]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
@@ -84,7 +95,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [shapes (generate-shapes)]
+  (let [shapes (generate-shapes 0.2)]
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
      :particles (make-particles shapes 32)
@@ -93,7 +104,7 @@
 (defn update-state [{:keys [particles] :as state}]
   (let [dt 0.01]
     (if (< (affinity particles) (cq/rel-h 0.01))
-      (let [targets (generate-shapes)]
+      (let [targets (generate-shapes (dr/random 0.1 0.4))]
         (-> state
             (update :t + dt)
             (assoc :shapes targets)
