@@ -133,7 +133,7 @@
 
 (defn draw [{:keys [image shapes particles t]}]
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-        scale (+ 0.002 (* 0.25 (Math/pow (q/noise (* t 0.1) 100.0) 3)))
+        scale (+ 0.002 (* 0.25 (Math/pow (q/noise (* t 0.15) 100.0) 3)))
         color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
