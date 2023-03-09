@@ -65,20 +65,24 @@
        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)]))))
 
-(defn move [dt]
+(defn move [dt pos-c angle-c drag]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
-    (let [force (control/force-accel pos dest (/ 0.5 dt) vel)
+    (let [force (control/force-accel pos dest (/ pos-c dt) vel)
           angle-target (g/heading (tm/- dest pos))
-          angle-acc (control/angular-acceleration angle angle-target (/ 0.5 dt) angle-vel)]
+          angle-acc (control/angular-acceleration angle angle-target (/ angle-c dt) angle-vel)]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
            :angle (+ angle (* angle-vel dt))
-           :vel (tm/+ vel (tm/* force dt))
+           :vel (tm/* (tm/+ vel (tm/* force dt)) (- 1.0 (eq/sqr (* drag dt))))
            :angle-vel (+ angle-vel (* angle-acc dt)))))))
 
-(defn update-positions [particles dt]
-  (mapv (move dt) particles))
+(defn update-positions [particles t dt]
+  (mapv (move dt
+              (+ 0.001 (* 1.5 (q/noise (* t dt 0.007) 10.0)))
+              (+ 0.001 (* 1.5 (q/noise 10.0 (* t dt 0.006))))
+              (+ 0.0 (* 20.0 (q/noise 20.0 (* t dt 0.008)))))
+        particles))
 
 (defn update-destinations [particles targets]
   (map (fn [particle dest]
@@ -102,7 +106,7 @@
      :particles (make-particles shapes 128)
      :t 0.0}))
 
-(defn update-state [{:keys [particles] :as state}]
+(defn update-state [{:keys [particles t] :as state}]
   (let [dt (dr/random 0.001 0.01)]
     (if (< (affinity particles) (cq/rel-h 0.01))
       (let [targets (generate-shapes (dr/random 0.05 0.45))]
@@ -112,7 +116,7 @@
             (update :particles update-destinations targets)))
       (-> state
           (update :t + dt)
-          (update :particles update-positions dt)))))
+          (update :particles update-positions t dt)))))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
