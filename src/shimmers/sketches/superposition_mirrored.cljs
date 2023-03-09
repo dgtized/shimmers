@@ -71,9 +71,9 @@
 
 (defn move [dt pos-c angle-c drag]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
-    (let [force (control/force-accel pos dest (/ pos-c dt) vel)
+    (let [force (control/force-accel pos dest pos-c vel)
           angle-target (g/heading (tm/- dest pos))
-          angle-acc (control/angular-acceleration angle angle-target (/ angle-c dt) angle-vel)]
+          angle-acc (control/angular-acceleration angle angle-target angle-c angle-vel)]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
@@ -83,8 +83,8 @@
 
 (defn update-positions [particles t dt]
   (mapv (move dt
-              (+ 0.001 (* 2.0 (q/noise (* t dt 0.007) 10.0)))
-              (+ 0.001 (* 2.0 (q/noise 10.0 (* t dt 0.006))))
+              (+ 5 (* 150.0 (q/noise t 10.0)))
+              (+ 5 (* 150.0 (q/noise 10.0 t)))
               (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
         particles))
 
