@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -109,11 +110,19 @@
     (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))
     (q/line pos dest)))
 
-(sketch/defquil superposition-mirrored
-  :created-at "2023-03-08"
-  :tags #{}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    [:p.explanation.readable-width
+     "Variation on superposition with more intentional shape placement."]]])
+
+(sketch/definition superposition-mirrored
+  {:created-at "2023-03-08"
+   :tags #{}}
+  (ctrl/mount page "sketch-host"))
