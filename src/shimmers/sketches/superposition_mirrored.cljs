@@ -73,7 +73,9 @@
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
     (let [force (control/force-accel pos dest pos-c vel)
           angle-target (g/heading (tm/- dest pos))
-          angle-acc (control/angular-acceleration angle angle-target angle-c angle-vel)]
+          angle-acc (if (< angle-c 90)
+                      (control/angular-acceleration angle angle-target angle-c angle-vel)
+                      (- angle-c 90))]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
