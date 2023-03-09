@@ -165,7 +165,7 @@
     :middleware [m/fun-mode framerate/mode])
    [:div.contained.explanation
     [:p.readable-width
-     "Variation on superposition with more intentional shape placement."]
+     "Variation on superposition with more intentional shape placement leveraging symmetries."]
     [:div.ui-controls
      (ctrl/checkbox ui-state "Debug" [:debug])]]])
 
