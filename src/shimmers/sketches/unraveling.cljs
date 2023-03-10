@@ -41,7 +41,10 @@
                          (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
           :let [[x y] p
                 theta0 (- (/ x r) (* 0.15 t))
-                dist (tm/smoothstep* 0.45 1.1 (eq/unit-cos (- Math/PI (* 0.25 t))))
+                dist (tm/smoothstep* 0.48 1.1
+                                     (- 1.0
+                                        (* 0.5 (eq/unit-cos (- (* 0.3 t) (/ eq/TAU r))))
+                                        (* 0.5 (eq/unit-cos (* 0.55 t)))))
                 theta1 (- theta0 0.001 (* eq/TAU dist))]]
     (cv/arc (cv/begin ctx) x y r theta0 theta1)
     (canvas/stroke ctx))
