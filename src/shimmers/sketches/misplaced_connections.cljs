@@ -17,9 +17,12 @@
   (let [a (dr/rand-nth (butlast offsets))]
     [a (dr/rand-nth (drop-while #(<= % a) offsets))]))
 
+;; TODO: for v-offsets maybe detect if line actually meets there?
+;; or go through and trim lines that don't connect?
+;; experiment with multiple gaps?
 (defn shapes []
-  (let [h-offsets (dr/gaussian-range 0.1 0.08)
-        v-offsets (dr/gaussian-range 0.05 0.08)]
+  (let [h-offsets (dr/gaussian-range 0.04 0.03)
+        v-offsets (dr/gaussian-range 0.03 0.03)]
     (concat
      (mapcat concat
              (for [h h-offsets]
@@ -28,7 +31,13 @@
                    [(gl/line2 (rv 0.0 h) (rv a h))
                     (gl/line2 (rv b h) (rv 1.0 h))])
                  [(gl/line2 (rv 0.0 h) (rv 1.0 h))])))
-     (for [v v-offsets] (gl/line2 (rv v 0.0) (rv v 1.0))))))
+     (mapcat concat
+             (for [v v-offsets]
+               (if (dr/chance 0.66)
+                 (let [[a b] (find-cuts h-offsets)]
+                   [(gl/line2 (rv v 0.0) (rv v a))
+                    (gl/line2 (rv v b) (rv v 1.0))])
+                 [(gl/line2 (rv v 0.0) (rv v 1.0))]))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
