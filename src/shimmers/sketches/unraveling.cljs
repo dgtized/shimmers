@@ -1,5 +1,6 @@
 (ns shimmers.sketches.unraveling
   (:require
+   [helins.canvas :as cv]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -32,14 +33,18 @@
 (defn draw [ {:keys [t]} ctx [width height] _time]
   (.clearRect ctx 0 0 width height)
   (set! (.-lineWidth ctx) (+ (/ 1.0 tm/PHI) (* 0.25 (Math/cos (* 1.33 (+ 0.5 t))))))
-  (doseq [c (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
-                                      (* 0.48 height))
-                           (* tm/PHI t)
-                           (+ 0.79 (* 0.175 (eq/unit-cos t)))
-                           (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))]
-    (-> ctx
-        (canvas/circle c)
-        canvas/stroke))
+  (doseq [{:keys [p r]}
+          (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
+                                    (* 0.48 height))
+                         (* tm/PHI t)
+                         (+ 0.79 (* 0.175 (eq/unit-cos t)))
+                         (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
+          :let [[x y] p
+                theta0 (- (/ x r) (* 0.15 t))
+                dist (tm/smoothstep* 0.45 1.1 (eq/unit-cos (- Math/PI (* 0.25 t))))
+                theta1 (- theta0 0.001 (* eq/TAU dist))]]
+    (cv/arc (cv/begin ctx) x y r theta0 theta1)
+    (canvas/stroke ctx))
   ctx)
 
 (defn page []
