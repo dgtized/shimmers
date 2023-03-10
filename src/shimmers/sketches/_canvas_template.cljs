@@ -1,6 +1,5 @@
 (ns shimmers.sketches._canvas-template
   (:require
-   [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
@@ -16,15 +15,14 @@
     ctx))
 
 (defn page []
-  (let [canvas-state
-        (r/atom {:width 800
-                 :height 600
-                 :setup #'setup
-                 :update #'update-state
-                 :draw #'draw})
-        toggle-fs
-        (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.7}))
-        attributes {:class "canvas-frame" :on-double-click toggle-fs}]
+  (let [{:keys [canvas-state attributes]}
+        (canvas/make-state
+         {:width 800
+          :height 600
+          :setup #'setup
+          :update #'update-state
+          :draw #'draw}
+         {:width-pct 0.7})]
     (fn []
       [:div
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))

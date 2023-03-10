@@ -47,14 +47,11 @@
     ctx))
 
 (defn page []
-  (let [canvas-state
-        (r/atom {:width 900
-                 :height 600
-                 :draw #'draw})
-        toggle-fs
-        (fn [] (canvas/toggle-full-screen! canvas-state {:width-pct 0.7}))
-        attributes {:class "canvas-frame"
-                    :on-double-click toggle-fs}]
+  (let [{:keys [canvas-state attributes]}
+        (canvas/make-state {:width 900
+                            :height 600
+                            :draw #'draw}
+                           {:width-pct 0.7})]
     (fn []
       [:div
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]

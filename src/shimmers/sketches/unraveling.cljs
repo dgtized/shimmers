@@ -1,6 +1,5 @@
 (ns shimmers.sketches.unraveling
   (:require
-   [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -44,15 +43,13 @@
   ctx)
 
 (defn page []
-  (let [canvas-state
-        (r/atom {:width 800 :height 600
-                 :setup #'setup
-                 :update #'update-state
-                 :draw #'draw})
-        toggle-fs (fn [] (canvas/toggle-full-screen! canvas-state
-                                                    {:height-pct 0.9}))
-        attributes {:class "canvas-frame"
-                    :on-double-click toggle-fs}]
+  (let [{:keys [canvas-state attributes]}
+        (canvas/make-state
+         {:width 800 :height 600
+          :setup #'setup
+          :update #'update-state
+          :draw #'draw}
+         {:height-pct 0.9})]
     (fn []
       [:div
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))

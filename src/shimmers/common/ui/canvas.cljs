@@ -109,6 +109,12 @@
          (swap! frame-state update-state screen-dims ms)
          ((:draw cv) @frame-state ctx screen-dims ms))))))
 
+(defn make-state [cv-config fs-config]
+  (let [canvas-state (r/atom cv-config)
+        toggle-fs (fn [] (toggle-full-screen! canvas-state fs-config))]
+    {:attributes {:class "canvas-frame" :on-double-click toggle-fs}
+     :canvas-state canvas-state}))
+
 (defn circle [ctx {[x y] :p r :r}]
   (doto ctx
     .beginPath
