@@ -37,6 +37,10 @@
 (defn random-tau []
   (random eq/TAU))
 
+;; https://ivandianov.com/circular-random/
+(defn circular-random []
+  (- 1 (Math/sqrt (- 1 (eq/sqr (random))))))
+
 (defn rand-nth [coll]
   (nth coll (random-int (count coll))))
 
