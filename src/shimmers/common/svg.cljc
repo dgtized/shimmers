@@ -157,3 +157,8 @@
          (cljs.core/str " ms")
          display)
      ret#))
+
+(defmacro svg-timed
+  {:style/indent [:defn]}
+  [attribs & body]
+  `(timed (svg ~attribs ~@body)))

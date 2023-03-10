@@ -26,13 +26,12 @@
           (partition 2 1 (dr/gaussian-range 0.05 0.01))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 1.0}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
+    (shapes)))
 
 (sketch/definition cutouts
   {:created-at "2023-02-04"

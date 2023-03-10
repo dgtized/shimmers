@@ -150,12 +150,11 @@
 
 (defn scene []
   (reset! defo {:shapes []})
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"}
+    (shapes)))
 
 (defn ui-controls []
   [:div

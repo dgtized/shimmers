@@ -31,17 +31,16 @@
 (comment (circle-between-closest (rp/random-cells (rect/rect 0 0 10 10) 10)))
 
 (defn scene [points mst]
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 0.5}
-     [(csvg/group {:fill "black"}
-        (map (fn [p] (gc/circle p 1.5)) points))
-      (when mst
-        (csvg/group {:fill "none"}
-          (circle-between-closest points)))])))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
+    [(csvg/group {:fill "black"}
+       (map (fn [p] (gc/circle p 1.5)) points))
+     (when mst
+       (csvg/group {:fill "none"}
+         (circle-between-closest points)))]))
 
 (defn page []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)

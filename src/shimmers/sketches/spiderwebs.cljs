@@ -35,13 +35,12 @@
           spiral)))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 0.5}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
+    (shapes)))
 
 (sketch/definition spiderwebs
   {:created-at "2022-11-03"

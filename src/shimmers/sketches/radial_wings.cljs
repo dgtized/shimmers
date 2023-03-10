@@ -31,13 +31,12 @@
 
 ;; FIXME: handle large gaps and overlapping lines
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 0.5}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
+    (shapes)))
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"

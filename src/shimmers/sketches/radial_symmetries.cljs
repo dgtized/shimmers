@@ -182,14 +182,13 @@
     (mapcat change-hexes rings rules)))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 0.66}
-     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-       (hexagons 17)))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.66}
+    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+      (hexagons 17))))
 
 (sketch/definition radial-symmetries
   {:created-at "2022-11-24"

@@ -148,13 +148,12 @@
       (svg-row {:type type :v v :row-height row-height}))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 1.0}
-     (shapes (dr/rand-nth [17 23])))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
+    (shapes (dr/rand-nth [17 23]))))
 
 (sketch/definition shapes-and-patterns
   {:created-at "2022-02-19"

@@ -127,11 +127,11 @@
     (fn []
       [:div
        [:div.canvas-frame
-        (csvg/timed
-         (csvg/svg {:id "scene"
-                    :width width
-                    :height height}
-           [(scene params)]))
+        (csvg/svg-timed
+         {:id "scene"
+          :width width
+          :height height}
+         [(scene params)])
         [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-mosaic")]]
        [:p.center (view-sketch/generate :radial-mosaic)]
        [palette/as-svg {:class "center"

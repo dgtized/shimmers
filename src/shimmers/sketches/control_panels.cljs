@@ -418,13 +418,12 @@
     (concat panels (mapcat assign-pane panels))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 0.75}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.75}
+    (shapes)))
 
 (sketch/definition control-panels
   {:created-at "2022-02-07"

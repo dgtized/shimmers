@@ -179,26 +179,25 @@
             settings)))
 
 (defn scene [plan {:keys [auto-scale color-tiles max-overlap] :as settings}]
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill-opacity (if color-tiles
-                              (/ 2 (+ (or max-overlap 4) 3))
-                              "5%")
-              :fill "black"
-              :stroke-width 1.0}
-     (let [tiles (shapes plan settings)
-           radial-height (max (* 0.25 height)
-                              (apply max (map (comp rect/top :bounds) tiles)))
-           scale (/ height (* 2 (+ radial-height 2)))]
-       (csvg/group {:transform
-                    (str (csvg/translate (rv 0.5 0.5))
-                         " "
-                         (if auto-scale
-                           (csvg/scale scale scale)
-                           ""))}
-         (map :shape tiles))))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill-opacity (if color-tiles
+                                   (/ 2 (+ (or max-overlap 4) 3))
+                                   "5%")
+                   :fill "black"
+                   :stroke-width 1.0}
+    (let [tiles (shapes plan settings)
+          radial-height (max (* 0.25 height)
+                             (apply max (map (comp rect/top :bounds) tiles)))
+          scale (/ height (* 2 (+ radial-height 2)))]
+      (csvg/group {:transform
+                   (str (csvg/translate (rv 0.5 0.5))
+                        " "
+                        (if auto-scale
+                          (csvg/scale scale scale)
+                          ""))}
+        (map :shape tiles)))))
 
 (defn sanitize-depth [{:keys [limit-overlap recursion-depth]}]
   (let [depth (if (number? recursion-depth)

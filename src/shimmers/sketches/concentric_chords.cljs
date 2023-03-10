@@ -65,13 +65,12 @@
     (concat circles chords)))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 1.0}
-     (shapes (g/scale-size (rect/rect 0 0 width height) 0.98)))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
+    (shapes (g/scale-size (rect/rect 0 0 width height) 0.98))))
 
 (sketch/definition concentric-chords
   {:created-at "2023-03-08"

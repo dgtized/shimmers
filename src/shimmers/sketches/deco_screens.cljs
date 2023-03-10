@@ -78,13 +78,12 @@
         (range n)))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 2.0}
-     (shapes 7))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 2.0}
+    (shapes 7)))
 
 (sketch/definition deco-screens
   {:created-at "2023-02-13"

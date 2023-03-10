@@ -101,12 +101,11 @@
                  (grow-until-bounds control gen-line :right margin density)))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :stroke-width 0.7}
-     (grow-lines))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :stroke-width 0.7}
+    (grow-lines)))
 
 (sketch/definition wood-grain
   {:created-at "2021-11-14"

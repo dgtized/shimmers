@@ -128,13 +128,12 @@
 (defonce ui-state (ctrl/state {:mode :color}))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 2.0}
-     (shapes (:mode @ui-state)))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 2.0}
+    (shapes (:mode @ui-state))))
 
 ;; TODO: embed this in the url somehow?
 (defn ui-controls []

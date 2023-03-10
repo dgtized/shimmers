@@ -96,22 +96,21 @@
 ;; interesting pattern with big circle left, small circle right, flow field heading right
 ;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 0.5}
-     (let [seed (tm/abs (dr/randvec2 100))
-           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
-           offset (dr/weighted {0 2 10 2 15 1})
-           n (dr/rand-nth [600 900 1200])]
-       (mapcat (fn [bounds i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
-                                     scale
-                                     bounds
-                                     (+ n (* i 600))))
-               (shape-plan)
-               (range))))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.5}
+    (let [seed (tm/abs (dr/randvec2 100))
+          scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
+          offset (dr/weighted {0 2 10 2 15 1})
+          n (dr/rand-nth [600 900 1200])]
+      (mapcat (fn [bounds i] (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
+                                    scale
+                                    bounds
+                                    (+ n (* i 600))))
+              (shape-plan)
+              (range)))))
 
 (defn ui-controls []
   [:div

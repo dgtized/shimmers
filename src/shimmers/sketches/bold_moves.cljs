@@ -82,13 +82,12 @@
    (sketch-lines)))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 2.0}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 2.0}
+    (shapes)))
 
 (sketch/definition bold-moves
   {:created-at "2023-01-14"

@@ -174,13 +174,12 @@
 
 (defn scene [state]
   (reset! defo {})
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "white"
-              :stroke-width 0.5}
-     (landscape state))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
+    (landscape state)))
 
 (defn ui-controls [state]
   [:div

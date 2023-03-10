@@ -39,13 +39,12 @@
                            (range 0.03 0.9 0.15))))))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 1.0}
-     (shapes))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
+    (shapes)))
 
 (sketch/definition deeply-askew
   {:created-at "2022-11-14"

@@ -40,15 +40,14 @@
             (dr/gaussian-range 0.01 0.012))))
 
 (defn scene []
-  (csvg/timed
-   (csvg/svg {:id "scene"
-              :width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 0.66}
-     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-       (shapes)))))
+  (csvg/svg-timed {:id "scene"
+                   :width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.66}
+    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+      (shapes))))
 
 (defn ui-controls []
   [:div [kb/kb-action "alt-s" #(svg-export/download "scene" "tree-rings")]])

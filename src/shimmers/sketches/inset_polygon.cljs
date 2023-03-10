@@ -40,13 +40,12 @@
      :orient-inset (orientation (g/vertices inset))}))
 
 (defn scene [{:keys [polygon inset]}]
-  (csvg/timed
-   (csvg/svg {:width width
-              :height height
-              :stroke "black"
-              :fill "none"}
-     [(csvg/group {:stroke "blue"} polygon)
-      (csvg/group {:stroke "red"} inset)])))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"}
+    [(csvg/group {:stroke "blue"} polygon)
+     (csvg/group {:stroke "red"} inset)]))
 
 (defn page []
   (let [ui-state (ctrl/state {:inset 100})]
