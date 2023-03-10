@@ -109,6 +109,7 @@
    shimmers.sketches.marching-squares
    shimmers.sketches.mechanism
    shimmers.sketches.memory-allocation
+   shimmers.sketches.misplaced-connections
    shimmers.sketches.minimum-spanning-tree
    shimmers.sketches.morse-patterns
    shimmers.sketches.mosaic-tiling
