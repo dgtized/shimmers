@@ -1,7 +1,6 @@
 (ns shimmers.sketches.othello
   (:require
    [helins.canvas :as cv]
-   [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
