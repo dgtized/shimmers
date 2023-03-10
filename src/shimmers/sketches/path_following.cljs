@@ -29,7 +29,7 @@
                      (g/sample-uniform 10.0 true)
                      gl/linestrip2
                      (g/translate (r 0.0 0.5)))]
-    (csvg/svg {:width width :height height}
+    (csvg/svg-timed {:width width :height height}
       [(svg/polyline (:points original)
                      {:stroke "#efc020"
                       :stroke-width 10.0})]

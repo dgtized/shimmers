@@ -27,11 +27,11 @@
     (gl/linestrip2 (upper-ellipse (rv 0.5 0.5) (* t 0.3 width) (* t 0.4 height)))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
     (shapes)))
 
 (sketch/definition imperfect-curves

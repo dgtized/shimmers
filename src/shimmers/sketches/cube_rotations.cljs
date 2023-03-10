@@ -56,11 +56,11 @@
          (k-swaps 3 (cubes (* r c) [(/ width c) (/ height r)])))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.8}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.8}
     (grid)))
 
 (sketch/definition cube-rotations

@@ -88,11 +88,11 @@
       s)))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
     (shapes (rect/rect 0 0 width height)
             (dr/random-int 3 6))))
 

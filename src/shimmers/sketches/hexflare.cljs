@@ -55,11 +55,11 @@
             (mapv (scale-dist centroid 1.8) hexes2))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.5}
     (shapes)))
 
 (sketch/definition hexflare

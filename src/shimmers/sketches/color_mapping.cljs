@@ -27,9 +27,9 @@
                  assoc :fill (color seed i j)))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "none"}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "none"}
     (shapes)))
 
 (sketch/definition color-mapping

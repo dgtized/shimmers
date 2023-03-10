@@ -53,11 +53,11 @@
                                 (glyph))))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.5}
     (shapes)))
 
 (sketch/definition glyphs

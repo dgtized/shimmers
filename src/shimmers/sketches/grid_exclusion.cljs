@@ -40,12 +40,11 @@
                    (filter square/has-area? panes))))))
 
 (defn scene []
-  (csvg/svg
-    {:width width
-     :height height
-     :stroke "black"
-     :fill "none"
-     :stroke-width 1.0}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
     (shapes [] [(g/scale-size (rect/rect 0 0 width height) 0.95)])))
 
 (sketch/definition grid-exclusion

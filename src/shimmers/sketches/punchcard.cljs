@@ -27,13 +27,12 @@
                   (into [(g/scale-size column 0.95)]))))))
 
 (defn scene []
-  (csvg/svg-timed
-   {:width width
-    :height height
-    :stroke "black"
-    :fill "white"
-    :stroke-width 0.8}
-   (shapes (g/scale-size (rect/rect 0 0 width height) 0.95))))
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.8}
+    (shapes (g/scale-size (rect/rect 0 0 width height) 0.95))))
 
 (sketch/definition punchcard
   {:created-at "2022-01-22"

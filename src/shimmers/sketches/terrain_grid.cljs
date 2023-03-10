@@ -81,13 +81,13 @@
       (hexagon show-coords cell (hex-click index cell)))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 1.0
-             ;; required for on-click to fire on pointer events within group/polygon clip path
-             :style {:pointer-events "fill"}}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0
+                   ;; required for on-click to fire on pointer events within group/polygon clip path
+                   :style {:pointer-events "fill"}}
     (shapes)))
 
 (defn ui-controls []

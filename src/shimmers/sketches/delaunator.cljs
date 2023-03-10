@@ -92,11 +92,11 @@
   (let [diagram (case (:mode state)
                   :delaunator delaunator-diagram
                   :d3-delaunay d3-diagram)]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :fill "white"
-               :stroke-width 0.5}
+    (csvg/svg-timed {:width width
+                     :height height
+                     :stroke "black"
+                     :fill "white"
+                     :stroke-width 0.5}
       (diagram bounds state points))))
 
 (defonce ui-state

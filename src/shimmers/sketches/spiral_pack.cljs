@@ -81,11 +81,11 @@
          (map :r))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.5}
     ((dr/weighted {spiral-inside 1
                    spiral-surrounding 1
                    poly-pack 1}))))

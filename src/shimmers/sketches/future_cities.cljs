@@ -89,11 +89,11 @@
 (defn scene [state]
   (let [{:keys [entities]} @state
         shapes (mapv :shape entities)]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :fill "black"
-               :stroke-width 0.5}
+    (csvg/svg-timed {:width width
+                     :height height
+                     :stroke "black"
+                     :fill "black"
+                     :stroke-width 0.5}
       shapes)))
 
 (defn ui-controls [state]

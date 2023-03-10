@@ -35,11 +35,11 @@
             (lines c (fn [x] (Math/pow x 2.5)) 30))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 1.0}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 1.0}
     (shapes)))
 
 (sketch/definition angle-of-ascent

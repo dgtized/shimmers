@@ -53,12 +53,12 @@
 
 (defn scene []
   [:div [kb/kb-action "alt-s" #(svg-export/download "scene" "triangle-gradient")]
-   (csvg/svg {:id "scene"
-              :width width
-              :height height
-              :stroke "black"
-              :fill "none"
-              :stroke-width 0.5}
+   (csvg/svg-timed {:id "scene"
+                    :width width
+                    :height height
+                    :stroke "black"
+                    :fill "none"
+                    :stroke-width 0.5}
      (shapes))])
 
 (sketch/definition triangle-gradient

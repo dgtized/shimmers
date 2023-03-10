@@ -45,11 +45,11 @@
                              (csvg/hsl (+ 0.075 (* 0.25 centroid-noise)) 0.4 0.75))))))))
 
 (defn scene []
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "none"
-             :stroke-width 0.5}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 0.5}
     (shapes)))
 
 (defonce sink (debug/state []))

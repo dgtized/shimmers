@@ -51,7 +51,7 @@
         destinations (vec (concat dst-left dst-right-a dst-right-b))
         ;; TODO: remove duplicates
         connections (gen-connections sources destinations 12)]
-    (csvg/svg {:width width :height height :stroke "black"}
+    (csvg/svg-timed {:width width :height height :stroke "black"}
       (for [[i src] (map-indexed vector sources)]
         (svg/line src (gv/vec2 (:x src) (* height 0.1))
                   {:stroke (color (+ color-base i))

@@ -121,11 +121,11 @@
          csvg/path)))
 
 (defn scene [rule-name depth curved]
-  (csvg/svg {:width width
-             :height height
-             :stroke "black"
-             :fill "white"
-             :stroke-width 1.0}
+  (csvg/svg-timed {:width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 1.0}
     [(shapes (by-name rule-name) depth curved)]))
 
 (defonce ui-state
