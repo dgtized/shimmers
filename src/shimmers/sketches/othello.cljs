@@ -60,9 +60,10 @@
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]
        [:div.contained
         [:div.centered.readable-width
-         [:p "The arcs are a variation on Ben-Day dots generating CMYK colors
-        from the portion of each arc which is visible instead of how much each
-        dot overlaps. Double click to scale to fit the screen size."]]]])))
+         [:p "The arcs are a variation on Ben-Day dots using CMYK colors and
+         arcs. Colors are formed from the visible portion of each arc instead of
+         how much each dot overlaps. Double click to scale to fit the screen
+         size."]]]])))
 
 (sketch/definition othello
   {:created-at "2023-02-11"
