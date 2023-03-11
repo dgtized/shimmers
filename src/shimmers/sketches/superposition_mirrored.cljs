@@ -149,7 +149,7 @@
                     (+ 0.4 (* 0.6 (apply q/noise (tm/+ (tm/* (gv/vec2 (+ t r) r) 0.05) (gv/vec2 50.0 100.0)))))
                     (+ 0.45 (* 0.55 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.02) (gv/vec2 100.0 50.0)))))
                     (+ 0.001 (* 0.04 (apply q/noise (tm/+ (tm/* (gv/vec2 t r) 0.006) (gv/vec2 200.0 200.0))))))
-            (q/stroke (tm/smoothstep* 0.33 0.66 (apply q/noise (tm/* (gv/vec2 r (+ t r)) 0.01)))
+            (q/stroke (tm/smoothstep* 0.33 0.66 (apply q/noise (tm/+ (tm/* (gv/vec2 r (+ t r)) 0.02) (gv/vec2 500.0 500.0))))
                       (+ 0.001 (* 0.1 (apply q/noise (tm/+ (tm/* (gv/vec2 (+ angle t) (+ angle r)) 0.005) (gv/vec2 300.0 300.0)))))))
           (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle))))))
 
