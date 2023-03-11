@@ -134,13 +134,22 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
+;; https://www.desmos.com/calculator/o5pjuhrxlq
+(defn flatstep
+  "Sorta an inverse of smoothstep with a slow middle and sharper end slope."
+  [t f]
+  (* (Math/pow t f) (+ (* 3 t t t) (* -3 t t) 1)))
+
+(comment
+  (map (fn [x] [x (flatstep x 1.2)]) (range 0 1 0.1)))
+
 (defn noise-at [pos rate base]
   (let [[x y] (tm/+ (tm/* (gv/vec2 pos) rate) (gv/vec2 base))]
     (q/noise x y)))
 
 (defn draw [{:keys [image shapes particles t]}]
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-        scale (+ 0.002 (* 0.25 (Math/pow (q/noise (* t 0.15) 100.0) 3)))
+        scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
         color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
     (q/with-graphics image
       (q/color-mode :hsl 1.0)
