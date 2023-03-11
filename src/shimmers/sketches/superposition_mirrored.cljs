@@ -135,7 +135,7 @@
 (defonce ui-state (ctrl/state {:debug false}))
 
 (defn noise-at [pos rate base]
-  (let [[x y] (tm/+ (tm/* pos rate) base)]
+  (let [[x y] (tm/+ (tm/* (gv/vec2 pos) rate) (gv/vec2 base))]
     (q/noise x y)))
 
 (defn draw [{:keys [image shapes particles t]}]
@@ -149,12 +149,12 @@
       (doseq [{:keys [pos angle]} particles]
         (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))]
           (when color
-            (q/fill (mod (* 3 (noise-at (gv/vec2 t r) 0.01 (gv/vec2))) 1.0)
-                    (+ 0.4 (* 0.6 (noise-at (gv/vec2 (+ t r) r) 0.05 (gv/vec2 50.0 100.0))))
-                    (+ 0.45 (* 0.55 (noise-at (gv/vec2 t r) 0.02 (gv/vec2 100.0 50.0))))
-                    (+ 0.001 (* 0.04 (noise-at (gv/vec2 t r) 0.006 (gv/vec2 200.0 200.0)))))
-            (q/stroke (tm/smoothstep* 0.33 0.66 (noise-at (gv/vec2 r (+ t r)) 0.02 (gv/vec2 500.0 500.0)))
-                      (+ 0.001 (* 0.1 (noise-at (gv/vec2 (+ angle t) (+ angle r)) 0.005 (gv/vec2 300.0 300.0))))))
+            (q/fill (mod (* 3 (noise-at [t r] 0.01 [0 0])) 1.0)
+                    (+ 0.4 (* 0.6 (noise-at [(+ t r) r] 0.05 [50.0 100.0])))
+                    (+ 0.45 (* 0.55 (noise-at [t r] 0.02 [100.0 50.0])))
+                    (+ 0.001 (* 0.04 (noise-at [t r] 0.006 [200.0 200.0]))))
+            (q/stroke (tm/smoothstep* 0.33 0.66 (noise-at [r (+ t r)] 0.02 [500.0 500.0]))
+                      (+ 0.001 (* 0.1 (noise-at [(+ angle t) (+ angle r)] 0.005 [300.0 300.0])))))
           (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle))))))
 
   (q/color-mode :hsl 1.0)
