@@ -153,7 +153,7 @@
                     (+ 0.4 (* 0.6 (noise-at [(+ t r) r] 0.05 [50.0 100.0])))
                     (+ 0.45 (* 0.55 (noise-at [t r] 0.02 [100.0 50.0])))
                     (+ 0.001 (* 0.04 (noise-at [t r] 0.006 [200.0 200.0]))))
-            (q/stroke (tm/smoothstep* 0.33 0.66 (noise-at [r (+ t r)] 0.02 [500.0 500.0]))
+            (q/stroke (tm/smoothstep* 0.33 0.66 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
                       (+ 0.001 (* 0.1 (noise-at [(+ angle t) (+ angle r)] 0.005 [300.0 300.0])))))
           (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle))))))
 
