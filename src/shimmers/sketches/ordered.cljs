@@ -71,9 +71,15 @@
                            (lines/cut-polygon poly)
                            (filter #(> (count (:points %)) 0))
                            (map (fn [cut-poly]
-                                  (vary-meta cut-poly assoc
-                                             :stroke-width
-                                             (/ 1.3 (inc (dr/random depth))))))))
+                                  (let [area (g/area cut-poly)
+                                        disp (if (and (> depth 2)
+                                                      (< 2000 area 4000)
+                                                      (dr/chance 0.01))
+                                               (dr/jitter (/ (min (g/width cut-poly) (g/height poly)) 3))
+                                               (gv/vec2))]
+                                    (vary-meta (g/translate cut-poly disp) assoc
+                                               :stroke-width
+                                               (/ 1.3 (inc (dr/random depth)))))))))
                     polygons))
           [polygon] lines))
 
