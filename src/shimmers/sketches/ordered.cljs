@@ -64,10 +64,17 @@
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
-(defn slice [polygon lines]
+(defn slice [polygon lines depth]
   (reduce (fn [polygons line]
-            (mapcat (fn [poly] (filter #(> (count (:points %)) 0)
-                                      (lines/cut-polygon poly line))) polygons))
+            (mapcat (fn [poly]
+                      (->> line
+                           (lines/cut-polygon poly)
+                           (filter #(> (count (:points %)) 0))
+                           (map (fn [cut-poly]
+                                  (vary-meta cut-poly assoc
+                                             :stroke-width
+                                             (/ 1.3 (inc (dr/random depth))))))))
+                    polygons))
           [polygon] lines))
 
 (defn recurse-shapes [sides shape last-side depth]
@@ -105,7 +112,7 @@
                 (if  (and stripes? (odd? i))
                   [s]
                   (recurse-shapes sides s side (inc depth))))
-              (slice shape' (cuts shape' side offsets))
+              (slice shape' (cuts shape' side offsets) depth)
               (range)))))
 
 (defn rectangle []
