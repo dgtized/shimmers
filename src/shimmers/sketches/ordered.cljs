@@ -115,6 +115,24 @@
               (slice shape' (cuts shape' side offsets) depth)
               (range)))))
 
+(defn extend [p q len]
+  (let [theta (g/heading (tm/- q p))]
+    (gl/line2 (v/-polar p len theta)
+              (v/+polar q len theta))))
+
+(defn outside-shapes [bounds shape]
+  (let [len (max (g/width bounds) (g/height bounds))]
+    (->> (reduce (fn [shapes [p q]]
+                   (mapcat (fn [s]
+                             (->>
+                              (extend p q len)
+                              (lines/cut-polygon s)
+                              (filter (fn [s] (> (g/area s) 1)))))
+                           shapes))
+                 [bounds]
+                 (g/edges shape))
+         (remove (fn [s] (g/contains-point? shape (g/centroid s)))))))
+
 (defn rectangle []
   (let [[pw ph] (dr/weighted {[0.5 0.75] 1
                               [0.33 0.66] 1})]
@@ -146,7 +164,9 @@
         side-shapes [bounds
                      (when (= s bounds) (n-gon 6))
                      shape]
-        split-shapes (recurse-shapes (sides-distribution side-shapes) shape nil 0)]
+        split-shapes (concat (recurse-shapes (sides-distribution side-shapes) shape nil 0)
+                             (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
+                                  (outside-shapes bounds shape)))]
     (swap! defo update :shapes conj (count split-shapes))
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
