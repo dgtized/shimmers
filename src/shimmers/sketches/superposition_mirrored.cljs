@@ -163,7 +163,7 @@
 (defn draw [{:keys [image cycle shapes particles t]}]
   (when (running? cycle)
     (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-          scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
+          scale (+ 0.001 (* 0.15 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
           color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
       (q/with-graphics image
         (q/color-mode :hsl 1.0)
