@@ -13,6 +13,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -34,6 +35,23 @@
            (->Particle p (dr/random-tau) (gv/vec2) 0 d))
          points dests)))
 
+(defn circumcircle [{:keys [points]}]
+  (apply gt/circumcircle points))
+
+(defn quad-shape [d shape]
+  (let [bounds (cq/screen-rect 0.98)
+        center (g/centroid bounds)
+        r (:r (circumcircle shape))
+        corner-dist (g/dist (gv/vec2 0 0) center)
+        facing (dr/rand-nth [(fn [a b] (tm/- a b))
+                             (fn [a b] (tm/- b a))])]
+    (println r)
+    (for [corner (g/vertices bounds)]
+      (-> shape
+          (g/rotate (g/heading (facing corner center)))
+          (g/center (tm/mix (tm/mix center corner (/ (- corner-dist (* tm/SQRT3 r)) corner-dist))
+                            center d))))))
+
 ;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
   ([scale] (generate-shapes
@@ -42,6 +60,7 @@
                           :center-square 1
                           :center-hexagon 1
                           :quad-square 1
+                          :quad-triangle 1
                           :lr-in-triangles 1
                           :lr-out-triangles 1
                           :ud-in-triangles 1
@@ -64,6 +83,8 @@
           (g/center rect (cq/rel-vec 0.75 0.25))
           (g/center rect (cq/rel-vec 0.75 0.75))
           (g/center rect (cq/rel-vec 0.25 0.75))])
+       :quad-triangle
+       (quad-shape 0.0 (g/center (triangle/inscribed-equilateral {:p (gv/vec2) :r r} 0)))
        :ud-in-triangles
        [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.25))
         (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.75))]
