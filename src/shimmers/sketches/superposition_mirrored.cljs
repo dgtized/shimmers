@@ -125,22 +125,25 @@
                                :mode :infinite
                                :limit 16}))
 
-(defn update-state [{:keys [particles t cycle] :as state}]
+(defn running? [cycle]
   (let [{:keys [limit mode]} @ui-state]
-    (if (or (= mode :infinite)
-            (< cycle limit))
-      (let [dt (dr/random 0.001 0.01)]
-        (if (< (affinity particles) (cq/rel-h 0.005))
-          (let [targets (generate-shapes (dr/random 0.05 0.49))]
-            (-> state
-                (update :t + dt)
-                (assoc :shapes targets)
-                (update :cycle inc)
-                (update :particles update-destinations targets)))
+    (or (= mode :infinite)
+        (< cycle limit))))
+
+(defn update-state [{:keys [particles t cycle] :as state}]
+  (if (running? cycle)
+    (let [dt (dr/random 0.001 0.01)]
+      (if (< (affinity particles) (cq/rel-h 0.005))
+        (let [targets (generate-shapes (dr/random 0.05 0.49))]
           (-> state
               (update :t + dt)
-              (update :particles update-positions t dt))))
-      state)))
+              (assoc :shapes targets)
+              (update :cycle inc)
+              (update :particles update-destinations targets)))
+        (-> state
+            (update :t + dt)
+            (update :particles update-positions t dt))))
+    state))
 
 ;; https://www.desmos.com/calculator/o5pjuhrxlq
 (defn flatstep
@@ -156,8 +159,7 @@
     (q/noise x y)))
 
 (defn draw [{:keys [image cycle shapes particles t]}]
-  (when (or (= (:mode @ui-state) :infinite)
-            (< cycle (:limit @ui-state)))
+  (when (running? cycle)
     (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
           scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
           color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
