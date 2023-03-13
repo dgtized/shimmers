@@ -122,11 +122,13 @@
      :t 0.0}))
 
 (defonce ui-state (ctrl/state {:debug false
+                               :mode :infinite
                                :limit 16}))
 
 (defn update-state [{:keys [particles t cycle] :as state}]
-  (let [limit (:limit @ui-state)]
-    (if (< cycle limit)
+  (let [{:keys [limit mode]} @ui-state]
+    (if (or (= mode :infinite)
+            (< cycle limit))
       (let [dt (dr/random 0.001 0.01)]
         (if (< (affinity particles) (cq/rel-h 0.005))
           (let [targets (generate-shapes (dr/random 0.05 0.49))]
@@ -154,7 +156,8 @@
     (q/noise x y)))
 
 (defn draw [{:keys [image cycle shapes particles t]}]
-  (when (< cycle (:limit @ui-state))
+  (when (or (= (:mode @ui-state) :infinite)
+            (< cycle (:limit @ui-state)))
     (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
           scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
           color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
@@ -196,9 +199,12 @@
    [:div.contained.explanation
     [:p.readable-width
      "Variation on superposition with more intentional shape placement leveraging symmetries."]
-    [:div.ui-controls
-     (ctrl/checkbox ui-state "Debug" [:debug])
-     (ctrl/numeric ui-state "Limit" [:limit] [0 10000 1])]]])
+    (let [mode (:mode @ui-state)]
+      [:div.ui-controls
+       (ctrl/checkbox ui-state "Debug" [:debug])
+       (ctrl/change-mode ui-state [:infinite :limit])
+       (when (= mode :limit)
+         (ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]))])]])
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"
