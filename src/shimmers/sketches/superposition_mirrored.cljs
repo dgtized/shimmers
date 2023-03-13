@@ -116,7 +116,7 @@
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
-  (let [shapes (generate-shapes 0.2)]
+  (let [shapes (generate-shapes (dr/random 0.1 0.49))]
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
      :particles (make-particles shapes 128)
