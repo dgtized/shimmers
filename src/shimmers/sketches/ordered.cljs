@@ -192,7 +192,7 @@
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
     ;; maybe a bug in split generation or the cut-polygon routine?
-    (if (< 150 (count split-shapes) 750)
+    (if (< 150 (count split-shapes) 900)
       split-shapes
       (recur))))
 
