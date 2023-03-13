@@ -71,6 +71,12 @@
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
+(defn edge-displacement [polygon]
+  (let [d (min (g/width polygon) (g/height polygon))
+        axis-angles (map (comp g/heading gl/line2) (g/edges polygon))]
+    (v/polar (/ d (dr/rand-nth [tm/PHI 2 3 4 5 6 7 8]))
+             (dr/rand-nth axis-angles))))
+
 (defn slice [polygon lines depth]
   (reduce (fn [polygons line]
             (mapcat (fn [poly]
@@ -79,11 +85,12 @@
                            (filter #(> (count (:points %)) 0))
                            (map (fn [cut-poly]
                                   (let [area (g/area cut-poly)
-                                        disp (if (and (> depth 2)
-                                                      (< 2000 area 4000)
-                                                      (dr/chance 0.01))
-                                               (dr/jitter (/ (min (g/width cut-poly) (g/height poly)) 3))
-                                               (gv/vec2))]
+                                        disp
+                                        (if (and (> depth 2)
+                                                 (< 3000 area 6000)
+                                                 (dr/chance 0.02))
+                                          (edge-displacement cut-poly)
+                                          (gv/vec2))]
                                     (vary-meta (g/translate cut-poly disp) assoc
                                                :stroke-width
                                                (/ 1.3 (inc (dr/random depth)))))))))
