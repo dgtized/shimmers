@@ -85,9 +85,10 @@
                            (filter #(> (count (:points %)) 0))
                            (map (fn [cut-poly]
                                   (let [area (g/area cut-poly)
+                                        region (* width height)
                                         disp
                                         (if (and (> depth 2)
-                                                 (< 3000 area 6000)
+                                                 (< (* 0.005 region) area (* 0.02 region))
                                                  (dr/chance 0.02))
                                           (edge-displacement cut-poly)
                                           (gv/vec2))]
@@ -99,7 +100,7 @@
 
 (defn recurse-shapes [sides shape last-side depth]
   (if (or (> depth 6)
-          (< (g/area shape) 8)
+          (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
                 (g/edges shape)))
     [shape]
