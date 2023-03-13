@@ -118,21 +118,27 @@
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
      :particles (make-particles shapes 128)
+     :cycle 0
      :t 0.0}))
 
-(defn update-state [{:keys [particles t] :as state}]
-  (let [dt (dr/random 0.001 0.01)]
-    (if (< (affinity particles) (cq/rel-h 0.005))
-      (let [targets (generate-shapes (dr/random 0.05 0.49))]
-        (-> state
-            (update :t + dt)
-            (assoc :shapes targets)
-            (update :particles update-destinations targets)))
-      (-> state
-          (update :t + dt)
-          (update :particles update-positions t dt)))))
+(defonce ui-state (ctrl/state {:debug false
+                               :limit 16}))
 
-(defonce ui-state (ctrl/state {:debug false}))
+(defn update-state [{:keys [particles t cycle] :as state}]
+  (let [limit (:limit @ui-state)]
+    (if (< cycle limit)
+      (let [dt (dr/random 0.001 0.01)]
+        (if (< (affinity particles) (cq/rel-h 0.005))
+          (let [targets (generate-shapes (dr/random 0.05 0.49))]
+            (-> state
+                (update :t + dt)
+                (assoc :shapes targets)
+                (update :cycle inc)
+                (update :particles update-destinations targets)))
+          (-> state
+              (update :t + dt)
+              (update :particles update-positions t dt))))
+      state)))
 
 ;; https://www.desmos.com/calculator/o5pjuhrxlq
 (defn flatstep
@@ -147,24 +153,25 @@
   (let [[x y] (tm/+ (tm/* (gv/vec2 pos) rate) (gv/vec2 base))]
     (q/noise x y)))
 
-(defn draw [{:keys [image shapes particles t]}]
-  (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-        scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
-        color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
-    (q/with-graphics image
-      (q/color-mode :hsl 1.0)
-      (q/fill 1.0 0.1)
-      (q/stroke 0.0 0.1)
-      (doseq [{:keys [pos angle]} particles]
-        (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))]
-          (when color
-            (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
-                    (+ 0.4 (* 0.6 (noise-at [(+ t r) r] 0.05 [50.0 100.0])))
-                    (+ 0.45 (* 0.55 (noise-at [r t] 0.02 [100.0 50.0])))
-                    (+ 0.001 (* 0.04 (noise-at [t r] 0.006 [200.0 200.0]))))
-            (q/stroke (tm/smoothstep* 0.4 0.6 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
-                      (+ 0.001 (* 0.1 (noise-at [(+ angle t) (+ angle r)] 0.005 [300.0 300.0])))))
-          (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle))))))
+(defn draw [{:keys [image cycle shapes particles t]}]
+  (when (< cycle (:limit @ui-state))
+    (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
+          scale (+ 0.002 (* 0.2 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
+          color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
+      (q/with-graphics image
+        (q/color-mode :hsl 1.0)
+        (q/fill 1.0 0.1)
+        (q/stroke 0.0 0.1)
+        (doseq [{:keys [pos angle]} particles]
+          (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))]
+            (when color
+              (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
+                      (+ 0.4 (* 0.6 (noise-at [(+ t r) r] 0.05 [50.0 100.0])))
+                      (+ 0.45 (* 0.55 (noise-at [r t] 0.02 [100.0 50.0])))
+                      (+ 0.001 (* 0.04 (noise-at [t r] 0.006 [200.0 200.0]))))
+              (q/stroke (tm/smoothstep* 0.4 0.6 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
+                        (+ 0.001 (* 0.1 (noise-at [(+ angle t) (+ angle r)] 0.005 [300.0 300.0])))))
+            (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle)))))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
@@ -190,7 +197,8 @@
     [:p.readable-width
      "Variation on superposition with more intentional shape placement leveraging symmetries."]
     [:div.ui-controls
-     (ctrl/checkbox ui-state "Debug" [:debug])]]])
+     (ctrl/checkbox ui-state "Debug" [:debug])
+     (ctrl/numeric ui-state "Limit" [:limit] [0 10000 1])]]])
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"
