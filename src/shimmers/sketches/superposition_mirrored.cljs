@@ -123,12 +123,14 @@
 
 (defonce ui-state (ctrl/state {:debug false
                                :mode :infinite
-                               :limit 16}))
+                               :paused false
+                               :limit 20}))
 
 (defn running? [cycle]
-  (let [{:keys [limit mode]} @ui-state]
-    (or (= mode :infinite)
-        (< cycle limit))))
+  (let [{:keys [limit mode paused]} @ui-state]
+    (and (not paused)
+         (or (= mode :infinite)
+             (< cycle limit)))))
 
 (defn update-state [{:keys [particles t cycle] :as state}]
   (if (running? cycle)
@@ -204,6 +206,7 @@
     (let [mode (:mode @ui-state)]
       [:div.ui-controls
        (ctrl/checkbox ui-state "Debug" [:debug])
+       (ctrl/checkbox ui-state "Paused" [:paused])
        (ctrl/change-mode ui-state [:infinite :limit])
        (when (= mode :limit)
          (ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]))])]])
