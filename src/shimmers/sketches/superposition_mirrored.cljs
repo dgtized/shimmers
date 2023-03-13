@@ -18,16 +18,18 @@
 
 (defrecord Particle [pos angle vel angle-vel dest])
 
-(defn distribute-particles [shapes n]
+(defn distribute-particles [shapes points]
   (let [random-point (dr/weighted {g/random-point 1
                                    g/random-point-inside 8})]
-    (->> (fn []
-           (random-point (dr/rand-nth shapes)))
-         (repeatedly n))))
+    (map (fn [{:keys [pos]}]
+           (random-point (dr/weighted-by (fn [s] (g/dist pos (g/centroid s)))
+                                         shapes)))
+         points)))
 
 (defn make-particles [shapes n]
-  (let [points (distribute-particles shapes n)
-        dests (distribute-particles shapes n)]
+  (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
+        points (distribute-particles shapes init)
+        dests (distribute-particles shapes init)]
     (map (fn [p d]
            (->Particle p (dr/random-tau) (gv/vec2) 0 d))
          points dests)))
@@ -102,7 +104,7 @@
   (map (fn [particle dest]
          (assoc particle :dest dest))
        particles
-       (distribute-particles targets (count particles))))
+       (distribute-particles targets particles)))
 
 (defn affinity [particles]
   (/ (reduce (fn [acc {:keys [pos dest]}]
