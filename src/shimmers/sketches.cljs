@@ -44,6 +44,7 @@
    shimmers.sketches.cutouts
    shimmers.sketches.dance-patterns
    shimmers.sketches.decaying-foundations
+   shimmers.sketches.decomposite
    shimmers.sketches.decorative-tiles
    shimmers.sketches.deco-screens
    shimmers.sketches.deeper-squares
