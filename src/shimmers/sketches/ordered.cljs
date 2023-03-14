@@ -88,7 +88,7 @@
                                         region (* width height)
                                         disp
                                         (if (and (> depth 2)
-                                                 (< (* 0.005 region) area (* 0.02 region))
+                                                 (< (* 0.005 region) area (* 0.015 region))
                                                  (dr/chance 0.02))
                                           (edge-displacement cut-poly)
                                           (gv/vec2))]
