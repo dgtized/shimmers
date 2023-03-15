@@ -1,6 +1,7 @@
 (ns shimmers.sketches.decomposite
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -46,13 +47,20 @@
 (defn longest-side [container]
   (max (g/width container) (g/height container)))
 
+(defn cut-outs [shape]
+  (if (< (g/area shape) 160)
+    [(vary-meta shape assoc :fill "#000")]
+    (let [s1 (poly-detect/inset-polygon shape (dr/random 2.0 4.0))
+          s2 (poly-detect/inset-polygon shape (dr/random 4.0 8.0))]
+      [s1 s2])))
+
 (defn break-apart [container depth]
   (if (< (g/area container) 1500)
     [container]
     (let [shape (regular-shape container)
           lines (map (fn [[p q]] (extend-line p q (longest-side container)))
                      (g/edges shape))]
-      (into [(vary-meta shape assoc :fill "#000")]
+      (into (cut-outs shape)
             (dr/mapcat-random-sample
              (constantly (/ 0.75 (inc depth)))
              (fn [child] (break-apart child (inc depth)))
