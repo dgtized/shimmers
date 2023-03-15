@@ -5,6 +5,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -36,6 +37,7 @@
           [polygon]
           lines))
 
+;; FIXME: This scaling to fit is not always working, sometimes it pokes out
 (defn regular-shape [container]
   (let [n (dr/rand-nth [3 4 5 6])
         center (g/centroid container)
@@ -48,11 +50,17 @@
   (max (g/width container) (g/height container)))
 
 (defn cut-outs [shape]
-  (if (< (g/area shape) 160)
-    [(vary-meta shape assoc :fill "#000")]
-    (let [s1 (poly-detect/inset-polygon shape (dr/random 2.0 4.0))
-          s2 (poly-detect/inset-polygon shape (dr/random 4.0 8.0))]
-      [s1 s2])))
+  (cond (< (g/area shape) 160)
+        [(vary-meta shape assoc :fill "#000")]
+        (< (g/area shape) 1000)
+        (let [s1 (poly-detect/inset-polygon shape (dr/random 2.0 4.0))
+              s2 (poly-detect/inset-polygon shape (dr/random 4.0 8.0))]
+          [s1 s2])
+        :else
+        (for [o (dr/gaussian-range (/ 500 (g/area shape)) (dr/random 0.01 0.15))]
+          (-> shape
+              (poly-detect/inset-polygon (* 0.4 o (Math/sqrt (g/area shape))))
+              (geometry/rotate-around-centroid (dr/gaussian 0.0 (* 0.015 o)))))))
 
 (defn break-apart [container depth]
   (if (< (g/area container) 1500)
