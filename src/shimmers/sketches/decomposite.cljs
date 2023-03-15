@@ -37,14 +37,30 @@
           [polygon]
           lines))
 
+(defn longest-edge [polygon]
+  (apply gl/line2 (apply max-key (fn [[p q]] (g/dist p q)) (g/edges polygon))))
+
+;; FIXME: does this actually work? Concept is to find angle of longest edge and
+;; rotate container to align to that edge as x axis?
+(defn axis-aligned [polygon]
+  (let [longest (longest-edge polygon)
+        theta (g/heading longest)]
+    (-> polygon
+        g/center
+        (g/rotate (- theta)))))
+
 ;; FIXME: This scaling to fit is not always working, sometimes it pokes out
 (defn regular-shape [container]
   (let [n (dr/rand-nth [3 4 5 6])
-        center (g/centroid container)
-        size (apply min (map (partial g/dist center) (g/vertices container)))]
+        aligned (axis-aligned container)
+        center (g/centroid aligned)
+        ;; Is this the same as closest edge distance?
+        size (min (apply min (map (partial g/dist center) (g/vertices aligned)))
+                  (* 0.5 (g/height aligned))
+                  (* 0.5 (g/width aligned)))]
     (-> (poly/regular-n-gon n (* 0.25 size))
         (g/rotate (dr/random-tau))
-        (g/translate (tm/+ center (dr/jitter (* 0.25 size)))))))
+        (g/translate (tm/+ (g/centroid container) (dr/jitter (* 0.33 size)))))))
 
 (defn longest-side [container]
   (max (g/width container) (g/height container)))
