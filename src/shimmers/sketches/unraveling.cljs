@@ -23,10 +23,6 @@
        (take-while (fn [{:keys [r]}] (> r 3.0)))
        (map :circle)))
 
-(defn clockwise-arc [ctx [x y] r t0 t1]
-  (.beginPath ctx)
-  (.arc ctx x y r t0 t1 nil))
-
 (defn setup [_]
   {:t 0})
 
@@ -49,7 +45,7 @@
                                         (* 0.5 (eq/unit-cos (- (* 0.3 t) (/ eq/TAU r))))
                                         (* 0.5 (eq/unit-cos (* 0.55 t)))))
                 theta1 (- theta0 0.001 (* eq/TAU dist))]]
-    (clockwise-arc ctx p r theta0 theta1)
+    (canvas/clockwise-arc ctx p r theta0 theta1)
     (canvas/stroke ctx))
   ctx)
 

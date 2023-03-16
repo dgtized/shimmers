@@ -115,6 +115,11 @@
     {:attributes {:class "canvas-frame" :on-double-click toggle-fs}
      :canvas-state canvas-state}))
 
+(defn clockwise-arc [ctx [x y] r t0 t1]
+  (doto ctx
+    .beginPath
+    (.arc x y r t0 t1 nil)))
+
 (defn circle [ctx {[x y] :p r :r}]
   (doto ctx
     .beginPath
