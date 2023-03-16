@@ -1,6 +1,5 @@
 (ns shimmers.sketches.unraveling
   (:require
-   [helins.canvas :as cv]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -24,6 +23,10 @@
        (take-while (fn [{:keys [r]}] (> r 3.0)))
        (map :circle)))
 
+(defn clockwise-arc [ctx [x y] r t0 t1]
+  (.beginPath ctx)
+  (.arc ctx x y r t0 t1 nil))
+
 (defn setup [_]
   {:t 0})
 
@@ -39,14 +42,14 @@
                          (* tm/PHI t)
                          (+ 0.79 (* 0.175 (eq/unit-cos t)))
                          (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
-          :let [[x y] p
+          :let [[x _] p
                 theta0 (- (/ x r) (* 0.15 t))
                 dist (tm/smoothstep* 0.48 1.1
                                      (- 1.0
                                         (* 0.5 (eq/unit-cos (- (* 0.3 t) (/ eq/TAU r))))
                                         (* 0.5 (eq/unit-cos (* 0.55 t)))))
                 theta1 (- theta0 0.001 (* eq/TAU dist))]]
-    (cv/arc (cv/begin ctx) x y r theta0 theta1)
+    (clockwise-arc ctx p r theta0 theta1)
     (canvas/stroke ctx))
   ctx)
 
