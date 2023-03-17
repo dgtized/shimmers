@@ -52,7 +52,8 @@
 (defn draw-frame [id telemetry]
   (fn [canvas-el canvas-state]
     (let [{:keys [width height]} @canvas-state
-          ctx (canvas/scale-dpi canvas-el [width height])
+          ctx (canvas/scale-dpi (.getContext canvas-el "2d")
+                                canvas-el [width height])
           box-state (make-box-state width height 10 50)]
       (canvas/on-animated-frame
        {:delay 0}

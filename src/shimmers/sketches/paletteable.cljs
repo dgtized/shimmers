@@ -11,7 +11,7 @@
           ratio (/ sh (float sw))
           w width
           h (int (* w ratio))
-          ctx (canvas/scale-dpi canvas [w h])]
+          ctx (canvas/scale-dpi (.getContext canvas "2d") canvas [w h])]
       (.drawImage ctx image 0 0 sw sh 0 0 w h))))
 
 (defn set-image-cb [!upload !canvas width _]

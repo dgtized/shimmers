@@ -13,9 +13,8 @@
       (assoc-in [:style :height] (str width "px"))))
 
 ;; https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#scaling_for_high_resolution_displays
-(defn scale-dpi [canvas [width height]]
-  (let [ctx (.getContext canvas "2d")
-        dpr (dom/getPixelRatio)]
+(defn scale-dpi [ctx canvas [width height]]
+  (let [dpr (dom/getPixelRatio)]
     (set! (.-width canvas) (Math/floor (* dpr width)))
     (set! (.-height canvas) (Math/floor (* dpr height)))
     (set! (.-style.width canvas) (str width "px"))
@@ -96,6 +95,7 @@
   updated at runtime."
   [canvas-el canvas-state]
   (let [measure-frames! (framerate/sampler)
+        ctx (.getContext canvas-el "2d")
         setup (get @canvas-state :setup (fn [_] {}))
         frame-state (atom (setup @canvas-state))]
     (on-animated-frame
@@ -104,7 +104,7 @@
        (measure-frames! ms)
        (let [{:keys [width height] :as cv} @canvas-state
              screen-dims [width height]
-             ctx (scale-dpi canvas-el screen-dims)
+             ctx (scale-dpi ctx canvas-el screen-dims)
              update-state (get cv :update (fn [_sd fs] fs))]
          (swap! frame-state update-state screen-dims ms)
          ((:draw cv) @frame-state ctx screen-dims ms))))))
