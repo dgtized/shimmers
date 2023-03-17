@@ -18,6 +18,10 @@
   (.stroke ctx)
   ctx)
 
+(defn turns [t0 t1]
+  (let [a0 (* eq/TAU (eq/unit-cos t0))]
+    [a0 (+ a0 (* eq/TAU (eq/unit-sin t1)))]))
+
 (defn draw [_ ctx [width height] ms]
   (let [t (* 0.001 ms)
         r (max 30 (int (/ (min width height) 16)))
@@ -32,14 +36,14 @@
               offset (* 0.33 r)
               dx (* offset (/ (Math/sqrt 3) 2))
               dy offset
-              a0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.45 t))))
-              a1 (+ a0 (* eq/TAU (eq/unit-sin (+ (- 1.0 (/ 1.0 x)) (/ 1.0 y) (* 0.25 t)))))
-              b0 (* eq/TAU (eq/unit-cos (+  (/ x width) (- 1.0 (/ y height)) (* 0.41 t))))
-              b1 (+ b0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (/ 1.0 y) (* 0.23 t)))))
-              c0 (* eq/TAU (eq/unit-cos (+  (- 1.0 (/ x width)) (- 1.0 (/ y height)) (* 0.66 t))))
-              c1 (+ c0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (/ 1.0 y) (* 0.37 t)))))
-              d0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.37 t))))
-              d1 (+ d0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (- 1.0 (/ 1.0 y)) (* 0.27 t)))))]
+              [a0 a1] (turns (+ (/ x width) (/ y height) (* 0.45 t))
+                             (+ (- 1.0 (/ 1.0 x)) (/ 1.0 y) (* 0.25 t)))
+              [b0 b1] (turns (+ (/ x width) (- 1.0 (/ y height)) (* 0.41 t))
+                             (+ (/ 1.0 x) (/ 1.0 y) (* 0.23 t)))
+              [c0 c1] (turns (+ (- 1.0 (/ x width)) (- 1.0 (/ y height)) (* 0.66 t))
+                             (+ (/ 1.0 x) (/ 1.0 y) (* 0.37 t)))
+              [d0 d1] (turns (+ (/ x width) (/ y height) (* 0.37 t))
+                             (+ (/ 1.0 x) (- 1.0 (/ 1.0 y)) (* 0.27 t)))]
           (canvas/clockwise-arc ctx (gv/vec2 x y) (* 0.5 tm/SQRT2 r) a0 a1)
           (stroke-path ctx "rgba(0,0,0,0.66)")
           (canvas/clockwise-arc ctx (gv/vec2 x (- y dy)) r b0 b1)
