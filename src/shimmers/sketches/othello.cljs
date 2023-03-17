@@ -8,6 +8,16 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn fill-path [ctx color]
+  (set! (.-fillStyle ctx) color)
+  (.fill ctx)
+  ctx)
+
+(defn stroke-path [ctx color]
+  (set! (.-strokeStyle ctx) color)
+  (.stroke ctx)
+  ctx)
+
 (defn draw [_ ctx [width height] ms]
   (let [t (* 0.001 ms)
         r (max 30 (int (/ (min width height) 16)))
@@ -31,19 +41,15 @@
               d0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.37 t))))
               d1 (+ d0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (- 1.0 (/ 1.0 y)) (* 0.27 t)))))]
           (canvas/clockwise-arc ctx (gv/vec2 x y) (* 0.5 tm/SQRT2 r) a0 a1)
-          (cv/color-stroke ctx "rgba(0,0,0,0.66)")
-          (cv/stroke ctx)
+          (stroke-path ctx "rgba(0,0,0,0.66)")
           (canvas/clockwise-arc ctx (gv/vec2 x (- y dy)) r b0 b1)
-          (cv/color-fill ctx "rgba(240,0,240,0.4)")
-          (cv/fill ctx)
+          (fill-path ctx "rgba(240,0,240,0.4)")
           (canvas/clockwise-arc ctx (gv/vec2 (- x dx) (+ y (* 0.5 dy)))
                                 r c0 c1)
-          (cv/color-fill ctx "rgba(0.0,240,240,0.4)")
-          (cv/fill ctx)
+          (fill-path ctx "rgba(0.0,240,240,0.4)")
           (canvas/clockwise-arc ctx (gv/vec2 (+ x dx) (+ y (* 0.5 dy)))
                                 r d0 d1)
-          (cv/color-fill ctx "rgba(240,240,0,0.4)")
-          (cv/fill ctx))))
+          (fill-path ctx "rgba(240,240,0,0.4)"))))
     ctx))
 
 (defn page []
