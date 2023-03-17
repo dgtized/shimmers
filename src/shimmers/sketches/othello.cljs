@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn draw [_ ctx [width height] ms]
@@ -29,18 +30,18 @@
               c1 (+ c0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (/ 1.0 y) (* 0.37 t)))))
               d0 (* eq/TAU (eq/unit-cos (+  (/ x width) (/ y height) (* 0.37 t))))
               d1 (+ d0 (* eq/TAU (eq/unit-sin (+ (/ 1.0 x) (- 1.0 (/ 1.0 y)) (* 0.27 t)))))]
-          (cv/arc (cv/begin ctx) x y (* 0.5 tm/SQRT2 r) a0 a1 false)
+          (canvas/clockwise-arc ctx (gv/vec2 x y) (* 0.5 tm/SQRT2 r) a0 a1)
           (cv/color-stroke ctx "rgba(0,0,0,0.66)")
           (cv/stroke ctx)
-          (cv/arc (cv/begin ctx) x (- y dy) r b0 b1 false)
+          (canvas/clockwise-arc ctx (gv/vec2 x (- y dy)) r b0 b1)
           (cv/color-fill ctx "rgba(240,0,240,0.4)")
           (cv/fill ctx)
-          (cv/arc (cv/begin ctx) (- x dx) (+ y (* 0.5 dy))
-                  r c0 c1 false)
+          (canvas/clockwise-arc ctx (gv/vec2 (- x dx) (+ y (* 0.5 dy)))
+                                r c0 c1)
           (cv/color-fill ctx "rgba(0.0,240,240,0.4)")
           (cv/fill ctx)
-          (cv/arc (cv/begin ctx) (+ x dx) (+ y (* 0.5 dy))
-                  r d0 d1 false)
+          (canvas/clockwise-arc ctx (gv/vec2 (+ x dx) (+ y (* 0.5 dy)))
+                                r d0 d1)
           (cv/color-fill ctx "rgba(240,240,0,0.4)")
           (cv/fill ctx))))
     ctx))
