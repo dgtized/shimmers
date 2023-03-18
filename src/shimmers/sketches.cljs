@@ -218,6 +218,7 @@
    shimmers.sketches.voronoi-after-effect
    shimmers.sketches.yin-yang
    shimmers.sketches.wave-function-collapse
+   shimmers.sketches.waystation
    shimmers.sketches.wood-grain
    shimmers.sketches.zigzag
    shimmers.sketches.zoetropic))
