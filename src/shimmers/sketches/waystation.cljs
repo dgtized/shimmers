@@ -34,15 +34,15 @@
         (update :trains (partial mapv (partial move-train dt)))
         (update :t + dt))))
 
-(defn draw-track [offset]
-  (let [th 0.02]
-    (q/line (cq/rel-vec 0 (- offset th)) (cq/rel-vec 1.0 (- offset th)))
-    (q/line (cq/rel-vec 0 (+ offset th)) (cq/rel-vec 1.0 (+ offset th)))
-    (doseq [x (range 0.01 1 0.015)]
-      (q/line (cq/rel-vec x (- offset (* th 1.2))) (cq/rel-vec x (+ offset (* th 1.2)))))))
+(defn draw-track [offset th]
+  (q/line (cq/rel-vec 0 (- offset th)) (cq/rel-vec 1.0 (- offset th)))
+  (q/line (cq/rel-vec 0 (+ offset th)) (cq/rel-vec 1.0 (+ offset th)))
+  (doseq [x (range 0.01 1 0.015)]
+    (q/line (cq/rel-vec x (- offset (* th 1.2)))
+            (cq/rel-vec x (+ offset (* th 1.2))))))
 
-(defn draw-train [{:keys [pos cars]} track]
-  (let [th 0.017]
+(defn draw-train [{:keys [pos cars]} track track-height]
+  (let [th (* track-height 0.85)]
     (doseq [i (range (inc cars))]
       (let [left (car-left pos i)
             right (car-right pos i)]
@@ -54,11 +54,12 @@
 
 (defn draw [{:keys [tracks trains]}]
   (q/background 1.0)
-  (doseq [track tracks]
-    (draw-track track))
+  (let [track-height 0.02]
+    (doseq [track tracks]
+      (draw-track track track-height))
 
-  (doseq [{:keys [track] :as train} trains]
-    (draw-train train (nth tracks track))))
+    (doseq [{:keys [track] :as train} trains]
+      (draw-train train (nth tracks track) track-height))))
 
 (sketch/defquil waystation
   :created-at "2023-05-17"
