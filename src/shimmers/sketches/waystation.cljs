@@ -10,6 +10,14 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
+(let [length 0.07
+      gap 0.005]
+  (defn car-left [pos i]
+    (- pos (* (inc i) length) (* gap i)))
+
+  (defn car-right [pos i]
+    (- pos (* i length) (* gap i))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [n 2]
@@ -34,17 +42,15 @@
       (q/line (cq/rel-vec x (- offset (* th 1.2))) (cq/rel-vec x (+ offset (* th 1.2)))))))
 
 (defn draw-train [{:keys [pos cars]} track]
-  (let [length 0.07
-        th 0.017
-        gap 0.005]
+  (let [th 0.017]
     (doseq [i (range (inc cars))]
-      (let [left (- pos (* (inc i) length) (* gap i))
-            right (- pos (* i length) (* gap i))]
+      (let [left (car-left pos i)
+            right (car-right pos i)]
         (qdg/draw (rect/rect (cq/rel-vec left (- track th))
                              (cq/rel-vec right (+ track th))))
         (when (pos? i)
           (q/line (cq/rel-vec right track)
-                  (cq/rel-vec (- pos (* i length) (* gap (dec i))) track)))))))
+                  (cq/rel-vec (car-left pos (dec i)) track)))))))
 
 (defn draw [{:keys [tracks trains]}]
   (q/background 1.0)
