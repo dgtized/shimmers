@@ -12,7 +12,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.math.core :as tm]))
 
-;; TODO: add slowing/stopping and then accelerating to leave
+;; TODO: fix starting/stopping so it's proportional to mass or car count
 
 (let [length 0.07
       gap 0.005]
