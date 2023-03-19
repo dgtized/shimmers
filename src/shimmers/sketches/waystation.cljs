@@ -27,9 +27,9 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [n 7]
+  (let [n 5]
     {:t 0.0
-     :tracks (cs/midsection (tm/norm-range (inc n)))
+     :tracks (butlast (dr/density-range 0.06 (/ 1.0 (inc n))))
      :trains [{:track (dr/random-int n)
                :cars (dr/random-int 3 9)
                :pos (dr/random)
