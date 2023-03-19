@@ -27,9 +27,13 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [n 5]
+  (let [n 5
+        min-dist 0.065
+        tracks (dr/density-range min-dist (/ 1.0 (inc 5)))]
     {:t 0.0
-     :tracks (butlast (dr/density-range 0.06 (/ 1.0 (inc n))))
+     :tracks (if (> (last tracks) (- 1.0 min-dist))
+               (butlast tracks)
+               tracks)
      :trains [{:track (dr/random-int n)
                :cars (dr/random-int 3 9)
                :pos (dr/random)
