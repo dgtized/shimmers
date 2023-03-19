@@ -30,7 +30,10 @@
   (let [n 7]
     {:t 0.0
      :tracks (cs/midsection (tm/norm-range (inc n)))
-     :trains [{:track 0 :cars 3 :pos 0.9 :vel 0.01}]}))
+     :trains [{:track (dr/random-int n)
+               :cars (dr/random-int 3 9)
+               :pos (dr/random)
+               :vel (dr/random 0.01 0.03)}]}))
 
 (defn add-trains [tracks trains]
   (if (< (count trains) (count tracks))
