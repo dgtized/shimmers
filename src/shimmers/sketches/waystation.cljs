@@ -32,7 +32,7 @@
      :tracks (cs/midsection (tm/norm-range (inc n)))
      :trains [{:track 0 :cars 3 :pos 0.9 :vel 0.01}]}))
 
-(defn add-trains [trains tracks]
+(defn add-trains [tracks trains]
   (if (< (count trains) (count tracks))
     (let [diff (set/difference (set (range (count tracks)))
                                (set (map :track trains)))
@@ -47,13 +47,17 @@
 (defn move-train [dt {:keys [vel] :as train}]
   (update train :pos + (* vel dt)))
 
+(defn update-trains [trains tracks dt]
+  (->> trains
+       (mapv (partial move-train dt))
+       (remove left-station?)
+       (add-trains tracks)))
+
 (defn update-state [{:keys [tracks] :as state}]
   (let [dt 0.1]
     (-> state
-        (update :trains add-trains tracks)
-        (update :trains (partial mapv (partial move-train dt)))
-        (update :t + dt)
-        (update :trains (partial remove left-station?)))))
+        (update :trains update-trains tracks dt)
+        (update :t + dt))))
 
 (defn draw-track [offset th]
   (q/line (cq/rel-vec 0 (- offset th)) (cq/rel-vec 1.0 (- offset th)))
