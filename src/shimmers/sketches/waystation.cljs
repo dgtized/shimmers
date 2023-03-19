@@ -80,9 +80,11 @@
         (update :t + dt))))
 
 (defn draw-track [offset th]
+  (q/stroke-weight 1.0)
   (q/line (cq/rel-vec 0 (- offset th)) (cq/rel-vec 1.0 (- offset th)))
   (q/line (cq/rel-vec 0 (+ offset th)) (cq/rel-vec 1.0 (+ offset th)))
-  (doseq [x (range 0.01 1 0.015)]
+  (q/stroke-weight 0.5)
+  (doseq [x (range 0.01 1 0.018)]
     (q/line (cq/rel-vec x (- offset (* th 1.2)))
             (cq/rel-vec x (+ offset (* th 1.2))))))
 
@@ -102,6 +104,8 @@
   (let [track-height 0.02]
     (doseq [track tracks]
       (draw-track track track-height))
+
+    (q/stroke-weight 1.0)
 
     (doseq [{:keys [track] :as train} trains]
       (draw-train train (nth tracks track) track-height))))
