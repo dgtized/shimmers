@@ -48,12 +48,12 @@
       (conj trains train))
     trains))
 
-(defn move-train [dt {:keys [pos vel target] :as train}]
+(defn move-train [dt {:keys [pos vel target cars] :as train}]
   (let [acc (if target
               (let [control 0.5
                     delta (- target pos)
                     acc (- (* control delta) (* (* 2 (Math/sqrt control)) vel))]
-                (tm/clamp acc -0.04 0.01))
+                (tm/clamp acc -0.04 (/ 0.01 cars)))
               0)]
     (-> train
         (assoc :target (if (and target (<= (Math/abs vel) 0.00001)
