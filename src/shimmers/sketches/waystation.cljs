@@ -6,7 +6,6 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
-   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.rect :as rect]
