@@ -43,12 +43,25 @@
           train {:track track
                  :cars (dr/random-int 3 15)
                  :pos (dr/random -0.5 -0.1)
+                 :target (when (dr/chance 0.5) (dr/gaussian 0.75 0.01))
                  :vel (dr/random 0.01 0.12)}]
       (conj trains train))
     trains))
 
-(defn move-train [dt {:keys [vel] :as train}]
-  (update train :pos + (* vel dt)))
+(defn move-train [dt {:keys [pos vel target] :as train}]
+  (let [acc (if target
+              (let [control 0.5
+                    delta (- target pos)
+                    acc (- (* control delta) (* (* 2 (Math/sqrt control)) vel))]
+                (tm/clamp acc -0.04 0.01))
+              0)]
+    (-> train
+        (assoc :target (if (and target (<= (Math/abs vel) 0.00001)
+                                (dr/chance 0.008))
+                         10.0
+                         target))
+        (update :vel + (* acc dt))
+        (update :pos + (* vel dt)))))
 
 (defn update-trains [trains tracks dt]
   (->> trains
