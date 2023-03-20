@@ -104,3 +104,25 @@
 
 (defn clothoid-length [R tau]
   (* 2 R tau))
+
+(defn adsr-envelope
+  "Returns a linear piecewise envelope for the given `attack`, `decay`, `sustain`, `release`.
+
+  That envelope takes parameters `t` since start of envelope, and `pressed`,
+  indicating length of time inclusive of sustain time."
+  ;; FIXME: what happens if pressed is < attack or attack + decay?
+  [attack decay sustain release]
+  (fn [t pressed]
+    (tm/clamp01
+     (cond (< t attack)
+           (tm/mix* 0 1 (/ t attack))
+           (< t (+ attack decay))
+           (tm/mix* 1 sustain (/ (- t attack) decay))
+           (< t pressed)
+           sustain
+           :else
+           (tm/mix* sustain 0 (/ (- t pressed) release))))))
+
+(comment
+  (let [envelope (adsr-envelope 0.2 0.2 0.5 0.2)]
+    (map (fn [t] [t (envelope t 0.6)]) (range 0 1 0.05))))
