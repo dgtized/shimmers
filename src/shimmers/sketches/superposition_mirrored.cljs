@@ -45,7 +45,6 @@
         corner-dist (g/dist (gv/vec2 0 0) center)
         facing (dr/rand-nth [(fn [a b] (tm/- a b))
                              (fn [a b] (tm/- b a))])]
-    (println r)
     (for [corner (g/vertices bounds)]
       (-> shape
           (g/rotate (g/heading (facing corner center)))
