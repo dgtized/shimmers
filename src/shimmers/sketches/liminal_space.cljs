@@ -48,7 +48,7 @@
                   (dr/gaussian 0.0 2.0)
                   (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.07))
                   (dr/gaussian 1.0 0.15)
-                  (dr/random 0.05 0.4)))))
+                  (dr/random 0.05 0.25)))))
 
 (defn generate-particles [boundary n]
   (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.1) (cq/rel-vec -0.1 1.1))
@@ -57,7 +57,7 @@
             (repeatedly n (gen-particle line1 boundary)))))
 
 (defn update-particles [particles dt]
-  (keep (move dt 0.5 0.0001 0.99999) particles))
+  (keep (move dt 0.5 0.0003 0.99999) particles))
 
 (defn inverted [x]
   (- 1.0 x))
@@ -73,7 +73,7 @@
         angle (dr/gaussian 0.0 0.1)
         boundary (geometry/rotate-around-centroid line angle)]
     {:boundary boundary
-     :particles (generate-particles boundary 128)
+     :particles (generate-particles boundary 96)
      :t 0.0}))
 
 (defn update-state [state]
@@ -83,7 +83,7 @@
         (update :particles update-particles dt))))
 
 (defn draw-particle [{:keys [pos angle scale]} _t]
-  (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 8)} angle)))
+  (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 10)} angle)))
 
 (defn draw [{:keys [particles t]}]
   (q/stroke 0.0 0.05)
