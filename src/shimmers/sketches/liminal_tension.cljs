@@ -1,4 +1,4 @@
-(ns shimmers.sketches.liminal-space
+(ns shimmers.sketches.liminal-tension
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -93,7 +93,7 @@
       (draw-particle particle t))
     (q/no-loop)))
 
-(sketch/defquil liminal-space
+(sketch/defquil liminal-tension
   :created-at "2023-03-21"
   :tags #{}
   :size [800 600]
