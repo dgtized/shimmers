@@ -105,6 +105,7 @@
    shimmers.sketches.lattice-in-steps
    shimmers.sketches.lattice-of-common-chords
    shimmers.sketches.lifecycle-of-shapes
+   shimmers.sketches.liminal-space
    shimmers.sketches.logistics-flow
    shimmers.sketches.magnetic-fields
    shimmers.sketches.marching-squares
