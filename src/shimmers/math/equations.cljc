@@ -122,9 +122,9 @@
             (tm/mix* decayed 0 (/ (tm/clamp (- t pressed) 0 release) release))))))
 
 (comment
-  (let [envelope (adsr-envelope 0.2 0.2 0.5 0.2)]
+  (let [envelope (adsr-envelope 8 8 0.5 8)]
     (map (fn [t] [t
-                 (int (* 100 (envelope (/ t 20) 0.1)))
-                 (int (* 100 (envelope (/ t 20) 0.3)))
-                 (int (* 100 (envelope (/ t 20) 0.5)))])
-         (range 0 20 1))))
+                 (int (* 100 (envelope t 5)))
+                 (int (* 100 (envelope t 10)))
+                 (int (* 100 (envelope t 20)))])
+         (range 0 32 1))))
