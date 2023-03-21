@@ -113,15 +113,15 @@
   [attack decay sustain release]
   (fn [t pressed]
     (let [peak (tm/smoothstep* 0 attack (min t pressed))
-          decayed (min (+ (* (- peak sustain) (- 1.0 (tm/smoothstep* attack (+ attack decay) (min t pressed))))
-                          sustain)
-                       peak)]
-      (cond (and (< t attack) (< t pressed))
-            peak
-            (< t pressed)
-            decayed
-            :else
-            (* decayed (- 1.0 (tm/smoothstep* pressed (+ pressed release) t)))))))
+          decayed (if (< peak sustain)
+                    peak
+                    (+ (* (- peak sustain) (- 1.0 (tm/smoothstep* attack (+ attack decay) (min t pressed))))
+                       sustain))]
+      (if (< t pressed)
+        (if (< t attack)
+          peak
+          decayed)
+        (* decayed (- 1.0 (tm/smoothstep* pressed (+ pressed release) t)))))))
 
 (comment
   (let [envelope (adsr-envelope 10 10 0.5 10)]
