@@ -106,25 +106,29 @@
   (* 2 R tau))
 
 (defn adsr-envelope
-  "Returns a linear piecewise envelope for the given `attack`, `decay`, `sustain`, `release`.
+  "Returns a piecewise envelope for the given `attack`, `decay`, `sustain`, `release`.
 
   That envelope takes parameters `t` since start of envelope, and `pressed`,
   indicating length of time inclusive of sustain time."
   [attack decay sustain release]
   (fn [t pressed]
-    (let [peak (tm/mix* 0 1 (/ (tm/clamp (min t pressed) 0 attack) attack))
-          decayed (tm/mix* peak sustain (/ (tm/clamp (- (min t pressed) attack) 0 decay) decay))]
+    (let [peak (tm/smoothstep* 0 attack (min t pressed))
+          decayed (min (+ (* (- peak sustain) (- 1.0 (tm/smoothstep* attack (+ attack decay) (min t pressed))))
+                          sustain)
+                       peak)]
       (cond (and (< t attack) (< t pressed))
             peak
             (< t pressed)
             decayed
             :else
-            (tm/mix* decayed 0 (/ (tm/clamp (- t pressed) 0 release) release))))))
+            (* decayed (- 1.0 (tm/smoothstep* pressed (+ pressed release) t)))))))
 
 (comment
-  (let [envelope (adsr-envelope 8 8 0.5 8)]
+  (let [envelope (adsr-envelope 10 10 0.5 10)]
     (map (fn [t] [t
                  (int (* 100 (envelope t 5)))
                  (int (* 100 (envelope t 10)))
-                 (int (* 100 (envelope t 20)))])
-         (range 0 32 1))))
+                 (int (* 100 (envelope t 15)))
+                 (int (* 100 (envelope t 20)))
+                 (int (* 100 (envelope t 22)))])
+         (range 0 35 1))))
