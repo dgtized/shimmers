@@ -15,7 +15,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
 
-(defrecord Particle [pos angle vel angle-vel dest decay])
+(defrecord Particle [pos angle vel angle-vel dest scale decay])
 
 (defn move [dt pos-c angle-c drag]
   (fn [{:keys [pos angle vel angle-vel dest decay] :as particle}]
@@ -46,7 +46,8 @@
                   (dr/random-tau)
                   (dr/randvec2 20)
                   (dr/gaussian 0.0 2.0)
-                  (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.08))
+                  (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.07))
+                  (dr/gaussian 1.0 0.15)
                   (dr/random 0.05 0.4)))))
 
 (defn generate-particles [boundary n]
@@ -56,7 +57,7 @@
             (repeatedly n (gen-particle line1 boundary)))))
 
 (defn update-particles [particles dt]
-  (keep (move dt 0.5 0.001 0.99999) particles))
+  (keep (move dt 0.5 0.0001 0.99999) particles))
 
 (defn inverted [x]
   (- 1.0 x))
@@ -72,7 +73,7 @@
         angle (dr/gaussian 0.0 0.1)
         boundary (geometry/rotate-around-centroid line angle)]
     {:boundary boundary
-     :particles (generate-particles boundary 150)
+     :particles (generate-particles boundary 128)
      :t 0.0}))
 
 (defn update-state [state]
@@ -81,8 +82,8 @@
         (update :t + dt)
         (update :particles update-particles dt))))
 
-(defn draw-particle [{:keys [pos angle]} _t]
-  (qdg/draw (triangle/inscribed-equilateral {:p pos :r 8} angle)))
+(defn draw-particle [{:keys [pos angle scale]} _t]
+  (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 8)} angle)))
 
 (defn draw [{:keys [particles t]}]
   (q/stroke 0.0 0.05)
