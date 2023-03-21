@@ -44,19 +44,19 @@
     (let [pos (g/point-at line (dr/random))]
       (->Particle pos
                   (dr/random-tau)
-                  (dr/randvec2 10)
-                  (dr/gaussian 0.0 1.0)
-                  (tm/mix pos (g/closest-point boundary pos) (dr/random 0.8 0.95))
+                  (dr/randvec2 20)
+                  (dr/gaussian 0.0 2.0)
+                  (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.08))
                   (dr/random 0.05 0.4)))))
 
 (defn generate-particles [boundary n]
-  (let [line0 (gl/line2 (cq/rel-vec -0.2 -0.1) (cq/rel-vec -0.2 1.1))
-        line1 (gl/line2 (cq/rel-vec 1.2 -0.1) (cq/rel-vec 1.2 1.1))]
+  (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.1) (cq/rel-vec -0.1 1.1))
+        line1 (gl/line2 (cq/rel-vec 1.1 -0.1) (cq/rel-vec 1.1 1.1))]
     (concat (repeatedly n (gen-particle line0 boundary))
             (repeatedly n (gen-particle line1 boundary)))))
 
 (defn update-particles [particles dt]
-  (keep (move dt 0.5 0.01 0.99999) particles))
+  (keep (move dt 0.5 0.001 0.99999) particles))
 
 (defn inverted [x]
   (- 1.0 x))
@@ -72,7 +72,7 @@
         angle (dr/gaussian 0.0 0.1)
         boundary (geometry/rotate-around-centroid line angle)]
     {:boundary boundary
-     :particles (generate-particles boundary 100)
+     :particles (generate-particles boundary 150)
      :t 0.0}))
 
 (defn update-state [state]
@@ -85,10 +85,12 @@
   (qdg/draw (triangle/inscribed-equilateral {:p pos :r 8} angle)))
 
 (defn draw [{:keys [particles t]}]
-  (q/stroke 0.0 0.1)
-  (q/fill 0.0 0.02)
-  (doseq [particle particles]
-    (draw-particle particle t)))
+  (q/stroke 0.0 0.05)
+  (q/fill 0.0 0.01)
+  (if (seq particles)
+    (doseq [particle particles]
+      (draw-particle particle t))
+    (q/no-loop)))
 
 (sketch/defquil liminal-space
   :created-at "2023-03-21"
