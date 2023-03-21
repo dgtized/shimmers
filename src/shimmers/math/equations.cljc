@@ -110,19 +110,21 @@
 
   That envelope takes parameters `t` since start of envelope, and `pressed`,
   indicating length of time inclusive of sustain time."
-  ;; FIXME: what happens if pressed is < attack or attack + decay?
   [attack decay sustain release]
   (fn [t pressed]
-    (tm/clamp01
-     (cond (< t attack)
-           (tm/mix* 0 1 (/ t attack))
-           (< t (+ attack decay))
-           (tm/mix* 1 sustain (/ (- t attack) decay))
-           (< t pressed)
-           sustain
-           :else
-           (tm/mix* sustain 0 (/ (- t pressed) release))))))
+    (let [peak (tm/mix* 0 1 (/ (tm/clamp (min t pressed) 0 attack) attack))
+          decayed (tm/mix* peak sustain (/ (tm/clamp (- (min t pressed) attack) 0 decay) decay))]
+      (cond (and (< t attack) (< t pressed))
+            peak
+            (< t pressed)
+            decayed
+            :else
+            (tm/mix* decayed 0 (/ (tm/clamp (- t pressed) 0 release) release))))))
 
 (comment
   (let [envelope (adsr-envelope 0.2 0.2 0.5 0.2)]
-    (map (fn [t] [t (envelope t 0.6)]) (range 0 1 0.05))))
+    (map (fn [t] [t
+                 (int (* 100 (envelope (/ t 20) 0.1)))
+                 (int (* 100 (envelope (/ t 20) 0.3)))
+                 (int (* 100 (envelope (/ t 20) 0.5)))])
+         (range 0 20 1))))
