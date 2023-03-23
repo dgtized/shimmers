@@ -2,6 +2,7 @@
   "Useful equations"
   (:require
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.quaternion :as quat]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -140,6 +141,11 @@
     (tm/+ (tm/* v0 (/ (Math/sin (* (- 1.0 t) theta)) s-theta))
           (tm/* v1 (/ (Math/sin (* t theta)) s-theta)))))
 
+(defn quat-slerp [v0 v1 t]
+  (let [q0 (quat/quat (tm/normalize (gv/vec3 v0)) 0)
+        q1 (quat/quat (tm/normalize (gv/vec3 v1)) 0)]
+    (:xy (tm/mix q0 q1 t))))
+
 (comment
   (mapv (fn [t]
           (let [v (slerp (gv/vec2 0 1) (gv/vec2 1 0) t)]
@@ -147,6 +153,8 @@
         (tm/norm-range 10))
 
   (mapv (fn [t]
-          (let [v (slerp (gv/vec2 -1 0) (gv/vec2 1 0) t)]
-            [t v (g/heading v)]))
-        (tm/norm-range 10)))
+          [t (quat-slerp (gv/vec2 0 1) (gv/vec2 1 0) t)])
+        (tm/norm-range 10))
+
+  ;; neither are happy for interpolating v2[-1 0] to v2[1 0] ?
+  )
