@@ -94,7 +94,7 @@
 (sketch/defquil liminal-tension
   :created-at "2023-03-21"
   :tags #{}
-  :size [800 600]
+  :size [900 600]
   :setup setup
   :update update-state
   :draw draw
