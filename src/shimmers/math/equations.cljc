@@ -1,8 +1,9 @@
 (ns shimmers.math.equations
   "Useful equations"
   (:require
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
@@ -132,3 +133,20 @@
                  (int (* 100 (envelope t 20)))
                  (int (* 100 (envelope t 22)))])
          (range 0 35 1))))
+
+(defn slerp [v0 v1 t]
+  (let [theta (Math/acos (tm/dot v0 v1))
+        s-theta (Math/sin theta)]
+    (tm/+ (tm/* v0 (/ (Math/sin (* (- 1.0 t) theta)) s-theta))
+          (tm/* v1 (/ (Math/sin (* t theta)) s-theta)))))
+
+(comment
+  (mapv (fn [t]
+          (let [v (slerp (gv/vec2 0 1) (gv/vec2 1 0) t)]
+            [t v (g/heading v)]))
+        (tm/norm-range 10))
+
+  (mapv (fn [t]
+          (let [v (slerp (gv/vec2 -1 0) (gv/vec2 1 0) t)]
+            [t v (g/heading v)]))
+        (tm/norm-range 10)))
