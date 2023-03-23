@@ -45,12 +45,12 @@
                   (dr/randvec2 20)
                   (dr/gaussian 0.0 2.0)
                   (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.07))
-                  (dr/gaussian 1.0 0.15)
+                  (dr/gaussian 1.0 0.2)
                   (dr/random 0.05 0.25)))))
 
 (defn generate-particles [boundary n]
-  (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.1) (cq/rel-vec -0.1 1.1))
-        line1 (gl/line2 (cq/rel-vec 1.1 -0.1) (cq/rel-vec 1.1 1.1))]
+  (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.15) (cq/rel-vec -0.1 1.15))
+        line1 (gl/line2 (cq/rel-vec 1.1 -0.15) (cq/rel-vec 1.1 1.15))]
     (concat (repeatedly n (gen-particle line0 boundary))
             (repeatedly n (gen-particle line1 boundary)))))
 
