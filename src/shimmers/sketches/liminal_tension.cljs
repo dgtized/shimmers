@@ -69,9 +69,11 @@
                          (/ 1 3) 1}))
         line (gl/line2 (cq/rel-vec x -1.0) (cq/rel-vec x 2.0))
         angle (dr/gaussian 0.0 0.1)
-        boundary (geometry/rotate-around-centroid line angle)]
+        boundary (geometry/rotate-around-centroid line angle)
+        ;; other factors requiring scaling, control for spin?
+        scale (/ (q/height) 600)]
     {:boundary boundary
-     :particles (generate-particles boundary 96)
+     :particles (generate-particles boundary (int (* 100 scale)))
      :t 0.0}))
 
 (defn update-state [state]
