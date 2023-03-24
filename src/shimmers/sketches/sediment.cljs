@@ -7,7 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -50,7 +50,7 @@
 (defn update-point [{:keys [pos] :as point} surrounding]
   (let [vel (/ (reduce + (map velocity surrounding))
                (count surrounding))
-        acc (* (/ (:acceleration @ui-state) 20) (q/random-gaussian))
+        acc (* (/ (:acceleration @ui-state) 20) (dr/gaussian))
         vel' (gv/vec2 0 (* 0.995 (+ vel acc)))
         pos' (update (tm/+ pos vel') :y tm/clamp 0 (q/height))]
     (assoc point
@@ -72,9 +72,8 @@
     (q/stroke 0 0.05)
     (q/stroke-weight 0.35)
     (if sand
-      (doseq [{:keys [pos]} particles
-              :let [[x y] (p/jitter-x pos radius)]]
-        (q/ellipse x y radius radius))
+      (doseq [{:keys [pos]} particles]
+        (cq/circle (dr/jitter-x pos radius) radius))
       (doseq [segment (partition 4 1 particles)]
         (apply q/curve (mapcat :pos segment))))))
 
