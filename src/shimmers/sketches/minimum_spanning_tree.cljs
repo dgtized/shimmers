@@ -5,15 +5,16 @@
    [shimmers.algorithm.minimum-spanning-tree :as mst]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.points :as points]
-   [shimmers.math.probability :as p]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn fresh-graph []
-  (let [point-gen (rand-nth [(partial q/random 0.05 0.95)
-                             (p/gaussian-clamped 0.5 0.15)])
+  (let [point-gen (dr/weighted {(partial dr/random 0.05 0.95) 1
+                                (fn [] (tm/clamp01 (dr/gaussian 0.5 0.15))) 1})
         points (points/generate 256 point-gen)
-        calculate-tree (rand-nth [mst/prim-points mst/kruskal-points])
+        calculate-tree (dr/rand-nth [mst/prim-points mst/kruskal-points])
         edges (calculate-tree points)]
     {:points points
      :edges edges
@@ -47,6 +48,7 @@
 
 (sketch/defquil minimum-spanning-tree
   :created-at "2021-03-20"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state
