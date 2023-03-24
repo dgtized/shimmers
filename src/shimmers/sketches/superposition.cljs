@@ -9,7 +9,6 @@
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
@@ -107,7 +106,7 @@
     previous :target
     :as state}
    fc target]
-  (let [curve (* 0.8 (p/happensity 0.4))
+  (let [curve (* 0.8 (dr/happensity 0.4))
         last-orbit (last orbit)
         random-point-from
         (dr/weighted {g/random-point-inside 10
