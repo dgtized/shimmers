@@ -4,8 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.probability :as p]
-   [shimmers.math.vector :as v]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.verlet-particles :as vp]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -19,7 +18,7 @@
 
 (defn flock-separation [radius strength likelyhood]
   (fn [{:keys [particles]} {at-p :pos mass :mass :as p} delta]
-    (if (p/chance likelyhood)
+    (if (dr/chance likelyhood)
       (let [neighborhood (neighborhood p particles (+ mass radius))]
         (when (seq neighborhood)
           (let [differences (map (fn [{at-q :pos}]
@@ -31,13 +30,13 @@
 
 (defn jumping [distance likelyhood]
   (fn [_ _ _]
-    (if (p/chance likelyhood)
-      (v/jitter distance)
+    (if (dr/chance likelyhood)
+      (dr/jitter distance)
       (gv/vec2))))
 
 (defn make-insect []
-  (let [p (cq/rel-vec (tm/random) (tm/random))]
-    (vp/make-particle p (tm/+ p (v/jitter 1.0)) (tm/random 1.0 3.0))))
+  (let [p (cq/rel-vec (dr/random) (dr/random))]
+    (vp/make-particle p (tm/+ p (dr/jitter 1.0)) (dr/random 1.0 3.0))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -63,6 +62,7 @@
 
 (sketch/defquil motion-of-insects
   :created-at "2021-09-13"
+  :tags #{:deterministic}
   :size [800 600]
   :setup setup
   :update update-state
