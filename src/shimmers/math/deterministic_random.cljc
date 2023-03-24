@@ -122,11 +122,11 @@
 
 (defn jitter-x [[x y] r]
   (let [rx (random (- r) r)]
-    [(+ x rx) y]))
+    (gv/vec2 (+ x rx) y)))
 
 (defn jitter-y [[x y] r]
   (let [ry (random (- r) r)]
-    [x (+ y ry)]))
+    (gv/vec2 x (+ y ry))))
 
 (defn random-vertex []
   (gv/vec2 (random-double) (random-double)))
