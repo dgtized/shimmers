@@ -7,7 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.shader :as shader]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes {:abs-difference 0
@@ -72,17 +72,17 @@
   (let [[w h] image-size
         {:keys [droplets diffusion-a diffusion-b feed kill delta-t iterations]} @ui-state]
 
-    (when (and droplets (p/chance 0.01))
-      (let [size (+ 4 (* 38 (rand)))]
+    (when (and droplets (dr/chance 0.01))
+      (let [size (+ 4 (* 38 (dr/random)))]
         (q/with-graphics in-buffer
-          (if (< (rand) 0.5)
+          (if (dr/chance 0.5)
             (do
               (q/no-fill)
               (q/stroke 0.0 1.0 0.0 1.0))
             (do
               (q/no-stroke)
               (q/fill 1.0 0.0 0.0 1.0)))
-          (cq/circle (* w (rand)) (* h (rand)) size))))
+          (cq/circle (dr/random w) (dr/random h) size))))
 
     (dotimes [_ iterations]
       (shader/transform shader out-buffer in-buffer [w h]
