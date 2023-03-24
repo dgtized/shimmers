@@ -8,7 +8,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.verlet-particles :as vp]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -18,7 +18,7 @@
 
 (defn dust-mote [loc]
   (let [start (gv/vec2 loc)
-        velocity (gv/vec2 (tm/random 6.0 8.0) 0)]
+        velocity (gv/vec2 (dr/random 6.0 8.0) 0)]
     (vp/make-particle start (tm/- start velocity) 1.0)))
 
 (defn in-bounds
@@ -57,9 +57,9 @@
                             :drag 0.001})})
 
 (defn update-state [{:keys [system] :as state}]
-  (when (and (< (count (:particles system)) 768) (p/chance 0.66))
-    (let [loc (cq/rel-pos 0 (rand))]
-      (vp/add-particles system (repeatedly (rand-int 16) (partial dust-mote loc)))))
+  (when (and (< (count (:particles system)) 768) (dr/chance 0.66))
+    (let [loc (cq/rel-pos 0 (dr/random))]
+      (vp/add-particles system (repeatedly (dr/random-int 16) (partial dust-mote loc)))))
   (vp/timestep system 1)
   state)
 
