@@ -121,7 +121,7 @@
 (defn jitter
   "Create a random unit vector and then scale it by `amount` to use as noise."
   [amount]
-  (v/polar amount (random tm/TWO_PI)))
+  (v/polar amount (random-tau)))
 
 (defn jitter-x [[x y] r]
   (let [rx (random (- r) r)]
