@@ -13,8 +13,8 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -54,7 +54,7 @@
       :circle
       (partial rp/inside-circle
                (gc/circle (cq/rel-vec 0.5 0.5)
-                          (cq/rel-h (tm/random 0.2 0.45))))
+                          (cq/rel-h (dr/random 0.2 0.45))))
       :square
       (let [left (/ width 6)]
         (partial g/random-point-inside
@@ -73,9 +73,9 @@
         attractors
         (repeatedly (Math/pow 2 attractor-power)
                     (attractor-gen bounds (rand-nth [:triangle :square :circle])))
-        roots (p/weighted {1 4
-                           2 2
-                           3 1})]
+        roots (dr/weighted {1 4
+                            2 2
+                            3 1})]
     (-> settings
         (assoc :snap-theta (if (string? snap-theta) (edn/read-string snap-theta) snap-theta)
                :bounds bounds
