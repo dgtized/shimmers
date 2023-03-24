@@ -51,10 +51,12 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:system (vp/make-system {:mechanics [(slowing-zone (rect/rect (cq/rel-pos 0.2 0.2) (cq/rel-pos 0.6 0.8)))
-                                        (acceleration-zone (rect/rect (cq/rel-pos 0.6 0.2) (cq/rel-pos 0.8 0.8)))]
-                            :constraints [in-bounds]
-                            :drag 0.001})})
+  (let [slow (rect/rect (cq/rel-pos 0.2 0.2) (cq/rel-pos 0.6 0.8))
+        accel (rect/rect (cq/rel-pos 0.6 0.2) (cq/rel-pos 0.8 0.8))]
+    {:system (vp/make-system {:mechanics [(slowing-zone slow)
+                                          (acceleration-zone accel)]
+                              :constraints [in-bounds]
+                              :drag 0.001})}))
 
 (defn update-state [{:keys [system] :as state}]
   (when (and (< (count (:particles system)) 768) (dr/chance 0.66))
