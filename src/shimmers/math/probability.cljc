@@ -107,11 +107,3 @@
         alpha (* 2 Math/PI (rand))]
     [(+ x (* radius (Math/cos alpha)))
      (+ y (* radius (Math/sin alpha)))]))
-
-(defn jitter-x [[x y] r]
-  (let [rx (tm/random (- r) r)]
-    [(+ x rx) y]))
-
-(defn jitter-y [[x y] r]
-  (let [ry (tm/random (- r) r)]
-    [x (+ y ry)]))
