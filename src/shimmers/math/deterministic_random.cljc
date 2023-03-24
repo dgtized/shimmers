@@ -92,7 +92,13 @@
 (defn random-sample
   "Returns items from coll with probability of prob (0.0 - 1.0)."
   [prob coll]
-  (filter (partial chance prob) coll))
+  (if (ifn? prob)
+    (filter (fn [x] (chance (prob x))) coll)
+    (filter (partial chance prob) coll)))
+
+(comment
+  (random-sample 0.2 (range 20))
+  (random-sample (constantly 0.2) (range 20)))
 
 (defn map-random-sample
   "Apply `xf` to the subset of `coll` selected with probability density `pf` for
