@@ -158,3 +158,13 @@
 
   ;; neither are happy for interpolating v2[-1 0] to v2[1 0] ?
   )
+
+(defn cos-similarity
+  "Measure similarity between vectors `a`, and `b`.
+
+  Positive indicates similarity, with 1 meaning same direction, 0 indicates
+  orthogonal, and -1 indicating opposite direction."
+  [a b]
+  (/ (tm/dot a b) (* (tm/mag a) (tm/mag b))))
+
+
