@@ -16,9 +16,14 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn sketch-circle [pos r]
+  (let [n (Math/ceil (* 6 (dr/circular-random)))]
+    (for [_ (range n)]
+      (gc/circle (tm/+ pos (dr/jitter 4.0)) r))))
+
 (defn make-concentric [pos max-radius offsets]
-  (for [o offsets]
-    (gc/circle pos (* max-radius o))))
+  (mapcat (fn [o] (sketch-circle pos (* max-radius o)))
+          offsets))
 
 (defn shapes []
   (let [center (rv 0.5 0.5)]
