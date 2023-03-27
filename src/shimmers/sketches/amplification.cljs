@@ -29,10 +29,21 @@
        (drop 1)
        (keep-indexed (fn [i x] (when (= 0 (mod i 3)) x)))))
 
+(defn arc-segment [pos r t0 t1]
+  (let [src (v/+polar pos r t0)
+        dest (v/+polar pos r t1)]
+    (csvg/path [[:M src]
+                [:A [r r] 0.0
+                 0
+                 (if (> (Math/abs (- t1 t0)) Math/PI) 0 1)
+                 dest]])))
+
 (defn sketch-circle [pos r]
   (let [n (Math/ceil (* 6 (dr/circular-random)))]
-    (for [_ (range n)]
-      (gc/circle (tm/+ pos (dr/jitter 4.0)) r))))
+    (mapcat (fn [_]
+              [(gc/circle (tm/+ pos (dr/jitter 4.0)) r)
+               (arc-segment pos (* r (dr/gaussian 1.0 0.01)) 0 (* 0.66 eq/TAU))])
+            (range n))))
 
 (defn make-concentric [pos max-radius offsets]
   (mapcat (fn [o] (sketch-circle pos (* max-radius o)))
