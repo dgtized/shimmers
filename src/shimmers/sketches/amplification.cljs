@@ -69,7 +69,7 @@
 
 (defn sketch-circle [pos r]
   (let [n (Math/ceil (* 8 (dr/circular-random)))
-        p (tm/+ pos (dr/jitter 4.0))]
+        p (tm/+ pos (dr/jitter (dr/gaussian 2.0 0.8)))]
     (map (fn [_]
            (dr/weighted [[(gc/circle p r) 5]
                          [(segmented-circle p r) 3]
