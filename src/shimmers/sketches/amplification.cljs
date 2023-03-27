@@ -33,11 +33,13 @@
 (defn arc-segment [pos r t0 t1]
   (let [src (v/+polar pos r t0)
         dest (v/+polar pos r t1)]
-    (csvg/path [[:M src]
-                [:A [r r] 0.0
-                 (if (> (Math/abs (- t1 t0)) Math/PI) 1 0)
-                 (if (> t1 t0) 1 0)
-                 dest]])))
+    (if (>= (- t1 t0) (- eq/TAU tm/*eps*))
+      (gc/circle pos r)
+      (csvg/path [[:M src]
+                  [:A [r r] 0.0
+                   (if (> (Math/abs (- t1 t0)) Math/PI) 1 0)
+                   (if (> t1 t0) 1 0)
+                   dest]]))))
 
 (defn sketch-circle [pos r]
   (let [n (Math/ceil (* 8 (dr/circular-random)))]
