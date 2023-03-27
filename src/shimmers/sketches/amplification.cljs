@@ -57,12 +57,23 @@
                                   (+ base (* s1 eq/TAU)))))
            csvg/path))))
 
+(defn radial-circle [pos r disp]
+  (let [a (gc/circle pos (- r disp))
+        b (gc/circle pos (+ r disp))
+        n (int (* 2 r (dr/circular-random)))
+        base (dr/random-tau)]
+    (->> (tm/norm-range n)
+         (mapcat (fn [o] [[:M (g/point-at a (+ base o))]
+                         [:L (g/point-at b (+ base o))]]))
+         (csvg/path))))
+
 (defn sketch-circle [pos r]
-  (let [n (Math/ceil (* 8 (dr/circular-random)))]
+  (let [n (Math/ceil (* 8 (dr/circular-random)))
+        p (tm/+ pos (dr/jitter 4.0))]
     (map (fn [_]
-           (if (dr/chance 0.66)
-             (gc/circle (tm/+ pos (dr/jitter 4.0)) r)
-             (segmented-circle pos r)))
+           (dr/weighted [[(gc/circle p r) 5]
+                         [(segmented-circle p r) 3]
+                         [(radial-circle p r (dr/rand-nth [2 3 4 5])) 1]]))
          (range n))))
 
 (defn make-concentric [pos max-radius offsets]
