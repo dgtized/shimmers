@@ -23,10 +23,11 @@
 (partition 2 2 (range 10))
 
 (defn skip-line [a b]
-  (let [n (dr/random-int 12 48)]
+  (let [n (dr/random-int 12 48)
+        gap-spacing (dr/rand-nth [2 3 4])]
     (->> (tm/norm-range n)
          (drop 1)
-         (partition 2 3)
+         (partition 2 gap-spacing)
          (mapcat (fn [[t0 t1]] [[:M (tm/mix a b t0)]
                                [:L (tm/mix a b t1)]]))
          csvg/path)))
