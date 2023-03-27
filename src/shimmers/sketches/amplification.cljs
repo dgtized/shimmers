@@ -39,10 +39,16 @@
                  dest]])))
 
 (defn sketch-circle [pos r]
-  (let [n (Math/ceil (* 6 (dr/circular-random)))]
+  (let [n (Math/ceil (* 8 (dr/circular-random)))]
     (mapcat (fn [_]
-              [(gc/circle (tm/+ pos (dr/jitter 4.0)) r)
-               (arc-segment pos (* r (dr/gaussian 1.0 0.01)) 0 (* 0.66 eq/TAU))])
+              (if (dr/chance 0.66)
+                [(gc/circle (tm/+ pos (dr/jitter 4.0)) r)]
+                (->> (tm/norm-range (Math/ceil (* 64 (dr/circular-random))))
+                     (partition 2 1)
+                     (take-nth 2)
+                     (map (fn [[s0 s1]]
+                            (arc-segment pos (* r (dr/gaussian 1.0 0.01))
+                                         (* s0 eq/TAU) (* s1 eq/TAU)))))))
             (range n))))
 
 (defn make-concentric [pos max-radius offsets]
