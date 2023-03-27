@@ -29,37 +29,37 @@
        (drop 1)
        (take-nth 3)))
 
-;; TODO: use one path for multiple arcs
 (defn arc-segment [pos r t0 t1]
   (let [src (v/+polar pos r t0)
         dest (v/+polar pos r t1)]
-    (csvg/path [[:M src]
-                [:A [r r] 0.0
-                 (if (> (Math/abs (- t1 t0)) Math/PI) 1 0)
-                 (if (> t1 t0) 1 0)
-                 dest]])))
+    [[:M src]
+     [:A [r r] 0.0
+      (if (> (Math/abs (- t1 t0)) Math/PI) 1 0)
+      (if (> t1 t0) 1 0)
+      dest]]))
 
 (defn segmented-circle [pos r]
   (let [n (Math/ceil (* 64 (dr/circular-random)))
         base (dr/random-tau)]
     (if (<= n 1)
-      [(gc/circle pos r)]
+      (gc/circle pos r)
       (->> (tm/norm-range n)
            (partition 2 1)
            (take-nth 2)
-           (map (fn [[s0 s1]]
-                  (arc-segment pos
-                               (* r (dr/gaussian 1.0 0.01))
-                               (+ base (* s0 eq/TAU))
-                               (+ base (* s1 eq/TAU)))))))))
+           (mapcat (fn [[s0 s1]]
+                     (arc-segment pos
+                                  (* r (dr/gaussian 1.0 0.01))
+                                  (+ base (* s0 eq/TAU))
+                                  (+ base (* s1 eq/TAU)))))
+           csvg/path))))
 
 (defn sketch-circle [pos r]
   (let [n (Math/ceil (* 8 (dr/circular-random)))]
-    (mapcat (fn [_]
-              (if (dr/chance 0.66)
-                [(gc/circle (tm/+ pos (dr/jitter 4.0)) r)]
-                (segmented-circle pos r)))
-            (range n))))
+    (map (fn [_]
+           (if (dr/chance 0.66)
+             (gc/circle (tm/+ pos (dr/jitter 4.0)) r)
+             (segmented-circle pos r)))
+         (range n))))
 
 (defn make-concentric [pos max-radius offsets]
   (mapcat (fn [o] (sketch-circle pos (* max-radius o)))
