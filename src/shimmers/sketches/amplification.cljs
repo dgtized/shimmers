@@ -27,7 +27,7 @@
   (->> (dr/random-int 12 48)
        (lines/segmented (gl/line2 a b))
        (drop 1)
-       (keep-indexed (fn [i x] (when (= 0 (mod i 3)) x)))))
+       (take-nth 3)))
 
 ;; TODO: use one path for multiple arcs
 (defn arc-segment [pos r t0 t1]
