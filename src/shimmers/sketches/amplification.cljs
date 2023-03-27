@@ -20,16 +20,17 @@
 
 (defn distance-to-edge [bounds p]
   (g/dist p (g/closest-point bounds p)))
-(partition 2 2 (range 10))
 
 (defn skip-line [a b]
   (let [n (dr/random-int 12 48)
-        gap-spacing (dr/rand-nth [2 3 4])]
+        segment-len (dr/rand-nth [2 3 4])
+        gap-spacing (max segment-len (dr/rand-nth [2 3 4]))]
     (->> (tm/norm-range n)
          (drop 1)
-         (partition 2 gap-spacing)
-         (mapcat (fn [[t0 t1]] [[:M (tm/mix a b t0)]
-                               [:L (tm/mix a b t1)]]))
+         (partition segment-len gap-spacing)
+         (mapcat (fn [s]
+                   [[:M (tm/mix a b (first s))]
+                    [:L (tm/mix a b (last s))]]))
          csvg/path)))
 
 (defn arc-segment [pos r t0 t1]
