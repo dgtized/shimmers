@@ -76,9 +76,17 @@
                          [(radial-circle p r (dr/rand-nth [2 3 4 5])) 1]]))
          (range n))))
 
+(defn exp-range [exp n]
+  (map #(Math/pow % exp) (tm/norm-range n)))
+
+(comment (exp-range 2 10))
+
 (defn make-concentric [pos max-radius offsets]
   (mapcat (fn [o] (sketch-circle pos (* max-radius o)))
-          offsets))
+          (drop 1 ((dr/weighted [[tm/norm-range 2]
+                                 [(partial exp-range tm/PHI) 1]
+                                 [(partial exp-range (* 2 tm/PHI)) 1]])
+                   offsets))))
 
 (defn shapes [bounds]
   (let [center (rv (dr/random 0.25 0.75) (dr/random 0.35 0.65))
@@ -86,7 +94,7 @@
         edge-dist (g/dist center close-edge-point)]
     (concat (make-concentric center
                              (* 0.66 edge-dist)
-                             (drop 1 (tm/norm-range 5)))
+                             (dr/rand-nth [5 6 8]))
             (mapcat (fn [t]
                       (let [direction (dr/gaussian (+ (* 0.75 eq/TAU) (* eq/TAU t)) 0.2)
                             proj (v/+polar center
@@ -99,7 +107,7 @@
                         (when (g/contains-point? (g/scale-size bounds 0.9) proj)
                           (concat (make-concentric proj
                                                    (* 0.4 proj-edge-dist)
-                                                   (drop 1 (tm/norm-range 3)))
+                                                   (dr/rand-nth [3 4 5]))
                                   [(skip-line center proj)]))))
                     (drop 1 (tm/norm-range (dr/random-int 2 8)))))))
 
