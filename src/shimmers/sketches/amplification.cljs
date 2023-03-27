@@ -42,12 +42,12 @@
 
 (defn segmented-circle [pos r]
   (let [n (Math/ceil (* 64 (dr/circular-random)))
+        gap-spacing (dr/rand-nth [2 3 4])
         base (dr/random-tau)]
     (if (<= n 1)
       (gc/circle pos r)
       (->> (tm/norm-range n)
-           (partition 2 1)
-           (take-nth 2)
+           (partition 2 gap-spacing)
            (mapcat (fn [[s0 s1]]
                      (arc-segment pos
                                   (* r (dr/gaussian 1.0 0.01))
