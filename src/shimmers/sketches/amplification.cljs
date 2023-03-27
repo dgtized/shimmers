@@ -81,13 +81,11 @@
                                               (* 0.6 edge-dist))
                                            direction)
                             proj-edge-dist (distance-to-edge bounds proj)]
-                        (if (and (g/contains-point? bounds proj)
-                                 (> proj-edge-dist 25))
+                        (when (g/contains-point? (g/scale-size bounds 0.9) proj)
                           (concat (make-concentric proj
                                                    (* 0.4 proj-edge-dist)
                                                    (drop 1 (tm/norm-range 3)))
-                                  (skip-line center proj))
-                          [])))
+                                  (skip-line center proj)))))
                     (drop 1 (tm/norm-range (dr/random-int 2 8)))))))
 
 (defn scene []
