@@ -91,7 +91,8 @@
 (defn shapes [bounds]
   (let [center (rv (dr/random 0.25 0.75) (dr/random 0.35 0.65))
         close-edge-point (g/closest-point bounds center)
-        edge-dist (g/dist center close-edge-point)]
+        edge-dist (g/dist center close-edge-point)
+        children (dr/random-int 3 12)]
     (concat (make-concentric center
                              (* 0.66 edge-dist)
                              (dr/rand-nth [5 6 8]))
@@ -109,7 +110,7 @@
                                                    (* 0.4 proj-edge-dist)
                                                    (dr/rand-nth [3 4 5]))
                                   [(skip-line center proj)]))))
-                    (drop 1 (tm/norm-range (dr/random-int 2 8)))))))
+                    (drop 1 (tm/norm-range children))))))
 
 (defn scene []
   (csvg/svg-timed
