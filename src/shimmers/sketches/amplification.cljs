@@ -1,6 +1,5 @@
 (ns shimmers.sketches.amplification
   (:require
-   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -10,7 +9,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -22,12 +20,16 @@
 
 (defn distance-to-edge [bounds p]
   (g/dist p (g/closest-point bounds p)))
+(partition 2 2 (range 10))
 
 (defn skip-line [a b]
-  (->> (dr/random-int 12 48)
-       (lines/segmented (gl/line2 a b))
-       (drop 1)
-       (take-nth 3)))
+  (let [n (dr/random-int 12 48)]
+    (->> (tm/norm-range n)
+         (drop 1)
+         (partition 2 3)
+         (mapcat (fn [[t0 t1]] [[:M (tm/mix a b t0)]
+                               [:L (tm/mix a b t1)]]))
+         csvg/path)))
 
 (defn arc-segment [pos r t0 t1]
   (let [src (v/+polar pos r t0)
@@ -85,7 +87,7 @@
                           (concat (make-concentric proj
                                                    (* 0.4 proj-edge-dist)
                                                    (drop 1 (tm/norm-range 3)))
-                                  (skip-line center proj)))))
+                                  [(skip-line center proj)]))))
                     (drop 1 (tm/norm-range (dr/random-int 2 8)))))))
 
 (defn scene []
