@@ -27,22 +27,22 @@
         (g/translate p))))
 
 (defn shapes []
-  (mapcat (fn [[i line]]
-            (let [dx 0.003
-                  flip-row (dr/rand-nth [2 4 5])
-                  {[a b] :points} (g/scale-size line 1.03)]
-              [(gl/line2 a b)
-               (csvg/group {:stroke-width 0.5}
-                           (map (fn [x]
-                                  (let [t (dr/gaussian x (* x dx))
-                                        {[p q] :points}
-                                        (verticle-line (if (= i flip-row) (g/flip line) line)
-                                                       t
-                                                       (* x (* 0.2 (inc i)) (* height 0.01))
-                                                       (* 0.03 (* t (inc i))))]
-                                    (gl/line2 p q)))
-                                (range 0 1 dx)))]))
-          (map-indexed vector (lines))))
+  (let [dx 0.003
+        flip-row (dr/rand-nth [2 4 5])]
+    (mapcat (fn [[i line]]
+              (let [{[a b] :points} (g/scale-size line 1.03)]
+                [(gl/line2 a b)
+                 (csvg/group {:stroke-width 0.5}
+                   (map (fn [x]
+                          (let [t (dr/gaussian x (* x dx))
+                                {[p q] :points}
+                                (verticle-line (if (= i flip-row) (g/flip line) line)
+                                               t
+                                               (* x (* 0.2 (inc i)) (* height 0.01))
+                                               (* 0.03 (* t (inc i))))]
+                            (gl/line2 p q)))
+                        (range 0 1 dx)))]))
+            (map-indexed vector (lines)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
