@@ -7,7 +7,8 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 900)
 (def height 600)
@@ -26,25 +27,25 @@
         (g/scale-size (dr/gaussian (* height 0.025) height-sd))
         (g/translate p))))
 
-(defn verticals [line i dx]
-  (map (fn [x]
-         (let [t (dr/gaussian x (* x dx))
-               {[p q] :points}
-               (verticle-line line
-                              t
-                              (* x (* 0.2 (inc i)) (* height 0.01))
-                              (* 0.03 (* t (inc i))))]
-           (gl/line2 p q)))
-       (range 0 1 dx)))
+(defn verticals [line i]
+  (let [dx (/ 2.5 (tm/mag line))]
+    (map (fn [x]
+           (let [t (dr/gaussian x (* x dx))
+                 {[p q] :points}
+                 (verticle-line line
+                                t
+                                (* x (* 0.2 (inc i)) (* height 0.01))
+                                (* 0.03 (* t (inc i))))]
+             (gl/line2 p q)))
+         (range 0 1 dx))))
 
 (defn shapes []
-  (let [dx 0.003
-        flip-row (dr/rand-nth [2 4 5])]
+  (let [flip-row (dr/rand-nth [2 4 5])]
     (mapcat (fn [[i line]]
               (let [{[a b] :points} (g/scale-size line 1.03)]
                 [(gl/line2 a b)
                  (csvg/group {:stroke-width 0.5}
-                   (verticals (if (= i flip-row) (g/flip line) line) i dx))]))
+                   (verticals (if (= i flip-row) (g/flip line) line) i))]))
             (map-indexed vector (lines)))))
 
 (defn scene []
