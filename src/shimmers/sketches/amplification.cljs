@@ -89,7 +89,10 @@
                    offsets))))
 
 (defn shapes [bounds]
-  (let [center (rv (dr/random 0.25 0.75) (dr/random 0.35 0.65))
+  (let [center ((dr/weighted [[(fn [] (rv (dr/random 0.25 0.75) (dr/random 0.35 0.65))) 1]
+                              [(fn [] (rv 0.5 (dr/gaussian 0.5 0.05))) 1]
+                              [(fn [] (rv 0.5 (dr/gaussian 0.33 0.05))) 1]
+                              [(fn [] (rv 0.5 (dr/gaussian 0.66 0.05))) 1]]))
         close-edge-point (g/closest-point bounds center)
         edge-dist (g/dist center close-edge-point)
         children (dr/random-int 3 12)]
