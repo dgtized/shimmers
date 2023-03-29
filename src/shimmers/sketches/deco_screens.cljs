@@ -1,5 +1,6 @@
 (ns shimmers.sketches.deco-screens
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -50,32 +51,37 @@
       p'
       (recur start size l p))))
 
-(defn deco-path [start end size]
+(defn create-path [start end size]
   (let [start' (tm/+ start (forward size))
-        end' (tm/- end (forward size))
-        steps (->> [start start']
-                   (iterate (fn [[l p]] (let [p' (next-pos start size l p)]
-                                         [p p'
-                                          (if (or (> (tm/mag p') (* 2 size))
-                                                  (and (> (tm/mag p') size) (dr/chance 0.5)))
-                                            [:Q (gv/vec2 (:x p') (:y p)) p']
-                                            [:L p'])])))
-                   rest
-                   (take-while (fn [[_ p _]] (>= (vertical-dist p end) size)))
-                   (mapv (fn [[_ _ cmd]] cmd)))]
+        path (->> [start start']
+                  (iterate (fn [[l p]] [p (next-pos start size l p)]))
+                  (take-while (fn [[_ p]] (>= (vertical-dist p end) size)))
+                  vec)]
+    ;; FIXME: ending is still a little abrubt
+    (conj path [(second (last path)) end])))
+
+(defn deco-path [steps size]
+  (let [[start start'] (first steps)
+        [end' end] (last steps)]
     (->> (concat [[:M start]
                   [:L start']]
-                 steps
+                 (mapv (fn [[p p']]
+                         (if (or (> (tm/mag p') (* 2 size))
+                                 (and (> (tm/mag p') size) (dr/chance 0.5)))
+                           [:Q (gv/vec2 (:x p') (:y p)) p']
+                           [:L p']))
+                       (cs/midsection 1 steps))
                  [[:L end']
                   [:L end]])
          csvg/path)))
 
 (defn shapes [n]
-  (mapv (fn [i]
-          (let [s (/ 1.0 (inc n))
-                x (* s (inc i))]
-            (deco-path (rv x 0.0) (rv x 1.0) (/ height (* 2 (inc n))))))
-        (range n)))
+  (let [size (/ height (* 2 (inc n)))]
+    (mapv (fn [i]
+            (let [s (/ 1.0 (inc n))
+                  x (* s (inc i))]
+              (deco-path (create-path (rv x 0.0) (rv x 1.0) size) size)))
+          (range n))))
 
 (defn scene []
   (csvg/svg-timed {:width width
