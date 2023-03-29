@@ -52,7 +52,7 @@
     (fn []
       (let [state (polygon-state (:inset @ui-state))]
         [:div
-         [:div.canvas-frame [(partial scene state)]]
+         [:div.canvas-frame [scene state]]
          [:div.explanation.contained
           [:div
            [:div.ui-controls
