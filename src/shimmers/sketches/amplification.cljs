@@ -88,7 +88,7 @@
                                  [(partial exp-range (* 2 tm/PHI)) 1]])
                    offsets))))
 
-(defn shapes [bounds]
+(defn generate-root+children [bounds]
   (let [center ((dr/weighted [[(fn [] (rv (dr/random 0.25 0.75) (dr/random 0.35 0.65))) 1]
                               [(fn [] (rv 0.5 (dr/gaussian 0.5 0.05))) 1]
                               [(fn [] (rv 0.5 (dr/gaussian 0.33 0.05))) 1]
@@ -96,22 +96,27 @@
         close-edge-point (g/closest-point bounds center)
         edge-dist (g/dist center close-edge-point)
         children (dr/random-int 3 12)]
-    (concat (make-concentric (gc/circle center (* 0.66 edge-dist))
-                             (dr/rand-nth [5 6 8]))
-            (mapcat (fn [t]
-                      (let [direction (dr/gaussian (+ (* 0.75 eq/TAU) (* eq/TAU t)) 0.2)
-                            proj (v/+polar center
-                                           (+ (* (- 1 (eq/cos-similarity (tm/- close-edge-point center)
-                                                                         (v/polar 1 direction)))
-                                                 (* 0.5 edge-dist))
-                                              (* 0.6 edge-dist))
-                                           direction)
-                            proj-edge-dist (distance-to-edge bounds proj)]
-                        (when (g/contains-point? (g/scale-size bounds 0.9) proj)
-                          (concat (make-concentric (gc/circle proj (* 0.4 proj-edge-dist))
-                                                   (dr/rand-nth [3 4 5]))
-                                  [(skip-line center proj)]))))
-                    (drop 1 (tm/norm-range children))))))
+    [(gc/circle center (* 0.66 edge-dist))
+     (keep (fn [t]
+             (let [direction (dr/gaussian (+ (* 0.75 eq/TAU) (* eq/TAU t)) 0.2)
+                   proj (v/+polar center
+                                  (+ (* (- 1 (eq/cos-similarity (tm/- close-edge-point center)
+                                                                (v/polar 1 direction)))
+                                        (* 0.5 edge-dist))
+                                     (* 0.6 edge-dist))
+                                  direction)
+                   proj-edge-dist (distance-to-edge bounds proj)]
+               (when (g/contains-point? (g/scale-size bounds 0.9) proj)
+                 (gc/circle proj (* 0.4 proj-edge-dist)))))
+           (drop 1 (tm/norm-range children)))]))
+
+(defn shapes [bounds]
+  (let [[{center :p :as root} children] (generate-root+children bounds)]
+    (concat (make-concentric root (dr/rand-nth [5 6 8]))
+            (mapcat (fn [{proj :p :as c}]
+                      (concat (make-concentric c (dr/rand-nth [3 4 5]))
+                              [(skip-line center proj)]))
+                    children))))
 
 (defn scene []
   (csvg/svg-timed
