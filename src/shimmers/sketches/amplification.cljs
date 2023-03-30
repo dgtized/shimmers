@@ -67,13 +67,13 @@
                          [:L (g/point-at b (+ base o))]]))
          (csvg/path))))
 
-(defn sketch-circle [pos r]
-  (let [n (Math/ceil (* 8 (dr/circular-random)))
-        p (tm/+ pos (dr/jitter (dr/gaussian 2.0 0.8)))]
+(defn sketch-circle [{:keys [p r]}]
+  (let [n (Math/ceil (* 6 (dr/circular-random)))]
     (map (fn [_]
-           (dr/weighted [[(gc/circle p r) 5]
-                         [(segmented-circle p r) 3]
-                         [(radial-circle p r (dr/rand-nth [2 3 4 5])) 1]]))
+           (let [p' (tm/+ p (dr/jitter (dr/gaussian 2.0 0.5)))]
+             (dr/weighted [[(gc/circle p' r) 5]
+                           [(segmented-circle p' r) 3]
+                           [(radial-circle p' r (dr/rand-nth [2 3 4 5])) 1]])))
          (range n))))
 
 (defn exp-range [exp n]
@@ -82,7 +82,7 @@
 (comment (exp-range 2 10))
 
 (defn make-concentric [{:keys [p r]} offsets]
-  (mapcat (fn [o] (sketch-circle p (* r o)))
+  (mapcat (fn [o] (sketch-circle (gc/circle p (* r o))))
           (drop 1 ((dr/weighted [[tm/norm-range 2]
                                  [(partial exp-range tm/PHI) 1]
                                  [(partial exp-range (* 2 tm/PHI)) 1]])
