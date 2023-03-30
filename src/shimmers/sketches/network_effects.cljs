@@ -132,6 +132,7 @@
 
   (q/no-stroke)
   (q/fill 0 0.01)
+  ;; TODO: replace with poly-detect/inset-polygon
   (doseq [shape polygons
           :let [inset (gp/inset-polygon shape -5.0)]]
     (when (and (not (poly-detect/self-intersecting? (gp/polygon2 inset)))
