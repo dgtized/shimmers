@@ -81,8 +81,8 @@
 
 (comment (exp-range 2 10))
 
-(defn make-concentric [pos max-radius offsets]
-  (mapcat (fn [o] (sketch-circle pos (* max-radius o)))
+(defn make-concentric [{:keys [p r]} offsets]
+  (mapcat (fn [o] (sketch-circle p (* r o)))
           (drop 1 ((dr/weighted [[tm/norm-range 2]
                                  [(partial exp-range tm/PHI) 1]
                                  [(partial exp-range (* 2 tm/PHI)) 1]])
@@ -96,8 +96,7 @@
         close-edge-point (g/closest-point bounds center)
         edge-dist (g/dist center close-edge-point)
         children (dr/random-int 3 12)]
-    (concat (make-concentric center
-                             (* 0.66 edge-dist)
+    (concat (make-concentric (gc/circle center (* 0.66 edge-dist))
                              (dr/rand-nth [5 6 8]))
             (mapcat (fn [t]
                       (let [direction (dr/gaussian (+ (* 0.75 eq/TAU) (* eq/TAU t)) 0.2)
@@ -109,8 +108,7 @@
                                            direction)
                             proj-edge-dist (distance-to-edge bounds proj)]
                         (when (g/contains-point? (g/scale-size bounds 0.9) proj)
-                          (concat (make-concentric proj
-                                                   (* 0.4 proj-edge-dist)
+                          (concat (make-concentric (gc/circle proj (* 0.4 proj-edge-dist))
                                                    (dr/rand-nth [3 4 5]))
                                   [(skip-line center proj)]))))
                     (drop 1 (tm/norm-range children))))))
