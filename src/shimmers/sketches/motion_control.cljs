@@ -32,20 +32,20 @@
 (defn gen-location []
   (cq/rel-vec (dr/rand-nth [0.2 0.8]) 0.5))
 
-(defn update-particle [{:keys [pos dest] :as particle} dt]
-  (let [control-move (move 0.5 0.5 0.9)]
-    (-> (if (and (< (g/dist pos dest) 1.0) (dr/chance 0.1))
-          (assoc particle :dest (gen-location))
-          particle)
-        (control-move dt))))
+(defn update-particle [{:keys [pos dest] :as particle} motion-fn dt]
+  (-> (if (and (< (g/dist pos dest) 1.0) (dr/chance 0.1))
+        (assoc particle :dest (gen-location))
+        particle)
+      (motion-fn dt)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:particle (->Particle (gen-location) (dr/random-tau) (gv/vec2) 0.0 (gen-location))})
+  {:motion-fn (move 0.5 0.5 0.9)
+   :particle (->Particle (gen-location) (dr/random-tau) (gv/vec2) 0.0 (gen-location))})
 
-(defn update-state [state]
+(defn update-state [{:keys [motion-fn] :as state}]
   (let [dt 0.1]
-    (update state :particle update-particle dt)))
+    (update state :particle update-particle motion-fn dt)))
 
 (defn draw-particle [{:keys [pos angle dest]}]
   (q/color 0.0)
