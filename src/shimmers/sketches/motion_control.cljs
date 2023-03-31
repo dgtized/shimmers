@@ -29,6 +29,15 @@
            :vel (tm/* (tm/+ vel (tm/* force dt)) drag-c)
            :angle-vel (* (+ angle-vel (* angle-acc dt)) drag-c))))))
 
+;; TODO: add thrust example where rotation is small dv changes and only a rear
+;; thruster can push forward
+
+;; TODO: add a mix or linear tweening between src and dest
+;; TODO: add example mixing from particle to dest
+;; TODO: add force push avoidance?
+;; TODO: add something with overshoot / correction?
+;; TODO: include a speed limit?
+
 (defn gen-location []
   (cq/rel-vec (dr/rand-nth [0.2 0.8]) 0.5))
 
