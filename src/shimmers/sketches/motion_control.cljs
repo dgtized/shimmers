@@ -16,8 +16,8 @@
 
 (defrecord Particle [pos angle vel angle-vel dest])
 
-(defn move [dt pos-c angle-c drag]
-  (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
+(defn move [pos-c angle-c drag]
+  (fn [{:keys [pos angle vel angle-vel dest] :as particle} dt]
     (let [force (control/force-accel pos dest pos-c vel)
           angle-target (g/heading (tm/- dest pos))
           angle-acc (control/angular-acceleration angle angle-target angle-c angle-vel)
@@ -33,11 +33,11 @@
   (cq/rel-vec (dr/rand-nth [0.2 0.8]) 0.5))
 
 (defn update-particle [{:keys [pos dest] :as particle} dt]
-  (let [control-move (move dt 0.5 0.5 0.9)]
+  (let [control-move (move 0.5 0.5 0.9)]
     (-> (if (and (< (g/dist pos dest) 1.0) (dr/chance 0.1))
           (assoc particle :dest (gen-location))
           particle)
-        control-move)))
+        (control-move dt))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
