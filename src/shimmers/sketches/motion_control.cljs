@@ -38,10 +38,11 @@
         particle)
       (motion-fn dt)))
 
-(defn setup []
-  (q/color-mode :hsl 1.0)
-  {:motion-fn (move 0.5 0.5 0.9)
-   :particle (->Particle (gen-location) (dr/random-tau) (gv/vec2) 0.0 (gen-location))})
+(defn setup [motion-fn]
+  (fn []
+    (q/color-mode :hsl 1.0)
+    {:motion-fn motion-fn
+     :particle (->Particle (gen-location) (dr/random-tau) (gv/vec2) 0.0 (gen-location))}))
 
 (defn update-state [{:keys [motion-fn] :as state}]
   (let [dt 0.1]
@@ -57,16 +58,22 @@
   (q/background 1.0)
   (draw-particle particle))
 
-(defn page []
-  [:div
+(defn move-example [vel-c angle-c drag]
+  [:<>
    [:div.contained.explanation
-    [:p "Seeking behavior using control/force-accel"]]
+    [:p "Seeking behavior using move " vel-c " " angle-c " " drag]]
    (sketch/component
     :size [600 100]
-    :setup setup
+    :setup (setup (move vel-c angle-c drag))
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])])
+
+(defn page []
+  [:div
+   (move-example 0.1 0.5 0.9)
+   (move-example 0.5 0.5 0.9)
+   (move-example 1.2 0.5 0.9)])
 
 (sketch/definition motion-control
   {:created-at "2023-03-31"
