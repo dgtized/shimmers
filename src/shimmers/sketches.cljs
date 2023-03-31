@@ -117,6 +117,7 @@
    shimmers.sketches.morse-patterns
    shimmers.sketches.mosaic-tiling
    shimmers.sketches.motif-shapes
+   shimmers.sketches.motion-control
    shimmers.sketches.motion-of-insects
    shimmers.sketches.negative-overlap
    shimmers.sketches.network-effects
