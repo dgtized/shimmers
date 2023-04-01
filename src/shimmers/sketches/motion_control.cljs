@@ -2,7 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [shimmers.common.framerate :as framerate]
+   ;; [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
