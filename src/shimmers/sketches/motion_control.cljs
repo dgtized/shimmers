@@ -84,9 +84,9 @@
 
 (defn page []
   [:div
-   (move-example 0.1 0.5 0.9)
+   (move-example 0.1 0.1 0.9)
    (move-example 0.5 0.5 0.9)
-   (move-example 1.2 0.5 0.9)])
+   (move-example 1.2 1.2 0.9)])
 
 (sketch/definition motion-control
   {:created-at "2023-03-31"
