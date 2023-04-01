@@ -80,7 +80,7 @@
     :setup (setup (move vel-c angle-c drag))
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode #_framerate/mode])])
 
 (defn page []
   [:div
