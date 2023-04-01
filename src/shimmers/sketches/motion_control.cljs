@@ -38,6 +38,10 @@
 ;; TODO: add something with overshoot / correction?
 ;; TODO: include a speed limit?
 
+;; See also http://motion.cs.illinois.edu/RoboticSystems/PlanningWithDynamicsAndUncertainty.html
+;; https://motion.cs.illinois.edu/RoboticSystems/Geometry.html
+;; https://motion.cs.illinois.edu/RoboticSystems/Control.html
+
 (defn gen-location []
   (cq/rel-vec (dr/rand-nth [0.2 0.8]) 0.5))
 
