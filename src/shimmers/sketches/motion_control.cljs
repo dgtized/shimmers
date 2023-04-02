@@ -2,7 +2,6 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   ;; [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
@@ -80,7 +79,7 @@
     :setup (setup (move vel-c angle-c drag))
     :update update-state
     :draw draw
-    :middleware [m/fun-mode #_framerate/mode])])
+    :middleware [m/fun-mode])])
 
 (defn page []
   [:div
