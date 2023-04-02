@@ -40,6 +40,9 @@
 ;; See also http://motion.cs.illinois.edu/RoboticSystems/PlanningWithDynamicsAndUncertainty.html
 ;; https://motion.cs.illinois.edu/RoboticSystems/Geometry.html
 ;; https://motion.cs.illinois.edu/RoboticSystems/Control.html
+;; Also investigate Fast Marching Tree algorithm aka FMT*
+;; * https://blog.nodraak.fr/2020/12/aerospace-sim-2-guidance-law/
+;; https://en.wikipedia.org/wiki/PID_controller -- Cascade control?
 
 (defn gen-location []
   (cq/rel-vec (dr/rand-nth [0.2 0.8]) 0.5))
