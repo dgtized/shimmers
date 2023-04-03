@@ -107,9 +107,10 @@
         pairs (partition 2 1 lines)
         percent-color (dr/weighted {0.01 1.0
                                     0.05 3.0
-                                    0.10 2.0
-                                    0.15 1.0
-                                    0.20 1.0})]
+                                    0.10 3.0
+                                    0.15 2.0
+                                    0.20 1.0
+                                    0.25 0.5})]
     (swap! defo assoc :percent-color percent-color)
     (concat (dr/map-random-sample (constantly 0.1)
                                   (fn [line] (vary-meta line assoc :stroke-width (dr/random 3 8)))
