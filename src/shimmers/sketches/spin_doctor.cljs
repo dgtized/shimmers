@@ -88,10 +88,13 @@
             (set-color (g/centroid vane) t)
             (cq/draw-polygon vane)))))))
 
-(defn draw [state]
+(defn running? []
   (let [{:keys [running frame-limit]} @ui-state]
-    (when (and running (or (= 0 frame-limit) (< (q/frame-count) frame-limit)))
-      (draw-frame state))))
+    (and running (or (= 0 frame-limit) (< (q/frame-count) frame-limit)))))
+
+(defn draw [state]
+  (when (running?)
+    (draw-frame state)))
 
 (defn ui-controls []
   [:div
