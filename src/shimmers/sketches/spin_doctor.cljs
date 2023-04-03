@@ -41,7 +41,7 @@
     (new-destination)
     destination))
 
-(defn update-state [{:keys [center radius destination velocity] :as state}]
+(defn velocity-update [{:keys [center radius destination velocity] :as state}]
   (let [dt (dr/random 0.1 3)
         direction (tm/- destination center)
         dv (tm/* direction (/ (* 250 dt) (tm/mag-squared direction)))
@@ -53,7 +53,7 @@
         (update :destination update-destination pos radius)
         (update :t + (* dt 0.1)))))
 
-(defn update-state-stencils [state]
+(defn stencils-update [state]
   (let [dt (dr/random 0.5 2.5)]
     (-> state
         (assoc :center (new-destination))
@@ -92,6 +92,12 @@
   (let [{:keys [running frame-limit]} @ui-state]
     (and running (or (= 0 frame-limit) (< (q/frame-count) frame-limit)))))
 
+(defn update-state [method]
+  (fn [state]
+    (if (running?)
+      (method state)
+      state)))
+
 (defn draw [state]
   (when (running?)
     (draw-frame state)))
@@ -106,7 +112,7 @@
   :size [900 600]
   :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
-  :update update-state
+  :update (update-state velocity-update)
   :draw draw
   :middleware [m/fun-mode framerate/mode])
 
@@ -115,6 +121,6 @@
   :size [900 600]
   :on-mount (fn [] (ctrl/mount ui-controls))
   :setup setup
-  :update update-state-stencils
+  :update (update-state stencils-update)
   :draw draw
   :middleware [m/fun-mode framerate/mode])
