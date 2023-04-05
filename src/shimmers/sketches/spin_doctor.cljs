@@ -54,10 +54,10 @@
         (update :t + (* dt 0.1)))))
 
 (defn stencils-update [state]
-  (let [dt (dr/random 0.5 2.5)]
+  (let [dt (dr/random 0.05 0.25)]
     (-> state
         (assoc :center (new-destination))
-        (update :t + (* dt 0.1)))))
+        (update :t + dt))))
 
 (defn noise-at [t scale p]
   (let [[x y] (tm/* p scale)]
