@@ -86,7 +86,7 @@
   (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 10)} angle)))
 
 (defn draw [{:keys [particles t]}]
-  (q/stroke 0.0 0.05)
+  (q/stroke 0.0 (tm/clamp (dr/gaussian 0.05 0.005) 0.025 0.1))
   (q/fill 0.0 0.01)
   (if (seq particles)
     (doseq [particle particles]
