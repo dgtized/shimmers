@@ -26,19 +26,14 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn distance-to-closest-point [shape p]
-  (-> shape
-      (g/closest-point p)
-      (g/dist p)))
-
 (defn closest-vertex-to-line [shape line]
   (apply min-key
-         (partial distance-to-closest-point line)
+         (partial poly/dist-to-closest-point line)
          (g/vertices shape)))
 
 (defn furthest-vertex-to-line [shape line]
   (apply max-key
-         (partial distance-to-closest-point line)
+         (partial poly/dist-to-closest-point line)
          (g/vertices shape)))
 
 (defn pick-side [shape sides last-cut]

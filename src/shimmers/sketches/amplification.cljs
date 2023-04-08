@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -17,9 +18,6 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
-
-(defn distance-to-edge [bounds p]
-  (g/dist p (g/closest-point bounds p)))
 
 (defn skip-line [a b]
   (let [n (dr/random-int 12 48)
@@ -105,7 +103,7 @@
                                         (* 0.5 edge-dist))
                                      (* 0.6 edge-dist))
                                   direction)
-                   proj-edge-dist (distance-to-edge bounds proj)]
+                   proj-edge-dist (poly/dist-to-closest-point bounds proj)]
                (when (g/contains-point? (g/scale-size bounds 0.9) proj)
                  (gc/circle proj (* 0.4 proj-edge-dist)))))
            (drop 1 (tm/norm-range children)))]))

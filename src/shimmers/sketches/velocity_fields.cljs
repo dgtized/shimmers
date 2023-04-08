@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -49,7 +50,7 @@
     (map (fn [i]
            (let [angle (+ base-angle (* i 1.1 tm/PHI))
                  p (v/+polar center (* 0.33 height) angle)
-                 max-radius (g/dist p (g/closest-point (screen-rect) p))
+                 max-radius (poly/dist-to-closest-point (screen-rect) p)
                  circle (gc/circle p (min (* 0.33 height (/ 1 (inc i)))
                                           max-radius))]
              (if triangles

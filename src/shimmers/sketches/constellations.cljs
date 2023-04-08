@@ -12,6 +12,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.graph :as graph]
    [shimmers.math.points :as points]
    [shimmers.math.vector :as v]
@@ -140,7 +141,8 @@
   (reduce (fn [g p]
             (let [neighbors (neighbors-with-distance graph p)
                   [_ dist] (first neighbors)
-                  max-radius (min dist (* 0.975 (g/dist p (g/closest-point bounds p))))
+                  max-radius (min dist
+                                  (* 0.975 (poly/dist-to-closest-point bounds p)))
                   radius (min (* 0.475 dist) max-radius)]
               (-> g
                   (lga/add-attr p :max-radius max-radius)

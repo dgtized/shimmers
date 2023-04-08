@@ -100,3 +100,12 @@
     [n
      (sum-interior-angles-regular-polygon n)
      (interior-angle-regular-polygon n)]))
+
+(defn dist-to-closest-point
+  "Calculate distance to closest point on polygon.
+
+  Note this is at least O(edges) of the polygon."
+  [shape p]
+  (-> shape
+      (g/closest-point p)
+      (g/dist p)))

@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -102,7 +103,7 @@
                 (min (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 tm/PHI)
                                             (dr/gaussian 0.02 0.06))
                                          0.01 0.2))
-                     (g/dist position (g/closest-point (cq/screen-rect 0.92) position)))]
+                     (poly/dist-to-closest-point (cq/screen-rect 0.92) position))]
             (make-spot position
                        max-radius
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))

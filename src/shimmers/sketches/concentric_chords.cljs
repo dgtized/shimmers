@@ -6,6 +6,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.intersection :as isec]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -19,12 +20,9 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn closest-dist [bounds point]
-  (g/dist point (g/closest-point bounds point)))
-
 (defn max-circle-in-bounds [bounds point]
   (let [p (g/unmap-point bounds point)]
-    (gc/circle p (closest-dist bounds p))))
+    (gc/circle p (poly/dist-to-closest-point bounds p))))
 
 (defn pack-overlap-circles [bounds n]
   (let [legal-candidate
