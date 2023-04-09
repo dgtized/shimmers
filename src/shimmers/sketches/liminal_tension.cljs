@@ -15,7 +15,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
 
-(defrecord Particle [pos angle vel angle-vel dest scale wiggle decay])
+(defrecord Particle [color pos angle vel angle-vel dest scale wiggle decay])
 
 (defn perp-motion [pos dest wiggle t]
   (let [v (tm/- pos dest)
@@ -45,11 +45,12 @@
             :else
             nil))))
 
-(defn gen-particle [line boundary]
+(defn gen-particle [line boundary color]
   (fn []
     (let [pos (g/point-at line (dr/random))]
       (map->Particle
-       {:pos pos
+       {:color (if (dr/chance 0.05) color [0.0 0.0 0.0])
+        :pos pos
         :angle (dr/random-tau)
         :vel (dr/randvec2 20)
         :angle-vel (dr/gaussian 0.0 2.0)
@@ -60,11 +61,11 @@
         :wiggle (if (dr/chance 0.2) (dr/gaussian 1.0 0.2) 0.0)
         :decay (dr/random 0.05 0.25)}))))
 
-(defn generate-particles [boundary n]
+(defn generate-particles [boundary n color]
   (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.15) (cq/rel-vec -0.1 1.15))
         line1 (gl/line2 (cq/rel-vec 1.1 -0.15) (cq/rel-vec 1.1 1.15))]
-    (concat (repeatedly n (gen-particle line0 boundary))
-            (repeatedly n (gen-particle line1 boundary)))))
+    (concat (repeatedly n (gen-particle line0 boundary color))
+            (repeatedly n (gen-particle line1 boundary color)))))
 
 (defn update-particles [particles dt t]
   (keep (move dt t 0.5 0.0003 0.99999) particles))
@@ -83,9 +84,14 @@
         angle (dr/gaussian 0.0 0.1)
         boundary (geometry/rotate-around-centroid line angle)
         ;; other factors requiring scaling, control for spin?
-        scale (/ (q/height) 600)]
+        scale (/ (q/height) 600)
+        color (dr/weighted {[0.0 0.0 0.0] 3
+                            [0.65 0.66 0.45] 1
+                            [0.18 0.75 0.65] 1
+                            [0.33 0.66 0.45] 1
+                            [0.0 0.5 0.45] 1})]
     {:boundary boundary
-     :particles (generate-particles boundary (int (* 100 scale)))
+     :particles (generate-particles boundary (int (* 100 scale)) color)
      :t 0.0}))
 
 (defn update-state [{:keys [t] :as state}]
@@ -98,10 +104,10 @@
   (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 10)} angle)))
 
 (defn draw [{:keys [particles t]}]
-  (q/stroke 0.0 (tm/clamp (dr/gaussian 0.05 0.005) 0.025 0.1))
-  (q/fill 0.0 0.01)
   (if (seq particles)
-    (doseq [particle particles]
+    (doseq [{:keys [color] :as particle} particles]
+      (q/stroke 0.0 (tm/clamp (dr/gaussian 0.05 0.005) 0.025 0.1))
+      (apply q/fill (conj color 0.01))
       (draw-particle particle t))
     (q/no-loop)))
 
