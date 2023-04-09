@@ -15,11 +15,19 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.math.core :as tm]))
 
-(defrecord Particle [pos angle vel angle-vel dest scale decay])
+(defrecord Particle [pos angle vel angle-vel dest scale wiggle decay])
 
-(defn move [dt pos-c angle-c drag]
-  (fn [{:keys [pos angle vel angle-vel dest decay] :as particle}]
-    (let [force (control/force-accel pos dest pos-c vel)
+(defn perp-motion [pos dest wiggle t]
+  (let [v (tm/- pos dest)
+        wobble (* wiggle
+                  (/ (tm/mag v) (inc t))
+                  (Math/sin t))]
+    (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
+
+(defn move [dt t pos-c angle-c drag]
+  (fn [{:keys [pos angle vel angle-vel dest wiggle decay] :as particle}]
+    (let [force (tm/+ (control/force-accel pos dest pos-c vel)
+                      (perp-motion pos dest wiggle t))
           angle-target (g/heading (tm/- dest pos))
           angle-acc (control/angular-acceleration angle angle-target angle-c angle-vel)
           drag-c (- 1.0 (eq/sqr (* drag dt)))
@@ -49,6 +57,7 @@
                       (g/closest-point boundary pos)
                       (dr/gaussian 0.85 0.07))
         :scale (dr/gaussian 1.0 0.2)
+        :wiggle (if (dr/chance 0.2) (dr/gaussian 1.0 0.2) 0.0)
         :decay (dr/random 0.05 0.25)}))))
 
 (defn generate-particles [boundary n]
@@ -57,8 +66,8 @@
     (concat (repeatedly n (gen-particle line0 boundary))
             (repeatedly n (gen-particle line1 boundary)))))
 
-(defn update-particles [particles dt]
-  (keep (move dt 0.5 0.0003 0.99999) particles))
+(defn update-particles [particles dt t]
+  (keep (move dt t 0.5 0.0003 0.99999) particles))
 
 (defn inverted [x]
   (- 1.0 x))
@@ -79,11 +88,11 @@
      :particles (generate-particles boundary (int (* 100 scale)))
      :t 0.0}))
 
-(defn update-state [state]
+(defn update-state [{:keys [t] :as state}]
   (let [dt 0.1]
     (-> state
         (update :t + dt)
-        (update :particles update-particles dt))))
+        (update :particles update-particles dt t))))
 
 (defn draw-particle [{:keys [pos angle scale]} _t]
   (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 10)} angle)))
