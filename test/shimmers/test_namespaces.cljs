@@ -16,6 +16,7 @@
    [shimmers.common.sequence-test]
    [shimmers.common.svg-test]
    [shimmers.math.core-test]
+   [shimmers.math.control-test]
    [shimmers.math.equations-test]
    [shimmers.math.geometry-test]
    [shimmers.math.geometry.collisions-test]
