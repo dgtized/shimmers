@@ -40,13 +40,16 @@
 (defn gen-particle [line boundary]
   (fn []
     (let [pos (g/point-at line (dr/random))]
-      (->Particle pos
-                  (dr/random-tau)
-                  (dr/randvec2 20)
-                  (dr/gaussian 0.0 2.0)
-                  (tm/mix pos (g/closest-point boundary pos) (dr/gaussian 0.85 0.07))
-                  (dr/gaussian 1.0 0.2)
-                  (dr/random 0.05 0.25)))))
+      (map->Particle
+       {:pos pos
+        :angle (dr/random-tau)
+        :vel (dr/randvec2 20)
+        :angle-vel (dr/gaussian 0.0 2.0)
+        :dest (tm/mix pos
+                      (g/closest-point boundary pos)
+                      (dr/gaussian 0.85 0.07))
+        :scale (dr/gaussian 1.0 0.2)
+        :decay (dr/random 0.05 0.25)}))))
 
 (defn generate-particles [boundary n]
   (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.15) (cq/rel-vec -0.1 1.15))
