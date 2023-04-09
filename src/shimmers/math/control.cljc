@@ -4,7 +4,7 @@
    [thi.ng.math.core :as tm]))
 
 (defn angular-delta [angle target]
-  (let [delta (- target angle)]
+  (let [delta (- (mod target eq/TAU) (mod angle eq/TAU))]
     (cond (< delta (- Math/PI)) (+ delta eq/TAU)
           (> delta Math/PI) (- delta eq/TAU)
           :else delta)))
