@@ -47,7 +47,7 @@
         ;; This is not dev only because of production build
 
         ;; Better debug output
-        binaryage/devtools {:mvn/version "1.0.6"}
+        binaryage/devtools {:mvn/version "1.0.7"}
         }
  ;; setup some development paths
  :paths ["src" "resources"]
