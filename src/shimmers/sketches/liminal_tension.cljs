@@ -21,7 +21,7 @@
   (let [v (tm/- pos dest)
         wobble (* wiggle
                   (/ (tm/mag v) (inc t))
-                  (Math/sin t))]
+                  (Math/sin (/ t tm/PHI)))]
     (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
 
 (defn move [dt t pos-c angle-c drag]
@@ -58,7 +58,7 @@
                       (g/closest-point boundary pos)
                       (dr/gaussian 0.85 0.07))
         :scale (dr/gaussian 1.0 0.2)
-        :wiggle (if (dr/chance 0.2) (dr/gaussian 1.0 0.2) 0.0)
+        :wiggle (if (dr/chance 0.2) (dr/gaussian 1.5 0.33) 0.0)
         :decay (dr/random 0.05 0.25)}))))
 
 (defn generate-particles [boundary n color]
