@@ -62,8 +62,10 @@
         :decay (dr/random 0.05 0.25)}))))
 
 (defn generate-particles [boundary n color]
-  (let [line0 (gl/line2 (cq/rel-vec -0.1 -0.15) (cq/rel-vec -0.1 1.15))
-        line1 (gl/line2 (cq/rel-vec 1.1 -0.15) (cq/rel-vec 1.1 1.15))]
+  (let [[x0 x1] [-0.1 1.1]
+        [y0 y1] [-0.15 1.15]
+        line0 (gl/line2 (cq/rel-vec x0 y0) (cq/rel-vec x0 y1))
+        line1 (gl/line2 (cq/rel-vec x1 y0) (cq/rel-vec x1 y1))]
     (concat (repeatedly n (gen-particle line0 boundary color))
             (repeatedly n (gen-particle line1 boundary color)))))
 
