@@ -63,7 +63,9 @@
 
 (defn generate-particles [boundary n color]
   (let [[x0 x1] [-0.1 1.1]
-        [y0 y1] [-0.15 1.15]
+        [y0 y1] (dr/weighted {[-0.15 1.15] 2
+                              [0.0 1.0] 1
+                              [0.15 0.85] 1})
         line0 (gl/line2 (cq/rel-vec x0 y0) (cq/rel-vec x0 y1))
         line1 (gl/line2 (cq/rel-vec x1 y0) (cq/rel-vec x1 y1))]
     (concat (repeatedly n (gen-particle line0 boundary color))
