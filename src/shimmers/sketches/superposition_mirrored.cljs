@@ -130,9 +130,9 @@
 
 (defn update-positions [particles t dt]
   (let [wobble
-        (let [amp-n (center-filter 0.1 (q/noise 30.0 30.0 (* 0.5 t)))
-              amplitude (* (cq/rel-h 0.08) (dec (Math/pow 2.0 amp-n)))
-              rate-n (center-filter 0.1 (q/noise 60.0 (* 0.33 t) 20.0))
+        (let [amp-n (center-filter 0.1 (q/noise 30.0 30.0 (* 0.66 t)))
+              amplitude (* (cq/rel-h 0.1) (dec (Math/pow 2.0 amp-n)))
+              rate-n (center-filter 0.1 (q/noise 60.0 (* 0.1 t) 20.0))
               rate (tm/mix* 8 32 rate-n)]
           (* amplitude (Math/sin (* rate t))))]
     (mapv (move dt wobble
