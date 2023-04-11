@@ -167,4 +167,11 @@
   [a b]
   (/ (tm/dot a b) (* (tm/mag a) (tm/mag b))))
 
+;; https://www.desmos.com/calculator/o5pjuhrxlq
+(defn flatstep
+  "Sorta an inverse of smoothstep with a slow middle and sharper end slope."
+  [t f]
+  (* (Math/pow t f) (+ (* 3 t t t) (* -3 t t) 1)))
 
+(comment
+  (map (fn [x] [x (flatstep x 1.2)]) (range 0 1 0.1)))
