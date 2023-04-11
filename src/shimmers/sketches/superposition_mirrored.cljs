@@ -130,9 +130,9 @@
 
 (defn update-positions [particles t dt]
   (let [wobble
-        (let [amp-n (center-filter 0.1 (q/noise 30.0 30.0 (* 0.66 t)))
-              amplitude (* (cq/rel-h 0.1) (dec (Math/pow 2.0 amp-n)))
-              rate-n (center-filter 0.1 (q/noise 60.0 (* 0.1 t) 20.0))
+        (let [amp-n (center-filter 0.2 (q/noise 30.0 30.0 (* 0.66 t)))
+              amplitude (* (cq/rel-h 0.15) (dec (Math/pow 2.0 amp-n)))
+              rate-n (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0))
               rate (tm/mix* 8 32 rate-n)]
           (* amplitude (Math/sin (* rate t))))]
     (mapv (move dt wobble
@@ -179,7 +179,7 @@
 (defn update-state [{:keys [particles t cycle] :as state}]
   (if (running? cycle)
     (let [dt (dr/random 0.001 0.01)]
-      (if (< (affinity particles) (cq/rel-h 0.005))
+      (if (< (affinity particles) (cq/rel-h 0.008))
         (let [targets (generate-shapes (dr/random 0.05 0.49))]
           (-> state
               (update :t + dt)
