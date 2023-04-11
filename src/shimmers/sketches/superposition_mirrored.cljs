@@ -207,7 +207,8 @@
 (defn draw [{:keys [image cycle shapes particles t]}]
   (when (running? cycle)
     (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-          scale (+ 0.001 (* 0.10 (flatstep (q/noise (* t 0.66) 100.0) 1.2)))
+          scale-noise (center-filter 0.0 (q/noise (* t 0.2) 100.0))
+          scale (cq/rel-h (+ 0.005 (* 0.09 (tm/smoothstep* -0.1 1.33 scale-noise))))
           color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
       (q/with-graphics image
         (q/color-mode :hsl 1.0)
@@ -224,7 +225,7 @@
                       (+ 0.001 (* 0.04 fill-opacity)))
               (q/stroke (tm/smoothstep* 0.4 0.6 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
                         (+ 0.001 (* 0.1 stroke-opacity))))
-            (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h scale)} angle)))))))
+            (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r scale} angle)))))))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
