@@ -17,6 +17,15 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn center-filter
+  "Map a noise value as distance from center point into [0.0,1.0].
+
+  If distance is less than `percent-cutoff` output is 0.0"
+  [percent-cutoff n]
+  (tm/map-interval-clamped (Math/abs (- n 0.5))
+                           [(* percent-cutoff 0.5) 0.5]
+                           [0.0 1.0]))
+
 (defrecord Particle [pos angle vel angle-vel dest])
 
 (defn distribute-particles [shapes points]
@@ -97,9 +106,15 @@
        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)]))))
 
-(defn move [dt pos-c angle-c drag]
+(defn perp-motion [pos dest wobble]
+  (let [v (tm/- pos dest)]
+    (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
+
+(defn move [dt wobble pos-c angle-c drag]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
-    (let [force (control/force-accel pos dest pos-c vel)
+    (let [force (tm/+ (control/force-accel pos dest pos-c vel)
+                      (tm/* (perp-motion pos dest wobble)
+                            (tm/mag vel)))
           angle-target (g/heading (tm/- dest pos))
           angle-acc (if (< angle-c 90)
                       (control/angular-acceleration angle angle-target angle-c angle-vel)
@@ -114,11 +129,17 @@
            :angle-vel (* (+ angle-vel (* angle-acc dt)) drag-c))))))
 
 (defn update-positions [particles t dt]
-  (mapv (move dt
-              (+ 5 (* 150.0 (q/noise t 10.0)))
-              (+ 5 (* 150.0 (q/noise 10.0 t)))
-              (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
-        particles))
+  (let [wobble
+        (let [amp-n (center-filter 0.1 (q/noise 30.0 30.0 (* 0.5 t)))
+              amplitude (* (cq/rel-h 0.08) (dec (Math/pow 2.0 amp-n)))
+              rate-n (center-filter 0.1 (q/noise 60.0 (* 0.33 t) 20.0))
+              rate (tm/mix* 8 32 rate-n)]
+          (* amplitude (Math/sin (* rate t))))]
+    (mapv (move dt wobble
+                (+ 5 (* 150.0 (q/noise t 10.0)))
+                (+ 5 (* 150.0 (q/noise 10.0 t)))
+                (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
+          particles)))
 
 (defn update-destinations [particles targets]
   (map (fn [particle dest]
