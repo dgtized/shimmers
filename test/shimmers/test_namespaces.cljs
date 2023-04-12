@@ -19,6 +19,7 @@
    [shimmers.math.control-test]
    [shimmers.math.equations-test]
    [shimmers.math.geometry-test]
+   [shimmers.math.geometry.arc-test]
    [shimmers.math.geometry.collisions-test]
    [shimmers.math.geometry.ellipse-test]
    [shimmers.math.geometry.group-test]
