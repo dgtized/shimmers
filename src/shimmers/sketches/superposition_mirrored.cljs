@@ -9,6 +9,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -60,11 +61,34 @@
           (g/center (tm/mix (tm/mix center corner (/ (- corner-dist (* tm/SQRT3 r)) corner-dist))
                             center d))))))
 
+(defrecord Arc [p r t0 t1]
+  g/ISample
+  (random-point [_]
+    (v/+polar p r (dr/random t0 t1)))
+  (random-point-inside [_]
+    (v/+polar p (* r (Math/sqrt (dr/random)))
+              (dr/random t0 t1)))
+
+  g/ICenter
+  (centroid [_]
+    (let [alpha (/ (- t1 t0) 2)]
+      (gv/vec2 (/ (* 2 r (Math/sin alpha)) (* 3 alpha))
+               (:y (v/+polar p r (+ t0 alpha))))))
+
+  g/IVertexAccess
+  (vertices [_] (g/vertices _ 12))
+  (vertices [{:keys [p r t0 t1]} res]
+    (->> res
+         tm/norm-range
+         (mapv (fn [t] (v/+polar p r (tm/mix* t0 t1 t))))
+         (into [p]))))
+
 ;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
   ([scale] (generate-shapes
             (dr/weighted {:bounds 0.5
                           :center-circle 1
+                          :arc 1
                           :center-square 1
                           :center-hexagon 1
                           :quad-square 1
@@ -81,6 +105,12 @@
        [(cq/screen-rect 0.95)]
        :center-circle
        [(gc/circle (cq/rel-vec 0.5 0.5) r)]
+       :arc
+       (let [base (dr/weighted {(* 0.75 eq/TAU) 1
+                                (* 0.0 eq/TAU) 1})
+             center (cq/rel-vec 0.5 0.5)]
+         [(->Arc center r (+ base (* (/ 1 8) eq/TAU)) (+ base (* (/ 3 8) eq/TAU)))
+          (->Arc center r (+ base (* (/ 5 8) eq/TAU)) (+ base (* (/ 7 8) eq/TAU)))])
        :center-square
        [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
        :center-hexagon
