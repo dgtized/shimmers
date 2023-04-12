@@ -118,6 +118,7 @@
   (let [v (tm/- pos dest)]
     (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
 
+;; TODO: add repulsion zones, though would need to ensure destinations were outside?
 (defn move [dt wobble pos-c angle-c drag]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
     (let [force (tm/+ (control/force-accel pos dest pos-c vel)
