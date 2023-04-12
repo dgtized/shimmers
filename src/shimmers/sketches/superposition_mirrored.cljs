@@ -87,8 +87,8 @@
        (let [base (dr/weighted {(* 0.75 eq/TAU) 1
                                 (* 0.0 eq/TAU) 1})
              center (cq/rel-vec 0.5 0.5)]
-         [(arc/->Arc center r (+ base (* (/ 1 8) eq/TAU)) (+ base (* (/ 3 8) eq/TAU)))
-          (arc/->Arc center r (+ base (* (/ 5 8) eq/TAU)) (+ base (* (/ 7 8) eq/TAU)))])
+         [(arc/arc center r (+ base (* (/ 1 8) eq/TAU)) (+ base (* (/ 3 8) eq/TAU)))
+          (arc/arc center r (+ base (* (/ 5 8) eq/TAU)) (+ base (* (/ 7 8) eq/TAU)))])
        :center-square
        [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
        :center-hexagon
