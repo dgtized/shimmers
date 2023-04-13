@@ -229,7 +229,7 @@
   (when (running? cycle)
     (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
           scale-noise (center-filter 0.0 (q/noise (* t 0.2) 100.0))
-          scale (cq/rel-h (+ 0.005 (* 0.09 (tm/smoothstep* -0.1 1.33 scale-noise))))
+          scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
           color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
       (q/with-graphics image
         (q/color-mode :hsl 1.0)
