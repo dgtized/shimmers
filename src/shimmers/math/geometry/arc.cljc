@@ -47,6 +47,7 @@
 
   g/ISample
   (random-point [_]
+    ;; note, does not include edges to center, just arc surface
     (v/+polar p r (dr/random t0 t1)))
   (random-point-inside [_]
     (v/+polar p (* r (Math/sqrt (dr/random)))
