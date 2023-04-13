@@ -29,18 +29,22 @@
 
 (defrecord Particle [pos angle vel angle-vel dest])
 
-(defn distribute-particles [shapes points]
-  (let [random-point (dr/weighted {g/random-point 1
-                                   g/random-point-inside 8})]
+(defn select-random-point [bias]
+  (dr/weighted {:outside (- 1 bias)
+                :inside bias}))
+
+(defn distribute-particles [{:keys [random-point shapes]} points]
+  (let [rp ({:outside g/random-point
+             :inside g/random-point-inside} random-point)]
     (map (fn [{:keys [pos]}]
-           (random-point (dr/weighted-by (fn [s] (g/dist pos (g/centroid s)))
-                                         shapes)))
+           (rp (dr/weighted-by (fn [s] (g/dist pos (g/centroid s)))
+                               shapes)))
          points)))
 
-(defn make-particles [shapes n]
+(defn make-particles [point-gen n]
   (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
-        points (distribute-particles shapes init)
-        dests (distribute-particles shapes init)]
+        points (distribute-particles point-gen init)
+        dests (distribute-particles point-gen init)]
     (map (fn [p d]
            (->Particle p (dr/random-tau) (gv/vec2) 0 d))
          points dests)))
@@ -61,6 +65,12 @@
           (g/center (tm/mix (tm/mix center corner (/ (- corner-dist (* tm/SQRT3 r)) corner-dist))
                             center d))))))
 
+(defn point-gen
+  ([shapes] (point-gen (select-random-point (/ 8 9)) shapes))
+  ([random-point shapes]
+   {:random-point random-point
+    :shapes shapes}))
+
 ;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
   ([scale] (generate-shapes
@@ -80,39 +90,46 @@
    (let [r (cq/rel-h scale)]
      (case kind
        :bounds
-       [(cq/screen-rect 0.95)]
+       (point-gen [(cq/screen-rect 0.95)])
        :center-circle
-       [(gc/circle (cq/rel-vec 0.5 0.5) r)]
+       (point-gen [(gc/circle (cq/rel-vec 0.5 0.5) r)])
        :arc
        (let [base (dr/weighted {(* 0.75 eq/TAU) 1
                                 (* 0.0 eq/TAU) 1})
              center (cq/rel-vec 0.5 0.5)]
-         [(arc/arc center r (+ base (* (/ 1 8) eq/TAU)) (+ base (* (/ 3 8) eq/TAU)))
-          (arc/arc center r (+ base (* (/ 5 8) eq/TAU)) (+ base (* (/ 7 8) eq/TAU)))])
+         (point-gen
+          [(arc/arc center r (+ base (* (/ 1 8) eq/TAU)) (+ base (* (/ 3 8) eq/TAU)))
+           (arc/arc center r (+ base (* (/ 5 8) eq/TAU)) (+ base (* (/ 7 8) eq/TAU)))]))
        :center-square
-       [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))]
+       (point-gen [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))])
        :center-hexagon
-       [(g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) r) 6)]
+       (point-gen [(g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) r) 6)])
        :quad-square
        (let [rect (rect/rect (* 1.5 r))]
-         [(g/center rect (cq/rel-vec 0.25 0.25))
-          (g/center rect (cq/rel-vec 0.75 0.25))
-          (g/center rect (cq/rel-vec 0.75 0.75))
-          (g/center rect (cq/rel-vec 0.25 0.75))])
+         (point-gen
+          [(g/center rect (cq/rel-vec 0.25 0.25))
+           (g/center rect (cq/rel-vec 0.75 0.25))
+           (g/center rect (cq/rel-vec 0.75 0.75))
+           (g/center rect (cq/rel-vec 0.25 0.75))]))
        :quad-triangle
-       (quad-shape 0.0 (g/center (triangle/inscribed-equilateral {:p (gv/vec2) :r r} 0)))
+       (point-gen
+        (quad-shape 0.0 (g/center (triangle/inscribed-equilateral {:p (gv/vec2) :r r} 0))))
        :ud-in-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.25))
-        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.75))]
+       (point-gen
+        [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.25))
+         (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.75))])
        :ud-out-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.75))
-        (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.25))]
+       (point-gen
+        [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.75))
+         (triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (- 1.0 (* 1.1 scale))) :r r} (* eq/TAU 0.25))])
        :lr-in-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} 0)
-        (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} Math/PI)]
+       (point-gen
+        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} 0)
+         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} Math/PI)])
        :lr-out-triangles
-       [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
-        (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)]))))
+       (point-gen
+        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
+         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)])))))
 
 (defn perp-motion [pos dest wobble]
   (let [v (tm/- pos dest)]
@@ -151,11 +168,11 @@
                 (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
           particles)))
 
-(defn update-destinations [particles targets]
+(defn update-destinations [particles point-gen]
   (map (fn [particle dest]
          (assoc particle :dest dest))
        particles
-       (distribute-particles targets particles)))
+       (distribute-particles point-gen particles)))
 
 (defn affinity [particles]
   (/ (reduce (fn [acc {:keys [pos dest]}]
@@ -167,10 +184,10 @@
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
-  (let [shapes (generate-shapes (dr/random 0.1 0.49))]
+  (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))]
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
-     :particles (make-particles shapes 128)
+     :particles (make-particles point-gen 128)
      :cycle 0
      :t 0.0}))
 
@@ -189,12 +206,12 @@
   (if (running? cycle)
     (let [dt (dr/random 0.001 0.01)]
       (if (< (affinity particles) (cq/rel-h 0.008))
-        (let [targets (generate-shapes (dr/random 0.05 0.49))]
+        (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.05 0.49))]
           (-> state
               (update :t + dt)
-              (assoc :shapes targets)
+              (assoc :shapes shapes)
               (update :cycle inc)
-              (update :particles update-destinations targets)))
+              (update :particles update-destinations point-gen)))
         (-> state
             (update :t + dt)
             (update :particles update-positions t dt))))
