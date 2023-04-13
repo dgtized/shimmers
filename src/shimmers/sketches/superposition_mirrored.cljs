@@ -35,9 +35,10 @@
 
 (defn distribute-particles [{:keys [random-point shapes]} points]
   (let [rp ({:outside g/random-point
-             :inside g/random-point-inside} random-point)]
+             :inside g/random-point-inside} random-point)
+        max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
     (map (fn [{:keys [pos]}]
-           (rp (dr/weighted-by (fn [s] (g/dist pos (g/centroid s)))
+           (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
                                shapes)))
          points)))
 
