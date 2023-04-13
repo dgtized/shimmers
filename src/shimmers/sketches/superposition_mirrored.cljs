@@ -253,6 +253,8 @@
   (q/image image 0 0)
 
   (when (:debug @ui-state)
+    (q/no-fill)
+    (q/stroke 0.1 0.5)
     (doseq [poly shapes]
       (cq/draw-polygon poly))
 
