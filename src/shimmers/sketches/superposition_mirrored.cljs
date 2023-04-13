@@ -105,7 +105,9 @@
        :center-square
        (point-gen [(g/center (rect/rect (* 2 r)) (cq/rel-vec 0.5 0.5))])
        :center-hexagon
-       (point-gen [(g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) r) 6)])
+       (point-gen
+        (select-random-point (/ 1 3))
+        [(g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) r) 6)])
        :quad-square
        (let [rect (rect/rect (* 1.5 r))]
          (point-gen
