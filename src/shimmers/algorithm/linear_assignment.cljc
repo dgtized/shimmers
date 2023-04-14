@@ -12,11 +12,12 @@
   `comparator` can be `<` or `>` to determine if matching is aiming for global
   minimization or maximization of the distance between each pair."
   [comparator as bs]
-  (loop [queue (into (priority/priority-map-by comparator)
-                     (for [[[idx-a a] [idx-b b]]
-                           (mc/cartesian-product (map-indexed vector as)
-                                                 (map-indexed vector bs))]
-                       [[idx-a idx-b] (g/dist a b)]))
+  (loop [queue (reduce (fn [pm [idx-a idx-b]]
+                         (assoc pm [idx-a idx-b]
+                                (g/dist (nth as idx-a) (nth bs idx-b))))
+                       (priority/priority-map-by comparator)
+                       (mc/cartesian-product (range (count as))
+                                             (range (count bs))))
          connected {:a {} :b {}}
          matches []]
     (if (empty? queue)
