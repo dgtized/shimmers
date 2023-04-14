@@ -43,8 +43,9 @@
                (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
                                    shapes)))
              points))
-      (let [positions (repeatedly (count points) #(rp (dr/rand-nth shapes)))]
-        (map second (linear/greedy-assignment-match < (mapv :pos points) (vec positions)))))))
+      (time
+       (let [positions (into [] (repeatedly (count points) #(rp (dr/rand-nth shapes))))]
+         (map second (linear/greedy-assignment-match < (mapv :pos points) positions)))))))
 
 (defn make-particles [point-gen n]
   (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
