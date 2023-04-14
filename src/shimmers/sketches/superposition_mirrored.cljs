@@ -34,6 +34,23 @@
   (dr/weighted {:outside (- 1 bias)
                 :inside bias}))
 
+(defn init-linear-matrix [particles {:keys [random-point shapes]}]
+  (let [rp ({:outside g/random-point
+             :inside g/random-point-inside} random-point)
+        positions (into [] (repeatedly (count particles) #(rp (dr/rand-nth shapes))))]
+    (assoc (linear/online-match-matrix < (mapv :dest particles) positions)
+           :shapes shapes)))
+
+(defn distribute-linear-matrix [{:keys [edges as bs] :as matrix} particles]
+  (let [matrix' (if (empty? edges)
+                  matrix
+                  (linear/online-match-update matrix (count edges)))
+        destinations (time (linear/greedy-match-loop (:queue matrix') as bs))]
+    (map (fn [particle [_ dest']]
+           (assoc particle :dest dest'))
+         particles
+         destinations)))
+
 (defn distribute-particles [{:keys [random-point shapes]} particles]
   (let [rp ({:outside g/random-point
              :inside g/random-point-inside} random-point)]
@@ -177,11 +194,8 @@
                 (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
           particles)))
 
-(defn update-destinations [particles point-gen]
-  (map (fn [particle dest]
-         (assoc particle :dest dest))
-       particles
-       (distribute-particles point-gen particles)))
+(defn update-destinations [particles matrix]
+  (distribute-linear-matrix matrix particles))
 
 (defn affinity [particles]
   (/ (reduce (fn [acc {:keys [pos dest]}]
@@ -193,10 +207,12 @@
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
   (q/color-mode :hsl 1.0)
-  (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))]
+  (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))
+        particles (make-particles point-gen 128)]
     {:image (q/create-graphics (q/width) (q/height))
      :shapes shapes
-     :particles (make-particles point-gen 128)
+     :particles particles
+     :linear-matrix (init-linear-matrix particles (generate-shapes (dr/random 0.1 0.49)))
      :cycle 0
      :t 0.0}))
 
@@ -211,18 +227,20 @@
          (or (= mode :infinite)
              (< cycle limit)))))
 
-(defn update-state [{:keys [particles t cycle] :as state}]
+(defn update-state [{:keys [particles t cycle linear-matrix] :as state}]
   (if (running? cycle)
     (let [dt (dr/random 0.001 0.01)]
       (if (< (affinity particles) (cq/rel-h 0.008))
-        (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.05 0.49))]
+        (let [point-gen (generate-shapes (dr/random 0.05 0.49))]
           (-> state
               (update :t + dt)
-              (assoc :shapes shapes)
+              (assoc :shapes (:shapes linear-matrix))
               (update :cycle inc)
-              (update :particles update-destinations point-gen)))
+              (assoc :linear-matrix (init-linear-matrix particles point-gen))
+              (update :particles update-destinations linear-matrix)))
         (-> state
             (update :t + dt)
+            (update :linear-matrix linear/online-match-update (* 2 (count particles)))
             (update :particles update-positions t dt))))
     state))
 

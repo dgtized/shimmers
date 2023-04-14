@@ -32,7 +32,9 @@
          connected {:a {} :b {}}
          matches []]
     (if (empty? queue)
-      (mapv (fn [[idx-a idx-b]] [(nth as idx-a) (nth bs idx-b)]) matches)
+      (->> matches
+           (sort-by first)
+           (mapv (fn [[idx-a idx-b]] [(nth as idx-a) (nth bs idx-b)])))
       (let [[[idx-a idx-b] _] (peek queue)]
         (if (or (get-in connected [:a idx-a]) (get-in connected [:b idx-b]))
           (recur (pop queue) connected matches)
