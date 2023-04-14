@@ -41,11 +41,8 @@
     (assoc (linear/online-match-matrix < (mapv :dest particles) positions)
            :shapes shapes)))
 
-(defn distribute-linear-matrix [{:keys [edges as bs] :as matrix} particles]
-  (let [matrix' (if (empty? edges)
-                  matrix
-                  (linear/online-match-update matrix (count edges)))
-        destinations (time (linear/greedy-match-loop (:queue matrix') as bs))]
+(defn distribute-linear-matrix [matrix particles]
+  (let [destinations (linear/online-match-solution matrix)]
     (map (fn [particle [_ dest']]
            (assoc particle :dest dest'))
          particles
