@@ -5,19 +5,16 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]))
 
-;; O(n^2 log n)?
-(defn greedy-assignment-match
-  "Find an approximate bipartite matching between a set of coordinates `as` and `bs`.
+(defn match-matrix [comparator as bs]
+  (reduce (fn [pm [idx-a idx-b]]
+            (assoc pm [idx-a idx-b]
+                   (g/dist (nth as idx-a) (nth bs idx-b))))
+          (priority/priority-map-by comparator)
+          (mc/cartesian-product (range (count as))
+                                (range (count bs)))))
 
-  `comparator` can be `<` or `>` to determine if matching is aiming for global
-  minimization or maximization of the distance between each pair."
-  [comparator as bs]
-  (loop [queue (reduce (fn [pm [idx-a idx-b]]
-                         (assoc pm [idx-a idx-b]
-                                (g/dist (nth as idx-a) (nth bs idx-b))))
-                       (priority/priority-map-by comparator)
-                       (mc/cartesian-product (range (count as))
-                                             (range (count bs))))
+(defn greedy-match-loop [queue as bs]
+  (loop [queue queue
          connected {:a {} :b {}}
          matches []]
     (if (empty? queue)
@@ -31,6 +28,15 @@
                (assoc-in [:a idx-a] true)
                (assoc-in [:b idx-b] true))
            (conj matches [idx-a idx-b])))))))
+
+;; O(n^2 log n)?
+(defn greedy-assignment-match
+  "Find an approximate bipartite matching between a set of coordinates `as` and `bs`.
+
+  `comparator` can be `<` or `>` to determine if matching is aiming for global
+  minimization or maximization of the distance between each pair."
+  [comparator as bs]
+  (greedy-match-loop (match-matrix comparator as bs) as bs))
 
 (comment
   (greedy-assignment-match
