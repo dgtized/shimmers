@@ -42,11 +42,7 @@
            :shapes shapes)))
 
 (defn distribute-linear-matrix [matrix particles]
-  (let [destinations (linear/online-match-solution matrix)]
-    (map (fn [particle [_ dest']]
-           (assoc particle :dest dest'))
-         particles
-         destinations)))
+  )
 
 (defn distribute-particles [{:keys [random-point shapes]} particles]
   (let [rp ({:outside g/random-point
@@ -192,7 +188,10 @@
           particles)))
 
 (defn update-destinations [particles matrix]
-  (distribute-linear-matrix matrix particles))
+  (map (fn [particle [_ dest']]
+         (assoc particle :dest dest'))
+       particles
+       (linear/online-match-solution matrix)))
 
 (defn affinity [particles]
   (/ (reduce (fn [acc {:keys [pos dest]}]
