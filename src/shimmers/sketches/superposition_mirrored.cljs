@@ -34,7 +34,7 @@
   (dr/weighted {:outside (- 1 bias)
                 :inside bias}))
 
-(defn distribute-particles [{:keys [random-point shapes]} points]
+(defn distribute-particles [{:keys [random-point shapes]} particles]
   (let [rp ({:outside g/random-point
              :inside g/random-point-inside} random-point)]
     (if (dr/chance 0.8)
@@ -42,10 +42,10 @@
         (map (fn [{:keys [pos]}]
                (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
                                    shapes)))
-             points))
+             particles))
       (time
-       (let [positions (into [] (repeatedly (count points) #(rp (dr/rand-nth shapes))))]
-         (map second (linear/greedy-assignment-match < (mapv :pos points) positions)))))))
+       (let [positions (into [] (repeatedly (count particles) #(rp (dr/rand-nth shapes))))]
+         (map second (linear/greedy-assignment-match < (mapv :pos particles) positions)))))))
 
 (defn make-particles [point-gen n]
   (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
