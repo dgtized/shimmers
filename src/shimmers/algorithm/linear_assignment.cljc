@@ -9,12 +9,29 @@
   {:queue (priority/priority-map-by comparator)
    :edges (mc/cartesian-product (range (count as))
                                 (range (count bs)))
+   :connected {:a {} :b {}}
+   :matches []
    :as as
    :bs bs})
 
+(defn online-match-solver [{:keys [queue connected] :as matrix} steps]
+  (if (or (zero? steps) (empty? queue))
+    matrix
+    (let [[[idx-a idx-b] _] (peek queue)]
+      (if (or (get-in connected [:a idx-a])
+              (get-in connected [:b idx-b]))
+        (recur (update matrix :queue pop) (dec steps))
+        (recur (-> matrix
+                   (update :queue pop)
+                   (assoc :connected (-> connected
+                                         (assoc-in [:a idx-a] true)
+                                         (assoc-in [:b idx-b] true)))
+                   (update :matches (conj [idx-a idx-b])))
+               (dec steps))))))
+
 (defn online-match-update [{:keys [queue edges as bs] :as matrix} steps]
   (if (empty? edges)
-    matrix
+    (online-match-solver matrix steps)
     (let [[edges-batch edges'] (split-at steps edges)
           queue' (reduce (fn [pm [idx-a idx-b]]
                            (assoc pm [idx-a idx-b]
@@ -22,6 +39,17 @@
                          queue
                          edges-batch)]
       (assoc matrix :queue queue' :edges edges'))))
+
+(defn online-match-solution [{:keys [edges as bs] :as matrix}]
+  (let [matrix0 (if (empty? edges)
+                  matrix
+                  (online-match-update matrix (count edges)))
+        matrix' (if (empty? (:queue matrix0))
+                  matrix0
+                  (online-match-solver matrix0 (count (:queue matrix0))))]
+    (->> (:matches matrix')
+         (sort-by first)
+         (mapv (fn [[idx-a idx-b]] [(nth as idx-a) (nth bs idx-b)])))))
 
 (defn match-matrix [comparator as bs]
   (let [matrix (online-match-matrix comparator as bs)]
@@ -58,4 +86,9 @@
   (greedy-assignment-match
    <
    [(gv/vec2 0 0) (gv/vec2 0 1) (gv/vec2 0 2)]
-   [(gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 1 2)]))
+   [(gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 1 2)])
+
+  (online-match-solution (online-match-matrix
+                          <
+                          [(gv/vec2 0 0) (gv/vec2 0 1) (gv/vec2 0 2)]
+                          [(gv/vec2 1 0) (gv/vec2 1 1) (gv/vec2 1 2)])))
