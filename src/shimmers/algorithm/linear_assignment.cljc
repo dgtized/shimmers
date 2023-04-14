@@ -5,13 +5,27 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]))
 
+(defn online-match-matrix [comparator as bs]
+  {:queue (priority/priority-map-by comparator)
+   :edges (mc/cartesian-product (range (count as))
+                                (range (count bs)))
+   :as as
+   :bs bs})
+
+(defn online-match-update [{:keys [queue edges as bs] :as matrix} steps]
+  (if (empty? edges)
+    matrix
+    (let [[edges-batch edges'] (split-at steps edges)
+          queue' (reduce (fn [pm [idx-a idx-b]]
+                           (assoc pm [idx-a idx-b]
+                                  (g/dist (nth as idx-a) (nth bs idx-b))))
+                         queue
+                         edges-batch)]
+      (assoc matrix :queue queue' :edges edges'))))
+
 (defn match-matrix [comparator as bs]
-  (reduce (fn [pm [idx-a idx-b]]
-            (assoc pm [idx-a idx-b]
-                   (g/dist (nth as idx-a) (nth bs idx-b))))
-          (priority/priority-map-by comparator)
-          (mc/cartesian-product (range (count as))
-                                (range (count bs)))))
+  (let [matrix (online-match-matrix comparator as bs)]
+    (:queue (online-match-update matrix (count (:edges matrix))))))
 
 (defn greedy-match-loop [queue as bs]
   (loop [queue queue
