@@ -1,6 +1,7 @@
 (ns shimmers.test-namespaces
   (:require
    ;; namespaces to test
+   [shimmers.algorithm.linear-assignment-test]
    [shimmers.algorithm.line-clipping-test]
    [shimmers.algorithm.lines-test]
    [shimmers.algorithm.minimum-spanning-tree-test]
