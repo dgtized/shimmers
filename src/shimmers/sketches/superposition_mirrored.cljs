@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.linear-assignment :as linear]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
@@ -35,12 +36,15 @@
 
 (defn distribute-particles [{:keys [random-point shapes]} points]
   (let [rp ({:outside g/random-point
-             :inside g/random-point-inside} random-point)
-        max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
-    (map (fn [{:keys [pos]}]
-           (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
-                               shapes)))
-         points)))
+             :inside g/random-point-inside} random-point)]
+    (if (dr/chance 0.8)
+      (let [max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
+        (map (fn [{:keys [pos]}]
+               (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
+                                   shapes)))
+             points))
+      (let [positions (repeatedly (count points) #(rp (dr/rand-nth shapes)))]
+        (map second (linear/greedy-assignment-match < (mapv :pos points) (vec positions)))))))
 
 (defn make-particles [point-gen n]
   (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
