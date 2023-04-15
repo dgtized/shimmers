@@ -41,21 +41,14 @@
     (assoc (linear/online-match-matrix < (mapv :dest particles) positions)
            :shapes shapes)))
 
-(defn distribute-linear-matrix [matrix particles]
-  )
-
 (defn distribute-particles [{:keys [random-point shapes]} particles]
   (let [rp ({:outside g/random-point
-             :inside g/random-point-inside} random-point)]
-    (if (dr/chance 0.8)
-      (let [max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
-        (map (fn [{:keys [pos]}]
-               (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
-                                   shapes)))
-             particles))
-      (time
-       (let [positions (into [] (repeatedly (count particles) #(rp (dr/rand-nth shapes))))]
-         (map second (linear/greedy-assignment-match < (mapv :pos particles) positions)))))))
+             :inside g/random-point-inside} random-point)
+        max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
+    (map (fn [{:keys [pos]}]
+           (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
+                               shapes)))
+         particles)))
 
 (defn make-particles [point-gen n]
   (let [init (repeatedly n (fn [] {:pos (gv/vec2)}))
