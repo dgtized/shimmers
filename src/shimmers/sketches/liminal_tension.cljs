@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
@@ -93,8 +94,15 @@
                             [0.65 0.66 0.45] 1
                             [0.18 0.75 0.65] 1
                             [0.33 0.66 0.45] 1
-                            [0.0 0.5 0.45] 1})]
+                            [0.0 0.5 0.45] 1})
+        invert-region
+        (when (dr/chance 0.5)
+          (dr/rand-nth (lines/cut-polygon (cq/screen-rect) boundary)))]
+    (when invert-region
+      (q/fill 0.0 1.0)
+      (qdg/draw invert-region))
     {:boundary boundary
+     :invert-region invert-region
      :particles (generate-particles boundary (int (* 100 scale)) color)
      :t 0.0}))
 
@@ -107,11 +115,12 @@
 (defn draw-particle [{:keys [pos angle scale]} _t]
   (qdg/draw (triangle/inscribed-equilateral {:p pos :r (* scale 10)} angle)))
 
-(defn draw [{:keys [particles t]}]
+(defn draw [{:keys [particles invert-region t]}]
   (if (seq particles)
-    (doseq [{:keys [color] :as particle} particles]
-      (q/stroke 0.0 (tm/clamp (dr/gaussian 0.05 0.005) 0.025 0.1))
-      (apply q/fill (conj color 0.01))
+    (doseq [{:keys [color pos] :as particle} particles]
+      (let [invert (and invert-region (g/contains-point? invert-region pos))]
+        (q/stroke (if invert 1.0 0.0) (tm/clamp (dr/gaussian 0.05 0.005) 0.025 0.1))
+        (apply q/fill (conj (if invert (update color 0 inverted) color) 0.01)))
       (draw-particle particle t))
     (q/no-loop)))
 
