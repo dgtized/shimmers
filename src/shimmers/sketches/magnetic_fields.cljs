@@ -55,7 +55,7 @@
         dipoles (repeatedly (dr/random-int 2 5) (partial random-dipole bounds))]
     [(csvg/group {}
        (for [{:keys [p strength]} dipoles]
-         (with-meta (gc/circle p (Math/abs strength))
+         (with-meta (gc/circle p (abs strength))
            {:fill (if (> strength 0) "none" "black")})))
      (csvg/group {}
        (apply concat (repeatedly 200 #(line bounds dipoles))))]))

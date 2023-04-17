@@ -144,7 +144,7 @@
                 (q/stroke 0.0 (+ 0.1 (* 0.15 (tm/smoothstep* 0.4 1.0 p-radius))))
                 (let [polygon (gp/polygon2 points)]
                   (dotimes [_ (int (* 30 sqrt-r))]
-                    (let [c (gc/circle (Math/abs (* sqrt-r (dr/gaussian (cq/rel-h 0.0025) 1.2))))
+                    (let [c (gc/circle (abs (* sqrt-r (dr/gaussian (cq/rel-h 0.0025) 1.2))))
                           sample (g/point-at polygon (dr/random))
                           ext (if spores
                                 (+ 0.94 (dr/pareto 0.05 tm/PHI))

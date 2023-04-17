@@ -39,7 +39,7 @@
                    (partial code
                             (cq/rel-h (+ (+ (* 0.5 height) (* i height))
                                          (* chaos (* 0.01 (dr/random)))))
-                            (cq/rel-w (Math/abs (dr/gaussian 0.005 0.002)))
+                            (cq/rel-w (abs (dr/gaussian 0.005 0.002)))
                             (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))
         differential (+ 1.66 (* 0.3 chaos))]
     (-> state

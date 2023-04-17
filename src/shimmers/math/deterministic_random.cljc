@@ -142,7 +142,7 @@
 (defn gaussian
   ([] (gaussian 0 1))
   ([mu sd]
-   (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (Math/abs sd))})
+   (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (abs sd))})
              {:seed (random-int MAX-INT)})))
 
 (defn pareto [scale shape]

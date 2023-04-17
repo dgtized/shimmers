@@ -60,7 +60,7 @@
        (keep (fn [[a b c]]
                (let [ab (g/heading (tm/- b a))
                      bc (g/heading (tm/- c b))]
-                 (when (> (Math/abs (- ab bc)) tolerance)
+                 (when (> (abs (- ab bc)) tolerance)
                    b))))
        (cs/sandwich points)))
 

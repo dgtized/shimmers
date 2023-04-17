@@ -25,7 +25,7 @@
 ;; FIXME: velocity is fixed and not proportional to distance to parent?
 (defn position [{:keys [semi-major semi-minor focal-distance
                         speed theta0]} t]
-  (let [dt (if (> (Math/abs speed) 0) speed 1)
+  (let [dt (if (> (abs speed) 0) speed 1)
         theta (+ theta0 (/ t dt))]
     (gv/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
              (* semi-minor (Math/sin theta)))))

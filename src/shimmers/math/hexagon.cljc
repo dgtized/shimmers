@@ -136,9 +136,9 @@
 (defn cube-distance
   [a b]
   (let [[q r s] (tm/- b a)]
-    (/ (+ (Math/abs q)
-          (Math/abs r)
-          (Math/abs s))
+    (/ (+ (abs q)
+          (abs r)
+          (abs s))
        2)))
 
 (defn cube-spiral

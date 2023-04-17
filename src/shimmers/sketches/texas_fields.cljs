@@ -56,7 +56,7 @@
                       (->> (g/scale-size line 1.01)
                            (lines/cut-polygon cell)
                            ;; remove tiny slivers from output
-                           (filter #(> (Math/abs (g/area %)) 1.0))))
+                           (filter #(> (abs (g/area %)) 1.0))))
                     cells))
           [cell] lines))
 
@@ -129,7 +129,7 @@
     (if-let [shape (some (fn [s] (when (let [{:keys [combine error]} (meta s)]
                                         (and combine (not error)))
                                   s))
-                         (sort-by (fn [s] (Math/abs (g/area s)))
+                         (sort-by (fn [s] (abs (g/area s)))
                                   (spatialtree/select-with-shape qt region)))]
       (recur
        (if-let [closest (find-closest qt shape (search-radius shape))]

@@ -19,8 +19,8 @@
   {})
 
 (defn rdirection []
-  (tm/* (gv/vec2 (* 0.6 (Math/abs (dr/gaussian 0 3.5)))
-                 (* -0.4 (Math/abs (dr/gaussian 0 3.5))))
+  (tm/* (gv/vec2 (* 0.6 (abs (dr/gaussian 0 3.5)))
+                 (* -0.4 (abs (dr/gaussian 0 3.5))))
         (cq/rel-w 0.09)))
 
 (defn epicenter-distance [epicenter max-dist s]

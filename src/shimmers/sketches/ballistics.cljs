@@ -62,14 +62,14 @@
 
 (defn initial-velocity [angle [x y]]
   (Math/sqrt
-   (Math/abs
+   (abs
     (/ (* (eq/sqr x) 9.8)
        (- (* x (Math/sin (* 2 angle)))
           (* 2 y (eq/sqr (Math/cos angle))))))))
 
 ;; need to account for vertical height of target?
 (defn time-of-flight [angle v0 x]
-  (Math/abs (/ x (* v0 (Math/cos angle)))))
+  (abs (/ x (* v0 (Math/cos angle)))))
 
 (defn fire-projectile [state {:keys [pos angle target]}]
   (let [dir (v/polar 1.0 angle)

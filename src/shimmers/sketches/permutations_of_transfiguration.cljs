@@ -47,7 +47,7 @@
      (fn [effect] (update effect :theta + (* dir speed)))
      :done?
      (fn [{:keys [theta]}]
-       (< (Math/abs (- (* dir target) theta)) (* speed 0.5)))
+       (< (abs (- (* dir target) theta)) (* speed 0.5)))
      :on-complete (rotate-grid-cells (* dir rotations))
      :draw
      (fn [{:keys [cells theta]} grid w h]
@@ -69,7 +69,7 @@
    (fn [effect] (update effect :theta + speed))
    :done?
    (fn [{:keys [theta]}]
-     (< (Math/abs (- Math/PI theta)) (* speed 0.5)))
+     (< (abs (- Math/PI theta)) (* speed 0.5)))
    :on-complete (rotate-grid-cells 1)
    :draw
    (fn [effect grid w h]
@@ -91,7 +91,7 @@
    (fn [effect] (update effect :theta + speed))
    :done?
    (fn [{:keys [theta]}]
-     (< (Math/abs (- Math/PI theta)) (* speed 0.5)))
+     (< (abs (- Math/PI theta)) (* speed 0.5)))
    :on-complete (rotate-grid-cells 1)
    :draw
    (fn [effect grid w h]
@@ -125,7 +125,7 @@
      :step
      (fn [effect] (update effect :offset + speed))
      :done?
-     (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
+     (fn [{:keys [offset]}] (< (- (abs n) offset) (* speed 0.5)))
      :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]
@@ -146,7 +146,7 @@
      :step
      (fn [effect] (update effect :offset + speed))
      :done?
-     (fn [{:keys [offset]}] (< (- (Math/abs n) offset) (* speed 0.5)))
+     (fn [{:keys [offset]}] (< (- (abs n) offset) (* speed 0.5)))
      :on-complete (rotate-grid-cells n)
      :draw
      (fn [{:keys [cells offset]} grid w h]

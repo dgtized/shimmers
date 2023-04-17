@@ -161,7 +161,7 @@
                          (- (eq/sqr r-small))
                          (eq/sqr r-big))
                       (* 2 d))
-                x2 (Math/abs (- d x1))
+                x2 (abs (- d x1))
                 y (Math/sqrt (- (eq/sqr r-big) (eq/sqr x1)))
                 a-big (- (* (eq/sqr r-big) (Math/acos (/ x1 r-big)))
                          (* x1 y))

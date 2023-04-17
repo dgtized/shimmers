@@ -37,7 +37,7 @@
          (filter (fn [s] (> (g/area s) 0)))
          (map (fn [{:keys [points]}]
                 ;; TODO: make this proportional to size?
-                (let [ratio (Math/abs (dr/gaussian 0.0 0.12))
+                (let [ratio (abs (dr/gaussian 0.0 0.12))
                       iters (dr/random-int 1 4)
                       poly (gp/polygon2 (chaikin/chaikin ratio true iters points))
                       centroid-noise (dr/noise-at-point (tm/* seed 1.5) 0.005 (g/centroid poly))]

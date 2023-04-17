@@ -30,7 +30,7 @@
                  (->> (poly-detect/inset-polygon poly 4)
                       #_poly-detect/split-self-intersection
                       poly-detect/self-intersection-polygons
-                      (filter (fn [inset] (> (Math/abs (g/area inset)) 100))))))))
+                      (filter (fn [inset] (> (abs (g/area inset)) 100))))))))
 
 (defn cline [p0 r0 p1 r1 t0 t1]
   (let [a (gc/circle (apply cq/rel-vec p0) (cq/rel-h r0))
@@ -55,7 +55,7 @@
 (defn update-state [{:keys [t bounds] :as state}]
   (let [lines (gen-lines t)]
     (-> state
-        (update :t + (* 0.1 (Math/abs (dr/gaussian 0.08 0.1))))
+        (update :t + (* 0.1 (abs (dr/gaussian 0.08 0.1))))
         (assoc :shapes
                (reduce (fn [polygons line]
                          (mapcat (fn [poly] (cut line poly)) polygons))

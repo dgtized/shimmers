@@ -36,7 +36,7 @@
         dest (v/+polar pos r t1)]
     [[:M src]
      [:A [r r] 0.0
-      (if (> (Math/abs (- t1 t0)) Math/PI) 1 0)
+      (if (> (abs (- t1 t0)) Math/PI) 1 0)
       (if (> t1 t0) 1 0)
       dest]]))
 

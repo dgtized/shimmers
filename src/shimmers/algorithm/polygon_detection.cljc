@@ -43,7 +43,7 @@
   "Returns the absolute relative angle-between vectors `p` and `q`.
   The range is 0 to π."
   [p q]
-  (Math/abs (- (atan2 p) (atan2 q))))
+  (abs (- (atan2 p) (atan2 q))))
 
 ;; TODO: optimize these a bit?
 (defn clockwise-point

@@ -17,7 +17,7 @@
 (defn nearby [rect rectangles]
   (let [center-x (:x (g/centroid rect))
         width (* 2 (g/width rect))]
-    (filter (fn [t] (< (Math/abs (- center-x (:x (g/centroid t)))) width))
+    (filter (fn [t] (< (abs (- center-x (:x (g/centroid t)))) width))
             rectangles)))
 
 ;; note this only connects edges that completely overlap, it won't form L or T

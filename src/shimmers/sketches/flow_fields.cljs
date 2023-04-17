@@ -53,7 +53,7 @@
 
 (defn variance [mu sd]
   (if (> sd 0)
-    (int (Math/abs (dr/gaussian mu sd)))
+    (int (abs (dr/gaussian mu sd)))
     mu))
 
 (defn dir-at
@@ -241,7 +241,7 @@
     (doseq [p (:points obstacles)]
       (cq/circle p (/ (:radius obstacles) 4))))
   (q/no-fill)
-  (q/stroke-weight (Math/abs (dr/gaussian stroke-weight stroke-weight-variance)))
+  (q/stroke-weight (abs (dr/gaussian stroke-weight stroke-weight-variance)))
   (when (< iter iterations)
     (apply q/stroke (palettes palette-mode palette-color))
     (let [hstep (* step-size 0.5)]

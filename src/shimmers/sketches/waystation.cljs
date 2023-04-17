@@ -72,7 +72,7 @@
                 (tm/clamp acc (- max-accel) (/ max-accel cars)))
               0)]
     (-> train
-        (assoc :target (if (and target (<= (Math/abs vel) 0.00001)
+        (assoc :target (if (and target (<= (abs vel) 0.00001)
                                 (dr/chance 0.008))
                          10.0
                          target))

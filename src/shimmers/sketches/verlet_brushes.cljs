@@ -66,7 +66,7 @@
   (q/stroke-weight 1)
   (q/no-stroke)
   (let [fc (q/frame-count)]
-    (q/fill (mod (+ (* (Math/abs (q/cos (/ fc 1000))) 0.2) base-color) 1.0)
+    (q/fill (mod (+ (* (abs (q/cos (/ fc 1000))) 0.2) base-color) 1.0)
             (tm/map-interval (q/noise (/ fc 600) 500.0) [0 1] [0.4 0.75])
             (tm/map-interval (q/noise (/ fc 800) 1000.0) [0 1] [0.5 0.8])
             (tm/map-interval (q/noise (/ fc 500) 2000.0) [0 1] [0.01 0.1])))

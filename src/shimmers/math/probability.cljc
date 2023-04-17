@@ -92,10 +92,10 @@
          (map (prob-if (constantly 0.2) (fn [x y] [:v x y]) vector) (range 5) (reverse (range 5))))
 
 (defn gaussian [mu sd]
-  (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (Math/abs sd))})))
+  (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (abs sd))})))
 
 (defn gaussian-clamped [mean sd]
-  (let [dist (ksd/normal {:mu mean :sd (+ tm/*eps* (Math/abs sd))})]
+  (let [dist (ksd/normal {:mu mean :sd (+ tm/*eps* (abs sd))})]
     (fn []
       (-> dist
           ksd/draw

@@ -49,7 +49,7 @@
 (defn update-state [{:keys [length t] :as state}]
   (-> state
       (update :chain rotate-chainlinks (gv/vec2) length 0.02 t)
-      (update :t + (Math/abs (dr/gaussian 0 0.02)))))
+      (update :t + (abs (dr/gaussian 0 0.02)))))
 
 (defn draw [{:keys [chain]}]
   (q/no-fill)

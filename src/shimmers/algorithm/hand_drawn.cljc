@@ -29,7 +29,7 @@
                     (* 6 (Math/pow t 5))
                     (* 10 (Math/pow t 3)))]
         ;; Seems safer to use abs, but something weird is flipped with mix here?
-        (tm/mix p q (Math/abs term))))))
+        (tm/mix p q (abs term))))))
 
 (defn deviation [prev current]
   (let [midpoint (tm/mix prev current 0.5)

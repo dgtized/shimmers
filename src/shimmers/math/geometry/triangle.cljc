@@ -16,7 +16,7 @@
 
 (extend-type Triangle2
   g/IArea
-  (area [_] (Math/abs (apply gu/tri-area2 (get _ :points))))
+  (area [_] (abs (apply gu/tri-area2 (get _ :points))))
   ISignedArea
   (signed-area [_] (apply gu/tri-area2 (get _ :points))))
 

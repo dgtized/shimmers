@@ -41,8 +41,8 @@
 (defn perpendicular-distance [[x1 y1] [x2 y2] [x0 y0]]
   (let [x21 (- x2 x1)
         y21 (- y2 y1)]
-    (/ (Math/abs (- (* x21 (- y1 y0))
-                    (* (- x1 x0) y21)))
+    (/ (abs (- (* x21 (- y1 y0))
+               (* (- x1 x0) y21)))
        (Math/sqrt (+ (* x21 x21) (* y21 y21))))))
 
 (defn max-perpendicular-distance [points]

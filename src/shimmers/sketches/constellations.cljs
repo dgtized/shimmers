@@ -60,7 +60,7 @@
   (let [end-angle (+ start-angle dtheta)
         start (v/+polar p r start-angle)
         end (v/+polar p r end-angle)
-        large-arc (if (<= (Math/abs (- end-angle start-angle)) Math/PI) 0 1)
+        large-arc (if (<= (abs (- end-angle start-angle)) Math/PI) 0 1)
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 

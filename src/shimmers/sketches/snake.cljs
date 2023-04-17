@@ -36,7 +36,7 @@
                     (+ (g/heading dir-center)
                        (dr/gaussian 0 0.8))
                     (dr/random-tau))
-        size (Math/abs (dr/gaussian 20 6))]
+        size (abs (dr/gaussian 20 6))]
     (chain/->KinematicSegment base direction size)))
 
 (defrecord Spinner [pos vel t0 t1])
