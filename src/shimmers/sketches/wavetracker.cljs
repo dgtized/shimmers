@@ -31,7 +31,7 @@
         (dotimes [i samples]
           (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
                 y (* (Math/cos (+ time-factor (/ x rate))))
-                scale (/ (mod (+ (tm/floor (* 2.5 t)) (+ j 2)) 13) 13)]
+                scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 2.5 t) (+ j 2)))))]
             (cq/circle (gv/vec2 x (* amplitude y)) (abs (* scale 4.0)))))))))
 
 (defn page []
