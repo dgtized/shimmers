@@ -22,15 +22,17 @@
     (q/background 1.0 (- 1.0 opacity))
     (q/fill 0.0 opacity)
     (q/stroke 0.0 opacity))
-  ;; (q/translate (cq/rel-vec 0.5 0.5))
-  (let [samples 75]
+  (q/translate (cq/rel-vec 0.0 0.5))
+  (let [samples 75
+        rate (* 30 Math/PI (+ 0.5 (eq/unit-sin (* tm/HALF_PI t))))
+        amplitude (* (cq/rel-h 0.4) (+ 0.2 (* 0.8 (eq/unit-sin (* 0.66 t)))))]
     (dotimes [j 10]
-      (dotimes [i samples]
-        (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
-              y (Math/cos (+ t (* 0.2 j) (/ x (* 30 Math/PI (+ 0.5 (eq/unit-sin (* tm/HALF_PI t)))))))
-              scale (/ (mod (+ (tm/floor (* 2.5 t)) (+ j 2)) 13) 13)]
-          (cq/circle (gv/vec2 x (+ (cq/rel-h 0.5) (* (cq/rel-h 0.4) y)))
-                     (abs (* scale 4.0))))))))
+      (let [time-factor (+ t (* 0.2 j))]
+        (dotimes [i samples]
+          (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
+                y (* (Math/cos (+ time-factor (/ x rate))))
+                scale (/ (mod (+ (tm/floor (* 2.5 t)) (+ j 2)) 13) 13)]
+            (cq/circle (gv/vec2 x (* amplitude y)) (abs (* scale 4.0)))))))))
 
 (defn page []
   [:div
