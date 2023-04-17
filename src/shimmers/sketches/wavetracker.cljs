@@ -3,11 +3,12 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
+   [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
-   [shimmers.math.equations :as eq]))
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -17,17 +18,19 @@
   (update state :t + 0.01))
 
 (defn draw [{:keys [t]}]
-  (q/background 1.0)
-  (q/fill 0.0)
+  (let [opacity (+ 0.33 (* 0.33 (eq/unit-cos (* tm/THREE_HALVES_PI t))))]
+    (q/background 1.0 (- 1.0 opacity))
+    (q/fill 0.0 opacity)
+    (q/stroke 0.0 opacity))
   ;; (q/translate (cq/rel-vec 0.5 0.5))
-  (let [samples 150]
+  (let [samples 75]
     (dotimes [j 10]
       (dotimes [i samples]
         (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
-              y (+ (cq/rel-h 0.5)
-                   (* (cq/rel-h 0.4)
-                      (Math/cos (+ t (* 0.2 j) (/ x (* 30 Math/PI (+ 0.5 (eq/unit-sin (* 2 t)))))))))]
-          (cq/circle (gv/vec2 x y) 3.0))))))
+              y (Math/cos (+ t (* 0.2 j) (/ x (* 30 Math/PI (+ 0.5 (eq/unit-sin (* tm/HALF_PI t)))))))
+              scale (/ (mod (+ (tm/floor (* 2.5 t)) (+ j 2)) 13) 13)]
+          (cq/circle (gv/vec2 x (+ (cq/rel-h 0.5) (* (cq/rel-h 0.4) y)))
+                     (abs (* scale 4.0))))))))
 
 (defn page []
   [:div
