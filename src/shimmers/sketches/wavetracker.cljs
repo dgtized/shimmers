@@ -20,7 +20,7 @@
   (update state :t + 0.01))
 
 (defn draw [{:keys [t]}]
-  (let [opacity (+ 0.1 (* 0.9 (eq/unit-cos (* tm/THREE_HALVES_PI t))))]
+  (let [opacity (+ 0.1 (* 0.9 (tm/smoothstep* 0.2 0.7 (eq/unit-cos (+ 0.7 (* 1.47 t))))))]
     (q/background 1.0 opacity)
     (q/no-stroke)
     (q/fill 0.0 1.0))
