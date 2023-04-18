@@ -19,10 +19,10 @@
   (update state :t + 0.01))
 
 (defn draw [{:keys [t]}]
-  (let [opacity (+ 0.33 (* 0.33 (eq/unit-cos (* tm/THREE_HALVES_PI t))))]
-    (q/background 1.0 (- 1.0 opacity))
-    (q/fill 0.0 opacity)
-    (q/stroke 0.0 opacity))
+  (let [opacity (+ 0.1 (* 0.9 (eq/unit-cos (* tm/THREE_HALVES_PI t))))]
+    (q/background 1.0 opacity)
+    (q/no-stroke)
+    (q/fill 0.0 1.0))
   (q/translate (cq/rel-vec 0.0 0.5))
   (let [samples 75
         rate (* 30 Math/PI (+ 0.5 (eq/unit-sin (* 0.9 tm/QUARTER_PI t))))
