@@ -43,7 +43,7 @@
                 y (+ (* (- 1.0 (* 0.2 wobble)) (Math/cos (+ time-factor (/ x rate))))
                      (* 0.2 wobble
                         (Math/cos (+ 1.1 time-factor (/ (* wibble x) rate)))))
-                scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 2.5 t) (* j 0.5)))))]
+                scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 2.13 t) (* j 0.5)))))]
             (cq/circle (tm/+ (gv/vec2 x (* amplitude y))
                              (dr/jitter (* max-jitter jitter (- 1.0 scale))))
                        (abs (* scale max-scale)))))))))
