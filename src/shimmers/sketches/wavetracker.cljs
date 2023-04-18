@@ -25,7 +25,7 @@
     (q/no-stroke)
     (q/fill 0.0 1.0))
   (q/translate (cq/rel-vec 0.0 0.5))
-  (let [samples 60
+  (let [samples 75
         rate (* 30 Math/PI (+ 0.5 (eq/unit-sin (- (* 0.8 tm/QUARTER_PI t) 0.05))))
         amplitude (* (cq/rel-h 0.4) (+ 0.2 (* 0.8 (eq/unit-sin (- (* 0.53 t) (/ 1 5))))))
         jitter (tm/smoothstep* 0.39 0.9 (eq/unit-sin (* 0.31 t)))
@@ -36,7 +36,7 @@
                  (* 0.1 (eq/unit-sin (+ 0.3 (* 1.4 t)))))
         wobble (tm/smoothstep* 0.65 0.95 (eq/unit-sin (+ (/ 1 7) (* (/ 1 6) t))))
         wibble (+ 1.3 (* 0.4 (Math/sin (+ (/ 2 7) (* 1.41 t)))))]
-    (dotimes [j 10]
+    (dotimes [j 9]
       (let [time-factor (+ t (* 0.25 (inc j) width))]
         (dotimes [i samples]
           (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
