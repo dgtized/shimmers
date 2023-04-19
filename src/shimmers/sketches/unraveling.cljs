@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -12,12 +13,13 @@
 
 ;; Reminiscent of Yoann Bourgeois "Progress is not Linear" dance
 
-(defn spiral-inside [circle t0 dr dt]
+(defn spiral-inside [circle drift t0 dr dt]
   (->> {:circle circle :t t0 :r (:r circle)}
        (iterate
         (fn [{:keys [circle t r]}]
           (let [r' (* dr r)]
-            {:circle (gc/circle (v/+polar (g/point-at circle (/ t eq/TAU)) r' (+ t Math/PI)) r')
+            {:circle (gc/circle (tm/+ (v/+polar (g/point-at circle (/ t eq/TAU)) r' (+ t Math/PI))
+                                      (dr/jitter drift)) r')
              :t (+ t dt)
              :r r'})))
        (take-while (fn [{:keys [r]}] (> r 3.0)))
@@ -35,6 +37,9 @@
   (doseq [{:keys [p r]}
           (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                     (* 0.48 height))
+                         (* 0.66 (tm/smoothstep* 0.66 1.0
+                                                 (+ (* 0.66 (eq/unit-cos (+ 1.0 t (* 0.13 t))))
+                                                    (* 0.33 (eq/unit-cos (+ 1.3 t (* 0.66 t)))))))
                          (* tm/PHI t)
                          (+ 0.79 (* 0.175 (eq/unit-cos t)))
                          (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
