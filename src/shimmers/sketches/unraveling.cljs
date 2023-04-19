@@ -37,9 +37,9 @@
   (doseq [{:keys [p r]}
           (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                     (* 0.48 height))
-                         (* 0.66 (tm/smoothstep* 0.66 1.0
-                                                 (+ (* 0.66 (eq/unit-cos (+ 1.0 t (* 0.13 t))))
-                                                    (* 0.33 (eq/unit-cos (+ 1.3 t (* 0.66 t)))))))
+                         (* 0.55 (tm/smoothstep* 0.66 1.0
+                                                 (+ (* 0.66 (eq/unit-cos (+ 1.0 (* 0.3 t))))
+                                                    (* 0.33 (eq/unit-cos (+ 1.3 (* 0.6 t)))))))
                          (* tm/PHI t)
                          (+ 0.79 (* 0.175 (eq/unit-cos t)))
                          (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
@@ -47,8 +47,8 @@
                 theta0 (- (/ x r) (* 0.15 t))
                 dist (tm/smoothstep* 0.48 1.1
                                      (- 1.0
-                                        (* 0.5 (eq/unit-cos (- (* 0.3 t) (/ eq/TAU r))))
-                                        (* 0.5 (eq/unit-cos (* 0.55 t)))))
+                                        (* 0.5 (eq/unit-cos (- (* 0.22 t) (/ eq/TAU r))))
+                                        (* 0.5 (eq/unit-cos (* 0.48 t)))))
                 theta1 (- theta0 0.001 (* eq/TAU dist))]]
     (canvas/clockwise-arc ctx p r theta0 theta1)
     (canvas/stroke ctx))
