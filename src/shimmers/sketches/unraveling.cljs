@@ -47,7 +47,7 @@
                                                     (* 0.33 (eq/unit-cos (+ 1.3 (* 0.6 t)))))))
                          (* tm/PHI t)
                          (+ 0.79 (* 0.175 (eq/unit-cos t)))
-                         (+ 0.01 (* 0.5 (eq/unit-cos (* tm/PHI t)))))
+                         (* (/ eq/TAU 10) (eq/unit-cos (* tm/PHI t))))
           :let [[x _] p
                 theta0 (- (/ x r) (* 0.15 t))
                 dist (tm/smoothstep* 0.48 1.1
