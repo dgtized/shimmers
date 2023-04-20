@@ -30,7 +30,10 @@
   {:t 0})
 
 (defn update-state [{:keys [t] :as state} _dims _time]
-  (update state :t + (+ 0.002 (* 0.018 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))))
+  (let [dt (+ 0.002 (* 0.018 (eq/unit-cos (+ tm/PHI (/ t tm/PHI)))))]
+    (-> state
+        (assoc :dt dt)
+        (update :t + dt))))
 
 (defn draw [ {:keys [t]} ctx [width height] _time]
   (.clearRect ctx 0 0 width height)
