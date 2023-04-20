@@ -46,7 +46,7 @@
                                                  (+ (* 0.66 (eq/unit-cos (+ 1.0 (* 0.3 t))))
                                                     (* 0.33 (eq/unit-cos (+ 1.3 (* 0.6 t)))))))
                          (* tm/PHI t)
-                         (- 0.975 (* 0.2 (eq/unit-cos t)))
+                         (- 0.97 (* 0.2 (eq/unit-cos t)))
                          (* (/ eq/TAU 10) (eq/unit-cos (* tm/PHI t))))
           :let [[x _] p
                 theta0 (- (/ x r) (* 0.15 t))
