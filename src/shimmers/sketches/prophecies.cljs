@@ -1,6 +1,9 @@
 (ns shimmers.sketches.prophecies
   (:require
    [reagent-keybindings.keyboard :as kb]
+   [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
@@ -56,6 +59,22 @@
                      (+ t dt)]))
          (take (int (* 1.2 (inc n))))
          (map first))))
+
+(defn clipping [theta polygon n]
+  (let [{[cx _] :p radius :r :as bounding } (g/bounding-circle polygon)
+        [xstart ystart] (rp/inside-circle bounding dr/random)
+        cosa (Math/cos theta)
+        m (Math/tan theta)
+        c (- ystart (* m xstart))
+        x0 (- cx (* 1.2 radius))
+        y0 (+ (* m x0) c)
+        x1 (+ cx (* 1.2 radius))
+        y1 (+ (* m x1) c)
+        spacing (/ (max (g/width polygon) (g/height polygon)) (int (* 1.33 (inc n))))]
+    (clip/hatching-middle-out (fn [a b]
+                                (first (lines/clip-line (gl/line2 a b) polygon)))
+                              spacing cosa
+                              [x0 y0] [x1 y1])))
 
 (defn flat-polygon [n]
   (fn [connect circumradius angle]
@@ -130,16 +149,22 @@
         shape (shape-fn connect radius angle)
         line (gl/line2 vertex connect)
         padded (g/scale-size shape 1.2)
-        p-area (/ (g/area shape) width)]
+        p-area (/ (g/area shape) width)
+        clipper-r (partial clipping (dr/gaussian (+ angle tm/HALF_PI) 0.33))
+        clipper-p (partial clipping (+ angle tm/HALF_PI))
+        ;; clipper-a (partial clipping angle) -- vertical lines don't work
+        ]
     (when (and (collide/bounded? (rect/rect width height) padded)
                (not-any? (fn [s] (collide/overlaps? s padded)) shapes)
                (not-any? (fn [s] (collide/overlaps? s line)) shapes))
       ;; TODO: add hatching here, but not supporting polygons yet
       (let [shading
             (if (dr/chance 0.5)
-              ((dr/weighted {deepen 4
-                             nested 4
-                             spiral 1})
+              ((dr/weighted [[deepen 4]
+                             [nested 4]
+                             [spiral 1]
+                             [clipper-r 1]
+                             [clipper-p 1]])
                shape
                (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
                        (dr/random-int 3 9))))
