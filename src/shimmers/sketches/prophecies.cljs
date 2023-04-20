@@ -44,6 +44,19 @@
   (->> (range 0.0 0.8 (/ 0.8 n))
        (mapv (fn [s] (g/scale-size polygon (- 1.0 s))))))
 
+(defn spiral [polygon n]
+  (let [scale (/ 1.1 (inc n))
+        dt (/ tm/PHI (inc n))]
+    (->> [polygon 0]
+         (iterate (fn [[poly t]]
+                    [(g/translate (g/scale-size poly (- 1.0 scale))
+                                  (tm/* (tm/- (g/point-at poly (mod (+ t 0.5) 1.0))
+                                              (g/centroid poly))
+                                        (/ 0.3 (inc n))))
+                     (+ t dt)]))
+         (take (int (* 1.2 (inc n))))
+         (map first))))
+
 (defn flat-polygon [n]
   (fn [connect circumradius angle]
     (let [r (poly/apothem-circumradius n circumradius)]
@@ -124,7 +137,9 @@
       ;; TODO: add hatching here, but not supporting polygons yet
       (let [shading
             (if (dr/chance 0.5)
-              ((dr/rand-nth [deepen nested])
+              ((dr/weighted {deepen 4
+                             nested 4
+                             spiral 1})
                shape
                (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
                        (dr/random-int 3 9))))
