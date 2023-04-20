@@ -38,7 +38,7 @@
 
 (defn draw [ {:keys [t]} ctx [width height] _time]
   (.clearRect ctx 0 0 width height)
-  (set! (.-lineWidth ctx) (+ (/ 1.0 tm/PHI) (* 0.25 (Math/cos (* 1.33 (+ 0.5 t))))))
+  (set! (.-lineWidth ctx) (+ 0.70 (* 0.3 (Math/cos (* 1.33 (+ 0.5 t))))))
   (doseq [{:keys [p r]}
           (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                     (* 0.48 height))
