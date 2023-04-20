@@ -18,8 +18,9 @@
        (iterate
         (fn [{:keys [circle t r]}]
           (let [r' (* dr r)]
-            {:circle (gc/circle (tm/+ (v/+polar (g/point-at circle (/ t eq/TAU)) r' (+ t Math/PI))
-                                      (dr/jitter tremors))
+            {:circle (gc/circle (-> (g/point-at circle (/ t eq/TAU))
+                                    (v/+polar r' (+ t Math/PI))
+                                    (tm/+ (dr/jitter tremors)))
                                 r')
              :t (+ t dt)
              :r r'})))
