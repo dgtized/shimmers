@@ -13,13 +13,14 @@
 
 ;; Reminiscent of Yoann Bourgeois "Progress is not Linear" dance
 
-(defn spiral-inside [circle drift t0 dr dt]
+(defn spiral-inside [circle tremors t0 dr dt]
   (->> {:circle circle :t t0 :r (:r circle)}
        (iterate
         (fn [{:keys [circle t r]}]
           (let [r' (* dr r)]
             {:circle (gc/circle (tm/+ (v/+polar (g/point-at circle (/ t eq/TAU)) r' (+ t Math/PI))
-                                      (dr/jitter drift)) r')
+                                      (dr/jitter tremors))
+                                r')
              :t (+ t dt)
              :r r'})))
        (take-while (fn [{:keys [r]}] (> r 3.0)))
