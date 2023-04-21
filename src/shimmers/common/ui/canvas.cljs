@@ -124,10 +124,13 @@
   (doto ctx
     .beginPath
     (.arc x y r 0 eq/TAU false)))
-
-(defn stroke [ctx]
-  (.stroke ctx)
-  ctx)
+(defn stroke
+  ([ctx]
+   (.stroke ctx)
+   ctx)
+  ([ctx path]
+   (.stroke ctx path)
+   ctx))
 
 (defn fill
   ([ctx]
@@ -135,6 +138,9 @@
    ctx)
   ([ctx fill-rule]
    (.fill ctx fill-rule)
+   ctx)
+  ([ctx path fill-rule]
+   (.fill ctx path fill-rule)
    ctx))
 
 (defn clear
