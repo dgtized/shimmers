@@ -1,6 +1,5 @@
 (ns shimmers.sketches.othello
   (:require
-   [helins.canvas :as cv]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -27,8 +26,8 @@
         r (max 30 (int (/ (min width height) 16)))
         cols (int (/ width (* 2.66 r)))
         rows (int (/ height (* 2.66 r)))]
-    (cv/clear ctx 0 0 width height)
-    (cv/line-width ctx (/ r 3))
+    (canvas/clear ctx width height)
+    (canvas/line-width ctx (/ r 3))
     (dotimes [i cols]
       (dotimes [j rows]
         (let [x (* (/ width cols) (+ i 0.5))

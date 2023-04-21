@@ -136,3 +136,15 @@
   ([ctx fill-rule]
    (.fill ctx fill-rule)
    ctx))
+
+(defn clear
+  ([ctx width height]
+   (clear ctx 0 0 width height))
+  ([ctx x y width height]
+   (.clearRect ctx x y width height)))
+
+(defn line-width
+  ([ctx] (.-lineWidth ctx))
+  ([ctx width]
+   (set! (.-lineWidth ctx) width)
+   ctx))
