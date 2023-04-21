@@ -124,6 +124,11 @@
   (doto ctx
     .beginPath
     (.arc x y r 0 eq/TAU false)))
+
+(defn global-composite-op
+  ([ctx] (.-globalCompositeOperation ctx))
+  ([ctx op] (set! (.-globalCompositeOperation ctx) op) ctx))
+
 (defn stroke
   ([ctx] (.stroke ctx) ctx)
   ([ctx path] (.stroke ctx path) ctx))
@@ -142,3 +147,11 @@
 (defn line-width
   ([ctx] (.-lineWidth ctx))
   ([ctx width] (set! (.-lineWidth ctx) width) ctx))
+
+(defn line-join
+  ([ctx] (.-lineJoin ctx))
+  ([ctx join] (set! (.-lineJoin ctx) join) ctx))
+
+(defn shadow-blur
+  ([ctx] (.-shadowBlur ctx))
+  ([ctx blur] (set! (.-shadowBlur ctx) blur) ctx))

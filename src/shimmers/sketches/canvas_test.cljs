@@ -66,9 +66,9 @@
            (reset! box-state box-state')
            (-> ctx
                (canvas/clear width height)
-               (cv/composite-op "lighter")
-               (cv/line-join "round")
-               (cv/shadow-blur "50")
+               (canvas/global-composite-op "lighter")
+               (canvas/line-join "round")
+               (canvas/shadow-blur "50")
                (canvas/line-width 5)
                (cv/color-stroke (str "rgba(" 55 "," 240 "," 180 "," 5 ")"))
                (cv/rect-stroke x y size size))))))))
