@@ -125,32 +125,20 @@
     .beginPath
     (.arc x y r 0 eq/TAU false)))
 (defn stroke
-  ([ctx]
-   (.stroke ctx)
-   ctx)
-  ([ctx path]
-   (.stroke ctx path)
-   ctx))
+  ([ctx] (.stroke ctx) ctx)
+  ([ctx path] (.stroke ctx path) ctx))
 
 (defn fill
-  ([ctx]
-   (.fill ctx)
-   ctx)
-  ([ctx fill-rule]
-   (.fill ctx fill-rule)
-   ctx)
-  ([ctx path fill-rule]
-   (.fill ctx path fill-rule)
-   ctx))
+  ([ctx] (.fill ctx) ctx)
+  ([ctx fill-rule] (.fill ctx fill-rule) ctx)
+  ([ctx path fill-rule] (.fill ctx path fill-rule) ctx))
 
 (defn clear
-  ([ctx width height]
-   (clear ctx 0 0 width height))
+  ([ctx width height] (clear ctx 0 0 width height))
   ([ctx x y width height]
-   (.clearRect ctx x y width height)))
+   (.clearRect ctx x y width height)
+   ctx))
 
 (defn line-width
   ([ctx] (.-lineWidth ctx))
-  ([ctx width]
-   (set! (.-lineWidth ctx) width)
-   ctx))
+  ([ctx width] (set! (.-lineWidth ctx) width) ctx))
