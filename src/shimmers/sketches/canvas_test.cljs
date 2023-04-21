@@ -1,6 +1,5 @@
 (ns shimmers.sketches.canvas-test
   (:require
-   [helins.canvas :as cv]
    [reagent.core :as r]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
@@ -70,8 +69,8 @@
                (canvas/line-join "round")
                (canvas/shadow-blur "50")
                (canvas/line-width 5)
-               (cv/color-stroke (str "rgba(" 55 "," 240 "," 180 "," 5 ")"))
-               (cv/rect-stroke x y size size))))))))
+               (canvas/stroke-style (str "rgba(" 55 "," 240 "," 180 "," 5 ")"))
+               (canvas/stroke-rect x y size size))))))))
 
 (defn page []
   (let [canvas-state (r/atom {:width 200 :height 200})

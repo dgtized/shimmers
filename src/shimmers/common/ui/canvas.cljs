@@ -133,6 +133,14 @@
   ([ctx] (.stroke ctx) ctx)
   ([ctx path] (.stroke ctx path) ctx))
 
+(defn stroke-style
+  ([ctx] (.-strokeStyle ctx))
+  ([ctx style] (set! (.-strokeStyle ctx) style) ctx))
+
+(defn stroke-rect [ctx x y width height]
+  (.strokeRect ctx x y width height)
+  ctx)
+
 (defn fill
   ([ctx] (.fill ctx) ctx)
   ([ctx fill-rule] (.fill ctx fill-rule) ctx)
