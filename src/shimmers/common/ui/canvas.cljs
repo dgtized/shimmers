@@ -2,6 +2,7 @@
   (:require
    [goog.dom :as dom]
    [reagent.core :as r]
+   [shimmers.common.ui.canvas-attributes :as ca :include-macros true]
    [shimmers.common.framerate :as framerate]
    [shimmers.math.equations :as eq]))
 
@@ -125,18 +126,6 @@
     .beginPath
     (.arc x y r 0 eq/TAU false)))
 
-(defn global-composite-op
-  ([ctx] (.-globalCompositeOperation ctx))
-  ([ctx op] (set! (.-globalCompositeOperation ctx) op) ctx))
-
-(defn stroke
-  ([ctx] (.stroke ctx) ctx)
-  ([ctx path] (.stroke ctx path) ctx))
-
-(defn stroke-style
-  ([ctx] (.-strokeStyle ctx))
-  ([ctx style] (set! (.-strokeStyle ctx) style) ctx))
-
 (defn stroke-rect [ctx x y width height]
   (.strokeRect ctx x y width height)
   ctx)
@@ -152,14 +141,9 @@
    (.clearRect ctx x y width height)
    ctx))
 
-(defn line-width
-  ([ctx] (.-lineWidth ctx))
-  ([ctx width] (set! (.-lineWidth ctx) width) ctx))
-
-(defn line-join
-  ([ctx] (.-lineJoin ctx))
-  ([ctx join] (set! (.-lineJoin ctx) join) ctx))
-
-(defn shadow-blur
-  ([ctx] (.-shadowBlur ctx))
-  ([ctx blur] (set! (.-shadowBlur ctx) blur) ctx))
+(ca/defattr global-composite-op .-globalCompositeOperation)
+(ca/defattr stroke .-stroke)
+(ca/defattr stroke-style .-strokeStyle)
+(ca/defattr line-width .-lineWidth)
+(ca/defattr line-join .-lineJoin)
+(ca/defattr shadow-blur .-shadowBlur)
