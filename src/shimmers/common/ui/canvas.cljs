@@ -130,6 +130,10 @@
   (.strokeRect ctx x y width height)
   ctx)
 
+(defn stroke
+  ([ctx] (.stroke ctx) ctx)
+  ([ctx path] (.stroke ctx path) ctx))
+
 (defn fill
   ([ctx] (.fill ctx) ctx)
   ([ctx fill-rule] (.fill ctx fill-rule) ctx)
@@ -142,7 +146,6 @@
    ctx))
 
 (defattr global-composite-op .-globalCompositeOperation)
-(defattr stroke .-stroke)
 (defattr stroke-style .-strokeStyle)
 (defattr line-width .-lineWidth)
 (defattr line-join .-lineJoin)
