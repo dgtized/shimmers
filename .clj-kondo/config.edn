@@ -5,7 +5,8 @@
  :linters
  {:unresolved-symbol
   ;; c-for defines loop variables for a specific range
-  {:exclude [(shimmers.macros.loop/c-for)]}
+  {:exclude [(shimmers.macros.loop/c-for)
+             (shimmers.common.ui.canvas-attributes/defattr)]}
 
   :unused-namespace
   {:exclude
