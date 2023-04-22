@@ -2,7 +2,7 @@
   (:require
    [goog.dom :as dom]
    [reagent.core :as r]
-   [shimmers.common.ui.canvas-attributes :as ca :include-macros true]
+   [shimmers.common.ui.canvas-attributes :as ca :refer-macros [defattr]]
    [shimmers.common.framerate :as framerate]
    [shimmers.math.equations :as eq]))
 
@@ -141,9 +141,9 @@
    (.clearRect ctx x y width height)
    ctx))
 
-(ca/defattr global-composite-op .-globalCompositeOperation)
-(ca/defattr stroke .-stroke)
-(ca/defattr stroke-style .-strokeStyle)
-(ca/defattr line-width .-lineWidth)
-(ca/defattr line-join .-lineJoin)
-(ca/defattr shadow-blur .-shadowBlur)
+(defattr global-composite-op .-globalCompositeOperation)
+(defattr stroke .-stroke)
+(defattr stroke-style .-strokeStyle)
+(defattr line-width .-lineWidth)
+(defattr line-join .-lineJoin)
+(defattr shadow-blur .-shadowBlur)
