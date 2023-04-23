@@ -1,6 +1,9 @@
 {:lint-as
  {shimmers.sketch/defquil clj-kondo.lint-as/def-catch-all
-  shimmers.sketch/definition clj-kondo.lint-as/def-catch-all}
+  shimmers.sketch/definition clj-kondo.lint-as/def-catch-all
+
+  shimmers.common.ui.canvas-attributes/defattr
+  clj-kondo.lint-as/def-catch-all}
 
  :linters
  {:unresolved-symbol
