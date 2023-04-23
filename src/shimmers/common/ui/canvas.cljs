@@ -147,15 +147,23 @@
 
 (defattr alpha .-globalAlpha)
 (defattr global-composite-op .-globalCompositeOperation)
+
 (defattr fill-style .-fillStyle)
+
 (defattr stroke-style .-strokeStyle)
-(defattr shadow-style .-shadowColor)
 (defattr line-cap .-lineCap)
+(defattr line-dash-offset .-lineDashOffset)
 (defattr line-join .-lineJoin)
 (defattr line-width .-lineWidth)
+(defattr miter-limit .-miterLimit)
+
+(defattr shadow-style .-shadowColor)
 (defattr shadow-blur .-shadowBlur)
 (defattr shadow-x .-shadowOffsetX)
 (defattr shadow-y .-shadowOffsetY)
+
 (defattr font .-font)
+(defattr font-kerning .-fontKerning)
+(defattr text-direction .-direction)
 (defattr text-align .-textAlign)
 (defattr text-baseline .-textBaseline)
