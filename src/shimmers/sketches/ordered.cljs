@@ -171,7 +171,7 @@
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         s (dr/weighted
-           [[bounds 3.0]
+           [[bounds 1.0]
             [(rectangle) 2.0]
             [(n-gon 5) 1.0]
             [(n-gon 6) 3.0]
