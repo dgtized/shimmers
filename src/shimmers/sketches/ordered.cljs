@@ -182,13 +182,19 @@
                      shape]]
     [shape side-shapes]))
 
-(defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
-        [shape side-shapes] (bounded-shape-in-region bounds bounds)
+(defn generate-shapes [bounds region]
+  (let [[shape side-shapes] (bounded-shape-in-region bounds region)
         inner (recurse-shapes (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
-                   (outside-shapes bounds shape))
-        split-shapes (concat inner (if (dr/chance 0.75) outer []))]
+                   (outside-shapes bounds shape))]
+    [inner outer]))
+
+(defn shapes []
+  (let [bounds (rect/rect 0 0 width height)
+        [inner outer] (generate-shapes bounds bounds)
+        approach (dr/weighted [[identity 1.0]
+                               [empty 1.0]])
+        split-shapes (concat inner (approach outer))]
     (swap! defo update :shapes conj (count split-shapes))
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
