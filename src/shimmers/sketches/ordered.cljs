@@ -168,18 +168,23 @@
                    (mapcat g/edges))]
     [(gl/line2 p q) 1.0]))
 
-(defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
-        s (dr/weighted
-           [[bounds 1.0]
+(defn bounded-shape-in-region [bounds region]
+  (let [s (dr/weighted
+           [[region 1.0]
             [(rectangle) 2.0]
             [(n-gon 5) 1.0]
             [(n-gon 6) 3.0]
             [(n-gon 8) 1.0]])
-        shape (first (gu/fit-all-into-bounds bounds [s]))
+        shape (first (gu/fit-all-into-bounds region [s]))
         side-shapes [bounds
+                     region
                      (when (= s bounds) (n-gon 6))
-                     shape]
+                     shape]]
+    [shape side-shapes]))
+
+(defn shapes []
+  (let [bounds (rect/rect 0 0 width height)
+        [shape side-shapes] (bounded-shape-in-region bounds bounds)
         inner (recurse-shapes (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))
@@ -188,7 +193,7 @@
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
     ;; maybe a bug in split generation or the cut-polygon routine?
-    (if (< 150 (count split-shapes) 900)
+    (if (< 150 (count split-shapes) 1000)
       split-shapes
       (recur))))
 
