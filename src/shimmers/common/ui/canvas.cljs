@@ -3,7 +3,7 @@
    [goog.dom :as dom]
    [reagent.core :as r]
    [shimmers.common.framerate :as framerate]
-   [shimmers.common.ui.canvas-attributes :as ca :refer-macros [defattr]]
+   [shimmers.common.ui.canvas-attributes :refer-macros [defattr]]
    [shimmers.math.equations :as eq]))
 
 ;; See also https://github.com/reagent-project/reagent-cookbook/tree/master/recipes/canvas-fills-div
