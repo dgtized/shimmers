@@ -8,6 +8,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -66,17 +67,21 @@
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
-(defn edge-displacement
+(defn edge-displaced
   "Displace a polygon along the axis of one of it's edges.
 
   Displacement distance is a multiple of the length of the selected edge."
-  [polygon]
+  [bounds polygon]
   (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
-        d (min (tm/mag axis) (* 0.5 width) (* 0.5 height))]
-    (v/polar (/ d (dr/rand-nth [2 3 4 5 6]))
-             (g/heading axis))))
+        dist (min (tm/mag axis) (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
+        displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6]))
+                          (g/heading axis))
+        shape (g/translate polygon displace)]
+    (if (collide/bounded? (g/scale-size bounds 0.99) shape)
+      shape
+      polygon)))
 
-(defn slice [polygon lines depth]
+(defn slice [bounds polygon lines depth]
   (reduce (fn [polygons line]
             (mapcat (fn [poly]
                       (->> line
@@ -85,19 +90,19 @@
                            (map (fn [cut-poly]
                                   (let [area (g/area cut-poly)
                                         region (* width height)
-                                        disp
+                                        translated-poly
                                         (if (and (> depth 1)
                                                  (< (* 0.005 region) area (* 0.015 region))
                                                  (dr/chance 0.02))
-                                          (edge-displacement cut-poly)
-                                          (gv/vec2))]
-                                    (vary-meta (g/translate cut-poly disp) assoc
+                                          (edge-displaced bounds cut-poly)
+                                          cut-poly)]
+                                    (vary-meta translated-poly assoc
                                                :stroke-width
                                                (/ 1.3 (inc (dr/random depth)))))))))
                     polygons))
           [polygon] lines))
 
-(defn recurse-shapes [sides shape last-side depth]
+(defn recurse-shapes [bounds sides shape last-side depth]
   (if (or (> depth 6)
           (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
@@ -131,8 +136,8 @@
       (mapcat (fn [s i]
                 (if  (and stripes? (odd? i))
                   [s]
-                  (recurse-shapes sides s side (inc depth))))
-              (slice shape' (cuts shape' side offsets) depth)
+                  (recurse-shapes bounds sides s side (inc depth))))
+              (slice bounds shape' (cuts shape' side offsets) depth)
               (range)))))
 
 (defn extend [p q len]
@@ -185,7 +190,7 @@
     [shape side-shapes]))
 
 (defn generate-shapes [bounds shape side-shapes]
-  (let [inner (recurse-shapes (sides-distribution side-shapes) shape nil 0)
+  (let [inner (recurse-shapes bounds (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))]
     [inner outer]))
@@ -195,7 +200,7 @@
 ;; so I need to implement a fit-all-into-polygon method.
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        [shape side-shapes] (bounded-shape-in-region bounds bounds)
+        [shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
         [inner outer] (generate-shapes bounds shape side-shapes)
         approach (dr/weighted [[identity 1.0]
                                [empty 1.0]])
