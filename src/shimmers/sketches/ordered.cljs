@@ -131,7 +131,9 @@
                               3 1})
           offsets (map (fn [x] (Math/pow x power))
                        (tm/norm-range n-cuts))
-          stripes? (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
+          terminal-stripe? (if (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
+                             (dr/weighted {odd? 2 even? 1})
+                             (constantly nil))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
           shape' (if (contains? layers depth)
@@ -141,7 +143,7 @@
                    shape)]
       (mapcat (fn [s i]
                 (let [s' (perturb bounds depth s)]
-                  (if  (and stripes? (odd? i))
+                  (if (terminal-stripe? i)
                     [s']
                     (recurse-shapes bounds sides s' side (inc depth)))))
               (slice shape' (cuts shape' side offsets))
