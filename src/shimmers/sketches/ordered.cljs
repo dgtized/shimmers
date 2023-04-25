@@ -72,8 +72,8 @@
   Displacement distance is a multiple of the length of the selected edge."
   [polygon]
   (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
-        d (tm/mag axis)]
-    (v/polar (/ d (dr/rand-nth [3 4 5 6 7 8]))
+        d (min (tm/mag axis) (* 0.5 width) (* 0.5 height))]
+    (v/polar (/ d (dr/rand-nth [2 3 4 5 6]))
              (g/heading axis))))
 
 (defn slice [polygon lines depth]
