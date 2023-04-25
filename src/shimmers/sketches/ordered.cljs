@@ -1,5 +1,6 @@
 (ns shimmers.sketches.ordered
   (:require
+   [clojure.math.combinatorics :as mc]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -15,6 +16,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -170,6 +172,23 @@
         (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
         (g/translate (rv 0.5 0.5)))))
 
+(defn parallelogram [region]
+  (let [[pw ph] (dr/rand-nth (mc/cartesian-product
+                              [(/ 1 tm/PHI) 0.66 0.75 0.8]
+                              [(/ 1 tm/PHI) 0.66 0.75 0.8]))
+        rect (-> (rect/rect 0 0 (* pw (g/width region)) (* ph (g/height region)))
+                 (g/center (g/centroid region)))
+        [a b c d] (g/vertices rect)
+        displace (gv/vec2 (* (dr/rand-nth [1 -1]) (* (g/width rect) (* 0.5 pw))) 0)
+        [a b c d] (if (dr/chance 0.5)
+                    [(g/translate a displace)
+                     (g/translate b displace)
+                     c d]
+                    [a b
+                     (g/translate c displace)
+                     (g/translate d displace)])]
+    (gp/polygon2 a b c d)))
+
 (defn n-gon [n]
   (-> (poly/regular-n-gon n (* 0.49 height))
       (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
@@ -183,7 +202,8 @@
   (let [s (dr/weighted
            [[region 1.0]
             [(rectangle) 2.0]
-            [(n-gon 5) 1.0]
+            [(parallelogram region) 2.0]
+            [(n-gon 5) 2.0]
             [(n-gon 6) 3.0]
             [(n-gon 8) 1.0]])
         shape (first (gu/fit-all-into-bounds region [s]))
