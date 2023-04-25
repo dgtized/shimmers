@@ -87,23 +87,25 @@
            :else
            (recur bounds polygon (dec attempts))))))
 
+;; TODO: odd/even? striping displacement?
 (defn slice [bounds polygon lines depth]
-  (reduce (fn [polygons line]
-            (mapcat (fn [poly]
-                      (->> line
-                           (lines/cut-polygon poly)
-                           (filter #(> (count (:points %)) 0))
-                           (map (fn [cut-poly]
-                                  (let [translated-poly
-                                        (if (and (> depth 0)
-                                                 (dr/chance (* 0.01 (/ 1 depth))))
-                                          (edge-displaced bounds cut-poly)
-                                          cut-poly)]
-                                    (vary-meta translated-poly assoc
-                                               :stroke-width
-                                               (/ 1.3 (inc (dr/random depth)))))))))
-                    polygons))
-          [polygon] lines))
+  (->> lines
+       (reduce (fn [polygons line]
+                 (mapcat (fn [poly]
+                           (->> line
+                                (lines/cut-polygon poly)
+                                (remove #(empty? (:points %)))))
+                         polygons))
+               [polygon])
+       (map (fn [cut-poly]
+              (let [translated-poly
+                    (if (and (> depth 0)
+                             (dr/chance (* 0.01 (/ 1 depth))))
+                      (edge-displaced bounds cut-poly)
+                      cut-poly)]
+                (vary-meta translated-poly assoc
+                           :stroke-width
+                           (/ 1.3 (inc (dr/random depth)))))))))
 
 (defn recurse-shapes [bounds sides shape last-side depth]
   (if (or (> depth 6)
