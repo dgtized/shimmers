@@ -187,11 +187,13 @@
                     [a b
                      (g/translate c displace)
                      (g/translate d displace)])]
-    (gp/polygon2 a b c d)))
+    (-> (gp/polygon2 a b c d)
+        (g/rotate (* eq/TAU (dr/weighted {0 2 (/ 1 8) 1 (/ 1 6) 1})))
+        (g/translate (rv 0.5 0.5)))))
 
 (defn n-gon [n]
   (-> (poly/regular-n-gon n (* 0.49 height))
-      (g/rotate (* eq/TAU (dr/rand-nth [(/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
+      (g/rotate (* eq/TAU (dr/rand-nth [0 (/ 1 8) (/ 1 6) (/ 5 8) (/ 5 6)])))
       (g/translate (rv 0.5 0.5))))
 
 (defn sides-distribution [shapes]
