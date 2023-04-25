@@ -189,6 +189,9 @@
                    (outside-shapes bounds shape))]
     [inner outer]))
 
+;; TODO: adjust generate-shapes to fill some of the surrounding regions
+;; however, gu/fit-all-into-bounds only works if bounds is an aabb and not a polygon
+;; so I need to implement a fit-all-into-polygon method.
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
         [inner outer] (generate-shapes bounds bounds)
