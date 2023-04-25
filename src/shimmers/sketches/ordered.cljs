@@ -87,25 +87,26 @@
            :else
            (recur bounds polygon (dec attempts))))))
 
+(defn slice [polygon lines]
+  (reduce (fn [polygons line]
+            (mapcat (fn [poly]
+                      (->> line
+                           (lines/cut-polygon poly)
+                           (remove #(empty? (:points %)))))
+                    polygons))
+          [polygon]
+          lines))
+
 ;; TODO: odd/even? striping displacement?
-(defn slice [bounds polygon lines depth]
-  (->> lines
-       (reduce (fn [polygons line]
-                 (mapcat (fn [poly]
-                           (->> line
-                                (lines/cut-polygon poly)
-                                (remove #(empty? (:points %)))))
-                         polygons))
-               [polygon])
-       (map (fn [cut-poly]
-              (let [translated-poly
-                    (if (and (> depth 0)
-                             (dr/chance (* 0.01 (/ 1 depth))))
-                      (edge-displaced bounds cut-poly)
-                      cut-poly)]
-                (vary-meta translated-poly assoc
-                           :stroke-width
-                           (/ 1.3 (inc (dr/random depth)))))))))
+(defn perturb [bounds depth polygon]
+  (let [translated-poly
+        (if (and (> depth 0)
+                 (dr/chance (* 0.01 (/ 1 depth))))
+          (edge-displaced bounds polygon)
+          polygon)]
+    (vary-meta translated-poly assoc
+               :stroke-width
+               (/ 1.3 (inc (dr/random depth))))))
 
 (defn recurse-shapes [bounds sides shape last-side depth]
   (if (or (> depth 6)
@@ -139,10 +140,11 @@
                         (apply max-key g/area))
                    shape)]
       (mapcat (fn [s i]
-                (if  (and stripes? (odd? i))
-                  [s]
-                  (recurse-shapes bounds sides s side (inc depth))))
-              (slice bounds shape' (cuts shape' side offsets) depth)
+                (let [s' (perturb bounds depth s)]
+                  (if  (and stripes? (odd? i))
+                    [s']
+                    (recurse-shapes bounds sides s' side (inc depth)))))
+              (slice shape' (cuts shape' side offsets))
               (range)))))
 
 (defn extend [p q len]
