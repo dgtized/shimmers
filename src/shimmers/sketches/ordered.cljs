@@ -77,7 +77,7 @@
   ([bounds polygon attempts]
    (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
          dist (min (tm/mag axis) (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
-         displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6]))
+         displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6 8]))
                            (g/heading axis))
          shape (g/translate polygon displace)]
      (cond (zero? attempts)
@@ -94,12 +94,9 @@
                            (lines/cut-polygon poly)
                            (filter #(> (count (:points %)) 0))
                            (map (fn [cut-poly]
-                                  (let [area (g/area cut-poly)
-                                        region (* width height)
-                                        translated-poly
-                                        (if (and (> depth 1)
-                                                 (< (* 0.005 region) area (* 0.015 region))
-                                                 (dr/chance 0.02))
+                                  (let [translated-poly
+                                        (if (and (> depth 0)
+                                                 (dr/chance (* 0.01 (/ 1 depth))))
                                           (edge-displaced bounds cut-poly)
                                           cut-poly)]
                                     (vary-meta translated-poly assoc
