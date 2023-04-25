@@ -189,7 +189,7 @@
         shape (first (gu/fit-all-into-bounds region [s]))
         side-shapes (distinct (filter some? [bounds
                                              region
-                                             (when (= s bounds) (n-gon 6))
+                                             (when (= s region) (n-gon 6))
                                              shape]))]
     [shape side-shapes]))
 
