@@ -71,15 +71,19 @@
   "Displace a polygon along the axis of one of it's edges.
 
   Displacement distance is a multiple of the length of the selected edge."
-  [bounds polygon]
-  (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
-        dist (min (tm/mag axis) (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
-        displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6]))
-                          (g/heading axis))
-        shape (g/translate polygon displace)]
-    (if (collide/bounded? (g/scale-size bounds 0.99) shape)
-      shape
-      polygon)))
+  ([bounds polygon] (edge-displaced bounds polygon 10))
+  ([bounds polygon attempts]
+   (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
+         dist (min (tm/mag axis) (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
+         displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6]))
+                           (g/heading axis))
+         shape (g/translate polygon displace)]
+     (cond (zero? attempts)
+           polygon
+           (collide/bounded? (g/scale-size bounds 0.99) shape)
+           shape
+           :else
+           (recur bounds polygon (dec attempts))))))
 
 (defn slice [bounds polygon lines depth]
   (reduce (fn [polygons line]
