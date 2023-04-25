@@ -66,11 +66,15 @@
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
-(defn edge-displacement [polygon]
-  (let [d (min (g/width polygon) (g/height polygon))
-        axis-angles (map (comp g/heading gl/line2) (g/edges polygon))]
-    (v/polar (/ d (dr/rand-nth [tm/PHI 2 3 4 5 6 7 8]))
-             (dr/rand-nth axis-angles))))
+(defn edge-displacement
+  "Displace a polygon along the axis of one of it's edges.
+
+  Displacement distance is a multiple of the length of the selected edge."
+  [polygon]
+  (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
+        d (tm/mag axis)]
+    (v/polar (/ d (dr/rand-nth [3 4 5 6 7 8]))
+             (g/heading axis))))
 
 (defn slice [polygon lines depth]
   (reduce (fn [polygons line]
@@ -82,7 +86,7 @@
                                   (let [area (g/area cut-poly)
                                         region (* width height)
                                         disp
-                                        (if (and (> depth 2)
+                                        (if (and (> depth 1)
                                                  (< (* 0.005 region) area (* 0.015 region))
                                                  (dr/chance 0.02))
                                           (edge-displacement cut-poly)
