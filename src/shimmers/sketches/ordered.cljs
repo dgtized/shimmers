@@ -167,9 +167,7 @@
       (g/translate (rv 0.5 0.5))))
 
 (defn sides-distribution [shapes]
-  (for [[p q] (->> shapes
-                   (filter some?)
-                   (mapcat g/edges))]
+  (for [[p q] (mapcat g/edges shapes)]
     [(gl/line2 p q) 1.0]))
 
 (defn bounded-shape-in-region [bounds region]
@@ -180,15 +178,14 @@
             [(n-gon 6) 3.0]
             [(n-gon 8) 1.0]])
         shape (first (gu/fit-all-into-bounds region [s]))
-        side-shapes [bounds
-                     region
-                     (when (= s bounds) (n-gon 6))
-                     shape]]
+        side-shapes (distinct (filter some? [bounds
+                                             region
+                                             (when (= s bounds) (n-gon 6))
+                                             shape]))]
     [shape side-shapes]))
 
-(defn generate-shapes [bounds region]
-  (let [[shape side-shapes] (bounded-shape-in-region bounds region)
-        inner (recurse-shapes (sides-distribution side-shapes) shape nil 0)
+(defn generate-shapes [bounds shape side-shapes]
+  (let [inner (recurse-shapes (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))]
     [inner outer]))
@@ -198,11 +195,15 @@
 ;; so I need to implement a fit-all-into-polygon method.
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        [inner outer] (generate-shapes bounds bounds)
+        [shape side-shapes] (bounded-shape-in-region bounds bounds)
+        [inner outer] (generate-shapes bounds shape side-shapes)
         approach (dr/weighted [[identity 1.0]
                                [empty 1.0]])
         split-shapes (concat inner (approach outer))]
     (swap! defo update :shapes conj (count split-shapes))
+    #_(swap! defo assoc
+             :shape shape
+             :sides side-shapes)
     ;; FIXME: mostly if the shape appears empty it looks like it's from multiple
     ;; copies of the origin shape, and not because it didn't split enough, so
     ;; maybe a bug in split generation or the cut-polygon routine?
