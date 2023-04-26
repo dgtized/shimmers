@@ -135,6 +135,7 @@
                                8 1})
           ;; FIXME: how can offsets mirror outward from center cuts for powers >1
           power (dr/weighted {1 2
+                              1.25 2
                               tm/PHI 4
                               2 2
                               3 1})
