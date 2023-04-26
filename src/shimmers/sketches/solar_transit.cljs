@@ -15,18 +15,35 @@
 
 (defrecord Body [name
                  semi-major-axis
+                 inclination
+                 longitude-of-ascending-node
                  argument-of-perihelion
                  eccentricity])
 
-(defn planet [name semi-major-axis argument-of-perihelion eccentricity]
-  (->Body name semi-major-axis argument-of-perihelion eccentricity))
+(defn planet
+  [name
+   semi-major-axis
+   inclination
+   longitude-of-ascending-node
+   argument-of-perihelion
+   eccentricity]
+  (->Body name
+          semi-major-axis
+          inclination
+          longitude-of-ascending-node
+          argument-of-perihelion
+          eccentricity))
 
-(def orbits [(planet "Mercury" 5.791e10 29.124 0.20563)
-             (planet "Venus" 1.082e11 54.884 0.006772)
-             (planet "Earth" 1.496e11 114.20783 0.0167086)
-             (planet "Mars" 2.279e11 286.502 0.0934)
-             (planet "Jupiter" 7.785e11 273.867 0.0489)
-             (planet "Saturn" 1.434e12 339.392 0.0565)])
+(def orbits
+  [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563)
+   (planet "Venus" 1.082e11 3.39458 76.86 54.884 0.006772)
+   (planet "Earth" 1.496e11 5.0E-5 -11.26064 114.20783 0.0167086)
+   (planet "Mars" 2.279e11 1.85 49.558 286.502 0.0934)
+   (planet "Jupiter" 7.785e11 1.303 100.464 273.867 0.0489)
+   (planet "Saturn" 1.434e12 2.485 113.665 339.392 0.0565)
+   (planet "Uranus" 2.871e12 0.773 74.006 96.998857 0.04717)
+   (planet "Neptune" 4.500e12 1.77 131.783 273.187 0.008678)
+   (planet "Pluto" 5.906e12 17.16 110.299 113.834 0.2488)])
 
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
@@ -37,12 +54,18 @@
   (let [radius (radial-dist semi-major-axis eccentricity)]
     (map (fn [t]
            (let [theta (* eq/TAU t)]
-             (gv/vec3 (v/polar (radius theta) theta))))
+             (v/polar (radius theta) theta)))
          (tm/norm-range 60))))
 
-(defn orbit [{:keys [argument-of-perihelion] :as body}]
+(defn orbit [{:keys [argument-of-perihelion
+                     inclination
+                     longitude-of-ascending-node]
+              :as body}]
   (sequence
-   (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians argument-of-perihelion)))))
+   (comp
+    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians argument-of-perihelion)))))
+    (map (fn [pos] (g/transform pos (g/rotate-x mat/M44 (tm/radians inclination)))))
+    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians longitude-of-ascending-node))))))
    (butlast (orbit-ellipse body))))
 
 (defn setup []
@@ -57,8 +80,9 @@
   (q/no-fill)
   (q/stroke 0.0)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
+  (q/scale 1 -1)
   (let [max-orbit (apply max (map :semi-major-axis orbits))
-        scale (/ (* 2.2 max-orbit) (max (q/width) (q/height)))]
+        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))]
     (doseq [body orbits]
       (q/begin-shape)
       (doseq [pos (orbit body)]
