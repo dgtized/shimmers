@@ -49,6 +49,7 @@
 
 ;; FIXME: sometimes roads in inside of a cell, and despite the fact that the
 ;; base-line cuts first, it's still not always separating on subsequent cuts
+;; FIXME: re-use lines/slice-polygons instead?
 (defn decompose [cell lines]
   (reduce (fn [cells line]
             (mapcat (fn [cell]

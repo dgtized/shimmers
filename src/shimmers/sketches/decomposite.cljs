@@ -26,17 +26,6 @@
     (gl/line2 (v/-polar p len theta)
               (v/+polar q len theta))))
 
-(defn decompose [polygon lines]
-  (reduce (fn [polygons line]
-            (mapcat (fn [poly]
-                      (->> line
-                           (lines/cut-polygon poly)
-                           (filter (fn [sp] (and (> (count (:points sp)) 0)
-                                                (> (g/area sp) 0))))))
-                    polygons))
-          [polygon]
-          lines))
-
 (defn longest-edge [polygon]
   (apply gl/line2 (apply max-key (fn [[p q]] (g/dist p q)) (g/edges polygon))))
 
@@ -89,7 +78,7 @@
              (constantly (/ 0.75 (inc depth)))
              (fn [child] (break-apart child (inc depth)))
              (remove (fn [poly] (g/contains-point? shape (g/centroid poly)))
-                     (decompose container lines)))))))
+                     (lines/slice-polygons [container] lines)))))))
 
 (defn shapes [bounds]
   (break-apart bounds 0))
