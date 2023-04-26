@@ -10,7 +10,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.matrix :as mat]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defrecord Body [name
@@ -18,7 +17,9 @@
                  inclination
                  longitude-of-ascending-node
                  argument-of-perihelion
-                 eccentricity])
+                 eccentricity
+                 period
+                 mean-anomaly-at-epoch])
 
 (defn planet
   [name
@@ -26,24 +27,28 @@
    inclination
    longitude-of-ascending-node
    argument-of-perihelion
-   eccentricity]
+   eccentricity
+   period
+   mean-anomaly-at-epoch]
   (->Body name
           semi-major-axis
           inclination
           longitude-of-ascending-node
           argument-of-perihelion
-          eccentricity))
+          eccentricity
+          period
+          mean-anomaly-at-epoch))
 
 (def orbits
-  [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563)
-   (planet "Venus" 1.082e11 3.39458 76.86 54.884 0.006772)
-   (planet "Earth" 1.496e11 5.0E-5 -11.26064 114.20783 0.0167086)
-   (planet "Mars" 2.279e11 1.85 49.558 286.502 0.0934)
-   (planet "Jupiter" 7.785e11 1.303 100.464 273.867 0.0489)
-   (planet "Saturn" 1.434e12 2.485 113.665 339.392 0.0565)
-   (planet "Uranus" 2.871e12 0.773 74.006 96.998857 0.04717)
-   (planet "Neptune" 4.500e12 1.77 131.783 273.187 0.008678)
-   (planet "Pluto" 5.906e12 17.16 110.299 113.834 0.2488)])
+  [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563 87.97 174.796)
+   (planet "Venus" 1.082e11 3.39458 76.86 54.884 0.006772 224.70 50.115)
+   (planet "Earth" 1.496e11 5.0E-5 -11.26064 114.20783 0.0167086 365.26 358.617)
+   (planet "Mars" 2.279e11 1.85 49.558 286.502 0.0934 686.98 19.412)
+   (planet "Jupiter" 7.785e11 1.303 100.464 273.867 0.0489 4332.59 20.02)
+   (planet "Saturn" 1.434e12 2.485 113.665 339.392 0.0565 10759.22 317.02)
+   (planet "Uranus" 2.871e12 0.773 74.006 96.998857 0.04717 30688.50 142.2386)
+   (planet "Neptune" 4.500e12 1.77 131.783 273.187 0.008678 60195.00 256.228)
+   (planet "Pluto" 5.906e12 17.16 110.299 113.834 0.2488 90560.00 14.53)])
 
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
