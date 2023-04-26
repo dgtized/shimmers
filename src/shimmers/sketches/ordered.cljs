@@ -28,6 +28,7 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
+(def max-depth 6)
 
 (defn closest-vertex-to-line [shape line]
   (apply min-key
@@ -111,17 +112,20 @@
           lines))
 
 ;; TODO: odd/even? striping displacement?
-(defn perturb [bounds side perturb-rate depth polygon]
+(defn perturb [bounds side perturb-rate depth terminal-stripe polygon]
   (let [translated-poly
         (if (dr/chance perturb-rate)
           (edge-displaced bounds side polygon)
           polygon)]
-    (vary-meta translated-poly assoc
-               :stroke-width
-               (/ 1.3 (inc (dr/random depth))))))
+    [(if terminal-stripe
+       (+ depth max-depth)
+       depth)
+     (vary-meta translated-poly assoc
+                :stroke-width
+                (/ 1.3 (inc (dr/random depth))))]))
 
 (defn recurse-shapes [bounds sides shape last-side depth]
-  (if (or (> depth 6)
+  (if (or (> depth max-depth)
           (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
                 (g/edges shape)))
@@ -156,10 +160,8 @@
                         (apply max-key g/area))
                    shape)]
       (mapcat (fn [s i]
-                (let [s' (perturb bounds side perturb-rate depth s)]
-                  (if (terminal-stripe? i)
-                    [s']
-                    (recurse-shapes bounds sides s' side (inc depth)))))
+                (let [[p-depth p-shape] (perturb bounds side perturb-rate depth (terminal-stripe? i) s)]
+                  (recurse-shapes bounds sides p-shape side (inc p-depth))))
               (slice shape' (cuts shape' side offsets))
               (range)))))
 
