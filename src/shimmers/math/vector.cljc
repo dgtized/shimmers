@@ -26,8 +26,10 @@
   (v2 (tm/clamp x (rect/left bounds) (rect/right bounds))
       (tm/clamp y (rect/bottom bounds) (rect/top bounds))))
 
-(defn polar [r theta]
-  (g/as-cartesian (v2 r theta)))
+(defn polar
+  ([theta] (polar 1.0 theta))
+  ([r theta]
+   (g/as-cartesian (v2 r theta))))
 
 (defn +polar [p r theta]
   (tm/+ p (polar r theta)))
