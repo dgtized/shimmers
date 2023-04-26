@@ -251,7 +251,7 @@
         [shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
         [inner outer] (generate-shapes bounds shape side-shapes)
         approach (dr/weighted [[identity 1.0]
-                               [empty 1.0]])
+                               [empty 2.0]])
         split-shapes (concat inner (approach outer))]
     (swap! defo update :shapes conj (count split-shapes))
     #_(swap! defo assoc
