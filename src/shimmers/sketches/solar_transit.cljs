@@ -149,20 +149,19 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {})
+  {:date-ms (js/Date.)})
 
 (defn update-state [state]
-  state)
+  (update state :date-ms + (* 24 60 60 1000)))
 
-(defn draw [_]
+(defn draw [{:keys [date-ms]}]
   (q/background 1.0)
   (q/no-fill)
   (q/stroke 0.0)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (q/scale 1 -1)
   (let [max-orbit (apply max (map :semi-major-axis orbits))
-        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))
-        date-ms (js/Date.parse "2022-11-17T00:00:00Z")]
+        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))]
     (doseq [body orbits]
       (q/begin-shape)
       (doseq [pos (orbit body)]
