@@ -40,22 +40,20 @@
          (g/vertices shape)))
 
 (defn pick-side [shape sides last-cut]
-  (let [angle (when last-cut (g/heading last-cut))]
-    (dr/weighted
-     (for [[side prob] sides
-           :let [side-heading (g/heading side)]]
-       [side
-        (* (cond (and last-cut
-                      (> (abs (eq/cos-similarity (v/polar angle) (v/polar side-heading))) 0.95))
-                 0.1
-                 (and (> (* 3 (g/width shape)) (g/height shape))
-                      (< (sm/radial-distance (* 0.25 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
-                 1.5
-                 (and (> (* 3 (g/height shape)) (g/width shape))
-                      (< (sm/radial-distance (* 0.0 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
-                 1.5
-                 :else 1.0)
-           prob)]))))
+  (for [[side prob] sides
+        :let [side-heading (g/heading side)]]
+    [side
+     (* (cond (and last-cut
+                   (> (abs (eq/cos-similarity (v/polar (g/heading last-cut)) (v/polar side-heading))) 0.95))
+              0.1
+              (and (> (* 3 (g/width shape)) (g/height shape))
+                   (< (sm/radial-distance (* 0.25 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
+              1.5
+              (and (> (* 3 (g/height shape)) (g/width shape))
+                   (< (sm/radial-distance (* 0.0 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
+              1.5
+              :else 1.0)
+        prob)]))
 
 (defn cuts [polygon side offsets]
   (let [lower (closest-vertex-to-line polygon side)
@@ -129,7 +127,7 @@
           (some (fn [[p q]] (< (g/dist p q) 3))
                 (g/edges shape)))
     [shape]
-    (let [side (pick-side shape sides last-side)
+    (let [side (dr/weighted (pick-side shape sides last-side))
           n-cuts (dr/weighted {0 (max 0 (* (- depth 2) 3))
                                1 5
                                2 5
