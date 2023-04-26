@@ -70,13 +70,12 @@
 
 (defn similar-side [polygon {[a b] :points}]
   (let [side-direction (tm/- b a)]
-    (dr/weighted
-     (for [[p q] (g/edges polygon)
-           :let [radial-d (abs (eq/cos-similarity (tm/- q p) side-direction))]]
-       [(gl/line2 p q)
-        (if (> radial-d 0.95)
-          1.0
-          0.1)]))))
+    (for [[p q] (g/edges polygon)
+          :let [radial-d (abs (eq/cos-similarity (tm/- q p) side-direction))]]
+      [(gl/line2 p q)
+       (if (> radial-d 0.95)
+         1.0
+         0.1)])))
 
 (defn edge-displaced
   "Displace a polygon along the axis of one of it's edges.
@@ -84,7 +83,7 @@
   Displacement distance is a multiple of the length of the selected edge."
   ([bounds side polygon] (edge-displaced bounds side polygon 10))
   ([bounds side polygon attempts]
-   (let [axis (similar-side polygon side)
+   (let [axis (dr/weighted (similar-side polygon side))
          max-displace (min (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
          dist (max 1.0 (min (tm/mag axis) max-displace))
          folds (if (< (/ dist max-displace) 0.25)
