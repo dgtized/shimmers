@@ -69,15 +69,30 @@
       (gl/line2 (tm/mix lp up pct)
                 (tm/mix lq uq pct)))))
 
+(defn similar-side [polygon {[a b] :points}]
+  (let [side-direction (tm/- b a)]
+    (dr/weighted
+     (for [[p q] (g/edges polygon)
+           :let [radial-d (abs (eq/cos-similarity (tm/- q p) side-direction))]]
+       [(gl/line2 p q)
+        (if (> radial-d 0.95)
+          1.0
+          0.1)]))))
+
 (defn edge-displaced
   "Displace a polygon along the axis of one of it's edges.
 
   Displacement distance is a multiple of the length of the selected edge."
-  ([bounds polygon] (edge-displaced bounds polygon 10))
-  ([bounds polygon attempts]
-   (let [axis (apply gl/line2 (dr/rand-nth (g/edges polygon)))
-         dist (min (tm/mag axis) (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
-         displace (v/polar (/ dist (dr/rand-nth [2 3 4 5 6 8]))
+  ([bounds side polygon] (edge-displaced bounds side polygon 10))
+  ([bounds side polygon attempts]
+   (let [axis (similar-side polygon side)
+         max-displace (min (* 0.5 (g/width bounds)) (* 0.5 (g/height bounds)))
+         dist (max 1.0 (min (tm/mag axis) max-displace))
+         folds (if (< (/ dist max-displace) 0.25)
+                 (dr/rand-nth [2 3 4])
+                 (dr/rand-nth [5 6 8]))
+         direction (dr/weighted {1 4 -1 1})
+         displace (v/polar (* direction (/ dist folds))
                            (g/heading axis))
          shape (g/translate polygon displace)]
      (cond (zero? attempts)
@@ -85,7 +100,7 @@
            (collide/bounded? (g/scale-size bounds 0.99) shape)
            shape
            :else
-           (recur bounds polygon (dec attempts))))))
+           (recur bounds side polygon (dec attempts))))))
 
 (defn slice [polygon lines]
   (reduce (fn [polygons line]
@@ -98,11 +113,10 @@
           lines))
 
 ;; TODO: odd/even? striping displacement?
-(defn perturb [bounds depth polygon]
+(defn perturb [bounds side perturb-rate depth polygon]
   (let [translated-poly
-        (if (and (> depth 0)
-                 (dr/chance (* 0.01 (/ 1 depth))))
-          (edge-displaced bounds polygon)
+        (if (dr/chance perturb-rate)
+          (edge-displaced bounds side polygon)
           polygon)]
     (vary-meta translated-poly assoc
                :stroke-width
@@ -134,6 +148,8 @@
           terminal-stripe? (if (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
                              (dr/weighted {odd? 2 even? 1})
                              (constantly nil))
+          perturb-rate (* (dr/rand-nth [0.02 0.05 0.1])
+                          (/ 1 (Math/pow 2 depth)))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
           shape' (if (contains? layers depth)
@@ -142,7 +158,7 @@
                         (apply max-key g/area))
                    shape)]
       (mapcat (fn [s i]
-                (let [s' (perturb bounds depth s)]
+                (let [s' (perturb bounds side perturb-rate depth s)]
                   (if (terminal-stripe? i)
                     [s']
                     (recurse-shapes bounds sides s' side (inc depth)))))
