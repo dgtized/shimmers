@@ -149,19 +149,20 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:date-ms (js/Date.now)})
+  {:date-ms (js/Date.now)
+   :zoom 1.0})
 
 (defn update-state [state]
   (update state :date-ms + (/ (* 7 24 60 60 1000) 60.0)))
 
-(defn draw [{:keys [date-ms]}]
+(defn draw [{:keys [date-ms zoom]}]
   (q/background 1.0)
   (q/no-fill)
   (q/stroke 0.0)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (q/scale 1 -1)
   (let [max-orbit (apply max (map :semi-major-axis orbits))
-        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))]
+        scale (* zoom (/ (* 2.3 max-orbit) (max (q/width) (q/height))))]
     (q/stroke-weight 0.33)
     (doseq [body orbits]
       (q/begin-shape)
@@ -170,10 +171,15 @@
       (q/end-shape :close))
 
     (q/fill 0.0)
-    (cq/circle 0 0 1.0)
+    (cq/circle 0 0 2.0)
     (doseq [body orbits]
       (cq/circle (g/scale (orbit-position body date-ms) (/ 1 scale))
                  2.0))))
+
+(defn mouse-wheel [state dir]
+  (update state :zoom
+          (fn [zoom delta] (tm/clamp (+ zoom delta) 0.05 1.0))
+          (* 0.05 (tm/sign dir))))
 
 (defn page []
   [:div
@@ -182,7 +188,8 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode]
+    :mouse-wheel mouse-wheel)])
 
 (sketch/definition solar-transit
   {:created-at "2023-04-26"
