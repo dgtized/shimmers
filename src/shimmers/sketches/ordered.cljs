@@ -40,6 +40,16 @@
          (partial poly/dist-to-closest-point line)
          (g/vertices shape)))
 
+(defn slice [polygon lines]
+  (reduce (fn [polygons line]
+            (mapcat (fn [poly]
+                      (->> line
+                           (lines/cut-polygon poly)
+                           (remove #(empty? (:points %)))))
+                    polygons))
+          [polygon]
+          lines))
+
 (defn pick-side [shape sides last-cut]
   (for [[side prob] sides
         :let [side-heading (g/heading side)]]
@@ -100,16 +110,6 @@
            shape
            :else
            (recur bounds side polygon (dec attempts))))))
-
-(defn slice [polygon lines]
-  (reduce (fn [polygons line]
-            (mapcat (fn [poly]
-                      (->> line
-                           (lines/cut-polygon poly)
-                           (remove #(empty? (:points %)))))
-                    polygons))
-          [polygon]
-          lines))
 
 ;; TODO: odd/even? striping displacement?
 (defn perturb [bounds side perturb-rate depth terminal-stripe? [i n-cuts] polygon]
