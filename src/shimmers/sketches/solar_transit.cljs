@@ -4,24 +4,29 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.core :as g]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.matrix :as mat]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
-(defrecord Body [name semi-major-axis eccentricity])
+(defrecord Body [name
+                 semi-major-axis
+                 argument-of-perihelion
+                 eccentricity])
 
-(defn planet [name semi-major-axis eccentricity]
-  (->Body name semi-major-axis eccentricity))
+(defn planet [name semi-major-axis argument-of-perihelion eccentricity]
+  (->Body name semi-major-axis argument-of-perihelion eccentricity))
 
-(def orbits [(planet "Mercury" 5.791e10 0.20563)
-             (planet "Venus" 1.082e11 0.006772)
-             (planet "Earth" 1.496e11 0.0167086)
-             (planet "Mars" 2.279e11 0.0934)
-             (planet "Jupiter" 7.785e11 0.0489)
-             (planet "Saturn" 1.434e12 0.0565)])
+(def orbits [(planet "Mercury" 5.791e10 29.124 0.20563)
+             (planet "Venus" 1.082e11 54.884 0.006772)
+             (planet "Earth" 1.496e11 114.20783 0.0167086)
+             (planet "Mars" 2.279e11 286.502 0.0934)
+             (planet "Jupiter" 7.785e11 273.867 0.0489)
+             (planet "Saturn" 1.434e12 339.392 0.0565)])
 
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
@@ -32,11 +37,13 @@
   (let [radius (radial-dist semi-major-axis eccentricity)]
     (map (fn [t]
            (let [theta (* eq/TAU t)]
-             (v/polar (radius theta) theta)))
+             (gv/vec3 (v/polar (radius theta) theta))))
          (tm/norm-range 60))))
 
-(defn orbital-path [body]
-  (butlast (orbit-ellipse body)))
+(defn orbit [{:keys [argument-of-perihelion] :as body}]
+  (sequence
+   (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians argument-of-perihelion)))))
+   (butlast (orbit-ellipse body))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -54,7 +61,7 @@
         scale (/ (* 2.2 max-orbit) (max (q/width) (q/height)))]
     (doseq [body orbits]
       (q/begin-shape)
-      (doseq [pos (orbital-path body)]
+      (doseq [pos (orbit body)]
         (apply q/curve-vertex (g/scale pos (/ 1 scale))))
       (q/end-shape :close))))
 
