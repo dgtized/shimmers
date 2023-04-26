@@ -22,6 +22,7 @@
                  mean-anomaly-at-epoch])
 
 (defn planet
+  "Convert parameters from degrees to radians"
   [name
    semi-major-axis
    inclination
@@ -32,12 +33,12 @@
    mean-anomaly-at-epoch]
   (->Body name
           semi-major-axis
-          inclination
-          longitude-of-ascending-node
-          argument-of-perihelion
+          (tm/radians inclination)
+          (tm/radians longitude-of-ascending-node)
+          (tm/radians argument-of-perihelion)
           eccentricity
           period
-          mean-anomaly-at-epoch))
+          (tm/radians mean-anomaly-at-epoch)))
 
 (def orbits
   [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563 87.97 174.796)
@@ -68,9 +69,9 @@
               :as body}]
   (sequence
    (comp
-    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians argument-of-perihelion)))))
-    (map (fn [pos] (g/transform pos (g/rotate-x mat/M44 (tm/radians inclination)))))
-    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 (tm/radians longitude-of-ascending-node))))))
+    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 argument-of-perihelion))))
+    (map (fn [pos] (g/transform pos (g/rotate-x mat/M44 inclination))))
+    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 longitude-of-ascending-node)))))
    (butlast (orbit-ellipse body))))
 
 (defn setup []
