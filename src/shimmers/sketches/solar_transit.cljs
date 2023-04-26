@@ -1,5 +1,6 @@
 (ns shimmers.sketches.solar-transit
-  "adapted from https://blog.exupero.org/mapping-elliptical-orbits/"
+  "adapted from https://blog.exupero.org/mapping-elliptical-orbits/
+   and https://blog.exupero.org/mapping-orbital-positions/"
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -40,6 +41,7 @@
           period
           (tm/radians mean-anomaly-at-epoch)))
 
+(def EPOCH (js/Date.parse "2000-01-01T12:00:00Z"))
 (def orbits
   [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563 87.97 174.796)
    (planet "Venus" 1.082e11 3.39458 76.86 54.884 0.006772 224.70 50.115)
@@ -73,6 +75,16 @@
     (map (fn [pos] (g/transform pos (g/rotate-x mat/M44 inclination))))
     (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 longitude-of-ascending-node)))))
    (butlast (orbit-ellipse body))))
+
+(defn mean-anomaly [{:keys [mean-anomaly-at-epoch period]} date-ms]
+  ;; FIXME: use a date library to correctly find days between?
+  (let [ms-per-day (* 1000 60 60 24)
+        days-since-epoch (/ (- date-ms EPOCH) ms-per-day)]
+    (mod (+ mean-anomaly-at-epoch (/ (* eq/TAU days-since-epoch) period)) eq/TAU)))
+
+(comment
+  (let [today (js/Date.parse "2022-11-17T00:00:00Z")]
+    (map (juxt :name #(tm/degrees (mean-anomaly % today))) orbits)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
