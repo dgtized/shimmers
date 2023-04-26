@@ -143,7 +143,7 @@
                               3 1})
           offsets (map (fn [x] (Math/pow x power))
                        (tm/norm-range n-cuts))
-          terminal-stripe? (if (and (> n-cuts 1) (odd? n-cuts) (dr/chance 0.5))
+          terminal-stripe? (if (and (> n-cuts 1) (dr/chance 0.5))
                              (dr/weighted {odd? 2 even? 1})
                              (constantly nil))
           perturb-rate (* (dr/rand-nth [0.02 0.05 0.1])
