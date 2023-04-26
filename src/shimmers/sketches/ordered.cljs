@@ -112,12 +112,15 @@
           lines))
 
 ;; TODO: odd/even? striping displacement?
-(defn perturb [bounds side perturb-rate depth terminal-stripe polygon]
+(defn perturb [bounds side perturb-rate depth terminal-stripe? [i n-cuts] polygon]
   (let [translated-poly
-        (if (dr/chance perturb-rate)
+        (if (dr/chance
+             (if (and (< depth 1) (< 0 i (dec n-cuts)))
+               (* perturb-rate 1.5)
+               perturb-rate))
           (edge-displaced bounds side polygon)
           polygon)]
-    [(if terminal-stripe
+    [(if (terminal-stripe? i)
        (+ depth max-depth)
        depth)
      (vary-meta translated-poly assoc
@@ -160,7 +163,7 @@
                         (apply max-key g/area))
                    shape)]
       (mapcat (fn [s i]
-                (let [[p-depth p-shape] (perturb bounds side perturb-rate depth (terminal-stripe? i) s)]
+                (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)]
                   (recurse-shapes bounds sides p-shape side (inc p-depth))))
               (slice shape' (cuts shape' side offsets))
               (range)))))
