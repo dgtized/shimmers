@@ -149,10 +149,10 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:date-ms (js/Date.)})
+  {:date-ms (js/Date.now)})
 
 (defn update-state [state]
-  (update state :date-ms + (* 24 60 60 1000)))
+  (update state :date-ms + (/ (* 7 24 60 60 1000) 60.0)))
 
 (defn draw [{:keys [date-ms]}]
   (q/background 1.0)
