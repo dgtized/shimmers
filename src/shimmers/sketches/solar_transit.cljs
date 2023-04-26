@@ -162,6 +162,7 @@
   (q/scale 1 -1)
   (let [max-orbit (apply max (map :semi-major-axis orbits))
         scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))]
+    (q/stroke-weight 0.33)
     (doseq [body orbits]
       (q/begin-shape)
       (doseq [pos (orbit body)]
@@ -169,9 +170,10 @@
       (q/end-shape :close))
 
     (q/fill 0.0)
+    (cq/circle 0 0 1.0)
     (doseq [body orbits]
       (cq/circle (g/scale (orbit-position body date-ms) (/ 1 scale))
-                 3.0))))
+                 2.0))))
 
 (defn page []
   [:div
