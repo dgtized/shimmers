@@ -40,16 +40,6 @@
          (partial poly/dist-to-closest-point line)
          (g/vertices shape)))
 
-(defn slice [polygon lines]
-  (reduce (fn [polygons line]
-            (mapcat (fn [poly]
-                      (->> line
-                           (lines/cut-polygon poly)
-                           (remove #(empty? (:points %)))))
-                    polygons))
-          [polygon]
-          lines))
-
 (defn pick-side [shape sides last-cut]
   (for [[side prob] sides
         :let [side-heading (g/heading side)]]
@@ -165,7 +155,7 @@
       (mapcat (fn [s i]
                 (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)]
                   (recurse-shapes bounds sides p-shape side (inc p-depth))))
-              (slice shape' (cuts shape' side offsets))
+              (lines/slice-polygons [shape'] (cuts shape' side offsets))
               (range)))))
 
 (defn extend [p q len]

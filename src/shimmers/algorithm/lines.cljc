@@ -315,6 +315,18 @@
     [(cut-polygon poly (gl/line2 [2 0] [2 10]))
      (cut-polygon poly (gl/line2 [0 4] [10 4]))]))
 
+(defn slice-polygons
+  "Slice a set of polygons with multiple lines"
+  [polygons lines]
+  (reduce (fn [polygons' line]
+            (mapcat (fn [poly]
+                      (->> line
+                           (cut-polygon poly)
+                           (remove #(empty? (:points %)))))
+                    polygons'))
+          polygons
+          lines))
+
 ;; TODO: join-polygon
 ;; simple case is for coincident lines, complex is if edges cut eachother.
 

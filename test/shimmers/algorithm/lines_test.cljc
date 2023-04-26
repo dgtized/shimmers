@@ -439,4 +439,43 @@
        (sut/coincident-edges (rect/rect 10) (rect/rect 10)))
       "identity, all edges are coincident"))
 
+(deftest slice-polygons
+  (is (empty? (sut/slice-polygons [] []))
+      "empty, empty")
+  (is (empty? (sut/slice-polygons [] [(gl/line2 0 0 10 0)]))
+      "empty polygons")
+  (is (= [(rect/rect 10 10)] (sut/slice-polygons [(rect/rect 10 10)] []))
+      "empty lines")
+  (is (= [(gp/polygon2 [0 0] [10 0] [10 5] [0 5])
+          (gp/polygon2 [10 5] [10 10] [0 10] [0 5])
+          (gp/polygon2 [10 10] [20 10] [20 15] [10 15])
+          (gp/polygon2 [20 15] [20 20] [10 20] [10 15])]
+         (sut/slice-polygons [(rect/rect 10 10)
+                              (rect/rect 10 10 10 10)]
+                             [(gl/line2 0 5 20 5)
+                              (gl/line2 0 15 20 15)]))
+      "horizontal lines")
+
+  (is (= [(gp/polygon2 [0 0] [5 0] [5 10] [0 10])
+          (gp/polygon2 [5 0] [10 0] [10 10] [5 10])
+          (gp/polygon2 [10 10] [15 10] [15 20] [10 20])
+          (gp/polygon2 [15 10] [20 10] [20 20] [15 20])]
+         (sut/slice-polygons [(rect/rect 10 10)
+                              (rect/rect 10 10 10 10)]
+                             [(gl/line2 5 0 5 20)
+                              (gl/line2 15 0 15 20)]))
+      "vertical lines")
+
+  (is (= [(gp/polygon2 [0 0] [5 0] [5 5] [0 5])
+          (gp/polygon2 [5 0] [10 0] [10 5] [5 5])
+          (gp/polygon2 [10 5] [10 10] [5 10] [5 5])
+          (gp/polygon2 [5 10] [0 10] [0 5] [5 5])
+          (gp/polygon2 [10 0] [20 0] [20 5] [10 5])
+          (gp/polygon2 [20 5] [20 10] [10 10] [10 5])]
+         (sut/slice-polygons [(rect/rect 10 10)
+                              (rect/rect 10 0 10 10)]
+                             [(gl/line2 0 5 20 5)
+                              (gl/line2 5 0 5 20)]))
+      "crossed lines"))
+
 (comment (t/run-tests))
