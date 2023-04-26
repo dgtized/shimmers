@@ -5,6 +5,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -86,6 +87,66 @@
   (let [today (js/Date.parse "2022-11-17T00:00:00Z")]
     (map (juxt :name #(tm/degrees (mean-anomaly % today))) orbits)))
 
+(defn newtons-method [f f' x0 tolerance]
+  (loop [x x0]
+    (let [x' (- x (/ (f x) (f' x)))]
+      (if (< tolerance (Math/abs (- x x')))
+        (recur x')
+        x'))))
+
+(defn eccentric-anomaly [mean-anomaly eccentricity]
+  (newtons-method (fn [t] (- t (* eccentricity (Math/sin t)) mean-anomaly))
+                  (fn [t] (- 1 (* eccentricity (Math/cos t))))
+                  mean-anomaly
+                  1e-7))
+
+(comment
+  (let [today (js/Date.parse "2022-11-17T00:00:00Z")]
+    (map (juxt :name
+               (fn [{:keys [eccentricity] :as body}]
+                 (-> body
+                     (mean-anomaly today)
+                     (eccentric-anomaly eccentricity)
+                     tm/degrees)))
+         orbits)))
+
+(defn true-anomaly [eccentric-anomaly eccentricity]
+  (* 2 (Math/atan2 (* (Math/sqrt (+ 1 eccentricity))
+                      (Math/sin (/ eccentric-anomaly 2)))
+                   (* (Math/sqrt (- 1 eccentricity))
+                      (Math/cos (/ eccentric-anomaly 2))))))
+
+(comment
+  (let [today (js/Date.parse "2022-11-17T00:00:00Z")]
+    (map (juxt :name
+               (fn [{:keys [eccentricity] :as body}]
+                 (-> body
+                     (mean-anomaly today)
+                     (eccentric-anomaly eccentricity)
+                     (true-anomaly eccentricity)
+                     tm/degrees)))
+         orbits)))
+
+(defn elliptical-position [{:keys [semi-major-axis eccentricity] :as body} date-ms]
+  (let [anomaly (-> body
+                    (mean-anomaly date-ms)
+                    (eccentric-anomaly eccentricity)
+                    (true-anomaly eccentricity))]
+    (v/polar ((radial-dist semi-major-axis eccentricity) anomaly)
+             anomaly)))
+
+(defn orbit-position
+  [{:keys [argument-of-perihelion
+           inclination
+           longitude-of-ascending-node]
+    :as body}
+   date-ms]
+  (-> body
+      (elliptical-position date-ms)
+      (g/transform (g/rotate-z mat/M44 argument-of-perihelion))
+      (g/transform (g/rotate-x mat/M44 inclination))
+      (g/transform (g/rotate-z mat/M44 longitude-of-ascending-node))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {})
@@ -100,12 +161,18 @@
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (q/scale 1 -1)
   (let [max-orbit (apply max (map :semi-major-axis orbits))
-        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))]
+        scale (/ (* 2.3 max-orbit) (max (q/width) (q/height)))
+        date-ms (js/Date.parse "2022-11-17T00:00:00Z")]
     (doseq [body orbits]
       (q/begin-shape)
       (doseq [pos (orbit body)]
         (apply q/curve-vertex (g/scale pos (/ 1 scale))))
-      (q/end-shape :close))))
+      (q/end-shape :close))
+
+    (q/fill 0.0)
+    (doseq [body orbits]
+      (cq/circle (g/scale (orbit-position body date-ms) (/ 1 scale))
+                 3.0))))
 
 (defn page []
   [:div
