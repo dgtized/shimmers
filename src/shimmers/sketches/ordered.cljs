@@ -45,7 +45,8 @@
      (for [[side prob] sides
            :let [side-heading (g/heading side)]]
        [side
-        (* (cond (and last-cut (< (sm/radial-distance angle side-heading) 0.05))
+        (* (cond (and last-cut
+                      (> (abs (eq/cos-similarity (v/polar angle) (v/polar side-heading))) 0.95))
                  0.1
                  (and (> (* 3 (g/width shape)) (g/height shape))
                       (< (sm/radial-distance (* 0.25 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
@@ -53,7 +54,7 @@
                  (and (> (* 3 (g/height shape)) (g/width shape))
                       (< (sm/radial-distance (* 0.0 eq/TAU) (g/heading side)) (* 0.25 eq/TAU)))
                  1.5
-                 :else 1)
+                 :else 1.0)
            prob)]))))
 
 (defn cuts [polygon side offsets]
