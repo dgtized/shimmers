@@ -180,6 +180,7 @@
    shimmers.sketches.slashes
    shimmers.sketches.slow-zone
    shimmers.sketches.snake
+   shimmers.sketches.solar-transit
    shimmers.sketches.space-colonization
    shimmers.sketches.spaces-divided
    shimmers.sketches.space-filling-curves
