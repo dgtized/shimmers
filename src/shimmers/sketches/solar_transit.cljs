@@ -150,7 +150,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:date-ms (js/Date.now)
-   :zoom 1.0})
+   :zoom 0.2})
 
 (defn update-state [state]
   (update state :date-ms + (/ (* 7 24 60 60 1000) 60.0)))
