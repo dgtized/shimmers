@@ -21,10 +21,9 @@
 (defn blob-at-t [scale theta t nr]
   (for [s (butlast (tm/norm-range 24))]
     (let [p (v/+polar (gv/vec2 20 20) nr (* eq/TAU s))
-          n (apply q/noise (tm/* (gv/vec3 p t) scale))
-          v (v/polar (cq/rel-h (+ 0.05 (* 0.42 n)))
-                     (* eq/TAU (+ s theta)))]
-      v)))
+          n (apply q/noise (tm/* (gv/vec3 p t) scale))]
+      (v/polar (cq/rel-h (+ 0.05 (* 0.42 n)))
+               (* eq/TAU (+ s theta))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
