@@ -21,7 +21,8 @@
                  argument-of-perihelion
                  eccentricity
                  period
-                 mean-anomaly-at-epoch])
+                 mean-anomaly-at-epoch
+                 epoch])
 
 (defn planet
   "Convert parameters from degrees to radians"
@@ -40,9 +41,9 @@
           (tm/radians argument-of-perihelion)
           eccentricity
           period
-          (tm/radians mean-anomaly-at-epoch)))
+          (tm/radians mean-anomaly-at-epoch)
+          (js/Date.parse "2000-01-01T12:00:00Z")))
 
-(def EPOCH (js/Date.parse "2000-01-01T12:00:00Z"))
 (def orbits
   [(planet "Mercury" 5.791e10 7.005 48.331 29.124 0.20563 87.97 174.796)
    (planet "Venus" 1.082e11 3.39458 76.86 54.884 0.006772 224.70 50.115)
@@ -84,10 +85,10 @@
    (map (partial orbit-rotational-correction body))
    (butlast (orbit-ellipse body))))
 
-(defn mean-anomaly [{:keys [mean-anomaly-at-epoch period]} date-ms]
+(defn mean-anomaly [{:keys [mean-anomaly-at-epoch period epoch]} date-ms]
   ;; FIXME: use a date library to correctly find days between?
   (let [ms-per-day (* 1000 60 60 24)
-        days-since-epoch (/ (- date-ms EPOCH) ms-per-day)]
+        days-since-epoch (/ (- date-ms epoch) ms-per-day)]
     (mod (+ mean-anomaly-at-epoch (/ (* eq/TAU days-since-epoch) period)) eq/TAU)))
 
 (comment
