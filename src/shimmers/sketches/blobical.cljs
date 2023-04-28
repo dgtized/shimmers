@@ -16,13 +16,13 @@
   {:t 0.0})
 
 (defn update-state [state]
-  (update state :t + 0.01))
+  (update state :t + 0.005))
 
-(defn blob-at-t [scale theta t nr]
+(defn blob-at-t [scale theta t nr f]
   (for [s (butlast (tm/norm-range 24))]
-    (let [p (v/+polar (gv/vec2 20 20) nr (* eq/TAU s))
-          n (apply q/noise (tm/* (gv/vec3 p t) scale))]
-      (v/polar (cq/rel-h (+ 0.05 (* 0.42 n)))
+    (let [p (v/+polar (gv/vec2 100 100) nr (* eq/TAU s))
+          n (tm/smoothstep* 0.05 0.95 (apply q/noise (tm/* (gv/vec3 p t) scale)))]
+      (v/polar (cq/rel-h (+ 0.05 (* 0.42 n f)))
                (* eq/TAU (+ s theta))))))
 
 (defn draw [{:keys [t]}]
@@ -35,9 +35,10 @@
     (doseq [o (tm/norm-range 16)]
       (cq/draw-curve-shape
        (blob-at-t scale
-                  (* o 0.05 width)
+                  (* o 0.03 width)
                   (+ t (* 0.3 o))
-                  (+ 10.0 (* 6 o)))))))
+                  (+ 8.0 (* 6.0 width o))
+                  (+ 0.75 (* 0.25 o)))))))
 
 (defn page []
   [:div
