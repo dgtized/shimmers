@@ -54,6 +54,9 @@
    (planet "Neptune" 4.500e12 1.77 131.783 273.187 0.008678 60195.00 256.228)
    (planet "Pluto" 5.906e12 17.16 110.299 113.834 0.2488 90560.00 14.53)])
 
+;; TODO: https://ssd.jpl.nasa.gov/sats/elem/ appears to have these parameters
+;; for various moons of mars, earth, and jupiter.
+
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
     (/ (* semi-major-axis (- 1 (eq/sqr eccentricity)))
