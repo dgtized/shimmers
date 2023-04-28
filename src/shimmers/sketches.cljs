@@ -12,6 +12,7 @@
    shimmers.sketches.ballistics
    shimmers.sketches.balloon
    shimmers.sketches.barcodes
+   shimmers.sketches.blobical
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
