@@ -66,15 +66,19 @@
              (v/polar (radius theta) theta)))
          (tm/norm-range 60))))
 
-(defn orbit [{:keys [argument-of-perihelion
-                     inclination
-                     longitude-of-ascending-node]
-              :as body}]
+(defn orbit-rotational-correction
+  [{:keys [argument-of-perihelion
+           inclination
+           longitude-of-ascending-node]}]
+  (fn [pos]
+    (-> pos
+        (g/transform (g/rotate-z mat/M44 argument-of-perihelion))
+        (g/transform (g/rotate-x mat/M44 inclination))
+        (g/transform (g/rotate-z mat/M44 longitude-of-ascending-node)))))
+
+(defn orbit [body]
   (sequence
-   (comp
-    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 argument-of-perihelion))))
-    (map (fn [pos] (g/transform pos (g/rotate-x mat/M44 inclination))))
-    (map (fn [pos] (g/transform pos (g/rotate-z mat/M44 longitude-of-ascending-node)))))
+   (map (orbit-rotational-correction body))
    (butlast (orbit-ellipse body))))
 
 (defn mean-anomaly [{:keys [mean-anomaly-at-epoch period]} date-ms]
@@ -135,17 +139,11 @@
     (v/polar ((radial-dist semi-major-axis eccentricity) anomaly)
              anomaly)))
 
-(defn orbit-position
-  [{:keys [argument-of-perihelion
-           inclination
-           longitude-of-ascending-node]
-    :as body}
-   date-ms]
-  (-> body
-      (elliptical-position date-ms)
-      (g/transform (g/rotate-z mat/M44 argument-of-perihelion))
-      (g/transform (g/rotate-x mat/M44 inclination))
-      (g/transform (g/rotate-z mat/M44 longitude-of-ascending-node))))
+(defn orbit-position [body date-ms]
+  (let [rotated (orbit-rotational-correction body)]
+    (-> body
+        (elliptical-position date-ms)
+        rotated)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
