@@ -56,7 +56,9 @@
    (planet "Pluto" 5.906e12 17.16 110.299 113.834 0.2488 90560.00 14.53)])
 
 ;; TODO: https://ssd.jpl.nasa.gov/sats/elem/ appears to have these parameters
-;; for various moons of mars, earth, and jupiter.
+;; for various moons of mars, earth, and jupiter. Also need to add larger
+;; dwarf-planet/asteroids like eris/dysnomia, ceres, eros, pallas, etc
+;; also maybe add radius/mass parameters for each body?
 
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
