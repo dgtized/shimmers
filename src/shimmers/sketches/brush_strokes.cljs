@@ -174,7 +174,20 @@
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.readable-width
+     "Experimenting with dragging a row of triangles through a path to mimic
+     brush strokes. The concept is that each triangle represents an individual
+     bristle. The brush can be oriented independently of the vector of motion.
+     Likewise, each bristle can also rotate, but slowly aligns towards the
+     vector of motion. Each bristle is drawn with a low opacity, but with
+     variations in the speed of motion, the overdraw gives the impression of
+     light or dark strokes."]
+    [:p.readable-width
+     "On each each restart, a new path is generated for the brush to follow.
+     There are a couple of path templates each invocation selects from, circles,
+     lines and squiggles, etc."]]])
 
 (sketch/definition brush-strokes
   {:created-at "2023-01-15"
