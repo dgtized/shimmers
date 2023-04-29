@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
@@ -166,11 +167,17 @@
     #_(doseq [p path]
         (apply q/point p))))
 
-(sketch/defquil brush-strokes
-  :created-at "2023-01-15"
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])])
+
+(sketch/definition brush-strokes
+  {:created-at "2023-01-15"
+   :type :quil
+   :tags #{}}
+  (ctrl/mount page "sketch-host"))
