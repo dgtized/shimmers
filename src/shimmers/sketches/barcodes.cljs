@@ -61,16 +61,19 @@
           r codes]
     (qdg/draw r)))
 
-(defn explanation []
+(defn page []
   [:div
-   [:p "Genuary 2023 Day 19 - Black & White"]])
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p "Genuary 2023 Day 19 - Black & White"]]])
 
-(sketch/defquil barcodes
-  :created-at "2023-01-19"
-  :tags #{:genuary2023}
-  :on-mount (fn [] (ctrl/mount explanation))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition barcodes
+  {:created-at "2023-01-19"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
