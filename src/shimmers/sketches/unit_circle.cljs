@@ -7,6 +7,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.string :as scs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
@@ -103,13 +104,27 @@
                      :small-angle (debug/fixed-width (poly-detect/small-angle-between mouse (gv/vec2 1 0)))}
              :axis {:cw (first axis-pts) :ccw (last axis-pts)}
              :chain (debug-chain chain)))))
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:div.flexcols
+     [:div {:style {:width "25em"}}
+      [:p "Interactive visual test for some methods involving angles around a
+      circle and a kinematic chain."]
+      [:p "Reminder, since the origin is in the upper left corner, and
+      translated down to the center, the y-axis is inverted, adjusting many
+      angles accordingly."]]
+     [:div (debug/display defo)]]]])
 
-(sketch/defquil unit-circle
-  :created-at "2021-10-28"
-  :tags #{:demo}
-  :on-mount (debug/mount defo)
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition unit-circle
+  {:created-at "2021-10-28"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
+
