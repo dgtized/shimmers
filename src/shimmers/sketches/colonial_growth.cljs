@@ -71,15 +71,19 @@
       (when (and show-parent parent)
         (q/line p (:p parent))))))
 
-(defn ui-controls []
-  [:div (ctrl/checkbox ui-state "Show Parent" [:show-parent])])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:div (ctrl/checkbox ui-state "Show Parent" [:show-parent])]]])
 
-(sketch/defquil colonial-growth
-  :created-at "2021-05-14"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :tags #{:deterministic}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition colonial-growth
+  {:created-at "2021-05-14"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
