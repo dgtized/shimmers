@@ -155,11 +155,19 @@
    [:p "\"Hand drawn\" determines if the lines should be drawn using a sketch
    like effect or with precision. \"Centered Origin\" determines if origin is in the center or upper left."]])
 
-(sketch/defquil cube-sketch
-  :created-at "2020-11-02"
-  :on-mount #(ctrl/mount ui-controls)
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition cube-sketch
+  {:created-at "2020-11-02"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
