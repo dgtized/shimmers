@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.geometry.group :as gg]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -48,10 +49,23 @@
   (when shapes
     (qdg/draw shapes)))
 
-(sketch/defquil overlapping-polygons
-  :created-at "2021-11-12"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.readable-width
+     "Some examples using " [:code "g/clip-with"] " for punching out the
+     intersection between two overlapping polygons."]]])
+
+(sketch/definition overlapping-polygons
+  {:created-at "2021-11-12"
+   :type :quil
+   :tags #{}}
+  (ctrl/mount page "sketch-host"))
+
+
