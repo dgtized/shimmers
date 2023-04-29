@@ -209,17 +209,22 @@
     (q/stroke 0 0.0 0.0 1.0)
     (cq/draw-polygon target)))
 
-(defn ui-controls []
+(defn page []
   [:div
-   (ctrl/checkbox ui-state "Debug" [:debug])
-   (when (:debug @ui-state)
-     (debug/display defo))])
+   (sketch/component
+    :size [1024 768]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    [:div
+     (ctrl/checkbox ui-state "Debug" [:debug])
+     (when (:debug @ui-state)
+       (debug/display defo))]]])
 
-(sketch/defquil superposition
-  :created-at "2021-03-08"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [1024 768]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition superposition
+  {:created-at "2021-03-08"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
