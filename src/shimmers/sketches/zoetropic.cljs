@@ -48,12 +48,19 @@
              (* height (int (/ i 6)))
              width height)))
 
-(sketch/defquil zoetropic
-  :created-at "2021-04-17"
-  :tags #{:camera}
-  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state modes)))
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/change-mode ui-state modes]]])
+
+(sketch/definition zoetropic
+  {:created-at "2021-04-17"
+   :tags #{:camera}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
