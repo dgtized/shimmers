@@ -42,12 +42,19 @@
                     "videoTexture" camera
                     "u_mode" (get modes (:mode @ui-state))}))))
 
-(sketch/defquil video-shader
-  :created-at "2021-02-14"
-  :tags #{:camera :shader}
-  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
-  :size [640 480]
-  :renderer :p3d
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [640 480]
+    :renderer :p3d
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/change-mode ui-state (keys modes)]]])
+
+(sketch/definition video-shader
+  {:created-at "2021-02-14"
+   :tags #{:camera :shader}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
