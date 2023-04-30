@@ -57,21 +57,25 @@
 (defn restart []
   (view-sketch/restart-sketch :poisson-disc-sampling))
 
-(defn ui-controls []
-  (ctrl/container
-   (ctrl/change-mode ui-state [:fixed :variable] {:on-change restart})
-   (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
-                [:radius] [2 32 1])
-   (when (= (:mode @ui-state) :variable)
-     (ctrl/change-mode ui-state (keys radius-source)
-                       {:mode-key :radius-fn :on-change restart}))))
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    (ctrl/container
+     (ctrl/change-mode ui-state [:fixed :variable] {:on-change restart})
+     (ctrl/slider ui-state (fn [v] (str "Min Separation: " v))
+                  [:radius] [2 32 1])
+     (when (= (:mode @ui-state) :variable)
+       (ctrl/change-mode ui-state (keys radius-source)
+                         {:mode-key :radius-fn :on-change restart})))]])
 
-(sketch/defquil poisson-disc-sampling
-  :created-at "2021-06-30"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :tags #{:demo}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition poisson-disc-sampling
+  {:created-at "2021-06-30"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
