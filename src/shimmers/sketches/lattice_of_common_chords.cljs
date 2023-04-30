@@ -155,11 +155,19 @@
         (sand-line pa pb)
         (q/line pa pb)))))
 
-(sketch/defquil lattice-of-common-chords
-  :created-at "2021-03-29"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition lattice-of-common-chords
+  {:created-at "2021-03-29"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
