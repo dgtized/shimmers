@@ -103,14 +103,21 @@
                     "mode" (get modes mode)
                     "invert" invert}))))
 
-(sketch/defquil reaction-diffusion
-  :created-at "2021-09-15"
-  :tags #{:shader}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [900 600]
-  :renderer :p3d
-  :settings #(q/pixel-density 1)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :renderer :p3d
+    :settings #(q/pixel-density 1)
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    [ui-controls]]])
+
+(sketch/definition reaction-diffusion
+  {:created-at "2021-09-15"
+   :tags #{:shader}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
