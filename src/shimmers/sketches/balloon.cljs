@@ -70,18 +70,21 @@
     (doseq [p points]
       (cq/circle p 3.0))))
 
-(defn ui-controls []
+(defn page []
   [:div
-   [:p.readable-width "Modeling a balloon using point forces across the surface.
-   The pressure of the balloon varies over time, causing it to expand and
-   contract."]])
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.readable-width "Modeling a balloon using point forces across the
+   surface. The pressure of the balloon varies over time, causing it to expand
+   and contract."]]])
 
-(sketch/defquil balloon
-  :created-at "2023-03-01"
-  :tags #{}
-  :size [800 600]
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition balloon
+  {:created-at "2023-03-01"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
