@@ -70,12 +70,19 @@
            hex/flat-hexagon->polygon
            cq/draw-polygon))))
 
-(sketch/defquil six-of-one-half-dozen-of-the-other
-  :created-at "2021-05-17"
-  :tags #{:static :deterministic}
-  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]))
-  :size [1024 768]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [1024 768]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]]])
+
+(sketch/definition six-of-one-half-dozen-of-the-other
+  {:created-at "2021-05-17"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
