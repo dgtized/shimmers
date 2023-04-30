@@ -58,12 +58,18 @@
     difference, union and intersection."]
    (debug/display defo)])
 
-(sketch/defquil geometry-interactive
-  :created-at "2023-02-16"
-  :tags #{:demo}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div (sketch/component
+         :size [800 600]
+         :setup setup
+         :update update-state
+         :draw draw
+         :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    [ui-controls]]])
+
+(sketch/definition geometry-interactive
+  {:created-at "2023-02-16"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
