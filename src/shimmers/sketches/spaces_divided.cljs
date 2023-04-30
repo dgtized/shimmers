@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
@@ -125,11 +126,19 @@
                                                           [411.73 357.02]])
                                            -10))))
 
-(sketch/defquil spaces-divided
-  :created-at "2021-12-09"
-  :size [800 600]
-  :on-mount (debug/mount defo)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [debug/display defo]]])
+
+(sketch/definition spaces-divided
+  {:created-at "2021-12-09"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
