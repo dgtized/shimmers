@@ -295,5 +295,6 @@
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"
-   :tags #{}}
+   :tags #{}
+   :type :quil}
   (ctrl/mount page "sketch-host"))

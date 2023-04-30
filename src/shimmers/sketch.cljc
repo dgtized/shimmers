@@ -113,6 +113,7 @@
   [sketch-page-name options & body]
   (let [runner (vary-meta sketch-page-name merge {:export true})
         options (assoc options :sketch-id (keyword sketch-page-name))]
+    (assert (:type options) "definition requires type")
     `(do (defn ~runner []
            ~@body)
 

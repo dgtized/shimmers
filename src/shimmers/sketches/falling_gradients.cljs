@@ -55,5 +55,6 @@
 
 (sketch/definition falling-gradients
   {:created-at "2021-05-04"
-   :tags #{:static :deterministic}}
+   :tags #{:static :deterministic}
+   :type :quil}
   (ctrl/mount page "sketch-host"))
