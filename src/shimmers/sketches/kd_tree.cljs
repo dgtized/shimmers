@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.points :as points]
@@ -97,14 +98,21 @@
     ;; (swap! defo assoc :tree tree)
     (draw-tree tree [[0 (q/height)] [0 (q/width)]])))
 
-(sketch/defquil kd-tree-sketch
-  :created-at "2020-11-28"
-  :tags #{:datastructures}
-  ;; :on-mount (debug/mount defo)
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    #_[debug/display defo]]])
+
+(sketch/definition kd-tree-sketch
+  {:created-at "2020-11-28"
+   :tags #{:datastructures}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
 
 
