@@ -46,12 +46,19 @@
   (apply q/stroke (:color chain))
   (cq/draw-path (g/vertices chain)))
 
-(sketch/defquil kinematic-chain
-  :created-at "2021-03-19"
-  :tags #{:demo}
-  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state (keys modes))))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/change-mode ui-state (keys modes)]]])
+
+(sketch/definition kinematic-chain
+  {:created-at "2021-03-19"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
