@@ -112,7 +112,11 @@
 (defmacro definition
   [sketch-page-name options & body]
   (let [runner (vary-meta sketch-page-name merge {:export true})
-        options (assoc options :sketch-id (keyword sketch-page-name))]
+        {:keys [created-at] :as options}
+        (assoc options :sketch-id (keyword sketch-page-name))]
+    ;; YYYY- is allowed so as to avoid throwing errors on templates
+    (assert (and created-at (re-matches #"\d{4}-(\d{2}-\d{2})?" created-at))
+            "definition requires created-at in form of YYYY-MM-DD")
     (assert (:type options) "definition requires type")
     `(do (defn ~runner []
            ~@body)
