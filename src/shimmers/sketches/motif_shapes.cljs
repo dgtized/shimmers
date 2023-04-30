@@ -171,17 +171,20 @@
   (q/stroke-weight 0.66)
   (qdg/draw shapes))
 
-;; Convert to SVG?
-
 (defn page []
-  [:p.center (view-sketch/generate :motif-shapes)])
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.center (view-sketch/generate :motif-shapes)]]])
 
-(sketch/defquil motif-shapes
-  :created-at "2021-10-16"
-  :tags #{:static :deterministic}
-  :on-mount #(ctrl/mount page)
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+;; Convert to SVG?
+(sketch/definition motif-shapes
+  {:created-at "2021-10-16"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
