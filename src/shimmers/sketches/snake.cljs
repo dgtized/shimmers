@@ -214,12 +214,19 @@
 (defn draw [state]
   ((get draw-modes (:draw-mode @ui-state)) state))
 
-(sketch/defquil snake
-  :created-at "2022-04-02"
-  :on-mount #(ctrl/mount ui-controls)
-  :tags #{:deterministic}
-  :size [1024 768]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])1
+(defn page []
+  [:div
+   (sketch/component
+    :size [1024 768]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition snake
+  {:created-at "2022-04-02"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
