@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -40,11 +41,19 @@
           (q/line (tm/mix p1 q1 t) (tm/mix p2 q2 t)))))
     (cq/draw-polygon cursor)))
 
-(sketch/defquil vanishing-points
-  :created-at "2022-03-05"
-  :on-mount (debug/mount defo)
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [debug/display defo]]])
+
+(sketch/definition vanishing-points
+  {:created-at "2022-03-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
