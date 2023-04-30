@@ -51,19 +51,22 @@
         (draw-points v-overlap)
         (cq/draw-curve-shape v-overlap)))))
 
-(defn ui-controls []
+(defn page []
   [:div
-   [:p.readable-width
-    "Experimenting with curve vertex on polygons. The issue is that by
-   default curve-vertex will use every 2nd vertex as a control point, but it
-   leaves a straight line at the start."]])
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.readable-width
+     "Experimenting with curve vertex on polygons. The issue is that by default
+   curve-vertex will use every 2nd vertex as a control point, but it leaves a
+   straight line at the start."]]])
 
-(sketch/defquil vertex-curves
-  :created-at "2023-01-18"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition vertex-curves
+  {:created-at "2023-01-18"
+   :tags #{:debug}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
