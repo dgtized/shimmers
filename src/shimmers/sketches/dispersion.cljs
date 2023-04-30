@@ -61,13 +61,17 @@
       (cq/draw-polygon shape))))
 
 (defn page []
-  [:p.center (view-sketch/generate :dispersion)])
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode])
+   [:div.contained.explanation
+    [:p.center (view-sketch/generate :dispersion)]]])
 
-(sketch/defquil dispersion
-  :created-at "2021-03-10"
-  :tags #{:static :deterministic}
-  :on-mount #(ctrl/mount page)
-  :size [900 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode])
+(sketch/definition dispersion
+  {:created-at "2021-03-10"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
