@@ -164,11 +164,19 @@
    [:div
     (debug/display defo)]])
 
-(sketch/defquil differential-growth
-  :created-at "2022-02-23"
-  :size [800 600]
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition differential-growth
+  {:created-at "2022-02-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
