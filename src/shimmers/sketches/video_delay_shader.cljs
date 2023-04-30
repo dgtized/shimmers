@@ -54,14 +54,21 @@
                     "frame25" (if (> fc 25) (nth frames (mod (- fc 25) history)) buffer)
                     }))))
 
+(defn page []
+  [:div
+   (sketch/component
+    :size [640 480]
+    :renderer :p3d
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/change-mode ui-state modes]]])
+
 ;; out of memories after N seconds sometimes?
-(sketch/defquil video-delay-shader
-  :created-at "2023-01-03"
-  :tags #{:camera :shader :genuary2023}
-  :on-mount (fn [] (ctrl/mount (partial ctrl/change-mode ui-state modes)))
-  :size [640 480]
-  :renderer :p3d
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition video-delay-shader
+  {:created-at "2023-01-03"
+   :tags #{:camera :shader :genuary2023}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
