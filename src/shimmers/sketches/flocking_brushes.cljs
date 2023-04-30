@@ -141,15 +141,19 @@
     (doseq [particle (:particles physics)]
       (brush particle scale))))
 
-(defn ui-controls []
+(defn page []
   [:div
-   (ctrl/checkbox ui-state "Draw Trails" [:trails])])
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained
+    (ctrl/checkbox ui-state "Draw Trails" [:trails])]])
 
-(sketch/defquil flocking-brushes
-  :created-at "2021-05-27"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition flocking-brushes
+  {:created-at "2021-05-27"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
