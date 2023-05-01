@@ -370,12 +370,19 @@
                      (view-sketch/restart-sketch :flow-fields))}
      "Shuffle Settings"]]])
 
-(sketch/defquil flow-fields
-  :created-at "2021-06-17"
-  :tags #{:static :deterministic}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [1024 768]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [1024 768]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition flow-fields
+  {:created-at "2021-06-17"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
