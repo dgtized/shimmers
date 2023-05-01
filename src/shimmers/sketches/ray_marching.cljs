@@ -375,11 +375,19 @@
     [explanation])
    (debug/display defo)])
 
-(sketch/defquil ray-marching
-  :created-at "2020-08-24"
-  :on-mount #(ctrl/mount ui-controls)
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw-state
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw-state
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition ray-marching
+  {:created-at "2020-08-24"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
