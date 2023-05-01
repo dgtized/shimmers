@@ -84,19 +84,23 @@
                                  (g/rotate down angle)))]
         (qdg/draw t)))))
 
-(defn ui-controls []
-  [:div.readable-width
-   [:p "Genuary2023 Day 6 - Steal like an Artist"]
-   [:p "Inspired by "
-    [:a {:href "https://mobile.twitter.com/CodeAndWood/status/1611270290071232513"}
-     "CodeAndWood's sketch"] ". Experimenting with varying the density of
-     rectangle brushes and the compositional frame."]])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:div.readable-width
+     [:p "Genuary2023 Day 6 - Steal like an Artist"]
+     [:p "Inspired by "
+      [:a {:href "https://mobile.twitter.com/CodeAndWood/status/1611270290071232513"}
+       "CodeAndWood's sketch"] ". Experimenting with varying the density of
+     rectangle brushes and the compositional frame."]]]])
 
-(sketch/defquil divide-by-triangle
-  :created-at "2023-01-06"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :tags #{:genuary2023}
-  :size [800 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition divide-by-triangle
+  {:created-at "2023-01-06"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
