@@ -75,19 +75,22 @@
                 (apply q/vertex (reflect box v)))
               (q/end-shape))))))
 
-(defn ui-controls []
+(defn page []
   [:div
-   [:p "Genuary 2023 Day 16 - Reflections on Reflections"]
-   [:p.readable-width "Reflect the animated scene in the top left over both x,
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p "Genuary 2023 Day 16 - Reflections on Reflections"]
+    [:p.readable-width "Reflect the animated scene in the top left over both x,
    y, and x/y axis. However, to shake things up a little, move the origin point
-   specifying each axis over time."]])
+   specifying each axis over time."]]])
 
-(sketch/defquil reflections
-  :created-at "2023-01-16"
-  :tags #{:genuary2023}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition reflections
+  {:created-at "2023-01-16"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
