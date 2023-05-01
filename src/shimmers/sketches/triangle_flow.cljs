@@ -101,16 +101,19 @@
 (defn draw [state]
   ((get modes (:mode @ui-state)) state))
 
-(defn ui-controls []
+(defn page []
   [:div
-   (ctrl/change-mode ui-state (keys modes))])
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    (ctrl/change-mode ui-state (keys modes))]])
 
-(sketch/defquil triangle-flow
-  :created-at "2022-04-13"
-  :on-mount #(ctrl/mount ui-controls)
-  :tags #{:deterministic}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition triangle-flow
+  {:created-at "2022-04-13"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
