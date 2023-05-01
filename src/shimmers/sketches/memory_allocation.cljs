@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.automata.memory :as mem]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -80,11 +81,19 @@
                 y (quot offset cols)]
             (q/rect (* x w) (* y h) w h)))))))
 
-(sketch/defquil memory-allocation
-  :created-at "2021-10-14"
-  :on-mount (debug/mount defo)
-  :size [800 800]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 800]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [debug/display defo]]])
+
+(sketch/definition memory-allocation
+  {:created-at "2021-10-14"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
