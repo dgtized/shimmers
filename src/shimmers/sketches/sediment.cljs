@@ -77,12 +77,20 @@
       (doseq [segment (partition 4 1 particles)]
         (apply q/curve (mapcat :pos segment))))))
 
-(sketch/defquil sediment
-  :created-at "2021-04-08"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [900 600]
-  :setup setup
-  :update update-state
-  ;; :mouse-clicked (fn [state] (q/redraw) state)
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    ;; :mouse-clicked (fn [state] (q/redraw) state)
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition sediment
+  {:created-at "2021-04-08"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
