@@ -158,12 +158,19 @@
     (ctrl/numeric ui-state "K-nearest" [:knearest] [1 16 1])]
    [:div (debug/display defo)]])
 
-(sketch/defquil quadtree
-  :created-at "2021-10-10"
-  :tags #{:datastructures}
-  :size [800 600]
-  :on-mount #(ctrl/mount ui-controls)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition quadtree
+  {:created-at "2021-10-10"
+   :tags #{:datastructures}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
