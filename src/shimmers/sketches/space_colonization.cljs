@@ -178,14 +178,22 @@
      (ctrl/checkbox settings "Show Next Branch Direction" [:debug :next-branch])])
    (debug/display defo)])
 
-(sketch/defquil space-colonization
-  :created-at "2020-11-27"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition space-colonization
+  {:created-at "2020-11-27"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
 
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save
