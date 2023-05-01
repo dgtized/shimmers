@@ -273,11 +273,19 @@
     (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])]
    [:div (debug/display defo)]])
 
-(sketch/defquil mechanism
-  :created-at "2021-04-19"
-  :size [900 600]
-  :on-mount #(ctrl/mount ui-controls)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition mechanism
+  {:created-at "2021-04-19"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
