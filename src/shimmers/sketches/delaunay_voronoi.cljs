@@ -5,8 +5,10 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.points :as points]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -14,8 +16,7 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.delaunay :as delaunay]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.points :as points]))
+   [thi.ng.math.core :as tm]))
 
 ;; More references: https://www.youtube.com/watch?v=ysLCuqcyJZA
 (defonce defo (debug/state))
@@ -177,12 +178,19 @@
           (q/end-shape :close)
           (q/end-shape))))))
 
-(sketch/defquil delaunay-voronoi
-  :created-at "2021-03-21"
-  :tags #{:static}
-  :size [800 600]
-  :on-mount (debug/mount defo)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [debug/display defo]]])
+
+(sketch/definition delaunay-voronoi
+  {:created-at "2021-03-21"
+   :tags #{:static}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
