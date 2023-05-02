@@ -30,16 +30,20 @@
   (doseq [{[p q] :points} lines]
     (hand-drawn/line p q)))
 
-(defn ui-controls []
+(defn page []
   [:div
-   [:p "Demonstration of simulated hand drawn lines in various orientations."]])
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p "Demonstration of simulated hand drawn lines in various orientations."]]])
 
-(sketch/defquil squiggle-line
-  :created-at "2021-11-05"
-  :tags #{:demo}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+;; TODO: convert to SVG?
+(sketch/definition squiggle-line
+  {:created-at "2021-11-05"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
