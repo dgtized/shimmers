@@ -57,7 +57,7 @@
     {:bounds bounds
      :background (q/create-graphics (q/width) (q/height))
      :circletree (circle-pack bounds 15)
-     :hue (dr/rand-nth [0.0 0.38 0.6 0.8])
+     :hue (dr/rand-nth [0.0 0.45 0.6 0.8])
      :t 0.0}))
 
 (defn rescale [bounds t {:keys [r] :as circle}]
