@@ -142,11 +142,21 @@
         (for [[i s] (map-indexed vector path)]
           [:div {:key (str "v" i)} (debug/pre-edn s)])]]]]))
 
-(sketch/defquil the-journey-between
-  :created-at "2022-06-02"
-  :size [800 600]
-  :on-mount #(ctrl/mount ui-controls)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+
+;; TODO: convert svg?
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition the-journey-between
+  {:created-at "2022-06-02"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
