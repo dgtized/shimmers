@@ -49,11 +49,18 @@
   (doseq [[p q] (partition 2 1 (convex-spiral (map cq/rel-pos points)))]
     (q/line p q)))
 
-(sketch/defquil convex-spiral-sketch
-  :created-at "2021-03-22"
-  :tags #{:static}
-  :on-mount #(ctrl/mount explanation)
-  :size [800 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [explanation]]])
+
+(sketch/definition convex-spiral-sketch
+  {:created-at "2021-03-22"
+   :tags #{:static}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
