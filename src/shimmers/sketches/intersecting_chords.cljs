@@ -194,12 +194,19 @@
     [:p "This is a variation on Casey Reas' technique of drawing a line between
     two circles if they intersect."]]])
 
-(sketch/defquil intersecting-chords
-  :created-at "2023-01-04"
-  :tags #{:genuary2023}
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition intersecting-chords
+  {:created-at "2023-01-04"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
