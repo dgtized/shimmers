@@ -8,7 +8,10 @@
 
 (defn sketch-title [sketch]
   (->> [(when-let [created-at (:created-at sketch)]
-          (subs (.toISOString (js/Date. created-at)) 0 10))
+          (try (subs (.toISOString (js/Date. created-at)) 0 10)
+               (catch js/Object e
+                 (println e (:sketch-id sketch) sketch)
+                 "")))
         (when-let [tags (seq (:tags sketch))]
           (str "tags:" (str/join "," (map name tags))))]
        (filter some?)
