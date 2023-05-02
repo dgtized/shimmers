@@ -102,25 +102,27 @@
   (when (running?)
     (draw-frame state)))
 
-(defn ui-controls []
+(defn page [update-f]
   [:div
-   (ctrl/checkbox-after ui-state "Running" [:running])
-   (ctrl/numeric ui-state "Frame Limit" [:frame-limit] [0 100000 1000])])
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update (update-state update-f)
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:div
+     (ctrl/checkbox-after ui-state "Running" [:running])
+     (ctrl/numeric ui-state "Frame Limit" [:frame-limit] [0 100000 1000])]]])
 
-(sketch/defquil spin-doctor
-  :created-at "2022-10-29"
-  :size [900 600]
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :setup setup
-  :update (update-state velocity-update)
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition spin-doctor
+  {:created-at "2022-10-29"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount (partial page velocity-update)))
 
-(sketch/defquil spin-doctor-stencils
-  :created-at "2022-10-30"
-  :size [900 600]
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :setup setup
-  :update (update-state stencils-update)
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition spin-doctor-stencils
+  {:created-at "2022-10-30"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount (partial page stencils-update)))
