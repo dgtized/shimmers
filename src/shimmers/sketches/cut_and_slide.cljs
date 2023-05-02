@@ -94,15 +94,19 @@
         (apply q/fill color))
       (cq/draw-polygon s))))
 
-(defn ui-controls []
+(defn page []
   [:div
-   (ctrl/checkbox ui-state "Show Colors" [:show-colors])])
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/checkbox ui-state "Show Colors" [:show-colors]]]])
 
-(sketch/defquil cut-and-slide
-  :created-at "2022-09-05"
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition cut-and-slide
+  {:created-at "2022-09-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
