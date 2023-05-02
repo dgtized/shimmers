@@ -98,12 +98,19 @@
         (doseq [{[p q] :points} (clip/hatch-rectangle r spacing theta [0.5 0.5])]
           (q/line p q))))))
 
-(sketch/defquil plaid-arrangements
-  :created-at "2021-11-07"
-  :tags #{:deterministic :static}
-  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :plaid-arrangements)]))
-  :size [1000 1000]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [1000 1000]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.center (view-sketch/generate :plaid-arrangements)]]])
+
+(sketch/definition plaid-arrangements
+  {:created-at "2021-11-07"
+   :tags #{:deterministic :static}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
