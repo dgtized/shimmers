@@ -165,12 +165,20 @@
       (q/no-fill))
     (cq/draw-polygon shape)))
 
-(sketch/defquil disassociated-boxes
-  :created-at "2021-05-05"
-  :tags #{:static :deterministic}
-  :on-mount #(ctrl/mount (fn [] [:p.center (view-sketch/generate :disassociated-boxes)]))
-  :size [1200 900]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [1200 900]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [:p.center (view-sketch/generate :disassociated-boxes)]]])
+
+;; TODO: convert svg?
+(sketch/definition disassociated-boxes
+  {:created-at "2021-05-05"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
