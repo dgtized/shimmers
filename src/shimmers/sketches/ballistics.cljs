@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.control :as control]
    [shimmers.math.core :as sm]
@@ -305,12 +306,19 @@
                  (dr/random (* 0.5 mass) (* 3.0 mass))
                  mass))))
 
-(sketch/defquil ballistics
-  :created-at "2023-02-05"
-  :tags #{}
-  :size [800 600]
-  :on-mount (debug/mount defo)
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [debug/display defo]]])
+
+(sketch/definition ballistics
+  {:created-at "2023-02-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
