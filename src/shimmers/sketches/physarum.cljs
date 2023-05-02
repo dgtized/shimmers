@@ -140,12 +140,19 @@
 (defn draw [{:keys [trail]}]
   (q/image trail 0 0 (q/width) (q/height)))
 
-(sketch/defquil physarum
-  :created-at "2021-07-04"
-  :tags #{:shader}
-  :size [800 800]
-  :on-mount (fn [] (ctrl/mount ui-controls))
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 800]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ui-controls]]])
+
+(sketch/definition physarum
+  {:created-at "2021-07-04"
+   :tags #{:shader}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
