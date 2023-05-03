@@ -23,7 +23,6 @@
 (defn setup []
   (let [width 320
         height 240]
-    (ctrl/mount (partial ctrl/change-mode ui-state modes) "interface")
     {:width width
      :height height
      :capture (video/capture width height)}))
@@ -260,10 +259,18 @@
   ;; (q/image capture (+ 10 width) 0)
   )
 
-(sketch/defquil dithering
-  :created-at "2020-11-21"
-  :tags #{:camera}
-  :size [640 480]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [640 480]
+    :setup setup
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    [ctrl/change-mode ui-state modes]]])
+
+(sketch/definition dithering
+  {:created-at "2020-11-21"
+   :tags #{:camera}
+   :type :quil}
+  (ctrl/mount page))
