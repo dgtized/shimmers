@@ -56,7 +56,7 @@
   ;; TODO: only unmount components used by sketch?
   (doseq [id ["sketch-host"
               "interface"
-              "route-debug-mount" "debug-mount"]]
+              "route-debug-mount"]]
     (when-let [node (dom/getElement id)]
       (rdom/unmount-component-at-node node))))
 
