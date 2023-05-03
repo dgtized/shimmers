@@ -3,6 +3,7 @@
    [cljs.core.match :refer-macros [match]]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [reagent.core :as r]
    [shimmers.automata.programs :as programs]
    [shimmers.automata.simplify :as simplify]
    [shimmers.common.framerate :as framerate]
@@ -159,20 +160,23 @@
                   [[:dt term]
                    [:dd explanation]])))])
 
-(defn setup
-  []
-  (q/background "white")
-  (let [automata
-        (for [x [0.25 0.75]
-              y [0.25 0.75]]
-          (make-automata (cq/rel-vec x y) (generate-program)))]
-    (ctrl/mount (partial explanation automata) "interface")
+(defonce !automata (r/atom nil))
+
+(defn new-automata []
+  (let [automata (vec (for [x [0.25 0.75]
+                            y [0.25 0.75]]
+                        (make-automata (cq/rel-vec x y) (generate-program))))]
+    (q/background "white")
+    (reset! !automata automata)
     {:automata automata}))
+
+(defn setup []
+  (new-automata))
 
 (defn update-state
   [state]
   (if (= (mod (inc (q/frame-count)) (* 30 60)) 0)
-    (setup)
+    (new-automata)
     (update state :automata execute-all)))
 
 (defn draw-bot [{:keys [position last-position color]}]
@@ -184,10 +188,20 @@
   (doseq [bot (filter #(= (:state %) :running) automata)]
     (draw-bot bot)))
 
-(sketch/defquil probabilistic-automata
-  :created-at "2020-11-18"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation
+    (when-let [automata @!automata]
+      [explanation automata])]])
+
+(sketch/definition probabilistic-automata
+  {:created-at "2020-11-18"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page "sketch-host"))
