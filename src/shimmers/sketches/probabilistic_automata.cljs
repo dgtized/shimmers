@@ -3,7 +3,6 @@
    [cljs.core.match :refer-macros [match]]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [reagent.core :as r]
    [shimmers.automata.programs :as programs]
    [shimmers.automata.simplify :as simplify]
    [shimmers.common.framerate :as framerate]
@@ -160,7 +159,7 @@
                   [[:dt term]
                    [:dd explanation]])))])
 
-(defonce !automata (r/atom nil))
+(defonce !automata (ctrl/state nil))
 
 (defn new-automata []
   (let [automata (vec (for [x [0.25 0.75]
