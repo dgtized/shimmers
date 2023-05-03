@@ -104,12 +104,7 @@
    (do
      (defn state
        ([] (ctrl/state {}))
-       ([init] (ctrl/state init)))
-
-     (defn mount
-       ([atom] (mount atom "interface"))
-       ([atom element]
-        (fn [] (ctrl/mount #(display atom) element))))))
+       ([init] (ctrl/state init)))))
 
 (defn with-tap-log [f]
   (let [tap-log (atom [])
