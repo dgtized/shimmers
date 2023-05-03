@@ -63,4 +63,4 @@
   {:created-at "2021-04-17"
    :tags #{:camera}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

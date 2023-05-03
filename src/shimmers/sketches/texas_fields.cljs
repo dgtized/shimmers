@@ -198,4 +198,4 @@
   {:created-at "2022-04-24"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

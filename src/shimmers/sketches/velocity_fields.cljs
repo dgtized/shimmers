@@ -129,6 +129,4 @@
   {:created-at "2023-01-27"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :velocity-fields
-                                    ui-controls)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :velocity-fields ui-controls)))

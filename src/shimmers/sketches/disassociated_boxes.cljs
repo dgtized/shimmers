@@ -181,4 +181,4 @@
   {:created-at "2021-05-05"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

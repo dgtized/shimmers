@@ -380,6 +380,4 @@
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (-> scene
-      (view-sketch/page-for :constellations ui-controls)
-      (ctrl/mount "sketch-host")))
+  (ctrl/mount (view-sketch/page-for scene :constellations ui-controls)))

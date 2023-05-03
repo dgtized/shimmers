@@ -12,7 +12,7 @@
 
   Helper method so it can be invoked on run-sketch OR on figwheel reload."
   ([view]
-   (mount view "interface"))
+   (mount view "sketch-host"))
   ([view host]
    (rdom/render [view] (dom/getElement host))))
 

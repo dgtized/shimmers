@@ -159,5 +159,4 @@
   {:created-at "2022-02-19"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :shapes-and-patterns)))

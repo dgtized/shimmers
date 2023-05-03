@@ -271,5 +271,4 @@
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :ordered ui-controls)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :ordered ui-controls)))

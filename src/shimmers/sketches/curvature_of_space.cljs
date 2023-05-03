@@ -118,6 +118,6 @@
   {:created-at "2022-01-18"
    :type :svg
    :tags #{:deterministic}}
-  (-> scene
-      (view-sketch/page-for :curvature-of-space (partial debug/display defo))
-      (ctrl/mount "sketch-host")))
+  (->> (partial debug/display defo)
+       (view-sketch/page-for scene :curvature-of-space)
+       ctrl/mount))

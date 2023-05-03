@@ -72,5 +72,4 @@
   {:created-at "2022-01-25"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :hairy-spiral)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :hairy-spiral)))

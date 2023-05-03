@@ -69,4 +69,4 @@
   {:created-at "2021-09-29"
    :type :thing
    :tags #{:shader :demo}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

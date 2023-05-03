@@ -64,4 +64,4 @@
   {:created-at "2023-02-27"
    :type :svg
    :tags #{:demo}}
-  (ctrl/mount (page) "sketch-host"))
+  (ctrl/mount (page)))

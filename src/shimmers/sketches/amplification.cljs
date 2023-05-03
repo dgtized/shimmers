@@ -129,5 +129,4 @@
   {:created-at "2023-03-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :amplification)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :amplification)))

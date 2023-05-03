@@ -32,5 +32,4 @@
   {:created-at "2022-01-01"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :shattered)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :shattered)))

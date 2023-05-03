@@ -71,4 +71,4 @@
   {:created-at "2023-01-03"
    :tags #{:camera :shader :genuary2023}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

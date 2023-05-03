@@ -229,4 +229,4 @@
   {:created-at "2022-04-02"
    :tags #{:deterministic}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

@@ -104,5 +104,4 @@
   {:created-at "2022-02-28"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :terrain-grid ui-controls)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :terrain-grid ui-controls)))

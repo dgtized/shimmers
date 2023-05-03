@@ -65,4 +65,4 @@
   {:created-at "2022-03-12"
    :type :svg
    :tags #{}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

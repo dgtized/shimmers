@@ -95,5 +95,4 @@
   {:created-at "2023-02-13"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :deco-screens)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :deco-screens)))

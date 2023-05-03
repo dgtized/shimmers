@@ -120,4 +120,4 @@
   {:created-at "2021-09-15"
    :tags #{:shader}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

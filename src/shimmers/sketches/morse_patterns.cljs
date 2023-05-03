@@ -96,5 +96,4 @@
   {:created-at "2021-12-02"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :morse-patterns)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :morse-patterns)))

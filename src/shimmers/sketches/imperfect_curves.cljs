@@ -38,5 +38,4 @@
   {:created-at "2022-02-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :imperfect-curves)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :imperfect-curves)))

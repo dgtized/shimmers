@@ -63,4 +63,4 @@
   {:created-at "2021-03-22"
    :tags #{:static}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

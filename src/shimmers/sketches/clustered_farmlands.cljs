@@ -83,5 +83,4 @@
   {:created-at "2021-05-10"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :clustered-farmlands)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :clustered-farmlands)))

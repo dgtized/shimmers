@@ -76,4 +76,4 @@
   {:created-at "2023-01-19"
    :tags #{:genuary2023}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

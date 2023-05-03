@@ -66,5 +66,4 @@
   {:created-at "2021-12-30"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :hexflare)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :hexflare)))

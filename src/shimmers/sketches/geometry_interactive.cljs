@@ -72,4 +72,4 @@
   {:created-at "2023-02-16"
    :tags #{:demo}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

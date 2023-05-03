@@ -311,6 +311,4 @@
   {:created-at "2022-07-08"
    :type :svg
    :tags #{:deterministic}}
-  (-> scene
-      (view-sketch/page-for :prophecies ui-controls)
-      (ctrl/mount "sketch-host")))
+  (ctrl/mount (view-sketch/page-for scene :prophecies ui-controls)))

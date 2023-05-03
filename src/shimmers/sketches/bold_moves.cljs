@@ -93,5 +93,4 @@
   {:created-at "2023-01-14"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (view-sketch/page-for scene :bold-moves)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :bold-moves)))

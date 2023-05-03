@@ -40,5 +40,4 @@
   {:created-at "2021-08-20"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :slashes)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :slashes)))

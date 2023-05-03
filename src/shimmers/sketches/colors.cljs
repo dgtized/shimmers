@@ -65,7 +65,7 @@
          :lightness2 50
          :noise-mult 0.5}
         ui (ctrl/state (merge defaults (random-hues)))]
-    (ctrl/mount #(ui-controls ui))
+    (ctrl/mount #(ui-controls ui) "interface")
     {:ui ui}))
 
 (defn update-state [state]

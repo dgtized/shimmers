@@ -51,5 +51,4 @@
   {:created-at "2023-03-10"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :misplaced-connections)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :misplaced-connections)))

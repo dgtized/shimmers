@@ -380,4 +380,4 @@
   {:created-at "2022-04-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

@@ -141,4 +141,4 @@
   {:created-at "2021-12-09"
    :tags #{}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

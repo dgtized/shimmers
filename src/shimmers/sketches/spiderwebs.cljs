@@ -46,5 +46,4 @@
   {:created-at "2022-11-03"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :spiderwebs)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :spiderwebs)))

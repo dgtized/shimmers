@@ -51,5 +51,4 @@
   {:created-at "2022-11-01"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :grid-exclusion)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :grid-exclusion)))

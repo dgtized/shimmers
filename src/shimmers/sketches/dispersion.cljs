@@ -74,4 +74,4 @@
   {:created-at "2021-03-10"
    :tags #{:static :deterministic}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

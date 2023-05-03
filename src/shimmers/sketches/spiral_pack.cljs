@@ -94,5 +94,4 @@
   {:created-at "2022-03-13"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :spiral-pack)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :spiral-pack)))

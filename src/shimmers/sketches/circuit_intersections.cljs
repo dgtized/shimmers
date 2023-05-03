@@ -68,5 +68,4 @@
   {:created-at "2021-11-08"
    :type :svg
    :tags #{:static}}
-  (ctrl/mount (view-sketch/page-for scene :circuit-intersections)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :circuit-intersections)))

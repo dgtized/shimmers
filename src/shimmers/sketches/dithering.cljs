@@ -23,7 +23,7 @@
 (defn setup []
   (let [width 320
         height 240]
-    (ctrl/mount (partial ctrl/change-mode ui-state modes))
+    (ctrl/mount (partial ctrl/change-mode ui-state modes) "interface")
     {:width width
      :height height
      :capture (video/capture width height)}))

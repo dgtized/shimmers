@@ -81,4 +81,4 @@
    :type :svg
    :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

@@ -112,5 +112,4 @@
     (ctrl/mount (view-sketch/page-for
                  (partial scene state)
                  :future-cities
-                 (partial ui-controls state))
-                "sketch-host")))
+                 (partial ui-controls state)))))

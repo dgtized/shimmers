@@ -95,5 +95,4 @@
   {:created-at "2021-04-09"
    :type :svg
    :tags #{:static :demo}}
-  (ctrl/mount (view-sketch/page-for scene :uniform-distribution)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :uniform-distribution)))

@@ -64,5 +64,4 @@
   {:created-at "2022-01-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :glyphs)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :glyphs)))

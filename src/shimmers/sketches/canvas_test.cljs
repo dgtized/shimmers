@@ -101,4 +101,4 @@
 (sketch/definition canvas-test
   {:created-at "2021-11-18"
    :type :canvas}
-  (ctrl/mount (page) "sketch-host"))
+  (ctrl/mount (page)))

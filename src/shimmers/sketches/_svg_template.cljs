@@ -26,5 +26,4 @@
   {:created-at "2023-"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :svg-template)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :svg-template)))

@@ -143,4 +143,4 @@
   {:created-at "2021-05-15"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))

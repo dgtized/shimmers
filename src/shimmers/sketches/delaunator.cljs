@@ -155,4 +155,4 @@
    :tags #{}}
   (let [bounds (csvg/screen 800 600)
         points (generate-points (g/scale-size bounds 0.99) ui-state)]
-    (ctrl/mount #(page bounds points) "sketch-host")))
+    (ctrl/mount #(page bounds points))))

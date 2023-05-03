@@ -193,7 +193,7 @@
   {:created-at "2020-11-27"
    :tags #{}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))
 
 ;; Temporarily disable so it doesn't load on saving other sketches
 ;; ;; reload reagent components after figwheel save

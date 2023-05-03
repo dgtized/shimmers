@@ -46,5 +46,4 @@
   {:created-at "2022-01-31"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :angle-of-ascent)
-              "sketch-host"))
+  (ctrl/mount (view-sketch/page-for scene :angle-of-ascent)))

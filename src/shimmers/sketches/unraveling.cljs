@@ -75,4 +75,4 @@
   {:created-at "2023-02-02"
    :type :canvas
    :tags #{}}
-  (ctrl/mount (page) "sketch-host"))
+  (ctrl/mount (page)))

@@ -113,6 +113,6 @@
   {:created-at "2020-11-28"
    :tags #{:datastructures}
    :type :quil}
-  (ctrl/mount page "sketch-host"))
+  (ctrl/mount page))
 
 
