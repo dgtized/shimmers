@@ -75,6 +75,8 @@
         size 47]
     {:bounds bounds
      :size size
+     :last-side 10
+     :side 10
      :t 0
      :actors [(make-cell (gv/vec2 (int (/ size 2)) (int (/ size 2))))]}))
 
@@ -96,9 +98,19 @@
           []
           actors))
 
-(defn update-state [{:keys [t size] :as state}]
+(defn scaled-side [{[w h] :size} size actors]
+  (let [min-x (apply min (map (comp :x :position) actors))
+        max-x (apply max (map (comp :x :position) actors))
+        min-y (apply min (map (comp :y :position) actors))
+        max-y (apply max (map (comp :y :position) actors))]
+    (min (/ w (min size (- (+ max-x 3) (- min-x 3))))
+         (/ h (min size (- (+ max-y 3) (- min-y 3)))))))
+
+(defn update-state [{:keys [actors bounds t size last-side side] :as state}]
   (-> state
       (update :t + (/ 1 32))
+      (assoc :last-side side
+             :side (tm/mix* last-side (scaled-side bounds size actors) 0.05))
       (update :actors update-actors t size)))
 
 (defn rotation-corner [dir]
@@ -121,23 +133,14 @@
                                       side)))
         cq/draw-polygon)))
 
-(defn scaled-side [{[w h] :size} size actors]
-  (let [min-x (apply min (map (comp :x :position) actors))
-        max-x (apply max (map (comp :x :position) actors))
-        min-y (apply min (map (comp :y :position) actors))
-        max-y (apply max (map (comp :y :position) actors))]
-    (min (/ w (min size (- (+ max-x 3) (- min-x 3))))
-         (/ h (min size (- (+ max-y 3) (- min-y 3)))))))
-
 ;; TODO: add size scaling to zoom out as the actor quantity increases?
-(defn draw [{:keys [bounds size actors t]}]
+(defn draw [{:keys [side size actors t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
 
   (q/stroke 0.0)
   (q/translate (cq/rel-vec 0.5 0.5))
-  (let [side (scaled-side bounds size actors)
-        draw-cell (render-cell (tm/* (gv/vec2 0.5 0.5) side) side size)
+  (let [draw-cell (render-cell (tm/* (gv/vec2 0.5 0.5) side) side size)
         cell (g/center (rect/rect side))]
     (doseq [{:keys [position actions]} actors]
       (if (empty? actions)
