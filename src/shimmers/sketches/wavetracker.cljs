@@ -31,6 +31,8 @@
         jitter (tm/smoothstep* 0.39 0.9 (eq/unit-sin (* 0.31 t)))
         max-scale (cq/rel-h 0.004)
         max-jitter (* 2 max-scale)
+        x-slide (let [s (Math/cos (+ 0.15 (* 0.33 t)))]
+                  (* 5 (tm/sign s) (tm/smoothstep* 0.35 0.75 (abs s))))
         width (+ (* 0.6 (eq/unit-sin (* 0.1 (* 0.6 t))))
                  (* 0.3 (eq/unit-sin (+ 0.2 (* 1.1 t))))
                  (* 0.1 (eq/unit-sin (+ 0.3 (* 1.4 t)))))
@@ -39,7 +41,8 @@
     (dotimes [j 9]
       (let [time-factor (+ t (* 0.25 (inc j) width))]
         (dotimes [i samples]
-          (let [x (* (mod (/ (float i) samples) 1.0) (q/width))
+          (let [x-norm (+ (float i) (* x-slide (eq/unit-sin (+ (* 1.66 t) (/ j 18)))))
+                x (* (mod (/ x-norm samples) 1.0) (q/width))
                 y (+ (* (- 1.0 (* 0.25 wobble)) (Math/cos (+ time-factor (/ x rate))))
                      (* 0.25 wobble
                         (Math/cos (+ 1.1 time-factor (/ (* wibble x) rate)))))
