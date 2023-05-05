@@ -130,3 +130,10 @@
                            :ns (:ns m#)
                            :file (:file m#)
                            :line (:line m#)})))))
+
+(defn with-explanation
+  [component & children]
+  [:<>
+   component
+   (into [:div.contained.explanation]
+         children)])

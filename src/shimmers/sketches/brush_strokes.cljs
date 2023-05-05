@@ -12,7 +12,6 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -169,7 +168,7 @@
         (apply q/point p))))
 
 (defn page []
-  [view-sketch/with-explanation
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
