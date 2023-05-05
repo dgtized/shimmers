@@ -79,11 +79,13 @@
     [:p "Seeking behavior using move " vel-c " " angle-c " " drag]]
    (sketch/component
     :size [600 100]
+    ;; :performance-id :fps-overlay
     :setup (setup (move vel-c angle-c drag))
     :update update-state
     :draw draw
     :middleware [m/fun-mode])])
 
+;; TODO: add examples using PID control for acceleration to position
 (defn page []
   [:div
    (move-example 0.1 0.1 0.9)
