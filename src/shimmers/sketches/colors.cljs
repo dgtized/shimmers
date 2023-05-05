@@ -128,11 +128,18 @@
     :noise (draw-noise ui)
     :oklab (draw-oklab ui)))
 
-(sketch/defquil colors
-  :created-at "2021-03-11"
-  :tags #{:demo}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  [:div
+   (sketch/component
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.contained.explanation]])
+
+(sketch/definition colors
+  {:created-at "2021-03-11"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page))
