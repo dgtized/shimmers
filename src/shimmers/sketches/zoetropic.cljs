@@ -49,15 +49,14 @@
              width height)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/change-mode ui-state modes]]])
+   [ctrl/change-mode ui-state modes]])
 
 (sketch/definition zoetropic
   {:created-at "2021-04-17"

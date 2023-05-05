@@ -166,15 +166,14 @@
     (cq/draw-polygon shape)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [1200 900]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.center (view-sketch/generate :disassociated-boxes)]]])
+   [:p.center (view-sketch/generate :disassociated-boxes)]])
 
 ;; TODO: convert svg?
 (sketch/definition disassociated-boxes

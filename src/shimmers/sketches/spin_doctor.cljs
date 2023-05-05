@@ -103,17 +103,15 @@
     (draw-frame state)))
 
 (defn page [update-f]
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update (update-state update-f)
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:div
-     (ctrl/checkbox-after ui-state "Running" [:running])
-     (ctrl/numeric ui-state "Frame Limit" [:frame-limit] [0 100000 1000])]]])
+   [ctrl/checkbox-after ui-state "Running" [:running]]
+   [ctrl/numeric ui-state "Frame Limit" [:frame-limit] [0 100000 1000]]])
 
 (sketch/definition spin-doctor
   {:created-at "2022-10-29"

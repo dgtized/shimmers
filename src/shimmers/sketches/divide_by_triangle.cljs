@@ -85,19 +85,18 @@
         (qdg/draw t)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:div.readable-width
-     [:p "Genuary2023 Day 6 - Steal like an Artist"]
-     [:p "Inspired by "
-      [:a {:href "https://mobile.twitter.com/CodeAndWood/status/1611270290071232513"}
-       "CodeAndWood's sketch"] ". Experimenting with varying the density of
-     rectangle brushes and the compositional frame."]]]])
+   [:div.readable-width
+    [:p "Genuary2023 Day 6 - Steal like an Artist"]
+    [:p "Inspired by "
+     [:a {:href "https://mobile.twitter.com/CodeAndWood/status/1611270290071232513"}
+      "CodeAndWood's sketch"] ". Experimenting with varying the density of
+     rectangle brushes and the compositional frame."]]])
 
 (sketch/definition divide-by-triangle
   {:created-at "2023-01-06"

@@ -132,28 +132,27 @@
      [:p "Select source tile with left mouse button, and destination with right."]
      [:div.flexcols
       [:div {:style {:width "15em"}}
-       [:div [:h5 "Source"] (debug/pre-edn source {:width 40})]
-       [:div [:h5 "Destination"] (debug/pre-edn dest {:width 40})]
-       [:div [:h5 "Cost"] (debug/pre-edn cost)]]
+       [:div [:h5 "Source"] [debug/pre-edn source {:width 40}]]
+       [:div [:h5 "Destination"] [debug/pre-edn dest {:width 40}]]
+       [:div [:h5 "Cost"] [debug/pre-edn cost]]]
       [:div
        [:h5 "Path"]
        [:div {:style {:font-size "0.75em"
                       :column-count (Math/ceil (/ (count path) 20))}}
         (for [[i s] (map-indexed vector path)]
-          [:div {:key (str "v" i)} (debug/pre-edn s)])]]]]))
+          [:div {:key (str "v" i)} [debug/pre-edn s]])]]]]))
 
 
 ;; TODO: convert svg?
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition the-journey-between
   {:created-at "2022-06-02"

@@ -131,15 +131,14 @@
 
 (defn page []
   (let [ui-state (init-state)]
-    [:div
+    [sketch/with-explanation
      (sketch/component
       :size [800 600]
       :setup (partial setup ui-state)
       :update update-state
       :draw draw
       :middleware [m/fun-mode framerate/mode])
-     [:div.contained.explanation
-      [ui-controls ui-state]]]))
+     [ui-controls ui-state]]))
 
 (sketch/definition colors
   {:created-at "2021-03-11"

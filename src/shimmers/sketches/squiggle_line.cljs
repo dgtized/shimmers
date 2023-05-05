@@ -31,15 +31,14 @@
     (hand-drawn/line p q)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p "Demonstration of simulated hand drawn lines in various orientations."]]])
+   [:p "Demonstration of simulated hand drawn lines in various orientations."]])
 
 ;; TODO: convert to SVG?
 (sketch/definition squiggle-line

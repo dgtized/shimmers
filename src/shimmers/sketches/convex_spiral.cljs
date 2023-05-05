@@ -50,14 +50,13 @@
     (q/line p q)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [explanation]]])
+   [explanation]])
 
 (sketch/definition convex-spiral-sketch
   {:created-at "2021-03-22"

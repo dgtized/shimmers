@@ -99,15 +99,14 @@
     (draw-tree tree [[0 (q/height)] [0 (q/width)]])))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    #_[debug/display defo]]])
+   #_[debug/display defo]])
 
 (sketch/definition kd-tree-sketch
   {:created-at "2020-11-28"

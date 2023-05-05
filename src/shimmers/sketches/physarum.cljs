@@ -141,15 +141,14 @@
   (q/image trail 0 0 (q/width) (q/height)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 800]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition physarum
   {:created-at "2021-07-04"

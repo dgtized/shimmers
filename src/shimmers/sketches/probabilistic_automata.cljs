@@ -188,16 +188,15 @@
     (draw-bot bot)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    (when-let [automata @!automata]
-      [explanation automata])]])
+   (when-let [automata @!automata]
+     [explanation automata])])
 
 (sketch/definition probabilistic-automata
   {:created-at "2020-11-18"

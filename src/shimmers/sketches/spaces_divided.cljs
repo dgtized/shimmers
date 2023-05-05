@@ -119,6 +119,7 @@
 
 (comment
   ;; example of self intersect after inset operation
+  ;; better displayed in shimmers.sketches.inset-polygon
   (poly-detect/self-intersecting?
    (gp/polygon2 (poly-detect/inset-polygon (mapv gv/vec2 [[383.33 202.97]
                                                           [435.44 199.85]
@@ -126,16 +127,16 @@
                                                           [411.73 357.02]])
                                            -10))))
 
+;; TODO: convert to svg with on-click handlers?
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [debug/display defo]]])
+   [debug/display defo]])
 
 (sketch/definition spaces-divided
   {:created-at "2021-12-09"

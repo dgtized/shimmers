@@ -99,15 +99,14 @@
           (q/line p q))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [1000 1000]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.center (view-sketch/generate :plaid-arrangements)]]])
+   [:p.center (view-sketch/generate :plaid-arrangements)]])
 
 (sketch/definition plaid-arrangements
   {:created-at "2021-11-07"

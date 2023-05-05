@@ -215,15 +215,14 @@
   ((get draw-modes (:draw-mode @ui-state)) state))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [1024 768]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition snake
   {:created-at "2022-04-02"

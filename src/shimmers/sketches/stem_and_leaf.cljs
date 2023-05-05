@@ -111,16 +111,15 @@
       (tangent-lines (nth circles a) (nth circles b))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p "WIP experiment with connecting tangent clothoids between a pair of circles."]
-    [debug/display defo]]])
+   [:p "WIP experiment with connecting tangent clothoids between a pair of circles."]
+   [debug/display defo]])
 
 (sketch/definition stem-and-leaf
   {:created-at "2021-07-21"

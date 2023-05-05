@@ -161,12 +161,11 @@
 
 (defn page []
   (let [{:keys [rule-system depth curved]} @ui-state]
-    [:div
+    [sketch/with-explanation
      [:div.canvas-frame [scene rule-system depth curved]]
-     [:div.contained.explanation
-      [:div.flexcols
-       [controls]
-       (debug/pre-edn (dissoc (by-name rule-system) :start))]]]))
+     [:div.flexcols
+      [controls]
+      [debug/pre-edn (dissoc (by-name rule-system) :start)]]]))
 
 (sketch/definition space-filling-curves
   {:created-at "2022-01-02"

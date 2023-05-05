@@ -102,15 +102,14 @@
   ((get modes (:mode @ui-state)) state))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    (ctrl/change-mode ui-state (keys modes))]])
+   [ctrl/change-mode ui-state (keys modes)]])
 
 (sketch/definition triangle-flow
   {:created-at "2022-04-13"

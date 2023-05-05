@@ -82,15 +82,14 @@
             (q/rect (* x w) (* y h) w h)))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 800]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [debug/display defo]]])
+   [debug/display defo]])
 
 (sketch/definition memory-allocation
   {:created-at "2021-10-14"

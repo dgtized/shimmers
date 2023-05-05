@@ -195,15 +195,14 @@
     two circles if they intersect."]]])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition intersecting-chords
   {:created-at "2023-01-04"

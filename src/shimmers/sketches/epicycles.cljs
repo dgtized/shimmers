@@ -67,7 +67,7 @@
         (cq/circle p 5)))))
 
 (defn ui-controls []
-  [:div.ui-controls
+  [ctrl/container
    (ctrl/checkbox ui-state "Persistent" [:persistent])
    (ctrl/numeric ui-state "Chain Links" [:n] [2 16 1])
    (ctrl/checkbox ui-state "Show Chain" [:show-chain])
@@ -75,15 +75,14 @@
    (ctrl/checkbox ui-state "Stretchy" [:stretchy])])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition epicycles
   {:created-at "2022-12-06"

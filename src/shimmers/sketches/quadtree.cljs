@@ -156,18 +156,17 @@
                        :on-change
                        (fn [] (swap! ui-state assoc :rebuild true))})
     (ctrl/numeric ui-state "K-nearest" [:knearest] [1 16 1])]
-   [:div (debug/display defo)]])
+   [debug/display defo]])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition quadtree
   {:created-at "2021-10-10"

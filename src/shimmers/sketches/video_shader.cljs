@@ -43,15 +43,14 @@
                     "u_mode" (get modes (:mode @ui-state))}))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [640 480]
     :renderer :p3d
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/change-mode ui-state (keys modes)]]])
+   [ctrl/change-mode ui-state (keys modes)]])
 
 (sketch/definition video-shader
   {:created-at "2021-02-14"

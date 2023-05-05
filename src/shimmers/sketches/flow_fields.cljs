@@ -371,15 +371,14 @@
      "Shuffle Settings"]]])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [1024 768]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition flow-fields
   {:created-at "2021-06-17"

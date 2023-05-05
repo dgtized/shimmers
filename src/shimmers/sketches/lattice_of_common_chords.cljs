@@ -122,10 +122,6 @@
                                   (update state :circles update-positions)])))
 
 (defonce ui-state (ctrl/state {:debug false :sand false}))
-(defn ui-controls []
-  [:div
-   (ctrl/checkbox ui-state "Debug" [:debug])
-   (ctrl/checkbox ui-state "Sand" [:sand])])
 
 (defn sand-line [pa pb]
   (q/stroke-weight 1)
@@ -156,15 +152,16 @@
         (q/line pa pb)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ctrl/container
+    [ctrl/checkbox ui-state "Debug" [:debug]]
+    [ctrl/checkbox ui-state "Sand" [:sand]]]])
 
 (sketch/definition lattice-of-common-chords
   {:created-at "2021-03-29"

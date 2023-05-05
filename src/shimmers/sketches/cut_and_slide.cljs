@@ -95,15 +95,14 @@
       (cq/draw-polygon s))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/checkbox ui-state "Show Colors" [:show-colors]]]])
+   [ctrl/checkbox ui-state "Show Colors" [:show-colors]]])
 
 (sketch/definition cut-and-slide
   {:created-at "2022-09-05"

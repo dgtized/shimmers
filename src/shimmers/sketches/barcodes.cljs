@@ -62,15 +62,14 @@
     (qdg/draw r)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p "Genuary 2023 Day 19 - Black & White"]]])
+   [:p "Genuary 2023 Day 19 - Black & White"]])
 
 (sketch/definition barcodes
   {:created-at "2023-01-19"

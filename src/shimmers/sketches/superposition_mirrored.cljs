@@ -275,23 +275,22 @@
       (q/line pos dest))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.readable-width
-     "Variation on superposition with more intentional shape placement leveraging symmetries."]
-    (let [mode (:mode @ui-state)]
-      [:div.ui-controls
-       (ctrl/checkbox ui-state "Debug" [:debug])
-       (ctrl/checkbox ui-state "Paused" [:paused])
-       (ctrl/change-mode ui-state [:infinite :limit])
-       (when (= mode :limit)
-         (ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]))])]])
+   [:p.readable-width
+    "Variation on superposition with more intentional shape placement leveraging symmetries."]
+   (let [mode (:mode @ui-state)]
+     [ctrl/container
+      [ctrl/checkbox ui-state "Debug" [:debug]]
+      [ctrl/checkbox ui-state "Paused" [:paused]]
+      [ctrl/change-mode ui-state [:infinite :limit]]
+      (when (= mode :limit)
+        [ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]])])])
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"

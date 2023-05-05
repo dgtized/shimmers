@@ -172,15 +172,14 @@
   (qdg/draw shapes))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.center (view-sketch/generate :motif-shapes)]]])
+   [:p.center (view-sketch/generate :motif-shapes)]])
 
 ;; Convert to SVG?
 (sketch/definition motif-shapes

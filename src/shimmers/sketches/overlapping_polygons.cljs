@@ -50,17 +50,16 @@
     (qdg/draw shapes)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.readable-width
-     "Some examples using " [:code "g/clip-with"] " for punching out the
-     intersection between two overlapping polygons."]]])
+   [:p.readable-width
+    "Some examples using " [:code "g/clip-with"] " for punching out the
+     intersection between two overlapping polygons."]])
 
 (sketch/definition overlapping-polygons
   {:created-at "2021-11-12"

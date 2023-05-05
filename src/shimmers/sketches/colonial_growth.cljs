@@ -72,15 +72,14 @@
         (q/line p (:p parent))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:div (ctrl/checkbox ui-state "Show Parent" [:show-parent])]]])
+   [ctrl/checkbox ui-state "Show Parent" [:show-parent]]])
 
 (sketch/definition colonial-growth
   {:created-at "2021-05-14"

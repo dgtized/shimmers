@@ -55,7 +55,7 @@
                     }))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [640 480]
     :renderer :p3d
@@ -63,8 +63,7 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/change-mode ui-state modes]]])
+   [ctrl/change-mode ui-state modes]])
 
 ;; out of memories after N seconds sometimes?
 (sketch/definition video-delay-shader

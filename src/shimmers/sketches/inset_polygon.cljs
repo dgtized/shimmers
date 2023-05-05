@@ -51,14 +51,12 @@
   (let [ui-state (ctrl/state {:inset 100})]
     (fn []
       (let [state (polygon-state (:inset @ui-state))]
-        [:div
+        [sketch/with-explanation
          [:div.canvas-frame [scene state]]
-         [:div.explanation.contained
-          [:div
-           [:div.ui-controls
-            (ctrl/slider ui-state (fn [x] (str "Inset " x)) [:inset] [-100 200 1])]
-           [:div
-            (debug/pre-edn state)]]]]))))
+         [ctrl/container
+          [ctrl/slider ui-state (fn [x] (str "Inset " x)) [:inset] [-100 200 1]]]
+         [:div
+          [debug/pre-edn state]]]))))
 
 (sketch/definition inset-polygon
   {:created-at "2023-02-27"

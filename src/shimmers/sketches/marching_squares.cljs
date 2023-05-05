@@ -42,18 +42,18 @@
             (q/line p q)))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 800]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    (ctrl/container
-     (ctrl/slider ui-state (fn [v] (f/format ["Divisor 1 / 2 ^ " (f/float 1)] v))
-                  [:divisor] [5.0 12.0 0.1])
-     (ctrl/slider ui-state (fn [v] (str "Threshold " v)) [:threshold] [0.0 1.0 0.01]))]])
+   [ctrl/container
+    [ctrl/slider ui-state (fn [v] (f/format ["Divisor 1 / 2 ^ " (f/float 1)] v))
+     [:divisor] [5.0 12.0 0.1]]
+    [ctrl/slider ui-state (fn [v] (str "Threshold " v))
+     [:threshold] [0.0 1.0 0.01]]]])
 
 (sketch/definition marching-squares
   {:created-at "2021-09-20"

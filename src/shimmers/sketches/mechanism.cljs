@@ -271,18 +271,17 @@
     (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
     (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
     (ctrl/numeric ui-state "Driver Ratio" [:driver-ratio] [0.5 4.0 0.1])]
-   [:div (debug/display defo)]])
+   [debug/display defo]])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition mechanism
   {:created-at "2021-04-19"

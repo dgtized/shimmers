@@ -76,18 +76,17 @@
               (q/end-shape))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p "Genuary 2023 Day 16 - Reflections on Reflections"]
-    [:p.readable-width "Reflect the animated scene in the top left over both x,
+   [:p "Genuary 2023 Day 16 - Reflections on Reflections"]
+   [:p.readable-width "Reflect the animated scene in the top left over both x,
    y, and x/y axis. However, to shake things up a little, move the origin point
-   specifying each axis over time."]]])
+   specifying each axis over time."]])
 
 (sketch/definition reflections
   {:created-at "2023-01-16"

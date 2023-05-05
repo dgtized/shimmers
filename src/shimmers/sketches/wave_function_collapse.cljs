@@ -355,26 +355,25 @@
       (let [{:keys [wfc-state highlight cancel message]} @state
             {:keys [grid tiles]} wfc-state
             pattern-set (select-keys @state [:wfc-state :mode :show-rules :rotations])]
-        [:div
+        [sketch/with-explanation
          [:div.canvas-frame [scene [width height] grid
                              :tiles tiles
                              :highlight highlight
                              :on-click (partial set-cell! state)]]
-         [:div.contained.explanation
-          [:div.flexcols
-           [:div [ctrl/change-mode state (keys modes) {:on-change (emit :reset)}]
-            (when message
-              [:div {:style {:color "red"}}
-               (debug/pre-edn message)])]
-           [:button.generate {:on-click (emit :reset)} "Reset"]
-           [:button.generate {:on-click (emit :solve-one)} "Solve One"]
-           [:button.generate {:on-click (emit :solve)} (if cancel "Stop" "Solve")]]
-          [:p.readable
-           "Click on a cell above to collapse it to a specific tile, or to
+         [:div.flexcols
+          [:div [ctrl/change-mode state (keys modes) {:on-change (emit :reset)}]
+           (when message
+             [:div {:style {:color "red"}}
+              (debug/pre-edn message)])]
+          [:button.generate {:on-click (emit :reset)} "Reset"]
+          [:button.generate {:on-click (emit :solve-one)} "Solve One"]
+          [:button.generate {:on-click (emit :solve)} (if cancel "Stop" "Solve")]]
+         [:p.readable
+          "Click on a cell above to collapse it to a specific tile, or to
          expand it to the set of all legal tiles. Click on a cell in the pattern
          below to derive new tiles and rules."]
-          [:p.readable "Does not yet support backtracking."]
-          [display-patterns pattern-set emit]]]))))
+         [:p.readable "Does not yet support backtracking."]
+         [display-patterns pattern-set emit]]))))
 
 (sketch/definition wave-function-collapse
   {:created-at "2022-04-26"

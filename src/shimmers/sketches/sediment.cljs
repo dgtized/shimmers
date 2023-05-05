@@ -78,7 +78,7 @@
         (apply q/curve (mapcat :pos segment))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
@@ -86,8 +86,7 @@
     ;; :mouse-clicked (fn [state] (q/redraw) state)
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition sediment
   {:created-at "2021-04-08"

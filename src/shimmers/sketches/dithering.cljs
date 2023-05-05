@@ -260,14 +260,13 @@
   )
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [640 480]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/change-mode ui-state modes]]])
+   [ctrl/change-mode ui-state modes]])
 
 (sketch/definition dithering
   {:created-at "2020-11-21"

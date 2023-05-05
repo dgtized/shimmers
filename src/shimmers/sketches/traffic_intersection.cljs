@@ -155,17 +155,16 @@
     (q/line position (tm/+ position (tm/* velocity size)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    (ctrl/container
-     (ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
-                  [:align-width] [0.0 Math/PI 0.1]))]])
+   [ctrl/container
+    [ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
+     [:align-width] [0.0 Math/PI 0.1]]]])
 
 (sketch/definition traffic-intersection
   {:created-at "2021-10-05"

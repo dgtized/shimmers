@@ -61,14 +61,13 @@
       (cq/draw-polygon shape))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode])
-   [:div.contained.explanation
-    [:p.center (view-sketch/generate :dispersion)]]])
+   [:p.center (view-sketch/generate :dispersion)]])
 
 (sketch/definition dispersion
   {:created-at "2021-03-10"

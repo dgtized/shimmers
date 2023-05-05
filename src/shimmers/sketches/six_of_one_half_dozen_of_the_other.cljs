@@ -71,15 +71,14 @@
            cq/draw-polygon))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [1024 768]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]]])
+   [:p.center (view-sketch/generate :six-of-one-half-dozen-of-the-other)]])
 
 (sketch/definition six-of-one-half-dozen-of-the-other
   {:created-at "2021-05-17"

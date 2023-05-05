@@ -108,18 +108,17 @@
 ;; from N intersecting circles by converting to graphs. Also, need to add a
 ;; CompositePath / CompositePolygon type to allow line segments or arc segments.
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [:p "Genuary 2023 Day 5 - Debug View"]
-    [:p "Shows the disjoint polygon regions constructed from two circles
+   [:p "Genuary 2023 Day 5 - Debug View"]
+   [:p "Shows the disjoint polygon regions constructed from two circles
    intersecting eachother."]
-    (debug/display defo)]])
+   [debug/display defo]])
 
 (sketch/definition intersecting-circle-regions
   {:created-at "2023-01-05"

@@ -156,15 +156,14 @@
    like effect or with precision. \"Centered Origin\" determines if origin is in the center or upper left."]])
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ui-controls]]])
+   [ui-controls]])
 
 (sketch/definition cube-sketch
   {:created-at "2020-11-02"

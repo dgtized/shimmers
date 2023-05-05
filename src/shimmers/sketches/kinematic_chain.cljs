@@ -47,15 +47,14 @@
   (cq/draw-path (g/vertices chain)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [ctrl/change-mode ui-state (keys modes)]]])
+   [ctrl/change-mode ui-state (keys modes)]])
 
 (sketch/definition kinematic-chain
   {:created-at "2021-03-19"

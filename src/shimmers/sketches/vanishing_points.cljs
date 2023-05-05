@@ -42,15 +42,14 @@
     (cq/draw-polygon cursor)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation
-    [debug/display defo]]])
+   [debug/display defo]])
 
 (sketch/definition vanishing-points
   {:created-at "2022-03-05"
