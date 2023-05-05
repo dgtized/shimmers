@@ -12,7 +12,8 @@
         performance-id (name (gensym "performance_"))
         options (assoc sketch-args :performance-id performance-id)]
     [r/create-class
-     {:component-did-mount
+     {:display-name "quil-sketch-component"
+      :component-did-mount
       (fn []
         (apply q/sketch (apply concat (assoc options :host @!dom-node))))
       :component-will-unmount
