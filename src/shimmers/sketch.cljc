@@ -79,9 +79,6 @@
 
        (defn ~runner []
          (inject-quil-host-if-missing! ~(:host opts))
-         (when-let [mount# ~(:on-mount opts)]
-           (mount#))
-
          (when-not (some #(= :no-start %) ~(:features opts))
            (quil.sketch/add-sketch-to-init-list
             {:fn ~sketch-start
