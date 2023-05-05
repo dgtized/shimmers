@@ -34,6 +34,7 @@
     "Experimenting with wrapping Quil sketches in a Reagent Component"]
    (sketch/component
     :size [800 300]
+    :performance-id :fps-overlay
     :setup (setup 0.01)
     :update update-state
     :draw draw
@@ -42,6 +43,7 @@
     "and now the same sketch, but with a setup function using dθ of 0.05"]
    (sketch/component
     :size [800 300]
+    :performance-id :fps-overlay
     :setup (setup 0.05)
     :update update-state
     :draw draw

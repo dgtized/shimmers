@@ -15,14 +15,20 @@
             :padding "0.1em 0.33em"
             :z-index 100}}])
 
+(defn configure-fps-overlay [sketch-args]
+  (let [overlay (:performance-id sketch-args)
+        performance-id (if (= overlay :fps-overlay)
+                         (name (gensym "performance_"))
+                         "framerate")]
+    (assoc sketch-args :performance-id performance-id)))
+
 ;; Amalgamation of:
 ;; https://github.com/quil/quil/issues/320#issuecomment-534859573
 ;; https://github.com/simon-katz/nomisdraw/blob/for-quil-api-request/src/cljs/nomisdraw/utils/nomis_quil_on_reagent.cljs
 
 (defn sketch-component [sketch-args]
   (let [!dom-node (atom nil)
-        performance-id (name (gensym "performance_"))
-        options (assoc sketch-args :performance-id performance-id)]
+        {:keys [performance-id] :as options} (configure-fps-overlay sketch-args)]
     (r/create-class
      {:display-name "quil-sketch-component"
       :component-did-mount
@@ -36,4 +42,5 @@
       (fn []
         [:div.canvas-frame {:style {:position "relative"}
                             :ref (fn [el] (reset! !dom-node el))}
-         [fps-overlay performance-id]])})))
+         (when-not (= performance-id "framerate")
+           [fps-overlay performance-id])])})))
