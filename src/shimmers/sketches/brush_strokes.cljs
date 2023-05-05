@@ -186,7 +186,7 @@
      light or dark strokes."]
     [:p.readable-width
      "On each each restart, a new path is generated for the brush to follow.
-     There are a couple of path templates each invocation selects from, circles,
+     There are a couple of path templates each invocation selects from; circles,
      lines and squiggles, etc."]]])
 
 (sketch/definition brush-strokes
