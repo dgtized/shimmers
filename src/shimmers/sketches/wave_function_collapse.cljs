@@ -360,7 +360,7 @@
                              :tiles tiles
                              :highlight highlight
                              :on-click (partial set-cell! state)]]
-         [:div#interface.contained
+         [:div.contained.explanation
           [:div.flexcols
            [:div [ctrl/change-mode state (keys modes) {:on-change (emit :reset)}]
             (when message
