@@ -53,7 +53,7 @@
      [:div
       (ctrl/slider ui (fn [v] (str "Chroma: " v)) [:chroma] [0 0.5 0.01])])))
 
-(defn setup []
+(defn init-state []
   (let [defaults
         {:mode :hsla
          :lightness 50
@@ -63,10 +63,11 @@
          :saturation2 50
          :lightness1 50
          :lightness2 50
-         :noise-mult 0.5}
-        ui (ctrl/state (merge defaults (random-hues)))]
-    (ctrl/mount #(ui-controls ui) "interface")
-    {:ui ui}))
+         :noise-mult 0.5}]
+    (ctrl/state (merge defaults (random-hues)))))
+
+(defn setup [ui]
+  {:ui ui})
 
 (defn update-state [state]
   state)
@@ -129,14 +130,16 @@
     :oklab (draw-oklab ui)))
 
 (defn page []
-  [:div
-   (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:div.contained.explanation]])
+  (let [ui-state (init-state)]
+    [:div
+     (sketch/component
+      :size [800 600]
+      :setup (partial setup ui-state)
+      :update update-state
+      :draw draw
+      :middleware [m/fun-mode framerate/mode])
+     [:div.contained.explanation
+      [ui-controls ui-state]]]))
 
 (sketch/definition colors
   {:created-at "2021-03-11"
