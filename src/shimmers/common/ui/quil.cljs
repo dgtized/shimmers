@@ -3,6 +3,18 @@
    [quil.core :as q :include-macros true]
    [reagent.core :as r]))
 
+(defn fps-overlay [performance-id]
+  [:div.performance
+   {:id performance-id
+    :style {:position "absolute"
+            :color "#000"
+            :background "#ddd"
+            :opacity 0.66
+            :right 0
+            :top 0
+            :padding "0.1em 0.33em"
+            :z-index 100}}])
+
 ;; Amalgamation of:
 ;; https://github.com/quil/quil/issues/320#issuecomment-534859573
 ;; https://github.com/simon-katz/nomisdraw/blob/for-quil-api-request/src/cljs/nomisdraw/utils/nomis_quil_on_reagent.cljs
@@ -24,13 +36,4 @@
       (fn []
         [:div.canvas-frame {:style {:position "relative"}
                             :ref (fn [el] (reset! !dom-node el))}
-         [:div.performance
-          {:id performance-id
-           :style {:position "absolute"
-                   :color "#000"
-                   :background "#ddd"
-                   :opacity 0.66
-                   :right 0
-                   :top 0
-                   :padding "0.1em 0.33em"
-                   :z-index 100}}]])})))
+         [fps-overlay performance-id]])})))
