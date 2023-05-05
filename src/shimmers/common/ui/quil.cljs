@@ -11,7 +11,7 @@
   (let [!dom-node (atom nil)
         performance-id (name (gensym "performance_"))
         options (assoc sketch-args :performance-id performance-id)]
-    [r/create-class
+    (r/create-class
      {:display-name "quil-sketch-component"
       :component-did-mount
       (fn []
@@ -33,4 +33,4 @@
                    :right 0
                    :top 0
                    :padding "0.1em 0.33em"
-                   :z-index 100}}]])}]))
+                   :z-index 100}}]])})))
