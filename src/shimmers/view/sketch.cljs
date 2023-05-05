@@ -89,7 +89,7 @@
    (fn []
      [:div
       [:div.canvas-frame [scene]]
-      [:div.explanation.contained
+      [:div.contained.explanation
        (if controls
          [:div.flexcols
           [:div [generate sketch-id]]
