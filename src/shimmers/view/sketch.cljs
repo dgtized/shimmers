@@ -96,3 +96,10 @@
           [controls]]
          [:p.center
           [generate sketch-id]])]])))
+
+(defn with-explanation
+  [component & children]
+  [:<>
+   component
+   (into [:div.contained.explanation]
+         children)])
