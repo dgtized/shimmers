@@ -56,4 +56,4 @@
   {:created-at "2022-10-22"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :tree-rings ui-controls)))
+  (ctrl/mount (view-sketch/static-page scene :tree-rings ui-controls)))

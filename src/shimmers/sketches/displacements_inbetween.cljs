@@ -164,7 +164,7 @@
 (defn page []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
         palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))]
-    (view-sketch/page-for
+    (view-sketch/static-page
      (fn [] (csvg/timed (scene screen palette)))
      :displacements-inbetween
      (partial ui-controls palette))))

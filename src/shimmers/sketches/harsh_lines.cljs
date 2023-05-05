@@ -60,4 +60,4 @@
   {:created-at "2021-04-07"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :harsh-lines)))
+  (ctrl/mount (view-sketch/static-page scene :harsh-lines)))

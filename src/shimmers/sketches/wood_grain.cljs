@@ -111,4 +111,4 @@
   {:created-at "2021-11-14"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :wood-grain)))
+  (ctrl/mount (view-sketch/static-page scene :wood-grain)))

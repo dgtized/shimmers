@@ -37,4 +37,4 @@
   {:created-at "2023-02-04"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :cutouts)))
+  (ctrl/mount (view-sketch/static-page scene :cutouts)))

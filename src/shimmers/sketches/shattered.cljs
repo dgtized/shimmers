@@ -32,4 +32,4 @@
   {:created-at "2022-01-01"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :shattered)))
+  (ctrl/mount (view-sketch/static-page scene :shattered)))

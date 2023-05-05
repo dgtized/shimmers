@@ -119,5 +119,5 @@
    :type :svg
    :tags #{:deterministic}}
   (->> (partial debug/display defo)
-       (view-sketch/page-for scene :curvature-of-space)
+       (view-sketch/static-page scene :curvature-of-space)
        ctrl/mount))

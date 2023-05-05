@@ -74,4 +74,4 @@
   {:created-at "2023-03-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :concentric-chords)))
+  (ctrl/mount (view-sketch/static-page scene :concentric-chords)))

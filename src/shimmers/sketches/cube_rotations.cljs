@@ -67,4 +67,4 @@
   {:created-at "2022-01-09"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :cube-rotations)))
+  (ctrl/mount (view-sketch/static-page scene :cube-rotations)))

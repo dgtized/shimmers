@@ -72,4 +72,4 @@
   {:created-at "2022-02-27"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :magnetic-fields)))
+  (ctrl/mount (view-sketch/static-page scene :magnetic-fields)))

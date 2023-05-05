@@ -69,4 +69,4 @@
   {:created-at "2022-01-04"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :deeper-squares ui-controls)))
+  (ctrl/mount (view-sketch/static-page scene :deeper-squares ui-controls)))

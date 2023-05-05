@@ -380,4 +380,4 @@
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :constellations ui-controls)))
+  (ctrl/mount (view-sketch/static-page scene :constellations ui-controls)))

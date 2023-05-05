@@ -95,4 +95,4 @@
   {:created-at "2023-03-14"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :decomposite)))
+  (ctrl/mount (view-sketch/static-page scene :decomposite)))

@@ -50,4 +50,4 @@
   {:created-at "2023-01-02"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (view-sketch/page-for scene :all-the-shapes-in-between)))
+  (ctrl/mount (view-sketch/static-page scene :all-the-shapes-in-between)))

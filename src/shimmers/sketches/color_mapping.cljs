@@ -36,4 +36,4 @@
   {:created-at "2022-05-02"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :color-mapping)))
+  (ctrl/mount (view-sketch/static-page scene :color-mapping)))

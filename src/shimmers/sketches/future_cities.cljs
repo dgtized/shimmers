@@ -109,7 +109,7 @@
    :type :svg
    :tags #{}}
   (let [state (ctrl/state (city-start))]
-    (ctrl/mount (view-sketch/page-for
+    (ctrl/mount (view-sketch/static-page
                  (partial scene state)
                  :future-cities
                  (partial ui-controls state)))))

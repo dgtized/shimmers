@@ -271,4 +271,4 @@
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :ordered ui-controls)))
+  (ctrl/mount (view-sketch/static-page scene :ordered ui-controls)))

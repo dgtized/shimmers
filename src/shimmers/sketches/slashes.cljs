@@ -40,4 +40,4 @@
   {:created-at "2021-08-20"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :slashes)))
+  (ctrl/mount (view-sketch/static-page scene :slashes)))

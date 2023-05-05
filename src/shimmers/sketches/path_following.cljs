@@ -49,4 +49,4 @@
   {:created-at "2021-11-12"
    :type :svg
    :tags #{:demo :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :path-following)))
+  (ctrl/mount (view-sketch/static-page scene :path-following)))

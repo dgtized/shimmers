@@ -68,4 +68,4 @@
   {:created-at "2021-11-08"
    :type :svg
    :tags #{:static}}
-  (ctrl/mount (view-sketch/page-for scene :circuit-intersections)))
+  (ctrl/mount (view-sketch/static-page scene :circuit-intersections)))

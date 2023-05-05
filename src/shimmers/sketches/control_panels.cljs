@@ -429,4 +429,4 @@
   {:created-at "2022-02-07"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :control-panels)))
+  (ctrl/mount (view-sketch/static-page scene :control-panels)))

@@ -65,4 +65,4 @@
   {:created-at "2022-01-07"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :triangle-gradient)))
+  (ctrl/mount (view-sketch/static-page scene :triangle-gradient)))

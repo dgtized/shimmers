@@ -190,7 +190,7 @@
 (defn page []
   (let [state (r/atom {:show {:closest true}
                        :landscape (grid+roads (rect/rect 0 0 width height))})]
-    (view-sketch/page-for (partial scene state)
+    (view-sketch/static-page (partial scene state)
                           :texas-fields
                           (partial ui-controls state))))
 

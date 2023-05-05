@@ -93,4 +93,4 @@
   {:created-at "2023-01-14"
    :type :svg
    :tags #{:genuary2023}}
-  (ctrl/mount (view-sketch/page-for scene :bold-moves)))
+  (ctrl/mount (view-sketch/static-page scene :bold-moves)))

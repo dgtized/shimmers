@@ -194,4 +194,4 @@
   {:created-at "2022-11-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :radial-symmetries)))
+  (ctrl/mount (view-sketch/static-page scene :radial-symmetries)))

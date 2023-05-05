@@ -83,8 +83,8 @@
 (defn generate [sketch-id]
   [:button.generate {:on-click #(restart-sketch sketch-id)} "Generate"])
 
-(defn page-for
-  ([scene sketch-id] (page-for scene sketch-id nil))
+(defn static-page
+  ([scene sketch-id] (static-page scene sketch-id nil))
   ([scene sketch-id controls]
    (fn []
      [:div
@@ -94,4 +94,5 @@
          [:div.flexcols
           [:div [generate sketch-id]]
           [controls]]
-         [:p.center (generate sketch-id)])]])))
+         [:p.center
+          [generate sketch-id]])]])))

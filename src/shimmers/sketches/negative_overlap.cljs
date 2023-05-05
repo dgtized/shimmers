@@ -143,4 +143,4 @@
   {:created-at "2022-01-26"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/page-for scene :negative-overlap ui-controls)))
+  (ctrl/mount (view-sketch/static-page scene :negative-overlap ui-controls)))

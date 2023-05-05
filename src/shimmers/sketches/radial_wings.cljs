@@ -42,4 +42,4 @@
   {:created-at "2021-11-15"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/page-for scene :radial-wings)))
+  (ctrl/mount (view-sketch/static-page scene :radial-wings)))
