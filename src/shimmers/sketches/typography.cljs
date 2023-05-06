@@ -4,6 +4,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
@@ -47,10 +48,17 @@
             (swap! x + (rand-nth [-10 50 text-width text-width 100])))
           (swap! y + yset))))))
 
-(sketch/defquil typography
-  :created-at "2021-01-11"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+;; TODO: scale to fit larger view sizes
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition typography
+  {:created-at "2021-01-11"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
