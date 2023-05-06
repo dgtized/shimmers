@@ -6,6 +6,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
@@ -74,10 +75,16 @@
       (q/fill 0.0))
     (cq/draw-polygon polygon)))
 
-(sketch/defquil chaos-cuts
-  :created-at "2022-12-04"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition chaos-cuts
+  {:created-at "2022-12-04"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
