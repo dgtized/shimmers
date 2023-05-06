@@ -87,6 +87,7 @@
 
 (defn page []
   (sketch/component
+   :size [900 600]
    :setup setup
    :update update-state
    :draw draw
@@ -94,6 +95,6 @@
 
 (sketch/definition conveyors
   {:created-at "2022-12-31"
-   :size [900 600]
+   :tags #{}
    :type :quil}
   (ctrl/mount page))
