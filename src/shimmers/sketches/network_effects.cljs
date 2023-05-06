@@ -6,6 +6,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -139,10 +140,17 @@
                (every? #(g/contains-point? bounds %) inset))
       (cq/draw-shape inset))))
 
-(sketch/defquil network-effects
-  :created-at "2021-12-05"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+;; TODO: add toggle for quadtree view
+(sketch/definition network-effects
+  {:created-at "2021-12-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
