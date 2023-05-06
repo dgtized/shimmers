@@ -4,6 +4,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.macros.loop :as loop :include-macros true]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.ndarray.core :as nd]))
@@ -65,12 +66,18 @@
         (q/fill 96 96 (+ (* amount 64) 128) 16)
         (q/rect (* factor i) (* factor j) factor factor)))))
 
-(sketch/defquil ripples
-  :created-at "2020-12-31"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition ripples
+  {:created-at "2020-12-31"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
 
 
