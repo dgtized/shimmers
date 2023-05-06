@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -84,10 +85,15 @@
   (doseq [s shapes]
     (qdg/draw s)))
 
-(sketch/defquil conveyors
-  :created-at "2022-12-31"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition conveyors
+  {:created-at "2022-12-31"
+   :size [900 600]
+   :type :quil}
+  (ctrl/mount page))
