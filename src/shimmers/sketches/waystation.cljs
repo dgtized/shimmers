@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
@@ -122,11 +123,16 @@
     (doseq [{:keys [track] :as train} trains]
       (draw-train train (nth tracks track) track-height))))
 
-(sketch/defquil waystation
-  :created-at "2023-03-17"
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition waystation
+  {:created-at "2023-03-17"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
