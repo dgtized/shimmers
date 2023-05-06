@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn rain [noise]
@@ -24,8 +25,14 @@
     (dotimes [_ (rand-int (* 8 noise))]
       (rain noise))))
 
-(sketch/defquil precipitation
-  :created-at "2021-01-19"
-  :size [800 600]
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition precipitation
+  {:created-at "2021-01-19"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
