@@ -3,10 +3,11 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
-   [shimmers.math.vector :as v]))
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -39,11 +40,16 @@
         (q/curve-vertex x y))))
   (q/end-shape))
 
-(sketch/defquil flower-petals
-  :created-at "2023-01-09"
-  :tags #{:genuary2023}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition flower-petals
+  {:created-at "2023-01-09"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page))
