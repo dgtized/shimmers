@@ -9,6 +9,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.shader :as shader]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn next-point [[x y]]
@@ -51,11 +52,16 @@
                       "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2))})))
     (q/image pass1 0 0 (q/width) (q/height))))
 
-(sketch/defquil integer-circles
-  :created-at "2021-09-04"
-  :tags #{:shader}
-  :size [1280 960]
-  :renderer :p2d
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [1280 960]
+   :renderer :p2d
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition integer-circles
+  {:created-at "2021-09-04"
+   :tags #{:shader}
+   :type :quil}
+  (ctrl/mount page))
