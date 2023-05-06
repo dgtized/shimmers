@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.geometry.triangle :as triangle]
@@ -157,11 +158,16 @@
   (when (> t lifespan)
     (q/no-loop)))
 
-(sketch/defquil s-chartarum
-  :created-at "2023-01-30"
-  :tags #{:deterministic}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition s-chartarum
+  {:created-at "2023-01-30"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page))
