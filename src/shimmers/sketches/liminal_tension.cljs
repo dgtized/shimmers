@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -124,11 +125,16 @@
       (draw-particle particle t))
     (q/no-loop)))
 
-(sketch/defquil liminal-tension
-  :created-at "2023-03-21"
-  :tags #{}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition liminal-tension
+  {:created-at "2023-03-21"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
