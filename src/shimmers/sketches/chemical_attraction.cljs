@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.control :as control]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -114,11 +115,16 @@
   (when (and (> (count structure) limit) (empty? shapes))
     (q/no-loop)))
 
-(sketch/defquil chemical-attraction
-  :created-at "2023-02-01"
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition chemical-attraction
+  {:created-at "2023-02-01"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
