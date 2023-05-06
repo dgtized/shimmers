@@ -74,17 +74,16 @@
         (cq/circle pos (tm/random 1.0 10.0))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode]) ;; TODO: optionally hide framerate somehow?
-   [:div.contained
-    [:p.explanation.readable-width
-     "Continuous layering of low opacity, random triangle streaks create an
+   [:p.readable-width
+    "Continuous layering of low opacity, random triangle streaks create an
     impression of a red morning sunrise over a whitecapped sea. Inspired by Mark
-    Rothko."]]])
+    Rothko."]])
 
 (sketch/definition sea-and-sky
   {:created-at "2021-07-06"
