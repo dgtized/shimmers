@@ -24,7 +24,6 @@
     (q/background 1.0 opacity)
     (q/no-stroke)
     (q/fill 0.0 1.0))
-  (q/translate (cq/rel-vec 0.0 0.5))
   (let [samples 75
         rate (* 30 Math/PI (+ 0.5 (eq/unit-sin (- (* 0.8 tm/QUARTER_PI t) 0.05))))
         amplitude (* (cq/rel-h 0.4) (+ 0.2 (* 0.8 (eq/unit-sin (- (* 0.53 t) (/ 1 5))))))
@@ -47,7 +46,7 @@
                      (* 0.25 wobble
                         (Math/cos (+ 1.1 time-factor (/ (* wibble x) rate)))))
                 scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 2.13 t) (* j 0.5)))))]
-            (cq/circle (tm/+ (gv/vec2 x (* amplitude y))
+            (cq/circle (tm/+ (gv/vec2 x (+ (* amplitude y) (cq/rel-h 0.5)))
                              (dr/jitter (* max-jitter jitter (- 1.0 scale))))
                        (abs (* scale max-scale)))))))))
 
