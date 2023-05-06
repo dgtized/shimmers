@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch]))
 
 (defn seconds-since-epoch []
@@ -34,9 +35,15 @@
     (dotimes [i m]
       (zig gap [(* i gap) 0] (/ t 256)))))
 
-(sketch/defquil zigzag
-  :created-at "2020-12-04"
-  :size [600 600]
-  :draw draw
-  :middleware [framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 800]
+   :draw draw
+   :middleware [framerate/mode]))
+
+(sketch/definition zigzag
+  {:created-at "2020-12-04"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
 
