@@ -5,6 +5,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
@@ -96,11 +97,16 @@
   (when (> t paused)
     (draw-frame state)))
 
-(sketch/defquil under-the-surface
-  :created-at "2023-01-13"
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition under-the-surface
+  {:created-at "2023-01-13"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
