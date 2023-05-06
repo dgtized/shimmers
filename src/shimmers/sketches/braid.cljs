@@ -4,7 +4,8 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
-   [shimmers.common.sequence :refer [index-of]]
+   [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn color [value]
@@ -33,7 +34,7 @@
         next-strands (braid-row (inc row))]
     (for [position [1 0 2]
           :let [value (nth strands position)]]
-      [(color value) position (index-of next-strands value)])))
+      [(color value) position (cs/index-of next-strands value)])))
 
 (defn candy-cane [row]
   [[(color (mod row 2)) 0 1]
@@ -62,9 +63,15 @@
           (apply q/stroke color)
           (cq/lerp-line [(* from cw) 0] [(* to cw) rh] percent))))))
 
-(sketch/defquil braid
-  :created-at "2021-01-23"
-  :size [600 400]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition braid
+  {:created-at "2021-01-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
