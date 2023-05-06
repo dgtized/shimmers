@@ -3,12 +3,13 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.math.core :as tm]))
 
 (defn remap-from [pos scale points]
   (mapv (fn [p] (g/translate (tm/* p scale) pos))
@@ -73,11 +74,16 @@
         (plot big-left)
         (plot big-right)))))
 
-(sketch/defquil unwinding
-  :created-at "2023-01-01"
-  :tags #{:genuary2023}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition unwinding
+  {:created-at "2023-01-01"
+   :tags #{:genuary2023}
+   :type :quil}
+  (ctrl/mount page))
