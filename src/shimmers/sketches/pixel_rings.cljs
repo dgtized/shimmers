@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -43,9 +44,14 @@
            (v/+polar center r theta))))))
   (q/no-loop))
 
-(sketch/defquil pixel-rings
-  :created-at "2023-02-23"
-  :tags #{}
-  :size [900 600]
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition pixel-rings
+  {:created-at "2023-02-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
