@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.aabb :as aabb]
    [thi.ng.geom.core :as g]
@@ -52,10 +53,16 @@
       (doseq [face-pts (isofaces shape)]
         (cq/draw-shape (map isometric3 face-pts))))))
 
-(sketch/defquil isometric
-  :created-at "2021-10-21"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition isometric
+  {:created-at "2021-10-21"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
