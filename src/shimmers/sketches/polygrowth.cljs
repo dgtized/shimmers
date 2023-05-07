@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
@@ -54,10 +55,16 @@
     (doseq [v vertices]
       (cq/circle v 0.5))))
 
-(sketch/defquil polygrowth
-  :created-at "2021-05-02"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition polygrowth
+  {:created-at "2021-05-02"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
