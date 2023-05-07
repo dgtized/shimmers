@@ -6,6 +6,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -168,10 +169,16 @@
     (cq/color-if q/fill color)
     (cq/draw-triangle a b c)))
 
-(sketch/defquil triangulating-subdivisions
-  :created-at "2021-02-22"
-  :size [900 900]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 900]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition triangulating-subdivisions
+  {:created-at "2021-02-22"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
