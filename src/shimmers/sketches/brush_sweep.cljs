@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -48,10 +49,16 @@
       (doseq [hair (shuffle (hairs line))]
         (cq/draw-polygon hair)))))
 
-(sketch/defquil brush-sweep
-  :created-at "2021-04-12"
-  :size [1200 900]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [1200 900]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition brush-sweep
+  {:created-at "2021-04-12"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
