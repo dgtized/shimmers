@@ -22,7 +22,7 @@
 
   (q/background "white")
   ;; (q/frame-rate 5)
-  (let [size 10
+  (let [size 20
         w    (/ (q/width) size)
         h    (/ (q/height) size)]
     {:size size
@@ -85,7 +85,7 @@
 
 (defn page []
   (sketch/component
-   :size [400 400]
+   :size [800 800]
    :setup setup
    :update update-state
    :draw draw
