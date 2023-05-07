@@ -6,6 +6,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -51,10 +52,16 @@
         (q/fill 1.0 0.25))
       (cq/draw-shape (g/vertices shape)))))
 
-(sketch/defquil voronoi-after-effect
-  :created-at "2022-03-23"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition voronoi-after-effect
+  {:created-at "2022-03-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
