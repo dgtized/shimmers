@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -116,10 +117,16 @@
   (doseq [points (butlast (rest lines))]
     (cq/draw-path (map cq/rel-pos points))))
 
-(sketch/defquil iterative-displacement
-  :created-at "2021-08-22"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition iterative-displacement
+  {:created-at "2021-08-22"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
