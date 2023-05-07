@@ -6,6 +6,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -66,10 +67,16 @@
         (let [[x y] (v/add center (g/scale position r))]
           (q/rect x y r r))))))
 
-(sketch/defquil langton-ant
-  :created-at "2020-12-23"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [framerate/mode m/fun-mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [framerate/mode m/fun-mode]))
+
+(sketch/definition langton-ant
+  {:created-at "2020-12-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
