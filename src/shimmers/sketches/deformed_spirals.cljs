@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
@@ -27,8 +28,14 @@
       (spiral 9.0 0.9 425 (/ (q/frame-count) 800))
       cq/draw-curve-path))
 
-(sketch/defquil deformed-spirals
-  :created-at "2021-10-10"
-  :size [800 600]
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition deformed-spirals
+  {:created-at "2021-10-10"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
