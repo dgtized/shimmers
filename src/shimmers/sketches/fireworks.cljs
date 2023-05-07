@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.math.verlet-particles :as vp]
@@ -163,12 +164,18 @@
   (doseq [particle (:particles system)]
     (draw-particle particle)))
 
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
 ;; Future: Add audio for launch shreak and crackle/explosion
 ;; Add fountains?
-(sketch/defquil fireworks
-  :created-at "2021-06-07"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(sketch/definition fireworks
+  {:created-at "2021-06-07"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
