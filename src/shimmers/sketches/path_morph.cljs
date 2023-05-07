@@ -3,6 +3,8 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -10,8 +12,7 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.quil :as cq]))
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: define a path record from a set of points
 (defn zig-zag []
@@ -60,10 +61,16 @@
     ;; (cq/circle p 1)
     (cq/draw-polygon (g/translate (g/scale-size shape 50.0) p))))
 
-(sketch/defquil path-morph
-  :created-at "2021-10-06"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition path-morph
+  {:created-at "2021-10-06"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
