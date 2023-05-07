@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
@@ -71,9 +72,15 @@
   (q/stroke 0 0.3)
   (grid 0 0 (q/width) 5 0))
 
-(sketch/defquil interstitial-transitions
-  :created-at "2021-06-26"
-  :size [800 800]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 800]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition interstitial-transitions
+  {:created-at "2021-06-26"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
