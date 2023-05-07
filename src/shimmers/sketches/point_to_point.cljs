@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.points :as points]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -83,10 +84,16 @@
           :let [q (closest-edge-point p)]]
     (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
-(sketch/defquil point-to-point
-  :created-at "2021-04-02"
-  :size [600 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition point-to-point
+  {:created-at "2021-04-02"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
