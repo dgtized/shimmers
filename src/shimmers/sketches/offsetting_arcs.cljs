@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -30,10 +31,16 @@
               x (+ a (* n (Math/tan (* eq/TAU (+ t n)))))]
           (q/arc x (+ b (- x a)) scale scale (* eq/TAU (Math/sin t)) (* eq/TAU n)))))))
 
-(sketch/defquil offsetting-arcs
-  :created-at "2022-01-16"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition offsetting-arcs
+  {:created-at "2022-01-16"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
