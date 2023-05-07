@@ -9,6 +9,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
@@ -126,10 +127,16 @@
   (q/stroke 0.75 0.7 0.5 0.75)
   (cq/circle (graph/position graph dst) 5.0))
 
-(sketch/defquil logistics-flow
-  :created-at "2022-03-20"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition logistics-flow
+  {:created-at "2022-03-20"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
