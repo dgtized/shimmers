@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
@@ -101,10 +102,16 @@
             (q/with-rotation [rotation]
               (cq/circle (position moon t) mass))))))))
 
-(sketch/defquil periapsis
-  :created-at "2021-07-06"
-  :size [800 800]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 800]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition periapsis
+  {:created-at "2021-07-06"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
