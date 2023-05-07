@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -44,10 +45,16 @@
     (let [clip 0.2]
       (q/arc 0 (/ H 8) (/ W 6) (/ H 10) clip (- Math/PI clip)))))
 
-(sketch/defquil object-permanence
-  :created-at "2021-01-23"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition object-permanence
+  {:created-at "2021-01-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
