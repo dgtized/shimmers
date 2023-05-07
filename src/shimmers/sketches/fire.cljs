@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.macros.loop :as loop :include-macros true]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -82,10 +83,16 @@
   (paint fuel size [0 255 0 20])
   (paint fire size [255 0 0 20]))
 
-(sketch/defquil fire
-  :created-at "2020-11-08"
-  :size [400 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [400 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition fire
+  {:created-at "2020-11-08"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
