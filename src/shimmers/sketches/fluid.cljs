@@ -3,13 +3,13 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.macros.loop :as loop :include-macros true]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.ndarray.core :as nd]
-   [thi.ng.geom.vector :as gv]))
-
+   [thi.ng.ndarray.core :as nd]))
 
 ;; other reading:
 ;; https://shahriyarshahrabi.medium.com/gentle-introduction-to-fluid-simulation-for-programmers-and-technical-artists-7c0045c40bac
@@ -128,10 +128,16 @@
 (defn draw [_]
   )
 
-(sketch/defquil fluid
-  :created-at "2020-10-29"
-  :size [100 100]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [100 100]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition fluid
+  {:created-at "2020-10-29"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
