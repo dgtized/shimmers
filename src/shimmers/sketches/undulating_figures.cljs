@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
@@ -41,9 +42,15 @@
                   (cq/rel-h (* 0.3 thickness)))
           (recur (+ y thickness padding)))))))
 
-(sketch/defquil undulating-figures
-  :created-at "2021-06-05"
-  :size [1024 768]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [1024 768]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition undulating-figures
+  {:created-at "2021-06-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
