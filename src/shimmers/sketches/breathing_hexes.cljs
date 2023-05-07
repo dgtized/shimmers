@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.hexagon :as hex]
    [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
@@ -14,9 +15,6 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {})
-
-(defn update-state [state]
-  state)
 
 ;; Is there a way to make this smoother and stutter less? Also, the transition
 ;; from a single cell to multiple is a little jarring, maybe someway to smooth
@@ -36,10 +34,15 @@
                 :let [hex (hex/cube-hexagon pos r)]]
           (cq/draw-shape (g/vertices hex 6)))))))
 
-(sketch/defquil breathing-hexes
-  :created-at "2021-05-23"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition breathing-hexes
+  {:created-at "2021-05-23"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
