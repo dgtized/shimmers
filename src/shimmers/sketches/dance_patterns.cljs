@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.wave :as wave]
@@ -170,11 +171,16 @@
             :duplicate
             (draw-cell cell 3.0 position)))))))
 
-(sketch/defquil dance-patterns
-  :created-at "2023-01-10"
-  :tags #{}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition dance-patterns
+  {:created-at "2023-01-10"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
