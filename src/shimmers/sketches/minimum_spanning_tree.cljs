@@ -5,6 +5,7 @@
    [shimmers.algorithm.minimum-spanning-tree :as mst]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.points :as points]
    [shimmers.sketch :as sketch :include-macros true]
@@ -46,11 +47,16 @@
   (doseq [[p q] (take step edges)]
     (q/line (cq/rel-pos p) (cq/rel-pos q))))
 
-(sketch/defquil minimum-spanning-tree
-  :created-at "2021-03-20"
-  :tags #{:deterministic}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition minimum-spanning-tree
+  {:created-at "2021-03-20"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page))
