@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
@@ -52,10 +53,16 @@
     (q/line (cq/rel-pos point)
             (cq/rel-pos (tm/+ point (gv/vec2 0 (dr/random -0.015 0)))))))
 
-(sketch/defquil impressions-of-open-space
-  :created-at "2021-03-09"
-  :tags #{:static :deterministic}
-  :size [900 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode]))
+
+;; TODO: convert to svg?
+(sketch/definition impressions-of-open-space
+  {:created-at "2021-03-09"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page))
