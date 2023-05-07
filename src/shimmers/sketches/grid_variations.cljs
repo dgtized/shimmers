@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.transition-interval :as transition]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
@@ -152,10 +153,16 @@
                      (* scale (tm/mix* (scalar-a pos) (scalar-b pos) tween))
                      (* tm/TWO_PI (tm/mix* (rot-a pos) (rot-b pos) tween))))))))
 
-(sketch/defquil grid-variations
-  :created-at "2021-08-25"
-  :size [800 800]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 800]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition grid-variations
+  {:created-at "2021-08-25"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
