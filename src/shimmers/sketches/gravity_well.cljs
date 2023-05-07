@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.particle-system :as particles]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -82,10 +83,16 @@
         weight-fn (fn [{:keys [mass]}] (q/map-range mass 1 max-mass 1.5 9))]
     (particles/draw bodies :weight weight-fn)))
 
-(sketch/defquil gravity-well
-  :created-at "2021-01-06"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition gravity-well
+  {:created-at "2021-01-06"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
