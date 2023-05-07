@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
@@ -31,11 +32,16 @@
          (mapv #(tm/* % 12))
          (cq/plot (fn [p] (cq/circle p 0.3))))))
 
-(sketch/defquil clothoid-flowers
-  :created-at "2021-11-23"
-  :tags #{:deterministic}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition clothoid-flowers
+  {:created-at "2021-11-23"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page))
