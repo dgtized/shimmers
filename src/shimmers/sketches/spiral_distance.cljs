@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -50,8 +51,14 @@
             (q/fill c 0.6 (/ 1.1 tm/PHI) 1.0)
             (cq/draw-curve-shape (g/vertices polygon))))))))
 
-(sketch/defquil spiral-distance
-  :created-at "2021-10-18"
-  :size [800 600]
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition spiral-distance
+  {:created-at "2021-10-18"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
