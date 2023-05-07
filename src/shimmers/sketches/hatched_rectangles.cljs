@@ -124,7 +124,7 @@
    :draw draw
    :middleware [m/fun-mode framerate/mode]))
 
-(sketch/defquil hatched-rectangles
+(sketch/definition hatched-rectangles
   {:created-at "2021-08-17"
    :tags #{:deterministic}
    :type :quil}
