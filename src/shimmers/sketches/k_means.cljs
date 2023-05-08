@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -125,10 +126,16 @@
   (doseq [shape shapes]
     (draw-shape (assoc shape :theta (* 2 Math/PI (rand))))))
 
-(sketch/defquil k-means
-  :created-at "2021-03-09"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition k-means
+  {:created-at "2021-03-09"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
