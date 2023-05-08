@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
@@ -124,10 +125,16 @@
           (apply q/vertex v)))
       (q/end-shape))))
 
-(sketch/defquil lifecycle-of-shapes
-  :created-at "2021-12-28"
-  :size [1024 768]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [1024 768]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition lifecycle-of-shapes
+  {:created-at "2021-12-28"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
