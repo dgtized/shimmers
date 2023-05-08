@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -73,10 +74,16 @@
   (doseq [particle (:particles physics)]
     (brush particle)))
 
-(sketch/defquil verlet-brushes
-  :created-at "2021-03-27"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition verlet-brushes
+  {:created-at "2021-03-27"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
