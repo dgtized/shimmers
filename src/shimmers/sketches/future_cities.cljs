@@ -104,12 +104,15 @@
     [:summary "Moves"]
     (debug/pre-edn (list-moves @state))]])
 
+(defn page []
+  (let [state (ctrl/state (city-start))]
+    (view-sketch/static-page
+     (partial scene state)
+     :future-cities
+     (partial ui-controls state))))
+
 (sketch/definition future-cities
   {:created-at "2022-05-24"
    :type :svg
    :tags #{}}
-  (let [state (ctrl/state (city-start))]
-    (ctrl/mount (view-sketch/static-page
-                 (partial scene state)
-                 :future-cities
-                 (partial ui-controls state)))))
+  (ctrl/mount page))

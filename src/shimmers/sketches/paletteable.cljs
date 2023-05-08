@@ -24,8 +24,9 @@
 ;; See https://presumably.de/reagent-mysteries-part-3-manipulating-the-dom.html
 ;; and https://ericnormand.me/guide/reagent#form-3 for further discussion on
 ;; using the ref pattern.
-(defn page [width]
-  (let [!canvas (atom nil)
+(defn page []
+  (let [width 800
+        !canvas (atom nil)
         !upload (atom nil)]
     (fn []
       [:div
@@ -53,4 +54,4 @@
   {:created-at "2023-01-07"
    :type :canvas
    :tags #{:genuary2023}}
-  (ctrl/mount (page 800)))
+  (ctrl/mount (page)))
