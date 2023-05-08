@@ -41,20 +41,19 @@
                   (+ 0.75 (* 0.25 o)))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.explanation.contained
-    [:p
-     "Radial displacement for each point is determined by a polar projection
+   [:p.readable-width
+    "Radial displacement for each point is determined by a polar projection
      into a 2d noise function allowing shapes to smoothly connect back to the
      start. The blob function is parameterized by time, allowing each concentric
      ring to be offset forward in time slightly, predicting where the inner
-     rings will go as time steps forward."]]])
+     rings will go as time steps forward."]])
 
 (sketch/definition blobical
   {:created-at "2023-04-28"
