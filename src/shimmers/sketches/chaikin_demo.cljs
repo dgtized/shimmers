@@ -5,12 +5,13 @@
    [shimmers.algorithm.chaikin :as chaikin]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.subdiv :as gsd]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.triangle :as gt]))
+   [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -63,11 +64,16 @@
     (draw-at (gsd-bezier (gsd-bezier (gsd-bezier vertices))) (cq/rel-vec 0.6 0.6))
     (draw-at (gsd-bezier (gsd-bezier (gsd-bezier (gsd-bezier vertices)))) (cq/rel-vec 0.8 0.6))))
 
-(sketch/defquil chaikin-demo
-  :created-at "2021-08-31"
-  :tags #{:demo}
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition chaikin-demo
+  {:created-at "2021-08-31"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page))
