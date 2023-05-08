@@ -3,11 +3,11 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   {:theta 0.0})
@@ -20,17 +20,19 @@
   (q/stroke 10 64)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
   (let [radial-noise (q/noise (q/cos (/ theta 2)) (q/sin (/ theta 2)))
-        radius (+ 120 (* (- radial-noise 0.5) 10))
+        length (cq/rel-h 0.15)
+        radius (+ (cq/rel-h 0.35) (* (- radial-noise 0.5) length))
         x (* radius (q/cos theta))
         y (* radius (q/sin theta))]
     (q/stroke-weight (+ 0.8 radial-noise))
     (q/line [x y]
-            (tm/+ (gv/vec2 x y)
-                  (v/polar (* radial-noise 32) (+ theta radial-noise))))))
+            (v/+polar (gv/vec2 x y)
+                      (* radial-noise length)
+                      (+ theta radial-noise)))))
 
 (defn page []
   (sketch/component
-   :size [600 400]
+   :size [800 600]
    :setup setup
    :update update-state
    :draw draw
