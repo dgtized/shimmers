@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -42,10 +43,16 @@
   (doseq [s (map (partial rotate t) shapes)]
     (cq/draw-path (g/vertices s))))
 
-(sketch/defquil rolling-shapes
-  :created-at "2021-06-30"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition rolling-shapes
+  {:created-at "2021-06-30"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
