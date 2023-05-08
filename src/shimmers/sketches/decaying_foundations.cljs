@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -73,11 +74,16 @@
                           (g/scale-size (dr/random 0.88 0.96))
                           g/vertices))))))
 
-(sketch/defquil decaying-foundations
-  :created-at "2021-04-14"
-  :tags #{:static :deterministic}
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition decaying-foundations
+  {:created-at "2021-04-14"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page))
