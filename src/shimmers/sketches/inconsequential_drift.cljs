@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -66,10 +67,15 @@
           :rectangle
           (cq/draw-polygon (rectangle p w h)))))))
 
-(sketch/defquil inconsequential-drift
-  :created-at "2021-06-13"
-  :tags #{:static :deterministic}
-  :size [800 800]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 800]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition inconsequential-drift
+  {:created-at "2021-06-13"
+   :tags #{:static :deterministic}
+   :type :quil}
+  (ctrl/mount page))
