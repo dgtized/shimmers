@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -45,10 +46,16 @@
       (apply q/fill fill)
       (cq/circle (cq/rel-vec point) size))))
 
-(sketch/defquil string-lights
-  :created-at "2021-08-31"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition string-lights
+  {:created-at "2021-08-31"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
