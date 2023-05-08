@@ -8,6 +8,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.particle-system :as particles]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.core :as sm]
    [shimmers.math.vector :as v]
@@ -119,11 +120,17 @@
   (when (:draw-forces @ui)
     (draw-forces)))
 
-(sketch/defquil particles
-  :created-at "2020-10-20"
-  :size [900 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition particles
+  {:created-at "2020-10-20"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
 
