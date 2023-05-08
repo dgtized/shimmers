@@ -2,9 +2,10 @@
   "Display a tiling grid of noise function to show dicontinuities."
   (:require
    [quil.core :as q :include-macros true]
-   [quil.sketch]
    [quil.middleware :as m]
+   [quil.sketch]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -51,10 +52,15 @@
       (dotimes [gx 3]
         (q/image tile (* gx size) (* gy size))))))
 
-(sketch/defquil noise-grid
-  :created-at "2020-11-01"
-  :tags #{:demo}
-  :size [300 300]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [400 400]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition noise-grid
+  {:created-at "2020-11-01"
+   :tags #{:demo}
+   :type :quil}
+  (ctrl/mount page))
