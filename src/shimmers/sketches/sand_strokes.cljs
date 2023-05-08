@@ -8,6 +8,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -89,10 +90,16 @@
                 :let [[x y] (g/point-at line p)]]
           (q/ellipse x y 0.05 0.05))))))
 
-(sketch/defquil sand-strokes
-  :created-at "2021-04-05"
-  :size [800 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition sand-strokes
+  {:created-at "2021-04-05"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
