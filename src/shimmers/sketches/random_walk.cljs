@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.particle-system :as particles]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -46,12 +47,18 @@
   ;; (q/background 256 16)
   (particles/draw particles))
 
-(sketch/defquil random-walk
-  :created-at "2020-10-21"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition random-walk
+  {:created-at "2020-10-21"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
 
 
