@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr :refer [rand-nth]]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -243,11 +244,17 @@
       ((:draw effect) effect grid w h)
       (q/pop-matrix))))
 
-(sketch/defquil permutations-of-transfiguration
-  :created-at "2021-02-07"
-  :size [900 600]
-  :tags #{:deterministic}
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :tags #{:deterministic}
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition permutations-of-transfiguration
+  {:created-at "2021-02-07"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
