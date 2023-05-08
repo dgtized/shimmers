@@ -3,11 +3,12 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defrecord Particle [position velocity])
 
@@ -71,10 +72,16 @@
     (apply q/stroke (green lifespan))
     (apply q/point position)))
 
-(sketch/defquil radar
-  :created-at "2021-01-16"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition radar
+  {:created-at "2021-01-16"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
