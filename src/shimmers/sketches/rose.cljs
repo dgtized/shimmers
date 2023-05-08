@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -54,10 +55,16 @@
   (doseq [ring rings]
     (cq/draw-curve-shape (scale-shape ring z))))
 
-(sketch/defquil rose
-  :created-at "2021-02-10"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition rose
+  {:created-at "2021-02-10"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
