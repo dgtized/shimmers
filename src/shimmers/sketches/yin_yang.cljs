@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn sum-square [r1 r2]
@@ -40,10 +41,16 @@
       (q/stroke (mod (- sc r2) 255) 100 140 48)
       (q/ellipse r2 0 r2 r2))))
 
-(sketch/defquil yin-yang
-  :created-at "2021-02-03"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition yin-yang
+  {:created-at "2021-02-03"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
