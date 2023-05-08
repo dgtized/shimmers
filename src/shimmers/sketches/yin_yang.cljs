@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -11,15 +12,17 @@
 
 (defn setup []
   (q/color-mode :hsl 255 255 255 255)
-  {:direction 0.001
-   :r1 64
-   :r2 64})
+  (let [r-size (cq/rel-h 0.125)]
+    {:direction 0.001
+     :r-size r-size
+     :r1 r-size
+     :r2 r-size}))
 
-(defn migrate-volume [{:keys [direction r1 r2] :as state}]
+(defn migrate-volume [{:keys [direction r1 r2 r-size] :as state}]
   (let [rN (+ r1 (* direction r2))]
     (assoc state
            :r1 rN
-           :r2 (Math/sqrt (- (sum-square 64 64) (* rN rN))))))
+           :r2 (Math/sqrt (- (sum-square r-size r-size) (* rN rN))))))
 
 (defn update-state [{:keys [r1 r2] :as state}]
   (if (or (< r1 10) (< r2 10))
@@ -43,7 +46,7 @@
 
 (defn page []
   (sketch/component
-   :size [600 400]
+   :size [800 600]
    :setup setup
    :update update-state
    :draw draw
