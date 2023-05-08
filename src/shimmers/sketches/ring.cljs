@@ -3,11 +3,11 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
 
 (defn setup []
   {:theta 0.0})
@@ -28,10 +28,16 @@
             (tm/+ (gv/vec2 x y)
                   (v/polar (* radial-noise 32) (+ theta radial-noise))))))
 
-(sketch/defquil ring
-  :created-at "2020-12-27"
-  :size [600 400]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition ring
+  {:created-at "2020-12-27"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
