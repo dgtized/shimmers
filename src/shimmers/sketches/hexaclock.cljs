@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn spur-angles []
@@ -48,10 +49,16 @@
     (q/stroke-weight 16)
     (hexagon rH hour)))
 
-(sketch/defquil hexaclock
-  :created-at "2020-12-04"
-  :size [800 600]
-  :draw draw
-  :middleware [framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :draw draw
+   :middleware [framerate/mode]))
+
+(sketch/definition hexaclock
+  {:created-at "2020-12-04"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
 
 
