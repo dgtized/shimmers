@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -78,9 +79,15 @@
     (doseq [args (shuffle shapes)]
       (fuzzy-shape args))))
 
-(sketch/defquil noisy-shapes
-  :created-at "2021-03-03"
-  :size [800 600]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition noisy-shapes
+  {:created-at "2021-03-03"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
