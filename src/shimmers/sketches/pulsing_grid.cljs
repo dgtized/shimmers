@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -70,10 +71,16 @@
     (apply q/fill color)
     (cq/draw-polygon cell)))
 
-(sketch/defquil pulsing-grid
-  :created-at "2021-08-21"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition pulsing-grid
+  {:created-at "2021-08-21"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
