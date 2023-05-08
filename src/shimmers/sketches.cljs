@@ -155,6 +155,7 @@
    shimmers.sketches.punchcard
    shimmers.sketches.quadtree
    shimmers.sketches.radar
+   shimmers.sketches.radial-breaks
    shimmers.sketches.radial-expansion
    shimmers.sketches.radial-mosaic
    shimmers.sketches.radial-symmetries
