@@ -22,11 +22,10 @@
   (let [radial-noise (q/noise (q/cos (/ theta 2)) (q/sin (/ theta 2)))
         length (cq/rel-h 0.15)
         radius (+ (cq/rel-h 0.35) (* (- radial-noise 0.5) length))
-        x (* radius (q/cos theta))
-        y (* radius (q/sin theta))]
+        pos (v/polar radius theta)]
     (q/stroke-weight (+ 0.8 radial-noise))
-    (q/line [x y]
-            (v/+polar (gv/vec2 x y)
+    (q/line pos
+            (v/+polar pos
                       (* radial-noise length)
                       (+ theta radial-noise)))))
 
