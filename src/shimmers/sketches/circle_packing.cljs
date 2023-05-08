@@ -7,6 +7,7 @@
    [shimmers.algorithm.quadtree :as saq]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
@@ -107,11 +108,16 @@
       (q/stroke 0 0 0 1.0))
     (cq/circle c)))
 
-(sketch/defquil circle-packing
-  :created-at "2021-03-10"
-  :size [900 600]
-  :tags #{:deterministic}
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [900 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition circle-packing
+  {:created-at "2021-03-10"
+   :tags #{:deterministic}
+   :type :quil}
+  (ctrl/mount page))
