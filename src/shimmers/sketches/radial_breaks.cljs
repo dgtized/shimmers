@@ -21,12 +21,22 @@
                       :stroke "black"}
                      attribs)))
 
+(defn minimum-spacing [gap offsets]
+  (->> offsets
+       (partition 2 1)
+       (filter (fn [[a b]] (> (- b a) gap)))
+       (map second)
+       (into [0])))
+
+;; FIXME remove gap at theta transition back to 0
+;; FIXME how to gather together slices and not just the breaks outward from center
 (defn shapes []
-  (let [breaks (drop 1 (dr/gaussian-range 0.01 0.05))
+  (let [radial (minimum-spacing 0.05 (map (partial * eq/TAU) (dr/gaussian-range 0.02 0.05)))
+        breaks (minimum-spacing 0.01 (dr/gaussian-range 0.02 0.05))
         radius (* 0.45 height)]
-    (for [[t0 t1] (partition 2 1 (rest (dr/gaussian-range 0.01 0.05)))
+    (for [[t0 t1] (partition 2 1 radial)
           [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
-      (csvg/arc-segment (* eq/TAU t0) (* eq/TAU t1) (* radius r0) (* radius r1)
+      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1)
                         {}))))
 
 (defn scene []
