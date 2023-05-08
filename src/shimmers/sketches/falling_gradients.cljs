@@ -43,15 +43,14 @@
               cq/draw-polygon))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [900 600]
     :setup setup
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:div.contained
-    [:p.explanation.readable-width
-     "Layer triangles as they slowly rotate and fall to a specific depth."]]])
+   [:p.readable-width
+    "Layer triangles as they slowly rotate and fall to a specific depth."]])
 
 (sketch/definition falling-gradients
   {:created-at "2021-05-04"
