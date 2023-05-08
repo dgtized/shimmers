@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -63,10 +64,16 @@
   (doseq [line lines]
     (cq/draw-path (map cq/rel-pos line))))
 
-(sketch/defquil additive-displacement
-  :created-at "2021-07-25"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition additive-displacement
+  {:created-at "2021-07-25"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
