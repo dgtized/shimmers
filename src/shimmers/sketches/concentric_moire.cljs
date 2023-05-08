@@ -3,8 +3,9 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.quil :as cq]))
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/frame-rate 20)
@@ -31,10 +32,16 @@
       (doseq [r (range 0 upper)]
         (cq/circle pos (* spacing (+ r change)))))))
 
-(sketch/defquil concentric-moire
-  :created-at "2021-08-14"
-  :size [800 600]
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition concentric-moire
+  {:created-at "2021-08-14"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
