@@ -49,11 +49,10 @@
 ;;
 ;; Plan:
 ;;
-;; - [ ] Consolidate `definition` and `defquil`?
 ;; - [x] Wrap quil.sketch/sketch call with appropriate reagent definitions so that they respect react lifecycle hooks? -- See reagent-quil-component sketch
 ;; - [x] Allow more than one sketch per namespace
 ;; - [x] 2+ sketches in parallel (probably less useful except for long form explanation)
-;; - [ ] Multiple sketches from the same namespace, each with own index entry
+;; - [x] Multiple sketches from the same namespace, each with own index entry
 ;; - [ ] Is it possible to wrap defsketch and reduces the overlap?
 ;; - [ ] Assist in passing parameters like RNG seed into the sketch at invoke?
 ;; - [x] add sketches to a registry automatically ala
@@ -62,6 +61,8 @@
 ;; Modified from defsketch in
 ;; https://github.com/quil/quil/blob/master/src/cljs/quil/sketch.clj#L22
 ;; to allow modifications like auto-starting explanation and metadata like date.
+
+;; defquil is deprecated, use definition but still need to incorporate add-sketch-to-init-list to component
 (defmacro defquil
   [sketch-page-name & options]
   (let [raw-opts (apply hash-map options)
