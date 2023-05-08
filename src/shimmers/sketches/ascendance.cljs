@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]))
 
@@ -77,11 +78,17 @@
       (doseq [[p0 p1] point-pairs]
         (q/line p0 p1)))))
 
-(sketch/defquil ascendance
-  :created-at "2021-02-17"
-  :size [800 600]
-  :renderer :p3d
-  :setup setup
-  :update update-state
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [800 600]
+   :renderer :p3d
+   :setup setup
+   :update update-state
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition ascendance
+  {:created-at "2021-02-17"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
