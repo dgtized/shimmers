@@ -68,17 +68,10 @@
        [:li {:key (str "li-" (name desc))} (scs/format "%s %.1f ms (%1.1f%%)" (name desc) duration (* 100 percent))])
      [:li {:key "li-total"} (scs/format "Total %.1f ms" total-duration)]]))
 
-(defn page []
-  [:div
-   [:div.canvas-frame [scene]]
-   [:div.explanation.contained
-    [:div.flexcols
-     [:div [view-sketch/generate :cracked-playa]]
-     #_[profile-summary sink]]]])
-
 (sketch/definition cracked-playa
   {:created-at "2022-04-03"
    :type :svg
    :taps [(debug/profile-to sink)]
    :tags #{:deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount (view-sketch/static-page scene :cracked-playa
+                                       #_(partial profile-summary sink))))
