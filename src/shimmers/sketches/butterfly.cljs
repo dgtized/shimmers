@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]))
 
 ;; TODO: Perturb parameters a little to generate random wings? Similarly is it
@@ -76,9 +77,15 @@
         (q/rotate-x noise))
       (butterfly theta))))
 
-(sketch/defquil butterfly
-  :created-at "2021-01-25"
-  :renderer :p3d
-  :size [600 400]
-  :draw draw
-  :middleware [m/fun-mode framerate/mode])
+(defn page []
+  (sketch/component
+   :size [600 400]
+   :renderer :p3d
+   :draw draw
+   :middleware [m/fun-mode framerate/mode]))
+
+(sketch/definition butterfly
+  {:created-at "2021-01-25"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
