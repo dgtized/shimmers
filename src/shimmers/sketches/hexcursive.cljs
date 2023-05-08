@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -47,10 +48,16 @@
         (g/vertices 6)
         cq/draw-shape)))
 
-(sketch/defquil hexcursive
-  :created-at "2021-06-04"
-  :tags #{:static}
-  :size [1200 1000]
-  :setup setup
-  :draw draw
-  :middleware [m/fun-mode])
+(defn page []
+  (sketch/component
+   :size [1200 1000]
+   :setup setup
+   :draw draw
+   :middleware [m/fun-mode]))
+
+;; TODO: convert to svg
+(sketch/definition hexcursive
+  {:created-at "2021-06-04"
+   :tags #{:static}
+   :type :quil}
+  (ctrl/mount page))
