@@ -6,8 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]))
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   {:theta 0.0})
