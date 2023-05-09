@@ -31,6 +31,19 @@
                     (dr/gaussian 0.0 0.025)
                     0.0)))))
 
+(defn segment [t0 t1 r0 r1 attribs]
+  (if (and (= "none" (:fill attribs))
+           (dr/chance 0.08))
+    (csvg/group {}
+      (repeatedly (dr/random-int 2 4)
+                  (fn []
+                    (let [transformed
+                          (assoc attribs
+                                 :transform (transforms (dr/gaussian 1.2 0.2))
+                                 :stroke-width (dr/gaussian 1.0 0.02))]
+                      (csvg/arc-segment t0 t1 r0 r1 transformed)))))
+    (csvg/arc-segment t0 t1 r0 r1 attribs)))
+
 ;; FIXME how to gather together slices and not just the breaks outward from center
 (defn shapes [palette]
   (let [radial (->> (dr/gaussian-range 0.02 0.03 true)
@@ -41,12 +54,11 @@
                     rest)
         radius (* 0.45 height)]
     (for [[t0 t1] (partition 2 1 radial)
-          [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))
-          :let [fill (dr/rand-nth palette)]]
-      (->> {:fill fill
+          [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
+      (->> {:fill (dr/rand-nth palette)
             :stroke-width (if (dr/chance 0.15) 2.5 1.0)
             :transform (transforms (dr/gaussian 1.5 0.5))}
-           (csvg/arc-segment t0 t1 (* radius r0) (* radius r1))))))
+           (segment t0 t1 (* radius r0) (* radius r1))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
