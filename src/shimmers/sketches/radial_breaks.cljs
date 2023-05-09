@@ -31,9 +31,17 @@
                     rest)
         radius (* 0.45 height)]
     (for [[t0 t1] (partition 2 1 radial)
-          [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
-      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1)
-                        {:fill (dr/rand-nth palette)}))))
+          [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))
+          :let [jitter (max 0 (dr/gaussian 1.5 0.5))]]
+      (->> {:fill (dr/rand-nth palette)
+            :transform (csvg/transform
+                        (csvg/translate (dr/jitter (if (< jitter 1.0)
+                                                     0.0
+                                                     jitter)))
+                        (csvg/rotate (if (dr/chance 0.05)
+                                       (dr/gaussian 0.0 0.025)
+                                       0.0)))}
+           (csvg/arc-segment t0 t1 (* radius r0) (* radius r1))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
