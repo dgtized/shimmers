@@ -13,14 +13,6 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn segment [t0 t1 r0 r1 attribs]
-  (csvg/arc-segment t0 t1 r0 r1
-                    (merge
-                     {:fill "white"
-                      :stroke-width 0.6
-                      :stroke "black"}
-                     attribs)))
-
 (defn minimum-spacing [gap offsets]
   (->> offsets
        (partition 2 1)
@@ -44,7 +36,7 @@
                    :height height
                    :stroke "black"
                    :fill "none"
-                   :stroke-width 0.5}
+                   :stroke-width 1.0}
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
       (shapes))))
 
