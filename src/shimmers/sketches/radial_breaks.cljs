@@ -46,9 +46,9 @@
 
 ;; FIXME how to gather together slices and not just the breaks outward from center
 (defn shapes [palette]
-  (let [radial (->> (dr/gaussian-range 0.02 0.03 true)
+  (let [radial (->> (dr/gaussian-range 0.02 0.065 true)
                     (map (partial * eq/TAU))
-                    (minimum-spacing 0.1))
+                    (minimum-spacing 0.025))
         breaks (->> (dr/gaussian-range 0.01 0.03 true)
                     (minimum-spacing 0.02)
                     rest)
