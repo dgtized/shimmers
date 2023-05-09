@@ -21,6 +21,16 @@
        (map second)
        (into [0])))
 
+(defn transforms [jitter]
+  (let [jitter (max 0 jitter)]
+    (csvg/transform
+     (csvg/translate (dr/jitter (if (< jitter 1.0)
+                                  0.0
+                                  jitter)))
+     (csvg/rotate (if (dr/chance 0.05)
+                    (dr/gaussian 0.0 0.025)
+                    0.0)))))
+
 ;; FIXME how to gather together slices and not just the breaks outward from center
 (defn shapes [palette]
   (let [radial (->> (dr/gaussian-range 0.02 0.03 true)
@@ -32,16 +42,10 @@
         radius (* 0.45 height)]
     (for [[t0 t1] (partition 2 1 radial)
           [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))
-          :let [jitter (max 0 (dr/gaussian 1.5 0.5))]]
-      (->> {:fill (dr/rand-nth palette)
+          :let [fill (dr/rand-nth palette)]]
+      (->> {:fill fill
             :stroke-width (if (dr/chance 0.15) 2.5 1.0)
-            :transform (csvg/transform
-                        (csvg/translate (dr/jitter (if (< jitter 1.0)
-                                                     0.0
-                                                     jitter)))
-                        (csvg/rotate (if (dr/chance 0.05)
-                                       (dr/gaussian 0.0 0.025)
-                                       0.0)))}
+            :transform (transforms (dr/gaussian 1.5 0.5))}
            (csvg/arc-segment t0 t1 (* radius r0) (* radius r1))))))
 
 (defn scene []
