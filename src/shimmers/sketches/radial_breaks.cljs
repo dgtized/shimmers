@@ -39,7 +39,7 @@
                   (fn []
                     (let [transformed
                           (assoc attribs
-                                 :transform (transforms (dr/gaussian 1.2 0.2))
+                                 :transform (transforms (dr/gaussian 1.2 0.33))
                                  :stroke-width (dr/gaussian 1.0 0.02))]
                       (csvg/arc-segment t0 t1 r0 r1 transformed)))))
     (csvg/arc-segment t0 t1 r0 r1 attribs)))
