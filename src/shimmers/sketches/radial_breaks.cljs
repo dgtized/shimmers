@@ -1,5 +1,6 @@
 (ns shimmers.sketches.radial-breaks
   (:require
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -61,18 +62,25 @@
             :transform (transforms (dr/gaussian 1.5 0.5))}
            (segment t0 t1 r0 r1)))))
 
-(defn scene []
+(defn scene [palette]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (let [palette (dr/rand-nth radial-mosaic/palettes)]
-      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-        (shapes (into (repeat 10 "none") palette))))))
+    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+      (shapes (into (repeat 10 "none") palette)))))
+
+(defn page []
+  (let [palette (dr/rand-nth radial-mosaic/palettes)]
+    (view-sketch/static-page
+     (partial scene palette)
+     :radial-breaks
+     (fn []
+       [palette/as-svg {:class "center"} palette]))))
 
 (sketch/definition radial-breaks
   {:created-at "2023-05-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :radial-breaks)))
+  (ctrl/mount (page)))
