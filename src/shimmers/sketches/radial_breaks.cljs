@@ -20,16 +20,18 @@
        (map second)
        (into [0])))
 
-;; FIXME remove gap at theta transition back to 0
 ;; FIXME how to gather together slices and not just the breaks outward from center
 (defn shapes []
-  (let [radial (minimum-spacing 0.05 (map (partial * eq/TAU) (dr/gaussian-range 0.02 0.05)))
-        breaks (minimum-spacing 0.01 (dr/gaussian-range 0.02 0.05))
+  (let [radial (->> (dr/gaussian-range 0.02 0.03 true)
+                    (map (partial * eq/TAU))
+                    (minimum-spacing 0.1))
+        breaks (->> (dr/gaussian-range 0.02 0.05 true)
+                    (minimum-spacing 0.01)
+                    rest)
         radius (* 0.45 height)]
     (for [[t0 t1] (partition 2 1 radial)
           [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
-      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1)
-                        {}))))
+      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1) {}))))
 
 (defn scene []
   (csvg/svg-timed {:width width
