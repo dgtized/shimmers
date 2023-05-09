@@ -5,6 +5,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.sketches.radial-mosaic :as radial-mosaic]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]))
 
@@ -21,17 +22,18 @@
        (into [0])))
 
 ;; FIXME how to gather together slices and not just the breaks outward from center
-(defn shapes []
+(defn shapes [palette]
   (let [radial (->> (dr/gaussian-range 0.02 0.03 true)
                     (map (partial * eq/TAU))
                     (minimum-spacing 0.1))
-        breaks (->> (dr/gaussian-range 0.02 0.05 true)
-                    (minimum-spacing 0.01)
+        breaks (->> (dr/gaussian-range 0.01 0.03 true)
+                    (minimum-spacing 0.02)
                     rest)
         radius (* 0.45 height)]
     (for [[t0 t1] (partition 2 1 radial)
           [r0 r1] (partition 2 1 (dr/random-sample 0.4 breaks))]
-      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1) {}))))
+      (csvg/arc-segment t0 t1 (* radius r0) (* radius r1)
+                        {:fill (dr/rand-nth palette)}))))
 
 (defn scene []
   (csvg/svg-timed {:width width
@@ -39,8 +41,9 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (shapes))))
+    (let [palette (dr/rand-nth radial-mosaic/palettes)]
+      (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+        (shapes (into (repeat 10 "none") palette))))))
 
 (sketch/definition radial-breaks
   {:created-at "2023-05-08"
