@@ -20,7 +20,7 @@
 
 (defn move-pos [pos elastic t dt]
   (let [open-space (tm/+ pos (gv/vec2 1000 1000))
-        theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 2 t)) dt)))]
+        theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 3 t)) dt)))]
     (tm/+ (v/+polar pos (* (cq/rel-h 0.1) dt) theta)
           (tm/* elastic dt))))
 
@@ -58,7 +58,7 @@
   (q/stroke 0.0 0.06)
   (doseq [{:keys [p q]} pairs]
     (q/line p q))
-  (when (< (count pairs) 32)
+  (when (< (count pairs) 48)
     (q/no-loop)))
 
 (defn page []
