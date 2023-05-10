@@ -27,6 +27,6 @@
 
 (sketch/definition quil-template
   {:created-at "2023-"
-   :type :quil
-   :tags #{}}
+   :tags #{}
+   :type :quil}
   (ctrl/mount page))

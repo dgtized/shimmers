@@ -29,6 +29,6 @@
 
 (sketch/definition _canvas-template
   {:created-at "2023-"
-   :type :canvas
-   :tags #{}}
+   :tags #{}
+   :type :canvas}
   (ctrl/mount (page)))
