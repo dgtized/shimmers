@@ -1,5 +1,6 @@
 (ns shimmers.sketches.flow-pairs
   (:require
+   [clojure.edn :as edn]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -14,14 +15,23 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state (ctrl/state {:snap "0"}))
+
 (defn make-pair [p]
   {:p p
    :q (tm/+ p (dr/jitter (cq/rel-h 0.025)))})
 
+(defn snap-to [theta resolution]
+  (* (Math/round (/ theta resolution)) resolution))
+
 (defn move-pos [pos elastic t dt]
   (let [open-space (tm/+ pos (gv/vec2 1000 1000))
-        theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 3 t)) dt)))]
-    (tm/+ (v/+polar pos (* (cq/rel-h 0.1) dt) theta)
+        theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 3 t)) dt)))
+        snap (edn/read-string (:snap @ui-state))]
+    (tm/+ (v/+polar pos (* (cq/rel-h 0.1) dt)
+                    (if (> snap 0)
+                      (snap-to theta (* (/ 1 snap) eq/TAU))
+                      theta))
           (tm/* elastic dt))))
 
 (defn move-pairs [pairs t dt]
@@ -62,13 +72,19 @@
     (q/no-loop)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   (ctrl/container
+    (ctrl/dropdown ui-state "Snap Resolution" [:snap]
+                   {"Disabled" 0
+                    "90 degrees" 4
+                    "60 degrees" 6
+                    "45 degrees" 8}))])
 
 (sketch/definition flow-pairs
   {:created-at "2023-05-10"
