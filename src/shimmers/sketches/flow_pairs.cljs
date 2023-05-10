@@ -21,7 +21,7 @@
 (defn move-pos [pos elastic t dt]
   (let [open-space (tm/+ pos (gv/vec2 1000 1000))
         theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 2 t)) dt)))]
-    (tm/+ (v/+polar pos (* (cq/rel-h 0.08) dt) theta)
+    (tm/+ (v/+polar pos (* (cq/rel-h 0.1) dt) theta)
           (tm/* elastic dt))))
 
 (defn move-pairs [pairs t dt]
