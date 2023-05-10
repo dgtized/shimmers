@@ -27,7 +27,7 @@
 ;; https://github.com/simon-katz/nomisdraw/blob/for-quil-api-request/src/cljs/nomisdraw/utils/nomis_quil_on_reagent.cljs
 
 (defn sketch-component [sketch-args]
-  (let [!dom-node (atom nil)
+  (let [!dom-node (get sketch-args :dom-node (atom nil))
         {:keys [performance-id] :as options} (configure-fps-overlay sketch-args)]
     (r/create-class
      {:display-name "quil-sketch-component"
