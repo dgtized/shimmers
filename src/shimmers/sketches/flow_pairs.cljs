@@ -58,7 +58,7 @@
   (q/stroke 0.0 0.06)
   (doseq [{:keys [p q]} pairs]
     (q/line p q))
-  (when (< (count pairs) 48)
+  (when (< (count pairs) 64)
     (q/no-loop)))
 
 (defn page []
