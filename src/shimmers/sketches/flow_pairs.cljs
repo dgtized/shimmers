@@ -45,7 +45,7 @@
   (q/noise-seed (dr/random-int 10000))
   {:t 0.0
    :bounds (cq/screen-rect)
-   :pairs (mapv make-pair (rp/random-points (cq/screen-rect 0.9) 100))})
+   :pairs (mapv make-pair (rp/random-points (cq/screen-rect 0.9) 128))})
 
 (defn update-state [{:keys [t bounds] :as state}]
   (let [dt 0.01]
@@ -58,7 +58,7 @@
   (q/stroke 0.0 0.06)
   (doseq [{:keys [p q]} pairs]
     (q/line p q))
-  (when (empty? pairs)
+  (when (< (count pairs) 32)
     (q/no-loop)))
 
 (defn page []
