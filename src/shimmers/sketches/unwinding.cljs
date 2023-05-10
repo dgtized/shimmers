@@ -29,7 +29,8 @@
   (update state :t (fn [t] (mod (+ t 0.005) eq/TAU))))
 
 (defn draw [{:keys [t]}]
-  (q/background 1.0)
+  (let [alpha (+ 0.2 (* 0.8 (tm/smoothstep* 0.2 0.8 (eq/unit-sin t))))]
+    (q/background 1.0 alpha))
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/translate (cq/rel-vec 0.5 0.5))
