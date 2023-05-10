@@ -18,17 +18,21 @@
   {:p p
    :q (tm/+ p (dr/jitter (cq/rel-h 0.025)))})
 
-(defn move-pos [pos t dt]
+(defn move-pos [pos elastic t dt]
   (let [open-space (tm/+ pos (gv/vec2 1000 1000))
         theta (* 2 tm/PHI eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 2 t)) dt)))]
-    (v/+polar pos (* (cq/rel-h 0.06) dt) theta)))
+    (tm/+ (v/+polar pos (* (cq/rel-h 0.08) dt) theta)
+          (tm/* elastic dt))))
 
 (defn move-pairs [pairs t dt]
-  (mapv (fn [pair]
-          (-> pair
-              (update :p move-pos t dt)
-              (update :q move-pos (+ t 5.0) dt)))
-        pairs))
+  (let [max-dist (eq/sqr (cq/rel-h 0.33))]
+    (mapv (fn [{:keys [p q] :as pair}]
+            (let [elastic (tm/* (tm/- q p)
+                                (/ (g/dist-squared p q) max-dist))]
+              (-> pair
+                  (update :p move-pos elastic t dt)
+                  (update :q move-pos (tm/- elastic) (+ t 10.0) dt))))
+          pairs)))
 
 (defn cull-pairs [pairs bounds]
   (filter (fn [{:keys [p q]}]
@@ -51,7 +55,7 @@
         (update :t + dt))))
 
 (defn draw [{:keys [pairs]}]
-  (q/stroke 0.0 0.05)
+  (q/stroke 0.0 0.06)
   (doseq [{:keys [p q]} pairs]
     (q/line p q))
   (when (empty? pairs)
