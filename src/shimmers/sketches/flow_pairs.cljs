@@ -18,7 +18,7 @@
 (defonce ui-state (ctrl/state {:snap "0"}))
 
 (defn make-pair [p]
-  (let [distance (cq/rel-h (max 0.02 (dr/gaussian 0.03 0.03)))]
+  (let [distance (cq/rel-h (max 0.02 (dr/gaussian 0.075 0.05)))]
     {:p p
      :q (tm/+ p (dr/jitter distance))
      :distance distance
@@ -38,13 +38,11 @@
           (tm/* elastic dt))))
 
 (defn move-pair [t dt]
-  (let [max-dist (eq/sqr (cq/rel-h 0.25))]
-    (fn [{:keys [p q jitter] :as pair}]
-      (let [elastic (tm/* (tm/- q p)
-                          (/ (g/dist-squared p q) max-dist))]
-        (-> pair
-            (update :p move-pos elastic (+ t jitter) dt)
-            (update :q move-pos (tm/- elastic) (+ t jitter 10.0) dt))))))
+  (fn [{:keys [p q resting-distance jitter] :as pair}]
+    (let [elastic (tm/normalize (tm/- q p) (* 0.4 (- (g/dist p q) resting-distance)))]
+      (-> pair
+          (update :p move-pos elastic (+ t jitter) dt)
+          (update :q move-pos (tm/- elastic) (+ t jitter 10.0) dt)))))
 
 (defn in-bounds? [bounds]
   (fn [{:keys [p q]}]
