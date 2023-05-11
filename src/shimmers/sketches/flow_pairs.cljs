@@ -34,14 +34,14 @@
                       theta))
           (tm/* elastic dt))))
 
-(defn move-pairs [t dt]
+(defn move-pair [t dt]
   (let [max-dist (eq/sqr (cq/rel-h 0.33))]
-    (map (fn [{:keys [p q] :as pair}]
-           (let [elastic (tm/* (tm/- q p)
-                               (/ (g/dist-squared p q) max-dist))]
-             (-> pair
-                 (update :p move-pos elastic t dt)
-                 (update :q move-pos (tm/- elastic) (+ t 10.0) dt)))))))
+    (fn [{:keys [p q] :as pair}]
+      (let [elastic (tm/* (tm/- q p)
+                          (/ (g/dist-squared p q) max-dist))]
+        (-> pair
+            (update :p move-pos elastic t dt)
+            (update :q move-pos (tm/- elastic) (+ t 10.0) dt))))))
 
 (defn in-bounds? [bounds]
   (fn [{:keys [p q]}]
@@ -51,7 +51,7 @@
 (defn update-pairs [pairs bounds t dt]
   (sequence
    (comp (filter (in-bounds? bounds))
-         (move-pairs t dt))
+         (map (move-pair t dt)))
    pairs))
 
 (defn setup []
