@@ -34,21 +34,25 @@
                       theta))
           (tm/* elastic dt))))
 
-(defn move-pairs [pairs t dt]
+(defn move-pairs [t dt]
   (let [max-dist (eq/sqr (cq/rel-h 0.33))]
-    (mapv (fn [{:keys [p q] :as pair}]
-            (let [elastic (tm/* (tm/- q p)
-                                (/ (g/dist-squared p q) max-dist))]
-              (-> pair
-                  (update :p move-pos elastic t dt)
-                  (update :q move-pos (tm/- elastic) (+ t 10.0) dt))))
-          pairs)))
+    (map (fn [{:keys [p q] :as pair}]
+           (let [elastic (tm/* (tm/- q p)
+                               (/ (g/dist-squared p q) max-dist))]
+             (-> pair
+                 (update :p move-pos elastic t dt)
+                 (update :q move-pos (tm/- elastic) (+ t 10.0) dt)))))))
 
-(defn cull-pairs [pairs bounds]
+(defn cull-pairs [bounds]
   (filter (fn [{:keys [p q]}]
             (or (g/contains-point? bounds p)
-                (g/contains-point? bounds q)))
-          pairs))
+                (g/contains-point? bounds q)))))
+
+(defn update-pairs [pairs bounds t dt]
+  (sequence
+   (comp (cull-pairs bounds)
+         (move-pairs t dt))
+   pairs))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -60,8 +64,7 @@
 (defn update-state [{:keys [t bounds] :as state}]
   (let [dt 0.01]
     (-> state
-        (update :pairs move-pairs t dt)
-        (update :pairs cull-pairs bounds)
+        (update :pairs update-pairs bounds t dt)
         (update :t + dt))))
 
 (defn draw [{:keys [pairs]}]
