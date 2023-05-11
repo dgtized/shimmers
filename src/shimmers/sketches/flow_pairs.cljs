@@ -43,14 +43,14 @@
                  (update :p move-pos elastic t dt)
                  (update :q move-pos (tm/- elastic) (+ t 10.0) dt)))))))
 
-(defn cull-pairs [bounds]
-  (filter (fn [{:keys [p q]}]
-            (or (g/contains-point? bounds p)
-                (g/contains-point? bounds q)))))
+(defn in-bounds? [bounds]
+  (fn [{:keys [p q]}]
+    (or (g/contains-point? bounds p)
+        (g/contains-point? bounds q))))
 
 (defn update-pairs [pairs bounds t dt]
   (sequence
-   (comp (cull-pairs bounds)
+   (comp (filter (in-bounds? bounds))
          (move-pairs t dt))
    pairs))
 
