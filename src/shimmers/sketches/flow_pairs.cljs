@@ -19,7 +19,8 @@
 
 (defn make-pair [p]
   {:p p
-   :q (tm/+ p (dr/jitter (cq/rel-h 0.025)))})
+   :q (tm/+ p (dr/jitter (cq/rel-h 0.03)))
+   :jitter (dr/gaussian 0.0 1.0)})
 
 (defn snap-to [theta resolution]
   (* (Math/round (/ theta resolution)) resolution))
@@ -36,12 +37,12 @@
 
 (defn move-pair [t dt]
   (let [max-dist (eq/sqr (cq/rel-h 0.33))]
-    (fn [{:keys [p q] :as pair}]
+    (fn [{:keys [p q jitter] :as pair}]
       (let [elastic (tm/* (tm/- q p)
                           (/ (g/dist-squared p q) max-dist))]
         (-> pair
-            (update :p move-pos elastic t dt)
-            (update :q move-pos (tm/- elastic) (+ t 10.0) dt))))))
+            (update :p move-pos elastic (+ t jitter) dt)
+            (update :q move-pos (tm/- elastic) (+ t jitter 10.0) dt))))))
 
 (defn in-bounds? [bounds]
   (fn [{:keys [p q]}]
