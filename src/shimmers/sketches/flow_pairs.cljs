@@ -18,9 +18,11 @@
 (defonce ui-state (ctrl/state {:snap "0"}))
 
 (defn make-pair [p]
-  {:p p
-   :q (tm/+ p (dr/jitter (cq/rel-h 0.03)))
-   :jitter (dr/gaussian 0.0 1.0)})
+  (let [distance (cq/rel-h (max 0.02 (dr/gaussian 0.03 0.03)))]
+    {:p p
+     :q (tm/+ p (dr/jitter distance))
+     :distance distance
+     :jitter (dr/gaussian 0.0 1.0)}))
 
 (defn snap-to [theta resolution]
   (* (Math/round (/ theta resolution)) resolution))
@@ -36,7 +38,7 @@
           (tm/* elastic dt))))
 
 (defn move-pair [t dt]
-  (let [max-dist (eq/sqr (cq/rel-h 0.33))]
+  (let [max-dist (eq/sqr (cq/rel-h 0.25))]
     (fn [{:keys [p q jitter] :as pair}]
       (let [elastic (tm/* (tm/- q p)
                           (/ (g/dist-squared p q) max-dist))]
