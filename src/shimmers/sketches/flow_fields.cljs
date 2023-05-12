@@ -85,7 +85,7 @@
         next-point (v/+polar point (variance step-size step-size-variance) dir)]
     (tm/+ next-point
           (avoid-obstacles next-point obstacles)
-          (v/jitter (tm/random jitter)))))
+          (dr/jitter (dr/random jitter)))))
 
 (defn draw-grid [{:keys [length step-size noise-div jitter] :as state}]
   (let [w (/ (q/width) length)
@@ -97,7 +97,7 @@
       (q/line p
               (-> p
                   (v/+polar step-size (snap-to state p dir))
-                  (v/add (v/jitter (tm/random jitter))))))))
+                  (v/add (dr/jitter (dr/random jitter))))))))
 
 (defn pointy-hexagon [r [x y]]
   (for [i (range 0 6)]
@@ -151,7 +151,7 @@
      (if-let [next-point (downhill p
                                    (variance step-size step-size-variance)
                                    noise-div snap-resolution)]
-       (tm/+ p next-point (v/jitter (tm/random jitter)))
+       (tm/+ p next-point (dr/jitter (dr/random jitter)))
        (reduced p)))
    p (range (variance length length-variance))))
 

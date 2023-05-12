@@ -40,11 +40,6 @@
 (defn- unit2-from-angle [theta]
   (v2 (Math/cos theta) (Math/sin theta)))
 
-(defn jitter
-  "Create a random unit vector and then scale it by `amount` to use as noise."
-  [amount]
-  (polar amount (rand tm/TWO_PI)))
-
 (defn snap-to
   "Snap an input angle `dir` to the closest multiple of `radians`."
   [dir radians]

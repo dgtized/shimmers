@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.math.verlet-particles :as vp]
@@ -52,7 +53,7 @@
 (defn make-payload [{:keys [pos prev hue]} type {:keys [quantity force max-age]}]
   (let [mass (/ 50 quantity)]
     (repeatedly quantity
-                #(assoc (vp/make-particle (tm/+ pos (v/jitter (force))) prev mass)
+                #(assoc (vp/make-particle (tm/+ pos (dr/jitter (force))) prev mass)
                         :type type
                         :hue hue
                         :max-age max-age))))
