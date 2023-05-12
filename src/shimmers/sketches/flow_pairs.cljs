@@ -24,16 +24,13 @@
      :distance distance
      :jitter (dr/gaussian 0.0 1.0)}))
 
-(defn snap-to [theta resolution]
-  (* (Math/round (/ theta resolution)) resolution))
-
 (defn move-pos [pos elastic t dt]
   (let [open-space (tm/+ pos (gv/vec2 1000 1000))
         theta (* 4 eq/TAU (apply q/noise (tm/* (gv/vec3 open-space (* 4 t)) (* 0.5 dt))))
         snap (edn/read-string (:snap @ui-state))]
     (tm/+ (v/+polar pos (* (cq/rel-h 0.1) dt)
                     (if (> snap 0)
-                      (snap-to theta (* (/ 1 snap) eq/TAU))
+                      (tm/roundto theta (* (/ 1 snap) eq/TAU))
                       theta))
           (tm/* elastic dt))))
 
