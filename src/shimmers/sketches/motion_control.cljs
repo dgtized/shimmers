@@ -47,7 +47,7 @@
         (control/adjust (get particle :pos-pid
                              (control/make-pid {:kp 2.0 :ki 0.05 :kd 1.0
                                                 :set-point (:x dest)
-                                                :bounds [-2000.0 2000.0 -20.0 20.0]}))
+                                                :bounds [-2000.0 2000.0 -50.0 50.0]}))
                         (* t 1000.0)
                         (:x pos))
         force (gv/vec2 (get pos-pid :control 0.0) 0)
