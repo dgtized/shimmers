@@ -140,7 +140,18 @@
     :draw draw
     :middleware [m/fun-mode])
    [:div.contained.explanation
-    [debug/display defo]]])
+    (let [particle @defo]
+      [:div.flexcols
+       [:div {:style {:width "15em"}}
+        "Telemetry"
+        [debug/pre-edn (dissoc particle :pos-pid :angle-pid)]]
+       [:div {:style {:width "15em"}}
+        "Position"
+        [debug/pre-edn (get particle :pos-pid)]]
+       [:div {}
+        "Angle"
+        [debug/pre-edn (get particle :angle-pid)]]])
+    ]])
 
 ;; TODO: add examples using PID control for acceleration to position
 (defn page []
