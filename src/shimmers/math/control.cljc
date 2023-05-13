@@ -23,46 +23,41 @@
 (defprotocol IPid
   (adjust [_ time-ms value]))
 
-(defrecord PID [sample-period set-point i-term kp ki kd last-time last-value bounds]
+(defrecord PID [set-point i-term kp ki kd last-time last-value bounds]
   IPid
   (adjust [pid time-ms value]
-    (println time-ms last-time sample-period)
-    (if (or (nil? last-time)
-            (>= (- time-ms last-time) sample-period))
+    (if (and last-time (>= (- time-ms last-time) 0.0))
       (let [[in0 in1 out0 out1] bounds
+            dt (- time-ms last-time)
             current-value (tm/map-interval-clamped value [in0 in1] [-1.0 1.0])
             expected (tm/map-interval-clamped set-point [in0 in1] [-1.0 1.0])
             error (- expected current-value)
-            p-val (* kp error)
-            d-val (if last-value
-                    (let [last-val (tm/map-interval-clamped last-value [in0 in1] [-1.0 1.0])]
-                      (* kd (- last-val current-value)))
-                    0.0)
-            i-val (tm/clamp (+ i-term (* ki error)) -1.0 1.0)
-            control (tm/map-interval-clamped (+ p-val i-val d-val)
-                                             [-1.0 1.0]
-                                             [out0 out1])]
+            derivative (if last-value
+                         (let [last-val (tm/map-interval-clamped last-value [in0 in1] [-1.0 1.0])]
+                           (/ (- error (- expected last-val)) dt))
+                         0.0)
+            integral (+ i-term (* error dt))
+            control (tm/map-interval-clamped
+                     (+ (* kp error) (* ki integral) (* kd derivative))
+                     [-1.0 1.0]
+                     [out0 out1])]
         (assoc pid
-               :i-term i-val
+               :i-term integral
                :last-value value
                :last-time time-ms
                :control control))
-      pid)))
+      (assoc pid :last-time time-ms))))
 
-(defn make-pid [{:keys [sample-period ki kd] :as pid
-                 :or {sample-period (/ 1000.0 60.0)}}]
-  (let [period-s (/ sample-period 1000.0)]
-    (map->PID
-     (merge
-      {:i-term 0.0
-       :set-point 0.0
-       :last-time nil
-       :last-value nil
-       :bounds [-1.0 1.0 -1.0 1.0]}
-      (assoc pid
-             :sample-period sample-period
-             :ki (* ki period-s)
-             :kd (/ kd period-s))))))
+(defn make-pid [pid]
+  (map->PID
+   (merge
+    {:i-term 0.0
+     :set-point 0.0
+     :control 0.0
+     :last-time nil
+     :last-value nil
+     :bounds [-1.0 1.0 -1.0 1.0]}
+    pid)))
 
 (comment
   (let [dt 0.02
