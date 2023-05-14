@@ -19,7 +19,7 @@
 (defonce defo (debug/state))
 (def width 1024)
 (def height 768)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
 (defn make-line [a b controls scale]
@@ -48,15 +48,15 @@
         angle (if (dr/chance 0.1)
                 (dr/random -0.3 0.3)
                 (dr/random -0.15 0.15))
-        a (-> (make-line (r 0.1 0.1) (r 0.1 0.9) 2 (* 0.08 width))
+        a (-> (make-line (rv 0.1 0.1) (rv 0.1 0.9) 2 (* 0.08 width))
               (g/rotate (dr/random -0.05 0.1))
               simplify
               (vary-meta assoc :stroke-width 2.0))
-        b (-> (make-line (r 0.5 0.0) (r 0.5 1.0) 3 (* 0.12 width))
+        b (-> (make-line (rv 0.5 0.0) (rv 0.5 1.0) 3 (* 0.12 width))
               (g/rotate (dr/random -0.05 0.05))
               simplify
               (vary-meta assoc :stroke-width 2.0))
-        c (-> (make-line (r 0.9 0.1) (r 0.9 0.9) 2 (* 0.08 width))
+        c (-> (make-line (rv 0.9 0.1) (rv 0.9 0.9) 2 (* 0.08 width))
               (g/rotate angle)
               simplify
               (vary-meta assoc :stroke-width 2.0))

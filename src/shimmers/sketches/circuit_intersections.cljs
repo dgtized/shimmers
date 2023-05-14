@@ -12,7 +12,7 @@
 
 (def width 600)
 (def height 800)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
 (defn color [i]
@@ -41,13 +41,13 @@
 (defn scene []
   (let [offset 0.42
         color-base (dr/random)
-        dst-left (mapv #(r 0.1 %) (placement (range 12) 0.01 0.5))
-        dst-right-a (mapv #(r 0.9 %) (placement (range 6) 0.01 0.33))
-        dst-right-b (mapv #(r 0.9 %) (placement (range 8) 0.01 0.66))
+        dst-left (mapv #(rv 0.1 %) (placement (range 12) 0.01 0.5))
+        dst-right-a (mapv #(rv 0.9 %) (placement (range 6) 0.01 0.33))
+        dst-right-b (mapv #(rv 0.9 %) (placement (range 8) 0.01 0.66))
         sources (->> [offset 0.5 (- 1.0 offset)]
                      dr/rand-nth
                      (placement (range 12) 0.01)
-                     (mapv #(r % 0.9)))
+                     (mapv #(rv % 0.9)))
         destinations (vec (concat dst-left dst-right-a dst-right-b))
         ;; TODO: remove duplicates
         connections (gen-connections sources destinations 12)]

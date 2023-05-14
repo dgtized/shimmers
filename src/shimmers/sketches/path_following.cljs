@@ -16,32 +16,32 @@
 
 (def width 800)
 (def height 600)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
 ;; Experimenting with line simplification above, and dampening below.
 (defn scene []
-  (let [original (-> [(r 0.05 0.0)
-                      (r 0.33 (dr/random -0.15 0.15))
-                      (r 0.66 (dr/random -0.15 0.15))
-                      (r 0.95 0.0)]
+  (let [original (-> [(rv 0.05 0.0)
+                      (rv 0.33 (dr/random -0.15 0.15))
+                      (rv 0.66 (dr/random -0.15 0.15))
+                      (rv 0.95 0.0)]
                      bezier/auto-spline2
                      (g/sample-uniform 10.0 true)
                      gl/linestrip2
-                     (g/translate (r 0.0 0.5)))]
+                     (g/translate (rv 0.0 0.5)))]
     (csvg/svg-timed {:width width :height height}
       [(svg/polyline (:points original)
                      {:stroke "#efc020"
                       :stroke-width 10.0})]
       (for [v (range 0.0 1.0 0.1)]
         (svg/polyline (:points (g/translate (lines/dampen original v)
-                                            (r 0.0 (+ 0.07 (* 0.3 v)))))
+                                            (rv 0.0 (+ 0.07 (* 0.3 v)))))
                       {:stroke "#3a3421"
                        :stroke-width (* 3.0 (- 1.0 v))}))
       (let [factors [1.0 2.0 4.0 8.0 12.0 14.0]]
         (for [[i eps] (map-indexed vector factors)]
           (svg/polyline (:points (g/translate (lines/simplify-line original eps)
-                                              (r 0.0 (- -0.07 (* 0.05 i)))))
+                                              (rv 0.0 (- -0.07 (* 0.05 i)))))
                         {:stroke "#da3b29"
                          :stroke-width (* 3.0 (- 1.0 (/ i (count factors))))}))))))
 

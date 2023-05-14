@@ -18,7 +18,7 @@
 (def settings (ctrl/state {:dispersion false}))
 (def width 900)
 (def height 600)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* x width) (* y height)))
 
 (defn radial-range [n st]
@@ -109,11 +109,11 @@
            {:fill (dr/rand-nth palette)}))))
 
 (defn mosaic-params []
-  (->> [{:origin (r (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+  (->> [{:origin (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
          :radius (range 6 (int (* 0.5 height)))}
-        {:origin (r (dr/rand-nth [0.33 0.66]) 0.5)
+        {:origin (rv (dr/rand-nth [0.33 0.66]) 0.5)
          :radius (range 6 (int (* 0.6 width)))}
-        {:origin (r (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]))
+        {:origin (rv (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]))
          :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
        dr/rand-nth
        (merge {:palette (dr/rand-nth palettes)

@@ -14,7 +14,7 @@
 
 (def width 800)
 (def height 800)
-(defn r [x y]
+(defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
 (defn random-offsets-spaced [spacing]
@@ -46,10 +46,10 @@
 ;; Add varying green levels per row
 (defn shapes []
   (let [spacing 0.05
-        road (bezier/auto-spline2 [(r (dr/gaussian 0.5 0.1) (- (* 2 spacing)))
-                                   (r (dr/gaussian 0.5 0.01) 0.3)
-                                   (r (dr/gaussian 0.5 0.01) 0.7)
-                                   (r (dr/gaussian 0.5 0.1) (+ 1 (* 2 spacing)))])
+        road (bezier/auto-spline2 [(rv (dr/gaussian 0.5 0.1) (- (* 2 spacing)))
+                                   (rv (dr/gaussian 0.5 0.01) 0.3)
+                                   (rv (dr/gaussian 0.5 0.01) 0.7)
+                                   (rv (dr/gaussian 0.5 0.1) (+ 1 (* 2 spacing)))])
         ;; Trying to make them line up, but to be fields I think they have to be
         ;; separate to fill later
         road-start (g/point-at road 0.0)
@@ -60,10 +60,10 @@
                                 g/normal
                                 tm/normalize
                                 (tm/* (* width 0.15)))
-                     path [(r 0 y)
+                     path [(rv 0 y)
                            (tm/- mid normal)
                            (tm/+ mid normal)
-                           (r 1 y)]]
+                           (rv 1 y)]]
                  [y (bezier/auto-spline2 path)]))
         ;; TODO: stay out of the road, vary shapes or multiple buildings, and build on both sides
         houses (mapcat (generate-houses road) (partition 2 1 (map first rows)))]

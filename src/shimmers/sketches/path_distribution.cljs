@@ -13,6 +13,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(def width 800)
+(def height 600)
+(defn rv [x y]
+  (gv/vec2 (* width x) (* height y)))
+
 (defn displace-line
   "Generate a set of points on a curved line between p and q by picking a confused
   midpoint."
@@ -36,27 +41,22 @@
         curve (g/random-point bisector)]
     (g/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
-(def width 800)
-(def height 600)
-(defn r [x y]
-  (gv/vec2 (* width x) (* height y)))
-
 (defn scene [d]
-  (let [line1 (gl/line2 (r 0.1 0.25) (r 0.9 0.25))
-        line2 (gl/line2 (r 0.1 0.75) (r 0.9 0.75))
+  (let [line1 (gl/line2 (rv 0.1 0.25) (rv 0.9 0.25))
+        line2 (gl/line2 (rv 0.1 0.75) (rv 0.9 0.75))
         bisector2 (scaled-bisector line2 d)]
     (csvg/svg-timed
-     {:width width :height height :stroke "black" :stroke-width 0.2}
-     (concat [(with-meta line1 {:stroke "blue"})
-              (with-meta (gc/circle (g/point-at line1 0.5)
-                                    (* d 0.5 (apply g/dist (g/vertices line1))))
-                {:stroke "blue" :fill "none"})]
-             (for [_ (range 20)]
-               (svg/polyline (displace-line line1 d)))
-             [(with-meta line2 {:stroke "blue"})
-              (with-meta bisector2 {:stroke "blue"})]
-             (for [_ (range 20)]
-               (svg/polyline (displace-at-bisector line2 d)))))))
+      {:width width :height height :stroke "black" :stroke-width 0.2}
+      (concat [(with-meta line1 {:stroke "blue"})
+               (with-meta (gc/circle (g/point-at line1 0.5)
+                                     (* d 0.5 (apply g/dist (g/vertices line1))))
+                 {:stroke "blue" :fill "none"})]
+              (for [_ (range 20)]
+                (svg/polyline (displace-line line1 d)))
+              [(with-meta line2 {:stroke "blue"})
+               (with-meta bisector2 {:stroke "blue"})]
+              (for [_ (range 20)]
+                (svg/polyline (displace-at-bisector line2 d)))))))
 
 (defn page []
   (let [d 0.3]
