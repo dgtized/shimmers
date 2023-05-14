@@ -144,7 +144,7 @@
        (concat [["maroon" "gold" "black"]])))
 
 (defn scene [screen palette]
-  (let [shapes (->> (lines palette)
+  (let [shapes (->> (lines (dr/shuffle (into palette (repeat 2 "white"))))
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
     (csvg/svg {:width width
@@ -163,7 +163,7 @@
 
 (defn page []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
-        palette (dr/shuffle (into (dr/rand-nth palettes) ["white" "white"]))]
+        palette (dr/rand-nth palettes)]
     (view-sketch/static-page
      (fn [] (csvg/timed (scene screen palette)))
      :displacements-inbetween
