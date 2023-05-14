@@ -36,7 +36,7 @@
 
 (defn move-pair [t dt]
   (fn [{:keys [p q resting-distance jitter] :as pair}]
-    (let [elastic (tm/normalize (tm/- q p) (* 0.4 (- (g/dist p q) resting-distance)))]
+    (let [elastic (tm/normalize (tm/- q p) (* 0.5 (- (g/dist p q) resting-distance)))]
       (-> pair
           (update :p move-pos elastic (+ t jitter) dt)
           (update :q move-pos (tm/- elastic) (+ t jitter 10.0) dt)))))
