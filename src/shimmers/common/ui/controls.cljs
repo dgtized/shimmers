@@ -33,7 +33,6 @@
                         [{} body])]
     (into [:div.ui-controls params] (keep identity body))))
 
-;; TODO: add support for changing label/button somehow?
 (defn change-mode
   ([ui-state modes]
    (change-mode ui-state modes {:mode-key :mode}))
