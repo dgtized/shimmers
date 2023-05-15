@@ -79,7 +79,7 @@
     :size [800 600]
     :setup setup
     :draw draw
-    :middleware [m/fun-mode framerate/mode]) ;; TODO: optionally hide framerate somehow?
+    :middleware [m/fun-mode framerate/mode])
    [:p.readable-width
     "Continuous layering of low opacity, random triangle streaks create an
     impression of a red morning sunrise over a whitecapped sea. Inspired by Mark
