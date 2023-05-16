@@ -162,11 +162,12 @@
         [(polyrythm (repeatedly freq #(dr/rand-nth shape-rules)) freq) 2]
         [(sequence-cut freq) 4]]))))
 
-(defn change-hexes [ring rule]
-  (map-indexed (fn change-hex [idx hex]
-                 (let [poly (hex/flat-hexagon->polygon hex)]
-                   (csvg/group {} (rule poly idx))))
-               ring))
+(defn change-hexes [ring]
+  (let [rule (generate-rule (count ring))]
+    (map-indexed (fn change-hex [idx hex]
+                   (let [poly (hex/flat-hexagon->polygon hex)]
+                     (csvg/group {} (rule poly idx))))
+                 ring)))
 
 (defn hexagons [revolutions]
   (let [radius (* 0.95 height)
@@ -176,10 +177,9 @@
                              :coord hex
                              :ring (hex/cube-distance (gv/vec3) hex)))
                     (hex/cube-spiral (gv/vec3) revolutions))
-        rings (partition-by :ring hexes)
-        rules (mapv (fn [ring] (generate-rule (count ring))) rings)]
+        rings (partition-by :ring hexes)]
     #_(map-indexed individual hexes)
-    (mapcat change-hexes rings rules)))
+    (mapcat change-hexes rings)))
 
 (defn scene []
   (csvg/svg-timed {:width width
