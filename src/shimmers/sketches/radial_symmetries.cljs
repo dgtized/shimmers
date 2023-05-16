@@ -171,15 +171,14 @@
 
 (defn hexagons [revolutions]
   (let [radius (* 0.95 height)
-        hex-radius (/ radius (* 3 (+ revolutions 2.5)))
-        hexes (mapv (fn [hex]
-                      (assoc (hex/cube-hexagon hex hex-radius)
-                             :coord hex
-                             :ring (hex/cube-distance (gv/vec3) hex)))
-                    (hex/cube-spiral (gv/vec3) revolutions))
-        rings (partition-by :ring hexes)]
-    #_(map-indexed individual hexes)
-    (mapcat change-hexes rings)))
+        hex-radius (/ radius (* 3 (+ revolutions 2.5)))]
+    (->> (hex/cube-spiral (gv/vec3) revolutions)
+         (mapv (fn [hex]
+                 (assoc (hex/cube-hexagon hex hex-radius)
+                        :coord hex
+                        :ring (hex/cube-distance (gv/vec3) hex))))
+         (partition-by :ring)
+         (mapcat change-hexes))))
 
 (defn scene []
   (csvg/svg-timed {:width width
