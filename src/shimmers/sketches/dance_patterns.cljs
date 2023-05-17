@@ -52,11 +52,13 @@
        :t1 (+ t (inc (dr/random-int 4)))}
       (action-wait action-state))))
 
-(defn action-duplicate [{:keys [actor t]}]
-  {:type :duplicate
-   :move (:position actor)
-   :t0 t
-   :t1 (+ t (inc (dr/random-int 4)))})
+(defn action-duplicate [{:keys [size actors actor t] :as action-state}]
+  (if (> (count (empty-spaces size actors actor)) 5)
+    {:type :duplicate
+     :move (:position actor)
+     :t0 t
+     :t1 (+ t (inc (dr/random-int 4)))}
+    (action-wait action-state)))
 
 (defn make-action [size actors actor t]
   (let [max-count (* 0.125 size size)
