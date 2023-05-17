@@ -45,9 +45,9 @@
 
 (defn action-slide [{:keys [size actors actor t] :as action-state}]
   (let [moves (empty-spaces size actors actor)]
-    (if (seq moves)
+    (if-let [move (and (seq moves) (dr/rand-nth moves))]
       {:type (if (dr/chance 0.5) :rotate :slide)
-       :move (dr/rand-nth moves)
+       :move move
        :t0 t
        :t1 (+ t (inc (dr/random-int 4)))}
       (action-wait action-state))))
