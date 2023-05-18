@@ -42,9 +42,17 @@
        (take-while (fn [s] (< (count s) n)))
        last))
 
+(defn clipped [box circles]
+  (for [circle circles
+        :when (collide/overlaps? circle box)]
+    (g/clip-with (g/as-polygon circle 64) box)))
+
 (defn shapes [bounds n]
-  (concat (generate bounds gen-box 16)
-          (generate bounds gen-circle 16)))
+  (let [boxes (generate bounds gen-box 16)
+        circles (generate bounds gen-circle 16)]
+    (mapcat (fn [box]
+              (concat [box] (clipped box circles)))
+            boxes)))
 
 (defn scene []
   (csvg/svg-timed {:width width
