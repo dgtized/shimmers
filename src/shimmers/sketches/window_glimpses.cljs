@@ -42,17 +42,21 @@
        (take-while (fn [s] (< (count s) n)))
        last))
 
-(defn clipped [box circles]
-  (for [circle circles
-        :when (collide/overlaps? circle box)]
-    (g/clip-with (g/as-polygon circle 64) box)))
+(defn clipped [shape shapes]
+  (for [s shapes
+        :when (collide/overlaps? shape s)]
+    (g/clip-with shape s)))
 
 (defn shapes [bounds]
-  (let [boxes (generate bounds gen-box 16)
-        circles (generate bounds gen-circle 16)]
-    (mapcat (fn [box]
-              (concat [box] (clipped box circles)))
-            boxes)))
+  (let [boxes (map g/as-polygon (generate bounds gen-box 16))
+        circles (map (fn [s] (g/as-polygon s 64))
+                     (generate bounds gen-circle 16))
+        [as bs] (if (dr/chance 0.25)
+                  [boxes circles]
+                  [circles boxes])]
+    (mapcat (fn [a]
+              (concat [a] (clipped a bs)))
+            as)))
 
 (defn scene []
   (csvg/svg-timed {:width width
