@@ -47,7 +47,7 @@
         :when (collide/overlaps? circle box)]
     (g/clip-with (g/as-polygon circle 64) box)))
 
-(defn shapes [bounds n]
+(defn shapes [bounds]
   (let [boxes (generate bounds gen-box 16)
         circles (generate bounds gen-circle 16)]
     (mapcat (fn [box]
@@ -60,7 +60,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (shapes (rect/rect 0 0 width height) 16)))
+    (shapes (rect/rect 0 0 width height))))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
