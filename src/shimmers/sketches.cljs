@@ -227,6 +227,7 @@
    shimmers.sketches.wave-function-collapse
    shimmers.sketches.wavetracker
    shimmers.sketches.waystation
+   shimmers.sketches.window-glimpses
    shimmers.sketches.wood-grain
    shimmers.sketches.zigzag
    shimmers.sketches.zoetropic))
