@@ -25,9 +25,13 @@
 (defn gen-box [{[width height] :size} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
-        box (rect/rect (dr/random-int 0 (- width w))
-                       (dr/random-int 0 (- height h))
-                       w h)]
+        poly (g/as-polygon
+              (rect/rect (dr/random-int 0 (- width w))
+                         (dr/random-int 0 (- height h))
+                         w h))
+        box (if (dr/chance 0.2)
+              (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
+              poly)]
     (if (some (fn [s] (collide/overlaps? (g/scale-size box 1.1) s)) existing)
       existing
       (conj existing box))))
@@ -91,10 +95,7 @@
 (defn shapes [bounds]
   (let [theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
-        boxes (dr/map-random-sample
-               (constantly 0.2)
-               (fn [s] (geometry/rotate-around-centroid s (dr/gaussian 0.0 0.1)))
-               (map g/as-polygon (generate bounds gen-box 20)))
+        boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (map (fn [s] (g/as-polygon s 64))
                      (generate bounds gen-circle 16))
