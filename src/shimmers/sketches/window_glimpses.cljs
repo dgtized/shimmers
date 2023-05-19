@@ -103,7 +103,7 @@
 (defn dashed-line [line pattern]
   (->> pattern
        cycle
-       (map (fn [x] (/ 1.0 (* 10 x))))
+       (map (fn [x] (/ 1.0 (* 8 x))))
        (reductions +)
        (take-while (fn [l] (<= l 1.0)))
        (partition 2 2)
@@ -121,7 +121,10 @@
         clipped-bs (mapcat (fn [a] (clipped a bs)) as)
         inner-lines
         (mapcat (fn [line]
-                  (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs))
+                  (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs)]
+                    (if (dr/chance 0.15)
+                      (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
+                      subset)))
                 (clip/hatch-rectangle bounds (* width 0.03) theta1))]
     (concat
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
