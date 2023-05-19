@@ -100,7 +100,7 @@
     (concat
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
-     as
+     (mass-vary as :stroke-width 1.5)
      clipped-bs
      (mass-vary inner-lines :stroke-width 0.5))))
 
