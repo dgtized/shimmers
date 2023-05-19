@@ -100,6 +100,17 @@
                  triangles)
             (map (fn [c] (g/as-polygon c 64)) circles'))))
 
+(defn dashed-line [line pattern]
+  (->> pattern
+       cycle
+       (map (fn [x] (/ 1.0 (* 10 x))))
+       (reductions +)
+       (take-while (fn [l] (<= l 1.0)))
+       (partition 2 2)
+       (map (fn [[a b]] (gl/line2 (g/point-at line a) (g/point-at line b))))))
+
+(comment (dashed-line (gl/line2 0 0 0 10) [1 2 3]))
+
 (defn shapes [bounds]
   (let [theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
