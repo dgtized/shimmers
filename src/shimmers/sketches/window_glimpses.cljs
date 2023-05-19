@@ -82,6 +82,10 @@
                                        (intersecting-points rp rq))
                                   [rq]))))))
 
+(defn mass-vary [shapes field value]
+  (map (fn [s] (vary-meta s assoc field value))
+       shapes))
+
 (defn shapes [bounds]
   (let [boxes (map g/as-polygon (generate bounds gen-box 16))
         lines (clip/hatch-rectangle bounds (* width 0.08) (dr/random-tau))
@@ -94,12 +98,11 @@
                   (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs))
                 (clip/hatch-rectangle bounds (* width 0.03) (dr/random-tau)))]
     (concat
-     (map (fn [line] (vary-meta line assoc :stroke-width 0.5))
-          (mapcat (fn [line] (separate line as)) lines))
+     (mass-vary (mapcat (fn [line] (separate line as)) lines)
+                :stroke-width 0.5)
      as
      clipped-bs
-     (map (fn [line] (vary-meta line assoc :stroke-width 0.5))
-          inner-lines))))
+     (mass-vary inner-lines :stroke-width 0.5))))
 
 (defn scene []
   (csvg/svg-timed {:width width
