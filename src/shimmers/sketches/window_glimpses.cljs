@@ -6,6 +6,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -90,7 +91,10 @@
 (defn shapes [bounds]
   (let [theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
-        boxes (map g/as-polygon (generate bounds gen-box 16))
+        boxes (dr/map-random-sample
+               (constantly 0.2)
+               (fn [s] (geometry/rotate-around-centroid s (dr/gaussian 0.0 0.1)))
+               (map g/as-polygon (generate bounds gen-box 20)))
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (map (fn [s] (g/as-polygon s 64))
                      (generate bounds gen-circle 16))
