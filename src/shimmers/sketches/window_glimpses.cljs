@@ -22,6 +22,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn distinct-shape [scale existing shape]
+  (if (some (fn [s] (collide/overlaps? (g/scale-size shape scale) s)) existing)
+    existing
+    (conj existing shape)))
+
 (defn gen-box [{[width height] :size} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
@@ -32,9 +37,7 @@
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
-    (if (some (fn [s] (collide/overlaps? (g/scale-size box 1.12) s)) existing)
-      existing
-      (conj existing box))))
+    (distinct-shape 1.12 existing box)))
 
 (defn gen-circle [{[width height] :size} existing]
   (let [r (dr/random-int (int (* 0.04 (min width height)))
@@ -42,9 +45,7 @@
         circle (gc/circle (dr/random-int r (- width r))
                           (dr/random-int r (- height r))
                           r)]
-    (if (some (fn [s] (collide/overlaps? (g/scale-size circle 1.05) s)) existing)
-      existing
-      (conj existing circle))))
+    (distinct-shape 1.05 existing circle)))
 
 (defn generate [bounds f n]
   (->> []
