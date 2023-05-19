@@ -1,6 +1,7 @@
 (ns shimmers.sketches.window-glimpses
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -86,13 +87,19 @@
         lines (clip/hatch-rectangle bounds (* width 0.08) (dr/random-tau))
         circles (map (fn [s] (g/as-polygon s 64))
                      (generate bounds gen-circle 16))
-        [as bs] (if (dr/chance 0.25)
-                  [boxes circles]
-                  [circles boxes])]
-    (concat (mapcat (fn [line] (separate line as)) lines)
-            (mapcat (fn [a]
-                      (concat [a] (clipped a bs)))
-                    as))))
+        [as bs] (dr/shuffle [boxes circles])
+        clipped-bs (mapcat (fn [a] (clipped a bs)) as)
+        inner-lines
+        (mapcat (fn [line]
+                  (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs))
+                (clip/hatch-rectangle bounds (* width 0.03) (dr/random-tau)))]
+    (concat
+     (map (fn [line] (vary-meta line assoc :stroke-width 0.5))
+          (mapcat (fn [line] (separate line as)) lines))
+     as
+     clipped-bs
+     (map (fn [line] (vary-meta line assoc :stroke-width 0.5))
+          inner-lines))))
 
 (defn scene []
   (csvg/svg-timed {:width width
