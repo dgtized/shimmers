@@ -5,6 +5,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -87,8 +88,10 @@
        shapes))
 
 (defn shapes [bounds]
-  (let [boxes (map g/as-polygon (generate bounds gen-box 16))
-        lines (clip/hatch-rectangle bounds (* width 0.08) (dr/random-tau))
+  (let [theta0 (dr/random-tau)
+        theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
+        boxes (map g/as-polygon (generate bounds gen-box 16))
+        lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (map (fn [s] (g/as-polygon s 64))
                      (generate bounds gen-circle 16))
         [as bs] (dr/shuffle [boxes circles])
@@ -96,7 +99,7 @@
         inner-lines
         (mapcat (fn [line]
                   (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs))
-                (clip/hatch-rectangle bounds (* width 0.03) (dr/random-tau)))]
+                (clip/hatch-rectangle bounds (* width 0.03) theta1))]
     (concat
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
