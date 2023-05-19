@@ -32,7 +32,7 @@
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
-    (if (some (fn [s] (collide/overlaps? (g/scale-size box 1.1) s)) existing)
+    (if (some (fn [s] (collide/overlaps? (g/scale-size box 1.12) s)) existing)
       existing
       (conj existing box))))
 
