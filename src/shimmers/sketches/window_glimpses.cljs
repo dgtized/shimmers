@@ -8,6 +8,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -93,13 +94,18 @@
   (map (fn [s] (vary-meta s assoc field value))
        shapes))
 
+(defn swap-triangles [circles n]
+  (let [[triangles circles'] (split-at n (dr/shuffle circles))]
+    (concat (map (fn [c] (g/as-polygon (triangle/inscribed-equilateral c (dr/random-tau))))
+                 triangles)
+            (map (fn [c] (g/as-polygon c 64)) circles'))))
+
 (defn shapes [bounds]
   (let [theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
-        circles (map (fn [s] (g/as-polygon s 64))
-                     (generate bounds gen-circle 16))
+        circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
         [as bs] (dr/shuffle [boxes circles])
         clipped-bs (mapcat (fn [a] (clipped a bs)) as)
         inner-lines
