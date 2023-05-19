@@ -28,7 +28,7 @@
     existing
     (conj existing shape)))
 
-(defn gen-box [{[width height] :size} existing]
+(defn gen-box [{[width height] :size :as bounds} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
         poly (g/as-polygon
@@ -38,7 +38,9 @@
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
-    (distinct-shape 1.12 existing box)))
+    (if (collide/bounded? bounds box)
+      (distinct-shape 1.12 existing box)
+      existing)))
 
 (defn gen-circle [{[width height] :size} existing]
   (let [r (dr/random-int (int (* 0.05 (min width height)))
