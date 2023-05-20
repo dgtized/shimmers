@@ -11,8 +11,8 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.sketches.radial-mosaic :as radial-mosaic]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.color.core :as col]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -115,8 +115,26 @@
 
 (comment (dashed-line (gl/line2 0 0 0 10) [1 2 3]))
 
+
+(defn separate-palette [palette]
+  (if (seq palette)
+    (let [ordered
+          (->> palette
+               (map col/hex->int)
+               (sort-by col/luminance))
+          avg (/ (+ (col/luminance (first ordered)) (col/luminance (last ordered))) 2)
+          [dark light] (split-with (fn [c] (< (col/luminance c) avg)) ordered)
+          [background & lights] (dr/shuffle light)]
+      (map col/as-css (concat [background] lights dark)))
+    palette))
+
+;; (separate-palette (pick-palette))
+;; (separate-palette (first (palette/from-urls [palette/slate-shell-red-tan-yellow])))
+;; (separate-palette (first (palette/from-urls [palette/orange-maroon-blues])))
+;; (separate-palette [])
+
 (defn shapes [bounds palette]
-  (let [[ocolor & palette] (dr/shuffle palette)
+  (let [[background & palette] (separate-palette palette)
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         boxes (generate bounds gen-box 20)
@@ -137,7 +155,7 @@
     (concat
      (-> as
          (mass-vary :stroke-width 1.5)
-         (mass-vary :fill ocolor))
+         (mass-vary :fill background))
      clipped-bs
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
