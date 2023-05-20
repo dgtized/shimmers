@@ -155,10 +155,14 @@
                    :stroke-width 1.0}
     (shapes (rect/rect 0 0 width height) palette)))
 
+(defn pick-palette []
+  (-> (concat radial-mosaic/palettes
+              [] ;; no palette
+              [["#ffeedd" "#ddeeff"]])
+      dr/rand-nth))
+
 (defn page []
-  (let [palette (dr/rand-nth (concat radial-mosaic/palettes
-                                     [] ;; no palette
-                                     [["#ffeedd" "#ddeeff"]]))]
+  (let [palette (pick-palette)]
     (fn []
       [:div
        [:div.canvas-frame [scene palette]]
