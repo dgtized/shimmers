@@ -119,7 +119,9 @@
         boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
-        [as bs] (dr/shuffle [boxes circles])
+        [as bs] (if (dr/chance 0.66)
+                  [boxes circles]
+                  [circles boxes])
         clipped-bs (mapcat (fn [a] (clipped a bs)) as)
         inner-lines
         (mapcat (fn [line]
