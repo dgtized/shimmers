@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -146,19 +147,25 @@
 ;; higher contrast between color pairs..
 ;; TODO: color a specific strip between two of the inner stripe lines across all
 ;; shapes it's clipped with.
-(defn scene []
+(defn scene [palette]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (let [palette (dr/rand-nth (concat radial-mosaic/palettes
-                                       [] ;; no palette
-                                       [["#fed" "#def"]]))]
-      (shapes (rect/rect 0 0 width height) palette))))
+    (shapes (rect/rect 0 0 width height) palette)))
+
+(defn page []
+  (let [palette (dr/rand-nth (concat radial-mosaic/palettes
+                                     [] ;; no palette
+                                     [["#ffeedd" "#ddeeff"]]))]
+    (view-sketch/static-page (partial scene palette) :window-glimpses
+                             (fn []
+                               [palette/as-svg {:class "center"}
+                                palette]))))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
    :tags #{}
    :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :window-glimpses)))
+  (ctrl/mount (page)))
