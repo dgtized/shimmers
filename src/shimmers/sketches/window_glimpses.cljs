@@ -163,7 +163,7 @@
       [:div
        [:div.canvas-frame [scene palette]]
        [:div.contained
-        [palette/as-svg {:class "center"} palette]
+        [palette/as-svg {:class "center" :height 10} palette]
         [:p.center (view-sketch/generate :window-glimpses)]]])))
 
 (sketch/definition window-glimpses
