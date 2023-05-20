@@ -156,8 +156,19 @@
     (shapes (rect/rect 0 0 width height) palette)))
 
 (defn pick-palette []
-  (-> (concat radial-mosaic/palettes
-              [] ;; no palette
+  (-> [palette/blue-yellow-tan-brown
+       palette/shell-blue-yellow-grey
+       palette/purple-shell-brown
+       palette/shell-grey-blues
+       palette/slate-shell-red-tan-yellow
+       palette/shell-grey-blues-bold
+       palette/yellow-blue-slate-grey-red
+       palette/red-black-yellow-grey-blue
+       palette/orange-black-blue-shell-red
+       palette/orange-maroon-blues
+       palette/blues-orange-black-shell]
+      palette/from-urls
+      (concat [[]] ;; no palette
               [["#ffeedd" "#ddeeff"]])
       dr/rand-nth))
 
