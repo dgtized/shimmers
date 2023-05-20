@@ -159,13 +159,15 @@
   (let [palette (dr/rand-nth (concat radial-mosaic/palettes
                                      [] ;; no palette
                                      [["#ffeedd" "#ddeeff"]]))]
-    (view-sketch/static-page (partial scene palette) :window-glimpses
-                             (fn []
-                               [palette/as-svg {:class "center"}
-                                palette]))))
+    (fn []
+      [:div
+       [:div.canvas-frame [scene palette]]
+       [:div.contained
+        [palette/as-svg {:class "center"} palette]
+        [:p.center (view-sketch/generate :window-glimpses)]]])))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
    :tags #{}
    :type :svg}
-  (ctrl/mount (page)))
+  (ctrl/mount page))
