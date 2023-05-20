@@ -18,6 +18,12 @@
        (map url->colors)
        (map (partial map (partial str "#")))))
 
+(defn to-url [palette]
+  (->> palette
+       (map (fn [color] (str/replace-first color "#" "")))
+       (str/join "-")
+       (str "https://artsexperiments.withgoogle.com/artpalette/colors/")))
+
 (defn as-svg
   [{:keys [width height class]
     :or {width 400 height 30
@@ -25,8 +31,11 @@
    palette]
   (let [cell (/ width (count palette))
         rect (rect/rect 0 0 cell height)]
-    (csvg/svg {:class class :width width :height height}
-      (for [[idx color] (map-indexed vector palette)]
-        (-> rect
-            (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
-            (with-meta {:fill (str color)}))))))
+    (if (seq palette)
+      [:a {:href (to-url palette)}
+       (csvg/svg {:class class :width width :height height}
+         (for [[idx color] (map-indexed vector palette)]
+           (-> rect
+               (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
+               (with-meta {:fill (str color)}))))]
+      [:p])))
