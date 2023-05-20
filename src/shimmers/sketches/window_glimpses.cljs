@@ -129,10 +129,13 @@
                       subset)))
                 (clip/hatch-rectangle bounds (* width 0.03) theta1))]
     (concat
+     (-> as
+         (mass-vary :stroke-width 1.5)
+         (mass-vary :fill "#def"))
+     (mass-vary clipped-bs
+                :fill "#fed")
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
-     (mass-vary as :stroke-width 1.5)
-     clipped-bs
      (mass-vary inner-lines :stroke-width 0.5))))
 
 (defn scene []
