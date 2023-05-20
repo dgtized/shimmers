@@ -118,14 +118,8 @@
 
 (defn separate-palette [palette]
   (if (seq palette)
-    (let [ordered
-          (->> palette
-               (map col/hex->int)
-               (sort-by col/luminance))
-          avg (/ (+ (col/luminance (first ordered)) (col/luminance (last ordered))) 2)
-          [dark light] (split-with (fn [c] (< (col/luminance c) avg)) ordered)
-          [background & lights] (dr/shuffle light)]
-      (map col/as-css (concat [background] lights dark)))
+    (let [background (dr/weighted-by (comp col/luminance col/hex->int) palette)]
+      (concat [background] (remove #{background} palette)))
     palette))
 
 ;; (separate-palette (pick-palette))
@@ -179,7 +173,7 @@
        palette/purple-shell-brown
        palette/shell-grey-blues
        palette/slate-shell-red-tan-yellow
-       palette/shell-grey-blues-bold
+       palette/shell-grey-blues-bold ;; blues are maybe too close?
        palette/yellow-blue-slate-grey-red
        palette/red-black-yellow-grey-blue
        palette/orange-black-blue-shell-red
