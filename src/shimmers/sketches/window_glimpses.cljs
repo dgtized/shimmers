@@ -129,13 +129,14 @@
                     (if (dr/chance 0.15)
                       (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
-                (clip/hatch-rectangle bounds (* width 0.03) theta1))]
+                (clip/hatch-rectangle bounds (* width 0.03) theta1))
+        [icolor ocolor] (dr/shuffle ["#fed" "#def"])]
     (concat
      (-> as
          (mass-vary :stroke-width 1.5)
-         (mass-vary :fill "#def"))
+         (mass-vary :fill ocolor))
      (mass-vary clipped-bs
-                :fill "#fed")
+                :fill icolor)
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
      (mass-vary inner-lines :stroke-width 0.5))))
