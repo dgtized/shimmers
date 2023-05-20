@@ -10,6 +10,7 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.sketches.radial-mosaic :as radial-mosaic]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -59,7 +60,7 @@
 (defn clipped [shape shapes]
   (for [s shapes
         :when (collide/overlaps? shape s)]
-    (g/clip-with shape s)))
+    (with-meta (g/clip-with shape s) (meta s))))
 
 (defn intersecting-points
   "Finds all intersection points along a line through a set of edges sorted by
@@ -113,8 +114,9 @@
 
 (comment (dashed-line (gl/line2 0 0 0 10) [1 2 3]))
 
-(defn shapes [bounds]
-  (let [theta0 (dr/random-tau)
+(defn shapes [bounds palette]
+  (let [[ocolor & palette] (dr/shuffle palette)
+        theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
@@ -122,6 +124,7 @@
         [as bs] (if (dr/chance 0.66)
                   [boxes circles]
                   [circles boxes])
+        bs (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette))) bs)
         clipped-bs (mapcat (fn [a] (clipped a bs)) as)
         inner-lines
         (mapcat (fn [line]
@@ -129,25 +132,30 @@
                     (if (dr/chance 0.15)
                       (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
-                (clip/hatch-rectangle bounds (* width 0.03) theta1))
-        [icolor ocolor] (dr/shuffle ["#fed" "#def"])]
+                (clip/hatch-rectangle bounds (* width 0.03) theta1))]
     (concat
      (-> as
          (mass-vary :stroke-width 1.5)
          (mass-vary :fill ocolor))
-     (mass-vary clipped-bs
-                :fill icolor)
+     clipped-bs
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
      (mass-vary inner-lines :stroke-width 0.5))))
 
+;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
+;; higher contrast between color pairs..
+;; TODO: color a specific strip between two of the inner stripe lines across all
+;; shapes it's clipped with.
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (shapes (rect/rect 0 0 width height))))
+    (let [palette (dr/rand-nth (concat radial-mosaic/palettes
+                                       [] ;; no palette
+                                       [["#fed" "#def"]]))]
+      (shapes (rect/rect 0 0 width height) palette))))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
