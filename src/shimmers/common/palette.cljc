@@ -1,6 +1,7 @@
 (ns shimmers.common.palette
   (:require
    [clojure.string :as str]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -39,6 +40,28 @@
                (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
                (with-meta {:fill (str color)}))))]
       [:p])))
+
+(defn named-url [[name url]]
+  {:name name
+   :url url
+   :colors (->> url url->colors (map (partial str "#")))})
+
+(def db
+  {:blue-yellow-tan-brown
+   "https://artsexperiments.withgoogle.com/artpalette/colors/617caa-d1b053-976e27-7a94ae-c9b27d"})
+
+(def all
+  (map named-url db))
+
+(defn by-name [id]
+  (cs/find-first (fn [{:keys [name]}]  (= name id)) all))
+
+(defn by-names [ids]
+  (filter (fn [{:keys [name]}] (contains? (set ids) name))
+          all))
+
+(comment (by-name :blue-yellow-tan-brown)
+         (by-names [:blue-yellow-tan-brown]))
 
 (def blue-yellow-tan-brown
   "https://artsexperiments.withgoogle.com/artpalette/colors/617caa-d1b053-976e27-7a94ae-c9b27d")
