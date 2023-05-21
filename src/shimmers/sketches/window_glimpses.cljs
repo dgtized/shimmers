@@ -168,21 +168,22 @@
     (shapes (rect/rect 0 0 width height) palette)))
 
 (defn pick-palette []
-  (-> [palette/blue-yellow-tan-brown
-       palette/shell-blue-yellow-grey
-       palette/purple-shell-brown
-       palette/shell-grey-blues
-       palette/slate-shell-red-tan-yellow
-       palette/shell-grey-blues-bold ;; blues are maybe too close?
-       palette/yellow-blue-slate-grey-red
-       palette/red-black-yellow-grey-blue
-       palette/orange-black-blue-shell-red
-       palette/orange-maroon-blues
-       palette/blues-orange-black-shell]
-      palette/from-urls
-      (concat [[]] ;; no palette
-              [["#ffeedd" "#ddeeff"]])
-      dr/rand-nth))
+  (->> [:blue-yellow-tan-brown
+        :shell-blue-yellow-grey
+        :purple-shell-brown
+        :shell-grey-blues
+        :slate-shell-red-tan-yellow
+        :shell-grey-blues-bold ;; blues are maybe too close?
+        :yellow-blue-slate-grey-red
+        :red-black-yellow-grey-blue
+        :orange-black-blue-shell-red
+        :orange-maroon-blues
+        :blues-orange-black-shell]
+       palette/by-names
+       (map :colors)
+       (concat [[]] ;; no palette
+               [["#ffeedd" "#ddeeff"]])
+       dr/rand-nth))
 
 (defn page []
   (let [palette (pick-palette)]
