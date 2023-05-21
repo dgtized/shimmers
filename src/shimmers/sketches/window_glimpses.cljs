@@ -178,7 +178,8 @@
         :red-black-yellow-grey-blue
         :orange-black-blue-shell-red
         :orange-maroon-blues
-        :blues-orange-black-shell]
+        :blues-orange-black-shell
+        :green-shades]
        palette/by-names
        (map :colors)
        (concat [[]] ;; no palette

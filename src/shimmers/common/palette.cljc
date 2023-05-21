@@ -87,6 +87,8 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/150d0a-e8dfda-ca202a-420f11-99292f"
    :aqua-foam-black-greeen-teal
    "https://artsexperiments.withgoogle.com/artpalette/colors/69d4d3-ccf5ee-020804-0b4736-389b84"
+   :green-shades
+   "https://artsexperiments.withgoogle.com/artpalette/colors/54a867-c2d7bf-98c79e-1e4629-22823c"
    }
   )
 
