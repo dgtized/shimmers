@@ -72,7 +72,22 @@
    :orange-maroon-blues
    "https://artsexperiments.withgoogle.com/artpalette/colors/0c3c56-236884-ce5110-3e160e-338bab"
    :blues-orange-black-shell
-   "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8"}
+   "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8"
+   :blue-pink-brown-orange-lblue
+   "https://artsexperiments.withgoogle.com/artpalette/colors/2cb4c8-e7b9a6-5b463c-dc6031-a4bfc1"
+   :slate-red-yellow-blue-brown
+   "https://artsexperiments.withgoogle.com/artpalette/colors/abb6ba-803f37-e0a964-355b83-b37958"
+   :blue-khacki-green-pink-aqua
+   "https://artsexperiments.withgoogle.com/artpalette/colors/4585b3-cec69a-479186-cc989d-5dacaa"
+   :yellow-pink-blue-aqua-shell
+   "https://artsexperiments.withgoogle.com/artpalette/colors/ece39f-f1a39e-8aaccd-5fa6aa-cddcd3"
+   :yellow-slate-white-mint-red
+   "https://artsexperiments.withgoogle.com/artpalette/colors/f8ce32-525456-f4f3f3-66debf-d51f07"
+   :black-shell-red-maroon-red
+   "https://artsexperiments.withgoogle.com/artpalette/colors/150d0a-e8dfda-ca202a-420f11-99292f"
+   :aqua-foam-black-greeen-teal
+   "https://artsexperiments.withgoogle.com/artpalette/colors/69d4d3-ccf5ee-020804-0b4736-389b84"
+   }
   )
 
 (def db
