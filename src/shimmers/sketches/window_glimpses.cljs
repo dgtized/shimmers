@@ -173,12 +173,15 @@
         :purple-shell-brown
         :shell-grey-blues
         :slate-shell-red-tan-yellow
+        :slate-red-yellow-blue-brown
         :shell-grey-blues-bold ;; blues are maybe too close?
         :yellow-blue-slate-grey-red
         :red-black-yellow-grey-blue
         :orange-black-blue-shell-red
         :orange-maroon-blues
         :blues-orange-black-shell
+        :yellow-slate-white-mint-red
+        :black-shell-red-maroon-red
         :green-shades]
        palette/by-names
        (map :colors)
