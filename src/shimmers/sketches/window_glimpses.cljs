@@ -131,13 +131,15 @@
   (let [[background & palette] (separate-palette palette)
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
+        theta2 (dr/gaussian (/ (+ theta0 theta1) 2) (/ eq/TAU 16))
         boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
         [as bs] (if (dr/chance 0.66)
                   [boxes circles]
                   [circles boxes])
-        bs (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette))) bs)
+        bs (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
+                                  :cross (dr/chance 0.08))) bs)
         clipped-bs (mapcat (fn [a] (clipped a bs)) as)
         inner-lines
         (mapcat (fn [line]
@@ -145,7 +147,14 @@
                     (if (dr/chance 0.15)
                       (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
-                (clip/hatch-rectangle bounds (* width 0.03) theta1))]
+                (clip/hatch-rectangle bounds (* width 0.03) theta1))
+
+        crossed
+        (mapcat (fn [line]
+                  (mapcat
+                   (fn [shape] (lines/clip-line line shape))
+                   (filter (fn [s] (:cross (meta s))) clipped-bs)))
+                (clip/hatch-rectangle bounds (* width 0.015) theta2))]
     (concat
      (-> as
          (mass-vary :stroke-width 1.5)
@@ -153,7 +162,8 @@
      clipped-bs
      (mass-vary (mapcat (fn [line] (separate line as)) lines)
                 :stroke-width 0.5)
-     (mass-vary inner-lines :stroke-width 0.5))))
+     (mass-vary inner-lines :stroke-width 0.5)
+     (mass-vary crossed :stroke-width 0.125))))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
