@@ -122,6 +122,14 @@
       (concat [background] (remove #{background} palette)))
     palette))
 
+(defn clip-lines-to-shapes [lines shapes]
+  (mapcat
+   (fn [line]
+     (mapcat (fn [shape]
+               (lines/clip-line line shape))
+             shapes))
+   lines))
+
 ;; (separate-palette (pick-palette))
 ;; (separate-palette (first (palette/from-urls [palette/slate-shell-red-tan-yellow])))
 ;; (separate-palette (first (palette/from-urls [palette/orange-maroon-blues])))
@@ -150,11 +158,9 @@
                 (clip/hatch-rectangle bounds (* width 0.03) theta1))
 
         crossed
-        (mapcat (fn [line]
-                  (mapcat
-                   (fn [shape] (lines/clip-line line shape))
-                   (filter (fn [s] (:cross (meta s))) clipped-bs)))
-                (clip/hatch-rectangle bounds (* width 0.015) theta2))]
+        (clip-lines-to-shapes
+         (clip/hatch-rectangle bounds (* width 0.015) theta2)
+         (filter (fn [s] (:cross (meta s))) clipped-bs))]
     (concat
      (-> as
          (mass-vary :stroke-width 1.5)
