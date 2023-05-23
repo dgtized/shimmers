@@ -163,7 +163,7 @@
      [:div.contained
       [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
        [view-sketch/generate :displacements-inbetween]
-       [palette/as-svg {:width 250 :height 12} palette]]
+       [palette/as-svg {} palette]]
       #_(debug/pre-edn @defo)]]))
 
 (sketch/definition displacements-inbetween

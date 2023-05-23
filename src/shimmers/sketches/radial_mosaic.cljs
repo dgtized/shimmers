@@ -133,7 +133,7 @@
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :radial-mosaic]
-         [palette/as-svg {:width 250 :height 12} palette]]
+         [palette/as-svg {} palette]]
         #_(ctrl/checkbox settings "Dispersion" [:dispersion])]])))
 
 (sketch/definition radial-mosaic

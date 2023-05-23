@@ -233,7 +233,7 @@
             [:p.center (view-sketch/generate :decorative-tiles)]
             [:p.center "Recursively layer regular polygons on each outward face."]
             (when color-tiles
-              [palette/as-svg {:class "center" :width 250 :height 12} palette])]
+              [palette/as-svg {:class "center"} palette])]
            (ctrl/container
             [:p]
             (ctrl/slider ui-state (fn [x] (str "Recursion Depth " x))

@@ -27,7 +27,8 @@
 
 (defn as-svg
   [{:keys [width height class]
-    :or {width 400 height 30
+    :or {width 256
+         height 16
          class "palette"}}
    palette]
   (let [cell (/ width (count palette))

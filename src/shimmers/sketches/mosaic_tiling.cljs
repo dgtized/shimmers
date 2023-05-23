@@ -120,7 +120,7 @@
            [:div
             (ctrl/checkbox ui-settings "Show Scene" [:show-scene])
             (ctrl/checkbox ui-settings "Show Borders" [:show-borders])]
-           (palette/as-svg {:width 250 :height 12} palette)]
+           [palette/as-svg {} palette]]
           [:p]
           [:div.explanation
            [:div.flexcols

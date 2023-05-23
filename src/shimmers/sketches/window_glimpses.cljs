@@ -247,7 +247,7 @@
         [:div.flexcols {:style {:justify-content :space-evenly}}
          [view-sketch/generate :window-glimpses]
          [:div {:style {:display :flex :align-items :center}}
-          [palette/as-svg {:width 250 :height 12} palette]]]]])))
+          [palette/as-svg {} palette]]]]])))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
