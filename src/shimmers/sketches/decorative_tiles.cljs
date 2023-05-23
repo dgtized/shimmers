@@ -229,6 +229,11 @@
          [:div.canvas-frame [scene (take depth plan) settings]]
          [:div.contained
           [:div.flexcols
+           [:div
+            [:p.center (view-sketch/generate :decorative-tiles)]
+            [:p.center "Recursively layer regular polygons on each outward face."]
+            (when color-tiles
+              [palette/as-svg {:class "center" :width 250 :height 12} palette])]
            (ctrl/container
             [:p]
             (ctrl/slider ui-state (fn [x] (str "Recursion Depth " x))
@@ -242,13 +247,7 @@
             (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size])
             (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
-            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))
-           [:div
-            [:p.center (view-sketch/generate :decorative-tiles)]
-            [:p.center "Recursively layer regular polygons on each outward face."]
-            (when color-tiles
-              [palette/as-svg {:class "center" :width (* 40 (count palette)) :height 30}
-               palette])]]]]))))
+            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))]]]))))
 
 (sketch/definition decorative-tiles
   {:created-at "2023-01-20"
