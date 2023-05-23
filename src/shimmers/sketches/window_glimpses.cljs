@@ -166,8 +166,13 @@
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         theta2 (dr/gaussian (/ (+ theta0 theta1) 2) (/ eq/TAU 16))
+
+        line-density (dr/gaussian (* width 0.08) 6.0)
+        hatch-density (dr/gaussian (* width 0.03) 2.5)
+        cross-density (dr/gaussian (* width 0.015) 1.5)
+
         boxes (generate bounds gen-box 20)
-        lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
+        lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
         [as bs] (if (dr/chance 0.75)
                   [boxes circles]
@@ -181,11 +186,11 @@
                     (if (dr/chance 0.15)
                       (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
-                (clip/hatch-rectangle bounds (* width 0.03) theta1))
+                (clip/hatch-rectangle bounds hatch-density theta1))
 
         crossed
         (clip-lines-to-shapes
-         (clip/hatch-rectangle bounds (* width 0.015) theta2)
+         (clip/hatch-rectangle bounds cross-density theta2)
          (filter (fn [s] (:cross (meta s))) clipped-bs))]
     [(csvg/group {:fill background
                   :stroke-width 1.5}
