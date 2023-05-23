@@ -161,15 +161,16 @@
         (clip-lines-to-shapes
          (clip/hatch-rectangle bounds (* width 0.015) theta2)
          (filter (fn [s] (:cross (meta s))) clipped-bs))]
-    (concat
-     (-> as
-         (mass-vary :stroke-width 1.5)
-         (mass-vary :fill background))
-     clipped-bs
-     (mass-vary (mapcat (fn [line] (separate line as)) lines)
-                :stroke-width 0.5)
-     (mass-vary inner-lines :stroke-width 0.5)
-     (mass-vary crossed :stroke-width 0.125))))
+    [(csvg/group {:fill background
+                  :stroke-width 1.5}
+       as)
+     (csvg/group {} clipped-bs)
+     (csvg/group {:stroke-width 0.5}
+       (mapcat (fn [line] (separate line as)) lines))
+     (csvg/group {:stroke-width 0.5}
+       inner-lines)
+     (csvg/group {:stroke-width 0.125}
+       crossed)]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
