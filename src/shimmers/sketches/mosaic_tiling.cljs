@@ -110,7 +110,7 @@
   (let [{:keys [seed n palette operations] :as config} (scene-options)]
     (fn []
       (let [{:keys [show-scene]} @ui-settings]
-        [:div
+        [:<>
          (if show-scene
            [:div.canvas-frame [scene 1024 config]]
            [examples seed])
