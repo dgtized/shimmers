@@ -236,7 +236,7 @@
 (defn page []
   (let [palette (pick-palette)]
     (fn []
-      [:div
+      [:<>
        [:div.canvas-frame [scene palette]]
        [:div.contained
         [palette/as-svg {:class "center" :height 10} palette]
