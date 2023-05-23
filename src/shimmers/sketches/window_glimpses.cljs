@@ -10,12 +10,14 @@
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.utils.intersect :as isec]
@@ -31,12 +33,21 @@
     existing
     (conj existing shape)))
 
+(defn parallelogram [rect angle]
+  (let [[a b c _d] (g/vertices rect)
+        bc (g/dist b c)]
+    (gp/polygon2 [a b (v/+polar b bc angle) (v/+polar a bc angle)])))
+
 (defn gen-box [{[width height] :size :as bounds} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
-        poly (rect/rect (dr/random-int 0 (- width w))
+        rect (rect/rect (dr/random-int 0 (- width w))
                         (dr/random-int 0 (- height h))
                         w h)
+        poly (if (dr/chance 0.05)
+               (let [angle (* (dr/rand-nth [1 -1]) (dr/random 2 4))]
+                 (parallelogram rect (/ Math/PI angle)))
+               rect)
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
