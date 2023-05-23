@@ -96,12 +96,14 @@
   (let [polygons (filter (partial collide/overlaps? line) shapes)]
     (if (empty? polygons)
       [line]
-      (map gl/line2
-           (partition 2 2 (concat [rp]
-                                  (->> polygons
-                                       (mapcat g/edges)
-                                       (intersecting-points rp rq))
-                                  [rq]))))))
+      (->>
+       (concat [rp]
+               (->> polygons
+                    (mapcat g/edges)
+                    (intersecting-points rp rq))
+               [rq])
+       (partition 2 2)
+       (map gl/line2)))))
 
 (defn mass-vary [shapes field value]
   (map (fn [s] (vary-meta s assoc field value))
