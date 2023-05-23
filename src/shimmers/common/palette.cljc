@@ -39,7 +39,7 @@
            (-> rect
                (g/translate (tm/* (gv/vec2 idx 0) (gv/vec2 cell 0)))
                (with-meta {:fill (str color)}))))]
-      [:p])))
+      (csvg/svg {:class class :width width :height height}))))
 
 (defn named-url [[name url]]
   {:name name
