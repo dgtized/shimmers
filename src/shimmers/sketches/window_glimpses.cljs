@@ -244,10 +244,9 @@
       [:<>
        [:div.canvas-frame [scene palette]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly}}
+        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :window-glimpses]
-         [:div {:style {:display :flex :align-items :center}}
-          [palette/as-svg {} palette]]]]])))
+         [palette/as-svg {} palette]]]])))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
