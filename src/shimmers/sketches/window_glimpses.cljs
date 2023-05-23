@@ -179,7 +179,8 @@
     [(csvg/group {:fill background
                   :stroke-width 1.5}
        as)
-     (csvg/group {} clipped-bs)
+     (csvg/group {}
+       (map (fn [s] (vary-meta s dissoc :cross)) clipped-bs))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line as)) lines))
      (csvg/group {:stroke-width 0.5}
