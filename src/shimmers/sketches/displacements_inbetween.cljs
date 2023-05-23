@@ -147,27 +147,24 @@
   (let [shapes (->> (lines (dr/shuffle (into palette (repeat 2 "white"))))
                     (fit-region screen)
                     #_(debug/time-it defo [:time :generate]))]
-    (csvg/svg {:width width
-               :height height
-               :stroke "black"
-               :stroke-opacity 0.8
-               :stroke-width 1.0}
-      shapes)))
-
-(defn ui-controls [palette]
-  [:div
-   "Palette"
-   (palette/as-svg {:width (* 60 (count palette)) :height 40}
-                   palette)
-   #_(debug/pre-edn @defo)])
+    (csvg/timed
+     (csvg/svg {:width width
+                :height height
+                :stroke "black"
+                :stroke-opacity 0.8
+                :stroke-width 1.0}
+       shapes))))
 
 (defn page []
   (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
         palette (dr/rand-nth palettes)]
-    (view-sketch/static-page
-     (fn [] (csvg/timed (scene screen palette)))
-     :displacements-inbetween
-     (partial ui-controls palette))))
+    [:<>
+     [:div.canvas-frame [scene screen palette]]
+     [:div.contained
+      [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+       [view-sketch/generate :displacements-inbetween]
+       [palette/as-svg {:width 250 :height 12} palette]]
+      #_(debug/pre-edn @defo)]]))
 
 (sketch/definition displacements-inbetween
   {:created-at "2021-11-13"
