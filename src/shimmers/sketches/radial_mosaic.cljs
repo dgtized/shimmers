@@ -123,19 +123,18 @@
 (defn page []
   (let [{:keys [palette] :as params} (mosaic-params)]
     (fn []
-      [:div
+      [:<>
        [:div.canvas-frame
         (csvg/svg-timed {:id "scene"
                          :width width
                          :height height}
           [(scene params)])
         [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-mosaic")]]
-       [:p.center (view-sketch/generate :radial-mosaic)]
-       [palette/as-svg {:class "center"
-                        :width (* 40 (count palette))
-                        :height 30}
-        palette]
-       #_(ctrl/checkbox settings "Dispersion" [:dispersion])])))
+       [:div.contained
+        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+         [view-sketch/generate :radial-mosaic]
+         [palette/as-svg {:width 250 :height 12} palette]]
+        #_(ctrl/checkbox settings "Dispersion" [:dispersion])]])))
 
 (sketch/definition radial-mosaic
   {:created-at "2021-05-15"
