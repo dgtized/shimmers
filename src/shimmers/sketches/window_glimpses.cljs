@@ -152,7 +152,7 @@
         boxes (generate bounds gen-box 20)
         lines (clip/hatch-rectangle bounds (* width 0.08) theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
-        [as bs] (if (dr/chance 0.66)
+        [as bs] (if (dr/chance 0.75)
                   [boxes circles]
                   [circles boxes])
         bs (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
