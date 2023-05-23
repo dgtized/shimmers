@@ -17,6 +17,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]))
 
@@ -33,10 +34,9 @@
 (defn gen-box [{[width height] :size :as bounds} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
-        poly (g/as-polygon
-              (rect/rect (dr/random-int 0 (- width w))
-                         (dr/random-int 0 (- height h))
-                         w h))
+        poly (rect/rect (dr/random-int 0 (- width w))
+                        (dr/random-int 0 (- height h))
+                        w h)
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
@@ -58,10 +58,15 @@
        (take-while (fn [s] (< (count s) n)))
        last))
 
+(defn smooth-poly [s]
+  (if (instance? Circle2 s)
+    (g/as-polygon s 64)
+    (g/as-polygon s)))
+
 (defn clipped [shape shapes]
   (for [s shapes
         :when (collide/overlaps? shape s)]
-    (with-meta (g/clip-with shape s) (meta s))))
+    (with-meta (g/clip-with (smooth-poly shape) (smooth-poly s)) (meta s))))
 
 (defn intersecting-points
   "Finds all intersection points along a line through a set of edges sorted by
@@ -100,9 +105,9 @@
 
 (defn swap-triangles [circles n]
   (let [[triangles circles'] (split-at n (dr/shuffle circles))]
-    (concat (map (fn [c] (g/as-polygon (triangle/inscribed-equilateral c (dr/random-tau))))
+    (concat (map (fn [c] (triangle/inscribed-equilateral c (dr/random-tau)))
                  triangles)
-            (map (fn [c] (g/as-polygon c 64)) circles'))))
+            circles')))
 
 (defn dashed-line [line pattern]
   (->> pattern
