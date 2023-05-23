@@ -66,7 +66,11 @@
 (defn clipped [shape shapes]
   (for [s shapes
         :when (collide/overlaps? shape s)]
-    (with-meta (g/clip-with (smooth-poly shape) (smooth-poly s)) (meta s))))
+    (with-meta
+      (if (collide/bounded? s shape)
+        shape
+        (g/clip-with (smooth-poly shape) (smooth-poly s)))
+      (meta s))))
 
 (defn intersecting-points
   "Finds all intersection points along a line through a set of edges sorted by

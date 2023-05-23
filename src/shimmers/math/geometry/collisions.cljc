@@ -181,6 +181,10 @@
   (every? (fn [p] (g/contains-point? bounds p)) (g/vertices poly)))
 
 (defmethod bounded?
+  [Rect2 Triangle2] [bounds poly]
+  (every? (fn [p] (g/contains-point? bounds p)) (g/vertices poly)))
+
+(defmethod bounded?
   [Rect2 Circle2] [bounds circle]
   (every? (fn [p] (g/contains-point? bounds p))
           (g/vertices (g/bounds circle))))
@@ -222,3 +226,15 @@
 (defmethod bounded?
   [Polygon2 Vec2] [bounds point]
   (g/contains-point? bounds point))
+
+;; FIXME: concave polygons might clip into a circle or triangle while stil
+;; containing all bounding points
+(defmethod bounded?
+  [Polygon2 Triangle2] [bounds triangle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices triangle)))
+
+(defmethod bounded?
+  [Polygon2 Circle2] [bounds circle]
+  (every? (fn [p] (g/contains-point? bounds p))
+          (g/vertices (g/bounds circle))))
