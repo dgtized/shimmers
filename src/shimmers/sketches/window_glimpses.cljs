@@ -89,6 +89,7 @@
        (map first)))
 
 ;; FIXME: this only works for convex shapes
+;; FIXME: adjust point intersection logic for circles instead of always using edges
 (defn separate
   "Clips a line with shapes, such that it returns the set of lines that are not
   contained within the shapes. "
@@ -99,7 +100,10 @@
       (->>
        (concat [rp]
                (->> polygons
-                    (mapcat g/edges)
+                    (mapcat (fn [s]
+                              (if (instance? Circle2 s)
+                                (g/edges s 64)
+                                (g/edges s))))
                     (intersecting-points rp rq))
                [rq])
        (partition 2 2)
