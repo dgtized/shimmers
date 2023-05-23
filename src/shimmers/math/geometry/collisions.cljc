@@ -227,14 +227,31 @@
   [Polygon2 Vec2] [bounds point]
   (g/contains-point? bounds point))
 
-;; FIXME: concave polygons might clip into a circle or triangle while stil
-;; containing all bounding points
+;; FIXME: optimize better for concave shapes?
 (defmethod bounded?
   [Polygon2 Triangle2] [bounds triangle]
-  (every? (fn [p] (g/contains-point? bounds p))
-          (g/vertices triangle)))
+  (and (every? (fn [p] (g/contains-point? bounds p))
+               (g/vertices triangle))
+       (not-any? (fn [p] (g/contains-point? triangle p))
+                 (g/vertices bounds))))
+
+(defmethod bounded?
+  [Polygon2 Rect2] [bounds rect]
+  (and (every? (fn [p] (g/contains-point? bounds p))
+               (g/vertices rect))
+       (not-any? (fn [p] (g/contains-point? rect p))
+                 (g/vertices bounds))))
 
 (defmethod bounded?
   [Polygon2 Circle2] [bounds circle]
-  (every? (fn [p] (g/contains-point? bounds p))
-          (g/vertices (g/bounds circle))))
+  (and (every? (fn [p] (g/contains-point? bounds p))
+               (g/vertices (g/bounds circle)))
+       (not-any? (fn [p] (g/contains-point? circle p))
+                 (g/vertices bounds))))
+
+(defmethod bounded?
+  [Polygon2 Polygon2] [bounds poly]
+  (and (every? (fn [p] (g/contains-point? bounds p))
+               (g/vertices poly))
+       (not-any? (fn [p] (g/contains-point? poly p))
+                 (g/vertices bounds))))
