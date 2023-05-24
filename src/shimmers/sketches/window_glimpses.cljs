@@ -58,7 +58,7 @@
                (let [angle (* (dr/rand-nth [1 -1]) (dr/random 2 4))]
                  (parallelogram rect (dr/chance 0.33) (/ Math/PI angle)))
                rect)
-        box (if (dr/chance 0.2)
+        box (if (dr/chance (if affine 0.5 0.2))
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
     (if (collide/bounded? bounds box)
@@ -181,7 +181,7 @@
         hatch-density (dr/gaussian (* width 0.03) 2.5)
         cross-density (dr/gaussian (* width 0.015) 1.5)
 
-        boxes (generate bounds (partial gen-box {:affine (dr/chance 0.5)}) 20)
+        boxes (generate bounds (partial gen-box {:affine (dr/chance 0.33)}) 20)
         lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
         [as bs] (if (dr/chance 0.75)
