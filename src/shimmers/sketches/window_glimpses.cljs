@@ -21,7 +21,8 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.types :refer [Circle2]]
    [thi.ng.geom.utils.intersect :as isec]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -33,20 +34,29 @@
     existing
     (conj existing shape)))
 
-(defn parallelogram [rect angle]
-  (let [[a b c _d] (g/vertices rect)
-        bc (g/dist b c)]
-    (gp/polygon2 [a b (v/+polar b bc angle) (v/+polar a bc angle)])))
+(defn parallelogram [rect upper-left angle]
+  (let [[a b c d] (g/vertices rect)
+        a-b (g/dist a b)
+        b-c (g/dist b c)]
+    (if upper-left
+      (gp/polygon2 [a
+                    b
+                    (v/+polar b b-c angle)
+                    (v/+polar a b-c angle)])
+      (gp/polygon2 [a
+                    (v/+polar a a-b (- angle tm/HALF_PI))
+                    (v/+polar d a-b (- angle tm/HALF_PI))
+                    d]))))
 
-(defn gen-box [{[width height] :size :as bounds} existing]
+(defn gen-box [{:keys [affine]} {[width height] :size :as bounds} existing]
   (let [w (dr/random-int (* 0.04 width) (int (* 0.44 width)))
         h (dr/random-int (* 0.04 height) (int (* 0.44 height)))
         rect (rect/rect (dr/random-int 0 (- width w))
                         (dr/random-int 0 (- height h))
                         w h)
-        poly (if (dr/chance 0.05)
+        poly (if (dr/chance (if affine 0.5 0.05))
                (let [angle (* (dr/rand-nth [1 -1]) (dr/random 2 4))]
-                 (parallelogram rect (/ Math/PI angle)))
+                 (parallelogram rect (dr/chance 0.33) (/ Math/PI angle)))
                rect)
         box (if (dr/chance 0.2)
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
@@ -171,7 +181,7 @@
         hatch-density (dr/gaussian (* width 0.03) 2.5)
         cross-density (dr/gaussian (* width 0.015) 1.5)
 
-        boxes (generate bounds gen-box 20)
+        boxes (generate bounds (partial gen-box {:affine (dr/chance 0.5)}) 20)
         lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
         [as bs] (if (dr/chance 0.75)
