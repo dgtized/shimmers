@@ -168,7 +168,6 @@
 
 (comment (dashed-line (gl/line2 0 0 0 10) [1 2 3]))
 
-
 (defn separate-palette [palette]
   (if (seq palette)
     (let [background (dr/weighted-by (comp col/luminance col/hex->int) palette)]
@@ -230,9 +229,10 @@
        inner-lines)
      (csvg/group {:stroke-width 0.125}
        crossed)
-     (csvg/group {:stroke-width 1.5 :stroke "#333333"}
-       (mapcat (comp (partitioned-arcs as) triangle-arc)
-               (filter (fn [x] (instance? Triangle2 x)) bs)))]))
+     (csvg/group {:stroke-width 0.9}
+       (mapcat (fn [l] (dashed-line l [3 1 4]))
+               (mapcat (comp (partitioned-arcs as) triangle-arc)
+                       (filter (fn [x] (instance? Triangle2 x)) bs))))]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
