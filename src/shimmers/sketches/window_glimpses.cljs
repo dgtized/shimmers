@@ -145,7 +145,8 @@
 ;; FIXME: need to extend to closest point on the clipping window, leaves gaps sometimes
 (defn partitioned-arcs [windows]
   (fn [arc]
-    (let [point-in-window? (fn [p] (some (fn [window] (g/contains-point? window p)) windows))]
+    (let [overlapping (filter (fn [w] (collide/overlaps? (g/bounds arc) w))  windows)
+          point-in-window? (fn [p] (some (fn [window] (g/contains-point? window p)) overlapping))]
       (->> (g/vertices arc 32)
            (partition-by point-in-window?)
            (filter (fn [pts] (point-in-window? (first pts))))
