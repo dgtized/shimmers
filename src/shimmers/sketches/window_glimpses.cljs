@@ -137,8 +137,8 @@
 
 (defn triangle-arc [triangle]
   (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
-        ct 0.83]
-    (-> (bezier/auto-spline2 [(tm/mix a b ct) (tm/mix b c 0.5) (tm/mix a c ct)])
+        ct 0.80]
+    (-> (bezier/auto-spline2 [(tm/mix a b ct) (tm/mix a (tm/mix b c 0.5) 0.95) (tm/mix a c ct)])
         (g/vertices 10)
         (gl/linestrip2))))
 
