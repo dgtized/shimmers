@@ -1,10 +1,12 @@
 (ns shimmers.math.geometry.arc
   (:require
+   [shimmers.common.svg :as csvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -51,7 +53,13 @@
     (v/+polar p r (dr/random t0 t1)))
   (random-point-inside [_]
     (v/+polar p (* r (Math/sqrt (dr/random)))
-              (dr/random t0 t1))))
+              (dr/random t0 t1)))
+
+  svg/ISVGConvert
+  (as-svg [_ opts]
+    (csvg/path [[:M (v/+polar p r t0)]
+                [:A [r r] 0.0 0 1 (v/+polar p r t1)]]
+               opts)))
 
 (defn arc
   ([t0 t1] (->Arc (gv/vec2) 1.0 t0 t1))

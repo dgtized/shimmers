@@ -8,6 +8,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
@@ -19,7 +20,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.types :refer [Circle2]]
+   [thi.ng.geom.types :refer [Circle2 Triangle2]]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -134,6 +135,11 @@
   (map (fn [s] (vary-meta s assoc field value))
        shapes))
 
+(defn triangle-arc [triangle]
+  (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
+        r (g/dist a (tm/mix b c 0.5))]
+    (arc/arc a (* 0.95 r) (g/heading (tm/- b a)) (g/heading (tm/- c a)))))
+
 (defn swap-triangles [circles n]
   (let [[triangles circles'] (split-at n (dr/shuffle circles))]
     (concat (map (fn [c] (triangle/inscribed-equilateral c (dr/random-tau)))
@@ -212,7 +218,9 @@
      (csvg/group {:stroke-width 0.5}
        inner-lines)
      (csvg/group {:stroke-width 0.125}
-       crossed)]))
+       crossed)
+     #_(csvg/group {}
+         (map triangle-arc (filter (fn [x] (instance? Triangle2 x)) bs)))]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
