@@ -8,13 +8,13 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
-   [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
+   [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -137,8 +137,19 @@
 
 (defn triangle-arc [triangle]
   (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
-        r (g/dist a (tm/mix b c 0.5))]
-    (arc/arc a (* 0.95 r) (g/heading (tm/- b a)) (g/heading (tm/- c a)))))
+        ct 0.83]
+    (-> (bezier/auto-spline2 [(tm/mix a b ct) (tm/mix b c 0.5) (tm/mix a c ct)])
+        (g/vertices 10)
+        (gl/linestrip2))))
+
+;; FIXME: need to extend to closest point on the clipping window, leaves gaps sometimes
+(defn partitioned-arcs [windows]
+  (fn [arc]
+    (let [point-in-window? (fn [p] (some (fn [window] (g/contains-point? window p)) windows))]
+      (->> (g/vertices arc 32)
+           (partition-by point-in-window?)
+           (filter (fn [pts] (point-in-window? (first pts))))
+           (map (fn [pts] (gl/linestrip2 pts)))))))
 
 (defn swap-triangles [circles n]
   (let [[triangles circles'] (split-at n (dr/shuffle circles))]
@@ -219,8 +230,9 @@
        inner-lines)
      (csvg/group {:stroke-width 0.125}
        crossed)
-     #_(csvg/group {}
-         (map triangle-arc (filter (fn [x] (instance? Triangle2 x)) bs)))]))
+     (csvg/group {:stroke-width 1.5 :stroke "#333333"}
+       (mapcat (comp (partitioned-arcs as) triangle-arc)
+               (filter (fn [x] (instance? Triangle2 x)) bs)))]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
