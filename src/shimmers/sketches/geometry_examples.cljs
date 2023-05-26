@@ -4,11 +4,15 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.polygon :as gp]))
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn mark-centroids [shapes]
   (for [s shapes]
@@ -81,6 +85,23 @@
    (when description
      [:p description])])
 
+(defn inset-arc-example []
+  (let [width 400 height 200
+        triangle (triangle/inscribed-equilateral (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.45)) Math/PI)
+        [c a b] (g/vertices triangle)
+        mid-bc (tm/mix b c 0.5)
+        p (tm/mix a mid-bc 0.33)
+        r (g/dist p mid-bc)
+        ap (/ (g/dist a p) tm/SQRT2)
+        isec-ab (v/+polar a (+ r ap) (g/heading (tm/- b a)))
+        isec-ac (v/+polar a (+ r ap) (g/heading (tm/- c a)))]
+    (csvg/svg {:width width :height height :stroke "black" :fill "none"}
+      (concat [triangle
+               (csvg/path [[:M isec-ab]
+                           [:A [r r] 0.0 0.0 1.0 isec-ac]])]
+              (for [c [a mid-bc p isec-ab isec-ac]]
+                (gc/circle c 2.0))))))
+
 (defn page []
   [:div.contained.explanation
    [:div
@@ -91,7 +112,11 @@
     (into [:div {}] (mapv show-example (cut-polygon-examples)))]
    [:div
     [:h2 "Clip lines to segments inside of a polygon"]
-    (into [:div {}] (mapv show-example (clip-line-examples)))]])
+    (into [:div {}] (mapv show-example (clip-line-examples)))]
+   [:div
+    [:h2 "Inset arc in triangle"]
+    [:p "WIP but thought a diagram example would help"]
+    (inset-arc-example)]])
 
 (sketch/definition geometry-examples
   {:created-at "2022-05-05"
