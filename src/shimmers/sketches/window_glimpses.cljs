@@ -201,15 +201,16 @@
         boxes (generate bounds (partial gen-box {:affine (dr/chance 0.33)}) 20)
         lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 16) (dr/random-int 4))
-        [as bs] (if (dr/chance 0.75)
-                  [boxes circles]
-                  [circles boxes])
-        bs (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
-                                  :cross (dr/chance 0.08))) bs)
-        clipped-bs (mapcat (fn [a] (clipped a bs)) as)
+        [windows shapes] (if (dr/chance 0.75)
+                           [boxes circles]
+                           [circles boxes])
+        shapes (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
+                                      :cross (dr/chance 0.08)))
+                    shapes)
+        clipped-shapes (mapcat (fn [window] (clipped window shapes)) windows)
         inner-lines
         (mapcat (fn [line]
-                  (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-bs)]
+                  (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-shapes)]
                     (if (dr/chance 0.15)
                       (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
@@ -218,22 +219,22 @@
         crossed
         (clip-lines-to-shapes
          (clip/hatch-rectangle bounds cross-density theta2)
-         (filter (fn [s] (:cross (meta s))) clipped-bs))]
+         (filter (fn [s] (:cross (meta s))) clipped-shapes))]
     [(csvg/group {:fill background
                   :stroke-width 1.5}
-       as)
+       windows)
      (csvg/group {}
-       (map (fn [s] (vary-meta s dissoc :cross)) clipped-bs))
+       (map (fn [s] (vary-meta s dissoc :cross)) clipped-shapes))
      (csvg/group {:stroke-width 0.5}
-       (mapcat (fn [line] (separate line as)) lines))
+       (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5}
        inner-lines)
      (csvg/group {:stroke-width 0.125}
        crossed)
      (csvg/group {:stroke-width 0.9}
        (mapcat (fn [l] (dashed-line l [3 1 4]))
-               (mapcat (comp (partitioned-arcs as) triangle-arc)
-                       (filter (fn [x] (instance? Triangle2 x)) bs))))]))
+               (mapcat (comp (partitioned-arcs windows) triangle-arc)
+                       (filter (fn [x] (instance? Triangle2 x)) shapes))))]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
