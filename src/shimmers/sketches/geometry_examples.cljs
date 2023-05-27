@@ -100,7 +100,13 @@
     (csvg/svg {:width width :height height :stroke "black" :fill "none"}
       (concat [triangle
                (csvg/path [[:M isec-ab]
-                           [:A [r r] 0.0 0.0 1.0 isec-ac]])]
+                           [:A [r r] 0.0 0.0 1.0 isec-ac]])
+               (csvg/path [[:M p] [:L mid-bc]] {:id "p-mid-bc"})
+               [:text [:textPath {:href "#p-mid-bc" :startOffset "50%"} [:tspan {:dy "-0.25em"} "r"]]]
+               (csvg/path [[:M p] [:L isec-ab]] {:id "p-isec-ab"})
+               [:text [:textPath {:href "#p-isec-ab" :startOffset "50%"} [:tspan {:dy "-0.25em"} "r"]]]
+               (csvg/path [[:M p] [:L isec-ac]] {:id "p-isec-ac"})
+               [:text [:textPath {:href "#p-isec-ac" :startOffset "50%"} [:tspan {:dy "-0.25em"} "r"]]]]
               (for [c [a mid-bc p isec-ab isec-ac]]
                 (gc/circle c 2.0))))))
 
