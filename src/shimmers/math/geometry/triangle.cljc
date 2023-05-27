@@ -29,6 +29,9 @@
     (v/+polar p r angle)
     (v/+polar p r (+ angle (/ eq/TAU 3))))))
 
+(defn law-of-cosines [b c alpha]
+  (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c)) (* 2 b c (Math/cos alpha)))))
+
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
 ;; https://stackoverflow.com/questions/47410054/generate-random-locations-within-a-triangular-domain/47418580#47418580

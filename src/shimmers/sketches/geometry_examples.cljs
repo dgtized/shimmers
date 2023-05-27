@@ -90,11 +90,13 @@
         triangle (triangle/inscribed-equilateral (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.45)) Math/PI)
         [c a b] (g/vertices triangle)
         mid-bc (tm/mix b c 0.5)
-        p (tm/mix a mid-bc 0.33)
+        p (tm/mix a mid-bc 0.5)
         r (g/dist p mid-bc)
-        ap (/ (g/dist a p) tm/SQRT2)
-        isec-ab (v/+polar a (+ r ap) (g/heading (tm/- b a)))
-        isec-ac (v/+polar a (+ r ap) (g/heading (tm/- c a)))]
+        ap (g/dist a p)
+        c-angle (Math/asin (* (Math/sin (/ Math/PI 6)) (/ ap r)))
+        proj (triangle/law-of-cosines r ap (- Math/PI (/ Math/PI 6) c-angle))
+        isec-ab (v/+polar a proj (g/heading (tm/- b a)))
+        isec-ac (v/+polar a proj (g/heading (tm/- c a)))]
     (csvg/svg {:width width :height height :stroke "black" :fill "none"}
       (concat [triangle
                (csvg/path [[:M isec-ab]
@@ -115,7 +117,9 @@
     (into [:div {}] (mapv show-example (clip-line-examples)))]
    [:div
     [:h2 "Inset arc in triangle"]
-    [:p "WIP but thought a diagram example would help"]
+    [:p "Given an equilateral triangle pick an inner point along an axis, and
+    then draw an arc with radius the distance between the point and the midpoint
+    of the opposing face. "]
     (inset-arc-example)]])
 
 (sketch/definition geometry-examples
