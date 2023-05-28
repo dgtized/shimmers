@@ -29,8 +29,10 @@
     (v/+polar p r angle)
     (v/+polar p r (+ angle (/ eq/TAU 3))))))
 
+;; https://en.wikipedia.org/wiki/Law_of_cosines
 (defn law-of-cosines [b c alpha]
-  (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c)) (* 2 b c (Math/cos alpha)))))
+  (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c))
+                (* 2 b c (Math/cos alpha)))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
