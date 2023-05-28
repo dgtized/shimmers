@@ -94,7 +94,7 @@
         r (g/dist p mid-bc)
         ap (g/dist a p)
         c-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
-        proj (triangle/law-of-cosines r ap (- Math/PI (/ Math/PI 6) c-angle))
+        proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) c-angle))
         isec-ab (v/+polar a proj (g/heading (tm/- b a)))
         isec-ac (v/+polar a proj (g/heading (tm/- c a)))]
     (csvg/svg {:width width :height height :stroke "black" :fill "none"}

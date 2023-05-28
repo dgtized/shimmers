@@ -43,9 +43,18 @@
   (* (Math/sin beta) (/ (Math/sin alpha) a)))
 
 ;; https://en.wikipedia.org/wiki/Law_of_cosines
-(defn law-of-cosines [b c alpha]
+(defn law-of-cosines-side
+  "Given a triangle with sides `b`, `c`, and opposing angle `alpha`, return length
+  of side `c`."
+  [b c alpha]
   (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c))
                 (* 2 b c (Math/cos alpha)))))
+
+(defn law-of-cosines-angle
+  "Angle of a triangle given three sides?"
+  [a b c]
+  (Math/acos (/ (+ (eq/sqr a) (eq/sqr b) (- (eq/sqr c)))
+                (* 2 a b))))
 
 ;; Kraemer Method
 ;; http://extremelearning.com.au/evenly-distributing-points-in-a-triangle/
