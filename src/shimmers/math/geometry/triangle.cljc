@@ -29,6 +29,9 @@
     (v/+polar p r angle)
     (v/+polar p r (+ angle (/ eq/TAU 3))))))
 
+(defn law-of-sines-angle [a alpha b]
+  (Math/asin (* (Math/sin alpha) (/ b a))))
+
 ;; https://en.wikipedia.org/wiki/Law_of_cosines
 (defn law-of-cosines [b c alpha]
   (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c))
