@@ -36,6 +36,12 @@
   [alpha a b]
   (Math/asin (* (Math/sin alpha) (/ b a))))
 
+(defn law-of-sines-side
+  "Given angle `alpha` and opposite side length `a`, and another angle `beta`,
+  find the opposing side length `b`."
+  [alpha a beta]
+  (* (Math/sin beta) (/ (Math/sin alpha) a)))
+
 ;; https://en.wikipedia.org/wiki/Law_of_cosines
 (defn law-of-cosines [b c alpha]
   (Math/sqrt (- (+ (eq/sqr b) (eq/sqr c))
