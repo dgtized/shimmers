@@ -29,7 +29,11 @@
     (v/+polar p r angle)
     (v/+polar p r (+ angle (/ eq/TAU 3))))))
 
-(defn law-of-sines-angle [a alpha b]
+;; https://en.wikipedia.org/wiki/Law_of_sines
+(defn law-of-sines-angle
+  "Given angle `alpha`, and opposite side length `a`, and another side `b`, find
+  the opposite angle `beta`."
+  [alpha a b]
   (Math/asin (* (Math/sin alpha) (/ b a))))
 
 ;; https://en.wikipedia.org/wiki/Law_of_cosines

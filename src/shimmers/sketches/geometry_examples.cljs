@@ -93,7 +93,7 @@
         p (tm/mix a mid-bc 0.5)
         r (g/dist p mid-bc)
         ap (g/dist a p)
-        c-angle (triangle/law-of-sines-angle r (/ Math/PI 6) ap)
+        c-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
         proj (triangle/law-of-cosines r ap (- Math/PI (/ Math/PI 6) c-angle))
         isec-ab (v/+polar a proj (g/heading (tm/- b a)))
         isec-ac (v/+polar a proj (g/heading (tm/- c a)))]
