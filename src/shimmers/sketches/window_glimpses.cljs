@@ -14,7 +14,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.color.core :as col]
-   [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -140,7 +139,6 @@
 
 (defn circle-arc [{:keys [p r]} t0 t1 n]
   (let [[a0 a1] (if (< t0 t1) [t0 t1] [t0 (+ eq/TAU t1)])]
-    (println a0 a1)
     (for [x (tm/norm-range n)]
       (let [t (tm/mix* a0 a1 x)]
         (v/+polar p r t)))))
