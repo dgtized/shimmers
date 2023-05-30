@@ -135,12 +135,31 @@
   (map (fn [s] (vary-meta s assoc field value))
        shapes))
 
+(defn heading-to [p q]
+  (g/heading (tm/- q p)))
+
+(defn circle-arc [{:keys [p r]} t0 t1 n]
+  (let [[a0 a1] (if (< t0 t1) [t0 t1] [t0 (+ eq/TAU t1)])]
+    (println a0 a1)
+    (for [x (tm/norm-range n)]
+      (let [t (tm/mix* a0 a1 x)]
+        (v/+polar p r t)))))
+
 (defn triangle-arc [triangle]
   (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
-        ct 0.80]
-    (-> (bezier/auto-spline2 [(tm/mix a b ct) (tm/mix a (tm/mix b c 0.5) 0.95) (tm/mix a c ct)])
-        (g/vertices 10)
-        (gl/linestrip2))))
+        mid-bc (tm/mix b c 0.5)
+        p (tm/mix a mid-bc 0.5)
+        r (* (dr/random 0.9 1.0) (g/dist p mid-bc))
+        ap (g/dist a p)
+        a-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
+        proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) a-angle))
+        isec-ab (v/+polar a proj (heading-to a b))
+        isec-ac (v/+polar a proj (heading-to a c))]
+    (-> (gc/circle p r)
+        (circle-arc (heading-to p isec-ab)
+                    (heading-to p isec-ac)
+                    32)
+        gl/linestrip2)))
 
 ;; FIXME: need to extend to closest point on the clipping window, leaves gaps sometimes
 (defn partitioned-arcs [windows]
