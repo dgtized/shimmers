@@ -139,10 +139,11 @@
   (g/heading (tm/- q p)))
 
 (defn triangle-arc [triangle]
-  (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
+  (let [{:keys [selection face-dist]} (meta triangle)
+        [a b c] (take 3 (drop selection (cycle (g/vertices triangle))))
         mid-bc (tm/mix b c 0.5)
         p (tm/mix a mid-bc 0.5)
-        r (* (dr/random 0.9 1.0) (g/dist p mid-bc))
+        r (* face-dist (g/dist p mid-bc))
         ap (g/dist a p)
         a-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
         proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) a-angle))
@@ -176,7 +177,11 @@
 
 (defn swap-triangles [circles n]
   (let [[triangles circles'] (split-at n (dr/shuffle circles))]
-    (concat (map (fn [c] (triangle/inscribed-equilateral c (dr/random-tau)))
+    (concat (map (fn [c]
+                   (-> (triangle/inscribed-equilateral c (dr/random-tau))
+                       (vary-meta assoc
+                                  :selection (dr/random-int 3)
+                                  :face-dist (dr/random 0.9 1.0))))
                  triangles)
             circles')))
 
@@ -211,7 +216,7 @@
 ;; (separate-palette (first (palette/from-urls [palette/orange-maroon-blues])))
 ;; (separate-palette [])
 
-(defn shapes [bounds palette]
+(defn generate-layers [bounds palette]
   (let [[background & palette] (separate-palette palette)
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
@@ -222,26 +227,48 @@
         cross-density (dr/gaussian (* width 0.015) 1.5)
 
         boxes (generate bounds (partial gen-box {:affine (dr/chance 0.33)}) 20)
-        lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 18) (dr/random-int 5))
         [windows shapes] (if (dr/chance 0.8)
                            [boxes circles]
                            [circles boxes])
-        shapes (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
-                                      :cross (dr/chance 0.08)))
-                    shapes)
-        clipped-shapes (mapcat (fn [window] (clipped window shapes)) windows)
+        shapes
+        (map (fn [s] (vary-meta s assoc
+                               :palette-color (dr/random-int (count palette))
+                               :cross (dr/chance 0.08)))
+             shapes)]
+    {:bounds bounds
+     :background background
+     :palette palette
+     :theta1 theta1
+     :theta2 theta2
+     :hatch-density hatch-density
+     :cross-density cross-density
+     :windows windows
+     :shapes shapes
+     :lines
+     (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)])
+     :hatched-lines
+     (map (fn [line] (vary-meta line assoc :dashed (dr/chance 0.15)))
+          (clip/hatch-rectangle bounds hatch-density theta1 [(dr/random) (dr/random)]))
+     :crossed-lines
+     (clip/hatch-rectangle bounds cross-density theta2 [(dr/random) (dr/random)])}))
+
+(defn shapes
+  [{:keys [windows shapes lines crossed-lines hatched-lines
+           background palette]}]
+  (let [clipped-shapes (mapcat (fn [window] (clipped window shapes)) windows)
+
         inner-lines
         (mapcat (fn [line]
                   (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-shapes)]
-                    (if (dr/chance 0.15)
+                    (if (:dashed (meta line))
                       (map (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
-                (clip/hatch-rectangle bounds hatch-density theta1))
+                hatched-lines)
 
         crossed
         (clip-lines-to-shapes
-         (clip/hatch-rectangle bounds cross-density theta2)
+         crossed-lines
          (filter (fn [s] (:cross (meta s))) clipped-shapes))
         arcs (->> shapes
                   (filter (fn [x] (instance? Triangle2 x)))
@@ -251,7 +278,15 @@
                   :stroke-width 1.5}
        windows)
      (csvg/group {}
-       (map (fn [s] (vary-meta s dissoc :cross)) clipped-shapes))
+       (map (fn [s]
+              (let [{:keys [palette-color]} (meta s)
+                    fill (when (seq palette)
+                           (nth palette (mod palette-color (count palette))))
+                    s' (vary-meta s dissoc :cross :palette-color)]
+                (if fill
+                  (vary-meta s' assoc :fill fill)
+                  s')))
+            clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5}
@@ -264,13 +299,13 @@
 ;; higher contrast between color pairs..
 ;; TODO: color a specific strip between two of the inner stripe lines across all
 ;; shapes it's clipped with.
-(defn scene [palette]
-  (csvg/svg-timed {:width width
-                   :height height
+(defn scene [{:keys [bounds] :as layers}]
+  (csvg/svg-timed {:width (g/width bounds)
+                   :height (g/height bounds)
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (shapes (rect/rect 0 0 width height) palette)))
+    (shapes layers)))
 
 (defn pick-palette []
   (->> [:blue-yellow-tan-brown
@@ -290,19 +325,28 @@
         :green-shades]
        palette/by-names
        (map :colors)
-       (concat [[]] ;; no palette
-               [["#ffeedd" "#ddeeff"]])
+       (concat [["#ffeedd" "#ddeeff"]])
        dr/rand-nth))
 
+(defonce ui-state (ctrl/state {:monochrome false}))
+
 (defn page []
-  (let [palette (pick-palette)]
+  (let [palette (pick-palette)
+        bounds (rect/rect 0 0 width height)
+        layers (generate-layers bounds palette)]
     (fn []
       [:<>
-       [:div.canvas-frame [scene palette]]
+       [:div.canvas-frame
+        [scene
+         (if (:monochrome @ui-state)
+           (assoc layers :background "white" :palette [])
+           layers)]]
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :window-glimpses]
-         [palette/as-svg {} palette]]]])))
+         [:div
+          [palette/as-svg {} palette]
+          [ctrl/checkbox ui-state "Monochrome" [:monochrome]]]]]])))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
