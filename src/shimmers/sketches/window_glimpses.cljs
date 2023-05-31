@@ -187,7 +187,8 @@
        (reductions +)
        (take-while (fn [l] (<= l 1.0)))
        (partition 2 2)
-       (map (fn [[a b]] (gl/line2 (g/point-at line a) (g/point-at line b))))))
+       (mapcat (fn [[a b]] [[:M (g/point-at line a)] [:L (g/point-at line b)]]))
+       csvg/path))
 
 (comment (dashed-line (gl/line2 0 0 0 10) [1 2 3]))
 
@@ -234,7 +235,7 @@
         (mapcat (fn [line]
                   (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-shapes)]
                     (if (dr/chance 0.15)
-                      (mapcat (fn [segment] (dashed-line segment [2 3 5])) subset)
+                      (map (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
                 (clip/hatch-rectangle bounds hatch-density theta1))
 
