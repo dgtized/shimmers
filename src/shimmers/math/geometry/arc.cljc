@@ -6,6 +6,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -26,6 +27,14 @@
 
   g/IArea
   (area [_] (* (half-angle _) r r))
+
+  g/IBounds
+  ;; FIXME: this is the circle bounds, tighten to arc bounds?
+  (bounds [_]
+    (rect/rect (tm/- p r) (gv/vec2 (* 2 r))))
+  (width [_] (* 2 r))
+  (height [_] (* 2 r))
+  (depth [_] 0)
 
   g/IBoundary
   (contains-point? [_ q]
