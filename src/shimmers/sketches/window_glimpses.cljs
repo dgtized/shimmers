@@ -224,7 +224,7 @@
         boxes (generate bounds (partial gen-box {:affine (dr/chance 0.33)}) 20)
         lines (clip/hatch-rectangle bounds line-density theta0)
         circles (swap-triangles (generate bounds gen-circle 18) (dr/random-int 5))
-        [windows shapes] (if (dr/chance 0.75)
+        [windows shapes] (if (dr/chance 0.8)
                            [boxes circles]
                            [circles boxes])
         shapes (map (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)
