@@ -139,10 +139,10 @@
   (g/heading (tm/- q p)))
 
 (defn triangle-arc [triangle]
-  (let [{:keys [selection face-dist]} (meta triangle)
-        [a b c] (take 3 (drop selection (cycle (g/vertices triangle))))
+  (let [{:keys [start-vertex face-dist center-pct]} (meta triangle)
+        [a b c] (take 3 (drop start-vertex (cycle (g/vertices triangle))))
         mid-bc (tm/mix b c 0.5)
-        p (tm/mix a mid-bc 0.5)
+        p (tm/mix a mid-bc center-pct)
         r (* face-dist (g/dist p mid-bc))
         ap (g/dist a p)
         a-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
@@ -180,8 +180,9 @@
     (concat (map (fn [c]
                    (-> (triangle/inscribed-equilateral c (dr/random-tau))
                        (vary-meta assoc
-                                  :selection (dr/random-int 3)
-                                  :face-dist (dr/random 0.9 1.0))))
+                                  :start-vertex (dr/random-int 3)
+                                  :face-dist (dr/random 0.9 1.0)
+                                  :center-pct (dr/rand-nth [0.5 0.33 0.25]))))
                  triangles)
             circles')))
 
