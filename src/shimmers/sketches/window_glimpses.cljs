@@ -290,10 +290,8 @@
             clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
-     (csvg/group {:stroke-width 0.5}
-       inner-lines)
-     (csvg/group {:stroke-width 0.125}
-       crossed)
+     (csvg/group {:stroke-width 0.5} inner-lines)
+     (csvg/group {:stroke-width 0.125} crossed)
      (csvg/group {:stroke-width 0.9} arcs)]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
