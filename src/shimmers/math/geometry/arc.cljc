@@ -57,6 +57,8 @@
          (into [p])))
 
   g/ISample
+  (point-at [_ t]
+    (v/+polar p r (tm/mix* t0 t1 t)))
   (random-point [_]
     ;; note, does not include edges to center, just arc surface
     (v/+polar p r (dr/random t0 t1)))
@@ -70,7 +72,11 @@
                 [:A [r r] 0.0 0 1 (v/+polar p r t1)]]
                opts)))
 
+;; Forces arcs to be clockwise from t0 to t1
 (defn arc
-  ([t0 t1] (->Arc (gv/vec2) 1.0 t0 t1))
-  ([r t0 t1] (->Arc (gv/vec2) r t0 t1))
-  ([p r t0 t1] (->Arc p r t0 t1)))
+  ([t0 t1] (arc (gv/vec2) 1.0 t0 t1))
+  ([r t0 t1] (arc (gv/vec2) r t0 t1))
+  ([p r t0 t1]
+   (if (< t0 t1)
+     (->Arc p r t0 t1)
+     (->Arc p r t0 (+ t1 eq/TAU)))))

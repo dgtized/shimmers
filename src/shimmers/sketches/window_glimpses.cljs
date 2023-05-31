@@ -8,6 +8,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
@@ -137,12 +138,6 @@
 (defn heading-to [p q]
   (g/heading (tm/- q p)))
 
-(defn circle-arc [{:keys [p r]} t0 t1 n]
-  (let [[a0 a1] (if (< t0 t1) [t0 t1] [t0 (+ eq/TAU t1)])]
-    (for [x (tm/norm-range n)]
-      (let [t (tm/mix* a0 a1 x)]
-        (v/+polar p r t)))))
-
 (defn triangle-arc [triangle]
   (let [[a b c] (take 3 (drop (dr/random-int 3) (cycle (g/vertices triangle))))
         mid-bc (tm/mix b c 0.5)
@@ -153,21 +148,31 @@
         proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) a-angle))
         isec-ab (v/+polar a proj (heading-to a b))
         isec-ac (v/+polar a proj (heading-to a c))]
-    (-> (gc/circle p r)
-        (circle-arc (heading-to p isec-ab)
-                    (heading-to p isec-ac)
-                    32)
-        gl/linestrip2)))
+    (arc/arc p r (heading-to p isec-ab) (heading-to p isec-ac))))
 
 ;; FIXME: need to extend to closest point on the clipping window, leaves gaps sometimes
 (defn partitioned-arcs [windows]
-  (fn [arc]
+  (fn [{:keys [p r] :as arc}]
     (let [overlapping (filter (fn [w] (collide/overlaps? (g/bounds arc) w))  windows)
           point-in-window? (fn [p] (some (fn [window] (g/contains-point? window p)) overlapping))]
-      (->> (g/vertices arc 32)
+      (->> (g/vertices arc 64)
+           (drop 1)
            (partition-by point-in-window?)
-           (filter (fn [pts] (point-in-window? (first pts))))
-           (map (fn [pts] (gl/linestrip2 pts)))))))
+           (filter (fn [pts] (and (point-in-window? (first pts))
+                                 (not (tm/delta= (first pts) (last pts))))))
+           (map (fn [pts] (arc/arc p r (heading-to p (first pts)) (heading-to p (last pts)))))))))
+
+(defn dashed-arc [pattern]
+  (fn [{:keys [r] :as arc}]
+    (->> pattern
+         cycle
+         (map (fn [x] (/ 1.0 (* 8 x))))
+         (reductions +)
+         (take-while (fn [l] (<= l 1.0)))
+         (partition 2 2)
+         (mapcat (fn [[a b]] [[:M (g/point-at arc a)]
+                             [:A [r r] 0.0 0 1 (g/point-at arc b)]]))
+         csvg/path)))
 
 (defn swap-triangles [circles n]
   (let [[triangles circles'] (split-at n (dr/shuffle circles))]
@@ -236,7 +241,11 @@
         crossed
         (clip-lines-to-shapes
          (clip/hatch-rectangle bounds cross-density theta2)
-         (filter (fn [s] (:cross (meta s))) clipped-shapes))]
+         (filter (fn [s] (:cross (meta s))) clipped-shapes))
+        arcs (->> shapes
+                  (filter (fn [x] (instance? Triangle2 x)))
+                  (mapcat (comp (partitioned-arcs windows) triangle-arc))
+                  (map (dashed-arc [3 1 4])))]
     [(csvg/group {:fill background
                   :stroke-width 1.5}
        windows)
@@ -248,10 +257,7 @@
        inner-lines)
      (csvg/group {:stroke-width 0.125}
        crossed)
-     (csvg/group {:stroke-width 0.9}
-       (mapcat (fn [l] (dashed-line l [3 1 4]))
-               (mapcat (comp (partitioned-arcs windows) triangle-arc)
-                       (filter (fn [x] (instance? Triangle2 x)) shapes))))]))
+     (csvg/group {:stroke-width 0.9} arcs)]))
 
 ;; TODO: curate palettes for this sketch -- dark inner is often weird, and need
 ;; higher contrast between color pairs..
