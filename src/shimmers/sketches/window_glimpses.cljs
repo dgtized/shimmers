@@ -33,6 +33,9 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defonce ui-state (ctrl/state {:monochrome false
+                               :path-points false}))
+
 (defn distinct-shape [scale existing shape]
   (if (some (fn [s] (collide/overlaps? (g/scale-size shape scale) s)) existing)
     existing
@@ -270,6 +273,12 @@
          g/vertices
          (sort-by (fn [v] (heading-to centroid v))))))
 
+(defn debug-chunks [arc-groups]
+  (for [g arc-groups]
+    (csvg/group {}
+      (gc/circle (first g) 1.0)
+      (gc/circle (last g) 1.0))))
+
 (defn arc-path [polygon {:keys [p r]} attribs]
   (let [on-arc? (fn [v] (tm/delta= (g/dist p v) r 0.0001))
         vertices (clockwise-vertices polygon)
@@ -284,14 +293,13 @@
                [[:L (first chunk)]
                 [:A [r r] 0.0 large-arc 1 (last chunk)]])
              (map (fn [v] [:L v]) chunk)))
-         arc-groups)]
-    (csvg/group {:n (count vertices)}
-      (into [(csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
+         arc-groups)
+        path (csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
                         attribs)]
-            (map (fn [g] (csvg/group {}
-                          (gc/circle (first g) 1.0)
-                          (gc/circle (last g) 1.0)))
-                 arc-groups)))))
+    (if (:path-points @ui-state)
+      (csvg/group {:n (count vertices)}
+        (into [path] (debug-chunks arc-groups)))
+      path)))
 
 (defn render-shapes [palette]
   (fn [s]
@@ -375,8 +383,6 @@
        (concat [["#ffeedd" "#ddeeff"]])
        dr/rand-nth))
 
-(defonce ui-state (ctrl/state {:monochrome false}))
-
 (defn page []
   (let [palette (pick-palette)
         bounds (rect/rect 0 0 width height)
@@ -393,7 +399,8 @@
          [view-sketch/generate :window-glimpses]
          [:div
           [palette/as-svg {} palette]
-          [ctrl/checkbox ui-state "Monochrome" [:monochrome]]]]]])))
+          [ctrl/checkbox ui-state "Monochrome" [:monochrome]]
+          [ctrl/checkbox ui-state "Path Points" [:path-points]]]]]])))
 
 (sketch/definition window-glimpses
   {:created-at "2023-05-18"
