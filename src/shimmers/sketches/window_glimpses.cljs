@@ -279,7 +279,7 @@
       (gc/circle (first g) 1.0)
       (gc/circle (last g) 1.0))))
 
-(defn arc-path [polygon {:keys [p r]} attribs]
+(defn arc-path [polygon {:keys [p r]} attribs show-path-points]
   (let [on-arc? (fn [v] (tm/delta= (g/dist p v) r 0.0001))
         vertices (clockwise-vertices polygon)
         arc-groups (partition-by on-arc? vertices)
@@ -296,7 +296,7 @@
          arc-groups)
         path (csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
                         attribs)]
-    (if (:path-points @ui-state)
+    (if show-path-points
       (csvg/group {:n (count vertices)}
         (into [path] (debug-chunks arc-groups)))
       path)))
@@ -306,7 +306,7 @@
              :arc :cross :palette-color
              :start-vertex :face-dist :center-pct))
 
-(defn render-shapes [palette]
+(defn render-shapes [palette show-path-points]
   (fn [s]
     (let [{:keys [arc palette-color]} (meta s)
           fill (when (seq palette)
@@ -314,7 +314,7 @@
           s' (clean-meta s)
           attribs (meta s')]
       (cond (and arc (not (instance? Circle2 s')))
-            (arc-path s' arc (assoc attribs :fill fill))
+            (arc-path s' arc (assoc attribs :fill fill) show-path-points)
             fill
             (vary-meta s' assoc :fill fill)
             :else
@@ -322,7 +322,7 @@
 
 (defn shapes
   [{:keys [windows shapes lines crossed-lines hatched-lines
-           background palette]}]
+           background palette show-path-points]}]
   (let [clipped-shapes
         (->> windows
              (mapcat (fn [window] (clipped window shapes)))
@@ -347,7 +347,7 @@
     [(csvg/group {:fill background
                   :stroke-width 1.5}
        (map clean-meta windows))
-     (csvg/group {} (map (render-shapes palette) clipped-shapes))
+     (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
@@ -394,10 +394,13 @@
     (fn []
       [:<>
        [:div.canvas-frame
-        [scene
-         (if (:monochrome @ui-state)
-           (assoc layers :background "white" :palette [])
-           layers)]]
+        (let [{:keys [monochrome path-points]} @ui-state]
+          [scene
+           (cond-> layers
+             monochrome
+             (assoc :background "white" :palette [])
+             path-points
+             (assoc :show-path-points path-points))])]
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :window-glimpses]
