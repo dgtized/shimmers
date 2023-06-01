@@ -285,15 +285,10 @@
                 [:A [r r] 0.0 large-arc 1 (last chunk)]])
              (map (fn [v] [:L v]) chunk)))
          arc-groups)]
-    (csvg/group {:n (count vertices)
-                 :clockwise (if (poly-detect/clockwise-polygon? vertices) "1" "0")}
+    (csvg/group {:n (count vertices)}
       (into [(csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
                         attribs)]
-            (map (fn [g] (csvg/group {:a0 (heading-to p (first g))
-                                     :av (heading-to p (cs/middle g))
-                                     :a1 (heading-to p (last g))
-                                     :n (count g)
-                                     :arc (if (on-arc? (first g)) "1" "0")}
+            (map (fn [g] (csvg/group {}
                           (gc/circle (first g) 1.0)
                           (gc/circle (last g) 1.0)))
                  arc-groups)))))
