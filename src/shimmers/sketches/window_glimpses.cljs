@@ -2,9 +2,12 @@
   (:require
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.palette :as palette]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -92,7 +95,9 @@
       (if (collide/bounded? s shape)
         shape
         (g/clip-with (smooth-poly shape) (smooth-poly s)))
-      (meta s))))
+      (if (instance? Circle2 s)
+        (assoc (meta s) :arc s)
+        (meta s)))))
 
 (defn intersecting-points
   "Finds all intersection points along a line through a set of edges sorted by
@@ -254,10 +259,67 @@
      :crossed-lines
      (clip/hatch-rectangle bounds cross-density theta2 [(dr/random) (dr/random)])}))
 
+(defn clockwise-vertices
+  "Force a clockwise ordering by sorting vertices around centroid.
+
+  This only works if the polygon is convex. This is likely an artifact of
+  `g/clip-with`."
+  [convex-polygon]
+  (let [centroid (g/centroid convex-polygon)]
+    (->> convex-polygon
+         g/vertices
+         (sort-by (fn [v] (heading-to centroid v))))))
+
+(defn arc-path [polygon {:keys [p r]} attribs]
+  (let [on-arc? (fn [v] (tm/delta= (g/dist p v) r 0.0001))
+        vertices (clockwise-vertices polygon)
+        arc-groups (partition-by on-arc? vertices)
+        commands
+        (mapcat
+         (fn [chunk]
+           (if (and (on-arc? (first chunk)) (> (count chunk) 1))
+             (let [a0 (heading-to p (first chunk))
+                   a1 (heading-to p (last chunk))
+                   large-arc (if (< (sm/clockwise-distance a0 a1) Math/PI) 0 1)]
+               [[:L (first chunk)]
+                [:A [r r] 0.0 large-arc 1 (last chunk)]])
+             (map (fn [v] [:L v]) chunk)))
+         arc-groups)]
+    (csvg/group {:n (count vertices)
+                 :clockwise (if (poly-detect/clockwise-polygon? vertices) "1" "0")}
+      (into [(csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
+                        attribs)]
+            (map (fn [g] (csvg/group {:a0 (heading-to p (first g))
+                                     :av (heading-to p (cs/middle g))
+                                     :a1 (heading-to p (last g))
+                                     :n (count g)
+                                     :arc (if (on-arc? (first g)) "1" "0")}
+                          (gc/circle (first g) 1.0)
+                          (gc/circle (last g) 1.0)))
+                 arc-groups)))))
+
+(defn render-shapes [palette]
+  (fn [s]
+    (let [{:keys [arc palette-color]} (meta s)
+          fill (when (seq palette)
+                 (nth palette (mod palette-color (count palette))))
+          s' (vary-meta s dissoc :arc :cross :palette-color
+                        :start-vertex :face-dist :center-pct)
+          attribs (meta s')]
+      (cond (and arc (not (instance? Circle2 s')))
+            (arc-path s' arc (assoc attribs :fill fill))
+            fill
+            (vary-meta s' assoc :fill fill)
+            :else
+            s'))))
+
 (defn shapes
   [{:keys [windows shapes lines crossed-lines hatched-lines
            background palette]}]
-  (let [clipped-shapes (mapcat (fn [window] (clipped window shapes)) windows)
+  (let [clipped-shapes
+        (->> windows
+             (mapcat (fn [window] (clipped window shapes)))
+             (filter (fn [s] (seq (g/vertices s)))))
 
         inner-lines
         (mapcat (fn [line]
@@ -278,16 +340,7 @@
     [(csvg/group {:fill background
                   :stroke-width 1.5}
        windows)
-     (csvg/group {}
-       (map (fn [s]
-              (let [{:keys [palette-color]} (meta s)
-                    fill (when (seq palette)
-                           (nth palette (mod palette-color (count palette))))
-                    s' (vary-meta s dissoc :cross :palette-color)]
-                (if fill
-                  (vary-meta s' assoc :fill fill)
-                  s')))
-            clipped-shapes))
+     (csvg/group {} (map (render-shapes palette) clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
