@@ -80,6 +80,9 @@
 (comment (radial-distance 0 -1)
          (radial-distance -1 -5))
 
+(defn clockwise-distance [a b]
+  (- (if (< b a) (+ b tm/TWO_PI) b) a))
+
 (defn relative-diff
   "Calculate relative difference between two positive values `a` and `b`"
   [a b]
