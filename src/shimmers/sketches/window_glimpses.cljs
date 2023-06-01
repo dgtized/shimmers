@@ -301,13 +301,17 @@
         (into [path] (debug-chunks arc-groups)))
       path)))
 
+(defn clean-meta [s]
+  (vary-meta s dissoc
+             :arc :cross :palette-color
+             :start-vertex :face-dist :center-pct))
+
 (defn render-shapes [palette]
   (fn [s]
     (let [{:keys [arc palette-color]} (meta s)
           fill (when (seq palette)
                  (nth palette (mod palette-color (count palette))))
-          s' (vary-meta s dissoc :arc :cross :palette-color
-                        :start-vertex :face-dist :center-pct)
+          s' (clean-meta s)
           attribs (meta s')]
       (cond (and arc (not (instance? Circle2 s')))
             (arc-path s' arc (assoc attribs :fill fill))
@@ -342,7 +346,7 @@
                   (map (dashed-arc [3 1 4])))]
     [(csvg/group {:fill background
                   :stroke-width 1.5}
-       windows)
+       (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette) clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
