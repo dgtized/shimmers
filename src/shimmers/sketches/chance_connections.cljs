@@ -24,6 +24,10 @@
     :chaikin true
     :depth 1}))
 
+;; TODO: remove single intersection loops somehow? lookahead from an edge, if it
+;; crosses only one other edge and no other intersecting edges in between,
+;; splice connection and reverse the loop to connect without a loop?
+
 (defn path-segments [points]
   (let [points' (dr/shuffle points)]
     (loop [path (vec (take 1 points'))
