@@ -33,6 +33,9 @@
 
 ;; Also worth trying to find an euler tour?
 
+;; Maybe cross-hatch the connections between each side of the resulting maze?
+;; Or draw parallel lines to some edges, or mix and match between smooth and blocky?
+
 (defn path-segments [points]
   (loop [path (vec (take 1 points))
          points (rest points)]
