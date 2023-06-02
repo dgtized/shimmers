@@ -27,6 +27,12 @@
 ;; crosses only one other edge and no other intersecting edges in between,
 ;; splice connection and reverse the loop to connect without a loop?
 
+;; Find all edge intersections, but include their index in the original edges?
+;; Not sure how to deal with the edges that cross most of the sketch.
+;; Basically need to unsnarl/planarize the connections
+
+;; Also worth trying to find an euler tour?
+
 (defn path-segments [points]
   (loop [path (vec (take 1 points))
          points (rest points)]
