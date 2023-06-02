@@ -4,7 +4,6 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -29,16 +28,15 @@
 ;; splice connection and reverse the loop to connect without a loop?
 
 (defn path-segments [points]
-  (let [points' (dr/shuffle points)]
-    (loop [path (vec (take 1 points'))
-           points (rest points')]
-      (if (seq points)
-        (let [current (last path)
-              next (apply min-key (fn [v] (g/dist-squared current v))
-                          points)]
-          (recur (conj path next)
-                 (remove (fn [v] (tm/delta= next v)) points)))
-        path))))
+  (loop [path (vec (take 1 points))
+         points (rest points)]
+    (if (seq points)
+      (let [current (last path)
+            next (apply min-key (fn [v] (g/dist-squared current v))
+                        points)]
+        (recur (conj path next)
+               (remove (fn [v] (tm/delta= next v)) points)))
+      path)))
 
 (defn point-path [{:keys [show-points]} points]
   (csvg/group {}
@@ -71,9 +69,9 @@
          [view-sketch/generate :chance-connections]
          [:div
           [:p.readable-width
-           "Create a set of random points using poisson disc sampling. Pick a random
-     point to start and then greedily take the next closest point in the set
-     from the current position until the set is exhausted."]
+           "Create a set of random points using poisson disc sampling. Pick the
+     first point to start and then greedily take the next closest point in the
+     set from the current position until the set is exhausted."]
           [ctrl/container {:style {:width "5em"}}
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
