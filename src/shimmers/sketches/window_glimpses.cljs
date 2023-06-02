@@ -2,9 +2,7 @@
   (:require
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
-   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.palette :as palette]
-   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
