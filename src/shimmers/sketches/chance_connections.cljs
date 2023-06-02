@@ -1,5 +1,6 @@
 (ns shimmers.sketches.chance-connections
   (:require
+   [shimmers.algorithm.chaikin :as chaikin]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -17,6 +18,12 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defonce ui-state
+  (ctrl/state
+   {:show-points false
+    :chaikin true
+    :depth 1}))
+
 (defn path-segments [points]
   (let [points' (dr/shuffle points)]
     (loop [path (vec (take 1 points'))
@@ -26,37 +33,48 @@
               next (apply min-key (fn [v] (g/dist-squared current v))
                           points)]
           (recur (conj path next)
-                 (remove (fn [v] (tm/delta= current v)) points)))
+                 (remove (fn [v] (tm/delta= next v)) points)))
         path))))
 
-(defn shapes [bounds]
-  (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 256)]
-    (csvg/group {}
-      (let [path (path-segments points)]
-        (csvg/path (into [[:M (first path)]]
-                         (map (fn [v] [:L v]) (rest path)))))
+(defn point-path [{:keys [show-points]} points]
+  (csvg/group {}
+    (csvg/path (into [[:M (first points)]]
+                     (map (fn [v] [:L v]) (rest points))))
+    (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
           (gc/circle p 2.0))))))
 
-(defn scene []
-  (csvg/svg-timed {:width width
-                   :height height
+(defn scene [bounds points settings]
+  (csvg/svg-timed {:width (g/width bounds)
+                   :height (g/height bounds)
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes (rect/rect 0 0 width height))))
+    (let [{:keys [chaikin depth]} settings]
+      (if chaikin
+        (point-path settings (chaikin/chaikin 0.2 false depth points))
+        (point-path settings points)))))
 
 (defn page []
-  [:<>
-   [:div.canvas-frame [scene]]
-   [:div.contained
-    [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
-     [view-sketch/generate :chance-connections]
-     [:p.readable-width
-      "Create a set of random points using poisson disc sampling. Pick a random
+  (let [bounds (rect/rect 0 0 width height)
+        points (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 256))]
+    (fn []
+      [:<>
+       [:div.canvas-frame [scene bounds points @ui-state]]
+       [:div.contained
+        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+         [view-sketch/generate :chance-connections]
+         [:div
+          [:p.readable-width
+           "Create a set of random points using poisson disc sampling. Pick a random
      point to start and then greedily take the next closest point in the set
-     from the current position until the set is exhausted."]]]])
+     from the current position until the set is exhausted."]
+          [ctrl/container {:style {:width "5em"}}
+           [ctrl/checkbox ui-state "Show Points" [:show-points]]
+           [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
+           (when (:chaikin @ui-state)
+             [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]]]]])))
 
 (sketch/definition chance-connections
   {:created-at "2023-06-01"
