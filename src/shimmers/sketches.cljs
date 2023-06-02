@@ -23,6 +23,7 @@
    shimmers.sketches.butterfly
    shimmers.sketches.canvas-test
    shimmers.sketches.chaikin-demo
+   shimmers.sketches.chance-connections
    shimmers.sketches.chaos-cuts
    shimmers.sketches.chemical-attraction
    shimmers.sketches.circle-hatch
