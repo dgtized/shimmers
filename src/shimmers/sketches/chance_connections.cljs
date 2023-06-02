@@ -23,13 +23,14 @@
            points (rest points')]
       (if (seq points)
         (let [current (last path)
-              next (apply min-key (fn [v] (g/dist-squared current v)) points)]
+              next (apply min-key (fn [v] (g/dist-squared current v))
+                          points)]
           (recur (conj path next)
                  (remove (fn [v] (tm/delta= current v)) points)))
         path))))
 
 (defn shapes [bounds]
-  (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 128)]
+  (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 256)]
     (csvg/group {}
       (let [path (path-segments points)]
         (csvg/path (into [[:M (first path)]]
