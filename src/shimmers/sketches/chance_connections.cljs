@@ -53,12 +53,41 @@
 (defn intersections [points]
   (->> points
        (partition 2 1)
+       (map-indexed vector)
        cs/non-consecutive-pairs
        (keep
-        (fn [[[a b] [c d]]]
+        (fn [[[idx0 [a b]] [idx1 [c d]]]]
           (let [{type :type isec :p} (isec/intersect-line2-line2? a b c d)]
             (when (= type :intersect)
-              {:isec isec :segments [[a b] [c d]]}))))))
+              {:isec isec :segments [[a b] [c d]] :indices [idx0 idx1]}))))))
+
+(defn overlaps? [[a b] [c d]]
+  (and (<= a d) (>= b c)))
+
+(defn covers? [cover inside]
+  (let [[a b] cover
+        [c d] inside]
+    (and (>= c a) (<= d b))))
+
+;; Concept is to find ranges that are non-overlapping and non-covering, as those
+;; can be flipped in direction to untangle a single intersection point.
+;; FIXME: algorithm is buggy, particularly for termination case but also
+;; sometimes finds false positives.
+(defn simple-cycles [intervals]
+  (loop [simple []
+         intervals (rest intervals)
+         current (first intervals)]
+    (println current intervals simple)
+    (if (empty? intervals)
+      (conj simple current)
+      (let [[next & intervals] intervals]
+        (if (overlaps? current next)
+          (if (covers? current next)
+            (recur simple intervals next)
+            (recur simple (rest intervals) (first intervals)))
+          (recur (conj simple current)
+                 intervals
+                 next))))))
 
 (defn point-path [{:keys [show-points show-intersections]} points]
   (csvg/group {}
@@ -69,9 +98,13 @@
         (for [p points]
           (gc/circle p 2.0))))
     (when show-intersections
-      (csvg/group {:fill "black"}
-        (for [{:keys [isec]} (intersections points)]
-          (gc/circle isec 2.0))))))
+      (let [intersects (intersections points)]
+        (println (map :indices intersects))
+        (println (simple-cycles (map :indices intersects)))
+        (csvg/group {:fill "black"}
+          (for [{:keys [isec indices]} intersects]
+            (vary-meta (gc/circle isec 2.0)
+                       assoc :indices indices)))))))
 
 (defn scene [bounds points settings]
   (csvg/svg-timed {:width (g/width bounds)
@@ -86,7 +119,7 @@
 
 (defn page []
   (let [bounds (rect/rect 0 0 width height)
-        points (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 256))]
+        points (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 64))]
     (fn []
       [:<>
        [:div.canvas-frame [scene bounds points @ui-state]]
