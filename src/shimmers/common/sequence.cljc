@@ -102,6 +102,13 @@
     (lazy-cat (for [y s] [(first coll) y])
               (all-pairs s))))
 
+(defn non-consecutive-pairs
+  "Generate all pairs of a collection that are not consecutive. "
+  [coll]
+  (when-let [s (nnext coll)]
+    (lazy-cat (for [y s] [(first coll) y])
+              (non-consecutive-pairs (next coll)))))
+
 (defn first-last [coll]
   [(first coll) (last coll)])
 

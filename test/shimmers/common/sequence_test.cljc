@@ -101,4 +101,8 @@
   (is (= 0 (sut/iterate-cycles 0 inc 0)))
   (is (= 5 (sut/iterate-cycles 5 inc 0))))
 
+(deftest non-consecutive-pairs
+  (is (= [[0 2] [0 3] [0 4] [1 3] [1 4] [2 4]]
+         (sut/non-consecutive-pairs (range 5)))))
+
 (comment (t/run-tests))
