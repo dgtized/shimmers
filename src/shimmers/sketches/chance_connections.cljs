@@ -53,11 +53,11 @@
 (defn intersections [points]
   (->> points
        (partition 2 1)
-       cs/all-pairs
+       cs/non-consecutive-pairs
        (keep
         (fn [[[a b] [c d]]]
           (let [{type :type isec :p} (isec/intersect-line2-line2? a b c d)]
-            (when (and (= type :intersect) (not (tm/delta= b isec)))
+            (when (= type :intersect)
               {:isec isec :segments [[a b] [c d]]}))))))
 
 (defn point-path [{:keys [show-points show-intersections]} points]
