@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.chaikin :as chaikin]
    [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
@@ -9,6 +10,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -20,6 +22,7 @@
 (defonce ui-state
   (ctrl/state
    {:show-points false
+    :show-intersections true
     :chaikin false
     :depth 1}))
 
@@ -47,14 +50,28 @@
                (remove (fn [v] (tm/delta= next v)) points)))
       path)))
 
-(defn point-path [{:keys [show-points]} points]
+(defn intersections [points]
+  (->> points
+       (partition 2 1)
+       cs/all-pairs
+       (keep
+        (fn [[[a b] [c d]]]
+          (let [{type :type isec :p} (isec/intersect-line2-line2? a b c d)]
+            (when (and (= type :intersect) (not (tm/delta= b isec)))
+              {:isec isec :segments [[a b] [c d]]}))))))
+
+(defn point-path [{:keys [show-points show-intersections]} points]
   (csvg/group {}
     (csvg/path (into [[:M (first points)]]
                      (map (fn [v] [:L v]) (rest points))))
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
-          (gc/circle p 2.0))))))
+          (gc/circle p 2.0))))
+    (when show-intersections
+      (csvg/group {:fill "black"}
+        (for [{:keys [isec]} (intersections points)]
+          (gc/circle isec 2.0))))))
 
 (defn scene [bounds points settings]
   (csvg/svg-timed {:width (g/width bounds)
@@ -83,6 +100,7 @@
      set from the current position until the set is exhausted."]
           [ctrl/container {:style {:width "5em"}}
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
+           [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
            [:div.flexcols
             [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
             (when (:chaikin @ui-state)
