@@ -20,7 +20,7 @@
 (defonce ui-state
   (ctrl/state
    {:show-points false
-    :chaikin true
+    :chaikin false
     :depth 1}))
 
 ;; TODO: remove single intersection loops somehow? lookahead from an edge, if it
@@ -83,9 +83,10 @@
      set from the current position until the set is exhausted."]
           [ctrl/container {:style {:width "5em"}}
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
-           [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
-           (when (:chaikin @ui-state)
-             [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]]]]])))
+           [:div.flexcols
+            [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
+            (when (:chaikin @ui-state)
+              [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]]]]]])))
 
 (sketch/definition chance-connections
   {:created-at "2023-06-01"
