@@ -75,19 +75,22 @@
 ;; sometimes finds false positives.
 (defn simple-cycles [intervals]
   (loop [simple []
-         intervals (rest intervals)
+         ivals (rest intervals)
          current (first intervals)]
-    (println current intervals simple)
-    (if (empty? intervals)
-      (conj simple current)
-      (let [[next & intervals] intervals]
-        (if (overlaps? current next)
-          (if (covers? current next)
-            (recur simple intervals next)
-            (recur simple (rest intervals) (first intervals)))
-          (recur (conj simple current)
-                 intervals
-                 next))))))
+    ;; (println current ivals simple)
+    (if (empty? ivals)
+      (if current
+        (conj simple current)
+        simple)
+      (let [[next & ivals']
+            (remove (fn [x] (and (overlaps? current x)
+                                (not (covers? current x))))
+                    ivals)]
+        (recur (if (overlaps? current next)
+                 simple
+                 (conj simple current))
+               ivals'
+               next)))))
 
 (defn point-path [{:keys [show-points show-intersections]} points]
   (csvg/group {}
@@ -99,12 +102,15 @@
           (gc/circle p 2.0))))
     (when show-intersections
       (let [intersects (intersections points)]
-        (println (map :indices intersects))
+        (println "indices" (map :indices intersects))
         (println (simple-cycles (map :indices intersects)))
         (csvg/group {:fill "black"}
           (for [{:keys [isec indices]} intersects]
-            (vary-meta (gc/circle isec 2.0)
-                       assoc :indices indices)))))))
+            (csvg/group {} (gc/circle isec 2.0)
+              (csvg/center-label
+               (tm/+ isec (gv/vec2 0 -12))
+               (str indices)
+               {:font-size 12}))))))))
 
 (defn scene [bounds points settings]
   (csvg/svg-timed {:width (g/width bounds)
