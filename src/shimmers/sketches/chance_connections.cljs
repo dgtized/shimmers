@@ -23,6 +23,7 @@
   (ctrl/state
    {:show-points false
     :show-intersections true
+    :untangle true
     :chaikin false
     :depth 1}))
 
@@ -38,6 +39,8 @@
 
 ;; Maybe cross-hatch the connections between each side of the resulting maze?
 ;; Or draw parallel lines to some edges, or mix and match between smooth and blocky?
+
+;; Might want to remove extremly sharp hairpin angles?
 
 (defn path-segments [points]
   (loop [path (vec (take 1 points))
@@ -92,10 +95,27 @@
                ivals'
                next)))))
 
-(defn point-path [{:keys [show-points show-intersections]} points]
+(defn untangle [points intervals]
+  (println "untangle " intervals (count points))
+  (reduce
+   (fn [pts [start end]]
+     (vec (concat (subvec pts 0 (inc start))
+                  (vec (reverse (subvec pts (inc start) (inc end))))
+                  (if (<= (inc end) (count pts))
+                    (subvec pts (inc end) (count pts))
+                    []))))
+   (vec points)
+   intervals))
+
+(defn point-path [{:keys [chaikin depth
+                          show-points show-intersections]}
+                  points]
   (csvg/group {}
-    (csvg/path (into [[:M (first points)]]
-                     (map (fn [v] [:L v]) (rest points))))
+    (let [path (if chaikin
+                 (chaikin/chaikin 0.2 false depth points)
+                 points)]
+      (csvg/path (into [[:M (first path)]]
+                       (map (fn [v] [:L v]) (rest path)))))
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
@@ -112,23 +132,29 @@
                (str indices)
                {:font-size 12}))))))))
 
+(defn remove-cycles [path]
+  (cs/iterate-fixed-point
+   (fn [pts]
+     (untangle pts (simple-cycles (map :indices (intersections pts)))))
+   path))
+
 (defn scene [bounds points settings]
   (csvg/svg-timed {:width (g/width bounds)
                    :height (g/height bounds)
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (let [{:keys [chaikin depth]} settings]
-      (if chaikin
-        (point-path settings (chaikin/chaikin 0.2 false depth points))
-        (point-path settings points)))))
+    (point-path settings
+                (if (:untangle settings)
+                  (remove-cycles points)
+                  points))))
 
 (defn page []
   (let [bounds (rect/rect 0 0 width height)
-        points (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 64))]
+        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 64))]
     (fn []
       [:<>
-       [:div.canvas-frame [scene bounds points @ui-state]]
+       [:div.canvas-frame [scene bounds path @ui-state]]
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :chance-connections]
@@ -138,6 +164,7 @@
      first point to start and then greedily take the next closest point in the
      set from the current position until the set is exhausted."]
           [ctrl/container {:style {:width "5em"}}
+           [ctrl/checkbox ui-state "Untangle" [:untangle]]
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
            [:div.flexcols
@@ -149,4 +176,4 @@
   {:created-at "2023-06-01"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (page)))
