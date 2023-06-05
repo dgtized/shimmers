@@ -172,8 +172,8 @@
   [f x]
   (->> (iterate f x)
        (partition 2 1)
-       (take-while (fn [[s s']] (not= s s')))
-       last
+       (drop-while (fn [[s s']] (not= s s')))
+       first
        first))
 
 (defn retry
