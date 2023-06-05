@@ -151,7 +151,7 @@
 
 (defn page []
   (let [bounds (rect/rect 0 0 width height)
-        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 64))]
+        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))]
     (fn []
       [:<>
        [:div.canvas-frame [scene bounds path @ui-state]]
