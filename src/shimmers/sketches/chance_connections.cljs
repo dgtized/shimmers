@@ -22,10 +22,10 @@
 (defonce ui-state
   (ctrl/state
    {:show-points false
-    :show-intersections true
+    :show-intersections false
     :untangle true
     :chaikin false
-    :depth 1}))
+    :depth 3}))
 
 ;; TODO: remove single intersection loops somehow? lookahead from an edge, if it
 ;; crosses only one other edge and no other intersecting edges in between,
