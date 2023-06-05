@@ -110,7 +110,7 @@
 (defn point-path [{:keys [chaikin depth
                           show-points show-intersections]}
                   points]
-  (csvg/group {}
+  (csvg/group {:stroke-width 1.5}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)]
@@ -142,8 +142,7 @@
   (csvg/svg-timed {:width (g/width bounds)
                    :height (g/height bounds)
                    :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.5}
+                   :fill "white"}
     (point-path settings
                 (if (:untangle settings)
                   (remove-cycles points)
