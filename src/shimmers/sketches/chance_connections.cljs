@@ -101,9 +101,7 @@
    (fn [pts [start end]]
      (vec (concat (subvec pts 0 (inc start))
                   (vec (reverse (subvec pts (inc start) (inc end))))
-                  (if (<= (inc end) (count pts))
-                    (subvec pts (inc end) (count pts))
-                    []))))
+                  (subvec pts (inc end) (count pts)))))
    (vec points)
    intervals))
 
