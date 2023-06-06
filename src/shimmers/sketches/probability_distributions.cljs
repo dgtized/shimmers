@@ -57,6 +57,9 @@
    {:title "Gaussian"
     :params {:mu 0.5 :sd 0.075}
     :generator #(dr/gaussian 0.5 0.075)}
+   {:title "Gaussian Between"
+    :params {:mu 0.5 :sd 0.4 :min 0.0 :max 1.0}
+    :generator #(dr/gaussian-between 0.5 0.4 0.0 1.0)}
    {:title "Pareto"
     :params {:scale 0.01 :shape 0.8}
     :generator #(dr/pareto 0.01 0.8)}
