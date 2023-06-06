@@ -145,18 +145,19 @@
    (ksd/draw (ksd/normal {:mu mu :sd (+ tm/*eps* (abs sd))})
              {:seed (random-int MAX-INT)})))
 
-(defn gaussian-between
-  "Sample a gaussian, but only accept the first value within the clamping range.
+(defn sample-between
+  "Returns a function to sample an rng, but only accept values within the clamping range.
 
   This useless for statistics, but helpful for pretty graphics."
-  [mu sd min max]
-  (->> #(gaussian mu sd)
-       repeatedly
-       (drop-while (fn [x] (or (<= x min) (>= x max))))
-       first))
+  [rng min max]
+  (fn []
+    (->> rng
+         repeatedly
+         (drop-while (fn [x] (or (<= x min) (>= x max))))
+         first)))
 
 (comment
-  (repeatedly 100 #(gaussian-between 0.5 0.5 0.0 1.0)))
+  (repeatedly 100 (sample-between #(gaussian 0.5 0.5) 0.0 1.0)))
 
 (defn pareto [scale shape]
   (/ scale (Math/pow (random) (/ 1 shape))))
