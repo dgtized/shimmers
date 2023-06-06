@@ -5,6 +5,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -105,6 +106,14 @@
    (vec points)
    intervals))
 
+(defn partition-segments [path]
+  (->> path
+       (partition 2 1)
+       (partition-by (fn [_] (dr/weighted {0 2 1 1})))
+       (map (fn [segment] (conj (mapv first segment) (second (last segment)))))))
+
+(comment (partition-segments (range 10)))
+
 (defn point-path [{:keys [chaikin depth
                           show-points show-intersections]}
                   points]
@@ -112,8 +121,10 @@
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)]
-      (csvg/path (into [[:M (first path)]]
-                       (map (fn [v] [:L v]) (rest path)))))
+      (for [segment (partition-segments path)]
+        (csvg/path (into [[:M (first segment)]]
+                         (map (fn [v] [:L v]) (rest segment)))
+                   {:stroke-width (tm/roundto (dr/random 0.8 3.0) 0.1)})))
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
