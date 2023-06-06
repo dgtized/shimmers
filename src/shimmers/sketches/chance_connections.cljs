@@ -24,6 +24,7 @@
   (ctrl/state
    {:show-points false
     :show-intersections false
+    :vary-width true
     :untangle true
     :chaikin false
     :depth 3}))
@@ -114,17 +115,23 @@
 
 (comment (partition-segments (range 10)))
 
-(defn point-path [{:keys [chaikin depth
+(defn draw-segment [points attribs]
+  (csvg/path (into [[:M (first points)]]
+                   (map (fn [v] [:L v]) (rest points)))
+             attribs))
+
+(defn point-path [{:keys [chaikin depth vary-width
                           show-points show-intersections]}
                   points]
   (csvg/group {:stroke-width 1.5}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)]
-      (for [segment (partition-segments path)]
-        (csvg/path (into [[:M (first segment)]]
-                         (map (fn [v] [:L v]) (rest segment)))
-                   {:stroke-width (tm/roundto (dr/random 0.8 3.0) 0.1)})))
+      (if vary-width
+        (for [segment (partition-segments path)]
+          (draw-segment segment
+                        {:stroke-width (tm/roundto (dr/random 1.0 8.0) 0.5)}))
+        (draw-segment points {:stroke-width 1.0})))
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
@@ -171,6 +178,7 @@
           [:p]
           [:div {:style {:min-width "20em"}}
            [ctrl/checkbox ui-state "Untangle" [:untangle]]
+           [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
            [:div.flexcols {:style {:gap "0px 1.5em"}}
