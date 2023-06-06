@@ -61,18 +61,18 @@
     :init
     {:shapes [(assoc (cq/screen-rect 0.66) :color (random-color))]
      :lines []
-     :angle (dr/random-tau)
+     :angle (tm/roundto (dr/random-tau) (/ Math/PI 12))
      :action :cut
      :time 0}
     :cut
     (let [line (cutting-line angle)
           mix-color (random-color)]
-      (if (> (count shapes) 800)
+      (if (> (count shapes) 500)
         (assoc state :action :init)
         (assoc state
                :shapes (mapcat (partial cut line mix-color) shapes)
                :lines (conj lines line)
-               :angle (+ (* angle tm/PHI) (dr/random 0.1))
+               :angle (+ angle (tm/roundto (dr/random-tau) (/ Math/PI 12)))
                :time (q/frame-count)
                :force (displacement-force angle)
                :action :slide)))
