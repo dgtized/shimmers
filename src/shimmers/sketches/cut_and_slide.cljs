@@ -27,7 +27,10 @@
                             (cq/screen-rect)))))
 
 (defn displacement-force [angle]
-  (let [force (/ 1 (dr/random 4 32))]
+  (let [lower (/ 1 32)
+        upper (/ 1 4)
+        bias (/ (+ upper (* 2 lower)) 3)
+        force (dr/gaussian-between bias (/ bias 2) lower upper)]
     (v/polar force (if (dr/chance 0.2)
                      (+ angle tm/HALF_PI)
                      angle))))
