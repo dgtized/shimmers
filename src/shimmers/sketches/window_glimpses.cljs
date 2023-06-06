@@ -72,7 +72,7 @@
 
 (defn gen-circle [{[width height] :size} existing]
   (let [r (dr/random-int (int (* 0.05 (min width height)))
-                         (int (* 0.44 (min width height))))
+                         (int (* 0.40 (min width height))))
         circle (gc/circle (dr/random-int r (- width r))
                           (dr/random-int r (- height r))
                           r)]
