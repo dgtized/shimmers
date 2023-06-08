@@ -355,6 +355,7 @@
 ;; higher contrast between color pairs..
 ;; TODO: color a specific strip between two of the inner stripe lines across all
 ;; shapes it's clipped with.
+;; TODO: clip out pie shapes from circles that do not clip any other shape?
 (defn scene [{:keys [bounds] :as layers}]
   (csvg/svg-timed {:width (g/width bounds)
                    :height (g/height bounds)
