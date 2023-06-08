@@ -3,6 +3,7 @@
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.palette :as palette]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
@@ -276,6 +277,25 @@
       (gc/circle (first g) 1.0)
       (gc/circle (last g) 1.0))))
 
+(defn rotate-to-max-dist-last
+  "Rotate so the straight line return from Z to close the shape is probably in the
+  last place."
+  [group]
+  (let [idx (->> group
+                 (partition 2 1)
+                 (map-indexed vector)
+                 (apply max-key (fn [[_idx [a b]]] (g/dist a b))))]
+    (cs/rotate (inc (first idx)) group)))
+
+(comment
+  (rotate-to-max-dist-last [(gv/vec2) (gv/vec2 10 0)
+                            (gv/vec2 5 5) (gv/vec2 0 5)]))
+
+(defn rotate-groups [arc-groups]
+  (if (= (count arc-groups) 1)
+    [(rotate-to-max-dist-last (first arc-groups))]
+    arc-groups))
+
 (defn arc-path [polygon {:keys [p r]} attribs show-path-points]
   (let [on-arc? (fn [v] (tm/delta= (g/dist p v) r 0.0001))
         vertices (clockwise-vertices polygon)
@@ -290,7 +310,7 @@
                [[:L (first chunk)]
                 [:A [r r] 0.0 large-arc 1 (last chunk)]])
              (map (fn [v] [:L v]) chunk)))
-         arc-groups)
+         (rotate-groups arc-groups))
         path (csvg/path (conj (assoc-in (vec commands) [0 0] :M) [:Z])
                         attribs)]
     (if show-path-points
