@@ -23,7 +23,7 @@
 (defn invert [x] (- 1.0 x))
 
 (defn random-offset []
-  ((dr/rand-nth [invert identity]) (/ 1 (dr/rand-nth [2 3 4 5]))))
+  ((dr/rand-nth [invert identity]) (/ 1 (dr/rand-nth [2 3 4 5 6 7]))))
 
 (defn cut-line [line offset padding]
   (let [margin (/ padding (tm/mag line))]
