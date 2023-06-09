@@ -108,6 +108,7 @@
    shimmers.sketches.langton-ant
    shimmers.sketches.lattice-in-steps
    shimmers.sketches.lattice-of-common-chords
+   shimmers.sketches.layered-intersections
    shimmers.sketches.lifecycle-of-shapes
    shimmers.sketches.liminal-tension
    shimmers.sketches.logistics-flow
