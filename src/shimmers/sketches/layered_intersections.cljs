@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.intersection :as isec]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -46,17 +47,31 @@
         offset (random-offset)
         line (gl/line2 (g/unmap-point bounds start)
                        (g/unmap-point bounds end))
-        r (* (g/height bounds) (dr/random 0.02 0.10))
+        r (* (g/height bounds) 0.01 (+ 2 (dr/random-int 6)))
         circle (gc/circle (g/point-at line offset) r)
         perp-line (first (lines/clip-line (g/scale-size (perpindicular line offset) 3.0) bounds))
         isec (isec/line-intersect line perp-line)
         p-isec (map-point perp-line isec)]
-    (concat [circle]
-            (cut-line line offset r)
-            (cut-line perp-line p-isec r))))
+    {:circle [circle]
+     :lines (cut-line line offset r)
+     :perp (cut-line perp-line p-isec r)}))
 
 (defn shapes [bounds]
-  (apply concat (repeatedly 2 #(space-divide bounds))))
+  (mapcat (fn [layer] (apply concat (vals layer)))
+          (reduce (fn [layers _]
+                    (let [{:as attempt}
+                          (->> #(space-divide bounds)
+                               repeatedly
+                               (drop-while
+                                (fn [attempt]
+                                  (some (fn [{[circle] :circle}]
+                                          (when (collide/overlaps? circle (first (:circle attempt)))
+                                            attempt))
+                                        layers)))
+                               first)]
+                      (conj layers attempt)))
+                  []
+                  (range 5))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
