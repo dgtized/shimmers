@@ -53,25 +53,28 @@
         isec (isec/line-intersect line perp-line)
         p-isec (map-point perp-line isec)]
     {:circle [circle]
-     :lines (cut-line line offset r)
-     :perp (cut-line perp-line p-isec r)}))
+     :lines (concat (cut-line line offset r)
+                    (cut-line perp-line p-isec r))}))
+
+(defn build-layers [bounds]
+  (reduce (fn [layers _]
+            (let [{:as attempt}
+                  (->> #(space-divide bounds)
+                       repeatedly
+                       (drop-while
+                        (fn [attempt]
+                          (some (fn [{[circle] :circle}]
+                                  (when (collide/overlaps? circle (first (:circle attempt)))
+                                    attempt))
+                                layers)))
+                       first)]
+              (conj layers attempt)))
+          []
+          (range (dr/random-int 3 8))))
 
 (defn shapes [bounds]
   (mapcat (fn [layer] (apply concat (vals layer)))
-          (reduce (fn [layers _]
-                    (let [{:as attempt}
-                          (->> #(space-divide bounds)
-                               repeatedly
-                               (drop-while
-                                (fn [attempt]
-                                  (some (fn [{[circle] :circle}]
-                                          (when (collide/overlaps? circle (first (:circle attempt)))
-                                            attempt))
-                                        layers)))
-                               first)]
-                      (conj layers attempt)))
-                  []
-                  (range (dr/random-int 3 8)))))
+          (build-layers bounds)))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
