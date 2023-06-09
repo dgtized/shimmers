@@ -71,7 +71,7 @@
                                first)]
                       (conj layers attempt)))
                   []
-                  (range 5))))
+                  (range (dr/random-int 3 8)))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
