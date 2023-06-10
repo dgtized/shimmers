@@ -66,6 +66,25 @@
           lines
           layer-lines))
 
+(defn overlap-circles [circles lines]
+  (reduce (fn [lines circle]
+            (mapcat (fn [{[p q] :points :as line}]
+                      (if-let [{:keys [type isec]} (isec/circle-ray circle p q)]
+                        (do
+                          (println type isec p q)
+                          (case type
+                            :tangent (cut-line line (map-point line (first isec)) 5)
+                            :poke [(gl/line2 p (tm/mix p (first isec) 0.95))]
+                            :exit [(gl/line2 (tm/mix (first isec) q 0.05) q)]
+                            :impale [(gl/line2 p (tm/mix p (first isec) 0.95))
+                                     (gl/line2 (tm/mix (second isec) q 0.05) q)]
+                            :inside []
+                            [line]))
+                        [line]))
+                    lines))
+          lines
+          circles))
+
 (defn build-layers [bounds]
   (reduce (fn [layers _]
             (let [{:as attempt}
@@ -86,11 +105,17 @@
   (reduce
    (fn [existing layer]
      (conj existing
-           (update layer :lines
-                   (fn [lines]
-                     (overlap-lines
-                      (mapcat :lines existing)
-                      lines)))))
+           (-> layer
+               (update :lines
+                       (fn [lines]
+                         (overlap-lines
+                          (mapcat :lines existing)
+                          lines)))
+               (update :lines
+                       (fn [lines]
+                         (overlap-circles
+                          (mapcat :circle existing)
+                          lines))))))
    []
    (reverse layers)))
 
