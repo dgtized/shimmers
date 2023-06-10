@@ -56,6 +56,16 @@
      :lines (concat (cut-line line offset r)
                     (cut-line perp-line p-isec r))}))
 
+(defn overlap-lines [layer-lines lines]
+  (reduce (fn [lines overlap]
+            (mapcat (fn [line]
+                      (if-let [isec (isec/line-intersect line overlap)]
+                        (cut-line line (map-point line isec) 5)
+                        [line]))
+                    lines))
+          lines
+          layer-lines))
+
 (defn build-layers [bounds]
   (reduce (fn [layers _]
             (let [{:as attempt}
@@ -68,7 +78,11 @@
                                     attempt))
                                 layers)))
                        first)]
-              (conj layers attempt)))
+              (conj layers (update attempt :lines
+                                   (fn [lines]
+                                     (overlap-lines
+                                      (mapcat :lines layers)
+                                      lines))))))
           []
           (range (dr/random-int 3 8))))
 
