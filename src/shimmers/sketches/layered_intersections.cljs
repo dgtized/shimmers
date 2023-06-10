@@ -78,17 +78,27 @@
                                     attempt))
                                 layers)))
                        first)]
-              (conj layers (update attempt :lines
-                                   (fn [lines]
-                                     (overlap-lines
-                                      (mapcat :lines layers)
-                                      lines))))))
+              (conj layers attempt)))
           []
           (range (dr/random-int 3 8))))
 
+(defn add-gaps [layers]
+  (reduce
+   (fn [existing layer]
+     (conj existing
+           (update layer :lines
+                   (fn [lines]
+                     (overlap-lines
+                      (mapcat :lines existing)
+                      lines)))))
+   []
+   (reverse layers)))
+
 (defn shapes [bounds]
-  (mapcat (fn [layer] (apply concat (vals layer)))
-          (build-layers bounds)))
+  (->> bounds
+       build-layers
+       add-gaps
+       (mapcat (fn [layer] (apply concat (vals layer))))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)]
