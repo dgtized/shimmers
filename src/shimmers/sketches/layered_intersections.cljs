@@ -66,6 +66,12 @@
           lines
           layer-lines))
 
+(defn cut-before [line isec-pt padding]
+  (g/point-at line (- (map-point line isec-pt) (/ padding (tm/mag line)))))
+
+(defn cut-after [line isec-pt padding]
+  (g/point-at line (+ (map-point line isec-pt) (/ padding (tm/mag line)))))
+
 (defn overlap-circles [circles lines]
   (reduce (fn [lines circle]
             (mapcat (fn [{[p q] :points :as line}]
@@ -74,10 +80,10 @@
                           (println type isec p q)
                           (case type
                             :tangent (cut-line line (map-point line (first isec)) 5)
-                            :poke [(gl/line2 p (g/point-at line (- (map-point line (first isec)) (/ 5 (tm/mag line)))))]
-                            :exit [(gl/line2 (g/point-at line (+ (map-point line (first isec)) (/ 5 (tm/mag line)))) q)]
-                            :impale [(gl/line2 p (g/point-at line (- (map-point line (first isec)) (/ 5 (tm/mag line)))))
-                                     (gl/line2 (g/point-at line (+ (map-point line (second isec)) (/ 5 (tm/mag line)))) q)]
+                            :poke [(gl/line2 p (cut-before line (first isec) 5))]
+                            :exit [(gl/line2 (cut-after line (first isec) 5) q)]
+                            :impale [(gl/line2 p (cut-before line (first isec) 5))
+                                     (gl/line2 (cut-after line (second isec) 5) q)]
                             :inside []
                             [line]))
                         [line]))
