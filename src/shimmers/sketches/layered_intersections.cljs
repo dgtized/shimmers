@@ -99,7 +99,8 @@
                        (drop-while
                         (fn [attempt]
                           (some (fn [{[circle] :circle}]
-                                  (when (collide/overlaps? circle (first (:circle attempt)))
+                                  (when (collide/overlaps? (g/scale-size circle 1.1)
+                                                           (first (:circle attempt)))
                                     attempt))
                                 layers)))
                        first)]
