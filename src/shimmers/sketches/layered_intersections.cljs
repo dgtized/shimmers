@@ -74,10 +74,10 @@
                           (println type isec p q)
                           (case type
                             :tangent (cut-line line (map-point line (first isec)) 5)
-                            :poke [(gl/line2 p (tm/mix p (first isec) 0.95))]
-                            :exit [(gl/line2 (tm/mix (first isec) q 0.05) q)]
-                            :impale [(gl/line2 p (tm/mix p (first isec) 0.95))
-                                     (gl/line2 (tm/mix (second isec) q 0.05) q)]
+                            :poke [(gl/line2 p (g/point-at line (- (map-point line (first isec)) (/ 5 (tm/mag line)))))]
+                            :exit [(gl/line2 (g/point-at line (+ (map-point line (first isec)) (/ 5 (tm/mag line)))) q)]
+                            :impale [(gl/line2 p (g/point-at line (- (map-point line (first isec)) (/ 5 (tm/mag line)))))
+                                     (gl/line2 (g/point-at line (+ (map-point line (second isec)) (/ 5 (tm/mag line)))) q)]
                             :inside []
                             [line]))
                         [line]))
