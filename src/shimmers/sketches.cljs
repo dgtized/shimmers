@@ -209,6 +209,7 @@
    shimmers.sketches.tree-rings
    shimmers.sketches.triangle-flow
    shimmers.sketches.triangle-gradient
+   shimmers.sketches.triangle-intersections
    shimmers.sketches.triangulating-subdivisions
    shimmers.sketches.tunnel-flight
    shimmers.sketches.typography
