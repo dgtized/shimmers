@@ -32,10 +32,12 @@
                       (* (abs (tm/mag p))
                          (abs (tm/mag q)))))))))
 
-;; Exclude obtuse triangles
+;; Exclude obtuse triangles & triangles with any edge length ratio > 2.5
 (defn fit-triangle [{:as bounds} point]
-  (let [triangle (apply gt/triangle2 (conj (rp/random-points bounds 2) point))]
-    (if-not (some (fn [x] (> x tm/HALF_PI)) (angles triangle))
+  (let [triangle (apply gt/triangle2 (conj (rp/random-points bounds 2) point))
+        edge-lengths (map (fn [[p q]] (g/dist p q)) (g/edges triangle))]
+    (if-not (or (some (fn [x] (> x tm/HALF_PI)) (angles triangle))
+                (> (apply max edge-lengths) (* 2.5 (apply min edge-lengths))))
       triangle
       (recur bounds point))))
 
