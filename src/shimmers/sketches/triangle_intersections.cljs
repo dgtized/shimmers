@@ -1,14 +1,16 @@
 (ns shimmers.sketches.triangle-intersections
   (:require
+   [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.rect :as rect]
-   [shimmers.algorithm.random-points :as rp]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (def width 800)
@@ -35,11 +37,23 @@
       triangle
       (recur bounds point))))
 
-(defn shapes [bounds]
-  (let [bounds' (g/scale-size bounds 0.9)
-        points (rp/random-points bounds' 5)]
-    (map (partial fit-triangle bounds')
+(defn make-triangles [bounds n]
+  (let [points (rp/random-points bounds n)]
+    (map (partial fit-triangle bounds)
          points)))
+
+(defn shapes [bounds]
+  (let [triangles (make-triangles (g/scale-size bounds 0.9) 5)]
+    [(csvg/group {:fill-opacity 0.15 :fill "#CCCCCC"} triangles)
+     (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
+       (->> triangles
+            (map g/as-polygon)
+            cs/all-pairs
+            (mapcat (fn [[a b]]
+                      [(g/clip-with a b)
+                       (g/clip-with b a)]))
+            (remove (fn [poly] (empty? (g/vertices poly))))
+            (map (fn [poly] (g/translate poly (dr/jitter 4.0))))))]))
 
 (defn scene []
   (csvg/svg-timed {:width width
