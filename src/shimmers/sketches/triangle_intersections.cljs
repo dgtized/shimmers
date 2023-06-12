@@ -8,6 +8,7 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
@@ -44,17 +45,19 @@
          points)))
 
 (defn shapes [bounds]
-  (let [triangles (make-triangles (g/scale-size bounds 0.9) 5)]
+  (let [triangles (make-triangles (g/scale-size bounds 0.9) 5)
+        clipped (->> triangles
+                     (map g/as-polygon)
+                     cs/all-pairs
+                     (mapcat (fn [[a b]]
+                               (when (collide/overlaps? a b)
+                                 [(g/clip-with a b)
+                                  (g/clip-with b a)]))))]
     [(csvg/group {:fill-opacity 0.15 :fill "#CCCCCC"} triangles)
-     (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
-       (->> triangles
-            (map g/as-polygon)
-            cs/all-pairs
-            (mapcat (fn [[a b]]
-                      (when (collide/overlaps? a b)
-                        [(g/clip-with a b)
-                         (g/clip-with b a)])))
-            (map (fn [poly] (g/translate poly (dr/jitter 4.0))))))]))
+     (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"} (map (fn [poly] (g/translate poly (dr/jitter 4.0)))
+                                                           clipped))
+     (csvg/group {:fill "#000"} (map (fn [p] (gc/circle p 2.0))
+                                     (mapcat g/vertices clipped)))]))
 
 (defn scene []
   (csvg/svg-timed {:width width
