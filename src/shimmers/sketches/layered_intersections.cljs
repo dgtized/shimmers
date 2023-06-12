@@ -138,7 +138,7 @@
     (csvg/svg-timed {:width (g/width bounds)
                      :height (g/height bounds)
                      :stroke "black"
-                     :fill "none"
+                     :fill "white"
                      :stroke-width 1.0}
       (shapes bounds))))
 
