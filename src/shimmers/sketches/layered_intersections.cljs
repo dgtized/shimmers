@@ -77,16 +77,14 @@
   (reduce (fn [lines circle]
             (mapcat (fn [{[p q] :points :as line}]
                       (if-let [{:keys [type isec]} (isec/circle-ray circle p q)]
-                        (do
-                          (println type isec p q)
-                          (case type
-                            :tangent (cut-line line (map-point line (first isec)) margin)
-                            :poke [(gl/line2 p (cut-before line (first isec) margin))]
-                            :exit [(gl/line2 (cut-after line (first isec) margin) q)]
-                            :impale [(gl/line2 p (cut-before line (first isec) margin))
-                                     (gl/line2 (cut-after line (second isec) margin) q)]
-                            :inside []
-                            [line]))
+                        (case type
+                          :tangent (cut-line line (map-point line (first isec)) margin)
+                          :poke [(gl/line2 p (cut-before line (first isec) margin))]
+                          :exit [(gl/line2 (cut-after line (first isec) margin) q)]
+                          :impale [(gl/line2 p (cut-before line (first isec) margin))
+                                   (gl/line2 (cut-after line (second isec) margin) q)]
+                          :inside []
+                          [line])
                         [line]))
                     lines))
           lines
