@@ -74,38 +74,41 @@
   (g/point-at line (+ (map-point line isec-pt) (/ padding (tm/mag line)))))
 
 (defn overlap-circles [circles lines]
-  (reduce (fn [lines circle]
-            (mapcat (fn [{[p q] :points :as line}]
-                      (if-let [{:keys [type isec]} (isec/circle-ray circle p q)]
-                        (case type
-                          :tangent (cut-line line (map-point line (first isec)) margin)
-                          :poke [(gl/line2 p (cut-before line (first isec) margin))]
-                          :exit [(gl/line2 (cut-after line (first isec) margin) q)]
-                          :impale [(gl/line2 p (cut-before line (first isec) margin))
-                                   (gl/line2 (cut-after line (second isec) margin) q)]
-                          :inside []
-                          [line])
-                        [line]))
-                    lines))
-          lines
-          circles))
+  (reduce
+   (fn [lines circle]
+     (mapcat
+      (fn [{[p q] :points :as line}]
+        (if-let [{:keys [type isec]} (isec/circle-ray circle p q)]
+          (case type
+            :tangent (cut-line line (map-point line (first isec)) margin)
+            :poke [(gl/line2 p (cut-before line (first isec) margin))]
+            :exit [(gl/line2 (cut-after line (first isec) margin) q)]
+            :impale [(gl/line2 p (cut-before line (first isec) margin))
+                     (gl/line2 (cut-after line (second isec) margin) q)]
+            :inside []
+            [line])
+          [line]))
+      lines))
+   lines
+   circles))
 
 (defn build-layers [bounds]
-  (reduce (fn [layers _]
-            (let [{:as attempt}
-                  (->> #(space-divide bounds)
-                       repeatedly
-                       (drop-while
-                        (fn [attempt]
-                          (some (fn [{[circle] :circle}]
-                                  (when (collide/overlaps? (g/scale-size circle 1.1)
-                                                           (first (:circle attempt)))
-                                    attempt))
-                                layers)))
-                       first)]
-              (conj layers attempt)))
-          []
-          (range (dr/random-int 3 8))))
+  (reduce
+   (fn [layers _]
+     (->> #(space-divide bounds)
+          repeatedly
+          (drop-while
+           (fn [attempt]
+             (some
+              (fn [{[circle] :circle}]
+                (when (collide/overlaps? (g/scale-size circle 1.1)
+                                         (first (:circle attempt)))
+                  attempt))
+              layers)))
+          first
+          (conj layers)))
+   []
+   (range (dr/random-int 3 8))))
 
 (defn add-gaps [layers]
   (reduce
