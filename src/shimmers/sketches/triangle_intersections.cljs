@@ -5,6 +5,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -50,9 +51,9 @@
             (map g/as-polygon)
             cs/all-pairs
             (mapcat (fn [[a b]]
-                      [(g/clip-with a b)
-                       (g/clip-with b a)]))
-            (remove (fn [poly] (empty? (g/vertices poly))))
+                      (when (collide/overlaps? a b)
+                        [(g/clip-with a b)
+                         (g/clip-with b a)])))
             (map (fn [poly] (g/translate poly (dr/jitter 4.0))))))]))
 
 (defn scene []
