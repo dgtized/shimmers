@@ -17,6 +17,7 @@
 
 (def width 800)
 (def height 600)
+(def margin 8)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -60,7 +61,7 @@
   (reduce (fn [lines overlap]
             (mapcat (fn [line]
                       (if-let [isec (isec/line-intersect line overlap)]
-                        (cut-line line (map-point line isec) 5)
+                        (cut-line line (map-point line isec) margin)
                         [line]))
                     lines))
           lines
@@ -79,11 +80,11 @@
                         (do
                           (println type isec p q)
                           (case type
-                            :tangent (cut-line line (map-point line (first isec)) 5)
-                            :poke [(gl/line2 p (cut-before line (first isec) 5))]
-                            :exit [(gl/line2 (cut-after line (first isec) 5) q)]
-                            :impale [(gl/line2 p (cut-before line (first isec) 5))
-                                     (gl/line2 (cut-after line (second isec) 5) q)]
+                            :tangent (cut-line line (map-point line (first isec)) margin)
+                            :poke [(gl/line2 p (cut-before line (first isec) margin))]
+                            :exit [(gl/line2 (cut-after line (first isec) margin) q)]
+                            :impale [(gl/line2 p (cut-before line (first isec) margin))
+                                     (gl/line2 (cut-after line (second isec) margin) q)]
                             :inside []
                             [line]))
                         [line]))
