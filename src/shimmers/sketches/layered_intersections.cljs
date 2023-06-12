@@ -24,7 +24,7 @@
 (defn invert [x] (- 1.0 x))
 
 (defn random-offset []
-  ((dr/rand-nth [invert identity]) (/ 1 (dr/rand-nth [2 3 4 5 6 7]))))
+  (dr/random 0.1 0.9))
 
 (defn cut-line [line offset padding]
   (let [margin (/ padding (tm/mag line))]
@@ -48,7 +48,7 @@
         offset (random-offset)
         line (gl/line2 (g/unmap-point bounds start)
                        (g/unmap-point bounds end))
-        r (* (g/height bounds) 0.01 (+ 2 (dr/random-int 6)))
+        r (* (g/height bounds) 0.01 (+ 2 (dr/random-int 5)))
         circle (gc/circle (g/point-at line offset) r)
         perp-line (first (lines/clip-line (g/scale-size (perpindicular line offset) 3.0) bounds))
         isec (isec/line-intersect line perp-line)
