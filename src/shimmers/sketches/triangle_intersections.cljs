@@ -33,19 +33,28 @@
                          (abs (tm/mag q)))))))))
 
 ;; Exclude obtuse triangles & triangles with any edge length ratio > 2.5
-(defn fit-triangle [bounds point]
-  (let [triangle (apply gt/triangle2 (conj (rp/random-points bounds 2) point))
-        edge-lengths (map (fn [[p q]] (g/dist p q)) (g/edges triangle))]
-    (if-not (or (some (fn [x] (> x tm/HALF_PI)) (angles triangle))
-                (> (apply max edge-lengths) (* 2.5 (apply min edge-lengths)))
-                (< (g/area triangle) (* 0.05 (g/area bounds))))
-      triangle
-      (recur bounds point))))
+(defn fit-triangle [triangles bounds point]
+  (loop [attempt 10]
+    (let [triangle (apply gt/triangle2 (conj (rp/random-points bounds 2) point))
+          edge-lengths (map (fn [[p q]] (g/dist p q)) (g/edges triangle))
+          accepted
+          (and (every? (fn [x] (< x tm/HALF_PI)) (angles triangle))
+               (< (apply max edge-lengths) (* 2.5 (apply min edge-lengths)))
+               (> (g/area triangle) (* 0.05 (g/area bounds)))
+               (not-any? (fn [[p q]] (< (g/dist p q) (* 0.05 (g/height bounds))))
+                         (for [a (g/vertices triangle)
+                               b (mapcat g/vertices triangles)]
+                           [a b])))]
+      (if (or accepted (zero? attempt))
+        (conj triangles triangle)
+        (recur (dec attempt))))))
 
 (defn make-triangles [bounds n]
-  (let [points (rp/random-points bounds n)]
-    (map (partial fit-triangle bounds)
-         points)))
+  (let [points (take n (rp/poisson-disc-sampling bounds n))]
+    (reduce (fn [triangles p]
+              (fit-triangle triangles bounds p))
+            []
+            points)))
 
 (defn shapes [bounds]
   (let [triangles (make-triangles (g/scale-size bounds 0.9) 5)
