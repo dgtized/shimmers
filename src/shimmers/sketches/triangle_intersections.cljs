@@ -68,10 +68,10 @@
     [(csvg/group {:fill-opacity 0.15 :fill "#CCCCCC"} triangles)
      (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
        (map (fn [poly] (g/translate poly (dr/jitter 4.0))) clipped))
-     (csvg/group {:fill "#000"}
+     (csvg/group {:stroke-width 1.5}
        (->> clipped
             (mapcat g/vertices)
-            (map (fn [p] (gc/circle p 2.0)))))]))
+            (map (fn [p] (gc/circle p 3.0)))))]))
 
 (defn scene []
   (csvg/svg-timed {:width width
