@@ -42,16 +42,19 @@
           (and (every? (fn [x] (< x tm/HALF_PI)) (angles triangle))
                (< (apply max edge-lengths) (* 2.5 (apply min edge-lengths)))
                (> (g/area triangle) (* 0.05 (g/area bounds)))
-               (not-any? (fn [[p q]] (< (g/dist p q) (* 0.05 (g/height bounds))))
+               (not-any? (fn [[p q]] (< (g/dist p q) (* 0.08 (g/height bounds))))
                          (for [a (g/vertices triangle)
                                b (mapcat g/vertices triangles)]
                            [a b])))]
-      (if (or accepted (zero? attempt))
-        (conj triangles triangle)
-        (recur (dec attempt))))))
+      (cond (zero? attempt)
+            triangles
+            accepted
+            (conj triangles triangle)
+            :else
+            (recur (dec attempt))))))
 
 (defn make-triangles [bounds n]
-  (let [points (take n (rp/poisson-disc-sampling bounds n))]
+  (let [points (rp/poisson-disc-sampling bounds n)]
     (reduce (fn [triangles p]
               (fit-triangle triangles bounds p))
             []
