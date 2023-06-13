@@ -70,7 +70,9 @@
      (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
        (map (fn [poly]
               (csvg/group {}
-                (let [d (dr/random-int -20 -8)]
+                (let [d (* (dr/weighted {1 1
+                                         -1 4})
+                           (dr/random-int 20 8))]
                   (into [(g/translate poly (gv/vec2 0 d))]
                         (map (fn [p] (gl/line2 (g/translate p (gv/vec2 0 d)) p))
                              (g/vertices poly)))))) clipped))]))
