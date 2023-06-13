@@ -57,10 +57,12 @@
                                  [(g/clip-with a b)
                                   (g/clip-with b a)]))))]
     [(csvg/group {:fill-opacity 0.15 :fill "#CCCCCC"} triangles)
-     (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"} (map (fn [poly] (g/translate poly (dr/jitter 4.0)))
-                                                           clipped))
-     (csvg/group {:fill "#000"} (map (fn [p] (gc/circle p 2.0))
-                                     (mapcat g/vertices clipped)))]))
+     (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
+       (map (fn [poly] (g/translate poly (dr/jitter 4.0))) clipped))
+     (csvg/group {:fill "#000"}
+       (->> clipped
+            (mapcat g/vertices)
+            (map (fn [p] (gc/circle p 2.0)))))]))
 
 (defn scene []
   (csvg/svg-timed {:width width
