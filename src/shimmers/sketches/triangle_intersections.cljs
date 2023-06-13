@@ -13,7 +13,8 @@
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.line :as gl]))
 
 (def width 800)
 (def height 600)
@@ -67,11 +68,12 @@
                                   (g/clip-with b a)]))))]
     [(csvg/group {:fill-opacity 0.15 :fill "#CCCCCC"} triangles)
      (csvg/group {:fill-opacity 0.15 :fill "#FFFFFF"}
-       (map (fn [poly] (g/translate poly (dr/jitter 4.0))) clipped))
-     (csvg/group {:stroke-width 1.5}
-       (->> clipped
-            (mapcat g/vertices)
-            (map (fn [p] (gc/circle p 3.0)))))]))
+       (map (fn [poly]
+              (csvg/group {}
+                (let [d (dr/random-int -20 -8)]
+                  (into [(g/translate poly (gv/vec2 0 d))]
+                        (map (fn [p] (gl/line2 (g/translate p (gv/vec2 0 d)) p))
+                             (g/vertices poly)))))) clipped))]))
 
 (defn scene []
   (csvg/svg-timed {:width width
