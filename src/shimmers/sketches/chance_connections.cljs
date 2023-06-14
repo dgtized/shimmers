@@ -107,6 +107,12 @@
    (vec points)
    intervals))
 
+;; Need a better partitioning approach. Something like `k` edges, separate into ranges like:
+;; {[0 5] 1, [5 8] 0.5, [8, 10] 1.2}
+;; and then apply that over the edges at draw time. This is effectively a range
+;; version of `dr/density-range`. Partitions would then be deterministic to edge
+;; counts and could be applied in sequence from the beginning of the path,
+;; unraveled or not.
 (defn partition-segments [path]
   (->> path
        (partition 2 1)
