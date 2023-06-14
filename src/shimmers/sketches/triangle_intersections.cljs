@@ -8,13 +8,12 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.line :as gl]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
