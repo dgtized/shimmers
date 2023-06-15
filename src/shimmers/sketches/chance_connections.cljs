@@ -113,14 +113,6 @@
 ;; version of `dr/density-range`. Partitions would then be deterministic to edge
 ;; counts and could be applied in sequence from the beginning of the path,
 ;; unraveled or not.
-(defn partition-segments [path]
-  (->> path
-       (partition 2 1)
-       (partition-by (fn [_] (dr/weighted {0 2 1 1})))
-       (map (fn [segment] (conj (mapv first segment) (second (last segment)))))))
-
-(comment (partition-segments (range 10)))
-
 (defn partition-range [n mu sd]
   (keep (fn [[t0 t1]]
           (let [lower (int (* t0 n))
@@ -137,11 +129,11 @@
         (conj groups points))
       (let [[start stop] (first parts)
             len (- stop start)]
-        (recur (conj groups (take len points))
+        (recur (conj groups (take (inc len) points))
                (drop len points)
                (rest parts))))))
 
-(comment (segmentize (range 20) (partition-range 20 3 2)))
+(comment (segmentize (range 20) (partition-range 20 1 3)))
 
 (defn draw-segment [points attribs]
   (csvg/path (into [[:M (first points)]]
@@ -156,7 +148,7 @@
                  (chaikin/chaikin 0.2 false depth points)
                  points)]
       (if vary-width
-        (for [segment (partition-segments path)]
+        (for [segment (segmentize path (partition-range (count path) 4 2))]
           (draw-segment segment
                         {:stroke-width (tm/roundto (dr/random 1.0 8.0) 0.5)}))
         (draw-segment points {:stroke-width 1.0})))
