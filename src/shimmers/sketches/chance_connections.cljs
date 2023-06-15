@@ -121,15 +121,27 @@
 
 (comment (partition-segments (range 10)))
 
-(defn partition-range [n]
+(defn partition-range [n mu sd]
   (keep (fn [[t0 t1]]
           (let [lower (int (* t0 n))
                 upper (int (* t1 n))]
             (when (> upper 0)
               [lower upper])))
-        (partition 2 1 (dr/gaussian-range (/ 2 n) (/ 1 n) true))))
+        (partition 2 1 (dr/gaussian-range (/ mu n) (/ sd n) true))))
 
-(comment (partition-range 10))
+(defn segmentize [points parts]
+  (loop [groups [] points points parts parts]
+    (if (empty? parts)
+      (if (empty? points)
+        groups
+        (conj groups points))
+      (let [[start stop] (first parts)
+            len (- stop start)]
+        (recur (conj groups (take len points))
+               (drop len points)
+               (rest parts))))))
+
+(comment (segmentize (range 20) (partition-range 20 3 2)))
 
 (defn draw-segment [points attribs]
   (csvg/path (into [[:M (first points)]]
