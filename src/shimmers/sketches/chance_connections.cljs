@@ -178,7 +178,7 @@
   (csvg/svg-timed {:width (g/width bounds)
                    :height (g/height bounds)
                    :stroke "black"
-                   :fill "white"}
+                   :fill "none"}
     (point-path settings
                 (if (:untangle settings)
                   (remove-cycles points)
