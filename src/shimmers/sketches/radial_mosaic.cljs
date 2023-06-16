@@ -78,8 +78,9 @@
                      (dr/rand-nth m)))
         colors (into palette ["white" "white"])
         row-palette (repeatedly multiple #(dr/rand-nth colors))]
-    (if (dr/chance 0.2)
-      (concat row-palette (reverse row-palette))
+    (if (and (even? multiple) (> multiple 2) (dr/chance 0.33))
+      (let [s (take (/ multiple 2) row-palette)]
+        (concat s (reverse s)))
       row-palette)))
 
 (comment (palette-sequence (first palettes) 19))
