@@ -76,13 +76,10 @@
 
 ;; Concept is to find ranges that are non-overlapping and non-covering, as those
 ;; can be flipped in direction to untangle a single intersection point.
-;; FIXME: algorithm is buggy, particularly for termination case but also
-;; sometimes finds false positives.
 (defn simple-cycles [intervals]
   (loop [simple []
          ivals (rest intervals)
          current (first intervals)]
-    ;; (println current ivals simple)
     (if (empty? ivals)
       (if current
         (conj simple current)
@@ -110,7 +107,7 @@
 ;; Need a better partitioning approach. Something like `k` edges, separate into ranges like:
 ;; {[0 5] 1, [5 8] 0.5, [8, 10] 1.2}
 ;; and then apply that over the edges at draw time. This is effectively a range
-;; version of `dr/density-range`. Partitions would then be deterministic to edge
+;; version of `dr/gaussian-range`. Partitions would then be deterministic to edge
 ;; counts and could be applied in sequence from the beginning of the path,
 ;; unraveled or not.
 (defn partition-range [n mu sd]
@@ -143,7 +140,7 @@
 (defn point-path [{:keys [chaikin depth vary-width
                           show-points show-intersections]}
                   points]
-  (csvg/group {:stroke-width 1.5}
+  (csvg/group {}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)]
