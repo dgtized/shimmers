@@ -72,7 +72,7 @@
     palette/blues-orange-black-shell]))
 
 (defn palette-sequence [palette segments]
-  (let [multiple (let [m (sm/factors segments 10)]
+  (let [multiple (let [m (sm/factors segments 12)]
                    (if (empty? m)
                      1
                      (dr/rand-nth m)))
@@ -143,7 +143,7 @@
           [:p "A circle is chopped into a set of radial arcs, ascending from the
         origin. Each arc is broken up into a number of segments proportional to
         the arc length. Find the common multiples between the number of segments
-        and 10, and pick one randomly. That factor is used to pick a list of
+        and 12, and pick one randomly. That factor is used to pick a list of
         colors from a source palette for that particular row, which are then
         cycled across all segments in the arc, subdviding evenly as it's an even
         divisor."]]]]])))
