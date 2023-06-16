@@ -133,8 +133,16 @@
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
          [view-sketch/generate :radial-mosaic]
-         [palette/as-svg {} palette]]
-        #_(ctrl/checkbox settings "Dispersion" [:dispersion])]])))
+         [:div
+          [palette/as-svg {} palette]
+          #_(ctrl/checkbox settings "Dispersion" [:dispersion])
+          [:p "A circle is chopped into a set of radial arcs, ascending from the
+        origin. Each arc is broken up into a number of segments proportional to
+        the arc length. Find the common multiples between the number of segments
+        and 10, and pick one randomly. That factor is used to pick a list of
+        colors from a source palette for that particular row, which are then
+        cycled across all segments in the arc, subdviding evenly as it's an even
+        divisor."]]]]])))
 
 (sketch/definition radial-mosaic
   {:created-at "2021-05-15"
