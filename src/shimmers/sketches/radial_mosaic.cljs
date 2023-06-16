@@ -76,8 +76,11 @@
                    (if (empty? m)
                      1
                      (dr/rand-nth m)))
-        colors (into palette ["white" "white"])]
-    (repeatedly multiple #(dr/rand-nth colors))))
+        colors (into palette ["white" "white"])
+        row-palette (repeatedly multiple #(dr/rand-nth colors))]
+    (if (dr/chance 0.2)
+      (concat row-palette (reverse row-palette))
+      row-palette)))
 
 (comment (palette-sequence (first palettes) 19))
 
