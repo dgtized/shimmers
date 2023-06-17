@@ -20,6 +20,7 @@
 
 (defonce defo (debug/state))
 
+;; TODO: add visual example using line segments instead of circles
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [shapes lower upper]} @ui-state
