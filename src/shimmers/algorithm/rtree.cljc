@@ -70,11 +70,13 @@
     (g/intersect-shape a b)))
 
 (defn search-intersection
-  [tree box]
-  (letfn [(search [{:keys [bounds data children]} box]
-            (when (intersects? box bounds)
-              (lazy-seq (cons data (mapcat #(search % box) children)))))]
-    (remove nil? (search tree box))))
+  [{:keys [bounds data children]} box]
+  (when (intersects? box bounds)
+    (lazy-seq
+     (let [remaining (mapcat #(search-intersection % box) children)]
+       (if data
+         (cons data remaining)
+         remaining)))))
 
 (defn path-search
   [{:keys [bounds children] :as node} point]
