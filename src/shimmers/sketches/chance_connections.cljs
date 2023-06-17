@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.chaikin :as chaikin]
    [shimmers.algorithm.random-points :as rp]
+   [shimmers.algorithm.rtree :as rtree]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -10,6 +11,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
@@ -56,15 +58,20 @@
       path)))
 
 (defn intersections [points]
-  (->> points
-       (partition 2 1)
-       (map-indexed vector)
-       cs/non-consecutive-pairs
-       (keep
-        (fn [[[idx0 [a b]] [idx1 [c d]]]]
-          (let [{type :type isec :p} (isec/intersect-line2-line2? a b c d)]
-            (when (= type :intersect)
-              {:isec isec :segments [[a b] [c d]] :indices [idx0 idx1]}))))))
+  (let [segments (->> points
+                      (partition 2 1)
+                      (map-indexed (fn [i [p q]] (assoc (gl/line2 p q) :idx i))))
+        tree (rtree/create {:max-children 4} segments)]
+    (mapcat (fn [{[a b] :points idx0 :idx :as segment}]
+              (let [candidates (->> segment
+                                    g/bounds
+                                    (rtree/search-intersection tree)
+                                    (filter (fn [{:keys [idx]}] (< (inc idx0) idx))))]
+                (for [{[c d] :points idx1 :idx} candidates
+                      :let [{type :type isec :p} (isec/intersect-line2-line2? a b c d)]
+                      :when (= type :intersect)]
+                  {:isec isec :segments [[a b] [c d]] :indices [idx0 idx1]})))
+            segments)))
 
 (defn overlaps? [[a b] [c d]]
   (and (<= a d) (>= b c)))
