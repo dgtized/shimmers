@@ -120,17 +120,19 @@
 (defn partition-range [n mu sd]
   (keep (fn [[t0 t1]]
           (let [lower (int (* t0 n))
-                upper (int (* t1 n))]
-            (when (> upper 0)
-              [lower upper])))
+                upper (int (* t1 n))
+                len (- upper lower)]
+            (when (and (> upper 0) (> len 0))
+              len)))
         (partition 2 1 (dr/gaussian-range (/ mu n) (/ sd n) true))))
 
+;; sometimes leaves a trailing segment with one element, might be from len+1 for
+;; last element?
 (defn segmentize [points parts]
   (lazy-seq
    (when (seq points)
      (if-let [s (seq parts)]
-       (let [[start stop] (first s)
-             len (- stop start)]
+       (let [len (first s)]
          (cons (take (inc len) points)
                (segmentize (drop len points) (rest parts))))
        (list points)))))
