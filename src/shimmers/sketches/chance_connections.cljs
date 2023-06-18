@@ -126,16 +126,14 @@
         (partition 2 1 (dr/gaussian-range (/ mu n) (/ sd n) true))))
 
 (defn segmentize [points parts]
-  (loop [groups [] points points parts parts]
-    (if (empty? parts)
-      (if (empty? points)
-        groups
-        (conj groups points))
-      (let [[start stop] (first parts)
-            len (- stop start)]
-        (recur (conj groups (take (inc len) points))
-               (drop len points)
-               (rest parts))))))
+  (lazy-seq
+   (when (seq points)
+     (if-let [s (seq parts)]
+       (let [[start stop] (first s)
+             len (- stop start)]
+         (cons (take (inc len) points)
+               (segmentize (drop len points) (rest parts))))
+       (list points)))))
 
 (comment (segmentize (range 20) (partition-range 20 1 3)))
 
