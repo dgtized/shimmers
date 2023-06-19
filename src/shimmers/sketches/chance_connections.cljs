@@ -12,6 +12,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
@@ -150,11 +151,17 @@
   (csvg/group {}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
-                 points)]
+                 points)
+          displace (tm/- (tm/mix (first path) (g/centroid (gp/polygon2 points)) 0.025) (first path))]
       (if vary-width
         (for [segment (segmentize path (partition-range (count path) 4 2))]
-          (draw-segment segment
-                        {:stroke-width (dr/random-int 1 10)}))
+          (csvg/group {}
+            (draw-segment segment
+                          {:stroke-width (dr/random-int 1 10)})
+            (draw-segment (map (fn [p] (g/translate p displace))segment)
+                          {:stroke-width (dr/random-int 1 5)})
+            (draw-segment (map (fn [p] (g/translate p (tm/- displace)))segment)
+                          {:stroke-width (dr/random-int 1 5)})))
         (draw-segment points {:stroke-width 1.0})))
     (when show-points
       (csvg/group {:fill "black"}
