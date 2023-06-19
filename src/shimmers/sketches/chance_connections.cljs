@@ -27,6 +27,7 @@
   (ctrl/state
    {:show-points false
     :show-intersections false
+    :show-tight-bends false
     :vary-width true
     :untangle true
     :displaced-lines true
@@ -113,6 +114,12 @@
    (vec points)
    intervals))
 
+(defn tight-bends [points]
+  (for [[a b c] (partition 3 1 points)
+        :let [angle (g/angle-between (tm/- a b) (tm/- c b))]
+        :when (< angle (/ Math/PI 8))]
+    {:p b :angle angle}))
+
 ;; Need a better partitioning approach. Something like `k` edges, separate into ranges like:
 ;; {[0 5] 1, [5 8] 0.5, [8, 10] 1.2}
 ;; and then apply that over the edges at draw time. This is effectively a range
@@ -152,9 +159,10 @@
 (defn translate-points [points displace]
   (map (fn [p] (g/translate p (tm/- displace))) points))
 
-(defn point-path [{:keys [chaikin depth vary-width displaced-lines
-                          show-points show-intersections]}
-                  points]
+(defn point-path
+  [{:keys [chaikin depth vary-width displaced-lines
+           show-tight-bends show-points show-intersections]}
+   points]
   (csvg/group {}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
@@ -177,6 +185,10 @@
       (csvg/group {:fill "black"}
         (for [p points]
           (gc/circle p 2.0))))
+    (when show-tight-bends
+      (csvg/group {:stroke "#666666" :fill "none" :stroke-width 3.0}
+        (for [{:keys [p]} (tight-bends points)]
+          (gc/circle p 6.0))))
     (when show-intersections
       (let [intersects (intersections points)]
         (println "indices" (map :indices intersects))
@@ -223,6 +235,7 @@
            [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
+           [ctrl/checkbox ui-state "Show Tight Bends" [:show-tight-bends]]
            [:div.flexcols {:style {:gap "0px 1.5em"}}
             [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
             (when (:chaikin @ui-state)
