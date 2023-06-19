@@ -29,6 +29,7 @@
     :show-intersections false
     :vary-width true
     :untangle true
+    :displaced-lines true
     :chaikin false
     :depth 3}))
 
@@ -145,23 +146,25 @@
                    (map (fn [v] [:L v]) (rest points)))
              attribs))
 
-(defn point-path [{:keys [chaikin depth vary-width
+(defn point-path [{:keys [chaikin depth vary-width displaced-lines
                           show-points show-intersections]}
                   points]
   (csvg/group {}
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)
-          displace (tm/- (tm/mix (first path) (g/centroid (gp/polygon2 points)) 0.025) (first path))]
+          displace (tm/normalize (tm/- (first path) (g/centroid (gp/polygon2 points))) 6.0)]
       (if vary-width
         (for [segment (segmentize path (partition-range (count path) 4 2))]
           (csvg/group {}
-            (draw-segment segment
-                          {:stroke-width (dr/random-int 1 10)})
-            (draw-segment (map (fn [p] (g/translate p displace))segment)
-                          {:stroke-width (dr/random-int 1 5)})
-            (draw-segment (map (fn [p] (g/translate p (tm/- displace)))segment)
-                          {:stroke-width (dr/random-int 1 5)})))
+            (concat [(draw-segment segment
+                                   {:stroke-width (dr/random-int 1 10)})]
+                    (if displaced-lines
+                      [(draw-segment (map (fn [p] (g/translate p displace))segment)
+                                     {:stroke-width (dr/random-int 1 5)})
+                       (draw-segment (map (fn [p] (g/translate p (tm/- displace)))segment)
+                                     {:stroke-width (dr/random-int 1 5)})]
+                      []))))
         (draw-segment points {:stroke-width 1.0})))
     (when show-points
       (csvg/group {:fill "black"}
@@ -209,6 +212,7 @@
           [:p]
           [:div {:style {:min-width "20em"}}
            [ctrl/checkbox ui-state "Untangle" [:untangle]]
+           [ctrl/checkbox ui-state "Displaced Lines" [:displaced-lines]]
            [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
