@@ -87,8 +87,13 @@
                    :stroke-width 1.0}
     (shapes (rect/rect 0 0 width height))))
 
+(defn ui-controls []
+  [:div
+   [:p.readable-width
+    "Extrude displaced polygons from the clip intersections between overlapping triangles."]])
+
 (sketch/definition triangle-intersections
   {:created-at "2023-06-12"
    :tags #{}
    :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :triangle-intersections)))
+  (ctrl/mount (view-sketch/static-page scene :triangle-intersections ui-controls)))
