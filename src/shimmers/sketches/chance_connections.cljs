@@ -135,7 +135,10 @@
    (when (seq points)
      (if-let [s (seq parts)]
        (let [len (first s)]
-         (cons (take (inc len) points)
+         (cons {:segment (take (inc len) points)
+                :width (dr/random-int 1 10)
+                :up (dr/random-int 1 5)
+                :down (dr/random-int 1 5)}
                (segmentize (drop len points) (rest parts))))
        (list points)))))
 
@@ -158,17 +161,16 @@
                  points)
           displace (tm/normalize (tm/- (first path) (g/centroid (gp/polygon2 points))) 6.0)]
       (if vary-width
-        (for [segment (segmentize path (partition-range (count path) 4 2))]
+        (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 4 2))]
           (csvg/group {}
-            (concat [(draw-segment segment
-                                   {:stroke-width (dr/random-int 1 10)})]
+            (concat [(draw-segment segment {:stroke-width width})]
                     (if displaced-lines
                       [(-> segment
                            (translate-points displace)
-                           (draw-segment {:stroke-width (dr/random-int 1 5)}))
+                           (draw-segment {:stroke-width up}))
                        (-> segment
                            (translate-points (tm/- displace))
-                           (draw-segment {:stroke-width (dr/random-int 1 5)}))]
+                           (draw-segment {:stroke-width down}))]
                       []))))
         (draw-segment points {:stroke-width 1.0})))
     (when show-points
