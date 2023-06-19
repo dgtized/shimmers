@@ -154,7 +154,7 @@
       (if vary-width
         (for [segment (segmentize path (partition-range (count path) 4 2))]
           (draw-segment segment
-                        {:stroke-width (tm/roundto (dr/random 1.0 8.0) 0.5)}))
+                        {:stroke-width (dr/random-int 1 10)}))
         (draw-segment points {:stroke-width 1.0})))
     (when show-points
       (csvg/group {:fill "black"}
