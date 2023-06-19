@@ -146,6 +146,9 @@
                    (map (fn [v] [:L v]) (rest points)))
              attribs))
 
+(defn translate-points [points displace]
+  (map (fn [p] (g/translate p (tm/- displace))) points))
+
 (defn point-path [{:keys [chaikin depth vary-width displaced-lines
                           show-points show-intersections]}
                   points]
@@ -160,10 +163,12 @@
             (concat [(draw-segment segment
                                    {:stroke-width (dr/random-int 1 10)})]
                     (if displaced-lines
-                      [(draw-segment (map (fn [p] (g/translate p displace))segment)
-                                     {:stroke-width (dr/random-int 1 5)})
-                       (draw-segment (map (fn [p] (g/translate p (tm/- displace)))segment)
-                                     {:stroke-width (dr/random-int 1 5)})]
+                      [(-> segment
+                           (translate-points displace)
+                           (draw-segment {:stroke-width (dr/random-int 1 5)}))
+                       (-> segment
+                           (translate-points (tm/- displace))
+                           (draw-segment {:stroke-width (dr/random-int 1 5)}))]
                       []))))
         (draw-segment points {:stroke-width 1.0})))
     (when show-points
