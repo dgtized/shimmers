@@ -240,19 +240,19 @@
             [ctrl/checkbox ui-state "Chaiken Smooth" [:chaikin]]
             (when (:chaikin @ui-state)
               [ctrl/numeric ui-state "Depth" [:depth] [1 6 1]])]]]
-         [:div
-          [:p.readable-width
+         [:div.readable-width
+          [:p
            "Create a set of random points using poisson disc sampling. Pick the
      first point to start and then greedily take the next closest point in the
      set from the current position until the set is exhausted."]
-          [:p.readable-width
+          [:p
            "As often there are intersections in the resulting path, untangle
            will find all self-intersections, and remove any simple loops it can
            find. Simple loops are sequences like A-B-C-D where A-B and C-D
            intersect. These can be unwound by connecting opposite ends of the
            loop and reversing the middle, ie a sequence like A-C-B-D. This is
            applied repeatedly until all simple loops are removed."]
-          [:p.readable-width
+          [:p
            "A few paths still have loops where the entry and exit
            are from two intersections, those are not currently corrected."]]]]])))
 
