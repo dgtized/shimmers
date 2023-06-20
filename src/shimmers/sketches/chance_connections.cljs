@@ -28,6 +28,7 @@
    {:show-points false
     :show-intersections false
     :show-tight-bends false
+    :show-original true
     :vary-width true
     :untangle true
     :displaced-lines true
@@ -161,9 +162,14 @@
 
 (defn point-path
   [{:keys [chaikin depth vary-width displaced-lines
-           show-tight-bends show-points show-intersections]}
+           show-tight-bends show-points show-intersections
+           show-original] :as settings}
    points]
   (csvg/group {}
+    (when show-original
+      (csvg/group {}
+        (draw-segment (:points settings)
+                      {:stroke-opacity 0.33 :stroke-width 1.0})))
     (let [path (if chaikin
                  (chaikin/chaikin 0.2 false depth points)
                  points)
@@ -212,7 +218,7 @@
                    :height (g/height bounds)
                    :stroke "black"
                    :fill "none"}
-    (point-path settings
+    (point-path (assoc settings :points points)
                 (if (:untangle settings)
                   (remove-cycles points)
                   points))))
@@ -233,6 +239,7 @@
            [ctrl/checkbox ui-state "Untangle" [:untangle]]
            [ctrl/checkbox ui-state "Displaced Lines" [:displaced-lines]]
            [ctrl/checkbox ui-state "Vary Widths" [:vary-width]]
+           [ctrl/checkbox ui-state "Show Original" [:show-original]]
            [ctrl/checkbox ui-state "Show Points" [:show-points]]
            [ctrl/checkbox ui-state "Show Intersections" [:show-intersections]]
            [ctrl/checkbox ui-state "Show Tight Bends" [:show-tight-bends]]
