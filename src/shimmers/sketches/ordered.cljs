@@ -152,10 +152,24 @@
                    (->> (poly-detect/inset-polygon shape 3)
                         poly-detect/split-self-intersection
                         (apply max-key g/area))
-                   shape)]
+                   shape)
+          ;; FIXME: add top level rule to enable/disable extrusion
+          y-off (tm/* (gv/vec2 0 (* 1.6 (- 8 depth)))
+                      (if (dr/chance 0.5) 1 -1))]
       (mapcat (fn [s i]
-                (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)]
-                  (recurse-shapes bounds sides p-shape side (inc p-depth))))
+                (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)
+                      children (recurse-shapes bounds sides p-shape side (inc p-depth))]
+                  (if (dr/chance (* depth 0.015))
+                    (let [extruded (vary-meta (g/translate p-shape y-off)
+                                              assoc :stroke-width 0.5)]
+                      (concat children
+                              [extruded]
+                              (mapv (fn [a b]
+                                      (vary-meta (gl/line2 a b) assoc :stroke-width 0.5))
+                                    (g/vertices p-shape)
+                                    (g/vertices extruded))
+                              ))
+                    children)))
               (lines/slice-polygons [shape'] (cuts shape' side offsets))
               (range)))))
 
