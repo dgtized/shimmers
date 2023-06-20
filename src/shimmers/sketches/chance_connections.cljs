@@ -187,7 +187,7 @@
    segmentation]
   (csvg/group {}
     (when show-original
-      (csvg/group {:stroke "hsla(0.0,80%,40%,80%)"}
+      (csvg/group {:stroke "hsla(0,75%,35%,80%)"} ;; or 210 for blue
         (draw-path settings original
                    (tm/normalize (tm/- (last original) (g/centroid (gp/polygon2 original))) 8.0)
                    segmentation)))
