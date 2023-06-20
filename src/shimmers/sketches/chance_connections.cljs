@@ -160,33 +160,36 @@
 (defn translate-points [points displace]
   (map (fn [p] (g/translate p (tm/- displace))) points))
 
+(defn draw-path
+  [{:keys [chaikin depth vary-width displaced-lines]} points displace]
+  (let [path (if chaikin
+               (chaikin/chaikin 0.2 false depth points)
+               points)]
+    (if vary-width
+      (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 4 2))]
+        (csvg/group {}
+          (concat [(draw-segment segment {:stroke-width width})]
+                  (if displaced-lines
+                    [(-> segment
+                         (translate-points displace)
+                         (draw-segment {:stroke-width up}))
+                     (-> segment
+                         (translate-points (tm/- displace))
+                         (draw-segment {:stroke-width down}))]
+                    []))))
+      (draw-segment points {:stroke-width 1.0}))))
+
 (defn point-path
-  [{:keys [chaikin depth vary-width displaced-lines
-           show-tight-bends show-points show-intersections
-           show-original] :as settings}
+  [{:keys [show-tight-bends show-points show-intersections
+           show-original original] :as settings}
    points]
   (csvg/group {}
     (when show-original
-      (csvg/group {}
-        (draw-segment (:points settings)
-                      {:stroke-opacity 0.33 :stroke-width 1.0})))
-    (let [path (if chaikin
-                 (chaikin/chaikin 0.2 false depth points)
-                 points)
-          displace (tm/normalize (tm/- (first path) (g/centroid (gp/polygon2 points))) 6.0)]
-      (if vary-width
-        (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 4 2))]
-          (csvg/group {}
-            (concat [(draw-segment segment {:stroke-width width})]
-                    (if displaced-lines
-                      [(-> segment
-                           (translate-points displace)
-                           (draw-segment {:stroke-width up}))
-                       (-> segment
-                           (translate-points (tm/- displace))
-                           (draw-segment {:stroke-width down}))]
-                      []))))
-        (draw-segment points {:stroke-width 1.0})))
+      (csvg/group {:stroke "hsla(0.0,80%,40%,80%)"}
+        (draw-path settings original
+                   (tm/normalize (tm/- (last original) (g/centroid (gp/polygon2 original))) 8.0))))
+    (draw-path settings points
+               (tm/normalize (tm/- (first points) (g/centroid (gp/polygon2 points))) 6.0))
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
@@ -218,7 +221,7 @@
                    :height (g/height bounds)
                    :stroke "black"
                    :fill "none"}
-    (point-path (assoc settings :points points)
+    (point-path (assoc settings :original points)
                 (if (:untangle settings)
                   (remove-cycles points)
                   points))))
