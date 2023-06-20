@@ -133,7 +133,10 @@
                 upper (int (* t1 n))
                 len (- upper lower)]
             (when (and (> upper 0) (> len 0))
-              len)))
+              {:len len
+               :width (dr/random-int 1 10)
+               :up (dr/random-int 1 5)
+               :down (dr/random-int 1 5)})))
         (partition 2 1 (dr/gaussian-range (/ mu n) (/ sd n) true))))
 
 ;; sometimes leaves a trailing segment with one element, might be from len+1 for
@@ -142,11 +145,8 @@
   (lazy-seq
    (when (seq points)
      (if-let [s (seq parts)]
-       (let [len (first s)]
-         (cons {:segment (take (inc len) points)
-                :width (dr/random-int 1 10)
-                :up (dr/random-int 1 5)
-                :down (dr/random-int 1 5)}
+       (let [{:keys [len] :as seg} (first s)]
+         (cons (assoc seg :segment (take (inc len) points))
                (segmentize (drop len points) (rest parts))))
        (list points)))))
 
