@@ -161,12 +161,13 @@
   (map (fn [p] (g/translate p (tm/- displace))) points))
 
 (defn draw-path
-  [{:keys [chaikin depth vary-width displaced-lines]} points displace]
+  [{:keys [chaikin depth vary-width displaced-lines]}
+   points displace segmentation]
   (let [path (if chaikin
                (chaikin/chaikin 0.2 false depth points)
                points)]
     (if vary-width
-      (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 3 1))]
+      (for [{:keys [segment width up down]} (segmentize path segmentation)]
         (csvg/group {}
           (concat [(draw-segment segment {:stroke-width width})]
                   (if displaced-lines
@@ -182,14 +183,17 @@
 (defn point-path
   [{:keys [show-tight-bends show-points show-intersections
            show-original original] :as settings}
-   points]
+   points
+   segmentation]
   (csvg/group {}
     (when show-original
       (csvg/group {:stroke "hsla(0.0,80%,40%,80%)"}
         (draw-path settings original
-                   (tm/normalize (tm/- (last original) (g/centroid (gp/polygon2 original))) 8.0))))
+                   (tm/normalize (tm/- (last original) (g/centroid (gp/polygon2 original))) 8.0)
+                   segmentation)))
     (draw-path settings points
-               (tm/normalize (tm/- (first points) (g/centroid (gp/polygon2 points))) 6.0))
+               (tm/normalize (tm/- (first points) (g/centroid (gp/polygon2 points))) 6.0)
+               segmentation)
     (when show-points
       (csvg/group {:fill "black"}
         (for [p points]
@@ -216,7 +220,7 @@
      (untangle pts (simple-cycles (map :indices (intersections pts)))))
    path))
 
-(defn scene [bounds points settings]
+(defn scene [bounds points segmentation settings]
   (csvg/svg-timed {:width (g/width bounds)
                    :height (g/height bounds)
                    :stroke "black"
@@ -224,14 +228,16 @@
     (point-path (assoc settings :original points)
                 (if (:untangle settings)
                   (remove-cycles points)
-                  points))))
+                  points)
+                (cycle segmentation))))
 
 (defn page []
   (let [bounds (rect/rect 0 0 width height)
-        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))]
+        path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))
+        segmentation (partition-range (count path) 3 1)]
     (fn []
       [:<>
-       [:div.canvas-frame [scene bounds path @ui-state]]
+       [:div.canvas-frame [scene bounds path segmentation @ui-state]]
        [:div.contained
         [:div.flexcols {:style {:justify-content :space-evenly :gap "0 0"}}
          [:div
