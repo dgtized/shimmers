@@ -150,7 +150,7 @@
                (segmentize (drop len points) (rest parts))))
        (list points)))))
 
-(comment (segmentize (range 20) (partition-range 20 1 3)))
+(comment (segmentize (range 20) (partition-range 20 3 1)))
 
 (defn draw-segment [points attribs]
   (csvg/path (into [[:M (first points)]]
@@ -166,7 +166,7 @@
                (chaikin/chaikin 0.2 false depth points)
                points)]
     (if vary-width
-      (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 4 2))]
+      (for [{:keys [segment width up down]} (segmentize path (partition-range (count path) 3 1))]
         (csvg/group {}
           (concat [(draw-segment segment {:stroke-width width})]
                   (if displaced-lines
