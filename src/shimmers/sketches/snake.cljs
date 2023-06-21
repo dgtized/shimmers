@@ -8,6 +8,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -95,22 +96,26 @@
         (update :spinners into (gen-spinners chain t))
         (update :t + 0.01))))
 
-(defn brush-at [pos theta]
-  (let [t (gt/triangle2 [-9 -6] [6 10] [-15 5])]
-    (doseq [p (:points (g/rotate t theta))]
+(defn brush-at [pos theta size]
+  (let [t (triangle/inscribed-equilateral {:p (gv/vec2) :r size} theta)]
+    (doseq [p (:points t)]
       (apply q/vertex (tm/+ p pos)))))
 
 (defn draw-triangle-brushes [{:keys [target chain t]}]
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.7 (q/noise x y (* 0.01 t)))
               (* 0.2 (q/noise x y (+ 100 (* 0.01 t))))))
-  (let [vertices (g/vertices chain)]
+  (let [vertices (g/vertices chain)
+        len (g/dist (first vertices) (last vertices))]
     (q/begin-shape :triangles)
-    (doseq [vertex vertices
+    (doseq [[vertex next-vertex] (partition 2 1 vertices)
             :let [[x y] (tm/* vertex 0.001)]]
       (q/fill (q/noise x y (* t 0.001))
-              0.2)
-      (brush-at vertex (* eq/TAU t (/ 50 (g/dist vertex (:p target))))))
+              0.25)
+      (brush-at vertex
+                (+ (g/heading (tm/- next-vertex vertex))
+                   (* t 0.33 (/ (g/dist vertex (last vertices)) len)))
+                (/ (g/dist vertex next-vertex) 1.5)))
     (q/end-shape)))
 
 (defn draw-spinners [{:keys [spinners t]}]
