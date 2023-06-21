@@ -122,10 +122,8 @@
   (let [vertices (g/vertices chain)
         len (g/dist (first vertices) (last vertices))]
     (q/begin-shape :triangles)
-    (doseq [[vertex next-vertex] (partition 2 1 vertices)
-            :let [[x y] (tm/* vertex 0.001)]]
-      (q/fill (q/noise x y (* t 0.001))
-              0.25)
+    (doseq [[vertex next-vertex] (partition 2 1 vertices)]
+      (apply-fill @ui-state t vertex)
       (brush-at vertex
                 (+ (g/heading (tm/- next-vertex vertex))
                    (* t 0.33 (/ (g/dist vertex (last vertices)) len)))
