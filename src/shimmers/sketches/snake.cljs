@@ -96,6 +96,20 @@
         (update :spinners into (gen-spinners chain t))
         (update :t + 0.01))))
 
+
+(defn apply-fill [{:keys [color limit-palette]} t vertex]
+  (let [[x y] (tm/* vertex 0.001)
+        grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
+        opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]
+    (if (and color (< 0.4 grey 0.6))
+      (if limit-palette
+        (q/fill (tm/map-interval (q/noise x (+ 80 (* 0.02 t)) y) [0 1] [-0.1 0.1])
+                (tm/map-interval (q/noise x (+ 120 (* 0.05 t)) y) [0 1] [0.5 0.75])
+                (tm/map-interval (q/noise x (+ 240 (* 0.02 t)) y) [0 1] [0.25 0.5])
+                opacity)
+        (q/fill (mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5 opacity))
+      (q/fill grey opacity))))
+
 (defn brush-at [pos theta size]
   (let [t (triangle/inscribed-equilateral {:p (gv/vec2) :r size} theta)]
     (doseq [p (:points t)]
@@ -158,21 +172,11 @@
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
-  (let [edges (g/edges chain)
-        {:keys [color limit-palette]} @ui-state]
+  (let [edges (g/edges chain)]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
-            :let [[x y] (tm/* a 0.001)
-                  grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
-                  opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]]
-      (if (and color (< 0.4 grey 0.6))
-        (if limit-palette
-          (q/fill (tm/map-interval (q/noise x (+ 80 (* 0.02 t)) y) [0 1] [-0.1 0.1])
-                  (tm/map-interval (q/noise x (+ 120 (* 0.05 t)) y) [0 1] [0.5 0.75])
-                  (tm/map-interval (q/noise x (+ 240 (* 0.02 t)) y) [0 1] [0.25 0.5])
-                  opacity)
-          (q/fill (mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5 opacity))
-        (q/fill grey opacity))
+            :let []]
+      (apply-fill @ui-state t a)
       (apply q/vertex a)
       (apply q/vertex b)
       (apply q/vertex (equilateral-point a b i nil)))
