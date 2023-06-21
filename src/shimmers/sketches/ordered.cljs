@@ -162,13 +162,14 @@
                   (if (dr/chance (* depth 0.015))
                     (let [extruded (vary-meta (g/translate p-shape y-off)
                                               assoc :stroke-width 0.5)]
-                      (concat children
-                              [extruded]
-                              (mapv (fn [a b]
-                                      (vary-meta (gl/line2 a b) assoc :stroke-width 0.5))
-                                    (g/vertices p-shape)
-                                    (g/vertices extruded))
-                              ))
+                      (if (collide/bounded? bounds extruded)
+                        (concat children
+                                [extruded]
+                                (mapv (fn [a b]
+                                        (vary-meta (gl/line2 a b) assoc :stroke-width 0.5))
+                                      (g/vertices p-shape)
+                                      (g/vertices extruded)))
+                        children))
                     children)))
               (lines/slice-polygons [shape'] (cuts shape' side offsets))
               (range)))))
