@@ -97,6 +97,11 @@
         (update :t + 0.01))))
 
 
+(defn apply-stroke [target t]
+  (let [[x y] (tm/* (:p target) 0.1)]
+    (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
+              (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t))))))))
+
 (defn apply-fill [{:keys [color limit-palette]} t vertex]
   (let [[x y] (tm/* vertex 0.001)
         grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
@@ -116,9 +121,7 @@
       (apply q/vertex (tm/+ p pos)))))
 
 (defn draw-triangle-brushes [{:keys [target chain t]}]
-  (let [[x y] (tm/* (:p target) 0.1)]
-    (q/stroke (tm/smoothstep* 0.3 0.7 (q/noise x y (* 0.01 t)))
-              (* 0.2 (q/noise x y (+ 100 (* 0.01 t))))))
+  (apply-stroke target t)
   (let [vertices (g/vertices chain)
         len (g/dist (first vertices) (last vertices))]
     (q/begin-shape :triangles)
@@ -167,9 +170,7 @@
 
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
   ;; (test-rotation tm/HALF_PI)
-  (let [[x y] (tm/* (:p target) 0.1)]
-    (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
-              (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t)))))))
+  (apply-stroke target t)
   (let [edges (g/edges chain)]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
