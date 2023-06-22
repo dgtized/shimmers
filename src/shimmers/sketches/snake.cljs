@@ -96,7 +96,6 @@
         (update :spinners into (gen-spinners chain t))
         (update :t + 0.01))))
 
-
 (defn apply-stroke [target t]
   (let [[x y] (tm/* (:p target) 0.1)]
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
@@ -183,10 +182,17 @@
     (when (:spinners @ui-state)
       (draw-spinners state))))
 
-(defn draw-chain [{:keys [chain]}]
-  (q/stroke 0.0 0.05)
-  (q/no-fill)
-  (cq/draw-curve-path (g/vertices chain)))
+(defn draw-chain [{:keys [chain t]}]
+  (let [vertices (g/vertices chain)
+        [x y] (tm/* (first vertices) 0.001)
+        grey (tm/smoothstep* 0.33 0.66 (q/noise x y (* t 0.001)))
+        opacity (+ 0.025 (* 0.1 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t))))))]
+    (apply q/stroke
+           (if (and (:color @ui-state) (< 0.4 grey 0.6))
+             [(mod (* tm/PHI (q/noise x (+ 80 (* 0.01 t)) y)) 1) 0.5 0.5 opacity]
+             [grey opacity]))
+    (q/no-fill)
+    (cq/draw-curve-path vertices)))
 
 (def draw-modes
   {:chain draw-chain
@@ -205,8 +211,7 @@
     [:li "Brushes draws triangles at each vertex of the chain, spinning them
      proportional to distance from the head of the chain."]]
    [:div.flexmodes
-    (when (#{:equilateral-links :brushes} (:draw-mode @ui-state))
-      (ctrl/checkbox ui-state "Color Patches" [:color]))
+    (ctrl/checkbox ui-state "Color Patches" [:color])
     (when (and (#{:equilateral-links :brushes} (:draw-mode @ui-state))
                (:color @ui-state))
       (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
