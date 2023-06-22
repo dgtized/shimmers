@@ -104,7 +104,7 @@
 
 (defn apply-fill [{:keys [color limit-palette]} t vertex]
   (let [[x y] (tm/* vertex 0.001)
-        grey (tm/smoothstep* 0.25 0.6 (q/noise x y (* t 0.001)))
+        grey (tm/smoothstep* 0.2 0.6 (q/noise x y (* t 0.001)))
         opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]
     (if (and color (< 0.4 grey 0.6))
       (if limit-palette
