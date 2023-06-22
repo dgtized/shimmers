@@ -205,9 +205,9 @@
     [:li "Brushes draws triangles at each vertex of the chain, spinning them
      proportional to distance from the head of the chain."]]
    [:div.flexmodes
-    (when (= (:draw-mode @ui-state) :equilateral-links)
+    (when (#{:equilateral-links :brushes} (:draw-mode @ui-state))
       (ctrl/checkbox ui-state "Color Patches" [:color]))
-    (when (and (= (:draw-mode @ui-state) :equilateral-links)
+    (when (and (#{:equilateral-links :brushes} (:draw-mode @ui-state))
                (:color @ui-state))
       (ctrl/checkbox ui-state "Limit Palette" [:limit-palette]))
     (when (= (:draw-mode @ui-state) :equilateral-links)
