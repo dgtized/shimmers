@@ -184,8 +184,8 @@
 
 (defn draw-chain [{:keys [chain t]}]
   (let [vertices (g/vertices chain)
-        [x y] (tm/* (first vertices) 0.001)
-        grey (tm/smoothstep* 0.33 0.66 (q/noise x y (* t 0.001)))
+        [x y] (tm/* (first vertices) 0.005)
+        grey (tm/smoothstep* 0.33 0.66 (q/noise x y (* t 0.01)))
         opacity (+ 0.025 (* 0.1 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t))))))]
     (apply q/stroke
            (if (and (:color @ui-state) (< 0.4 grey 0.6))
