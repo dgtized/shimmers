@@ -186,7 +186,7 @@
 (defn draw-chain [{:keys [chain]}]
   (q/stroke 0.0 0.05)
   (q/no-fill)
-  (cq/draw-path (g/vertices chain)))
+  (cq/draw-curve-path (g/vertices chain)))
 
 (def draw-modes
   {:chain draw-chain
