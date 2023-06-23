@@ -13,7 +13,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.quaternion :as quat]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -146,16 +145,13 @@
         :points
         cq/draw-triangle)))
 
-(defn equilateral-point [a b i t]
-  (let [a-b (tm/- a b)
-        p (tm/+ b (g/rotate a-b (* (if (even? i) 1 -1) (/ eq/TAU 6))))]
-    ;; with rotation enabled some orientations rotate regardless of theta from
-    ;; changes in axis orientation?
-    (if t
-      (let [mid (tm/+ b (tm/* a-b 0.5))
-            quat-angle (quat/quat-from-axis-angle a-b t)]
-        (tm/+ mid (tm/* (tm/- p mid) (:xy quat-angle))))
-      p)))
+(defn equilateral-point [a b i scale]
+  (let [a-b (tm/normalize (tm/- a b)
+                          (* (/ tm/SQRT3 2)
+                             scale
+                             (tm/mag (tm/- a b))))]
+    (tm/+ (tm/mix a b 0.5)
+          (g/rotate a-b (* (if (even? i) 1 -1) (/ eq/TAU 4))))))
 
 (defn test-rotation [t]
   (q/stroke 0 1.0)
@@ -170,14 +166,22 @@
 (defn draw-equilateral-links [{:keys [target chain t] :as state}]
   ;; (test-rotation tm/HALF_PI)
   (apply-stroke target t)
-  (let [edges (g/edges chain)]
+  (let [edges (g/edges chain)
+        scale-noise (apply q/noise (tm/+ (tm/* (gv/vec3 (ffirst edges) (* 5 t)) 0.005)
+                                         (gv/vec3 80 30 60)))
+        scale (cond (< 0.4 scale-noise 0.6)
+                    1.0
+                    (< scale-noise 0.4)
+                    (tm/smoothstep* 0.15 0.4 scale-noise)
+                    :else
+                    (- 1.0 (tm/smoothstep* 0.6 0.85 scale-noise)))]
     (q/begin-shape :triangles)
     (doseq [[i [a b]] (map-indexed vector edges)
             :let []]
       (apply q/fill (apply-fill @ui-state t a))
       (apply q/vertex a)
       (apply q/vertex b)
-      (apply q/vertex (equilateral-point a b i nil)))
+      (apply q/vertex (equilateral-point a b i scale)))
     (q/end-shape)
     (when (:spinners @ui-state)
       (draw-spinners state))))
