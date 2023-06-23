@@ -29,6 +29,13 @@
     (gc/circle (cq/rel-vec (dr/random r (- 1 r)) (dr/random r (- 1 r)))
                (cq/rel-h r))))
 
+(defn fresh-target
+  "Bias next target to be furthest from tip"
+  [tip]
+  (->> gen-target
+       (repeatedly 8)
+       (dr/weighted-by (fn [{p :p}] (g/dist-squared p tip)))))
+
 (defn gen-segment [segment]
   (let [base (chain/segment-endpoint segment)
         dir-center (tm/- (cq/rel-vec 0.5 0.5) base)
@@ -89,7 +96,7 @@
   (let [tip (chain/segment-endpoint (last (:segments chain)))
         follow (get follow-modes (:follow-mode @ui-state))]
     (-> (if (g/contains-point? target tip)
-          (assoc state :target (gen-target))
+          (assoc state :target (fresh-target tip))
           (update state :chain chain/chain-update nil (follow tip target t)))
         (update :spinners update-spinners t)
         (update :spinners into (gen-spinners chain t))
