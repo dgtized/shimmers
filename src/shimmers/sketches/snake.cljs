@@ -200,12 +200,13 @@
    :equilateral-links draw-equilateral-links})
 
 (defn ui-controls []
-  [:div.readable-width
-   [:p "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
-                  "kinematic chain"]
+  [:div
+   [:p.readable-width
+    "Drag a " [:a {:href "https://en.wikipedia.org/wiki/Kinematic_chain"}
+               "kinematic chain"]
     " across a canvas, drawing triangles or lines along it's path."]
    (ctrl/change-mode ui-state (keys draw-modes) {:mode-key :draw-mode})
-   [:ul
+   [:ul.readable-width
     [:li "Equilateral links draws triangles from each link in the chain."]
     [:li "Chain draws the lines between each link of the chain."]
     [:li "Brushes draws triangles at each vertex of the chain, spinning them
@@ -219,7 +220,7 @@
       (ctrl/checkbox ui-state "Add Spinners" [:spinners]))]
    [:p]
    (ctrl/change-mode ui-state (keys follow-modes) {:mode-key :follow-mode})
-   [:ul
+   [:ul.readable-width
     [:li "Sinusoidal chooses a winding path towards each target locations."]
     [:li "Proportional follows the path mixing from the current location to a
      circle around the target."]]])
