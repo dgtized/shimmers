@@ -88,8 +88,10 @@
    :sinusoidal
    (fn follow-sinusoidal [pos {:keys [p]} t]
      (let [dirv (tm/- p pos)
-           speed (* 2 (+ 0.9 (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t)))))]
-       (tm/+ pos (tm/normalize (g/rotate dirv (Math/sin (* 2 t))) speed))))})
+           speed (+ (+ 0.8 (* 0.2 (eq/unit-cos (* 0.3 t))))
+                    (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t))))]
+       (tm/+ pos (tm/normalize (g/rotate dirv (* 1.66 (Math/sin (* 2 t))))
+                               (* 1.8 speed)))))})
 
 ;; TODO: fix how harsh the transition is between old target and new target somehow?
 (defn update-state [{:keys [chain target t] :as state}]
