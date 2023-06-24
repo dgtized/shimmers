@@ -174,7 +174,7 @@
   ;; (test-rotation tm/HALF_PI)
   (apply-stroke target t)
   (let [edges (g/edges chain)
-        scale-noise (apply q/noise (tm/+ (tm/* (gv/vec3 (ffirst edges) (* 5 t)) 0.005)
+        scale-noise (apply q/noise (tm/+ (tm/* (gv/vec3 (ffirst edges) (* 5 t)) 0.001)
                                          (gv/vec3 80 30 60)))
         scale (cond (< 0.4 scale-noise 0.6)
                     1.0
