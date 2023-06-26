@@ -43,7 +43,7 @@
                     (+ (g/heading dir-center)
                        (dr/gaussian 0 0.8))
                     (dr/random-tau))
-        size (abs (dr/gaussian 20 6))]
+        size (tm/clamp (abs (dr/gaussian 18 10)) 2.0 36.0)]
     (chain/->KinematicSegment base direction size)))
 
 (defrecord Spinner [pos vel t0 t1])
@@ -74,7 +74,7 @@
      :target (gen-target)
      :chain (->> (chain/->KinematicSegment start (dr/random-tau) 8)
                  (iterate gen-segment)
-                 (take 32)
+                 (take 40)
                  chain/->KinematicChain)
      :spinners []}))
 
