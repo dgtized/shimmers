@@ -39,7 +39,7 @@
 (defn gen-segment [segment]
   (let [base (chain/segment-endpoint segment)
         dir-center (tm/- (cq/rel-vec 0.5 0.5) base)
-        direction (if (dr/chance 0.66)
+        direction (if (dr/chance 0.85)
                     (+ (g/heading dir-center)
                        (dr/gaussian 0 0.8))
                     (dr/random-tau))
