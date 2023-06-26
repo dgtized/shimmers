@@ -26,9 +26,9 @@
                :spinners false}))
 
 (defn gen-target []
-  (let [r (dr/random 0.05 0.15)]
+  (let [r (dr/random 0.1 0.3)]
     (gc/circle (cq/rel-vec (dr/random r (- 1 r)) (dr/random r (- 1 r)))
-               (cq/rel-h r))))
+               (cq/rel-h (* 0.33 r)))))
 
 (defn fresh-target
   "Bias next target to be furthest from tip"
