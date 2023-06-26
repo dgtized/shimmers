@@ -20,6 +20,7 @@
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
+               :debug false
                :color true
                :limit-palette false
                :spinners false}))
@@ -68,9 +69,9 @@
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
-  (q/color-mode :hsl 1.0)
   (let [start (gv/vec2 (g/point-at (cq/screen-rect 0.85) (dr/random)))]
-    {:t 0.0
+    {:image (q/create-graphics (q/width) (q/height))
+     :t 0.0
      :target (gen-target)
      :chain (->> (chain/->KinematicSegment start (dr/random-tau) 8)
                  (iterate gen-segment)
@@ -88,7 +89,7 @@
    :sinusoidal
    (fn follow-sinusoidal [pos {:keys [p]} t]
      (let [dirv (tm/- p pos)
-           speed (+ (+ 0.8 (* 0.2 (eq/unit-cos (* 0.3 t))))
+           speed (+ (* 0.6 (eq/unit-cos (* 0.25 t)))
                     (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t))))]
        (tm/+ pos (tm/normalize (g/rotate dirv (* 1.66 (Math/sin (* 2 t))))
                                (* 1.8 speed)))))})
@@ -236,10 +237,21 @@
    [:ul.readable-width
     [:li "Sinusoidal chooses a winding path towards each target locations."]
     [:li "Proportional follows the path mixing from the current location to a
-     circle around the target."]]])
+     circle around the target."]]
+   [ctrl/checkbox ui-state "Debug Mode" [:debug]]])
 
-(defn draw [state]
-  ((get draw-modes (:draw-mode @ui-state)) state))
+(defn draw [{:keys [image target] :as state}]
+  (q/with-graphics image
+    (q/color-mode :hsl 1.0)
+    ((get draw-modes (:draw-mode @ui-state)) state))
+  (q/color-mode :hsl 1.0)
+  (q/background 1.0)
+  (q/ellipse-mode :radius)
+  (q/image image 0 0)
+  (when (:debug @ui-state)
+    (q/no-fill)
+    (q/stroke 0.1 0.5)
+    (cq/circle target)))
 
 (defn page []
   [sketch/with-explanation
