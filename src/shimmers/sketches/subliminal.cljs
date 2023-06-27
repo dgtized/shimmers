@@ -23,6 +23,7 @@
   (q/color-mode :hsl 1.0)
   (let [shape (triangle/inscribed-equilateral
                (gv/vec2 (cq/rel-h -0.5) (cq/rel-h 0.5)) (cq/rel-h 0.4) (dr/random-tau))
+        alpha 0.8
         color (dr/weighted {0.1 1 0.5 1})]
     {:t 0.0
      :shape shape
@@ -33,8 +34,8 @@
                                (* eq/TAU t))
                        :display-rate (dr/random 0.25 0.8)
                        :shade (if (< 0.42 t 0.58)
-                                [(mod (+ color t) 1.0) 0.6 0.4 0.66]
-                                [(* (- 1.0 t) 0.33) 0.66])
+                                [(mod (+ color t) 1.0) 0.6 0.4 alpha]
+                                [(* (- 1.0 t) 0.33) alpha])
                        :spin-rate (* (dr/weighted {-1 1 1 4})
                                      (dr/random 0.05 0.4))
                        :offset t})
@@ -59,7 +60,7 @@
             (map-indexed vector children)]
       (q/no-fill)
       (apply q/stroke shade)
-      (q/stroke-weight (dr/gaussian 0.75 0.33))
+      (q/stroke-weight (tm/clamp (dr/gaussian 0.75 0.4) 0.1 2.0))
       (when (spacing? display-rate i)
         (-> child
             (geometry/rotate-around-centroid (* eq/TAU spin-rate t))
