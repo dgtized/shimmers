@@ -14,6 +14,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defn spacing? [rate i]
+  (if (> rate 0.4)
+    (zero? (mod (q/frame-count) (+ (int (* 0.5 i)) 2)))
+    (dr/chance rate)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [shape (triangle/inscribed-equilateral
@@ -25,6 +30,7 @@
                                (gv/vec2)
                                (cq/rel-h (tm/clamp (dr/gaussian 0.038 0.03) 0.01 0.1))
                                (* eq/TAU t))
+                       :display-rate (dr/random 0.25 0.8)
                        :shade (if (< 0.42 t 0.58)
                                 [(+ 0.1 t) 0.6 0.4 0.66]
                                 [(* (- 1.0 t) 0.33) 0.66])
@@ -44,15 +50,16 @@
         (update :shape slide t dt)
         (update :t + dt))))
 
-(defn draw [{:keys [shape children t]}]
+(defn draw [{:keys [shape children t dt]}]
   (if (> (:x (g/centroid shape)) (+ (q/width) (cq/rel-h 0.4)))
     (q/no-loop)
     #_(cq/draw-polygon shape)
-    (doseq [{:keys [child shade offset spin-rate]} children]
+    (doseq [[i {:keys [child display-rate shade offset spin-rate]}]
+            (map-indexed vector children)]
       (q/no-fill)
       (apply q/stroke shade)
       (q/stroke-weight (dr/gaussian 0.75 0.33))
-      (when (dr/chance 0.33)
+      (when (spacing? display-rate i)
         (-> child
             (geometry/rotate-around-centroid (* eq/TAU spin-rate t))
             (g/translate (g/point-at shape offset))
