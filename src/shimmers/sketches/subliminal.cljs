@@ -52,7 +52,7 @@
         (update :shape slide t dt)
         (update :t + dt))))
 
-(defn draw [{:keys [shape children t dt]}]
+(defn draw [{:keys [shape children t]}]
   (if (> (:x (g/centroid shape)) (+ (q/width) (cq/rel-h 0.4)))
     (q/no-loop)
     #_(cq/draw-polygon shape)
