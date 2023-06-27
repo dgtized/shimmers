@@ -110,18 +110,34 @@
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t))))))))
 
+;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
+;; https://iquilezles.org/articles/palettes/
+;; outputs an RGB triplet ranged from 0.0 to 1.0
+(defn smooth-palette [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
+  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
+           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
+           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
+
+(def palette
+  (partial smooth-palette
+           (gv/vec3 0.5 0.5 0.5)
+           (gv/vec3 0.5 0.5 0.5)
+           (gv/vec3 1.0 1.0 1.0)
+           (gv/vec3 0.0 0.1 0.2)))
+
+(comment (map (fn [t] [t (palette t)]) (range 0.0 2.0 0.05)))
+
 (defn apply-fill [{:keys [color limit-palette]} t vertex]
   (let [[x y] (tm/* vertex 0.001)
         grey (tm/smoothstep* 0.2 0.6 (q/noise x y (* t 0.001)))
         opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]
-    (if (and color (< 0.4 grey 0.6))
-      (if limit-palette
-        [(tm/map-interval (q/noise x (+ 80 (* 0.02 t)) y) [0 1] [-0.1 0.1])
-         (tm/map-interval (q/noise x (+ 120 (* 0.05 t)) y) [0 1] [0.5 0.75])
-         (tm/map-interval (q/noise x (+ 240 (* 0.02 t)) y) [0 1] [0.25 0.5])
-         opacity]
-        [(mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5 opacity])
-      [grey opacity])))
+    (-> (cond (and color limit-palette)
+              (conj (palette (q/noise y (* 0.001 t) x)))
+              (and color (< 0.4 grey 0.6))
+              [(mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5]
+              :else
+              [grey])
+        (conj opacity))))
 
 (defn brush-at [pos theta size]
   (let [t (triangle/inscribed-equilateral {:p (gv/vec2) :r size} theta)]
@@ -242,9 +258,9 @@
 
 (defn draw [{:keys [image target] :as state}]
   (q/with-graphics image
-    (q/color-mode :hsl 1.0)
+    (q/color-mode (if (:limit-palette @ui-state) :rgb :hsl) 1.0)
     ((get draw-modes (:draw-mode @ui-state)) state))
-  (q/color-mode :hsl 1.0)
+  (q/color-mode (if (:limit-palette @ui-state) :rgb :hsl) 1.0)
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/image image 0 0)
