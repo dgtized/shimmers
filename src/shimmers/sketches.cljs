@@ -197,6 +197,7 @@
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
    shimmers.sketches.stem-and-leaf
+   shimmers.sketches.subliminal
    shimmers.sketches.substrate
    shimmers.sketches.string-lights
    shimmers.sketches.superposition
