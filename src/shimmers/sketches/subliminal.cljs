@@ -17,20 +17,25 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [shape (triangle/inscribed-equilateral
-               (cq/rel-vec -0.5 0.5) (cq/rel-h 0.4) 0)]
+               (gv/vec2 (cq/rel-h -0.5) (cq/rel-h 0.5)) (cq/rel-h 0.4) (dr/random-tau))]
     {:t 0.0
      :shape shape
      :children (map (fn [t]
                       {:child (triangle/inscribed-equilateral
                                (gv/vec2)
-                               (cq/rel-h (tm/clamp (dr/gaussian 0.06 0.03) 0.01 0.15))
+                               (cq/rel-h (tm/clamp (dr/gaussian 0.038 0.03) 0.01 0.1))
                                (* eq/TAU t))
+                       :shade (if (< 0.42 t 0.58)
+                                [(+ 0.1 t) 0.6 0.4 0.66]
+                                [(* (- 1.0 t) 0.33) 0.66])
+                       :spin-rate (* (dr/weighted {-1 1 1 4})
+                                     (dr/random 0.05 0.4))
                        :offset t})
-                    (dr/gaussian-range 0.05 0.02))}))
+                    (dr/gaussian-range 0.09 0.03))}))
 
 (defn slide [shape _t dt]
   (g/translate
-   (geometry/rotate-around-centroid shape (* (dr/gaussian 0.8 0.2) dt))
+   (geometry/rotate-around-centroid shape (* (dr/gaussian 0.9 0.33) dt))
    (gv/vec2 (* (cq/rel-w 0.15) dt) 0)))
 
 (defn update-state [{:keys [t] :as state}]
@@ -39,16 +44,19 @@
         (update :shape slide t dt)
         (update :t + dt))))
 
-(defn draw [{:keys [shape children]}]
-  (q/stroke 0.0 0.33)
-  (q/no-fill)
-  (q/stroke-weight (dr/gaussian 1.0 0.1))
-  (if (> (:x (g/centroid shape)) (cq/rel-w 1.5))
+(defn draw [{:keys [shape children t]}]
+  (if (> (:x (g/centroid shape)) (+ (q/width) (cq/rel-h 0.4)))
     (q/no-loop)
-    (when (dr/chance 0.4)
-      #_(cq/draw-polygon shape)
-      (doseq [{:keys [child offset]} children]
-        (cq/draw-polygon (g/translate child (g/point-at shape offset)))))))
+    #_(cq/draw-polygon shape)
+    (doseq [{:keys [child shade offset spin-rate]} children]
+      (q/no-fill)
+      (apply q/stroke shade)
+      (q/stroke-weight (dr/gaussian 0.75 0.33))
+      (when (dr/chance 0.33)
+        (-> child
+            (geometry/rotate-around-centroid (* eq/TAU spin-rate t))
+            (g/translate (g/point-at shape offset))
+            cq/draw-polygon)))))
 
 (defn page []
   [:div
