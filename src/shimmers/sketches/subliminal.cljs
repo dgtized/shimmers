@@ -28,12 +28,12 @@
                        :offset t})
                     (dr/gaussian-range 0.05 0.02))}))
 
-(defn slide [shape t dt]
+(defn slide [shape _t dt]
   (g/translate
    (geometry/rotate-around-centroid shape (* (dr/gaussian 0.8 0.2) dt))
    (gv/vec2 (* (cq/rel-w 0.15) dt) 0)))
 
-(defn update-state [{:keys [t shape] :as state}]
+(defn update-state [{:keys [t] :as state}]
   (let [dt 0.01]
     (-> state
         (update :shape slide t dt)
