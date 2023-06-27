@@ -16,7 +16,7 @@
 
 (defn spacing? [rate i]
   (if (> rate 0.4)
-    (zero? (mod (q/frame-count) (+ (int (* 0.5 i)) 2)))
+    (zero? (mod (q/frame-count) (+ (int (* 0.66 i)) 3)))
     (dr/chance rate)))
 
 (defn setup []
