@@ -131,8 +131,8 @@
   (let [[x y] (tm/* vertex 0.001)
         grey (tm/smoothstep* 0.2 0.6 (q/noise x y (* t 0.001)))
         opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]
-    (-> (cond (and color limit-palette)
-              (conj (palette (q/noise y (* 0.001 t) x)))
+    (-> (cond (and color limit-palette (< 0.3 grey 0.7))
+              (palette (q/noise (+ 60 y) (* 0.001 t) (+ 25 x)))
               (and color (< 0.4 grey 0.6))
               [(mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5]
               :else
