@@ -219,8 +219,8 @@
    lines))
 
 ;; (separate-palette (pick-palette))
-;; (separate-palette (first (palette/from-urls [palette/slate-shell-red-tan-yellow])))
-;; (separate-palette (first (palette/from-urls [palette/orange-maroon-blues])))
+;; (separate-palette (:colors (palette/by-name :slate-shell-red-tan-yellow)))
+;; (separate-palette (:colors (palette/by-name :orange-black-blue-shell-red)))
 ;; (separate-palette [])
 
 (defn generate-layers [bounds palette]
