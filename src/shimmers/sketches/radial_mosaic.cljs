@@ -56,20 +56,20 @@
 ;; First palette is more in pastel range, seems like that fits this better?
 ;; Maybe just because it's also ensuring "none" is used a lot?
 (def palettes
-  (palette/from-urls
-   [palette/shell-blue-yellow-grey
-    palette/purple-shell-brown
-    palette/shell-grey-blues
-    palette/shell-aqua-blue-green
-    palette/slate-shell-red-tan-yellow
+  (palette/by-names
+   [:shell-blue-yellow-grey
+    :purple-shell-brown
+    :shell-grey-blues
+    :shell-aqua-blue-green
+    :slate-shell-red-tan-yellow
     ;; some bolder palettes
-    palette/shell-grey-blues-bold
-    palette/yellow-blue-slate-grey-red
-    palette/slate-black-green-forest-blue
-    palette/red-black-yellow-grey-blue
-    palette/orange-black-blue-shell-red
-    palette/orange-maroon-blues
-    palette/blues-orange-black-shell]))
+    :shell-grey-blues-bold
+    :yellow-blue-slate-grey-red
+    :slate-black-green-forest-blue
+    :red-black-yellow-grey-blue
+    :orange-black-blue-shell-red
+    :orange-maroon-blues
+    :blues-orange-black-shell]))
 
 (defn palette-sequence [palette segments]
   (let [multiple (let [m (sm/factors segments 12)]
@@ -83,7 +83,7 @@
         (concat s (reverse s)))
       row-palette)))
 
-(comment (palette-sequence (first palettes) 19))
+(comment (palette-sequence (:colors (first palettes)) 21))
 
 ;; Cycle through segment theta rotations? ie 2,4,8 radial arcs?
 ;; Consider adding a "dispersion" line that displaces all tiles it touches outwards slightly?
@@ -118,7 +118,7 @@
         {:origin (rv (dr/rand-nth [0.2 0.3 0.7 0.8]) (dr/rand-nth [0.33 0.4 0.6 0.66]))
          :radius (range 6 (int (* (dr/rand-nth [0.6 0.7 0.8 0.9]) width)))}]
        dr/rand-nth
-       (merge {:palette (dr/rand-nth palettes)
+       (merge {:palette (:colors (dr/rand-nth palettes))
                ;; TODO: set arc0 to arc1 to be close to a far corner from
                ;; center? Also, Consider setting a single theta with a radial
                ;; width and displace more the closer the piece is to theta?

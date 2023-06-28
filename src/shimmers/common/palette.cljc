@@ -107,45 +107,6 @@
 (comment (by-name :blue-yellow-tan-brown)
          (by-names [:blue-yellow-tan-brown]))
 
-(def blue-yellow-tan-brown
-  "https://artsexperiments.withgoogle.com/artpalette/colors/617caa-d1b053-976e27-7a94ae-c9b27d")
-
-(def shell-blue-yellow-grey
-  "https://artsexperiments.withgoogle.com/artpalette/colors/c8cccc-7c9aa8-ede4da-a5b6c0-e0c1a2")
-
-(def shell-grey-blues
-  "https://artsexperiments.withgoogle.com/artpalette/colors/e7eef0-759acd-81a4d1-9f9a98-454d7d")
-
-(def shell-grey-blues-bold
-  "https://artsexperiments.withgoogle.com/artpalette/colors/adc7e5-e1e6e7-5087ba-b89474-222982")
-
-(def purple-shell-brown
-  "https://artsexperiments.withgoogle.com/artpalette/colors/51467c-dccfbe-d4ba90-aa8c60-726665")
-
-(def shell-aqua-blue-green
-  "https://artsexperiments.withgoogle.com/artpalette/colors/d4ddda-51988e-274b75-a0b5c0-2d5429")
-
-(def slate-shell-red-tan-yellow
-  "https://artsexperiments.withgoogle.com/artpalette/colors/2f403d-e9e6d9-b4533a-9b9270-ddbd67")
-
-(def yellow-blue-slate-grey-red
-  "https://artsexperiments.withgoogle.com/artpalette/colors/c5962a-30497c-dddecf-7b7b75-8f3020")
-
-(def slate-black-green-forest-blue
-  "https://artsexperiments.withgoogle.com/artpalette/colors/b1bfc5-212720-6f8f48-49583d-5081ad")
-
-(def red-black-yellow-grey-blue
-  "https://artsexperiments.withgoogle.com/artpalette/colors/ca2825-161519-d6c844-979593-0b5999")
-
-(def orange-black-blue-shell-red
-  "https://artsexperiments.withgoogle.com/artpalette/colors/db9003-332f2e-20778c-d8cdb9-ba3a29")
-
-(def orange-maroon-blues
-  "https://artsexperiments.withgoogle.com/artpalette/colors/0c3c56-236884-ce5110-3e160e-338bab")
-
-(def blues-orange-black-shell
-  "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8")
-
 ;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
 ;; https://iquilezles.org/articles/palettes/
 (defn smooth-palette
