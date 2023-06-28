@@ -3,6 +3,7 @@
    [clojure.string :as str]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
+   [shimmers.math.equations :as eq]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -144,3 +145,24 @@
 
 (def blues-orange-black-shell
   "https://artsexperiments.withgoogle.com/artpalette/colors/204354-34a3bb-f34c1c-241f1e-c0bbb8")
+
+;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
+;; https://iquilezles.org/articles/palettes/
+(defn smooth-palette
+  "Output an RGB triplet ranged from 0.0 to 1.0."
+  [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
+  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
+           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
+           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
+
+(def smooth-palettes
+  {:gold-blue
+   (partial smooth-palette
+            (gv/vec3 0.5 0.5 0.5)
+            (gv/vec3 0.5 0.5 0.5)
+            (gv/vec3 1.0 1.0 1.0)
+            (gv/vec3 0.0 0.1 0.2))})
+
+(comment
+  (let [palette (:gold-blue smooth-palettes)]
+    (map (fn [t] [t (palette t)]) (range 0.0 2.0 0.05))))

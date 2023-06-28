@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.algorithm.kinematic-chain :as chain]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.palette :as palette]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -17,26 +18,6 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-
-;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
-;; https://iquilezles.org/articles/palettes/
-(defn smooth-palette
-  "Output an RGB triplet ranged from 0.0 to 1.0."
-  [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
-  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
-           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
-           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
-
-(def palettes
-  {:gold-blue
-   (partial smooth-palette
-            (gv/vec3 0.5 0.5 0.5)
-            (gv/vec3 0.5 0.5 0.5)
-            (gv/vec3 1.0 1.0 1.0)
-            (gv/vec3 0.0 0.1 0.2))})
-
-(comment (map (fn [t] [t ((:gold-blue palettes) t)]) (range 0.0 2.0 0.05)))
-
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
@@ -44,7 +25,7 @@
                :color true
                :limit-palette false
                :spinners false
-               :palette-fn (:gold-blue palettes)}))
+               :palette-fn (:gold-blue palette/smooth-palettes)}))
 
 (defn gen-target []
   (let [r (dr/random 0.1 0.3)]
