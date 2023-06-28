@@ -17,13 +17,34 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+
+;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
+;; https://iquilezles.org/articles/palettes/
+(defn smooth-palette
+  "Output an RGB triplet ranged from 0.0 to 1.0."
+  [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
+  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
+           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
+           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
+
+(def palettes
+  {:gold-blue
+   (partial smooth-palette
+            (gv/vec3 0.5 0.5 0.5)
+            (gv/vec3 0.5 0.5 0.5)
+            (gv/vec3 1.0 1.0 1.0)
+            (gv/vec3 0.0 0.1 0.2))})
+
+(comment (map (fn [t] [t ((:gold-blue palettes) t)]) (range 0.0 2.0 0.05)))
+
 (defonce ui-state
   (ctrl/state {:draw-mode :equilateral-links
                :follow-mode :sinusoidal
                :debug false
                :color true
                :limit-palette false
-               :spinners false}))
+               :spinners false
+               :palette-fn (:gold-blue palettes)}))
 
 (defn gen-target []
   (let [r (dr/random 0.1 0.3)]
@@ -110,29 +131,12 @@
     (q/stroke (tm/smoothstep* 0.3 0.8 (q/noise x y (* 0.01 t)))
               (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 100 (* 0.01 t))))))))
 
-;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
-;; https://iquilezles.org/articles/palettes/
-;; outputs an RGB triplet ranged from 0.0 to 1.0
-(defn smooth-palette [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
-  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
-           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
-           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
-
-(def palette
-  (partial smooth-palette
-           (gv/vec3 0.5 0.5 0.5)
-           (gv/vec3 0.5 0.5 0.5)
-           (gv/vec3 1.0 1.0 1.0)
-           (gv/vec3 0.0 0.1 0.2)))
-
-(comment (map (fn [t] [t (palette t)]) (range 0.0 2.0 0.05)))
-
-(defn apply-fill [{:keys [color limit-palette]} t vertex]
+(defn apply-fill [{:keys [color limit-palette palette-fn]} t vertex]
   (let [[x y] (tm/* vertex 0.001)
         grey (tm/smoothstep* 0.2 0.6 (q/noise x y (* t 0.001)))
         opacity (* 0.3 (tm/smoothstep* 0.1 0.9 (q/noise x y (+ 200 (* 0.01 t)))))]
     (-> (cond (and color limit-palette (< 0.3 grey 0.7))
-              (palette (q/noise (+ 60 y) (* 0.001 t) (+ 25 x)))
+              (palette-fn (q/noise (+ 60 y) (* 0.001 t) (+ 25 x)))
               (and color (< 0.4 grey 0.6))
               [(mod (* tm/PHI (q/noise x (+ 80 (* 0.02 t)) y)) 1) 0.5 0.5]
               :else
