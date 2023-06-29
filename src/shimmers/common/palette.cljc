@@ -109,6 +109,7 @@
 
 ;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
 ;; https://iquilezles.org/articles/palettes/
+;; TODO: just re-use thi.ng.color.gradients/cosine-gradient-color?
 (defn smooth-palette
   "Output an RGB triplet ranged from 0.0 to 1.0."
   [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
