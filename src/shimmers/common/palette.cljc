@@ -91,8 +91,7 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/69d4d3-ccf5ee-020804-0b4736-389b84"
    :green-shades
    "https://artsexperiments.withgoogle.com/artpalette/colors/54a867-c2d7bf-98c79e-1e4629-22823c"
-   }
-  )
+   })
 
 (def db
   (map named-url palette-urls))
@@ -104,8 +103,9 @@
   (filter (fn [{:keys [name]}] (contains? (set ids) name))
           db))
 
-(comment (by-name :blue-yellow-tan-brown)
-         (by-names [:blue-yellow-tan-brown]))
+(comment
+  (by-name :blue-yellow-tan-brown)
+  (by-names [:blue-yellow-tan-brown]))
 
 ;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
 ;; https://iquilezles.org/articles/palettes/
