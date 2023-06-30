@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -13,6 +14,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/noise-seed (dr/random-int 100000))
   {:t 0.0})
 
 (defn update-state [state]
