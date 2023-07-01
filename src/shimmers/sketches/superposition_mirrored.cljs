@@ -237,28 +237,31 @@
   (let [[x y] (tm/+ (tm/* (gv/vec2 pos) rate) (gv/vec2 base))]
     (q/noise x y)))
 
-(defn draw [{:keys [image cycle shapes particles t]}]
+(defn draw-image [{:keys [particles t]}]
+  (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
+        scale-noise (center-filter 0.0 (q/noise (* t 0.2) 100.0))
+        scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
+        color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
+    (q/color-mode :hsl 1.0)
+    (q/fill 1.0 0.1)
+    (q/stroke 0.0 0.1)
+    (doseq [{:keys [pos angle]} particles]
+      (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
+            fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
+            stroke-opacity (center-filter 0.05 (noise-at [(+ r t) (+ r t)] 0.01 [300.0 300.0]))]
+        (when color
+          (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
+                  (+ 0.5 (* 0.5 (noise-at [(+ t r) r] 0.15 [50.0 100.0])))
+                  (+ 0.4 (* 0.5 (noise-at [r t] 0.1 [100.0 50.0])))
+                  (+ 0.001 (* 0.04 fill-opacity)))
+          (q/stroke (tm/smoothstep* 0.45 0.55 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
+                    (+ 0.001 (* 0.12 stroke-opacity))))
+        (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r scale} angle))))))
+
+(defn draw [{:keys [image cycle shapes particles] :as state}]
   (when (running? cycle)
     (q/with-graphics image
-      (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-            scale-noise (center-filter 0.0 (q/noise (* t 0.2) 100.0))
-            scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
-            color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
-        (q/color-mode :hsl 1.0)
-        (q/fill 1.0 0.1)
-        (q/stroke 0.0 0.1)
-        (doseq [{:keys [pos angle]} particles]
-          (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
-                fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
-                stroke-opacity (center-filter 0.05 (noise-at [(+ r t) (+ r t)] 0.01 [300.0 300.0]))]
-            (when color
-              (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
-                      (+ 0.5 (* 0.5 (noise-at [(+ t r) r] 0.15 [50.0 100.0])))
-                      (+ 0.4 (* 0.5 (noise-at [r t] 0.1 [100.0 50.0])))
-                      (+ 0.001 (* 0.04 fill-opacity)))
-              (q/stroke (tm/smoothstep* 0.45 0.55 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
-                        (+ 0.001 (* 0.12 stroke-opacity))))
-            (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r scale} angle)))))))
+      (draw-image state)))
 
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
