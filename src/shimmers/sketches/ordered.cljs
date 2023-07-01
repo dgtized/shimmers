@@ -130,7 +130,7 @@
       children)))
 
 (defn recurse-shapes
-  [{:keys [p-extrusion] :as rules} bounds sides shape last-side depth]
+  [{:keys [bounds p-extrusion] :as rules} sides shape last-side depth]
   (if (or (> depth max-depth)
           (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
@@ -170,7 +170,7 @@
                       (if (dr/chance 0.5) 1 -1))]
       (mapcat (fn [s i]
                 (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)
-                      children (recurse-shapes rules bounds sides p-shape side (inc p-depth))]
+                      children (recurse-shapes rules sides p-shape side (inc p-depth))]
                   (if (dr/chance (* depth p-extrusion))
                     (extrusion p-shape bounds children y-off)
                     children)))
@@ -246,8 +246,8 @@
                                              shape]))]
     [shape side-shapes]))
 
-(defn generate-shapes [rules bounds shape side-shapes]
-  (let [inner (recurse-shapes rules bounds (sides-distribution side-shapes) shape nil 0)
+(defn generate-shapes [{:keys [bounds] :as rules} shape side-shapes]
+  (let [inner (recurse-shapes rules (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))]
     [inner outer]))
@@ -255,10 +255,9 @@
 ;; TODO: adjust generate-shapes to fill some of the surrounding regions
 ;; however, gu/fit-all-into-bounds only works if bounds is an aabb and not a polygon
 ;; so I need to implement a fit-all-into-polygon method.
-(defn shapes [rules]
-  (let [bounds (rect/rect 0 0 width height)
-        [shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
-        [inner outer] (generate-shapes rules bounds shape side-shapes)
+(defn shapes [{:keys [bounds] :as rules}]
+  (let [[shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
+        [inner outer] (generate-shapes rules shape side-shapes)
         approach (dr/weighted [[identity 1.0]
                                [empty 2.0]])
         split-shapes (concat inner (approach outer))]
@@ -273,11 +272,15 @@
       split-shapes
       (recur rules))))
 
+(defn ruleset []
+  {:bounds (rect/rect 0 0 width height)
+   :p-extrusion (dr/weighted {0.0 3.0
+                              0.01 2.0
+                              0.015 1.0
+                              0.02 1.0})})
+
 (defn scene []
-  (let [rules {:p-extrusion (dr/weighted {0.0 3.0
-                                          0.01 2.0
-                                          0.015 1.0
-                                          0.02 1.0})}]
+  (let [rules (ruleset)]
     (reset! defo {:rules rules
                   :shapes []})
     (csvg/svg-timed {:width width
