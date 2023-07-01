@@ -129,7 +129,8 @@
                     (g/vertices extruded)))
       children)))
 
-(defn recurse-shapes [bounds sides shape last-side depth]
+(defn recurse-shapes
+  [{:keys [p-extrusion] :as rules} bounds sides shape last-side depth]
   (if (or (> depth max-depth)
           (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
@@ -165,13 +166,12 @@
                         poly-detect/split-self-intersection
                         (apply max-key g/area))
                    shape)
-          ;; FIXME: add top level rule to enable/disable extrusion
           y-off (tm/* (gv/vec2 0 (* 1.6 (- 8 depth)))
                       (if (dr/chance 0.5) 1 -1))]
       (mapcat (fn [s i]
                 (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)
-                      children (recurse-shapes bounds sides p-shape side (inc p-depth))]
-                  (if (dr/chance (* depth 0.015))
+                      children (recurse-shapes rules bounds sides p-shape side (inc p-depth))]
+                  (if (dr/chance (* depth p-extrusion))
                     (extrusion p-shape bounds children y-off)
                     children)))
               (lines/slice-polygons [shape'] (cuts shape' side offsets))
@@ -246,8 +246,8 @@
                                              shape]))]
     [shape side-shapes]))
 
-(defn generate-shapes [bounds shape side-shapes]
-  (let [inner (recurse-shapes bounds (sides-distribution side-shapes) shape nil 0)
+(defn generate-shapes [rules bounds shape side-shapes]
+  (let [inner (recurse-shapes rules bounds (sides-distribution side-shapes) shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))]
     [inner outer]))
@@ -255,10 +255,10 @@
 ;; TODO: adjust generate-shapes to fill some of the surrounding regions
 ;; however, gu/fit-all-into-bounds only works if bounds is an aabb and not a polygon
 ;; so I need to implement a fit-all-into-polygon method.
-(defn shapes []
+(defn shapes [rules]
   (let [bounds (rect/rect 0 0 width height)
         [shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
-        [inner outer] (generate-shapes bounds shape side-shapes)
+        [inner outer] (generate-shapes rules bounds shape side-shapes)
         approach (dr/weighted [[identity 1.0]
                                [empty 2.0]])
         split-shapes (concat inner (approach outer))]
@@ -271,15 +271,20 @@
     ;; maybe a bug in split generation or the cut-polygon routine?
     (if (< 150 (count split-shapes) 1000)
       split-shapes
-      (recur))))
+      (recur rules))))
 
 (defn scene []
-  (reset! defo {:shapes []})
-  (csvg/svg-timed {:width width
-                   :height height
-                   :stroke "black"
-                   :fill "none"}
-    (shapes)))
+  (let [rules {:p-extrusion (dr/weighted {0.0 3.0
+                                          0.01 2.0
+                                          0.015 1.0
+                                          0.02 1.0})}]
+    (reset! defo {:rules rules
+                  :shapes []})
+    (csvg/svg-timed {:width width
+                     :height height
+                     :stroke "black"
+                     :fill "none"}
+      (shapes rules))))
 
 (defn ui-controls []
   [:div
