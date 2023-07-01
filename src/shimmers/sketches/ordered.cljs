@@ -117,6 +117,18 @@
                 :stroke-width
                 (/ 1.3 (inc (dr/random depth))))]))
 
+(defn extrusion [shape bounds children y-off]
+  (let [extruded (vary-meta (g/translate shape y-off)
+                            assoc :stroke-width 0.5)]
+    (if (collide/bounded? bounds extruded)
+      (concat children
+              [extruded]
+              (mapv (fn [a b]
+                      (vary-meta (gl/line2 a b) assoc :stroke-width 0.5))
+                    (g/vertices shape)
+                    (g/vertices extruded)))
+      children)))
+
 (defn recurse-shapes [bounds sides shape last-side depth]
   (if (or (> depth max-depth)
           (< (g/area shape) (* 0.00005 width height))
@@ -160,16 +172,7 @@
                 (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)
                       children (recurse-shapes bounds sides p-shape side (inc p-depth))]
                   (if (dr/chance (* depth 0.015))
-                    (let [extruded (vary-meta (g/translate p-shape y-off)
-                                              assoc :stroke-width 0.5)]
-                      (if (collide/bounded? bounds extruded)
-                        (concat children
-                                [extruded]
-                                (mapv (fn [a b]
-                                        (vary-meta (gl/line2 a b) assoc :stroke-width 0.5))
-                                      (g/vertices p-shape)
-                                      (g/vertices extruded)))
-                        children))
+                    (extrusion p-shape bounds children y-off)
                     children)))
               (lines/slice-polygons [shape'] (cuts shape' side offsets))
               (range)))))
