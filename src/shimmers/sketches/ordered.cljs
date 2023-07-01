@@ -130,7 +130,7 @@
       children)))
 
 (defn recurse-shapes
-  [{:keys [bounds p-extrusion] :as rules} sides shape last-side depth]
+  [{:keys [bounds p-extrusion sides] :as rules} shape last-side depth]
   (if (or (> depth max-depth)
           (< (g/area shape) (* 0.00005 width height))
           (some (fn [[p q]] (< (g/dist p q) 3))
@@ -170,7 +170,7 @@
                       (if (dr/chance 0.5) 1 -1))]
       (mapcat (fn [s i]
                 (let [[p-depth p-shape] (perturb bounds side perturb-rate depth terminal-stripe? [i n-cuts] s)
-                      children (recurse-shapes rules sides p-shape side (inc p-depth))]
+                      children (recurse-shapes rules p-shape side (inc p-depth))]
                   (if (dr/chance (* depth p-extrusion))
                     (extrusion p-shape bounds children y-off)
                     children)))
@@ -246,8 +246,8 @@
                                              shape]))]
     [shape side-shapes]))
 
-(defn generate-shapes [{:keys [bounds] :as rules} shape side-shapes]
-  (let [inner (recurse-shapes rules (sides-distribution side-shapes) shape nil 0)
+(defn generate-shapes [{:keys [bounds] :as rules} shape]
+  (let [inner (recurse-shapes rules shape nil 0)
         outer (map (fn [s] (vary-meta s assoc :stroke-width 0.15))
                    (outside-shapes bounds shape))]
     [inner outer]))
@@ -256,11 +256,15 @@
 ;; however, gu/fit-all-into-bounds only works if bounds is an aabb and not a polygon
 ;; so I need to implement a fit-all-into-polygon method.
 (defn shapes [{:keys [bounds] :as rules}]
-  (let [[shape side-shapes] (bounded-shape-in-region bounds (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
-        [inner outer] (generate-shapes rules shape side-shapes)
+  (let [[shape side-shapes]
+        (bounded-shape-in-region bounds
+                                 (if (dr/chance 0.5) bounds (g/scale-size bounds 0.9)))
+        [inner outer]
+        (generate-shapes (assoc rules :sides (sides-distribution side-shapes)) shape)
         approach (dr/weighted [[identity 1.0]
                                [empty 2.0]])
         split-shapes (concat inner (approach outer))]
+    (swap! defo assoc :rules rules)
     (swap! defo update :shapes conj (count split-shapes))
     #_(swap! defo assoc
              :shape shape
@@ -281,8 +285,7 @@
 
 (defn scene []
   (let [rules (ruleset)]
-    (reset! defo {:rules rules
-                  :shapes []})
+    (reset! defo {:shapes []})
     (csvg/svg-timed {:width width
                      :height height
                      :stroke "black"
