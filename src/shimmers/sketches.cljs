@@ -102,6 +102,7 @@
    shimmers.sketches.intertwined
    shimmers.sketches.isometric
    shimmers.sketches.iterative-displacement
+   shimmers.sketches.kaleidoscope
    shimmers.sketches.kd-tree
    shimmers.sketches.kinematic-chain
    shimmers.sketches.k-means
