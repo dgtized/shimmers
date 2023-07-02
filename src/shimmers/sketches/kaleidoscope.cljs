@@ -14,7 +14,7 @@
 (def modes
   [:basic,:rgb-delay])
 
-(defonce ui-state (ctrl/state {:mode :basic :blades 3.0}))
+(defonce ui-state (ctrl/state {:mode :basic :blades 5.0}))
 
 (defn setup []
   (let [[w h] [320 240]]
