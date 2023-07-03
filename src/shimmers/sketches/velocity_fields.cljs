@@ -90,7 +90,7 @@
     (gen)))
 
 ;; exclude full rectangle if first shape?
-(defn shapes [seed scale bounds buzzy pareto-width n]
+(defn shapes [seed scale bounds {:keys [buzzy pareto-width]} n]
   (let [lifespan (dr/weighted [[(constantly 150) 1]
                                [(constantly 100) 1]
                                [(constantly 80) 1]
@@ -123,8 +123,8 @@
                 (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                         scale
                         bounds
-                        (dr/chance 0.4)
-                        (dr/chance 0.5)
+                        {:buzzy (dr/chance 0.4)
+                         :pareto-width (dr/chance 0.5)}
                         (+ n (* i 600))))
               (shape-plan)
               (range)))))
