@@ -93,7 +93,9 @@
   (let [lifespan (dr/weighted [[(constantly 100) 1]
                                [(constantly 80) 1]
                                [(constantly 60) 1]
-                               [(fn [] (dr/random-int 60 100)) 1]])]
+                               [(constantly 40) 1]
+                               [(fn [] (dr/random-int 50 100)) 1]
+                               [(fn [] (dr/random-int 20 50)) 1]])]
     (->> (make-path bounds seed scale pareto-width lifespan)
          repeatedly
          (keep identity)
