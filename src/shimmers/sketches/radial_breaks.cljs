@@ -72,7 +72,7 @@
       (shapes (into (repeat 10 "none") palette)))))
 
 (defn page []
-  (let [palette (dr/rand-nth radial-mosaic/palettes)]
+  (let [palette (:colors (dr/rand-nth radial-mosaic/palettes))]
     (fn []
       [:<>
        [:div.canvas-frame [scene palette]]

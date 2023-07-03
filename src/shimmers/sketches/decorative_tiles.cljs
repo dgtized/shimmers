@@ -215,8 +215,8 @@
         :black-shell-red-maroon-red
         :aqua-foam-black-greeen-teal]
        palette/by-names
-       (map :colors)
-       (concat radial-mosaic/palettes)))
+       (concat radial-mosaic/palettes)
+       (map :colors)))
 
 (defn page []
   (let [palette (dr/rand-nth palettes)
