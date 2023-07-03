@@ -21,7 +21,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn make-path [bounds seed scale pareto-width lifespan]
+(defn make-path [bounds seed scale buzzy pareto-width lifespan]
   (fn []
     (let [start (rv (dr/random -0.1 1.1)
                     (dr/random -0.1 1.1))
@@ -38,7 +38,8 @@
       (when (seq path)
         (csvg/path
          (into [[:M start]]
-               (map (fn [p] [:L p]) path))
+               (map (fn [p] [:T p])
+                    (dr/random-sample buzzy path)))
          {:stroke-width
           (if pareto-width
             (tm/clamp (/ (dr/pareto 1.0 1.5) 10.0) 0.25 2.0)
@@ -89,14 +90,20 @@
     (gen)))
 
 ;; exclude full rectangle if first shape?
-(defn shapes [seed scale bounds pareto-width n]
-  (let [lifespan (dr/weighted [[(constantly 100) 1]
+(defn shapes [seed scale bounds buzzy pareto-width n]
+  (let [lifespan (dr/weighted [[(constantly 150) 1]
+                               [(constantly 100) 1]
                                [(constantly 80) 1]
                                [(constantly 60) 1]
                                [(constantly 40) 1]
                                [(fn [] (dr/random-int 50 100)) 1]
-                               [(fn [] (dr/random-int 20 50)) 1]])]
-    (->> (make-path bounds seed scale pareto-width lifespan)
+                               [(fn [] (dr/random-int 20 50)) 1]])
+        buzzy (if buzzy
+                (dr/weighted {1.0 10
+                              0.66 2
+                              0.5 1})
+                1.0)]
+    (->> (make-path bounds seed scale buzzy pareto-width lifespan)
          repeatedly
          (keep identity)
          (take (max 100 (int (* n (/ (g/area bounds) (* width height)))))))))
@@ -111,13 +118,13 @@
     (let [seed (tm/abs (dr/randvec2 100))
           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
           offset (dr/weighted {0 2 10 2 15 1})
-          pareto-width (dr/chance 0.5)
           n (dr/rand-nth [600 900 1200])]
       (mapcat (fn [bounds i]
                 (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                         scale
                         bounds
-                        pareto-width
+                        (dr/chance 0.4)
+                        (dr/chance 0.5)
                         (+ n (* i 600))))
               (shape-plan)
               (range)))))
