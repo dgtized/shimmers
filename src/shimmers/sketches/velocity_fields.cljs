@@ -61,17 +61,18 @@
          (range 3))))
 
 (defn boundaries []
-  (dr/rand-nth [(g/scale-size (rect/rect 0 0 width height) 0.8)
-                (g/translate
-                 (geometry/rotate-around-centroid
-                  (g/scale-size (rect/rect 0 0 width height) 0.66)
-                  (dr/random -0.5 0.5))
-                 (dr/randvec2 (* 0.1 height)))
-                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height))
-                (-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
-                    (gc/circle (* 0.6 height))
-                    (triangle/inscribed-equilateral (dr/random-tau)))
-                (gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height))]))
+  (dr/weighted
+   [[(g/scale-size (rect/rect 0 0 width height) 0.8) 1]
+    [(g/translate
+      (geometry/rotate-around-centroid
+       (g/scale-size (rect/rect 0 0 width height) 0.66)
+       (dr/random -0.5 0.5))
+      (dr/randvec2 (* 0.1 height))) 1]
+    [(gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height)) 1]
+    [(-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+         (gc/circle (* 0.6 height))
+         (triangle/inscribed-equilateral (dr/random-tau))) 1]
+    [(gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height)) 1]]))
 
 (defn shape-plan []
   (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
