@@ -86,10 +86,10 @@
 
 ;; exclude full rectangle if first shape?
 (defn shapes [seed scale bounds n]
-  (let [lifespan (dr/weighted {(constantly 100) 1
-                               (constantly 80) 1
-                               (constantly 60) 1
-                               (fn [] (dr/random-int 60 100)) 1})]
+  (let [lifespan (dr/weighted [[(constantly 100) 1]
+                               [(constantly 80) 1]
+                               [(constantly 60) 1]
+                               [(fn [] (dr/random-int 60 100)) 1]])]
     (->> (make-path bounds seed scale lifespan)
          repeatedly
          (keep identity)
