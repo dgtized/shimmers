@@ -127,8 +127,8 @@
                 (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                         scale
                         bounds
-                        {:buzzy (and buzzy (dr/chance 0.4))
-                         :pareto-width (and pareto-width (dr/chance 0.5))}
+                        {:buzzy (and buzzy (dr/chance 0.6))
+                         :pareto-width (and pareto-width (dr/chance 0.7))}
                         (+ n (* i 600))))
               (shape-plan)
               (range)))))
