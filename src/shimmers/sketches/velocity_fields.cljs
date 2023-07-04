@@ -79,6 +79,7 @@
          (triangle/inscribed-equilateral (dr/random-tau))) 1]
     [(gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.6 height)) 1]]))
 
+;; TODO: bias plan to ensure boundaries are nested and only overlap once
 (defn shape-plan []
   (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
                           (fn [] (repeatedly 1 boundaries)) 2
@@ -97,7 +98,8 @@
                                [(constantly 60) 1]
                                [(constantly 40) 1]
                                [(fn [] (dr/random-int 50 100)) 1]
-                               [(fn [] (dr/random-int 20 50)) 1]])
+                               [(fn [] (dr/random-int 10 50)) 1]])
+        ;; TODO: increase bias for buzziness and pareto per inner shape?
         buzzy (if buzzy
                 (dr/weighted {1.0 10
                               0.66 2
@@ -118,13 +120,15 @@
     (let [seed (tm/abs (dr/randvec2 100))
           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
           offset (dr/weighted {0 2 10 2 15 1})
-          n (dr/rand-nth [600 900 1200])]
+          n (dr/rand-nth [600 900 1200])
+          buzzy (dr/chance 0.75)
+          pareto-width (dr/chance 0.75)]
       (mapcat (fn [bounds i]
                 (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                         scale
                         bounds
-                        {:buzzy (dr/chance 0.4)
-                         :pareto-width (dr/chance 0.5)}
+                        {:buzzy (and buzzy (dr/chance 0.4))
+                         :pareto-width (and pareto-width (dr/chance 0.5))}
                         (+ n (* i 600))))
               (shape-plan)
               (range)))))
