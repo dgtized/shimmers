@@ -67,8 +67,8 @@
          (range 3))))
 
 (defn facing-pair []
-  [(triangle/inscribed-equilateral {:p (rv 0.25 0.5) :r (* 0.33 height)} 0.0)
-   (triangle/inscribed-equilateral {:p (rv 0.75 0.5) :r (* 0.33 height)} Math/PI)])
+  [(triangle/inscribed-equilateral {:p (rv 0.25 0.5) :r (* 0.37 height)} 0.0)
+   (triangle/inscribed-equilateral {:p (rv 0.75 0.5) :r (* 0.37 height)} Math/PI)])
 
 (defn inner []
   (dr/weighted
@@ -76,8 +76,8 @@
     [(g/translate
       (geometry/rotate-around-centroid
        (g/scale-size (rect/rect 0 0 width height) 0.66)
-       (dr/random -0.5 0.5))
-      (dr/randvec2 (* 0.1 height))) 1]
+       (* eq/TAU (dr/random -0.1 0.1)))
+      (dr/randvec2 (* 0.05 height))) 1]
     [(gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height)) 1]
     [(-> (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
          (gc/circle (* 0.6 height))
