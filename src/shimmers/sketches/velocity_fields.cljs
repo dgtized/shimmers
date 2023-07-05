@@ -17,7 +17,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def width 800)
+(def width 900)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
@@ -153,7 +153,7 @@
             (range))))
 
 (defn explanation []
-  [:div
+  [:<>
    [:div.readable-width
     [:p
      "Flow fields generated using a simple physics engine, applying a fixed
