@@ -94,6 +94,7 @@
                  (fn [] (triplet)) 1})))
 
 ;; exclude full rectangle if first shape?
+;; TODO: bias lifespan if buzzy/pareto is enabled?
 (defn shapes [seed scale bounds {:keys [buzzy pareto-width]} n]
   (let [lifespan (dr/weighted [[(constantly 150) 1]
                                [(constantly 100) 1]
