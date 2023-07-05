@@ -124,9 +124,9 @@
                               1400 1})
         [buzzy pareto-width]
         (dr/weighted {[false false] 1
-                      [true false] 3
-                      [false true] 3
-                      [true true] 5})]
+                      [true false] 2
+                      [false true] 4
+                      [true true] 8})]
     {:seed (tm/abs (dr/randvec2 100))
      :scaling scaling
      :scale (/ 1.0 scaling)
