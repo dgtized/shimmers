@@ -148,7 +148,7 @@
                       bounds
                       {:buzzy (and buzzy (dr/chance 0.8))
                        :pareto-width (and pareto-width (dr/chance 0.9))}
-                      (+ density (* i 600))))
+                      (* density (Math/pow 2.5 i))))
             (shape-plan)
             (range))))
 
