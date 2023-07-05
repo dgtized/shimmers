@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -114,33 +115,44 @@
          (keep identity)
          (take (max 100 (int (* n (/ (g/area bounds) (* width height)))))))))
 
+(defn generate-rules []
+  (let [scaling (dr/weighted {400 1
+                              600 1
+                              800 1
+                              1000 2
+                              1200 1
+                              1400 1})
+        [buzzy pareto-width]
+        (dr/weighted {[false false] 1
+                      [true false] 3
+                      [false true] 3
+                      [true true] 5})]
+    {:seed (tm/abs (dr/randvec2 100))
+     :scaling scaling
+     :scale (/ 1.0 scaling)
+     :offset (dr/weighted {0 2 10 2 15 1})
+     :density (dr/rand-nth [600 900 1200])
+     :buzzy buzzy
+     :pareto-width pareto-width}))
+
 ;; interesting pattern with big circle left, small circle right, flow field heading right
 ;; http://localhost:9500/#/sketches/velocity-fields?seed=4000107855
-(defn scene []
+(defn scene [{:keys [seed scale offset density buzzy pareto-width]}]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"}
-    (let [seed (tm/abs (dr/randvec2 100))
-          scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
-          offset (dr/weighted {0 2 10 2 15 1})
-          n (dr/rand-nth [600 900 1200])
-          [buzzy pareto-width]
-          (dr/weighted {[false false] 1
-                        [true false] 3
-                        [false true] 3
-                        [true true] 5})]
-      (mapcat (fn [bounds i]
-                (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
-                        scale
-                        bounds
-                        {:buzzy (and buzzy (dr/chance 0.8))
-                         :pareto-width (and pareto-width (dr/chance 0.9))}
-                        (+ n (* i 600))))
-              (shape-plan)
-              (range)))))
+    (mapcat (fn [bounds i]
+              (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
+                      scale
+                      bounds
+                      {:buzzy (and buzzy (dr/chance 0.8))
+                       :pareto-width (and pareto-width (dr/chance 0.9))}
+                      (+ density (* i 600))))
+            (shape-plan)
+            (range))))
 
-(defn ui-controls []
+(defn explanation []
   [:div
    [:div.readable-width
     [:p
@@ -152,8 +164,21 @@
      idential noise scale and seed, which varies the density and adds some
      interesting edges."]]])
 
+(defn page []
+  (let [rules (generate-rules)]
+    (fn []
+      [:<>
+       [:div.canvas-frame [scene rules]]
+       [:div.contained
+        [:div.flexcols {:style {:justify-content :space-evenly}}
+         [:div
+          [view-sketch/generate :velocity-fields]
+          [:p]
+          [debug/pre-edn (dissoc rules :seed :scale)]]
+         [explanation]]]])))
+
 (sketch/definition velocity-fields
   {:created-at "2023-01-27"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :velocity-fields ui-controls)))
+  (ctrl/mount (page)))
