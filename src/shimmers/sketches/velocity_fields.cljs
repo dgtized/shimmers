@@ -65,6 +65,10 @@
                 (- eq/TAU angle)))))
          (range 3))))
 
+(defn facing-pair []
+  [(triangle/inscribed-equilateral {:p (rv 0.25 0.5) :r (* 0.33 height)} 0.0)
+   (triangle/inscribed-equilateral {:p (rv 0.75 0.5) :r (* 0.33 height)} Math/PI)])
+
 (defn inner []
   (dr/weighted
    [[(g/scale-size (rect/rect 0 0 width height) 0.8) 1]
@@ -84,6 +88,8 @@
   ((dr/weighted {(fn [] [(screen-rect)]) 1
                  (fn [] (into [(screen-rect)] (triplet))) 3
                  (fn [] [(screen-rect) (inner)]) 2
+                 (fn [] (into [(screen-rect)] (facing-pair))) 1
+                 (fn [] (facing-pair)) 1
                  (fn [] (into [(g/scale-size (screen-rect) 0.9)] (triplet))) 1.5
                  (fn [] (triplet)) 1})))
 
