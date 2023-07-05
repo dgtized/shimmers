@@ -130,7 +130,7 @@
     {:seed (tm/abs (dr/randvec2 100))
      :scaling scaling
      :scale (/ 1.0 scaling)
-     :offset (dr/weighted {0 2 10 2 15 1})
+     :offset (dr/weighted {0 2 4 2 8 2 12 1})
      :density (dr/rand-nth [600 900 1200])
      :buzzy buzzy
      :pareto-width pareto-width}))
