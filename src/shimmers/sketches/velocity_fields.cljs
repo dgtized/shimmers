@@ -65,7 +65,7 @@
                 (- eq/TAU angle)))))
          (range 3))))
 
-(defn boundaries []
+(defn inner []
   (dr/weighted
    [[(g/scale-size (rect/rect 0 0 width height) 0.8) 1]
     [(g/translate
@@ -81,14 +81,11 @@
 
 ;; TODO: bias plan to ensure boundaries are nested and only overlap once
 (defn shape-plan []
-  (let [gen (dr/weighted {(fn [] [(screen-rect)]) 1
-                          (fn [] (repeatedly 1 boundaries)) 2
-                          (fn [] (repeatedly 2 boundaries)) 2
-                          (fn [] (repeatedly 3 boundaries)) 1
-                          (fn [] [(screen-rect) (boundaries)]) 2
-                          (fn [] (triplet)) 2
-                          (fn [] (into [(screen-rect)] (triplet))) 3})]
-    (gen)))
+  ((dr/weighted {(fn [] [(screen-rect)]) 1
+                 (fn [] (into [(screen-rect)] (triplet))) 3
+                 (fn [] [(screen-rect) (inner)]) 2
+                 (fn [] (into [(g/scale-size (screen-rect) 0.9)] (triplet))) 1.5
+                 (fn [] (triplet)) 1})))
 
 ;; exclude full rectangle if first shape?
 (defn shapes [seed scale bounds {:keys [buzzy pareto-width]} n]
