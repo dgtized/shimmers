@@ -124,14 +124,17 @@
           scale (dr/rand-nth [(/ 1 400) (/ 1 800) (/ 1 1200)])
           offset (dr/weighted {0 2 10 2 15 1})
           n (dr/rand-nth [600 900 1200])
-          buzzy (dr/chance 0.75)
-          pareto-width (dr/chance 0.75)]
+          [buzzy pareto-width]
+          (dr/weighted {[false false] 1
+                        [true false] 3
+                        [false true] 3
+                        [true true] 5})]
       (mapcat (fn [bounds i]
                 (shapes (tm/+ seed (dr/randvec2 (* i offset scale)))
                         scale
                         bounds
-                        {:buzzy (and buzzy (dr/chance 0.6))
-                         :pareto-width (and pareto-width (dr/chance 0.7))}
+                        {:buzzy (and buzzy (dr/chance 0.8))
+                         :pareto-width (and pareto-width (dr/chance 0.9))}
                         (+ n (* i 600))))
               (shape-plan)
               (range)))))
