@@ -12,7 +12,7 @@
     (.hide capture)
     capture))
 
-(defn copy-frame [capture width height dest]
+(defn copy-frame [dest capture width height]
   (if capture
     (do (q/copy capture dest
                 [0 0 width height]

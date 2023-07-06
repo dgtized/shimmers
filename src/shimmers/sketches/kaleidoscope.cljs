@@ -30,7 +30,7 @@
   (let [fc (q/frame-count)
         [w h] dims]
     (update-in state [:frames (mod fc history)]
-               (partial video/copy-frame camera w h))))
+               video/copy-frame camera w h)))
 
 (defn draw [{:keys [dims shader buffer frames]}]
   (let [[w h] dims

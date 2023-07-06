@@ -38,7 +38,7 @@
     (-> state
         (update :frames (comp vec (partial cs/rotate r)))
         (update-in [:frames offset]
-                   (partial video/copy-frame capture width height)))))
+                   video/copy-frame capture width height))))
 
 (defn draw [{:keys [frames width height]}]
   (doseq [i (range (count frames))
