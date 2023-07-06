@@ -65,7 +65,6 @@
     :middleware [m/fun-mode framerate/mode])
    [ctrl/change-mode ui-state modes]])
 
-;; out of memories after N seconds sometimes?
 (sketch/definition video-delay-shader
   {:created-at "2023-01-03"
    :tags #{:camera :shader :genuary2023}

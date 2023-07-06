@@ -61,7 +61,6 @@
     [ctrl/change-mode ui-state modes]
     [ctrl/numeric ui-state "Blades" [:blades] [1.0 13.0 1.0]]]])
 
-;; out of memories after N seconds sometimes?
 (sketch/definition kaleidoscope
   {:created-at "2023-07-02"
    :tags #{:camera :shader}
