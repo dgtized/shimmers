@@ -14,7 +14,7 @@
 (defn fresh-graph []
   (let [point-gen (dr/weighted {(partial dr/random 0.05 0.95) 1
                                 (fn [] (tm/clamp01 (dr/gaussian 0.5 0.15))) 1})
-        points (points/generate 256 point-gen)
+        points (points/generate (dr/weighted {64 1 128 1 256 1}) point-gen)
         calculate-tree (dr/rand-nth [mst/prim-points mst/kruskal-points])
         edges (calculate-tree points)]
     {:points points
