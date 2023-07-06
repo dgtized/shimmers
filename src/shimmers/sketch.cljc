@@ -126,7 +126,7 @@
                            :type ~(:type options)
                            :fn ~runner
                            :taps ~(:taps options)
-                           :created-at ~(:created-at options)
+                           :created-at ~created-at
                            :tags ~(:tags options #{})
                            :ns (:ns m#)
                            :file (:file m#)
