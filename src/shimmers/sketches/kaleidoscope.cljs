@@ -17,7 +17,7 @@
 (defonce ui-state (ctrl/state {:mode :basic :blades 5.0}))
 
 (defn setup []
-  (let [[w h] [320 240]]
+  (let [[w h] [640 480]]
     {:mode :color-delay
      :dims [w h]
      :camera (video/capture w h)
