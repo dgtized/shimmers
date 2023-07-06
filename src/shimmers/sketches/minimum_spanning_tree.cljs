@@ -20,12 +20,12 @@
         edges (calculate-tree points)]
     {:points points
      :edges edges
-     :step 0}))
+     :step 0.0}))
 
 (defn graph-step [{:keys [step edges] :as state}]
-  (if (= step (count edges))
+  (if (> step (count edges))
     [true state]
-    [false (update state :step inc)]))
+    [false (update state :step + 0.2)]))
 
 (defn setup []
   (fresh-graph))
@@ -45,8 +45,12 @@
     (cq/circle (cq/rel-pos pt) 0.2))
   (q/stroke-weight 0.5)
   (q/stroke 50 50 230)
-  (doseq [[p q] (take step edges)]
-    (q/line (cq/rel-pos p) (cq/rel-pos q))))
+  (doseq [[i [p q]] (map-indexed vector (take (Math/floor (inc step)) edges))
+          :let [wp (cq/rel-vec p)
+                wq (cq/rel-vec q)]]
+    (if (< i (Math/floor step))
+      (q/line wp wq)
+      (q/line wp (tm/mix wp wq (tm/fract step))))))
 
 (defn page []
   (sketch/component
