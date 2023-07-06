@@ -1,17 +1,10 @@
 (ns shimmers.algorithm.minimum-spanning-tree
-  #?@
-  (:clj
-   [(:require
-     [clojure.data.priority-map :as priority]
-     [nifty.disjoint-set :as djs]
-     [shimmers.math.points :as points]
-     [thi.ng.geom.core :as g])]
-   :cljs
-   [(:require
-     [nifty.disjoint-set :as djs]
-     [shimmers.math.points :as points]
-     [tailrecursion.priority-map :as priority]
-     [thi.ng.geom.core :as g])]))
+  (:require
+   [nifty.disjoint-set :as djs]
+   [thi.ng.geom.core :as g]
+   [shimmers.math.points :as points]
+   #?(:clj [clojure.data.priority-map :as priority]
+      :cljs [tailrecursion.priority-map :as priority])))
 
 ;; Something off about performance here. Points to edges is <N^2, but pretty
 ;; close, so maybe sort x/y and find close somehow? On top of that though,
