@@ -35,9 +35,9 @@
 (defn draw [{:keys [dims shader buffer frames]}]
   (let [[w h] dims
         fc (q/frame-count)]
-    (when (and (q/loaded? shader) (> fc 4))
-      ;; not clear why copy is required but it is -- otherwise every frame is black
-      (q/copy (nth frames (mod fc history)) buffer [0 0 w h] [0 0 w h])
+    (when (and (q/loaded? shader) (> fc 1))
+      ;; not clear why copy-frame is required but it is -- otherwise every frame is black
+      (video/copy-frame buffer (nth frames (mod fc history)) w h)
       (shader/pass shader [w h]
                    {"u_resolution" (array w h)
                     "u_time" (/ (q/millis) 1000.0)
