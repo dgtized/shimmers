@@ -1,9 +1,11 @@
 (ns shimmers.sketches.ordered
   (:require
    [clojure.math.combinatorics :as mc]
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
@@ -286,7 +288,8 @@
 (defn scene []
   (let [rules (ruleset)]
     (reset! defo {:shapes []})
-    (csvg/svg-timed {:width width
+    (csvg/svg-timed {:id "scene"
+                     :width width
                      :height height
                      :stroke "black"
                      :fill "none"}
@@ -294,7 +297,8 @@
 
 (defn ui-controls []
   [:div
-   (debug/display defo)])
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "ordered")]
+   [debug/display defo]])
 
 (sketch/definition ordered
   {:created-at "2023-02-24"
