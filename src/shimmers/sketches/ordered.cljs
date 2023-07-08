@@ -285,23 +285,29 @@
                               0.015 1.0
                               0.02 1.0})})
 
-(defn scene []
-  (let [rules (ruleset)]
-    (reset! defo {:shapes []})
-    (csvg/svg-timed {:id "scene"
-                     :width width
-                     :height height
-                     :stroke "black"
-                     :fill "none"}
-      (shapes rules))))
+(defn scene [rules]
+  (reset! defo {:shapes []})
+  [:<>
+   (csvg/svg-timed {:id "scene"
+                    :width width
+                    :height height
+                    :stroke "black"
+                    :fill "none"}
+     (shapes rules))
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "ordered")]])
 
-(defn ui-controls []
-  [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "ordered")]
-   [debug/display defo]])
+(defn page []
+  (let [rules (ruleset)]
+    (fn []
+      [:<>
+       [:div.canvas-frame [scene rules]]
+       [:div.contained
+        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+         [view-sketch/generate :ordered]
+         [debug/display defo]]]])))
 
 (sketch/definition ordered
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :ordered ui-controls)))
+  (ctrl/mount page))
