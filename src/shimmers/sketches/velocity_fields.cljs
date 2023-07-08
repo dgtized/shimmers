@@ -153,16 +153,15 @@
             (range))))
 
 (defn explanation []
-  [:<>
-   [:div.readable-width
-    [:p
-     "Flow fields generated using a simple physics engine, applying a fixed
-      acceleration at each point in the direction of the noise field and then
-      keeping velocity in check by applying a drag coefficent."]
-    [:p
-     "Some outputs apply the algorithm twice using two bounding shapes but
+  [:div.readable-width
+   [:p
+    "Flow fields generated using a simple physics engine, applying a fixed
+     acceleration at each point in the direction of the noise field and then
+     keeping velocity in check by applying a drag coefficent."]
+   [:p
+    "Some outputs apply the algorithm twice using two bounding shapes but
      idential noise scale and seed, which varies the density and adds some
-     interesting edges."]]])
+     interesting edges."]])
 
 (defn page []
   (let [rules (generate-rules)]
