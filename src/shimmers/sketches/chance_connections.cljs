@@ -270,7 +270,11 @@
            applied repeatedly until all simple loops are removed."]
           [:p
            "A few paths still have loops where the entry and exit
-           are from two intersections, those are not currently corrected."]]]]])))
+           are from two intersections, those are not currently corrected."]
+          [:p
+           "Displaced lines offsets 2 copies along a particular path, vary
+           widths randomizes the widths at each segment for each offset, and
+           show original overlays the original, untangled path in red."]]]]])))
 
 (sketch/definition chance-connections
   {:created-at "2023-06-01"
