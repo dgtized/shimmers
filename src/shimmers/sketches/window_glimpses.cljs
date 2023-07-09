@@ -138,7 +138,8 @@
                     (intersecting-points rp rq))
                [rq])
        (partition 2 2)
-       (map gl/line2)))))
+       (map (fn [[p q]]
+              (with-meta (gl/line2 p q) (meta line))))))))
 
 (defn mass-vary [shapes field value]
   (map (fn [s] (vary-meta s assoc field value))
@@ -259,7 +260,8 @@
           windows)
      :shapes shapes
      :lines
-     (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)])
+     (map (fn [l] (vary-width l (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)))
+          (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)]))
      :hatched-lines
      (map (fn [line] (vary-meta line assoc :dashed (dr/chance 0.15)))
           (clip/hatch-rectangle bounds hatch-density theta1 [(dr/random) (dr/random)]))
@@ -371,11 +373,7 @@
        (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
-       (mapcat (fn [line]
-                 (let [width (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)]
-                   (->> windows
-                        (separate line)
-                        (map (fn [l] (vary-width l width)))))) lines))
+       (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
      (csvg/group {:stroke-width 0.125} crossed)
      (csvg/group {:stroke-width 0.9} arcs)]))
