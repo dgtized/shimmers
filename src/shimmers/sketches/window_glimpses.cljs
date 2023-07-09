@@ -239,7 +239,7 @@
 
         boxes (generate bounds (partial gen-box {:affine (dr/chance 0.33)}) 20)
         circles (swap-triangles (generate bounds gen-circle 18) (dr/random-int 5))
-        [windows shapes] (if (dr/chance 0.8)
+        [windows shapes] (if (dr/chance 0.85)
                            [boxes circles]
                            [circles boxes])
         shapes
