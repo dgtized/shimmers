@@ -361,9 +361,12 @@
                   (filter (fn [x] (instance? Triangle2 x)))
                   (mapcat (comp (partitioned-arcs windows) triangle-arc))
                   (map (dashed-arc [3 1 4])))]
-    [(csvg/group {:fill background
-                  :stroke-width 1.5}
-       (map clean-meta windows))
+    [(csvg/group {:fill background}
+       (->> windows
+            (map clean-meta)
+            (map (fn [s]
+                   (let [width (tm/clamp (dr/gaussian 1.5 1.0) 1.0 4.0)]
+                     (vary-meta s assoc :stroke-width width))))))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {:stroke-width 0.5}
        (mapcat (fn [line] (separate line windows)) lines))
