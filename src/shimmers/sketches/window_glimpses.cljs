@@ -35,6 +35,9 @@
 (defonce ui-state (ctrl/state {:monochrome false
                                :path-points false}))
 
+(defn vary-width [shape width]
+  (vary-meta shape assoc :stroke-width width))
+
 (defn distinct-shape [scale existing shape]
   (if (some (fn [s] (collide/overlaps? (g/scale-size shape scale) s)) existing)
     existing
@@ -250,7 +253,10 @@
      :theta2 theta2
      :hatch-density hatch-density
      :cross-density cross-density
-     :windows windows
+     :windows
+     (map (fn [s]
+            (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5)))
+          windows)
      :shapes shapes
      :lines
      (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)])
@@ -337,9 +343,6 @@
             :else
             s'))))
 
-(defn vary-width [shape width]
-  (vary-meta shape assoc :stroke-width width))
-
 (defn shapes
   [{:keys [windows shapes lines crossed-lines hatched-lines
            background palette show-path-points]}]
@@ -365,10 +368,7 @@
                   (mapcat (comp (partitioned-arcs windows) triangle-arc))
                   (map (dashed-arc [3 1 4])))]
     [(csvg/group {:fill background}
-       (->> windows
-            (map clean-meta)
-            (map (fn [s]
-                   (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5))))))
+       (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
        (mapcat (fn [line]
