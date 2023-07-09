@@ -337,6 +337,9 @@
             :else
             s'))))
 
+(defn vary-width [shape width]
+  (vary-meta shape assoc :stroke-width width))
+
 (defn shapes
   [{:keys [windows shapes lines crossed-lines hatched-lines
            background palette show-path-points]}]
@@ -365,14 +368,14 @@
        (->> windows
             (map clean-meta)
             (map (fn [s]
-                   (let [width (tm/clamp (dr/gaussian 1.5 1.0) 1.0 4.0)]
-                     (vary-meta s assoc :stroke-width width))))))
+                   (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 1.0 4.0))))))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
        (mapcat (fn [line]
-                 (let [width (dr/pareto 0.5 2.0)]
-                   (map (fn [l] (vary-meta l assoc :stroke-width width))
-                        (separate line windows)))) lines))
+                 (let [width (tm/clamp (dr/pareto 0.5 2.0) 0.5 4.0)]
+                   (->> windows
+                        (separate line)
+                        (map (fn [l] (vary-width l width)))))) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
      (csvg/group {:stroke-width 0.125} crossed)
      (csvg/group {:stroke-width 0.9} arcs)]))
