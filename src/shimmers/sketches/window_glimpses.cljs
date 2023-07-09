@@ -227,6 +227,12 @@
 ;; (separate-palette (:colors (palette/by-name :orange-black-blue-shell-red)))
 ;; (separate-palette [])
 
+(defn connect-lines [lines]
+  (let [la (dr/rand-nth lines)
+        lb (dr/rand-nth (remove #{la} lines))]
+    (for [t (dr/density-range 0.05 0.15)]
+      (gl/line2 (g/point-at la t) (g/point-at lb t)))))
+
 (defn generate-layers [bounds palette]
   (let [[background & palette] (separate-palette palette)
         theta0 (dr/random-tau)
@@ -246,7 +252,10 @@
         (map (fn [s] (vary-meta s assoc
                                :palette-color (dr/random-int (count palette))
                                :cross (dr/chance 0.08)))
-             shapes)]
+             shapes)
+        lines
+        (map (fn [l] (vary-width l (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)))
+             (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)]))]
     {:bounds bounds
      :background background
      :palette palette
@@ -259,9 +268,9 @@
             (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5)))
           windows)
      :shapes shapes
-     :lines
-     (map (fn [l] (vary-width l (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)))
-          (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)]))
+     :lines lines
+     :connecting-lines (when (dr/chance 0.5)
+                         (connect-lines lines))
      :hatched-lines
      (map (fn [line] (vary-meta line assoc :dashed (dr/chance 0.15)))
           (clip/hatch-rectangle bounds hatch-density theta1 [(dr/random) (dr/random)]))
@@ -346,7 +355,8 @@
             s'))))
 
 (defn shapes
-  [{:keys [windows shapes lines crossed-lines hatched-lines
+  [{:keys [windows shapes
+           lines connecting-lines crossed-lines hatched-lines
            background palette show-path-points]}]
   (let [clipped-shapes
         (->> windows
@@ -369,7 +379,9 @@
                   (filter (fn [x] (instance? Triangle2 x)))
                   (mapcat (comp (partitioned-arcs windows) triangle-arc))
                   (map (dashed-arc [3 1 4])))]
-    [(csvg/group {:fill background}
+    [(csvg/group {:stroke-width 0.5 :stroke "#888888"}
+       connecting-lines)
+     (csvg/group {:fill background}
        (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
