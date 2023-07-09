@@ -368,8 +368,11 @@
                    (let [width (tm/clamp (dr/gaussian 1.5 1.0) 1.0 4.0)]
                      (vary-meta s assoc :stroke-width width))))))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
-     (csvg/group {:stroke-width 0.5}
-       (mapcat (fn [line] (separate line windows)) lines))
+     (csvg/group {}
+       (mapcat (fn [line]
+                 (let [width (dr/pareto 0.5 2.0)]
+                   (map (fn [l] (vary-meta l assoc :stroke-width width))
+                        (separate line windows)))) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
      (csvg/group {:stroke-width 0.125} crossed)
      (csvg/group {:stroke-width 0.9} arcs)]))
