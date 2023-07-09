@@ -368,7 +368,7 @@
        (->> windows
             (map clean-meta)
             (map (fn [s]
-                   (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 1.0 3.0))))))
+                   (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5))))))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
        (mapcat (fn [line]
