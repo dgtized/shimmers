@@ -4,7 +4,8 @@
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.common.svg :as csvg]))
 
 ;; See also: https://roughjs.com/
 
@@ -45,6 +46,14 @@
                 [cx cy] (deviation prev current)]]
     (q/quadratic-vertex cx cy x y))
   (q/end-shape))
+
+(defn squiggle-path [{[p q] :points}]
+  (let [control-points (control-points p q)]
+    (csvg/path (conj (into [[:M p]]
+                           (->> control-points
+                                (partition 2 1)
+                                (map (fn [[a b]] [:Q (deviation a b) b]))))
+                     [:L q]))))
 
 (defn line [p q]
   (squiggle p q))
