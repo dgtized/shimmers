@@ -1,5 +1,6 @@
 (ns shimmers.sketches.window-glimpses
   (:require
+   [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.palette :as palette]
@@ -380,9 +381,10 @@
         arcs (->> shapes
                   (filter (fn [x] (instance? Triangle2 x)))
                   (mapcat (comp (partitioned-arcs windows) triangle-arc))
-                  (map (dashed-arc [3 1 4])))]
+                  (map (dashed-arc [3 1 4])))
+        render-path (dr/rand-nth [hand-drawn/squiggle-path identity])]
     [(csvg/group {:stroke-width 0.5 :stroke "#888888"}
-       connecting-lines)
+       (map render-path connecting-lines))
      (csvg/group {:fill background}
        (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
