@@ -241,7 +241,8 @@
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         theta2 (dr/gaussian (/ (+ theta0 theta1) 2) (/ eq/TAU 16))
-        shadow-theta theta2
+        shadow-dir (v/polar (Math/sqrt (dr/random (* width 0.02)))
+                            theta2)
 
         line-density (dr/gaussian (* width 0.08) 6.0)
         hatch-density (dr/gaussian (* width 0.03) 2.5)
@@ -259,15 +260,14 @@
                (let [pct-area (/ (g/area s) (g/area bounds))]
                  (vary-meta s assoc
                             :palette-color (dr/random-int (count palette))
-                            :shadow (dr/chance (* 0.2 (- 1.0 pct-area)))
+                            :shadow (dr/chance (* 0.5 (- 1.0 pct-area)))
                             :cross (dr/chance 0.08))))
              shapes)
 
         shadows
         (->> (filter (fn [s] (:shadow (meta s))) shapes)
              (map (fn [s] (-> (g/scale-size s 0.995)
-                             (g/translate (v/polar (Math/sqrt (dr/random (* width 0.02)))
-                                                   shadow-theta))
+                             (g/translate shadow-dir)
                              (with-meta (assoc (meta s) :shadow true))))))
         lines
         (map (fn [l] (vary-width l (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)))
@@ -354,7 +354,7 @@
 
 (defn clean-meta [s]
   (vary-meta s dissoc
-             :arc :cross :palette-color
+             :arc :cross :palette-color :shadow
              :start-vertex :face-dist :center-pct))
 
 (defn render-shapes [palette show-path-points]
