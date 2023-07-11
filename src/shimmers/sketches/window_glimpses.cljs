@@ -241,6 +241,7 @@
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         theta2 (dr/gaussian (/ (+ theta0 theta1) 2) (/ eq/TAU 16))
+        shadow-theta theta2
 
         line-density (dr/gaussian (* width 0.08) 6.0)
         hatch-density (dr/gaussian (* width 0.03) 2.5)
@@ -254,10 +255,20 @@
                            [boxes circles]
                            [circles boxes])
         shapes
-        (map (fn [s] (vary-meta s assoc
-                               :palette-color (dr/random-int (count palette))
-                               :cross (dr/chance 0.08)))
+        (map (fn [s]
+               (let [pct-area (/ (g/area s) (g/area bounds))]
+                 (vary-meta s assoc
+                            :palette-color (dr/random-int (count palette))
+                            :shadow (dr/chance (* 0.2 (- 1.0 pct-area)))
+                            :cross (dr/chance 0.08))))
              shapes)
+
+        shadows
+        (->> (filter (fn [s] (:shadow (meta s))) shapes)
+             (map (fn [s] (-> (g/scale-size s 0.995)
+                             (g/translate (v/polar (Math/sqrt (dr/random (* width 0.02)))
+                                                   shadow-theta))
+                             (with-meta (assoc (meta s) :shadow true))))))
         lines
         (map (fn [l] (vary-width l (tm/clamp (dr/pareto 0.5 2.0) 0.5 3.0)))
              (clip/hatch-rectangle bounds line-density theta0 [(dr/random) (dr/random)]))]
@@ -273,6 +284,7 @@
             (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5)))
           windows)
      :shapes shapes
+     :shadows shadows
      :lines lines
      :connecting-lines (when (dr/chance (+ 0.33 (if affine 0.33 0)))
                          (connect-lines lines))
@@ -360,7 +372,7 @@
             s'))))
 
 (defn shapes
-  [{:keys [windows shapes
+  [{:keys [windows shapes shadows
            lines connecting-lines crossed-lines hatched-lines
            background palette show-path-points]}]
   (let [clipped-shapes
@@ -368,9 +380,15 @@
              (mapcat (fn [window] (clipped window shapes)))
              (filter (fn [s] (seq (g/vertices s)))))
 
+        clipped-shadows
+        (->> windows
+             (mapcat (fn [window] (clipped window shadows)))
+             (filter (fn [s] (seq (g/vertices s)))))
+
         inner-lines
         (mapcat (fn [line]
-                  (let [subset (mapcat (fn [shape] (lines/clip-line line shape)) clipped-shapes)]
+                  (let [subset (mapcat (fn [shape] (lines/clip-line line shape))
+                                       clipped-shapes)]
                     (if (:dashed (meta line))
                       (map (fn [segment] (dashed-line segment [2 3 5])) subset)
                       subset)))
@@ -393,6 +411,7 @@
        (map render-path connecting-lines))
      (csvg/group {:fill background}
        (map clean-meta windows))
+     (csvg/group {} (map (render-shapes palette show-path-points) clipped-shadows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
      (csvg/group {}
        (mapcat (fn [line] (separate line windows)) lines))
