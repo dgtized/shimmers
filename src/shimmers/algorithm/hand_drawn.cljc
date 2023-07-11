@@ -32,9 +32,9 @@
         ;; Seems safer to use abs, but something weird is flipped with mix here?
         (tm/mix p q (abs term))))))
 
-(defn deviation [prev current]
+(defn deviation [radius prev current]
   (let [midpoint (tm/mix prev current 0.5)
-        displacement (random-point-in-circle 5)] ;; this should be biased toward normal at point?
+        displacement (random-point-in-circle radius)] ;; this should be biased toward normal at point?
     (tm/+ midpoint displacement)))
 
 ;; TODO: add controls for dt and displacement quantity
@@ -43,17 +43,19 @@
   (apply q/vertex p)
   (doseq [[prev current] (partition 2 1 (control-points p q))
           :let [[x y] current
-                [cx cy] (deviation prev current)]]
+                [cx cy] (deviation 5 prev current)]]
     (q/quadratic-vertex cx cy x y))
   (q/end-shape))
 
-(defn squiggle-path [{[p q] :points}]
+(defn squiggle-path
+  [{:keys [displace-radius]} {[p q] :points}]
   (let [control-points (control-points p q)]
-    (csvg/path (conj (into [[:M p]]
-                           (->> control-points
-                                (partition 2 1)
-                                (map (fn [[a b]] [:Q (deviation a b) b]))))
-                     [:L q]))))
+    (csvg/path
+     (conj (->> control-points
+                (partition 2 1)
+                (map (fn [[a b]] [:Q (deviation displace-radius a b) b]))
+                (into [[:M p]]))
+           [:L q]))))
 
 (defn line [p q]
   (squiggle p q))

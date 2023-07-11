@@ -380,11 +380,15 @@
         (clip-lines-to-shapes
          crossed-lines
          (filter (fn [s] (:cross (meta s))) clipped-shapes))
-        arcs (->> shapes
-                  (filter (fn [x] (instance? Triangle2 x)))
-                  (mapcat (comp (partitioned-arcs windows) triangle-arc))
-                  (map (dashed-arc [3 1 4])))
-        render-path (dr/rand-nth [hand-drawn/squiggle-path identity])]
+        arcs
+        (->> shapes
+             (filter (fn [x] (instance? Triangle2 x)))
+             (mapcat (comp (partitioned-arcs windows) triangle-arc))
+             (map (dashed-arc [3 1 4])))
+
+        render-path
+        (dr/rand-nth [(fn [line] (hand-drawn/squiggle-path {:displace-radius 5} line))
+                      identity])]
     [(csvg/group {:stroke-width 0.5 :stroke "#888888"}
        (map render-path connecting-lines))
      (csvg/group {:fill background}
