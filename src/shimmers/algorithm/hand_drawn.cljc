@@ -49,13 +49,12 @@
 
 (defn squiggle-path
   [{:keys [displace-radius]} {[p q] :points}]
-  (let [control-points (control-points p q)]
-    (csvg/path
-     (conj (->> control-points
-                (partition 2 1)
-                (map (fn [[a b]] [:Q (deviation displace-radius a b) b]))
-                (into [[:M p]]))
-           [:L q]))))
+  (csvg/path
+   (conj (->> (control-points p q)
+              (partition 2 1)
+              (map (fn [[a b]] [:Q (deviation displace-radius a b) b]))
+              (into [[:M p]]))
+         [:L q])))
 
 (defn line [p q]
   (squiggle p q))
