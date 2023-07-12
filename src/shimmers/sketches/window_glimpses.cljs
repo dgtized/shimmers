@@ -455,7 +455,10 @@
         :blues-orange-black-shell
         :yellow-slate-white-mint-red
         :black-shell-red-maroon-red
-        :green-shades]
+        :green-shades
+        :grey-charcoal-tan-mint-olive
+        :brown-tan-shell-blue-brown
+        :yellow-brown]
        palette/by-names
        (map :colors)
        (concat [["#ffeedd" "#ddeeff"]])

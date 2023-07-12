@@ -91,6 +91,12 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/69d4d3-ccf5ee-020804-0b4736-389b84"
    :green-shades
    "https://artsexperiments.withgoogle.com/artpalette/colors/54a867-c2d7bf-98c79e-1e4629-22823c"
+   :grey-charcoal-tan-mint-olive
+   "https://artsexperiments.withgoogle.com/artpalette/colors/5d6a66-303737-ded5c2-97bfb0-88968d"
+   :brown-tan-shell-blue-brown
+   "https://artsexperiments.withgoogle.com/artpalette/colors/634123-a19169-cbc2ac-264888-89693b"
+   :yellow-brown
+   "https://artsexperiments.withgoogle.com/artpalette/colors/aca192-5d503f-e4c111-806d4e-3d352d"
    })
 
 (def db
