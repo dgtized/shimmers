@@ -97,6 +97,10 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/634123-a19169-cbc2ac-264888-89693b"
    :yellow-brown
    "https://artsexperiments.withgoogle.com/artpalette/colors/aca192-5d503f-e4c111-806d4e-3d352d"
+   :shell-olive-blue-charcoal-red
+   "https://artsexperiments.withgoogle.com/artpalette/colors/eee5ce-7e937a-8eadb4-495659-aa604d"
+   :blue-grey-red-white-lavender
+   "https://artsexperiments.withgoogle.com/artpalette/colors/485985-5a5357-a94d3d-efeef2-b6a2a8"
    })
 
 (def db
