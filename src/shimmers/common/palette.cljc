@@ -101,6 +101,8 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/eee5ce-7e937a-8eadb4-495659-aa604d"
    :blue-grey-red-white-lavender
    "https://artsexperiments.withgoogle.com/artpalette/colors/485985-5a5357-a94d3d-efeef2-b6a2a8"
+   :teals-shell-yellow-blue
+   "https://artsexperiments.withgoogle.com/artpalette/colors/538591-52806f-bec8c1-d8d47f-3875b4"
    })
 
 (def db

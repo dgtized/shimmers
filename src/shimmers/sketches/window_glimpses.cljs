@@ -460,7 +460,8 @@
         :brown-tan-shell-blue-brown
         :yellow-brown
         :shell-olive-blue-charcoal-red
-        :blue-grey-red-white-lavender]
+        :blue-grey-red-white-lavender
+        :teals-shell-yellow-blue]
        palette/by-names
        (map :colors)
        (concat [["#ffeedd" "#ddeeff"]])
