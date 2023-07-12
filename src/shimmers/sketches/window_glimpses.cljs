@@ -82,7 +82,7 @@
         circle (gc/circle (dr/random-int r (- width r))
                           (dr/random-int r (- height r))
                           r)]
-    (distinct-shape 1.05 existing circle)))
+    (distinct-shape 1.08 existing circle)))
 
 (defn generate [bounds f n]
   (->> []
