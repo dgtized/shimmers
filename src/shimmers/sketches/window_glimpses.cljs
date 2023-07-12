@@ -188,16 +188,21 @@
                              [:A [r r] 0.0 0 1 (g/point-at arc b)]]))
          csvg/path)))
 
-(defn swap-triangles [circles n]
-  (let [[triangles circles'] (split-at n (dr/shuffle circles))]
-    (concat (map (fn [c]
-                   (-> (triangle/inscribed-equilateral c (dr/random-tau))
-                       (vary-meta assoc
-                                  :start-vertex (dr/random-int 3)
-                                  :face-dist (dr/random 0.9 1.0)
-                                  :center-pct (dr/rand-nth [0.5 0.33 0.25]))))
-                 triangles)
-            circles')))
+(defn circle-alternates
+  [circles n]
+  (let [alternate-shape
+        (fn [c]
+          (let [faces (dr/weighted {3 1.0 6 1.0 8 1.0})]
+            (case faces
+              3 (-> (triangle/inscribed-equilateral c (dr/random-tau))
+                    (vary-meta assoc
+                               :start-vertex (dr/random-int 3)
+                               :face-dist (dr/random 0.9 1.0)
+                               :center-pct (dr/rand-nth [0.5 0.33 0.25])))
+              6 (g/as-polygon c 6)
+              8 (geometry/rotate-around-centroid (g/as-polygon c 8) (/ Math/PI 8)))))
+        [alternates circles'] (split-at n (dr/shuffle circles))]
+    (into (mapv alternate-shape alternates) circles')))
 
 (defn dashed-line [line pattern]
   (->> pattern
@@ -251,8 +256,8 @@
         affine (dr/chance 0.33)
 
         boxes (generate bounds (partial gen-box {:affine affine}) 20)
-        circles (swap-triangles (generate bounds gen-circle 18) (dr/random-int 5))
-        [windows shapes] (if (dr/chance 0.85)
+        circles (circle-alternates (generate bounds gen-circle 18) (dr/random-int 7))
+        [windows shapes] (if (dr/chance 0.75)
                            [boxes circles]
                            [circles boxes])
         shapes
