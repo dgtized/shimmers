@@ -74,7 +74,7 @@
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
               poly)]
     (if (collide/bounded? bounds box)
-      (distinct-shape 1.12 existing box)
+      (distinct-shape 1.15 existing box)
       existing)))
 
 (defn gen-circle [{[width height] :size} existing]
@@ -82,7 +82,7 @@
         circle (gc/circle (dr/random-int r (- width r))
                           (dr/random-int r (- height r))
                           r)]
-    (distinct-shape 1.08 existing circle)))
+    (distinct-shape 1.1 existing circle)))
 
 (defn generate [bounds f n]
   (->> []
