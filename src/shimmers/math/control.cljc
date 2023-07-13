@@ -20,6 +20,7 @@
     (tm/- (tm/* dir control)
           (tm/* velocity (* 2 (Math/sqrt control))))))
 
+;; see also http://brettbeauregard.com/blog/tag/beginners-pid/
 (defprotocol IPid
   (adjust [_ time-ms value]))
 

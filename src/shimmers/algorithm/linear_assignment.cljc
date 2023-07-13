@@ -5,6 +5,8 @@
             [thi.ng.geom.core :as g]
             [thi.ng.geom.vector :as gv]))
 
+;; See also https://antimatroid.wordpress.com/2017/03/21/a-greedy-approximation-algorithm-for-the-linear-assignment-problem/
+
 (defn online-match-matrix [comparator as bs]
   {:queue (priority/priority-map-by comparator)
    :edges (mc/cartesian-product (range (count as))
