@@ -286,7 +286,11 @@
      :cross-density cross-density
      :windows
      (map (fn [s]
-            (vary-width s (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5)))
+            (-> s
+                (vary-width (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5))
+                (vary-meta assoc :project
+                           (when (dr/chance (* (if (instance? Circle2 s) 0.5 1.0) 0.2))
+                             (tm/* shadow-dir 1.8)))))
           windows)
      :shapes shapes
      :shadows shadows
@@ -360,6 +364,7 @@
 (defn clean-meta [s]
   (vary-meta s dissoc
              :arc :cross :palette-color :shadow
+             :project
              :start-vertex :face-dist :center-pct))
 
 (defn render-shapes [palette show-path-points]
@@ -414,12 +419,18 @@
                       identity])]
     [(csvg/group {:stroke-width 0.5 :stroke "#888888"}
        (map render-path connecting-lines))
+     (csvg/group {}
+       (mapcat (fn [line] (separate line windows)) lines))
+     (csvg/group {:fill background}
+       (->> windows
+            (filter (fn [s] (:project (meta s))))
+            (mapcat (fn [s] (let [project (:project (meta s))
+                                 back (g/translate s project)]
+                             (into [back] (mapv gl/line2 (g/vertices s) (g/vertices back))))))))
      (csvg/group {:fill background}
        (map clean-meta windows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shadows))
      (csvg/group {} (map (render-shapes palette show-path-points) clipped-shapes))
-     (csvg/group {}
-       (mapcat (fn [line] (separate line windows)) lines))
      (csvg/group {:stroke-width 0.5} inner-lines)
      (csvg/group {:stroke-width 0.125} crossed)
      (csvg/group {:stroke-width 0.9} arcs)]))
