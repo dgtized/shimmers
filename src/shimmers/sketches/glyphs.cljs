@@ -17,11 +17,11 @@
 (def height 600)
 
 (defn smooth-line [points]
-  (->> points
-       (gsd/subdivide-closed (:chaikin gsd/schemes))
-       (gsd/subdivide-closed (:chaikin gsd/schemes))
-       cs/midsection
-       (cs/sandwich points)))
+  (as-> points _
+    (iterate (partial gsd/subdivide-closed (:chaikin gsd/schemes)) _)
+    (nth _ (dr/weighted {0 1 1 2 2 4 3 1}))
+    (cs/midsection _)
+    (cs/sandwich points _)))
 
 (defn glyph []
   (let [shapes (dr/weighted {0 6
