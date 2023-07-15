@@ -55,6 +55,7 @@
         (rotate-around-point (dr/gaussian 0.5 0.2) (dr/gaussian 0.0 0.02))
         (g/translate (dr/jitter (dr/gaussian 10.0 6.0)))
         (vary-meta assoc
+                   :stroke-linecap (dr/weighted {"round" 1.0 "square" 1.5})
                    :stroke-width (tm/clamp (dr/gaussian 4.0 6.0) 0.6 12.0)
                    :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.125)))))))
 
