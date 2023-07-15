@@ -23,7 +23,7 @@
                :follow-mode :sinusoidal
                :debug false
                :color true
-               :limit-palette false
+               :limit-palette true
                :spinners false
                :palette-fn (:gold-blue palette/smooth-palettes)}))
 
