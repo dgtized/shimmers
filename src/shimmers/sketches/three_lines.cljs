@@ -3,6 +3,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -37,10 +38,11 @@
   (for [_ (range 45)]
     (-> (gl/line2 (tm/mix p q (dr/gaussian 0.0 0.07))
                   (tm/mix p q (dr/gaussian 1.0 0.07)))
+        (geometry/rotate-around-centroid (dr/gaussian 0.0 0.02))
         (g/translate (dr/jitter (dr/gaussian 8.0 4.0)))
         (vary-meta assoc
                    :stroke-width (tm/clamp (dr/gaussian 7.0 4.0) 1.0 32.0)
-                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.2)))))))
+                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.15)))))))
 
 (defn shapes []
   [(csvg/group {:stroke-opacity 0.03} (mapcat draw-line (lines)))
