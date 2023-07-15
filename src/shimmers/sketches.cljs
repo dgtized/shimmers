@@ -204,8 +204,9 @@
    shimmers.sketches.superposition
    shimmers.sketches.superposition-mirrored
    shimmers.sketches.terrain-grid
-   shimmers.sketches.the-journey-between
    shimmers.sketches.texas-fields
+   shimmers.sketches.the-journey-between
+   shimmers.sketches.three-lines
    shimmers.sketches.tilt
    shimmers.sketches.traffic-intersection
    shimmers.sketches.tree-rings
