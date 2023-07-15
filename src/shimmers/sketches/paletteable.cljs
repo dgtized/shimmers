@@ -55,3 +55,5 @@
    :type :canvas
    :tags #{:genuary2023}}
   (ctrl/mount (page)))
+
+;; See also https://towardsdatascience.com/the-perils-of-palette-transfer-f2739b5e4d2c

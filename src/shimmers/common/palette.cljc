@@ -122,7 +122,8 @@
   (by-names [:blue-yellow-tan-brown]))
 
 ;; https://www.youtube.com/watch?v=f4s1h2YETNY led me to:
-;; https://iquilezles.org/articles/palettes/
+;; https://iquilezles.org/articles/palettes/ and
+;; http://dev.thi.ng/gradients/
 ;; TODO: just re-use thi.ng.color.gradients/cosine-gradient-color?
 (defn smooth-palette
   "Output an RGB triplet ranged from 0.0 to 1.0."
