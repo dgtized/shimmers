@@ -19,20 +19,31 @@
 (defn invert-x [{[p q] :points}]
   (gl/line2 (- width (:x p)) (:y p) (- width (:x q)) (:y q)))
 
+(defn expand-line [line]
+  (let [length (tm/mag line)
+        scale (cond (< length (* 0.5 width))
+                    1.25
+                    (< length (* 0.66 width))
+                    1.1
+                    :else
+                    1.0)]
+    (g/scale-size line scale)))
+
 (defn lines []
   (let [top (gl/line2 (rv (dr/random -0.2 0.4) (dr/random -0.2 0.1))
                       (rv (dr/random 0.2 0.6) (dr/random 0.6 0.9)))
         bottom (gl/line2 (rv (dr/random 0.6 1.2) (dr/random 0.9 1.2))
                          (rv (dr/random 0.4 0.8) (dr/random 0.1 0.6)))
         flip-x (dr/chance 0.5)]
-    (dr/shuffle
-     [(if flip-x (invert-x top) top)
-      (if flip-x (invert-x bottom) bottom)
-      (gl/line2 (rv (dr/random -0.1 0.3) (dr/random 0.25 0.75))
-                (rv (dr/random 0.7 1.1) (dr/random 0.25 0.75)))])))
+    (->> [(if flip-x (invert-x top) top)
+          (if flip-x (invert-x bottom) bottom)
+          (gl/line2 (rv (dr/random -0.1 0.3) (dr/random 0.25 0.75))
+                    (rv (dr/random 0.7 1.1) (dr/random 0.25 0.75)))]
+         dr/shuffle
+         (mapv expand-line))))
 
 (defn grey [t]
-  (str "hsla(0,0%," (int (* 100 t)) "%,66%)"))
+  (str "hsla(0,0%," (int (* 100 t)) "%,90%)"))
 
 (defn rotate-around-point [{[p q] :points :as line} t angle]
   (geometry/rotate-around line (tm/mix p q t) angle))
@@ -44,8 +55,8 @@
         (rotate-around-point (dr/gaussian 0.5 0.2) (dr/gaussian 0.0 0.02))
         (g/translate (dr/jitter (dr/gaussian 10.0 6.0)))
         (vary-meta assoc
-                   :stroke-width (tm/clamp (dr/gaussian 4.0 6.0) 0.8 16.0)
-                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.15)))))))
+                   :stroke-width (tm/clamp (dr/gaussian 4.0 6.0) 0.6 12.0)
+                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.125)))))))
 
 (defn shapes []
   [(csvg/group {:stroke-opacity 0.04
