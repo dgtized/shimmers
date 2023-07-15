@@ -28,24 +28,29 @@
     (dr/shuffle
      [(if flip-x (invert-x top) top)
       (if flip-x (invert-x bottom) bottom)
-      (gl/line2 (rv (dr/random -0.1 0.35) (dr/random 0.25 0.75))
-                (rv (dr/random 0.65 1.1) (dr/random 0.25 0.75)))])))
+      (gl/line2 (rv (dr/random -0.1 0.3) (dr/random 0.25 0.75))
+                (rv (dr/random 0.7 1.1) (dr/random 0.25 0.75)))])))
 
 (defn grey [t]
   (str "hsla(0,0%," (int (* 100 t)) "%,66%)"))
 
+(defn rotate-around-point [{[p q] :points :as line} t angle]
+  (geometry/rotate-around line (tm/mix p q t) angle))
+
 (defn draw-line [{[p q] :points}]
-  (for [_ (range 45)]
-    (-> (gl/line2 (tm/mix p q (dr/gaussian 0.0 0.07))
-                  (tm/mix p q (dr/gaussian 1.0 0.07)))
-        (geometry/rotate-around-centroid (dr/gaussian 0.0 0.02))
-        (g/translate (dr/jitter (dr/gaussian 8.0 4.0)))
+  (for [_ (range 60)]
+    (-> (gl/line2 (tm/mix p q (dr/gaussian 0.02 0.05))
+                  (tm/mix p q (dr/gaussian 0.98 0.05)))
+        (rotate-around-point (dr/gaussian 0.5 0.2) (dr/gaussian 0.0 0.02))
+        (g/translate (dr/jitter (dr/gaussian 10.0 6.0)))
         (vary-meta assoc
-                   :stroke-width (tm/clamp (dr/gaussian 7.0 4.0) 1.0 32.0)
+                   :stroke-width (tm/clamp (dr/gaussian 4.0 6.0) 0.8 16.0)
                    :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.15)))))))
 
 (defn shapes []
-  [(csvg/group {:stroke-opacity 0.03} (mapcat draw-line (lines)))
+  [(csvg/group {:stroke-opacity 0.04
+                :transform (csvg/rotate (dr/gaussian 0.0 1.5) (rv 0.5 0.5))}
+     (mapcat draw-line (lines)))
    (csvg/group {:stroke-opacity 0.12} (mapcat draw-line (lines)))
    (csvg/group {:stroke-opacity 1.00} (mapcat draw-line (lines)))])
 
