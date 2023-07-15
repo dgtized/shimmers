@@ -27,8 +27,8 @@
     (dr/shuffle
      [(if flip-x (invert-x top) top)
       (if flip-x (invert-x bottom) bottom)
-      (gl/line2 (rv (dr/random -0.1 0.4) (dr/random 0.3 0.6))
-                (rv (dr/random 0.7 1.1) (dr/random 0.3 0.7)))])))
+      (gl/line2 (rv (dr/random -0.1 0.35) (dr/random 0.25 0.75))
+                (rv (dr/random 0.65 1.1) (dr/random 0.25 0.75)))])))
 
 (defn grey [t]
   (str "hsla(0,0%," (int (* 100 t)) "%,66%)"))
@@ -40,10 +40,12 @@
         (g/translate (dr/jitter (dr/gaussian 8.0 4.0)))
         (vary-meta assoc
                    :stroke-width (tm/clamp (dr/gaussian 7.0 4.0) 1.0 32.0)
-                   :stroke (grey (tm/clamp01 (dr/gaussian 0.05 0.25)))))))
+                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.2)))))))
 
 (defn shapes []
-  (mapcat draw-line (lines)))
+  [(csvg/group {:stroke-opacity 0.03} (mapcat draw-line (lines)))
+   (csvg/group {:stroke-opacity 0.12} (mapcat draw-line (lines)))
+   (csvg/group {:stroke-opacity 1.00} (mapcat draw-line (lines)))])
 
 (defn scene []
   (csvg/svg-timed
