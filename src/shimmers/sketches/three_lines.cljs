@@ -5,8 +5,10 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -17,26 +19,38 @@
   (gl/line2 (- width (:x p)) (:y p) (- width (:x q)) (:y q)))
 
 (defn lines []
-  (let [top (gl/line2 (rv (dr/random -0.2 0.4) -0.1)
+  (let [top (gl/line2 (rv (dr/random -0.2 0.4) (dr/random -0.2 0.1))
                       (rv (dr/random 0.2 0.6) (dr/random 0.6 0.9)))
-        bottom (gl/line2 (rv (dr/random 0.6 1.2) 1.1)
+        bottom (gl/line2 (rv (dr/random 0.6 1.2) (dr/random 0.9 1.2))
                          (rv (dr/random 0.4 0.8) (dr/random 0.1 0.6)))
         flip-x (dr/chance 0.5)]
-    [(if flip-x (invert-x top) top)
-     (if flip-x (invert-x bottom) bottom)
-     (gl/line2 (rv (dr/random -0.1 0.3) (dr/random 0.3 0.7))
-               (rv (dr/random 0.7 1.1) (dr/random 0.3 0.7)))]))
+    (dr/shuffle
+     [(if flip-x (invert-x top) top)
+      (if flip-x (invert-x bottom) bottom)
+      (gl/line2 (rv (dr/random -0.1 0.4) (dr/random 0.3 0.6))
+                (rv (dr/random 0.7 1.1) (dr/random 0.3 0.7)))])))
+
+(defn grey [t]
+  (str "hsla(0,0%," (int (* 100 t)) "%,66%)"))
+
+(defn draw-line [{[p q] :points}]
+  (for [_ (range 45)]
+    (-> (gl/line2 (tm/mix p q (dr/gaussian 0.0 0.07))
+                  (tm/mix p q (dr/gaussian 1.0 0.07)))
+        (g/translate (dr/jitter (dr/gaussian 8.0 4.0)))
+        (vary-meta assoc
+                   :stroke-width (tm/clamp (dr/gaussian 7.0 4.0) 1.0 32.0)
+                   :stroke (grey (tm/clamp01 (dr/gaussian 0.05 0.25)))))))
 
 (defn shapes []
-  (lines))
+  (mapcat draw-line (lines)))
 
 (defn scene []
   (csvg/svg-timed
     {:width width
      :height height
      :stroke "black"
-     :fill "white"
-     :stroke-width 32.0}
+     :fill "white"}
     (shapes)))
 
 (sketch/definition three-lines
