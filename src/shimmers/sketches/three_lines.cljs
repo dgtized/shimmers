@@ -64,7 +64,7 @@
         (vary-meta assoc
                    :stroke-linecap (dr/weighted {"round" 1.0 "square" 1.5})
                    :stroke-width (tm/clamp (dr/gaussian 2.5 7.0) 0.6 12.0)
-                   :stroke (grey (tm/clamp01 (dr/gaussian 0.02 0.125)))))))
+                   :stroke (grey (tm/clamp01 (dr/gaussian 0.00 0.125)))))))
 
 (defn shapes []
   [(csvg/group {:stroke-opacity 0.04
