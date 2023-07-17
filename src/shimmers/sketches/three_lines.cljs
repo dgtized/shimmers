@@ -3,7 +3,9 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -71,6 +73,10 @@
                 :transform (csvg/rotate (dr/gaussian 0.0 1.5) (rv 0.5 0.5))}
      (mapcat draw-line (lines)))
    (csvg/group {:stroke-opacity 0.12} (mapcat draw-line (lines)))
+   (when (dr/chance 0.25)
+     (csvg/group {:fill "none" :stroke-width 20}
+       (triangle/inscribed-equilateral (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+                                       (* height 0.45) (* eq/TAU (dr/rand-nth [0 0.25 0.5 0.75])))))
    (csvg/group {:stroke-opacity 1.00} (mapcat draw-line (lines)))])
 
 (defn scene []
