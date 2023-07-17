@@ -73,15 +73,16 @@
   [(csvg/group {:stroke-opacity 0.04
                 :transform (csvg/rotate (dr/gaussian 0.0 1.5) (rv 0.5 0.5))}
      (mapcat draw-line (lines)))
-   (csvg/group {:stroke-opacity 0.12} (mapcat draw-line (lines)))
-   (when (dr/chance 0.25)
-     (csvg/group {:fill "none" :stroke-width 20}
-       (let [orientation (* eq/TAU (dr/rand-nth [0 0.25 0.5 0.75]))]
-         (triangle/inscribed-equilateral (v/+polar (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
-                                                   (- (* height 0.125))
-                                                   orientation)
-                                         (* height 0.5)
-                                         orientation))))
+   (if (dr/chance 0.8)
+     (csvg/group {:stroke-opacity 0.12} (mapcat draw-line (lines)))
+     (csvg/group {:stroke-opacity 0.20}
+       (let [orientation (* eq/TAU (dr/rand-nth [0 0.25 0.5 0.75]))
+             triangle (triangle/inscribed-equilateral (v/+polar (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5)
+                                                                (- (* height 0.125))
+                                                                orientation)
+                                                      (* height 0.5)
+                                                      orientation)]
+         (mapcat draw-line (map gl/line2 (g/edges triangle))))))
    (csvg/group {:stroke-opacity 1.00} (mapcat draw-line (lines)))])
 
 (defn scene []
