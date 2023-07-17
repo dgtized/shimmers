@@ -82,7 +82,9 @@
                                                                 orientation)
                                                       (* height 0.5)
                                                       orientation)]
-         (mapcat draw-line (map gl/line2 (g/edges triangle))))))
+         (for [edge (dr/shuffle (map gl/line2 (g/edges triangle)))]
+           (csvg/group {:stroke-opacity (tm/clamp (dr/gaussian 0.2 0.1) 0.05 0.33)}
+             (draw-line edge))))))
    (csvg/group {:stroke-opacity 1.00} (mapcat draw-line (lines)))])
 
 (defn scene []
