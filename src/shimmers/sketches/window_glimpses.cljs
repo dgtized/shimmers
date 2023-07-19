@@ -77,6 +77,21 @@
       (distinct-shape 1.15 existing box)
       existing)))
 
+(defn seed-boxes [bounds]
+  (case (dr/rand-nth [:bookends :descending])
+    :bookends
+    [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
+                (g/unmap-point bounds (gv/vec2 0.2 0.9)))
+     (rect/rect (g/unmap-point bounds (gv/vec2 0.8 0.1))
+                (g/unmap-point bounds (gv/vec2 0.9 0.9)))]
+    :descending
+    [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
+                (g/unmap-point bounds (gv/vec2 0.2 0.6)))
+     (rect/rect (g/unmap-point bounds (gv/vec2 0.45 0.25))
+                (g/unmap-point bounds (gv/vec2 0.55 0.75)))
+     (rect/rect (g/unmap-point bounds (gv/vec2 0.8 0.4))
+                (g/unmap-point bounds (gv/vec2 0.9 0.9)))]))
+
 (defn gen-circle [{[width height] :size} existing]
   (let [r (int (* (min width height) (dr/random 0.05 0.40)))
         circle (gc/circle (dr/random-int r (- width r))
@@ -84,8 +99,13 @@
                           r)]
     (distinct-shape 1.1 existing circle)))
 
-(defn generate [bounds f n]
-  (->> []
+(defn seed-circles [{[width height] :size}]
+  [(gc/circle (gv/vec2 (* width 0.15) (* height 0.5)) (* height 0.15))
+   (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.25))
+   (gc/circle (gv/vec2 (* width 0.85) (* height 0.5)) (* height 0.15))])
+
+(defn generate [bounds f seed-fn n]
+  (->> (if seed-fn (seed-fn bounds) [])
        (iterate (partial f bounds))
        (take-while (fn [s] (< (count s) n)))
        last))
@@ -255,8 +275,15 @@
 
         affine (dr/chance 0.33)
 
-        boxes (generate bounds (partial gen-box {:affine affine}) 20)
-        circles (circle-alternates (generate bounds gen-circle 18) (dr/random-int 7))
+        boxes (-> bounds
+                  (generate (partial gen-box {:affine affine})
+                            (when (dr/chance 0.25) seed-boxes)
+                            20))
+        circles (-> bounds
+                    (generate gen-circle
+                              (when (dr/chance 0.25) seed-circles)
+                              18)
+                    (circle-alternates (dr/random-int 7)))
         [windows shapes] (if (dr/chance 0.75)
                            [boxes circles]
                            [circles boxes])
