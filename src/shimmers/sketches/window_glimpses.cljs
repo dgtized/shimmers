@@ -106,10 +106,20 @@
                           r)]
     (distinct-shape 1.1 existing circle)))
 
-(defn seed-circles [{[width height] :size}]
-  [(gc/circle (gv/vec2 (* width 0.15) (* height 0.5)) (* height 0.15))
-   (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.25))
-   (gc/circle (gv/vec2 (* width 0.85) (* height 0.5)) (* height 0.15))])
+(defn seed-circles [{[width height] :size :as bounds}]
+  (case (dr/rand-nth [:triplets :diagonal])
+    :triplets
+    [(gc/circle (gv/vec2 (* width 0.15) (* height 0.5)) (* height 0.15))
+     (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.25))
+     (gc/circle (gv/vec2 (* width 0.85) (* height 0.5)) (* height 0.15))]
+    :diagonal
+    (let [line (dr/rand-nth [(gl/line2 (g/unmap-point bounds (gv/vec2 0 0.1))
+                                       (g/unmap-point bounds (gv/vec2 1 0.9)))
+                             (gl/line2 (g/unmap-point bounds (gv/vec2 0 0.9))
+                                       (g/unmap-point bounds (gv/vec2 1 0.1)))])
+          radius (* height (dr/random 0.1 0.2))]
+      (for [p [0.2 0.5 0.8]]
+        (gc/circle (g/point-at line p) radius)))))
 
 (defn generate [bounds f seed-fn n]
   (->> (if seed-fn (seed-fn bounds) [])
