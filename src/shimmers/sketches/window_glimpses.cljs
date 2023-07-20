@@ -122,10 +122,12 @@
         (gc/circle (g/point-at line p) radius)))))
 
 (defn generate [bounds f seed-fn n]
-  (->> (if seed-fn (seed-fn bounds) [])
-       (iterate (partial f bounds))
-       (take-while (fn [s] (< (count s) n)))
-       last))
+  (let [seed (if seed-fn (seed-fn bounds) [])
+        expected (max n (inc (count seed)))]
+    (->> seed
+         (iterate (partial f bounds))
+         (take-while (fn [s] (< (count s) expected)))
+         last)))
 
 (defn smooth-poly [s]
   (if (instance? Circle2 s)
