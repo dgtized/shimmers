@@ -78,19 +78,20 @@
       existing)))
 
 (defn seed-boxes [bounds]
-  (case (dr/rand-nth [:bookends :descending])
-    :bookends
-    [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
-                (g/unmap-point bounds (gv/vec2 0.2 0.9)))
-     (rect/rect (g/unmap-point bounds (gv/vec2 0.8 0.1))
-                (g/unmap-point bounds (gv/vec2 0.9 0.9)))]
-    :descending
-    [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
-                (g/unmap-point bounds (gv/vec2 0.2 0.6)))
-     (rect/rect (g/unmap-point bounds (gv/vec2 0.45 0.25))
-                (g/unmap-point bounds (gv/vec2 0.55 0.75)))
-     (rect/rect (g/unmap-point bounds (gv/vec2 0.8 0.4))
-                (g/unmap-point bounds (gv/vec2 0.9 0.9)))]))
+  (let [width (dr/rand-nth [0.1 0.16 0.2])]
+    (case (dr/rand-nth [:bookends :descending])
+      :bookends
+      [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
+                  (g/unmap-point bounds (gv/vec2 (+ 0.1 width) 0.9)))
+       (rect/rect (g/unmap-point bounds (gv/vec2 (- 0.9 width) 0.1))
+                  (g/unmap-point bounds (gv/vec2 0.9 0.9)))]
+      :descending
+      [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
+                  (g/unmap-point bounds (gv/vec2 (+ 0.1 width) 0.6)))
+       (rect/rect (g/unmap-point bounds (gv/vec2 (- 0.5 (/ width 2.0)) 0.25))
+                  (g/unmap-point bounds (gv/vec2 (+ 0.5 (/ width 2.0)) 0.75)))
+       (rect/rect (g/unmap-point bounds (gv/vec2 (- 0.9 width) 0.4))
+                  (g/unmap-point bounds (gv/vec2 0.9 0.9)))])))
 
 (defn gen-circle [{[width height] :size} existing]
   (let [r (int (* (min width height) (dr/random 0.05 0.40)))
