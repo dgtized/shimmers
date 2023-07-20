@@ -295,11 +295,11 @@
         boxes (-> bounds
                   (generate (partial gen-box {:affine affine})
                             (when (dr/chance 0.25) seed-boxes)
-                            20))
+                            (dr/random-int 18 23)))
         circles (-> bounds
                     (generate gen-circle
                               (when (dr/chance 0.25) seed-circles)
-                              18)
+                              (dr/random-int 16 21))
                     (circle-alternates (dr/random-int 7)))
         [windows shapes] (if (dr/chance 0.75)
                            [boxes circles]
