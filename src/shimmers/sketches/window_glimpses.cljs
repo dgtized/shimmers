@@ -107,7 +107,7 @@
     (distinct-shape 1.1 existing circle)))
 
 (defn seed-circles [{[width height] :size :as bounds}]
-  (case (dr/rand-nth [:triplets :diagonal])
+  (case (dr/rand-nth [:triplets :diagonal :spiral])
     :triplets
     [(gc/circle (gv/vec2 (* width 0.15) (* height 0.5)) (* height 0.15))
      (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.25))
@@ -119,7 +119,15 @@
                                        (g/unmap-point bounds (gv/vec2 1 0.1)))])
           radius (* height (dr/random 0.1 0.2))]
       (for [p [0.2 0.5 0.8]]
-        (gc/circle (g/point-at line p) radius)))))
+        (gc/circle (g/point-at line p) radius)))
+    :spiral
+    (let [center (g/unmap-point bounds (gv/vec2 0.32 0.70))
+          n 7]
+      (for [t (tm/norm-range n)
+            :let [theta (* eq/TAU (Math/sqrt t))]]
+        (vary-meta (gc/circle (v/+polar center (* 0.12 height (Math/pow tm/PHI (/ (* 2 theta) Math/PI))) theta)
+                              (* height 0.08 (Math/sqrt (/ theta eq/TAU))))
+                   assoc :spiral true)))))
 
 (defn generate [bounds f seed-fn n]
   (let [seed (if seed-fn (seed-fn bounds) [])
@@ -410,7 +418,7 @@
 (defn clean-meta [s]
   (vary-meta s dissoc
              :arc :cross :palette-color :shadow
-             :project
+             :project :spiral
              :start-vertex :face-dist :center-pct))
 
 (defn render-shapes [palette show-path-points]
