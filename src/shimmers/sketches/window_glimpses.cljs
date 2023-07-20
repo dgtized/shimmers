@@ -78,13 +78,19 @@
       existing)))
 
 (defn seed-boxes [bounds]
-  (let [width (dr/rand-nth [0.1 0.16 0.2])]
-    (case (dr/rand-nth [:bookends :descending])
+  (let [width (dr/rand-nth [0.1 0.16 0.2])
+        height (dr/rand-nth [0.08 0.10 0.12])]
+    (case (dr/rand-nth [:bookends :topends :descending])
       :bookends
       [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
                   (g/unmap-point bounds (gv/vec2 (+ 0.1 width) 0.9)))
        (rect/rect (g/unmap-point bounds (gv/vec2 (- 0.9 width) 0.1))
                   (g/unmap-point bounds (gv/vec2 0.9 0.9)))]
+      :topends
+      [(rect/rect (g/unmap-point bounds (gv/vec2 0.2 0.05))
+                  (g/unmap-point bounds (gv/vec2 0.8 (+ 0.1 height))))
+       (rect/rect (g/unmap-point bounds (gv/vec2 0.2 (- 0.95 height)))
+                  (g/unmap-point bounds (gv/vec2 0.8 0.95)))]
       :descending
       [(rect/rect (g/unmap-point bounds (gv/vec2 0.1 0.1))
                   (g/unmap-point bounds (gv/vec2 (+ 0.1 width) 0.6)))
