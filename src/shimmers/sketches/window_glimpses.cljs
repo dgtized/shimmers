@@ -527,7 +527,10 @@
         :shell-olive-blue-charcoal-red
         :blue-grey-red-white-lavender
         :teals-shell-yellow-blue
-        :charcoal-grey-yellow-blue]
+        :charcoal-grey-yellow-blue
+        :sand-sky-water-black-grey
+        :grey-brown-yellow-grey-blue
+        :tan-shell-forest-green-offwhite]
        palette/by-names
        (map :colors)
        (concat [["#ffeedd" "#ddeeff"]])

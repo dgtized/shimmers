@@ -105,7 +105,12 @@
    "https://artsexperiments.withgoogle.com/artpalette/colors/538591-52806f-bec8c1-d8d47f-3875b4"
    :charcoal-grey-yellow-blue
    "https://artsexperiments.withgoogle.com/artpalette/colors/3f4340-8c8d83-accbc6-ecd6b5-6f9eb8"
-   })
+   :sand-sky-water-black-grey
+   "https://artsexperiments.withgoogle.com/artpalette/colors/d8b082-68a1aa-6f8585-191513-90867c"
+   :grey-brown-yellow-grey-blue
+   "https://artsexperiments.withgoogle.com/artpalette/colors/c7c8c4-594540-c6b165-9f9a98-454d7d"
+   :tan-shell-forest-green-offwhite
+   "https://artsexperiments.withgoogle.com/artpalette/colors/a18a74-e5e2d4-577a44-688a4f-e1dbc1"})
 
 (def db
   (map named-url palette-urls))
