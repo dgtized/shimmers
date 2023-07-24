@@ -26,12 +26,10 @@ jobs:
 
       - name: Cache deps.edn dependencies
         uses: actions/cache@v3
-        env:
-          cache-name: cache-maven
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/deps.edn') }}
-          restore-keys: ${{ runner.os }}-${{ env.cache-name }}-
+          key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: clj-${{ runner.os }}-
 
       - name: Setup Java 11
         uses: actions/setup-java@v3
@@ -69,12 +67,10 @@ jobs:
 
       - name: Cache deps.edn dependencies
         uses: actions/cache@v3
-        env:
-          cache-name: cache-maven
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/deps.edn') }}
-          restore-keys: ${{ runner.os }}-${{ env.cache-name }}-
+          key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
+          restore-keys: clj-${{ runner.os }}-
 
       - name: Setup Java 11
         uses: actions/setup-java@v3
