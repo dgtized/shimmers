@@ -184,6 +184,7 @@
    shimmers.sketches.shattered
    shimmers.sketches.six-of-one-half-dozen-of-the-other
    shimmers.sketches.slashes
+   shimmers.sketches.slither
    shimmers.sketches.slow-zone
    shimmers.sketches.snake
    shimmers.sketches.solar-transit
