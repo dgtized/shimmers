@@ -3,11 +3,11 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.quil :as cq]
-   [shimmers.math.vector :as v]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
 (defn setup []
