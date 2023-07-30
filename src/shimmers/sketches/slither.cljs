@@ -24,10 +24,10 @@
   (doseq [v (tm/norm-range 23)]
     (q/begin-shape)
     (apply q/curve-vertex (v/polar (cq/rel-h 0.01) (* eq/TAU v)))
-    (apply q/curve-vertex (v/polar (cq/rel-h 0.05) (* eq/TAU v)))
-    (apply q/curve-vertex (v/polar (cq/rel-h (+ 0.25 (* 0.15 (Math/cos t))))
+    (apply q/curve-vertex (v/polar (cq/rel-h 0.05) (* eq/TAU (+ v (* 0.075 (Math/sin (* 0.33 t)))))))
+    (apply q/curve-vertex (v/polar (cq/rel-h (+ 0.25 (* 0.125 (Math/cos t))))
                                    (* eq/TAU (+ v (* 0.1 (Math/sin (* 1.5 t)))))))
-    (apply q/curve-vertex (v/polar (cq/rel-h 0.45) (* eq/TAU v)))
+    (apply q/curve-vertex (v/polar (cq/rel-h 0.45) (* eq/TAU (+ v (* 0.075 (Math/sin (* 0.25 t)))))))
     (apply q/curve-vertex (v/polar (cq/rel-h 0.49) (* eq/TAU v)))
     (q/end-shape)))
 
