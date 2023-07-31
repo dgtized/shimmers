@@ -26,6 +26,7 @@
    shimmers.sketches.chance-connections
    shimmers.sketches.chaos-cuts
    shimmers.sketches.chemical-attraction
+   shimmers.sketches.circle-connections
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
    shimmers.sketches.circuit-intersections
