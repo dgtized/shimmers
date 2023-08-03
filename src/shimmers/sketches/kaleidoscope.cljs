@@ -14,7 +14,7 @@
 (def modes
   [:basic,:rgb-delay])
 
-(defonce ui-state (ctrl/state {:mode :basic :blades 5.0}))
+(defonce ui-state (ctrl/state {:mode :basic :blades 5.0 :zoom 0.3}))
 
 (defn setup []
   (let [[w h] [640 480]]
@@ -43,6 +43,7 @@
                     "u_time" (/ (q/millis) 1000.0)
                     "u_mode" (cs/index-of modes (:mode @ui-state))
                     "blades" (float (:blades @ui-state))
+                    "zoom" (float (:zoom @ui-state))
                     "frame" (nth frames (mod (- fc 1) history))
                     "frame10" (if (> fc 10) (nth frames (mod (- fc 10) history)) buffer)
                     "frame25" (if (> fc 25) (nth frames (mod (- fc 25) history)) buffer)
@@ -59,7 +60,8 @@
     :middleware [m/fun-mode framerate/mode])
    [:div.ui-controls
     [ctrl/change-mode ui-state modes]
-    [ctrl/numeric ui-state "Blades" [:blades] [1.0 13.0 1.0]]]])
+    [ctrl/numeric ui-state "Blades" [:blades] [1.0 13.0 1.0]]
+    [ctrl/slider ui-state (fn [v] (str "Zoom " v)) [:zoom] [0.1 3.0 0.01]]]])
 
 (sketch/definition kaleidoscope
   {:created-at "2023-07-02"
