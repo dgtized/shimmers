@@ -14,7 +14,12 @@
 (def modes
   [:basic,:rgb-delay])
 
-(defonce ui-state (ctrl/state {:mode :basic :blades 5.0 :zoom 0.3}))
+(defonce ui-state
+  (ctrl/state {:mode :basic
+               :blades 5.0
+               :zoom 0.3
+               :power1 1.0
+               :power2 1.2}))
 
 (defn setup []
   (let [[w h] [640 480]]
@@ -44,6 +49,8 @@
                     "u_mode" (cs/index-of modes (:mode @ui-state))
                     "blades" (float (:blades @ui-state))
                     "zoom" (float (:zoom @ui-state))
+                    "power1" (float (:power1 @ui-state))
+                    "power2" (float (:power2 @ui-state))
                     "frame" (nth frames (mod (- fc 1) history))
                     "frame10" (if (> fc 10) (nth frames (mod (- fc 10) history)) buffer)
                     "frame25" (if (> fc 25) (nth frames (mod (- fc 25) history)) buffer)
@@ -61,7 +68,9 @@
    [:div.ui-controls
     [ctrl/change-mode ui-state modes]
     [ctrl/slider ui-state (fn [v] (str "Blades " v)) [:blades] [1.0 17.0 1.0]]
-    [ctrl/slider ui-state (fn [v] (str "Zoom " v)) [:zoom] [0.1 3.0 0.01]]]])
+    [ctrl/slider ui-state (fn [v] (str "Zoom " v)) [:zoom] [0.1 3.0 0.01]]
+    [ctrl/slider ui-state (fn [v] (str "Power1 " v)) [:power1] [0.1 2.0 0.05]]
+    [ctrl/slider ui-state (fn [v] (str "Power2 " v)) [:power2] [0.9 2.0 0.01]]]])
 
 (sketch/definition kaleidoscope
   {:created-at "2023-07-02"

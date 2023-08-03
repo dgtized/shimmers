@@ -11,6 +11,8 @@ uniform float u_time;
 uniform int u_mode;
 uniform float blades;
 uniform float zoom;
+uniform float power1;
+uniform float power2;
 
 uniform sampler2D frame;
 uniform sampler2D frame10;
@@ -20,11 +22,11 @@ uniform sampler2D frame25;
 vec2 kaleidoscope(vec2 uv)
 {
   float th = atan(uv.y, uv.x);
-  float r = pow(length(uv), 1.);
+  float r = pow(length(uv), power1);
 
   float q = 2. * pi / blades;
   th = abs(mod(th + cos(0.1*u_time), q) - 0.5 * q);
-  return pow(r, 1.2)*vec2(cos(th), sin(th)) * zoom;
+  return pow(r, power2)*vec2(cos(th), sin(th)) * zoom;
 }
 
 vec2 transform(vec2 at)
