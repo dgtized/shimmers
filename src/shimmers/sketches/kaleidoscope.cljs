@@ -60,7 +60,7 @@
     :middleware [m/fun-mode framerate/mode])
    [:div.ui-controls
     [ctrl/change-mode ui-state modes]
-    [ctrl/numeric ui-state "Blades" [:blades] [1.0 13.0 1.0]]
+    [ctrl/slider ui-state (fn [v] (str "Blades " v)) [:blades] [1.0 17.0 1.0]]
     [ctrl/slider ui-state (fn [v] (str "Zoom " v)) [:zoom] [0.1 3.0 0.01]]]])
 
 (sketch/definition kaleidoscope
