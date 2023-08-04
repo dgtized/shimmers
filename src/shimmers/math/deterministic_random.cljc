@@ -199,7 +199,7 @@
   "Generate an ordered range of values from [0..1] with normal spacing `mu`, and
   standard-deviation `sd`."
   ([mu sd]
-   (->> #(tm/abs* (gaussian mu sd))
+   (->> #(abs (gaussian mu sd))
         repeatedly
         (reductions +)
         (take-while #(< % 1.0))

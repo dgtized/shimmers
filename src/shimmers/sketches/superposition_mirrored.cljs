@@ -24,9 +24,10 @@
 
   If distance is less than `percent-cutoff` output is 0.0"
   [percent-cutoff n]
-  (tm/map-interval-clamped (abs (- n 0.5))
-                           [(* percent-cutoff 0.5) 0.5]
-                           [0.0 1.0]))
+  (tm/map-interval-clamped
+   (abs (- n 0.5))
+   (* percent-cutoff 0.5) 0.5
+   0.0 1.0))
 
 (defrecord Particle [pos angle vel angle-vel dest])
 

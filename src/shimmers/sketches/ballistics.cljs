@@ -74,7 +74,7 @@
 
 (defn fire-projectile [state {:keys [pos angle target]}]
   (let [dir (v/polar 1.0 angle)
-        [x y] (tm/abs (tm/- (:pos target) pos))
+        [x y] (abs (tm/- (:pos target) pos))
         ;; v0 is ignoring drag
         v0 (initial-velocity angle [x y])
         v0' (* v0 (dr/gaussian 1.0 0.12))
