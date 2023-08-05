@@ -14,10 +14,10 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:t 0.0})
+  {:t (q/millis)})
 
 (defn update-state [state]
-  (update state :t + 0.01))
+  (assoc state :t (/ (q/millis) 2000.0)))
 
 (defn draw [{:keys [t]}]
   (let [opacity (+ 0.1 (* 0.9 (tm/smoothstep* 0.2 0.7 (eq/unit-cos (+ 0.7 (* 1.47 t))))))]
