@@ -19,14 +19,11 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0.0
-   :n 40})
-
-(defn update-state [state]
-  (update state :t + 0.002))
+  {:n 40})
 
 (defn draw [{:keys [n t]}]
-  (let [sx (/ (q/width) n)
+  (let [t (/ (q/millis) 50000.0)
+        sx (/ (q/width) n)
         sy (/ (q/height) n)
         {:keys [threshold divisor]} @ui-state
         m (/ 1 (Math/pow 2 divisor))]
@@ -46,7 +43,6 @@
    (sketch/component
     :size [800 800]
     :setup setup
-    :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
    [ctrl/container
