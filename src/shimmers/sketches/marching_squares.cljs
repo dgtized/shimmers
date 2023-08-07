@@ -21,7 +21,7 @@
   (q/color-mode :hsl 1.0)
   {:n 40})
 
-(defn draw [{:keys [n t]}]
+(defn draw [{:keys [n]}]
   (let [t (/ (q/millis) 50000.0)
         sx (/ (q/width) n)
         sy (/ (q/height) n)
