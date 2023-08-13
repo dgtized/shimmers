@@ -36,7 +36,7 @@
   (let [t (/ (q/frame-count) 200)
         offset (- (/ 1 tm/PHI))
         dt (* Math/PI (tm/fract (/ t 3)))
-        points (for [theta (range 0 (* Math/PI 13) 0.2)]
+        points (for [theta (range Math/PI (* Math/PI 13) 0.2)]
                  (log-spiral 0.1 0.25 (+ theta dt)))
         points (mapv (partial noise-displace (/ 1 400) 12 t) points)]
     (doseq [[[ia pa] [ib pb]] (partition 2 1 (map-indexed vector points))]
