@@ -9,7 +9,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; concept here was to play with log or golden spirals as a means for assigning
@@ -20,9 +19,8 @@
 ;; https://en.wikipedia.org/wiki/Logarithmic_spiral
 ;; https://en.wikipedia.org/wiki/Golden_spiral
 (defn log-spiral [alpha k theta]
-  (let [nat (* alpha (Math/exp (* k theta)))]
-    (gv/vec2 (* nat (Math/cos theta))
-             (* nat (Math/sin theta)))))
+  (v/polar (* alpha (Math/exp (* k theta)))
+           theta))
 
 (defn noise-displace [factor r t p]
   (let [[x y] (tm/* p factor)
