@@ -45,8 +45,8 @@
           (let [polygon (gp/polygon2 [pa qa qb pb])
                 center (g/centroid polygon)
                 mag (tm/mag center)
-                c (mod (+ offset (* 0.001 mag tm/PHI)) 1.0)]
-            (q/fill c 0.6 (/ 1.1 tm/PHI) 1.0)
+                c (+ offset (* 0.001 mag tm/PHI))]
+            (q/fill (mod c 1.0) 0.6 (/ 1.1 tm/PHI) 1.0)
             (cq/draw-curve-shape (g/vertices polygon))))))))
 
 (defn page []
