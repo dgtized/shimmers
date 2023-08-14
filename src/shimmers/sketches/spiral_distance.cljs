@@ -35,9 +35,9 @@
   (q/translate (cq/rel-vec 0.66 0.33))
   (let [t (/ (q/frame-count) 200)
         offset (- (/ 1 tm/PHI))
-        dt (* Math/PI (tm/fract (/ t 3)))
-        points (for [theta (range Math/PI (* Math/PI 13) 0.2)]
-                 (log-spiral 0.1 0.25 (+ theta dt)))
+        dt (* 2 Math/PI (tm/fract (/ t 5)))
+        points (for [theta (range (* 2.5 Math/PI) (* Math/PI 17) 0.2)]
+                 (log-spiral 0.1 0.175 (+ theta dt)))
         points (mapv (partial noise-displace (/ 1 400) 12 t) points)]
     (doseq [[[ia pa] [ib pb]] (partition 2 1 (map-indexed vector points))]
       (when-let [qa (nth points (- ia 28) nil)]
@@ -45,7 +45,7 @@
           (let [polygon (gp/polygon2 [pa qa qb pb])
                 center (g/centroid polygon)
                 mag (tm/mag center)
-                c (+ offset (* 0.001 mag tm/PHI))]
+                c (+ offset (* 0.003 mag tm/PHI))]
             (q/fill (mod c 1.0) 0.6 (/ 1.1 tm/PHI) 1.0)
             (cq/draw-curve-shape (g/vertices polygon))))))))
 
