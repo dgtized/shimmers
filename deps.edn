@@ -4,9 +4,6 @@
         ;; p5 is excluded so that the latest version can be provided through npm
         quil/quil {:mvn/version "3.1.0" :exclusions [cljsjs/p5]}
 
-        ;; raw canvas API
-        io.helins/canvas {:mvn/version "2.0.0-beta0"}
-
         ;; alternative SVG library
         io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
 
