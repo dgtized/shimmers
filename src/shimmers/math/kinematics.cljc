@@ -12,7 +12,7 @@
 ;; Limitations: only works for constant acceleration in one axis
 
 ;; s = (u + v)/2 * t
-(defn displacement-from-velocity [u v t]
+(defn displacement-from-velocity-change [u v t]
   (* (/ (+ u v) 2) t))
 
 ;; v = u + at
@@ -20,7 +20,7 @@
   (+ u (* a t)))
 
 ;; s = ut + (at^2)/2
-(defn displacement-from-acceleration [u a t]
+(defn displacement-from-initial-velocity [u a t]
   (+ (* u t) (/ (* a (eq/sqr t)) 2)))
 
 ;; s = vt - at^2
