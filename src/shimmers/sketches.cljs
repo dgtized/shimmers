@@ -63,6 +63,7 @@
    shimmers.sketches.dithering
    shimmers.sketches.divide-by-triangle
    shimmers.sketches.dreamcatcher
+   shimmers.sketches.eliptics
    shimmers.sketches.emitters
    shimmers.sketches.epicenter-of-impact
    shimmers.sketches.epicycles
