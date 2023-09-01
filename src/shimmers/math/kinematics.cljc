@@ -31,7 +31,3 @@
 ;; or v = sqrt(u^2+2as)
 (defn velocity-from-displacement [u a s]
   (Math/sqrt (+ (eq/sqr u) (* 2 a s))))
-
-
-
-
