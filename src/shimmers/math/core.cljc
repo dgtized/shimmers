@@ -102,7 +102,7 @@
 
 (defn primes-between [a b]
   (->> primes
-       (drop-while #(>= % a))
+       (drop-while #(<= % a))
        (take-while #(< % b))))
 
 (comment
