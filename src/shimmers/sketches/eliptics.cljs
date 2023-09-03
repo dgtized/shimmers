@@ -36,7 +36,7 @@
      :rate-base rate-base}))
 
 (defn update-state [state]
-  (assoc state :t (* 0.001 (q/millis))))
+  (assoc state :t (* 0.001 (q/millis) (/ 5 7))))
 
 ;; invert/overlay a black circle underneath to sketch against?
 (defn draw [{:keys [t rate-base]}]
