@@ -63,9 +63,9 @@
 
 (defn group-mirror [group direction]
   (let [bounds (g/bounds group)
-        offset (abs (rect/bottom-left bounds))
+        offset-v (tm/abs (rect/bottom-left bounds))
         ;; ensure entire group is inside of upper-right quadrant before mirroring
-        g (g/translate group (tm/* offset 1.1))
+        g (g/translate group (tm/* offset-v 1.1))
         dir (case direction
               :x (mat/matrix32 -1.0 0 0 0 1 0)
               :y (mat/matrix32 1 0 0 0 -1.0 0))]
