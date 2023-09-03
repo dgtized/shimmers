@@ -26,7 +26,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  (let [n 11
+  (let [n 14
         rates (generate-time-factors n)
         basis (mapv * (generate-time-factors n) (repeat eq/TAU))
         rate-base (fn [i t] (+ (nth basis i) (* t (nth rates i))))]
@@ -38,10 +38,10 @@
 (defn update-state [state]
   (assoc state :t (* 0.001 (q/millis))))
 
+;; invert/overlay a black circle underneath to sketch against?
 (defn draw [{:keys [t rate-base]}]
   (q/background 1.0 0.15)
-  (q/no-fill)
-  (let [p1 (v/+polar (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1) (rate-base 0 t))
+  (let [p1 (v/+polar (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1) (rate-base 0 (* (/ 3 7) t)))
         p2 (v/+polar p1 (cq/rel-h 0.1) (rate-base 1 t))
         p3 (v/+polar p2 (cq/rel-h 0.025) (rate-base 2 t))
         p2' (v/+polar p1
@@ -51,14 +51,22 @@
                       (* (cq/rel-h 0.05) (Math/sin (rate-base 5 t)))
                       (rate-base 6 t))
         j3  (dr/jitter (* 5 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 7 (* (/ 2 3) t))))))
-        j3' (dr/jitter (* 4 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 8 (* (/ 2 3) t))))))]
-    (cq/circle p1 2.0)
-    (cq/circle p2 3.0)
+        j3' (dr/jitter (* 4 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 8 (* (/ 2 3) t))))))
+        j-back (dr/jitter (* 3 (tm/smoothstep* 0.65 0.9 (eq/unit-cos (rate-base 9 (* (/ 1 3) t))))))]
+    (q/fill 0.0 0.5)
+    (cq/circle (tm/+ (v/+polar p1 (cq/rel-h 0.04) (Math/sin (rate-base 10 t)))
+                     j-back)
+               (tm/mix* (cq/rel-h 0.3) (cq/rel-h 0.4) (eq/unit-sin (rate-base 11 (* (/ 1 7) t)))))
+    (q/no-fill)
+    (q/stroke 1.0)
     (cq/circle (tm/+ p3 j3)
-               (tm/mix* (cq/rel-h 0.05) (cq/rel-h 0.12) (eq/unit-sin (rate-base 9 (* (/ 1 3) t)))))
-    (cq/circle p2' 4.0)
+               (tm/mix* (cq/rel-h 0.05) (cq/rel-h 0.12) (eq/unit-sin (rate-base 12 (* (/ 1 3) t)))))
     (cq/circle (tm/+ p3' j3')
-               (tm/mix* (cq/rel-h 0.09) (cq/rel-h 0.14) (eq/unit-sin (rate-base 10 (* (/ 1 3) t)))))))
+               (tm/mix* (cq/rel-h 0.09) (cq/rel-h 0.14) (eq/unit-sin (rate-base 13 (* (/ 1 3) t)))))
+    (q/fill 1.0)
+    (cq/circle p2' 4.0)
+    (cq/circle p2 3.0)
+    (cq/circle p1 2.0)))
 
 (defn page []
   [:div
