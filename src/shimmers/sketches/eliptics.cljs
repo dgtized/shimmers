@@ -26,26 +26,31 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  {:t 0.0
-   :rates (generate-time-factors 9)})
+  (let [rates (generate-time-factors 9)
+        basis (mapv * (generate-time-factors 9) (repeat eq/TAU))
+        rate-base (fn [i t] (+ (nth basis i) (* t (nth rates i))))]
+    {:t 0.0
+     :rates rates
+     :basis basis
+     :rate-base rate-base}))
 
 (defn update-state [state]
   (assoc state :t (* 0.001 (q/millis))))
 
-(defn draw [{:keys [t rates]}]
+(defn draw [{:keys [t rate-base]}]
   (q/background 1.0 0.15)
   (q/no-fill)
-  (let [p1 (v/+polar (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1) (nth rates 0))
-        p2 (v/+polar p1 (cq/rel-h 0.1) (* t (nth rates 1)))
-        p3 (v/+polar p2 (cq/rel-h 0.025) (* t (nth rates 2)))
+  (let [p1 (v/+polar (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1) (rate-base 0 t))
+        p2 (v/+polar p1 (cq/rel-h 0.1) (rate-base 1 t))
+        p3 (v/+polar p2 (cq/rel-h 0.025) (rate-base 2 t))
         p2' (v/+polar p1
-                      (* (cq/rel-h 0.1) (Math/sin (* t (nth rates 3))))
-                      (* t (nth rates 4)))
+                      (* (cq/rel-h 0.1) (Math/sin (rate-base 4 t)))
+                      (rate-base 4 t))
         p3' (v/+polar p2'
-                      (* (cq/rel-h 0.05) (Math/sin (* t (nth rates 5))))
-                      (* t (nth rates 6)))
-        j3  (dr/jitter (* 5 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (* t (nth rates 7))))))
-        j3' (dr/jitter (* 4 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (* t (nth rates 8))))))]
+                      (* (cq/rel-h 0.05) (Math/sin (rate-base 5 t)))
+                      (rate-base 6 t))
+        j3  (dr/jitter (* 5 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 7 t)))))
+        j3' (dr/jitter (* 4 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 8 t)))))]
     (cq/circle p1 2.0)
     (cq/circle p2 3.0)
     (cq/circle (tm/+ p3 j3) (cq/rel-h 0.1))
