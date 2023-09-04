@@ -1,4 +1,4 @@
-(ns shimmers.sketches.eliptics
+(ns shimmers.sketches.elliptics
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -78,7 +78,7 @@
     :draw draw
     :middleware [m/fun-mode framerate/mode])])
 
-(sketch/definition eliptics
+(sketch/definition elliptics
   {:created-at "2023-08-31"
    :tags #{}
    :type :quil}
