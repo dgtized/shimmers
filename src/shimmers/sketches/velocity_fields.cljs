@@ -127,7 +127,7 @@
                       [true false] 2
                       [false true] 4
                       [true true] 8})]
-    {:seed (abs (dr/randvec2 100))
+    {:seed (tm/abs (dr/randvec2 100))
      :scaling scaling
      :scale (/ 1.0 scaling)
      :offset (dr/weighted {0 2 4 2 8 2 12 1})
