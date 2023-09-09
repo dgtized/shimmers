@@ -79,8 +79,8 @@
 (defn allow-reload-save-keybindings []
   (reset! kb/preventing-default-keys []))
 
-(defn page-root []
-  (let [page @match
+(defn page-root [page-match]
+  (let [page @page-match
         view (:view (:data page))]
     (when view
       [:div
@@ -100,7 +100,7 @@
   (allow-reload-save-keybindings)
 
   ;; (rdom/render [debug/display match] (dom/getElement "route-debug-mount"))
-  (rdom/render [page-root] (dom/getElement "shimmer-mount")))
+  (rdom/render [page-root match] (dom/getElement "shimmer-mount")))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
