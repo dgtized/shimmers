@@ -65,11 +65,11 @@
 
 (defonce match (r/atom nil))
 
-(defn on-navigate [new-match]
+(defn on-navigate [page-match new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
     ;; default route, not sure on reitit for frontend routing
     (rfe/replace-state :shimmers.view.index/by-alphabetical)
-    (swap! match
+    (swap! page-match
            (fn [old-match]
              (if new-match
                (assoc new-match :controllers
@@ -91,7 +91,7 @@
   (rfe/start!
    ;; coercion here will cause missing sketches to explode
    (rf/router routes {:data {:coercion rss/coercion}})
-   on-navigate
+   (partial on-navigate match)
    {:use-fragment true})
 
   ;; Render at least one frame of the favicon animation at start
