@@ -3,7 +3,7 @@
    [goog.dom :as dom]
    [reagent-keybindings.keyboard :as kb]
    [reagent.core :as r]
-   [reagent.dom :as rdom]
+   [reagent.dom.client :as rdomc]
    [reitit.coercion.spec :as rss]
    [reitit.frontend :as rf]
    [reitit.frontend.controllers :as rfc]
@@ -85,6 +85,7 @@
        [kb/keyboard-listener]
        [view (:parameters page)]])))
 
+(defonce shimmer-root (rdomc/create-root (dom/getElement "shimmer-mount")))
 (defonce !active-route (r/atom nil))
 
 (defn init []
@@ -99,9 +100,7 @@
 
   (allow-reload-save-keybindings)
 
-  ;; (rdom/render [debug/display match] (dom/getElement "route-debug-mount"))
-  (rdom/render [page-root !active-route]
-               (dom/getElement "shimmer-mount")))
+  (rdomc/render shimmer-root [page-root !active-route]))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
