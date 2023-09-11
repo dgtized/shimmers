@@ -63,8 +63,6 @@
        :start (on-event view-sketch/start-sketch "start")
        :stop (on-event view-sketch/stop-sketch "stop")}]}]])
 
-(defonce match (r/atom nil))
-
 (defn on-navigate [page-match new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
     ;; default route, not sure on reitit for frontend routing
@@ -87,11 +85,13 @@
        [kb/keyboard-listener]
        [view (:parameters page)]])))
 
+(defonce !active-route (r/atom nil))
+
 (defn init []
   (rfe/start!
    ;; coercion here will cause missing sketches to explode
    (rf/router routes {:data {:coercion rss/coercion}})
-   (partial on-navigate match)
+   (partial on-navigate !active-route)
    {:use-fragment true})
 
   ;; Render at least one frame of the favicon animation at start
@@ -100,7 +100,8 @@
   (allow-reload-save-keybindings)
 
   ;; (rdom/render [debug/display match] (dom/getElement "route-debug-mount"))
-  (rdom/render [page-root match] (dom/getElement "shimmer-mount")))
+  (rdom/render [page-root !active-route]
+               (dom/getElement "shimmer-mount")))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))
