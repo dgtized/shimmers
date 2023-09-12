@@ -18,9 +18,10 @@
 (defn generate-time-factors [n]
   (let [primes (sm/primes-between 2 50)]
     (->> (repeatedly (fn []
-                       (let [num (dr/rand-nth primes)]
-                         (/ num (dr/rand-nth (remove #{num} primes))))))
-         (filter (fn [x] (<= 0.1 x 2.5)))
+                       (let [num (dr/rand-nth primes)
+                             denom (dr/rand-nth (remove #{num} primes))]
+                         (/ num denom))))
+         (filter (fn [x] (<= 0.25 x 2.0)))
          (take n)
          vec)))
 
