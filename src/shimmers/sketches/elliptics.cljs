@@ -12,6 +12,9 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
+(defn jitter-rate [mult [l u] value]
+  (dr/jitter (* mult (tm/smoothstep* l u value))))
+
 (defn generate-time-factors [n]
   (let [primes (sm/primes-between 2 50)]
     (->> (repeatedly (fn []
@@ -51,19 +54,14 @@
         p3' (v/+polar p2'
                       (* (cq/rel-h 0.05) (Math/sin (rate-base 6 t)))
                       (rate-base 7 t))
-        j3  (dr/jitter (* 5 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 8 (* (/ 2 3) t))))))
-        j3' (dr/jitter (* 4 (tm/smoothstep* 0.35 0.9 (eq/unit-cos (rate-base 9 (* (/ 2 3) t))))))]
+        j3  (jitter-rate 5 [0.35 0.9] (eq/unit-cos (rate-base 8 (* (/ 2 3) t))))
+        j3' (jitter-rate 4 [0.35 0.9] (eq/unit-cos (rate-base 9 (* (/ 2 3) t))))]
     (q/stroke c (/ 2 3))
     (q/fill (- 1.0 c) (/ 1 3))
     (cq/circle (tm/+ (->> (rate-base 10 t)
                           Math/sin
                           (v/+polar p1 (cq/rel-h 0.04)))
-                     (->> (* (/ 1 3) t)
-                          (rate-base 11)
-                          eq/unit-cos
-                          (tm/smoothstep* 0.65 0.9)
-                          (* 3)
-                          dr/jitter))
+                     (jitter-rate 3 [0.65 0.9] (eq/unit-cos (rate-base 11 (* (/ 1 3) t)))))
                (tm/mix* (cq/rel-h 0.3) (cq/rel-h 0.4)
                         (eq/unit-sin (rate-base 12 (* (/ 1 7) t)))))
     (q/no-fill)
