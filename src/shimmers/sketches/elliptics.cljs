@@ -35,8 +35,6 @@
         basis (mapv * (generate-time-factors n) (repeat eq/TAU))
         rate-base (fn [i t] (+ (nth basis i) (* t (nth rates i))))]
     {:t 0.0
-     :rates rates
-     :basis basis
      :rate-base rate-base}))
 
 (defn update-state [state]
