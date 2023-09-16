@@ -78,17 +78,21 @@
              (dr/random-tau)))
       1.0]])))
 
-(defn create-elements [base-r n]
+(defn random-element [base-r n]
   (->Element (random-behavior base-r)
              [0.0 (/ 1.5 (- 6 n))]
-             (if (> n 0)
-               (repeatedly (dr/weighted {0 (if (> n 2) 0 (/ 1.0 n))
-                                         1 4
-                                         2 2
-                                         3 1
-                                         4 0.5})
-                           #(create-elements base-r (dec n)))
-               [])))
+             []))
+
+(defn create-elements [base-r n]
+  (assoc (random-element base-r n) :children
+         (if (> n 0)
+           (repeatedly (dr/weighted {0 (if (> n 2) 0 (/ 1.0 n))
+                                     1 4
+                                     2 2
+                                     3 1
+                                     4 0.5})
+                       #(create-elements base-r (dec n)))
+           [])))
 
 (defn plot-elements
   [parent {:keys [behavior color children] :as element} t]
