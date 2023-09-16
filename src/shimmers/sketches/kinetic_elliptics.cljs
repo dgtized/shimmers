@@ -23,7 +23,7 @@
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
         (v/+polar parent-pos r (tm/mix* t0 t1 cyclic-t))))))
 
-(defrecord Element [behavior children])
+(defrecord Element [behavior color children])
 
 (defn random-behavior [base-r]
   ((dr/weighted [[(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
@@ -36,6 +36,7 @@
 
 (defn create-elements [base-r n]
   (->Element (random-behavior base-r)
+             [0.0 (/ 1.5 (- 6 n))]
              (if (> n 0)
                (repeatedly (dr/weighted {0 (if (> n 2) 0 (/ 1.0 n))
                                          1 4
@@ -46,11 +47,11 @@
                [])))
 
 (defn plot-elements
-  [origin {:keys [behavior children] :as element} t]
+  [origin {:keys [behavior color children] :as element} t]
   (lazy-seq
    (when element
      (let [position (behavior origin t)]
-       (cons [origin position]
+       (cons [origin position color]
              (mapcat (fn [child] (plot-elements position child t))
                      children))))))
 
@@ -58,19 +59,23 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (create-elements (cq/rel-h 0.1) 4)
+   :root (create-elements (cq/rel-h 0.15) 4)
    :t 0.0})
 
 (defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
 
 (defn draw [{:keys [origin root t]}]
-  (q/background 1.0)
-  (q/fill 0.0)
-  (cq/circle origin 3.0)
-  (doseq [[parent element] (plot-elements origin root t)]
-    (q/line parent element)
-    (cq/circle element 3.0)))
+  (q/background 1.0 0.25)
+  (q/no-stroke)
+  (q/fill 0.0 1.0)
+  (cq/circle origin 2.0)
+  (doseq [[parent element color] (plot-elements origin root t)]
+    (q/no-stroke)
+    (cq/circle element 2.0)
+    (q/stroke-weight 2.0)
+    (apply q/stroke color)
+    (q/line parent element)))
 
 (defn page []
   [sketch/with-explanation
