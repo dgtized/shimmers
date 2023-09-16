@@ -11,6 +11,9 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.common.quil :as cq]))
 
+(defn fixed-behavior []
+  (fn [parent _t] parent))
+
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
     (fn [parent-pos t]
@@ -59,7 +62,8 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (create-elements (cq/rel-h 0.15) 4)
+   :root (assoc (create-elements (cq/rel-h 0.15) 4)
+                :behavior (fixed-behavior))
    :t 0.0})
 
 (defn update-state [state]
