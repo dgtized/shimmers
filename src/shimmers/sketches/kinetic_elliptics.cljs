@@ -12,6 +12,9 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+(defn heading [{:keys [position origin]}]
+  (g/heading (tm/- position origin)))
+
 (defn fixed-behavior []
   (fn [{:keys [position]} _t] position))
 
@@ -22,8 +25,9 @@
     (v/+polar position r global-angle)))
 
 (defn relative-angle [r rel-angle]
-  (fn [{:keys [position angle]} _t]
-    (v/+polar position r (+ angle rel-angle))))
+  (fn [{:keys [position] :as parent} _t]
+    (v/+polar position r (+ (heading parent)
+                            rel-angle))))
 
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
@@ -40,9 +44,10 @@
 (defn relative-pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [{:keys [position angle]} t]
+    (fn [{:keys [position] :as parent} t]
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
-        (v/+polar position r (+ angle (tm/mix* t0 t1 cyclic-t)))))))
+        (v/+polar position r (+ (heading parent)
+                                (tm/mix* t0 t1 cyclic-t)))))))
 
 (defrecord Element [behavior color children])
 
@@ -91,8 +96,7 @@
    (when element
      (let [position (behavior parent t)
            origin (:position parent)
-           self {:position position
-                 :angle (g/heading (tm/- position origin))}]
+           self {:position position :origin origin}]
        (cons [origin position color]
              (mapcat (fn [child] (plot-elements self child t))
                      children))))))
