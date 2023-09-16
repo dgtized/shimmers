@@ -26,18 +26,22 @@
 (defrecord Element [behavior children])
 
 (defn random-behavior [base-r]
-  ((dr/weighted [[(fn [] (orbit-behavior (* base-r (dr/random 0.25 1.25))
-                                        (dr/random 6 18)
+  ((dr/weighted [[(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
+                                        (dr/random 6 24)
                                         (dr/random-tau))) 1.0]
                  [(fn [] (pendulum-behavior (* base-r (dr/random 0.25 1.25))
                                            (dr/random-tau) (dr/random-tau)
-                                           (dr/random 6 18)
+                                           (dr/random 6 24)
                                            (dr/random-tau))) 1.0]])))
 
 (defn create-elements [base-r n]
   (->Element (random-behavior base-r)
              (if (> n 0)
-               (repeatedly (dr/weighted {0 (/ 1.0 n) 1 4 2 2 3 1 4 0.1})
+               (repeatedly (dr/weighted {0 (if (> n 2) 0 (/ 1.0 n))
+                                         1 4
+                                         2 2
+                                         3 1
+                                         4 0.5})
                            #(create-elements base-r (dec n)))
                [])))
 
