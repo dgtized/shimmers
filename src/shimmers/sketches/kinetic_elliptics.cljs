@@ -49,6 +49,13 @@
         (v/+polar position r (+ (heading parent)
                                 (tm/mix* t0 t1 cyclic-t)))))))
 
+;; TODO: implement parallel or roller which is a pair of elements. first element
+;; ends and then it's child starts a new draw in parallel / offset from the
+;; original line.
+;; (defn parallel [displace]
+;;   (fn [{:keys [position origin]} t]))
+;; Maybe worth converting behavior to data before adding multi-stage elements?
+
 (defrecord Element [behavior color children])
 
 (defn random-behavior [base-r]
