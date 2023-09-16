@@ -12,7 +12,13 @@
    [shimmers.common.quil :as cq]))
 
 (defn fixed-behavior []
-  (fn [parent _t] parent))
+  (fn [parent-pos _t] parent-pos))
+
+;; fixed angle to global
+;; TODO: add fixed angle relative to parent
+(defn fixed-angle [r angle]
+  (fn [parent-pos _t]
+    (v/+polar parent-pos r angle)))
 
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
@@ -29,13 +35,19 @@
 (defrecord Element [behavior color children])
 
 (defn random-behavior [base-r]
-  ((dr/weighted [[(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
-                                        (dr/random 6 24)
-                                        (dr/random-tau))) 1.0]
-                 [(fn [] (pendulum-behavior (* base-r (dr/random 0.25 1.25))
-                                           (dr/random-tau) (dr/random-tau)
-                                           (dr/random 6 24)
-                                           (dr/random-tau))) 1.0]])))
+  ((dr/weighted
+    [[(fn [] (fixed-angle (* base-r (dr/random 0.2 1.2))
+                         (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
+      1.0]
+     [(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
+                            (dr/random 6 24)
+                            (dr/random-tau)))
+      3.0]
+     [(fn [] (pendulum-behavior (* base-r (dr/random 0.25 1.25))
+                               (dr/random-tau) (dr/random-tau)
+                               (dr/random 6 24)
+                               (dr/random-tau)))
+      3.0]])))
 
 (defn create-elements [base-r n]
   (->Element (random-behavior base-r)
