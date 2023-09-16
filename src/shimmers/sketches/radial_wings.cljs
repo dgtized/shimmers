@@ -32,10 +32,10 @@
     :orange-black-blue-shell-red
     :blues-orange-black-shell]))
 
-(defn shapes [palette spin]
-  (->> (for [[a b] (->> (dr/density-range 0.02 0.08 true)
+(defn shapes [palette spin [d0 d1]]
+  (->> (for [[a b] (->> (dr/density-range d0 d1 true)
                         (partition 2 1))
-             :when (> (- b a) 0.02)
+             :when (> (- b a) d0)
              :let [[ra rb] (map (partial + 0.01) [a b])]]
          (gp/polygon2 [(rp 0 0)
                        (rp ra (+ spin (* a tm/TWO_PI)))
@@ -49,7 +49,11 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes (dr/shuffle palette) (dr/random-tau))))
+    (shapes (dr/shuffle palette) (dr/random-tau)
+            (dr/rand-nth [[0.01 0.03]
+                          [0.01 0.05]
+                          [0.02 0.08]
+                          [0.03 0.1]]))))
 
 (defn page []
   (let [palette (:colors (dr/rand-nth palettes))]
