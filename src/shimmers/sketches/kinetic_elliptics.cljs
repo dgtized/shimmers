@@ -25,14 +25,21 @@
 
 (defrecord Element [behavior children])
 
-(defn create-elements [max-r]
-  (->Element (orbit-behavior (* max-r 0.1) (dr/random 4 8) (dr/random-tau))
-             [(->Element (orbit-behavior (* max-r 0.15) (dr/random 3 6) (dr/random-tau))
-                         [])
-              (->Element (pendulum-behavior (* max-r 0.15) (dr/random-tau) (dr/random-tau)
-                                            (dr/random 3 7)
-                                            (dr/random-tau))
-                         [])]))
+(defn random-behavior [base-r]
+  ((dr/weighted [[(fn [] (orbit-behavior (* base-r (dr/random 0.25 1.25))
+                                        (dr/random 6 18)
+                                        (dr/random-tau))) 1.0]
+                 [(fn [] (pendulum-behavior (* base-r (dr/random 0.25 1.25))
+                                           (dr/random-tau) (dr/random-tau)
+                                           (dr/random 6 18)
+                                           (dr/random-tau))) 1.0]])))
+
+(defn create-elements [base-r n]
+  (->Element (random-behavior base-r)
+             (if (> n 0)
+               (repeatedly (dr/weighted {0 (/ 1.0 n) 1 4 2 2 3 1 4 0.1})
+                           #(create-elements base-r (dec n)))
+               [])))
 
 (defn plot-elements
   [origin {:keys [behavior children] :as element} t]
@@ -47,7 +54,7 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (create-elements (cq/rel-h 0.5))
+   :root (create-elements (cq/rel-h 0.1) 4)
    :t 0.0})
 
 (defn update-state [state]
@@ -55,18 +62,22 @@
 
 (defn draw [{:keys [origin root t]}]
   (q/background 1.0)
+  (q/fill 0.0)
+  (cq/circle origin 3.0)
   (doseq [[parent element] (plot-elements origin root t)]
     (q/line parent element)
     (cq/circle element 3.0)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   [:p.readable-width
+    "Randomly generate a tree structure with each node either orbiting or swinging on a pendulum between two random angles relative to it's parent."]])
 
 (sketch/definition kinetic-elliptics
   {:created-at "2023-09-15"
