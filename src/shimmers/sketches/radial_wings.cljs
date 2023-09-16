@@ -1,5 +1,6 @@
 (ns shimmers.sketches.radial-wings
   (:require
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -19,7 +20,19 @@
 (defn rp [r theta]
   (v/polar (* r 0.45 height) theta))
 
-(defn shapes [spin]
+
+(def palettes
+  (palette/by-names
+   [:purple-shell-brown
+    :shell-aqua-blue-green
+    :slate-shell-red-tan-yellow
+    :shell-grey-blues-bold
+    :yellow-blue-slate-grey-red
+    :red-black-yellow-grey-blue
+    :orange-black-blue-shell-red
+    :blues-orange-black-shell]))
+
+(defn shapes [palette spin]
   (->> (for [[a b] (->> (dr/density-range 0.02 0.08 true)
                         (partition 2 1))
              :when (> (- b a) 0.02)
@@ -27,19 +40,29 @@
          (gp/polygon2 [(rp 0 0)
                        (rp ra (+ spin (* a tm/TWO_PI)))
                        (rp rb (+ spin (* b tm/TWO_PI)))]))
-       (mapv #(g/translate % (rv 0.5 0.5)))))
+       (map-indexed (fn [i s] (vary-meta (g/translate s (rv 0.5 0.5)) assoc
+                                        :fill (nth palette (mod i (count palette))))))))
 
-;; FIXME: handle large gaps and overlapping lines
-(defn scene []
+(defn scene [palette]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes (dr/random-tau))))
+    (shapes (dr/shuffle palette) (dr/random-tau))))
+
+(defn page []
+  (let [palette (:colors (dr/rand-nth palettes))]
+    (fn []
+      [:<>
+       [:div.canvas-frame [scene palette]]
+       [:div.contained
+        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+         [view-sketch/generate :radial-wings]
+         [palette/as-svg {} palette]]]])))
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :radial-wings)))
+  (ctrl/mount page))
