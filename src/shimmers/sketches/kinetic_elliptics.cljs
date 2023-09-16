@@ -3,34 +3,39 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]
-   [shimmers.common.quil :as cq]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.math.core :as tm]))
 
 (defn fixed-behavior []
-  (fn [parent-pos _t] parent-pos))
+  (fn [{:keys [position]} _t] position))
 
 ;; fixed angle to global
 ;; TODO: add fixed angle relative to parent
-(defn fixed-angle [r angle]
-  (fn [parent-pos _t]
-    (v/+polar parent-pos r angle)))
+(defn fixed-angle [r global-angle]
+  (fn [{:keys [position]} _t]
+    (v/+polar position r global-angle)))
+
+(defn relative-angle [r rel-angle]
+  (fn [{:keys [position angle]} _t]
+    (v/+polar position r (+ angle rel-angle))))
 
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
-    (fn [parent-pos t]
-      (v/+polar parent-pos r (+ (* dtheta t) phase)))))
+    (fn [{:keys [position]} t]
+      (v/+polar position r (+ (* dtheta t) phase)))))
 
 (defn pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [parent-pos t]
+    (fn [{:keys [position]} t]
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
-        (v/+polar parent-pos r (tm/mix* t0 t1 cyclic-t))))))
+        (v/+polar position r (tm/mix* t0 t1 cyclic-t))))))
 
 (defrecord Element [behavior color children])
 
@@ -38,6 +43,10 @@
   ((dr/weighted
     [[(fn [] (fixed-angle (* base-r (dr/random 0.2 1.2))
                          (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
+      1.0]
+     [(fn [] (relative-angle (* base-r (dr/random 0.2 1.2))
+                            (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
+                               Math/PI)))
       1.0]
      [(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
                             (dr/random 6 24)
@@ -62,12 +71,15 @@
                [])))
 
 (defn plot-elements
-  [origin {:keys [behavior color children] :as element} t]
+  [parent {:keys [behavior color children] :as element} t]
   (lazy-seq
    (when element
-     (let [position (behavior origin t)]
+     (let [position (behavior parent t)
+           origin (:position parent)
+           self {:position position
+                 :angle (g/heading (tm/- position origin))}]
        (cons [origin position color]
-             (mapcat (fn [child] (plot-elements position child t))
+             (mapcat (fn [child] (plot-elements self child t))
                      children))))))
 
 (defn setup []
@@ -87,7 +99,7 @@
   (q/fill 0.0 1.0)
   (cq/circle origin 2.0)
   (doseq [group (apply map vector
-                       (map (partial plot-elements origin root)
+                       (map (partial plot-elements {:position origin :angle 0} root)
                             (map + (range 0.0 0.1 (/ 0.1 4)) (repeat t))))]
     (doseq [[parent element color] group]
       (q/no-stroke)
