@@ -17,16 +17,16 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn rp [r theta]
-  (v/polar (* r 0.5 height) theta))
+  (v/polar (* r 0.45 height) theta))
 
-(defn shapes []
-  (->> (for [[a b] (->> (dr/density-range 0.05 0.1 true)
-                        (partition 2 1)
-                        (dr/random-sample 0.8))
-             :let [[ra rb] (map (partial + 0.1) [a b])]]
+(defn shapes [spin]
+  (->> (for [[a b] (->> (dr/density-range 0.02 0.08 true)
+                        (partition 2 1))
+             :when (> (- b a) 0.02)
+             :let [[ra rb] (map (partial + 0.01) [a b])]]
          (gp/polygon2 [(rp 0 0)
-                       (rp ra (* a tm/TWO_PI))
-                       (rp rb (* b tm/TWO_PI))]))
+                       (rp ra (+ spin (* a tm/TWO_PI)))
+                       (rp rb (+ spin (* b tm/TWO_PI)))]))
        (mapv #(g/translate % (rv 0.5 0.5)))))
 
 ;; FIXME: handle large gaps and overlapping lines
@@ -36,7 +36,7 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes)))
+    (shapes (dr/random-tau))))
 
 (sketch/definition radial-wings
   {:created-at "2021-11-15"
