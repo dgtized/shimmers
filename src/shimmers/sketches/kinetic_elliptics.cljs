@@ -37,6 +37,13 @@
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
         (v/+polar position r (tm/mix* t0 t1 cyclic-t))))))
 
+(defn relative-pendulum-behavior [r t0 t1 period phase]
+  (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
+        dtheta (/ (* 2 (- t1 t0)) period)]
+    (fn [{:keys [position angle]} t]
+      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
+        (v/+polar position r (+ angle (tm/mix* t0 t1 cyclic-t)))))))
+
 (defrecord Element [behavior color children])
 
 (defn random-behavior [base-r]
@@ -52,11 +59,18 @@
                             (dr/random 6 24)
                             (dr/random-tau)))
       3.0]
-     [(fn [] (pendulum-behavior (* base-r (dr/random 0.25 1.25))
-                               (dr/random-tau) (dr/random-tau)
-                               (dr/random 6 24)
-                               (dr/random-tau)))
-      3.0]])))
+     [(fn [] (pendulum-behavior
+             (* base-r (dr/random 0.25 1.25))
+             (dr/random-tau) (dr/random-tau)
+             (dr/random 6 24)
+             (dr/random-tau)))
+      3.0]
+     [(fn [] (relative-pendulum-behavior
+             (* base-r (dr/random 0.25 1.25))
+             (- (dr/random-tau)) (dr/random-tau)
+             (dr/random 6 24)
+             (dr/random-tau)))
+      1.0]])))
 
 (defn create-elements [base-r n]
   (->Element (random-behavior base-r)
