@@ -107,6 +107,7 @@
    shimmers.sketches.kaleidoscope
    shimmers.sketches.kd-tree
    shimmers.sketches.kinematic-chain
+   shimmers.sketches.kinetic-elliptics
    shimmers.sketches.k-means
    shimmers.sketches.langton-ant
    shimmers.sketches.lattice-in-steps
