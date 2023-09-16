@@ -66,16 +66,19 @@
   (assoc state :t (/ (q/millis) 1000.0)))
 
 (defn draw [{:keys [origin root t]}]
-  (q/background 1.0 0.25)
+  (q/background 1.0 1.0)
   (q/no-stroke)
   (q/fill 0.0 1.0)
   (cq/circle origin 2.0)
-  (doseq [[parent element color] (plot-elements origin root t)]
-    (q/no-stroke)
-    (cq/circle element 2.0)
-    (q/stroke-weight 2.0)
-    (apply q/stroke color)
-    (q/line parent element)))
+  (doseq [group (apply map vector
+                       (map (partial plot-elements origin root)
+                            (map + (range 0.0 0.1 (/ 0.1 4)) (repeat t))))]
+    (doseq [[parent element color] group]
+      (q/no-stroke)
+      (cq/circle element 2.0)
+      (q/stroke-weight 2.0)
+      (apply q/stroke color)
+      (q/line parent element))))
 
 (defn page []
   [sketch/with-explanation
