@@ -15,11 +15,11 @@
 (defn heading [{:keys [position origin]}]
   (g/heading (tm/- position origin)))
 
+;; TODO: datify these behaviors instead of using functions
 (defn fixed-behavior []
   (fn [{:keys [position]} _t] position))
 
 ;; fixed angle to global
-;; TODO: add fixed angle relative to parent
 (defn fixed-angle [r global-angle]
   (fn [{:keys [position]} _t]
     (v/+polar position r global-angle)))
