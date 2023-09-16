@@ -56,7 +56,8 @@
                                Math/PI)))
       1.0]
      [(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
-                            (dr/random 6 24)
+                            (* (dr/weighted {-1 1 1 1})
+                               (dr/random 6 24))
                             (dr/random-tau)))
       3.0]
      [(fn [] (pendulum-behavior
