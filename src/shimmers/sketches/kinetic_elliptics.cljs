@@ -123,20 +123,25 @@
 (defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
 
-(defn draw [{:keys [origin root t]}]
-  (q/background 1.0 1.0)
+(defn draw-joint [element]
   (q/no-stroke)
   (q/fill 0.0 1.0)
-  (cq/circle origin 2.0)
+  (cq/circle element 2.0))
+
+(defn draw-connector [parent element color]
+  (q/stroke-weight 2.0)
+  (apply q/stroke color)
+  (q/line parent element))
+
+(defn draw [{:keys [origin root t]}]
+  (q/background 1.0 1.0)
+  (draw-joint origin)
   (doseq [group (apply map vector
                        (map (partial plot-elements {:position origin :angle 0} root)
                             (map + (range 0.0 0.1 (/ 0.1 4)) (repeat t))))]
     (doseq [[parent element color] group]
-      (q/no-stroke)
-      (cq/circle element 2.0)
-      (q/stroke-weight 2.0)
-      (apply q/stroke color)
-      (q/line parent element))))
+      (draw-joint element)
+      (draw-connector parent element color))))
 
 (defn page []
   [sketch/with-explanation
