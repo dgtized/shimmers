@@ -88,9 +88,9 @@
       1.0]])))
 
 (defn random-element [base-r depth]
-  (let [len (* (tm/clamp (/ (dr/gaussian (* 2.1 (- (inc max-depth) depth))
-                                         0.5)
-                            (* max-depth 2))
+  (let [len (* (tm/clamp (* 0.5 (+ (/ (dr/gaussian max-depth 1.0)
+                                      (* 1.5 (inc depth)))
+                                   0.5))
                          0.2
                          1.8)
                base-r)]
