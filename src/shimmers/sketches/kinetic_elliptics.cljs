@@ -12,6 +12,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
+(def max-depth 4)
+
 (defn heading [{:keys [position origin]}]
   (g/heading (tm/- position origin)))
 
@@ -58,47 +60,53 @@
 
 (defrecord Element [behavior color children])
 
-(defn random-behavior [base-r]
+(defn random-behavior [radial-length]
   ((dr/weighted
-    [[(fn [] (fixed-angle (* base-r (dr/random 0.2 1.2))
+    [[(fn [] (fixed-angle radial-length
                          (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
       1.0]
-     [(fn [] (relative-angle (* base-r (dr/random 0.2 1.2))
+     [(fn [] (relative-angle radial-length
                             (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
                                Math/PI)))
       1.0]
-     [(fn [] (orbit-behavior (* base-r (dr/random 0.2 1.2))
+     [(fn [] (orbit-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
                                (dr/random 6 24))
                             (dr/random-tau)))
       3.0]
      [(fn [] (pendulum-behavior
-             (* base-r (dr/random 0.25 1.25))
+             radial-length
              (dr/random-tau) (dr/random-tau)
              (dr/random 6 24)
              (dr/random-tau)))
       3.0]
      [(fn [] (relative-pendulum-behavior
-             (* base-r (dr/random 0.25 1.25))
+             radial-length
              (- (dr/random-tau)) (dr/random-tau)
              (dr/random 6 24)
              (dr/random-tau)))
       1.0]])))
 
-(defn random-element [base-r n]
-  (->Element (random-behavior base-r)
-             [0.0 (/ 1.5 (- 6 n))]
-             []))
+(defn random-element [base-r depth]
+  (let [len (* (tm/clamp (/ (dr/gaussian (* 2.1 (inc depth))
+                                         0.5)
+                            (* max-depth 2))
+                         0.1
+                         1.8)
+               base-r)]
+    (->Element (random-behavior len)
+               [0.0 (/ 1.5 (- (inc max-depth) depth))]
+               [])))
 
-(defn create-elements [base-r n]
-  (assoc (random-element base-r n) :children
-         (if (> n 0)
-           (repeatedly (dr/weighted {0 (if (> n 2) 0 (/ 1.0 n))
+(defn create-elements [base-r depth]
+  (assoc (random-element base-r depth) :children
+         (if (> depth 0)
+           (repeatedly (dr/weighted {0 (if (> depth 2) 0 (/ 1.0 depth))
                                      1 4
                                      2 2
                                      3 1
                                      4 0.5})
-                       #(create-elements base-r (dec n)))
+                       #(create-elements base-r (dec depth)))
            [])))
 
 (defn plot-elements
@@ -116,7 +124,7 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (assoc (create-elements (cq/rel-h 0.15) 4)
+   :root (assoc (create-elements (cq/rel-h 0.15) max-depth)
                 :behavior (fixed-behavior))
    :t 0.0})
 
