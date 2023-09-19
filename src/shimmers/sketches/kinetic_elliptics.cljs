@@ -88,11 +88,10 @@
       1.0]])))
 
 (defn random-element [base-r depth]
-  (let [len (* (tm/clamp (* 0.5 (+ (/ (dr/gaussian max-depth 1.0)
-                                      (* 1.5 (inc depth)))
-                                   0.5))
-                         0.2
-                         1.8)
+  (let [len (* (tm/clamp (/ (dr/gaussian max-depth 0.66)
+                            (* 1.5 (inc depth)))
+                         0.5
+                         3.0)
                base-r)]
     (->Element (random-behavior len)
                [0.0 (/ 1.5 (inc depth))]
@@ -124,7 +123,7 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (assoc (create-elements (cq/rel-h 0.15) 0)
+   :root (assoc (create-elements (cq/rel-h 0.125) 0)
                 :behavior (fixed-behavior))
    :t 0.0})
 
