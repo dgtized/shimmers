@@ -158,8 +158,9 @@
     :update update-state
     :draw draw
     :middleware [m/fun-mode framerate/mode])
-   [:p.readable-width
-    "Randomly generate a tree structure with each node either orbiting or swinging on a pendulum between two random angles relative to it's parent."]])
+   [:div.readable-width
+    [:p "Randomly generate a tree structure with each node either at a fixed angle, orbiting or swinging on a pendulum between two random angles from it's parent. Angles can be either relative to the parent or locked to screen coordinates."]
+    [:p "Each frame of animation renders the current position at time " [:code "t"] ", as well as it's future positions at " [:code "t+0.025"] ", " [:code "t+0.05"] ", and " [:code "t+0.075"] " in seconds."]]])
 
 (sketch/definition kinetic-elliptics
   {:created-at "2023-09-15"
