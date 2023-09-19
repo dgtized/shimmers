@@ -88,25 +88,25 @@
       1.0]])))
 
 (defn random-element [base-r depth]
-  (let [len (* (tm/clamp (/ (dr/gaussian (* 2.1 (inc depth))
+  (let [len (* (tm/clamp (/ (dr/gaussian (* 2.1 (- (inc max-depth) depth))
                                          0.5)
                             (* max-depth 2))
-                         0.1
+                         0.2
                          1.8)
                base-r)]
     (->Element (random-behavior len)
-               [0.0 (/ 1.5 (- (inc max-depth) depth))]
+               [0.0 (/ 1.5 (inc depth))]
                [])))
 
 (defn create-elements [base-r depth]
   (assoc (random-element base-r depth) :children
-         (if (> depth 0)
-           (repeatedly (dr/weighted {0 (if (> depth 2) 0 (/ 1.0 depth))
+         (if (<= depth max-depth)
+           (repeatedly (dr/weighted {0 (if (< depth 2) 0 depth)
                                      1 4
                                      2 2
                                      3 1
                                      4 0.5})
-                       #(create-elements base-r (dec depth)))
+                       #(create-elements base-r (inc depth)))
            [])))
 
 (defn plot-elements
@@ -124,7 +124,7 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (assoc (create-elements (cq/rel-h 0.15) max-depth)
+   :root (assoc (create-elements (cq/rel-h 0.15) 0)
                 :behavior (fixed-behavior))
    :t 0.0})
 
