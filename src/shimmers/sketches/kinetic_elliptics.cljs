@@ -36,6 +36,12 @@
     (fn [{:keys [position]} t]
       (v/+polar position r (+ (* dtheta t) phase)))))
 
+(defn orbit-r-behavior [base-r repeats period phase]
+  (let [dtheta (/ eq/TAU period)]
+    (fn [{:keys [position]} t]
+      (v/+polar position (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
+                (+ (* dtheta t) phase)))))
+
 (defn pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
@@ -74,6 +80,12 @@
                                (dr/random 6 24))
                             (dr/random-tau)))
       3.0]
+     [(fn [] (orbit-r-behavior (* base-r (dr/random 0.2 1.2))
+                              (dr/random-int 2 10)
+                              (* (dr/weighted {-1 1 1 1})
+                                 (dr/random 6 24))
+                              (dr/random-tau)))
+      1.5]
      [(fn [] (pendulum-behavior
              radial-length
              (dr/random-tau) (dr/random-tau)
