@@ -39,8 +39,8 @@
 (defn orbit-r-behavior [base-r repeats period phase]
   (let [dtheta (/ eq/TAU period)]
     (fn [{:keys [position]} t]
-      (v/+polar position (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
-                (+ (* dtheta t) phase)))))
+      (let [radius (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))]
+        (v/+polar position radius (+ (* dtheta t) phase))))))
 
 (defn pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
