@@ -49,6 +49,14 @@
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
         (v/+polar position r (tm/mix* t0 t1 cyclic-t))))))
 
+(defn pendulum-r-behavior [base-r repeats t0 t1 period phase]
+  (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
+        dtheta (/ (* 2 (- t1 t0)) period)]
+    (fn [{:keys [position]} t]
+      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))
+            dist (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))]
+        (v/+polar position dist (tm/mix* t0 t1 cyclic-t))))))
+
 (defn relative-pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
@@ -92,6 +100,13 @@
              (dr/random 6 24)
              (dr/random-tau)))
       3.0]
+     [(fn [] (pendulum-r-behavior
+             radial-length
+             (dr/random-int 2 10)
+             (dr/random-tau) (dr/random-tau)
+             (dr/random 6 24)
+             (dr/random-tau)))
+      1.0]
      [(fn [] (relative-pendulum-behavior
              radial-length
              (- (dr/random-tau)) (dr/random-tau)
