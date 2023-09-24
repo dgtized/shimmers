@@ -17,6 +17,9 @@
 (defn heading [{:keys [position origin]}]
   (g/heading (tm/- position origin)))
 
+(defn radius-repeats [repeats phase dtheta t]
+  (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
+
 ;; TODO: datify these behaviors instead of using functions
 (defn fixed-behavior []
   (fn [{:keys [position]} _t] position))
@@ -39,7 +42,7 @@
 (defn orbit-r-behavior [base-r repeats period phase]
   (let [dtheta (/ eq/TAU period)]
     (fn [{:keys [position]} t]
-      (let [radius (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))]
+      (let [radius (* base-r (radius-repeats repeats phase dtheta t))]
         (v/+polar position radius (+ (* dtheta t) phase))))))
 
 (defn pendulum-behavior [r t0 t1 period phase]
@@ -54,7 +57,7 @@
         dtheta (/ (* 2 (- t1 t0)) period)]
     (fn [{:keys [position]} t]
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))
-            dist (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))]
+            dist (* base-r (radius-repeats repeats phase dtheta t))]
         (v/+polar position dist (tm/mix* t0 t1 cyclic-t))))))
 
 (defn relative-pendulum-behavior [r t0 t1 period phase]
@@ -71,7 +74,7 @@
     (fn [{:keys [position] :as parent} t]
       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
         (v/+polar position
-                  (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
+                  (* base-r (radius-repeats repeats phase dtheta t))
                   (+ (heading parent)
                      (tm/mix* t0 t1 cyclic-t)))))))
 
