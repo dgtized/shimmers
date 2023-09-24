@@ -65,6 +65,16 @@
         (v/+polar position r (+ (heading parent)
                                 (tm/mix* t0 t1 cyclic-t)))))))
 
+(defn relative-pendulum-r-behavior [base-r repeats t0 t1 period phase]
+  (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
+        dtheta (/ (* 2 (- t1 t0)) period)]
+    (fn [{:keys [position] :as parent} t]
+      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
+        (v/+polar position
+                  (* base-r (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
+                  (+ (heading parent)
+                     (tm/mix* t0 t1 cyclic-t)))))))
+
 ;; TODO: implement parallel or roller which is a pair of elements. first element
 ;; ends and then it's child starts a new draw in parallel / offset from the
 ;; original line.
@@ -109,6 +119,13 @@
       1.0]
      [(fn [] (relative-pendulum-behavior
              radial-length
+             (- (dr/random-tau)) (dr/random-tau)
+             (dr/random 6 24)
+             (dr/random-tau)))
+      1.5]
+     [(fn [] (relative-pendulum-r-behavior
+             radial-length
+             (dr/random-int 2 10)
              (- (dr/random-tau)) (dr/random-tau)
              (dr/random 6 24)
              (dr/random-tau)))
