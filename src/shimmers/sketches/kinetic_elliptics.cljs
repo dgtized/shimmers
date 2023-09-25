@@ -20,6 +20,9 @@
 (defn radius-repeats [repeats phase dtheta t]
   (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
 
+(defn cyclic [dtheta phase t]
+  (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase)))
+
 ;; TODO: datify these behaviors instead of using functions
 (defn fixed-behavior []
   (fn [{:keys [position]} _t] position))
@@ -56,7 +59,7 @@
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
     (fn [{:keys [position]} t]
-      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))
+      (let [cyclic-t (cyclic dtheta phase t)
             dist (* base-r (radius-repeats repeats phase dtheta t))]
         (v/+polar position dist (tm/mix* t0 t1 cyclic-t))))))
 
@@ -64,7 +67,7 @@
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
     (fn [{:keys [position] :as parent} t]
-      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
+      (let [cyclic-t (cyclic dtheta phase t)]
         (v/+polar position r (+ (heading parent)
                                 (tm/mix* t0 t1 cyclic-t)))))))
 
@@ -72,7 +75,7 @@
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
     (fn [{:keys [position] :as parent} t]
-      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
+      (let [cyclic-t (cyclic dtheta phase t)]
         (v/+polar position
                   (* base-r (radius-repeats repeats phase dtheta t))
                   (+ (heading parent)
