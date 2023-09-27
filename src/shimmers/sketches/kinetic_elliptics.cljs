@@ -109,6 +109,9 @@
 
 (defrecord Element [behavior color children])
 
+(defn random-period []
+  (dr/random 6 30))
+
 (defn random-behavior [radial-length]
   ((dr/weighted
     [[(fn [] (fixed-angle radial-length
@@ -120,39 +123,39 @@
       1.0]
      [(fn [] (orbit-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
-                               (dr/random 6 24))
+                               (random-period))
                             (dr/random-tau)))
       3.0]
      [(fn [] (orbit-r-behavior (* radial-length (dr/random 0.2 1.2))
                               (dr/random-int 2 10)
                               (* (dr/weighted {-1 1 1 1})
-                                 (dr/random 6 24))
+                                 (random-period))
                               (dr/random-tau)))
       1.5]
      [(fn [] (pendulum-behavior
              radial-length
              (dr/random-tau) (dr/random-tau)
-             (dr/random 6 24)
+             (random-period)
              (dr/random-tau)))
       3.0]
      [(fn [] (pendulum-r-behavior
              radial-length
              (dr/random-int 2 10)
              (dr/random-tau) (dr/random-tau)
-             (dr/random 6 24)
+             (random-period)
              (dr/random-tau)))
       1.0]
      [(fn [] (relative-pendulum-behavior
              radial-length
              (- (dr/random-tau)) (dr/random-tau)
-             (dr/random 6 24)
+             (random-period)
              (dr/random-tau)))
       1.5]
      [(fn [] (relative-pendulum-r-behavior
              radial-length
              (dr/random-int 2 10)
              (- (dr/random-tau)) (dr/random-tau)
-             (dr/random 6 24)
+             (random-period)
              (dr/random-tau)))
       1.0]])))
 
