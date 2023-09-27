@@ -127,7 +127,7 @@
                             (dr/random-tau)))
       3.0]
      [(fn [] (orbit-r-behavior (* radial-length (dr/random 0.2 1.2))
-                              (dr/random-int 2 10)
+                              (dr/random-int 1 8)
                               (* (dr/weighted {-1 1 1 1})
                                  (random-period))
                               (dr/random-tau)))
@@ -140,7 +140,7 @@
       3.0]
      [(fn [] (pendulum-r-behavior
              radial-length
-             (dr/random-int 2 10)
+             (dr/random-int 1 8)
              (dr/random-tau) (dr/random-tau)
              (random-period)
              (dr/random-tau)))
@@ -153,7 +153,7 @@
       1.5]
      [(fn [] (relative-pendulum-r-behavior
              radial-length
-             (dr/random-int 2 10)
+             (dr/random-int 1 8)
              (- (dr/random-tau)) (dr/random-tau)
              (random-period)
              (dr/random-tau)))
