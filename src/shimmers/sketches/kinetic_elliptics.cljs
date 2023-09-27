@@ -25,61 +25,70 @@
 
 ;; TODO: datify these behaviors instead of using functions
 (defn fixed-behavior []
-  (fn [{:keys [position]} _t] position))
+  {:pos
+   (fn [{:keys [position]} _t] position)})
 
 ;; fixed angle to global
 (defn fixed-angle [r global-angle]
-  (fn [{:keys [position]} _t]
-    (v/+polar position r global-angle)))
+  {:pos
+   (fn [{:keys [position]} _t]
+     (v/+polar position r global-angle))})
 
 (defn relative-angle [r rel-angle]
-  (fn [{:keys [position] :as parent} _t]
-    (v/+polar position r (+ (heading parent)
-                            rel-angle))))
+  {:pos
+   (fn [{:keys [position] :as parent} _t]
+     (v/+polar position r (+ (heading parent)
+                             rel-angle)))})
 
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
-    (fn [{:keys [position]} t]
-      (v/+polar position r (+ (* dtheta t) phase)))))
+    {:pos
+     (fn [{:keys [position]} t]
+       (v/+polar position r (+ (* dtheta t) phase)))}))
 
 (defn orbit-r-behavior [base-r repeats period phase]
   (let [dtheta (/ eq/TAU period)]
-    (fn [{:keys [position]} t]
-      (let [radius (* base-r (radius-repeats repeats phase dtheta t))]
-        (v/+polar position radius (+ (* dtheta t) phase))))))
+    {:pos
+     (fn [{:keys [position]} t]
+       (let [radius (* base-r (radius-repeats repeats phase dtheta t))]
+         (v/+polar position radius (+ (* dtheta t) phase))))}))
 
 (defn pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [{:keys [position]} t]
-      (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
-        (v/+polar position r (tm/mix* t0 t1 cyclic-t))))))
+    {:pos
+     (fn [{:keys [position]} t]
+       (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
+         (v/+polar position r (tm/mix* t0 t1 cyclic-t))))}))
 
 (defn pendulum-r-behavior [base-r repeats t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [{:keys [position]} t]
-      (let [cyclic-t (cyclic dtheta phase t)
-            dist (* base-r (radius-repeats repeats phase dtheta t))]
-        (v/+polar position dist (tm/mix* t0 t1 cyclic-t))))))
+    {:pos
+     (fn [{:keys [position]} t]
+       (let [cyclic-t (cyclic dtheta phase t)
+             dist (* base-r (radius-repeats repeats phase dtheta t))]
+         (v/+polar position dist (tm/mix* t0 t1 cyclic-t))))}))
 
 (defn relative-pendulum-behavior [r t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [{:keys [position] :as parent} t]
-      (let [cyclic-t (cyclic dtheta phase t)]
-        (v/+polar position r (+ (heading parent)
-                                (tm/mix* t0 t1 cyclic-t)))))))
+    {:pos
+     (fn [{:keys [position] :as parent} t]
+       (let [cyclic-t (cyclic dtheta phase t)]
+         (v/+polar position r (+ (heading parent)
+                                 (tm/mix* t0 t1 cyclic-t)))))}))
 
 (defn relative-pendulum-r-behavior [base-r repeats t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
-    (fn [{:keys [position] :as parent} t]
-      (let [cyclic-t (cyclic dtheta phase t)]
-        (v/+polar position
-                  (* base-r (radius-repeats repeats phase dtheta t))
-                  (+ (heading parent)
-                     (tm/mix* t0 t1 cyclic-t)))))))
+    {:pos
+     (fn [{:keys [position] :as parent} t]
+       (let [cyclic-t (cyclic dtheta phase t)]
+         (v/+polar position
+                   (* base-r (radius-repeats repeats phase dtheta t))
+                   (+ (heading parent)
+                      (tm/mix* t0 t1 cyclic-t)))))}))
 
 ;; TODO: implement parallel or roller which is a pair of elements. first element
 ;; ends and then it's child starts a new draw in parallel / offset from the
@@ -162,7 +171,7 @@
   [parent {:keys [behavior color children] :as element} t]
   (lazy-seq
    (when element
-     (let [position (behavior parent t)
+     (let [position ((:pos behavior) parent t)
            origin (:position parent)
            self {:position position :origin origin}]
        (cons [origin position color]
