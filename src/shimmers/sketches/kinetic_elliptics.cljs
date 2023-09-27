@@ -215,9 +215,10 @@
   (doseq [group (apply map vector
                        (map (partial plot-elements {:position origin :angle 0} root)
                             (map + (range 0.0 0.1 (/ 0.1 4)) (repeat t))))]
-    (doseq [[parent element draw color t] group]
+    (let [[parent element draw _color t] (first group)]
       (when draw
-        (draw parent element t))
+        (draw parent element t)))
+    (doseq [[parent element _draw color _t] group]
       (draw-joint element)
       (draw-connector parent element color))))
 
