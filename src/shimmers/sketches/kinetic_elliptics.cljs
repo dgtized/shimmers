@@ -46,7 +46,7 @@
      (fn [{:keys [position]} t]
        (v/+polar position r (+ (* dtheta t) phase)))
      :draw
-     (fn [[x y] _element t]
+     (fn [[x y] _element _t]
        (q/no-fill)
        (q/stroke-weight 0.2)
        (cq/circle x y r))}))
@@ -66,7 +66,7 @@
        (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
          (v/+polar position r (tm/mix* t0 t1 cyclic-t))))
      :draw
-     (fn [[x y] _element t]
+     (fn [[x y] _element _t]
        (q/no-fill)
        (q/stroke-weight 0.2)
        (q/arc x y r r t0 t1))}))
