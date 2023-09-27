@@ -44,7 +44,12 @@
   (let [dtheta (/ eq/TAU period)]
     {:pos
      (fn [{:keys [position]} t]
-       (v/+polar position r (+ (* dtheta t) phase)))}))
+       (v/+polar position r (+ (* dtheta t) phase)))
+     :draw
+     (fn [[x y] _element t]
+       (q/no-fill)
+       (q/stroke-weight 0.2)
+       (cq/circle x y r))}))
 
 (defn orbit-r-behavior [base-r repeats period phase]
   (let [dtheta (/ eq/TAU period)]
@@ -59,7 +64,12 @@
     {:pos
      (fn [{:keys [position]} t]
        (let [cyclic-t (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase))]
-         (v/+polar position r (tm/mix* t0 t1 cyclic-t))))}))
+         (v/+polar position r (tm/mix* t0 t1 cyclic-t))))
+     :draw
+     (fn [[x y] _element t]
+       (q/no-fill)
+       (q/stroke-weight 0.2)
+       (q/arc x y r r t0 t1))}))
 
 (defn pendulum-r-behavior [base-r repeats t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
@@ -174,7 +184,7 @@
      (let [position ((:pos behavior) parent t)
            origin (:position parent)
            self {:position position :origin origin}]
-       (cons [origin position color]
+       (cons [origin position (:draw behavior) color t]
              (mapcat (fn [child] (plot-elements self child t))
                      children))))))
 
@@ -205,7 +215,9 @@
   (doseq [group (apply map vector
                        (map (partial plot-elements {:position origin :angle 0} root)
                             (map + (range 0.0 0.1 (/ 0.1 4)) (repeat t))))]
-    (doseq [[parent element color] group]
+    (doseq [[parent element draw color t] group]
+      (when draw
+        (draw parent element t))
       (draw-joint element)
       (draw-connector parent element color))))
 
