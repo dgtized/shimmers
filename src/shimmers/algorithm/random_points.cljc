@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.random-points
   (:require
    [shimmers.algorithm.poisson-disc-sampling :as pds]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -68,8 +69,35 @@
             (reset! pool (if (seq r) r (dr/shuffle points)))
             v))))
 
+;; https://observablehq.com/@jrus/halton
+(defn halton [index base]
+  (loop [index index
+         fraction 1
+         result 0]
+    (if (<= index 0)
+      result
+      (let [fract (/ fraction base)]
+        (recur (Math/floor (/ index base))
+               fract
+               (+ result (* fract (mod index base))))))))
+
+(comment (for [i (range 32)]
+           (halton i 7)))
+
+;; how to pick good prime pairs?
+(defn halton-prime-pair [lower upper]
+  (let [primes (sm/primes-between lower upper)
+        p1 (dr/rand-nth primes)]
+    [p1 (dr/rand-nth (remove #{p1 (+ p1 2) (- p1 2)} primes))]))
+
+(defn halton-sequence [bounds [p1 p2] n]
+  (for [i (range n)
+        :let [k (+ i 100)]]
+    (g/unmap-point bounds (gv/vec2 (halton k p1) (halton k p2)))))
+
 (def modes
   {:random-points random-points
    :random-cells random-cells
    :random-cell-jitter random-cell-jitter
-   :poisson-disc-sampling poisson-disc-sampling} )
+   :poisson-disc-sampling poisson-disc-sampling
+   :halton-sequence halton-sequence} )
