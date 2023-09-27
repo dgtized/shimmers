@@ -70,6 +70,8 @@
             v))))
 
 ;; https://observablehq.com/@jrus/halton
+;; https://pbr-book.org/3ed-2018/Sampling_and_Reconstruction/The_Halton_Sampler
+;; https://www.mathworks.com/help/stats/haltonset.html
 (defn halton [index base]
   (loop [index index
          fraction 1
