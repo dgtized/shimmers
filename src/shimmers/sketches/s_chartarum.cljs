@@ -159,12 +159,18 @@
     (q/no-loop)))
 
 (defn page []
-  (sketch/component
-   :size [900 600]
-   :setup setup
-   :update update-state
-   :draw draw
-   :middleware [m/fun-mode framerate/mode]))
+  [sketch/with-explanation
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [:div.readable-width
+    [:p "Mimics some of the textures generated from the growth of S. Chartarum,
+    aka black mold. Growth circles are seeded nearby to an existing colony, and
+    then grow out radially at varying rates and in some cases with some
+    directional affinity."]]])
 
 (sketch/definition s-chartarum
   {:created-at "2023-01-30"
