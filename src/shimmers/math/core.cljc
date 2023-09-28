@@ -133,6 +133,7 @@
             0.0
             (range (count points)))))
 
+;; https://acme.byu.edu/00000179-afb2-d74f-a3ff-bfbb158d0001/polynomialinterpolation19-pdf
 (defn lagrange-barycentric [points]
   (let [ks (range (count points))
         weights (mapv (fn [j]
@@ -146,7 +147,7 @@
                       ks)]
     (fn [x]
       ;; as we divide by x - xj, replace the known points to avoid divide by zero
-      (if-let [y (some (fn [[px py]] (when (= px x) py)) points)]
+      (if-let [y (some (fn [[px py]] (when (tm/delta= px x) py)) points)]
         y
         (* (reduce (fn [prod m]
                      (* prod (- x (:x (nth points m)))))
