@@ -1,5 +1,7 @@
 (ns shimmers.math.core
-  (:require [thi.ng.math.core :as tm]))
+  (:require
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn range-subdivided [r n]
   (let [n (if (zero? n) (inc n) n)]
@@ -113,3 +115,24 @@
   (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
 
 (comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
+
+;; https://en.wikipedia.org/wiki/Lagrange_polynomial
+;; https://www.youtube.com/watch?v=4S6G-zenbFM
+(defn lagrange-interpolate [points]
+  (fn [x]
+    (reduce (fn [sum j]
+              (let [[xj yj] (nth points j)]
+                (+ sum (* yj
+                          (reduce (fn [prod m]
+                                    (if (= m j)
+                                      prod
+                                      (let [xm (:x (nth points m))]
+                                        (* prod (/ (- x xm) (- xj xm))))))
+                                  1.0
+                                  (range (count points)))))))
+            0.0
+            (range (count points)))))
+
+(comment
+  (let [f (lagrange-interpolate [(gv/vec2 0 2) (gv/vec2 1 1) (gv/vec2 2 3)])]
+    (map (fn [x] (gv/vec2 x (f x))) (range 0 3 0.1))))
