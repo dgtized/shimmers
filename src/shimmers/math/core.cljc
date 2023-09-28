@@ -133,6 +133,34 @@
             0.0
             (range (count points)))))
 
+(defn lagrange-barycentric [points]
+  (let [ks (range (count points))
+        weights (mapv (fn [j]
+                        (let [xj (:x (nth points j))]
+                          (reduce (fn [prod m]
+                                    (if (= m j)
+                                      prod
+                                      (* prod (Math/pow (- xj (:x (nth points m))) -1))))
+                                  1.0
+                                  ks)))
+                      ks)]
+    (fn [x]
+      ;; as we divide by x - xj, replace the known points to avoid divide by zero
+      (if-let [y (some (fn [[px py]] (when (= px x) py)) points)]
+        y
+        (* (reduce (fn [prod m]
+                     (* prod (- x (:x (nth points m)))))
+                   1.0
+                   ks)
+           (reduce (fn [sum j]
+                     (let [[xj yj] (nth points j)]
+                       (+ sum (* yj (/ (nth weights j) (- x xj))))))
+                   0.0
+                   ks))))))
+
 (comment
-  (let [f (lagrange-interpolate [(gv/vec2 0 2) (gv/vec2 1 1) (gv/vec2 2 3)])]
-    (map (fn [x] (gv/vec2 x (f x))) (range 0 3 0.1))))
+  (let [f (lagrange-interpolate [(gv/vec2 1 2) (gv/vec2 2 1) (gv/vec2 3 3)])]
+    (map (fn [x] (gv/vec2 x (f x))) (range 0 4 0.25)))
+
+  (let [f (lagrange-barycentric [(gv/vec2 1 2) (gv/vec2 2 1) (gv/vec2 3 3)])]
+    (map (fn [x] (gv/vec2 x (f x))) (range 0 4 0.25))))
