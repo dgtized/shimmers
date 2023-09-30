@@ -8,7 +8,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -29,7 +28,7 @@
                      (v/+polar base r (+ offset (* 0.5 t))))
                    basis radius offset))))
 
-(defn draw [{:keys [points]}]
+(defn draw [{:keys [points t]}]
   (q/background 1.0)
   (q/no-fill)
   (let [fp (sm/lagrange-barycentric points)]
@@ -46,10 +45,8 @@
             x' (+ x 0.1)
             fx' (fp x')
             b (gv/vec2 x fx)
-            perp (g/scale (g/rotate (tm/- (gv/vec2 x' fx') b) (if (> fx fx')
-                                                                (- tm/HALF_PI)
-                                                                tm/HALF_PI))
-                          8)]
+            perp (gv/vec2 (tm/cross (gv/vec3 (tm/- (gv/vec2 x' fx') b))
+                                    (gv/vec3 0 0 (* 20 (Math/cos (+ (/ x 5) (* 0.5 t)))))))]
         (q/curve-vertex x fx)
         (q/line b (tm/+ b perp))))
     (q/end-shape)))
