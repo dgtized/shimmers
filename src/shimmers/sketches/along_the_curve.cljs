@@ -4,31 +4,32 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.core :as sm]))
+   [thi.ng.geom.vector :as gv]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:points [(gv/vec2 -6 4)
-            (gv/vec2 4 6)
-            (gv/vec2 8 2)
-            (gv/vec2 12 4)
-            (gv/vec2 16 0)]})
+  (let [basis (mapv (fn [x] (gv/vec2 (* 50 (- x 0.5)) 0)) (dr/density-range 0.15 0.2))]
+    {:basis basis
+     :radius (repeatedly (count basis) #(dr/random 2.0 5.0))
+     :offset (repeatedly (count basis) #(dr/random-tau))
+     :t (/ (q/millis) 1000.0)}))
 
-(defn update-state [state]
-  state)
+(defn update-state [{:keys [basis radius offset t] :as state}]
+  (-> state
+      (assoc :t (/ (q/millis) 1000.0))
+      (assoc :points
+             (mapv (fn [base r offset]
+                     (v/+polar base r (+ offset (* 0.5 t))))
+                   basis radius offset))))
 
 (defn draw [{:keys [points]}]
   (q/background 1.0)
   (q/no-fill)
-  (let [lx (:x (apply min-key :x points))
-        ux (:x (apply max-key :x points))
-        x-range (- ux lx)
-        ly (:y (apply min-key :y points))
-        uy (:y (apply max-key :y points))
-        _y-range (- uy ly)
-        fp (sm/lagrange-barycentric points)]
+  (let [fp (sm/lagrange-barycentric points)]
     (q/translate (/ (q/width) 2) (/ (q/height) 2))
     (q/scale 10 -10)
     (q/stroke-weight 0.05)
@@ -37,9 +38,7 @@
 
     (q/stroke-weight 0.2)
     (q/begin-shape)
-    (doseq [x (range (- lx (* x-range 0.5))
-                     (+ ux (* x-range 0.5))
-                     (/ (* x-range 1.5) 50.0))]
+    (doseq [x (range -40 40 (/ 80 50))]
       (q/curve-vertex x (fp x)))
     (q/end-shape)))
 
