@@ -12,7 +12,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [basis (mapv (fn [x] (gv/vec2 (* 50 (- x 0.5)) 0)) (dr/density-range 0.15 0.2))]
+  (let [basis (mapv (fn [x] (gv/vec2 (int (* 50 (- x 0.5))) (dr/random-int -5 5)))
+                    (dr/density-range 0.15 0.3))]
     {:basis basis
      :radius (repeatedly (count basis) #(dr/random 2.0 5.0))
      :offset (repeatedly (count basis) #(dr/random-tau))
