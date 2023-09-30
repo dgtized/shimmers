@@ -8,7 +8,9 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -39,8 +41,17 @@
 
     (q/stroke-weight 0.2)
     (q/begin-shape)
-    (doseq [x (range -40 40 (/ 80 50))]
-      (q/curve-vertex x (fp x)))
+    (doseq [x (range -50 50 (/ 100 80))]
+      (let [fx (fp x)
+            x' (+ x 0.1)
+            fx' (fp x')
+            b (gv/vec2 x fx)
+            perp (g/scale (g/rotate (tm/- (gv/vec2 x' fx') b) (if (> fx fx')
+                                                                (- tm/HALF_PI)
+                                                                tm/HALF_PI))
+                          8)]
+        (q/curve-vertex x fx)
+        (q/line b (tm/+ b perp))))
     (q/end-shape)))
 
 (defn page []
