@@ -10,6 +10,7 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (def max-depth 4)
@@ -191,12 +192,19 @@
              (mapcat (fn [child] (plot-elements self child t))
                      children))))))
 
+(defn build-tree [base-r]
+  (let [tree (assoc (create-elements base-r 0)
+                    :behavior (fixed-behavior))
+        size (count (plot-elements {:position (gv/vec2) :angle 0} tree 0))]
+    (if (< 8 size 40)
+      tree
+      (recur base-r))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:origin (cq/rel-vec 0.5 0.5)
-   :root (assoc (create-elements (cq/rel-h 0.125) 0)
-                :behavior (fixed-behavior))
+   :root (build-tree (cq/rel-h 0.125))
    :t 0.0})
 
 (defn update-state [state]
