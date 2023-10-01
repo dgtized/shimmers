@@ -143,6 +143,7 @@
    shimmers.sketches.path-distribution
    shimmers.sketches.path-following
    shimmers.sketches.path-morph
+   ;; shimmers.sketches.pawns
    shimmers.sketches.periapsis
    shimmers.sketches.permutations-of-transfiguration
    shimmers.sketches.physarum
