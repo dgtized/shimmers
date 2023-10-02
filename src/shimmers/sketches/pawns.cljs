@@ -72,7 +72,7 @@
         (q/rect x y cell-w cell-h)
         (cond (:agent cell)
               (do
-                (q/fill 0.0)
+                (q/fill 0.6 0.5 0.5 1.0)
                 (cq/circle (+ x (/ cell-w 2)) (+ y (/ cell-h 2)) (* cell-w 0.4))
                 (q/no-fill))
               (> (get-in cell [:block :items] 0) 0)
