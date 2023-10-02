@@ -48,7 +48,7 @@
                      grid agents)
              (reduce (fn [g pos]
                        (assoc-in g [pos :target] {:items 0}))
-                     grid (for [k (range 8 13)] [0 k]))
+                     grid (for [k (range 6 16 2)] [1 k]))
              (reduce (fn [g pos]
                        (assoc-in g [pos :block] {:items 1}))
                      grid (repeatedly 64 (fn [] [(dr/random-int ( * 3 (/ cols 4)) (dec cols))
