@@ -1,12 +1,16 @@
 (ns shimmers.sketches.pawns
   (:require
+   [loom.alg :as la]
+   [loom.graph :as lg]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn make-grid [cols rows]
   (into {:dims [cols rows]}
@@ -29,7 +33,7 @@
   (assoc-in state [:grid pos :block] {:items 1}))
 
 (defn make-agent [pos id]
-  {:pos pos :id id})
+  {:pos pos :id id :mode :start})
 
 (defn move [{:keys [agents] :as state} id dest]
   (let [pos (get-in agents [id :pos])]
@@ -37,6 +41,48 @@
         (assoc-in [:agents id :pos] dest)
         (update-in [:grid pos] dissoc :agent)
         (assoc-in [:grid pos :agent] id))))
+
+(defn manhattan [from p]
+  (apply + (tm/abs (tm/- (gv/vec2 p) (gv/vec2 from)))))
+
+(defn find-closest [grid from element]
+  (apply min-key (fn [p] (manhattan from p))
+         (keep (fn [[pos value]]
+                 (when (> (get-in value [element :items] 0) 0)
+                   (gv/vec2 pos)))
+               (dissoc grid :dims))))
+
+(defn search-path [grid start dest]
+  (la/astar-path (lg/fly-graph :start start
+                               :successors (fn [loc] (neighbors grid loc))
+                               :predecessors (fn [loc] (neighbors grid loc))
+                               :weight (fn [_l1 _l2] 1))
+                 start dest manhattan))
+
+(defn update-agent [{:keys [grid] :as state} id]
+  (let [{:keys [pos dest mode]} (get-in state [:agents id])]
+    (case mode
+      :start
+      (-> state
+          (update-in [:agents id] assoc
+                     :mode :moving
+                     :dest (find-closest grid pos :block)))
+      :moving
+      (if (= pos dest)
+        (update-in state [:agents id] (fn [agent] (-> agent
+                                                     (assoc :dest
+                                                            (find-closest grid pos :target))
+                                                     (assoc :mode :carrying))))
+        (let [path (search-path grid pos dest)]
+          (move state id (first path))))
+
+      :carrying
+      (if (= pos dest)
+        (update-in state [:agents id] (fn [agent] (-> agent
+                                                     (dissoc :dest)
+                                                     (assoc :mode :start))))
+        (let [path (search-path grid pos dest)]
+          (move state id (first path)))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -55,7 +101,10 @@
                                                 (dr/random-int 1 (dec rows))]))))}))
 
 (defn update-state [state]
-  state)
+  (-> state
+      ;; (update-agent 0)
+      )
+  )
 
 (defn draw [{:keys [grid]}]
   (q/background 1.0)
