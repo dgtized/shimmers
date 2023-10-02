@@ -26,6 +26,10 @@
         :when (not= :missing (get grid pos :missing))]
     pos))
 
+(comment
+  (neighbors (make-grid 5 5) [2 2])
+  (neighbors (make-grid 5 5) [0 0]))
+
 (defn assign-target [state pos]
   (assoc-in state [:grid pos :target] {:items 0}))
 
