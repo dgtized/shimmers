@@ -3,9 +3,10 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.quil :as cq]))
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn make-grid [cols rows]
   (into {:dims [cols rows]}
@@ -21,11 +22,14 @@
         :when (not= :missing (get grid pos :missing))]
     pos))
 
+(defn assign-target [state pos]
+  (assoc-in state [:grid pos :target] {:items 0}))
+
+(defn assign-block [state pos]
+  (assoc-in state [:grid pos :block] {:items 1}))
+
 (defn make-agent [pos id]
   {:pos pos :id id})
-
-(defn set-grid-position [grid {:keys [pos id]}]
-  (assoc-in grid [pos :agent] id))
 
 (defn move [{:keys [agents] :as state} id dest]
   (let [pos (get-in agents [id :pos])]
@@ -36,11 +40,19 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [agents [(make-agent [15 10] 0)]]
+  (let [[cols rows] [30 20]
+        agents [(make-agent [15 10] 0)]]
     {:agents agents
-     :grid (reduce (fn [g agent] (set-grid-position g agent))
-                   (make-grid 30 20)
-                   agents)}))
+     :grid (as-> (make-grid cols rows) grid
+             (reduce (fn [g {:keys [id pos]}] (assoc-in g [pos :agent] id))
+                     grid agents)
+             (reduce (fn [g pos]
+                       (assoc-in g [pos :target] {:items 0}))
+                     grid (for [k (range 8 13)] [0 k]))
+             (reduce (fn [g pos]
+                       (assoc-in g [pos :block] {:items 1}))
+                     grid (repeatedly 64 (fn [] [(dr/random-int ( * 3 (/ cols 4)) (dec cols))
+                                                (dr/random-int 1 (dec rows))]))))}))
 
 (defn update-state [state]
   state)
@@ -58,10 +70,23 @@
             x (* i cell-w)
             y (* j cell-h)]
         (q/rect x y cell-w cell-h)
-        (when (:agent cell)
-          (q/fill 0.0)
-          (cq/circle (+ x (/ cell-w 2)) (+ y (/ cell-h 2)) (* cell-w 0.4))
-          (q/no-fill))))))
+        (cond (:agent cell)
+              (do
+                (q/fill 0.0)
+                (cq/circle (+ x (/ cell-w 2)) (+ y (/ cell-h 2)) (* cell-w 0.4))
+                (q/no-fill))
+              (> (get-in cell [:block :items] 0) 0)
+              (do
+                (q/fill 0.0)
+                (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
+                        (* 0.8 cell-w) (* 0.8 cell-h))
+                (q/no-fill))
+              (>= (get-in cell [:target :items] -1) 0)
+              (do
+                (q/stroke-weight 1.5)
+                (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
+                        (* 0.8 cell-w) (* 0.8 cell-h))
+                (q/stroke-weight 1.0)))))))
 
 (defn page []
   [:div
