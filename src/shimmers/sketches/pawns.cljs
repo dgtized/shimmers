@@ -180,11 +180,21 @@
                 (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
                         (* 0.8 cell-w) (* 0.8 cell-h))
                 (q/no-fill))
-              (>= (get-in cell [:target :items] -1) 0)
+              (:target cell)
               (do
                 (q/stroke-weight 1.5)
                 (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
                         (* 0.8 cell-w) (* 0.8 cell-h))
+                (let [items (get-in cell [:target :items] 0)]
+                  (when (> items 0)
+                    (q/fill 0.0)
+                    (let [s (str items)
+                          tw (q/text-width s)
+                          th (+ (q/text-ascent) (q/text-descent))]
+                      (q/text s
+                              (+ x (/ (- cell-w tw) 2)) (+ y (/ (- cell-h th) 2))
+                              (+ x cell-w) (+ y cell-h)))
+                    (q/no-fill)))
                 (q/stroke-weight 1.0)))))))
 
 (defn page []
