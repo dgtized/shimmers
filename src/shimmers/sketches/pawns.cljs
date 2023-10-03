@@ -116,22 +116,22 @@
               (update-in [:grid pos :block :items] dec)
               (update-in [:agents id]
                          (fn [agent] (-> agent
-                                        (assoc :dest
-                                               (find-closest grid pos :target))
                                         (assoc :mode :carrying)
-                                        (update :items (fnil inc 0)))))))
+                                        (update :items (fnil inc 0))
+                                        (assoc :dest
+                                               (find-closest grid pos :target)))))))
         (let [path (rest (search-path grid pos dest))]
           (move state id (first path))))
 
       :carrying
       (if (= pos dest)
         (-> state
+            (update-in [:grid pos :target :items] (fnil inc 0))
             (update-in [:agents id]
                        (fn [agent] (-> agent
-                                      (dissoc :dest)
                                       (assoc :mode :start)
-                                      (update :items dec))))
-            (update-in [:grid pos :target :items] (fnil inc 0)))
+                                      (update :items dec)
+                                      (dissoc :dest)))))
         (let [path (rest (search-path grid pos dest))]
           (move state id (first path)))))))
 
