@@ -18,6 +18,24 @@
               j (range rows)]
           [[i j] nil])))
 
+
+(defn make-agent [pos id]
+  {:pos pos :id id :mode :start})
+
+(defn init-state [cols rows]
+  (let [agents [(make-agent [15 10] 0)]]
+    {:agents agents
+     :grid (as-> (make-grid cols rows) grid
+             (reduce (fn [g {:keys [id pos]}] (assoc-in g [pos :agent] id))
+                     grid agents)
+             (reduce (fn [g pos]
+                       (assoc-in g [pos :target] {:items 0}))
+                     grid (for [k (range 6 16 2)] [1 k]))
+             (reduce (fn [g pos]
+                       (assoc-in g [pos :block] {:items 1}))
+                     grid (repeatedly 64 (fn [] [(dr/random-int ( * 3 (/ cols 4)) (dec cols))
+                                                (dr/random-int 1 (dec rows))]))))}))
+
 (defn neighbors [grid [x y]]
   (for [i [-1 0 1]
         j [-1 0 1]
@@ -27,6 +45,7 @@
     pos))
 
 (comment
+  (init-state 5 5)
   (neighbors (make-grid 5 5) [2 2])
   (neighbors (make-grid 5 5) [0 0]))
 
@@ -35,9 +54,6 @@
 
 (defn assign-block [state pos]
   (assoc-in state [:grid pos :block] {:items 1}))
-
-(defn make-agent [pos id]
-  {:pos pos :id id :mode :start})
 
 (defn move [{:keys [agents] :as state} id dest]
   (let [pos (get-in agents [id :pos])]
@@ -90,19 +106,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [[cols rows] [30 20]
-        agents [(make-agent [15 10] 0)]]
-    {:agents agents
-     :grid (as-> (make-grid cols rows) grid
-             (reduce (fn [g {:keys [id pos]}] (assoc-in g [pos :agent] id))
-                     grid agents)
-             (reduce (fn [g pos]
-                       (assoc-in g [pos :target] {:items 0}))
-                     grid (for [k (range 6 16 2)] [1 k]))
-             (reduce (fn [g pos]
-                       (assoc-in g [pos :block] {:items 1}))
-                     grid (repeatedly 64 (fn [] [(dr/random-int ( * 3 (/ cols 4)) (dec cols))
-                                                (dr/random-int 1 (dec rows))]))))}))
+  (init-state 30 20))
 
 (defn update-state [state]
   (-> state
