@@ -95,6 +95,8 @@
   (find-closest (:grid (init-state 7 5)) [1 1] :target)
   (search-path (:grid (init-state 5 5)) [0 0] [4 4]))
 
+;; should only recompute search-path if next step is invalid
+;; also need to update path better so it shows you can't go through blocks
 (defn update-agent [{:keys [grid] :as state} id]
   (let [{:keys [pos dest mode] :as _agent} (get-in state [:agents id])]
     ;; (println agent)
