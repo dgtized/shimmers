@@ -189,7 +189,7 @@
                     (q/fill 0.0)
                     (let [s (str items)
                           tw (q/text-width s)
-                          th (+ (q/text-ascent) (q/text-descent))]
+                          th (+ (* 0.66 (q/text-ascent)) (q/text-descent))]
                       (q/text s
                               (+ x (/ (- cell-w tw) 2)) (+ y (/ (- cell-h th) 2))
                               (+ x cell-w) (+ y cell-h)))
