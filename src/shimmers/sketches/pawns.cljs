@@ -41,9 +41,9 @@
   (for [i [-1 0 1]
         j [-1 0 1]
         :when (not (and (zero? i) (zero? j)))
-        :let [pos [(+ x i) (+ y j)]]
+        :let [pos (gv/vec2 (+ x i) (+ y j))]
         :when (not= :missing (get grid pos :missing))]
-    (gv/vec2 pos)))
+    pos))
 
 (comment
   (neighbors (make-grid 5 5) [2 2])
@@ -83,11 +83,10 @@
                     (backtrack parent path)))))
 
 (defn search-path [grid start dest]
-  (when-let [path (la/astar-path (lg/fly-graph :start start
-                                               :successors (fn [loc] (neighbors grid loc))
-                                               :predecessors (fn [loc] (neighbors grid loc))
-                                               :weight (fn [_l1 _l2] 1))
-                                 start dest g/dist)]
+  (when-let [path (-> (lg/fly-graph :start start
+                                    :successors (fn [loc] (neighbors grid loc))
+                                    :weight (fn [_l1 _l2] 1))
+                      (la/astar-path start dest g/dist))]
     (reverse (backtrack dest path))))
 
 (comment
