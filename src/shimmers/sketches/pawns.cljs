@@ -95,10 +95,20 @@
   (find-closest (:grid (init-state 7 5)) [1 1] :target)
   (search-path (:grid (init-state 5 5)) [0 0] [4 4]))
 
+(defn move-path
+  [{:keys [grid] :as state}
+   {:keys [pos dest id] :as agent}]
+  (if-let [path (seq (:path agent))]
+    (-> state
+        (move id (first path))
+        (update-in [:agents id :path] rest))
+    (assoc-in state [:agents id :path]
+              (rest (search-path grid pos dest)))))
+
 ;; should only recompute search-path if next step is invalid
 ;; also need to update path better so it shows you can't go through blocks
 (defn update-agent [{:keys [grid] :as state} id]
-  (let [{:keys [pos dest mode] :as _agent} (get-in state [:agents id])]
+  (let [{:keys [pos dest mode] :as agent} (get-in state [:agents id])]
     ;; (println agent)
     (case mode
       :start
@@ -120,8 +130,7 @@
                                         (update :items (fnil inc 0))
                                         (assoc :dest
                                                (find-closest grid pos :target)))))))
-        (let [path (rest (search-path grid pos dest))]
-          (move state id (first path))))
+        (move-path state agent))
 
       :carrying
       (if (= pos dest)
@@ -132,8 +141,7 @@
                                       (assoc :mode :start)
                                       (update :items dec)
                                       (dissoc :dest)))))
-        (let [path (rest (search-path grid pos dest))]
-          (move state id (first path)))))))
+        (move-path state agent)))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
