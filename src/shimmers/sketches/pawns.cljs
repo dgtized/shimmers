@@ -145,6 +145,17 @@
                               (assoc :mode :start)
                               (dissoc :dest))))))
 
+(defn drop-block
+  [state {:keys [id pos dest]}]
+  (println [pos dest (get-in state [:grid dest])])
+  (-> state
+      (update-in [:grid dest :target :items] (fnil inc 0))
+      (update-in [:agents id]
+                 (fn [agent] (-> agent
+                                (assoc :mode :start)
+                                (update :items dec)
+                                (dissoc :dest))))))
+
 ;; should only recompute search-path if next step is invalid
 ;; also need to update path better so it shows you can't go through blocks
 (defn update-agent [{:keys [grid] :as state} id]
@@ -165,15 +176,7 @@
 
       :carrying
       (if (neighbor? pos dest)
-        (do
-          (println [pos dest (get-in state [:grid dest])])
-          (-> state
-              (update-in [:grid dest :target :items] (fnil inc 0))
-              (update-in [:agents id]
-                         (fn [agent] (-> agent
-                                        (assoc :mode :start)
-                                        (update :items dec)
-                                        (dissoc :dest))))))
+        (drop-block state agent)
         (move-path state agent)))))
 
 (defn setup []
