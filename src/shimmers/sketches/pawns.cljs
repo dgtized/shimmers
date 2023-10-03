@@ -111,7 +111,7 @@
 
 (defn move-path
   [{:keys [grid] :as state}
-   {:keys [pos dest id] :as agent}]
+   {:keys [id pos dest] :as agent}]
   (let [pos' (first (seq (:path agent)))]
     (if pos'
       (if (passable? grid pos')
@@ -126,6 +126,24 @@
           state))
       (assoc-in state [:agents id :path]
                 (rest (butlast (search-path grid pos dest)))))))
+
+(defn pickup-block
+  [{:keys [grid] :as state}
+   {:keys [id pos dest]}]
+  (println [pos dest (get-in state [:grid dest])])
+  (if (> (get-in state [:grid dest :block :items]) 0)
+    (-> state
+        (update-in [:grid dest :block :items] dec)
+        (update-in [:agents id]
+                   (fn [agent] (-> agent
+                                  (assoc :mode :carrying)
+                                  (update :items (fnil inc 0))
+                                  (assoc :dest
+                                         (find-closest grid pos :target))))))
+    (update-in state [:agents id]
+               (fn [agent] (-> agent
+                              (assoc :mode :start)
+                              (dissoc :dest))))))
 
 ;; should only recompute search-path if next step is invalid
 ;; also need to update path better so it shows you can't go through blocks
@@ -142,21 +160,7 @@
         state)
       :moving
       (if (neighbor? pos dest)
-        (do
-          (println [pos dest (get-in state [:grid dest])])
-          (if (> (get-in state [:grid dest :block :items]) 0)
-            (-> state
-                (update-in [:grid dest :block :items] dec)
-                (update-in [:agents id]
-                           (fn [agent] (-> agent
-                                          (assoc :mode :carrying)
-                                          (update :items (fnil inc 0))
-                                          (assoc :dest
-                                                 (find-closest grid pos :target))))))
-            (update-in state [:agents id]
-                       (fn [agent] (-> agent
-                                      (assoc :mode :start)
-                                      (dissoc :dest))))))
+        (pickup-block state agent)
         (move-path state agent))
 
       :carrying
