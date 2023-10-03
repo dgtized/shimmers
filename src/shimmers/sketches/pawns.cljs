@@ -137,13 +137,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  ;; (q/frame-rate 10)
   (init-state 30 20))
 
 (defn update-state [state]
   (-> state
       (update-agent 0)))
 
-(defn draw [{:keys [grid]}]
+(defn draw [{:keys [grid agents]}]
   (q/background 1.0)
   (q/no-fill)
   (q/ellipse-mode :radius)
@@ -160,6 +161,10 @@
               (do
                 (q/fill 0.6 0.5 0.5 1.0)
                 (cq/circle (+ x (/ cell-w 2)) (+ y (/ cell-h 2)) (* cell-w 0.4))
+                (when (= (:mode (nth agents (:agent cell))) :carrying)
+                  (q/fill 0.0)
+                  (q/rect (+ x (* 0.25 cell-w)) (+ y (* 0.25 cell-h))
+                          (* 0.5 cell-w) (* 0.5 cell-h)))
                 (q/no-fill))
               (> (get-in cell [:block :items] 0) 0)
               (do
