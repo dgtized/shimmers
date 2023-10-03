@@ -67,8 +67,13 @@
 
 (defn find-closest [grid from element]
   (when-let [positions (seq (keep (fn [[pos value]]
-                                    (when (>= (get-in value [element :items] -1) 0)
-                                      (gv/vec2 pos)))
+                                    (when-let [cell (element value)]
+                                      (case element
+                                        :target
+                                        (gv/vec2 pos)
+                                        :block
+                                        (when (> (get cell :items 0) 0)
+                                          (gv/vec2 pos)))))
                                   (dissoc grid :dims)))]
     (apply min-key (fn [p] (manhattan from p)) positions)))
 
@@ -101,14 +106,16 @@
                      :dest (find-closest grid pos :block)))
       :moving
       (if (= pos dest)
-        (-> state
-            (update-in [:grid pos :block :items] dec)
-            (update-in [:agents id]
-                       (fn [agent] (-> agent
-                                      (assoc :dest
-                                             (find-closest grid pos :target))
-                                      (assoc :mode :carrying)
-                                      (update :items (fnil inc 0))))))
+        (do
+          (println [pos (get-in state [:grid pos])])
+          (-> state
+              (update-in [:grid pos :block :items] dec)
+              (update-in [:agents id]
+                         (fn [agent] (-> agent
+                                        (assoc :dest
+                                               (find-closest grid pos :target))
+                                        (assoc :mode :carrying)
+                                        (update :items (fnil inc 0)))))))
         (let [path (rest (search-path grid pos dest))]
           (move state id (first path))))
 
