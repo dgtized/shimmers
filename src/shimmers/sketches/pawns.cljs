@@ -45,6 +45,13 @@
         :when (not= :missing (get grid pos :missing))]
     pos))
 
+(defn neighbor? [[ax ay] [bx by]]
+  (let [dx (Math/abs (- ax bx))
+        dy (Math/abs (- ay by))]
+    (or (and (= dx 1) (= dy 0))
+        (and (= dx 0) (= dy 1))
+        (and (= dx 1) (= dy 1)))))
+
 (comment
   (neighbors (make-grid 5 5) [2 2])
   (neighbors (make-grid 5 5) [0 0]))
@@ -102,7 +109,7 @@
         (move id (first path))
         (update-in [:agents id :path] rest))
     (assoc-in state [:agents id :path]
-              (rest (search-path grid pos dest)))))
+              (rest (butlast (search-path grid pos dest))))))
 
 ;; should only recompute search-path if next step is invalid
 ;; also need to update path better so it shows you can't go through blocks
@@ -118,11 +125,11 @@
                        :dest dest))
         state)
       :moving
-      (if (= pos dest)
+      (if (neighbor? pos dest)
         (do
-          (println [pos (get-in state [:grid pos])])
+          (println [pos dest (get-in state [:grid dest])])
           (-> state
-              (update-in [:grid pos :block :items] dec)
+              (update-in [:grid dest :block :items] dec)
               (update-in [:agents id]
                          (fn [agent] (-> agent
                                         (assoc :mode :carrying)
@@ -132,14 +139,16 @@
         (move-path state agent))
 
       :carrying
-      (if (= pos dest)
-        (-> state
-            (update-in [:grid pos :target :items] (fnil inc 0))
-            (update-in [:agents id]
-                       (fn [agent] (-> agent
-                                      (assoc :mode :start)
-                                      (update :items dec)
-                                      (dissoc :dest)))))
+      (if (neighbor? pos dest)
+        (do
+          (println [pos dest (get-in state [:grid dest])])
+          (-> state
+              (update-in [:grid dest :target :items] (fnil inc 0))
+              (update-in [:agents id]
+                         (fn [agent] (-> agent
+                                        (assoc :mode :start)
+                                        (update :items dec)
+                                        (dissoc :dest))))))
         (move-path state agent)))))
 
 (defn setup []
