@@ -9,6 +9,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -42,10 +43,9 @@
         :when (not (and (zero? i) (zero? j)))
         :let [pos [(+ x i) (+ y j)]]
         :when (not= :missing (get grid pos :missing))]
-    pos))
+    (gv/vec2 pos)))
 
 (comment
-  (init-state 5 5)
   (neighbors (make-grid 5 5) [2 2])
   (neighbors (make-grid 5 5) [0 0]))
 
@@ -66,21 +66,32 @@
   (apply + (tm/abs (tm/- (gv/vec2 p) (gv/vec2 from)))))
 
 (defn find-closest [grid from element]
-  (apply min-key (fn [p] (manhattan from p))
-         (keep (fn [[pos value]]
-                 (when (> (get-in value [element :items] 0) 0)
-                   (gv/vec2 pos)))
-               (dissoc grid :dims))))
+  (when-let [positions (seq (keep (fn [[pos value]]
+                                    (when (> (get-in value [element :items] 0) 0)
+                                      (gv/vec2 pos)))
+                                  (dissoc grid :dims)))]
+    (apply min-key (fn [p] (manhattan from p)) positions)))
+
+(defn backtrack [current path]
+  (cons current
+        (lazy-seq (when-let [parent (get path current)]
+                    (backtrack parent path)))))
 
 (defn search-path [grid start dest]
-  (la/astar-path (lg/fly-graph :start start
-                               :successors (fn [loc] (neighbors grid loc))
-                               :predecessors (fn [loc] (neighbors grid loc))
-                               :weight (fn [_l1 _l2] 1))
-                 start dest manhattan))
+  (when-let [path (la/astar-path (lg/fly-graph :start start
+                                               :successors (fn [loc] (neighbors grid loc))
+                                               :predecessors (fn [loc] (neighbors grid loc))
+                                               :weight (fn [_l1 _l2] 1))
+                                 start dest g/dist)]
+    (reverse (backtrack dest path))))
+
+(comment
+  (find-closest (:grid (init-state 5 5)) [1 1] :block)
+  (search-path (:grid (init-state 5 5)) [0 0] [4 4]))
 
 (defn update-agent [{:keys [grid] :as state} id]
-  (let [{:keys [pos dest mode]} (get-in state [:agents id])]
+  (let [{:keys [pos dest mode] :as agent} (get-in state [:agents id])]
+    (println agent)
     (case mode
       :start
       (-> state
@@ -93,7 +104,7 @@
                                                      (assoc :dest
                                                             (find-closest grid pos :target))
                                                      (assoc :mode :carrying))))
-        (let [path (search-path grid pos dest)]
+        (let [path (rest (search-path grid pos dest))]
           (move state id (first path))))
 
       :carrying
@@ -101,7 +112,7 @@
         (update-in state [:agents id] (fn [agent] (-> agent
                                                      (dissoc :dest)
                                                      (assoc :mode :start))))
-        (let [path (search-path grid pos dest)]
+        (let [path (rest (search-path grid pos dest))]
           (move state id (first path)))))))
 
 (defn setup []
@@ -110,9 +121,7 @@
 
 (defn update-state [state]
   (-> state
-      ;; (update-agent 0)
-      )
-  )
+      (update-agent 0)))
 
 (defn draw [{:keys [grid]}]
   (q/background 1.0)
