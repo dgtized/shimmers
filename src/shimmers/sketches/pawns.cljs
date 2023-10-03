@@ -24,7 +24,9 @@
   {:pos pos :id id :mode :start})
 
 (defn init-state [cols rows]
-  (let [agents [(make-agent [15 10] 0)]]
+  (let [agents [(make-agent [15 6] 0)
+                (make-agent [15 10] 1)
+                (make-agent [15 14] 2)]]
     {:agents agents
      :grid (as-> (make-grid cols rows) grid
              (reduce (fn [g {:keys [id pos]}] (assoc-in g [pos :agent] id))
@@ -51,6 +53,12 @@
     (or (and (= dx 1) (= dy 0))
         (and (= dx 0) (= dy 1))
         (and (= dx 1) (= dy 1)))))
+
+(defn passable? [grid pos]
+  (let [cell (get-in grid [pos])]
+    (not (or (:target cell)
+             (and (:block cell) (> (:items (:block cell)) 0))
+             (:agent cell)))))
 
 (comment
   (neighbors (make-grid 5 5) [2 2])
@@ -104,12 +112,20 @@
 (defn move-path
   [{:keys [grid] :as state}
    {:keys [pos dest id] :as agent}]
-  (if-let [path (seq (:path agent))]
-    (-> state
-        (move id (first path))
-        (update-in [:agents id :path] rest))
-    (assoc-in state [:agents id :path]
-              (rest (butlast (search-path grid pos dest))))))
+  (let [pos' (first (seq (:path agent)))]
+    (if pos'
+      (if (passable? grid pos')
+        (-> state
+            (move id pos')
+            (update-in [:agents id :path] rest))
+        (if-let [sidesteps (seq (keep (fn [p] (when (passable? grid p) p))
+                                      (neighbors grid pos)))]
+          (-> state
+              (move id (dr/rand-nth sidesteps))
+              (update-in [:agents id] dissoc :path))
+          state))
+      (assoc-in state [:agents id :path]
+                (rest (butlast (search-path grid pos dest)))))))
 
 ;; should only recompute search-path if next step is invalid
 ;; also need to update path better so it shows you can't go through blocks
@@ -128,14 +144,19 @@
       (if (neighbor? pos dest)
         (do
           (println [pos dest (get-in state [:grid dest])])
-          (-> state
-              (update-in [:grid dest :block :items] dec)
-              (update-in [:agents id]
-                         (fn [agent] (-> agent
-                                        (assoc :mode :carrying)
-                                        (update :items (fnil inc 0))
-                                        (assoc :dest
-                                               (find-closest grid pos :target)))))))
+          (if (> (get-in state [:grid dest :block :items]) 0)
+            (-> state
+                (update-in [:grid dest :block :items] dec)
+                (update-in [:agents id]
+                           (fn [agent] (-> agent
+                                          (assoc :mode :carrying)
+                                          (update :items (fnil inc 0))
+                                          (assoc :dest
+                                                 (find-closest grid pos :target))))))
+            (update-in state [:agents id]
+                       (fn [agent] (-> agent
+                                      (assoc :mode :start)
+                                      (dissoc :dest))))))
         (move-path state agent))
 
       :carrying
@@ -156,9 +177,8 @@
   ;; (q/frame-rate 10)
   (init-state 30 20))
 
-(defn update-state [state]
-  (-> state
-      (update-agent 0)))
+(defn update-state [{:keys [agents] :as state}]
+  (reduce update-agent state (range (count agents))))
 
 (defn draw [{:keys [grid agents]}]
   (q/background 1.0)
