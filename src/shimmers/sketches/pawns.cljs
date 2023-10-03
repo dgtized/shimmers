@@ -100,10 +100,12 @@
     ;; (println agent)
     (case mode
       :start
-      (-> state
-          (update-in [:agents id] assoc
-                     :mode :moving
-                     :dest (find-closest grid pos :block)))
+      (if-let [dest (find-closest grid pos :block)]
+        (-> state
+            (update-in [:agents id] assoc
+                       :mode :moving
+                       :dest dest))
+        state)
       :moving
       (if (= pos dest)
         (do
