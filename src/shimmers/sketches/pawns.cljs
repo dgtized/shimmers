@@ -130,7 +130,6 @@
 (defn pickup-block
   [{:keys [grid] :as state}
    {:keys [id pos dest]}]
-  (println [pos dest (get-in state [:grid dest])])
   (if (> (get-in state [:grid dest :block :items]) 0)
     (-> state
         (update-in [:grid dest :block :items] dec)
@@ -146,8 +145,7 @@
                               (dissoc :dest))))))
 
 (defn drop-block
-  [state {:keys [id pos dest]}]
-  (println [pos dest (get-in state [:grid dest])])
+  [state {:keys [id dest]}]
   (-> state
       (update-in [:grid dest :target :items] (fnil inc 0))
       (update-in [:agents id]
@@ -160,7 +158,6 @@
 ;; also need to update path better so it shows you can't go through blocks
 (defn update-agent [{:keys [grid] :as state} id]
   (let [{:keys [pos dest mode] :as agent} (get-in state [:agents id])]
-    ;; (println agent)
     (case mode
       :start
       (if-let [dest (find-closest grid pos :block)]
