@@ -124,6 +124,7 @@
    shimmers.sketches.misplaced-connections
    shimmers.sketches.minimum-spanning-tree
    shimmers.sketches.morse-patterns
+   shimmers.sketches.mosaic-deformed
    shimmers.sketches.mosaic-tiling
    shimmers.sketches.motif-shapes
    shimmers.sketches.motion-control
