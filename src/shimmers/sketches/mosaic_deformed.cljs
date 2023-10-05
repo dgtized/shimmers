@@ -2,14 +2,15 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.polygon :as gp]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 900)
 (def height 600)
@@ -25,8 +26,14 @@
       (tm/+ p (v/polar displace (* eq/TAU noise))))))
 
 (defn shapes [seed]
-  (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.025) (* 0.025 radius (+ 1 r))))))
-        (dr/gaussian-range 0.1 0.005)))
+  (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.025) (* 0.025 radius (+ 1 r))))))
+                    (dr/gaussian-range 0.1 0.005))]
+    (into rings
+          (map (fn [[r0 r1]]
+                 (let [n (dr/random-int 32 64)]
+                   (gp/polygon2 (for [t (range (inc n))]
+                                  (g/point-at (if (odd? t) r0 r1) (/ (float t) n))))))
+               (partition 2 1 rings)))))
 
 (defn scene [seed]
   (csvg/svg-timed
