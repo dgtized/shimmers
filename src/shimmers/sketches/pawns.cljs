@@ -184,6 +184,14 @@
 (defn update-state [{:keys [agents] :as state}]
   (reduce update-agent state (range (count agents))))
 
+(defn draw-count [items x y cell-w cell-h]
+  (let [s (str items)
+        tw (q/text-width s)
+        th (+ (* 0.66 (q/text-ascent)) (q/text-descent))]
+    (q/text s
+            (+ x (/ (- cell-w tw) 2)) (+ y (/ (- cell-h th) 2))
+            (+ x cell-w) (+ y cell-h))))
+
 (defn draw [{:keys [grid agents]}]
   (q/background 1.0)
   (q/no-fill)
@@ -214,12 +222,7 @@
                 (let [items (get-in cell [:block :items] 0)]
                   (when (> items 0)
                     (q/fill 0.0)
-                    (let [s (str items)
-                          tw (q/text-width s)
-                          th (+ (* 0.66 (q/text-ascent)) (q/text-descent))]
-                      (q/text s
-                              (+ x (/ (- cell-w tw) 2)) (+ y (/ (- cell-h th) 2))
-                              (+ x cell-w) (+ y cell-h)))
+                    (draw-count items x y cell-w cell-h)
                     (q/no-fill)))
                 (q/stroke-weight 1.0))
               (> (get-in cell [:block :items] 0) 0)
@@ -227,6 +230,11 @@
                 (q/fill 0.0)
                 (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
                         (* 0.8 cell-w) (* 0.8 cell-h))
+                (let [items (get-in cell [:block :items] 0)]
+                  (when (> items 0)
+                    (q/fill 1.0)
+                    (draw-count items x y cell-w cell-h)
+                    (q/no-fill)))
                 (q/no-fill)))))))
 
 (defn page []
