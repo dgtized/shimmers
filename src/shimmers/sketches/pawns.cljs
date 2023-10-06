@@ -62,8 +62,7 @@
 
 (defn passable? [grid pos]
   (let [cell (get-in grid [pos])]
-    (not (or (:target cell)
-             (and (:block cell) (> (:items (:block cell)) 0))
+    (not (or (and (:block cell) (> (:items (:block cell)) 0))
              (:agent cell)))))
 
 (comment
@@ -87,7 +86,8 @@
                                         :target
                                         (gv/vec2 pos)
                                         :block
-                                        (when (> (get cell :items 0) 0)
+                                        (when (and (not (:target value))
+                                                   (> (get cell :items 0) 0))
                                           (gv/vec2 pos)))))
                                   (dissoc grid :dims)))]
     (apply min-key (fn [p] (manhattan from p)) positions)))
@@ -147,7 +147,7 @@
 (defn drop-block
   [state {:keys [id dest]}]
   (-> state
-      (update-in [:grid dest :target :items] (fnil inc 0))
+      (update-in [:grid dest :block :items] (fnil inc 0))
       (update-in [:agents id]
                  (fn [agent] (-> agent
                                 (assoc :mode :start)
@@ -206,18 +206,12 @@
                   (q/rect (+ x (* 0.25 cell-w)) (+ y (* 0.25 cell-h))
                           (* 0.5 cell-w) (* 0.5 cell-h)))
                 (q/no-fill))
-              (> (get-in cell [:block :items] 0) 0)
-              (do
-                (q/fill 0.0)
-                (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
-                        (* 0.8 cell-w) (* 0.8 cell-h))
-                (q/no-fill))
               (:target cell)
               (do
                 (q/stroke-weight 1.5)
                 (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
                         (* 0.8 cell-w) (* 0.8 cell-h))
-                (let [items (get-in cell [:target :items] 0)]
+                (let [items (get-in cell [:block :items] 0)]
                   (when (> items 0)
                     (q/fill 0.0)
                     (let [s (str items)
@@ -227,7 +221,13 @@
                               (+ x (/ (- cell-w tw) 2)) (+ y (/ (- cell-h th) 2))
                               (+ x cell-w) (+ y cell-h)))
                     (q/no-fill)))
-                (q/stroke-weight 1.0)))))))
+                (q/stroke-weight 1.0))
+              (> (get-in cell [:block :items] 0) 0)
+              (do
+                (q/fill 0.0)
+                (q/rect (+ x (* 0.1 cell-w)) (+ y (* 0.1 cell-h))
+                        (* 0.8 cell-w) (* 0.8 cell-h))
+                (q/no-fill)))))))
 
 (defn page []
   [:div
