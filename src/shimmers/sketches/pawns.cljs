@@ -70,12 +70,6 @@
   (neighbors (make-grid 5 5) [2 2])
   (neighbors (make-grid 5 5) [0 0]))
 
-(defn assign-target [state pos]
-  (assoc-in state [:grid pos :target] {:items 0}))
-
-(defn assign-block [state pos]
-  (assoc-in state [:grid pos :block] {:items 1}))
-
 (defn move [{:keys [agents] :as state} id dest]
   (let [pos (get-in agents [id :pos])]
     (-> state
