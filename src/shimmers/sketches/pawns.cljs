@@ -29,6 +29,11 @@
           grid (repeatedly 64 (fn [] [(dr/random-int ( * 3 (/ cols 4)) (dec cols))
                                      (dr/random-int 1 (dec rows))]))))
 
+(defn add-targets [grid targets]
+  (reduce (fn [g pos]
+            (assoc-in g [pos :target] {:items 0}))
+          grid targets))
+
 (defn init-state [cols rows]
   (let [agents [(make-agent [15 6] 0)
                 (make-agent [15 10] 1)
@@ -37,9 +42,7 @@
      :grid (as-> (make-grid cols rows) grid
              (reduce (fn [g {:keys [id pos]}] (assoc-in g [pos :agent] id))
                      grid agents)
-             (reduce (fn [g pos]
-                       (assoc-in g [pos :target] {:items 0}))
-                     grid (for [k (range 6 16 2)] [1 k]))
+             (add-targets grid (for [k (range 6 16 2)] [1 k]))
              (add-blocks grid cols rows))}))
 
 (defn neighbors [grid [x y]]
