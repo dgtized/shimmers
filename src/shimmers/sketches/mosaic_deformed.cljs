@@ -48,7 +48,9 @@
                                                (/ (float t) n))))
                     assoc :stroke-width
                     (dr/weighted {0.25 4 0.5 6 0.75 4 1.0 2 1.5 1})
-                    :fill (csvg/hsl (+ base (dr/random 0.12))
+                    :fill (csvg/hsl ((dr/weighted
+                                      [[(fn [] (+ base (dr/random 0.12))) 4.0]
+                                       [(fn [] (+ base 0.5 (dr/random 0.06))) 1.0]]))
                                     (dr/random 0.5 0.8)
                                     (tm/clamp01 (dr/gaussian 0.85 0.12))))))
                (map-indexed vector (partition 2 1 rings))))))
