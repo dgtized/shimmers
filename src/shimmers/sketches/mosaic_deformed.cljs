@@ -33,7 +33,6 @@
     [(fn [t] (and (< (mod t 6) 4) (odd? t))) 1]
     [(fn [t] (and (< (mod t 5) 3) (odd? t))) 1]]))
 
-;; TODO make n triangles proportional to ring size
 (defn shapes [seed]
   (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
                     (dr/gaussian-range 0.1 0.005))]
@@ -42,9 +41,12 @@
                  (let [n (int (* (dr/random-int 6 36)
                                  (+ 1 (* 4 (/ (float i) (count rings))))))
                        inner? (ring-pattern)]
-                   (gp/polygon2 (for [t (range (inc n))]
-                                  (g/point-at (if (inner? t) r0 r1)
-                                              (/ (float t) n))))))
+                   (vary-meta
+                    (gp/polygon2 (for [t (range (inc n))]
+                                   (g/point-at (if (inner? t) r0 r1)
+                                               (/ (float t) n))))
+                    assoc :stroke-width
+                    (dr/weighted {0.25 2 0.5 3 0.75 2 1.0 1 1.5 1}))))
                (map-indexed vector (partition 2 1 rings))))))
 
 (defn scene [seed]
