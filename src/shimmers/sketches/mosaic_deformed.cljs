@@ -30,12 +30,12 @@
   (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
                     (dr/gaussian-range 0.1 0.005))]
     (into rings
-          (map (fn [[r0 r1]]
-                 (let [n (dr/random-int 32 96)]
+          (map (fn [[i [r0 r1]]]
+                 (let [n (int (* (dr/random-int 12 36) (+ 1 (* 3 (/ i (count rings))))))]
                    (gp/polygon2 (for [t (range (inc n))]
                                   (g/point-at (if (odd? t) r0 r1)
                                               (/ (float t) n))))))
-               (partition 2 1 rings)))))
+               (map-indexed vector (partition 2 1 rings))))))
 
 (defn scene [seed]
   (csvg/svg-timed
