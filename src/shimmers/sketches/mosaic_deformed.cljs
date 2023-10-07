@@ -35,7 +35,8 @@
 
 (defn shapes [seed]
   (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
-                    (dr/gaussian-range 0.1 0.005))]
+                    (dr/gaussian-range 0.1 0.005))
+        base (dr/random)]
     (into rings
           (map (fn [[i [r0 r1]]]
                  (let [n (int (* (dr/random-int 6 36)
@@ -46,7 +47,10 @@
                                    (g/point-at (if (inner? t) r0 r1)
                                                (/ (float t) n))))
                     assoc :stroke-width
-                    (dr/weighted {0.25 2 0.5 3 0.75 2 1.0 1 1.5 1}))))
+                    (dr/weighted {0.25 4 0.5 6 0.75 4 1.0 2 1.5 1})
+                    :fill (csvg/hsl (+ base (dr/random 0.12))
+                                    (dr/random 0.5 0.8)
+                                    (tm/clamp01 (dr/gaussian 0.85 0.12))))))
                (map-indexed vector (partition 2 1 rings))))))
 
 (defn scene [seed]
@@ -57,7 +61,7 @@
      :fill "none"
      :stroke-width 0.5}
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (shapes seed))))
+      (reverse (shapes seed)))))
 
 (defn page []
   (let [seed (gv/vec2 (dr/random 100) (dr/random 100))]
