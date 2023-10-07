@@ -33,9 +33,12 @@
           (map (fn [[i [r0 r1]]]
                  (let [n (int (* (dr/random-int 6 36)
                                  (+ 1 (* 4 (/ (float i) (count rings))))))
-                       inner? (dr/weighted [[odd? 2]
-                                            [(fn [t] (> (mod t 3) 0)) 1]
-                                            [(fn [t] (> (mod t 4) 1)) 2]])]
+                       inner?
+                       (dr/weighted [[odd? 2]
+                                     [(fn [t] (> (mod t 3) 0)) 1]
+                                     [(fn [t] (> (mod t 4) 1)) 2]
+                                     [(fn [t] (and (< (mod t 6) 4) (odd? t))) 1]
+                                     [(fn [t] (and (< (mod t 5) 3) (odd? t))) 1]])]
                    (gp/polygon2 (for [t (range (inc n))]
                                   (g/point-at (if (inner? t) r0 r1)
                                               (/ (float t) n))))))
