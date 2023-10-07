@@ -22,7 +22,7 @@
 (defn ring [seed r displace]
   (for [t (dr/gaussian-range 0.01 0.01)]
     (let [p (v/polar (* radius r ) (* t eq/TAU))
-          noise (dr/noise-at-point-01 seed 0.003 p)]
+          noise (dr/noise-at-point-01 seed 0.0035 p)]
       (tm/+ p (v/polar displace (* eq/TAU noise))))))
 
 ;; TODO make n triangles proportional to ring size
