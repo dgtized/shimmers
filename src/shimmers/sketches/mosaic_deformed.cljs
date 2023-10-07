@@ -31,7 +31,8 @@
                     (dr/gaussian-range 0.1 0.005))]
     (into rings
           (map (fn [[i [r0 r1]]]
-                 (let [n (int (* (dr/random-int 12 36) (+ 1 (* 3 (/ i (count rings))))))]
+                 (let [n (int (* (dr/random-int 6 36)
+                                 (+ 1 (* 4 (/ (float i) (count rings))))))]
                    (gp/polygon2 (for [t (range (inc n))]
                                   (g/point-at (if (odd? t) r0 r1)
                                               (/ (float t) n))))))
