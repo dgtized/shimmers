@@ -37,23 +37,25 @@
   (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
                     (dr/gaussian-range 0.1 0.005))
         base (dr/random)]
-    (into rings
-          (map (fn [[i [r0 r1]]]
-                 (let [n (int (* (dr/random-int 6 36)
-                                 (+ 1 (* 4 (/ (float i) (count rings))))))
-                       inner? (ring-pattern)]
-                   (vary-meta
-                    (gp/polygon2 (for [t (range (inc n))]
-                                   (g/point-at (if (inner? t) r0 r1)
-                                               (/ (float t) n))))
-                    assoc :stroke-width
-                    (dr/weighted {0.25 4 0.5 6 0.75 4 1.0 2 1.5 1})
-                    :fill (csvg/hsl ((dr/weighted
-                                      [[(fn [] (+ base (dr/random 0.12))) 4.0]
-                                       [(fn [] (+ base 0.5 (dr/random 0.06))) 1.0]]))
-                                    (dr/random 0.5 0.8)
-                                    (tm/clamp01 (dr/gaussian 0.85 0.12))))))
-               (map-indexed vector (partition 2 1 rings))))))
+    (->> rings
+         (partition 2 1)
+         (map-indexed vector)
+         (map (fn [[i [r0 r1]]]
+                (let [n (int (* (dr/random-int 6 36)
+                                (+ 1 (* 4 (/ (float i) (count rings))))))
+                      inner? (ring-pattern)]
+                  (vary-meta
+                   (gp/polygon2 (for [t (range (inc n))]
+                                  (g/point-at (if (inner? t) r0 r1)
+                                              (/ (float t) n))))
+                   assoc :stroke-width
+                   (dr/weighted {0.25 4 0.5 6 0.75 4 1.0 2 1.5 1})
+                   :fill (csvg/hsl ((dr/weighted
+                                     [[(fn [] (+ base (dr/random 0.12))) 4.0]
+                                      [(fn [] (+ base 0.5 (dr/random 0.06))) 1.0]]))
+                                   (dr/random 0.5 0.8)
+                                   (tm/clamp01 (dr/gaussian 0.85 0.12)))))))
+         (into rings))))
 
 (defn scene [seed]
   (csvg/svg-timed
