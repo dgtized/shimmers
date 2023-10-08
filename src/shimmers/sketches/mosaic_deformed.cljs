@@ -42,7 +42,7 @@
 
 (defn shapes [seed]
   (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
-                    (dr/gaussian-range 0.1 0.005))
+                    (dr/gaussian-range 0.075 0.02))
         base (dr/random)]
     (->> rings
          (partition 2 1)
