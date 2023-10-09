@@ -17,11 +17,9 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(def radius (* 0.45 height))
-
 (defn ring [seed r displace]
   (for [t (dr/gaussian-range 0.01 0.01)]
-    (let [p (v/polar (* radius r ) (* t eq/TAU))
+    (let [p (v/polar r (* t eq/TAU))
           noise (dr/noise-at-point-01 seed 0.0035 p)]
       (tm/+ p (v/polar displace (* eq/TAU noise))))))
 
@@ -41,7 +39,10 @@
             (tm/clamp01 (dr/gaussian 0.85 0.12))))
 
 (defn shapes [seed]
-  (let [rings (mapv (fn [r] (gp/polygon2 (vec (ring seed (- r 0.05) (* 0.025 radius (+ 1 r))))))
+  (let [radius (* 0.45 height)
+        rings (mapv (fn [r] (gp/polygon2 (ring seed
+                                              (* radius (- r 0.05))
+                                              (* radius 0.025 (+ 1 r)))))
                     (dr/gaussian-range 0.075 0.02))
         base (dr/random)]
     (->> rings
