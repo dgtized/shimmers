@@ -38,8 +38,8 @@
             (dr/random 0.5 0.8)
             (tm/clamp01 (dr/gaussian 0.85 0.12))))
 
-(defn shapes [seed]
-  (let [radius (* 0.45 height)
+(defn shapes [[width height] seed]
+  (let [radius (* 0.45 (min width height))
         rings (mapv (fn [r] (gp/polygon2 (ring seed
                                               (* radius (- r 0.05))
                                               (* radius 0.025 (+ 1 r)))))
@@ -69,7 +69,7 @@
      :fill "none"
      :stroke-width 0.5}
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (reverse (shapes seed)))))
+      (reverse (shapes [width height] seed)))))
 
 (defn page []
   (let [seed (gv/vec2 (dr/random 100) (dr/random 100))]
