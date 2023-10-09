@@ -69,6 +69,29 @@
                      (tm/+ seed pos)
                      base-color))))
 
+(defn layout [seed base-color]
+  (case (dr/weighted {:pair-left 1
+                      :pair-right 1
+                      :solo 1})
+    :pair-left
+    [(mosaic seed [(* 0.75 width) (* 0.50 height)]
+             (rv 0.3 0.25) base-color)
+     (mosaic seed [(* 0.75 width) (* 0.50 height)]
+             (rv 0.3 0.75) base-color)
+     (mosaic seed [(* 0.8 width) (* 0.8 height)]
+             (rv 0.7 (+ 0.45 (dr/random 0.1))) base-color)]
+    :pair-right
+    [(mosaic seed [(* 0.75 width) (* 0.50 height)]
+             (rv 0.7 0.25) base-color)
+     (mosaic seed [(* 0.75 width) (* 0.50 height)]
+             (rv 0.7 0.75) base-color)
+     (mosaic seed [(* 0.8 width) (* 0.8 height)]
+             (rv 0.3 (+ 0.45 (dr/random 0.1))) base-color)]
+    :solo
+    (mosaic seed [width height]
+            (rv (dr/random 0.4 0.6) (dr/random 0.45 0.55))
+            base-color)))
+
 (defn scene [seed base-color]
   (csvg/svg-timed
     {:width width
@@ -76,12 +99,7 @@
      :stroke "black"
      :fill "none"
      :stroke-width 0.5}
-    (mosaic seed [(* 0.75 width) (* 0.50 height)]
-            (rv 0.3 0.25) base-color)
-    (mosaic seed [(* 0.75 width) (* 0.50 height)]
-            (rv 0.3 0.75) base-color)
-    (mosaic seed [(* 0.8 width) (* 0.8 height)]
-            (rv 0.7 (+ 0.45 (dr/random 0.1))) base-color)))
+    (layout seed base-color)))
 
 (defn page []
   (let [seed (gv/vec2 (dr/random 100) (dr/random 100))
