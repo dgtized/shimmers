@@ -38,13 +38,15 @@
             (dr/random 0.5 0.8)
             (tm/clamp01 (dr/gaussian 0.85 0.12))))
 
-(defn shapes [[width height] seed]
+(defn shapes [[width height] seed base-color]
   (let [radius (* 0.45 (min width height))
-        rings (mapv (fn [r] (gp/polygon2 (ring seed
-                                              (* radius (- r 0.05))
-                                              (* radius 0.025 (+ 1 r)))))
-                    (dr/gaussian-range 0.075 0.02))
-        base (dr/random)]
+        rings (mapv (fn [r]
+                      (vary-meta
+                       (gp/polygon2 (ring seed
+                                          (* radius (- r 0.05))
+                                          (* radius 0.025 (+ 1 r))))
+                       assoc :fill "none"))
+                    (dr/gaussian-range 0.075 0.02))]
     (->> rings
          (partition 2 1)
          (map-indexed vector)
@@ -58,7 +60,7 @@
                                               (/ (float t) n))))
                    assoc :stroke-width
                    (dr/weighted {0.25 4 0.5 6 0.75 4 1.0 2 1.5 1})
-                   :fill (fill-color base)))))
+                   :fill (fill-color base-color)))))
          (into rings))))
 
 (defn scene [seed]
@@ -69,7 +71,7 @@
      :fill "none"
      :stroke-width 0.5}
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (reverse (shapes [width height] seed)))))
+      (reverse (shapes [width height] seed (dr/random))))))
 
 (defn page []
   (let [seed (gv/vec2 (dr/random 100) (dr/random 100))]
