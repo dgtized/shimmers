@@ -63,21 +63,32 @@
                    :fill (fill-color base-color)))))
          (into rings))))
 
-(defn scene [seed]
+(defn mosaic [seed dims pos base-color]
+  (csvg/group {:transform (csvg/translate pos)}
+    (reverse (shapes dims
+                     (tm/+ seed pos)
+                     base-color))))
+
+(defn scene [seed base-color]
   (csvg/svg-timed
     {:width width
      :height height
      :stroke "black"
      :fill "none"
      :stroke-width 0.5}
-    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (reverse (shapes [width height] seed (dr/random))))))
+    (mosaic seed [(* 0.75 width) (* 0.50 height)]
+            (rv 0.3 0.25) base-color)
+    (mosaic seed [(* 0.75 width) (* 0.50 height)]
+            (rv 0.3 0.75) base-color)
+    (mosaic seed [(* 0.8 width) (* 0.8 height)]
+            (rv 0.7 (+ 0.45 (dr/random 0.1))) base-color)))
 
 (defn page []
-  (let [seed (gv/vec2 (dr/random 100) (dr/random 100))]
+  (let [seed (gv/vec2 (dr/random 100) (dr/random 100))
+        base-color (dr/random)]
     (fn []
       [sketch/with-explanation
-       [:div.canvas-frame [scene seed]]
+       [:div.canvas-frame [scene seed base-color]]
        [:div.flexcols
         [view-sketch/generate :mosaic-deformed]]])))
 
