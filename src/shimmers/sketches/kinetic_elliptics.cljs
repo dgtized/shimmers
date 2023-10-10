@@ -52,6 +52,28 @@
        (q/stroke-weight 0.2)
        (cq/circle x y r))}))
 
+(defn smooth-stepper [steps e0 e1 t]
+  (let [t' (/ t steps)]
+    (* steps (+ (Math/floor t')
+                (tm/smoothstep* e0 e1 (- t' (Math/floor t')))))))
+
+(comment
+  (map (fn [t] (smooth-stepper (/ 6 2) 0.33 0.66 t))
+       (range 0 10 0.1)))
+
+(defn clock-behavior [r period steps phase]
+  (let [dtheta (/ eq/TAU period)]
+    {:pos
+     (fn [{:keys [position]} t]
+       (let [t' (smooth-stepper (/ period steps) 0.33 0.66 t)]
+         (v/+polar position r (+ (* dtheta t') phase))))
+     :draw
+     (fn [pos _element _t]
+       (q/no-fill)
+       (q/stroke-weight 0.66)
+       (doseq [t (range 0 1 (/ 1.0 steps))]
+         (cq/circle (v/+polar pos r (+ (* eq/TAU t) phase)) 1.0)))}))
+
 (defn orbit-r-behavior [base-r repeats period phase]
   (let [dtheta (/ eq/TAU period)]
     {:pos
@@ -121,6 +143,12 @@
      [(fn [] (relative-angle radial-length
                             (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
                                Math/PI)))
+      1.0]
+     [(fn [] (clock-behavior radial-length
+                            (* (dr/weighted {-1 1 1 1})
+                               (random-period))
+                            (dr/random-int 2 32)
+                            (dr/random-tau)))
       1.0]
      [(fn [] (orbit-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
