@@ -274,7 +274,9 @@
     angle, orbiting or swinging on a pendulum between two random angles from
     it's parent. Angles can be either relative to the parent or locked to screen
     coordinates. Orbital and pendulum radial length is usually fixed, but a
-    small percentage oscillate."]
+    small percentage oscillate. For some transitions, it acts like a clock,
+    easing from a steady state to the next for a fixed number of steps per
+    period of rotation."]
     [:p "Each frame of animation renders the current position at
     time " [:code "t"] ", as well as it's future positions
     at " [:code "t+0.025"] ", " [:code "t+0.05"] ", and " [:code "t+0.075"] " in
