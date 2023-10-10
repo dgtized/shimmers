@@ -132,10 +132,10 @@
 
 (defrecord Element [behavior color children])
 
-(defn random-period []
-  (dr/random 6 30))
+(defn random-period [depth]
+  (* (Math/pow 1.1 depth)(dr/random 6 30)))
 
-(defn random-behavior [radial-length]
+(defn random-behavior [radial-length depth]
   ((dr/weighted
     [[(fn [] (fixed-angle radial-length
                          (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
@@ -146,45 +146,45 @@
       1.0]
      [(fn [] (clock-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
-                               (* 1.5 (random-period)))
+                               (* 1.5 (random-period depth)))
                             (dr/random-int 2 32)
                             (dr/random-tau)))
       1.0]
      [(fn [] (orbit-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
-                               (random-period))
+                               (random-period depth))
                             (dr/random-tau)))
       3.0]
      [(fn [] (orbit-r-behavior (* radial-length (dr/random 0.2 1.2))
                               (dr/random-int 1 8)
                               (* (dr/weighted {-1 1 1 1})
-                                 (random-period))
+                                 (random-period depth))
                               (dr/random-tau)))
       1.5]
      [(fn [] (pendulum-behavior
              radial-length
              (dr/random-tau) (dr/random-tau)
-             (random-period)
+             (random-period depth)
              (dr/random-tau)))
       3.0]
      [(fn [] (pendulum-r-behavior
              radial-length
              (dr/random-int 1 8)
              (dr/random-tau) (dr/random-tau)
-             (random-period)
+             (random-period depth)
              (dr/random-tau)))
       1.0]
      [(fn [] (relative-pendulum-behavior
              radial-length
              (- (dr/random-tau)) (dr/random-tau)
-             (random-period)
+             (random-period depth)
              (dr/random-tau)))
       1.5]
      [(fn [] (relative-pendulum-r-behavior
              radial-length
              (dr/random-int 1 8)
              (- (dr/random-tau)) (dr/random-tau)
-             (random-period)
+             (random-period depth)
              (dr/random-tau)))
       1.0]])))
 
@@ -194,7 +194,7 @@
                          0.5
                          3.0)
                base-r)]
-    (->Element (random-behavior len)
+    (->Element (random-behavior len depth)
                [0.0 (/ 1.5 (inc depth))]
                [])))
 
