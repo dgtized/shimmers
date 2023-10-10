@@ -107,8 +107,17 @@
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene seed base-color]]
-       [:div.flexcols
-        [view-sketch/generate :mosaic-deformed]]])))
+       [view-sketch/generate :mosaic-deformed]
+       [:div.readable-width
+        [:p "Create concentric rings, deformed by simplex noise at each sample
+       point. From these initial rings, create polygons connecting each
+       consecutive pair of rings using different patterns. With an odd/even
+       pattern it creates a serrated triangle edged polygon, but some patterns
+       skip or bias towards one ring creating other outlines. Each of these
+       polygons is assigned a random color near a common hue. Occasionally, the
+       common hue is rotated 180 degrees around the color wheel to add some
+       accents. Each polygon is then drawn in reverse order, outside-in,
+       ensuring the fill overlaps the inside of the previous ringed polygon."]]])))
 
 (sketch/definition mosaic-deformed
   {:created-at "2023-10-04"
