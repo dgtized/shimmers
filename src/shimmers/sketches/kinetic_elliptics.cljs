@@ -146,7 +146,7 @@
       1.0]
      [(fn [] (clock-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
-                               (random-period))
+                               (* 1.5 (random-period)))
                             (dr/random-int 2 32)
                             (dr/random-tau)))
       1.0]
