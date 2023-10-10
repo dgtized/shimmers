@@ -238,13 +238,17 @@
                 (q/no-fill)))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   [:div.readable-width
+    [:p "Experimenting with motion planning for little agents with different
+    tasks. Currently only fetching some boxes from initial conditions and
+    bringing them to drop off locations."]]])
 
 (sketch/definition pawns
   {:created-at "2023-10-01"
