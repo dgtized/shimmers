@@ -18,7 +18,7 @@
 ;; 800/1.5 ~= 800x533
 ;; 600/1.5 ~= 600x400
 
-(defn frame [{[width height] :size :as rect} w h]
+(defn frame [{[width height] :size :as rect} [w h]]
   (let [ratio (/ w h)
         box (if (< (/ width ratio) height)
               (rect/rect 0 0 (gv/vec2 width (/ width ratio)))
@@ -26,10 +26,18 @@
     (vary-meta (g/center box (g/centroid rect))
                assoc :stroke (if (< (/ width ratio) height) "green" "red"))))
 
-(defn display-frame [box w h]
+(defn display-frame [box frame-ratio]
   (csvg/group {}
     (vary-meta box assoc :stroke "blue")
-    (frame box w h)))
+    (frame box frame-ratio)))
+
+(defn frame-ratio []
+  (dr/weighted {[3 2] 1
+                [4 3] 1
+                [2 1] 1
+                [1 2] 1
+                [2 3] 1
+                [1 1] 1}))
 
 (defn wall-layout [wall layout n]
   (case layout
@@ -37,12 +45,12 @@
     (let [row (rect/rect (g/unmap-point wall (gv/vec2 0.0 0.33))
                          (g/unmap-point wall (gv/vec2 1.0 0.66)))]
       (for [box (g/subdivide row {:cols n :rows 1})]
-        (display-frame box 3 2)))
+        (display-frame box (frame-ratio))))
     :column
     (let [row (rect/rect (g/unmap-point wall (gv/vec2 0.33 0.0))
                          (g/unmap-point wall (gv/vec2 0.66 1.0)))]
       (for [box (g/subdivide row {:cols 1 :rows n})]
-        (display-frame box 3 2)))))
+        (display-frame box (frame-ratio))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
