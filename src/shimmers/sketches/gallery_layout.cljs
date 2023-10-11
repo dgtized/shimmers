@@ -27,9 +27,10 @@
                assoc :stroke (if (< (/ width ratio) height) "green" "red"))))
 
 (defn display-frame [box frame-ratio]
-  (csvg/group {}
-    (vary-meta box assoc :stroke "blue")
-    (frame box frame-ratio)))
+  (let [picture (frame box frame-ratio)]
+    (csvg/group {}
+      (vary-meta box assoc :stroke "blue")
+      (with-meta (g/scale-size picture 0.9) (meta picture)))))
 
 (defn frame-ratio []
   (dr/weighted {[3 2] 1
