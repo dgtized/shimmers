@@ -53,6 +53,10 @@
       (for [box (g/subdivide row {:cols 1 :rows n})]
         (display-frame box (frame-ratio))))))
 
+;; TODO: instead of randomly generating frame-ratio, should give a pregenerated
+;; list of frame ratios to optimize for.
+;; TODO: handle 2x1+1 and 3x1+1 cases or 3x with random circular offsets
+;; TODO: handle vertical or horizontal displacements to break up varying sizes
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
