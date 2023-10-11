@@ -78,6 +78,7 @@
    shimmers.sketches.folding-triangles
    ;; shimmers.sketches.fluid
    shimmers.sketches.future-cities
+   shimmers.sketches.gallery-layout
    shimmers.sketches.garden-hose
    shimmers.sketches.geometry-examples
    shimmers.sketches.geometry-interactive
