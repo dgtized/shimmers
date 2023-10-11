@@ -63,8 +63,15 @@
      (dr/weighted {:row 1 :column 1})
      (dr/random-int 1 6))))
 
+(defn page []
+  [sketch/with-explanation
+   [:div.canvas-frame [scene]]
+   [:div.center [view-sketch/generate :gallery-layout]]
+   [:div.readable-width
+    [:p "Automatic placement of multiple \"frames\" with varying aspect ratios on a gallery wall."]]])
+
 (sketch/definition gallery-layout
   {:created-at "2023-10-11"
    :tags #{}
    :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :gallery-layout)))
+  (ctrl/mount page))
