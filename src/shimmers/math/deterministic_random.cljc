@@ -240,6 +240,10 @@
   (let [[x y] (tm/+ seed (tm/* p scale))]
     (+ 0.5 (noise/noise2 x y))))
 
+(defn noise-seed
+  ([] (noise-seed 100))
+  ([n] (gv/vec2 (random n) (random n))))
+
 (defn summary-stats [xs]
   (let [n (count xs)
         avg (/ (reduce + xs) n)

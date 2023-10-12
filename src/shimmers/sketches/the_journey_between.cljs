@@ -62,7 +62,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [seed (gv/vec2 (dr/random 100) (dr/random 100))
+  (let [seed (dr/noise-seed)
         grid-size {:cols 40 :rows 30}
         grid (build-grid seed grid-size)]
     ;; prevent right click contextmenu on the sketch canvas so can capture right

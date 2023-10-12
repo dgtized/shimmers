@@ -20,7 +20,7 @@
 
 (defn shapes []
   (let [bounds (g/scale-size (csvg/screen width height) 0.9)
-        seed (gv/vec2 (dr/random 100) (dr/random 100))
+        seed (dr/noise-seed)
         point-noise (fn [p] (tm/clamp (Math/pow (dr/noise-at-point seed 0.005 p) 2) 0.1 1.0))
         points (pds/generate-dynamic bounds 15 [6 160] point-noise)
         cells (delvor/voronoi-cells points bounds)]

@@ -20,7 +20,7 @@
   (let [[cols rows] [80 60]
         w (/ width cols)
         h (/ height rows)
-        seed (gv/vec2 (dr/random 100) (dr/random 100))]
+        seed (dr/noise-seed)]
     (for [j (range rows)
           i (range cols)]
       (vary-meta (rect/rect (* i w) (* j h) w h)

@@ -102,7 +102,7 @@
     (layout seed base-color)))
 
 (defn page []
-  (let [seed (gv/vec2 (dr/random 100) (dr/random 100))
+  (let [seed (dr/noise-seed)
         base-color (dr/random)]
     (fn []
       [sketch/with-explanation

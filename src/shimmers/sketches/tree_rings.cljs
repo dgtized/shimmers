@@ -31,7 +31,7 @@
 
 (defn shapes []
   (let [radius (int (/ height 2.1))
-        seed (gv/vec2 (dr/random 100) (dr/random 100))]
+        seed (dr/noise-seed)]
     (mapcat (fn [r]
               (ring seed
                     (* r radius)

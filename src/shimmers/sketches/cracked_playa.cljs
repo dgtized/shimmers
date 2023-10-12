@@ -26,7 +26,7 @@
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
   (let [bounds (rect/rect 0 0 width height)
-        seed (gv/vec2 (dr/random 100) (dr/random 100))
+        seed (dr/noise-seed)
         points (pds/generate-dynamic bounds 10 [8 64] (partial dr/noise-at-point seed 0.005))
         cells (delvor/voronoi-cells points bounds)]
     (->> cells
