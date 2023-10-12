@@ -264,6 +264,8 @@
 (comment
   (summary-stats (range 0 1 0.001))
   (summary-stats (repeatedly 10000 #(gaussian 2 0.2)))
+  [(summary-stats (repeatedly 10000 #(gaussian 0 0.5)))
+   (summary-stats (repeatedly 10000 #(abs (gaussian 0 0.5))))]
   (summary-stats (repeatedly 10000 #(noise/noise2 (random 1000) (random 1000))))
   (summary-stats (repeatedly 10000 #(noise-at-point (gv/vec2) 0.5 (noise-seed)))))
 
