@@ -45,6 +45,14 @@
    (fn [{:keys [position]} _t]
      (v/+polar position r global-angle))})
 
+(defn piston-fixed [base-r period phase global-angle]
+  {:pos
+   (fn [{:keys [position]} t]
+     (let [t' (smooth-stepper (/ period 2) 0.2 0.8 t)]
+       (v/+polar position
+                 (* base-r (+ 1 (* 0.5 (wave/triangle01 period (+ phase t')))))
+                 global-angle)))})
+
 (defn relative-angle [r rel-angle]
   {:pos
    (fn [{:keys [position] :as parent} _t]
@@ -156,6 +164,11 @@
   ((dr/weighted
     [[(fn [] (fixed-angle radial-length
                          (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
+      1.0]
+     [(fn [] (piston-fixed (* radial-length (dr/random 0.75 1.25))
+                          (* 0.3 (random-period depth))
+                          (dr/random-tau)
+                          (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))))
       1.0]
      [(fn [] (relative-angle radial-length
                             (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
