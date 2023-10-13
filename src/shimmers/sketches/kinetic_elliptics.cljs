@@ -8,6 +8,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
+   [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -94,6 +95,22 @@
        (q/stroke-weight 0.2)
        (q/arc x y r r t0 t1))}))
 
+;; FIXME: at the top of the cycle sometimes tries to go a little too far?
+;; something about boundary conditions on triangle01 or smooth-stepper?
+(defn pendulum-step-behavior [r t0 t1 period steps phase]
+  (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)]
+    {:pos
+     (fn [{:keys [position]} t]
+       (let [t' (smooth-stepper (/ period steps) 0.33 0.66 t)
+             theta (tm/mix* t0 t1 (wave/triangle01 period t'))]
+         (v/+polar position r (+ theta phase))))
+     :draw
+     (fn [pos _element _t]
+       (q/no-fill)
+       (q/stroke-weight 0.66)
+       (doseq [theta (range t0 t1 (/ (- t1 t0) (/ steps 2)))]
+         (cq/circle (v/+polar pos r (+ theta phase)) 1.0)))}))
+
 (defn pendulum-r-behavior [base-r repeats t0 t1 period phase]
   (let [t1 (if (< t1 t0) (+ t1 eq/TAU) t1)
         dtheta (/ (* 2 (- t1 t0)) period)]
@@ -167,6 +184,13 @@
              (random-period depth)
              (dr/random-tau)))
       3.0]
+     [(fn [] (pendulum-step-behavior
+             radial-length
+             (dr/random-tau) (dr/random-tau)
+             (random-period depth)
+             (dr/random-int 2 12)
+             (dr/random-tau)))
+      2.0]
      [(fn [] (pendulum-r-behavior
              radial-length
              (dr/random-int 1 8)
