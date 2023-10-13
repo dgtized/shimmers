@@ -25,6 +25,15 @@
 (defn cyclic [dtheta phase t]
   (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase)))
 
+(defn smooth-stepper [steps e0 e1 t]
+  (let [t' (/ t steps)]
+    (* steps (+ (Math/floor t')
+                (tm/smoothstep* e0 e1 (- t' (Math/floor t')))))))
+
+(comment
+  (map (fn [t] (smooth-stepper (/ 6 2) 0.33 0.66 t))
+       (range 0 10 0.1)))
+
 ;; TODO: datify these behaviors instead of using functions
 (defn fixed-behavior []
   {:pos
@@ -52,15 +61,6 @@
        (q/no-fill)
        (q/stroke-weight 0.2)
        (cq/circle x y r))}))
-
-(defn smooth-stepper [steps e0 e1 t]
-  (let [t' (/ t steps)]
-    (* steps (+ (Math/floor t')
-                (tm/smoothstep* e0 e1 (- t' (Math/floor t')))))))
-
-(comment
-  (map (fn [t] (smooth-stepper (/ 6 2) 0.33 0.66 t))
-       (range 0 10 0.1)))
 
 (defn clock-behavior [r period steps phase]
   (let [dtheta (/ eq/TAU period)]
