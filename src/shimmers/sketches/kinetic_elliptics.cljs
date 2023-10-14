@@ -70,6 +70,26 @@
      (v/+polar position r (+ (heading parent)
                              rel-angle)))})
 
+(defn piston-relative [r0 r1 period rel-angle]
+  {:pos
+   (fn [{:keys [position] :as parent} t]
+     (let [t' (smooth-stepper (/ period 2) 0.2 0.8 t)]
+       (v/+polar position
+                 (tm/mix* r0 r1 (wave/triangle01 period t'))
+                 (+ (heading parent) rel-angle))))
+   :draw
+   (fn [pos element _t]
+     (let [angle (g/heading (tm/- element pos))
+           p0 (v/+polar pos r0 angle)
+           p1 (v/+polar pos r1 angle)
+           len 3.0]
+       (q/stroke 0.0)
+       (q/stroke-weight 0.5)
+       (q/line (v/+polar p0 len (- angle tm/HALF_PI))
+               (v/-polar p0 len (- angle tm/HALF_PI)))
+       (q/line (v/+polar p1 len (- angle tm/HALF_PI))
+               (v/-polar p1 len (- angle tm/HALF_PI)))))})
+
 (defn orbit-behavior [r period phase]
   (let [dtheta (/ eq/TAU period)]
     {:pos
@@ -185,6 +205,12 @@
      [(fn [] (relative-angle radial-length
                             (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
                                Math/PI)))
+      1.0]
+     [(fn [] (let [r0 (dr/random 0.5 0.75)
+                  r1 (+ r0 (dr/random 0.25 0.75))]
+              (piston-relative (* radial-length r0) (* radial-length r1)
+                               (* 0.4 (random-period depth))
+                               0.5)))
       1.0]
      [(fn [] (clock-behavior radial-length
                             (* (dr/weighted {-1 1 1 1})
