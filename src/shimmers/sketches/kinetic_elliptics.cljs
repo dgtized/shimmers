@@ -147,7 +147,7 @@
      (fn [pos _element _t]
        (q/no-fill)
        (q/stroke-weight 0.66)
-       (doseq [theta (range t0 t1 (/ (- t1 t0) (/ steps 2)))]
+       (doseq [theta (range t0 (+ t1 0.01) (/ (- t1 t0) (/ steps 2)))]
          (cq/circle (v/+polar pos r (+ theta phase)) 1.0)))}))
 
 (defn pendulum-r-behavior [base-r repeats t0 t1 period phase]
