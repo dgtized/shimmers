@@ -9,7 +9,7 @@
   (complete? [_ t]
     (>= t (+ base interval)))
   (percent [_ t]
-    (/ (- t base) interval)))
+    (/ (float (- t base)) interval)))
 
 (defn after [t interval]
   (->TransitionInterval t interval))
