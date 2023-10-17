@@ -31,11 +31,11 @@ jobs:
           key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
           restore-keys: clj-${{ runner.os }}-
 
-      - name: Setup Java 11
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Clojure
         uses: DeLaGuardo/setup-clojure@11.0
@@ -72,11 +72,11 @@ jobs:
           key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
           restore-keys: clj-${{ runner.os }}-
 
-      - name: Setup Java 11
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Setup Clojure
         uses: DeLaGuardo/setup-clojure@11.0
