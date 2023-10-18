@@ -52,13 +52,19 @@
     (q/end-shape)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
     :size [800 600]
     :setup setup
     :update update-state
     :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+    :middleware [m/fun-mode framerate/mode])
+   [:div.readable-width
+    [:p "Define a lagrange polynomial with N points that cross the y=0 line.
+    Then perturb each of these points in a circle around each basis point,
+    recalculating the polynomial for each new basis point, forcing it to
+    undulate. Draw perpindicular vectors along the curve to provide some
+    additional details."]]])
 
 (sketch/definition along-the-curve
   {:created-at "2023-09-30"
