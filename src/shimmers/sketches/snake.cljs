@@ -62,12 +62,13 @@
                t (+ t (dr/random 0.2 1.4)))))
 
 ;; 32 is capacity for active spinners
-(defn update-spinners [spinners t]
-  (for [{:keys [pos vel t1] :as spin} (take 32 spinners)
-        :when (< t t1)]
-    (assoc spin
-           :pos (tm/+ pos vel)
-           :vel (tm/* vel 0.96))))
+(defn update-spinners [spinners chain t]
+  (into (for [{:keys [pos vel t1] :as spin} (take 32 spinners)
+              :when (< t t1)]
+          (assoc spin
+                 :pos (tm/+ pos vel)
+                 :vel (tm/* vel 0.96)))
+        (gen-spinners chain t)))
 
 (defn setup []
   (q/noise-seed (dr/random-int 100000))
@@ -103,8 +104,7 @@
     (-> (if (g/contains-point? target tip)
           (assoc state :target (fresh-target tip))
           (update state :chain chain/chain-update nil (follow tip target t)))
-        (update :spinners update-spinners t)
-        (update :spinners into (gen-spinners chain t))
+        (update :spinners update-spinners chain t)
         (update :t + 0.01))))
 
 (defn apply-stroke [target t]
