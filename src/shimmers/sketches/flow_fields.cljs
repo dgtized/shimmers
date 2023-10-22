@@ -190,7 +190,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
-  (q/noise-seed (dr/random 1000000))
+  (q/noise-seed (dr/seed))
   (let [{:keys [iterations draw align-triangles
                 calc-points point-source grid-divisor
                 palette-mode palette-color

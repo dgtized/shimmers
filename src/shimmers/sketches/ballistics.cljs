@@ -57,7 +57,7 @@
      :ground ground}))
 
 (defn setup []
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (initial-state))
 

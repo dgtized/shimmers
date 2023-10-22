@@ -48,7 +48,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/noise-seed (dr/random 1000000))
+  (q/noise-seed (dr/seed))
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :t 0

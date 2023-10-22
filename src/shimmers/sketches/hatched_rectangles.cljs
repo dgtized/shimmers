@@ -69,7 +69,7 @@
 ;; rows/cols is sensitive and causes a freeze, not clear if in hatch-rectangle or clip-lines
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/noise-seed (dr/random-int 1000000))
+  (q/noise-seed (dr/seed))
 
   (let [sides (dr/weighted {16 1 20 1 24 3 32 2 48 1 64 1})
         depth (dr/weighted {0 0.4 1 0.3 2 0.2 3 0.2 4 0.2 5 0.2})

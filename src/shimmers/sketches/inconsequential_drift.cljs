@@ -40,7 +40,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/noise-seed (dr/random tm/MAX))
+  (q/noise-seed (dr/seed))
   (q/no-loop)
   (let [size 64]
     {:size size

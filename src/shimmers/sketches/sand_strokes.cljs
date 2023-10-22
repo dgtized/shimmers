@@ -25,7 +25,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
-  (q/noise-seed (dr/random-int 1000000))
+  (q/noise-seed (dr/seed))
   (q/noise-detail 6 0.75)
   (q/ellipse-mode :radius)
   {:t 0

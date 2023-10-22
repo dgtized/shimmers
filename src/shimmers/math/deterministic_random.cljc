@@ -37,6 +37,9 @@
 (defn random-tau []
   (random eq/TAU))
 
+(defn seed []
+  (random-int (Math/pow 2 32)))
+
 ;; https://ivandianov.com/circular-random/
 (defn circular-random []
   (- 1 (Math/sqrt (- 1 (eq/sqr (random))))))

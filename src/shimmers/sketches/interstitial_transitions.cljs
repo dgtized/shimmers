@@ -4,10 +4,11 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
-  (q/noise-seed (rand-int 1000000))
+  (q/noise-seed (dr/seed))
   (q/frame-rate 10)
   (q/color-mode :hsl 1.0)
   {})

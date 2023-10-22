@@ -195,7 +195,7 @@
      (count particles)))
 
 (defn setup []
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))
         particles (make-particles point-gen 128)]

@@ -12,7 +12,7 @@
    [thi.ng.math.core :as tm]))
 
 (defn setup []
-  (q/noise-seed (dr/random-int 1000000))
+  (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   {:t 0.0})
 

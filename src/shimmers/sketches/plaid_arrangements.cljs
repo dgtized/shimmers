@@ -45,7 +45,7 @@
 
 ;; TODO: extend grid generation to include grids from square-pack, ie not even subdivisions
 (defn setup []
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (let [region (cq/screen-rect 0.95)
         theta (dr/random 0.6 1.2)

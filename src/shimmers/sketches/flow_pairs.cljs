@@ -54,7 +54,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/noise-seed (dr/random-int 10000))
+  (q/noise-seed (dr/seed))
   {:t 0.0
    :bounds (cq/screen-rect)
    :pairs (mapv make-pair (rp/random-points (cq/screen-rect 0.9) 128))})

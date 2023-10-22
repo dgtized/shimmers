@@ -137,7 +137,7 @@
   ;; now dominated by MinorGC and cost of sort?
   (set! (.-disableFriendlyErrors js/p5) true)
 
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
 
   (let [start (random-target)
         factor (/ (+ (q/width) (q/height)) 800)

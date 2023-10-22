@@ -14,7 +14,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
   {:t 0.0})
 
 (defn update-state [state]

@@ -71,7 +71,7 @@
         (gen-spinners chain t)))
 
 (defn setup []
-  (q/noise-seed (dr/random-int 100000))
+  (q/noise-seed (dr/seed))
   (let [start (gv/vec2 (g/point-at (cq/screen-rect 0.85) (dr/random)))]
     {:image (q/create-graphics (q/width) (q/height))
      :t 0.0

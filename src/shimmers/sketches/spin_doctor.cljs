@@ -27,7 +27,7 @@
               (dr/random 0.18 0.82)))
 
 (defn setup []
-  (q/noise-seed (dr/random-int 10000))
+  (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   {:center (new-destination)
