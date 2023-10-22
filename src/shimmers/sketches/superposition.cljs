@@ -143,8 +143,10 @@
         factor (/ (+ (q/width) (q/height)) 800)
         brushes (repeatedly (int (* 48 factor))
                             #(make-stroke (g/random-point-inside start)
-                                          (g/random-point-inside start)))]
-    (-> {:image (q/create-graphics (q/width) (q/height))
+                                          (g/random-point-inside start)))
+        image (q/create-graphics (q/width) (q/height))]
+    (q/with-graphics image (q/color-mode :hsl 1.0))
+    (-> {:image image
          :current start
          :target start
          :factor factor
@@ -181,7 +183,6 @@
         tween (var-rate (transition/percent transition frame-count))
         orbit (orbit-transition state)]
     (q/with-graphics image
-      (q/color-mode :hsl 1.0)
       ;; Calculate stroke, stroke-weight, and fill for all brushes in a cohort
       (doseq [cohort brush-cohorts
               :let [fc (+ frame-count (* (:cohort (first cohort))
