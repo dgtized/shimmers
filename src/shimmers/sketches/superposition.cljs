@@ -211,21 +211,23 @@
     (cq/draw-polygon target)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [1024 768]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:div.contained
+     :size [1024 768]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.flexcols
+    [:div {:style {:width "50%"}}
+     [:p "Attract a flock of triangles to a random location that is in or on the edges of a simple shape. Perturb the fill color and outline opacity according to a noise function proportional to the triangle position. Spin the triangles along their path, either randomly or proportional to time until next transition. Redraw the triangles at each position, slowly accreting an ephemeral composition which endlessly evolves and erases itself."]]
     [:div
-     (ctrl/checkbox ui-state "Debug" [:debug])
+     [ctrl/checkbox ui-state "Debug" [:debug]]
      (when (:debug @ui-state)
        (debug/display defo))]]])
 
 (sketch/definition superposition
-  {:created-at "2021-03-08"
-   :tags #{}
-   :type :quil}
+    {:created-at "2021-03-08"
+     :tags #{}
+     :type :quil}
   (ctrl/mount page))
