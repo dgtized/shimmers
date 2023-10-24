@@ -220,7 +220,14 @@
      :middleware [m/fun-mode framerate/mode])
    [:div.flexcols
     [:div {:style {:width "50%"}}
-     [:p "Attract a flock of triangles to a random location that is in or on the edges of a simple shape. Perturb the fill color and outline opacity according to a noise function proportional to the triangle position. Spin the triangles along their path, either randomly or proportional to time until next transition. Redraw the triangles at each position, slowly accreting an ephemeral composition which endlessly evolves and erases itself."]]
+     [:p "Attract a flock of triangles to a random location that is in or on the
+     edges of a simple shape, once they reach it, generate a new shape and
+     repeat. Perturb the fill color and outline opacity according to a noise
+     function proportional to the triangle position. Spin the triangles along
+     their path, either randomly or proportional to time until next transition.
+     The path can be direct, an arc, and or an orbit around one of those
+     methods. Redraw the triangles at each position, slowly accreting an
+     ephemeral composition which endlessly evolves and erases itself."]]
     [:div
      [ctrl/checkbox ui-state "Debug" [:debug]]
      (when (:debug @ui-state)
