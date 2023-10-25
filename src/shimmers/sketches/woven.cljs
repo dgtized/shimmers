@@ -74,7 +74,7 @@
 
 (defn draw [{:keys [seed pass triangles n]}]
   (if (< pass 4)
-    (let [r (cq/rel-h (/ 0.2 (inc n)))]
+    (let [r (cq/rel-h (/ 0.15 (inc n)))]
       (doseq [[pos rot _] triangles]
         (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
               n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
