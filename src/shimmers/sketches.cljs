@@ -237,12 +237,12 @@
    shimmers.sketches.video-delay-shader
    shimmers.sketches.video-shader
    shimmers.sketches.voronoi-after-effect
-   shimmers.sketches.yin-yang
    shimmers.sketches.wave-function-collapse
    shimmers.sketches.wavetracker
    shimmers.sketches.waystation
    shimmers.sketches.window-glimpses
    shimmers.sketches.wood-grain
+   shimmers.sketches.yin-yang
    shimmers.sketches.zigzag
    shimmers.sketches.zoetropic))
 
