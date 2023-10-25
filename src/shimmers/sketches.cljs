@@ -242,6 +242,7 @@
    shimmers.sketches.waystation
    shimmers.sketches.window-glimpses
    shimmers.sketches.wood-grain
+   shimmers.sketches.woven
    shimmers.sketches.yin-yang
    shimmers.sketches.zigzag
    shimmers.sketches.zoetropic))
