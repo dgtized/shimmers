@@ -68,11 +68,12 @@
   (if (< pass 4)
     (let [r (cq/rel-h (/ 0.25 (inc n)))]
       (doseq [[pos rot _] triangles]
-        (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))]
+        (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
+              n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
           (q/fill 0.0 (+ 0.0001 (* n 0.018)))
-          (q/stroke 0.0 (+ 0.001 (* n 0.18))))
-        (let [triangle (triangle/inscribed-equilateral pos r rot)]
-          (cq/draw-triangle (g/vertices triangle)))))
+          (q/stroke 0.0 (+ 0.001 (* n 0.18)))
+          (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 1.75 n2)) r) rot)]
+            (cq/draw-triangle (g/vertices triangle))))))
     (q/no-loop)))
 
 (defn page []
