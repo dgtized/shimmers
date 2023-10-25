@@ -229,6 +229,7 @@
      methods. Redraw the triangles at each position, slowly accreting an
      ephemeral composition which endlessly evolves and erases itself."]]
     [:div
+     [:p]
      [ctrl/checkbox ui-state "Debug" [:debug]]
      (when (:debug @ui-state)
        (debug/display defo))]]])
