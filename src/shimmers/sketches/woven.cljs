@@ -5,55 +5,58 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.geometry.triangle :as triangle]))
+   [thi.ng.math.core :as tm]))
 
 (defn gen-threads [n pass]
   (for [t (range n)]
-    (let [o (/ (float (inc t)) (inc n))]
+    (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.33 (inc n))))]
       (if (even? pass)
-        [(cq/rel-vec -0.1 o) v/right]
-        [(cq/rel-vec o -0.1) v/up]))))
+        [(cq/rel-vec -0.1 o) 0.0 v/right]
+        [(cq/rel-vec o -0.1) 0.0 v/up]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [pass 0
-        n 12]
+        n 13]
     {:n n
      :pass pass
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
      :t (q/millis)}))
 
-(defn outside? [screen [pos dir]]
+(defn outside? [screen [pos _ dir]]
   (and (not (g/contains-point? screen pos))
        (case dir
          v/right (> (:x pos) (cq/rel-w 1.1))
          v/up (> (:y pos) (cq/rel-h 1.1)))))
 
-(defn update-pos [dt [pos dir]]
+(defn update-pos [t dt [pos rot dir]]
   [(tm/+ pos (tm/* dir (* 0.1 dt)))
+   (+ rot (* (* 0.005 (Math/sin (* 0.001 t))) dt))
    dir])
 
-(defn update-state [{:keys [triangles screen pass n t] :as state}]
+(defn update-state [{:keys [triangles screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
     (-> (if (every? (partial outside? screen) triangles)
-          (-> state
-              (update :pass inc)
-              (assoc :triangles (gen-threads n (inc pass))))
+          (let [n (dr/rand-nth [11 12 13 17])]
+            (-> state
+                (update :pass inc)
+                (assoc :n n
+                       :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
-        (update :triangles (partial map (partial update-pos dt))))))
+        (update :triangles (partial map (partial update-pos t dt))))))
 
-(defn draw [{:keys [triangles n t]}]
-  (q/fill 0.0 0.1)
-  (q/stroke 0.0 0.1)
-  (println (first triangles))
-  (doseq [[pos _] triangles]
-    (let [triangle (triangle/inscribed-equilateral pos (cq/rel-h (/ 1.0 (* 2 n))) 0.0)]
+(defn draw [{:keys [triangles n]}]
+  (q/fill 0.0 0.005)
+  (q/stroke 0.0 0.08)
+  (doseq [[pos rot _] triangles]
+    (let [triangle (triangle/inscribed-equilateral pos (cq/rel-h (/ 0.5 (inc n))) rot)]
       (cq/draw-triangle (g/vertices triangle)))))
 
 (defn page []
