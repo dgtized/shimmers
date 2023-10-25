@@ -22,6 +22,9 @@
         2 [(cq/rel-vec 1.1 o) 0.0 v/left]
         3 [(cq/rel-vec o 1.1) 0.0 v/down]))))
 
+(defn choose-rate []
+  (dr/random 0.0002 0.005))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [pass 0
@@ -29,6 +32,7 @@
     {:seed (cq/rel-vec (dr/random-vertex))
      :n n
      :pass pass
+     :rate (choose-rate)
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
      :t (q/millis)}))
@@ -41,23 +45,24 @@
          v/up (> (:y pos) (cq/rel-h 1.1))
          v/down (< (:y pos) (cq/rel-h -0.1)))))
 
-(defn update-pos [t dt [pos rot dir]]
+(defn update-pos [rate t dt [pos rot dir]]
   [(tm/+ pos (tm/* dir (* 0.075 dt)))
-   (+ rot (* (* 0.005 (Math/sin (* 0.0015 t))) dt))
+   (+ rot (* (* 0.005 (Math/sin (* rate t))) dt))
    dir])
 
-(defn update-state [{:keys [triangles screen pass t] :as state}]
+(defn update-state [{:keys [triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
     (-> (if (every? (partial outside? screen) triangles)
-          (let [n (dr/rand-nth [11 12 13 17])]
+          (let [n (dr/rand-nth [11 12 13 17 19])]
             (-> state
                 (update :pass inc)
                 (assoc :n n
+                       :rate (choose-rate)
                        :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
         (update :seed tm/+ (tm/* (gv/vec2 0.00001 0.00001) t))
-        (update :triangles (partial map (partial update-pos t dt))))))
+        (update :triangles (partial map (partial update-pos rate t dt))))))
 
 (defn draw [{:keys [seed pass triangles n]}]
   (if (< pass 4)
