@@ -15,7 +15,7 @@
 
 (defn gen-threads [n pass]
   (for [t (range n)]
-    (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.4 (inc n))))]
+    (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.5 (inc n))))]
       (case (mod pass 4)
         0 [(cq/rel-vec -0.1 o) 0.0 v/right]
         1 [(cq/rel-vec o -0.1) 0.0 v/up]
@@ -23,7 +23,7 @@
         3 [(cq/rel-vec o 1.1) 0.0 v/down]))))
 
 (defn choose-rate []
-  (dr/random 0.0002 0.005))
+  (dr/random 0.0002 0.01))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
