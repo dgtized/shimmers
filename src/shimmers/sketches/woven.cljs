@@ -59,14 +59,16 @@
         (update :seed tm/+ (tm/* (gv/vec2 0.00001 0.00001) t))
         (update :triangles (partial map (partial update-pos t dt))))))
 
-(defn draw [{:keys [seed triangles n]}]
-  (let [r (cq/rel-h (/ 0.25 (inc n)))]
-    (doseq [[pos rot _] triangles]
-      (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.005))]
-        (q/fill 0.0 (+ 0.0002 (* n 0.006)))
-        (q/stroke 0.0 (+ 0.002 (* n 0.09))))
-      (let [triangle (triangle/inscribed-equilateral pos r rot)]
-        (cq/draw-triangle (g/vertices triangle))))))
+(defn draw [{:keys [seed pass triangles n]}]
+  (if (< pass 4)
+    (let [r (cq/rel-h (/ 0.25 (inc n)))]
+      (doseq [[pos rot _] triangles]
+        (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))]
+          (q/fill 0.0 (+ 0.0001 (* n 0.018)))
+          (q/stroke 0.0 (+ 0.001 (* n 0.18))))
+        (let [triangle (triangle/inscribed-equilateral pos r rot)]
+          (cq/draw-triangle (g/vertices triangle)))))
+    (q/no-loop)))
 
 (defn page []
   [:div
