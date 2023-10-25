@@ -15,7 +15,7 @@
 
 (defn gen-threads [n pass]
   (for [t (range n)]
-    (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.5 (inc n))))]
+    (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.33 (inc n))))]
       (case (mod pass 4)
         0 [(cq/rel-vec -0.1 o) 0.0 v/right]
         1 [(cq/rel-vec o -0.1) 0.0 v/up]
@@ -74,13 +74,13 @@
 
 (defn draw [{:keys [seed pass triangles n]}]
   (if (< pass 4)
-    (let [r (cq/rel-h (/ 0.25 (inc n)))]
+    (let [r (cq/rel-h (/ 0.2 (inc n)))]
       (doseq [[pos rot _] triangles]
         (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
               n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
-          (q/fill 0.0 (+ 0.0001 (* n 0.018)))
-          (q/stroke 0.0 (+ 0.001 (* n 0.18)))
-          (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 1.75 n2)) r) rot)]
+          (q/fill 0.0 (+ 0.0001 (* n 0.0225)))
+          (q/stroke 0.0 (+ 0.001 (* n 0.225)))
+          (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 2.25 n2)) r) rot)]
             (cq/draw-triangle (g/vertices triangle))))))
     (q/no-loop)))
 
