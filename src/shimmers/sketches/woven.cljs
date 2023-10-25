@@ -22,6 +22,13 @@
         2 [(cq/rel-vec 1.1 o) 0.0 v/left]
         3 [(cq/rel-vec o 1.1) 0.0 v/down]))))
 
+(defn gen-n []
+  (dr/weighted {5 1
+                7 2
+                11 3
+                13 2
+                17 1}))
+
 (defn choose-rate []
   (dr/random 0.0002 0.01))
 
@@ -29,7 +36,7 @@
   (q/color-mode :hsl 1.0)
   (q/noise-seed (dr/seed))
   (let [pass 0
-        n 13]
+        n (gen-n)]
     {:seed (cq/rel-vec (dr/random-vertex))
      :n n
      :pass pass
@@ -54,7 +61,7 @@
 (defn update-state [{:keys [triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
     (-> (if (every? (partial outside? screen) triangles)
-          (let [n (dr/rand-nth [11 12 13 17 19])]
+          (let [n (gen-n)]
             (-> state
                 (update :pass inc)
                 (assoc :n n
