@@ -10,6 +10,7 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn gen-threads [n pass]
@@ -51,6 +52,7 @@
                        :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
+        (update :seed tm/+ (tm/* (gv/vec2 0.00001 0.00001) t))
         (update :triangles (partial map (partial update-pos t dt))))))
 
 (defn draw [{:keys [seed triangles n]}]
