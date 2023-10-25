@@ -27,6 +27,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/noise-seed (dr/seed))
   (let [pass 0
         n 13]
     {:seed (cq/rel-vec (dr/random-vertex))
