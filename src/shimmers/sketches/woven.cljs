@@ -42,7 +42,7 @@
          v/down (< (:y pos) (cq/rel-h -0.1)))))
 
 (defn update-pos [t dt [pos rot dir]]
-  [(tm/+ pos (tm/* dir (* 0.1 dt)))
+  [(tm/+ pos (tm/* dir (* 0.075 dt)))
    (+ rot (* (* 0.005 (Math/sin (* 0.0015 t))) dt))
    dir])
 
@@ -60,12 +60,13 @@
         (update :triangles (partial map (partial update-pos t dt))))))
 
 (defn draw [{:keys [seed triangles n]}]
-  (doseq [[pos rot _] triangles]
-    (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.005))]
-      (q/fill 0.0 (+ 0.0005 (* n 0.005)))
-      (q/stroke 0.0 (+ 0.005 (* n 0.08))))
-    (let [triangle (triangle/inscribed-equilateral pos (cq/rel-h (/ 0.33 (inc n))) rot)]
-      (cq/draw-triangle (g/vertices triangle)))))
+  (let [r (cq/rel-h (/ 0.25 (inc n)))]
+    (doseq [[pos rot _] triangles]
+      (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.005))]
+        (q/fill 0.0 (+ 0.0002 (* n 0.006)))
+        (q/stroke 0.0 (+ 0.002 (* n 0.09))))
+      (let [triangle (triangle/inscribed-equilateral pos r rot)]
+        (cq/draw-triangle (g/vertices triangle))))))
 
 (defn page []
   [:div
