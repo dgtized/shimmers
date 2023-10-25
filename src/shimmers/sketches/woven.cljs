@@ -23,7 +23,8 @@
   (q/color-mode :hsl 1.0)
   (let [pass 0
         n 13]
-    {:n n
+    {:seed (cq/rel-vec (dr/random-vertex))
+     :n n
      :pass pass
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
@@ -52,10 +53,11 @@
         (update :t + dt)
         (update :triangles (partial map (partial update-pos t dt))))))
 
-(defn draw [{:keys [triangles n]}]
-  (q/fill 0.0 0.005)
-  (q/stroke 0.0 0.08)
+(defn draw [{:keys [seed triangles n]}]
   (doseq [[pos rot _] triangles]
+    (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.005))]
+      (q/fill 0.0 (+ 0.0005 (* n 0.005)))
+      (q/stroke 0.0 (+ 0.005 (* n 0.08))))
     (let [triangle (triangle/inscribed-equilateral pos (cq/rel-h (/ 0.5 (inc n))) rot)]
       (cq/draw-triangle (g/vertices triangle)))))
 
