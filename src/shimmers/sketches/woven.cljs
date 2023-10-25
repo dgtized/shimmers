@@ -16,9 +16,11 @@
 (defn gen-threads [n pass]
   (for [t (range n)]
     (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.4 (inc n))))]
-      (if (even? pass)
-        [(cq/rel-vec -0.1 o) 0.0 v/right]
-        [(cq/rel-vec o -0.1) 0.0 v/up]))))
+      (case (mod pass 4)
+        0 [(cq/rel-vec -0.1 o) 0.0 v/right]
+        1 [(cq/rel-vec o -0.1) 0.0 v/up]
+        2 [(cq/rel-vec 1.1 o) 0.0 v/left]
+        3 [(cq/rel-vec o 1.1) 0.0 v/down]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -35,7 +37,9 @@
   (and (not (g/contains-point? screen pos))
        (case dir
          v/right (> (:x pos) (cq/rel-w 1.1))
-         v/up (> (:y pos) (cq/rel-h 1.1)))))
+         v/left (< (:x pos) (cq/rel-w -0.1))
+         v/up (> (:y pos) (cq/rel-h 1.1))
+         v/down (< (:y pos) (cq/rel-h -0.1)))))
 
 (defn update-pos [t dt [pos rot dir]]
   [(tm/+ pos (tm/* dir (* 0.1 dt)))
