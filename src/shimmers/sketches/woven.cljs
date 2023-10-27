@@ -98,13 +98,23 @@
     (q/no-loop)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div
+    [:p.readable-width
+     "Create parallel spinning triangle trails from each of the four cardinal
+     directions. Prefer monochromatic color schemes but occasionally introduce
+     blue or red stroke coloring. Each trail is opacity is modulated by noise at
+     that position, as is the size of each triangle. The spin of each parallel
+     set of trails is determined before each pass. The piece interposes the
+     ordered repitition of the parallel trails with the chaos of the noise,
+     giving some local variations in texture while maintaining an overall sense
+     of uniformity."]]])
 
 (sketch/definition woven
   {:created-at "2023-10-25"
