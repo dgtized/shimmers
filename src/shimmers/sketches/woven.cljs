@@ -111,7 +111,7 @@
      directions. Prefer monochromatic color schemes but occasionally introduce
      blue or red stroke coloring. Each trail's opacity is modulated by noise at
      that position, as is the size of each triangle. The spin of each parallel
-     set of trails is determined before each pass. The piece interposes the
+     set of trails is determined before each pass. The piece juxtaposes the
      ordered repitition of the parallel trails with the chaos of the noise,
      giving some local variations in texture while maintaining an overall sense
      of uniformity."]]])
