@@ -36,7 +36,7 @@
   (dr/weighted
    {[0.6 0.8 0.5] 1
     [0.0 0.8 0.5] 1
-    [0.0 0.0 0.0] 1}))
+    [0.0 0.0 0.0] 6}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -71,9 +71,9 @@
           (let [n (gen-n)]
             (-> state
                 (update :pass inc)
-                (update :color (fn [color] (if (dr/chance 0.66) (random-color) color)))
                 (assoc :n n
                        :rate (choose-rate)
+                       :color (random-color)
                        :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
