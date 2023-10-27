@@ -109,7 +109,7 @@
     [:p.readable-width
      "Create parallel spinning triangle trails from each of the four cardinal
      directions. Prefer monochromatic color schemes but occasionally introduce
-     blue or red stroke coloring. Each trail is opacity is modulated by noise at
+     blue or red stroke coloring. Each trail's opacity is modulated by noise at
      that position, as is the size of each triangle. The spin of each parallel
      set of trails is determined before each pass. The piece interposes the
      ordered repitition of the parallel trails with the chaos of the noise,
