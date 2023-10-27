@@ -32,24 +32,29 @@
 (defn choose-rate []
   (dr/random 0.0002 0.01))
 
+(def black&white
+  [0.0 0.0 0.0])
+
 (defn random-color []
   (dr/weighted
    {[0.6 0.8 0.5] 1
     [0.0 0.8 0.5] 1
-    [0.0 0.0 0.0] 6}))
+    black&white 4}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/noise-seed (dr/seed))
   (let [pass 0
-        n (gen-n)]
+        n (gen-n)
+        mono (dr/chance 0.6)]
     {:seed (cq/rel-vec (dr/random-vertex))
      :n n
      :pass pass
      :rate (choose-rate)
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
-     :color (random-color)
+     :color (if mono black&white (random-color))
+     :mono mono
      :t (q/millis)}))
 
 (defn outside? [screen [pos _ dir]]
@@ -65,7 +70,7 @@
    (+ rot (* (* 0.005 (Math/sin (* rate t))) dt))
    dir])
 
-(defn update-state [{:keys [triangles rate screen pass t] :as state}]
+(defn update-state [{:keys [mono triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
     (-> (if (every? (partial outside? screen) triangles)
           (let [n (gen-n)]
@@ -73,7 +78,7 @@
                 (update :pass inc)
                 (assoc :n n
                        :rate (choose-rate)
-                       :color (random-color)
+                       :color (if mono black&white (random-color))
                        :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
