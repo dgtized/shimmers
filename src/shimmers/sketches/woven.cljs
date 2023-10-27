@@ -46,7 +46,7 @@
   (q/noise-seed (dr/seed))
   (let [pass 0
         n (gen-n)
-        mono (dr/chance 0.6)]
+        mono (dr/chance 0.5)]
     {:seed (cq/rel-vec (dr/random-vertex))
      :n n
      :pass pass
