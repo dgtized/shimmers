@@ -32,6 +32,12 @@
 (defn choose-rate []
   (dr/random 0.0002 0.01))
 
+(defn random-color []
+  (dr/weighted
+   {[0.6 0.8 0.5] 1
+    [0.0 0.8 0.5] 1
+    [0.0 0.0 0.0] 1}))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/noise-seed (dr/seed))
@@ -43,6 +49,7 @@
      :rate (choose-rate)
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
+     :color (random-color)
      :t (q/millis)}))
 
 (defn outside? [screen [pos _ dir]]
@@ -64,6 +71,7 @@
           (let [n (gen-n)]
             (-> state
                 (update :pass inc)
+                (update :color (fn [color] (if (dr/chance 0.66) (random-color) color)))
                 (assoc :n n
                        :rate (choose-rate)
                        :triangles (gen-threads n (inc pass)))))
@@ -72,14 +80,14 @@
         (update :seed tm/+ (tm/* (gv/vec2 0.00001 0.00001) t))
         (update :triangles (partial map (partial update-pos rate t dt))))))
 
-(defn draw [{:keys [seed pass triangles n]}]
+(defn draw [{:keys [seed pass color triangles n]}]
   (if (< pass 4)
     (let [r (cq/rel-h (/ 0.15 (inc n)))]
       (doseq [[pos rot _] triangles]
         (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
               n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
           (q/fill 0.0 (+ 0.0001 (* n 0.0225)))
-          (q/stroke 0.0 (+ 0.001 (* n 0.225)))
+          (apply q/stroke (conj color (+ 0.001 (* n 0.225))))
           (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 2.25 n2)) r) rot)]
             (cq/draw-triangle (g/vertices triangle))))))
     (q/no-loop)))
