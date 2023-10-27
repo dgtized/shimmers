@@ -35,10 +35,10 @@
 (def black&white
   [0.0 0.0 0.0])
 
-(defn random-color []
+(defn random-color [mono]
   (dr/weighted
-   {[0.6 0.8 0.5] 1
-    [0.0 0.8 0.5] 1
+   {[0.6 0.8 0.5] (if mono 0 1)
+    [0.0 0.8 0.5] (if mono 0 1)
     black&white 4}))
 
 (defn setup []
@@ -53,7 +53,7 @@
      :rate (choose-rate)
      :triangles (gen-threads n pass)
      :screen (cq/screen-rect)
-     :color (if mono black&white (random-color))
+     :color (random-color mono)
      :mono mono
      :t (q/millis)}))
 
@@ -78,7 +78,7 @@
                 (update :pass inc)
                 (assoc :n n
                        :rate (choose-rate)
-                       :color (if mono black&white (random-color))
+                       :color (random-color mono)
                        :triangles (gen-threads n (inc pass)))))
           state)
         (update :t + dt)
