@@ -19,9 +19,15 @@
 (defn state [m]
   (r/atom m))
 
-(defn assoc-value [settings field-ref reader]
-  (fn [e] (swap! settings assoc-in field-ref
-                (reader (.-target.value e)))))
+(defn assoc-value
+  ([settings field-ref reader]
+   (assoc-value settings field-ref reader (fn [])))
+  ([settings field-ref reader on-change]
+   (fn [e]
+     (swap! settings assoc-in field-ref
+            (reader (.-target.value e)))
+     (when on-change
+       (on-change)))))
 
 (defn toggle-value [settings field-ref]
   (fn [_]
@@ -63,13 +69,16 @@
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
             :on-change (toggle-value settings field-ref)}]])
 
-(defn dropdown [settings label field-ref options]
-  [:div.label-set.dropdown {:key (str "dropdown-" field-ref)}
-   [:label label]
-   [:select {:on-change (assoc-value settings field-ref identity)
-             :value (get-in @settings field-ref)}
-    (for [[name value] options]
-      [:option {:key value :value value} name])]])
+(defn dropdown
+  ([settings label field-ref options]
+   (dropdown settings label field-ref options nil))
+  ([settings label field-ref options {:keys [on-change]}]
+   [:div.label-set.dropdown {:key (str "dropdown-" field-ref)}
+    [:label label]
+    [:select {:on-change (assoc-value settings field-ref identity on-change)
+              :value (get-in @settings field-ref)}
+     (for [[name value] options]
+       [:option {:key value :value value} name])]]))
 
 (defn slider [settings label-fn field-ref [lower upper step]]
   (let [value (get-in @settings field-ref)]

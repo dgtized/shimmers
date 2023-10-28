@@ -11,11 +11,15 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:snap "0"}))
+(defonce ui-state
+  (ctrl/state
+   {:snap "0"
+    :screen-size "800x600"}))
 
 (defn make-pair [p]
   (let [distance (cq/rel-h (max 0.02 (dr/gaussian 0.075 0.05)))]
@@ -75,20 +79,26 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   (ctrl/container
-    (ctrl/dropdown ui-state "Snap Resolution" [:snap]
-                   {"Disabled" 0
-                    "90 degrees" 4
-                    "60 degrees" 6
-                    "45 degrees" 8}))])
+     :size (case (:screen-size @ui-state)
+             "800x600" [800 600]
+             "1600x1200" [1600 1200])
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [ctrl/container
+    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+     {"800x600" "800x600"
+      "1600x1200" "1600x1200"}
+     {:on-change #(view-sketch/restart-sketch :flow-pairs)}]
+    [ctrl/dropdown ui-state "Snap Resolution" [:snap]
+     {"Disabled" 0
+      "90 degrees" 4
+      "60 degrees" 6
+      "45 degrees" 8}]]])
 
 (sketch/definition flow-pairs
-  {:created-at "2023-05-10"
-   :tags #{}
-   :type :quil}
+    {:created-at "2023-05-10"
+     :tags #{}
+     :type :quil}
   (ctrl/mount page))
