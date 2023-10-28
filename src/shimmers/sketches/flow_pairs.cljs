@@ -87,6 +87,9 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [ctrl/container
+    ;; TODO investigate forcing same seed with new size
+    ;; should screen-size be a path argument?
+    ;; also consider marking this requires restart
     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
      {"800x600" "800x600"
       "1600x1200" "1600x1200"}
