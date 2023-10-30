@@ -6,12 +6,14 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.palette :as palette]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
@@ -25,6 +27,7 @@
                :color true
                :limit-palette true
                :spinners false
+               :screen-size "1024x768"
                :palette-fn (:gold-blue palette/smooth-palettes)}))
 
 (defn gen-target []
@@ -239,7 +242,11 @@
     [:li "Sinusoidal chooses a winding path towards each target locations."]
     [:li "Proportional follows the path mixing from the current location to a
      circle around the target."]]
-   [ctrl/checkbox ui-state "Debug Mode" [:debug]]])
+   [ctrl/container
+    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+     (screen/sizes)
+     {:on-change #(view-sketch/restart-sketch :snake)}]
+    [ctrl/checkbox ui-state "Debug Mode" [:debug]]]])
 
 (defn draw [{:keys [image target] :as state}]
   (q/with-graphics image
@@ -257,11 +264,11 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-    :size [1024 768]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
+     :size (screen/parse-size (:screen-size @ui-state))
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
    [ui-controls]])
 
 (sketch/definition snake
