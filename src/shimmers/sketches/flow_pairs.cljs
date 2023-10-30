@@ -6,6 +6,7 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -76,27 +77,10 @@
   (when (< (count pairs) 64)
     (q/no-loop)))
 
-(defn screen-options []
-  (into {}
-        (for [size ["800x600"
-                    "900x600"
-                    "1600x1200"]]
-          [size size])))
-
-(defn screen-size [screen]
-  (->> screen
-       (re-seq #"(\d+)x(\d+)")
-       first
-       rest
-       (map edn/read-string)
-       vec))
-
-(comment (screen-size "800x600"))
-
 (defn page []
   [sketch/with-explanation
    (sketch/component
-     :size (screen-size (:screen-size @ui-state))
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
@@ -105,7 +89,8 @@
     ;; TODO investigate forcing same seed with new size
     ;; should screen-size be a path argument?
     ;; also consider marking this requires restart
-    [ctrl/dropdown ui-state "Screen Size" [:screen-size] (screen-options)
+    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+     (screen/sizes)
      {:on-change #(view-sketch/restart-sketch :flow-pairs)}]
     [ctrl/dropdown ui-state "Snap Resolution" [:snap]
      {"Disabled" 0
