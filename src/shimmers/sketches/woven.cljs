@@ -35,10 +35,11 @@
           add-limit))))
 
 (defn gen-n []
-  (dr/weighted {5 1
-                7 2
-                11 3
-                13 2
+  (dr/weighted {5 2
+                7 5
+                9 1
+                11 2
+                13 1
                 17 1}))
 
 (defn choose-rate []
