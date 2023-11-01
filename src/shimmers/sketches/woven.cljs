@@ -22,10 +22,10 @@
   (for [t (range n)]
     (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.33 (inc n))))]
       (case (mod pass 4)
-        0 [(cq/rel-vec -0.1 o) 0.0 v/right]
-        1 [(cq/rel-vec o -0.1) 0.0 v/up]
-        2 [(cq/rel-vec 1.1 o) 0.0 v/left]
-        3 [(cq/rel-vec o 1.1) 0.0 v/down]))))
+        0 {:pos (cq/rel-vec -0.1 o) :rot 0.0 :dir v/right}
+        1 {:pos (cq/rel-vec o -0.1) :rot 0.0 :dir v/up}
+        2 {:pos (cq/rel-vec 1.1 o) :rot 0.0 :dir v/left}
+        3 {:pos (cq/rel-vec o 1.1) :rot 0.0 :dir v/down}))))
 
 (defn gen-n []
   (dr/weighted {5 1
@@ -62,7 +62,7 @@
      :mono mono
      :t (q/millis)}))
 
-(defn outside? [screen [pos _ dir]]
+(defn outside? [screen {:keys [pos dir]}]
   (and (not (g/contains-point? screen pos))
        (case dir
          v/right (> (:x pos) (cq/rel-w 1.1))
@@ -70,10 +70,10 @@
          v/up (> (:y pos) (cq/rel-h 1.1))
          v/down (< (:y pos) (cq/rel-h -0.1)))))
 
-(defn update-pos [rate t dt [pos rot dir]]
-  [(tm/+ pos (tm/* dir (* 0.075 dt)))
-   (+ rot (* (* 0.005 (Math/sin (* rate t))) dt))
-   dir])
+(defn update-pos [rate t dt {:keys [dir] :as inst}]
+  (-> inst
+      (update :pos tm/+ (tm/* dir (* 0.075 dt)))
+      (update :rot + (* (* 0.005 (Math/sin (* rate t))) dt))))
 
 (defn update-state [{:keys [mono triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
@@ -93,7 +93,7 @@
 (defn draw [{:keys [seed pass color triangles n]}]
   (if (< pass 4)
     (let [r (cq/rel-h (/ 0.15 (inc n)))]
-      (doseq [[pos rot _] triangles]
+      (doseq [{:keys [pos rot]} triangles]
         (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
               n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
           (q/fill 0.0 (+ 0.0001 (* n 0.0225)))
