@@ -4,14 +4,19 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state
+  (ctrl/state {:screen-size "800x600"}))
 
 (defn gen-threads [n pass]
   (for [t (range n)]
@@ -100,7 +105,7 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-     :size [800 600]
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
@@ -114,7 +119,11 @@
      set of trails is determined before each pass. The piece juxtaposes the
      ordered repitition of the parallel trails with the chaos of the noise,
      giving some local variations in texture while maintaining an overall sense
-     of uniformity."]]])
+     of uniformity."]
+    [ctrl/container
+     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+      (screen/sizes)
+      {:on-change #(view-sketch/restart-sketch :woven)}]]]])
 
 (sketch/definition woven
   {:created-at "2023-10-25"
