@@ -18,14 +18,21 @@
 (defonce ui-state
   (ctrl/state {:screen-size "800x600"}))
 
+(defn add-limit [{:keys [pos limit] :as inst}]
+  (if (dr/chance 0.4)
+    (assoc inst :limit (tm/mix pos limit (dr/random 0.55 0.95)))
+    inst))
+
 (defn gen-threads [n pass]
   (for [t (range n)]
     (let [o (+ (/ (float (inc t)) (inc n)) (dr/gaussian 0.0 (/ 0.33 (inc n))))]
-      (case (mod pass 4)
-        0 {:pos (cq/rel-vec -0.1 o) :rot 0.0 :dir v/right}
-        1 {:pos (cq/rel-vec o -0.1) :rot 0.0 :dir v/up}
-        2 {:pos (cq/rel-vec 1.1 o) :rot 0.0 :dir v/left}
-        3 {:pos (cq/rel-vec o 1.1) :rot 0.0 :dir v/down}))))
+      (-> (case (mod pass 4)
+            0 {:pos (cq/rel-vec -0.1 o) :dir v/right :limit (cq/rel-vec 1.1 o)}
+            1 {:pos (cq/rel-vec o -0.1) :dir v/up :limit (cq/rel-vec o 1.1)}
+            2 {:pos (cq/rel-vec 1.1 o) :dir v/left :limit (cq/rel-vec -0.1 o)}
+            3 {:pos (cq/rel-vec o 1.1) :dir v/down :limit (cq/rel-vec o -0.1)})
+          (assoc :rot 0.0)
+          add-limit))))
 
 (defn gen-n []
   (dr/weighted {5 1
@@ -62,13 +69,16 @@
      :mono mono
      :t (q/millis)}))
 
-(defn outside? [screen {:keys [pos dir]}]
+(defn passed? [{:keys [pos dir limit]}]
+  (case dir
+    v/right (> (:x pos) (:x limit))
+    v/left (< (:x pos) (:x limit))
+    v/up (> (:y pos) (:y limit))
+    v/down (< (:y pos) (:y limit))))
+
+(defn outside? [screen {:keys [pos] :as instance}]
   (and (not (g/contains-point? screen pos))
-       (case dir
-         v/right (> (:x pos) (cq/rel-w 1.1))
-         v/left (< (:x pos) (cq/rel-w -0.1))
-         v/up (> (:y pos) (cq/rel-h 1.1))
-         v/down (< (:y pos) (cq/rel-h -0.1)))))
+       (passed? instance)))
 
 (defn update-pos [rate t dt {:keys [dir] :as inst}]
   (-> inst
@@ -93,13 +103,14 @@
 (defn draw [{:keys [seed pass color triangles n]}]
   (if (< pass 4)
     (let [r (cq/rel-h (/ 0.15 (inc n)))]
-      (doseq [{:keys [pos rot]} triangles]
-        (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
-              n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
-          (q/fill 0.0 (+ 0.0001 (* n 0.0225)))
-          (apply q/stroke (conj color (+ 0.001 (* n 0.225))))
-          (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 2.25 n2)) r) rot)]
-            (cq/draw-triangle (g/vertices triangle))))))
+      (doseq [{:keys [pos rot] :as inst} triangles]
+        (when-not (passed? inst)
+          (let [n (apply q/noise (tm/* (tm/+ seed pos) 0.006))
+                n2 (apply q/noise (tm/+ (gv/vec2 50 50) (tm/* (tm/+ seed pos) 0.005)))]
+            (q/fill 0.0 (+ 0.0001 (* n 0.0225)))
+            (apply q/stroke (conj color (+ 0.001 (* n 0.225))))
+            (let [triangle (triangle/inscribed-equilateral pos (* (+ 0.25 (* 2.25 n2)) r) rot)]
+              (cq/draw-triangle (g/vertices triangle)))))))
     (q/no-loop)))
 
 (defn page []
