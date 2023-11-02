@@ -5,14 +5,19 @@
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state
+  (ctrl/state {:screen-size "900x600"}))
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
@@ -70,13 +75,17 @@
         (q/line pos (:pos closest))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-     :size [900 600]
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [ctrl/container
+    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+     (screen/sizes)
+     {:on-change #(view-sketch/restart-sketch :dependents)}]]])
 
 (sketch/definition dependents
     {:created-at "2023-11-02"
