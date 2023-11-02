@@ -21,7 +21,7 @@
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
-    {:pos pos :vel (v/polar (dr/random 0.1 0.25) (dr/random-tau))}))
+    {:pos pos :vel (v/polar (dr/random 0.05 0.2) (dr/random-tau))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -63,15 +63,16 @@
         (update :t + dt))))
 
 (defn draw [{:keys [particles t t0]}]
-  (q/stroke 0 0.15)
   (when (> (- t t0) 16000)
     (q/no-loop))
   (doseq [{:keys [pos last-pos] :as _particle} particles]
     (when last-pos
+      (q/stroke 0 0.75 0.33 0.33)
       (q/line last-pos pos))
 
     (let [closest (first (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles)))]
       (when (< (g/dist pos (:pos closest)) (/ (q/height) 4))
+        (q/stroke 0 0.2)
         (q/line pos (:pos closest))))))
 
 (defn page []
