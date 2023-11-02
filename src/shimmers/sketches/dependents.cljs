@@ -28,6 +28,7 @@
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
      :particles (gen-particles 8 bounds)
+     :seconds (dr/chance 0.4)
      :t0 (q/millis)
      :t (q/millis)}))
 
@@ -62,7 +63,7 @@
         (update :particles update-particles bounds t dt)
         (update :t + dt))))
 
-(defn draw [{:keys [particles t t0]}]
+(defn draw [{:keys [particles seconds t t0]}]
   (when (> (- t t0) 16000)
     (q/no-loop))
   (doseq [{:keys [pos last-pos] :as _particle} particles]
@@ -70,10 +71,15 @@
       (q/stroke 0 0.75 0.33 0.33)
       (q/line last-pos pos))
 
-    (let [closest (first (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles)))]
-      (when (< (g/dist pos (:pos closest)) (/ (q/height) 4))
-        (q/stroke 0 0.2)
-        (q/line pos (:pos closest))))))
+    (let [neighbors (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles))]
+      (let [closest (first neighbors)]
+        (when (< (g/dist pos (:pos closest)) (/ (q/height) 4))
+          (q/stroke 0 0.2)
+          (q/line pos (:pos closest))))
+      (let [farther (second neighbors)]
+        (when (and seconds (< (g/dist pos (:pos farther)) (/ (q/height) 2)))
+          (q/stroke 0 0.02)
+          (q/line pos (:pos farther)))))))
 
 (defn page []
   [sketch/with-explanation
