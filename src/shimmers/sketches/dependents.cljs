@@ -16,13 +16,14 @@
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
-    {:pos pos :vel (v/polar 0.5 (dr/random-tau))}))
+    {:pos pos :vel (v/polar (dr/random 0.1 0.25) (dr/random-tau))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
-     :particles (gen-particles 10 bounds)
+     :particles (gen-particles 8 bounds)
+     :t0 (q/millis)
      :t (q/millis)}))
 
 (defn reflect [bounds {:keys [pos vel]}]
@@ -56,19 +57,26 @@
         (update :particles update-particles bounds t dt)
         (update :t + dt))))
 
-(defn draw [{:keys [particles]}]
-  (doseq [{:keys [pos last-pos]} particles]
+(defn draw [{:keys [particles t t0]}]
+  (q/stroke 0 0.15)
+  (when (> (- t t0) 16000)
+    (q/no-loop))
+  (doseq [{:keys [pos last-pos] :as _particle} particles]
     (when last-pos
-      (q/line last-pos pos))))
+      (q/line last-pos pos))
+
+    (let [closest (first (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles)))]
+      (when (< (g/dist pos (:pos closest)) (/ (q/height) 4))
+        (q/line pos (:pos closest))))))
 
 (defn page []
   [:div
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [900 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])])
 
 (sketch/definition dependents
     {:created-at "2023-11-02"
