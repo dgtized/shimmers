@@ -83,10 +83,16 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [ctrl/container
-    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
-     (screen/sizes)
-     {:on-change #(view-sketch/restart-sketch :dependents)}]]])
+   [:div
+    [:p.readable-width
+     "Bounce a few particles through the space, drawing lines between closest
+     pairs if they are less than a threshold. The striation arises from the
+     variations in the sample rate between frames to draw a new line. Stop after
+     16s."]
+    [ctrl/container
+     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+      (screen/sizes)
+      {:on-change #(view-sketch/restart-sketch :dependents)}]]]])
 
 (sketch/definition dependents
     {:created-at "2023-11-02"
