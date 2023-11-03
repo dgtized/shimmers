@@ -7,6 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -17,7 +18,8 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:screen-size "900x600"}))
+  (ctrl/state {:screen-size "900x600"
+               :show-debug false}))
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
@@ -65,9 +67,12 @@
         (update :particles update-particles bounds t dt)
         (update :t + dt))))
 
+(defonce defo (debug/state {}))
+
 (defn draw [{:keys [particles seconds t t0]}]
   (when (> (- t t0) 16000)
     (q/no-loop))
+  (swap! defo assoc :particles particles)
   (doseq [{:keys [pos last-pos] :as _particle} particles]
     (when last-pos
       (q/stroke 0 0.75 0.33 0.33)
@@ -91,16 +96,20 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [:div
-    [:p.readable-width
-     "Bounce a few particles through the space, drawing lines between closest
+   [:div.flexcols
+    [:div
+     [:p.readable-width
+      "Bounce a few particles through the space, drawing lines between closest
      pairs if they are less than a threshold. The striation arises from the
      variations in the sample rate between frames to draw a new line. Stop after
      16s."]
-    [ctrl/container
-     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
-      (screen/sizes)
-      {:on-change #(view-sketch/restart-sketch :dependents)}]]]])
+     [ctrl/container
+      [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+       (screen/sizes)
+       {:on-change #(view-sketch/restart-sketch :dependents)}]
+      [ctrl/checkbox-after ui-state "Debug" [:show-debug]]]]
+    (when (:show-debug @ui-state)
+      [debug/display defo])]])
 
 (sketch/definition dependents
     {:created-at "2023-11-02"
