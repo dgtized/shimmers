@@ -21,7 +21,7 @@
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
-    {:pos pos :vel (v/polar (dr/random 0.05 0.2) (dr/random-tau))}))
+    {:pos pos :vel (v/polar (dr/random 0.05 0.25) (dr/random-tau))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
