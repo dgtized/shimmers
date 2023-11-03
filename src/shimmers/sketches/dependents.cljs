@@ -35,13 +35,9 @@
 (defn reflect [bounds {:keys [pos vel]}]
   (let [[x y] pos
         [dx dy] vel]
-    (cond (< x (rect/left bounds))
+    (cond (<= (rect/left bounds) x (rect/right bounds))
           (gv/vec2 (- dx) dy)
-          (>= x (rect/right bounds))
-          (gv/vec2 (- dx) dy)
-          (< y (rect/bottom bounds))
-          (gv/vec2 dx (- dy))
-          (>= y (rect/top bounds))
+          (<= (rect/bottom bounds) y (rect/top bounds))
           (gv/vec2 dx (- dy))
           :else
           vel)))
