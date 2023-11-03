@@ -12,6 +12,7 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -29,6 +30,7 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
+     :center (gc/circle (cq/rel-vec 0.5 0.33) (cq/rel-h 0.05))
      :particles (gen-particles 8 bounds)
      :seconds (dr/chance 0.4)
      :t0 (q/millis)
@@ -48,12 +50,15 @@
           :else
           vel)))
 
-(defn update-particles [particles bounds _t dt]
+(defn update-particles [particles center bounds _t dt]
   (for [{:keys [pos vel] :as particle} particles]
     (let [pos' (tm/+ pos (tm/* vel dt))]
       (if (g/contains-point? bounds pos')
         (assoc particle
                :pos pos'
+               :vel (let [force (tm/- pos (:p center))
+                          dv (tm/div force (max 1 (tm/mag-squared force)))]
+                      (tm/+ vel (tm/* dv (* 0.01 dt))))
                :last-pos pos)
         (let [bounce (reflect bounds particle)]
           (assoc particle
@@ -61,10 +66,10 @@
                  :last-pos pos
                  :vel bounce))))))
 
-(defn update-state [{:keys [t bounds] :as state}]
+(defn update-state [{:keys [t bounds center] :as state}]
   (let [dt (- (q/millis) t)]
     (-> state
-        (update :particles update-particles bounds t dt)
+        (update :particles update-particles center bounds t dt)
         (update :t + dt))))
 
 (defonce defo (debug/state {}))
