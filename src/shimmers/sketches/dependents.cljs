@@ -58,7 +58,7 @@
                :pos pos'
                :vel (let [force (tm/- pos (:p center))
                           dv (tm/div force (max 1 (tm/mag-squared force)))]
-                      (tm/+ vel (tm/* dv (* 0.01 dt))))
+                      (tm/* (tm/+ vel (tm/* dv (* 0.005 dt))) 0.9999))
                :last-pos pos)
         (let [bounce (reflect bounds particle)]
           (assoc particle
