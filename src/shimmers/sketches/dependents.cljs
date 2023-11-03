@@ -30,8 +30,14 @@
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
-     :center (gc/circle (cq/rel-vec 0.5 0.33) (cq/rel-h 0.05))
-     :particles (gen-particles 8 bounds)
+     :repulsors [(gc/circle (cq/rel-vec 0.15 0.2) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.5 0.2) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.85 0.2) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.15 0.8) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.5 0.8) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.85 0.8) (cq/rel-h 0.05))]
+     :particles (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
+                                            (cq/rel-vec 0.9 0.66)))
      :seconds (dr/chance 0.4)
      :t0 (q/millis)
      :t (q/millis)}))
@@ -50,15 +56,21 @@
           :else
           vel)))
 
-(defn update-particles [particles center bounds _t dt]
+(defn forces [pos repulsors]
+  (reduce (fn [forces rep]
+            (let [force (tm/- pos (:p rep))]
+              (tm/+ forces (tm/div force (max 1 (tm/mag-squared force))))))
+          (gv/vec2)
+          repulsors))
+
+(defn update-particles [particles repulsors bounds _t dt]
   (for [{:keys [pos vel] :as particle} particles]
     (let [pos' (tm/+ pos (tm/* vel dt))]
       (if (g/contains-point? bounds pos')
         (assoc particle
                :pos pos'
-               :vel (let [force (tm/- pos (:p center))
-                          dv (tm/div force (max 1 (tm/mag-squared force)))]
-                      (tm/* (tm/+ vel (tm/* dv (* 0.005 dt))) 0.9999))
+               :vel (tm/* (tm/+ vel (tm/* (forces pos repulsors) (* 0.0075 dt)))
+                          0.999)
                :last-pos pos)
         (let [bounce (reflect bounds particle)]
           (assoc particle
@@ -66,10 +78,10 @@
                  :last-pos pos
                  :vel bounce))))))
 
-(defn update-state [{:keys [t bounds center] :as state}]
+(defn update-state [{:keys [t bounds repulsors] :as state}]
   (let [dt (- (q/millis) t)]
     (-> state
-        (update :particles update-particles center bounds t dt)
+        (update :particles update-particles repulsors bounds t dt)
         (update :t + dt))))
 
 (defonce defo (debug/state {}))
