@@ -35,14 +35,16 @@
 (defn reflect [bounds {:keys [pos vel]}]
   (let [[x y] pos
         [dx dy] vel]
-    (cond (>= x (rect/right bounds))
+    (cond (< x (rect/left bounds))
           (gv/vec2 (- dx) dy)
-          (<= x (rect/left bounds))
+          (>= x (rect/right bounds))
           (gv/vec2 (- dx) dy)
-          (<= y (rect/top bounds))
+          (< y (rect/bottom bounds))
           (gv/vec2 dx (- dy))
-          (>= y (rect/bottom bounds))
-          (gv/vec2 dx (- dy)))))
+          (>= y (rect/top bounds))
+          (gv/vec2 dx (- dy))
+          :else
+          vel)))
 
 (defn update-particles [particles bounds _t dt]
   (for [{:keys [pos vel] :as particle} particles]
