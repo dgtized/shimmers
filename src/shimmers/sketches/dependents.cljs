@@ -39,7 +39,6 @@
                  (gc/circle (cq/rel-vec 0.85 0.85) (cq/rel-h 0.05))]
      :particles (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
                                             (cq/rel-vec 0.9 0.66)))
-     :seconds (dr/chance 0.4)
      :t0 (q/millis)
      :t (q/millis)}))
 
@@ -97,14 +96,10 @@
       (q/line last-pos pos))
 
     (let [neighbors (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles))]
-      (let [closest (first neighbors)]
-        (when (< (g/dist pos (:pos closest)) (/ (q/height) 4))
-          (q/stroke 0 0.2)
-          (q/line pos (:pos closest))))
-      (let [farther (second neighbors)]
-        (when (and seconds (< (g/dist pos (:pos farther)) (/ (q/height) 2)))
-          (q/stroke 0 0.02)
-          (q/line pos (:pos farther)))))))
+      (doseq [[i neighbor] (map-indexed vector (take 3 neighbors))]
+        (when (< (g/dist pos (:pos neighbor)) (/ (q/height) (- 4 i)))
+          (q/stroke 0 (/ 1.0 (Math/pow 6 (inc i))))
+          (q/line pos (:pos neighbor)))))))
 
 (defn page []
   [sketch/with-explanation
