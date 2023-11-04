@@ -60,7 +60,7 @@
 (defn forces [pos repulsors]
   (reduce (fn [forces rep]
             (let [force (tm/- pos (:p rep))]
-              (tm/+ forces (tm/div force (max 1 (tm/mag-squared force))))))
+              (tm/+ forces (tm/div force (max 0.1 (tm/mag-squared force))))))
           (gv/vec2)
           repulsors))
 
@@ -70,7 +70,7 @@
       (if (g/contains-point? bounds pos')
         (assoc particle
                :pos pos'
-               :vel (tm/* (tm/+ vel (tm/* (forces pos repulsors) (* 0.0075 dt)))
+               :vel (tm/* (tm/+ vel (tm/* (forces pos repulsors) (* 0.01 dt)))
                           0.999)
                :last-pos pos)
         (let [bounce (reflect bounds particle)]
