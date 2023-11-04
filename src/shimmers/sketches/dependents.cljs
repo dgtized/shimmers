@@ -24,18 +24,19 @@
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
-    {:pos pos :vel (v/polar (dr/random 0.05 0.25) (dr/random-tau))}))
+    {:pos pos
+     :vel (v/polar (dr/random 0.05 0.25) (dr/random-tau))}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
     {:bounds bounds
-     :repulsors [(gc/circle (cq/rel-vec 0.15 0.2) (cq/rel-h 0.05))
-                 (gc/circle (cq/rel-vec 0.5 0.2) (cq/rel-h 0.05))
-                 (gc/circle (cq/rel-vec 0.85 0.2) (cq/rel-h 0.05))
-                 (gc/circle (cq/rel-vec 0.15 0.8) (cq/rel-h 0.05))
-                 (gc/circle (cq/rel-vec 0.5 0.8) (cq/rel-h 0.05))
-                 (gc/circle (cq/rel-vec 0.85 0.8) (cq/rel-h 0.05))]
+     :repulsors [(gc/circle (cq/rel-vec 0.15 0.15) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.5 0.15) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.85 0.15) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.15 0.85) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.5 0.85) (cq/rel-h 0.05))
+                 (gc/circle (cq/rel-vec 0.85 0.85) (cq/rel-h 0.05))]
      :particles (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
                                             (cq/rel-vec 0.9 0.66)))
      :seconds (dr/chance 0.4)
