@@ -9,6 +9,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -20,12 +21,23 @@
 
 (defonce ui-state
   (ctrl/state {:screen-size "900x600"
+               :connect-surfaces true
+               :extrude-shapes false
                :show-debug false}))
+
+(defn update-polygons [particles]
+  (for [{:keys [pos heading shape] :as particle} particles]
+    (assoc particle :poly (g/center (g/rotate shape heading) pos))))
 
 (defn gen-particles [n bounds]
   (for [pos (rp/random-points bounds n)]
     {:pos pos
-     :vel (v/polar (tm/clamp (dr/gaussian 0.2 0.05) 0.05 0.5) (dr/random-tau))}))
+     :vel (v/polar (tm/clamp (dr/gaussian 0.2 0.05) 0.05 0.5) (dr/random-tau))
+     :heading (dr/random-tau)
+     :spin (dr/gaussian 0.0 0.066)
+     :shape (dr/rand-nth [
+                          (triangle/inscribed-equilateral {:r 10} 0)
+                          (rect/rect 0 0 5 15)])}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -37,8 +49,9 @@
                  (gc/circle (cq/rel-vec 0.15 0.85) (cq/rel-h 0.05))
                  (gc/circle (cq/rel-vec 0.5 0.85) (cq/rel-h 0.05))
                  (gc/circle (cq/rel-vec 0.85 0.85) (cq/rel-h 0.05))]
-     :particles (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
-                                            (cq/rel-vec 0.9 0.66)))
+     :particles (update-polygons
+                 (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
+                                             (cq/rel-vec 0.9 0.66))))
      :t0 (q/millis)
      :t (q/millis)}))
 
@@ -64,24 +77,28 @@
           repulsors))
 
 (defn update-particles [particles repulsors bounds _t dt]
-  (for [{:keys [pos vel] :as particle} particles]
+  (for [{:keys [pos vel heading spin] :as particle} particles]
     (let [pos' (tm/+ pos (tm/* vel dt))]
       (if (g/contains-point? bounds pos')
         (assoc particle
                :pos pos'
                :vel (tm/* (tm/+ vel (tm/* (forces pos repulsors) (* 0.01 dt)))
                           0.999)
-               :last-pos pos)
+               :last-pos pos
+               :heading (+ heading (* spin (* 0.01 dt))))
         (let [bounce (reflect bounds particle)]
           (assoc particle
                  :pos (tm/+ pos (tm/* bounce dt))
                  :last-pos pos
-                 :vel bounce))))))
+                 :vel bounce
+                 :heading (+ heading (* spin (* 0.01 dt)))
+                 :spin (* -1 spin)))))))
 
 (defn update-state [{:keys [t bounds repulsors] :as state}]
   (let [dt (- (q/millis) t)]
     (-> state
         (update :particles update-particles repulsors bounds t dt)
+        (update :particles update-polygons)
         (update :t + dt))))
 
 (defonce defo (debug/state {}))
@@ -89,17 +106,25 @@
 (defn draw [{:keys [particles seconds t t0]}]
   (when (> (- t t0) 16000)
     (q/no-loop))
+  (q/no-fill)
   (swap! defo assoc :particles particles)
-  (doseq [{:keys [pos last-pos] :as _particle} particles]
-    (when last-pos
-      (q/stroke 0 0.75 0.33 0.33)
-      (q/line last-pos pos))
+  (let [{:keys [connect-surfaces extrude-shapes]} @ui-state]
+    (doseq [{:keys [pos last-pos poly] :as _particle} particles]
+      (when last-pos
+        (q/stroke 0 0.75 0.33 0.15)
+        (q/line last-pos pos))
 
-    (let [neighbors (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles))]
-      (doseq [[i neighbor] (map-indexed vector (take 3 neighbors))]
-        (when (< (g/dist pos (:pos neighbor)) (/ (q/height) (- 4 i)))
-          (q/stroke 0 (/ 1.0 (Math/pow 6 (inc i))))
-          (q/line pos (:pos neighbor)))))))
+      (when extrude-shapes
+        (cq/draw-polygon poly))
+
+      (let [neighbors (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles))]
+        (doseq [[i neighbor] (map-indexed vector (take 3 neighbors))]
+          (when (< (g/dist pos (:pos neighbor)) (/ (q/height) (- 4 i)))
+            (q/stroke 0 (/ 1.0 (Math/pow 6 (inc i))))
+            (if connect-surfaces
+              (q/line (g/closest-point (:poly neighbor) pos)
+                      (g/closest-point poly (:pos neighbor)))
+              (q/line pos (:pos neighbor)))))))))
 
 (defn page []
   [sketch/with-explanation
@@ -120,6 +145,8 @@
       [ctrl/dropdown ui-state "Screen Size" [:screen-size]
        (screen/sizes)
        {:on-change #(view-sketch/restart-sketch :dependents)}]
+      [ctrl/checkbox-after ui-state "Extrude Shapes" [:extrude-shapes]]
+      [ctrl/checkbox-after ui-state "Connect Surfaces" [:connect-surfaces]]
       [ctrl/checkbox-after ui-state "Debug" [:show-debug]]]]
     (when (:show-debug @ui-state)
       [debug/display defo])]])
