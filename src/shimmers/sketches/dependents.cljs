@@ -53,7 +53,8 @@
                  (gen-particles 8 (rect/rect (cq/rel-vec 0.1 0.33)
                                              (cq/rel-vec 0.9 0.66))))
      :t0 (q/millis)
-     :t (q/millis)}))
+     :t (q/millis)
+     :max-distance (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))}))
 
 (defn reflect [bounds {:keys [pos vel]}]
   (let [[x y] pos
@@ -103,7 +104,7 @@
 
 (defonce defo (debug/state {}))
 
-(defn draw [{:keys [particles seconds t t0]}]
+(defn draw [{:keys [particles seconds t t0 max-distance]}]
   (when (> (- t t0) 16000)
     (q/no-loop))
   (q/no-fill)
@@ -117,10 +118,12 @@
       (when extrude-shapes
         (cq/draw-polygon poly))
 
-      (let [neighbors (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles))]
-        (doseq [[i neighbor] (map-indexed vector (take 3 neighbors))]
-          (when (< (g/dist pos (:pos neighbor)) (/ (q/height) (- 4 i)))
-            (q/stroke 0 (/ 1.0 (Math/pow 6 (inc i))))
+      (let [neighbors (take 3 (drop 1 (sort-by (fn [part] (g/dist-squared (:pos part) pos)) particles)))]
+        (doseq [[i neighbor] (map-indexed vector neighbors)
+                :let [distance (g/dist pos (:pos neighbor))
+                      pct-dist (/ distance max-distance)]]
+          (when (< pct-dist (* 0.55 (/ (float (inc i)) 4)))
+            (q/stroke 0 (/ 1.0 (Math/pow 5 (inc i))))
             (if connect-surfaces
               (q/line (g/closest-point (:poly neighbor) pos)
                       (g/closest-point poly (:pos neighbor)))
