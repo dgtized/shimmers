@@ -122,8 +122,8 @@
         (doseq [[i neighbor] (map-indexed vector neighbors)
                 :let [distance (g/dist pos (:pos neighbor))
                       pct-dist (/ distance max-distance)]]
-          (when (< pct-dist (* 0.55 (/ (float (inc i)) 4)))
-            (q/stroke 0 (/ 1.0 (Math/pow 5 (inc i))))
+          (when (< pct-dist (* 0.5 (/ (float (inc i)) 4)))
+            (q/stroke 0 (* (- 1.0 pct-dist) (/ 1.0 (Math/pow 4 (inc i)))))
             (if connect-surfaces
               (q/line (g/closest-point (:poly neighbor) pos)
                       (g/closest-point poly (:pos neighbor)))
