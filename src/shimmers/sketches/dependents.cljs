@@ -104,7 +104,7 @@
 
 (defonce defo (debug/state {}))
 
-(defn draw [{:keys [particles seconds t t0 max-distance]}]
+(defn draw [{:keys [particles t t0 max-distance]}]
   (when (> (- t t0) 16000)
     (q/no-loop))
   (q/no-fill)
