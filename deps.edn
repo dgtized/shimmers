@@ -2,8 +2,7 @@
 ;; helpful for dev setup
 {:deps {org.clojure/clojurescript {:mvn/version "1.11.121"}
         ;; p5 was excluded so that the latest version can be provided through npm
-        ;; quil/quil {:mvn/version "4.3-SNAPSHOT"}
-        quil/quil {:mvn/version "4.3.1320-e5ff83f-SNAPSHOT"}
+        quil/quil {:mvn/version "4.3.1323"}
 
         ;; alternative SVG library
         io.github.adam-james-v/svg-clj {:mvn/version "0.0.11"}
