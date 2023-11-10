@@ -15,6 +15,11 @@
     (- (* control delta)
        (* (* 2 (Math/sqrt control)) angle-vel))))
 
+(defn spin-acceleration [angle-vel target-vel control]
+  (let [delta (- target-vel angle-vel)]
+    (- (* control delta)
+       (* (* 2 (Math/sqrt control)) angle-vel))))
+
 (defn force-accel [pos target control velocity]
   (let [dir (tm/- target pos)]
     (tm/- (tm/* dir control)

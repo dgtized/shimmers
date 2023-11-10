@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.control :as control]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -18,6 +19,8 @@
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(def defo (debug/state))
 
 (defn center-filter
   "Map a noise value as distance from center point into [0.0,1.0].
@@ -149,15 +152,14 @@
     (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
 
 ;; TODO: add repulsion zones, though would need to ensure destinations were outside?
-(defn move [dt wobble pos-c angle-c drag]
+(defn move [dt {:keys [wobble pos-c steering angle-c target-vel drag]}]
   (fn [{:keys [pos angle vel angle-vel dest] :as particle}]
     (let [force (tm/+ (control/force-accel pos dest pos-c vel)
                       (tm/* (perp-motion pos dest wobble)
                             (tm/mag vel)))
-          angle-target (g/heading (tm/- dest pos))
-          angle-acc (if (< angle-c 90)
-                      (control/angular-acceleration angle angle-target angle-c angle-vel)
-                      (* 2 (- angle-c 90)))
+          angle-acc (if steering
+                      (control/angular-acceleration angle (g/heading (tm/- dest pos)) angle-c angle-vel)
+                      (control/spin-acceleration angle-vel target-vel angle-c))
           drag-c (- 1.0 (eq/sqr (* drag dt)))]
       (-> particle
           (assoc
@@ -173,13 +175,17 @@
               amplitude (* (cq/rel-h 0.15) (dec (Math/pow 2.0 amp-n)))
               rate-n (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0))
               rate (tm/mix* 8 32 rate-n)]
-          (* amplitude (Math/sin (* rate t))))]
-    (mapv (move dt wobble
-                (+ 5 (* 150.0 (q/noise t 10.0)))
-                (+ 5 (* 150.0 (q/noise 10.0 t)))
-                ;; FIXME: does this drag make any sense?
-                (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008)))))
-          particles)))
+          (* amplitude (Math/sin (* rate t))))
+        controls
+        {:wobble wobble
+         :pos-c (+ 5 (* 150.0 (q/noise t 10.0)))
+         :steering (< 0.4 (q/noise t 82) 0.6)
+         :angle-c (+ 5 (* 150.0 (q/noise 10.0 t)))
+         :target-vel (- (* (q/noise t 133 120) 128) 64)
+         ;; FIXME: does this drag make any sense?
+         :drag (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008))))}]
+    (swap! defo assoc :controls controls)
+    (mapv (move dt controls) particles)))
 
 (defn update-destinations [particles matrix]
   (map (fn [particle [_ dest']]
@@ -281,20 +287,25 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-    :size [900 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
-   [:p.readable-width
-    "Variation on superposition with more intentional shape placement leveraging symmetries."]
-   (let [mode (:mode @ui-state)]
-     [ctrl/container
-      [ctrl/checkbox ui-state "Debug" [:debug]]
-      [ctrl/checkbox ui-state "Paused" [:paused]]
-      [ctrl/change-mode ui-state [:infinite :limit]]
-      (when (= mode :limit)
-        [ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]])])])
+     :size [900 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.flexcols
+    [:div
+     [:p.readable-width
+      "Variation on superposition with more intentional shape placement leveraging symmetries."]
+     (let [mode (:mode @ui-state)]
+       [ctrl/container
+        [ctrl/checkbox ui-state "Debug" [:debug]]
+        [ctrl/checkbox ui-state "Paused" [:paused]]
+        [ctrl/change-mode ui-state [:infinite :limit]]
+        (when (= mode :limit)
+          [ctrl/numeric ui-state "Limit Cycles" [:limit] [0 10000 1]])])]
+    [:div {:style {:width "12em"}}
+     [:p]
+     (debug/display defo)]]])
 
 (sketch/definition superposition-mirrored
   {:created-at "2023-03-08"
