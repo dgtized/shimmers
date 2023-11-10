@@ -181,7 +181,7 @@
          :pos-c (+ 5 (* 150.0 (q/noise t 10.0)))
          :steering (< 0.4 (q/noise t 82) 0.6)
          :angle-c (+ 5 (* 150.0 (q/noise 10.0 t)))
-         :target-vel (- (* (q/noise t 133 120) 128) 64)
+         :target-vel (* (- (q/noise t 133 120) 0.5) 100)
          ;; FIXME: does this drag make any sense?
          :drag (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008))))}]
     (swap! defo assoc :controls controls)
