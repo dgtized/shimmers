@@ -157,9 +157,10 @@
     (let [force (tm/+ (control/force-accel pos dest pos-c vel)
                       (tm/* (perp-motion pos dest wobble)
                             (tm/mag vel)))
-          angle-acc (if steering
-                      (control/angular-acceleration angle (g/heading (tm/- dest pos)) angle-c angle-vel)
-                      (control/spin-acceleration angle-vel target-vel angle-c))
+          angle-acc (case steering
+                      :active (control/angular-acceleration angle (g/heading (tm/- dest pos)) angle-c angle-vel)
+                      :slow (control/spin-acceleration angle-vel (* 32 target-vel) angle-c)
+                      :fast (control/spin-acceleration angle-vel (* 128 target-vel) angle-c))
           drag-c (- 1.0 (eq/sqr (* drag dt)))]
       (-> particle
           (assoc
@@ -179,9 +180,16 @@
         controls
         {:wobble wobble
          :pos-c (+ 5 (* 150.0 (q/noise t 10.0)))
-         :steering (< 0.4 (q/noise t 82) 0.6)
+         :steering (let [steer-noise (q/noise (* (/ 5 7) t) 160)]
+                     (cond (< 0.45 steer-noise 0.55)
+                           :active
+                           (or (< 0.28 steer-noise 0.45)
+                               (< 0.55 steer-noise 0.62))
+                           :slow
+                           :else
+                           :fast))
          :angle-c (+ 5 (* 150.0 (q/noise 10.0 t)))
-         :target-vel (* (- (q/noise t 133 120) 0.5) 100)
+         :target-vel (- (q/noise t 133 120) 0.5)
          ;; FIXME: does this drag make any sense?
          :drag (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008))))}]
     (swap! defo assoc :controls controls)
