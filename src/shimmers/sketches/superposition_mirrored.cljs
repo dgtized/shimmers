@@ -22,6 +22,9 @@
 
 (def defo (debug/state))
 
+(defn clock []
+  (/ (q/millis) 2500.0))
+
 (defn center-filter
   "Map a noise value as distance from center point into [0.0,1.0].
 
@@ -218,7 +221,7 @@
      :particles particles
      :linear-matrix (init-linear-matrix particles (generate-shapes (dr/random 0.1 0.49)))
      :cycle 0
-     :t 0.0}))
+     :t (clock)}))
 
 (defonce ui-state (ctrl/state {:debug false
                                :mode :infinite
@@ -233,7 +236,7 @@
 
 (defn update-state [{:keys [particles t cycle linear-matrix] :as state}]
   (if (running? cycle)
-    (let [dt (dr/random 0.001 0.01)]
+    (let [dt (- (clock) t)]
       (if (< (affinity particles) (cq/rel-h 0.008))
         (let [point-gen (generate-shapes (dr/random 0.05 0.49))]
           (-> state
