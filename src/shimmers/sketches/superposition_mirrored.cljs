@@ -5,6 +5,7 @@
    [shimmers.algorithm.linear-assignment :as linear]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.control :as control]
@@ -13,6 +14,7 @@
    [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -226,7 +228,8 @@
 (defonce ui-state (ctrl/state {:debug false
                                :mode :infinite
                                :paused false
-                               :limit 20}))
+                               :limit 20
+                               :screen-size "900x600"}))
 
 (defn running? [cycle]
   (let [{:keys [limit mode paused]} @ui-state]
@@ -298,7 +301,7 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-     :size [900 600]
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
@@ -309,6 +312,9 @@
       "Variation on superposition with more intentional shape placement leveraging symmetries."]
      (let [mode (:mode @ui-state)]
        [ctrl/container
+        [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+         (screen/sizes)
+         {:on-change #(view-sketch/restart-sketch :superposition-mirrored)}]
         [ctrl/checkbox ui-state "Debug" [:debug]]
         [ctrl/checkbox ui-state "Paused" [:paused]]
         [ctrl/change-mode ui-state [:infinite :limit]]

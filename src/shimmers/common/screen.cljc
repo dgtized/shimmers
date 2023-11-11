@@ -6,7 +6,9 @@
         (for [size ["800x600"
                     "900x600"
                     "1024x768"
-                    "1600x1200"]]
+                    "1600x1200"
+                    "1920x1200" ;; costly if using a pixel copy
+                    "2560x1600"]]
           [size size])))
 
 (defn parse-size [screen]
