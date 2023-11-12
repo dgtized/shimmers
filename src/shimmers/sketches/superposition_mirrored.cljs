@@ -96,10 +96,22 @@
    {:random-point random-point
     :shapes shapes}))
 
+(defn triangles-on-vertices [n r face]
+  (let [hex-points (-> (cq/rel-vec 0.5 0.5)
+                       (gc/circle (* 0.9 r))
+                       (g/as-polygon n)
+                       g/vertices)]
+    (for [point hex-points]
+      (triangle/inscribed-equilateral
+       {:p point :r (* 0.3 r)}
+       (g/heading (if (= face :inside)
+                    (tm/- point (cq/rel-vec 0.5 0.5))
+                    (tm/- (cq/rel-vec 0.5 0.5) point)))))))
+
 ;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
   ([scale] (generate-shapes
-            (dr/weighted {:bounds 0.5
+            (dr/weighted {:bounds 0.4
                           :center-circle 1
                           :arc 1
                           :center-square 1
@@ -109,7 +121,9 @@
                           :lr-in-triangles 1
                           :lr-out-triangles 1
                           :ud-in-triangles 1
-                          :ud-out-triangles 1})
+                          :ud-out-triangles 1
+                          :hex-triangles 0.5
+                          :oct-triangles 0.5})
             scale))
   ([kind scale]
    (let [r (cq/rel-h scale)]
@@ -157,7 +171,13 @@
        :lr-out-triangles
        (point-gen
         [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
-         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)])))))
+         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)])
+       :hex-triangles
+       (point-gen (select-random-point (/ 1 11))
+                  (triangles-on-vertices 6 r (dr/rand-nth [:inside :outside])))
+       :oct-triangles
+       (point-gen (select-random-point (/ 1 11))
+                  (triangles-on-vertices 8 r (dr/rand-nth [:inside :outside])))))))
 
 (defn perp-motion [pos dest wobble]
   (let [v (tm/- pos dest)]
