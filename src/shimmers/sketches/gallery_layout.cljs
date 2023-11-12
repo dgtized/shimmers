@@ -33,7 +33,9 @@
       (with-meta (g/scale-size picture 0.9) (meta picture)))))
 
 (defn frame-ratio []
-  (dr/weighted {[3 2] 1
+  (dr/weighted {[5 7] 1
+                [7 5] 1
+                [3 2] 1
                 [4 3] 1
                 [2 1] 1
                 [1 2] 1
