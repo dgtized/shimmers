@@ -260,7 +260,7 @@
 
 (defn draw-image [{:keys [particles t]}]
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
-        scale-noise (center-filter 0.0 (q/noise (* t 0.2) 100.0))
+        scale-noise (center-filter 0.0 (q/noise (* t 0.3) 100.0))
         scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
         color (< 0.2 (q/noise (* t 0.1) 1000.0) 0.8)]
     (q/color-mode :hsl 1.0)
