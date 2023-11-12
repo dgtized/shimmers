@@ -122,6 +122,8 @@
                           :lr-out-triangles 1
                           :ud-in-triangles 1
                           :ud-out-triangles 1
+                          :vertical-bars 1
+                          :horizontal-bars 1
                           :hex-triangles 0.5
                           :oct-triangles 0.5})
             scale))
@@ -156,6 +158,12 @@
        :quad-triangle
        (point-gen
         (quad-shape 0.0 (g/center (triangle/inscribed-equilateral {:p (gv/vec2) :r r} 0))))
+       :horizontal-bars
+       (point-gen [(rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.95 0.2))
+                   (rect/rect (cq/rel-vec 0.05 0.8) (cq/rel-vec 0.95 0.95))])
+       :vertical-bars
+       (point-gen [(rect/rect (cq/rel-vec 0.05 0.05) (cq/rel-vec 0.2 0.95))
+                   (rect/rect (cq/rel-vec 0.8 0.05) (cq/rel-vec 0.95 0.95))])
        :ud-in-triangles
        (point-gen
         [(triangle/inscribed-equilateral {:p (cq/rel-vec 0.5 (* 1.1 scale)) :r r} (* eq/TAU 0.25))
