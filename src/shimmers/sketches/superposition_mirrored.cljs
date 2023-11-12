@@ -267,9 +267,9 @@
     (doseq [{:keys [pos angle]} particles]
       (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
             fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
-            stroke-opacity (center-filter 0.05 (noise-at [(+ r t) (+ r t)] 0.03 [300.0 300.0]))]
+            stroke-opacity (center-filter 0.01 (noise-at [(+ r t) (+ r t)] 0.03 [300.0 300.0]))]
         (q/stroke (tm/smoothstep* 0.45 0.55 (noise-at [r (+ t r)] 0.15 [500.0 500.0]))
-                  (+ 0.001 (* 0.2 stroke-opacity)))
+                  (+ 0.001 (* 0.25 (tm/smoothstep* 0.1 0.9 stroke-opacity))))
         (if color
           (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
                   (+ 0.45 (* 0.55 (noise-at [(+ t r) r] 0.15 [50.0 100.0])))
