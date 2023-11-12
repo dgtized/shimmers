@@ -42,6 +42,11 @@
                 [2 3] 1
                 [1 1] 1}))
 
+(defn choose-layout [n]
+  (dr/weighted {:row 1
+                :column 1
+                :grid (if (> n 2) 1 0)}))
+
 (defn wall-layout [wall layout n]
   (case layout
     :grid
@@ -73,9 +78,7 @@
     (let [n (dr/random-int 1 6)]
       (wall-layout
        (rect/rect 0 0 width height)
-       (dr/weighted {:row 1
-                     :column 1
-                     :grid (if (> n 2) 1 0)})
+       (choose-layout n)
        n))))
 
 (defn page []
