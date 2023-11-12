@@ -25,7 +25,7 @@
 (def defo (debug/state))
 
 (defn clock []
-  (/ (q/millis) 2500.0))
+  (/ (q/millis) 3333.0))
 
 (defn center-filter
   "Map a noise value as distance from center point into [0.0,1.0].
