@@ -274,9 +274,9 @@
           (q/fill (mod (* 3 (noise-at [(* 0.75 t) (eq/sqr r)] 0.01 [0 0])) 1.0)
                   (+ 0.5 (* 0.5 (noise-at [(+ t r) r] 0.15 [50.0 100.0])))
                   (+ 0.4 (* 0.5 (noise-at [r t] 0.1 [100.0 50.0])))
-                  (+ 0.001 (* 0.04 fill-opacity)))
+                  (+ 0.001 (* 0.05 fill-opacity)))
           (q/stroke (tm/smoothstep* 0.45 0.55 (noise-at [r (+ t r)] 0.1 [500.0 500.0]))
-                    (+ 0.001 (* 0.12 stroke-opacity))))
+                    (+ 0.001 (* 0.15 stroke-opacity))))
         (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r scale} angle))))))
 
 (defn draw [{:keys [image cycle shapes particles] :as state}]
