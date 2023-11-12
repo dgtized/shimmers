@@ -42,6 +42,11 @@
 
 (defn wall-layout [wall layout n]
   (case layout
+    :grid
+    (let [area (rect/rect (g/unmap-point wall (gv/vec2 0.0 0.2))
+                          (g/unmap-point wall (gv/vec2 1.0 0.8)))]
+      (for [box (take n (dr/shuffle (g/subdivide area {:cols (int (/ n 2)) :rows 2})))]
+        (display-frame box (frame-ratio))))
     :row
     (let [row (rect/rect (g/unmap-point wall (gv/vec2 0.0 0.33))
                          (g/unmap-point wall (gv/vec2 1.0 0.66)))]
@@ -63,10 +68,13 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (wall-layout
-     (rect/rect 0 0 width height)
-     (dr/weighted {:row 1 :column 1})
-     (dr/random-int 1 6))))
+    (let [n (dr/random-int 1 6)]
+      (wall-layout
+       (rect/rect 0 0 width height)
+       (dr/weighted {:row 1
+                     :column 1
+                     :grid (if (> n 2) 1 0)})
+       n))))
 
 (defn page []
   [sketch/with-explanation
