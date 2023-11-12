@@ -1,13 +1,18 @@
 (ns shimmers.sketches.gallery-layout
   (:require
+   [shimmers.algorithm.lines :as lines]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -45,10 +50,28 @@
 (defn choose-layout [n]
   (dr/weighted {:row 1
                 :column 1
-                :grid (if (> n 2) 1 0)}))
+                :grid (if (> n 2) 1 0)
+                :diagonal 1}))
 
 (defn wall-layout [wall layout n]
   (case layout
+    :diagonal
+    (let [angle (dr/random-tau)
+          start (g/unmap-point wall (gv/vec2 0.5 0.5))
+          len (max (g/width wall) (g/height wall))
+          dir (v/polar len angle)
+          line (first (lines/clip-line (gl/line2 (tm/- start dir) (tm/+ start dir)) wall))
+          line-box (apply rect/rect (g/vertices line))
+          rect (if (< (g/width line-box) (g/height line-box))
+                 (rect/rect 0 0
+                            (min (g/width line-box) (/ (g/width wall) n))
+                            (/ (g/height line-box) (inc n)))
+                 (rect/rect 0 0
+                            (/ (g/width line-box) (inc n))
+                            (min (g/height line-box) (/ (g/height wall) n))))]
+      (for [t (cs/midsection (tm/norm-range (inc n)))]
+        (let [rect (g/center rect (g/point-at line t))]
+          (display-frame rect (frame-ratio)))))
     :grid
     (let [area (rect/rect (g/unmap-point wall (gv/vec2 0.0 0.2))
                           (g/unmap-point wall (gv/vec2 1.0 0.8)))]
