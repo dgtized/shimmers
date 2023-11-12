@@ -46,8 +46,15 @@
 (defn init-linear-matrix [particles {:keys [random-point shapes]}]
   (let [rp ({:outside g/random-point
              :inside g/random-point-inside} random-point)
-        positions (into [] (repeatedly (count particles) #(rp (dr/rand-nth shapes))))]
-    (assoc (linear/online-match-matrix < (mapv :dest particles) positions)
+        distribute-randomly (fn [n] (repeatedly n #(rp (dr/rand-nth shapes))))
+        positions
+        (if (dr/chance 0.6)
+          (distribute-randomly (count particles))
+          ;; distribute particles per shape evenly
+          (let [per-shape (int (/ (count particles) (count shapes)))]
+            (concat (mapcat (fn [shape] (repeatedly per-shape #(rp shape))) shapes)
+                    (distribute-randomly (mod (count particles) per-shape)))))]
+    (assoc (linear/online-match-matrix < (mapv :dest particles) (into [] positions))
            :shapes shapes)))
 
 (defn distribute-particles [{:keys [random-point shapes]} particles]
