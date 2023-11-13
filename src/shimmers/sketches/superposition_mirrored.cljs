@@ -207,7 +207,7 @@
            :pos (tm/+ pos (tm/* vel dt))
            :angle (+ angle (* angle-vel dt))
            :vel (tm/limit (tm/* (tm/+ vel (tm/* force dt)) drag-c)
-                          (+ (* 3 pos-c) (/ 1.0 dt)))
+                          (+ (* 5 pos-c) (/ 1.0 dt)))
            :angle-vel (* (+ angle-vel (* angle-acc dt)) drag-c))))))
 
 (defn update-positions [particles t dt]
@@ -219,7 +219,7 @@
           (* amplitude (Math/sin (* rate t))))
         controls
         {:wobble wobble
-         :pos-c (+ 5 (* 150.0 (q/noise t 10.0)))
+         :pos-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise (* t 0.2) 10.0)) 2)))
          :steering (let [steer-noise (q/noise (* (/ 5 7) t) 160)]
                      (cond (< 0.45 steer-noise 0.55)
                            :active
@@ -228,7 +228,7 @@
                            :slow
                            :else
                            :fast))
-         :angle-c (+ 5 (* 150.0 (q/noise 10.0 t)))
+         :angle-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise 10.0 (* t 0.2))) 2)))
          :target-vel (- (q/noise t 133 120) 0.5)
          ;; FIXME: does this drag make any sense?
          :drag (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008))))}]
