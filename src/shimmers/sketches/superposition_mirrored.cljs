@@ -209,14 +209,12 @@
            :angle-vel (* (+ angle-vel (* angle-acc dt)) drag))))))
 
 (defn update-positions [particles t dt]
-  (let [wobble
-        (let [amp-n (center-filter 0.3 (q/noise 30.0 30.0 (* 0.25 t)))
-              amplitude (* (cq/rel-h 0.15) (dec (Math/pow 2.0 amp-n)))
-              rate-n (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0))
-              rate (tm/mix* 4 32 rate-n)]
-          (* amplitude (Math/sin (* rate t))))
-        controls
-        {:wobble wobble
+  (let [controls
+        {:wobble (let [amp-n (center-filter 0.3 (q/noise 30.0 30.0 (* 0.25 t)))
+                       amplitude (* (cq/rel-h 0.15) (dec (Math/pow 2.0 amp-n)))
+                       rate-n (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0))
+                       rate (tm/mix* 4 32 rate-n)]
+                   (* amplitude (Math/sin (* rate t))))
          :pos-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise (* t 0.2) 10.0)) 2)))
          :steering (let [steer-noise (center-filter 0.0 (q/noise (* (/ 3 7) t) 160))]
                      (if (< steer-noise 0.15)
