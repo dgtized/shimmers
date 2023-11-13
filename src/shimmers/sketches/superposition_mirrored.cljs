@@ -200,15 +200,14 @@
           angle-acc (case steering
                       :active (control/angular-acceleration angle (g/heading (tm/- dest pos)) angle-c angle-vel)
                       :slow (control/spin-acceleration angle-vel (* 32 target-vel) angle-c)
-                      :fast (control/spin-acceleration angle-vel (* 128 target-vel) angle-c))
-          drag-c (- 1.0 (eq/sqr (* drag dt)))]
+                      :fast (control/spin-acceleration angle-vel (* 128 target-vel) angle-c))]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
            :angle (+ angle (* angle-vel dt))
-           :vel (tm/limit (tm/* (tm/+ vel (tm/* force dt)) drag-c)
-                          (+ (* 5 pos-c) (/ 1.0 dt)))
-           :angle-vel (* (+ angle-vel (* angle-acc dt)) drag-c))))))
+           :vel (tm/limit (tm/* (tm/+ vel (tm/* force dt)) drag)
+                          (+ (* 10 pos-c) (/ 1.0 dt)))
+           :angle-vel (* (+ angle-vel (* angle-acc dt)) drag))))))
 
 (defn update-positions [particles t dt]
   (let [wobble
@@ -230,8 +229,7 @@
                            :fast))
          :angle-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise 10.0 (* t 0.2))) 2)))
          :target-vel (- (q/noise t 133 120) 0.5)
-         ;; FIXME: does this drag make any sense?
-         :drag (+ 1.0 (* 50.0 (q/noise 20.0 (* t dt 0.008))))}]
+         :drag (- 1.0 (eq/sqr (* dt (+ 0.1 (* 100.0 (center-filter 0.1 (q/noise 20.0 (* 0.3 t))))))))}]
     (swap! defo assoc :controls controls)
     (mapv (move dt controls) particles)))
 
