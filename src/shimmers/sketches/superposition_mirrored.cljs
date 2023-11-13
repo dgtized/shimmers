@@ -237,10 +237,10 @@
 
 (defn affinity [particles]
   (/ (reduce (fn [acc {:keys [pos dest]}]
-               (+ acc (g/dist pos dest)))
+               (+ acc (g/dist-squared pos dest)))
              0.0
              particles)
-     (count particles)))
+     (eq/sqr (count particles))))
 
 (defn setup []
   ;; Performance, removes calls to addType & friends
@@ -273,7 +273,7 @@
 (defn update-state [{:keys [particles t cycle linear-matrix] :as state}]
   (if (running? cycle)
     (let [dt (- (clock) t)]
-      (if (< (affinity particles) (cq/rel-h 0.008))
+      (if (< (affinity particles) (cq/rel-h 0.05))
         (let [point-gen (generate-shapes (dr/random 0.05 0.49))]
           (-> state
               (update :t + dt)
@@ -291,14 +291,16 @@
   (let [[x y] (tm/+ (tm/* (gv/vec2 pos) rate) (gv/vec2 base))]
     (q/noise x y)))
 
-(defn draw-image [{:keys [particles t]}]
+(defn draw-image [{:keys [cycle particles t]}]
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
         scale-noise (center-filter 0.0 (q/noise (* t 0.3) 100.0))
         scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
         color (< 0.2 (q/noise (* t 0.33) 1000.0) 0.8)]
-    (swap! defo assoc :draw {:scale-noise scale-noise
-                             :scale scale
-                             :color color})
+    (swap! defo assoc
+           :cycle cycle
+           :draw {:scale-noise scale-noise
+                  :scale scale
+                  :color color})
     (q/color-mode :hsl 1.0)
     (doseq [{:keys [pos angle]} particles]
       (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
