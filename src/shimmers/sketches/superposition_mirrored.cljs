@@ -215,12 +215,12 @@
                        rate-n (+ 0.01 (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0)))
                        rate (* 8 (Math/pow rate-n 2))]
                    (* amplitude (Math/sin (* rate t))))
-         :pos-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise (* t 0.2) 10.0)) 2)))
+         :pos-c (+ 4 (* 150.0 (Math/pow (center-filter 0.0 (q/noise (* t 0.2) 10.0)) 2)))
          :steering (let [steer-noise (center-filter 0.0 (q/noise (* (/ 3 7) t) 160))]
                      (if (< steer-noise 0.15)
                        :active
                        :spin))
-         :angle-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise 10.0 (* t 0.2))) 2)))
+         :angle-c (+ 4 (* 150.0 (Math/pow (center-filter 0.0 (q/noise 10.0 (* t 0.2))) 2)))
          :target-vel (let [vel (* 2 (- (q/noise 250 (* 0.05 t)) 0.5))]
                        (+ (* (tm/sign vel) 2) (* 512 (Math/pow vel 3))))
          :drag (- 1.0 (eq/sqr (* dt (+ 0.1 (* 100.0 (center-filter 0.1 (q/noise 20.0 (* 0.3 t))))))))}]
