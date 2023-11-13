@@ -199,8 +199,7 @@
                             (tm/mag vel)))
           angle-acc (case steering
                       :active (control/angular-acceleration angle (g/heading (tm/- dest pos)) angle-c angle-vel)
-                      :slow (control/spin-acceleration angle-vel (* 32 target-vel) angle-c)
-                      :fast (control/spin-acceleration angle-vel (* 128 target-vel) angle-c))]
+                      :spin (control/spin-acceleration angle-vel target-vel angle-c))]
       (-> particle
           (assoc
            :pos (tm/+ pos (tm/* vel dt))
@@ -219,16 +218,13 @@
         controls
         {:wobble wobble
          :pos-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise (* t 0.2) 10.0)) 2)))
-         :steering (let [steer-noise (q/noise (* (/ 5 7) t) 160)]
-                     (cond (< 0.45 steer-noise 0.55)
-                           :active
-                           (or (< 0.28 steer-noise 0.45)
-                               (< 0.55 steer-noise 0.62))
-                           :slow
-                           :else
-                           :fast))
+         :steering (let [steer-noise (center-filter 0.0 (q/noise (* (/ 3 7) t) 160))]
+                     (if (< steer-noise 0.15)
+                       :active
+                       :spin))
          :angle-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise 10.0 (* t 0.2))) 2)))
-         :target-vel (- (q/noise t 133 120) 0.5)
+         :target-vel (let [vel (* 2 (- (q/noise 250 (* 0.1 t)) 0.5))]
+                       (+ (* (tm/sign vel) 2) (* 1024 (Math/pow vel 3))))
          :drag (- 1.0 (eq/sqr (* dt (+ 0.1 (* 100.0 (center-filter 0.1 (q/noise 20.0 (* 0.3 t))))))))}]
     (swap! defo assoc :controls controls)
     (mapv (move dt controls) particles)))
