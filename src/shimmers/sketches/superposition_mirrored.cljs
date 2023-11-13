@@ -211,9 +211,9 @@
 (defn update-positions [particles t dt]
   (let [controls
         {:wobble (let [amp-n (center-filter 0.3 (q/noise 120.0 30.0 (* 0.25 t)))
-                       amplitude (* (cq/rel-h 0.125) (dec (Math/pow 2.0 amp-n)))
+                       amplitude (* (cq/rel-h 0.06) (dec (Math/pow 2.0 amp-n)))
                        rate-n (+ 0.01 (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0)))
-                       rate (* 12 (Math/pow rate-n 2))]
+                       rate (* 8 (Math/pow rate-n 2))]
                    (* amplitude (Math/sin (* rate t))))
          :pos-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise (* t 0.2) 10.0)) 2)))
          :steering (let [steer-noise (center-filter 0.0 (q/noise (* (/ 3 7) t) 160))]
