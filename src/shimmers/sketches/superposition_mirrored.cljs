@@ -243,6 +243,10 @@
      (count particles)))
 
 (defn setup []
+  ;; Performance, removes calls to addType & friends
+  ;; now dominated by MinorGC and cost of sort?
+  (set! (.-disableFriendlyErrors js/p5) true)
+
   (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))
