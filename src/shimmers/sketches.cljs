@@ -117,6 +117,7 @@
    shimmers.sketches.lattice-of-common-chords
    shimmers.sketches.layered-intersections
    shimmers.sketches.lifecycle-of-shapes
+   shimmers.sketches.light-and-dark
    shimmers.sketches.liminal-tension
    shimmers.sketches.logistics-flow
    shimmers.sketches.magnetic-fields
