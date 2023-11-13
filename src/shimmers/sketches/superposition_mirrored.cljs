@@ -223,8 +223,8 @@
                        :active
                        :spin))
          :angle-c (+ 2 (* 150.0 (Math/pow (center-filter 0.01 (q/noise 10.0 (* t 0.2))) 2)))
-         :target-vel (let [vel (* 2 (- (q/noise 250 (* 0.1 t)) 0.5))]
-                       (+ (* (tm/sign vel) 2) (* 1024 (Math/pow vel 3))))
+         :target-vel (let [vel (* 2 (- (q/noise 250 (* 0.05 t)) 0.5))]
+                       (+ (* (tm/sign vel) 2) (* 512 (Math/pow vel 3))))
          :drag (- 1.0 (eq/sqr (* dt (+ 0.1 (* 100.0 (center-filter 0.1 (q/noise 20.0 (* 0.3 t))))))))}]
     (swap! defo assoc :controls controls)
     (mapv (move dt controls) particles)))
