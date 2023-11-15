@@ -1,6 +1,7 @@
 (ns shimmers.sketches.light-and-dark
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
@@ -42,6 +43,7 @@
         cross (->> (dr/gaussian (+ angle (* eq/TAU 0.25)) 0.2)
                    (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)))
                    (sort-by (fn [line] (:y (g/centroid line))))
+                   cs/midsection
                    (partition 2 2)
                    dr/shuffle
                    (take 2))]
