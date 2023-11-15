@@ -27,12 +27,11 @@
   (let [[a b] (g/vertices left)
         [c d] (g/vertices right)]
     ;; trying to add in corners if missing
-    (cond (diagonal? (tm/- d b))
-          (gp/polygon2 a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c)
-          (diagonal? (tm/- a c))
-          (gp/polygon2 a b d c (apply min-key (partial g/dist c) (g/vertices bounds)))
-          :else
-          (gp/polygon2 a b d c))))
+    (gp/polygon2 (cond-> (if (diagonal? (tm/- d b))
+                           [a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c]
+                           [a b d c])
+                   (diagonal? (tm/- a c))
+                   (conj (apply min-key (partial g/dist c) (g/vertices bounds)))))))
 
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
