@@ -19,6 +19,10 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn diagonal? [v]
+  (let [[x y] v]
+    (and (> (abs x) 0) (> (abs y) 0))))
+
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
                        (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)) angle))]
@@ -26,9 +30,9 @@
       (let [[a b] (g/vertices left)
             [c d] (g/vertices right)]
         ;; trying to add in corners if missing
-        (vary-meta (cond (not (tm/delta= (:y b) (:y d)))
+        (vary-meta (cond (diagonal? (tm/- d b))
                          (gp/polygon2 a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c)
-                         (not (tm/delta= (:x c) (:x a)))
+                         (diagonal? (tm/- a c))
                          (gp/polygon2 a b d c (apply min-key (partial g/dist c) (g/vertices bounds)))
                          :else
                          (gp/polygon2 a b d c))
