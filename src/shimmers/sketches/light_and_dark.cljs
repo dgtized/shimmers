@@ -44,6 +44,8 @@
                             overlap)))
           polygons))
 
+;; FIXME: if lines is odd, ie first/last line is out of bounds, should account
+;; for the triangle sliver?
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
                        (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)) angle))
