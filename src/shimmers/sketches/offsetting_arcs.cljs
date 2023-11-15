@@ -5,7 +5,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 ;; A variation on https://twitter.com/incre_ment/status/1482584406933979136
 (defn setup []
@@ -25,11 +26,15 @@
   (q/fill 0.0 0.4)
   ;; (q/no-stroke)
   (let [scale 10]
-    (doseq [a (range 0 800 scale)]
-      (doseq [b (range 0 600 scale)]
-        (let [n (q/noise (* a 0.01) (* b 0.01) t)
-              x (+ a (* n (Math/tan (* eq/TAU (+ t n)))))]
-          (q/arc x (+ b (- x a)) scale scale (* eq/TAU (Math/sin t)) (* eq/TAU n)))))))
+    (doseq [a (range 0 (q/width) scale)]
+      (doseq [b (range 0 (q/height) scale)]
+        (let [n1 (q/noise (* a 0.01) (* b 0.01) t)
+              n2 (q/noise (* tm/PHI t) (* b 0.003) (* a 0.003))
+              theta (* eq/TAU n2)
+              x (+ a (* n1 (Math/tan (* eq/TAU (+ t n1)))))]
+          (q/arc x (+ b (- x a)) scale scale
+                 (+ theta (* eq/TAU (Math/sin t)))
+                 (+ theta (* eq/TAU n1))))))))
 
 (defn page []
   (sketch/component
