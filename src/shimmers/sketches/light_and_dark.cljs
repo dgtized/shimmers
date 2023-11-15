@@ -1,6 +1,7 @@
 (ns shimmers.sketches.light-and-dark
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -37,10 +38,16 @@
                    (diagonal? (tm/- a c))
                    (conj (apply min-key (partial g/dist c) (g/vertices bounds)))))))
 
+(defn remove-overlap [polygons overlap]
+  (remove (fn [poly] (let [c (g/centroid poly)]
+                      (some (fn [shape] (g/contains-point? shape c))
+                            overlap)))
+          polygons))
+
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
                        (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)) angle))
-        line-polys (map (fn [[left right]]  (polygon-from-pair bounds left right))
+        poly-pairs (map (fn [[left right]]  (polygon-from-pair bounds left right))
                         (partition 2 2 lines))
         cross (->> (dr/gaussian (+ angle (* eq/TAU 0.25)) 0.2)
                    (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)))
@@ -49,12 +56,13 @@
                    (partition 2 2)
                    dr/shuffle
                    (take 2))
-        cross-polys (map (fn [[left right]] (polygon-from-pair bounds left right))
-                         cross)]
-    (concat (for [s line-polys]
+        cross-pairs (map (fn [[left right]]  (polygon-from-pair bounds left right)) cross)]
+    (concat (for [s (remove-overlap (lines/slice-polygons poly-pairs (apply concat cross))
+                                    cross-pairs)]
               (vary-meta s assoc :fill "black"))
-            (for [s cross-polys]
-              (vary-meta s assoc :fill "grey")))))
+            (for [s (remove-overlap (lines/slice-polygons cross-pairs lines)
+                                    poly-pairs)]
+              (vary-meta s assoc :fill "maroon")))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)
