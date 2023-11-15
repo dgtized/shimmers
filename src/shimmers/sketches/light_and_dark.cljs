@@ -23,20 +23,23 @@
   (let [[x y] v]
     (and (> (abs x) 0) (> (abs y) 0))))
 
+(defn polygon-from-pair [bounds left right]
+  (let [[a b] (g/vertices left)
+        [c d] (g/vertices right)]
+    ;; trying to add in corners if missing
+    (cond (diagonal? (tm/- d b))
+          (gp/polygon2 a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c)
+          (diagonal? (tm/- a c))
+          (gp/polygon2 a b d c (apply min-key (partial g/dist c) (g/vertices bounds)))
+          :else
+          (gp/polygon2 a b d c))))
+
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
                        (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)) angle))]
     (for [[left right] (partition 2 2 lines)]
-      (let [[a b] (g/vertices left)
-            [c d] (g/vertices right)]
-        ;; trying to add in corners if missing
-        (vary-meta (cond (diagonal? (tm/- d b))
-                         (gp/polygon2 a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c)
-                         (diagonal? (tm/- a c))
-                         (gp/polygon2 a b d c (apply min-key (partial g/dist c) (g/vertices bounds)))
-                         :else
-                         (gp/polygon2 a b d c))
-                   assoc :fill "black")))))
+      (vary-meta (polygon-from-pair bounds left right)
+                 assoc :fill "black"))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)
