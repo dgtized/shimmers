@@ -19,14 +19,17 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn diagonal? [v]
-  (let [[x y] v]
-    (and (> (abs x) 0) (> (abs y) 0))))
+(defn diagonal?
+  "A vector is diagonal if both x and y diverge from 0."
+  [[x y]]
+  (and (> (abs x) 0) (> (abs y) 0)))
 
-(defn polygon-from-pair [bounds left right]
+(defn polygon-from-pair
+  "Construct polygon between lines `left` and `right` through a rectangle `bounds`"
+  [bounds left right]
   (let [[a b] (g/vertices left)
         [c d] (g/vertices right)]
-    ;; trying to add in corners if missing
+    ;; add in corners if missing
     (gp/polygon2 (cond-> (if (diagonal? (tm/- d b))
                            [a b (apply min-key (partial g/dist b) (g/vertices bounds)) d c]
                            [a b d c])
