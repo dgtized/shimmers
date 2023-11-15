@@ -40,19 +40,21 @@
 (defn shapes [bounds angle cuts]
   (let [lines (sort-by (fn [line] (:x (g/centroid line)))
                        (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)) angle))
+        line-polys (map (fn [[left right]]  (polygon-from-pair bounds left right))
+                        (partition 2 2 lines))
         cross (->> (dr/gaussian (+ angle (* eq/TAU 0.25)) 0.2)
                    (clip/hatch-rectangle bounds (/ (g/width bounds) (inc cuts)))
                    (sort-by (fn [line] (:y (g/centroid line))))
                    cs/midsection
                    (partition 2 2)
                    dr/shuffle
-                   (take 2))]
-    (concat (for [[left right] (partition 2 2 lines)]
-              (vary-meta (polygon-from-pair bounds left right)
-                         assoc :fill "black"))
-            (for [[left right] cross]
-              (vary-meta (polygon-from-pair bounds left right)
-                         assoc :fill "grey")))))
+                   (take 2))
+        cross-polys (map (fn [[left right]] (polygon-from-pair bounds left right))
+                         cross)]
+    (concat (for [s line-polys]
+              (vary-meta s assoc :fill "black"))
+            (for [s cross-polys]
+              (vary-meta s assoc :fill "grey")))))
 
 (defn scene []
   (let [bounds (rect/rect 0 0 width height)
