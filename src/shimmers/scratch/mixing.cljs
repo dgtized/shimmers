@@ -17,3 +17,10 @@
 
   (for [x (range 2 10 0.5)]
     [x (remap 4 8 10 20 x)]))
+
+;; some easing examples
+(comment
+  (map (fn [x] [x (Math/pow (+ 1 x) 3)]) (range 0 1 0.1))
+  (map (fn [x] [x (Math/pow x 4)]) (range 0 1 0.1))
+  (map (fn [x] [x (Math/pow 4 x)]) (range 0 1 0.1))
+  (map (fn [x] [x (Math/pow 4 (+ 1 x))]) (range 0 1 0.1)))
