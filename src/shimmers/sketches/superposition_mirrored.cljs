@@ -248,8 +248,10 @@
   (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
   (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))
-        particles (make-particles point-gen 128)]
-    {:image (q/create-graphics (q/width) (q/height))
+        particles (make-particles point-gen 128)
+        image (q/create-graphics (q/width) (q/height))]
+    (q/with-graphics image (q/color-mode :hsl 1.0))
+    {:image image
      :shapes shapes
      :particles particles
      :linear-matrix (init-linear-matrix particles (generate-shapes (dr/random 0.1 0.49)))
@@ -299,7 +301,6 @@
            :draw {:scale-noise scale-noise
                   :scale scale
                   :color color})
-    (q/color-mode :hsl 1.0)
     (doseq [{:keys [pos angle]} particles]
       (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
             fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
