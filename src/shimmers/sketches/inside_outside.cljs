@@ -19,7 +19,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn generate-circles [bounds R]
+(defn generate-circles [{[w h] :size :as bounds} R]
   (reduce
    (fn [circles pct]
      (let [radius (* R pct)]
@@ -30,8 +30,8 @@
          :gen-circle
          (let [r (dr/random-int (* 0.75 radius) (* 1.25 radius))]
            (fn []
-             (let [p (gv/vec2 (dr/random) (dr/random))]
-               (gc/circle (g/unmap-point bounds p) r))))
+             (let [p (gv/vec2 (dr/random r (- w r)) (dr/random r (- h r)))]
+               (gc/circle (tm/+ (:p bounds) p) r))))
          :spacing (max (* 0.005 R) (* 0.1 radius))})))
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
