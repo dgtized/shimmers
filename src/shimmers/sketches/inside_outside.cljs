@@ -11,10 +11,11 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
-(def width 800)
-(def height 600)
+(def width 900)
+(def height (tm/ceil (/ width 1.41)))
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -54,9 +55,9 @@
 
 (defn restyle [circle]
   (let [min-r (* 0.01 (:r circle))]
-    (case (dr/weighted {:spiral 5
-                        :concentric-limit 1
-                        :concentric-fixed 2})
+    (case (dr/weighted {:spiral 6
+                        :concentric-limit 2
+                        :concentric-fixed 3})
       :spiral
       (spiral circle
               (dr/random 0.88 0.96)
