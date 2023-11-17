@@ -45,21 +45,42 @@
        (take-while (fn [{:keys [r]}] (> r min-r)))
        (map :circle)))
 
+(defn concentric [circle dr min-r]
+  (->> circle
+       (iterate
+        (fn [{:keys [p r]}]
+          (gc/circle p (dr r))))
+       (take-while (fn [{:keys [r]}] (> r min-r)))))
+
+(defn restyle [circle]
+  (let [min-r (* 0.01 (:r circle))]
+    (case (dr/weighted {:spiral 5
+                        :concentric-limit 1
+                        :concentric-fixed 2})
+      :spiral
+      (spiral circle
+              (dr/random 0.88 0.96)
+              (* (dr/rand-nth [-1 1])
+                 eq/TAU
+                 (if (dr/chance 0.75)
+                   (dr/random 0.05 0.2)
+                   (dr/random 0.25 0.5)))
+              min-r)
+      :concentric-limit
+      (concentric circle (let [dr (dr/random 0.875 0.94)]
+                           (fn [r] (* r dr)))
+                  min-r)
+      :concentric-fixed
+      (concentric circle (let [dr (* (:r circle) (dr/random 0.02 0.15))]
+                           (fn [r] (- r dr)))
+                  min-r))))
+
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         circles (sort-by :r > (generate-circles bounds R))]
     (into [circles]
-          (mapcat (fn [c]
-                    (spiral c
-                            (dr/random 0.88 0.96)
-                            (* (dr/rand-nth [-1 1])
-                               eq/TAU
-                               (if (dr/chance 0.66)
-                                 (dr/random 0.05 0.2)
-                                 (dr/random 0.25 0.5)))
-                            (* 0.002 R)))
-                  (take 29 (dr/shuffle (take 45 circles)))))))
+          (mapcat restyle (take 29 (dr/shuffle (take 45 circles)))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
