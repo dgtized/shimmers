@@ -52,18 +52,21 @@
     (into [circles]
           (mapcat (fn [c]
                     (spiral c
-                            (dr/random 0.9 0.95)
+                            (dr/random 0.88 0.96)
                             (* (dr/rand-nth [-1 1])
-                               (dr/random 0.2 0.8))
+                               eq/TAU
+                               (if (dr/chance 0.66)
+                                 (dr/random 0.05 0.2)
+                                 (dr/random 0.25 0.5)))
                             (* 0.002 R)))
-                  (take 23 (dr/shuffle (take 45 circles)))))))
+                  (take 29 (dr/shuffle (take 45 circles)))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
+                   :stroke-width 0.33}
     (shapes)))
 
 (sketch/definition inside-outside
