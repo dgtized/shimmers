@@ -29,7 +29,9 @@
          :candidates (min (int (/ 20 pct)) 800)
          :gen-circle
          (let [r (dr/random-int (* 0.75 radius) (* 1.25 radius))]
-           (fn [] (gc/circle (g/random-point-inside bounds) r)))
+           (fn []
+             (let [p (gv/vec2 (dr/random) (dr/random))]
+               (gc/circle (g/unmap-point bounds p) r))))
          :spacing (max (* 0.005 R) (* 0.1 radius))})))
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
