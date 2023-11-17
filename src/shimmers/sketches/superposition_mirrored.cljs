@@ -272,7 +272,11 @@
 
 (defn update-state [{:keys [particles t cycle linear-matrix] :as state}]
   (if (running? cycle)
-    (let [dt (- (clock) t)]
+    (let [t' (clock)
+          ;; remove discontinuity in force from excessive dt
+          ;; without this, suspending the tab would apply full
+          ;; However, it did give an interesting side-effect of kicking all the particles out of view.
+          dt (min (- t' t) 0.1)]
       (if (< (affinity particles) (cq/rel-h 0.05))
         (let [point-gen (generate-shapes (dr/random 0.05 0.49))]
           (-> state
@@ -282,7 +286,7 @@
               (assoc :linear-matrix (init-linear-matrix particles point-gen))
               (update :particles update-destinations linear-matrix)))
         (-> state
-            (update :t + dt)
+            (assoc :t t')
             (update :linear-matrix linear/online-match-update (* 2 (count particles)))
             (update :particles update-positions t dt))))
     state))
@@ -299,6 +303,7 @@
         individuality (center-filter 0.4 (q/noise 12000.0 (* t 0.05)))]
     (swap! defo assoc
            :cycle cycle
+           :t t
            :draw {:scale-noise scale-noise
                   :scale scale
                   :color color
