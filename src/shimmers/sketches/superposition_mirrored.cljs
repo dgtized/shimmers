@@ -295,14 +295,22 @@
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
         scale-noise (center-filter 0.0 (q/noise (* t 0.3) 100.0))
         scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
-        color (< 0.2 (q/noise (* t 0.33) 1000.0) 0.8)]
+        color (< 0.2 (q/noise (* t 0.33) 1000.0) 0.8)
+        individuality (center-filter 0.4 (q/noise 12000.0 (* t 0.05)))]
     (swap! defo assoc
            :cycle cycle
            :draw {:scale-noise scale-noise
                   :scale scale
-                  :color color})
+                  :color color
+                  :individuality individuality})
     (doseq [{:keys [pos angle]} particles]
       (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
+            t (+ t
+                 (if (> individuality 0)
+                   (let [local-noise (noise-at (tm/+ (gv/vec2 t t) pos) 0.002 [800 900])]
+                     (* (Math/pow 4 individuality)
+                        (Math/pow (+ 1 (center-filter 0.25 local-noise)) 4)))
+                   0))
             fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
             stroke-opacity (center-filter 0.01 (noise-at [(+ r t) (+ r t)] 0.03 [300.0 300.0]))]
         (q/stroke (tm/smoothstep* 0.45 0.55 (noise-at [r (+ t r)] 0.15 [500.0 500.0]))
