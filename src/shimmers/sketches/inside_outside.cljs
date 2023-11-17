@@ -57,9 +57,11 @@
 
 (defn restyle [circle]
   (let [min-r (* 0.01 (:r circle))]
-    (case (dr/weighted {:spiral 6
-                        :concentric-limit 2
-                        :concentric-fixed 3})
+    (case (dr/weighted {:spiral 3
+                        :concentric-limit 1.5
+                        :concentric-fixed 2
+                        :fill 2
+                        :drop 2})
       :spiral
       (spiral circle
               (dr/random 0.88 0.96)
@@ -76,20 +78,24 @@
       :concentric-fixed
       (concentric circle (let [dr (* (:r circle) (dr/random 0.02 0.15))]
                            (fn [r] (- r dr)))
-                  min-r))))
+                  min-r)
+      :drop
+      []
+      :fill
+      [(vary-meta circle assoc :fill "white")])))
 
 (defn shapes []
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         circles (sort-by :r > (generate-circles bounds R))]
-    (into [circles]
-          (mapcat restyle (take 29 (dr/shuffle (take 45 circles)))))))
+    (into (drop 41 circles)
+          (mapcat restyle (take 41 circles)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
-                   :fill "white"
+                   :fill "none"
                    :stroke-width 0.33}
     (shapes)))
 
