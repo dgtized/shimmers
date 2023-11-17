@@ -295,7 +295,7 @@
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
         scale-noise (center-filter 0.0 (q/noise (* t 0.3) 100.0))
         scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
-        color (< 0.2 (q/noise (* t 0.33) 1000.0) 0.8)
+        color (< 0.2 (q/noise (* t 0.25) 1000.0) 0.8)
         individuality (center-filter 0.4 (q/noise 12000.0 (* t 0.05)))]
     (swap! defo assoc
            :cycle cycle
