@@ -1,12 +1,14 @@
 (ns shimmers.sketches.inside-outside
   (:require
    [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.sketches.velocity-fields :as vf]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -55,13 +57,14 @@
           (gc/circle p (dr r))))
        (take-while (fn [{:keys [r]}] (> r min-r)))))
 
-(defn restyle [circle]
+(defn restyle [seed circle]
   (let [min-r (* 0.01 (:r circle))]
     (case (dr/weighted {:spiral 3
                         :concentric-limit 1.5
                         :concentric-fixed 2
+                        :flow 5
                         :fill 2
-                        :drop 2})
+                        :drop 1})
       :spiral
       (spiral circle
               (dr/random 0.88 0.96)
@@ -71,6 +74,17 @@
                    (dr/random 0.05 0.2)
                    (dr/random 0.25 0.5)))
               min-r)
+      :flow
+      [(csvg/group {:stroke "black"}
+         (into (if (dr/chance 0.33)
+                 [circle] [])
+               (->> (vf/make-path circle
+                                  (fn [] (rp/inside-circle circle dr/random))
+                                  seed 0.0015 1.0 false
+                                  (fn [] (dr/random 30 120)))
+                    repeatedly
+                    (keep identity)
+                    (take (* 2000 (/ (g/area circle) (* height width)))))))]
       :concentric-limit
       (concentric circle (let [dr (dr/random 0.875 0.94)]
                            (fn [r] (* r dr)))
@@ -84,12 +98,12 @@
       :fill
       [(vary-meta circle assoc :fill "white")])))
 
-(defn shapes []
+(defn shapes [seed]
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         circles (sort-by :r > (generate-circles bounds R))]
     (into (drop 41 circles)
-          (mapcat restyle (take 41 circles)))))
+          (mapcat (partial restyle seed) (take 41 circles)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
@@ -97,7 +111,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.33}
-    (shapes)))
+                  (shapes (tm/abs (dr/randvec2 1000)))))
 
 (sketch/definition inside-outside
     {:created-at "2023-11-17"
