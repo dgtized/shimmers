@@ -33,9 +33,9 @@
                         v' (tm/* (tm/+ v (v/polar (/ 200 height) (* noise eq/TAU))) 0.85)]
                     [(tm/+ p v) v'])))
                (take (lifespan))
-               (map first)
-               (take-while (fn [p] (g/contains-point? bounds p))))]
-      (when (seq path)
+               (take-while (fn [[p _v]] (g/contains-point? bounds p)))
+               (map first))]
+      (when (and (seq path) (> (count path) 1))
         (csvg/path
          (into [[:M start]]
                (map (fn [p] [:T p])
