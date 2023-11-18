@@ -8,7 +8,6 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.sketches.velocity-fields :as vf]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -57,6 +56,25 @@
           (gc/circle p (dr r))))
        (take-while (fn [{:keys [r]}] (> r min-r)))))
 
+(defn make-path [bounds start-fn seed scale force lifespan]
+  (fn []
+    (let [start (start-fn)
+          path
+          (->> [start (gv/vec2)]
+               (iterate
+                (fn [[p v]]
+                  (let [noise (dr/noise-at-point-01 seed scale p)
+                        v' (tm/* (tm/+ v (v/polar force (* noise eq/TAU))) 0.9)]
+                    [(tm/+ p v) v'])))
+               (take (lifespan))
+               (take-while (fn [[p _v]] (g/contains-point? bounds p)))
+               (map first))]
+      (when (and (seq path) (> (count path) 1))
+        (->> path
+             (map (fn [p] [:T p]))
+             (into [[:M start]])
+             csvg/path)))))
+
 (defn restyle [seed circle]
   (let [min-r (* 0.01 (:r circle))]
     (case (dr/weighted {:spiral 3
@@ -78,10 +96,11 @@
       [(csvg/group {:stroke "black"}
          (into (if (dr/chance 0.33)
                  [circle] [])
-               (->> (vf/make-path circle
-                                  (fn [] (rp/inside-circle circle dr/random))
-                                  seed 0.0015 1.0 false
-                                  (fn [] (dr/random 30 120)))
+               (->> (make-path circle
+                               (fn [] (rp/inside-circle circle dr/random))
+                               seed 0.001
+                               0.25
+                               (fn [] (dr/random 64 128)))
                     repeatedly
                     (keep identity)
                     (take (* 2000 (/ (g/area circle) (* height width)))))))]
