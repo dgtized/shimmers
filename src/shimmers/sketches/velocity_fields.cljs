@@ -22,10 +22,9 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn make-path [bounds seed scale buzzy pareto-width lifespan]
+(defn make-path [bounds start-fn seed scale buzzy pareto-width lifespan]
   (fn []
-    (let [start (rv (dr/random -0.1 1.1)
-                    (dr/random -0.1 1.1))
+    (let [start (start-fn)
           path
           (->> [start (gv/vec2)]
                (iterate
@@ -109,8 +108,10 @@
                 (dr/weighted {1.0 10
                               0.66 2
                               0.5 1})
-                1.0)]
-    (->> (make-path bounds seed scale buzzy pareto-width lifespan)
+                1.0)
+        start-fn (fn [] (rv (dr/random -0.1 1.1)
+                           (dr/random -0.1 1.1)))]
+    (->> (make-path bounds start-fn seed scale buzzy pareto-width lifespan)
          repeatedly
          (keep identity)
          (take (max 100 (int (* n (/ (g/area bounds) (* width height)))))))))
@@ -127,7 +128,7 @@
                       [true false] 2
                       [false true] 4
                       [true true] 8})]
-    {:seed (tm/abs (dr/randvec2 100))
+    {:seed (tm/abs (dr/randvec2 1000))
      :scaling scaling
      :scale (/ 1.0 scaling)
      :offset (dr/weighted {0 2 4 2 8 2 12 1})
