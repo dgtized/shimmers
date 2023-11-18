@@ -62,7 +62,7 @@
     (case (dr/weighted {:spiral 3
                         :concentric-limit 1.5
                         :concentric-fixed 2
-                        :flow 5
+                        :flow 3
                         :fill 2
                         :drop 1})
       :spiral
