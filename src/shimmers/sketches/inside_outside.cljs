@@ -38,13 +38,13 @@
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
-(defn flow-group [circle seed]
-  (let [force (flow/noise-force seed 0.001 4.0)]
+(defn flow-group [circle force]
+  (let [flow (dr/weighted {flow/bidirectional 4 flow/forward 1})]
     [(csvg/group {}
        (into (if (dr/chance 0.33)
                [circle] [])
              (->> (fn []
-                    (when-let [path (flow/bidirectional
+                    (when-let [path (flow
                                      (rp/inside-circle circle dr/random)
                                      (fn [p] (g/contains-point? circle p))
                                      force
@@ -55,9 +55,8 @@
                   (take (tm/clamp (* 1200 (/ (g/area circle) (* height width)))
                                   48 1024)))))]))
 
-(defn spaced-flow-group [circle seed]
-  (let [force (flow/noise-force seed 0.001 4.0)
-        theta (dr/gaussian (+ (g/heading (force (:p circle))) tm/HALF_PI) 0.2)
+(defn spaced-flow-group [circle force]
+  (let [theta (dr/gaussian (+ (g/heading (force (:p circle))) tm/HALF_PI) 0.2)
         {:keys [p r]} circle]
     [(csvg/group {}
        (into [circle]
@@ -91,7 +90,8 @@
        (take-while (fn [{:keys [r]}] (> r min-r)))))
 
 (defn restyle [seed circle]
-  (let [min-r (* 0.01 (:r circle))]
+  (let [min-r (* 0.01 (:r circle))
+        force (flow/noise-force seed 0.00125 4.0)]
     (case (dr/weighted {:spiral 3
                         :concentric-limit 1.5
                         :concentric-fixed 2
@@ -109,9 +109,9 @@
                    (dr/random 0.25 0.5)))
               min-r)
       :flow
-      (flow-group circle seed)
+      (flow-group circle force)
       :spaced-flow
-      (spaced-flow-group circle seed)
+      (spaced-flow-group circle force)
       :concentric-limit
       (concentric circle (let [dr (dr/random 0.80 0.90)]
                            (fn [r] (* r dr)))
