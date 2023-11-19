@@ -24,9 +24,8 @@
 
 (defn make-path [bounds start-fn seed scale buzzy pareto-width lifespan]
   (fn []
-    (let [start (start-fn)
-          path
-          (->> [start (gv/vec2)]
+    (let [path
+          (->> [(start-fn) (gv/vec2)]
                (iterate
                 (fn [[p v]]
                   (let [noise (dr/noise-at-point-01 seed scale p)
@@ -37,9 +36,7 @@
                (map first))]
       (when (and (seq path) (> (count path) 1))
         (csvg/path
-         (into [[:M start]]
-               (map (fn [p] [:T p])
-                    (dr/random-sample buzzy path)))
+         (csvg/curved-path (dr/random-sample buzzy path))
          {:stroke-width
           (if pareto-width
             (tm/clamp (/ (dr/pareto 1.0 1.5) 10.0) 0.25 2.0)
