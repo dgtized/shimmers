@@ -9,23 +9,20 @@
   (fn [p]
     (v/polar force (* (dr/noise-at-point-01 seed scale p) eq/TAU))))
 
-(defn forward [start inside? force-fn lifespan]
+(defn flow [start-pt inside? next-pt lifespan]
   (let [path
-        (->> start
-             (iterate (fn [p] (tm/+ p (force-fn p))))
-             (take (lifespan))
-             (take-while inside?))]
-    (when (and (seq path) (> (count path) 1))
+        (->> start-pt
+             (iterate next-pt)
+             (take-while inside?)
+             (take (lifespan)))]
+    (when (> (count path) 1)
       path)))
 
+(defn forward [start inside? force-fn lifespan]
+  (flow start inside? (fn [p] (tm/+ p (force-fn p))) lifespan))
+
 (defn backward [start inside? force-fn lifespan]
-  (let [path
-        (->> start
-             (iterate (fn [p] (tm/- p (force-fn p))))
-             (take (lifespan))
-             (take-while inside?))]
-    (when (and (seq path) (> (count path) 1))
-      path)))
+  (flow start inside? (fn [p] (tm/- p (force-fn p))) lifespan))
 
 (defn bidirectional [start inside? force-fn lifespan]
   (let [behind (backward start inside? force-fn lifespan)
@@ -36,5 +33,5 @@
                           (if (seq ahead)
                             ahead
                             [])))]
-    (when (and (seq path) (> (count path) 1))
+    (when (> (count path) 1)
       path)))
