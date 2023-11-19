@@ -68,10 +68,7 @@
                (take (lifespan))
                (take-while (fn [p] (g/contains-point? bounds p))))]
       (when (and (seq path) (> (count path) 1))
-        (->> path
-             (map (fn [p] [:T p]))
-             (into [[:M start]])
-             csvg/path)))))
+        (csvg/path (csvg/curved-path path))))))
 
 (defn restyle [seed circle]
   (let [min-r (* 0.01 (:r circle))]

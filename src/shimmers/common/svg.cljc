@@ -107,6 +107,14 @@
                         :t ["t" svg/*fmt-vec* " "])]
      (svg/path segments attribs))))
 
+(defn segmented-path [points]
+  (into [[:M (first points)]]
+        (map (fn [p] [:L p]) (rest points))))
+
+(defn curved-path [points]
+  (into [[:M (first points)]]
+        (map (fn [p] [:T p]) (rest points))))
+
 (defn hsl
   ([h s l] (hsl h s l 1.0))
   ([h s l a]
