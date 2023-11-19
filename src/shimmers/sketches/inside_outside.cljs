@@ -60,15 +60,13 @@
   (fn []
     (let [start (start-fn)
           path
-          (->> [start (gv/vec2)]
+          (->> start
                (iterate
-                (fn [[p v]]
-                  (let [noise (dr/noise-at-point-01 seed scale p)
-                        v' (tm/* (tm/+ v (v/polar force (* noise eq/TAU))) 0.9)]
-                    [(tm/+ p v) v'])))
+                (fn [p]
+                  (let [noise (dr/noise-at-point-01 seed scale p)]
+                    (tm/+ p (v/polar force (* noise eq/TAU))))))
                (take (lifespan))
-               (take-while (fn [[p _v]] (g/contains-point? bounds p)))
-               (map first))]
+               (take-while (fn [p] (g/contains-point? bounds p))))]
       (when (and (seq path) (> (count path) 1))
         (->> path
              (map (fn [p] [:T p]))
@@ -99,7 +97,7 @@
                (->> (make-path circle
                                (fn [] (rp/inside-circle circle dr/random))
                                seed 0.001
-                               0.25
+                               1.0
                                (fn [] (dr/random 64 128)))
                     repeatedly
                     (keep identity)
