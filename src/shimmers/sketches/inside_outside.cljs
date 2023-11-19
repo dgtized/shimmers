@@ -38,9 +38,9 @@
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
-(defn make-flow [bounds start-fn force-fn lifespan]
+(defn make-flow [start-fn inside? force-fn lifespan]
   (fn []
-    (when-let [path (flow/bidirectional bounds (start-fn) force-fn lifespan)]
+    (when-let [path (flow/bidirectional (start-fn) inside? force-fn lifespan)]
       (csvg/path (csvg/segmented-path path)))))
 
 (defn spiral [circle dr dt min-r]
@@ -84,8 +84,8 @@
          (into (if (dr/chance 0.33)
                  [circle] [])
                (->> (make-flow
-                     circle
                      (fn [] (rp/inside-circle circle dr/random))
+                     (fn [p] (g/contains-point? circle p))
                      (flow/noise-force seed 0.001 4.0)
                      (fn [] (dr/random 128 256)))
                     repeatedly

@@ -3,34 +3,33 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
 (defn noise-force [seed scale force]
   (fn [p]
     (v/polar force (* (dr/noise-at-point-01 seed scale p) eq/TAU))))
 
-(defn forward [bounds start force-fn lifespan]
+(defn forward [start inside? force-fn lifespan]
   (let [path
         (->> start
              (iterate (fn [p] (tm/+ p (force-fn p))))
              (take (lifespan))
-             (take-while (fn [p] (g/contains-point? bounds p))))]
+             (take-while inside?))]
     (when (and (seq path) (> (count path) 1))
       path)))
 
-(defn backward [bounds start force-fn lifespan]
+(defn backward [start inside? force-fn lifespan]
   (let [path
         (->> start
              (iterate (fn [p] (tm/- p (force-fn p))))
              (take (lifespan))
-             (take-while (fn [p] (g/contains-point? bounds p))))]
+             (take-while inside?))]
     (when (and (seq path) (> (count path) 1))
       path)))
 
-(defn bidirectional [bounds start force-fn lifespan]
-  (let [behind (backward bounds start force-fn lifespan)
-        ahead (forward bounds start force-fn lifespan)
+(defn bidirectional [start inside? force-fn lifespan]
+  (let [behind (backward start inside? force-fn lifespan)
+        ahead (forward start inside? force-fn lifespan)
         path (seq (concat (if (seq behind)
                             (reverse (rest behind))
                             [])
