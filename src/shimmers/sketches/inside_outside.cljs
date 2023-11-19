@@ -38,38 +38,37 @@
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
-(defn make-flow [start-fn inside? force-fn lifespan]
-  (fn []
-    (when-let [path (flow/bidirectional (start-fn) inside? force-fn lifespan)]
-      (csvg/path (csvg/segmented-path path)))))
-
 (defn flow-group [circle seed]
-  [(csvg/group {}
-     (into (if (dr/chance 0.33)
-             [circle] [])
-           (->> (make-flow
-                 (fn [] (rp/inside-circle circle dr/random))
-                 (fn [p] (g/contains-point? circle p))
-                 (flow/noise-force seed 0.001 4.0)
-                 (fn [] (dr/random 128 256)))
-                repeatedly
-                (keep identity)
-                (take (tm/clamp (* 1200 (/ (g/area circle) (* height width)))
-                                48 1024)))))])
+  (let [force (flow/noise-force seed 0.001 4.0)
+        lifespan (fn [] (dr/random 128 256))]
+    [(csvg/group {}
+       (into (if (dr/chance 0.33)
+               [circle] [])
+             (->> (fn []
+                    (when-let [path (flow/bidirectional
+                                     (rp/inside-circle circle dr/random)
+                                     (fn [p] (g/contains-point? circle p))
+                                     force lifespan)]
+                      (csvg/path (csvg/segmented-path path))))
+                  repeatedly
+                  (keep identity)
+                  (take (tm/clamp (* 1200 (/ (g/area circle) (* height width)))
+                                  48 1024)))))]))
 
 (defn spaced-flow-group [circle seed]
   (let [force (flow/noise-force seed 0.001 4.0)
-        theta (dr/gaussian (+ (g/heading (force (:p circle))) tm/HALF_PI) 0.2)]
+        theta (dr/gaussian (+ (g/heading (force (:p circle))) tm/HALF_PI) 0.2)
+        {:keys [p r]} circle]
     [(csvg/group {}
        (into [circle]
              (->> (tm/norm-range (int (/ (* 2 (:r circle)) (dr/random 2.5 10.0))))
                   (map (fn [t]
-                         ((make-flow
-                           (fn [] (let [{:keys [p r]} circle]
-                                   (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)))
-                           (fn [p] (g/contains-point? circle p))
-                           force
-                           (fn [] (dr/random 128 256))))))
+                         (when-let [path (flow/bidirectional
+                                          (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)
+                                          (fn [p] (g/contains-point? circle p))
+                                          force
+                                          (constantly 200))]
+                           (csvg/path (csvg/segmented-path path)))))
                   (keep identity))))]))
 
 (defn spiral [circle dr dt min-r]
