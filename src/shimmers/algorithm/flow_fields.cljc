@@ -14,7 +14,7 @@
         (->> start-pt
              (iterate next-pt)
              (take-while inside?)
-             (take (lifespan)))]
+             (take lifespan))]
     (when (> (count path) 1)
       path)))
 

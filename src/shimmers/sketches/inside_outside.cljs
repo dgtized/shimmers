@@ -39,8 +39,7 @@
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
 (defn flow-group [circle seed]
-  (let [force (flow/noise-force seed 0.001 4.0)
-        lifespan (fn [] (dr/random 128 256))]
+  (let [force (flow/noise-force seed 0.001 4.0)]
     [(csvg/group {}
        (into (if (dr/chance 0.33)
                [circle] [])
@@ -48,7 +47,8 @@
                     (when-let [path (flow/bidirectional
                                      (rp/inside-circle circle dr/random)
                                      (fn [p] (g/contains-point? circle p))
-                                     force lifespan)]
+                                     force
+                                     (dr/random 128 256))]
                       (csvg/path (csvg/segmented-path path))))
                   repeatedly
                   (keep identity)
@@ -67,7 +67,7 @@
                                           (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)
                                           (fn [p] (g/contains-point? circle p))
                                           force
-                                          (constantly 200))]
+                                          200)]
                            (csvg/path (csvg/segmented-path path)))))
                   (keep identity))))]))
 
