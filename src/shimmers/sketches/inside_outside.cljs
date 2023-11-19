@@ -62,19 +62,15 @@
         theta (dr/gaussian (+ (g/heading (force (:p circle))) tm/HALF_PI) 0.2)]
     [(csvg/group {}
        (into [circle]
-             (->> (make-flow
-                   (dr/cyclic
-                    (map (fn [t]
-                           (let [{:keys [p r]} circle]
-                             (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)))
-                         (tm/norm-range (int (/ (* 2 (:r circle)) 5)))))
-                   (fn [p] (g/contains-point? circle p))
-                   force
-                   (fn [] (dr/random 128 256)))
-                  repeatedly
-                  (keep identity)
-                  (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
-                                  48 1024)))))]))
+             (->> (tm/norm-range (int (/ (* 2 (:r circle)) (dr/random 2.5 10.0))))
+                  (map (fn [t]
+                         ((make-flow
+                           (fn [] (let [{:keys [p r]} circle]
+                                   (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)))
+                           (fn [p] (g/contains-point? circle p))
+                           force
+                           (fn [] (dr/random 128 256))))))
+                  (keep identity))))]))
 
 (defn spiral [circle dr dt min-r]
   (->> {:circle circle :t (dr/random-tau) :r (:r circle)}
