@@ -93,11 +93,11 @@
                     (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
                                     48 1024)))))]
       :concentric-limit
-      (concentric circle (let [dr (dr/random 0.875 0.94)]
+      (concentric circle (let [dr (dr/random 0.80 0.90)]
                            (fn [r] (* r dr)))
                   min-r)
       :concentric-fixed
-      (concentric circle (let [dr (* (:r circle) (dr/random 0.02 0.15))]
+      (concentric circle (let [dr (* (:r circle) (dr/random 0.05 0.2))]
                            (fn [r] (- r dr)))
                   min-r)
       :drop
