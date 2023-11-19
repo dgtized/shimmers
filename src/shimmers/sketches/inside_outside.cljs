@@ -1,6 +1,7 @@
 (ns shimmers.sketches.inside-outside
   (:require
    [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.flow-fields :as flow]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -56,20 +57,6 @@
           (gc/circle p (dr r))))
        (take-while (fn [{:keys [r]}] (> r min-r)))))
 
-(defn make-path [bounds start-fn seed scale force lifespan]
-  (fn []
-    (let [start (start-fn)
-          path
-          (->> start
-               (iterate
-                (fn [p]
-                  (let [noise (dr/noise-at-point-01 seed scale p)]
-                    (tm/+ p (v/polar force (* noise eq/TAU))))))
-               (take (lifespan))
-               (take-while (fn [p] (g/contains-point? bounds p))))]
-      (when (and (seq path) (> (count path) 1))
-        (csvg/path (csvg/segmented-path path))))))
-
 (defn restyle [seed circle]
   (let [min-r (* 0.01 (:r circle))]
     (case (dr/weighted {:spiral 3
@@ -91,11 +78,12 @@
       [(csvg/group {:stroke "black"}
          (into (if (dr/chance 0.33)
                  [circle] [])
-               (->> (make-path circle
-                               (fn [] (rp/inside-circle circle dr/random))
-                               seed 0.001
-                               2.0
-                               (fn [] (dr/random 128 256)))
+               (->> (flow/flow-path
+                     circle
+                     (fn [] (rp/inside-circle circle dr/random))
+                     seed 0.001
+                     2.0
+                     (fn [] (dr/random 128 256)))
                     repeatedly
                     (keep identity)
                     (take (* 2000 (/ (g/area circle) (* height width)))))))]
