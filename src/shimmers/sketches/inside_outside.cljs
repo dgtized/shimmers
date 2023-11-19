@@ -38,6 +38,11 @@
    []
    [0.2 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
+(defn make-flow [bounds start-fn seed scale force lifespan]
+  (fn []
+    (when-let [path (flow/flow-path bounds start-fn seed scale force lifespan)]
+      (csvg/path (csvg/segmented-path path)))))
+
 (defn spiral [circle dr dt min-r]
   (->> {:circle circle :t (dr/random-tau) :r (:r circle)}
        (iterate
@@ -78,7 +83,7 @@
       [(csvg/group {:stroke "black"}
          (into (if (dr/chance 0.33)
                  [circle] [])
-               (->> (flow/flow-path
+               (->> (make-flow
                      circle
                      (fn [] (rp/inside-circle circle dr/random))
                      seed 0.001
