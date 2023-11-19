@@ -130,11 +130,12 @@
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         circles (sort-by :r > (generate-circles bounds R))
-        hull (gp/convex-hull* (map :p (take 7 circles)))]
+        hull (gp/convex-hull* (map :p (take 7 circles)))
+        hulls (repeatedly (dr/random-int 2 7)
+                          (fn [] (g/translate (gp/polygon2 hull) (dr/randvec2 10))))]
     (concat (drop 41 circles)
             (mapcat (partial restyle seed) (take 41 circles))
-            (repeatedly (dr/random-int 6)
-                        (fn [] (g/translate (gp/polygon2 hull) (dr/randvec2 10)))))))
+            (when (dr/chance 0.25) hulls))))
 
 (defn scene []
   (csvg/svg-timed {:width width
@@ -142,7 +143,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.33}
-                  (shapes (tm/abs (dr/randvec2 1000)))))
+    (shapes (tm/abs (dr/randvec2 1000)))))
 
 (sketch/definition inside-outside
     {:created-at "2023-11-17"
