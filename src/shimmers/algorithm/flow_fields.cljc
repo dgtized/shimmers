@@ -10,11 +10,32 @@
   (fn [p]
     (v/polar force (* (dr/noise-at-point-01 seed scale p) eq/TAU))))
 
-(defn flow-path [bounds start-fn force-fn lifespan]
+(defn forward [bounds start force-fn lifespan]
   (let [path
-        (->> (start-fn)
+        (->> start
              (iterate (fn [p] (tm/+ p (force-fn p))))
              (take (lifespan))
              (take-while (fn [p] (g/contains-point? bounds p))))]
+    (when (and (seq path) (> (count path) 1))
+      path)))
+
+(defn backward [bounds start force-fn lifespan]
+  (let [path
+        (->> start
+             (iterate (fn [p] (tm/- p (force-fn p))))
+             (take (lifespan))
+             (take-while (fn [p] (g/contains-point? bounds p))))]
+    (when (and (seq path) (> (count path) 1))
+      path)))
+
+(defn bidirectional [bounds start force-fn lifespan]
+  (let [behind (backward bounds start force-fn lifespan)
+        ahead (forward bounds start force-fn lifespan)
+        path (seq (concat (if (seq behind)
+                            (reverse (rest behind))
+                            [])
+                          (if (seq ahead)
+                            ahead
+                            [])))]
     (when (and (seq path) (> (count path) 1))
       path)))
