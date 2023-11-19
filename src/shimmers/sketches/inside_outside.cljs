@@ -68,7 +68,7 @@
                (take (lifespan))
                (take-while (fn [p] (g/contains-point? bounds p))))]
       (when (and (seq path) (> (count path) 1))
-        (csvg/path (csvg/curved-path path))))))
+        (csvg/path (csvg/segmented-path path))))))
 
 (defn restyle [seed circle]
   (let [min-r (* 0.01 (:r circle))]
@@ -94,8 +94,8 @@
                (->> (make-path circle
                                (fn [] (rp/inside-circle circle dr/random))
                                seed 0.001
-                               1.0
-                               (fn [] (dr/random 64 128)))
+                               2.0
+                               (fn [] (dr/random 128 256)))
                     repeatedly
                     (keep identity)
                     (take (* 2000 (/ (g/area circle) (* height width)))))))]
