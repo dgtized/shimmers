@@ -43,6 +43,38 @@
     (when-let [path (flow/bidirectional (start-fn) inside? force-fn lifespan)]
       (csvg/path (csvg/segmented-path path)))))
 
+(defn flow-group [circle seed]
+  [(csvg/group {}
+     (into (if (dr/chance 0.33)
+             [circle] [])
+           (->> (make-flow
+                 (fn [] (rp/inside-circle circle dr/random))
+                 (fn [p] (g/contains-point? circle p))
+                 (flow/noise-force seed 0.001 4.0)
+                 (fn [] (dr/random 128 256)))
+                repeatedly
+                (keep identity)
+                (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
+                                48 1024)))))])
+
+(defn spaced-flow-group [circle seed]
+  (let [theta (dr/random-tau)]
+    [(csvg/group {}
+       (into [circle]
+             (->> (make-flow
+                   (dr/cyclic
+                    (map (fn [t]
+                           (let [{:keys [p r]} circle]
+                             (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)))
+                         (tm/norm-range (inc (int (* 128 (/ (:r circle) height)))))))
+                   (fn [p] (g/contains-point? circle p))
+                   (flow/noise-force seed 0.001 4.0)
+                   (fn [] (dr/random 128 256)))
+                  repeatedly
+                  (keep identity)
+                  (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
+                                  48 1024)))))]))
+
 (defn spiral [circle dr dt min-r]
   (->> {:circle circle :t (dr/random-tau) :r (:r circle)}
        (iterate
@@ -81,35 +113,9 @@
                    (dr/random 0.25 0.5)))
               min-r)
       :flow
-      [(csvg/group {}
-         (into (if (dr/chance 0.33)
-                 [circle] [])
-               (->> (make-flow
-                     (fn [] (rp/inside-circle circle dr/random))
-                     (fn [p] (g/contains-point? circle p))
-                     (flow/noise-force seed 0.001 4.0)
-                     (fn [] (dr/random 128 256)))
-                    repeatedly
-                    (keep identity)
-                    (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
-                                    48 1024)))))]
+      (flow-group circle seed)
       :spaced-flow
-      (let [theta (dr/random-tau)]
-        [(csvg/group {}
-           (into [circle]
-                 (->> (make-flow
-                       (dr/cyclic
-                        (map (fn [t]
-                               (let [{:keys [p r]} circle]
-                                 (tm/mix (v/-polar p r theta) (v/+polar p r theta) t)))
-                             (tm/norm-range (inc (int (* 128 (/ (:r circle) height)))))))
-                       (fn [p] (g/contains-point? circle p))
-                       (flow/noise-force seed 0.001 4.0)
-                       (fn [] (dr/random 128 256)))
-                      repeatedly
-                      (keep identity)
-                      (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
-                                      48 1024)))))])
+      (spaced-flow-group circle seed)
       :concentric-limit
       (concentric circle (let [dr (dr/random 0.80 0.90)]
                            (fn [r] (* r dr)))
