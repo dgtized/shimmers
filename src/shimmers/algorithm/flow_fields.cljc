@@ -6,13 +6,14 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
-(defn flow-path [bounds start-fn seed scale force lifespan]
+(defn noise-force [seed scale force]
+  (fn [p]
+    (v/polar force (* (dr/noise-at-point-01 seed scale p) eq/TAU))))
+
+(defn flow-path [bounds start-fn force-fn lifespan]
   (let [path
         (->> (start-fn)
-             (iterate
-              (fn [p]
-                (let [noise (dr/noise-at-point-01 seed scale p)]
-                  (tm/+ p (v/polar force (* noise eq/TAU))))))
+             (iterate (fn [p] (tm/+ p (force-fn p))))
              (take (lifespan))
              (take-while (fn [p] (g/contains-point? bounds p))))]
     (when (and (seq path) (> (count path) 1))
