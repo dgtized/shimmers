@@ -90,16 +90,17 @@
           (gc/circle p (dr r))))
        (take-while (fn [{:keys [r]}] (> r min-r)))))
 
-(defn restyle [seed circle]
+(defn restyle [seed hull circle]
   (let [min-r (* 0.01 (:r circle))
-        force (flow/noise-force seed 0.00125 4.0)]
+        force (flow/noise-force seed 0.00125 4.0)
+        inside (g/contains-point? (g/scale-size hull 0.9) (:p circle))]
     (case (dr/weighted {:spiral 3
                         :concentric-limit 1.5
                         :concentric-fixed 2
-                        :flow 3
-                        :spaced-flow 2
+                        :flow (* 3 (if inside 2 1))
+                        :spaced-flow (* 2 (if inside 2 1))
                         :fill 2
-                        :drop 1})
+                        :drop (if inside 0 1.5)})
       :spiral
       (spiral circle
               (dr/random 0.88 0.96)
@@ -130,12 +131,12 @@
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         circles (sort-by :r > (generate-circles bounds R))
-        hull (gp/convex-hull* (map :p (take 7 circles)))
+        hull (gp/polygon2 (gp/convex-hull* (map :p (take 7 circles))))
         hulls (repeatedly (dr/random-int 2 7)
-                          (fn [] (g/translate (gp/polygon2 hull) (dr/randvec2 10))))]
+                          (fn [] (g/translate hull (dr/randvec2 10))))]
     (concat (drop 41 circles)
-            (mapcat (partial restyle seed) (take 41 circles))
-            (when (dr/chance 0.25) hulls))))
+            (mapcat (partial restyle seed hull) (take 41 circles))
+            (when (dr/chance 0.1) hulls))))
 
 (defn scene []
   (csvg/svg-timed {:width width
