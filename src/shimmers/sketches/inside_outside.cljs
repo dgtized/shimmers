@@ -90,7 +90,8 @@
                      (fn [] (dr/random 128 256)))
                     repeatedly
                     (keep identity)
-                    (take (* 2000 (/ (g/area circle) (* height width)))))))]
+                    (take (tm/clamp (* 2000 (/ (g/area circle) (* height width)))
+                                    48 1024)))))]
       :concentric-limit
       (concentric circle (let [dr (dr/random 0.875 0.94)]
                            (fn [r] (* r dr)))
