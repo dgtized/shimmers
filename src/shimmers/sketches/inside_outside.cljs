@@ -11,6 +11,7 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [shimmers.math.geometry.bounded-shapes :as bounded]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -23,17 +24,10 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn generate-unique-box [bounds]
-  (let [rw (dr/random 0.05 0.50)
-        rh (dr/random 0.05 0.50)
-        p (gv/vec2 (dr/random 0 (- 1 rw)) (dr/random 0 (- 1 rh)))]
-    (rect/rect (g/unmap-point bounds p)
-               (g/unmap-point bounds (tm/+ p (gv/vec2 rw rh))))))
-
 ;; possible unbounded search
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
-             (let [candidate (generate-unique-box bounds)
+             (let [candidate (bounded/rectangle bounds (dr/random 0.5) (dr/random 0.5))
                    margin (g/scale-size candidate 1.2)]
                (if (some (fn [box] (when (collide/overlaps? margin box) box))
                          existing)
