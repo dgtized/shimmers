@@ -98,7 +98,10 @@
        [:p "Current approach is to recursively calculate difference of each
       rectangle that remains that contains one of the punched out rectangles.
       Unfortunately, this fails because remaining rectangle may overlap more
-      then one existing region."]]]]))
+      then one existing region."]
+       [:p "A possible solution is to investigate the "
+        [:a {:href "https://en.wikipedia.org/wiki/Guillotine_cutting"}
+         "guillotine cutting"] " problem."]]]]))
 
 (sketch/definition divisible
     {:created-at "2023-11-21"
