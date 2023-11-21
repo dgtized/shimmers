@@ -37,13 +37,17 @@
     [rect]))
 
 (defn shapes [bounds]
-  (let [punches (first (drop-while (fn [s] (< (count s) 5))
-                                   (generate-boxes bounds)))]
+  (let [punches (->> bounds
+                     generate-boxes
+                     (drop-while (fn [s] (< (count s) 5)))
+                     first
+                     (sort-by (fn [s] (rect/right s)) <))]
     (concat (reduce (fn [rects box]
                       (mapcat (fn [r] (punch-out r box)) rects))
                     [bounds]
-                    (sort-by (fn [s] (g/dist (g/centroid s) (g/centroid bounds))) punches))
-            (map (fn [s] (vary-meta s assoc :stroke "red")) punches))))
+                    punches)
+            (map-indexed (fn [i s] (vary-meta s assoc :fill (csvg/hsl (/ i (count punches)) 0.5 0.5 0.25)))
+                         punches))))
 
 (defn scene []
   (csvg/svg-timed {:width width
