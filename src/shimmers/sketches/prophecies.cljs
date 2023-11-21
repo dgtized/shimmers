@@ -228,11 +228,6 @@
 ;; circle is `1-cut/2`, radius of small circle is `cut/2`. The maximum radius of
 ;; large circle is 1/2 height, so it's x-coordinate must be at last `(1-cut)/2`.
 ;;
-
-(defn max-circle-in-bounds [bounds point]
-  (let [p (g/unmap-point bounds point)]
-    (gc/circle p (poly/dist-to-closest-point bounds p))))
-
 (defn scale-fit [bounds l r cut]
   (loop [{[p q] :points :as line} (gl/line2 l r)]
     (let [d (g/dist p q)
