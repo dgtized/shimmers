@@ -54,15 +54,17 @@
                 (g/unmap-point bounds q)))))
 
 (defn square-in-bounds
-  [{pos :p [width height] :size}]
-  (let [s (dr/random)
-        size (if (< height width)
-               (* s height)
-               (* s width))]
-    (rect/rect (tm/+ pos (gv/vec2 (dr/random 0 (- width size))
-                                  (dr/random 0 (- height size))))
-               size size)))
+  "Generates a random square inside the rectangle `bounds`.
+
+  `s%` is the percent size of min(width,height) of the bounding rectangle."
+  ([bounds] (square-in-bounds bounds (dr/random)))
+  ([{pos :p [width height] :size} s%]
+   (let [size (* s% (min height width))]
+     (rect/rect (tm/+ pos (gv/vec2 (dr/random 0 (- width size))
+                                   (dr/random 0 (- height size))))
+                size size))))
 
 (comment (let [r (rectangle-in-bounds (rect/rect 5 5 10 5))]
            [r (:p r) (rect/top-right r)])
-         (square-in-bounds (rect/rect 5 5 5 5)))
+         (square-in-bounds (rect/rect 5 5 5 5))
+         (square-in-bounds (rect/rect 5 5 5 5) 0.5))
