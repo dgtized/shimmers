@@ -64,6 +64,7 @@
    shimmers.sketches.displacements-inbetween
    shimmers.sketches.dithering
    shimmers.sketches.divide-by-triangle
+   shimmers.sketches.divisible
    shimmers.sketches.dreamcatcher
    shimmers.sketches.elliptics
    shimmers.sketches.emitters
