@@ -33,34 +33,39 @@
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
              (let [candidate (generate-unique-box bounds)
-                   margin (g/scale-size candidate 1.15)]
+                   margin (g/scale-size candidate 1.2)]
                (if (some (fn [box] (when (collide/overlaps? margin box) box))
                          existing)
                  existing
                  (conj existing candidate))))
            []))
 
-(defn generate-circles [{[w h] :size :as bounds} seeds R max-candidates]
+(defn generate-circles [{[w h] :size :as bounds} seeds R max-candidates boxes]
   (reduce
    (fn [circles pct]
-     (let [radius (* R pct)]
+     (let [radius (* R pct)
+           gen-circle (let [r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
+                        (fn []
+                          (let [p (gv/vec2 (dr/random r (- w r)) (dr/random r (- h r)))]
+                            (gc/circle (tm/+ (:p bounds) p) r))))]
        (pack/circle-pack
         circles
         {:bounds bounds
          :candidates (min max-candidates (int (/ 20 pct)))
-         :gen-circle
-         (let [r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
-           (fn []
-             (let [p (gv/vec2 (dr/random r (- w r)) (dr/random r (- h r)))]
-               (gc/circle (tm/+ (:p bounds) p) r))))
-         :spacing (max (* 0.005 R) (* 0.1 radius))})))
+         :gen-circle (fn []
+                       (some (fn [circle]
+                               (when (not-any? (fn [b] (collide/overlaps? b circle)) boxes)
+                                 circle))
+                             (repeatedly gen-circle)))
+         :spacing (max (* 0.01 R) (* 0.1 radius))})))
    seeds
    [0.15 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
 
 (defn generate-seeds [bounds]
   (let [boundaries (first (drop-while (fn [s] (< (count s) 5)) (generate-boxes bounds)))]
     [boundaries
-     (mapcat (fn [box] (take 16 (generate-circles (g/scale-size box 0.95) [] (min (g/width box) (g/height box)) 10)))
+     (mapcat (fn [box] (generate-circles (g/scale-size box 0.95) []
+                                        (min (g/width box) (g/height box)) 10 []))
              boundaries)]))
 
 (defn flow-group [circle force]
@@ -155,13 +160,14 @@
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         [boxes seeds] (generate-seeds bounds)
-        circles (sort-by :r > (generate-circles bounds seeds R 800))
+        circles (sort-by :r > (generate-circles bounds seeds R 800
+                                                (map (fn [b] (g/scale-size b 1.02)) boxes)))
         hull (gp/polygon2 (gp/convex-hull* (map :p (take 7 circles))))
         hulls (repeatedly (dr/random-int 2 7)
                           (fn [] (g/translate hull (dr/randvec2 10))))]
     (concat (drop 41 circles)
             (mapcat (partial restyle seed hull) (take 41 circles))
-            boxes
+            (when (dr/chance 0.1) boxes)
             (when (dr/chance 0.1) hulls))))
 
 (defn scene []
