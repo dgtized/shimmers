@@ -1,7 +1,9 @@
 (ns shimmers.sketches.divisible
   (:require
+   [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
@@ -9,7 +11,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [shimmers.math.deterministic-random :as dr]
    [thi.ng.math.core :as tm]))
 
 (def width 800)
@@ -29,9 +30,20 @@
                  (conj existing candidate))))
            []))
 
+;; this doesn't work because a punch might intersect with more than one rectangle
+(defn punch-out [rect punch]
+  (if (collide/bounded? rect punch)
+    (square/difference rect punch)
+    [rect]))
+
 (defn shapes [bounds]
-  (first (drop-while (fn [s] (< (count s) 11))
-                     (generate-boxes bounds))))
+  (let [punches (first (drop-while (fn [s] (< (count s) 5))
+                                   (generate-boxes bounds)))]
+    (concat (reduce (fn [rects box]
+                      (mapcat (fn [r] (punch-out r box)) rects))
+                    [bounds]
+                    punches)
+            (map (fn [s] (vary-meta s assoc :stroke "red")) punches))))
 
 (defn scene []
   (csvg/svg-timed {:width width
