@@ -41,14 +41,17 @@
      (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
 
 (defn rectangle-in-bounds
-  "Generate a random rectangle inside of an existing bounds."
-  [bounds]
-  (let [[w h] (repeatedly 2 dr/random)
-        p (gv/vec2 (dr/random 0 (- 1 w))
-                   (dr/random 0 (- 1 h)))
-        q (gv/vec2 w h)]
-    (rect/rect (g/unmap-point bounds p)
-               (g/unmap-point bounds q))))
+  "Generate a random rectangle inside of an existing bounds.
+
+  `w%` and `h%` are percentage sizes [0..1] of the bounding rectangle."
+  ([bounds]
+   (rectangle-in-bounds bounds (dr/random) (dr/random)))
+  ([bounds w% h%]
+   (let [p (gv/vec2 (dr/random 0 (- 1 w%))
+                    (dr/random 0 (- 1 h%)))
+         q (tm/+ p (gv/vec2 w% h%))]
+     (rect/rect (g/unmap-point bounds p)
+                (g/unmap-point bounds q)))))
 
 (defn square-in-bounds
   [{pos :p [width height] :size}]
@@ -60,5 +63,6 @@
                                   (dr/random 0 (- height size))))
                size size)))
 
-(comment (rectangle-in-bounds (rect/rect 5 5 5 5))
+(comment (let [r (rectangle-in-bounds (rect/rect 5 5 10 5))]
+           [r (:p r) (rect/top-right r)])
          (square-in-bounds (rect/rect 5 5 5 5)))
