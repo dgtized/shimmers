@@ -40,14 +40,14 @@
                  (conj existing candidate))))
            []))
 
-(defn generate-circles [{[w h] :size :as bounds} seeds R candidates]
+(defn generate-circles [{[w h] :size :as bounds} seeds R max-candidates]
   (reduce
    (fn [circles pct]
      (let [radius (* R pct)]
        (pack/circle-pack
         circles
         {:bounds bounds
-         :candidates (min candidates (min (int (/ 20 pct)) 800))
+         :candidates (min max-candidates (int (/ 20 pct)))
          :gen-circle
          (let [r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
            (fn []
