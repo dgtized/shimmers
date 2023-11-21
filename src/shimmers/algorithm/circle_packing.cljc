@@ -23,7 +23,7 @@
 (defn legal-candidate
   [circletree
    {:keys [bounds gen-circle spacing] :or {spacing 0}}]
-  (let [candidate (gen-circle)]
+  (when-let [candidate (gen-circle)]
     (when (geometry/contains-circle? bounds candidate)
       (if-let [near (saq/closest-circle circletree candidate)]
         (when (> (saq/circle-overlap near candidate) spacing)

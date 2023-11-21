@@ -30,6 +30,7 @@
     (rect/rect (g/unmap-point bounds p)
                (g/unmap-point bounds (tm/+ p (gv/vec2 rw rh))))))
 
+;; possible unbounded search
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
              (let [candidate (generate-unique-box bounds)
@@ -56,7 +57,7 @@
                        (some (fn [circle]
                                (when (not-any? (fn [b] (collide/overlaps? b circle)) boxes)
                                  circle))
-                             (repeatedly gen-circle)))
+                             (repeatedly 30 gen-circle)))
          :spacing (max (* 0.01 R) (* 0.1 radius))})))
    seeds
    [0.15 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
