@@ -122,6 +122,11 @@
 
 (comment (hsl 0.5 0.8 0.4 0.6))
 
+(defn hsv
+  ([h s v] (hsv h s v 1.0))
+  ([h s v a]
+   (col/as-css (col/hsva h s v a))))
+
 ;; svg tricks to revisit:
 ;; https://www.smashingmagazine.com/2019/03/svg-circle-decomposition-paths/
 ;; https://www.smashingmagazine.com/2022/05/magical-svg-techniques/

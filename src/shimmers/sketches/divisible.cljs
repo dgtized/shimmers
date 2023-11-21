@@ -46,7 +46,8 @@
                       (mapcat (fn [r] (punch-out r box)) rects))
                     [bounds]
                     punches)
-            (map-indexed (fn [i s] (vary-meta s assoc :fill (csvg/hsl (/ i (count punches)) 0.5 0.5 0.25)))
+            (map-indexed (fn [i s] (let [fill (csvg/hsv (/ i (count punches)) 1.0 0.5 0.33)]
+                                    (vary-meta s assoc :fill fill)))
                          punches))))
 
 (defn scene []
