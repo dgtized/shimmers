@@ -18,11 +18,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn int-rect [{[x y] :p [w h] :size}]
+  (rect/rect (int x) (int y) (int w) (int h)))
+
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
-             (let [candidate (bounded/rectangle bounds
-                                                (tm/roundto (dr/random 0.05 0.3) 0.05)
-                                                (tm/roundto (dr/random 0.05 0.3) 0.05))
+             (let [candidate (-> bounds
+                                 (bounded/rectangle (tm/roundto (dr/random 0.05 0.3) 0.05)
+                                                    (tm/roundto (dr/random 0.05 0.3) 0.05))
+                                 int-rect)
                    margin (g/scale-size candidate 1.4)]
                (if (some (fn [box] (when (collide/overlaps? margin box) box))
                          existing)
