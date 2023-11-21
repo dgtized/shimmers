@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry.bounded-shapes
   (:require
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.polygon :as poly]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -39,6 +40,12 @@
     (every?
      (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
      (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
+
+(defn max-circle
+  "Construct largest circle inside of rectangle `bounds` for a given point."
+  [bounds point]
+  (let [p (g/unmap-point bounds point)]
+    (gc/circle p (poly/dist-to-closest-point bounds p))))
 
 (defn rectangle
   "Generate a random rectangle inside of an existing bounds.

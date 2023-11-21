@@ -5,11 +5,10 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.intersection :as isec]
-   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -20,15 +19,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn max-circle-in-bounds [bounds point]
-  (let [p (g/unmap-point bounds point)]
-    (gc/circle p (poly/dist-to-closest-point bounds p))))
-
 (defn pack-overlap-circles [bounds n]
   (let [legal-candidate
         (fn [circles]
           (let [p (gv/vec2 (dr/random 0.1 0.9) (dr/random 0.1 0.9))
-                candidate (g/scale-size (max-circle-in-bounds bounds p) 0.66)]
+                candidate (g/scale-size (bounded/max-circle bounds p) 0.66)]
             (when-not (some
                        (fn [c] (> (geometry/percent-circle-overlap c candidate) 0.03))
                        circles)
