@@ -27,16 +27,20 @@
      (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
 
 (defn circle-with-radius
-  [{[width height] :size :as bounds} r0 r1]
-  (let [r (dr/random r0 r1)
-        m (/ r (min width height))
+  "Construct a random circle in `bounds` with radius `r`.
+
+  `r` is constrained to the minimum side length of the bounds."
+  [{[width height] :size :as bounds} r]
+  (let [short (min width height)
+        r (min r short)
+        m (/ r short)
         c (gv/vec2 (dr/random m (- 1 m))
                    (dr/random m (- 1 m)))]
     (gc/circle (g/unmap-point bounds c) r)))
 
 (comment
   (let [bounds (rect/rect 10 10 20 20)
-        circles (repeatedly 1000 #(circle-with-radius bounds 2 10))]
+        circles (repeatedly 1000 #(circle-with-radius bounds (dr/random 2 10)))]
     (every?
      (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
      (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
