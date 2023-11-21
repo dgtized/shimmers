@@ -168,7 +168,7 @@
                           (fn [] (g/translate hull (dr/randvec2 10))))]
     (concat (drop 41 circles)
             (mapcat (partial restyle seed hull) (take 41 circles))
-            (when (dr/chance 0.1) boxes)
+            (when (dr/chance 0.25) boxes)
             (when (dr/chance 0.1) hulls))))
 
 (defn scene []
