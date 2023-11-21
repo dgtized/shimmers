@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.square-packing :as square]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -13,8 +14,7 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.algorithm.line-clipping :as clip]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -45,6 +45,14 @@
   (gl/line2 (gv/vec2 (rect/right rect) (rect/bottom rect))
             (rect/top-right rect)))
 
+(defn top-side [rect]
+  (gl/line2 (gv/vec2 (rect/left rect) (rect/top rect))
+            (rect/top-right rect)))
+
+(defn bottom-side [rect]
+  (gl/line2 (rect/bottom-left rect)
+            (gv/vec2 (rect/right rect) (rect/bottom rect))))
+
 (comment
   (right-side (rect/rect 5))
   (left-side (rect/rect 5))
@@ -62,15 +70,46 @@
               cuts))
     [rect]))
 
+(defn convert-rectangles [shapes]
+  (map (fn [s] (if (= 4 (count (g/vertices s)))
+                (g/bounds s)
+                s))
+       shapes))
+
+(defn joined-polygons [polygons]
+  (println polygons)
+  (->> polygons
+       (cs/iterate-cycles
+        3
+        (fn [polygons] (reduce (fn [shapes s]
+                                (let [last-shape (last shapes)]
+                                  (if-let [joined (and last-shape (lines/join-polygons last-shape s))]
+                                    (conj (butlast shapes) joined)
+                                    (conj shapes s))))
+                              nil polygons)))
+       convert-rectangles))
+
+(defn reduce-overlapping [shapes overlap]
+  (let [overlapping (filter (fn [s] (collide/overlaps? overlap s)) shapes)
+        remaining (remove (fn [s] (collide/overlaps? overlap s)) shapes)]
+    (->> (for [[p q](g/edges overlap)]
+           (g/scale-size (gl/line2 p q) 1000))
+         (lines/slice-polygons (joined-polygons overlapping))
+         convert-rectangles
+         (concat remaining))))
+
 (defn shapes [bounds]
   (let [punches (->> bounds
                      generate-boxes
-                     (drop-while (fn [s] (< (count s) 5)))
+                     (drop-while (fn [s] (< (count s) (dr/random-int 5 22))))
                      first
-                     (sort-by (fn [s] (rect/right s)) <))]
-    (concat (reduce (fn [rects box]
-                      (mapcat (fn [r] (punch-out r box)) rects))
-                    [bounds]
+                     (sort-by (fn [s] (rect/right s)) <))
+        remaining (reduce (fn [rects box]
+                            (mapcat (fn [r] (punch-out r box)) rects))
+                          [bounds]
+                          punches)]
+    (concat (reduce reduce-overlapping
+                    remaining
                     punches)
             (map-indexed (fn [i s] (let [fill (csvg/hsv (/ i (count punches)) 1.0 0.5 0.33)]
                                     (vary-meta s assoc :fill fill)))
