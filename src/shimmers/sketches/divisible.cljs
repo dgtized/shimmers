@@ -57,14 +57,20 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
-      [view-sketch/generate :divisible]]
-     [:div.readable-width "Experimenting with dividing a rectangle by punching
+     [:div
+      [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+       [view-sketch/generate :divisible]]
+      [:div
+       [:p "Experimenting with dividing a rectangle by punching
      out a set of rectangles inside of it, and then calculating the set of
-     rectangles remaining which would tile the space."]]))
+     rectangles remaining which would tile the space."]
+       [:p "Current approach is to recursively calculate difference of each
+      rectangle that remains that contains one of the punched out rectangles.
+      Unfortunately, this fails because remaining rectangle may overlap more
+      then one existing region."]]]]))
 
 (sketch/definition divisible
     {:created-at "2023-11-21"
      :tags #{}
      :type :svg}
-  (ctrl/mount (page)))
+  (ctrl/mount page))

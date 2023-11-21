@@ -33,4 +33,4 @@
     {:created-at "2023-"
      :tags #{}
      :type :svg}
-  (ctrl/mount (page)))
+  (ctrl/mount page))
