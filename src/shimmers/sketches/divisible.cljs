@@ -1,5 +1,6 @@
 (ns shimmers.sketches.divisible
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -9,9 +10,11 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [shimmers.algorithm.line-clipping :as clip]))
 
 (def width 800)
 (def height 600)
@@ -34,10 +37,29 @@
                  (conj existing candidate))))
            []))
 
+(defn left-side [rect]
+  (gl/line2 (rect/bottom-left rect)
+            (gv/vec2 (rect/left rect) (rect/top rect))))
+
+(defn right-side [rect]
+  (gl/line2 (gv/vec2 (rect/right rect) (rect/bottom rect))
+            (rect/top-right rect)))
+
+(comment
+  (right-side (rect/rect 5))
+  (left-side (rect/rect 5))
+  (map g/bounds (lines/cut-polygon (rect/rect 10) (left-side (rect/rect 2 0 6 10)))))
+
 ;; this doesn't work because a punch might intersect with more than one rectangle
 (defn punch-out [rect punch]
   (if (collide/bounded? rect punch)
-    (square/difference rect punch)
+    (let [clip (g/scale-size (right-side punch) 1000)
+          cuts (mapv g/bounds (lines/cut-polygon rect clip))]
+      ;; (println {:rect rect :clip clip :cuts cuts})
+      (mapcat (fn [s] (if (collide/bounded? s punch)
+                       (square/difference s punch)
+                       [s]))
+              cuts))
     [rect]))
 
 (defn shapes [bounds]
