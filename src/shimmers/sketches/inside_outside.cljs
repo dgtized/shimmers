@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
@@ -22,22 +23,45 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn generate-circles [{[w h] :size :as bounds} R]
+(defn generate-unique-box [bounds]
+  (let [rw (dr/random 0.05 0.50)
+        rh (dr/random 0.05 0.50)
+        p (gv/vec2 (dr/random 0 (- 1 rw)) (dr/random 0 (- 1 rh)))]
+    (rect/rect (g/unmap-point bounds p)
+               (g/unmap-point bounds (tm/+ p (gv/vec2 rw rh))))))
+
+(defn generate-boxes [bounds]
+  (iterate (fn [existing]
+             (let [candidate (generate-unique-box bounds)
+                   margin (g/scale-size candidate 1.15)]
+               (if (some (fn [box] (when (collide/overlaps? margin box) box))
+                         existing)
+                 existing
+                 (conj existing candidate))))
+           []))
+
+(defn generate-circles [{[w h] :size :as bounds} seeds R candidates]
   (reduce
    (fn [circles pct]
      (let [radius (* R pct)]
        (pack/circle-pack
         circles
         {:bounds bounds
-         :candidates (min (int (/ 20 pct)) 800)
+         :candidates (min candidates (min (int (/ 20 pct)) 800))
          :gen-circle
          (let [r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
            (fn []
              (let [p (gv/vec2 (dr/random r (- w r)) (dr/random r (- h r)))]
                (gc/circle (tm/+ (:p bounds) p) r))))
          :spacing (max (* 0.005 R) (* 0.1 radius))})))
-   []
+   seeds
    [0.15 0.12 0.1 0.08 0.06 0.04 0.02 0.01]))
+
+(defn generate-seeds [bounds]
+  (let [boundaries (first (drop-while (fn [s] (< (count s) 5)) (generate-boxes bounds)))]
+    [boundaries
+     (mapcat (fn [box] (take 16 (generate-circles (g/scale-size box 0.95) [] (min (g/width box) (g/height box)) 10)))
+             boundaries)]))
 
 (defn flow-group [circle force]
   (let [flow (dr/weighted {flow/bidirectional 4 flow/forward 1})]
@@ -130,12 +154,14 @@
 (defn shapes [seed]
   (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
-        circles (sort-by :r > (generate-circles bounds R))
+        [boxes seeds] (generate-seeds bounds)
+        circles (sort-by :r > (generate-circles bounds seeds R 800))
         hull (gp/polygon2 (gp/convex-hull* (map :p (take 7 circles))))
         hulls (repeatedly (dr/random-int 2 7)
                           (fn [] (g/translate hull (dr/randvec2 10))))]
     (concat (drop 41 circles)
             (mapcat (partial restyle seed hull) (take 41 circles))
+            boxes
             (when (dr/chance 0.1) hulls))))
 
 (defn scene []
