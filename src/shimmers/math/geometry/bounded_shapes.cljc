@@ -1,4 +1,4 @@
-(ns shimmers.math.geometry.shapes
+(ns shimmers.math.geometry.bounded-shapes
   (:require
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.circle :as gc]
