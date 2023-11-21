@@ -22,8 +22,15 @@
                    :stroke-width 0.5}
     (shapes)))
 
+(defn page []
+  (fn []
+    [sketch/with-explanation
+     [:div.canvas-frame [scene]]
+     [view-sketch/generate :svg-template]
+     [:div.readable-width]]))
+
 (sketch/definition svg-template
-  {:created-at "2023-"
-   :tags #{}
-   :type :svg}
-  (ctrl/mount (view-sketch/static-page scene :svg-template)))
+    {:created-at "2023-"
+     :tags #{}
+     :type :svg}
+  (ctrl/mount (page)))
