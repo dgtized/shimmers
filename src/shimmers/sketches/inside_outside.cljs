@@ -27,7 +27,7 @@
 ;; possible unbounded search
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
-             (let [candidate (bounded/rectangle bounds (dr/random 0.5) (dr/random 0.5))
+             (let [candidate (bounded/rectangle bounds (dr/random 0.05 0.5) (dr/random 0.05 0.5))
                    margin (g/scale-size candidate 1.2)]
                (if (some (fn [box] (when (collide/overlaps? margin box) box))
                          existing)
