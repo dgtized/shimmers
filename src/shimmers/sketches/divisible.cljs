@@ -42,7 +42,7 @@
     (concat (reduce (fn [rects box]
                       (mapcat (fn [r] (punch-out r box)) rects))
                     [bounds]
-                    punches)
+                    (sort-by (fn [s] (g/dist (g/centroid s) (g/centroid bounds))) punches))
             (map (fn [s] (vary-meta s assoc :stroke "red")) punches))))
 
 (defn scene []
@@ -57,8 +57,11 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [view-sketch/generate :divisible]
-     [:div.readable-width]]))
+     [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+      [view-sketch/generate :divisible]]
+     [:div.readable-width "Experimenting with dividing a rectangle by punching
+     out a set of rectangles inside of it, and then calculating the set of
+     rectangles remaining which would tile the space."]]))
 
 (sketch/definition divisible
     {:created-at "2023-11-21"
