@@ -13,7 +13,8 @@
   (t/testing "Rect2 Rect2"
     (is (sut/overlaps? (rect/rect 4) (rect/rect 4)) "identity")
     (is (sut/overlaps? (rect/rect 4) (rect/rect 1 1 2)) "contains")
-    (is (sut/overlaps? (rect/rect 4) (rect/rect 2 2 4)) "overlap"))
+    (is (sut/overlaps? (rect/rect 4) (rect/rect 2 2 4)) "overlap")
+    (is (sut/overlaps? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge"))
   (t/testing "Rect2 Circle2"
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2)) "overlap")
     (is (sut/overlaps? (rect/rect 4) (gc/circle 2 2 1)) "contains"))
