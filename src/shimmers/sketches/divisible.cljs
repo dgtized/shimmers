@@ -90,8 +90,8 @@
        convert-rectangles))
 
 (defn reduce-overlapping [shapes overlap]
-  (let [overlapping (filter (fn [s] (collide/overlaps? overlap s)) shapes)
-        remaining (remove (fn [s] (collide/overlaps? overlap s)) shapes)]
+  (let [[overlapping remaining]
+        (cs/separate (fn [s] (collide/overlaps? overlap s)) shapes)]
     (->> (for [[p q](g/edges overlap)]
            (g/scale-size (gl/line2 p q) 1000))
          (lines/slice-polygons (joined-polygons overlapping))
