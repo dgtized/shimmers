@@ -130,17 +130,24 @@
      [:div
       [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
        [view-sketch/generate :divisible]]
-      [:div
-       [:p "Experimenting with dividing a rectangle by punching
+      [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+       [:div.readable-width
+        [:p "Experimenting with dividing a rectangle by punching
      out a set of rectangles inside of it, and then calculating the set of
      rectangles remaining which would tile the space."]
-       [:p "Current approach is to recursively calculate difference of each
+        [:p "Current approach is to recursively calculate difference of each
       rectangle that remains that contains one of the punched out rectangles.
       Unfortunately, this fails because remaining rectangle may overlap more
       then one existing region."]
-       [:p "A possible solution is to investigate the "
-        [:a {:href "https://en.wikipedia.org/wiki/Guillotine_cutting"}
-         "guillotine cutting"] " problem."]]]]))
+        [:p "After punching out every pane, any remaining cases which are not
+       bounded by an existing rectangle are sliced out of a polygon joined from
+       the overlap. This results in some interesting non-local jagged edges."]
+        [:p "There also appears to be a bug (possibly in join polygons), which
+       results in some diagonals, and occasionally a punching pane is still
+       overlapped."]
+        [:p "A possible solution is to investigate the "
+         [:a {:href "https://en.wikipedia.org/wiki/Guillotine_cutting"}
+          "guillotine cutting"] " problem."]]]]]))
 
 (sketch/definition divisible
     {:created-at "2023-11-21"
