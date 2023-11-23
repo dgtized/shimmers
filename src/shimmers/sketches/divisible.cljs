@@ -61,7 +61,7 @@
 ;; this doesn't work because a punch might intersect with more than one rectangle
 (defn punch-out [rect punch]
   (if (collide/bounded? rect punch)
-    (let [clip (g/scale-size (right-side punch) 1000)
+    (let [clip (g/scale-size (left-side punch) 1000)
           cuts (mapv g/bounds (lines/cut-polygon rect clip))]
       ;; (println {:rect rect :clip clip :cuts cuts})
       (mapcat (fn [s] (if (collide/bounded? s punch)
@@ -77,7 +77,6 @@
        shapes))
 
 (defn joined-polygons [polygons]
-  (println polygons)
   (->> polygons
        (cs/iterate-cycles
         3
@@ -91,7 +90,8 @@
 
 (defn reduce-overlapping [shapes overlap]
   (let [[overlapping remaining]
-        (cs/separate (fn [s] (collide/overlaps? overlap s)) shapes)]
+        (cs/separate (fn [s] (and (collide/overlaps? overlap s)
+                                 (not (collide/coincident-edge? overlap s)))) shapes)]
     (->> (for [[p q](g/edges overlap)]
            (g/scale-size (gl/line2 p q) 1000))
          (lines/slice-polygons (joined-polygons overlapping))
@@ -103,7 +103,7 @@
                      generate-boxes
                      (drop-while (fn [s] (< (count s) (dr/random-int 5 22))))
                      first
-                     (sort-by (fn [s] (rect/right s)) <))
+                     (sort-by (fn [s] (rect/left s)) <))
         remaining (reduce (fn [rects box]
                             (mapcat (fn [r] (punch-out r box)) rects))
                           [bounds]
