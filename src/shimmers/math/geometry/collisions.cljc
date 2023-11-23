@@ -3,6 +3,8 @@
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.utils.intersect :as isec]
+            [thi.ng.geom.rect :as rect]
+            [thi.ng.math.core :as tm]
             #?(:clj [thi.ng.geom.types]
                :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2 Rect2 Triangle2]])
             #?(:clj [thi.ng.geom.vector]
@@ -255,3 +257,24 @@
                (g/vertices poly))
        (not-any? (fn [p] (g/contains-point? poly p))
                  (g/vertices bounds))))
+
+(defmulti touching-edge?
+  "Test if shapes `a` and `b` have an edge that touches for some distance.
+
+  Should exclude intersecting shapes."
+  (fn [a b] [(type a) (type b)]))
+
+(defmethod touching-edge?
+  [Rect2 Rect2] [a b]
+  (let [[ax1 ay1] (:p a)
+        [ax2 ay2] (rect/top-right a)
+        [bx1 by1] (:p b)
+        [bx2 by2] (rect/top-right b)]
+    (cond (or (> ax1 bx2) (> bx1 ax2))
+          false
+          (or (> ay1 by2) (> by1 ay2))
+          false
+          :else (or (tm/delta= ax1 bx2)
+                    (tm/delta= ax2 bx1)
+                    (tm/delta= ay1 by2)
+                    (tm/delta= ay2 by1)))))

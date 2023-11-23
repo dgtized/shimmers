@@ -41,3 +41,8 @@
   (is (sut/bounded? (gc/circle 2) (gc/circle [1 0] 1)))
   (is (not (sut/bounded? (gc/circle 2) (gc/circle [1.1 0] 1))))
   (is (not (sut/bounded? (gc/circle 2) (gc/circle [1 0] 2)))))
+
+(deftest touching-edge?
+  (t/testing "Rect2 Rect2"
+    (is (sut/touching-edge? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge")
+    (is (not (sut/touching-edge? (rect/rect 4) (rect/rect 0 3 2 2))) "overlapping edge")))
