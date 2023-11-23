@@ -13,6 +13,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.types :refer [Polygon2]]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -108,9 +109,12 @@
                             (mapcat (fn [r] (punch-out r box)) rects))
                           [bounds]
                           punches)]
-    (concat (reduce reduce-overlapping
-                    remaining
-                    punches)
+    (concat (map (fn [s] (if (instance? Polygon2 s)
+                          (vary-meta s assoc :fill "#ddd")
+                          s))
+                 (reduce reduce-overlapping
+                         remaining
+                         punches))
             (map-indexed (fn [i s] (let [fill (csvg/hsv (/ i (count punches)) 1.0 0.5 0.33)]
                                     (vary-meta s assoc :fill fill)))
                          punches))))
