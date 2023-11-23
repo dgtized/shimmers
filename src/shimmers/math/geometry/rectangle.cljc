@@ -22,6 +22,11 @@
   (gl/line2 (rect/bottom-left rect)
             (gv/vec2 (rect/right rect) (rect/bottom rect))))
 
+(defn polygon->rectangle [s]
+  (if (= 4 (count (g/vertices s)))
+    (g/bounds s)
+    s))
+
 (comment
   (right-side (rect/rect 5))
   (left-side (rect/rect 5))

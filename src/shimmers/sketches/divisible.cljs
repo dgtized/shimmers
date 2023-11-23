@@ -52,10 +52,7 @@
     [rect]))
 
 (defn convert-rectangles [shapes]
-  (map (fn [s] (if (= 4 (count (g/vertices s)))
-                (g/bounds s)
-                s))
-       shapes))
+  (map mgr/polygon->rectangle shapes))
 
 (defn joined-polygons [polygons]
   (->> polygons
