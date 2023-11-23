@@ -258,13 +258,14 @@
        (not-any? (fn [p] (g/contains-point? poly p))
                  (g/vertices bounds))))
 
-(defmulti touching-edge?
+(defmulti coincident-edge?
   "Test if shapes `a` and `b` have an edge that touches for some distance.
 
-  Should exclude intersecting shapes."
+  Note this may still include intersecting shapes if say `a` is inside `b` but
+  touches on one edge."
   (fn [a b] [(type a) (type b)]))
 
-(defmethod touching-edge?
+(defmethod coincident-edge?
   [Rect2 Rect2] [a b]
   (let [[ax1 ay1] (:p a)
         [ax2 ay2] (rect/top-right a)
@@ -278,3 +279,26 @@
                     (tm/delta= ax2 bx1)
                     (tm/delta= ay1 by2)
                     (tm/delta= ay2 by1)))))
+
+(defn coincident-segment? [[p q] [r s]]
+  (let [{:keys [type] :as hit} (isec/intersect-line2-line2? p q r s)]
+    (when (= type :coincident)
+      [(:p hit) (:q hit)])))
+
+(defn coincident-polygon? [a b]
+  (some (fn [edge-a]
+          (some (fn [edge-b] (coincident-segment? edge-a edge-b))
+                (g/edges b)))
+        (g/edges a)))
+
+(defmethod coincident-edge?
+  [Polygon2 Polygon2] [a b]
+  (some? (coincident-polygon? a b)))
+
+(defmethod coincident-edge?
+  [Rect2 Polygon2] [a b]
+  (some? (coincident-polygon? (g/as-polygon a) b)))
+
+(defmethod coincident-edge?
+  [Polygon2 Rect2] [a b]
+  (some? (coincident-polygon? a (g/as-polygon b))))
