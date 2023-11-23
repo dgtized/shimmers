@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.square-packing :as square]
+   [shimmers.math.geometry.rectangle :as mgr]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -38,31 +39,10 @@
                  (conj existing candidate))))
            []))
 
-(defn left-side [rect]
-  (gl/line2 (rect/bottom-left rect)
-            (gv/vec2 (rect/left rect) (rect/top rect))))
-
-(defn right-side [rect]
-  (gl/line2 (gv/vec2 (rect/right rect) (rect/bottom rect))
-            (rect/top-right rect)))
-
-(defn top-side [rect]
-  (gl/line2 (gv/vec2 (rect/left rect) (rect/top rect))
-            (rect/top-right rect)))
-
-(defn bottom-side [rect]
-  (gl/line2 (rect/bottom-left rect)
-            (gv/vec2 (rect/right rect) (rect/bottom rect))))
-
-(comment
-  (right-side (rect/rect 5))
-  (left-side (rect/rect 5))
-  (map g/bounds (lines/cut-polygon (rect/rect 10) (left-side (rect/rect 2 0 6 10)))))
-
 ;; this doesn't work because a punch might intersect with more than one rectangle
 (defn punch-out [rect punch]
   (if (collide/bounded? rect punch)
-    (let [clip (g/scale-size (left-side punch) 1000)
+    (let [clip (g/scale-size (mgr/left-side punch) 1000)
           cuts (mapv g/bounds (lines/cut-polygon rect clip))]
       ;; (println {:rect rect :clip clip :cuts cuts})
       (mapcat (fn [s] (if (collide/bounded? s punch)
