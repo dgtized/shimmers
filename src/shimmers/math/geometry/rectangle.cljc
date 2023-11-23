@@ -29,9 +29,6 @@
   (left-side (rect/rect 5))
   (map g/bounds (lines/cut-polygon (rect/rect 10) (left-side (rect/rect 2 0 6 10)))))
 
-;; FIXME: handle if point order is rotated (also cw/ccw)?
-;; ie a-b  vs b-c  vs c-d
-;;    d-c     a-d     b-a
 (defn polygon->rectangle
   "Convert a `polygon` to a `Rect2` iff it has 4 points and they are axis aligned.
 
@@ -40,11 +37,21 @@
   (let [vertices (g/vertices polygon)]
     (if (and (= 4 (count vertices))
              ;; check axis-aligned
+             ;; FIXME: handle counter clockwise orderings?
              (let [[[ax ay] [bx by] [cx cy] [dx dy]] vertices]
-               (and (tm/delta= ax dx)
-                    (tm/delta= bx cx)
-                    (tm/delta= ay by)
-                    (tm/delta= cy dy))))
+               (or
+                ;; a-b or c-d
+                ;; d-c    b-a
+                (and (tm/delta= ax dx)
+                     (tm/delta= bx cx)
+                     (tm/delta= ay by)
+                     (tm/delta= cy dy))
+                ;; b-c or d-a
+                ;; a-d    c-b
+                (and (tm/delta= ax bx)
+                     (tm/delta= cx dx)
+                     (tm/delta= by cy)
+                     (tm/delta= dy ay)))))
       (g/bounds polygon)
       polygon)))
 
