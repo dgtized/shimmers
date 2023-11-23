@@ -104,6 +104,7 @@
                    :stroke-width 1.0}
     (shapes (rect/rect 0 0 width height))))
 
+;; see also https://gamedev.stackexchange.com/questions/74840/axis-aligned-spatial-division-divide-space-into-random-rectangles
 (defn page []
   (fn []
     [sketch/with-explanation

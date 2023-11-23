@@ -3,6 +3,7 @@
    [shimmers.algorithm.lines :as lines]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -43,3 +44,24 @@
                     (tm/delta= cy dy))))
       (g/bounds polygon)
       polygon)))
+
+;; for each edge, check to see if continuing would clip another edge, if so,
+;; lines/cut-polygon with that line and recurse on each remaining?
+;; might cause extra cuts if T shape with mismatched depths.
+(defn trim-axis-aligned-ears [polygon]
+  [polygon])
+
+(comment
+  ;; upper left corner is cut out
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 4) (gv/vec2 4 4) (gv/vec2 4 0)
+                (gv/vec2 10 0) (gv/vec2 10 10) (gv/vec2 0 10)))
+  ;; lower right corner is missing
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 6)
+                (gv/vec2 4 6) (gv/vec2 4 10) (gv/vec2 0 10)))
+
+  ;; TODO: examples with more then one "ear" on opposite sides
+  ;; or ears on ears
+  )
+
