@@ -62,16 +62,33 @@
   [polygon])
 
 (comment
-  ;; upper left corner is cut out
+  ;; L-shape upper left corner is cut out
   (trim-axis-aligned-ears
    (gp/polygon2 (gv/vec2 0 4) (gv/vec2 4 4) (gv/vec2 4 0)
                 (gv/vec2 10 0) (gv/vec2 10 10) (gv/vec2 0 10)))
-  ;; lower right corner is missing
+  ;; L-shape lower right corner is missing
   (trim-axis-aligned-ears
    (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 6)
                 (gv/vec2 4 6) (gv/vec2 4 10) (gv/vec2 0 10)))
 
-  ;; TODO: examples with more then one "ear" on opposite sides
-  ;; or ears on ears
+  ;; T-shape with box extruded
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 4)
+                (gv/vec2 7 4) (gv/vec2 7 10) (gv/vec2 3 10)
+                (gv/vec2 3 4) (gv/vec2 0 4)))
+
+  ;; T-shape with uneven base for extruded box
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 4)
+                (gv/vec2 7 4) (gv/vec2 7 10) (gv/vec2 3 10)
+                (gv/vec2 3 5) (gv/vec2 0 5)))
+
+  ;; ears on ears
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 2)
+                (gv/vec2 6 2) (gv/vec2 6 6) (gv/vec2 3 6)
+                (gv/vec2 3 10) (gv/vec2 0 10)))
+
+  ;; TODO rotations, opposite corners, identity and expected output?
   )
 
