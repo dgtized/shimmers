@@ -89,6 +89,12 @@
                 (gv/vec2 6 2) (gv/vec2 6 6) (gv/vec2 3 6)
                 (gv/vec2 3 10) (gv/vec2 0 10)))
 
+  ;; C-shape with mismatched extensions
+  (trim-axis-aligned-ears
+   (gp/polygon2 (gv/vec2 0 0) (gv/vec2 10 0) (gv/vec2 10 3)
+                (gv/vec2 6 3) (gv/vec2 6 7) (gv/vec2 8 7)
+                (gv/vec2 8 10) (gv/vec2 0 10)))
+
   ;; TODO rotations, opposite corners, identity and expected output?
   )
 
