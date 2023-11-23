@@ -86,9 +86,10 @@
                             (mapcat (fn [r] (punch-out r box)) rects))
                           [bounds]
                           punches)]
-    (concat (map (fn [s] (if (instance? Polygon2 s)
-                          (vary-meta s assoc :fill "#ddd")
-                          s))
+    (concat (map (fn [s]
+                   (if (instance? Polygon2 s)
+                     (vary-meta s assoc :fill "#ddd")
+                     s))
                  (reduce reduce-overlapping
                          remaining
                          punches))
