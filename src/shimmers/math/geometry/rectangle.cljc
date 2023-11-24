@@ -1,12 +1,17 @@
 (ns shimmers.math.geometry.rectangle
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
+   #?(:clj [thi.ng.geom.types]
+      :cljs [thi.ng.geom.types :refer [Rect2]])
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm])
+  #?(:clj
+     (:import [thi.ng.geom.types Rect2])))
 
 (defn left-side [rect]
   (gl/line2 (rect/bottom-left rect)
@@ -55,11 +60,23 @@
       (g/bounds polygon)
       polygon)))
 
+;; see also https://blog.thebehrens.net/2010/03/03/clipping-boxes/
+
 ;; for each edge, check to see if continuing would clip another edge, if so,
 ;; lines/cut-polygon with that line and recurse on each remaining?
 ;; might cause extra cuts if T shape with mismatched depths.
 (defn trim-axis-aligned-ears [polygon]
-  [polygon])
+  (let [rect (polygon->rectangle polygon)]
+    (if (instance? Rect2 rect)
+      [rect]
+      (let [vertices (g/vertices polygon)
+            slice (some (fn [[a b c]]
+                          (when (> (v/orient2d a b c) 0)
+                            (g/scale-size (gl/line2 b c) 1000)))
+                        (partition 3 1 (conj vertices (first vertices))))]
+        (if slice
+          (mapcat trim-axis-aligned-ears (lines/cut-polygon polygon slice))
+          [polygon])))))
 
 (comment
   ;; L-shape upper left corner is cut out
