@@ -150,6 +150,27 @@
                           (gu/point-at t1 a arc-index-a)]
                          (reverse a0-a1)))))
 
+;; modified from clojure.core/dedupe to support delta= check
+(defn dedupe-points
+  "Returns a lazy sequence removing consecutive duplicates in coll.
+  Returns a transducer when no collection is provided."
+  ([]
+   (fn [rf]
+     (let [pa (volatile! ::none)]
+       (fn
+         ([] (rf))
+         ([result] (rf result))
+         ([result input]
+          (let [prior @pa]
+            (vreset! pa input)
+            (if (or (= prior input)
+                    (and (satisfies? tm/IDeltaEquals prior)
+                         (satisfies? tm/IDeltaEquals input)
+                         (tm/delta= prior input)))
+              result
+              (rf result input))))))))
+  ([coll] (sequence (dedupe-points) coll)))
+
 (defn clip-line
   "Clip a `line` into set of line segments contained by the `polygon`."
   [line polygon]
@@ -163,7 +184,7 @@
                     (sort-by (partial g/dist-squared p))
                     ;; if line clips at a corner, remove duplicates
                     ;; might have difficulty with floating point coordinate boundaries
-                    dedupe)]
+                    dedupe-points)]
     (mapv gl/line2
           (cond (empty? points)
                 (if (and (g/contains-point? polygon p)
