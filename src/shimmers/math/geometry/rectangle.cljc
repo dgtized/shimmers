@@ -62,10 +62,12 @@
 
 ;; see also https://blog.thebehrens.net/2010/03/03/clipping-boxes/
 
-;; for each edge, check to see if continuing would clip another edge, if so,
-;; lines/cut-polygon with that line and recurse on each remaining?
-;; might cause extra cuts if T shape with mismatched depths.
-(defn trim-axis-aligned-ears [polygon]
+(defn trim-axis-aligned-ears
+  "Cuts polygon with axis-aligned edges into constituent rectangles
+
+  Does not check if polygon is axis-aligned, so will bail if encountering
+  diagonal edges or the like."
+  [polygon]
   (let [rect (polygon->rectangle polygon)]
     (if (instance? Rect2 rect)
       [rect]
@@ -75,6 +77,10 @@
                             (g/scale-size (gl/line2 b c) 1000)))
                         (partition 3 1 (conj vertices (first vertices))))]
         (if slice
-          (mapcat trim-axis-aligned-ears (lines/cut-polygon polygon slice))
+          (let [cuts (lines/cut-polygon polygon slice)]
+            (if (> (count cuts) 1)
+              (mapcat trim-axis-aligned-ears cuts)
+              ;; cut did not split polygon, so bail early
+              cuts))
           [polygon])))))
 
