@@ -60,29 +60,6 @@
       (g/bounds polygon)
       polygon)))
 
-;; see also https://blog.thebehrens.net/2010/03/03/clipping-boxes/
-
-(defn trim-axis-aligned-ears
-  "Cuts polygon with axis-aligned edges into constituent rectangles
-
-  Does not check if polygon is axis-aligned, so will bail if encountering
-  diagonal edges or the like."
-  [polygon]
-  (let [rect (polygon->rectangle polygon)]
-    (if (instance? Rect2 rect)
-      [rect]
-      (let [vertices (g/vertices polygon)
-            slice (some (fn [[a b c]]
-                          (when (> (v/orient2d a b c) 0)
-                            (g/scale-size (gl/line2 b c) 1000)))
-                        (partition 3 1 (conj vertices (first vertices))))]
-        (if slice
-          (let [cuts (lines/cut-polygon polygon slice)]
-            (if (> (count cuts) 1)
-              (mapcat trim-axis-aligned-ears cuts)
-              ;; cut did not split polygon, so bail early
-              cuts))
-          [polygon])))))
 
 (defn axis-aligned? [polygon]
   (and polygon
@@ -98,4 +75,30 @@
   (axis-aligned? (gp/polygon2 [95 100] [180 100] [180 95] [445 95] [445 265] [255 265]
                               [255 235] [180 235] [180 190] [355 190] [355 145] [180 145])))
 
+;; see also https://blog.thebehrens.net/2010/03/03/clipping-boxes/
+
+(defn trim-axis-aligned-ears
+  "Cuts polygon with axis-aligned edges into constituent rectangles
+
+  Does not check if polygon is axis-aligned, so will bail if encountering
+  diagonal edges or the like."
+  [polygon]
+  (let [rect (polygon->rectangle polygon)]
+    (cond (instance? Rect2 rect)
+          [rect]
+          (axis-aligned? polygon)
+          (let [vertices (g/vertices polygon)
+                slice (some (fn [[a b c]]
+                              (when (> (v/orient2d a b c) 0)
+                                (g/scale-size (gl/line2 b c) 1000)))
+                            (partition 3 1 (conj vertices (first vertices))))]
+            (if slice
+              (let [cuts (lines/cut-polygon polygon slice)]
+                (if (> (count cuts) 1)
+                  (mapcat trim-axis-aligned-ears cuts)
+                  ;; cut did not split polygon, so bail early
+                  cuts))
+              [polygon]))
+          :else
+          [polygon])))
 
