@@ -127,7 +127,8 @@
       then one existing region."]
         [:p "After punching out every pane, any remaining cases which are not
        bounded by an existing rectangle are sliced out of a polygon joined from
-       the overlap. This results in some interesting non-local jagged edges."]
+       the overlap. The remaining polygons from the overlap are then sliced
+       again to reduce into rectangles."]
         [:p "There also appears to be a bug (possibly in join polygons), which
        results in some diagonals, and occasionally a punching pane is still
        overlapped."]
