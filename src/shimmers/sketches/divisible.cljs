@@ -24,13 +24,16 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn int-rect [{[x y] :p [w h] :size}]
-  (rect/rect (int x) (int y) (int w) (int h)))
+  (rect/rect (int (tm/roundto x 5))
+             (int (tm/roundto y 5))
+             (int (tm/roundto w 5))
+             (int (tm/roundto h 5))))
 
 (defn generate-boxes [bounds]
   (iterate (fn [existing]
              (let [candidate (-> bounds
-                                 (bounded/rectangle (tm/roundto (dr/random 0.05 0.3) 0.05)
-                                                    (tm/roundto (dr/random 0.05 0.3) 0.05))
+                                 (bounded/rectangle (dr/random 0.05 0.35)
+                                                    (dr/random 0.05 0.35))
                                  int-rect)
                    margin (g/scale-size candidate 1.4)]
                (if (some (fn [box] (when (collide/overlaps? margin box) box))
