@@ -84,3 +84,18 @@
               cuts))
           [polygon])))))
 
+(defn axis-aligned? [polygon]
+  (and polygon
+       (every? (fn [edge]
+                 (let [[[ax ay] [bx by]] edge]
+                   (or (and (= ax bx) (not= ay by))
+                       (and (not= ax bx) (= ay by)))))
+               (g/edges polygon))))
+
+(comment
+  (axis-aligned? (rect/rect 0 0 5 4))
+  (axis-aligned? (gp/polygon2 [0 0] [10 0] [0 10]))
+  (axis-aligned? (gp/polygon2 [95 100] [180 100] [180 95] [445 95] [445 265] [255 265]
+                              [255 235] [180 235] [180 190] [355 190] [355 145] [180 145])))
+
+
