@@ -86,13 +86,13 @@
                             (mapcat (fn [r] (punch-out r box)) rects))
                           [bounds]
                           punches)]
-    (concat (map (fn [s]
-                   (if (instance? Polygon2 s)
-                     (vary-meta s assoc :fill "#ddd")
-                     s))
-                 (reduce reduce-overlapping
-                         remaining
-                         punches))
+    (concat (->> punches
+                 (reduce reduce-overlapping remaining)
+                 (mapcat (fn [shape]
+                           (if (instance? Polygon2 shape)
+                             (map (fn [s] (vary-meta s assoc :fill "#ddd"))
+                                  (mgr/trim-axis-aligned-ears shape))
+                             [shape]))))
             (map-indexed (fn [i s] (let [fill (csvg/hsv (/ i (count punches)) 1.0 0.5 0.33)]
                                     (vary-meta s assoc :fill fill)))
                          punches))))
