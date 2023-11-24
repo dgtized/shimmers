@@ -85,16 +85,21 @@
          (sut/clip-line (gl/line2 0 1 3 1) (gp/polygon2 [1 1] [2 1] [2 2] [1 2])))
       "segment is coincident with an edge")
   (t/testing "concave polygon"
+    ;;    2 3 7 8
+    ;; 0  a-----b
+    ;; 2  | f-e |
+    ;;    | | | |
+    ;; 10 h-g d-c
     (let [concave-poly (gp/polygon2 [2 0] [8 0] [8 10] [7 10] [7 2] [3 2] [3 10] [2 10])]
       (is (= [(gl/line2 2 5 3 5) (gl/line2 7 5 8 5)]
              (sut/clip-line (gl/line2 0 5 10 5) concave-poly))
           "line segment clips multiple regions of a concave polygon")
       (is (= [(gl/line2 2 5 3 5)]
              (sut/clip-line (gl/line2 0 5 7 5) concave-poly))
-          "clips right tail")
+          "clips left tail")
       (is (= [(gl/line2 7 5 8 5)]
              (sut/clip-line (gl/line2 3 5 10 5) concave-poly))
-          "clips left tail")
+          "clips right tail")
       (is (= [(gl/line2 2 2 3 2) (gl/line2 7 2 8 2)]
              (sut/clip-line (gl/line2 0 2 10 2) concave-poly))
           "line segment clips multiple regions of a concave polygon including coincident edges")
