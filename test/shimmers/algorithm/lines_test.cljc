@@ -103,7 +103,15 @@
           "line segment clips coincident edge of concave polygon starting inside")
       (is (= [(gl/line2 2 2 3 2) (gl/line2 7 2 7.5 2)]
              (sut/clip-line (gl/line2 2 2 7.5 2) concave-poly))
-          "line segment clips coincident edge of concave polygon ending inside"))))
+          "line segment clips coincident edge of concave polygon ending inside"))
+
+    (is (= [(gl/line2 190 515 190 450)]
+           (sut/clip-line
+            (gl/line2 [190 10440] [190 -9560])
+            (gp/polygon2 [155 515] [155 450]
+                         [190 450] [190 430]
+                         [630 430] [630 515])))
+        "corner cut, but checking on coincident edge")))
 
 (deftest remove-coincident-segments
   (is (= (gp/polygon2 [0 0] [10 0])

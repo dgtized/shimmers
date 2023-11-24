@@ -181,7 +181,8 @@
                             (partition 2 2 xs)))
                   (let [z (last points)]
                     (concat (partition 2 2 (butlast points))
-                            (if (tm/delta= q z)
+                            (if (or (tm/delta= q z)
+                                    (not (g/contains-point? polygon q)))
                               []
                               [[z q]]))))))))
 
