@@ -135,9 +135,9 @@
           [(scene params)])
         [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-mosaic")]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+        [:div.evencols
          [view-sketch/generate :radial-mosaic]
-         [:div
+         [:div.readable-width
           [palette/as-svg {} palette]
           #_(ctrl/checkbox settings "Dispersion" [:dispersion])
           [:p "A circle is chopped into a set of radial arcs, ascending from the

@@ -239,7 +239,7 @@
       [:<>
        [:div.canvas-frame [scene bounds path segmentation @ui-state]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly :gap "0 0"}}
+        [:div.evencols {:style {:gap "0 0"}}
          [:div
           [:p]
           [view-sketch/generate :chance-connections]

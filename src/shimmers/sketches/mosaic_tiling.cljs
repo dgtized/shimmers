@@ -115,7 +115,7 @@
            [:div.canvas-frame [scene 1024 config]]
            [examples seed])
          [:div.contained
-          [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+          [:div.evencols
            [view-sketch/generate :mosaic-tiling]
            [:div
             (ctrl/checkbox ui-settings "Show Scene" [:show-scene])

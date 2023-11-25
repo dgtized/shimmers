@@ -114,9 +114,9 @@
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
      [:div
-      [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+      [:div.evencols
        [view-sketch/generate :divisible]]
-      [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+      [:div.evencols
        [:div.readable-width
         [:p "Experimenting with dividing a rectangle by punching
      out a set of rectangles inside of it, and then calculating the set of

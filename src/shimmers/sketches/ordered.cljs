@@ -302,7 +302,7 @@
       [:<>
        [:div.canvas-frame [scene rules]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+        [:div.evencols
          [view-sketch/generate :ordered]
          [debug/display defo]]]])))
 

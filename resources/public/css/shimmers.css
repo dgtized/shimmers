@@ -191,6 +191,14 @@ button.generate {
   padding-left: 1.5em;
 }
 
+.evencols {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center
+  gap: 0px 3em;
+}
+
 pre.debug {
   margin: 0.2em 0;
 }

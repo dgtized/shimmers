@@ -551,7 +551,7 @@
              path-points
              (assoc :show-path-points path-points))])]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+        [:div.evencols
          [view-sketch/generate :window-glimpses]
          [:div
           [palette/as-svg {} palette]

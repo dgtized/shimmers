@@ -167,8 +167,9 @@
       [:<>
        [:div.canvas-frame [scene rules]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly}}
+        [:div.evencols
          [:div
+          [:p]
           [view-sketch/generate :velocity-fields]
           [:p]
           [debug/pre-edn (dissoc rules :seed :scale)]]

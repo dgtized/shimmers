@@ -77,7 +77,7 @@
       [:<>
        [:div.canvas-frame [scene palette]]
        [:div.contained
-        [:div.flexcols {:style {:justify-content :space-evenly :align-items :center}}
+        [:div.evencols
          [view-sketch/generate :radial-breaks]
          [palette/as-svg {} palette]]]])))
 
