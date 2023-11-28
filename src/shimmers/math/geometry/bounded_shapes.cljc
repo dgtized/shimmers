@@ -23,8 +23,10 @@
   (let [bounds (rect/rect 10 10 20 20)
         circles (repeatedly 1000 #(circle bounds))]
     (every?
-     (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
-     (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
+     (fn [{p :p :as c}]
+       (every? (fn [p] (g/contains-point? bounds p))
+               (conj (g/vertices c 12) p)))
+     circles)))
 
 (defn circle-with-radius
   "Construct a random circle in `bounds` with radius `r`.
@@ -42,8 +44,9 @@
   (let [bounds (rect/rect 10 10 20 20)
         circles (repeatedly 1000 #(circle-with-radius bounds (dr/random 2 10)))]
     (every?
-     (fn [points] (every? (fn [p] (g/contains-point? bounds p)) points))
-     (map (fn [{p :p :as c}] (conj (g/vertices c 12) p)) circles))))
+     (fn [{p :p :as c}] (every? (fn [p] (g/contains-point? bounds p))
+                               (conj (g/vertices c 12) p)))
+     circles)))
 
 (defn max-circle
   "Construct largest circle inside of rectangle `bounds` for a given point."
