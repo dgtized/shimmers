@@ -40,9 +40,7 @@
    (fn [circles pct]
      (let [radius (* R pct)
            gen-circle (let [r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
-                        (fn []
-                          (let [p (gv/vec2 (dr/random r (- w r)) (dr/random r (- h r)))]
-                            (gc/circle (tm/+ (:p bounds) p) r))))]
+                        (fn [] (bounded/circle-with-radius bounds r)))]
        (pack/circle-pack
         circles
         {:bounds bounds
