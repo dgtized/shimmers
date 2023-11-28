@@ -3,10 +3,16 @@
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Circle2 Rect2 Triangle2]])
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.utils :as gu])
+  #?(:clj (:import [thi.ng.geom.types Circle2 Rect2 Triangle2])))
 
 (defn cell-fit [{[w h] :size} n]
   (let [ratio (if (> h w) (/ w h) (/ h w))
@@ -103,3 +109,56 @@
    :random-cell-jitter random-cell-jitter
    :poisson-disc-sampling poisson-disc-sampling
    :halton-sequence halton-sequence} )
+
+;; Parameterize random somehow?
+(defprotocol ISamplePoint
+  (sample-point-at [_ t] [_ u v])
+  (sample-point-bounds [_])
+  (sample-point-inside [_]))
+
+(extend-type Circle2
+  ISamplePoint
+  (sample-point-at
+    ([{:keys [p r]} t] (v/+polar p r (* eq/TAU t)))
+    ([{:keys [p r]} u v]
+     (v/+polar p (* r (Math/sqrt u)) (* eq/TAU v))))
+  (sample-point-inside [_]
+    (sample-point-at _ (dr/random) (dr/random)))
+  (sample-point-bounds [{:keys [p r]}]
+    (v/+polar p r (dr/random-tau))))
+
+(extend-type Rect2
+  ISamplePoint
+  (sample-point-at
+    ([bounds t]
+     (g/point-at bounds t))
+    ([bounds u v]
+     (g/unmap-point bounds (gv/vec2 u v))))
+  (sample-point-inside [bounds]
+    (sample-point-at bounds (dr/random) (dr/random)))
+  (sample-point-bounds [bounds]
+    (sample-point-at bounds (dr/random))))
+
+(extend-type Triangle2
+  ISamplePoint
+  (sample-point-at
+    ([{:keys [points]} t]
+     (gu/point-at t (conj points (first points))))
+    ([{:keys [points]} u v]
+     (let [s (min u v)
+           t (max u v)
+           [a b c] points]
+       (tm/+ (tm/* a s)
+             (tm/* b (- t s))
+             (tm/* c (- 1 t))))))
+  (sample-point-inside [_]
+    (sample-point-at _ (dr/random) (dr/random)))
+  (sample-point-bounds [_]
+    (sample-point-at _ (dr/random))))
+
+(comment
+  (for [u (range 0 1 0.2)
+        v (range 0 1 0.2)]
+    [[u v] (sample-point-at (gt/triangle2 [0 0] [10 10] [10 5]) u v)])
+
+  (repeatedly 20 #(sample-point-inside (gt/triangle2 [0 0] [10 0] [0 10]))))
