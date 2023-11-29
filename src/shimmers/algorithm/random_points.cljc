@@ -8,13 +8,15 @@
    [shimmers.math.vector :as v]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
-   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Circle2 Polygon2 Rect2 Triangle2]])
+   #?(:clj [thi.ng.geom.types]
+      :cljs [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]])
    [thi.ng.math.core :as tm])
-  #?(:clj (:import [thi.ng.geom.types Circle2 Polygon2 Rect2 Triangle2])))
+  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2])))
 
 (defn cell-fit [{[w h] :size} n]
   (let [ratio (if (> h w) (/ w h) (/ h w))
@@ -117,6 +119,28 @@
   (sample-point-at [_ t] [_ u v])
   (sample-point-bounds [_])
   (sample-point-inside [_]))
+
+(extend-type Line2
+  ISamplePoint
+  (sample-point-at [{:keys [points]} t]
+    (gu/point-at t points))
+  (sample-point-inside [_]
+    (sample-point-at _ (dr/random)))
+  (sample-point-bounds [_]
+    (sample-point-at _ (dr/random))))
+
+(extend-type LineStrip2
+  ISamplePoint
+  (sample-point-at [{:keys [points]} t]
+    (gu/point-at t points))
+  (sample-point-inside [_]
+    (sample-point-at _ (dr/random)))
+  (sample-point-bounds [_]
+    (sample-point-at _ (dr/random))))
+
+(comment
+  (repeatedly 10 #(sample-point-inside (gl/line2 0 0 10 0)))
+  (repeatedly 10 #(sample-point-inside (gl/linestrip2 [0 0] [0 6] [2 6]))))
 
 (extend-type Circle2
   ISamplePoint
