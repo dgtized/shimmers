@@ -3,6 +3,7 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.linear-assignment :as linear]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.screen :as screen]
@@ -43,9 +44,12 @@
   (dr/weighted {:outside (- 1 bias)
                 :inside bias}))
 
+(def random-point-fn
+  {:outside rp/sample-point-bounds
+   :inside rp/sample-point-inside})
+
 (defn init-linear-matrix [particles {:keys [random-point shapes]}]
-  (let [rp ({:outside g/random-point
-             :inside g/random-point-inside} random-point)
+  (let [rp (random-point-fn random-point)
         distribute-randomly (fn [n] (repeatedly n #(rp (dr/rand-nth shapes))))
         positions
         (if (dr/chance 0.6)
@@ -58,8 +62,7 @@
            :shapes shapes)))
 
 (defn distribute-particles [{:keys [random-point shapes]} particles]
-  (let [rp ({:outside g/random-point
-             :inside g/random-point-inside} random-point)
+  (let [rp (random-point-fn random-point)
         max-dist (g/dist (cq/rel-vec 0 0) (cq/rel-vec 1 1))]
     (map (fn [{:keys [pos]}]
            (rp (dr/weighted-by (fn [s] (- max-dist (g/dist pos (g/centroid s))))
