@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq :refer [rel-h rel-w]]
    [shimmers.common.transition-interval :as transition]
@@ -109,8 +110,8 @@
   (let [curve (* 0.8 (dr/happensity 0.4))
         last-orbit (last orbit)
         random-point-from
-        (dr/weighted {g/random-point-inside 10
-                      g/random-point 1})
+        (dr/weighted {rp/sample-point-inside 10
+                      rp/sample-point-bounds 1})
         brushes' (->> brushes
                       (map-indexed
                        (fn [idx brush]
@@ -142,8 +143,8 @@
   (let [start (random-target)
         factor (/ (+ (q/width) (q/height)) 800)
         brushes (repeatedly (int (* 48 factor))
-                            #(make-stroke (g/random-point-inside start)
-                                          (g/random-point-inside start)))
+                            #(make-stroke (rp/sample-point-inside start)
+                                          (rp/sample-point-inside start)))
         image (q/create-graphics (q/width) (q/height))]
     (q/with-graphics image (q/color-mode :hsl 1.0))
     (-> {:image image
