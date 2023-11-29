@@ -29,10 +29,15 @@
   (point-at
     [_ t] (gu/point-at t (get spline :points) arc-length-idx)))
 
+(defn confused-midpoint [p q d]
+  (->> (* d 0.5 (g/dist p q))
+       (gc/circle (tm/mix p q 0.5))
+       rp/sample-point-inside))
+
 (defn make-stroke
   ([p q] (make-stroke p q 0))
   ([p q d]
-   (let [curve (geometry/confused-midpoint p q d)
+   (let [curve (confused-midpoint p q d)
          spline (bezier/auto-spline2 [p curve q])]
      (Stroke. p q curve spline
               (gu/arc-length-index (:points spline))))))
