@@ -4,15 +4,17 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
-   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Circle2 Rect2 Triangle2]])
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.utils :as gu])
-  #?(:clj (:import [thi.ng.geom.types Circle2 Rect2 Triangle2])))
+   #?(:clj [thi.ng.geom.types] :cljs [thi.ng.geom.types :refer [Circle2 Polygon2 Rect2 Triangle2]])
+   [thi.ng.math.core :as tm])
+  #?(:clj (:import [thi.ng.geom.types Circle2 Polygon2 Rect2 Triangle2])))
 
 (defn cell-fit [{[w h] :size} n]
   (let [ratio (if (> h w) (/ w h) (/ h w))
@@ -162,3 +164,19 @@
     [[u v] (sample-point-at (gt/triangle2 [0 0] [10 10] [10 5]) u v)])
 
   (repeatedly 20 #(sample-point-inside (gt/triangle2 [0 0] [10 0] [0 10]))))
+
+(extend-type Polygon2
+  ISamplePoint
+  (sample-point-at [{:keys [points]} t]
+    (gu/point-at t (conj points (first points))))
+  (sample-point-inside [_]
+    (->> (g/tessellate _)
+         (map gt/triangle2)
+         (dr/weighted-by triangle/signed-area)
+         sample-point-inside))
+  (sample-point-bounds [_]
+    (sample-point-at _ (dr/random))))
+
+(comment
+  (repeatedly 20 #(sample-point-inside (gp/polygon2 [0 0] [10 0] [10 10] [0 10])))
+  (repeatedly 20 #(sample-point-bounds (gp/polygon2 [0 0] [10 0] [10 10] [0 10]))))
