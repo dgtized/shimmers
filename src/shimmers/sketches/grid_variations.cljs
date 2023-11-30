@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.transition-interval :as transition]
    [shimmers.common.ui.controls :as ctrl]
@@ -9,6 +10,7 @@
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -26,7 +28,7 @@
                           (gl/line2 l o h o)])))))
 
 (defn perturb [pos radius]
-  (gv/vec2 (p/confusion-disk pos radius)))
+  (rp/sample-point-inside (gc/circle pos radius)))
 
 (defn xy-proportional [pos]
   (/ (* (:x pos) (:y pos))
