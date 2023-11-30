@@ -3,22 +3,24 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; modify fill/size opacity by y-pos or time to animate?
 (defn string-line [p q n r]
-  (for [point (repeatedly n #(tm/mix p q (rand)))]
-    {:point (p/confusion-disk point r)
-     :fill [(p/gaussian 0.125 0.03) 0.6 0.75 1.0]
-     :size (rand-nth [8 9 10 11 12])
-     :rate (tm/random 0.2 0.9)}))
+  (for [point (repeatedly n #(tm/mix p q (dr/random)))]
+    {:point (rp/sample-point-inside (gc/circle point r))
+     :fill [(dr/gaussian 0.125 0.03) 0.6 0.75 1.0]
+     :size (dr/rand-nth [8 9 10 11 12])
+     :rate (dr/random 0.2 0.9)}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -55,7 +57,7 @@
    :middleware [m/fun-mode framerate/mode]))
 
 (sketch/definition string-lights
-  {:created-at "2021-08-31"
-   :tags #{}
-   :type :quil}
+    {:created-at "2021-08-31"
+     :tags #{:deterministic}
+     :type :quil}
   (ctrl/mount page))
