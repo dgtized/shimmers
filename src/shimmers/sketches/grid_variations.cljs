@@ -10,7 +10,6 @@
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -27,8 +26,7 @@
                          [(gl/line2 o l o h)
                           (gl/line2 l o h o)])))))
 
-(defn perturb [pos radius]
-  (rp/sample-point-inside (gc/circle pos radius)))
+(def perturb rp/confusion-disk)
 
 (defn xy-proportional [pos]
   (/ (* (:x pos) (:y pos))

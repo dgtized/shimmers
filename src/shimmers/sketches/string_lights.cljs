@@ -10,14 +10,13 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; modify fill/size opacity by y-pos or time to animate?
 (defn string-line [p q n r]
   (for [point (repeatedly n #(tm/mix p q (dr/random)))]
-    {:point (rp/sample-point-inside (gc/circle point r))
+    {:point (rp/confusion-disk point r)
      :fill [(dr/gaussian 0.125 0.03) 0.6 0.75 1.0]
      :size (dr/rand-nth [8 9 10 11 12])
      :rate (dr/random 0.2 0.9)}))
