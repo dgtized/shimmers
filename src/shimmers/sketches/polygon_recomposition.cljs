@@ -2,25 +2,27 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils.delaunay :as delaunay]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn modify-points [points shape]
-  (let [p (rand-nth points)
-        p' (p/weighted {(g/random-point-inside shape) 1
-                        (p/confusion-disk p 1.0) 8
-                        (p/confusion-disk p (rand)) 4})]
-    (replace {p (gv/vec2 p')} points)))
+  (let [p (dr/rand-nth points)
+        p' (rp/sample-point-inside
+            (dr/weighted {shape 1
+                          (gc/circle p 1.0) 8
+                          (gc/circle p (dr/random)) 4}))]
+    (replace {p p'} points)))
 
 (defn setup []
   (q/color-mode :rgb 1.0)
