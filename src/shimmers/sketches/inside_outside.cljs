@@ -35,7 +35,7 @@
                  (conj existing candidate))))
            []))
 
-(defn generate-circles [{[w h] :size :as bounds} seeds R max-candidates boxes]
+(defn generate-circles [bounds seeds R max-candidates boxes]
   (reduce
    (fn [circles pct]
      (let [radius (* R pct)
