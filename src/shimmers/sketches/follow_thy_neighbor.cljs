@@ -1,16 +1,16 @@
 (ns shimmers.sketches.follow-thy-neighbor
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.sequence :as cs]
-   [thi.ng.geom.bezier :as bezier]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
