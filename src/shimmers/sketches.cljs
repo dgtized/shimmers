@@ -78,6 +78,7 @@
    shimmers.sketches.flow-pairs
    shimmers.sketches.flower-petals
    shimmers.sketches.folding-triangles
+   shimmers.sketches.follow-thy-neighbor
    ;; shimmers.sketches.fluid
    shimmers.sketches.future-cities
    shimmers.sketches.gallery-layout
