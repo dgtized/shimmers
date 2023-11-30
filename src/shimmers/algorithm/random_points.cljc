@@ -213,3 +213,7 @@
   (->> (* d 0.5 (g/dist p q))
        (gc/circle (tm/mix p q 0.5))
        sample-point-inside))
+
+;; https://stats.stackexchange.com/questions/481543/generating-random-points-uniformly-on-a-disk
+(defn confusion-disk [p r]
+  (sample-point-inside (gc/circle p r)))

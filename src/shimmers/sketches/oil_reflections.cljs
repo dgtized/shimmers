@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.algorithm.circle-packing :as pack]
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
@@ -36,8 +37,8 @@
         chunks (inc (rand-int 8))
         jitter (* 0.02 (/ (g/dist p q) chunks))]
     (for [[a b] (partition 2 1 (concat [(- edge-p)] (cs/centered-range chunks) [(+ 1 edge-q)]))]
-      (gl/line2 (p/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
-                (p/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
+      (gl/line2 (rp/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
+                (rp/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
 
 ;; TODO: add recursive split line with declining likelyhood to recursion depth.
 ;; not clear how to keep outer/inner parameters particularly as each segment can
