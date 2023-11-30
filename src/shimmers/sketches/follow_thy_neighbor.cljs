@@ -23,12 +23,17 @@
    (for [t (tm/norm-range 10)]
      (tm/mix (g/point-at left t) (g/point-at right t) displace))))
 
+(defn average-dist [a b samples]
+  (/ (reduce + (map (fn [t] (g/dist (g/point-at a t) (g/point-at b t)))
+                    (tm/norm-range samples)))
+     (inc samples)))
+
 (defn subdivide [lines]
   (let [idx (->> lines
                  (partition 2 1)
                  (map-indexed
                   (fn [idx [a b]]
-                    (let [dist (g/dist (g/point-at a 0.5) (g/point-at b 0.5))]
+                    (let [dist (average-dist a b 3)]
                       [idx (if (< dist 10) (* dist 0.2) dist)])))
                  dr/weighted)
         [before after] (split-at (inc idx) lines)
