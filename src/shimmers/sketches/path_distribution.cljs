@@ -1,9 +1,9 @@
 (ns shimmers.sketches.path-distribution
   "Perturbations of displaced lines."
   (:require
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
@@ -23,7 +23,7 @@
   midpoint."
   [line d]
   (let [[p q] (g/vertices line)
-        curve (geometry/confused-midpoint p q d)]
+        curve (rp/confused-midpoint p q d)]
     (g/sample-uniform (bezier/auto-spline2 [p curve q]) 15 true)))
 
 ;; https://stackoverflow.com/a/45701864/34450

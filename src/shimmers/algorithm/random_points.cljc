@@ -204,3 +204,12 @@
 (comment
   (repeatedly 20 #(sample-point-inside (gp/polygon2 [0 0] [10 0] [10 10] [0 10])))
   (repeatedly 20 #(sample-point-bounds (gp/polygon2 [0 0] [10 0] [10 10] [0 10]))))
+
+(defn confused-midpoint
+  "For a given line p to q, pick a random point from the circle centered at the
+  midpoint. d is a sizing factor for the radius, d of 1 yields a circle that clips
+  p and q, d of 0.5 would only allow points in the middle half."
+  [p q d]
+  (->> (* d 0.5 (g/dist p q))
+       (gc/circle (tm/mix p q 0.5))
+       sample-point-inside))

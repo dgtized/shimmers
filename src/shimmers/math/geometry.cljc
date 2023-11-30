@@ -78,15 +78,6 @@
       (g/scale-size scale)
       (g/translate pos)))
 
-(defn confused-midpoint
-  "For a given line p to q, pick a random point from the circle centered at the
-  midpoint. d is a sizing factor for the radius, d of 1 yields a circle that clips
-  p and q, d of 0.5 would only allow points in the middle half."
-  [p q d]
-  (->> (* d 0.5 (g/dist p q))
-       (p/confusion-disk (tm/mix p q 0.5))
-       gv/vec2))
-
 (defn circles-overlap? [a b]
   (let [distance (+ (:r a) (:r b))]
     (< (g/dist (:p a) (:p b)) distance)))

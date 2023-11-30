@@ -2,10 +2,10 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
@@ -26,7 +26,7 @@
 (defn update-state [{:keys [nodes] :as state}]
   (let [hull (gp/convex-hull* nodes)
         [p q] (rand-nth (partition 2 1 hull))
-        m (->> #(geometry/confused-midpoint p q 0.9)
+        m (->> #(rp/confused-midpoint p q 0.9)
                (repeatedly 20)
                (remove (fn [c] (g/contains-point? (gp/polygon2 hull) c)))
                (filter (fn [c] (g/contains-point? (cq/screen-rect) c)))
