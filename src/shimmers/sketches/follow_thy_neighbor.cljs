@@ -18,8 +18,11 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn bezier-line [points]
+  (gl/linestrip2 (g/vertices (bezier/auto-spline2 points) 8)))
+
 (defn make-line [left right displace]
-  (gl/linestrip2
+  (bezier-line
    (for [t (tm/norm-range 10)]
      (tm/mix (g/point-at left t) (g/point-at right t) displace))))
 
@@ -47,18 +50,17 @@
       (concat before [line] after))))
 
 (defn shapes []
-  (let [init
-        (concat [(gl/line2 (rv 0.0 0.0) (rv 0.0 1.0))]
+  (let [d 0.04
+        init
+        (concat [(gl/line2 (rv -0.01 0.0) (rv -0.01 1.0))]
                 (for [t (cs/midsection (tm/norm-range 3))]
-                  (-> [(rv t 0.0)
-                       (rv (+ t (dr/gaussian 0.0 0.04)) (dr/gaussian 0.33 0.03))
-                       (rv (+ t (dr/gaussian 0.0 0.04)) (dr/gaussian 0.66 0.03))
-                       (rv t 1.0)]
-                      bezier/auto-spline2
-                      (g/vertices 10)
-                      gl/linestrip2
+                  (-> [(rv (dr/gaussian t d) 0.0)
+                       (rv (dr/gaussian t d) (dr/gaussian 0.33 d))
+                       (rv (dr/gaussian t d) (dr/gaussian 0.66 d))
+                       (rv (dr/gaussian t d) 1.0)]
+                      bezier-line
                       (vary-meta assoc :stroke-width 3.0)))
-                [(gl/line2 (rv 1.0 0.0) (rv 1.0 1.0))])]
+                [(gl/line2 (rv 1.01 0.0) (rv 1.01 1.0))])]
     (last (take 20 (iterate subdivide init)))))
 
 (defn scene []
