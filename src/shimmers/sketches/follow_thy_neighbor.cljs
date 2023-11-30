@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
@@ -34,16 +35,22 @@
         b (first after)
         t (dr/random 0.25 0.75)
         line (make-line a b t)]
-    (concat before [line] after)))
+    (if (or (collide/overlaps? a line)
+            (collide/overlaps? b line))
+      lines
+      (concat before [line] after))))
 
 (defn shapes []
   (let [init
         (concat [(gl/line2 (rv 0.0 0.0) (rv 0.0 1.0))]
                 (for [t (cs/midsection (tm/norm-range 3))]
-                  (bezier/auto-spline2 [(rv t 0.0)
-                                        (rv (+ t (dr/gaussian 0.0 0.05)) (dr/random 0.2 0.45))
-                                        (rv (+ t (dr/gaussian 0.0 0.05)) (dr/random 0.55 0.8))
-                                        (rv t 1.0)]))
+                  (-> [(rv t 0.0)
+                       (rv (+ t (dr/gaussian 0.0 0.05)) (dr/gaussian 0.33 0.025))
+                       (rv (+ t (dr/gaussian 0.0 0.05)) (dr/gaussian 0.66 0.025))
+                       (rv t 1.0)]
+                      bezier/auto-spline2
+                      (g/vertices 4)
+                      gl/linestrip2))
                 [(gl/line2 (rv 1.0 0.0) (rv 1.0 1.0))])]
     (last (take 32 (iterate subdivide init)))))
 
