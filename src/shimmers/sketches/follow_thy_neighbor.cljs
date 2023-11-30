@@ -20,7 +20,7 @@
 
 (defn make-line [left right displace]
   (gl/linestrip2
-   (for [t (tm/norm-range 6)]
+   (for [t (tm/norm-range 10)]
      (tm/mix (g/point-at left t) (g/point-at right t) displace))))
 
 (defn subdivide [lines]
@@ -46,12 +46,13 @@
         (concat [(gl/line2 (rv 0.0 0.0) (rv 0.0 1.0))]
                 (for [t (cs/midsection (tm/norm-range 3))]
                   (-> [(rv t 0.0)
-                       (rv (+ t (dr/gaussian 0.0 0.05)) (dr/gaussian 0.33 0.025))
-                       (rv (+ t (dr/gaussian 0.0 0.05)) (dr/gaussian 0.66 0.025))
+                       (rv (+ t (dr/gaussian 0.0 0.04)) (dr/gaussian 0.33 0.03))
+                       (rv (+ t (dr/gaussian 0.0 0.04)) (dr/gaussian 0.66 0.03))
                        (rv t 1.0)]
                       bezier/auto-spline2
-                      (g/vertices 4)
-                      gl/linestrip2))
+                      (g/vertices 10)
+                      gl/linestrip2
+                      (vary-meta assoc :stroke-width 3.0)))
                 [(gl/line2 (rv 1.0 0.0) (rv 1.0 1.0))])]
     (last (take 20 (iterate subdivide init)))))
 
