@@ -55,7 +55,7 @@
        tm/norm-range
        cs/midsection))
 
-(defn shapes []
+(defn gen-lines []
   (let [d 0.03
         init
         (concat [(gl/line2 (rv -0.01 0.0) (rv -0.01 1.0))]
@@ -74,13 +74,28 @@
                 [(gl/line2 (rv 1.01 0.0) (rv 1.01 1.0))])]
     (last (take 20 (iterate subdivide init)))))
 
+(defn tick [line t]
+  (let [p (g/point-at line t)
+        p1 (g/point-at line (- t 0.001))
+        slope (tm/normalize (g/rotate (tm/- p p1) tm/HALF_PI) 3.0)]
+    (gl/line2 (tm/- p slope) (tm/+ p slope))))
+
+(defn details [lines]
+  (mapcat (fn [line]
+            (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)]
+              (tick line t)))
+          (take 9 (dr/shuffle (remove (fn [l] (:stroke-width (meta l))) lines)))))
+
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "white"
                    :stroke-width 1.0}
-    (shapes)))
+    (let [lines (gen-lines)]
+      (concat
+       lines
+       (details lines)))))
 
 (defn page []
   (fn []
