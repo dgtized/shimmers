@@ -19,7 +19,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn bezier-line [points]
-  (gl/linestrip2 (g/vertices (bezier/auto-spline2 points) 8)))
+  (gl/linestrip2 (g/vertices (bezier/auto-spline2 points) 6)))
 
 (defn make-line [left right displace]
   (bezier-line
@@ -54,10 +54,10 @@
         init
         (concat [(gl/line2 (rv -0.01 0.0) (rv -0.01 1.0))]
                 (for [t (cs/midsection (tm/norm-range 3))]
-                  (-> [(rv (dr/gaussian t d) 0.0)
-                       (rv (dr/gaussian t d) (dr/gaussian 0.33 d))
-                       (rv (dr/gaussian t d) (dr/gaussian 0.66 d))
-                       (rv (dr/gaussian t d) 1.0)]
+                  (-> (concat [(rv (dr/gaussian t d) 0.0)]
+                              (for [v (cs/midsection (tm/norm-range 3))]
+                                (rv (dr/gaussian t d) (dr/gaussian v d)))
+                              [(rv (dr/gaussian t d) 1.0)])
                       bezier-line
                       (vary-meta assoc :stroke-width 3.0)))
                 [(gl/line2 (rv 1.01 0.0) (rv 1.01 1.0))])]
