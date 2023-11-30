@@ -28,7 +28,8 @@
                  (partition 2 1)
                  (map-indexed
                   (fn [idx [a b]]
-                    [idx (g/dist (g/point-at a 0.5) (g/point-at b 0.5))]))
+                    (let [dist (g/dist (g/point-at a 0.5) (g/point-at b 0.5))]
+                      [idx (if (< dist 10) (* dist 0.2) dist)])))
                  dr/weighted)
         [before after] (split-at (inc idx) lines)
         a (last before)
@@ -52,7 +53,7 @@
                       (g/vertices 4)
                       gl/linestrip2))
                 [(gl/line2 (rv 1.0 0.0) (rv 1.0 1.0))])]
-    (last (take 32 (iterate subdivide init)))))
+    (last (take 20 (iterate subdivide init)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
