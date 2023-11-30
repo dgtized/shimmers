@@ -6,10 +6,10 @@
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]
             #?(:clj [thi.ng.geom.types]
-               :cljs [thi.ng.geom.types :refer [Circle2 Line2 Polygon2 Rect2 Triangle2]])
+               :cljs [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]])
             #?(:clj [thi.ng.geom.vector]
                :cljs [thi.ng.geom.vector :refer [Vec2]]))
-  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2]
+  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]
                    [thi.ng.geom.vector Vec2])))
 
 (defmulti overlaps?
@@ -53,6 +53,11 @@
              (:type (g/intersect-line a b))))
 
 (defmethod overlaps?
+  [Line2 LineStrip2] [{[p q] :points} b]
+  (when (isec/intersect-line2-edges? p q (g/edges b))
+    true))
+
+(defmethod overlaps?
   [Line2 Polygon2] [line polygon]
   (overlaps? polygon line))
 
@@ -63,6 +68,19 @@
 (defmethod overlaps?
   [Line2 Triangle2] [line triangle]
   (overlaps? (g/as-polygon triangle) line))
+
+;; Linestrip2
+(defmethod overlaps?
+  [LineStrip2 Line2] [a {[p q] :points}]
+  (when (isec/intersect-line2-edges? p q (g/edges a))
+    true))
+
+(defmethod overlaps?
+  [LineStrip2 LineStrip2] [a b]
+  (some (fn [[p q]]
+          (when (isec/intersect-line2-edges? p q (g/edges b))
+            true))
+        (g/edges a)))
 
 ;; Polygon2
 (defmethod overlaps?
