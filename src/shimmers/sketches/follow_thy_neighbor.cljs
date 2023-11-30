@@ -49,24 +49,24 @@
       lines
       (concat before [line] after))))
 
+(defn control-offsets [dist]
+  (->> dist
+       dr/weighted
+       tm/norm-range
+       cs/midsection))
+
 (defn shapes []
   (let [d 0.03
         init
         (concat [(gl/line2 (rv -0.01 0.0) (rv -0.01 1.0))]
-                (for [t (->> {2 1
-                              3 4
-                              4 3
-                              5 1}
-                             dr/weighted
-                             tm/norm-range
-                             cs/midsection)]
+                (for [t (control-offsets {2 1
+                                          3 4
+                                          4 3
+                                          5 1})]
                   (-> (concat [(rv (dr/gaussian t d) 0.0)]
-                              (for [v (->> {2 1
-                                            3 4
-                                            4 2}
-                                           dr/weighted
-                                           tm/norm-range
-                                           cs/midsection)]
+                              (for [v (control-offsets {2 1
+                                                        3 4
+                                                        4 2})]
                                 (rv (dr/gaussian t d) (dr/gaussian v (* d 0.66))))
                               [(rv (dr/gaussian t d) 1.0)])
                       bezier-line
