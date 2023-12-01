@@ -142,7 +142,7 @@
                    :stroke-width 1.0}
     (let [lines (cut-lines (gen-lines))]
       (concat
-       (splice lines)
+       (map (fn [line] (vary-meta line dissoc :cuts)) (splice lines))
        (details lines)))))
 
 (defn page []
