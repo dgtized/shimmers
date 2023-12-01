@@ -101,6 +101,31 @@
            path
            (tm/norm-range (dec (count path)))))))
 
+(defn trim-linestrip
+  "Trim a `linestrip` between the proprotional offsets `t0` < `t1`.
+
+  Will approximate a first vertice at `t0` and last vertice at `t1`` if the
+  offsets do not correspond to an actual point in the linestrip."
+  ([linestrip t0 t1]
+   (trim-linestrip linestrip t0 t1 (gu/arc-length-index (g/vertices linestrip))))
+  ([linestrip t0 t1 arc-index]
+   {:pre [(<= t0 t1)]}
+   (let [arc-length (last arc-index)
+         points (g/vertices linestrip)
+         between
+         (->> (map (fn [p arc] [p (/ arc arc-length)]) points arc-index)
+              (drop-while (fn [[_ t]] (< t t0)))
+              (take-while (fn [[_ t]] (<= t t1))))
+         [_ start] (first between)
+         [_ end] (last between)]
+     (->> (concat (when (< t0 start)
+                    [[(gu/point-at t0 points arc-index) t0]])
+                  between
+                  (when (> t1 end)
+                    [[(gu/point-at t1 points arc-index) t1]]))
+          (map first)
+          gl/linestrip2))))
+
 (defn points-between
   "Given a sequence of `points`, and relative offsets `t0` < `t1`, return all
   points that proportionally lie between `t0` and `t1`. The domain of `t0` and

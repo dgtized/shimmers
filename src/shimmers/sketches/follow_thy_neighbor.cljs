@@ -93,9 +93,9 @@
   (map (fn [line]
          (vary-meta
           (if-let [[a b] (:cuts (meta line))]
-            (let [points (lines/points-between (g/vertices line) a b)]
-              (if (seq points)
-                (with-meta (gl/linestrip2 points) (meta line))
+            (let [linestrip (lines/trim-linestrip line a b)]
+              (if (seq (:points linestrip))
+                (with-meta linestrip (meta line))
                 line))
             line)
           dissoc :cuts))
