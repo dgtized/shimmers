@@ -89,8 +89,8 @@
 
 (defn splice [lines]
   (map (fn [line]
-         (if-let [cuts (:cuts (meta line))]
-           (let [points (lines/points-between (g/vertices line) (first cuts) (second cuts))]
+         (if-let [[a b] (:cuts (meta line))]
+           (let [points (lines/points-between (g/vertices line) a b)]
              (if (seq points)
                (with-meta (gl/linestrip2 points) (meta line))
                line))
