@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
@@ -98,11 +99,16 @@
     (triangle/inscribed-equilateral
      (gc/circle p r) (g/heading (tm/- p1 p)))))
 
+(defn arrow-spin [line t r theta]
+  (let [p (g/point-at line t)]
+    (triangle/inscribed-equilateral
+     (gc/circle p r) theta)))
+
 (defn details [lines]
   (mapcat (fn [line]
-            (let [decorate (dr/weighted [[tick 2] [orb 2] [arrow-up 1] [arrow-down 1]])]
+            (let [decorate (dr/weighted [[tick 2] [orb 2] [arrow-up 1] [arrow-down 1] [arrow-spin 1]])]
               (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)]
-                (decorate line t (dr/gaussian 3.0 0.2)))))
+                (decorate line t (dr/gaussian 3.0 0.25) (* t 0.33 tm/PHI eq/TAU)))))
           (take 11 (dr/shuffle (remove (fn [l] (:stroke-width (meta l))) lines)))))
 
 (defn scene []
