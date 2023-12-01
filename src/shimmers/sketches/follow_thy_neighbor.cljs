@@ -1,5 +1,6 @@
 (ns shimmers.sketches.follow-thy-neighbor
   (:require
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -77,6 +78,25 @@
                 [(gl/line2 (rv 1.01 0.0) (rv 1.01 1.0))])]
     (last (take 30 (iterate subdivide init)))))
 
+(defn cut-lines [lines]
+  (dr/map-random-sample
+   (constantly 0.2)
+   (fn [line]
+     (let [cuts (first (filter (fn [[a b]]  (> (- b a) 0.33))
+                               (repeatedly #(sort [(dr/random 0.0 1.0) (dr/random 0.0 1.0)]))))]
+       (with-meta line (assoc (meta line) :cuts cuts))))
+   lines))
+
+(defn splice [lines]
+  (map (fn [line]
+         (if-let [cuts (:cuts (meta line))]
+           (let [points (lines/points-between (g/vertices line) (first cuts) (second cuts))]
+             (if (seq points)
+               (with-meta (gl/linestrip2 points) (meta line))
+               line))
+           line))
+       lines))
+
 (defn tick [line t r]
   (let [p (g/point-at line t)
         p1 (g/point-at line (- t 0.001))
@@ -106,8 +126,11 @@
 
 (defn details [lines]
   (mapcat (fn [line]
-            (let [decorate (dr/weighted [[tick 2] [orb 2] [arrow-up 1] [arrow-down 1] [arrow-spin 1]])]
-              (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)]
+            (let [decorate (dr/weighted [[tick 2] [orb 2] [arrow-up 1] [arrow-down 1] [arrow-spin 1]])
+                  [lower upper] (or (:cuts (meta line))
+                                    [0.0 1.0])]
+              (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)
+                    :when (<= lower t upper)]
                 (decorate line t (dr/gaussian 3.0 0.25) (* t 0.33 tm/PHI eq/TAU)))))
           (take 11 (dr/shuffle (remove (fn [l] (:stroke-width (meta l))) lines)))))
 
@@ -117,9 +140,9 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 1.0}
-    (let [lines (gen-lines)]
+    (let [lines (cut-lines (gen-lines))]
       (concat
-       lines
+       (splice lines)
        (details lines)))))
 
 (defn page []
