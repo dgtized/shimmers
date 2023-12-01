@@ -5,9 +5,11 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -72,19 +74,36 @@
                       bezier-line
                       (vary-meta assoc :stroke-width 3.0)))
                 [(gl/line2 (rv 1.01 0.0) (rv 1.01 1.0))])]
-    (last (take 20 (iterate subdivide init)))))
+    (last (take 30 (iterate subdivide init)))))
 
-(defn tick [line t]
+(defn tick [line t r]
   (let [p (g/point-at line t)
         p1 (g/point-at line (- t 0.001))
-        slope (tm/normalize (g/rotate (tm/- p p1) tm/HALF_PI) 3.0)]
+        slope (tm/normalize (g/rotate (tm/- p p1) tm/HALF_PI) r)]
     (gl/line2 (tm/- p slope) (tm/+ p slope))))
+
+(defn orb [line t r]
+  (let [p (g/point-at line t)]
+    (gc/circle p r)))
+
+(defn arrow-down [line t r]
+  (let [p (g/point-at line t)
+        p1 (g/point-at line (- t 0.001))]
+    (triangle/inscribed-equilateral
+     (gc/circle p r) (g/heading (tm/- p p1)))))
+
+(defn arrow-up [line t r]
+  (let [p (g/point-at line t)
+        p1 (g/point-at line (- t 0.001))]
+    (triangle/inscribed-equilateral
+     (gc/circle p r) (g/heading (tm/- p1 p)))))
 
 (defn details [lines]
   (mapcat (fn [line]
-            (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)]
-              (tick line t)))
-          (take 9 (dr/shuffle (remove (fn [l] (:stroke-width (meta l))) lines)))))
+            (let [decorate (dr/weighted [[tick 2] [orb 2] [arrow-up 1] [arrow-down 1]])]
+              (for [t (dr/gaussian-range (dr/random 0.02 0.05) 0.002)]
+                (decorate line t (dr/gaussian 3.0 0.2)))))
+          (take 11 (dr/shuffle (remove (fn [l] (:stroke-width (meta l))) lines)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
