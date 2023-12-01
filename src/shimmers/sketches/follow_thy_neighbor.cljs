@@ -82,8 +82,10 @@
   (dr/map-random-sample
    (constantly 0.2)
    (fn [line]
-     (let [cuts (first (filter (fn [[a b]]  (> (- b a) 0.33))
-                               (repeatedly #(sort [(dr/random 0.0 1.0) (dr/random 0.0 1.0)]))))]
+     (let [cuts (->> #(sort [(dr/random 0.0 1.0) (dr/random 0.0 1.0)])
+                     repeatedly
+                     (filter (fn [[a b]] (> (- b a) 0.4)))
+                     first)]
        (with-meta line (assoc (meta line) :cuts cuts))))
    lines))
 
