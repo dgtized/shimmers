@@ -89,12 +89,14 @@
 
 (defn splice [lines]
   (map (fn [line]
-         (if-let [[a b] (:cuts (meta line))]
-           (let [points (lines/points-between (g/vertices line) a b)]
-             (if (seq points)
-               (with-meta (gl/linestrip2 points) (meta line))
-               line))
-           line))
+         (vary-meta
+          (if-let [[a b] (:cuts (meta line))]
+            (let [points (lines/points-between (g/vertices line) a b)]
+              (if (seq points)
+                (with-meta (gl/linestrip2 points) (meta line))
+                line))
+            line)
+          dissoc :cuts))
        lines))
 
 (defn tick [line t r]
@@ -142,7 +144,7 @@
                    :stroke-width 1.0}
     (let [lines (cut-lines (gen-lines))]
       (concat
-       (map (fn [line] (vary-meta line dissoc :cuts)) (splice lines))
+       (splice lines)
        (details lines)))))
 
 (defn page []
