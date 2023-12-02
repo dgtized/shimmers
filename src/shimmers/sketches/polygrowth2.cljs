@@ -6,8 +6,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.color :as color]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -21,7 +21,7 @@
   (let [center (g/centroid polygon)]
     (as-> polygon it
       (g/vertices it)
-      (p/map-random-sample
+      (dr/map-random-sample
        (constantly p)
        (fn [v] (let [v' (tm/+ center (tm/* (tm/- v center) factor))]
                 (if (or (geometry/point-within? shapes v')
@@ -64,7 +64,7 @@
    :middleware [m/fun-mode framerate/mode]))
 
 (sketch/definition polygrowth2
-  {:created-at "2021-05-02"
-   :tags #{}
-   :type :quil}
+    {:created-at "2021-05-02"
+     :tags #{:deterministic}
+     :type :quil}
   (ctrl/mount page))
