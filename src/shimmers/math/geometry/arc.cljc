@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.arc
   (:require
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -63,6 +64,15 @@
     ;; note, does not include edges to center, just arc surface
     (v/+polar p r (dr/random t0 t1)))
   (random-point-inside [_]
+    (v/+polar p (* r (Math/sqrt (dr/random)))
+              (dr/random t0 t1)))
+
+  rp/ISamplePoint
+  (sample-point-at [_ t]
+    (v/+polar p r (tm/mix* t0 t1 t)))
+  (sample-point-bounds [_]
+    (v/+polar p r (dr/random t0 t1)))
+  (sample-point-inside [_]
     (v/+polar p (* r (Math/sqrt (dr/random)))
               (dr/random t0 t1)))
 
