@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -39,9 +40,10 @@
                   (q/random 0 Math/PI))))
 
 (defn random-displace [shapes prob offset]
-  (p/map-random-sample (constantly prob)
-                       (fn [shape] (g/translate shape (tm/* offset (rand))))
-                       shapes))
+  (dr/map-random-sample
+   (constantly prob)
+   (fn [shape] (g/translate shape (tm/* offset (rand))))
+   shapes))
 
 (defn sample-shape [shape brush fill-density edge-density]
   (concat (generate-strokes brush #(g/random-point shape) edge-density)
