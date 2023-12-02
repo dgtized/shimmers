@@ -9,8 +9,8 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -37,18 +37,18 @@
         chunks (inc (rand-int 8))
         jitter (* 0.02 (/ (g/dist p q) chunks))]
     (for [[a b] (partition 2 1 (concat [(- edge-p)] (cs/centered-range chunks) [(+ 1 edge-q)]))]
-      (gl/line2 (rp/confusion-disk (tm/mix p q (- a (tm/random edge-p))) jitter)
-                (rp/confusion-disk (tm/mix p q (+ b (tm/random edge-q))) jitter)))))
+      (gl/line2 (rp/confusion-disk (tm/mix p q (- a (dr/random edge-p))) jitter)
+                (rp/confusion-disk (tm/mix p q (+ b (dr/random edge-q))) jitter)))))
 
 ;; TODO: add recursive split line with declining likelyhood to recursion depth.
 ;; not clear how to keep outer/inner parameters particularly as each segment can
 ;; subdivide and start overlapping.
 (defn stroke-line [outer inner {[p q] :points}]
-  (let [a (tm/random (- outer) inner)
-        b (tm/random (- 1.0 inner) (+ 1.0 outer))
-        c (+ a (tm/random (- b a)))
-        gap (tm/random 0.01 0.08)]
-    (if (p/chance 0.1)
+  (let [a (dr/random (- outer) inner)
+        b (dr/random (- 1.0 inner) (+ 1.0 outer))
+        c (+ a (dr/random (- b a)))
+        gap (dr/random 0.01 0.08)]
+    (if (dr/chance 0.1)
       [(gl/line2 (tm/mix p q a) (tm/mix p q (- c gap)))
        (gl/line2 (tm/mix p q (+ c gap)) (tm/mix p q b))]
       [(gl/line2 (tm/mix p q a) (tm/mix p q b))])))
@@ -57,11 +57,11 @@
   (-> c
       (clip/hatch-circle
        (tm/clamp (/ r 8.0) 3.0 8.0)
-       (p/gaussian 5.8 (* 0.2 (/ x (q/width)))))
-      (remove-middle (inc (rand-int (int (/ r 6)))))))
+       (dr/gaussian 5.8 (* 0.2 (/ x (q/width)))))
+      (remove-middle (inc (dr/random-int (int (/ r 6)))))))
 
 (defn hatch-some-circles [circles]
-  (p/map-random-sample
+  (dr/map-random-sample
    (fn [{[_ y] :p}] (eq/gaussian 0.05 (/ (q/height) 2) (/ (q/height) 8) y))
    (fn [c] (assoc c :hatching
                  (mapcat (partial stroke-line -0.03 0.09)
@@ -83,7 +83,7 @@
         pack-rules {:bounds bounds
                     :candidates 20
                     :gen-circle
-                    (fn [] (gc/circle (g/random-point-inside bounds) radius))
+                    (fn [] (gc/circle (rp/sample-point-inside bounds) radius))
                     :spacing (* radius 0.9)}]
     (if (>= n 160)
       state
@@ -110,7 +110,7 @@
    :middleware [m/fun-mode framerate/mode]))
 
 (sketch/definition oil-reflections
-  {:created-at "2021-09-05"
-   :tags #{:static}
-   :type :quil}
+    {:created-at "2021-09-05"
+     :tags #{:static :deterministic}
+     :type :quil}
   (ctrl/mount page))
