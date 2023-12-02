@@ -38,12 +38,6 @@
   (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9})))
   (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
-(defn map-random-sample
-  "Apply `xf` to the subset of `coll` selected with probability density `pf` for
-  each element, with the unsampled elements intermingled as before."
-  [pf xf coll]
-  (map (fn [x] (if (chance (pf x)) (xf x) x)) coll))
-
 (defn mapcat-random-sample
   "Apply `xf` to the subset of `coll` selected with probability density `pf` for
   each element, with the unsampled elements intermingled as before. `xf` must
@@ -52,9 +46,6 @@
   (mapcat (fn [x]
             (if (chance (pf x)) (xf x) [x]))
           coll))
-
-(comment (map-random-sample (constantly 0.1) inc (range 10))
-         (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
 
 (defn map-rand-nth
   "Apply `xf` to update a random element in-place in `coll`."

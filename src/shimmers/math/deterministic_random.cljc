@@ -121,6 +121,9 @@
             (if (chance (pf x)) (xf x) [x]))
           coll))
 
+(comment (map-random-sample (constantly 0.1) (partial * 2) (range 10))
+         (mapcat-random-sample (constantly 0.1) (fn [x] [x x]) (range 10)))
+
 (defn jitter
   "Create a random unit vector and then scale it by `amount` to use as noise."
   [amount]
