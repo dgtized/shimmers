@@ -247,10 +247,32 @@
             (ctrl/numeric ui-state "Spacing" [:spacing-size] [1 20 1])
             (ctrl/checkbox ui-state "Variable Size" [:variable-size])
             (ctrl/checkbox ui-state "Color Tiles" [:color-tiles])
-            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))]]]))))
+            (ctrl/checkbox ui-state "Single Layer Color" [:single-layer-color]))]
+
+          [:h3 "Algorithm"]
+          [:div.readable-width
+           [:p "Pick a polygon randomly for each layer added. For the initial
+           layer, just place the polygon at the center, otherwise add a copy of
+           the new polygon on every outward face of the preceding layer,
+           centered along the perpendicular bisector of that face. This ensures
+           the new polygons are oriented so that a bisector of it's face matches
+           the bisector of it's parent face. The new polygons are displaced
+           along that bisector so there is a " [:em "spacing"] " margin between
+           it and it's parent face. The max overlap parameter determines how
+           many times the new polygons can overlap with the any polygons from
+           preceding layers."]
+
+           [:p "For colorization, after filtering the legal polygon additions,
+           either use a single random color from the palette for the entire
+           layer, or create mirror patterns derived from the parent polygon in
+           the preceding layer. "]
+
+           [:p "Variable size determines if the polygons picked for each layer
+           are scaled to match the length of the parent face, or resized
+           proportional that size."]]]]))))
 
 (sketch/definition decorative-tiles
-  {:created-at "2023-01-20"
-   :type :svg
-   :tags #{}}
+    {:created-at "2023-01-20"
+     :type :svg
+     :tags #{}}
   (ctrl/mount page))
