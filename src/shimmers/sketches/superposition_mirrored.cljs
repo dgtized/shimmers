@@ -361,7 +361,11 @@
    [:div.flexcols
     [:div
      [:p.readable-width
-      "Variation on superposition with more intentional shape placement leveraging symmetries."]
+      "Variation on superposition with more intentional shape placement
+      leveraging symmetries. The motion for each triangle uses a control system
+      to change velocity, orientation, and acceleration. This allows for more
+      varied motion planning that can still adjust to temporary stimuli
+      changes."]
      (let [mode (:mode @ui-state)]
        [ctrl/container
         [ctrl/dropdown ui-state "Screen Size" [:screen-size]
