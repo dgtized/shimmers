@@ -41,7 +41,7 @@
            (partial box (cq/rel-vec 0.7 0.5) (cq/rel-w 0.2) (cq/rel-h 0.1)
                     [(resize (cq/rel-vec 0.0 0.15) 0.9 0.1)])]})
 
-(defn update-state [{:keys [t] :as state}]
+(defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
 
 (defn update-box [t box]
