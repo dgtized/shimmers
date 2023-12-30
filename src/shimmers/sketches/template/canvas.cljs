@@ -1,4 +1,4 @@
-(ns shimmers.sketches._canvas-template
+(ns shimmers.sketches.template.canvas
   (:require
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
@@ -27,7 +27,7 @@
       [:div
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))
 
-(sketch/definition _canvas-template
+(sketch/definition template.canvas
   {:created-at "2023-"
    :tags #{}
    :type :canvas}

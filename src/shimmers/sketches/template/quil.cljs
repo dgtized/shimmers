@@ -1,4 +1,4 @@
-(ns shimmers.sketches._quil-template
+(ns shimmers.sketches.template.quil
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -25,7 +25,7 @@
     :draw draw
     :middleware [m/fun-mode framerate/mode])])
 
-(sketch/definition quil-template
+(sketch/definition template.quil
   {:created-at "2023-"
    :tags #{}
    :type :quil}

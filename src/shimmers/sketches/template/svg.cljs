@@ -1,4 +1,4 @@
-(ns shimmers.sketches._svg-template
+(ns shimmers.sketches.template.svg
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -26,11 +26,11 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [view-sketch/generate :svg-template]
+     [view-sketch/generate :template.svg]
      [:div.readable-width]]))
 
-(sketch/definition svg-template
-    {:created-at "2023-"
-     :tags #{}
-     :type :svg}
+(sketch/definition template.svg
+  {:created-at "2023-"
+   :tags #{}
+   :type :svg}
   (ctrl/mount page))
