@@ -17,9 +17,9 @@
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
-   shimmers.sketches.brush-sweep
-   shimmers.sketches.brush-strokes
    shimmers.sketches.breathing-hexes
+   shimmers.sketches.brush-strokes
+   shimmers.sketches.brush-sweep
    shimmers.sketches.bubbles
    shimmers.sketches.butterfly
    shimmers.sketches.canvas-test
@@ -31,14 +31,16 @@
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
    shimmers.sketches.circuit-intersections
-   shimmers.sketches.clothoids
    shimmers.sketches.clothoid-flowers
+   shimmers.sketches.clothoids
    shimmers.sketches.clustered-farmlands
    shimmers.sketches.colonial-growth
-   shimmers.sketches.colors
    shimmers.sketches.color-mapping
+   shimmers.sketches.colors
    shimmers.sketches.concentric-chords
    shimmers.sketches.concentric-moire
+   shimmers.sketches.constellations
+   shimmers.sketches.control-panels
    shimmers.sketches.convex-spiral
    shimmers.sketches.conveyors
    shimmers.sketches.cracked-playa
@@ -49,9 +51,9 @@
    shimmers.sketches.cutouts
    shimmers.sketches.dance-patterns
    shimmers.sketches.decaying-foundations
+   shimmers.sketches.deco-screens
    shimmers.sketches.decomposite
    shimmers.sketches.decorative-tiles
-   shimmers.sketches.deco-screens
    shimmers.sketches.deeper-squares
    shimmers.sketches.deeply-askew
    shimmers.sketches.deformed-spirals
@@ -89,8 +91,8 @@
    shimmers.sketches.glyphs
    shimmers.sketches.gossamer-coils
    shimmers.sketches.gravity-well
-   shimmers.sketches.grid-variations
    shimmers.sketches.grid-exclusion
+   shimmers.sketches.grid-variations
    shimmers.sketches.hairy-spiral
    shimmers.sketches.harsh-lines
    shimmers.sketches.hatched-rectangles
@@ -104,17 +106,17 @@
    shimmers.sketches.inset-polygon
    shimmers.sketches.inside-outside
    shimmers.sketches.integer-circles
-   shimmers.sketches.intersecting-circle-regions
    shimmers.sketches.intersecting-chords
+   shimmers.sketches.intersecting-circle-regions
    shimmers.sketches.interstitial-transitions
    shimmers.sketches.intertwined
    shimmers.sketches.isometric
    shimmers.sketches.iterative-displacement
+   shimmers.sketches.k-means
    shimmers.sketches.kaleidoscope
    shimmers.sketches.kd-tree
    shimmers.sketches.kinematic-chain
    shimmers.sketches.kinetic-elliptics
-   shimmers.sketches.k-means
    shimmers.sketches.langton-ant
    shimmers.sketches.lattice-in-steps
    shimmers.sketches.lattice-of-common-chords
@@ -127,8 +129,8 @@
    shimmers.sketches.marching-squares
    shimmers.sketches.mechanism
    shimmers.sketches.memory-allocation
-   shimmers.sketches.misplaced-connections
    shimmers.sketches.minimum-spanning-tree
+   shimmers.sketches.misplaced-connections
    shimmers.sketches.morse-patterns
    shimmers.sketches.mosaic-deformed
    shimmers.sketches.mosaic-tiling
@@ -145,8 +147,8 @@
    shimmers.sketches.ordered
    shimmers.sketches.othello
    shimmers.sketches.overlapping-polygons
-   shimmers.sketches.particles
    shimmers.sketches.paletteable
+   shimmers.sketches.particles
    shimmers.sketches.path-distribution
    shimmers.sketches.path-following
    shimmers.sketches.path-morph
@@ -157,8 +159,6 @@
    shimmers.sketches.pixel-rings
    shimmers.sketches.plaid-arrangements
    shimmers.sketches.point-to-point
-   shimmers.sketches.constellations
-   shimmers.sketches.control-panels
    shimmers.sketches.poisson-disc-sampling
    shimmers.sketches.polygon-recomposition
    shimmers.sketches.polygrowth
@@ -187,8 +187,8 @@
    shimmers.sketches.rolling-shapes
    shimmers.sketches.rose
    shimmers.sketches.rtree
-   shimmers.sketches.sand-strokes
    shimmers.sketches.s-chartarum
+   shimmers.sketches.sand-strokes
    shimmers.sketches.scintillation
    shimmers.sketches.sea-and-sky
    shimmers.sketches.sediment
@@ -201,8 +201,8 @@
    shimmers.sketches.snake
    shimmers.sketches.solar-transit
    shimmers.sketches.space-colonization
-   shimmers.sketches.spaces-divided
    shimmers.sketches.space-filling-curves
+   shimmers.sketches.spaces-divided
    shimmers.sketches.sphere
    shimmers.sketches.spiderwebs
    shimmers.sketches.spin-doctor
@@ -211,9 +211,9 @@
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
    shimmers.sketches.stem-and-leaf
+   shimmers.sketches.string-lights
    shimmers.sketches.subliminal
    shimmers.sketches.substrate
-   shimmers.sketches.string-lights
    shimmers.sketches.superposition
    shimmers.sketches.superposition-mirrored
    shimmers.sketches.terrain-grid
