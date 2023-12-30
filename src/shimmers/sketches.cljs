@@ -227,6 +227,7 @@
    shimmers.sketches.triangle-gradient
    shimmers.sketches.triangle-intersections
    shimmers.sketches.triangulating-subdivisions
+   shimmers.sketches.trigonometry-boxes
    shimmers.sketches.tunnel-flight
    shimmers.sketches.typography
    shimmers.sketches.under-the-surface
