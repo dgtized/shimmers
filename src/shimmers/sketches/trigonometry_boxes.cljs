@@ -32,8 +32,12 @@
   {:t (/ (q/millis) 1000.0)
    :boxes [(partial box (cq/rel-vec 0.3 0.5) (cq/rel-w 0.2) (cq/rel-h 0.1)
                     [(resize (cq/rel-vec 0.2 0.0) 1.0 0.0)])
+           (partial box (cq/rel-vec 0.4 0.5) (cq/rel-w 0.1) (cq/rel-h 0.1)
+                    [(slide (cq/rel-vec 0.0 0.2) 1.0 0.0)])
            (partial box (cq/rel-vec 0.5 0.5) (cq/rel-w 0.3) (cq/rel-h 0.2)
                     [(slide (cq/rel-vec 0.15 0) 0.8 0.0)])
+           (partial box (cq/rel-vec 0.6 0.5) (cq/rel-w 0.1) (cq/rel-h 0.1)
+                    [(slide (cq/rel-vec 0.0 0.2) 1.0 1.0)])
            (partial box (cq/rel-vec 0.7 0.5) (cq/rel-w 0.2) (cq/rel-h 0.1)
                     [(resize (cq/rel-vec 0.0 0.15) 0.9 0.1)])]})
 
