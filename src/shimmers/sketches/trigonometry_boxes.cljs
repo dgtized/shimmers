@@ -25,6 +25,11 @@
   (fn [box t]
     (update box :center tm/+ (tm/* v (f (+ t0 (* t dt)))))))
 
+(defn jitter [amount threshold f dt t0]
+  (fn [box t]
+    (update box :center tm/+
+            (dr/jitter (* amount (tm/smoothstep* threshold 1.0 (f (+ t0 (* t dt)))))))))
+
 (defn resize [[dx dy] f dt t0]
   (fn [box t]
     (-> box
@@ -32,20 +37,22 @@
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-mod []
-  (let [modf (dr/weighted {:slide 1.0 :resize 1.0})
+  (let [modf (dr/weighted {:slide 1.0 :resize 1.0 :jitter 0.5})
         tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
                          [(partial wave/triangle eq/TAU) 1.0]
                          [(partial wave/square (dr/random 0.75 3.5)) 1.0]
                          [(partial wave/sawtooth eq/TAU) 1.0]])
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
-    (({:slide slide :resize resize} modf)
-     (apply cq/rel-vec
-            (dr/weighted {[(dr/random 0.05 0.25) 0] 3.0
-                          [0 (dr/random 0.05 0.25)] 3.0
-                          [(dr/random 0.05 0.25)
-                           (dr/random 0.05 0.25)] 1.0}))
-     tf dt t0)))
+    (if (= modf :jitter)
+      (jitter (dr/random 10.0) (dr/random 0.0 0.8) tf dt t0)
+      (({:slide slide :resize resize} modf)
+       (apply cq/rel-vec
+              (dr/weighted {[(dr/random 0.05 0.25) 0] 3.0
+                            [0 (dr/random 0.05 0.25)] 3.0
+                            [(dr/random 0.05 0.25)
+                             (dr/random 0.05 0.25)] 1.0}))
+       tf dt t0))))
 
 (defn gen-box []
   (partial box
