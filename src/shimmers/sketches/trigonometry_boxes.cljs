@@ -56,11 +56,11 @@
            (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)))
 
 (defn gen-box-row []
-  (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.2)]
-        prototype (rect/rect (cq/rel-vec (dr/random 0.1 (- 1 w))
-                                         (dr/random 0.1 (- 1 h)))
-                             (cq/rel-vec w h))]
-    (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 7)})]
+  (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.15)]
+        ul (cq/rel-vec (dr/random 0.1 (- 1 w))
+                       (dr/random 0.1 (- 1 h)))
+        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))]
+    (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
@@ -81,7 +81,7 @@
 (defn draw [{:keys [boxes t]}]
   (q/background 1.0)
   (q/stroke 0.0 0.5)
-  (q/fill 0.5 0.1)
+  (q/fill 0.5 0.2)
   (doseq [box boxes]
     (qdg/draw (update-box t box))))
 
