@@ -7,6 +7,8 @@
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -30,7 +32,10 @@
 
 (defn gen-mod []
   (let [modf (dr/weighted {:slide 1.0 :resize 1.0})
-        tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]])
+        tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
+                         [(partial wave/triangle eq/TAU) 1.0]
+                         [(partial wave/square eq/TAU) 1.0]
+                         [(partial wave/sawtooth eq/TAU) 1.0]])
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
     (({:slide slide :resize resize} modf)
@@ -52,7 +57,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t (/ (q/millis) 1000.0)
-   :boxes (repeatedly (dr/random 5 17) gen-box)})
+   :boxes (repeatedly (dr/random 7 23) gen-box)})
 
 (defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
