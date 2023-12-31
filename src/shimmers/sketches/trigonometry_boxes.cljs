@@ -3,13 +3,14 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.controls :as ctrl]
-   [thi.ng.geom.rect :as rect]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]
+   [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
-   [shimmers.common.quil :as cq]))
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn box [center width height modulations t]
   (let [{:keys [center width height]}
@@ -17,29 +18,41 @@
         wh (gv/vec2 (* width 0.5) (* height 0.5))]
     (rect/rect (tm/- center wh) (tm/+ center wh))))
 
-(defn slide [v dt t0]
+(defn slide [v f dt t0]
   (fn [box t]
     (update box :center tm/+ (tm/* v (Math/sin (+ t0 (* t dt)))))))
 
-(defn resize [[dx dy] dt t0]
+(defn resize [[dx dy] f dt t0]
   (fn [box t]
     (-> box
         (update :width + (* dx (Math/sin (+ t0 (* t dt)))))
         (update :height + (* dy (Math/sin (+ t0 (* t dt))))))))
 
+(defn gen-mod []
+  (let [modf (dr/weighted {:slide 1.0 :resize 1.0})
+        tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]])
+        dt (dr/random 0.5 1.5)
+        t0 (dr/random-tau)]
+    (({:slide slide :resize resize} modf)
+     (apply cq/rel-vec
+            (dr/weighted {[(dr/random 0.05 0.25) 0] 3.0
+                          [0 (dr/random 0.05 0.25)] 3.0
+                          [(dr/random 0.05 0.25)
+                           (dr/random 0.05 0.25)] 1.0}))
+     tf dt t0)))
+
+(defn gen-box []
+  (partial box
+           (cq/rel-vec (dr/random 0.2 0.8)
+                       (dr/random 0.2 0.8))
+           (cq/rel-w (dr/random 0.05 0.3))
+           (cq/rel-h (dr/random 0.05 0.3))
+           (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t (/ (q/millis) 1000.0)
-   :boxes [(partial box (cq/rel-vec 0.3 0.5) (cq/rel-w 0.2) (cq/rel-h 0.1)
-                    [(resize (cq/rel-vec 0.2 0.0) 1.0 0.0)])
-           (partial box (cq/rel-vec 0.4 0.5) (cq/rel-w 0.1) (cq/rel-h 0.1)
-                    [(slide (cq/rel-vec 0.0 0.2) 1.0 0.0)])
-           (partial box (cq/rel-vec 0.5 0.5) (cq/rel-w 0.3) (cq/rel-h 0.2)
-                    [(slide (cq/rel-vec 0.15 0) 0.8 0.0)])
-           (partial box (cq/rel-vec 0.6 0.5) (cq/rel-w 0.1) (cq/rel-h 0.1)
-                    [(slide (cq/rel-vec 0.0 0.2) 1.0 1.0)])
-           (partial box (cq/rel-vec 0.7 0.5) (cq/rel-w 0.2) (cq/rel-h 0.1)
-                    [(resize (cq/rel-vec 0.0 0.15) 0.9 0.1)])]})
+   :boxes (repeatedly (dr/random 5 17) gen-box)})
 
 (defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
