@@ -23,19 +23,19 @@
 
 (defn slide [v f dt t0]
   (fn [box t]
-    (update box :center tm/+ (tm/* v (Math/sin (+ t0 (* t dt)))))))
+    (update box :center tm/+ (tm/* v (f (+ t0 (* t dt)))))))
 
 (defn resize [[dx dy] f dt t0]
   (fn [box t]
     (-> box
-        (update :width + (* dx (Math/sin (+ t0 (* t dt)))))
-        (update :height + (* dy (Math/sin (+ t0 (* t dt))))))))
+        (update :width + (* dx (f (+ t0 (* t dt)))))
+        (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-mod []
   (let [modf (dr/weighted {:slide 1.0 :resize 1.0})
         tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
                          [(partial wave/triangle eq/TAU) 1.0]
-                         [(partial wave/square eq/TAU) 1.0]
+                         [(partial wave/square (dr/random 0.75 3.5)) 1.0]
                          [(partial wave/sawtooth eq/TAU) 1.0]])
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
