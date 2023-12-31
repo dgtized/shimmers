@@ -10,6 +10,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -54,10 +55,22 @@
            (cq/rel-h (dr/random 0.05 0.3))
            (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)))
 
+(defn gen-box-row []
+  (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.2)]
+        prototype (rect/rect (cq/rel-vec (dr/random 0.1 (- 1 w))
+                                         (dr/random 0.1 (- 1 h)))
+                             (cq/rel-vec w h))]
+    (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 7)})]
+      (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
+               w h
+               [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
+                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t (/ (q/millis) 1000.0)
-   :boxes (repeatedly (dr/random 7 23) gen-box)})
+   :boxes (into (apply concat (repeatedly (dr/random 1 4) gen-box-row))
+                (repeatedly (dr/random 7 30) gen-box))})
 
 (defn update-state [state]
   (assoc state :t (/ (q/millis) 1000.0)))
