@@ -37,7 +37,7 @@
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-mod []
-  (let [modf (dr/weighted {:slide 1.0 :resize 1.0 :jitter 0.5})
+  (let [modf (dr/weighted {:slide 1.0 :resize 1.0 :jitter 1.0})
         tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
                          [(partial wave/triangle eq/TAU) 1.0]
                          [(partial wave/square (dr/random 0.75 3.5)) 1.0]
