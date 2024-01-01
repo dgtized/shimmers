@@ -15,11 +15,14 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn box [center width height modulations t]
+(defn box [center width height modulations fill t]
   (let [{:keys [center width height]}
         ((apply comp modulations) {:center center :width width :height height} t)
-        wh (gv/vec2 (* width 0.5) (* height 0.5))]
-    (rect/rect (tm/- center wh) (tm/+ center wh))))
+        wh (gv/vec2 (* width 0.5) (* height 0.5))
+        s (rect/rect (tm/- center wh) (tm/+ center wh))]
+    (if fill
+      (assoc s :fill fill)
+      s)))
 
 (defn slide [v f dt t0]
   (fn [box t]
@@ -60,7 +63,11 @@
                        (dr/random 0.2 0.8))
            (cq/rel-w (dr/random 0.05 0.3))
            (cq/rel-h (dr/random 0.05 0.3))
-           (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)))
+           (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)
+           (when (dr/chance 0.2)
+             (dr/weighted [[[0.0 0.7 0.4 0.2] 1.0]
+                           [[0.0 0.6 0.4 0.2] 1.0]
+                           [[0.0 0.5 0.4 0.2] 1.0]]))))
 
 (defn gen-box-row []
   (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
@@ -71,7 +78,8 @@
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
-                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]))))
+                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]
+               [0.0 0.2]))))
 
 (defn gen-box-column []
   (let [[w h] [(dr/random 0.05 0.25) (dr/random 0.4 0.8)]
@@ -82,7 +90,8 @@
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 (* w (dr/random 0.5 2.0)) 0)
-                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]))))
+                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]
+               [0.0 0.2]))))
 
 (defn gen-box-set []
   ((dr/weighted [[gen-box-column 1.0] [gen-box-row 1.0]])))
@@ -104,7 +113,10 @@
   (q/stroke 0.0 0.5)
   (q/fill 0.5 0.2)
   (doseq [box boxes]
-    (qdg/draw (update-box t box))))
+    (let [s (update-box t box)
+          fill (:fill s)]
+      (when fill (apply q/fill fill))
+      (qdg/draw s))))
 
 (defn page []
   [:div
