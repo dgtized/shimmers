@@ -46,11 +46,11 @@
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-time-function []
-  (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
-                [(partial wave/triangle eq/TAU) 1.0]
+  (dr/weighted [[Math/sin 4.0] [Math/cos 4.0] [Math/tan 1.0]
+                [(partial wave/triangle eq/TAU) 2.0]
                 [(partial wave/square (dr/random 0.75 3.5)) 1.0]
-                [(partial wave/sawtooth eq/TAU) 1.0]
-                [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 1.0]]))
+                [(partial wave/sawtooth eq/TAU) 2.0]
+                [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 2.0]]))
 
 (defn gen-mod []
   (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0})
@@ -92,24 +92,26 @@
   (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
         ul (cq/rel-vec (dr/random 0.1 (- 1 w))
                        (dr/random 0.1 (- 1 h)))
+        tf (gen-time-function)
         prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))]
     (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
-                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]
+                       tf (dr/random 0.2 2.0) (dr/random-tau))]
                [0.0 0.2]))))
 
 (defn gen-box-column []
   (let [[w h] [(dr/random 0.05 0.25) (dr/random 0.4 0.8)]
         ul (cq/rel-vec (dr/random 0.1 (- 1 w))
                        (dr/random 0.1 (- 1 h)))
+        tf (gen-time-function)
         prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))]
     (for [{p :p [w h] :size} (g/subdivide prototype {:rows (dr/random-int 3 12) :cols 1})]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 (* w (dr/random 0.5 2.0)) 0)
-                       Math/sin (dr/random 0.2 2.0) (dr/random-tau))]
+                       tf (dr/random 0.2 2.0) (dr/random-tau))]
                [0.0 0.2]))))
 
 (defn gen-box-set []
