@@ -81,7 +81,7 @@
                        (dr/random 0.2 0.8))
            (cq/rel-w (dr/random 0.05 0.3))
            (cq/rel-h (dr/random 0.05 0.3))
-           (repeatedly (dr/weighted {1 9 2 4 3 1 4 1}) gen-mod)
+           (repeatedly (dr/weighted {1 5 2 4 3 2 4 1 5 1}) gen-mod)
            (gen-fill)))
 
 (defn gen-box-row []
