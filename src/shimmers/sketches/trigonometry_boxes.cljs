@@ -57,6 +57,15 @@
                              (dr/random 0.05 0.25)] 1.0}))
        tf dt t0))))
 
+(defn gen-fill []
+  (dr/weighted
+   [[[(+ (dr/gaussian 0.0 0.05) (if (dr/chance 0.2) 0.5 0.0))
+      (dr/gaussian 0.6 0.05)
+      (dr/gaussian 0.5 0.05)
+      0.2] 1.0]
+    [(dr/gaussian 0.5 0.08) 0.2]
+    [nil 0.5]]))
+
 (defn gen-box []
   (partial box
            (cq/rel-vec (dr/random 0.2 0.8)
@@ -64,11 +73,7 @@
            (cq/rel-w (dr/random 0.05 0.3))
            (cq/rel-h (dr/random 0.05 0.3))
            (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)
-           (when (dr/chance 0.33)
-             [(+ (dr/gaussian 0.0 0.05) (if (dr/chance 0.2) 0.5 0.0))
-              (dr/gaussian 0.6 0.05)
-              (dr/gaussian 0.5 0.05)
-              0.2])))
+           (gen-fill)))
 
 (defn gen-box-row []
   (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
@@ -112,11 +117,9 @@
 (defn draw [{:keys [boxes t]}]
   (q/background 1.0)
   (q/stroke 0.0 0.5)
-  (q/fill 0.5 0.2)
   (doseq [box boxes]
-    (let [s (update-box t box)
-          fill (:fill s)]
-      (when fill (apply q/fill fill))
+    (let [s (update-box t box)]
+      (q/fill (:fill s))
       (qdg/draw s))))
 
 (defn page []
