@@ -45,13 +45,16 @@
         (update :width + (* dx (f (+ t0 (* t dt)))))
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
+(defn gen-time-function []
+  (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
+                [(partial wave/triangle eq/TAU) 1.0]
+                [(partial wave/square (dr/random 0.75 3.5)) 1.0]
+                [(partial wave/sawtooth eq/TAU) 1.0]
+                [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 1.0]]))
+
 (defn gen-mod []
   (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0})
-        tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
-                         [(partial wave/triangle eq/TAU) 1.0]
-                         [(partial wave/square (dr/random 0.75 3.5)) 1.0]
-                         [(partial wave/sawtooth eq/TAU) 1.0]
-                         [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 1.0]])
+        tf (gen-time-function)
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
     (case modf
