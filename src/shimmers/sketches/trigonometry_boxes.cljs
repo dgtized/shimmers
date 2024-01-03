@@ -64,10 +64,11 @@
            (cq/rel-w (dr/random 0.05 0.3))
            (cq/rel-h (dr/random 0.05 0.3))
            (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)
-           (when (dr/chance 0.2)
-             (dr/weighted [[[0.0 0.7 0.4 0.2] 1.0]
-                           [[0.0 0.6 0.4 0.2] 1.0]
-                           [[0.0 0.5 0.4 0.2] 1.0]]))))
+           (when (dr/chance 0.33)
+             [(+ (dr/gaussian 0.0 0.05) (if (dr/chance 0.2) 0.5 0.0))
+              (dr/gaussian 0.6 0.05)
+              (dr/gaussian 0.5 0.05)
+              0.2])))
 
 (defn gen-box-row []
   (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
