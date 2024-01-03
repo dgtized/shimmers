@@ -8,6 +8,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -16,10 +17,11 @@
    [thi.ng.math.core :as tm]))
 
 (defn box [center width height modulations fill t]
-  (let [{:keys [center width height]}
-        ((apply comp modulations) {:center center :width width :height height} t)
+  (let [{:keys [center width height angle]}
+        ((apply comp modulations) {:center center :width width :height height :angle 0} t)
         wh (gv/vec2 (* width 0.5) (* height 0.5))
-        s (rect/rect (tm/- center wh) (tm/+ center wh))]
+        s (-> (rect/rect (tm/- center wh) (tm/+ center wh))
+              (geometry/rotate-around-centroid angle))]
     (if fill
       (assoc s :fill fill)
       s)))
@@ -33,6 +35,10 @@
     (update box :center tm/+
             (dr/jitter (* amount (tm/smoothstep* threshold 1.0 (f (+ t0 (* t dt)))))))))
 
+(defn rotate [amount f dt t0]
+  (fn [box t]
+    (assoc box :angle (* amount (f (+ t0 (* t dt)))))))
+
 (defn resize [[dx dy] f dt t0]
   (fn [box t]
     (-> box
@@ -40,15 +46,18 @@
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-mod []
-  (let [modf (dr/weighted {:slide 1.0 :resize 1.0 :jitter 1.0})
+  (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0})
         tf (dr/weighted [[Math/sin 3.0] [Math/cos 3.0] [Math/tan 1.0]
                          [(partial wave/triangle eq/TAU) 1.0]
                          [(partial wave/square (dr/random 0.75 3.5)) 1.0]
                          [(partial wave/sawtooth eq/TAU) 1.0]])
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
-    (if (= modf :jitter)
+    (case modf
+      :jitter
       (jitter (dr/random 10.0) (dr/random 0.0 0.8) tf dt t0)
+      :rotate
+      (rotate (dr/random eq/TAU) tf dt t0)
       (({:slide slide :resize resize} modf)
        (apply cq/rel-vec
               (dr/weighted {[(dr/random 0.05 0.25) 0] 3.0
@@ -72,7 +81,7 @@
                        (dr/random 0.2 0.8))
            (cq/rel-w (dr/random 0.05 0.3))
            (cq/rel-h (dr/random 0.05 0.3))
-           (repeatedly (dr/weighted {1 11 2 3 3 1}) gen-mod)
+           (repeatedly (dr/weighted {1 9 2 4 3 1 4 1}) gen-mod)
            (gen-fill)))
 
 (defn gen-box-row []
