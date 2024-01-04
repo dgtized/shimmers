@@ -99,26 +99,28 @@
         ul (cq/rel-vec (dr/random 0.1 (- 1 w))
                        (dr/random 0.1 (- 1 h)))
         tf (gen-time-function)
-        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))]
+        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))
+        fill (gen-fill)]
     (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
                        tf (dr/random 0.2 2.0) (dr/random-tau))]
-               [0.0 0.2]))))
+               fill))))
 
 (defn gen-box-column []
   (let [[w h] [(dr/random 0.05 0.25) (dr/random 0.4 0.8)]
         ul (cq/rel-vec (dr/random 0.1 (- 1 w))
                        (dr/random 0.1 (- 1 h)))
         tf (gen-time-function)
-        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))]
+        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))
+        fill (gen-fill)]
     (for [{p :p [w h] :size} (g/subdivide prototype {:rows (dr/random-int 3 12) :cols 1})]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 (* w (dr/random 0.5 2.0)) 0)
                        tf (dr/random 0.2 2.0) (dr/random-tau))]
-               [0.0 0.2]))))
+               fill))))
 
 (defn gen-box-set []
   ((dr/weighted [[gen-box-column 1.0] [gen-box-row 1.0]])))
