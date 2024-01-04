@@ -110,10 +110,12 @@
                        (dr/random 0.1 (- 1 h)))
         tf (gen-time-function)
         prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))
-        fill (gen-fill)]
-    (for [{p :p [w h] :size} (if row?
-                               (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})
-                               (g/subdivide prototype {:rows (dr/random-int 3 12) :cols 1}))]
+        fill (gen-fill)
+        splits (dr/random-int 3 12)
+        divisions (if row?
+                    {:rows 1 :cols splits}
+                    {:rows splits :cols 1})]
+    (for [{p :p [w h] :size} (g/subdivide prototype divisions)]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (if row?
