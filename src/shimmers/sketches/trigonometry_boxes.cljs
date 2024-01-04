@@ -112,7 +112,7 @@
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
-                       tf (dr/random 0.2 2.0) (dr/random-tau))]
+                       tf (dr/random 0.3 3.0) (dr/random-tau))]
                fill))))
 
 (defn gen-box-column []
@@ -126,7 +126,7 @@
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
                [(slide (gv/vec2 (* w (dr/random 0.5 2.0)) 0)
-                       tf (dr/random 0.2 2.0) (dr/random-tau))]
+                       tf (dr/random 0.33 3.0) (dr/random-tau))]
                fill))))
 
 (defn gen-box-set []
