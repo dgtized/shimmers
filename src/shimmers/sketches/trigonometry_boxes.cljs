@@ -9,6 +9,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
+   [shimmers.math.vector :as v]
    [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -39,6 +40,10 @@
   (fn [box t]
     (assoc box :angle (* amount (f (+ t0 (* t dt)))))))
 
+(defn orbit [r dt t0]
+  (fn [box t]
+    (update box :center tm/+ (v/polar r (+ t0 (* dt t))))))
+
 (defn resize [[dx dy] f dt t0]
   (fn [box t]
     (-> box
@@ -53,7 +58,7 @@
                 [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 2.0]]))
 
 (defn gen-mod []
-  (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0})
+  (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0 :orbit 1.0})
         tf (gen-time-function)
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
@@ -62,6 +67,8 @@
       (jitter (dr/random 10.0) (dr/random 0.0 0.8) tf dt t0)
       :rotate
       (rotate (dr/random eq/TAU) tf dt t0)
+      :orbit
+      (orbit (cq/rel-h (dr/random 0.02 0.1)) (* (if (dr/chance 0.5) -1 1) dt) t0)
       (({:slide slide :resize resize} modf)
        (apply cq/rel-vec
               (dr/weighted {[(dr/random 0.05 0.25) 0] 3.0
