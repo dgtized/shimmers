@@ -36,6 +36,11 @@
     (update box :center tm/+
             (dr/jitter (* amount (tm/smoothstep* threshold 1.0 (f (+ t0 (* t dt)))))))))
 
+(defn jitter-rotate [amount threshold f dt t0]
+  (fn [box t]
+    (update box :angle (if (dr/chance 0.5) + -)
+            (* (dr/random amount) (tm/smoothstep* threshold 1.0 (f (+ t0 (* t dt))))))))
+
 (defn rotate [amount f dt t0]
   (fn [box t]
     (assoc box :angle (* amount (f (+ t0 (* t dt)))))))
@@ -58,13 +63,17 @@
                 [(fn [t] (- 0.0 (wave/sawtooth eq/TAU t))) 2.0]]))
 
 (defn gen-mod []
-  (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0 :rotate 1.0 :orbit 1.0})
+  (let [modf (dr/weighted {:slide 2.0 :resize 1.0 :jitter 2.0
+                           :rotate 1.0 :jitter-rotate 1.0
+                           :orbit 1.0})
         tf (gen-time-function)
         dt (dr/random 0.5 1.5)
         t0 (dr/random-tau)]
     (case modf
       :jitter
       (jitter (dr/random 10.0) (dr/random 0.0 0.8) tf dt t0)
+      :jitter-rotate
+      (jitter-rotate (dr/random 1.0) (dr/random 0.0 0.8) tf dt t0)
       :rotate
       (rotate (dr/random eq/TAU) tf dt t0)
       :orbit
