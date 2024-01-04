@@ -72,11 +72,17 @@
 
 (defn gen-fill []
   (dr/weighted
-   [[[(+ (dr/gaussian 0.0 0.05) (if (dr/chance 0.2) 0.5 0.0))
+   [[[(dr/gaussian 0.0 0.05)
+      (dr/gaussian 0.6 0.05)
+      (dr/gaussian 0.5 0.05)
+      0.2] 2.0]
+    [[(+ (dr/gaussian 0.0 0.05) (dr/gaussian 0.5 0.05))
       (dr/gaussian 0.6 0.05)
       (dr/gaussian 0.5 0.05)
       0.2] 1.0]
-    [(dr/gaussian 0.5 0.08) 0.2]
+    [[(dr/gaussian 0.5 0.08) 0.2] 1.0]
+    [[0.0 0.2] 2.0]
+    [[0.1 0.2] 1.0]
     [nil 0.5]]))
 
 (defn gen-box []
