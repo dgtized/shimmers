@@ -101,36 +101,26 @@
            (repeatedly (dr/weighted {1 5 2 4 3 2 4 1 5 1}) gen-mod)
            (gen-fill)))
 
-(defn gen-box-row []
-  (let [[w h] [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
+(defn gen-box-set []
+  (let [row? (dr/chance 0.5)
+        [w h] (if row?
+                [(dr/random 0.4 0.8) (dr/random 0.05 0.25)]
+                [(dr/random 0.05 0.25) (dr/random 0.4 0.8)])
         ul (cq/rel-vec (dr/random 0.1 (- 1 w))
                        (dr/random 0.1 (- 1 h)))
         tf (gen-time-function)
         prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))
         fill (gen-fill)]
-    (for [{p :p [w h] :size} (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})]
+    (for [{p :p [w h] :size} (if row?
+                               (g/subdivide prototype {:rows 1 :cols (dr/random-int 3 12)})
+                               (g/subdivide prototype {:rows (dr/random-int 3 12) :cols 1}))]
       (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
                w h
-               [(slide (gv/vec2 0 (* h (dr/random 0.5 2.0)))
+               [(slide (if row?
+                         (gv/vec2 0 (* h (dr/random 0.5 2.0)))
+                         (gv/vec2 (* w (dr/random 0.5 2.0)) 0))
                        tf (dr/random 0.3 3.0) (dr/random-tau))]
                fill))))
-
-(defn gen-box-column []
-  (let [[w h] [(dr/random 0.05 0.25) (dr/random 0.4 0.8)]
-        ul (cq/rel-vec (dr/random 0.1 (- 1 w))
-                       (dr/random 0.1 (- 1 h)))
-        tf (gen-time-function)
-        prototype (rect/rect ul (tm/+ ul (cq/rel-vec w h)))
-        fill (gen-fill)]
-    (for [{p :p [w h] :size} (g/subdivide prototype {:rows (dr/random-int 3 12) :cols 1})]
-      (partial box (tm/+ p (tm/* (gv/vec2 w h) 0.5))
-               w h
-               [(slide (gv/vec2 (* w (dr/random 0.5 2.0)) 0)
-                       tf (dr/random 0.33 3.0) (dr/random-tau))]
-               fill))))
-
-(defn gen-box-set []
-  ((dr/weighted [[gen-box-column 1.0] [gen-box-row 1.0]])))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
