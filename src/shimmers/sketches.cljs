@@ -90,6 +90,7 @@
    shimmers.sketches.gl-cube
    shimmers.sketches.glyphs
    shimmers.sketches.gossamer-coils
+   shimmers.sketches.graph-traces
    shimmers.sketches.gravity-well
    shimmers.sketches.grid-exclusion
    shimmers.sketches.grid-variations
