@@ -30,7 +30,7 @@
      [:div.readable-width]]))
 
 (sketch/definition template.svg
-  {:created-at "2023-"
+  {:created-at "2024-"
    :tags #{}
    :type :svg}
   (ctrl/mount page))
