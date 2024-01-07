@@ -44,15 +44,42 @@
      :ships (repeatedly 3 (fn [] (let [node (dr/rand-nth (keys (:nodes graph)))]
                                   (new-ship graph node now))))}))
 
+(defn contract-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
+  (let [p' (nodes p)
+        q' (nodes q)
+        dist (g/dist p' q')
+        move (tm/* (tm/- q' p') (/ dt dist))]
+    (-> graph
+        (update-in [:nodes p] tm/+ move)
+        (update-in [:nodes q] tm/- move))))
+
+(defn expand-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
+  (let [p' (nodes p)
+        q' (nodes q)
+        dist (g/dist p' q')
+        move (tm/* (tm/- p' q') (/ dt dist))]
+    (-> graph
+        (update-in [:nodes p] tm/+ move)
+        (update-in [:nodes q] tm/- move))))
+
+(defn update-graph [{:keys [nodes edges] :as graph} dt]
+  (let [ranked-edges (sort-by (fn [{:keys [p q]}] (g/dist (nodes p) (nodes q))) edges)
+        closest (take 6 ranked-edges)
+        furthest (take-last 4 ranked-edges)]
+    (as-> graph graph
+      (reduce (fn [g e] (expand-edge g e dt)) graph closest)
+      (reduce (fn [g e] (contract-edge g e dt)) graph furthest))))
+
 (defn update-ships [ships {:keys [nodes] :as graph} now]
   (for [{:keys [p q t0 t1] :as ship} ships]
     (if (>= now t1)
       (new-ship graph q now)
       (assoc ship :pos (tm/mix (nodes p) (nodes q) (/ (- now t0) (- t1 t0)))))))
 
-(defn update-state [{:keys [graph] :as state}]
-  (let [t (now)]
+(defn update-state [{:keys [t graph] :as state}]
+  (let [now (now)]
     (-> state
+        (update :graph update-graph (* 10 (- now t)))
         (update :ships update-ships graph t)
         (assoc :t now))))
 
