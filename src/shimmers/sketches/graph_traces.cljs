@@ -51,7 +51,10 @@
       (assoc ship :pos (tm/mix (nodes p) (nodes q) (/ (- now t0) (- t1 t0)))))))
 
 (defn update-state [{:keys [graph] :as state}]
-  (update state :ships update-ships graph (now)))
+  (let [t (now)]
+    (-> state
+        (update :ships update-ships graph t)
+        (assoc :t now))))
 
 (defn draw [{:keys [graph ships]}]
   (q/background 1.0)
