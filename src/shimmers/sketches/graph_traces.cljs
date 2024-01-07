@@ -41,8 +41,9 @@
         now (now)]
     {:graph graph
      :t now
-     :ships (repeatedly 3 (fn [] (let [node (dr/rand-nth (keys (:nodes graph)))]
-                                  (new-ship graph node now))))}))
+     :ships (->> (fn [] (let [node (dr/rand-nth (keys (:nodes graph)))]
+                         (new-ship graph node now)))
+                 (repeatedly 7))}))
 
 (defn contract-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
   (let [p' (nodes p)
