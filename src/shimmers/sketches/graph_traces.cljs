@@ -62,11 +62,19 @@
         (update-in [:nodes p] tm/+ move)
         (update-in [:nodes q] tm/- move))))
 
+(defn avoid-edges [graph rect node dt]
+  (let [pos ((:nodes graph) node)
+        closest (g/closest-point rect pos)
+        force (tm/* (tm/- pos closest) (* 2 (/ dt (g/dist-squared pos closest))))]
+    (update-in graph [:nodes node] tm/+ force)))
+
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
   (let [ranked-edges (sort-by (fn [{:keys [p q]}] (g/dist (nodes p) (nodes q))) edges)
-        closest (take 6 ranked-edges)
-        furthest (take-last 4 ranked-edges)]
+        closest (take 8 ranked-edges)
+        furthest (take-last 4 ranked-edges)
+        box (cq/screen-rect 1.01)]
     (as-> graph graph
+      (reduce (fn [g n] (avoid-edges g box n dt)) graph (keys nodes))
       (reduce (fn [g e] (expand-edge g e dt)) graph closest)
       (reduce (fn [g e] (contract-edge g e dt)) graph furthest))))
 
