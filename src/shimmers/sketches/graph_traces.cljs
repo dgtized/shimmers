@@ -63,10 +63,12 @@
         (update-in [:nodes q] tm/- move))))
 
 (defn avoid-edges [graph rect node dt]
-  (let [pos ((:nodes graph) node)
+  (let [pos (tm/+ ((:nodes graph) node) (dr/jitter 3.0))
         closest (g/closest-point rect pos)
-        force (tm/* (tm/- pos closest) (* 2 (/ dt (g/dist-squared pos closest))))]
-    (update-in graph [:nodes node] tm/+ force)))
+        force (tm/* (tm/- pos closest) (* 0.5 (/ dt (g/dist-squared pos closest))))]
+    (if (g/contains-point? rect pos)
+      (update-in graph [:nodes node] tm/+ force)
+      (assoc-in graph [:nodes node] (g/closest-point (g/scale-size rect 0.98) pos)))))
 
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
   (let [ranked-edges (sort-by (fn [{:keys [p q]}] (g/dist (nodes p) (nodes q))) edges)
