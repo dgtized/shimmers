@@ -47,7 +47,7 @@
 (defn contract-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
   (let [p' (nodes p)
         q' (nodes q)
-        dist (g/dist p' q')
+        dist (g/dist-squared p' q')
         move (tm/* (tm/- q' p') (/ dt dist))]
     (-> graph
         (update-in [:nodes p] tm/+ move)
@@ -56,7 +56,7 @@
 (defn expand-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
   (let [p' (nodes p)
         q' (nodes q)
-        dist (g/dist p' q')
+        dist (g/dist-squared p' q')
         move (tm/* (tm/- p' q') (/ dt dist))]
     (-> graph
         (update-in [:nodes p] tm/+ move)
@@ -70,7 +70,7 @@
 
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
   (let [ranked-edges (sort-by (fn [{:keys [p q]}] (g/dist (nodes p) (nodes q))) edges)
-        closest (take 8 ranked-edges)
+        closest (take 12 ranked-edges)
         furthest (take-last 4 ranked-edges)
         box (cq/screen-rect 1.01)]
     (as-> graph graph
@@ -87,7 +87,7 @@
 (defn update-state [{:keys [t graph] :as state}]
   (let [now (now)]
     (-> state
-        (update :graph update-graph (* 10 (- now t)))
+        (update :graph update-graph (* 500 (- now t)))
         (update :ships update-ships graph t)
         (assoc :t now))))
 
