@@ -51,8 +51,9 @@
   (let [conns (filter (fn [{:keys [p q]}] (or (= node p) (= node q))) edges)]
     (seq (disj (set/union (set (map :p conns)) (set (map :q conns))) node))))
 
-(defn new-ship [graph node now]
+(defn new-ship [graph fill node now]
   {:p node :q (dr/rand-nth (out-edges graph node))
+   :fill fill
    :t0 now :t1 (+ now (dr/random 1 4))})
 
 (defn setup []
@@ -61,9 +62,9 @@
         now (now)]
     {:graph graph
      :t now
-     :ships (->> (fn [] (let [node (dr/rand-nth (keys (:nodes graph)))]
-                         (new-ship graph node now)))
-                 (repeatedly 7))}))
+     :ships (for [f (range 7)]
+              (let [node (dr/rand-nth (keys (:nodes graph)))]
+                (new-ship graph [(mod (* f tm/PHI) 1.0) 0.66 0.5 0.5] node now)))}))
 
 (defn contract-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
   (let [p' (nodes p)
@@ -102,9 +103,9 @@
       (reduce (fn [g e] (contract-edge g e dt)) graph furthest))))
 
 (defn update-ships [ships {:keys [nodes] :as graph} now]
-  (for [{:keys [p q t0 t1] :as ship} ships]
+  (for [{:keys [p q t0 t1 fill] :as ship} ships]
     (if (>= now t1)
-      (new-ship graph q now)
+      (new-ship graph fill q now)
       (assoc ship :pos (tm/mix (nodes p) (nodes q) (/ (- now t0) (- t1 t0)))))))
 
 (defn update-state [{:keys [t graph] :as state}]
@@ -128,7 +129,9 @@
             (get (:nodes graph) q)))
   (q/stroke 0.0 0.25)
   (q/fill 0.0 0.4)
-  (doseq [{:keys [pos]} ships]
+  (doseq [{:keys [pos fill]} ships]
+    (when fill
+      (q/fill fill))
     (when pos
       (cq/circle pos 4.0))))
 
