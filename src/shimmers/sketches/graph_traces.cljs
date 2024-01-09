@@ -16,15 +16,18 @@
 (defn now []
   (/ (q/millis) 1000.0))
 
+(defn planar-edges [nodes]
+  (->> nodes
+       keys
+       cs/all-pairs
+       (sort-by (fn [[p q]] (g/dist (get nodes p) (get nodes q))))
+       (take 33)))
+
 (defn new-graph []
   (let [nodes (zipmap (map (comp keyword char) (range 65 (+ 65 26)))
                       (repeatedly 11 #(rp/sample-point-inside (cq/screen-rect 0.85))))]
     {:nodes nodes
-     :edges (for [[p q] (->> nodes
-                             keys
-                             cs/all-pairs
-                             (sort-by (fn [[p q]] (g/dist (get nodes p) (get nodes q))))
-                             (take 33))]
+     :edges (for [[p q] (planar-edges nodes)]
               {:p p :q q})}))
 
 (defn out-edges [{:keys [edges]} node]
