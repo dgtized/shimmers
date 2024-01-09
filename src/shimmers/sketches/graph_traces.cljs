@@ -11,17 +11,33 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.utils.intersect :as gisec]
    [thi.ng.math.core :as tm]))
 
 (defn now []
   (/ (q/millis) 1000.0))
 
+(defn planar? [nodes edges [p q]]
+  (not-any?
+   (fn [[a b]]
+     (and (not (or (= a p) (= b p) (= a q) (= b q)))
+          (= :intersect (:type (gisec/intersect-line2-line2?
+                                (nodes p) (nodes q)
+                                (nodes a) (nodes b))))))
+   edges))
+
 (defn planar-edges [nodes]
   (->> nodes
        keys
        cs/all-pairs
+       ;; order by shortest edge
        (sort-by (fn [[p q]] (g/dist (get nodes p) (get nodes q))))
-       (take 33)))
+       ;; greedy accept planar edges
+       (reduce (fn [accepted edge]
+                 (if (planar? nodes accepted edge)
+                   (conj accepted edge)
+                   accepted))
+               [])))
 
 (defn new-graph []
   (let [nodes (zipmap (map (comp keyword char) (range 65 (+ 65 26)))
