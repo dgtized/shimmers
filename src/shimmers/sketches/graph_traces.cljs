@@ -9,6 +9,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils.intersect :as gisec]
@@ -113,15 +114,20 @@
         (update :ships update-ships graph t)
         (assoc :t now))))
 
-(defn draw [{:keys [graph ships]}]
-  (q/background 1.0)
+(defn draw [{:keys [graph ships t]}]
+  (let [tv (+ (* 0.7 (eq/unit-sin (* 0.1 t)))
+              (* 0.3 (eq/unit-cos (* 0.33 t))))]
+    (q/background 1.0 (+ 0.01 (* 0.99 (tm/smoothstep* 0.6 0.8 tv)))))
   (q/ellipse-mode :radius)
-  (q/fill 0.0)
+  (q/fill 0.0 0.1)
+  (q/stroke 0.0 0.1)
   (doseq [[_ p] (:nodes graph)]
     (cq/circle p 3.0))
   (doseq [{:keys [p q]} (:edges graph)]
     (q/line (get (:nodes graph) p)
             (get (:nodes graph) q)))
+  (q/stroke 0.0 0.25)
+  (q/fill 0.0 0.4)
   (doseq [{:keys [pos]} ships]
     (when pos
       (cq/circle pos 4.0))))
