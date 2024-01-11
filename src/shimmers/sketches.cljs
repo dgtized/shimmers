@@ -60,7 +60,6 @@
    shimmers.sketches.delaunator
    shimmers.sketches.delaunay-voronoi
    shimmers.sketches.dependents
-   shimmers.sketches.descending-lines
    shimmers.sketches.differential-growth
    shimmers.sketches.disassociated-boxes
    shimmers.sketches.dispersion
@@ -224,6 +223,7 @@
    shimmers.sketches.three-lines
    shimmers.sketches.tilt
    shimmers.sketches.traffic-intersection
+   shimmers.sketches.transitory-tension
    shimmers.sketches.tree-rings
    shimmers.sketches.triangle-flow
    shimmers.sketches.triangle-gradient

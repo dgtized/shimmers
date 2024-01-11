@@ -1,4 +1,4 @@
-(ns shimmers.sketches.descending-lines
+(ns shimmers.sketches.transitory-tension
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -47,7 +47,7 @@
     :draw draw
     :middleware [m/fun-mode framerate/mode])])
 
-(sketch/definition descending-lines
+(sketch/definition transitory-tension
   {:created-at "2024-01-10"
    :tags #{}
    :type :quil}
