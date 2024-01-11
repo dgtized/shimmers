@@ -21,9 +21,16 @@
         (update :t + dt))))
 
 (defn draw [{:keys [t dt]}]
-  (q/stroke (/ (mod t 7.0) 7.0) 0.5 0.5 0.75)
+  (q/stroke (/ (mod t 7.0) 7.0)
+            (dr/gaussian 0.5 0.1)
+            (dr/gaussian 0.5 0.1)
+            0.75)
   (q/stroke-weight (tm/clamp (dr/gaussian 1.5 0.5) 0.2 100.0))
   (let [x (cq/rel-w (/ (mod t 5.0) 5.0))]
+    (q/line (+ x (dr/gaussian 0.0 4.0)) 0
+            (+ x (dr/gaussian 0.0 4.0)) (q/height)))
+  (q/stroke 1.0)
+  (let [x (cq/rel-w (/ (mod (- t) 11.0) 11.0))]
     (q/line (+ x (dr/gaussian 0.0 4.0)) 0
             (+ x (dr/gaussian 0.0 4.0)) (q/height))))
 
