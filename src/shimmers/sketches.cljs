@@ -60,6 +60,7 @@
    shimmers.sketches.delaunator
    shimmers.sketches.delaunay-voronoi
    shimmers.sketches.dependents
+   shimmers.sketches.descending-lines
    shimmers.sketches.differential-growth
    shimmers.sketches.disassociated-boxes
    shimmers.sketches.dispersion
