@@ -5,7 +5,9 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -19,9 +21,11 @@
         (update :t + dt))))
 
 (defn draw [{:keys [t dt]}]
-  (q/stroke (/ (mod t 6.0) 6.0) 0.5 0.5)
-  (let [x (cq/rel-w (/ (mod t 4.0) 4.0))]
-    (q/line x 0 x (q/height))))
+  (q/stroke (/ (mod t 7.0) 7.0) 0.5 0.5 0.75)
+  (q/stroke-weight (tm/clamp (dr/gaussian 1.5 0.5) 0.2 100.0))
+  (let [x (cq/rel-w (/ (mod t 5.0) 5.0))]
+    (q/line (+ x (dr/gaussian 0.0 4.0)) 0
+            (+ x (dr/gaussian 0.0 4.0)) (q/height))))
 
 (defn page []
   [:div
