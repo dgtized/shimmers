@@ -21,7 +21,7 @@
         (assoc :dt dt)
         (update :t + dt))))
 
-(defn draw [{:keys [t dt]}]
+(defn draw [{:keys [t]}]
   (q/stroke (dr/gaussian (/ (mod t 5.5) 5.5) 0.01)
             (dr/gaussian 0.5 0.1)
             (dr/gaussian 0.6 0.1)
