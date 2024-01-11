@@ -4,11 +4,15 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state (ctrl/state {:screen-size "900x600"}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -39,13 +43,18 @@
               (+ x (dr/gaussian 0.0 2.0)) bottom))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size (screen/parse-size (:screen-size @ui-state))
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div.flexcols
+    [ctrl/container
+     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+      (screen/sizes)
+      {:on-change #(view-sketch/restart-sketch :transitory-tension)}]]]])
 
 (sketch/definition transitory-tension
   {:created-at "2024-01-10"
