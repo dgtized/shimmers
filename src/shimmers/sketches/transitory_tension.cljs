@@ -51,6 +51,9 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div.flexcols
+    [:div.readable-width
+     [:p "Draw colored, vertical lines from left to right shifting the hue.
+     Then, from right to left draw grayscale lines to erase."]]
     [ctrl/container
      [ctrl/dropdown ui-state "Screen Size" [:screen-size]
       (screen/sizes)
