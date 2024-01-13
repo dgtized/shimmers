@@ -3,10 +3,13 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.math.vector :as v]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn seconds []
   (/ (q/millis) 1000.0))
@@ -17,10 +20,10 @@
     (fn [x y t]
       (* 0.5 (+ (Math/sin (+ (- (* 1.5 x) (* 1 t))
                              dx
-                             (* 2 (eq/cube (Math/sin (+ (* 2 y) (* 1.5 t) 5))))))
+                             (* 2 (eq/cube (Math/sin (+ (* 2.3 y) (* 1.5 t) 5))))))
                 (Math/sin (+ (- (* 1.2 y) (* 1 t))
                              dy
-                             (* 2 (Math/sin (+ (* 2 x) (* 1.3 t) 5))))))))))
+                             (* 2 (Math/sin (+ (* 2.1 x) (* 1.3 t) 5))))))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -31,21 +34,27 @@
   (assoc state :t (seconds)))
 
 (defn draw [{:keys [t wobble]}]
-  (q/background 1.0 0.1)
+  (q/background 1.0 0.2)
   (q/no-fill)
   (q/stroke 0.0)
   (q/rect-mode :center)
   (let [cols 90
         rows 60
         w (/ (q/width) cols)
-        h (/ (q/height) rows)]
+        h (/ (q/height) rows)
+        [hw hy] (tm/+ (cq/rel-vec 0.5 0.5) (v/polar (cq/rel-h 0.1) (* 0.5 t)))
+        scale (+ 0.0003
+                 (* 0.007
+                    (+ (eq/unit-cos (* 0.1 t))
+                       (eq/unit-sin (+ (eq/unit-cos t) 1
+                                       (* 0.5 t))))))]
     (doseq [i (range cols)
             j (range rows)]
       (let [x (+ (* i w) (* 0.5 w))
             y (+ (* j h) (* 0.5 h))
-            m (* 0.5 (+ 1 (wobble (* 0.01 x) (* 0.01 y) (* 0.5 t))))]
-        (q/rect x y
-                (* m w) (* m h))))))
+            m (* 0.5 (+ 1 (wobble (* scale (- x hw)) (* scale (- y hy)) (* 0.5 t))))]
+        ;; (q/fill (mod (+ m (* 0.1 t)) 1.0) 0.9 0.6)
+        (q/rect x y (* m w) (* m h))))))
 
 (defn page []
   [:div
