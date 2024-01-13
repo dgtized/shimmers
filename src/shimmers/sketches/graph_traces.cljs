@@ -40,12 +40,15 @@
                    accepted))
                [])))
 
+(defrecord MultiGraph [nodes edges])
+
 (defn new-graph []
   (let [nodes (zipmap (map (comp keyword char) (range 65 (+ 65 26)))
                       (repeatedly 11 #(rp/sample-point-inside (cq/screen-rect 0.85))))]
-    {:nodes nodes
-     :edges (for [[p q] (planar-edges nodes)]
-              {:p p :q q})}))
+    (->MultiGraph
+     nodes
+     (for [[p q] (planar-edges nodes)]
+       {:p p :q q}))))
 
 (defn out-edges [{:keys [edges]} node]
   (let [conns (filter (fn [{:keys [p q]}] (or (= node p) (= node q))) edges)]
