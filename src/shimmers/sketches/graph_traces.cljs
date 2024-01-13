@@ -21,6 +21,9 @@
 (defn position [nodes n]
   (get nodes n))
 
+(defn set-position [graph node pos]
+  (assoc-in graph [:nodes node] pos))
+
 (defn update-position [graph node & f]
   (apply update-in graph [:nodes node] f))
 
@@ -100,7 +103,8 @@
         force (tm/* (tm/- pos closest) (* 0.5 (/ dt (g/dist-squared pos closest))))]
     (if (g/contains-point? rect pos)
       (update-position graph node tm/+ force)
-      (assoc-in graph [:nodes node] (g/closest-point (g/scale-size rect 0.98) pos)))))
+      (set-position graph node
+                    (g/closest-point (g/scale-size rect 0.98) pos)))))
 
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
   (let [ranked-edges (sort-by (fn [{:keys [p q]}]
