@@ -21,6 +21,9 @@
 (defn position [nodes n]
   (get nodes n))
 
+(defn update-position [graph node & f]
+  (apply update-in graph [:nodes node] f))
+
 (defn planar? [nodes edges [p q]]
   (not-any?
    (fn [[a b]]
@@ -79,8 +82,8 @@
         dist (g/dist-squared p' q')
         move (tm/* (tm/- q' p') (/ dt dist))]
     (-> graph
-        (update-in [:nodes p] tm/+ move)
-        (update-in [:nodes q] tm/- move))))
+        (update-position p tm/+ move)
+        (update-position q tm/- move))))
 
 (defn expand-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
   (let [p' (position nodes p)
@@ -88,15 +91,15 @@
         dist (g/dist-squared p' q')
         move (tm/* (tm/- p' q') (/ dt dist))]
     (-> graph
-        (update-in [:nodes p] tm/+ move)
-        (update-in [:nodes q] tm/- move))))
+        (update-position p tm/+ move)
+        (update-position q tm/- move))))
 
 (defn avoid-edges [graph rect node dt]
   (let [pos (tm/+ (position (:nodes graph) node) (dr/jitter 3.0))
         closest (g/closest-point rect pos)
         force (tm/* (tm/- pos closest) (* 0.5 (/ dt (g/dist-squared pos closest))))]
     (if (g/contains-point? rect pos)
-      (update-in graph [:nodes node] tm/+ force)
+      (update-position graph node tm/+ force)
       (assoc-in graph [:nodes node] (g/closest-point (g/scale-size rect 0.98) pos)))))
 
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
