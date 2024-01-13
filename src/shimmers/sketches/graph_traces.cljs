@@ -18,13 +18,16 @@
 (defn now []
   (/ (q/millis) 1000.0))
 
+(defn position [nodes n]
+  (get nodes n))
+
 (defn planar? [nodes edges [p q]]
   (not-any?
    (fn [[a b]]
      (and (not (or (= a p) (= b p) (= a q) (= b q)))
           (= :intersect (:type (gisec/intersect-line2-line2?
-                                (nodes p) (nodes q)
-                                (nodes a) (nodes b))))))
+                                (position nodes p) (position nodes q)
+                                (position nodes a) (position nodes b))))))
    edges))
 
 (defn planar-edges [nodes]
@@ -32,7 +35,8 @@
        keys
        cs/all-pairs
        ;; order by shortest edge
-       (sort-by (fn [[p q]] (g/dist (get nodes p) (get nodes q))))
+       (sort-by (fn [[p q]] (g/dist (position nodes p)
+                                   (position nodes q))))
        ;; greedy accept planar edges
        (reduce (fn [accepted edge]
                  (if (planar? nodes accepted edge)
@@ -70,8 +74,8 @@
                 (new-ship graph [(mod (* f tm/PHI) 1.0) 0.66 0.5 0.5] node now)))}))
 
 (defn contract-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
-  (let [p' (nodes p)
-        q' (nodes q)
+  (let [p' (position nodes p)
+        q' (position nodes q)
         dist (g/dist-squared p' q')
         move (tm/* (tm/- q' p') (/ dt dist))]
     (-> graph
@@ -79,8 +83,8 @@
         (update-in [:nodes q] tm/- move))))
 
 (defn expand-edge [{:keys [nodes] :as graph} {:keys [p q]} dt]
-  (let [p' (nodes p)
-        q' (nodes q)
+  (let [p' (position nodes p)
+        q' (position nodes q)
         dist (g/dist-squared p' q')
         move (tm/* (tm/- p' q') (/ dt dist))]
     (-> graph
@@ -88,7 +92,7 @@
         (update-in [:nodes q] tm/- move))))
 
 (defn avoid-edges [graph rect node dt]
-  (let [pos (tm/+ ((:nodes graph) node) (dr/jitter 3.0))
+  (let [pos (tm/+ (position (:nodes graph) node) (dr/jitter 3.0))
         closest (g/closest-point rect pos)
         force (tm/* (tm/- pos closest) (* 0.5 (/ dt (g/dist-squared pos closest))))]
     (if (g/contains-point? rect pos)
@@ -96,7 +100,9 @@
       (assoc-in graph [:nodes node] (g/closest-point (g/scale-size rect 0.98) pos)))))
 
 (defn update-graph [{:keys [nodes edges] :as graph} dt]
-  (let [ranked-edges (sort-by (fn [{:keys [p q]}] (g/dist (nodes p) (nodes q))) edges)
+  (let [ranked-edges (sort-by (fn [{:keys [p q]}]
+                                (g/dist (position nodes p)
+                                        (position nodes q))) edges)
         closest (take 12 ranked-edges)
         furthest (take-last 4 ranked-edges)
         box (cq/screen-rect 1.01)]
@@ -109,7 +115,9 @@
   (for [{:keys [p q t0 t1 fill] :as ship} ships]
     (if (>= now t1)
       (new-ship graph fill q now)
-      (assoc ship :pos (tm/mix (nodes p) (nodes q) (/ (- now t0) (- t1 t0)))))))
+      (assoc ship :pos (tm/mix (position nodes p)
+                               (position nodes q)
+                               (/ (- now t0) (- t1 t0)))))))
 
 (defn update-state [{:keys [t graph] :as state}]
   (let [now (now)]
@@ -128,8 +136,8 @@
   (doseq [[_ p] (:nodes graph)]
     (cq/circle p 3.0))
   (doseq [{:keys [p q]} (:edges graph)]
-    (q/line (get (:nodes graph) p)
-            (get (:nodes graph) q)))
+    (q/line (position (:nodes graph) p)
+            (position (:nodes graph) q)))
   (q/stroke 0.0 0.25)
   (q/fill 0.0 0.4)
   (doseq [{:keys [pos fill]} ships]
