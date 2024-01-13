@@ -19,6 +19,9 @@
 (defn sqr [x]
   (* x x))
 
+(defn cube [x]
+  (* x x x))
+
 (defn gaussian
   "Bell curve of magnitude `a`, centered at `b`, width `c`.
   From https://en.wikipedia.org/wiki/Gaussian_function"

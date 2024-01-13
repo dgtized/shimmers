@@ -248,6 +248,7 @@
    shimmers.sketches.wave-function-collapse
    shimmers.sketches.wavetracker
    shimmers.sketches.waystation
+   shimmers.sketches.wibble-wobble
    shimmers.sketches.window-glimpses
    shimmers.sketches.wood-grain
    shimmers.sketches.woven
