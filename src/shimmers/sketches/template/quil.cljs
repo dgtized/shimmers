@@ -3,8 +3,8 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.controls :as ctrl]))
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.sketch :as sketch :include-macros true]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
