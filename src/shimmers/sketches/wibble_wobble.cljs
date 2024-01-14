@@ -35,18 +35,22 @@
 
 (defn draw [{:keys [t wobble]}]
   (q/background 1.0 0.2)
-  (q/no-fill)
+  (q/fill 0.6 0.65 0.6 0.5)
   (q/stroke 0.0)
   (q/rect-mode :center)
   (let [cols 90
         rows 60
         w (/ (q/width) cols)
         h (/ (q/height) rows)
-        [hw hy] (tm/+ (cq/rel-vec 0.5 0.5) (v/polar (cq/rel-h 0.1) (* 0.5 t)))
+        [hw hy] (tm/+ (cq/rel-vec 0.5 0.5)
+                      (v/polar (* (cq/rel-h 0.25)
+                                  (eq/unit-cos (+ (* 0.9 t)
+                                                  (* 2 (eq/unit-sin (* 0.5 t))))))
+                               (* 0.5 t)))
         scale (+ 0.0003
                  (* 0.007
                     (+ (eq/unit-cos (* 0.1 t))
-                       (eq/unit-sin (+ (eq/unit-cos t) 1
+                       (eq/unit-sin (+ (eq/unit-cos (/ t tm/PHI)) 1
                                        (* 0.5 t))))))]
     (doseq [i (range cols)
             j (range rows)]
@@ -57,13 +61,19 @@
         (q/rect x y (* m w) (* m h))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
      :size [900 600]
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [:div
+    [:div.readable-width
+     [:h4 "Genuary 2024 - Day 13 - Wobbly"]
+     [:p "Playing with "
+      [:a {:href "https://piterpasma.nl/articles/wobbly"} "Wobbly functions"] "
+     on a 2d grid passing through time."]]]])
 
 (sketch/definition wibble-wobble
   {:created-at "2024-01-13"
