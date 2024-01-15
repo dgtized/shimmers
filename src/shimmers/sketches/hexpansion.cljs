@@ -31,20 +31,27 @@
   (q/fill 1.0 0.2)
   (let [divs 12
         r (+ (/ (* 0.4 (q/height)) (* 2 divs)) (* (/ 3 divs) (Math/sin (* 0.75 t))))
-        mmag (tm/mag (cq/rel-vec 0.5 0.5))]
+        mmag (tm/mag (cq/rel-vec 0.5 0.5))
+        rotation (* (/ eq/TAU 6) (Math/cos (+ (/ t 29) 0.5 (* tm/PHI (eq/cube (Math/sin (* 0.33 t)))))))
+        spiral-rot (* 0.66 Math/PI (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))]
     (q/with-translation (cq/rel-vec 0.5 0.5)
-      (q/with-rotation [(* Math/PI (Math/cos (+ (* 0.2 t) (* tm/PHI (eq/cube (Math/sin (* 0.1 t)))))))]
+      (q/with-rotation [rotation]
         (doseq [pos (hex/cube-spiral (gv/vec3) divs)
                 :let [hex (hex/cube-hexagon pos r)
                       centroid (g/centroid hex)
                       [cx cy] centroid
-                      scale (+ (- 0.9 (/ (tm/mag centroid) mmag))
-                               (* 0.2 (Math/sin (* 0.02 (+ (* 0.65 t cx) (* 0.75 t cy))))))
+                      d (/ (tm/mag centroid) mmag)
+                      scale-factor (Math/sin (* 0.02 (+ (* 0.55 t cx) (* 0.65 t cy))))
+                      scale (+ (- 0.9 d) (* 0.2 scale-factor))
                       rot (* Math/PI (Math/cos (+ (* 0.5 t)
                                             (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
-              (g/scale (+ 1.0 (* 0.66 scale)))
+              (g/rotate (* (Math/sqrt d)
+                           (tm/smoothstep* 0.33 1.0 (abs spiral-rot))
+                           spiral-rot))
+              (g/scale (+ 1 (* (Math/sqrt d) 0.5
+                               (tm/smoothstep* 0.33 1.0 scale-factor))))
               (g/vertices 6)
               (gp/polygon2)
               (geometry/rotate-around-centroid rot)
