@@ -44,6 +44,7 @@
                                             (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
+              (g/scale (+ 1.0 (* 0.66 scale)))
               (g/vertices 6)
               (gp/polygon2)
               (geometry/rotate-around-centroid rot)
