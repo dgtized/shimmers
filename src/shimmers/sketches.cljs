@@ -100,6 +100,7 @@
    shimmers.sketches.hexaclock
    shimmers.sketches.hexcursive
    shimmers.sketches.hexflare
+   shimmers.sketches.hexpansion
    shimmers.sketches.hyphae
    ;; shimmers.sketches.imperfect-curves
    shimmers.sketches.impressions-of-open-space
