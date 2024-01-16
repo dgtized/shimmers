@@ -210,6 +210,7 @@
    shimmers.sketches.spin-doctor
    shimmers.sketches.spiral-distance
    shimmers.sketches.spiral-pack
+   shimmers.sketches.splitting-polygons
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
    shimmers.sketches.stem-and-leaf
