@@ -20,7 +20,7 @@
 
 (defn split-polygon [polygon cut]
   (let [line (apply min-key tm/mag-squared
-                    (repeatedly 8 (fn []
+                    (repeatedly 5 (fn []
                                     (let [a (dr/random)]
                                       (gl/line2 (g/point-at polygon a)
                                                 (g/point-at polygon (mod (+ a cut) 1.0)))))))]
@@ -41,20 +41,26 @@
       (iterate polygons)
       (nth steps)))
 
-(defn shapes []
-  (let [evens (recursive-split even-rule 50 [(g/scale-size (rect/rect 0 0 width height) 0.9)])]
+(defn shapes [bounds]
+  (let [evens (recursive-split even-rule 50 [(g/scale-size bounds 0.9)])]
     (mapcat
      (fn [polygon]
        (let [py (/ (:y (g/centroid polygon)) height)
              [rule steps]
-             (cond (< py 0.2)
-                   [tunnel-rule 128]
-                   (< py 0.2)
-                   [tunnel-rule 64]
-                   (> py 0.8)
-                   [even-rule 384]
-                   :else [even-rule 64])]
-         (recursive-split rule steps [polygon])))
+             (cond (< py 0.125)
+                   [tunnel-rule (dr/random-int 128 256)]
+                   (< py 0.25)
+                   [tunnel-rule (dr/random-int 64 128)]
+                   (> py 0.75)
+                   [even-rule (dr/random-int 256 1024)]
+                   :else
+                   [even-rule (if (dr/chance 0.1)
+                                (dr/random-int 512 1024)
+                                (dr/random-int 32 64))])]
+         [polygon
+          (csvg/group
+            {:stroke-width 0.4}
+            (recursive-split rule steps [polygon]))]))
      evens)))
 
 (defn scene []
