@@ -17,29 +17,44 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn split-polygon [polygon]
-  (let [py (/ (:y (g/centroid polygon)) height)
-        t (if (< py 0.5)
-            (dr/gaussian 0.2 0.02)
-            (dr/gaussian 0.5 0.02))
-        line (apply min-key tm/mag-squared
+(defn split-polygon [polygon cut]
+  (let [line (apply min-key tm/mag-squared
                     (repeatedly 8 (fn []
                                     (let [a (dr/random)]
                                       (gl/line2 (g/point-at polygon a)
-                                                (g/point-at polygon (mod (+ a t) 1.0)))))))]
+                                                (g/point-at polygon (mod (+ a cut) 1.0)))))))]
     (lines/cut-polygon polygon line)))
 
-(defn recursive-split [polygons]
-  (iterate (fn [polygons]
-             (let [xs (sort-by (fn [polygon] (get (meta polygon) :arc-length 0)) polygons)]
-               (into (butlast xs)
-                     (for [child (split-polygon (last xs))]
-                       (vary-meta child assoc :arc-length (g/circumference child))))))
-           polygons))
+(defn even-rule [_]
+  (dr/gaussian 0.5 0.05))
+
+(defn tunnel-rule [_]
+  (dr/gaussian 0.2 0.02))
+
+(defn recursive-split [rule steps polygons]
+  (-> (fn [polygons]
+        (let [xs (sort-by (fn [polygon] (get (meta polygon) :arc-length 0)) polygons)]
+          (into (butlast xs)
+                (for [child (split-polygon (last xs) (rule (last xs)))]
+                  (vary-meta child assoc :arc-length (g/circumference child))))))
+      (iterate polygons)
+      (nth steps)))
 
 (defn shapes []
-  (nth (recursive-split [(g/scale-size (rect/rect 0 0 width height) 0.9)])
-       4000))
+  (let [evens (recursive-split even-rule 50 [(g/scale-size (rect/rect 0 0 width height) 0.9)])]
+    (mapcat
+     (fn [polygon]
+       (let [py (/ (:y (g/centroid polygon)) height)
+             [rule steps]
+             (cond (< py 0.2)
+                   [tunnel-rule 128]
+                   (< py 0.2)
+                   [tunnel-rule 64]
+                   (> py 0.8)
+                   [even-rule 384]
+                   :else [even-rule 64])]
+         (recursive-split rule steps [polygon])))
+     evens)))
 
 (defn scene []
   (csvg/svg-timed {:width width
