@@ -79,7 +79,7 @@
       [view-sketch/generate :splitting-polygons]]
      [:p]
      [:div.centered.readable-width
-      "Experimenting with technique outlined by Piterpasma in "
+      "Experimenting with technique outlined by Piter Pasma in "
       [:a {:href "https://piterpasma.nl/articles/polysub"}
        "How to split polygons unevenly"]]]))
 
