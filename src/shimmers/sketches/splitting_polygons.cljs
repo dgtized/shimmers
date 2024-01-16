@@ -53,8 +53,10 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [view-sketch/generate :splitting-polygons]
-     [:div.readable-width
+     [:div.center
+      [view-sketch/generate :splitting-polygons]]
+     [:p]
+     [:div.centered.readable-width
       "Experimenting with technique outlined by Piterasma in "
       [:a {:href "https://piterpasma.nl/articles/polysub"}
        "How to split polygons unevenly"]]]))
