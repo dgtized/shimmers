@@ -12,8 +12,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def width 800)
-(def height 600)
+;; A3 ish aspect ratio
+(def width 640)
+(def height 900)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -61,8 +62,8 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
-    (shapes)))
+                   :stroke-width 2.0}
+    (shapes (rect/rect 0 0 width height))))
 
 (defn page []
   (fn []
