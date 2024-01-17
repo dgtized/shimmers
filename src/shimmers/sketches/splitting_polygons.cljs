@@ -78,7 +78,7 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 2.0}
+                   :stroke-width 2.5}
     (shapes (rect/rect 0 0 width height))))
 
 (defn page []
