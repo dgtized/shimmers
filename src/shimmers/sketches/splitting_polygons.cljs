@@ -32,17 +32,22 @@
 (defn tunnel-rule [_]
   (dr/gaussian 0.2 0.02))
 
+(defn set-arc-lengths [polygons]
+  (map (fn [poly]
+         (vary-meta poly
+                    update :arc-length
+                    (fn [l] (or l (g/circumference poly)))))
+       polygons))
+
 (defn recursive-split [rule steps polygons]
   (-> (fn [polygons]
         (let [xs (sort-by (fn [polygon] (get (meta polygon) :arc-length 0)) polygons)]
-          (into (butlast xs)
-                (for [child (split-polygon (last xs) (rule (last xs)))]
-                  (vary-meta child assoc :arc-length (g/circumference child))))))
+          (into (butlast xs) (set-arc-lengths (split-polygon (last xs) (rule (last xs)))))))
       (iterate polygons)
       (nth steps)))
 
 (defn shapes [bounds]
-  (let [evens (recursive-split even-rule 50 [(g/scale-size bounds 0.9)])]
+  (let [evens (recursive-split even-rule 64 [(g/scale-size bounds 0.9)])]
     (mapcat
      (fn [polygon]
        (let [py (/ (:y (g/centroid polygon)) height)
