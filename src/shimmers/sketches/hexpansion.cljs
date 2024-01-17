@@ -17,6 +17,13 @@
 (defn seconds []
   (/ (q/millis) 1000.0))
 
+(defn duty-cycle [[f0 p0] [a1 f1 p1] t]
+  (let [w (eq/unit-sin
+           (+ (* f0 t)
+              p0
+              (* a1 (eq/cube (Math/sin (+ p1 (* f1 t)))))))]
+    (tm/smoothstep* 0.25 0.75 w)))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:t (seconds)})
@@ -33,7 +40,10 @@
         r (+ (/ (* 0.4 (q/height)) (* 2 divs)) (* (/ 3 divs) (Math/sin (* 0.75 t))))
         mmag (tm/mag (cq/rel-vec 0.5 0.5))
         rotation (* (/ eq/TAU 6) (Math/cos (+ (/ t 29) 0.5 (* tm/PHI (eq/cube (Math/sin (* 0.33 t)))))))
-        spiral-rot (* 0.66 Math/PI (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))]
+        spiral-rot (* 0.66 Math/PI
+                      (duty-cycle [0.07 0.1] [2.1 0.57 2.1] t)
+                      (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))
+        duty-scale (duty-cycle [0.13 0.7] [tm/PHI 0.31 2.7] t)]
     (q/with-translation (cq/rel-vec 0.5 0.5)
       (q/with-rotation [rotation]
         (doseq [pos (hex/cube-spiral (gv/vec3) divs)
@@ -47,11 +57,10 @@
                                             (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
-              (g/rotate (* (Math/sqrt d)
-                           (tm/smoothstep* 0.33 1.0 (abs spiral-rot))
-                           spiral-rot))
-              (g/scale (+ 1 (* (Math/sqrt d) 0.5
-                               (tm/smoothstep* 0.33 1.0 scale-factor))))
+              (g/rotate (* (Math/sqrt d) spiral-rot))
+              (g/scale (+ 1 (* 0.5 (Math/sqrt d)
+                               duty-scale
+                               (tm/smoothstep* 0.25 1.0 scale-factor))))
               (g/vertices 6)
               (gp/polygon2)
               (geometry/rotate-around-centroid rot)
