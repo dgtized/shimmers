@@ -53,14 +53,15 @@
                       centroid (g/centroid hex)
                       [cx cy] centroid
                       d (/ (tm/mag centroid) mmag)
+                      sqrt-d (Math/sqrt d)
                       scale-factor (Math/sin (* 0.02 (+ (* 0.55 t cx) (* 0.65 t cy))))
                       scale (+ (- 0.9 d) (* 0.2 scale-factor))
                       rot (* Math/PI (Math/cos (+ (* 0.5 t)
                                             (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
-              (g/rotate (* (Math/sqrt d) spiral-rot))
-              (g/scale (+ 1 (* 0.5 (Math/sqrt d)
+              (g/rotate (* sqrt-d spiral-rot))
+              (g/scale (+ 1 (* 0.5 sqrt-d
                                duty-scale
                                (tm/smoothstep* 0.25 1.0 scale-factor))))
               (g/vertices 6)
