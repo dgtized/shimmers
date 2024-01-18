@@ -17,12 +17,15 @@
 (defn seconds []
   (/ (q/millis) 1000.0))
 
-(defn duty-cycle [[f0 p0] [a1 f1 p1] t]
-  (let [w (eq/unit-sin
-           (+ (* f0 t)
-              p0
-              (* a1 (eq/cube (Math/sin (+ p1 (* f1 t)))))))]
-    (tm/smoothstep* 0.25 0.75 w)))
+(defn cube-wobble
+  [[f0 p0] [a1 f1 p1] t]
+  (eq/unit-sin
+   (+ (* f0 t)
+      p0
+      (* a1 (eq/cube (Math/sin (+ p1 (* f1 t))))))))
+
+(defn duty-cycle [outer inner t]
+  (tm/smoothstep* 0.25 0.75 (cube-wobble outer inner t)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
