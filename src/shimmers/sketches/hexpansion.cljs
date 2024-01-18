@@ -43,9 +43,9 @@
                     (Math/cos (+ 1.7 (/ t 37)
                                  (* 0.33 tm/PHI (eq/cube (Math/sin (+ 0.3 (/ t 17))))))))
         spiral-rot (* Math/PI
-                      (duty-cycle [0.07 0.1] [2.1 0.57 2.1] t)
+                      (duty-cycle [0.11 0.1] [2.1 0.57 2.1] t)
                       (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))
-        duty-scale (duty-cycle [0.13 0.7] [tm/PHI 0.31 2.7] t)]
+        duty-scale (duty-cycle [0.17 0.7] [tm/PHI 0.29 2.7] t)]
     (q/with-translation (cq/rel-vec 0.5 0.5)
       (q/with-rotation [rotation]
         (doseq [pos (hex/cube-spiral (gv/vec3) divs)
