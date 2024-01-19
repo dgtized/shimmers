@@ -45,8 +45,10 @@
         rotation (cube-wobble [(/ eq/TAU 3) (/ 1 37) 1.7]
                               [(/ tm/PHI 3) (/ 1 17) 0.3]
                               t)
-        spiral-rot (* (duty-cycle [1.0 (/ 1 9) 0.1] [2.1 (/ 4 7) 2.1] t)
-                      (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))
+        spiral-rot (* (duty-cycle [1.0 (/ 1 9) 0.1] [2.1 (/ 3 7) 2.1] t)
+                      (cube-wobble [1.0 (/ 1 23) 0.1]
+                                   [0.5 (/ 4 11) 0.7]
+                                   t))
         duty-scale (duty-cycle [1.0 0.17 0.7] [tm/PHI 0.29 2.7] t)]
     (q/with-translation (cq/rel-vec 0.5 0.5)
       (q/with-rotation [rotation]
