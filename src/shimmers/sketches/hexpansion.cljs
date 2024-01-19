@@ -42,10 +42,10 @@
   (let [divs 12
         r (+ (/ (* 0.4 (q/height)) (* 2 divs)) (* (/ 3 divs) (Math/sin (* 0.75 t))))
         mmag (tm/mag (cq/rel-vec 0.5 0.5))
-        rotation (* (/ eq/TAU 3)
-                    (Math/cos (+ 1.7 (/ t 37)
-                                 (* 0.33 tm/PHI (eq/cube (Math/sin (+ 0.3 (/ t 17))))))))
-        spiral-rot (* (duty-cycle [1.0 0.11 0.1] [2.1 0.57 2.1] t)
+        rotation (cube-wobble [(/ eq/TAU 3) (/ 1 37) 1.7]
+                              [(/ tm/PHI 3) (/ 1 17) 0.3]
+                              t)
+        spiral-rot (* (duty-cycle [1.0 (/ 1 9) 0.1] [2.1 (/ 4 7) 2.1] t)
                       (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))
         duty-scale (duty-cycle [1.0 0.17 0.7] [tm/PHI 0.29 2.7] t)]
     (q/with-translation (cq/rel-vec 0.5 0.5)
