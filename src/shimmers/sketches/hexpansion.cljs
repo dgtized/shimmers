@@ -18,11 +18,11 @@
   (/ (q/millis) 1000.0))
 
 (defn cube-wobble
-  [[f0 p0] [a1 f1 p1] t]
-  (eq/unit-sin
-   (+ (* f0 t)
-      p0
-      (* a1 (eq/cube (Math/sin (+ p1 (* f1 t))))))))
+  [[a0 f0 p0] [a1 f1 p1] t]
+  (* a0 (eq/unit-sin
+         (+ (* f0 t)
+            (* a1 (eq/cube (Math/sin (+ p1 (* f1 t)))))
+            p0))))
 
 (defn duty-cycle [outer inner t]
   (tm/smoothstep* 0.25 0.75 (cube-wobble outer inner t)))
@@ -45,10 +45,9 @@
         rotation (* (/ eq/TAU 3)
                     (Math/cos (+ 1.7 (/ t 37)
                                  (* 0.33 tm/PHI (eq/cube (Math/sin (+ 0.3 (/ t 17))))))))
-        spiral-rot (* Math/PI
-                      (duty-cycle [0.11 0.1] [2.1 0.57 2.1] t)
+        spiral-rot (* (duty-cycle [1.0 0.11 0.1] [2.1 0.57 2.1] t)
                       (Math/sin (+ (/ t 23) 0.1 (Math/cos (+ 0.5 (* 0.37 t))))))
-        duty-scale (duty-cycle [0.17 0.7] [tm/PHI 0.29 2.7] t)]
+        duty-scale (duty-cycle [1.0 0.17 0.7] [tm/PHI 0.29 2.7] t)]
     (q/with-translation (cq/rel-vec 0.5 0.5)
       (q/with-rotation [rotation]
         (doseq [pos (hex/cube-spiral (gv/vec3) divs)
@@ -63,7 +62,7 @@
                                             (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
-              (g/rotate (* sqrt-d spiral-rot))
+              (g/rotate (* Math/PI sqrt-d spiral-rot))
               (g/scale (+ 1 (* 0.5 sqrt-d
                                duty-scale
                                (tm/smoothstep* 0.25 1.0 scale-factor))))
