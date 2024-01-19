@@ -213,6 +213,7 @@
    shimmers.sketches.splitting-polygons
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
+   shimmers.sketches.star-mosaic
    shimmers.sketches.stem-and-leaf
    shimmers.sketches.string-lights
    shimmers.sketches.subliminal
