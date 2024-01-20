@@ -213,7 +213,6 @@
    shimmers.sketches.splitting-polygons
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
-   shimmers.sketches.star-mosaic
    shimmers.sketches.stem-and-leaf
    shimmers.sketches.string-lights
    shimmers.sketches.subliminal
@@ -231,6 +230,7 @@
    shimmers.sketches.triangle-flow
    shimmers.sketches.triangle-gradient
    shimmers.sketches.triangle-intersections
+   shimmers.sketches.triangle-mosaic
    shimmers.sketches.triangulating-subdivisions
    shimmers.sketches.trigonometry-boxes
    shimmers.sketches.tunnel-flight
