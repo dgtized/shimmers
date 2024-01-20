@@ -30,7 +30,7 @@
   (let [!dom-node (get sketch-args :dom-node (atom nil))
         {:keys [performance-id] :as options} (configure-fps-overlay sketch-args)]
     (r/create-class
-     {:display-name "quil-sketch-component"
+     {:display-name "quil-sketch"
       :component-did-mount
       (fn []
         (apply q/sketch (apply concat (assoc options :host @!dom-node))))
@@ -39,7 +39,7 @@
         (when-let [div-host @!dom-node]
           (q/with-sketch (.-processing-obj div-host) (q/exit))))
       :render
-      (fn []
+      (fn [_sketch-args]
         [:div.canvas-frame {:style {:position "relative"}
                             :ref (fn [el] (reset! !dom-node el))}
          (when-not (= performance-id "framerate")
