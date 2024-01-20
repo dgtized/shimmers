@@ -53,14 +53,15 @@
   (let [!canvas (atom nil)
         cancel-animation (atom nil)]
     (r/create-class
-     {:component-did-mount
+     {:display-name "animated-canvas"
+      :component-did-mount
       (fn []
         (reset! cancel-animation
                 (render-frame-fn @!canvas canvas-state)))
       :component-will-unmount
       (fn [] (@cancel-animation))
       :reagent-render
-      (fn []
+      (fn [canvas-state attributes _]
         (let [{:keys [width height]} @canvas-state]
           [:canvas (assoc (sizing-attributes width height attributes)
                           :ref (fn [el] (reset! !canvas el)))]))})))
