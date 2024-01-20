@@ -135,7 +135,8 @@
 (defn canvas [attributes render-frame-fn]
   (let [!canvas (atom nil)]
     (r/create-class
-     {:component-did-mount
+     {:display-name "control-canvas"
+      :component-did-mount
       (fn [this]
         (r/set-state this {:active true})
         (render-frame-fn this @!canvas))
@@ -143,5 +144,5 @@
       (fn [this]
         (r/set-state this {:active false}))
       :reagent-render
-      (fn [_]
+      (fn [attributes _]
         [:canvas (assoc attributes :ref (fn [el] (reset! !canvas el)))])})))
