@@ -5,6 +5,7 @@
    [shimmers.registry :as registry]
 
    shimmers.sketches.additive-displacement
+   shimmers.sketches.alignment-perturbations
    shimmers.sketches.all-the-shapes-in-between
    shimmers.sketches.along-the-curve
    shimmers.sketches.amplification
