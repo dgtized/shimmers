@@ -44,8 +44,8 @@
 (defn draw [_]
   (q/background 1.0)
   (let [side (/ (q/width) 20)
-        bounds (rect/rect 20 20
-                          (* 19 side)
+        bounds (rect/rect 20 (* 20 SQRT3_2)
+                          (Math/floor (* 19 side))
                           (Math/floor (* 16 side SQRT3_2)))]
     (q/no-fill)
     (qdg/draw bounds)
