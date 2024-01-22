@@ -40,16 +40,21 @@
        polygons))
 
 (defn recursive-split [rule steps polygons]
-  (-> (fn [polys]
-        (let [choice (first polys)]
-          (sort-by (fn [polygon] (get (meta polygon) :arc-length))
-                   (fn [a b] (compare b a))
-                   (concat (set-arc-lengths (split-polygon choice (rule choice)))
-                           (rest polys)))))
-      (iterate (sort-by (fn [polygon] (get (meta polygon) :arc-length))
-                        (fn [a b] (compare b a))
-                        (set-arc-lengths polygons)))
-      (nth steps)))
+  (as-> polygons _
+    (set-arc-lengths _)
+    (sort-by (fn [polygon] (get (meta polygon) :arc-length))
+             (fn [a b] (compare b a))
+             _)
+    (iterate
+     (fn [polys]
+       (let [choice (first polys)]
+         (sort-by (fn [polygon] (get (meta polygon) :arc-length))
+                  (fn [a b] (compare b a))
+                  (concat (set-arc-lengths (split-polygon choice (rule choice)))
+                          (rest polys)))))
+     _)
+    (nth _ steps)
+    (map (fn [s] (vary-meta s dissoc :arc-length)) _)))
 
 (defn shapes [bounds]
   (let [evens (recursive-split even-rule 64 [(g/scale-size bounds 0.9)])]
