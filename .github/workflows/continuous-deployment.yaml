@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: Cache deps.edn dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
@@ -38,7 +38,7 @@ jobs:
           java-version: 17
 
       - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@12.2
+        uses: DeLaGuardo/setup-clojure@12.3
         with:
           cli: latest
           bb: latest
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@v4.1.1
 
       - name: Cache deps.edn dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: clj-${{ runner.os }}-${{ hashFiles('**/deps.edn') }}
@@ -79,7 +79,7 @@ jobs:
           java-version: 17
 
       - name: Setup Clojure
-        uses: DeLaGuardo/setup-clojure@12.2
+        uses: DeLaGuardo/setup-clojure@12.3
         with:
           cli: latest
           bb: latest
