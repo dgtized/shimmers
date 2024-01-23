@@ -19,9 +19,12 @@
 (defn update-state [state]
   (update state :t + 1))
 
+(defn modular-stroke [t]
+  (q/stroke-weight (+ 1.2 (* 0.6 (Math/sin (* 2 t))))))
+
 (defn skip-draw [k t]
   (when (> (Math/sin (+ (* (/ 7 5) t) (* 3 (Math/sin (* (/ 1 5) t))))) 0)
-    (q/stroke-weight (+ 1.2 (* 0.6 (Math/sin (* 2 t)))))
+    (modular-stroke t)
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
 (defn draw [{:keys [t]}]
