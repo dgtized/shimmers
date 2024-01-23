@@ -10,8 +10,8 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:table [1 3]
-               :pendulum [1.01 1]
+  (ctrl/state {:table [1.01 1]
+               :pendulum [1 3]
                :pen [1 2]
                :pen-phase [1 3]
                :dampen-rate 0.15
