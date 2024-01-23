@@ -7,11 +7,12 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:table [1.01 1]
-               :pendulum [1 3]
+  (ctrl/state {:table [1 1]
+               :pendulum [1.001 3]
                :pen [1 2]
                :pen-phase [1 3]
                :dampen-rate 0.15
@@ -86,12 +87,15 @@
         (q/no-loop)
         (q/with-translation
             [(tm/+ (cq/rel-vec 0.5 0.5)
-                   (v/polar (* 0.15 (q/height) k) (* dplat t)))]
+                   (gv/vec2 (* 0.225 (q/height) k (Math/cos (* 1 dplat t)))
+                            (* 0.225 (q/height) k (Math/sin (* 1 dplat t)))))]
           (when modulate-stroke
             (modular-stroke t))
           (when (or (not pen-modulation)
                     (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-            (apply q/point (v/polar (* 0.3 (q/height) k) (* dpend t)))))))))
+            (apply q/point
+                   (gv/vec2 (* 0.225 (q/height) k (Math/cos (* 1 dpend t)))
+                            (* 0.225 (q/height) k (Math/sin (* 1 dpend t)))))))))))
 
 (defn page []
   [sketch/with-explanation
