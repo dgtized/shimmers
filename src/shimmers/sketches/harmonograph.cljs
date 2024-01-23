@@ -10,15 +10,12 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:table-n 1.0
-               :table-d 3.0
-               :pendulum-n 1.01
-               :pendulum-d 2.0
-               :pen-n 1
-               :pen-d 2
-               :pen-phase-n 1.0
-               :pen-phase-d 3.0
-               :dampen-limit 0.05
+  (ctrl/state {:table [1.0 3.0]
+               :pendulum [1.01 2.0]
+               :pen [1 2]
+               :pen-phase [1 3]
+               :dampen-rate 0.15
+               :dampen-limit 0.2
                :modulate-stroke true
                :pen-modulation false}))
 
@@ -27,13 +24,14 @@
    [:h3 "Parameters"]
    [:div.flexcols
     [:div {:style {:width "8em"}} "Table Ratio"]
-    (ctrl/numeric ui-state "N" [:table-n] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:table-d] [1 16 0.1])]
+    (ctrl/numeric ui-state "N" [:table 0] [0 32 0.001])
+    (ctrl/numeric ui-state "D" [:table 1] [1 16 0.1])]
    [:div.flexcols
     [:div {:style {:width "8em"}} "Pendulum Ratio"]
-    (ctrl/numeric ui-state "N" [:pendulum-n] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:pendulum-d] [1 16 0.1])]
+    (ctrl/numeric ui-state "N" [:pendulum 0] [0 32 0.001])
+    (ctrl/numeric ui-state "D" [:pendulum 1] [1 16 0.1])]
    [:div {:style {:width "16em"}}
+    (ctrl/numeric ui-state "Dampen Rate" [:dampen-rate] [0.01 0.5 0.01])
     (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])
     (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])
     (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])]
@@ -41,28 +39,30 @@
      [:<>
       [:div.flexcols
        [:div {:style {:width "8em"}} "Pen Stroke Ratio"]
-       (ctrl/numeric ui-state "N" [:pen-n] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen-d] [1 16 0.1])]
+       (ctrl/numeric ui-state "N" [:pen 0] [0 32 0.001])
+       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.1])]
       [:div.flexcols
        [:div {:style {:width "8em"}} "Pen Stroke Phase Rate"]
-       (ctrl/numeric ui-state "N" [:pen-phase-n] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen-phase-d] [1 16 0.1])]])
+       (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
+       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.1])]])
 
    [:em "(updates after restart)"]))
 
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
 
+(defn ratio [[a b]]
+  (/ (float a) b))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [table-n table-d pendulum-n pendulum-d pen-n pen-d pen-phase-n pen-phase-d]}
-        @ui-state]
+  (let [{:keys [table pendulum pen pen-phase]} @ui-state]
     (merge @ui-state
            {:t 0
-            :dplat (/ table-n table-d)
-            :dpend (/ pendulum-n pendulum-d)
-            :dpen (/ pen-n pen-d)
-            :dpen-phase (/ pen-phase-n pen-phase-d)})))
+            :dplat (ratio table)
+            :dpend (ratio pendulum)
+            :dpen (ratio pen)
+            :dpen-phase (ratio pen-phase)})))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -76,12 +76,12 @@
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
 (defn draw
-  [{:keys [t dplat dpend dampen-limit modulate-stroke
+  [{:keys [t dplat dpend dampen-rate dampen-limit modulate-stroke
            pen-modulation dpen dpen-phase]}]
   (q/stroke-weight 0.33)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
-          k (dampen 0.15 (* 0.01 t))]
+          k (dampen dampen-rate (* 0.01 t))]
       (if (< k dampen-limit)
         (q/no-loop)
         (q/with-translation
