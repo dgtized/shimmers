@@ -10,8 +10,8 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:table [1.0 3.0]
-               :pendulum [1.01 2.0]
+  (ctrl/state {:table [1 3]
+               :pendulum [1.01 1]
                :pen [1 2]
                :pen-phase [1 3]
                :dampen-rate 0.15
@@ -42,7 +42,7 @@
        (ctrl/numeric ui-state "N" [:pen 0] [0 32 0.001])
        (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.1])]
       [:div.flexcols
-       [:div {:style {:width "8em"}} "Pen Stroke Phase Rate"]
+       [:div {:style {:width "8em"}} "Pen Phase Rate"]
        (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
        (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.1])]])
 
