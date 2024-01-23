@@ -49,6 +49,7 @@
 
 ;; TODO: how to make this lightweight enough to combine with devcards like visual tests?
 ;; As example, if I wanted a micro visual demo of contains-box?/contains-entity?
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn animated-canvas [canvas-state attributes render-frame-fn]
   (let [!canvas (atom nil)
         cancel-animation (atom nil)]

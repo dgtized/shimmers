@@ -132,6 +132,7 @@
 
 ;; Cribbed from https://gist.github.com/PlumpMath/66ad1d1654597056bbdde24b9808a883
 ;; and http://timothypratley.blogspot.com/2017/01/reagent-deep-dive-part-2-lifecycle-of.html
+#_{:clj-kondo/ignore [:unused-binding]}
 (defn canvas [attributes render-frame-fn]
   (let [!canvas (atom nil)]
     (r/create-class
