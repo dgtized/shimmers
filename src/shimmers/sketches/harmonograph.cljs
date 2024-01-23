@@ -9,12 +9,34 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state
+  (ctrl/state {:table-n 1.0
+               :table-d 3.0
+               :pendulum-n 1.01
+               :pendulum-d 2.0}))
+
+(defn ui-controls []
+  (ctrl/container
+   [:h3 "Parameters"]
+   [:div.flexcols
+    [:div {:style {:width "8em"}} "Table Ratio"]
+    (ctrl/numeric ui-state "N" [:table-n] [0 32 0.001])
+    (ctrl/numeric ui-state "D" [:table-d] [1 16 0.1])]
+   [:div.flexcols
+    [:div {:style {:width "8em"}} "Pendulum Ratio"]
+    (ctrl/numeric ui-state "N" [:pendulum-n] [0 32 0.001])
+    (ctrl/numeric ui-state "D" [:pendulum-d] [1 16 0.1])]
+   [:em "(updates after restart)"]))
+
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t 0})
+  (let [{:keys [table-n table-d pendulum-n pendulum-d]} @ui-state]
+    {:t 0
+     :dplat (/ table-n table-d)
+     :dpend (/ pendulum-n pendulum-d)}))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -27,28 +49,27 @@
     (modular-stroke t)
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
-(defn draw [{:keys [t]}]
-  (q/stroke-weight 0.5)
+(defn draw [{:keys [t dplat dpend]}]
+  (q/stroke-weight 0.33)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
-          k (dampen 0.1 (* 0.01 t))
-          dplat (/ 0.99 4)
-          dpoint (/ 2.01 4)]
-      (if (< k 0.02)
+          k (dampen 0.15 (* 0.01 t))]
+      (if (< k 0.1)
         (q/no-loop)
         (q/with-translation
           [(tm/+ (cq/rel-vec 0.5 0.5)
                  (v/polar (* 0.15 (q/height) k) (* dplat t)))]
-          (apply q/point (v/polar (* 0.3 (q/height) k) (* dpoint t))))))))
+          (apply q/point (v/polar (* 0.3 (q/height) k) (* dpend t))))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-     :size [800 600]
-     :setup setup
-     :update update-state
-     :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+    :size [800 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])
+   [ui-controls]])
 
 (sketch/definition harmonograph
   {:created-at "2024-01-22"
