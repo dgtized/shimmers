@@ -13,7 +13,8 @@
   (ctrl/state {:table-n 1.0
                :table-d 3.0
                :pendulum-n 1.01
-               :pendulum-d 2.0}))
+               :pendulum-d 2.0
+               :dampen-limit 0.05}))
 
 (defn ui-controls []
   (ctrl/container
@@ -26,6 +27,8 @@
     [:div {:style {:width "8em"}} "Pendulum Ratio"]
     (ctrl/numeric ui-state "N" [:pendulum-n] [0 32 0.001])
     (ctrl/numeric ui-state "D" [:pendulum-d] [1 16 0.1])]
+   [:div {:style {:width "16em"}}
+    (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])]
    [:em "(updates after restart)"]))
 
 (defn dampen [lambda t]
@@ -33,10 +36,13 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [table-n table-d pendulum-n pendulum-d]} @ui-state]
+  (let [{:keys [table-n table-d pendulum-n pendulum-d
+                dampen-limit]}
+        @ui-state]
     {:t 0
      :dplat (/ table-n table-d)
-     :dpend (/ pendulum-n pendulum-d)}))
+     :dpend (/ pendulum-n pendulum-d)
+     :dampen-limit dampen-limit}))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -49,12 +55,12 @@
     (modular-stroke t)
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
-(defn draw [{:keys [t dplat dpend]}]
+(defn draw [{:keys [t dplat dpend dampen-limit]}]
   (q/stroke-weight 0.33)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
           k (dampen 0.15 (* 0.01 t))]
-      (if (< k 0.1)
+      (if (< k dampen-limit)
         (q/no-loop)
         (q/with-translation
           [(tm/+ (cq/rel-vec 0.5 0.5)
