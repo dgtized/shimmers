@@ -14,8 +14,13 @@
                :table-d 3.0
                :pendulum-n 1.01
                :pendulum-d 2.0
+               :pen-n 1
+               :pen-d 2
+               :pen-phase-n 1.0
+               :pen-phase-d 3.0
                :dampen-limit 0.05
-               :modulate-stroke true}))
+               :modulate-stroke true
+               :pen-modulation false}))
 
 (defn ui-controls []
   (ctrl/container
@@ -30,7 +35,19 @@
     (ctrl/numeric ui-state "D" [:pendulum-d] [1 16 0.1])]
    [:div {:style {:width "16em"}}
     (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])
-    (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])]
+    (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])
+    (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])]
+   (when (:pen-modulation @ui-state)
+     [:<>
+      [:div.flexcols
+       [:div {:style {:width "8em"}} "Pen Stroke Ratio"]
+       (ctrl/numeric ui-state "N" [:pen-n] [0 32 0.001])
+       (ctrl/numeric ui-state "D" [:pen-d] [1 16 0.1])]
+      [:div.flexcols
+       [:div {:style {:width "8em"}} "Pen Stroke Phase Rate"]
+       (ctrl/numeric ui-state "N" [:pen-phase-n] [0 32 0.001])
+       (ctrl/numeric ui-state "D" [:pen-phase-d] [1 16 0.1])]])
+
    [:em "(updates after restart)"]))
 
 (defn dampen [lambda t]
@@ -38,12 +55,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [table-n table-d pendulum-n pendulum-d]}
+  (let [{:keys [table-n table-d pendulum-n pendulum-d pen-n pen-d pen-phase-n pen-phase-d]}
         @ui-state]
     (merge @ui-state
            {:t 0
             :dplat (/ table-n table-d)
-            :dpend (/ pendulum-n pendulum-d)})))
+            :dpend (/ pendulum-n pendulum-d)
+            :dpen (/ pen-n pen-d)
+            :dpen-phase (/ pen-phase-n pen-phase-d)})))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -56,7 +75,9 @@
     (modular-stroke t)
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
-(defn draw [{:keys [t dplat dpend dampen-limit modulate-stroke]}]
+(defn draw
+  [{:keys [t dplat dpend dampen-limit modulate-stroke
+           pen-modulation dpen dpen-phase]}]
   (q/stroke-weight 0.33)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
@@ -68,7 +89,9 @@
                    (v/polar (* 0.15 (q/height) k) (* dplat t)))]
           (when modulate-stroke
             (modular-stroke t))
-          (apply q/point (v/polar (* 0.3 (q/height) k) (* dpend t))))))))
+          (when (or (not pen-modulation)
+                    (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
+            (apply q/point (v/polar (* 0.3 (q/height) k) (* dpend t)))))))))
 
 (defn page []
   [sketch/with-explanation
