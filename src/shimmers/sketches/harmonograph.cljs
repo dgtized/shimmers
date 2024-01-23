@@ -28,13 +28,18 @@
     (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
 
 (defn draw [{:keys [t]}]
+  (q/stroke-weight 0.5)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
-          k (dampen 0.09 (* 0.01 t))]
-      (q/with-translation
-        [(tm/+ (cq/rel-vec 0.5 0.5)
-               (v/polar (* 0.15 (q/height) k) (* (/ 1 4) t)))]
-        (skip-draw k t)))))
+          k (dampen 0.1 (* 0.01 t))
+          dplat (/ 0.99 4)
+          dpoint (/ 2.01 4)]
+      (if (< k 0.02)
+        (q/no-loop)
+        (q/with-translation
+          [(tm/+ (cq/rel-vec 0.5 0.5)
+                 (v/polar (* 0.15 (q/height) k) (* dplat t)))]
+          (apply q/point (v/polar (* 0.3 (q/height) k) (* dpoint t))))))))
 
 (defn page []
   [:div
