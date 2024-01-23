@@ -40,9 +40,18 @@
 (defn update-state [state]
   (assoc state :t (* 0.001 (q/millis) (/ 5 7))))
 
+(defn stroke-fill [c wobble]
+  (if (> (abs wobble) 0.66)
+    (q/no-fill)
+    (let [w (* 0.5 wobble)]
+      (q/stroke (mod (+ c w) 1.0) (/ 2 3))
+      (q/fill (mod (- 1.0 c w) 1.0) (/ 1 6)))))
+
 ;; invert/overlay a black circle underneath to sketch against?
 (defn draw [{:keys [t rate-base]}]
-  (let [alpha (* 0.2 (eq/unit-sin (+ (/ 7 17) (* (/ 13 29) t) (* 2 (Math/sin (* (/ 11 17) t))))))]
+  (let [alpha (* 0.2 (eq/unit-sin (+ (/ 7 17)
+                                     (* (/ 13 29) t)
+                                     (* 2 (eq/cube (Math/sin (* (/ 11 13) t)))))))]
     (q/background 1.0 alpha))
   (let [c (tm/smoothstep* 0.35 0.65 (eq/unit-sin (rate-base 0 (* (/ 3 13) t))))
         p1 (v/+polar (cq/rel-vec 0.5 0.5) (cq/rel-h 0.1) (rate-base 1 (* (/ 3 7) t)))
@@ -66,21 +75,13 @@
                      (jitter-rate 3 [0.65 0.9] (eq/unit-cos (rate-base 11 (* (/ 1 3) t)))))
                (tm/mix* (cq/rel-h 0.3) (cq/rel-h 0.4)
                         (eq/unit-sin (rate-base 12 (* (/ 1 7) t)))))
-    (if (> (abs wobble1) 0.66)
-      (q/no-fill)
-      (let [w (* 0.5 wobble1)]
-        (q/stroke (mod (+ c w) 1.0) (/ 2 3))
-        (q/fill (mod (- 1.0 c w) 1.0) (/ 1 6))))
 
+    (stroke-fill c wobble1)
     (cq/circle (tm/+ p3 j3)
                (tm/mix* (cq/rel-h 0.05) (cq/rel-h 0.12)
                         (eq/unit-sin (rate-base 13 (* (/ 1 3) t)))))
 
-    (if (> (abs wobble2) 0.66)
-      (q/no-fill)
-      (let [w (* 0.5 wobble2)]
-        (q/stroke (mod (+ c w) 1.0) (/ 2 3))
-        (q/fill (mod (- 1.0 c w) 1.0) (/ 1 6))))
+    (stroke-fill c wobble2)
     (cq/circle (tm/+ p3' j3')
                (tm/mix* (cq/rel-h 0.09) (cq/rel-h 0.14)
                         (eq/unit-sin (rate-base 14 (* (/ 1 3) t)))))
