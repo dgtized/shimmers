@@ -97,6 +97,7 @@
    shimmers.sketches.grid-variations
    shimmers.sketches.hairy-spiral
    shimmers.sketches.harsh-lines
+   shimmers.sketches.harmonograph
    shimmers.sketches.hatched-rectangles
    shimmers.sketches.hexaclock
    shimmers.sketches.hexcursive
