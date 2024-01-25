@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -23,6 +24,7 @@
 (defn ui-controls []
   [:<>
    [:h3 "Parameters"]
+   [:em "(apply after restart)"]
    [:div.flexcols
     [:div {:style {:width "8em"}} "Table Ratio"]
     (ctrl/numeric ui-state "N" [:table 0] [0 32 0.001])
@@ -51,7 +53,7 @@
        (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
        (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.1])]])
 
-   [:em "(updates after restart)"]])
+   [view-sketch/generate :harmonograph]])
 
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
