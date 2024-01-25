@@ -16,11 +16,14 @@
 ;; int, float, fraction
 ;; 2, 1.01, 2.1e4, 1/3, 1.01/3.01
 (defn fraction-parse [s]
-  (if-let [m (re-find #"^\s*(\d+(\.\d*)?)\s*$" s)]
+  (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*$" s)]
     (edn/read-string (second m))
-    (if-let [m (re-find #"^\s*(\d+(\.\d*)?)\s*/\s*(\d+(\.\d*)?)\s*$" s)]
-      (/ (edn/read-string (nth m 1))
-         (edn/read-string (nth m 3)))
+    (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*/\s*(-?\d+(\.\d*)?)\s*$" s)]
+      (let [n (edn/read-string (nth m 1))
+            d (edn/read-string (nth m 3))]
+        (if (zero? d) ;; divide by zero
+          s
+          (/ n d)))
       s)))
 
 (defn fraction-validate
@@ -46,9 +49,7 @@
               (fn [e]
                 (let [v (fraction-validate (.-target.value e) (:value value))]
                   (swap! settings assoc-in field-ref v)))}]
-     [:span (debug/pre-edn value)]
-     " "
-     [:span (str (fraction-parse (:raw value)))]]))
+     [:span (debug/pre-edn value)]]))
 
 (defonce ui-state
   (ctrl/state {:sample-steps 1000
