@@ -19,6 +19,7 @@
                :dampen-rate 0.15
                :dampen-limit 0.2
                :modulate-stroke true
+               :weight 0.6
                :pen-modulation false}))
 
 (defn ui-controls []
@@ -40,6 +41,7 @@
    [:div {:style {:width "16em"}}
     (ctrl/numeric ui-state "Dampen Rate" [:dampen-rate] [0.01 0.5 0.01])
     (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])
+    (ctrl/numeric ui-state "Stroke Weight" [:weight] [0.1 2.0 0.1])
     (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])
     (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])]
    (when (:pen-modulation @ui-state)
@@ -74,21 +76,14 @@
 (defn update-state [state]
   (update state :t + 1))
 
-(defn modular-stroke [t]
-  (q/stroke-weight (+ 0.6 (* 0.4 (Math/sin (* 2 t))))))
-
-(defn skip-draw [k t]
-  (when (> (Math/sin (+ (* (/ 7 5) t) (* 3 (Math/sin (* (/ 1 5) t))))) 0)
-    (modular-stroke t)
-    (apply q/point (v/polar (* 0.3 (q/height) k) (* (/ 1 6) t)))))
-
 (defn draw
   [{:keys [t dplat dpend
-           dampen-rate dampen-limit modulate-stroke
+           dampen-rate dampen-limit
+           modulate-stroke weight
            pen-modulation dpen dpen-phase]
     [_ _ table-dxt table-dyt] :table
     [_ _ pendulum-dxt pendulum-dyt] :pendulum}]
-  (q/stroke-weight 0.33)
+  (q/stroke-weight weight)
   (dotimes [i 1000]
     (let [t (+ (* 4.0 t) (/ i 200))
           k (dampen dampen-rate (* 0.01 t))]
@@ -99,7 +94,7 @@
                    (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
                             (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t)))))]
           (when modulate-stroke
-            (modular-stroke t))
+            (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
           (when (or (not pen-modulation)
                     (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
             (apply q/point
