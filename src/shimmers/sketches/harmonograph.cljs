@@ -17,25 +17,26 @@
 ;; 2, 1.01, 2.1e4, 1/3, 1.01/3.01
 (defn fraction-parse [s]
   (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*$" s)]
-    (edn/read-string (second m))
+    [(edn/read-string (second m)) nil]
     (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*/\s*(-?\d+(\.\d*)?)\s*$" s)]
       (let [n (edn/read-string (nth m 1))
             d (edn/read-string (nth m 3))]
         (if (zero? d) ;; divide by zero
-          s
-          (/ n d)))
-      s)))
+          [s "divide by zero"]
+          [(/ n d) nil]))
+      [s "invalid string"])))
 
 (defn fraction-validate
   ([s] (fraction-validate s 1.0))
   ([s last-value]
-   (let [num (fraction-parse s)]
-     (if (number? num)
+   (let [[value error] (fraction-parse s)]
+     (if-not error
        {:raw s
         :valid true
-        :value num}
+        :value value}
        {:raw s
         :valid false
+        :error error
         :value (or last-value 1.0)}))))
 
 (defn fraction [settings label field-ref]
@@ -44,11 +45,14 @@
      [:label label]
      [:input {:type "text"
               :value (:raw value)
-              :style {:background (if (:valid value) "" "hsl(0,75%,85%)")}
+              :style {:background (if (:error value) "hsl(0,75%,85%)" "")}
               :on-change
               (fn [e]
                 (let [v (fraction-validate (.-target.value e) (:value value))]
                   (swap! settings assoc-in field-ref v)))}]
+     (when-let [error (:error value)]
+       [:div {:style {:color (if (:error value) "hsl(0,75%,50%)" "")}}
+        error])
      [:span (debug/pre-edn value)]]))
 
 (defonce ui-state
