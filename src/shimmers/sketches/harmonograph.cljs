@@ -5,14 +5,15 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state
-  (ctrl/state {:table [1 1 1 1]
+  (ctrl/state {:sample-steps 1000
+               :sample-rate 2.0
+               :table [1 1 1 1]
                :pendulum [1.001 3 1 1]
                :pen [1 2]
                :pen-phase [1 3]
@@ -29,18 +30,20 @@
    [:div.flexcols
     [:div {:style {:width "8em"}} "Table Ratio"]
     (ctrl/numeric ui-state "N" [:table 0] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:table 1] [1 16 0.1])
+    (ctrl/numeric ui-state "D" [:table 1] [1 16 0.001])
     (ctrl/numeric ui-state "dt-x" [:table 2] [0.001 10 0.001])
     (ctrl/numeric ui-state "dt-y" [:table 3] [0.001 10 0.001])]
    [:div.flexcols
     [:div {:style {:width "8em"}} "Pendulum Ratio"]
     (ctrl/numeric ui-state "N" [:pendulum 0] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:pendulum 1] [1 16 0.1])
+    (ctrl/numeric ui-state "D" [:pendulum 1] [1 16 0.001])
     (ctrl/numeric ui-state "dt-x" [:pendulum 2] [0.001 10 0.001])
     (ctrl/numeric ui-state "dt-y" [:pendulum 3] [0.001 10 0.001])]
    [:div {:style {:width "16em"}}
     (ctrl/numeric ui-state "Dampen Rate" [:dampen-rate] [0.01 0.5 0.01])
     (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])
+    (ctrl/numeric ui-state "Sample Steps" [:sample-steps] [100 2000 50])
+    (ctrl/numeric ui-state "Sample Rate" [:sample-rate] [0.1 12.0 0.1])
     (ctrl/numeric ui-state "Stroke Weight" [:weight] [0.1 2.0 0.1])
     (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])
     (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])]
@@ -49,11 +52,11 @@
       [:div.flexcols
        [:div {:style {:width "8em"}} "Pen Stroke Ratio"]
        (ctrl/numeric ui-state "N" [:pen 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.1])]
+       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.001])]
       [:div.flexcols
        [:div {:style {:width "8em"}} "Pen Phase Rate"]
        (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.1])]])
+       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.001])]])
 
    [view-sketch/generate :harmonograph]])
 
@@ -77,15 +80,16 @@
   (update state :t + 1))
 
 (defn draw
-  [{:keys [t dplat dpend
+  [{:keys [t sample-steps sample-rate
+           dplat dpend
            dampen-rate dampen-limit
            modulate-stroke weight
            pen-modulation dpen dpen-phase]
     [_ _ table-dxt table-dyt] :table
     [_ _ pendulum-dxt pendulum-dyt] :pendulum}]
   (q/stroke-weight weight)
-  (dotimes [i 1000]
-    (let [t (+ (* 4.0 t) (/ i 200))
+  (dotimes [i sample-steps]
+    (let [t (* sample-rate (+ t (/ i sample-steps)))
           k (dampen dampen-rate (* 0.01 t))]
       (if (< k dampen-limit)
         (q/no-loop)
