@@ -9,21 +9,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
-
-(defonce ui-state
-  (ctrl/state {:sample-steps 1000
-               :sample-rate 2.0
-               :table [1 1 1 1]
-               :fraction "1 / 3"
-               :pendulum [1.001 3 1 1]
-               :pen [1 2]
-               :pen-phase [1 3]
-               :dampen-rate 0.15
-               :dampen-limit 0.2
-               :modulate-stroke true
-               :weight 0.6
-               :pen-modulation false}))
+   [thi.ng.math.core :as tm]
+   [shimmers.common.ui.debug :as debug]))
 
 ;; TODO: add a ctrl/fraction input that accepts and validates:
 ;; int, float, fraction
@@ -36,28 +23,46 @@
          (edn/read-string (nth m 3)))
       s)))
 
-(defn fraction-validate [s]
-  (when (number? (fraction-parse s))
-    s))
+(defn fraction-validate
+  ([s] (fraction-validate s 1.0))
+  ([s last-value]
+   (let [num (fraction-parse s)]
+     (if (number? num)
+       {:raw s
+        :valid true
+        :value num}
+       {:raw s
+        :valid false
+        :value (or last-value 1.0)}))))
 
 (defn fraction [settings label field-ref]
   (let [value (get-in @settings field-ref)]
     [:div.label-set.fraction {:key (str "fraction-" field-ref)}
      [:label label]
      [:input {:type "text"
-              :value value
-              :style {:background (if (fraction-validate value)
-                                    ""
-                                    "hsl(0,75%,85%)")}
+              :value (:raw value)
+              :style {:background (if (:valid value) "" "hsl(0,75%,85%)")}
               :on-change
               (fn [e]
-                (when-let [v (fraction-validate (.-target.value e))]
+                (let [v (fraction-validate (.-target.value e) (:value value))]
                   (swap! settings assoc-in field-ref v)))}]
-     [:span (str value)]
+     [:span (debug/pre-edn value)]
      " "
-     [:span (str (fraction-validate value))]
-     " "
-     [:span (str (fraction-parse value))]]))
+     [:span (str (fraction-parse (:raw value)))]]))
+
+(defonce ui-state
+  (ctrl/state {:sample-steps 1000
+               :sample-rate 2.0
+               :table [1 1 1 1]
+               :fraction (fraction-validate "1 / 3")
+               :pendulum [1.001 3 1 1]
+               :pen [1 2]
+               :pen-phase [1 3]
+               :dampen-rate 0.15
+               :dampen-limit 0.2
+               :modulate-stroke true
+               :weight 0.6
+               :pen-modulation false}))
 
 (defn ui-controls []
   [:<>
