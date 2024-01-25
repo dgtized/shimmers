@@ -1,5 +1,6 @@
 (ns shimmers.sketches.harmonograph
   (:require
+   [clojure.edn :as edn]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -14,6 +15,7 @@
   (ctrl/state {:sample-steps 1000
                :sample-rate 2.0
                :table [1 1 1 1]
+               :fraction "1 / 3"
                :pendulum [1.001 3 1 1]
                :pen [1 2]
                :pen-phase [1 3]
@@ -23,9 +25,44 @@
                :weight 0.6
                :pen-modulation false}))
 
+;; TODO: add a ctrl/fraction input that accepts and validates:
+;; int, float, fraction
+;; 2, 1.01, 2.1e4, 1/3, 1.01/3.01
+(defn fraction-parse [s]
+  (if-let [m (re-find #"^\s*(\d+(\.\d*)?)\s*$" s)]
+    (edn/read-string (second m))
+    (if-let [m (re-find #"^\s*(\d+(\.\d*)?)\s*/\s*(\d+(\.\d*)?)\s*$" s)]
+      (/ (edn/read-string (nth m 1))
+         (edn/read-string (nth m 3)))
+      s)))
+
+(defn fraction-validate [s]
+  (when (number? (fraction-parse s))
+    s))
+
+(defn fraction [settings label field-ref]
+  (let [value (get-in @settings field-ref)]
+    [:div.label-set.fraction {:key (str "fraction-" field-ref)}
+     [:label label]
+     [:input {:type "text"
+              :value value
+              :style {:background (if (fraction-validate value)
+                                    ""
+                                    "hsl(0,75%,85%)")}
+              :on-change
+              (fn [e]
+                (when-let [v (fraction-validate (.-target.value e))]
+                  (swap! settings assoc-in field-ref v)))}]
+     [:span (str value)]
+     " "
+     [:span (str (fraction-validate value))]
+     " "
+     [:span (str (fraction-parse value))]]))
+
 (defn ui-controls []
   [:<>
    [:h3 "Parameters"]
+   #_(fraction ui-state "Fraction" [:fraction])
    [:em "(apply after restart)"]
    [:div.grid {:style {:grid-template-columns "0.2fr repeat(4,0.125fr)"
                        :column-gap "1%"}}
