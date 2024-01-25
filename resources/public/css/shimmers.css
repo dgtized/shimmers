@@ -199,6 +199,10 @@ button.generate {
   gap: 0px 3em;
 }
 
+.grid {
+  display: grid;
+}
+
 pre.debug {
   margin: 0.2em 0;
 }

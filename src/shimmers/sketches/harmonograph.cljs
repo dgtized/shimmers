@@ -27,36 +27,41 @@
   [:<>
    [:h3 "Parameters"]
    [:em "(apply after restart)"]
-   [:div.flexcols
-    [:div {:style {:width "8em"}} "Table Ratio"]
+   [:div.grid {:style {:grid-template-columns "0.2fr repeat(4,0.125fr)"
+                       :column-gap "1%"}}
+    [:div "Table Ratio"]
     (ctrl/numeric ui-state "N" [:table 0] [0 32 0.001])
     (ctrl/numeric ui-state "D" [:table 1] [1 16 0.001])
     (ctrl/numeric ui-state "dt-x" [:table 2] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:table 3] [0.001 10 0.001])]
-   [:div.flexcols
-    [:div {:style {:width "8em"}} "Pendulum Ratio"]
+    (ctrl/numeric ui-state "dt-y" [:table 3] [0.001 10 0.001])
+    [:div "Pendulum Ratio"]
     (ctrl/numeric ui-state "N" [:pendulum 0] [0 32 0.001])
     (ctrl/numeric ui-state "D" [:pendulum 1] [1 16 0.001])
     (ctrl/numeric ui-state "dt-x" [:pendulum 2] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:pendulum 3] [0.001 10 0.001])]
-   [:div {:style {:width "16em"}}
-    (ctrl/numeric ui-state "Dampen Rate" [:dampen-rate] [0.01 0.5 0.01])
-    (ctrl/numeric ui-state "Dampen Limit" [:dampen-limit] [0.01 0.2 0.01])
-    (ctrl/numeric ui-state "Sample Steps" [:sample-steps] [100 2000 50])
-    (ctrl/numeric ui-state "Sample Rate" [:sample-rate] [0.1 12.0 0.1])
-    (ctrl/numeric ui-state "Stroke Weight" [:weight] [0.1 2.0 0.1])
-    (ctrl/checkbox ui-state "Modulate Stroke" [:modulate-stroke])
-    (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])]
-   (when (:pen-modulation @ui-state)
-     [:<>
-      [:div.flexcols
-       [:div {:style {:width "8em"}} "Pen Stroke Ratio"]
+    (ctrl/numeric ui-state "dt-y" [:pendulum 3] [0.001 10 0.001])
+    [:div "Dampen"]
+    (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.01 0.5 0.01])
+    (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
+    [:div {:style {:grid-column "4 / 6" :grid-row "3 / 4"}}]
+    [:div "Sample"]
+    (ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50])
+    (ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1])
+    [:div {:style {:grid-column "4 / 6" :grid-row "4 / 5"}}]
+    [:div "Stroke"]
+    (ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1])
+    (ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke])
+    [:div {:style {:grid-column "4 / 6" :grid-row "5 / 6"}}]
+    (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])
+    [:div {:style {:grid-column "2 / 6" :grid-row "6 / 7"}}]
+    (when (:pen-modulation @ui-state)
+      [:<>
+       [:div "Pen Stroke Ratio"]
        (ctrl/numeric ui-state "N" [:pen 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.001])]
-      [:div.flexcols
-       [:div {:style {:width "8em"}} "Pen Phase Rate"]
+       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.001])
+       [:div {:style {:grid-column "4 / 6" :grid-row "7 / 8"}}]
+       [:div "Pen Phase Rate"]
        (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.001])]])
+       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.001])])]
 
    [view-sketch/generate :harmonograph]])
 
