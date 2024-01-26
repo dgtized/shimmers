@@ -98,16 +98,12 @@
     (ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1])
     (ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke])
     [:div {:style {:grid-column "4 / 5" :grid-row "5 / 6"}}]
-    [:div "Pen"]
-    (ctrl/checkbox ui-state "Modulation" [:pen-modulation])
-    [:div {:style {:grid-column "3 / 5" :grid-row "6 / 7"}}]
+    [:div "Pen Stroke"]
+    (ctrl/checkbox-after ui-state "Modulation" [:pen-modulation])
     (when (:pen-modulation @ui-state)
       [:<>
-       [:div "Pen Stroke"]
-       (fraction ui-state "Ratio" [:pen 0])
-       [:div {:style {:grid-column "3 / 5" :grid-row "7 / 8"}}]
-       [:div "Pen Phase"]
-       (fraction ui-state "Rate" [:pen 1])])]
+       (fraction ui-state "Rate" [:pen 0])
+       (fraction ui-state "Phase" [:pen 1])])]
 
    [view-sketch/generate :harmonograph]])
 
