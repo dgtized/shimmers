@@ -62,6 +62,12 @@ main {
   justify-content: space-between;
 }
 
+.fraction {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .color {
   display: flex;
   flex-direction: row;
@@ -89,6 +95,10 @@ select {
 }
 
 input[type=number] {
+  width: 5em;
+}
+
+.fraction input[type=text] {
   width: 5em;
 }
 

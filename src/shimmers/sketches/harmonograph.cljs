@@ -9,8 +9,7 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.ui.debug :as debug]))
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: add a ctrl/fraction input that accepts and validates:
 ;; int, float, fraction
@@ -50,19 +49,19 @@
               (fn [e]
                 (let [v (fraction-validate (.-target.value e) (:value value))]
                   (swap! settings assoc-in field-ref v)))}]
+     ;; FIXME: collect this elsewhere somehow
      (when-let [error (:error value)]
        [:div {:style {:color (if (:error value) "hsl(0,75%,50%)" "")}}
         error])
-     [:span (debug/pre-edn value)]]))
+     #_[:span (debug/pre-edn value)]]))
 
 (defonce ui-state
   (ctrl/state {:sample-steps 1000
                :sample-rate 2.0
-               :table [1 1 1 1]
-               :fraction (fraction-validate "1 / 3")
-               :pendulum [1.001 3 1 1]
-               :pen [1 2]
-               :pen-phase [1 3]
+               :table [(fraction-validate "1 / 1") 1 1]
+               :pendulum [(fraction-validate "1.001 / 3") 1 1]
+               :pen [(fraction-validate "1 / 2")
+                     (fraction-validate "1 / 3")]
                :dampen-rate 0.15
                :dampen-limit 0.2
                :modulate-stroke true
@@ -72,61 +71,54 @@
 (defn ui-controls []
   [:<>
    [:h3 "Parameters"]
-   #_(fraction ui-state "Fraction" [:fraction])
    [:em "(apply after restart)"]
-   [:div.grid {:style {:grid-template-columns "0.2fr repeat(4,0.125fr)"
-                       :column-gap "1%"}}
-    [:div "Table Ratio"]
-    (ctrl/numeric ui-state "N" [:table 0] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:table 1] [1 16 0.001])
-    (ctrl/numeric ui-state "dt-x" [:table 2] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:table 3] [0.001 10 0.001])
-    [:div "Pendulum Ratio"]
-    (ctrl/numeric ui-state "N" [:pendulum 0] [0 32 0.001])
-    (ctrl/numeric ui-state "D" [:pendulum 1] [1 16 0.001])
-    (ctrl/numeric ui-state "dt-x" [:pendulum 2] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:pendulum 3] [0.001 10 0.001])
+   [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
+                       :column-gap "2%"}}
+    [:div "Table"]
+    [fraction ui-state "Ratio" [:table 0]]
+    (ctrl/numeric ui-state "dt-x" [:table 1] [0.001 10 0.001])
+    (ctrl/numeric ui-state "dt-y" [:table 2] [0.001 10 0.001])
+    [:div "Pendulum"]
+    [fraction ui-state "Ratio" [:pendulum 0]]
+    (ctrl/numeric ui-state "dt-x" [:pendulum 1] [0.001 10 0.001])
+    (ctrl/numeric ui-state "dt-y" [:pendulum 2] [0.001 10 0.001])
     [:div "Dampen"]
     (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.01 0.5 0.01])
     (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
-    [:div {:style {:grid-column "4 / 6" :grid-row "3 / 4"}}]
+    [:div {:style {:grid-column "4 / 5" :grid-row "3 / 4"}}]
     [:div "Sample"]
     (ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50])
     (ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1])
-    [:div {:style {:grid-column "4 / 6" :grid-row "4 / 5"}}]
+    [:div {:style {:grid-column "4 / 5" :grid-row "4 / 5"}}]
     [:div "Stroke"]
     (ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1])
     (ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke])
-    [:div {:style {:grid-column "4 / 6" :grid-row "5 / 6"}}]
-    (ctrl/checkbox ui-state "Pen Modulation" [:pen-modulation])
-    [:div {:style {:grid-column "2 / 6" :grid-row "6 / 7"}}]
+    [:div {:style {:grid-column "4 / 5" :grid-row "5 / 6"}}]
+    [:div "Pen"]
+    (ctrl/checkbox ui-state "Modulation" [:pen-modulation])
+    [:div {:style {:grid-column "3 / 5" :grid-row "6 / 7"}}]
     (when (:pen-modulation @ui-state)
       [:<>
-       [:div "Pen Stroke Ratio"]
-       (ctrl/numeric ui-state "N" [:pen 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen 1] [1 16 0.001])
-       [:div {:style {:grid-column "4 / 6" :grid-row "7 / 8"}}]
-       [:div "Pen Phase Rate"]
-       (ctrl/numeric ui-state "N" [:pen-phase 0] [0 32 0.001])
-       (ctrl/numeric ui-state "D" [:pen-phase 1] [1 16 0.001])])]
+       [:div "Pen Stroke"]
+       (fraction ui-state "Ratio" [:pen 0])
+       [:div {:style {:grid-column "3 / 5" :grid-row "7 / 8"}}]
+       [:div "Pen Phase"]
+       (fraction ui-state "Rate" [:pen 1])])]
 
    [view-sketch/generate :harmonograph]])
 
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
 
-(defn ratio [[a b]]
-  (/ (float a) b))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [table pendulum pen pen-phase]} @ui-state]
+  (let [{:keys [table pendulum pen]} @ui-state]
     (merge @ui-state
            {:t 0
-            :dplat (ratio table)
-            :dpend (ratio pendulum)
-            :dpen (ratio pen)
-            :dpen-phase (ratio pen-phase)})))
+            :dplat (:value (first table))
+            :dpend (:value (first pendulum))
+            :dpen (:value (first pen))
+            :dpen-phase (:value (second pen))})))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -137,8 +129,8 @@
            dampen-rate dampen-limit
            modulate-stroke weight
            pen-modulation dpen dpen-phase]
-    [_ _ table-dxt table-dyt] :table
-    [_ _ pendulum-dxt pendulum-dyt] :pendulum}]
+    [_ table-dxt table-dyt] :table
+    [_ pendulum-dxt pendulum-dyt] :pendulum}]
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
