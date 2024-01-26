@@ -138,19 +138,18 @@
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
           k (dampen dampen-rate (* 0.01 t))]
-      (if (< k dampen-limit)
-        (q/no-loop)
-        (q/with-translation
-            [(tm/+ (cq/rel-vec 0.5 0.5)
-                   (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
-                            (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t)))))]
-          (when modulate-stroke
-            (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
-          (when (or (not pen-modulation)
-                    (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-            (apply q/point
-                   (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
-                            (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t)))))))))))
+      (when (< k dampen-limit)
+        (q/no-loop))
+      (when modulate-stroke
+        (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
+      (when (or (not pen-modulation)
+                (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
+        (apply q/point
+               (tm/+ (cq/rel-vec 0.5 0.5)
+                     (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
+                              (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
+                     (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
+                              (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t))))))))))
 
 (defn page []
   [sketch/with-explanation
