@@ -58,8 +58,12 @@
 (defonce ui-state
   (ctrl/state {:sample-steps 1000
                :sample-rate 2.0
-               :table [(fraction-validate "1 / 1") 1 1]
-               :pendulum [(fraction-validate "1.001 / 3") 1 1]
+               :table [(fraction-validate "1 / 1")
+                       (fraction-validate "1")
+                       (fraction-validate "1")]
+               :pendulum [(fraction-validate "1.001 / 3")
+                          (fraction-validate "1")
+                          (fraction-validate "1")]
                :pen [(fraction-validate "1 / 2")
                      (fraction-validate "1 / 3")]
                :dampen-rate 0.15
@@ -76,12 +80,12 @@
                        :column-gap "2%"}}
     [:div "Table"]
     [fraction ui-state "Ratio" [:table 0]]
-    (ctrl/numeric ui-state "dt-x" [:table 1] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:table 2] [0.001 10 0.001])
+    (fraction ui-state "dt-x" [:table 1])
+    (fraction ui-state "dt-y" [:table 2])
     [:div "Pendulum"]
     [fraction ui-state "Ratio" [:pendulum 0]]
-    (ctrl/numeric ui-state "dt-x" [:pendulum 1] [0.001 10 0.001])
-    (ctrl/numeric ui-state "dt-y" [:pendulum 2] [0.001 10 0.001])
+    (fraction ui-state "dt-x" [:pendulum 1])
+    (fraction ui-state "dt-y" [:pendulum 2])
     [:div "Dampen"]
     (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.01 0.5 0.01])
     (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
@@ -115,8 +119,12 @@
   (let [{:keys [table pendulum pen]} @ui-state]
     (merge @ui-state
            {:t 0
-            :dplat (:value (first table))
-            :dpend (:value (first pendulum))
+            :dplat (:value (nth table 0))
+            :table-dxt (:value (nth table 1))
+            :table-dyt (:value (nth table 2))
+            :dpend (:value (nth pendulum 0))
+            :pendulum-dxt (:value (nth pendulum 1))
+            :pendulum-dyt (:value (nth pendulum 2))
             :dpen (:value (first pen))
             :dpen-phase (:value (second pen))})))
 
@@ -125,12 +133,11 @@
 
 (defn draw
   [{:keys [t sample-steps sample-rate
-           dplat dpend
+           dplat table-dxt table-dyt
+           dpend pendulum-dxt pendulum-dyt
            dampen-rate dampen-limit
            modulate-stroke weight
-           pen-modulation dpen dpen-phase]
-    [_ table-dxt table-dyt] :table
-    [_ pendulum-dxt pendulum-dyt] :pendulum}]
+           pen-modulation dpen dpen-phase]}]
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
