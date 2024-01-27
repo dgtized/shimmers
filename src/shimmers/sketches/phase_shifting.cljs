@@ -26,7 +26,7 @@
 (defn draw [{:keys [parts table pendulum t]}]
   (let [opacity (tm/smoothstep* 0.1 1.0 (eq/unit-sin (+ (* (/ 1 20) t) (Math/sin (* (/ 1 30) t)))))
         origin (cq/rel-vec 0.5 0.5)
-        head-amp (eq/unit-sin (+ (* (/ 1 25) t) (* 2 (Math/sin (* (/ 1 35) t)))))
+        head-amp (eq/unit-sin (+ (* (/ 1 45) t) (Math/sin (* (/ 1 35) t))))
         spin-amp (tm/smoothstep* 0.66 1.0 (eq/unit-sin (+ (* (/ 1 15 t)) (Math/sin (* (/ 1 9) t)))))
         [ftx fty] table
         [fpx fpy] pendulum]
@@ -48,18 +48,18 @@
         (-> polygon
             g/center
             (g/scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 0.5 head head-amp) (* (/ 1 3) t))))))
-            (g/rotate (+ (* t (/ 1 4))
+            (g/rotate (+ (* t (/ 1 4) (Math/sin (* (/ 1 171) t)))
                          (* (/ 3 4) (Math/sin (+ head head-amp (* (/ 1 20) t))))))
             (g/translate (tm/* (tm/- centroid origin)
-                               (* 2 (eq/unit-sin (+ (* (/ 1 120) t)
-                                                    (Math/sin (* (/ 1 15) t)))))))
-            (g/rotate (+ (* t (/ 0.5 tm/PHI))
+                               (* 2 (eq/unit-sin (+ (* (/ 1 90) t)
+                                                    (Math/sin (* (/ 1 20) t)))))))
+            (g/rotate (+ (* t (/ 0.5 tm/PHI) (Math/sin (* (/ 1 231) t)))
                          (Math/sin (+ (* 0.2 head spin-amp)
                                       (* (/ 1 60) t)))))
             (g/translate (tm/+ origin
                                (tm/mix (gv/vec2)
                                        (tm/+ pos table)
-                                       (tm/smoothstep* 0.33 0.66 (eq/unit-cos (* (/ 1 60) t))))))
+                                       (tm/smoothstep* 0.33 0.66 (eq/unit-cos (* (/ 1 25) t))))))
             qdg/draw)))))
 
 (defn page []
