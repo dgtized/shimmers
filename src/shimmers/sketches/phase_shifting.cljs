@@ -42,7 +42,9 @@
                          (* (cq/rel-h 0.1) (Math/sin (* fpy t))))]
         (q/fill (eq/unit-sin (+ (* (/ 1 45) t)
                                 (* (/ 1 30) (Math/sin (* (/ 1 11) (/ (+ head t) tm/PHI))))))
-                0.5 0.5 (+ 0.05 (* (- 1.0 opacity) 0.05)))
+                (+ 0.55 (* 0.15 (Math/sin (+ (* (/ 1 11) t)
+                                             (Math/sin (* spin-amp (/ 1 7) t))))))
+                0.5 0.05)
         (-> polygon
             g/center
             (g/scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 0.5 head head-amp) (* (/ 1 3) t))))))
