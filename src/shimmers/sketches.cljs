@@ -159,6 +159,7 @@
    shimmers.sketches.pawns
    shimmers.sketches.periapsis
    shimmers.sketches.permutations-of-transfiguration
+   shimmers.sketches.phase-shifting
    shimmers.sketches.physarum
    shimmers.sketches.pixel-rings
    shimmers.sketches.plaid-arrangements
