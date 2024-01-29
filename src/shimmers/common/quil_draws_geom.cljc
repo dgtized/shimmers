@@ -45,8 +45,8 @@
 
 (extend-type Triangle2
   QuilDrawGeom
-  (draw [s]
-    (apply cq/draw-triangle (:points s)))
+  (draw [{[[ax ay] [bx by] [cx cy]] :points}]
+    (q/triangle ax ay bx by cx cy))
   (contour-draw [s] (draw-contour (:points s))))
 
 (extend-type Polygon2
