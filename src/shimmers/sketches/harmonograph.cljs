@@ -66,7 +66,7 @@
                           (fraction-validate "1")]
                :pen [(fraction-validate "1 / 2")
                      (fraction-validate "1 / 3")]
-               :dampen-rate 0.15
+               :dampen-rate 0.0015
                :dampen-limit 0.2
                :modulate-stroke true
                :weight 0.6
@@ -87,7 +87,7 @@
     (fraction ui-state "dt-x" [:pendulum 1])
     (fraction ui-state "dt-y" [:pendulum 2])
     [:div "Dampen"]
-    (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.01 0.5 0.01])
+    (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.001 0.01 0.00001])
     (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
     [:div {:style {:grid-column "4 / 5" :grid-row "3 / 4"}}]
     [:div "Sample"]
@@ -137,7 +137,7 @@
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
-          k (dampen dampen-rate (* 0.01 t))]
+          k (dampen dampen-rate t)]
       (when (< k dampen-limit)
         (q/no-loop))
       (when modulate-stroke
