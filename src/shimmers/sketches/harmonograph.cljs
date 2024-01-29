@@ -110,6 +110,27 @@
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
 
+;; TODO: Add the real parametric equation from: https://en.wikipedia.org/wiki/Harmonograph
+(defn decay-cycle [amplitude decay frequency period]
+  (fn [t]
+    (* amplitude
+       (Math/exp (* (- decay) t))
+       (Math/sin (+ (* frequency t) period)))))
+
+(defn parametric-harmonograph [xa xb ya yb]
+  (fn [t]
+    (gv/vec2 (+ (xa t) (xb t))
+             (+ (ya t) (yb t)))))
+
+(defn create-harmonograph [{:keys [table pendulum dampen-rate]}]
+  (let [A (/ (q/height) 5)
+        d dampen-rate]
+    (parametric-harmonograph
+     (decay-cycle A d (:value (nth table 0)) 0)
+     (decay-cycle A d (:value (nth table 0)) 0)
+     (decay-cycle A d (:value (nth pendulum 0)) 0)
+     (decay-cycle A d (:value (nth pendulum 0)) 0))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [table pendulum pen]} @ui-state]
@@ -122,7 +143,9 @@
             :pendulum-dxt (:value (nth pendulum 1))
             :pendulum-dyt (:value (nth pendulum 2))
             :dpen (:value (first pen))
-            :dpen-phase (:value (second pen))})))
+            :dpen-phase (:value (second pen))
+            ;; :harmonograph (create-harmonograph @ui-state)
+            })))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -133,7 +156,8 @@
            dpend pendulum-dxt pendulum-dyt
            dampen-rate dampen-limit
            modulate-stroke weight
-           pen-modulation dpen dpen-phase]}]
+           pen-modulation dpen dpen-phase]
+    :as state}]
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
@@ -144,12 +168,14 @@
         (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
       (when (or (not pen-modulation)
                 (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-        (apply q/point
-               (tm/+ (cq/rel-vec 0.5 0.5)
-                     (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
-                              (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
-                     (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
-                              (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t))))))))))
+        (if-let [harmonograph (:harmonograph state)]
+          (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) (harmonograph t)))
+          (apply q/point
+                 (tm/+ (cq/rel-vec 0.5 0.5)
+                       (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
+                                (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
+                       (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
+                                (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t)))))))))))
 
 (defn page []
   [sketch/with-explanation
