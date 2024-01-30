@@ -239,11 +239,9 @@
         (->> parts
              (map (fn [p] (assoc p :pos (mech/position sys p))))
              (sort-by (fn [{:keys [pos]}] (g/dist-squared pos mouse))))]
-    (if-let [closest (first (filter :radius close-parts))]
-      (if (< (g/dist (:pos closest) mouse) (:radius closest))
-        (take-while (fn [{:keys [pos]}] (= (:pos closest) pos)) close-parts)
-        [])
-      [])))
+    (when-let [closest (first (filter :radius close-parts))]
+      (when (< (g/dist (:pos closest) mouse) (:radius closest))
+        (take-while (fn [{:keys [pos]}] (= (:pos closest) pos)) close-parts)))))
 
 ;; Add stroke shading along the teeth somehow?
 ;; Add inner shapes like N spokes or crankshaft hole?
