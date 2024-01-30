@@ -1,22 +1,18 @@
 (ns shimmers.common.quil-draws-geom
-  #?@
-  (:clj
-   [(:require
-     [quil.core :as q]
-     [shimmers.common.quil :as cq]
-     [shimmers.math.geometry.group]
-     [thi.ng.geom.core :as g]
-     [thi.ng.geom.types])
-    (:import
-     (shimmers.math.geometry.group Group)
-     (thi.ng.geom.types Line2 Circle2 Polygon2 Rect2 Triangle2))]
-   :cljs
-   [(:require
-     [quil.core :as q :include-macros true]
-     [shimmers.common.quil :as cq]
-     [shimmers.math.geometry.group :refer [Group]]
-     [thi.ng.geom.core :as g]
-     [thi.ng.geom.types :refer [Line2 Circle2 Polygon2 Rect2 Triangle2]])]))
+  (:require
+   [quil.core :as q :include-macros true]
+   [shimmers.common.quil :as cq]
+   #?(:clj [shimmers.math.geometry.group]
+      :cljs [shimmers.math.geometry.group :refer [Group]])
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.types
+    :refer
+    #?(:clj []
+       :cljs [Circle2 Line2 Polygon2 Rect2 Triangle2])])
+  #?(:clj
+     (:import
+      (shimmers.math.geometry.group Group)
+      (thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2))))
 
 (defprotocol QuilDrawGeom
   (draw [s])
