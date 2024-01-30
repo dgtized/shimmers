@@ -137,7 +137,7 @@
       (q/with-stroke [0 0.6 0.6]
         (q/line pos (v/+polar pos (* 0.66 radius) theta))))))
 
-(defn draw-ring-gear [sys {:keys [radius teeth] :as gear} selected? t]
+(defn draw-ring-gear [sys {:keys [radius teeth] :as gear} selected-ids t]
   (let [theta (mech/rotation gear t)
         pos (mech/position sys gear)
         outer-r (+ radius (* 3 (mech/addendum gear)))]
@@ -157,7 +157,7 @@
     (when (:show-angle-path @ui-state)
       (q/with-stroke [0 0.6 0.6]
         (q/line pos (v/+polar pos (* 0.66 radius) theta))))
-    (when selected?
+    (when (contains? selected-ids (:id gear))
       (let [{:keys [angle]} gear
             r (+ radius (* 2 (mech/addendum gear)))
             high-pt (v/polar r (- angle Math/PI))
@@ -224,7 +224,7 @@
       (q/stroke-weight 1.5))
     (case type
       :gear (draw-gear sys part t)
-      :ring-gear (draw-ring-gear sys part selected? t)
+      :ring-gear (draw-ring-gear sys part selected-ids t)
       :piston (draw-piston sys part t)
       :wheel (draw-wheel sys part t))))
 
