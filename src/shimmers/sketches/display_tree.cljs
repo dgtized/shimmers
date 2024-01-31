@@ -15,10 +15,13 @@
    [thi.ng.geom.core :as g]))
 
 (defn generate-box [{p :p [width height] :size}]
-  (let [[w h] (dr/weighted {(gv/vec2 4 3) 1
-                            (gv/vec2 3 2) 1})
-        scale (dr/gaussian (/ height 10) (/ height 240))
-        box (gv/vec2 (* w scale) (* h scale))
+  (let [[w h] (dr/weighted {(gv/vec2 4 3) 2
+                            (gv/vec2 5 4) 2
+                            (gv/vec2 16 9) 1})
+        side (dr/gaussian (/ height 5) (/ height 100))
+        ratio (/ (float w) (float h))
+        ;; _ (println side ratio)
+        box (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))
         [x y] p
         a (gv/vec2 (dr/random x (- width (:x box)))
                    (dr/random y (- height (:y box))))]
