@@ -49,15 +49,28 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:displays (place-boxes (cq/screen-rect 0.8)
-                          (* 0.025 eq/TAU))})
+                          (* 0.025 eq/TAU))
+   :t 0.0})
 
 (defn update-state [state]
-  state)
+  (update state :t + 0.01))
 
-(defn draw [{:keys [displays]}]
+(defn draw [{:keys [displays t]}]
   (q/background 1.0)
-  (doseq [screen displays]
-    (qdg/draw screen)))
+  (doseq [[i screen] (map-indexed vector displays)
+          :let [centroid (g/centroid screen)
+                [x y] centroid
+                f (eq/unit-sin (+ i
+                                  (* 0.02 x t)
+                                  (* 0.1 t)
+                                  (* 2 (Math/sin (+ i (* 0.01 y t))))))]]
+    (q/fill f)
+    (qdg/draw screen)
+    (q/fill (- 1.0 f))
+    (let [s (str i "\n" (int x) "," (int y))]
+      (q/text s
+              (- x (* 0.5 (q/text-width s)))
+              (- y (* 0.5 (q/text-ascent)))))))
 
 (defn page []
   [:div
