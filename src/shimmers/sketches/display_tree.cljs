@@ -7,14 +7,16 @@
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.math.core :as tm]))
 
-(defn generate-box [{p :p [width height] :size}]
+(defn generate-box [{p :p [width height] :size} angle]
   (let [[w h] (dr/weighted {(gv/vec2 4 3) 2
                             (gv/vec2 5 4) 2
                             (gv/vec2 16 9) 1})
@@ -25,16 +27,20 @@
         [x y] p
         a (gv/vec2 (dr/random x (- width (:x box)))
                    (dr/random y (- height (:y box))))]
-    (rect/rect a (tm/+ a box))))
+    (geometry/rotate-around-centroid
+     (rect/rect a (tm/+ a box))
+     (if (dr/chance 0.25)
+       (dr/random (- angle) angle)
+       0.0))))
 
-(defn place-boxes [bounds]
+(defn place-boxes [bounds angle]
   (loop [boxes [] attempts 0]
     (cond (> (count boxes) 6)
           boxes
           (> attempts 512)
           (recur [] 0)
           :else
-          (let [candidate (generate-box bounds)]
+          (let [candidate (generate-box bounds angle)]
             (if (some (fn [b] (collide/overlaps? (g/scale-size b 1.15) candidate))
                       boxes)
               (recur boxes (inc attempts))
@@ -42,7 +48,8 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:displays (place-boxes (cq/screen-rect 0.8))})
+  {:displays (place-boxes (cq/screen-rect 0.8)
+                          (* 0.025 eq/TAU))})
 
 (defn update-state [state]
   state)
