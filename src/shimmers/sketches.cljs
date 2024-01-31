@@ -65,6 +65,7 @@
    shimmers.sketches.disassociated-boxes
    shimmers.sketches.dispersion
    shimmers.sketches.displacements-inbetween
+   shimmers.sketches.display-tree
    shimmers.sketches.dithering
    shimmers.sketches.divide-by-triangle
    shimmers.sketches.divisible
