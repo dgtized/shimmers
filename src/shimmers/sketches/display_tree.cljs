@@ -25,20 +25,21 @@
     (rect/rect a (tm/+ a box))))
 
 (defn place-boxes [bounds]
-  (iterate
-   (fn [boxes]
-     (let [candidate (generate-box bounds)]
-       (if (some (fn [b] (collide/overlaps? (g/scale-size b 1.2) candidate))
-                 boxes)
-         boxes
-         (conj boxes candidate))))
-   []))
+  (loop [boxes [] attempts 0]
+    (cond (> (count boxes) 6)
+          boxes
+          (> attempts 512)
+          (recur [] 0)
+          :else
+          (let [candidate (generate-box bounds)]
+            (if (some (fn [b] (collide/overlaps? (g/scale-size b 1.15) candidate))
+                      boxes)
+              (recur boxes (inc attempts))
+              (recur (conj boxes candidate) (inc attempts)))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:displays (last
-              (take-while (fn [s] (< (count s) 7))
-                          (place-boxes (cq/screen-rect 0.8))))})
+  {:displays (place-boxes (cq/screen-rect 0.8))})
 
 (defn update-state [state]
   state)
