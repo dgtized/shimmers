@@ -63,13 +63,14 @@
    :t 0.0})
 
 (defn split [{p :p [w h] :size}]
-  (if (> w h)
-    [(rect/rect p (tm/+ p (gv/vec2 (* 0.5 w) h)))
-     (rect/rect (tm/+ p (gv/vec2 (* 0.5 w) 0))
-                (tm/+ p (gv/vec2 w h)))]
-    [(rect/rect p (tm/+ p (gv/vec2 w (* 0.5 h))))
-     (rect/rect (tm/+ p (gv/vec2 0 (* 0.5 h)))
-                (tm/+ p (gv/vec2 w h)))]))
+  (let [m (dr/gaussian 0.5 0.03)]
+    (if (> w h)
+      [(rect/rect p (tm/+ p (gv/vec2 (* m w) h)))
+       (rect/rect (tm/+ p (gv/vec2 (* m w) 0))
+                  (tm/+ p (gv/vec2 w h)))]
+      [(rect/rect p (tm/+ p (gv/vec2 w (* m h))))
+       (rect/rect (tm/+ p (gv/vec2 0 (* m h)))
+                  (tm/+ p (gv/vec2 w h)))])))
 
 (defn subdiv [xs depth]
   (cond (vector? xs)
