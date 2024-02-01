@@ -31,8 +31,10 @@
                    (dr/random y (- height (:y box))))
         angle (if (dr/chance 0.25)
                 (dr/random (- angle) angle)
-                0.0)]
-    {:box (rect/rect a (tm/+ a box))
+                0.0)
+        rect (rect/rect a (tm/+ a box))]
+    {:box rect
+     :centroid (g/centroid rect)
      :rotation angle}))
 
 (defn rotated-box [{:keys [box rotation]}]
@@ -60,23 +62,27 @@
                           (* 0.025 eq/TAU))
    :t 0.0})
 
-(defn update-state [state]
-  (update state :t + 0.01))
+(defn update-displays [displays t]
+  (map (fn [s] s)
+       displays))
+
+(defn update-state [{:keys [t] :as state}]
+  (-> state
+      (update :displays update-displays t)
+      (update :t + 0.01)))
 
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{:keys [rotation]} screen
+          :let [{[x y] :centroid :keys [rotation]} screen
                 box (rotated-box screen)
-                centroid (g/centroid box)
-                [x y] centroid
-                f (eq/unit-sin (+ (* 0.005 x t)
-                                  (* 0.2 t)
-                                  (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t)))))))]]
-    (q/fill f)
+                fade (eq/unit-sin (+ (* 0.005 x t)
+                                     (* 0.2 t)
+                                     (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t)))))))]]
+    (q/fill fade)
     (qdg/draw box)
     (when (:debug @ui-state)
-      (q/fill (- 1.0 f))
+      (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y))]
         (q/with-translation [(- x (* 0.5 (q/text-width s)))
                              (- y (* 0.5 (q/text-ascent)))]
