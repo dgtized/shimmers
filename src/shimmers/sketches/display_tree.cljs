@@ -68,12 +68,21 @@
      (rect/rect (tm/+ p (gv/vec2 (* 0.5 w) 0))
                 (tm/+ p (gv/vec2 w h)))]
     [(rect/rect p (tm/+ p (gv/vec2 w (* 0.5 h))))
-     (rect/rect (tm/+ p (gv/vec2 w (* 0.5 h)))
+     (rect/rect (tm/+ p (gv/vec2 0 (* 0.5 h)))
                 (tm/+ p (gv/vec2 w h)))]))
+
+(defn subdiv [xs depth]
+  (cond (vector? xs)
+        (let [i (dr/random-int (count xs))]
+          (update xs i subdiv (inc depth)))
+        (< depth 6)
+        (split xs)
+        :else xs))
 
 (defn subdivide [{:keys [box divisions] :as screen}]
   (if divisions
-    screen
+    (let [i (dr/random-int (count divisions))]
+      (update-in screen [:divisions i] subdiv 0))
     (assoc screen
            :divisions
            (split box))))
@@ -85,7 +94,7 @@
 
 (defn update-displays [displays _t]
   (map (fn [s]
-         (case (dr/weighted {:divide 1
+         (case (dr/weighted {:divide 4
                              :combine 1
                              :nothing 120})
            :divide (subdivide s)
@@ -103,6 +112,15 @@
                   (* 0.2 t)
                   (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t))))))))
 
+(defn rdraw [divisions {:keys [p rotation i t] :as dstate}]
+  (doseq [d divisions]
+    (if (vector? d)
+      (rdraw d dstate)
+      (let [div (geometry/rotate-around d p rotation)
+            [dx dy] (g/centroid d)]
+        (q/fill (fader i dx dy t))
+        (qdg/draw div)))))
+
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
@@ -110,11 +128,11 @@
                 rbox (rotated-box screen)
                 fade (fader i x y t)]]
     (if (seq divisions)
-      (doseq [d divisions
-              :let [div (geometry/rotate-around d (rect/bottom-left box) rotation)
-                    [dx dy] (g/centroid d)]]
-        (q/fill (fader i dx dy t))
-        (qdg/draw div))
+      (rdraw divisions
+             {:p (rect/bottom-left box)
+              :rotation rotation
+              :i i
+              :t t})
       (do
         (q/fill fade)
         (qdg/draw rbox)))
