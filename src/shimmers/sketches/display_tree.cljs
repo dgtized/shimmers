@@ -38,7 +38,7 @@
      :rotation angle}))
 
 (defn rotated-box [{:keys [box rotation]}]
-  (geometry/rotate-around-centroid box rotation))
+  (geometry/rotate-around box (rect/bottom-left box) rotation))
 
 (defn place-boxes [bounds angle]
   (loop [boxes [] attempts 0]
@@ -62,8 +62,36 @@
                           (* 0.025 eq/TAU))
    :t 0.0})
 
-(defn update-displays [displays t]
-  (map (fn [s] s)
+(defn split [{p :p [w h] :size}]
+  (if (> w h)
+    [(rect/rect p (tm/+ p (gv/vec2 (* 0.5 w) h)))
+     (rect/rect (tm/+ p (gv/vec2 (* 0.5 w) 0))
+                (tm/+ p (gv/vec2 w h)))]
+    [(rect/rect p (tm/+ p (gv/vec2 w (* 0.5 h))))
+     (rect/rect (tm/+ p (gv/vec2 w (* 0.5 h)))
+                (tm/+ p (gv/vec2 w h)))]))
+
+(defn subdivide [{:keys [box rotation divisions] :as screen}]
+  (if divisions
+    screen
+    (assoc screen
+           :divisions
+           (map (fn [d] (geometry/rotate-around d (rect/bottom-left box) rotation))
+                (split box)))))
+
+(defn combine [{:keys [divisions] :as screen}]
+  (if divisions
+    (dissoc screen :divisions)
+    screen))
+
+(defn update-displays [displays _t]
+  (map (fn [s]
+         (case (dr/weighted {:divide 1
+                             :combine 1
+                             :nothing 120})
+           :divide (subdivide s)
+           :combine (combine s)
+           :nothing s))
        displays))
 
 (defn update-state [{:keys [t] :as state}]
@@ -71,16 +99,25 @@
       (update :displays update-displays t)
       (update :t + 0.01)))
 
+(defn fader [i x y t]
+  (eq/unit-sin (+ (* 0.005 x t)
+                  (* 0.2 t)
+                  (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t))))))))
+
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{[x y] :centroid :keys [rotation]} screen
+          :let [{[x y] :centroid :keys [rotation divisions]} screen
                 box (rotated-box screen)
-                fade (eq/unit-sin (+ (* 0.005 x t)
-                                     (* 0.2 t)
-                                     (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t)))))))]]
-    (q/fill fade)
-    (qdg/draw box)
+                fade (fader i x y t)]]
+    (if (seq divisions)
+      (doseq [d divisions
+              :let [[dx dy] (g/centroid d)]]
+        (q/fill (fader i dx dy t))
+        (qdg/draw d))
+      (do
+        (q/fill fade)
+        (qdg/draw box)))
     (when (:debug @ui-state)
       (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y))]
