@@ -68,10 +68,9 @@
                 box (rotated-box screen)
                 centroid (g/centroid box)
                 [x y] centroid
-                f (eq/unit-sin (+ i
-                                  (* 0.02 x t)
-                                  (* 0.1 t)
-                                  (* 2 (Math/sin (+ i (* 0.01 y t))))))]]
+                f (eq/unit-sin (+ (* 0.005 x t)
+                                  (* 0.2 t)
+                                  (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t)))))))]]
     (q/fill f)
     (qdg/draw box)
     (q/fill (- 1.0 f))
