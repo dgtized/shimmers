@@ -63,7 +63,7 @@
    :t 0.0})
 
 (defn split [{p :p [w h] :size}]
-  (let [m (dr/gaussian 0.5 0.03)]
+  (let [m (dr/gaussian 0.5 0.05)]
     (if (> w h)
       [(rect/rect p (tm/+ p (gv/vec2 (* m w) h)))
        (rect/rect (tm/+ p (gv/vec2 (* m w) 0))
@@ -97,7 +97,7 @@
   (map (fn [s]
          (case (dr/weighted {:divide 16
                              :combine 2
-                             :nothing 512})
+                             :nothing 2048})
            :divide (subdivide s)
            :combine (combine s)
            :nothing s))
@@ -113,13 +113,13 @@
                   (* 0.2 t)
                   (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t))))))))
 
-(defn rdraw [divisions {:keys [p rotation i t] :as dstate}]
+(defn rdraw [divisions {:keys [depth p rotation i t] :as dstate}]
   (doseq [d divisions]
     (if (vector? d)
-      (rdraw d dstate)
+      (rdraw d (update dstate :depth inc))
       (let [div (geometry/rotate-around d p rotation)
             [dx dy] (g/centroid d)]
-        (q/fill (fader i dx dy t))
+        (q/fill (fader i dx dy (* t (/ 1 (Math/pow tm/PHI depth)))))
         (qdg/draw div)))))
 
 (defn draw [{:keys [displays t]}]
@@ -130,7 +130,8 @@
                 fade (fader i x y t)]]
     (if (seq divisions)
       (rdraw divisions
-             {:p (rect/bottom-left box)
+             {:depth 0
+              :p (rect/bottom-left box)
               :rotation rotation
               :i i
               :t t})
