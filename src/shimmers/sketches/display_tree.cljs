@@ -16,6 +16,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state (ctrl/state {:debug false}))
+
 (defn generate-box [{p :p [width height] :size} angle]
   (let [[w h] (dr/weighted {(gv/vec2 4 3) 2
                             (gv/vec2 5 4) 2
@@ -73,21 +75,24 @@
                                   (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t)))))))]]
     (q/fill f)
     (qdg/draw box)
-    (q/fill (- 1.0 f))
-    (let [s (str i "\n" (int x) "," (int y))]
-      (q/with-translation [(- x (* 0.5 (q/text-width s)))
-                           (- y (* 0.5 (q/text-ascent)))]
-        (q/with-rotation [rotation]
-          (q/text s 0 0))))))
+    (when (:debug @ui-state)
+      (q/fill (- 1.0 f))
+      (let [s (str i "\n" (int x) "," (int y))]
+        (q/with-translation [(- x (* 0.5 (q/text-width s)))
+                             (- y (* 0.5 (q/text-ascent)))]
+          (q/with-rotation [rotation]
+            (q/text s 0 0)))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div
+    [ctrl/checkbox-after ui-state "Debug" [:debug]]]])
 
 (sketch/definition display-tree
   {:created-at "2024-01-30"
