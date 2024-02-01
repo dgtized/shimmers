@@ -71,13 +71,12 @@
      (rect/rect (tm/+ p (gv/vec2 w (* 0.5 h)))
                 (tm/+ p (gv/vec2 w h)))]))
 
-(defn subdivide [{:keys [box rotation divisions] :as screen}]
+(defn subdivide [{:keys [box divisions] :as screen}]
   (if divisions
     screen
     (assoc screen
            :divisions
-           (map (fn [d] (geometry/rotate-around d (rect/bottom-left box) rotation))
-                (split box)))))
+           (split box))))
 
 (defn combine [{:keys [divisions] :as screen}]
   (if divisions
@@ -107,17 +106,18 @@
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{[x y] :centroid :keys [rotation divisions]} screen
-                box (rotated-box screen)
+          :let [{[x y] :centroid :keys [box rotation divisions]} screen
+                rbox (rotated-box screen)
                 fade (fader i x y t)]]
     (if (seq divisions)
       (doseq [d divisions
-              :let [[dx dy] (g/centroid d)]]
+              :let [div (geometry/rotate-around d (rect/bottom-left box) rotation)
+                    [dx dy] (g/centroid d)]]
         (q/fill (fader i dx dy t))
-        (qdg/draw d))
+        (qdg/draw div))
       (do
         (q/fill fade)
-        (qdg/draw box)))
+        (qdg/draw rbox)))
     (when (:debug @ui-state)
       (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y))]
