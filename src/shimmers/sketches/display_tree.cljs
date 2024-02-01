@@ -26,12 +26,15 @@
         box (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))
         [x y] p
         a (gv/vec2 (dr/random x (- width (:x box)))
-                   (dr/random y (- height (:y box))))]
-    (geometry/rotate-around-centroid
-     (rect/rect a (tm/+ a box))
-     (if (dr/chance 0.25)
-       (dr/random (- angle) angle)
-       0.0))))
+                   (dr/random y (- height (:y box))))
+        angle (if (dr/chance 0.25)
+                (dr/random (- angle) angle)
+                0.0)]
+    {:box (rect/rect a (tm/+ a box))
+     :rotation angle}))
+
+(defn rotated-box [{:keys [box rotation]}]
+  (geometry/rotate-around-centroid box rotation))
 
 (defn place-boxes [bounds angle]
   (loop [boxes [] attempts 0]
@@ -40,8 +43,11 @@
           (> attempts 512)
           (recur [] 0)
           :else
-          (let [candidate (generate-box bounds angle)]
-            (if (some (fn [b] (collide/overlaps? (g/scale-size b 1.15) candidate))
+          (let [candidate (generate-box bounds angle)
+                rbox (rotated-box candidate)]
+            (if (some (fn [b]
+                        (collide/overlaps? (g/scale-size (rotated-box b) 1.15)
+                                           rbox))
                       boxes)
               (recur boxes (inc attempts))
               (recur (conj boxes candidate) (inc attempts)))))))
@@ -58,19 +64,22 @@
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [centroid (g/centroid screen)
+          :let [{:keys [rotation]} screen
+                box (rotated-box screen)
+                centroid (g/centroid box)
                 [x y] centroid
                 f (eq/unit-sin (+ i
                                   (* 0.02 x t)
                                   (* 0.1 t)
                                   (* 2 (Math/sin (+ i (* 0.01 y t))))))]]
     (q/fill f)
-    (qdg/draw screen)
+    (qdg/draw box)
     (q/fill (- 1.0 f))
     (let [s (str i "\n" (int x) "," (int y))]
-      (q/text s
-              (- x (* 0.5 (q/text-width s)))
-              (- y (* 0.5 (q/text-ascent)))))))
+      (q/with-translation [(- x (* 0.5 (q/text-width s)))
+                           (- y (* 0.5 (q/text-ascent)))]
+        (q/with-rotation [rotation]
+          (q/text s 0 0))))))
 
 (defn page []
   [:div
