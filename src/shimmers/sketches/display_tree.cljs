@@ -95,9 +95,9 @@
 
 (defn update-displays [displays _t]
   (map (fn [s]
-         (case (dr/weighted {:divide 4
-                             :combine 1
-                             :nothing 120})
+         (case (dr/weighted {:divide 16
+                             :combine 2
+                             :nothing 512})
            :divide (subdivide s)
            :combine (combine s)
            :nothing s))
