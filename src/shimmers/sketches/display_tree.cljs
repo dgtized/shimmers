@@ -109,9 +109,9 @@
       (update :t + 0.01)))
 
 (defn fader [i x y t]
-  (eq/unit-sin (+ (* 0.005 x t)
-                  (* 0.2 t)
-                  (* 2 (eq/cube (Math/sin (+ i (* 0.005 y t))))))))
+  (eq/unit-sin (+ (* 0.01 x)
+                  (* t tm/PHI)
+                  (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI))))))))
 
 (defn rdraw [divisions {:keys [depth p rotation i t] :as dstate}]
   (doseq [d divisions]
@@ -119,7 +119,7 @@
       (rdraw d (update dstate :depth inc))
       (let [div (geometry/rotate-around d p rotation)
             [dx dy] (g/centroid d)]
-        (q/fill (fader i dx dy (* t (/ 1 (Math/pow tm/PHI depth)))))
+        (q/fill (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth)))))
         (qdg/draw div)))))
 
 (defn draw [{:keys [displays t]}]
