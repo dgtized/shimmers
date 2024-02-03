@@ -62,9 +62,14 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:displays (place-boxes (cq/screen-rect 0.8)
-                          (* 0.025 eq/TAU))
-   :t 0.0})
+  (let [displays (place-boxes (cq/screen-rect 0.8)
+                              (* 0.025 eq/TAU))]
+    {:displays displays
+     :center (tm/* (reduce (fn [a screen] (tm/+ a (g/centroid (rotated-box screen))))
+                           (gv/vec2)
+                           displays)
+                   (/ 1 (count displays)))
+     :t 0.0}))
 
 (defn create-node [display]
   {:display display
@@ -156,18 +161,24 @@
       (update :t + 0.01)))
 
 (defn fader [i x y t]
-  (eq/unit-sin (+ (* 0.01 x)
-                  (* t tm/PHI)
-                  (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI))))))))
+  (let [theta (g/heading (gv/vec2 x y))
+        ;; r (tm/mag (gv/vec2 x y))
+        ]
+    (mod (+ (eq/unit-sin (+ (* 0.01 x)
+                            (* t tm/PHI)
+                            (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI)))))))
+            ;; (eq/unit-sin (+ r (* 2 t)))
+            (eq/unit-sin (- theta (* 1.2 t))))
+         1.0)))
 
 (defn rdraw
   [{:keys [display children symbol]}
-   {:keys [depth p rotation i t] :as dstate}]
+   {:keys [depth p rotation i t center] :as dstate}]
   (if (seq children)
     (doseq [d children]
       (rdraw d (update dstate :depth inc)))
     (let [div (geometry/rotate-around display p rotation)
-          [dx dy] (g/centroid display)
+          [dx dy] (tm/- (g/centroid display) center)
           f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
       (q/fill f)
       (qdg/draw div)
@@ -175,7 +186,7 @@
         (q/fill (- 1.0 f))
         (symbol t)))))
 
-(defn draw [{:keys [displays t]}]
+(defn draw [{:keys [displays center t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
           :let [{[x y] :centroid :keys [display rotation]} screen
@@ -183,10 +194,13 @@
     (rdraw screen
            {:depth 0
             :p (rect/bottom-left display)
+            :center center
             :rotation rotation
             :i i
             :t t})
     (when (:debug @ui-state)
+      (q/fill 0.0)
+      (cq/circle center 10.0)
       (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y))]
         (q/with-translation [(- x (* 0.5 (q/text-width s)))
