@@ -21,8 +21,8 @@
 (defonce ui-state (ctrl/state {:debug false}))
 
 (defn generate-box [{p :p [width height] :size} angle]
-  (let [[w h] (dr/weighted {(gv/vec2 4 3) 2
-                            (gv/vec2 5 4) 2
+  (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
+                            (gv/vec2 5 4) 4
                             (gv/vec2 16 9) 1})
         side (dr/gaussian (/ height 5) (/ height 100))
         ratio (/ (float w) (float h))
@@ -114,7 +114,7 @@
   (let [i (dr/random-int (count displays))]
     (update displays i
             (fn [s]
-              (case (dr/weighted {:divide 32
+              (case (dr/weighted {:divide 64
                                   :combine 8
                                   :collapse 2
                                   :nothing 2048})
