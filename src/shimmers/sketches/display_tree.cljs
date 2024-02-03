@@ -15,7 +15,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.geom.polygon :as gp]))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
@@ -132,6 +133,20 @@
             (g/translate centroid)
             qdg/draw)))))
 
+(defn make-letter [bounds]
+  (let [size (g/height bounds)
+        letter (char (+ 65 (dr/rand-nth (range 26))))]
+    (fn [p rotation _t]
+      (let [box (geometry/rotate-around bounds p rotation)
+            [x y] (g/centroid box)]
+        (q/text-size (int (* size (/ 2 3))))
+        (q/stroke 0.0 0.5 0.5 1.0)
+        (q/with-translation [(- x (* 0.5 (q/text-width letter)))
+                             (+ y (* 0.4 (q/text-ascent)))]
+          (q/with-rotation [rotation]
+            (q/text letter 0 0)))
+        (q/stroke 0.0)))))
+
 (defn add-symbol
   [{:keys [children display] :as screen}]
   (cond (and (seq children) (dr/chance 0.75))
@@ -140,7 +155,9 @@
         (:symbol screen)
         screen
         :else
-        (assoc screen :symbol (make-triangle display))))
+        (assoc screen :symbol ((dr/weighted [[make-triangle 1]
+                                             [make-letter 1]])
+                               display))))
 
 (defn update-displays [displays _t]
   (let [i (dr/random-int (count displays))]
