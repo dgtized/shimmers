@@ -118,20 +118,22 @@
     (dissoc screen :children)
     screen))
 
-;; TODO: fix rotation of bounds
 (defn make-triangle [bounds]
-  (let [centroid (g/centroid bounds)
-        triangle
+  (let [triangle
         (triangle/inscribed-equilateral (gv/vec2)
                                         (* 0.3 (min (g/width bounds)
                                                     (g/height bounds)))
                                         (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))]
-    (fn [t] (-> triangle
-               (g/rotate t)
-               (g/translate centroid)
-               qdg/draw))))
+    (fn [p rotation t]
+      (let [box (geometry/rotate-around bounds p rotation)
+            centroid (g/centroid box)]
+        (-> triangle
+            (g/rotate t)
+            (g/translate centroid)
+            qdg/draw)))))
 
-(defn add-symbol [{:keys [children display] :as screen}]
+(defn add-symbol
+  [{:keys [children display] :as screen}]
   (cond (and (seq children) (dr/chance 0.75))
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-symbol))
@@ -184,7 +186,7 @@
       (qdg/draw div)
       (when symbol
         (q/fill (- 1.0 f))
-        (symbol t)))))
+        (symbol p rotation t)))))
 
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
