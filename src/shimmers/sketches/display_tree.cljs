@@ -67,6 +67,11 @@
                           (* 0.025 eq/TAU))
    :t 0.0})
 
+(defn create-node [display]
+  {:display display
+   ;; :children []
+   })
+
 (defn split [{p :p [w h] :size}]
   (let [m (dr/gaussian 0.5 0.05)]
     (if (> w h)
@@ -77,39 +82,35 @@
        (rect/rect (tm/+ p (gv/vec2 0 (* m h)))
                   (tm/+ p (gv/vec2 w h)))])))
 
-(defn subdiv [xs depth]
-  (cond (vector? xs)
-        (let [i (dr/random-int (count xs))]
-          (update xs i subdiv (inc depth)))
-        (< depth 6)
-        (split xs)
-        :else xs))
+(defn subdiv [{:keys [display children] :as node} depth]
+  (cond (seq children)
+        (let [i (dr/random-int (count children))]
+          (update-in node [:children i] subdiv (inc depth)))
+        (< depth 8)
+        (assoc node :children (mapv create-node (split display)))
+        :else node))
 
 (defn subdivide [{:keys [display children] :as screen}]
-  (if children
+  (if (seq children)
     (let [i (dr/random-int (count children))]
       (update-in screen [:children i] subdiv 0))
     (assoc screen
            :children
-           (split display))))
+           (mapv create-node (split display)))))
 
-(defn combine [{:keys [children] :as screen}]
-  (letfn [(comb [xs]
-            (if (vector? xs)
-              (if-let [children (->> xs
-                                     (map-indexed vector)
-                                     (keep (fn [[i x]] (when (vector? x) i)))
-                                     seq)]
-                (let [childi (dr/rand-nth children)]
-                  (update xs childi comb))
-                [(mgr/polygon->rectangle (reduce lines/join-polygons xs))])
-              xs))]
-    (if children
-      (update screen :children comb)
-      screen)))
+(defn combine [{:keys [children] :as node}]
+  (if (seq children)
+    (if-let [index (->> children
+                        (map-indexed vector)
+                        (keep (fn [[i n]] (when (seq (:children n)) i)))
+                        seq)]
+      (let [i (dr/rand-nth index)]
+        (update-in node [:children i] combine))
+      (dissoc node :children))
+    node))
 
 (defn collapse [{:keys [children] :as screen}]
-  (if children
+  (if (seq children)
     (dissoc screen :children)
     screen))
 
@@ -136,31 +137,26 @@
                   (* t tm/PHI)
                   (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI))))))))
 
-(defn rdraw [children {:keys [depth p rotation i t] :as dstate}]
-  (doseq [d children]
-    (if (vector? d)
-      (rdraw d (update dstate :depth inc))
-      (let [div (geometry/rotate-around d p rotation)
-            [dx dy] (g/centroid d)]
-        (q/fill (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth)))))
-        (qdg/draw div)))))
+(defn rdraw [{:keys [display children]} {:keys [depth p rotation i t] :as dstate}]
+  (if (seq children)
+    (doseq [d children]
+      (rdraw d (update dstate :depth inc)))
+    (let [div (geometry/rotate-around display p rotation)
+          [dx dy] (g/centroid display)]
+      (q/fill (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth)))))
+      (qdg/draw div))))
 
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{[x y] :centroid :keys [display rotation children]} screen
-                rbox (rotated-box screen)
+          :let [{[x y] :centroid :keys [display rotation]} screen
                 fade (fader i x y t)]]
-    (if (seq children)
-      (rdraw children
-             {:depth 0
-              :p (rect/bottom-left display)
-              :rotation rotation
-              :i i
-              :t t})
-      (do
-        (q/fill fade)
-        (qdg/draw rbox)))
+    (rdraw screen
+           {:depth 0
+            :p (rect/bottom-left display)
+            :rotation rotation
+            :i i
+            :t t})
     (when (:debug @ui-state)
       (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y))]
