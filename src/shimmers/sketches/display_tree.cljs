@@ -20,7 +20,7 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn generate-box [{p :p [width height] :size} angle]
+(defn generate-screen [{p :p [width height] :size} angle]
   (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
                             (gv/vec2 5 4) 4
                             (gv/vec2 16 9) 1})
@@ -34,13 +34,14 @@
         angle (if (dr/chance 0.25)
                 (dr/random (- angle) angle)
                 0.0)
-        rect (rect/rect a (tm/+ a box))]
-    {:box rect
-     :centroid (g/centroid rect)
+        display (rect/rect a (tm/+ a box))]
+    {:display display
+     :centroid (g/centroid display)
      :rotation angle}))
 
-(defn rotated-box [{:keys [box rotation]}]
-  (geometry/rotate-around box (rect/bottom-left box) rotation))
+(defn rotated-box [{:keys [display rotation]}]
+  (geometry/rotate-around display (rect/bottom-left display)
+                          rotation))
 
 (defn place-boxes [bounds angle]
   (loop [boxes [] attempts 0]
@@ -49,11 +50,13 @@
           (> attempts 512)
           (recur [] 0)
           :else
-          (let [candidate (generate-box bounds angle)
+          (let [candidate (generate-screen bounds angle)
                 rbox (rotated-box candidate)]
-            (if (some (fn [b]
-                        (collide/overlaps? (g/scale-size (rotated-box b) 1.15)
-                                           rbox))
+            (if (some (fn [screen]
+                        (-> screen
+                            rotated-box
+                            (g/scale-size 1.15)
+                            (collide/overlaps? rbox)))
                       boxes)
               (recur boxes (inc attempts))
               (recur (conj boxes candidate) (inc attempts)))))))
@@ -82,13 +85,13 @@
         (split xs)
         :else xs))
 
-(defn subdivide [{:keys [box divisions] :as screen}]
+(defn subdivide [{:keys [display divisions] :as screen}]
   (if divisions
     (let [i (dr/random-int (count divisions))]
       (update-in screen [:divisions i] subdiv 0))
     (assoc screen
            :divisions
-           (split box))))
+           (split display))))
 
 (defn combine [{:keys [divisions] :as screen}]
   (letfn [(comb [xs]
@@ -145,13 +148,13 @@
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{[x y] :centroid :keys [box rotation divisions]} screen
+          :let [{[x y] :centroid :keys [display rotation divisions]} screen
                 rbox (rotated-box screen)
                 fade (fader i x y t)]]
     (if (seq divisions)
       (rdraw divisions
              {:depth 0
-              :p (rect/bottom-left box)
+              :p (rect/bottom-left display)
               :rotation rotation
               :i i
               :t t})
