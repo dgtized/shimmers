@@ -85,15 +85,15 @@
         (split xs)
         :else xs))
 
-(defn subdivide [{:keys [display divisions] :as screen}]
-  (if divisions
-    (let [i (dr/random-int (count divisions))]
-      (update-in screen [:divisions i] subdiv 0))
+(defn subdivide [{:keys [display children] :as screen}]
+  (if children
+    (let [i (dr/random-int (count children))]
+      (update-in screen [:children i] subdiv 0))
     (assoc screen
-           :divisions
+           :children
            (split display))))
 
-(defn combine [{:keys [divisions] :as screen}]
+(defn combine [{:keys [children] :as screen}]
   (letfn [(comb [xs]
             (if (vector? xs)
               (if-let [children (->> xs
@@ -104,13 +104,13 @@
                   (update xs childi comb))
                 [(mgr/polygon->rectangle (reduce lines/join-polygons xs))])
               xs))]
-    (if divisions
-      (update screen :divisions comb)
+    (if children
+      (update screen :children comb)
       screen)))
 
-(defn collapse [{:keys [divisions] :as screen}]
-  (if divisions
-    (dissoc screen :divisions)
+(defn collapse [{:keys [children] :as screen}]
+  (if children
+    (dissoc screen :children)
     screen))
 
 (defn update-displays [displays _t]
@@ -136,8 +136,8 @@
                   (* t tm/PHI)
                   (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI))))))))
 
-(defn rdraw [divisions {:keys [depth p rotation i t] :as dstate}]
-  (doseq [d divisions]
+(defn rdraw [children {:keys [depth p rotation i t] :as dstate}]
+  (doseq [d children]
     (if (vector? d)
       (rdraw d (update dstate :depth inc))
       (let [div (geometry/rotate-around d p rotation)
@@ -148,11 +148,11 @@
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
   (doseq [[i screen] (map-indexed vector displays)
-          :let [{[x y] :centroid :keys [display rotation divisions]} screen
+          :let [{[x y] :centroid :keys [display rotation children]} screen
                 rbox (rotated-box screen)
                 fade (fader i x y t)]]
-    (if (seq divisions)
-      (rdraw divisions
+    (if (seq children)
+      (rdraw children
              {:depth 0
               :p (rect/bottom-left display)
               :rotation rotation
