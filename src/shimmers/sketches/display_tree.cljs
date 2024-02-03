@@ -2,7 +2,6 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [shimmers.algorithm.lines :as lines]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
@@ -11,7 +10,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
-   [shimmers.math.geometry.rectangle :as mgr]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -114,17 +113,41 @@
     (dissoc screen :children)
     screen))
 
+;; TODO: fix rotation of bounds
+(defn make-triangle [bounds]
+  (let [centroid (g/centroid bounds)
+        triangle
+        (triangle/inscribed-equilateral (gv/vec2)
+                                        (* 0.3 (min (g/width bounds)
+                                                    (g/height bounds)))
+                                        (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))]
+    (fn [t] (-> triangle
+               (g/rotate t)
+               (g/translate centroid)
+               qdg/draw))))
+
+(defn add-symbol [{:keys [children display] :as screen}]
+  (cond (and (seq children) (dr/chance 0.75))
+        (let [i (dr/random-int (count children))]
+          (update-in screen [:children i] add-symbol))
+        (:symbol screen)
+        screen
+        :else
+        (assoc screen :symbol (make-triangle display))))
+
 (defn update-displays [displays _t]
   (let [i (dr/random-int (count displays))]
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 64
+                                  :add-symbol 16
                                   :combine 8
                                   :collapse 2
                                   :nothing 2048})
                 :divide (subdivide s)
                 :combine (combine s)
                 :collapse (collapse s)
+                :add-symbol (add-symbol s)
                 :nothing s)))))
 
 (defn update-state [{:keys [t] :as state}]
@@ -137,14 +160,20 @@
                   (* t tm/PHI)
                   (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI))))))))
 
-(defn rdraw [{:keys [display children]} {:keys [depth p rotation i t] :as dstate}]
+(defn rdraw
+  [{:keys [display children symbol]}
+   {:keys [depth p rotation i t] :as dstate}]
   (if (seq children)
     (doseq [d children]
       (rdraw d (update dstate :depth inc)))
     (let [div (geometry/rotate-around display p rotation)
-          [dx dy] (g/centroid display)]
-      (q/fill (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth)))))
-      (qdg/draw div))))
+          [dx dy] (g/centroid display)
+          f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
+      (q/fill f)
+      (qdg/draw div)
+      (when symbol
+        (q/fill (- 1.0 f))
+        (symbol t)))))
 
 (defn draw [{:keys [displays t]}]
   (q/background 1.0)
