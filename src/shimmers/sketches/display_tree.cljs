@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
@@ -10,6 +11,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.rectangle :as mgr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -88,20 +90,38 @@
            :divisions
            (split box))))
 
+(defn combine [{:keys [divisions] :as screen}]
+  (letfn [(comb [xs]
+            (if (vector? xs)
+              (if-let [children (->> xs
+                                     (map-indexed vector)
+                                     (keep (fn [[i x]] (when (vector? x) i)))
+                                     seq)]
+                (let [childi (dr/rand-nth children)]
+                  (update xs childi comb))
+                [(mgr/polygon->rectangle (reduce lines/join-polygons xs))])
+              xs))]
+    (if divisions
+      (update screen :divisions comb)
+      screen)))
+
 (defn collapse [{:keys [divisions] :as screen}]
   (if divisions
     (dissoc screen :divisions)
     screen))
 
 (defn update-displays [displays _t]
-  (map (fn [s]
-         (case (dr/weighted {:divide 16
-                             :collapse 2
-                             :nothing 2048})
-           :divide (subdivide s)
-           :collapse (collapse s)
-           :nothing s))
-       displays))
+  (let [i (dr/random-int (count displays))]
+    (update displays i
+            (fn [s]
+              (case (dr/weighted {:divide 32
+                                  :combine 8
+                                  :collapse 2
+                                  :nothing 2048})
+                :divide (subdivide s)
+                :combine (combine s)
+                :collapse (collapse s)
+                :nothing s)))))
 
 (defn update-state [{:keys [t] :as state}]
   (-> state
