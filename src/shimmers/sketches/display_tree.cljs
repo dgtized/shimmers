@@ -88,7 +88,7 @@
            :divisions
            (split box))))
 
-(defn combine [{:keys [divisions] :as screen}]
+(defn collapse [{:keys [divisions] :as screen}]
   (if divisions
     (dissoc screen :divisions)
     screen))
@@ -96,10 +96,10 @@
 (defn update-displays [displays _t]
   (map (fn [s]
          (case (dr/weighted {:divide 16
-                             :combine 2
+                             :collapse 2
                              :nothing 2048})
            :divide (subdivide s)
-           :combine (combine s)
+           :collapse (collapse s)
            :nothing s))
        displays))
 
