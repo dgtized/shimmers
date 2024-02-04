@@ -15,8 +15,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.polygon :as gp]))
+   [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:debug false}))
 
