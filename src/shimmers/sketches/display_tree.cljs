@@ -188,10 +188,10 @@
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 64
-                                  :add-symbol 16
+                                  :add-symbol 64
                                   :combine 8
                                   :collapse 2
-                                  :nothing 2048})
+                                  :nothing 4096})
                 :divide (subdivide s)
                 :combine (combine s)
                 :collapse (collapse s)
