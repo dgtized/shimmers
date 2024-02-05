@@ -146,12 +146,14 @@
         (triangle/inscribed-equilateral (gv/vec2)
                                         (* 0.3 (min (g/width bounds)
                                                     (g/height bounds)))
-                                        (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))]
+                                        (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))
+        rate (* (dr/rand-nth [1 -1])
+                (dr/gaussian 1.0 0.1))]
     (fn [p rotation t]
       (let [box (geometry/rotate-around bounds p rotation)
             centroid (g/centroid box)]
         (-> triangle
-            (g/rotate t)
+            (g/rotate (* rate t))
             (g/translate centroid)
             qdg/draw)))))
 
