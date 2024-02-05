@@ -2,6 +2,7 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
@@ -76,15 +77,37 @@
    ;; :children []
    })
 
-(defn split [{p :p [w h] :size}]
-  (let [m (dr/gaussian 0.5 0.05)]
-    (if (> w h)
-      [(rect/rect p (tm/+ p (gv/vec2 (* m w) h)))
-       (rect/rect (tm/+ p (gv/vec2 (* m w) 0))
-                  (tm/+ p (gv/vec2 w h)))]
-      [(rect/rect p (tm/+ p (gv/vec2 w (* m h))))
-       (rect/rect (tm/+ p (gv/vec2 0 (* m h)))
-                  (tm/+ p (gv/vec2 w h)))])))
+(defn cut-split
+  ([quad] (cut-split quad (dr/gaussian 0.5 0.05)))
+  ([{p :p [w h] :size} m]
+   (if (> w h)
+     [(rect/rect p (tm/+ p (gv/vec2 (* m w) h)))
+      (rect/rect (tm/+ p (gv/vec2 (* m w) 0))
+                 (tm/+ p (gv/vec2 w h)))]
+     [(rect/rect p (tm/+ p (gv/vec2 w (* m h))))
+      (rect/rect (tm/+ p (gv/vec2 0 (* m h)))
+                 (tm/+ p (gv/vec2 w h)))])))
+
+(defn point-quad [{p :p [w h] :size :as quad} point]
+  (if (g/contains-point? quad point)
+    (let [[x y] (tm/- point p)]
+      (map (fn [r] (g/translate r p))
+           [(rect/rect 0 0 x y)
+            (rect/rect x 0 (- w x) y)
+            (rect/rect 0 y x (- h y))
+            (rect/rect x y (- w x) (- h y))]))
+    quad))
+
+(comment
+  (point-quad (rect/rect 10 10 10 10) (gv/vec2 15 15))
+  (point-quad (rect/rect 10 10 10 10) (gv/vec2 25 15)))
+
+(defn split [quad]
+  (case (dr/weighted {:cut-split 4
+                      :point-quad 1})
+    :cut-split (cut-split quad)
+    :point-quad (point-quad quad
+                            (rp/sample-point-at quad 0.5 0.5))))
 
 (defn subdiv [{:keys [display children] :as node} depth]
   (cond (seq children)
