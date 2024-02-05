@@ -24,13 +24,13 @@
   (let [ratio (/ (float w) (float h))]
     (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))))
 
-(defn generate-screen [{p :p [width height] :size} angle-mag]
-  (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
-                            (gv/vec2 5 4) 4
-                            (gv/vec2 16 9) 1})
-        inch (/ height 90)
-        side (* inch (dr/rand-nth [19 20 21 23]))
-        box (box-ratio [w h] side)
+(defn generate-display
+  [{p :p [width height] :size}
+   {:keys [dims size]}
+   angle-mag]
+  (let [inch (/ height 90)
+        side (* inch size)
+        box (box-ratio dims side)
         a (tm/+ p (gv/vec2 (dr/random 0 (- width (:x box)))
                            (dr/random 0 (- height (:y box)))))
         angle (if (dr/chance 0.25)
@@ -40,6 +40,15 @@
     {:display display
      :centroid (g/centroid display)
      :rotation angle}))
+
+(defn generate-screen [bounds angle-mag]
+  (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
+                            (gv/vec2 5 4) 4
+                            (gv/vec2 16 9) 1})]
+    (generate-display bounds
+                      {:dims [w h]
+                       :size (dr/rand-nth [19 20 21 23])}
+                      angle-mag)))
 
 (defn rotated-box [{:keys [display rotation]}]
   (geometry/rotate-around display (rect/bottom-left display)
