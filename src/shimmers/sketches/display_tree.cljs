@@ -136,7 +136,7 @@
   (cond (seq children)
         (let [i (dr/random-int (count children))]
           (update-in node [:children i] subdiv (inc depth)))
-        (< depth 8)
+        (< depth 6)
         (assoc node :children (mapv create-node (split display)))
         :else node))
 
@@ -210,8 +210,8 @@
   (let [i (dr/random-int (count displays))]
     (update displays i
             (fn [s]
-              (case (dr/weighted {:divide 64
-                                  :add-symbol 64
+              (case (dr/weighted {:divide 32
+                                  :add-symbol 32
                                   :combine 8
                                   :collapse 2
                                   :nothing 4096})
