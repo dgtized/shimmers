@@ -28,7 +28,7 @@
   [{p :p [width height] :size}
    {:keys [dims size]}
    angle-mag]
-  (let [inch (/ height 90)
+  (let [inch (/ (q/height) 70)
         side (* inch size)
         box (box-ratio dims side)
         a (tm/+ p (gv/vec2 (dr/random 0 (- width (:x box)))
@@ -64,13 +64,13 @@
    {:dims [16 10] :size 15}])
 
 (defn place-boxes [bounds angle]
-  (loop [displays display-dims
+  (loop [displays (dr/shuffle display-dims)
          boxes []
          attempts 0]
     (cond (empty? displays)
           boxes
           (> attempts 512)
-          (recur display-dims [] 0)
+          (place-boxes bounds angle)
           :else
           (let [candidate (generate-display bounds (first displays) angle)
                 rbox (rotated-box candidate)]
@@ -85,7 +85,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [displays (place-boxes (cq/screen-rect 0.8)
+  (let [displays (place-boxes (cq/screen-rect 0.9)
                               (* 0.025 eq/TAU))]
     {:displays displays
      :center (tm/* (reduce (fn [a screen] (tm/+ a (g/centroid (rotated-box screen))))
