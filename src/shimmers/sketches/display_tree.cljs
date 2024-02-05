@@ -54,14 +54,25 @@
   (geometry/rotate-around display (rect/bottom-left display)
                           rotation))
 
+(def display-dims
+  [{:dims [5 4] :size 19}
+   {:dims [5 4] :size 19}
+   {:dims [16 9] :size 19}
+   {:dims [16 9] :size 19}
+   {:dims [16 10] :size 23}
+   {:dims [16 10] :size 23}
+   {:dims [16 10] :size 15}])
+
 (defn place-boxes [bounds angle]
-  (loop [boxes [] attempts 0]
-    (cond (> (count boxes) 6)
+  (loop [displays display-dims
+         boxes []
+         attempts 0]
+    (cond (empty? displays)
           boxes
           (> attempts 512)
-          (recur [] 0)
+          (recur display-dims [] 0)
           :else
-          (let [candidate (generate-screen bounds angle)
+          (let [candidate (generate-display bounds (first displays) angle)
                 rbox (rotated-box candidate)]
             (if (some (fn [screen]
                         (-> screen
@@ -69,8 +80,8 @@
                             (g/scale-size 1.15)
                             (collide/overlaps? rbox)))
                       boxes)
-              (recur boxes (inc attempts))
-              (recur (conj boxes candidate) (inc attempts)))))))
+              (recur displays boxes (inc attempts))
+              (recur (rest displays) (conj boxes candidate) (inc attempts)))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
