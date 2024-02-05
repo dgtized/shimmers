@@ -31,9 +31,8 @@
         inch (/ height 90)
         side (* inch (dr/rand-nth [19 20 21 23]))
         box (box-ratio [w h] side)
-        [x y] p
-        a (gv/vec2 (dr/random x (- width (:x box)))
-                   (dr/random y (- height (:y box))))
+        a (tm/+ p (gv/vec2 (dr/random 0 (- width (:x box)))
+                           (dr/random 0 (- height (:y box)))))
         angle (if (dr/chance 0.25)
                 (dr/random (- angle-mag) angle-mag)
                 0.0)
