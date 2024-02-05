@@ -20,7 +20,7 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn generate-screen [{p :p [width height] :size} angle]
+(defn generate-screen [{p :p [width height] :size} angle-mag]
   (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
                             (gv/vec2 5 4) 4
                             (gv/vec2 16 9) 1})
@@ -32,7 +32,7 @@
         a (gv/vec2 (dr/random x (- width (:x box)))
                    (dr/random y (- height (:y box))))
         angle (if (dr/chance 0.25)
-                (dr/random (- angle) angle)
+                (dr/random (- angle-mag) angle-mag)
                 0.0)
         display (rect/rect a (tm/+ a box))]
     {:display display
