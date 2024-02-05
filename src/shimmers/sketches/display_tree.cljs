@@ -20,14 +20,17 @@
 
 (defonce ui-state (ctrl/state {:debug false}))
 
+(defn box-ratio [[w h] side]
+  (let [ratio (/ (float w) (float h))]
+    (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))))
+
 (defn generate-screen [{p :p [width height] :size} angle-mag]
   (let [[w h] (dr/weighted {(gv/vec2 4 3) 4
                             (gv/vec2 5 4) 4
                             (gv/vec2 16 9) 1})
-        side (dr/gaussian (/ height 5) (/ height 100))
-        ratio (/ (float w) (float h))
-        ;; _ (println side ratio)
-        box (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))
+        inch (/ height 90)
+        side (* inch (dr/rand-nth [19 20 21 23]))
+        box (box-ratio [w h] side)
         [x y] p
         a (gv/vec2 (dr/random x (- width (:x box)))
                    (dr/random y (- height (:y box))))
