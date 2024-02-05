@@ -26,7 +26,7 @@
 
 (defn generate-display
   [{p :p [width height] :size}
-   {:keys [dims size]}
+   {:keys [dims size] :as info}
    angle-mag]
   (let [inch (/ (q/height) 70)
         side (* inch size)
@@ -39,6 +39,7 @@
         display (rect/rect a (tm/+ a box))]
     {:display display
      :centroid (g/centroid display)
+     :info info
      :rotation angle}))
 
 (defn generate-screen [bounds angle-mag]
@@ -57,11 +58,11 @@
 (def display-dims
   [{:dims [5 4] :size 19}
    {:dims [5 4] :size 19}
-   {:dims [16 9] :size 19}
-   {:dims [16 9] :size 19}
+   {:dims [16 9] :size 21}
+   {:dims [16 9] :size 21}
    {:dims [16 10] :size 23}
    {:dims [16 10] :size 23}
-   {:dims [16 10] :size 15}])
+   {:dims [16 10] :size 14}])
 
 (defn place-boxes [bounds angle]
   (loop [displays (dr/shuffle display-dims)
@@ -264,12 +265,13 @@
             :i i
             :t t})
     (when (:debug @ui-state)
+      (q/text-size 12)
       (q/fill 0.0)
       (cq/circle center 10.0)
       (q/fill (- 1.0 fade))
-      (let [s (str i "\n" (int x) "," (int y))]
+      (let [s (str i "\n" (int x) "," (int y) "\n" (str (:info screen)))]
         (q/with-translation [(- x (* 0.5 (q/text-width s)))
-                             (- y (* 0.5 (q/text-ascent)))]
+                             (- y (* 0.5 (* 3 (q/text-ascent))))]
           (q/with-rotation [rotation]
             (q/text s 0 0)))))))
 
