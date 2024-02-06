@@ -202,9 +202,9 @@
         (:symbol screen)
         screen
         :else
-        (assoc screen :symbol ((dr/weighted [[make-triangle 1]
-                                             [make-letter 1]])
-                               display))))
+        (let [mk-sym (dr/weighted [[make-triangle 1]
+                                   [make-letter 1]])]
+          (assoc screen :symbol (mk-sym display)))))
 
 (defn update-displays [displays _t]
   (let [i (dr/random-int (count displays))]
