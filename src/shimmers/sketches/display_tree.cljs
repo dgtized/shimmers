@@ -166,18 +166,25 @@
     screen))
 
 (defn make-triangle [bounds]
-  (let [triangle
+  (let [circle (dr/chance 0.5)
+        limit (min (g/width bounds) (g/height bounds))
+        s (if circle (dr/random 0.2 0.8) 0)
+        d (* s (* 0.3 limit))
+        triangle
         (triangle/inscribed-equilateral (gv/vec2)
-                                        (* 0.3 (min (g/width bounds)
-                                                    (g/height bounds)))
+                                        (* (- 1.0 s) 0.3 limit)
                                         (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))
         rate (* (dr/rand-nth [1 -1])
-                (dr/gaussian 1.0 0.1))]
+                (dr/gaussian 1.0 0.1))
+        rate2 (* (dr/rand-nth [1 -1])
+                 (dr/gaussian 1.25 0.2))]
     (fn [p rotation t]
       (let [box (geometry/rotate-around bounds p rotation)
             centroid (g/centroid box)]
         (-> triangle
             (g/rotate (* rate t))
+            (g/translate (gv/vec2 d 0))
+            (g/rotate (* rate2 t))
             (g/translate centroid)
             qdg/draw)))))
 
