@@ -94,6 +94,7 @@
                            (gv/vec2)
                            displays)
                    (/ 1 (count displays)))
+     :mode :divisions
      :t 0.0}))
 
 (defn create-node [display]
@@ -228,10 +229,11 @@
                 :add-symbol (add-symbol s)
                 :nothing s)))))
 
-(defn update-state [{:keys [t] :as state}]
-  (-> state
-      (update :displays update-displays t)
-      (update :t + 0.01)))
+(defn update-state [{:keys [mode t] :as state}]
+  (let [df ({:divisions update-displays} mode)]
+    (-> state
+        (update :displays df t)
+        (update :t + 0.01))))
 
 (defn fader [i x y t]
   (let [theta (g/heading (gv/vec2 x y))
