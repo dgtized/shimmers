@@ -86,6 +86,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/text-align :center :center)
   (let [displays (place-boxes (cq/screen-rect 0.9)
                               (* 0.025 eq/TAU))]
     {:displays displays
@@ -188,10 +189,9 @@
             [x y] (g/centroid box)]
         (q/text-size (int (* size (/ 2 3))))
         (q/stroke 0.0 0.5 0.5 1.0)
-        (q/with-translation [(- x (* 0.5 (q/text-width letter)))
-                             (+ y (* 0.4 (q/text-ascent)))]
+        (q/with-translation [x y]
           (q/with-rotation [rotation]
-            (q/text letter 0 0)))
+            (q/text-char letter 0 0)))
         (q/stroke 0.0)))))
 
 (defn add-symbol
@@ -270,8 +270,7 @@
       (cq/circle center 10.0)
       (q/fill (- 1.0 fade))
       (let [s (str i "\n" (int x) "," (int y) "\n" (str (:info screen)))]
-        (q/with-translation [(- x (* 0.5 (q/text-width s)))
-                             (- y (* 0.5 (* 3 (q/text-ascent))))]
+        (q/with-translation [x y]
           (q/with-rotation [rotation]
             (q/text s 0 0)))))))
 
