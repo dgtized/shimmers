@@ -175,6 +175,7 @@
    shimmers.sketches.prophecies
    shimmers.sketches.pulsing-grid
    shimmers.sketches.punchcard
+   shimmers.sketches.quadtrace
    shimmers.sketches.quadtree
    shimmers.sketches.radar
    shimmers.sketches.radial-breaks
