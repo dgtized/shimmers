@@ -202,16 +202,28 @@
             (q/text-char letter 0 0)))
         (q/stroke 0.0)))))
 
+(defn make-rect-growth [bounds]
+  (let [period (dr/rand-nth [2.0 4.0 6.0 8.0])
+        scale (if (dr/chance 0.5)
+                (fn [t] (mod (/ t period) 1.0))
+                (fn [t] (mod (/ (- t) period) 1.0)))]
+    (fn [p rotation t]
+      (-> bounds
+          (geometry/rotate-around p rotation)
+          (g/scale-size (scale t))
+          (qdg/draw)))))
+
 (defn add-animation
   [{:keys [children display] :as screen}]
-  (cond (and (seq children) (dr/chance 0.75))
+  (cond (seq children)
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-animation))
         (:animation screen)
         screen
         :else
         (let [mk-anim (dr/weighted [[make-triangle 1]
-                                    [make-letter 1]])]
+                                    [make-letter 1]
+                                    [make-rect-growth 1]])]
           (assoc screen :animation (mk-anim display)))))
 
 (defn update-displays [displays _t]
