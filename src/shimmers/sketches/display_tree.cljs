@@ -225,14 +225,16 @@
                                     [make-rect-growth 1]])]
           (assoc screen :animation (mk-anim display)))))
 
-(defn update-displays [displays _t]
-  (let [i (dr/random-int (count displays))]
+(defn update-displays [displays t]
+  (let [i (dr/random-int (count displays))
+        ramp (Math/pow 2 (* 4 (tm/smoothstep* 0.8 1.0 (mod (/ t 50.0) 1.0))))]
+    (println ramp)
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 32
                                   :add-animation 48
-                                  :combine 8
-                                  :collapse 2
+                                  :combine (* 8 ramp)
+                                  :collapse (* 2 ramp)
                                   :nothing 4096})
                 :divide (subdivide s)
                 :combine (combine s)
