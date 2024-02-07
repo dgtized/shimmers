@@ -253,7 +253,7 @@
     (mod (+ (eq/unit-sin (+ (* 0.01 x)
                             (* t tm/PHI)
                             (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI)))))))
-            ;; (eq/unit-sin (+ r (* 2 t)))
+            ;; (eq/unit-sin (+ (* tm/PHI r) t))
             (eq/unit-sin (- theta (* 1.2 t))))
          1.0)))
 
