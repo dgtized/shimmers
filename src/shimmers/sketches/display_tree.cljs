@@ -196,7 +196,7 @@
       (let [box (geometry/rotate-around bounds p rotation)
             [x y] (g/centroid box)]
         (q/text-size (int (* size (/ 2 3))))
-        (q/with-translation [x y]
+        (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
           (q/with-rotation [rotation]
             (q/text-char letter 0 0)))
         (q/stroke 0.0)))))
