@@ -203,9 +203,9 @@
 
 (defn make-rect-growth [bounds]
   (let [period (dr/rand-nth [2.0 4.0 6.0 8.0])
-        scale (if (dr/chance 0.5)
-                (fn [t] (mod (/ t period) 1.0))
-                (fn [t] (mod (/ (- t) period) 1.0)))]
+        scale (dr/weighted [[(fn [t] (mod (/ t period) 1.0)) 1]
+                            [(fn [t] (mod (/ (- t) period) 1.0)) 1]
+                            [(fn [t] (eq/unit-sin (/ t period))) 1]])]
     (fn [p rotation t]
       (-> bounds
           (geometry/rotate-around p rotation)
