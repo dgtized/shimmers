@@ -46,17 +46,20 @@
         (update :tree remove-point)
         (update :tree g/add-point p cursor))))
 
-(defn draw [{:keys [t tree]}]
+(defn breadth-seq [tree]
+  (sort-by (fn [n] (:depth (meta n)))
+           (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
+                     (fn [t] (map #(vary-meta % assoc :depth (inc (:depth (meta t))))
+                                 (remove nil? (spatialtree/get-children t))))
+                     (vary-meta tree assoc :depth 0))))
+
+(defn draw [{:keys [tree]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.66)
   (q/stroke 0.0 0.1)
   (q/fill 0.2 0.1)
-  (doseq [node (sort-by (fn [n] (:depth (meta n)))
-                        (tree-seq (fn [t] (not-empty (spatialtree/get-children t)))
-                                  (fn [t] (map #(vary-meta % assoc :depth (inc (:depth (meta t))))
-                                              (remove nil? (spatialtree/get-children t))))
-                                  (vary-meta tree assoc :depth 0)))]
+  (doseq [node (breadth-seq tree)]
     (cq/rectangle (g/bounds node))))
 
 (defn page []
