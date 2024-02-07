@@ -250,12 +250,14 @@
 (defn fader [i x y t]
   (let [theta (g/heading (gv/vec2 x y))
         ;; r (tm/mag (gv/vec2 x y))
-        ]
-    (mod (+ (eq/unit-sin (+ (* 0.01 x)
-                            (* t tm/PHI)
-                            (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI)))))))
+        wobble
+        (eq/unit-sin (+ (* 0.01 x)
+                        (* 0.5 t tm/PHI)
+                        (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t tm/PHI)))))))
+        orientation (eq/unit-sin (- theta (* 1.2 t)))]
+    (mod (+ (* 0.75 wobble)
             ;; (eq/unit-sin (+ (* tm/PHI r) t))
-            (eq/unit-sin (- theta (* 1.2 t))))
+            (* 0.5 orientation))
          1.0)))
 
 (defn rdraw
