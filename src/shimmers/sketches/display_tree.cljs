@@ -227,8 +227,7 @@
 
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
-        ramp (Math/pow 2 (* 4 (tm/smoothstep* 0.8 1.0 (mod (/ t 50.0) 1.0))))]
-    (println ramp)
+        ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))]
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 32
