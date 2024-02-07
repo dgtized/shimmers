@@ -231,7 +231,7 @@
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 32
-                                  :add-animation 32
+                                  :add-animation 48
                                   :combine 8
                                   :collapse 2
                                   :nothing 4096})
