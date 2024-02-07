@@ -202,31 +202,31 @@
             (q/text-char letter 0 0)))
         (q/stroke 0.0)))))
 
-(defn add-symbol
+(defn add-animation
   [{:keys [children display] :as screen}]
   (cond (and (seq children) (dr/chance 0.75))
         (let [i (dr/random-int (count children))]
-          (update-in screen [:children i] add-symbol))
-        (:symbol screen)
+          (update-in screen [:children i] add-animation))
+        (:animation screen)
         screen
         :else
-        (let [mk-sym (dr/weighted [[make-triangle 1]
-                                   [make-letter 1]])]
-          (assoc screen :symbol (mk-sym display)))))
+        (let [mk-anim (dr/weighted [[make-triangle 1]
+                                    [make-letter 1]])]
+          (assoc screen :animation (mk-anim display)))))
 
 (defn update-displays [displays _t]
   (let [i (dr/random-int (count displays))]
     (update displays i
             (fn [s]
               (case (dr/weighted {:divide 32
-                                  :add-symbol 32
+                                  :add-animation 32
                                   :combine 8
                                   :collapse 2
                                   :nothing 4096})
                 :divide (subdivide s)
                 :combine (combine s)
                 :collapse (collapse s)
-                :add-symbol (add-symbol s)
+                :add-animation (add-animation s)
                 :nothing s)))))
 
 (defn update-state [{:keys [mode t] :as state}]
@@ -247,7 +247,7 @@
          1.0)))
 
 (defn rdraw
-  [{:keys [display children symbol]}
+  [{:keys [display children animation]}
    {:keys [depth p rotation i t center] :as dstate}]
   (if (seq children)
     (doseq [d children]
@@ -257,9 +257,9 @@
           f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
       (q/fill f)
       (qdg/draw div)
-      (when symbol
+      (when animation
         (q/fill (- 1.0 f))
-        (symbol p rotation t)))))
+        (animation p rotation t)))))
 
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
