@@ -227,19 +227,14 @@
 
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
-        ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))]
-    (update displays i
-            (fn [s]
-              (case (dr/weighted {:divide 32
-                                  :add-animation 48
-                                  :combine (* 8 ramp)
-                                  :collapse (* 2 ramp)
-                                  :nothing 4096})
-                :divide (subdivide s)
-                :combine (combine s)
-                :collapse (collapse s)
-                :add-animation (add-animation s)
-                :nothing s)))))
+        ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))
+        display-f
+        (dr/weighted [[subdivide 32]
+                      [add-animation 48]
+                      [combine (* 8 ramp)]
+                      [collapse (* 2 ramp)]
+                      [identity 4096]])]
+    (update displays i display-f)))
 
 (defn update-state [{:keys [mode t] :as state}]
   (let [df ({:divisions update-displays} mode)]
