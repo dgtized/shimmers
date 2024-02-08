@@ -213,17 +213,17 @@
           (qdg/draw)))))
 
 (defn add-animation
-  [{:keys [children display] :as screen}]
+  [{:keys [children display] :as screen} t]
   (cond (seq children)
         (let [i (dr/random-int (count children))]
-          (update-in screen [:children i] add-animation))
+          (update-in screen [:children i] add-animation t))
         (:animation screen)
         screen
         :else
         (let [mk-anim (dr/weighted [[make-triangle 1]
                                     [make-letter 1]
                                     [make-rect-growth 1]])]
-          (assoc screen :animation (mk-anim display)))))
+          (assoc screen :animation (mk-anim display t)))))
 
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
@@ -234,7 +234,7 @@
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
-    (update displays i display-f)))
+    (update displays i display-f t)))
 
 (defn update-state [{:keys [mode t] :as state}]
   (let [df ({:divisions update-displays} mode)]
