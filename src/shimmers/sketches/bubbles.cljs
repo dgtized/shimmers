@@ -9,7 +9,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn make-bubble []
   (gc/circle (cq/rel-pos (rand) 1.0)
@@ -27,11 +28,12 @@
     (g/translate bubble (gv/vec2 0 (- (/ 0.33 (:r bubble)))))))
 
 (defn combine-bubble [a b]
-  (gc/circle (if (> (:r a) (:r b))
-               (:p a)
-               (:p b))
-             (Math/sqrt (+ (Math/pow (:r a) 2)
-                           (Math/pow (:r b) 2)))))
+  (gc/circle
+   (tm/mix (:p a) (:p b)
+           (/ (if (> (:r a) (:r b)) (:r b) (:r a))
+              (+ (:r a) (:r b))))
+   (Math/sqrt (+ (Math/pow (:r a) 2)
+                 (Math/pow (:r b) 2)))))
 
 (defn combine-intersecting [bubbles]
   (loop [ordered (sort-by (comp :p :x) bubbles)
