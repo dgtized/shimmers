@@ -44,6 +44,7 @@
    shimmers.sketches.control-panels
    shimmers.sketches.convex-spiral
    shimmers.sketches.conveyors
+   shimmers.sketches.countdown
    shimmers.sketches.cracked-playa
    shimmers.sketches.cube
    shimmers.sketches.cube-rotations
