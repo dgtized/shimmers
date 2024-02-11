@@ -5,7 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -13,8 +13,8 @@
    [thi.ng.math.core :as tm]))
 
 (defn make-bubble []
-  (gc/circle (cq/rel-pos (rand) 1.0)
-             (+ 1 (rand-int 6))))
+  (gc/circle (cq/rel-pos (dr/random) 1.0)
+             (+ 1 (dr/random-int 6))))
 
 (defn setup []
   {:bubbles []})
@@ -49,7 +49,7 @@
 (defn update-state [{:keys [bubbles] :as state}]
   (let [active (keep update-bubble (combine-intersecting bubbles))]
     (assoc state :bubbles
-           (if (and (p/chance 0.03)
+           (if (and (dr/chance 0.03)
                     (< (count active) 512))
              (conj active (make-bubble))
              active))))
