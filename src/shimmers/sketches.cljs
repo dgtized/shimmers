@@ -213,6 +213,7 @@
    shimmers.sketches.sphere
    shimmers.sketches.spiderwebs
    shimmers.sketches.spin-doctor
+   shimmers.sketches.spiral-approach
    shimmers.sketches.spiral-distance
    shimmers.sketches.spiral-pack
    shimmers.sketches.splitting-polygons
