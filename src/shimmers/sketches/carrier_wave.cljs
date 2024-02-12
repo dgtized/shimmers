@@ -39,12 +39,14 @@
     (draw-path ctx (generate-points [a b c d (* 1 k)] center (* 0.133 height) t))
     ctx))
 
+;; TODO: use fraction controls
 (defn controls [ui-state]
-  [:div.contained
-   (ctrl/numeric ui-state "A" [:params 0] [-5 5 1])
-   (ctrl/numeric ui-state "B" [:params 1] [-5 5 1])
-   (ctrl/numeric ui-state "C" [:params 2] [-5 5 1])
-   (ctrl/numeric ui-state "D" [:params 3] [-5 5 1])])
+  (let [sr [-7 7 0.25]]
+    [:div.contained
+     (ctrl/numeric ui-state "A" [:params 0] sr)
+     (ctrl/numeric ui-state "B" [:params 1] sr)
+     (ctrl/numeric ui-state "C" [:params 2] sr)
+     (ctrl/numeric ui-state "D" [:params 3] sr)]))
 
 (defn page []
   (let [ui-state
