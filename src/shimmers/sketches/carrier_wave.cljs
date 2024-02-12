@@ -44,10 +44,6 @@
         [a b c d] params]
     (canvas/line-width ctx 1.0)
     (draw-path ctx (generate-points [a b c d (* 1 k)] center (* 0.133 height) t))
-    ;; (canvas/line-width ctx 1.0)
-    ;; (draw-path ctx (generate-points [c a b (* 2 k)] center (* 0.099 height) t))
-    ;; (canvas/line-width ctx 2.0)
-    ;; (draw-path ctx (generate-points [b c a (* 3 k)] center (* 0.033 height) t))
     ctx))
 
 (defn page []
