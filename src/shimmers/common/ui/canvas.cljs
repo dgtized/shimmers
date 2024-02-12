@@ -99,8 +99,10 @@
   [canvas-el canvas-state]
   (let [measure-frames! (framerate/sampler)
         ctx (.getContext canvas-el "2d")
-        setup (get @canvas-state :setup (fn [_] {}))
-        frame-state (atom (setup @canvas-state))]
+        frame-state
+        (atom (if-let [setup (get @canvas-state :setup)]
+                (setup @canvas-state)
+                {}))]
     (on-animated-frame
      {:delay 0}
      (fn [ms]
