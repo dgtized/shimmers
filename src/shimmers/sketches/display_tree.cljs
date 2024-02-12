@@ -12,6 +12,7 @@
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -198,8 +199,7 @@
         (q/text-size (int (* size (/ 2 3))))
         (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
           (q/with-rotation [rotation]
-            (q/text-char letter 0 0)))
-        (q/stroke 0.0)))))
+            (q/text-char letter 0 0)))))))
 
 (defn make-rect-growth [bounds]
   (let [period (dr/rand-nth [2.0 4.0 6.0 8.0])
@@ -212,6 +212,29 @@
           (g/scale-size (scale t))
           (qdg/draw)))))
 
+(defn R [f p a s]
+  (v/polar a (* eq/TAU (+ (* s f) p))))
+
+(defn make-spinner [bounds]
+  (let [radius (min (g/width bounds) (g/height bounds))
+        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.75 0.05))
+        [a b c] (repeatedly 3 #(dr/random-int -4 4))]
+    (fn [p rotation t f]
+      (q/no-fill)
+      (q/stroke (- 1.0 f))
+      (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
+            t (* direction t)
+            path (for [s (tm/norm-range 128)]
+                   (->
+                    (gv/vec2)
+                    (tm/+ (R (+ a (Math/sin (* 0.2 t))) (Math/cos (* 0.5 t)) 1.0 s))
+                    (tm/+ (R (+ b (Math/cos (* 0.2 t))) (Math/sin (* 0.5 t)) 1.0 s))
+                    (tm/+ (R (+ c (Math/cos (* 0.5 t))) (Math/sin (* 0.7 t)) 0.5 s))
+                    (tm/* (* 0.15 radius))
+                    (tm/+ center)))]
+        (cq/draw-path path))
+      (q/no-stroke))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -220,9 +243,10 @@
         (:animation screen)
         screen
         :else
-        (let [mk-anim (dr/weighted [[make-triangle 1]
-                                    [make-letter 1]
-                                    [make-rect-growth 1]])]
+        (let [mk-anim (dr/weighted [[make-triangle 0.5]
+                                    [make-letter 0.1]
+                                    [make-rect-growth 1]
+                                    [make-spinner 1]])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn update-displays [displays t]
@@ -268,10 +292,11 @@
       (qdg/draw div)
       (when animation
         (q/fill (- 1.0 f))
-        (animation p rotation t)))))
+        (animation p rotation t f)))))
 
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
+  (q/no-stroke)
   (doseq [[i screen] (map-indexed vector displays)
           :let [{[x y] :centroid :keys [display rotation]} screen
                 fade (fader i x y t)]]
