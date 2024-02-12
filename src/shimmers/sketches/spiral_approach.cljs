@@ -2,14 +2,14 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.vector :as v]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.equations :as eq]
    [thi.ng.geom.line :as gl]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
