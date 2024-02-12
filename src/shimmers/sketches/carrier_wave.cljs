@@ -20,15 +20,18 @@
 (defn R [f p a s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
+(defn generate-points [[a b c] center height t]
+  (for [s (tm/norm-range 512)]
+    (-> (tm/+ (R (+ a (eq/unit-cos (* 0.2 t))) (eq/unit-cos (* 0.5 t)) 1.2 s)
+              (R (+ b (eq/unit-sin (* -0.2 t))) (eq/unit-sin (* -0.5 t)) 1.1 s)
+              (R (+ c (Math/tan (* 0.15 t))) (dr/gaussian 0.0 0.005) 1.0 s))
+        (tm/* (* 0.1 height))
+        (tm/+ center ))))
+
 (defn draw [{:keys [a b c]} ctx [width height] ms]
   (let [t (* 0.001 ms)
         center (gv/vec2 (* 0.5 width) (* 0.5 height))
-        points (for [s (tm/norm-range 512)]
-                 (-> (tm/+ (R (+ a (* 2.0 (eq/unit-cos t))) 0 (* 2 (eq/unit-sin t)) s)
-                           (R (+ b (* 1.0 (eq/unit-sin (* 0.5 t)))) (eq/unit-sin t) 2 s)
-                           (R (+ c (eq/unit-sin (* 0.25 t))) 0 1 s))
-                     (tm/* (* 0.1 height))
-                     (tm/+ center )))]
+        points (generate-points [a b c] center height t)]
     (canvas/line-width ctx 2.0)
     (.beginPath ctx)
     (canvas/move-to ctx (first points))
