@@ -24,6 +24,7 @@
    shimmers.sketches.bubbles
    shimmers.sketches.butterfly
    shimmers.sketches.canvas-test
+   shimmers.sketches.carrier-wave
    shimmers.sketches.chaikin-demo
    shimmers.sketches.chance-connections
    shimmers.sketches.chaos-cuts

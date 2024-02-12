@@ -128,6 +128,12 @@
     .beginPath
     (.arc x y r 0 eq/TAU false)))
 
+(defn move-to [ctx [x y]]
+  (.moveTo ctx x y))
+
+(defn line-to [ctx [x y]]
+  (.lineTo ctx x y))
+
 (defn stroke-rect [ctx x y width height]
   (.strokeRect ctx x y width height)
   ctx)
