@@ -2,11 +2,12 @@
   (:require
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.math.equations :as eq]
    [shimmers.math.hexagon :as hex]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.equations :as eq]))
+   [thi.ng.math.core :as tm]))
 
 (defn setup [_cv]
   {})
@@ -26,13 +27,16 @@
                   r (tm/mag (:p hex-pos))
                   pr (/ r corner)
                   pos (tm/+ center (:p hex-pos))
-                  pct (/ (float i) (count hexes))]]
-      (canvas/line-width ctx (* 8.0 (+ 0.1 pr)))
+                  pct (/ (float i) (count hexes))
+                  rot (+ t (* 0.5 (g/heading (:p hex-pos))))
+                  t0 (* eq/TAU (+ (Math/sin (+ t 0.02 (* pct (Math/sin (* 0.4 t))))) rot))
+                  t1 (* eq/TAU (+ (Math/sin (- t 0.03 (* pct (Math/sin (* 0.5 t))))) rot))]]
+      (canvas/line-width ctx (* 10.0 (+ 0.1 pr)))
+      ;; min/max t0/t1 to remove clip jump
       (canvas/clockwise-arc ctx pos
                             (- radius 15
-                               (* 5 (Math/sin (+ (* Math/PI pr) (* 10 t)))))
-                            (* eq/TAU (Math/sin (+ t 0.02 (* pct (Math/sin t)))))
-                            (* eq/TAU (Math/sin (- t 0.05 (* pct (Math/sin t))))))
+                               (* 6 (Math/sin (+ (* Math/PI pr) (* 10 t)))))
+                            t0 t1)
       (.stroke ctx)))
   ctx)
 
