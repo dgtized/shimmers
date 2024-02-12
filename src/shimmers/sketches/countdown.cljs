@@ -15,20 +15,24 @@
   state)
 
 (defn draw [_cv ctx [width height] ms]
-  (let [t (* 0.0005 ms)
-        radius 30
-        hexes (hex/cube-spiral (gv/vec3) 5)
-        center (gv/vec2 (* 0.5 width) (* 0.5 height))]
+  (let [t (* 0.0001 ms)
+        radius 25
+        hexes (hex/cube-spiral (gv/vec3) 6)
+        center (gv/vec2 (* 0.5 width) (* 0.5 height))
+        corner (tm/mag (tm/- (gv/vec2 width height) center))]
     (canvas/clear ctx width height)
-    (canvas/line-width ctx 4.0)
     (doseq [[i hex] (map-indexed vector hexes)
             :let [hex-pos (hex/cube-hexagon hex radius)
+                  r (tm/mag (:p hex-pos))
+                  pr (/ r corner)
                   pos (tm/+ center (:p hex-pos))
                   pct (/ (float i) (count hexes))]]
+      (canvas/line-width ctx (* 8.0 (+ 0.1 pr)))
       (canvas/clockwise-arc ctx pos
-                            (- radius 4)
-                            (mod (* eq/TAU (+ t i)) eq/TAU)
-                            (mod (* eq/TAU (+ t (* 2 pct)) ) eq/TAU))
+                            (- radius 15
+                               (* 5 (Math/sin (+ (* Math/PI pr) (* 10 t)))))
+                            (* eq/TAU (Math/sin (+ t 0.02 (* pct (Math/sin t)))))
+                            (* eq/TAU (Math/sin (- t 0.05 (* pct (Math/sin t))))))
       (.stroke ctx)))
   ctx)
 
