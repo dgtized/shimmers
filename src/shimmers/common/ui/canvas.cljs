@@ -107,9 +107,9 @@
        (measure-frames! ms)
        (let [{:keys [width height] :as cv} @canvas-state
              screen-dims [width height]
-             ctx (scale-dpi ctx canvas-el screen-dims)
-             update-state (get cv :update (fn [_sd fs] fs))]
-         (swap! frame-state update-state screen-dims ms)
+             ctx (scale-dpi ctx canvas-el screen-dims)]
+         (when-let [update-state (get cv :update)]
+           (swap! frame-state update-state screen-dims ms))
          ((:draw cv) @frame-state ctx screen-dims ms))))))
 
 (defn make-state [cv-config fs-config]
