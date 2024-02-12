@@ -9,15 +9,6 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defn setup [_cv]
-  (let [s {:params (repeatedly 4 #(dr/random-int -3 3))
-           :k (dr/random)}]
-    (println s)
-    s))
-
-(defn update-state [state _dims _ms]
-  state)
-
 (defn R [f p a s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
@@ -38,26 +29,39 @@
   (canvas/stroke ctx)
   ctx)
 
-(defn draw [{:keys [params k]} ctx [width height] ms]
+(defn draw
+  [ui-state _fs ctx [width height] ms]
   (let [t (* 0.001 ms)
         center (gv/vec2 (* 0.5 width) (* 0.5 height))
+        {:keys [params k]} @ui-state
         [a b c d] params]
     (canvas/line-width ctx 1.0)
     (draw-path ctx (generate-points [a b c d (* 1 k)] center (* 0.133 height) t))
     ctx))
 
+(defn controls [ui-state]
+  [:div.contained
+   (ctrl/numeric ui-state "A" [:params 0] [-5 5 1])
+   (ctrl/numeric ui-state "B" [:params 1] [-5 5 1])
+   (ctrl/numeric ui-state "C" [:params 2] [-5 5 1])
+   (ctrl/numeric ui-state "D" [:params 3] [-5 5 1])])
+
 (defn page []
-  (let [{:keys [canvas-state attributes]}
+  (let [ui-state
+        (ctrl/state
+         {:params (vec (repeatedly 4 #(dr/random-int -3 3)))
+          :k (dr/random)})
+        {:keys [canvas-state attributes]}
         (canvas/make-state
          {:width 800
           :height 600
-          :setup #'setup
-          :update #'update-state
-          :draw #'draw}
+          :draw (partial #'draw ui-state)}
          {:width-pct 0.7})]
     (fn []
-      [:div
-       [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))
+      [sketch/with-explanation
+       [canvas/canvas-frame attributes canvas-state canvas/animate-frame]
+       [ctrl/container
+        [controls ui-state]]])))
 
 (sketch/definition carrier-wave
   {:created-at "2024-02-12"
