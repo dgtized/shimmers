@@ -43,7 +43,7 @@
 ;; TODO: use fraction controls
 (defn controls [ui-state]
   (let [sr [-7 7 0.25]]
-    [:div.contained
+    [:div
      (ctrl/numeric ui-state "A" [:params 0] sr)
      (ctrl/numeric ui-state "B" [:params 1] sr)
      (ctrl/numeric ui-state "C" [:params 2] sr)
