@@ -144,6 +144,14 @@
   ([ctx] (.stroke ctx) ctx)
   ([ctx path] (.stroke ctx path) ctx))
 
+(defn stroke-path [ctx points]
+  (.beginPath ctx)
+  (move-to ctx (first points))
+  (doseq [p (rest points)]
+    (line-to ctx p))
+  (stroke ctx)
+  ctx)
+
 (defn fill
   ([ctx] (.fill ctx) ctx)
   ([ctx fill-rule] (.fill ctx fill-rule) ctx)

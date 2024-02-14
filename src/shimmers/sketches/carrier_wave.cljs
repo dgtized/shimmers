@@ -22,22 +22,15 @@
         (tm/* radius)
         (tm/+ center))))
 
-(defn draw-path [ctx points]
-  (.beginPath ctx)
-  (canvas/move-to ctx (first points))
-  (doseq [p (rest points)]
-    (canvas/line-to ctx p))
-  (canvas/stroke ctx)
-  ctx)
-
 (defn draw
   [ui-state _fs ctx [width height] ms]
   (let [t (* 0.001 ms)
         center (gv/vec2 (* 0.5 width) (* 0.5 height))
         {:keys [params k]} @ui-state
-        [a b c d] params]
+        [a b c d] params
+        points (generate-points [a b c d (* 1 k)] center (* 0.133 height) (* 0.5 t))]
     (canvas/line-width ctx 1.0)
-    (draw-path ctx (generate-points [a b c d (* 1 k)] center (* 0.133 height) (* 0.5 t)))
+    (canvas/stroke-path ctx points)
     ctx))
 
 ;; TODO: use fraction controls
