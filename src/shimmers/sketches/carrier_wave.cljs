@@ -15,10 +15,11 @@
 (defn generate-points [[a b c d k] center radius t]
   (for [s (tm/norm-range 1024)
         :let [noise (eq/unit-sin (+ (* 0.7 t) (* 0.5 Math/PI s) (Math/sin (+ (* 0.2 t) s))))]]
-    (-> (tm/+ (R (+ a (eq/unit-cos (* 0.2 t))) (Math/cos (* 0.5 t)) 1.2 s)
-              (R (+ b (eq/unit-sin (* -0.2 t))) (Math/sin (* -0.5 t)) 1.1 s)
-              (tm/+ (R (+ c (eq/unit-sin (* 0.8 t))) (* -2 k (Math/sin (* 0.25 t))) 0.5 s)
-                    (R (+ d (Math/tan (+ k (* 0.125 t)))) (dr/gaussian 0.0 (* 0.0066 noise)) 1.0 s)))
+    (-> (gv/vec2)
+        (tm/+ (R (+ a (eq/unit-cos (* 0.2 t))) (Math/cos (* 0.5 t)) 1.2 s))
+        (tm/+ (R (+ c (eq/unit-sin (* 0.8 t))) (* -2 k (Math/sin (* 0.25 t))) 0.5 s))
+        (tm/+ (R (+ b (eq/unit-sin (* -0.2 t))) (Math/sin (* -0.5 t)) 1.1 s))
+        (tm/+ (R (+ d (Math/tan (+ k (* 0.125 t)))) (dr/gaussian 0.0 (* 0.0066 noise)) 1.0 s))
         (tm/* radius)
         (tm/+ center))))
 
