@@ -29,6 +29,11 @@
         {:keys [params k]} @ui-state
         [a b c d] params
         points (generate-points [a b c d (* 1 k)] center (* 0.133 height) (* 0.5 t))]
+    (if (:inverted @ui-state)
+      (do (canvas/fill-style ctx "rgb(0,0,0)")
+          (.fillRect ctx 0 0 width height)
+          (canvas/stroke-style ctx "rgb(255,255,255)"))
+      (canvas/stroke-style ctx "rgb(0,0,0)"))
     (canvas/line-width ctx 1.0)
     (canvas/stroke-path ctx points)
     ctx))
@@ -40,7 +45,8 @@
      (ctrl/numeric ui-state "A" [:params 0] sr)
      (ctrl/numeric ui-state "B" [:params 1] sr)
      (ctrl/numeric ui-state "C" [:params 2] sr)
-     (ctrl/numeric ui-state "D" [:params 3] sr)]))
+     (ctrl/numeric ui-state "D" [:params 3] sr)
+     (ctrl/checkbox ui-state "Inverted" [:inverted])]))
 
 (defn page []
   (let [ui-state
