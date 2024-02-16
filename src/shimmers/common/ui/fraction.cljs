@@ -6,19 +6,19 @@
 ;; 2, 1.01, 2.1e4, 1/3, 1.01/3.01
 (defn parse [s]
   (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*$" s)]
-    [(edn/read-string (second m)) nil]
+    {:value (edn/read-string (second m))}
     (if-let [m (re-find #"^\s*(-?\d+(\.\d*)?)\s*/\s*(-?\d+(\.\d*)?)\s*$" s)]
       (let [n (edn/read-string (nth m 1))
             d (edn/read-string (nth m 3))]
         (if (zero? d) ;; divide by zero
-          [s "divide by zero"]
-          [(/ n d) nil]))
-      [s "invalid string"])))
+          {:error "divide by zero"}
+          {:value (/ n d)}))
+      {:error "invalid string"})))
 
 (defn validate
   ([s] (validate s 1.0))
   ([s last-value]
-   (let [[value error] (parse s)]
+   (let [{:keys [value error]} (parse s)]
      (if-not error
        {:raw s
         :valid true
