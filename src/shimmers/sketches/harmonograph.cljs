@@ -87,6 +87,14 @@
      (decay-cycle A d (:value (nth pendulum 0)) 0)
      (decay-cycle A d (:value (nth pendulum 0)) 0))))
 
+(defn hgraph
+  [{:keys [dplat table-dxt table-dyt
+           dpend pendulum-dxt pendulum-dyt]} k t]
+  (tm/+ (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
+                 (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
+        (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
+                 (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [{:keys [table pendulum pen]} @ui-state]
@@ -108,8 +116,6 @@
 
 (defn draw
   [{:keys [t sample-steps sample-rate
-           dplat table-dxt table-dyt
-           dpend pendulum-dxt pendulum-dyt
            dampen-rate dampen-limit
            modulate-stroke weight
            pen-modulation dpen dpen-phase]
@@ -124,14 +130,10 @@
         (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
       (when (or (not pen-modulation)
                 (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-        (if-let [harmonograph (:harmonograph state)]
-          (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) (harmonograph t)))
-          (apply q/point
-                 (tm/+ (cq/rel-vec 0.5 0.5)
-                       (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
-                                (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
-                       (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
-                                (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t)))))))))))
+        (let [pos (if-let [harmonograph (:harmonograph state)]
+                    (harmonograph t)
+                    (hgraph state k t))]
+          (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) pos)))))))
 
 (defn page []
   [sketch/with-explanation
