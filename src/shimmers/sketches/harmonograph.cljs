@@ -39,14 +39,16 @@
    [ctrl/checkbox-after ui-state "Simple Harmonograph" [:simple-harmonograph]]
    [:em "(apply after restart)"]
    (if (:simple-harmonograph @ui-state)
-     [:div.grid {:style {:grid-template-columns "0.2fr repeat(2,0.15fr)"
+     [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
       [fraction/control ui-state "A" [:table-b 0]]
       [fraction/control ui-state "B" [:table-b 1]]
+      [:div]
       [:div "Pendulum"]
       [fraction/control ui-state "B" [:pendulum-b 0]]
-      [fraction/control ui-state "B" [:pendulum-b 1]]]
+      [fraction/control ui-state "B" [:pendulum-b 1]]
+      [:div]]
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
