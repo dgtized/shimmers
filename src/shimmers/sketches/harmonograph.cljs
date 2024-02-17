@@ -14,6 +14,10 @@
 (defonce ui-state
   (ctrl/state {:sample-steps 1000
                :sample-rate 2.0
+               :table-b [(fraction/validate "2")
+                         (fraction/validate "4")]
+               :pendulum-b [(fraction/validate "3")
+                            (fraction/validate "1.01")]
                :table [(fraction/validate "1 / 1")
                        (fraction/validate "1")
                        (fraction/validate "1")]
@@ -31,35 +35,47 @@
 (defn ui-controls []
   [:<>
    [:h3 "Parameters"]
+   [ctrl/checkbox-after ui-state "Simple Harmonograph" [:harmonograph]]
    [:em "(apply after restart)"]
+   (if (:harmonograph @ui-state)
+     [:div.grid {:style {:grid-template-columns "0.2fr repeat(2,0.15fr)"
+                         :column-gap "2%"}}
+      [:div "Table"]
+      [fraction/control ui-state "A" [:table-b 0]]
+      [fraction/control ui-state "B" [:table-b 1]]
+      [:div "Pendulum"]
+      [fraction/control ui-state "B" [:pendulum-b 0]]
+      [fraction/control ui-state "B" [:pendulum-b 1]]]
+     [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
+                         :column-gap "2%"}}
+      [:div "Table"]
+      [fraction/control ui-state "Ratio" [:table 0]]
+      [fraction/control ui-state "dt-x" [:table 1]]
+      [fraction/control ui-state "dt-y" [:table 2]]
+      [:div "Pendulum"]
+      [fraction/control ui-state "Ratio" [:pendulum 0]]
+      [fraction/control ui-state "dt-x" [:pendulum 1]]
+      [fraction/control ui-state "dt-y" [:pendulum 2]]])
    [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                        :column-gap "2%"}}
-    [:div "Table"]
-    [fraction/control ui-state "Ratio" [:table 0]]
-    [fraction/control ui-state "dt-x" [:table 1]]
-    [fraction/control ui-state "dt-y" [:table 2]]
-    [:div "Pendulum"]
-    [fraction/control ui-state "Ratio" [:pendulum 0]]
-    [fraction/control ui-state "dt-x" [:pendulum 1]]
-    [fraction/control ui-state "dt-y" [:pendulum 2]]
     [:div "Dampen"]
     (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.001 0.01 0.00001])
     (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
-    [:div {:style {:grid-column "4 / 5" :grid-row "3 / 4"}}]
+    [:div {:style {:grid-column "3 / 4" :grid-row "1 / 3"}}]
     [:div "Sample"]
-    (ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50])
-    (ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1])
-    [:div {:style {:grid-column "4 / 5" :grid-row "4 / 5"}}]
+    [ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50]]
+    [ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1]]
+    [:div {:style {:grid-column "3 / 4" :grid-row "2 / 3"}}]
     [:div "Stroke"]
-    (ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1])
-    (ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke])
-    [:div {:style {:grid-column "4 / 5" :grid-row "5 / 6"}}]
+    [ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1]]
+    [ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke]]
+    [:div {:style {:grid-column "3 / 4" :grid-row "3 / 3"}}]
     [:div "Pen Stroke"]
-    (ctrl/checkbox-after ui-state "Modulation" [:pen-modulation])
+    [ctrl/checkbox-after ui-state "Modulation" [:pen-modulation]]
     (when (:pen-modulation @ui-state)
       [:<>
-       (fraction/control ui-state "Rate" [:pen 0])
-       (fraction/control ui-state "Phase" [:pen 1])])]
+       [fraction/control ui-state "Rate" [:pen 0]]
+       [fraction/control ui-state "Phase" [:pen 1]]])]
 
    [view-sketch/generate :harmonograph]])
 
@@ -78,14 +94,14 @@
     (gv/vec2 (+ (xa t) (xb t))
              (+ (ya t) (yb t)))))
 
-(defn create-harmonograph [{:keys [table pendulum dampen-rate]}]
+(defn create-harmonograph [{:keys [table-b pendulum-b dampen-rate]}]
   (let [A (/ (q/height) 5)
         d dampen-rate]
     (parametric-harmonograph
-     (decay-cycle A d (:value (nth table 0)) 0)
-     (decay-cycle A d (:value (nth table 0)) 0)
-     (decay-cycle A d (:value (nth pendulum 0)) 0)
-     (decay-cycle A d (:value (nth pendulum 0)) 0))))
+     (decay-cycle A d (:value (nth table-b 0)) 0)
+     (decay-cycle A d (:value (nth table-b 1)) 0)
+     (decay-cycle A d (:value (nth pendulum-b 0)) 0)
+     (decay-cycle A d (:value (nth pendulum-b 1)) 0))))
 
 (defn hgraph
   [{:keys [dplat table-dxt table-dyt
@@ -109,7 +125,7 @@
             :pendulum-dyt (:value (nth pendulum 2))
             :dpen (:value (first pen))
             :dpen-phase (:value (second pen))
-            ;; :harmonograph (create-harmonograph @ui-state)
+            :graph (create-harmonograph @ui-state)
             })))
 
 (defn update-state [state]
@@ -119,7 +135,8 @@
   [{:keys [t sample-steps sample-rate
            dampen-rate dampen-limit
            modulate-stroke weight
-           pen-modulation dpen dpen-phase]
+           pen-modulation dpen dpen-phase
+           graph]
     :as state}]
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
@@ -131,8 +148,8 @@
         (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
       (when (or (not pen-modulation)
                 (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-        (let [pos (if-let [harmonograph (:harmonograph state)]
-                    (harmonograph t)
+        (let [pos (if (:harmonograph state)
+                    (graph t)
                     (hgraph state k t))]
           (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) pos)))))))
 
