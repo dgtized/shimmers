@@ -12,7 +12,8 @@
    [shimmers.common.ui.fraction :as fraction]))
 
 (defonce ui-state
-  (ctrl/state {:sample-steps 1000
+  (ctrl/state {:simple-harmonograph false
+               :sample-steps 1000
                :sample-rate 2.0
                :table-b [(fraction/validate "2")
                          (fraction/validate "4")]
@@ -35,9 +36,9 @@
 (defn ui-controls []
   [:<>
    [:h3 "Parameters"]
-   [ctrl/checkbox-after ui-state "Simple Harmonograph" [:harmonograph]]
+   [ctrl/checkbox-after ui-state "Simple Harmonograph" [:simple-harmonograph]]
    [:em "(apply after restart)"]
-   (if (:harmonograph @ui-state)
+   (if (:simple-harmonograph @ui-state)
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(2,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
@@ -125,7 +126,7 @@
             :pendulum-dyt (:value (nth pendulum 2))
             :dpen (:value (first pen))
             :dpen-phase (:value (second pen))
-            :graph (create-harmonograph @ui-state)
+            :harmonograph (create-harmonograph @ui-state)
             })))
 
 (defn update-state [state]
@@ -136,7 +137,7 @@
            dampen-rate dampen-limit
            modulate-stroke weight
            pen-modulation dpen dpen-phase
-           graph]
+           harmonograph]
     :as state}]
   (q/stroke-weight weight)
   (dotimes [i sample-steps]
@@ -148,8 +149,8 @@
         (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
       (when (or (not pen-modulation)
                 (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
-        (let [pos (if (:harmonograph state)
-                    (graph t)
+        (let [pos (if (:simple-harmonograph state)
+                    (harmonograph t)
                     (hgraph state k t))]
           (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) pos)))))))
 
