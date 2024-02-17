@@ -90,10 +90,11 @@
 (defn hgraph
   [{:keys [dplat table-dxt table-dyt
            dpend pendulum-dxt pendulum-dyt]} k t]
-  (tm/+ (gv/vec2 (* 0.225 (q/height) k (Math/cos (* table-dxt dplat t)))
-                 (* 0.225 (q/height) k (Math/sin (* table-dyt dplat t))))
-        (gv/vec2 (* 0.225 (q/height) k (Math/cos (* pendulum-dxt dpend t)))
-                 (* 0.225 (q/height) k (Math/sin (* pendulum-dyt dpend t))))))
+  (let [size (* 0.225 (q/height) k)]
+    (tm/+ (gv/vec2 (* size (Math/cos (* table-dxt dplat t)))
+                   (* size (Math/sin (* table-dyt dplat t))))
+          (gv/vec2 (* size (Math/cos (* pendulum-dxt dpend t)))
+                   (* size (Math/sin (* pendulum-dyt dpend t)))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
