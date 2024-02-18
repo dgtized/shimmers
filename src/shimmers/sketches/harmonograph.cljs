@@ -16,9 +16,11 @@
                :sample-steps 1000
                :sample-rate 2.0
                :table-b [(fraction/validate "2")
-                         (fraction/validate "4")]
+                         (fraction/validate "4")
+                         (fraction/validate "0")]
                :pendulum-b [(fraction/validate "3")
-                            (fraction/validate "1.01")]
+                            (fraction/validate "1.01")
+                            (fraction/validate "0")]
                :table [(fraction/validate "1 / 1")
                        (fraction/validate "1")
                        (fraction/validate "1")]
@@ -44,11 +46,12 @@
       [:div "Table"]
       [fraction/control ui-state "A" [:table-b 0]]
       [fraction/control ui-state "B" [:table-b 1]]
-      [:div]
+      [fraction/control ui-state "Phase" [:table-b 2]]
       [:div "Pendulum"]
       [fraction/control ui-state "B" [:pendulum-b 0]]
       [fraction/control ui-state "B" [:pendulum-b 1]]
-      [:div]]
+      [fraction/control ui-state "Phase" [:pendulum-b 2]]
+      ]
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
@@ -99,12 +102,14 @@
 
 (defn create-harmonograph [{:keys [table-b pendulum-b dampen-rate]}]
   (let [A (/ (q/height) 5)
-        d dampen-rate]
+        d dampen-rate
+        table-period (:value (nth table-b 2))
+        pendulum-period (:value (nth pendulum-b 2))]
     (parametric-harmonograph
-     (decay-cycle A d (:value (nth table-b 0)) 0)
-     (decay-cycle A d (:value (nth table-b 1)) 0)
-     (decay-cycle A d (:value (nth pendulum-b 0)) 0)
-     (decay-cycle A d (:value (nth pendulum-b 1)) 0))))
+     (decay-cycle A d (:value (nth table-b 0)) table-period)
+     (decay-cycle A d (:value (nth table-b 1)) table-period)
+     (decay-cycle A d (:value (nth pendulum-b 0)) pendulum-period)
+     (decay-cycle A d (:value (nth pendulum-b 1)) pendulum-period))))
 
 (defn hgraph
   [{:keys [dplat table-dxt table-dyt
