@@ -237,6 +237,18 @@
         (cq/draw-path path))
       (q/no-stroke))))
 
+(defn make-static [bounds]
+  (let [{[w h] :size} bounds
+        ratio (/ (float w) h)
+        divisions (for [div (g/subdivide bounds {:rows (int (* 12 ratio)) :cols (int (/ 12 ratio))})]
+                    (assoc div :val (dr/random)))]
+    (fn [p rotation _t f]
+      (doseq [{:keys [val] :as div} divisions]
+        (q/fill (mod (+ f val) 1.0))
+        (-> div
+            (geometry/rotate-around p rotation)
+            qdg/draw)))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -248,7 +260,8 @@
         (let [mk-anim (dr/weighted [[make-triangle 0.5]
                                     [make-letter 0.1]
                                     [make-rect-growth 1]
-                                    [make-spinner 1]])]
+                                    [make-spinner 1]
+                                    [make-static 0.5]])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn all-displays [displays]
