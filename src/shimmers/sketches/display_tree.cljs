@@ -259,16 +259,21 @@
                            display)))
        (map (fn [n] (update n :children count)))))
 
+(comment
+  (for [n (range 200)]
+    [n (* 64 (Math/exp (* -0.04 n)))]))
+
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
         ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))
+        tree (all-displays displays)
         display-f
-        (dr/weighted [[subdivide 32]
+        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.04 (count tree))))]
                       [add-animation 48]
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
-    (swap! defo assoc :tree (all-displays displays))
+    (swap! defo assoc :tree tree)
     (update displays i display-f t)))
 
 (defn update-state [{:keys [mode t] :as state}]
