@@ -7,6 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.quil-draws-geom :as qdg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as geometry]
@@ -19,6 +20,7 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce defo (debug/state))
 (defonce ui-state (ctrl/state {:debug false}))
 
 (defn box-ratio [[w h] side]
@@ -249,6 +251,14 @@
                                     [make-spinner 1]])]
           (assoc screen :animation (mk-anim display t)))))
 
+(defn all-displays [displays]
+  (->> displays
+       (mapcat (fn [display]
+                 (tree-seq (fn [{:keys [children]}] (not-empty children))
+                           (fn [{:keys [children]}] children)
+                           display)))
+       (map (fn [n] (update n :children count)))))
+
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
         ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))
@@ -258,6 +268,7 @@
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
+    (swap! defo assoc :tree (all-displays displays))
     (update displays i display-f t)))
 
 (defn update-state [{:keys [mode t] :as state}]
@@ -326,7 +337,9 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div
-    [ctrl/checkbox-after ui-state "Debug" [:debug]]]])
+    [ctrl/checkbox-after ui-state "Debug" [:debug]]
+    (when (:debug @ui-state)
+      [debug/display defo])]])
 
 (sketch/definition display-tree
   {:created-at "2024-01-30"
