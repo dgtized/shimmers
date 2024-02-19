@@ -45,7 +45,7 @@
      :rate (fraction/make "1 / 2")
      :phase (fraction/make "1 / 3")}}))
 
-(defn ui-controls []
+(defn ui-controls [ui-state]
   [:<>
    [:h3 "Parameters"]
    [ctrl/checkbox-after ui-state "Simple Harmonograph" [:simple-harmonograph]]
@@ -187,7 +187,7 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   [ui-controls]])
+   [ui-controls ui-state]])
 
 (sketch/definition harmonograph
   {:created-at "2024-01-22"
