@@ -239,12 +239,28 @@
 
 (defn make-static [bounds]
   (let [{size :size} bounds
-        [c r] (ratio size 16)
-        divisions (for [div (g/subdivide bounds {:cols c :rows r})]
-                    (assoc div :val (dr/random)))]
-    (fn [p rotation _t f]
-      (doseq [{:keys [val] :as div} divisions]
-        (q/fill (mod (+ f val) 1.0))
+        [cols rows] (ratio size (dr/rand-nth [12 16 20]))
+        center (g/centroid bounds)
+        mode (dr/weighted {:static 1.0
+                           :sweep 2.0
+                           :radial 2.0})
+        divisions
+        (for [div (g/subdivide bounds {:cols cols :rows rows})
+              :let [c (g/centroid div)
+                    r (g/dist c center)
+                    theta (g/heading (tm/- c center))]]
+          (assoc div :value
+                 (case mode
+                   :static
+                   (let [v (dr/random)]
+                     (fn [t _f] (mod (+ t v) 1.0)))
+                   :radial
+                   (fn [t f] (eq/unit-sin (+ r (* 2 t) f)))
+                   :sweep
+                   (fn [t _f] (eq/unit-sin (+ theta t))))))]
+    (fn [p rotation t f]
+      (doseq [{:keys [value] :as div} divisions]
+        (q/fill (value t f))
         (-> div
             (geometry/rotate-around p rotation)
             qdg/draw)))))
