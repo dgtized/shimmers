@@ -131,18 +131,19 @@
   (let [A (/ (q/height) 5)
         dplat (:value (:ratio table-pt))
         dpend (:value (:ratio pendulum-pt))
-        table-dxt (:value (:fx table-pt))
-        table-dyt (:value (:fy table-pt))
-        pendulum-dxt (:value (:fx pendulum-pt))
-        pendulum-dyt (:value (:fy pendulum-pt))
+        table-fx (:value (:fx table-pt))
+        table-fy (:value (:fy table-pt))
+        pendulum-fx (:value (:fx pendulum-pt))
+        pendulum-fy (:value (:fy pendulum-pt))
         ]
     (fn [t]
-      (let [k (dampening (:rate dampen) t)
-            size (* A k)]
-        (tm/+ (gv/vec2 (* size (Math/cos (* table-dxt dplat t)))
-                       (* size (Math/sin (* table-dyt dplat t))))
-              (gv/vec2 (* size (Math/cos (* pendulum-dxt dpend t)))
-                       (* size (Math/sin (* pendulum-dyt dpend t)))))))))
+      (let [k (dampening (:rate dampen) t)]
+        (tm/* (gv/vec2
+               (+ (Math/cos (* table-fx dplat t))
+                  (Math/cos (* pendulum-fx dpend t)))
+               (+ (Math/sin (* table-fy dplat t))
+                  (Math/sin (* pendulum-fy dpend t))))
+              (* A k))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
