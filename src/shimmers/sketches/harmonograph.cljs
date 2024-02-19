@@ -13,25 +13,25 @@
 
 (defonce ui-state
   (ctrl/state
-   {:simple-harmonograph false
+   {:simple-harmonograph true
     :sample-steps 1000
     :sample-rate 2.0
-    :table-b
+    :table
     {:fx (fraction/make "3/5")
      :fy (fraction/make "2/5")
      :phase (fraction/make "0")}
-    :pendulum-b
+    :pendulum
     {:fx (fraction/make "4/5")
      :fy (fraction/make "1.01/5")
      :phase (fraction/make "0")}
-    :table
-    [(fraction/make "1 / 1")
-     (fraction/make "1")
-     (fraction/make "1")]
-    :pendulum
-    [(fraction/make "1.001 / 3")
-     (fraction/make "1")
-     (fraction/make "1")]
+    :table-pt
+    {:ratio (fraction/make "1 / 1")
+     :fx (fraction/make "1")
+     :fy (fraction/make "1")}
+    :pendulum-pt
+    {:ratio (fraction/make "1.001 / 3")
+     :fx (fraction/make "1")
+     :fy (fraction/make "1")}
     :dampen
     {:rate 0.0015
      :limit 0.2}
@@ -53,24 +53,24 @@
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
-      [fraction/control ui-state "fx" [:table-b :fx]]
-      [fraction/control ui-state "fy" [:table-b :fy]]
-      [fraction/control ui-state "Phase" [:table-b :phase]]
+      [fraction/control ui-state "fx" [:table :fx]]
+      [fraction/control ui-state "fy" [:table :fy]]
+      [fraction/control ui-state "Phase" [:table :phase]]
       [:div "Pendulum"]
-      [fraction/control ui-state "fx" [:pendulum-b :fx]]
-      [fraction/control ui-state "fy" [:pendulum-b :fy]]
-      [fraction/control ui-state "Phase" [:pendulum-b :phase]]
+      [fraction/control ui-state "fx" [:pendulum :fx]]
+      [fraction/control ui-state "fy" [:pendulum :fy]]
+      [fraction/control ui-state "Phase" [:pendulum :phase]]
       ]
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
-      [fraction/control ui-state "Ratio" [:table 0]]
-      [fraction/control ui-state "dt-x" [:table 1]]
-      [fraction/control ui-state "dt-y" [:table 2]]
+      [fraction/control ui-state "Ratio" [:table-pt :ratio]]
+      [fraction/control ui-state "dt-x" [:table-pt :fx]]
+      [fraction/control ui-state "dt-y" [:table-pt :fy]]
       [:div "Pendulum"]
-      [fraction/control ui-state "Ratio" [:pendulum 0]]
-      [fraction/control ui-state "dt-x" [:pendulum 1]]
-      [fraction/control ui-state "dt-y" [:pendulum 2]]])
+      [fraction/control ui-state "Ratio" [:pendulum-pt :ratio]]
+      [fraction/control ui-state "dt-x" [:pendulum-pt :fx]]
+      [fraction/control ui-state "dt-y" [:pendulum-pt :fy]]])
    [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                        :column-gap "2%"}}
     [:div "Dampen"]
@@ -114,26 +114,26 @@
              (+ (ya t) (yb t)))))
 
 (defn create-harmonograph
-  [{:keys [table-b pendulum-b dampen]}]
-  (let [A (/ (q/height) 5)
-        d (:rate dampen)
-        table-period (:value (:phase table-b))
-        pendulum-period (:value (:phase pendulum-b))]
-    (parametric-harmonograph
-     (decay-cycle A d (:value (:fx table-b)) table-period)
-     (decay-cycle A d (:value (:fx pendulum-b)) pendulum-period)
-     (decay-cycle A d (:value (:fy table-b)) table-period)
-     (decay-cycle A d (:value (:fy pendulum-b)) pendulum-period))))
-
-(defn create-pendulum-table
   [{:keys [table pendulum dampen]}]
   (let [A (/ (q/height) 5)
-        dplat (:value (nth table 0))
-        dpend (:value (nth pendulum 0))
-        table-dxt (:value (nth table 1))
-        table-dyt (:value (nth table 2))
-        pendulum-dxt (:value (nth pendulum 1))
-        pendulum-dyt (:value (nth pendulum 2))
+        d (:rate dampen)
+        table-period (:value (:phase table))
+        pendulum-period (:value (:phase pendulum))]
+    (parametric-harmonograph
+     (decay-cycle A d (:value (:fx table)) table-period)
+     (decay-cycle A d (:value (:fx pendulum)) pendulum-period)
+     (decay-cycle A d (:value (:fy table)) table-period)
+     (decay-cycle A d (:value (:fy pendulum)) pendulum-period))))
+
+(defn create-pendulum-table
+  [{:keys [table-pt pendulum-pt dampen]}]
+  (let [A (/ (q/height) 5)
+        dplat (:value (:ratio table-pt))
+        dpend (:value (:ratio pendulum-pt))
+        table-dxt (:value (:fx table-pt))
+        table-dyt (:value (:fy table-pt))
+        pendulum-dxt (:value (:fx pendulum-pt))
+        pendulum-dyt (:value (:fy pendulum-pt))
         ]
     (fn [t]
       (let [k (dampening (:rate dampen) t)
