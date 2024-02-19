@@ -32,6 +32,8 @@
                :dampen-rate 0.0015
                :dampen-limit 0.2
                :modulate-stroke true
+               :stroke {:weight 0.6
+                        :rate (fraction/validate "2")}
                :weight 0.6
                :pen-modulation false}))
 
@@ -73,11 +75,11 @@
     [ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1]]
     [:div {:style {:grid-column "3 / 4" :grid-row "2 / 3"}}]
     [:div "Stroke"]
-    [ctrl/numeric ui-state "Weight" [:weight] [0.1 2.0 0.1]]
     [ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke]]
-    [:div {:style {:grid-column "3 / 4" :grid-row "3 / 3"}}]
+    [ctrl/numeric ui-state "Weight" [:stroke :weight] [0.1 2.0 0.1]]
+    [fraction/control ui-state "Rate" [:stroke :rate]]
     [:div "Pen Stroke"]
-    [ctrl/checkbox-after ui-state "Modulation" [:pen-modulation]]
+    [ctrl/checkbox-after ui-state "Modulate" [:pen-modulation]]
     (when (:pen-modulation @ui-state)
       [:<>
        [fraction/control ui-state "Rate" [:pen 0]]
@@ -88,12 +90,14 @@
 (defn dampen [lambda t]
   (Math/exp (* (- lambda) t)))
 
+(defn sin-cycle [amplitude frequency period t]
+  (* amplitude (Math/sin (+ (* frequency t) period))))
+
 ;; TODO: Add the real parametric equation from: https://en.wikipedia.org/wiki/Harmonograph
 (defn decay-cycle [amplitude decay frequency period]
   (fn [t]
-    (* amplitude
-       (Math/exp (* (- decay) t))
-       (Math/sin (+ (* frequency t) period)))))
+    (* (dampen decay t)
+       (sin-cycle amplitude frequency period t))))
 
 (defn parametric-harmonograph [xa xb ya yb]
   (fn [t]
@@ -142,18 +146,20 @@
 (defn draw
   [{:keys [t sample-steps sample-rate
            dampen-rate dampen-limit
-           modulate-stroke weight
+           modulate-stroke
            pen-modulation dpen dpen-phase
+           stroke
            harmonograph]
     :as state}]
-  (q/stroke-weight weight)
+  (q/stroke-weight (:weight stroke))
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
           k (dampen dampen-rate t)]
       (when (< k dampen-limit)
         (q/no-loop))
       (when modulate-stroke
-        (q/stroke-weight (+ weight (* 0.4 (Math/sin (* 2 t))))))
+        (q/stroke-weight (tm/clamp01 (+ (:weight stroke)
+                                        (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
       (when (or (not pen-modulation)
                 (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
         (let [pos (if (:simple-harmonograph state)
