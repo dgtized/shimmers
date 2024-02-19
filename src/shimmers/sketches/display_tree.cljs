@@ -23,9 +23,9 @@
 (defonce defo (debug/state))
 (defonce ui-state (ctrl/state {:debug false}))
 
-(defn box-ratio [[w h] side]
-  (let [ratio (/ (float w) (float h))]
-    (gv/vec2 (* side ratio) (* side (/ 1.0 ratio)))))
+(defn ratio [[w h] side]
+  (let [ratio (/ (float h) (float w))]
+    (gv/vec2 side (int (* side ratio)))))
 
 (defn generate-display
   [{p :p [width height] :size}
@@ -33,7 +33,7 @@
    angle-mag]
   (let [inch (/ (q/height) 70)
         side (* inch size)
-        box (box-ratio dims side)
+        box (ratio dims side)
         a (tm/+ p (gv/vec2 (dr/random 0 (- width (:x box)))
                            (dr/random 0 (- height (:y box)))))
         angle (if (dr/chance 0.25)
@@ -238,9 +238,9 @@
       (q/no-stroke))))
 
 (defn make-static [bounds]
-  (let [{[w h] :size} bounds
-        ratio (/ (float w) h)
-        divisions (for [div (g/subdivide bounds {:rows (int (* 12 ratio)) :cols (int (/ 12 ratio))})]
+  (let [{size :size} bounds
+        [c r] (ratio size 16)
+        divisions (for [div (g/subdivide bounds {:cols c :rows r})]
                     (assoc div :val (dr/random)))]
     (fn [p rotation _t f]
       (doseq [{:keys [val] :as div} divisions]
