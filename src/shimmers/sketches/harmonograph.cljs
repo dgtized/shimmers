@@ -14,8 +14,9 @@
 (defonce ui-state
   (ctrl/state
    {:simple-harmonograph true
-    :sample-steps 1000
-    :sample-rate 2.0
+    :sample
+    {:steps 1000
+     :rate 2.0}
     :table
     {:fx (fraction/make "3/5")
      :fy (fraction/make "2/5")
@@ -78,8 +79,8 @@
     (ctrl/numeric ui-state "Limit" [:dampen :limit] [0.01 0.2 0.01])
     [:div {:style {:grid-column "3 / 4" :grid-row "1 / 3"}}]
     [:div "Sample"]
-    [ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50]]
-    [ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1]]
+    [ctrl/numeric ui-state "Steps" [:sample :steps] [100 2000 50]]
+    [ctrl/numeric ui-state "Rate" [:sample :rate] [0.1 12.0 0.1]]
     [:div {:style {:grid-column "3 / 4" :grid-row "2 / 3"}}]
     [:div "Stroke Weight"]
     [ctrl/checkbox-after ui-state "Modulate" [:stroke :modulate]]
@@ -160,12 +161,12 @@
   (update state :t + 1))
 
 (defn draw
-  [{:keys [t sample-steps sample-rate
+  [{:keys [t sample
            dampen stroke pen
            plot]}]
   (q/stroke-weight (:weight stroke))
-  (dotimes [i sample-steps]
-    (let [t (* sample-rate (+ t (/ i sample-steps)))
+  (dotimes [i (:steps sample)]
+    (let [t (* (:rate sample) (+ t (/ i (:steps sample))))
           k (dampening (:rate dampen) t)]
       (when (< k (:limit dampen))
         (q/no-loop))
