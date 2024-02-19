@@ -27,15 +27,15 @@
                :pendulum [(fraction/validate "1.001 / 3")
                           (fraction/validate "1")
                           (fraction/validate "1")]
-               :pen [(fraction/validate "1 / 2")
-                     (fraction/validate "1 / 3")]
                :dampen-rate 0.0015
                :dampen-limit 0.2
-               :modulate-stroke true
-               :stroke {:weight 0.6
+               :stroke {:modulate true
+                        :weight 0.6
                         :rate (fraction/validate "2")}
-               :weight 0.6
-               :pen-modulation false}))
+               :pen {:modulate false
+                     :rate (fraction/validate "1 / 2")
+                     :phase (fraction/validate "1 / 3")}
+               :weight 0.6}))
 
 (defn ui-controls []
   [:<>
@@ -74,16 +74,18 @@
     [ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50]]
     [ctrl/numeric ui-state "Rate" [:sample-rate] [0.1 12.0 0.1]]
     [:div {:style {:grid-column "3 / 4" :grid-row "2 / 3"}}]
-    [:div "Stroke"]
-    [ctrl/checkbox-after ui-state "Modulate" [:modulate-stroke]]
-    [ctrl/numeric ui-state "Weight" [:stroke :weight] [0.1 2.0 0.1]]
-    [fraction/control ui-state "Rate" [:stroke :rate]]
-    [:div "Pen Stroke"]
-    [ctrl/checkbox-after ui-state "Modulate" [:pen-modulation]]
-    (when (:pen-modulation @ui-state)
+    [:div "Stroke Weight"]
+    [ctrl/checkbox-after ui-state "Modulate" [:stroke :modulate]]
+    [ctrl/numeric ui-state "W" [:stroke :weight] [0.1 2.0 0.1]]
+    (if (:modulate (:stroke @ui-state))
+      [fraction/control ui-state "Rate" [:stroke :rate]]
+      [:div])
+    [:div "Pen Up/Down"]
+    [ctrl/checkbox-after ui-state "Modulate" [:pen :modulate]]
+    (when (:modulate (:pen @ui-state))
       [:<>
-       [fraction/control ui-state "Rate" [:pen 0]]
-       [fraction/control ui-state "Phase" [:pen 1]]])]
+       [fraction/control ui-state "Rate" [:pen :rate]]
+       [fraction/control ui-state "Phase" [:pen :phase]]])]
 
    [view-sketch/generate :harmonograph]])
 
@@ -135,8 +137,9 @@
             :dpend (:value (nth pendulum 0))
             :pendulum-dxt (:value (nth pendulum 1))
             :pendulum-dyt (:value (nth pendulum 2))
-            :dpen (:value (first pen))
-            :dpen-phase (:value (second pen))
+            :pen {:modulate (:modulate pen)
+                  :rate (:value (:rate pen))
+                  :phase (:value (:phase pen))}
             :harmonograph (create-harmonograph @ui-state)
             })))
 
@@ -146,9 +149,7 @@
 (defn draw
   [{:keys [t sample-steps sample-rate
            dampen-rate dampen-limit
-           modulate-stroke
-           pen-modulation dpen dpen-phase
-           stroke
+           stroke pen
            harmonograph]
     :as state}]
   (q/stroke-weight (:weight stroke))
@@ -157,11 +158,11 @@
           k (dampen dampen-rate t)]
       (when (< k dampen-limit)
         (q/no-loop))
-      (when modulate-stroke
+      (when (:modulate stroke)
         (q/stroke-weight (tm/clamp01 (+ (:weight stroke)
                                         (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
-      (when (or (not pen-modulation)
-                (> (Math/sin (+ (* dpen t) (* 2 (Math/sin (* dpen-phase t))))) 0))
+      (when (or (not (:modulate pen))
+                (> (Math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
         (let [pos (if (:simple-harmonograph state)
                     (harmonograph t)
                     (hgraph state k t))]
