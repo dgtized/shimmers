@@ -17,12 +17,12 @@
     :sample-steps 1000
     :sample-rate 2.0
     :table-b
-    {:fa (fraction/make "3/5")
-     :fb (fraction/make "2/5")
+    {:fx (fraction/make "3/5")
+     :fy (fraction/make "2/5")
      :phase (fraction/make "0")}
     :pendulum-b
-    {:fa (fraction/make "4/5")
-     :fb (fraction/make "1.01/5")
+    {:fx (fraction/make "4/5")
+     :fy (fraction/make "1.01/5")
      :phase (fraction/make "0")}
     :table
     [(fraction/make "1 / 1")
@@ -53,12 +53,12 @@
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
-      [fraction/control ui-state "A" [:table-b :fa]]
-      [fraction/control ui-state "B" [:table-b :fb]]
+      [fraction/control ui-state "fx" [:table-b :fx]]
+      [fraction/control ui-state "fy" [:table-b :fy]]
       [fraction/control ui-state "Phase" [:table-b :phase]]
       [:div "Pendulum"]
-      [fraction/control ui-state "A" [:pendulum-b :fa]]
-      [fraction/control ui-state "B" [:pendulum-b :fb]]
+      [fraction/control ui-state "fx" [:pendulum-b :fx]]
+      [fraction/control ui-state "fy" [:pendulum-b :fy]]
       [fraction/control ui-state "Phase" [:pendulum-b :phase]]
       ]
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
@@ -119,10 +119,10 @@
         table-period (:value (:phase table-b))
         pendulum-period (:value (:phase pendulum-b))]
     (parametric-harmonograph
-     (decay-cycle A d (:value (:fa table-b)) table-period)
-     (decay-cycle A d (:value (:fa pendulum-b)) pendulum-period)
-     (decay-cycle A d (:value (:fb table-b)) table-period)
-     (decay-cycle A d (:value (:fb pendulum-b)) pendulum-period))))
+     (decay-cycle A d (:value (:fx table-b)) table-period)
+     (decay-cycle A d (:value (:fx pendulum-b)) pendulum-period)
+     (decay-cycle A d (:value (:fy table-b)) table-period)
+     (decay-cycle A d (:value (:fy pendulum-b)) pendulum-period))))
 
 (defn hgraph
   [{:keys [dplat table-dxt table-dyt
