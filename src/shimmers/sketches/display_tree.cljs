@@ -244,6 +244,7 @@
         mode (dr/weighted {:static 1.0
                            :sweep 2.0
                            :radial 2.0})
+        dir (dr/rand-nth [-1 1])
         divisions
         (for [div (g/subdivide bounds {:cols cols :rows rows})
               :let [c (g/centroid div)
@@ -253,11 +254,12 @@
                  (case mode
                    :static
                    (let [v (dr/random)]
-                     (fn [t _f] (mod (+ t v) 1.0)))
+                     (fn [t _f] (mod (+ (* dir t) v) 1.0)))
                    :radial
-                   (fn [t f] (eq/unit-sin (+ r (* 2 t) f)))
+                   (fn [t f] (eq/unit-sin (+ r (* 2 (* dir t)) f)))
                    :sweep
-                   (fn [t _f] (eq/unit-sin (+ theta t))))))]
+                   (let [blades (dr/random-int 4)]
+                     (fn [t f] (eq/unit-sin (+ (+ (* Math/PI blades) theta) (* dir t) f)))))))]
     (fn [p rotation t f]
       (doseq [{:keys [value] :as div} divisions]
         (q/fill (value t f))
