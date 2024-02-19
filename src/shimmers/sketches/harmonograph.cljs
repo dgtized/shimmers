@@ -113,7 +113,8 @@
     (gv/vec2 (+ (xa t) (xb t))
              (+ (ya t) (yb t)))))
 
-(defn create-harmonograph [{:keys [table-b pendulum-b dampen]}]
+(defn create-harmonograph
+  [{:keys [table-b pendulum-b dampen]}]
   (let [A (/ (q/height) 5)
         d (:rate dampen)
         table-period (:value (:phase table-b))
@@ -124,31 +125,36 @@
      (decay-cycle A d (:value (:fy table-b)) table-period)
      (decay-cycle A d (:value (:fy pendulum-b)) pendulum-period))))
 
-(defn hgraph
-  [{:keys [dplat table-dxt table-dyt
-           dpend pendulum-dxt pendulum-dyt]} k t]
-  (let [size (* 0.225 (q/height) k)]
-    (tm/+ (gv/vec2 (* size (Math/cos (* table-dxt dplat t)))
-                   (* size (Math/sin (* table-dyt dplat t))))
-          (gv/vec2 (* size (Math/cos (* pendulum-dxt dpend t)))
-                   (* size (Math/sin (* pendulum-dyt dpend t)))))))
+(defn create-pendulum-table
+  [{:keys [table pendulum dampen]}]
+  (let [A (/ (q/height) 5)
+        dplat (:value (nth table 0))
+        dpend (:value (nth pendulum 0))
+        table-dxt (:value (nth table 1))
+        table-dyt (:value (nth table 2))
+        pendulum-dxt (:value (nth pendulum 1))
+        pendulum-dyt (:value (nth pendulum 2))
+        ]
+    (fn [t]
+      (let [k (dampening (:rate dampen) t)
+            size (* A k)]
+        (tm/+ (gv/vec2 (* size (Math/cos (* table-dxt dplat t)))
+                       (* size (Math/sin (* table-dyt dplat t))))
+              (gv/vec2 (* size (Math/cos (* pendulum-dxt dpend t)))
+                       (* size (Math/sin (* pendulum-dyt dpend t)))))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [{:keys [table pendulum pen]} @ui-state]
+  (let [{:keys [simple-harmonograph pen] :as state} @ui-state]
     (merge @ui-state
            {:t 0
-            :dplat (:value (nth table 0))
-            :table-dxt (:value (nth table 1))
-            :table-dyt (:value (nth table 2))
-            :dpend (:value (nth pendulum 0))
-            :pendulum-dxt (:value (nth pendulum 1))
-            :pendulum-dyt (:value (nth pendulum 2))
             :pen {:modulate (:modulate pen)
                   :rate (:value (:rate pen))
                   :phase (:value (:phase pen))}
-            :harmonograph (create-harmonograph @ui-state)
-            })))
+            :plot ((if simple-harmonograph
+                     create-harmonograph
+                     create-pendulum-table)
+                   state)})))
 
 (defn update-state [state]
   (update state :t + 1))
@@ -156,8 +162,7 @@
 (defn draw
   [{:keys [t sample-steps sample-rate
            dampen stroke pen
-           harmonograph]
-    :as state}]
+           plot]}]
   (q/stroke-weight (:weight stroke))
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
@@ -170,19 +175,16 @@
                         (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
       (when (or (not (:modulate pen))
                 (> (Math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
-        (let [pos (if (:simple-harmonograph state)
-                    (harmonograph t)
-                    (hgraph state k t))]
-          (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) pos)))))))
+        (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) (plot t)))))))
 
 (defn page []
   [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
    [ui-controls]])
 
 (sketch/definition harmonograph
