@@ -295,19 +295,24 @@
 
 (comment
   (for [n (range 200)]
-    [n (* 64 (Math/exp (* -0.04 n)))]))
+    [n (* 128 (Math/exp (* -0.1 n)))]))
 
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
-        ramp (Math/pow 2 (* 6 (tm/smoothstep* 0.92 1.0 (mod (/ t 50.0) 1.0))))
         tree (all-displays displays)
+        ramp (Math/exp (* 7 (tm/smoothstep* 0.85 0.95 (mod (/ t 50.0) 1.0))))
+        n (count tree)
+        animations (count (filter :animation tree))
         display-f
-        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.04 (count tree))))]
-                      [add-animation 48]
+        (dr/weighted [[subdivide (* 128 (Math/exp (* -0.1 n)))]
+                      [add-animation (* 32 (Math/exp (* -0.1 animations)))]
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
-    (swap! defo assoc :tree tree)
+    (swap! defo assoc
+           :displays n
+           :ramp ramp
+           :animations animations)
     (update displays i display-f t)))
 
 (defn update-state [{:keys [mode t] :as state}]
