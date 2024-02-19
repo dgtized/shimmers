@@ -28,6 +28,9 @@
         :error error
         :value (or last-value 1.0)}))))
 
+(defn make [s]
+  (validate s))
+
 (defn control [settings label field-ref]
   (let [value (get-in @settings field-ref)]
     [:div.label-set.fraction {:key (str "fraction-" field-ref)}

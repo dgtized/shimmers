@@ -12,30 +12,37 @@
    [shimmers.common.ui.fraction :as fraction]))
 
 (defonce ui-state
-  (ctrl/state {:simple-harmonograph false
-               :sample-steps 1000
-               :sample-rate 2.0
-               :table-b [(fraction/validate "3/5")
-                         (fraction/validate "2/5")
-                         (fraction/validate "0")]
-               :pendulum-b [(fraction/validate "4/5")
-                            (fraction/validate "1.01/5")
-                            (fraction/validate "0")]
-               :table [(fraction/validate "1 / 1")
-                       (fraction/validate "1")
-                       (fraction/validate "1")]
-               :pendulum [(fraction/validate "1.001 / 3")
-                          (fraction/validate "1")
-                          (fraction/validate "1")]
-               :dampen {:rate 0.0015
-                        :limit 0.2}
-               :stroke {:modulate true
-                        :weight 0.6
-                        :rate (fraction/validate "2")}
-               :pen {:modulate false
-                     :rate (fraction/validate "1 / 2")
-                     :phase (fraction/validate "1 / 3")}
-               :weight 0.6}))
+  (ctrl/state
+   {:simple-harmonograph false
+    :sample-steps 1000
+    :sample-rate 2.0
+    :table-b
+    [(fraction/make "3/5")
+     (fraction/make "2/5")
+     (fraction/make "0")]
+    :pendulum-b
+    [(fraction/make "4/5")
+     (fraction/make "1.01/5")
+     (fraction/make "0")]
+    :table
+    [(fraction/make "1 / 1")
+     (fraction/make "1")
+     (fraction/make "1")]
+    :pendulum
+    [(fraction/make "1.001 / 3")
+     (fraction/make "1")
+     (fraction/make "1")]
+    :dampen
+    {:rate 0.0015
+     :limit 0.2}
+    :stroke
+    {:modulate true
+     :weight 0.6
+     :rate (fraction/make "2")}
+    :pen
+    {:modulate false
+     :rate (fraction/make "1 / 2")
+     :phase (fraction/make "1 / 3")}}))
 
 (defn ui-controls []
   [:<>
