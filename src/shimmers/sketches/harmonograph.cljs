@@ -27,8 +27,8 @@
                :pendulum [(fraction/validate "1.001 / 3")
                           (fraction/validate "1")
                           (fraction/validate "1")]
-               :dampen-rate 0.0015
-               :dampen-limit 0.2
+               :dampen {:rate 0.0015
+                        :limit 0.2}
                :stroke {:modulate true
                         :weight 0.6
                         :rate (fraction/validate "2")}
@@ -67,8 +67,8 @@
    [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                        :column-gap "2%"}}
     [:div "Dampen"]
-    (ctrl/numeric ui-state "Rate" [:dampen-rate] [0.001 0.01 0.00001])
-    (ctrl/numeric ui-state "Limit" [:dampen-limit] [0.01 0.2 0.01])
+    (ctrl/numeric ui-state "Rate" [:dampen :rate] [0.001 0.01 0.00001])
+    (ctrl/numeric ui-state "Limit" [:dampen :limit] [0.01 0.2 0.01])
     [:div {:style {:grid-column "3 / 4" :grid-row "1 / 3"}}]
     [:div "Sample"]
     [ctrl/numeric ui-state "Steps" [:sample-steps] [100 2000 50]]
@@ -89,7 +89,7 @@
 
    [view-sketch/generate :harmonograph]])
 
-(defn dampen [lambda t]
+(defn dampening [lambda t]
   (Math/exp (* (- lambda) t)))
 
 (defn sin-cycle [amplitude frequency period t]
@@ -98,7 +98,7 @@
 ;; TODO: Add the real parametric equation from: https://en.wikipedia.org/wiki/Harmonograph
 (defn decay-cycle [amplitude decay frequency period]
   (fn [t]
-    (* (dampen decay t)
+    (* (dampening decay t)
        (sin-cycle amplitude frequency period t))))
 
 (defn parametric-harmonograph [xa xb ya yb]
@@ -106,9 +106,9 @@
     (gv/vec2 (+ (xa t) (xb t))
              (+ (ya t) (yb t)))))
 
-(defn create-harmonograph [{:keys [table-b pendulum-b dampen-rate]}]
+(defn create-harmonograph [{:keys [table-b pendulum-b dampen]}]
   (let [A (/ (q/height) 5)
-        d dampen-rate
+        d (:rate dampen)
         table-period (:value (nth table-b 2))
         pendulum-period (:value (nth pendulum-b 2))]
     (parametric-harmonograph
@@ -148,19 +148,19 @@
 
 (defn draw
   [{:keys [t sample-steps sample-rate
-           dampen-rate dampen-limit
-           stroke pen
+           dampen stroke pen
            harmonograph]
     :as state}]
   (q/stroke-weight (:weight stroke))
   (dotimes [i sample-steps]
     (let [t (* sample-rate (+ t (/ i sample-steps)))
-          k (dampen dampen-rate t)]
-      (when (< k dampen-limit)
+          k (dampening (:rate dampen) t)]
+      (when (< k (:limit dampen))
         (q/no-loop))
       (when (:modulate stroke)
-        (q/stroke-weight (tm/clamp01 (+ (:weight stroke)
-                                        (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
+        (q/stroke-weight
+         (tm/clamp01 (+ (:weight stroke)
+                        (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
       (when (or (not (:modulate pen))
                 (> (Math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
         (let [pos (if (:simple-harmonograph state)
