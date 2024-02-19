@@ -277,7 +277,7 @@
                                     [make-letter 0.1]
                                     [make-rect-growth 1]
                                     [make-spinner 1]
-                                    [make-static 0.5]])]
+                                    [make-static 0.66]])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn all-displays [displays]
