@@ -273,7 +273,7 @@
         (:animation screen)
         screen
         :else
-        (let [mk-anim (dr/weighted [[make-triangle 0.5]
+        (let [mk-anim (dr/weighted [[make-triangle 0.25]
                                     [make-letter 0.1]
                                     [make-rect-growth 1]
                                     [make-spinner 1]
