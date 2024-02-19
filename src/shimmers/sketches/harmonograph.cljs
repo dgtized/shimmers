@@ -17,13 +17,13 @@
     :sample-steps 1000
     :sample-rate 2.0
     :table-b
-    [(fraction/make "3/5")
-     (fraction/make "2/5")
-     (fraction/make "0")]
+    {:fa (fraction/make "3/5")
+     :fb (fraction/make "2/5")
+     :phase (fraction/make "0")}
     :pendulum-b
-    [(fraction/make "4/5")
-     (fraction/make "1.01/5")
-     (fraction/make "0")]
+    {:fa (fraction/make "4/5")
+     :fb (fraction/make "1.01/5")
+     :phase (fraction/make "0")}
     :table
     [(fraction/make "1 / 1")
      (fraction/make "1")
@@ -53,13 +53,13 @@
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
       [:div "Table"]
-      [fraction/control ui-state "A" [:table-b 0]]
-      [fraction/control ui-state "B" [:table-b 1]]
-      [fraction/control ui-state "Phase" [:table-b 2]]
+      [fraction/control ui-state "A" [:table-b :fa]]
+      [fraction/control ui-state "B" [:table-b :fb]]
+      [fraction/control ui-state "Phase" [:table-b :phase]]
       [:div "Pendulum"]
-      [fraction/control ui-state "A" [:pendulum-b 0]]
-      [fraction/control ui-state "B" [:pendulum-b 1]]
-      [fraction/control ui-state "Phase" [:pendulum-b 2]]
+      [fraction/control ui-state "A" [:pendulum-b :fa]]
+      [fraction/control ui-state "B" [:pendulum-b :fb]]
+      [fraction/control ui-state "Phase" [:pendulum-b :phase]]
       ]
      [:div.grid {:style {:grid-template-columns "0.2fr repeat(3,0.15fr)"
                          :column-gap "2%"}}
@@ -116,13 +116,13 @@
 (defn create-harmonograph [{:keys [table-b pendulum-b dampen]}]
   (let [A (/ (q/height) 5)
         d (:rate dampen)
-        table-period (:value (nth table-b 2))
-        pendulum-period (:value (nth pendulum-b 2))]
+        table-period (:value (:phase table-b))
+        pendulum-period (:value (:phase pendulum-b))]
     (parametric-harmonograph
-     (decay-cycle A d (:value (nth table-b 0)) table-period)
-     (decay-cycle A d (:value (nth pendulum-b 0)) pendulum-period)
-     (decay-cycle A d (:value (nth table-b 1)) table-period)
-     (decay-cycle A d (:value (nth pendulum-b 1)) pendulum-period))))
+     (decay-cycle A d (:value (:fa table-b)) table-period)
+     (decay-cycle A d (:value (:fa pendulum-b)) pendulum-period)
+     (decay-cycle A d (:value (:fb table-b)) table-period)
+     (decay-cycle A d (:value (:fb pendulum-b)) pendulum-period))))
 
 (defn hgraph
   [{:keys [dplat table-dxt table-dyt
