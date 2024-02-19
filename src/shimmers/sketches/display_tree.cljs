@@ -243,7 +243,7 @@
         center (g/centroid bounds)
         mode (dr/weighted {:static 1.0
                            :sweep 2.0
-                           :radial 10.0})
+                           :radial 3.0})
         dir (dr/rand-nth [-1 1])
         divisions
         (for [div (g/subdivide bounds {:cols cols :rows rows})
@@ -256,10 +256,8 @@
                    (let [v (dr/random)]
                      (fn [t _f] (mod (+ (* dir t) v) 1.0)))
                    :radial
-                   (let [factor (Math/pow 2.0 (dr/weighted {0 10
-                                                            6 4
-                                                            7 3}))]
-                     (fn [t _f] (eq/unit-sin (+ (/ r factor) (* 2 (* dir t))))))
+                   (let [factor (Math/pow 2.0 (dr/rand-nth [0 0 6]))]
+                     (fn [t _f] (eq/unit-sin (+ (/ r factor) (* 1.5 (* dir t))))))
                    :sweep
                    (let [blades (dr/random-int 4)]
                      (fn [t _f] (eq/unit-sin (+ (+ blades theta) (* dir t))))))))]
