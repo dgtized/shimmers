@@ -15,11 +15,11 @@
   (ctrl/state {:simple-harmonograph false
                :sample-steps 1000
                :sample-rate 2.0
-               :table-b [(fraction/validate "2")
-                         (fraction/validate "4")
+               :table-b [(fraction/validate "3/5")
+                         (fraction/validate "2/5")
                          (fraction/validate "0")]
-               :pendulum-b [(fraction/validate "3")
-                            (fraction/validate "1.01")
+               :pendulum-b [(fraction/validate "4/5")
+                            (fraction/validate "1.01/5")
                             (fraction/validate "0")]
                :table [(fraction/validate "1 / 1")
                        (fraction/validate "1")
