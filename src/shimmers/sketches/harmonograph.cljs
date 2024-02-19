@@ -48,7 +48,7 @@
       [fraction/control ui-state "B" [:table-b 1]]
       [fraction/control ui-state "Phase" [:table-b 2]]
       [:div "Pendulum"]
-      [fraction/control ui-state "B" [:pendulum-b 0]]
+      [fraction/control ui-state "A" [:pendulum-b 0]]
       [fraction/control ui-state "B" [:pendulum-b 1]]
       [fraction/control ui-state "Phase" [:pendulum-b 2]]
       ]
@@ -107,8 +107,8 @@
         pendulum-period (:value (nth pendulum-b 2))]
     (parametric-harmonograph
      (decay-cycle A d (:value (nth table-b 0)) table-period)
-     (decay-cycle A d (:value (nth table-b 1)) table-period)
      (decay-cycle A d (:value (nth pendulum-b 0)) pendulum-period)
+     (decay-cycle A d (:value (nth table-b 1)) table-period)
      (decay-cycle A d (:value (nth pendulum-b 1)) pendulum-period))))
 
 (defn hgraph
