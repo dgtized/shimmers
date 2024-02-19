@@ -5,11 +5,11 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.fraction :as fraction]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.ui.fraction :as fraction]))
+   [thi.ng.math.core :as tm]))
 
 (defonce ui-state
   (ctrl/state
