@@ -394,8 +394,8 @@
                         (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t (* 1.5 tm/PHI))))))))
         orientation (eq/unit-sin (- theta (* 0.8 t)))]
     (tm/smoothstep* 0.15 0.85
-                    (+ (* 0.75 wobble)
-                       (* 0.45 orientation)))))
+                    (+ (* 0.8 wobble)
+                       (* 0.4 orientation)))))
 
 (defn rdraw
   [{:keys [display children animation]}
