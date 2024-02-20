@@ -357,7 +357,7 @@
 
 (comment
   (for [n (range 200)]
-    [n (* 128 (Math/exp (* -0.1 n)))]))
+    [n (* 128 (Math/exp (* -0.12 n)))]))
 
 (defn update-displays [displays t]
   (let [i (dr/random-int (count displays))
@@ -366,9 +366,9 @@
         n (count tree)
         animations (count (filter :animation tree))
         display-f
-        (dr/weighted [[subdivide (* 128 (Math/exp (* -0.1 (+ n (dec ramp)))))]
-                      [add-animation (* 32 (Math/exp (* -0.1 (+ animations (dec ramp)))))]
-                      [combine (* 8 ramp)]
+        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.12 (+ n (dec ramp)))))]
+                      [add-animation (* 32 (Math/exp (* -0.12 (+ animations (dec ramp)))))]
+                      [combine (* 4 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
     (swap! defo assoc
