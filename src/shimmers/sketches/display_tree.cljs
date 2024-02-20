@@ -364,14 +364,18 @@
 (defn rdraw
   [{:keys [display children animation]}
    {:keys [depth p rotation i t center] :as dstate}]
-  (if (seq children)
-    (doseq [d children]
-      (rdraw d (update dstate :depth inc)))
-    (let [div (geometry/rotate-around display p rotation)
-          [dx dy] (tm/- (g/centroid display) center)
-          f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
-      (q/fill f)
-      (qdg/draw div)
+  (let [div (geometry/rotate-around display p rotation)
+        [dx dy] (tm/- (g/centroid display) center)
+        f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
+    (if (= depth 0)
+      (q/stroke 0.0)
+      (q/no-stroke))
+    (q/fill f)
+    (qdg/draw div)
+    (q/no-stroke)
+    (if (seq children)
+      (doseq [d children]
+        (rdraw d (update dstate :depth inc)))
       (when animation
         (q/fill (- 1.0 f))
         (animation p rotation t f)))))
