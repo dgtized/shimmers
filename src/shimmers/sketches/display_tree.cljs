@@ -366,9 +366,9 @@
         n (count tree)
         animations (count (filter :animation tree))
         display-f
-        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.12 (+ n (dec ramp)))))]
+        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.08 (+ n (dec ramp)))))]
                       [add-animation (* 32 (Math/exp (* -0.12 (+ animations (dec ramp)))))]
-                      [combine (* 4 ramp)]
+                      [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
     (swap! defo assoc
