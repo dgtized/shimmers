@@ -15,6 +15,7 @@
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -296,6 +297,41 @@
         (cq/draw-path path))
       (q/no-stroke))))
 
+(gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 Math/PI) 9.0)
+
+(defn make-spiral [bounds]
+  (let [size (min (g/width bounds) (g/height bounds))
+        dr-rate (dr/random 0.45 1.2)
+        dr-rate' (dr/gaussian 1.0 0.2)
+        dr-phase (dr/random-tau)
+        dr-phase' (dr/random-tau)]
+    (fn [pos rotation t f]
+      (let [box (geometry/rotate-around bounds pos rotation)
+            center (g/centroid box)
+            dr (- 0.975 (* 0.15 (eq/unit-sin (+ (* dr-rate t) dr-phase
+                                                (Math/sin (+ (* dr-rate' t)
+                                                             dr-phase'))))))
+            dt (+ 0.05 (* (/ eq/TAU 12) (eq/unit-cos (+ (/ t tm/PHI) size f))))
+            r (* 0.46 size)
+            circles (->> {:circle (gc/circle (gv/vec2) r)
+                          :theta t}
+                         (iterate
+                          (fn [{:keys [circle theta]}]
+                            (let [{:keys [p r]} circle
+                                  r' (* dr r)]
+                              {:circle
+                               (gc/circle (v/+polar p (- r' r) theta)
+                                          r')
+                               :theta (+ theta dt)})))
+                         (take-while (fn [{:keys [circle]}] (> (:r circle) 3.0))))]
+        (q/no-fill)
+        (q/stroke-weight 0.6)
+        (q/stroke (- 1.0 f))
+        (doseq [c (map :circle circles)]
+          (qdg/draw (g/translate c center)))
+        (q/stroke-weight 1.0)
+        (q/no-stroke)))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -309,6 +345,7 @@
                                     [make-rect-growth 0.75]
                                     [make-spinner 1]
                                     [make-wobble 0.75]
+                                    [make-spiral 0.75]
                                     [make-static 0.66]])]
           (assoc screen :animation (mk-anim display t)))))
 
@@ -381,6 +418,7 @@
 
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
+  (q/ellipse-mode :radius)
   (q/no-stroke)
   (doseq [[i screen] (map-indexed vector displays)
           :let [{[x y] :centroid :keys [display rotation]} screen
