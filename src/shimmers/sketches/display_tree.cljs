@@ -268,6 +268,34 @@
             (geometry/rotate-around p rotation)
             qdg/draw)))))
 
+(defn make-wobble [bounds]
+  (let [{ul :p [w h] :size} bounds
+        po0 (dr/random-tau)
+        pw0 (dr/random-tau)
+        pw1 (dr/random-tau)
+        dir (dr/rand-nth [-1 1])
+        fxw0 (dr/gaussian 0.0 0.33)
+        fxw1 (dr/gaussian 0.0 0.33)
+        fxo (if (dr/chance 0.5)
+              (dr/gaussian 1.0 0.5)
+              (dr/gaussian 24.0 4.0))]
+    (fn [p rotation t f]
+      (q/no-fill)
+      (q/stroke (- 1.0 f))
+      (let [t (* 10 dir t)
+            path (for [s (tm/norm-range 128)
+                       :let [x (* 1.5 eq/TAU s)
+                             wob0 (eq/cube (Math/sin (+ (* x fxw0) (* 0.2 t) pw0)))
+                             wob1 (Math/sin (+ (* x fxw1) (* 0.1 t) pw1))
+                             v (Math/sin (+ (* x fxo) (* 0.25 t) po0
+                                            (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
+                   (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
+                       (g/rotate rotation)
+                       (tm/+ (g/rotate (tm/- ul p) rotation))
+                       (tm/+ p)))]
+        (cq/draw-path path))
+      (q/no-stroke))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -280,6 +308,7 @@
                                     [make-letter 0.1]
                                     [make-rect-growth 1]
                                     [make-spinner 1]
+                                    [make-wobble 1]
                                     [make-static 0.66]])]
           (assoc screen :animation (mk-anim display t)))))
 
