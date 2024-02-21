@@ -174,25 +174,29 @@
 (defn make-triangle [bounds]
   (let [circle (dr/chance 0.5)
         limit (min (g/width bounds) (g/height bounds))
-        s (if circle (dr/random 0.2 0.8) 0)
-        d (* s (* 0.3 limit))
-        triangle
-        (triangle/inscribed-equilateral (gv/vec2)
-                                        (* (- 1.0 s) 0.3 limit)
-                                        (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4)))))
-        rate (* (dr/rand-nth [1 -1])
-                (dr/gaussian 1.0 0.1))
-        rate2 (* (dr/rand-nth [1 -1])
-                 (dr/gaussian 1.25 0.2))]
+        s (if circle (dr/random 0.15 0.66) 0)
+        d (* s (* 0.65 limit))
+        n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
+        angle (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4))))
+        spin (* (dr/rand-nth [1 -1])
+                (dr/gaussian 1.5 0.25))
+        orbit (* (dr/rand-nth [1 -1])
+                 (dr/gaussian 1.1 0.25))
+        dir (dr/rand-nth [1 -1])]
     (fn [p rotation t]
       (let [box (geometry/rotate-around bounds p rotation)
-            centroid (g/centroid box)]
-        (-> triangle
-            (g/rotate (* rate t))
-            (g/translate (gv/vec2 d 0))
-            (g/rotate (* rate2 t))
-            (g/translate centroid)
-            qdg/draw)))))
+            centroid (g/centroid box)
+            t (* dir t)]
+        (dotimes [i n-triangles]
+          (let [spacing (/ i n-triangles)]
+            (-> (gv/vec2)
+                (triangle/inscribed-equilateral
+                 (* (- 1.0 s) 0.25 limit) angle)
+                (g/rotate (* spin t))
+                (g/translate (gv/vec2 d 0))
+                (g/rotate (+ (* eq/TAU spacing) (* orbit t)))
+                (g/translate centroid)
+                qdg/draw)))))))
 
 (defn make-letter [bounds]
   (let [size (g/height bounds)
