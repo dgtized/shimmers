@@ -66,7 +66,8 @@
    {:dims [16 9] :size 21}
    {:dims [16 10] :size 23}
    {:dims [16 10] :size 23}
-   {:dims [16 10] :size 14}])
+   #_{:dims [16 10] :size 14} ;; laptop
+   ])
 
 (defn place-boxes [bounds angle]
   (loop [displays (dr/shuffle display-dims)
