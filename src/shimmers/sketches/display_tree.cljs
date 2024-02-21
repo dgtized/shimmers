@@ -332,6 +332,35 @@
         (q/stroke-weight 1.0)
         (q/no-stroke)))))
 
+(defn make-helix [bounds]
+  (let [{ul :p [w h] :size} bounds
+        dir (dr/rand-nth [-1 1])
+        r (dr/gaussian 2.0 0.1)
+        p (dr/random-tau)
+        r0 (dr/gaussian 1.5 0.2)
+        r1 (dr/gaussian 2.5 0.5)
+        p0 (dr/random-tau)
+        p1 (dr/random-tau)
+        helices (dr/rand-nth [1 2 3])]
+    (fn [pos rotation t f]
+      (let [t (* dir t)
+            spots 50.0]
+        (q/stroke (- 1.0 f))
+        (q/fill (- 1.0 f))
+        (dotimes [j helices]
+          (dotimes [i spots]
+            (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
+                  w0 (eq/cube (Math/sin (+ (* 0.03 y) (* r0 t) p0 j)))
+                  w1 (eq/cube (Math/sin (+ (* 0.05 y) (* r1 t) p1 (* 2 j))))
+                  v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
+              (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
+                           y)
+                  (g/rotate rotation)
+                  (tm/+ (g/rotate (tm/- ul pos) rotation))
+                  (tm/+ pos)
+                  (cq/circle 1.0)))))
+        (q/no-stroke)))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -344,7 +373,8 @@
                                     [make-spinner 4.0]
                                     [make-wobble 3.0]
                                     [make-spiral 2.0]
-                                    [make-static 1.0]])]
+                                    [make-static 1.0]
+                                    [make-helix 2.0]])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn all-displays [displays]
