@@ -376,8 +376,8 @@
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-animation t))
         :else
-        (let [mk-anim (dr/weighted [[make-triangle 0.4]
-                                    [make-letter 0.8]
+        (let [mk-anim (dr/weighted [[make-triangle 0.8]
+                                    [make-letter 0.75]
                                     [make-rect-growth 2.5]
                                     [make-spinner 4.0]
                                     [make-wobble 3.0]
