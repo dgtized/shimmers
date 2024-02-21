@@ -351,7 +351,7 @@
     (fn [pos rotation t f]
       (let [t (* dir t)
             spots 50.0]
-        (q/stroke (- 1.0 f))
+        (q/no-stroke)
         (q/fill (- 1.0 f))
         (dotimes [j helices]
           (dotimes [i spots]
@@ -364,8 +364,7 @@
                   (g/rotate rotation)
                   (tm/+ (g/rotate (tm/- ul pos) rotation))
                   (tm/+ pos)
-                  (cq/circle 1.0)))))
-        (q/no-stroke)))))
+                  (cq/circle 0.8)))))))))
 
 (defn add-animation
   [{:keys [children display] :as screen} t]
