@@ -402,7 +402,7 @@
         animations (count (filter :animation tree))
         display-f
         (dr/weighted [[subdivide (* 64 (Math/exp (* -0.08 (+ n (dec ramp)))))]
-                      [add-animation (* 32 (Math/exp (* -0.12 (+ animations (dec ramp)))))]
+                      [add-animation (* 32 (Math/exp (* -0.15 (+ animations (dec ramp)))))]
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]
                       [identity 4096]])]
