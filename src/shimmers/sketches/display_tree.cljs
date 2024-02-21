@@ -195,7 +195,12 @@
 
 (defn make-letter [bounds]
   (let [size (g/height bounds)
-        letter (char (+ 65 (dr/rand-nth (range 26))))]
+        letter (cond (dr/chance 0.1)
+                     (char (+ 65 (dr/rand-nth (range 26))))
+                     (dr/chance 0.2)
+                     (char (+ 48 (dr/random-int 10)))
+                     :else
+                     (char (+ 48 (dr/random-int 2))))]
     (fn [p rotation _t]
       (let [box (geometry/rotate-around bounds p rotation)
             [x y] (g/centroid box)]
@@ -367,8 +372,8 @@
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-animation t))
         :else
-        (let [mk-anim (dr/weighted [[make-triangle 0.5]
-                                    [make-letter 0.25]
+        (let [mk-anim (dr/weighted [[make-triangle 0.4]
+                                    [make-letter 0.8]
                                     [make-rect-growth 2.5]
                                     [make-spinner 4.0]
                                     [make-wobble 3.0]
