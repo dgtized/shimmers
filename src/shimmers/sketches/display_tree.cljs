@@ -174,7 +174,7 @@
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
-        d (* s (* 0.65 limit))
+        radius (* s (* 0.65 limit))
         n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
         angle (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4))))
         spin (* (dr/rand-nth [1 -1])
@@ -192,7 +192,7 @@
                 (triangle/inscribed-equilateral
                  (* (- 1.0 s) 0.25 limit) angle)
                 (g/rotate (* spin t))
-                (g/translate (gv/vec2 d 0))
+                (g/translate (gv/vec2 radius 0))
                 (g/rotate (+ (* eq/TAU spacing) (* orbit t)))
                 (g/translate centroid)
                 qdg/draw)))))))
