@@ -307,7 +307,7 @@
         (cq/draw-path path))
       (q/no-stroke))))
 
-(gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 Math/PI) 9.0)
+;; (gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 Math/PI) 9.0)
 
 (defn make-spiral [bounds]
   (let [size (min (g/width bounds) (g/height bounds))
