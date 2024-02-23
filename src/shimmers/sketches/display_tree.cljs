@@ -172,9 +172,8 @@
     screen))
 
 (defn make-triangle [bounds]
-  (let [circle (dr/chance 0.5)
-        limit (min (g/width bounds) (g/height bounds))
-        s (if circle (dr/random 0.15 0.66) 0)
+  (let [limit (min (g/width bounds) (g/height bounds))
+        s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
         d (* s (* 0.65 limit))
         n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
         angle (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4))))
