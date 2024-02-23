@@ -377,7 +377,7 @@
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-animation t))
         :else
-        (let [mk-anim (dr/weighted [[make-triangle 0.8]
+        (let [mk-anim (dr/weighted [[make-triangle 1.0]
                                     [make-letter 0.75]
                                     [make-rect-growth 2.5]
                                     [make-spinner 4.0]
@@ -457,6 +457,7 @@
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
+  (q/stroke-weight 1.0)
   (q/no-stroke)
   (doseq [[i screen] (map-indexed vector displays)
           :let [{[x y] :centroid :keys [display rotation]} screen
