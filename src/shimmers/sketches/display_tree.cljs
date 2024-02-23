@@ -387,7 +387,8 @@
           (-> bounds
               (g/scale-size (mod v 1.0))
               (geometry/rotate-around pos rotation)
-              (qdg/draw)))))))
+              (qdg/draw))))
+      (q/stroke-weight 1.0))))
 
 (defn add-animation
   [{:keys [children display] :as screen} t]
