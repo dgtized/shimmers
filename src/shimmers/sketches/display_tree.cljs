@@ -60,13 +60,13 @@
                           rotation))
 
 (def display-dims
-  [{:dims [5 4] :size 19}
-   {:dims [5 4] :size 19}
-   {:dims [16 9] :size 21}
-   {:dims [16 9] :size 21}
-   {:dims [16 10] :size 23}
-   {:dims [16 10] :size 23}
-   #_{:dims [16 10] :size 14} ;; laptop
+  [{:dims [5 4] :size 19} ;; 1280x1024
+   {:dims [5 4] :size 19} ;; 1280x1024
+   {:dims [16 10] :size 21} ;; 1440x900?
+   {:dims [16 10] :size 21} ;; 1440x900?
+   {:dims [16 9] :size 23} ;; 1920x1080
+   {:dims [16 9] :size 23} ;; 1920x1080
+   #_{:dims [16 10] :size 14} ;; 2560x1600 broken laptop
    ])
 
 (defn place-boxes [bounds angle]
