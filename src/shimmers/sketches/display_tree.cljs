@@ -371,6 +371,23 @@
                   (tm/+ pos)
                   (cq/circle 0.8)))))))))
 
+;; (map (fn [t] [t (mapv (fn [y] (mod (+ (/ y 3.0) t) 1.0)) (range 3))]) (range 0 1.0 0.05))
+
+(defn make-tunnel [bounds]
+  (let [n 4
+        dir (dr/rand-nth [1 -1])]
+    (fn [pos rotation t f]
+      (q/no-fill)
+      (q/stroke-weight 4.0)
+      (q/stroke (- 1.0 f))
+      (dotimes [i n]
+        ;; (q/fill (if (even? i) (- 1.0 f) f))
+        (let [v (/ (+ (* dir t) i) (float n))]
+          (-> bounds
+              (g/scale-size (mod v 1.0))
+              (geometry/rotate-around pos rotation)
+              (qdg/draw)))))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -384,7 +401,8 @@
                                     [make-wobble 3.0]
                                     [make-spiral 2.0]
                                     [make-static 1.0]
-                                    [make-helix 2.0]])]
+                                    [make-helix 2.0]
+                                    [make-tunnel 1.0]])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn all-displays [displays]
