@@ -100,7 +100,7 @@
                            (gv/vec2)
                            displays)
                    (/ 1 (count displays)))
-     :mode :divisions
+     :heat 0.0
      :t 0.0}))
 
 (defn create-node [display]
@@ -412,36 +412,39 @@
        (mapcat (fn [display]
                  (tree-seq (fn [{:keys [children]}] (not-empty children))
                            (fn [{:keys [children]}] children)
-                           display)))
-       (map (fn [n] (update n :children count)))))
+                           display)))))
 
 (comment
   (for [n (range 200)]
     [n (* 128 (Math/exp (* -0.12 n)))]))
 
-(defn update-displays [displays t]
+(defn update-displays [displays t heat]
   (let [i (dr/random-int (count displays))
         tree (all-displays displays)
+        leaves (filter (comp empty? :children) tree)
         ramp (Math/exp (* 7 (tm/smoothstep* 0.85 0.95 (mod (/ t 50.0) 1.0))))
-        n (count tree)
-        animations (count (filter :animation tree))
+        n (count leaves)
+        animations (count (filter :animation leaves))
         display-f
         (dr/weighted [[subdivide (* 64 (Math/exp (* -0.06 (+ n (dec ramp)))))]
                       [add-animation (* 32 (Math/exp (* -0.15 (+ animations (dec ramp)))))]
                       [combine (* 8 ramp)]
-                      [collapse (* 2 ramp)]
-                      [identity 4096]])]
+                      [collapse (* 2 ramp)]])]
     (swap! defo assoc
            :displays n
+           ;; :leaves leaves
            :ramp ramp
            :animations animations)
     (update displays i display-f t)))
 
-(defn update-state [{:keys [mode t] :as state}]
-  (let [df ({:divisions update-displays} mode)]
-    (-> state
-        (update :displays df t)
-        (update :t + 0.01))))
+(defn update-state [{:keys [t heat] :as state}]
+  (swap! defo assoc :heat heat)
+  (let [event (> (+ heat (dr/gaussian 0.4 0.1)) 0.99)]
+    (cond-> state
+      event (update :displays update-displays t heat)
+      event (update :heat - (dr/random 0.5))
+      true (update :heat + (dr/random (/ 1 300.0)))
+      true (update :t + 0.01))))
 
 (defn fader [i x y t]
   (let [theta (g/heading (gv/vec2 x y))
