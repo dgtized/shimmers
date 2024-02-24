@@ -32,7 +32,7 @@
   [{p :p [width height] :size}
    {:keys [dims size] :as info}
    angle-mag]
-  (let [inch (/ (q/height) 70)
+  (let [inch (/ (q/height) 60)
         side (* inch size)
         box (ratio dims side)
         a (tm/+ p (gv/vec2 (dr/random 0 (- width (:x box)))
