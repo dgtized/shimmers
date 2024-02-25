@@ -450,9 +450,9 @@
   (let [theta (g/heading (gv/vec2 x y))
         ;; r (tm/mag (gv/vec2 x y))
         wobble
-        (eq/unit-sin (+ (* 0.01 x)
+        (eq/unit-sin (+ (* 0.02 x)
                         (* 0.15 t tm/PHI)
-                        (* 2 (eq/cube (Math/sin (+ i (* 0.01 y) (/ t (* 1.5 tm/PHI))))))))
+                        (* 2 (eq/cube (Math/sin (+ i (* 0.02 y) (/ t (* 1.5 tm/PHI))))))))
         orientation (eq/unit-sin (- theta (* 0.8 t)))]
     (tm/smoothstep* 0.15 0.85
                     (+ (* 0.8 wobble)
