@@ -376,14 +376,17 @@
 
 (defn make-tunnel [bounds]
   (let [n 4
-        dir (dr/rand-nth [1 -1])]
+        dir (dr/rand-nth [1 -1])
+        time-f (if (dr/chance 0.5)
+                 (fn [t] (* dir t))
+                 (fn [t] (* 10 (Math/sin (* 0.15 t)))))]
     (fn [pos rotation t f]
       (q/no-fill)
       (q/stroke-weight 4.0)
       (q/stroke (- 1.0 f))
       (dotimes [i n]
         ;; (q/fill (if (even? i) (- 1.0 f) f))
-        (let [v (/ (+ (* dir t) i) (float n))]
+        (let [v (/ (+ (time-f t) i) (float n))]
           (-> bounds
               (g/scale-size (mod v 1.0))
               (geometry/rotate-around pos rotation)
