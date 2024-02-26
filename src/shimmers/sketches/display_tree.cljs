@@ -26,7 +26,7 @@
 
 (defn ratio [[w h] side]
   (let [ratio (/ (float h) (float w))]
-    (gv/vec2 side (int (* side ratio)))))
+    (gv/vec2 (int side) (int (* side ratio)))))
 
 (defn generate-display
   [{p :p [width height] :size}
