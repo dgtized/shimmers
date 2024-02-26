@@ -230,7 +230,7 @@
 
 (defn make-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
-        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.75 0.05))
+        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.7 0.06))
         [a b c] (repeatedly 3 #(dr/random-int -4 4))]
     (fn [p rotation t f]
       (q/no-fill)
@@ -351,7 +351,7 @@
 
 (defn make-helix [bounds]
   (let [{ul :p [w h] :size} bounds
-        dir (dr/rand-nth [-1 1])
+        dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.85 0.06))
         r (dr/gaussian 2.0 0.1)
         p (dr/random-tau)
         wobble0 (cube-wobble (dr/gaussian 1.5 0.2) (dr/random-tau))
