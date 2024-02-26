@@ -84,7 +84,7 @@
             (if (some (fn [screen]
                         (-> screen
                             rotated-box
-                            (g/scale-size 1.15)
+                            (g/scale-size 1.1)
                             (collide/overlaps? rbox)))
                       boxes)
               (recur displays boxes (inc attempts))
