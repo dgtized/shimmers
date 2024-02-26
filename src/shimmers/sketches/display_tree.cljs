@@ -314,7 +314,9 @@
         dr-rate (dr/random 0.45 1.2)
         dr-rate' (dr/gaussian 1.0 0.2)
         dr-phase (dr/random-tau)
-        dr-phase' (dr/random-tau)]
+        dr-phase' (dr/random-tau)
+        t-phase (dr/random-tau)
+        t-phase' (dr/random-tau)]
     (fn [pos rotation t f]
       (let [box (geometry/rotate-around bounds pos rotation)
             center (g/centroid box)
@@ -323,8 +325,9 @@
                                                              dr-phase'))))))
             dt (+ 0.05 (* (/ eq/TAU 12) (eq/unit-cos (+ (/ t tm/PHI) size f))))
             r (* 0.46 size)
+            theta (* 4 eq/TAU (Math/sin (+ (* 0.06 t) (eq/cube (Math/sin (+ (* 0.13 t) t-phase'))) t-phase)))
             circles (->> {:circle (gc/circle (gv/vec2) r)
-                          :theta t}
+                          :theta theta}
                          (iterate
                           (fn [{:keys [circle theta]}]
                             (let [{:keys [p r]} circle
