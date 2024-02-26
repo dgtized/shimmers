@@ -353,7 +353,8 @@
         p (dr/random-tau)
         wobble0 (cube-wobble (dr/gaussian 1.5 0.2) (dr/random-tau))
         wobble1 (cube-wobble (dr/gaussian 2.5 0.5) (dr/random-tau))
-        helices (dr/rand-nth [1 2 3])]
+        helices (dr/rand-nth [1 2 3])
+        width-w (if (dr/chance 0.5) 0.0 (dr/random 1.5 4.0))]
     (fn [pos rotation t f]
       (let [t (* dir t)
             spots 50.0]
@@ -362,8 +363,9 @@
         (dotimes [j helices]
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
-                  w0 (wobble0 t (+ (* 0.03 y) (inc j)))
-                  w1 (wobble1 t (+ (* 0.05 y) (* 2 (inc j))))
+                  width (* (inc (* width-w (eq/unit-sin (* 0.66 t)))) (inc j))
+                  w0 (wobble0 t (+ (* 0.03 y) width))
+                  w1 (wobble1 t (+ (* 0.05 y) (* 2 width)))
                   v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
