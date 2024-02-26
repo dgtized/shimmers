@@ -363,7 +363,7 @@
         (dotimes [j helices]
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
-                  width (* (inc (* width-w (eq/unit-sin (* 0.66 t)))) (inc j))
+                  width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
                   w0 (wobble0 t (+ (* 0.03 y) width))
                   w1 (wobble1 t (+ (* 0.05 y) (* 2 width)))
                   v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
