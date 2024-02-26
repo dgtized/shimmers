@@ -400,6 +400,8 @@
   (cond (seq children)
         (let [i (dr/random-int (count children))]
           (update-in screen [:children i] add-animation t))
+        (:animation screen)
+        screen
         :else
         (let [mk-anim (dr/weighted [[make-triangle 1.0]
                                     [make-letter 0.75]
