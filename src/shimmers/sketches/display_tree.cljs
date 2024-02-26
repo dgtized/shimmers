@@ -398,6 +398,34 @@
               (qdg/draw))))
       (q/stroke-weight 1.0))))
 
+(defn make-circle-blob [bounds]
+  (let [radius (* 0.4 (min (g/width bounds) (g/height bounds)))
+        samples 40
+        blades (+ (dr/random-int 2 7) (dr/gaussian 0.0 0.1))
+        phase (dr/random-tau)
+        rf (fn [theta t]
+             (let [w (Math/sin (+ (* blades theta) (* 1.5 t)))]
+               (eq/unit-sin (+ (* 0.66 blades theta)
+                               t
+                               (* 2 (eq/cube w))
+                               phase))))]
+    (fn [pos rotation t f]
+      (let [box (geometry/rotate-around bounds pos rotation)
+            center (g/centroid box)]
+        (q/no-fill)
+        (q/stroke-weight 1.0)
+        (q/stroke (- 1.0 f))
+        (q/begin-shape)
+        (doseq [s (tm/norm-range samples)]
+          (let [theta (* eq/TAU 1.1 s)
+                r (rf theta t)]
+            (apply q/curve-vertex
+                   (v/+polar center
+                             (* radius (+ 0.75 (* 0.25 r)))
+                             (+ theta phase)))))
+        (q/end-shape)
+        (q/stroke-weight 1.0)))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -414,7 +442,9 @@
                                     [make-spiral 2.0]
                                     [make-static 1.0]
                                     [make-helix 2.0]
-                                    [make-tunnel 1.0]])]
+                                    [make-tunnel 1.0]
+                                    ;; [make-circle-blob 1.0]
+                                    ])]
           (assoc screen :animation (mk-anim display t)))))
 
 (defn all-displays [displays]
