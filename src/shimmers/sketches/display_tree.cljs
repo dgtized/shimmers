@@ -448,17 +448,20 @@
 
 (defn make-bars [bounds]
   (let [n (dr/random-int 2 13)
-        dir (dr/rand-nth [1 -1])]
+        dir (dr/rand-nth [1 -1])
+        F (dr/rand-nth [:xy :yx])]
     (fn [pos rotation t f]
       (q/no-stroke)
       (let [cuts (tm/norm-range n)
             bicuts (partition 2 1 cuts)
             t (* dir 0.15 t)]
-        (doseq [[i [a b]] (map-indexed vector bicuts)]
+        (doseq [[i [a b]] (map-indexed vector bicuts)
+                :let [a' (gv/vec2 (mod (+ a t) 1.0) 0)
+                      b' (gv/vec2 (mod (+ b t) 1.0) 1.0)]]
           (q/fill (if (even? i) (- 1.0 f) f))
           (cq/draw-polygon
-           (-> (rect/rect (g/unmap-point bounds (gv/vec2 (mod (+ a t) 1.0) 0))
-                          (g/unmap-point bounds (gv/vec2 (mod (+ b t) 1.0) 1.0)))
+           (-> (rect/rect (g/unmap-point bounds (F a'))
+                          (g/unmap-point bounds (F b')))
                (g/translate (tm/- pos))
                (g/rotate rotation)
                (g/translate pos))))))))
