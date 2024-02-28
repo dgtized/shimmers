@@ -486,6 +486,7 @@
       true (update :heat + (dr/random (/ 1 300.0)))
       true (update :t + 0.01))))
 
+;; Why is this sometimes being overridden?
 (defn fader [i x y t]
   (let [theta (g/heading (gv/vec2 x y))
         ;; r (tm/mag (gv/vec2 x y))
@@ -493,10 +494,16 @@
         (eq/unit-sin (+ (* 0.02 x)
                         (* 0.15 t tm/PHI)
                         (* 2 (eq/cube (Math/sin (+ i (* 0.02 y) (/ t (* 1.5 tm/PHI))))))))
-        orientation (eq/unit-sin (- theta (* 0.8 t)))]
-    (tm/smoothstep* 0.15 0.85
-                    (+ (* 0.8 wobble)
-                       (* 0.4 orientation)))))
+        orientation (eq/unit-sin (- theta (* 0.8 t)))
+        unison-blink (eq/unit-sin t)
+        ramp-mode (tm/smoothstep* 0.8 0.9 (eq/unit-cos (+ (* 0.05 t) (Math/sin (* 0.17 t)))))]
+    (swap! defo assoc :ramp-mode ramp-mode :unison-blink unison-blink)
+    (tm/mix*
+     (tm/smoothstep* 0.15 0.85
+                     (+ (* 0.8 wobble)
+                        (* 0.4 orientation)))
+     (tm/smoothstep* 0.2 0.8 unison-blink)
+     ramp-mode)))
 
 (defn rdraw
   [{:keys [display children animation]}
