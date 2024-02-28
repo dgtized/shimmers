@@ -59,6 +59,9 @@
   (geometry/rotate-around display (rect/bottom-left display)
                           rotation))
 
+(defn rotated-centroid [bounds pos rotation]
+  (g/centroid (geometry/rotate-around bounds pos rotation)))
+
 (def display-dims
   [{:dims [5 4] :size 19} ;; 1280x1024
    {:dims [5 4] :size 19} ;; 1280x1024
@@ -184,8 +187,7 @@
                  (dr/gaussian 1.1 0.25))
         dir (dr/rand-nth [1 -1])]
     (fn [p rotation t]
-      (let [box (geometry/rotate-around bounds p rotation)
-            centroid (g/centroid box)
+      (let [centroid (rotated-centroid bounds p rotation)
             t (* dir t)]
         (dotimes [i n-triangles]
           (let [spacing (/ i n-triangles)]
@@ -207,8 +209,7 @@
                      :else
                      (char (+ 48 (dr/random-int 2))))]
     (fn [p rotation _t]
-      (let [box (geometry/rotate-around bounds p rotation)
-            [x y] (g/centroid box)]
+      (let [[x y] (rotated-centroid bounds p rotation)]
         (q/text-size (int (* size (/ 2 3))))
         (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
           (q/with-rotation [rotation]
@@ -318,8 +319,7 @@
         t-phase (dr/random-tau)
         t-phase' (dr/random-tau)]
     (fn [pos rotation t f]
-      (let [box (geometry/rotate-around bounds pos rotation)
-            center (g/centroid box)
+      (let [center (rotated-centroid bounds pos rotation)
             dr (- 0.975 (* 0.15 (eq/unit-sin (+ (* dr-rate t) dr-phase
                                                 (Math/sin (+ (* dr-rate' t)
                                                              dr-phase'))))))
@@ -410,8 +410,7 @@
                                (* 2 (eq/cube w))
                                phase))))]
     (fn [pos rotation t f]
-      (let [box (geometry/rotate-around bounds pos rotation)
-            center (g/centroid box)]
+      (let [center (rotated-centroid bounds pos rotation)]
         (q/no-fill)
         (q/stroke-weight 1.0)
         (q/stroke (- 1.0 f))
