@@ -446,6 +446,23 @@
            (v/+polar center r (+ spin (* s eq/TAU)))))
         (q/stroke-weight 1.0)))))
 
+(defn make-bars [bounds]
+  (let [n (dr/random-int 2 13)
+        dir (dr/rand-nth [1 -1])]
+    (fn [pos rotation t f]
+      (q/no-stroke)
+      (let [cuts (tm/norm-range n)
+            bicuts (partition 2 1 cuts)
+            t (* dir 0.15 t)]
+        (doseq [[i [a b]] (map-indexed vector bicuts)]
+          (q/fill (if (even? i) (- 1.0 f) f))
+          (cq/draw-polygon
+           (-> (rect/rect (g/unmap-point bounds (gv/vec2 (mod (+ a t) 1.0) 0))
+                          (g/unmap-point bounds (gv/vec2 (mod (+ b t) 1.0) 1.0)))
+               (g/translate (tm/- pos))
+               (g/rotate rotation)
+               (g/translate pos))))))))
+
 (defn add-animation
   [{:keys [children display] :as screen} t]
   (cond (seq children)
@@ -465,6 +482,7 @@
                                     [make-tunnel 1.0]
                                     ;; [make-circle-blob 1.0]
                                     [make-hex 1.0]
+                                    [make-bars 1.0]
                                     ])]
           (assoc screen :animation (mk-anim display t)))))
 
