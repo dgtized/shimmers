@@ -500,7 +500,10 @@
                                     [make-hex 1.0]
                                     [make-bars 1.0]
                                     ])]
-          (assoc screen :animation (mk-anim display t)))))
+          (assoc screen
+                 :animation {:animate (mk-anim display t)
+                             :rate (dr/gaussian 0.35 0.1)
+                             :t0 t}))))
 
 (defn all-displays [displays]
   (->> displays
@@ -575,9 +578,10 @@
     (if (seq children)
       (doseq [d children]
         (rdraw d (update dstate :depth inc)))
-      (when animation
-        (q/fill (- 1.0 f))
-        (animation p rotation t f)))))
+      (when-let [{:keys [animate t0 rate]} animation]
+        (q/fill f)
+        (let [ease-in-f (tm/mix* (- 1.0 f) f (tm/smoothstep* 0.0 1.0 (* rate (- t t0))))]
+          (animate p rotation t ease-in-f))))))
 
 (defn draw [{:keys [displays center t]}]
   (q/background 1.0)
