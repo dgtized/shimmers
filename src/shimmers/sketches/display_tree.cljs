@@ -238,6 +238,7 @@
         [a b c] (repeatedly 3 #(dr/random-int -4 4))]
     (fn [p rotation t f]
       (q/no-fill)
+      (q/stroke-weight (+ 0.75 (* 1.25 (eq/unit-sin (+ (* 0.3 b t) (Math/sin (* 0.7 a t) c))))))
       (q/stroke (- 1.0 f))
       (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
             t (* direction t)
@@ -250,6 +251,7 @@
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
         (cq/draw-path path))
+      (q/stroke-weight 1.0)
       (q/no-stroke))))
 
 ;; these aren't easing in from fade because they calculate their own fade
