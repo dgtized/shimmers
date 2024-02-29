@@ -535,7 +535,7 @@
         animations (count (filter :animation leaves))
         display-f
         (dr/weighted [[subdivide (* 64 (Math/exp (* -0.06 (+ n (dec ramp)))))]
-                      [add-animation (* 32 (Math/exp (* -0.15 (+ animations (dec ramp)))))]
+                      [add-animation (* 32 (Math/exp (* -0.125 (+ animations (dec ramp)))))]
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]])]
     (swap! defo assoc
