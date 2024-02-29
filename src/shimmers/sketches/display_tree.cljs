@@ -299,6 +299,7 @@
               (dr/gaussian 24.0 4.0))]
     (fn [p rotation t f]
       (q/no-fill)
+      (q/stroke-weight (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) pw1))))))
       (q/stroke (- 1.0 f))
       (let [t (* 10 dir t)
             path (for [s (tm/norm-range 128)
@@ -312,6 +313,7 @@
                        (tm/+ (g/rotate (tm/- ul p) rotation))
                        (tm/+ p)))]
         (cq/draw-path path))
+      (q/stroke-weight 1.0)
       (q/no-stroke))))
 
 ;; (gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 Math/PI) 9.0)
