@@ -383,7 +383,7 @@
                   (g/rotate rotation)
                   (tm/+ (g/rotate (tm/- ul pos) rotation))
                   (tm/+ pos)
-                  (cq/circle 0.8)))))))))
+                  (cq/circle (+ 0.75 (* 0.5 (eq/unit-sin (+ w0 w1 (* 0.1 t))))))))))))))
 
 ;; (map (fn [t] [t (mapv (fn [y] (mod (+ (/ y 3.0) t) 1.0)) (range 3))]) (range 0 1.0 0.05))
 
