@@ -299,7 +299,9 @@
               (dr/gaussian 24.0 4.0))]
     (fn [p rotation t f]
       (q/no-fill)
-      (q/stroke-weight (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) pw1))))))
+      (q/stroke-weight (if (> fxo 4.0)
+                         0.8
+                         (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) pw1)))))))
       (q/stroke (- 1.0 f))
       (let [t (* 10 dir t)
             path (for [s (tm/norm-range 128)
