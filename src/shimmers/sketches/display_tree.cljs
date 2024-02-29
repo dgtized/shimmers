@@ -209,10 +209,10 @@
                      (char (+ 48 (dr/random-int 10)))
                      :else
                      (char (+ 48 (dr/random-int 2))))]
-    (fn [p rotation _t f]
+    (fn [p rotation t f]
       (q/fill (- 1.0 f))
       (let [[x y] (rotated-centroid bounds p rotation)]
-        (q/text-size (int (* size (/ 2 3))))
+        (q/text-size (+ (* size (/ 2.0 3)) (* 9.0 (Math/sin (* tm/PHI t)))))
         (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
           (q/with-rotation [rotation]
             (q/text-char letter 0 0)))))))
