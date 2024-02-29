@@ -218,7 +218,7 @@
             (q/text-char letter 0 0)))))))
 
 (defn make-rect-growth [bounds]
-  (let [period (dr/rand-nth [2.0 4.0 6.0 8.0])
+  (let [period (dr/rand-nth [3.0 4.0 6.0 8.0])
         scale (dr/weighted [[(fn [t] (mod (/ t period) 1.0)) 1]
                             [(fn [t] (mod (/ (- t) period) 1.0)) 1]
                             [(fn [t] (eq/unit-sin (/ t period))) 1]])]
