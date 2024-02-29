@@ -506,7 +506,7 @@
                                     ])]
           (assoc screen
                  :animation {:animate (mk-anim display t)
-                             :rate (dr/gaussian 0.35 0.1)
+                             :rate (tm/clamp (dr/gaussian 0.5 0.15) 0.05 10.0)
                              :t0 t}))))
 
 (defn all-displays [displays]
