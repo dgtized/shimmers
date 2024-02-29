@@ -430,21 +430,21 @@
         (q/stroke-weight 1.0)))))
 
 (defn make-hex [bounds]
-  (let [scale (* 0.45 (Math/pow 0.98 (dr/random-int 5)))
+  (let [scale (* 0.435 (Math/pow 0.98 (dr/random-int 5)))
         radius (* scale (min (g/width bounds) (g/height bounds)))
         spin-phase (dr/random-tau)
         o-phase (dr/random-tau)]
     (fn [pos rotation t f]
       (let [center (rotated-centroid bounds pos rotation)
-            outline (pos? (Math/sin (+ (* 0.4 t) o-phase (* 1.5 (Math/sin (* 0.6 t))))))
+            outline (Math/sin (+ (* 0.4 t) o-phase (* 1.5 (Math/sin (* 0.6 t)))))
             r radius
             spin (* eq/TAU (Math/sin (+ (* 0.13 t) spin-phase (Math/sin (* 0.17 t)))))]
-        (if outline
+        (if (pos? outline)
           (do (q/no-stroke)
-              (q/fill (- 1.0 f)))
-          (do (q/stroke (- 1.0 f))
+              (q/fill (* outline (- 1.0 f))))
+          (do (q/stroke (* (- outline) (- 1.0 f)))
               (q/no-fill)
-              (q/stroke-weight 5.0)))
+              (q/stroke-weight (+ 0.5 (* 5.0 (- outline))))))
         (cq/draw-shape
          (for [s (butlast (tm/norm-range 6))]
            (v/+polar center r (+ spin (* s eq/TAU)))))
