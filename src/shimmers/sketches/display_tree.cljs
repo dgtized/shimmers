@@ -186,9 +186,10 @@
         orbit (* (dr/rand-nth [1 -1])
                  (dr/gaussian 1.1 0.25))
         dir (dr/rand-nth [1 -1])]
-    (fn [p rotation t]
+    (fn [p rotation t f]
       (let [centroid (rotated-centroid bounds p rotation)
             t (* dir t)]
+        (q/fill (- 1.0 f))
         (dotimes [i n-triangles]
           (let [spacing (/ i n-triangles)]
             (-> (gv/vec2)
@@ -208,7 +209,8 @@
                      (char (+ 48 (dr/random-int 10)))
                      :else
                      (char (+ 48 (dr/random-int 2))))]
-    (fn [p rotation _t]
+    (fn [p rotation _t f]
+      (q/fill (- 1.0 f))
       (let [[x y] (rotated-centroid bounds p rotation)]
         (q/text-size (int (* size (/ 2 3))))
         (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
@@ -220,7 +222,8 @@
         scale (dr/weighted [[(fn [t] (mod (/ t period) 1.0)) 1]
                             [(fn [t] (mod (/ (- t) period) 1.0)) 1]
                             [(fn [t] (eq/unit-sin (/ t period))) 1]])]
-    (fn [p rotation t]
+    (fn [p rotation t f]
+      (q/fill (- 1.0 f))
       (-> bounds
           (geometry/rotate-around p rotation)
           (g/scale-size (scale t))
@@ -249,6 +252,7 @@
         (cq/draw-path path))
       (q/no-stroke))))
 
+;; these aren't easing in from fade because they calculate their own fade
 (defn make-static [bounds]
   (let [{size :size} bounds
         [cols rows] (ratio size (dr/rand-nth [12 16 20]))
