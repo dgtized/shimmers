@@ -42,12 +42,13 @@
 
 ;; TODO: ensure fractions have a min/max value?
 (defn controls [ui-state]
-  [:div
-   [fraction/control ui-state "A" [:params 0]]
-   [fraction/control ui-state "B" [:params 1]]
-   [fraction/control ui-state "C" [:params 2]]
-   [fraction/control ui-state "D" [:params 3]]
-   [ctrl/checkbox ui-state "Inverted" [:inverted]]])
+  (let [bounds {:lower -10 :upper 10}]
+    [:div
+     [fraction/control ui-state "A" [:params 0] bounds]
+     [fraction/control ui-state "B" [:params 1] bounds]
+     [fraction/control ui-state "C" [:params 2] bounds]
+     [fraction/control ui-state "D" [:params 3] bounds]
+     [ctrl/checkbox ui-state "Inverted" [:inverted]]]))
 
 (defn page []
   (let [ui-state

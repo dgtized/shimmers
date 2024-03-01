@@ -1,6 +1,18 @@
 (ns shimmers.common.ui.fraction
   (:require [clojure.edn :as edn]))
 
+(defn check-bounds [v options]
+  (if-let [result (:value v)]
+    (let [{:keys [lower upper]} options]
+      (cond (and upper (> result upper))
+            (assoc v :error
+                   (str "Value " result " is greater than upper bound " upper "."))
+            (and lower (< result lower))
+            (assoc v :error
+                   (str "Value " result " is below lower bound " lower "."))
+            :else v))
+    v))
+
 ;; TODO: add a ctrl/fraction input that accepts and validates:
 ;; int, float, fraction
 ;; 2, 1.01, 2.1e4, 1/3, 1.01/3.01
@@ -16,9 +28,9 @@
       {:error "invalid string"})))
 
 (defn validate
-  ([s] (validate s 1.0))
-  ([s last-value]
-   (let [{:keys [value error]} (parse s)]
+  ([s] (validate s 1.0 {}))
+  ([s last-value options]
+   (let [{:keys [value error]} (check-bounds (parse s) options)]
      (if-not error
        {:raw s
         :valid true
@@ -31,7 +43,7 @@
 (defn make [s]
   (validate s))
 
-(defn control [settings label field-ref]
+(defn control [settings label field-ref & options]
   (let [value (get-in @settings field-ref)]
     [:div.label-set.fraction {:key (str "fraction-" field-ref)}
      [:label label]
@@ -40,7 +52,7 @@
               :style {:background (if (:error value) "hsl(0,75%,85%)" "")}
               :on-change
               (fn [e]
-                (let [v (validate (.-target.value e) (:value value))]
+                (let [v (validate (.-target.value e) (:value value) options)]
                   (swap! settings assoc-in field-ref v)))}]
      ;; FIXME: collect this elsewhere somehow
      (when-let [error (:error value)]
