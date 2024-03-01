@@ -2,6 +2,7 @@
   (:require
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.fraction :as fraction]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -28,7 +29,7 @@
   (let [t (* 0.001 ms)
         center (gv/vec2 (* 0.5 width) (* 0.5 height))
         {:keys [params k]} @ui-state
-        [a b c d] params
+        [a b c d] (map :value params)
         points (generate-points [a b c d (* 1 k)] center (* 0.133 height) (* 0.5 t))]
     (if (:inverted @ui-state)
       (do (canvas/fill-style ctx "rgb(0,0,0)")
@@ -39,20 +40,19 @@
     (canvas/stroke-path ctx points)
     ctx))
 
-;; TODO: use fraction controls
+;; TODO: ensure fractions have a min/max value?
 (defn controls [ui-state]
-  (let [sr [-7 7 0.25]]
-    [:div
-     (ctrl/numeric ui-state "A" [:params 0] sr)
-     (ctrl/numeric ui-state "B" [:params 1] sr)
-     (ctrl/numeric ui-state "C" [:params 2] sr)
-     (ctrl/numeric ui-state "D" [:params 3] sr)
-     (ctrl/checkbox ui-state "Inverted" [:inverted])]))
+  [:div
+   [fraction/control ui-state "A" [:params 0]]
+   [fraction/control ui-state "B" [:params 1]]
+   [fraction/control ui-state "C" [:params 2]]
+   [fraction/control ui-state "D" [:params 3]]
+   [ctrl/checkbox ui-state "Inverted" [:inverted]]])
 
 (defn page []
   (let [ui-state
         (ctrl/state
-         {:params (vec (repeatedly 4 #(dr/random-int -3 3)))
+         {:params (vec (repeatedly 4 #(fraction/make (str (dr/random-int -3 3)))))
           :k (dr/random)})
         {:keys [canvas-state attributes]}
         (canvas/make-state
