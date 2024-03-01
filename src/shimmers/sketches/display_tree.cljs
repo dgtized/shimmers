@@ -254,6 +254,35 @@
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
+(defn O [f p v d s]
+  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
+
+(defn make-loop-spinner [bounds]
+  (let [radius (min (g/width bounds) (g/height bounds))
+        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.7 0.06))
+        major (dr/random-int 1 10)
+        minor (* (dr/weighted {-1 5 1 1})
+                 (dr/random-int 1 10))
+        osc1 (dr/random-int 1 10)
+        osc2 (* (dr/weighted {-1 3 1 1})
+                (dr/random-int 1 10))]
+    (fn [p rotation t f]
+      (q/no-fill)
+      (q/stroke-weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) (Math/sin (* t (/ 1.0 minor))))))))
+      (q/stroke (- 1.0 f))
+      (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
+            t (* direction t)
+            path (for [s (tm/norm-range 128)]
+                   (->
+                    (gv/vec2)
+                    (tm/+ (R major (O osc1 t 0.0 0.1 s) 1.0 s))
+                    (tm/+ (R minor (O osc2 s 0.0 0.1 s) 1.0 s))
+                    (tm/* (* 0.15 radius))
+                    (tm/+ center)))]
+        (cq/draw-path path))
+      (q/stroke-weight 1.0)
+      (q/no-stroke))))
+
 ;; these aren't easing in from fade because they calculate their own fade
 (defn make-static [bounds]
   (let [{size :size} bounds
@@ -499,10 +528,11 @@
         :else
         (let [mk-anim (dr/weighted [[make-triangle 1.0]
                                     [make-letter 0.75]
-                                    [make-rect-growth 2.5]
-                                    [make-spinner 3.25]
+                                    [make-rect-growth 2.0]
+                                    [make-spinner 2.5]
+                                    [make-loop-spinner 2.5]
                                     [make-wobble 2.25]
-                                    [make-spiral 2.0]
+                                    [make-spiral 1.75]
                                     [make-static 1.0]
                                     [make-helix 2.0]
                                     [make-tunnel 1.0]
