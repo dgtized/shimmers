@@ -556,7 +556,7 @@
   (for [n (range 200)]
     [n (* 128 (Math/exp (* -0.12 n)))]))
 
-(defn update-displays [displays t heat]
+(defn update-displays [displays t _heat]
   (let [i (dr/random-int (count displays))
         tree (all-displays displays)
         leaves (filter (comp empty? :children) tree)
