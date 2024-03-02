@@ -277,8 +277,12 @@
         minor (* (dr/weighted {-1 5 1 1})
                  (dr/random-int 1 10))
         osc1 (dr/random-int 1 10)
+        val1 (dr/weighted {0.0 4 0.1 1 0.15 1})
+        amp1 (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1})
         osc2 (* (dr/weighted {-1 3 1 1})
                 (dr/random-int 1 10))
+        val2 (dr/weighted {0.0 4 0.1 1 0.15 1})
+        amp2 (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1})
         draw (choose-path-draw)]
     (fn [p rotation t f]
       (q/no-fill)
@@ -289,8 +293,8 @@
             path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
-                    (tm/+ (R major (O osc1 t 0.0 0.1 s) 1.0 s))
-                    (tm/+ (R minor (O osc2 s 0.0 0.1 s) 1.0 s))
+                    (tm/+ (R major (O osc1 t val1 amp1 s) 1.0 s))
+                    (tm/+ (R minor (O osc2 s val2 amp2 s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
         (draw path))
