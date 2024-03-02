@@ -175,6 +175,19 @@
     (dissoc screen :children)
     screen))
 
+(defn segmented-path [path]
+  (doseq [[a b] (partition 2 2 path)]
+    (apply q/point a)
+    (apply q/point b)
+    (q/line (tm/mix a b 0.25) (tm/mix a b 0.75))))
+
+(defn dotted-path [path]
+  (doseq [p path]
+    (cq/circle p 1.0)))
+
+(defn choose-path-draw []
+  (dr/rand-nth [segmented-path cq/draw-path dotted-path]))
+
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
@@ -265,21 +278,22 @@
                  (dr/random-int 1 10))
         osc1 (dr/random-int 1 10)
         osc2 (* (dr/weighted {-1 3 1 1})
-                (dr/random-int 1 10))]
+                (dr/random-int 1 10))
+        draw (choose-path-draw)]
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) (Math/sin (* t (/ 1.0 minor))))))))
       (q/stroke (- 1.0 f))
       (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
             t (* direction t)
-            path (for [s (tm/norm-range 128)]
+            path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
                     (tm/+ (R major (O osc1 t 0.0 0.1 s) 1.0 s))
                     (tm/+ (R minor (O osc2 s 0.0 0.1 s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (cq/draw-path path))
+        (draw path))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
@@ -325,7 +339,8 @@
         fxw1 (dr/gaussian 0.0 0.33)
         fxo (if (dr/chance 0.5)
               (dr/gaussian 1.0 0.5)
-              (dr/gaussian 24.0 4.0))]
+              (dr/gaussian 24.0 4.0))
+        draw (choose-path-draw)]
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
@@ -343,7 +358,7 @@
                        (g/rotate rotation)
                        (tm/+ (g/rotate (tm/- ul p) rotation))
                        (tm/+ p)))]
-        (cq/draw-path path))
+        (draw path))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
