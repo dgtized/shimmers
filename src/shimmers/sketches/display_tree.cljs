@@ -177,7 +177,7 @@
     screen))
 
 (defn segmented-path [p q]
-  (fn [path]
+  (fn [path _t]
     (doseq [[a b] (partition 2 2 path)]
       (apply q/point a)
       (apply q/point b)
@@ -187,13 +187,13 @@
 (def seg-path33 (segmented-path 0.33 0.66))
 (def seg-path40 (segmented-path 0.4 0.6))
 
-(defn point-path [path]
+(defn point-path [path _t]
   (doseq [p path] (apply q/point p)))
 
-(defn circle-path100 [path]
+(defn circle-path100 [path _t]
   (doseq [p path] (cq/circle p 1.0)))
 
-(defn circle-path75 [path]
+(defn circle-path75 [path _t]
   (doseq [p path] (cq/circle p 0.75)))
 
 (defn choose-path-draw []
@@ -325,7 +325,7 @@
                     (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (draw path))
+        (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
@@ -392,7 +392,7 @@
                        (g/rotate rotation)
                        (tm/+ (g/rotate (tm/- ul p) rotation))
                        (tm/+ p)))]
-        (draw path))
+        (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
