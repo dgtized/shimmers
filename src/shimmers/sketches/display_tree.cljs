@@ -290,7 +290,8 @@
   (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
 
 (defn create-osc [f v d]
-  (fn [p s] (O f p v d s)))
+  {:f f :v v :d d
+   :fe (fn [p s] (O f p v d s))})
 
 (defn make-loop-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
@@ -309,7 +310,8 @@
                          (dr/weighted {0.0 4 0.1 1 0.15 1 0.2 1})
                          (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1 0.25 1}))
         draw (choose-path-draw)]
-    (println "loop-spinner" bounds [major minor] draw)
+    (println "loop-spinner" bounds [major minor]
+             osc1 osc2 draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) (Math/sin (* t (/ 1.0 minor))))))))
@@ -319,8 +321,8 @@
             path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
-                    (tm/+ (R major (osc1 t s) 1.0 s))
-                    (tm/+ (R minor (osc2 s s) 1.0 s))
+                    (tm/+ (R major ((:fe osc1) t s) 1.0 s))
+                    (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
         (draw path))
