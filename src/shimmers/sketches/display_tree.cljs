@@ -14,6 +14,7 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
+   [shimmers.math.wobble :as mw]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -188,15 +189,6 @@
 (defn choose-path-draw []
   (dr/rand-nth [segmented-path cq/draw-path dotted-path]))
 
-(defn wobble [r c]
-  {:r r :c c})
-
-(defn wsin [{:keys [r c]} t p]
-  (Math/sin (+ (* r t) p c)))
-
-(defn wcube-sin [{:keys [r c]} t p]
-  (eq/cube (Math/sin (+ (* r t) p c))))
-
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
@@ -344,9 +336,9 @@
 
 (defn make-wobble [bounds]
   (let [{ul :p [w h] :size} bounds
-        wobble0 (wobble 2 (dr/random-tau))
-        wobble1 (wobble 1 (dr/random-tau))
-        osc (wobble 4 (dr/random-tau))
+        wobble0 (mw/create 2)
+        wobble1 (mw/create 1)
+        osc (mw/create 4)
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.95 0.1))
         fxw0 (dr/gaussian 0.0 0.33)
         fxw1 (dr/gaussian 0.0 0.33)
@@ -366,9 +358,9 @@
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (wcube-sin wobble0 t (* x fxw0))
-                             wob1 (wsin wobble1 t (* x fxw1))
-                             v (wsin osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
+                             wob0 (mw/cube-sin wobble0 t (* x fxw0))
+                             wob1 (mw/sin wobble1 t (* x fxw1))
+                             v (mw/sin osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
                    (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
                        (g/rotate rotation)
                        (tm/+ (g/rotate (tm/- ul p) rotation))
@@ -419,8 +411,8 @@
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.85 0.06))
         r (dr/gaussian 2.0 0.1)
         p (dr/random-tau)
-        wobble0 (wobble (dr/gaussian 1.5 0.2) (dr/random-tau))
-        wobble1 (wobble (dr/gaussian 2.5 0.5) (dr/random-tau))
+        wobble0 (mw/create (dr/gaussian 1.5 0.2))
+        wobble1 (mw/create (dr/gaussian 2.5 0.5))
         helices (dr/rand-nth [1 2 3])
         width-w (if (dr/chance 0.5) 0.0 (dr/random 1.5 4.0))]
     (fn [pos rotation t f]
@@ -432,8 +424,8 @@
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
                   width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
-                  w0 (wcube-sin wobble0 t (+ (* 0.03 y) width))
-                  w1 (wcube-sin wobble1 t (+ (* 0.05 y) (* 2 width)))
+                  w0 (mw/cube-sin wobble0 t (+ (* 0.03 y) width))
+                  w1 (mw/cube-sin wobble1 t (+ (* 0.05 y) (* 2 width)))
                   v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
