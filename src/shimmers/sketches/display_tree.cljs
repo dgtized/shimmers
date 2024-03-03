@@ -267,6 +267,7 @@
   (let [radius (min (g/width bounds) (g/height bounds))
         direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
         [a b c] (repeatedly 3 #(dr/random-int -4 4))]
+    (println "spinner" bounds direction a b c)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (+ 0.75 (* 1.25 (eq/unit-sin (+ (* 0.3 b t) (Math/sin (* 0.7 a t) c))))))
@@ -308,6 +309,7 @@
                          (dr/weighted {0.0 4 0.1 1 0.15 1 0.2 1})
                          (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1 0.25 1}))
         draw (choose-path-draw)]
+    (println "loop-spinner" bounds [major minor] draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) (Math/sin (* t (/ 1.0 minor))))))))
@@ -371,7 +373,7 @@
         draw (choose-path-draw)]
     ;; self overlap example
     ;; -1 -0.2878850416584414 -0.20994315524082172 21.157634493128658
-    (println bounds dir wobble0 wobble1 osc fxw0 fxw1 fxo draw)
+    (println "wobble" bounds dir wobble0 wobble1 osc fxw0 fxw1 fxo draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
