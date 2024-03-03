@@ -176,18 +176,35 @@
     (dissoc screen :children)
     screen))
 
-(defn segmented-path [path]
-  (doseq [[a b] (partition 2 2 path)]
-    (apply q/point a)
-    (apply q/point b)
-    (q/line (tm/mix a b 0.25) (tm/mix a b 0.75))))
+(defn segmented-path [p q]
+  (fn [path]
+    (doseq [[a b] (partition 2 2 path)]
+      (apply q/point a)
+      (apply q/point b)
+      (q/line (tm/mix a b p) (tm/mix a b q)))))
 
-(defn dotted-path [path]
-  (doseq [p path]
-    (cq/circle p 1.0)))
+(def seg-path25 (segmented-path 0.25 0.75))
+(def seg-path33 (segmented-path 0.33 0.66))
+(def seg-path40 (segmented-path 0.4 0.6))
+
+(defn point-path [path]
+  (doseq [p path] (apply q/point p)))
+
+(defn circle-path100 [path]
+  (doseq [p path] (cq/circle p 1.0)))
+
+(defn circle-path75 [path]
+  (doseq [p path] (cq/circle p 0.75)))
 
 (defn choose-path-draw []
-  (dr/rand-nth [segmented-path cq/draw-path dotted-path]))
+  (dr/weighted
+   [[#'seg-path25 1.0]
+    [#'seg-path33 1.0]
+    [#'seg-path40 1.0]
+    [point-path 2.0]
+    [circle-path75 1.0]
+    [circle-path100 1.0]
+    [cq/draw-path 2.0]]))
 
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
