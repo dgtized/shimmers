@@ -271,19 +271,22 @@
 (defn O [f p v d s]
   (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
 
+(defn create-osc [f v d]
+  (fn [p s] (O f p v d s)))
+
 (defn make-loop-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
         direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
-        major (dr/random-int 1 10)
-        minor (* (dr/weighted {-1 5 1 1})
-                 (dr/random-int 1 10))
-        osc1 (dr/random-int 1 10)
-        val1 (dr/weighted {0.0 4 0.1 1 0.15 1})
-        amp1 (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1})
-        osc2 (* (dr/weighted {-1 3 1 1})
-                (dr/random-int 1 10))
-        val2 (dr/weighted {0.0 4 0.1 1 0.15 1})
-        amp2 (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1})
+        major (dr/random-int 1 8)
+        minor (* (dr/weighted {-1 6 1 1})
+                 (dr/random-int 1 8))
+        osc1 (create-osc (dr/random-int 1 7)
+                         (dr/weighted {0.0 4 0.1 1 0.15 1})
+                         (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1}))
+        osc2 (create-osc (* (dr/weighted {-1 4 1 1})
+                            (dr/random-int 1 7))
+                         (dr/weighted {0.0 4 0.1 1 0.15 1})
+                         (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1}))
         draw (choose-path-draw)]
     (fn [p rotation t f]
       (q/no-fill)
@@ -294,8 +297,8 @@
             path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
-                    (tm/+ (R major (O osc1 t val1 amp1 s) 1.0 s))
-                    (tm/+ (R minor (O osc2 s val2 amp2 s) 1.0 s))
+                    (tm/+ (R major (osc1 t s) 1.0 s))
+                    (tm/+ (R minor (osc2 s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
         (draw path))
