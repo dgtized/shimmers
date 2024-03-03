@@ -191,10 +191,10 @@
 (defn wobble [r c]
   {:r r :c c})
 
-(defn sin-wobble [{:keys [r c]} t p]
+(defn wsin [{:keys [r c]} t p]
   (Math/sin (+ (* r t) p c)))
 
-(defn cube-wobble [{:keys [r c]} t p]
+(defn wcube-sin [{:keys [r c]} t p]
   (eq/cube (Math/sin (+ (* r t) p c))))
 
 (defn make-triangle [bounds]
@@ -366,9 +366,9 @@
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (cube-wobble wobble0 t (* x fxw0))
-                             wob1 (sin-wobble wobble1 t (* x fxw1))
-                             v (sin-wobble osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
+                             wob0 (wcube-sin wobble0 t (* x fxw0))
+                             wob1 (wsin wobble1 t (* x fxw1))
+                             v (wsin osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
                    (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
                        (g/rotate rotation)
                        (tm/+ (g/rotate (tm/- ul p) rotation))
@@ -432,8 +432,8 @@
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
                   width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
-                  w0 (cube-wobble wobble0 t (+ (* 0.03 y) width))
-                  w1 (cube-wobble wobble1 t (+ (* 0.05 y) (* 2 width)))
+                  w0 (wcube-sin wobble0 t (+ (* 0.03 y) width))
+                  w1 (wcube-sin wobble1 t (+ (* 0.05 y) (* 2 width)))
                   v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
