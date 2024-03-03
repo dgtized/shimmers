@@ -601,7 +601,7 @@
     (cond-> state
       event (update :displays update-displays t heat)
       event (update :heat - (dr/random 0.5))
-      true (update :heat + (dr/random (/ 1 300.0)))
+      true (update :heat + (tm/clamp (dr/gaussian (/ 1 300.0) 0.01) 0.0001 0.01))
       true (update :t + 0.01))))
 
 ;; Why is this sometimes being overridden?
