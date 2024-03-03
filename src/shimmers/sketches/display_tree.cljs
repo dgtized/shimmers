@@ -188,6 +188,11 @@
 (defn choose-path-draw []
   (dr/rand-nth [segmented-path cq/draw-path dotted-path]))
 
+(defn sin-wobble [r c]
+  {:r r
+   :c c
+   :f (fn [t p] (Math/sin (+ (* r t) p c)))})
+
 (defn cube-wobble [r c]
   (fn [t p]
     (eq/cube (Math/sin (+ (* r t) p c)))))
@@ -339,9 +344,9 @@
 
 (defn make-wobble [bounds]
   (let [{ul :p [w h] :size} bounds
-        wobble (cube-wobble 2 (dr/random-tau))
+        wobble0 (cube-wobble 2 (dr/random-tau))
+        wobble1 (sin-wobble 1 (dr/random-tau))
         po0 (dr/random-tau)
-        pw1 (dr/random-tau)
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.95 0.1))
         fxw0 (dr/gaussian 0.0 0.33)
         fxw1 (dr/gaussian 0.0 0.33)
@@ -350,19 +355,19 @@
               (dr/gaussian 24.0 4.0))
         draw (choose-path-draw)]
     ;; self overlap example
-    ;; 4.5993827884932115 6.249439750487722 4.443832286713721 -1 -0.2878850416584414 -0.20994315524082172 21.157634493128658
-    (println bounds po0 pw1 dir fxw0 fxw1 fxo draw)
+    ;; 4.443832286713721 -1 -0.2878850416584414 -0.20994315524082172 21.157634493128658
+    (println bounds po0 dir fxw0 fxw1 fxo draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
                          0.8
-                         (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) pw1)))))))
+                         (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) (:p wobble1))))))))
       (q/stroke (- 1.0 f))
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (wobble t (* x fxw0))
-                             wob1 (Math/sin (+ (* x fxw1) (* 1 t) pw1))
+                             wob0 (wobble0 t (* x fxw0))
+                             wob1 ((:f wobble1) t (* x fxw1))
                              v (Math/sin (+ (* x fxo) (* 4 t) po0
                                             (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
                    (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
