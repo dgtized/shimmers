@@ -176,16 +176,23 @@
     (dissoc screen :children)
     screen))
 
-(defn segmented-path [p q]
+(defn segmented-path [p]
   (fn [path _t]
     (doseq [[a b] (partition 2 2 path)]
       (apply q/point a)
       (apply q/point b)
-      (q/line (tm/mix a b p) (tm/mix a b q)))))
+      (q/line (tm/mix a b p) (tm/mix a b (- 1.0 p))))))
 
-(def seg-path25 (segmented-path 0.25 0.75))
-(def seg-path33 (segmented-path 0.33 0.66))
-(def seg-path40 (segmented-path 0.4 0.6))
+(def seg-path25 (segmented-path 0.25))
+(def seg-path33 (segmented-path 0.33))
+(def seg-path40 (segmented-path 0.4))
+
+(defn segmented-path-var [path t]
+  (let [p (+ 0.2 (* 0.25 (eq/unit-sin (* 0.2 t))))]
+    (doseq [[a b] (partition 2 2 path)]
+      (apply q/point a)
+      (apply q/point b)
+      (q/line (tm/mix a b p) (tm/mix a b (- 1.0 p))))))
 
 (defn point-path [path _t]
   (doseq [p path] (apply q/point p)))
@@ -196,14 +203,19 @@
 (defn circle-path75 [path _t]
   (doseq [p path] (cq/circle p 0.75)))
 
+(defn circle-path [path t]
+  (doseq [p path] (cq/circle p (+ 0.66 (* 0.33 (eq/unit-sin (* 0.2 t)))))))
+
 (defn choose-path-draw []
   (dr/weighted
    [[#'seg-path25 1.0]
     [#'seg-path33 1.0]
     [#'seg-path40 1.0]
+    [segmented-path-var 1.5]
     [point-path 2.0]
     [circle-path75 1.0]
     [circle-path100 1.0]
+    [circle-path 1.5]
     [cq/draw-path 2.0]]))
 
 (defn make-triangle [bounds]
@@ -266,8 +278,9 @@
 (defn make-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
         direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
-        [a b c] (repeatedly 3 #(dr/random-int -4 4))]
-    (println "spinner" bounds direction a b c)
+        [a b c] (repeatedly 3 #(dr/random-int -4 4))
+        draw (choose-path-draw)]
+    (println "spinner" bounds direction a b c draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (+ 0.75 (* 1.25 (eq/unit-sin (+ (* 0.3 b t) (Math/sin (* 0.7 a t) c))))))
@@ -282,7 +295,7 @@
                     (tm/+ (R (+ c (Math/cos (* 0.5 t))) (Math/sin (* 0.7 t)) 0.5 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (cq/draw-path path))
+        (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
