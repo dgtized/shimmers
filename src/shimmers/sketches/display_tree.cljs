@@ -409,8 +409,7 @@
 (defn make-helix [bounds]
   (let [{ul :p [w h] :size} bounds
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.85 0.06))
-        r (dr/gaussian 2.0 0.1)
-        p (dr/random-tau)
+        osc (mw/create (dr/gaussian 2.0 0.1))
         wobble0 (mw/create (dr/gaussian 1.5 0.2))
         wobble1 (mw/create (dr/gaussian 2.5 0.5))
         helices (dr/rand-nth [1 2 3])
@@ -426,7 +425,7 @@
                   width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
                   w0 (mw/cube-sin wobble0 t (+ (* 0.03 y) width))
                   w1 (mw/cube-sin wobble1 t (+ (* 0.05 y) (* 2 width)))
-                  v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
+                  v (mw/sin osc t (+ (/ y 10.0) w0 (* 0.3 w1)))]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
                   (g/rotate rotation)
