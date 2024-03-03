@@ -195,11 +195,11 @@
         radius (* s (* 0.65 limit))
         n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
         angle (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4))))
-        spin (* (dr/rand-nth [1 -1])
+        spin (* (dr/random-sign)
                 (dr/gaussian 1.5 0.25))
-        orbit (* (dr/rand-nth [1 -1])
+        orbit (* (dr/random-sign)
                  (dr/gaussian 1.1 0.25))
-        dir (dr/rand-nth [1 -1])]
+        dir (dr/random-sign)]
     (fn [p rotation t f]
       (let [centroid (rotated-centroid bounds p rotation)
             t (* dir t)]
@@ -248,7 +248,7 @@
 
 (defn make-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
-        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.7 0.06))
+        direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
         [a b c] (repeatedly 3 #(dr/random-int -4 4))]
     (fn [p rotation t f]
       (q/no-fill)
@@ -273,7 +273,7 @@
 
 (defn make-loop-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
-        direction (* (dr/rand-nth [1 -1]) (dr/gaussian 0.7 0.06))
+        direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
         major (dr/random-int 1 10)
         minor (* (dr/weighted {-1 5 1 1})
                  (dr/random-int 1 10))
@@ -310,7 +310,7 @@
         mode (dr/weighted {:static 1.0
                            :sweep 2.0
                            :radial 3.0})
-        dir (dr/rand-nth [-1 1])
+        dir (dr/random-sign)
         divisions
         (for [div (g/subdivide bounds {:cols cols :rows rows})
               :let [c (g/centroid div)
@@ -339,7 +339,7 @@
         wobble0 (mw/create 2)
         wobble1 (mw/create 1)
         osc (mw/create 4)
-        dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.95 0.1))
+        dir (* (dr/random-sign) (dr/gaussian 0.95 0.1))
         fxw0 (dr/gaussian 0.0 0.33)
         fxw1 (dr/gaussian 0.0 0.33)
         fxo (if (dr/chance 0.5)
@@ -408,7 +408,7 @@
 
 (defn make-helix [bounds]
   (let [{ul :p [w h] :size} bounds
-        dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.85 0.06))
+        dir (* (dr/random-sign) (dr/gaussian 0.85 0.06))
         osc (mw/create (dr/gaussian 2.0 0.1))
         wobble0 (mw/create (dr/gaussian 1.5 0.2))
         wobble1 (mw/create (dr/gaussian 2.5 0.5))
@@ -437,7 +437,7 @@
 
 (defn make-tunnel [bounds]
   (let [n 4
-        dir (dr/rand-nth [1 -1])
+        dir (dr/random-sign)
         time-f (if (dr/chance 0.5)
                  (fn [t] (* dir t))
                  (fn [t] (* 10 (Math/sin (* 0.15 t)))))]
@@ -504,7 +504,7 @@
 
 (defn make-bars [bounds]
   (let [n (dr/random-int 2 13)
-        dir (dr/rand-nth [1 -1])
+        dir (dr/random-sign)
         F (dr/rand-nth [:xy :yx])
         w (/ 1.0 (inc n))]
     (fn [pos rotation t f]

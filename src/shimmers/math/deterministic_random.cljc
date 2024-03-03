@@ -69,6 +69,9 @@
 (defn happensity [prob]
   (if (< (random-double) prob) (random-double) 0))
 
+(defn random-sign []
+  (if (chance 0.5) -1 1))
+
 (defn weighted
   "Given a pairing of values to weights, randomly choose a value biased by weight.
 
