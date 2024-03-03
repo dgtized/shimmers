@@ -345,6 +345,7 @@
               (dr/gaussian 1.0 0.5)
               (dr/gaussian 24.0 4.0))
         draw (choose-path-draw)]
+    (println bounds po0 pw0 pw1 dir fxw0 fxw1 fxo draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
