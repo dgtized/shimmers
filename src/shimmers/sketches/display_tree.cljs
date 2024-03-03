@@ -194,9 +194,8 @@
 (defn sin-wobble [{:keys [r c]} t p]
   (Math/sin (+ (* r t) p c)))
 
-(defn cube-wobble [r c]
-  (fn [t p]
-    (eq/cube (Math/sin (+ (* r t) p c)))))
+(defn cube-wobble [{:keys [r c]} t p]
+  (eq/cube (Math/sin (+ (* r t) p c))))
 
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
@@ -345,7 +344,7 @@
 
 (defn make-wobble [bounds]
   (let [{ul :p [w h] :size} bounds
-        wobble0 (cube-wobble 2 (dr/random-tau))
+        wobble0 (wobble 2 (dr/random-tau))
         wobble1 (wobble 1 (dr/random-tau))
         osc (wobble 4 (dr/random-tau))
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.95 0.1))
@@ -357,7 +356,7 @@
         draw (choose-path-draw)]
     ;; self overlap example
     ;; -1 -0.2878850416584414 -0.20994315524082172 21.157634493128658
-    (println bounds dir wobble1 osc fxw0 fxw1 fxo draw)
+    (println bounds dir wobble0 wobble1 osc fxw0 fxw1 fxo draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
@@ -367,7 +366,7 @@
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (wobble0 t (* x fxw0))
+                             wob0 (cube-wobble wobble0 t (* x fxw0))
                              wob1 (sin-wobble wobble1 t (* x fxw1))
                              v (sin-wobble osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
                    (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
@@ -420,8 +419,8 @@
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.85 0.06))
         r (dr/gaussian 2.0 0.1)
         p (dr/random-tau)
-        wobble0 (cube-wobble (dr/gaussian 1.5 0.2) (dr/random-tau))
-        wobble1 (cube-wobble (dr/gaussian 2.5 0.5) (dr/random-tau))
+        wobble0 (wobble (dr/gaussian 1.5 0.2) (dr/random-tau))
+        wobble1 (wobble (dr/gaussian 2.5 0.5) (dr/random-tau))
         helices (dr/rand-nth [1 2 3])
         width-w (if (dr/chance 0.5) 0.0 (dr/random 1.5 4.0))]
     (fn [pos rotation t f]
@@ -433,8 +432,8 @@
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
                   width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
-                  w0 (wobble0 t (+ (* 0.03 y) width))
-                  w1 (wobble1 t (+ (* 0.05 y) (* 2 width)))
+                  w0 (cube-wobble wobble0 t (+ (* 0.03 y) width))
+                  w1 (cube-wobble wobble1 t (+ (* 0.05 y) (* 2 width)))
                   v (Math/sin (+ (/ y 10.0) (* r t) p w0 (* 0.3 w1)))]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
