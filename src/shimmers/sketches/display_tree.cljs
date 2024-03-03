@@ -188,6 +188,10 @@
 (defn choose-path-draw []
   (dr/rand-nth [segmented-path cq/draw-path dotted-path]))
 
+(defn cube-wobble [r c]
+  (fn [t p]
+    (eq/cube (Math/sin (+ (* r t) p c)))))
+
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
@@ -335,8 +339,8 @@
 
 (defn make-wobble [bounds]
   (let [{ul :p [w h] :size} bounds
+        wobble (cube-wobble 2 (dr/random-tau))
         po0 (dr/random-tau)
-        pw0 (dr/random-tau)
         pw1 (dr/random-tau)
         dir (* (dr/rand-nth [-1 1]) (dr/gaussian 0.95 0.1))
         fxw0 (dr/gaussian 0.0 0.33)
@@ -347,7 +351,7 @@
         draw (choose-path-draw)]
     ;; self overlap example
     ;; 4.5993827884932115 6.249439750487722 4.443832286713721 -1 -0.2878850416584414 -0.20994315524082172 21.157634493128658
-    (println bounds po0 pw0 pw1 dir fxw0 fxw1 fxo draw)
+    (println bounds po0 pw1 dir fxw0 fxw1 fxo draw)
     (fn [p rotation t f]
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
@@ -357,7 +361,7 @@
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (eq/cube (Math/sin (+ (* x fxw0) (* 2 t) pw0)))
+                             wob0 (wobble t (* x fxw0))
                              wob1 (Math/sin (+ (* x fxw1) (* 1 t) pw1))
                              v (Math/sin (+ (* x fxo) (* 4 t) po0
                                             (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
@@ -405,10 +409,6 @@
           (qdg/draw (g/translate c center)))
         (q/stroke-weight 1.0)
         (q/no-stroke)))))
-
-(defn cube-wobble [r c]
-  (fn [t p]
-    (eq/cube (Math/sin (+ (* r t) p c)))))
 
 (defn make-helix [bounds]
   (let [{ul :p [w h] :size} bounds
