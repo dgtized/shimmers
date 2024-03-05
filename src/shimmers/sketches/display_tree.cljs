@@ -327,10 +327,11 @@
              osc1 osc2 draw)
     (fn [p rotation t f]
       (q/no-fill)
-      (q/stroke-weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) (Math/sin (* t (/ 1.0 minor))))))))
       (q/stroke (- 1.0 f))
       (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
             t (* direction t)
+            weight-wob (Math/sin (* t (/ 1.0 minor)))
+            weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) weight-wob))))
             path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
@@ -338,6 +339,7 @@
                     (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
+        (q/stroke-weight weight)
         (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
