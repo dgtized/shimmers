@@ -188,7 +188,7 @@
 (def seg-path40 (segmented-path 0.4))
 
 (defn segmented-path-var [path t]
-  (let [p (+ 0.2 (* 0.25 (eq/unit-sin (* 0.2 t))))]
+  (let [p (+ 0.2 (* 0.15 (eq/unit-sin (+ (* 0.2 t) (Math/sin (* 0.3 t))))))]
     (doseq [[a b] (partition 2 2 path)]
       (apply q/point a)
       (apply q/point b)
