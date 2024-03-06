@@ -594,7 +594,7 @@
                                     [make-spiral 1.5]
                                     [make-static 1.0]
                                     [make-helix 1.5]
-                                    [make-tunnel 1.0]
+                                    [make-tunnel 0.66]
                                     ;; [make-circle-blob 1.0]
                                     [make-hex 1.0]
                                     [make-bars 1.0]
