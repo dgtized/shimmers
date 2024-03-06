@@ -275,15 +275,22 @@
 (defn R [f p a s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
+(defn O [f p v d s]
+  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
+
+(defn create-osc [f v d]
+  {:f f :v v :d d
+   :fe (fn [p s] (O f p v d s))})
+
 (defn make-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
         direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
         [a b c] (repeatedly 3 #(dr/random-int -4 4))
+        weight (create-osc (* 0.3 b) 1.25 0.75)
         draw (choose-path-draw)]
     (println "spinner" bounds direction a b c draw)
     (fn [p rotation t f]
       (q/no-fill)
-      (q/stroke-weight (+ 0.75 (* 1.25 (eq/unit-sin (+ (* 0.3 b t) (Math/sin (* 0.7 a t) c))))))
       (q/stroke (- 1.0 f))
       (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
             t (* direction t)
@@ -295,16 +302,10 @@
                     (tm/+ (R (+ c (Math/cos (* 0.5 t))) (Math/sin (* 0.7 t)) 0.5 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
+        (q/stroke-weight ((:fe weight) (Math/sin (* 0.7 a t)) t))
         (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
-
-(defn O [f p v d s]
-  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
-
-(defn create-osc [f v d]
-  {:f f :v v :d d
-   :fe (fn [p s] (O f p v d s))})
 
 (defn make-loop-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
@@ -314,6 +315,7 @@
         direction (* (dr/random-sign)
                      (dr/gaussian 0.66 0.06)
                      (Math/pow 0.925 (+ major (abs minor))))
+        weight (create-osc (/ 1.0 major) 1.0 0.5)
         osc1 (create-osc (* (dr/weighted {1 6 -1 1})
                             (dr/random-int 1 13))
                          (dr/weighted {0.0 4 0.1 1 0.15 1 0.2 1})
@@ -330,8 +332,6 @@
       (q/stroke (- 1.0 f))
       (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
             t (* direction t)
-            weight-wob (Math/sin (* t (/ 1.0 minor)))
-            weight (+ 0.75 (* 1.0 (Math/sin (+ (* (/ 1.0 major) t) weight-wob))))
             path (for [s (tm/norm-range 192)]
                    (->
                     (gv/vec2)
@@ -339,7 +339,7 @@
                     (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (q/stroke-weight weight)
+        (q/stroke-weight ((:fe weight) (Math/sin (* t (/ 1.0 minor))) t))
         (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
