@@ -400,9 +400,9 @@
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
                        :let [x (* 1.5 eq/TAU s)
-                             wob0 (mw/cube-sin wobble0 t (* x fxw0))
-                             wob1 (mw/sin wobble1 t (* x fxw1))
-                             v (mw/sin osc t (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)))]]
+                             wob0 (mw/cube-sin wobble0 (* x fxw0) t)
+                             wob1 (mw/sin wobble1 (* x fxw1) t)
+                             v (mw/sin osc (+ (* x fxo) (* (/ 4 3) wob0) (* (/ 1 3) wob1)) t)]]
                    (-> (gv/vec2 (* w s) (+ (* 0.5 h) (* 0.4 h v)))
                        (g/rotate rotation)
                        (tm/+ (g/rotate (tm/- ul p) rotation))
@@ -465,9 +465,9 @@
           (dotimes [i spots]
             (let [y (* (+ 0.025 (* 0.95 (/ (+ i 0.5) (float spots)))) h)
                   width (* (inc (* width-w (eq/unit-sin (* 0.2 t)))) (inc j))
-                  w0 (mw/cube-sin wobble0 t (+ (* 0.03 y) width))
-                  w1 (mw/cube-sin wobble1 t (+ (* 0.05 y) (* 2 width)))
-                  v (mw/sin osc t (+ (/ y 10.0) w0 (* 0.3 w1)))]
+                  w0 (mw/cube-sin wobble0 (+ (* 0.03 y) width) t)
+                  w1 (mw/cube-sin wobble1 (+ (* 0.05 y) (* 2 width)) t)
+                  v (mw/sin osc (+ (/ y 10.0) w0 (* 0.3 w1)) t)]
               (-> (gv/vec2 (* w (+ 0.5 (* 0.425 v)))
                            y)
                   (g/rotate rotation)
