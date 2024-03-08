@@ -587,11 +587,11 @@
         :else
         (let [mk-anim (dr/weighted [[make-triangle 1.0]
                                     [make-letter 0.75]
-                                    [make-rect-growth 1.25]
+                                    [make-rect-growth 1.1]
                                     [make-spinner 1.75]
                                     [make-loop-spinner 1.66]
                                     [make-wobble 1.75]
-                                    [make-spiral 1.5]
+                                    [make-spiral 1.25]
                                     [make-static 1.0]
                                     [make-helix 1.5]
                                     [make-tunnel 0.66]
