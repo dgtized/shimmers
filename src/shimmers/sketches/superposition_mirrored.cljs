@@ -113,23 +113,23 @@
 
 ;; IDEA: option to rotate shapes near a target around a common centroid?
 (defn generate-shapes
-  ([scale] (generate-shapes
-            (dr/weighted {:bounds 0.4
-                          :center-circle 1
-                          :arc 1
-                          :center-square 1
-                          :center-hexagon 1
-                          :quad-square 1
-                          :quad-triangle 1
-                          :lr-in-triangles 1
-                          :lr-out-triangles 1
-                          :ud-in-triangles 1
-                          :ud-out-triangles 1
-                          :vertical-bars 1
-                          :horizontal-bars 1
-                          :hex-triangles 0.5
-                          :oct-triangles 0.5})
-            scale))
+  ([] (generate-shapes
+       (dr/weighted {:bounds 0.4
+                     :center-circle 1
+                     :arc 1
+                     :center-square 1
+                     :center-hexagon 1
+                     :quad-square 1
+                     :quad-triangle 1
+                     :lr-in-triangles 1
+                     :lr-out-triangles 1
+                     :ud-in-triangles 1
+                     :ud-out-triangles 1
+                     :vertical-bars 1
+                     :horizontal-bars 1
+                     :hex-triangles 0.5
+                     :oct-triangles 0.5})
+       (dr/random 0.1 0.49)))
   ([kind scale]
    (let [r (cq/rel-h scale)]
      (case kind
@@ -250,14 +250,14 @@
 
   (q/noise-seed (dr/seed))
   (q/color-mode :hsl 1.0)
-  (let [{:keys [shapes] :as point-gen} (generate-shapes (dr/random 0.1 0.49))
+  (let [{:keys [shapes] :as point-gen} (generate-shapes)
         particles (make-particles point-gen 128)
         image (q/create-graphics (q/width) (q/height))]
     (q/with-graphics image (q/color-mode :hsl 1.0))
     {:image image
      :shapes shapes
      :particles particles
-     :linear-matrix (init-linear-matrix particles (generate-shapes (dr/random 0.1 0.49)))
+     :linear-matrix (init-linear-matrix particles (generate-shapes))
      :cycle 0
      :t (clock)}))
 
@@ -281,7 +281,7 @@
           ;; However, it did give an interesting side-effect of kicking all the particles out of view.
           dt (min (- t' t) 0.1)]
       (if (< (affinity particles) (cq/rel-h 0.05))
-        (let [point-gen (generate-shapes (dr/random 0.05 0.49))]
+        (let [point-gen (generate-shapes)]
           (-> state
               (update :t + dt)
               (assoc :shapes (:shapes linear-matrix))
