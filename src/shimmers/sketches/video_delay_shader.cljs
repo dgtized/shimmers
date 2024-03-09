@@ -44,6 +44,7 @@
         fc (q/frame-count)]
     (when (and (q/loaded? shader) (> fc 1))
       ;; not clear why copy-frame is required but it is -- otherwise every frame is black
+      ;; possibly because we need to copy the last frame to show before calculating the new buffer
       (video/copy-frame buffer (nth frames (mod fc history)) w h)
       (shader/pass shader [w h]
                    {"u_resolution" (array w h)
