@@ -166,12 +166,24 @@
   (let [f (lagrange-barycentric [(gv/vec2 1 2) (gv/vec2 2 1) (gv/vec2 3 3)])]
     (map (fn [x] (gv/vec2 x (f x))) (range 0 4 0.25))))
 
-(defn k-lerp [xs t]
+(defn interpolate
+  "For `xs` values, smoothly interpolate using `t` in [0.0,1.0).
+
+  The parameter `k` in [0.0,1.0), determines how long to stay at each values."
+  [xs k t]
   (let [n (count xs)
-        v (* n t)
-        a (mod (Math/floor (- v 0.01)) n)
+        k (* 0.5 (mod k 1.0))
+        v (* n (mod t 1.0))
+        a (if (tm/delta= t 1.0)
+            (dec n)
+            (mod (Math/floor v) n))
         b (mod (inc a) n)]
-    [t xs [a b] (tm/mix* (nth xs a) (nth xs b) (* n (- t (/ a n))))]))
+    (tm/mix* (nth xs a) (nth xs b)
+             (tm/smoothstep* k (- 1.0 k) (* n (- t (/ a n)))))))
 
 (comment
-  (map (fn [t] (k-lerp [0.2 0.7 0.4] t)) (tm/norm-range 20)))
+  (map (fn [t] (interpolate [0.2 0.7 0.4] 0.0 t)) (tm/norm-range 20))
+  (map (fn [t] (interpolate [0.2 2.0 0.7] 0.1 t)) (tm/norm-range 20))
+  (map (fn [t] (interpolate [0.2 2.0 0.7] 0.3 t)) (tm/norm-range 20))
+  (map (fn [t] (interpolate [0.2 2.0 0.7] 1.0 t)) (tm/norm-range 20))
+  (map (fn [t] (interpolate [0.2 2.0 0.7 3.0] 1.0 t)) (tm/norm-range 20)))
