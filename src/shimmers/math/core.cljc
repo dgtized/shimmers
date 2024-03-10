@@ -165,3 +165,13 @@
 
   (let [f (lagrange-barycentric [(gv/vec2 1 2) (gv/vec2 2 1) (gv/vec2 3 3)])]
     (map (fn [x] (gv/vec2 x (f x))) (range 0 4 0.25))))
+
+(defn k-lerp [xs t]
+  (let [n (count xs)
+        v (* n t)
+        a (mod (Math/floor (- v 0.01)) n)
+        b (mod (inc a) n)]
+    [t xs [a b] (tm/mix* (nth xs a) (nth xs b) (* n (- t (/ a n))))]))
+
+(comment
+  (map (fn [t] (k-lerp [0.2 0.7 0.4] t)) (tm/norm-range 20)))
