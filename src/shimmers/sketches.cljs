@@ -41,6 +41,7 @@
    shimmers.sketches.colors
    shimmers.sketches.concentric-chords
    shimmers.sketches.concentric-moire
+   shimmers.sketches.concentric-orbits
    shimmers.sketches.constellations
    shimmers.sketches.control-panels
    shimmers.sketches.convex-spiral
