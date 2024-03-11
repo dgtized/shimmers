@@ -57,6 +57,20 @@
                :on-click cycle-mode}]
       [:span {:style {:padding-left "1em"}} mode-desc (name mode)]])))
 
+(defn toggle-button
+  [ui-state
+   {:keys [states mode-key on-change]
+    :or {states {false "Paused" true "Playing"}
+         on-change (fn [])}}]
+  (let [mode (get @ui-state mode-key)
+        toggle (fn []
+                 (swap! ui-state update mode-key not)
+                 (on-change))]
+    [:div
+     [:input {:type "button"
+              :value (str (get states mode))
+              :on-click toggle}]]))
+
 (defn checkbox [settings label field-ref]
   [:div.label-set {:key label}
    [:input {:type "checkbox" :checked (get-in @settings field-ref)
