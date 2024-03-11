@@ -264,7 +264,9 @@
   [:div.flexcols
    [:div {:style {:width "20em"}}
     (ctrl/change-mode ui-state system-modes)
-    (ctrl/toggle-button ui-state {:mode-key :running})
+    (ctrl/toggle-button ui-state
+                        {:mode-key :running
+                         :states {false "Paused" true "Running"}})
     (ctrl/checkbox ui-state "Show Angle/Path" [:show-angle-path])
     (ctrl/numeric ui-state "Diametral Pitch" [:diametral-pitch] [0.05 1.0 0.01])
     (ctrl/numeric ui-state "Driver Teeth" [:driver-teeth] [10 64 1])
