@@ -169,7 +169,9 @@
 (defn interpolate
   "For `xs` values, smoothly interpolate using `t` in [0.0,1.0).
 
-  The parameter `k` in [0.0,1.0), determines how long to stay at each values."
+  The values in `xs` are distributed at even intervals along the x-axis in the
+  range of `t`. The parameter `k` in [0.0,1.0), determines how long to stay at
+  each values."
   [xs k t]
   (let [n (count xs)
         k (* 0.5 (mod k 1.0))
