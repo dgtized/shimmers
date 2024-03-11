@@ -17,13 +17,13 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn max-radius [r n]
-  (min (/ (* r 0.99) (max 2 (Math/sqrt (+ n 3))))))
+  (/ r (+ Math/E (Math/sin (/ eq/TAU n)))))
 
 (defn orbit [{:keys [p r]} n phase]
   (for [t (butlast (tm/norm-range n))]
     (let [radius (max-radius r n)]
       (gc/circle (v/+polar p
-                           (- r (+ radius 1.0))
+                           (- r radius)
                            (+ phase (* eq/TAU t)))
                  radius))))
 
