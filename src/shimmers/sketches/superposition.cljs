@@ -176,8 +176,16 @@
 (defn map-noise [t rate offset interval]
   (tm/map-interval (q/noise (/ t rate) offset) [0 1] interval))
 
+(defn debug [{:keys [current target]}]
+  (q/no-fill)
+  (q/stroke-weight 1)
+  (q/stroke 0 1.0 1.0 1.0)
+  (cq/draw-polygon current)
+  (q/stroke 0 0.0 0.0 1.0)
+  (cq/draw-polygon target))
+
 (defn draw
-  [{:keys [image current target transition factor brush-cohorts variance spin] :as state}]
+  [{:keys [image transition factor brush-cohorts variance spin] :as state}]
 
   ;; measure/beat
   (let [frame-count (q/frame-count)
@@ -204,12 +212,7 @@
   (q/background 1.0)
   (q/image image 0 0)
   (when (:debug @ui-state)
-    (q/no-fill)
-    (q/stroke-weight 1)
-    (q/stroke 0 1.0 1.0 1.0)
-    (cq/draw-polygon current)
-    (q/stroke 0 0.0 0.0 1.0)
-    (cq/draw-polygon target)))
+    (debug state)))
 
 (defn page []
   [sketch/with-explanation
