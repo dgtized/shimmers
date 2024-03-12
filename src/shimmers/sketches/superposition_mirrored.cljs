@@ -331,7 +331,17 @@
           (q/fill 1.0 (+ 0.01 (* 0.2 fill-opacity))))
         (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r scale} angle))))))
 
-(defn draw [{:keys [image cycle shapes particles] :as state}]
+(defn debug-view [{:keys [shapes particles]}]
+  (q/no-fill)
+  (q/stroke 0.1 0.5)
+  (doseq [poly shapes]
+    (cq/draw-polygon poly))
+
+  (doseq [{:keys [pos angle dest]} particles]
+    (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))
+    (q/line pos dest)))
+
+(defn draw [{:keys [image cycle] :as state}]
   (when (running? cycle)
     (q/with-graphics image
       (draw-image state)))
@@ -339,16 +349,8 @@
   (q/color-mode :hsl 1.0)
   (q/background 1.0)
   (q/image image 0 0)
-
   (when (:debug @ui-state)
-    (q/no-fill)
-    (q/stroke 0.1 0.5)
-    (doseq [poly shapes]
-      (cq/draw-polygon poly))
-
-    (doseq [{:keys [pos angle dest]} particles]
-      (cq/draw-polygon (triangle/inscribed-equilateral {:p pos :r (cq/rel-h 0.03)} angle))
-      (q/line pos dest))))
+    (debug-view state)))
 
 (defn page []
   [sketch/with-explanation
