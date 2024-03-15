@@ -307,6 +307,47 @@
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
+(defn make-loop-spinner-hairs [bounds]
+  (let [radius (min (g/width bounds) (g/height bounds))
+        major (dr/random-int 1 7)
+        minor (* (dr/weighted {-1 6 1 1})
+                 (dr/random-int 1 7))
+        direction (* (dr/random-sign)
+                     (dr/gaussian 0.66 0.06)
+                     (Math/pow 0.925 (+ major (abs minor))))
+        weight (create-osc (/ 1.0 major) 1.0 0.5)
+        osc1 (create-osc (* (dr/weighted {1 6 -1 1})
+                            (dr/random-int 1 13))
+                         (dr/weighted {0.0 4 0.1 1 0.15 1 0.2 1})
+                         (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1 0.25 1}))
+        osc2 (create-osc (* (dr/weighted {-1 6 1 1})
+                            (dr/random-int 1 13))
+                         (dr/weighted {0.0 4 0.1 1 0.15 1 0.2 1})
+                         (dr/weighted {0.05 1 0.1 4 0.15 1 0.2 1 0.25 1}))
+        draw (choose-path-draw)]
+    (println "loop-spinner-hairs" bounds [major minor]
+             osc1 osc2 draw)
+    (fn [p rotation t f]
+      (q/no-fill)
+      (q/stroke (- 1.0 f))
+      (let [center (geometry/rotate-around (g/centroid bounds) p rotation)
+            t (* direction t)
+            path (for [s (tm/norm-range 256)]
+                   (->
+                    (gv/vec2)
+                    (tm/+ (R major ((:fe osc1) t s) 1.0 s))
+                    (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
+                    (tm/* (* 0.15 radius))
+                    (tm/+ center)))]
+        (q/stroke-weight ((:fe weight) (Math/sin (* t (/ 1.0 minor))) t))
+        (draw path t)
+        (q/stroke-weight 0.5)
+        (doseq [[a b] (partition 2 1 path)]
+          (let [dir (tm/* (tm/- b a) 0.5)]
+            (q/line a (tm/+ a (g/rotate dir (* 0.25 eq/TAU)))))))
+      (q/stroke-weight 1.0)
+      (q/no-stroke))))
+
 (defn make-loop-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))
         major (dr/random-int 1 7)
@@ -589,7 +630,8 @@
                                     [make-letter 0.75]
                                     [make-rect-growth 1.1]
                                     [make-spinner 1.75]
-                                    [make-loop-spinner 1.66]
+                                    [make-loop-spinner 1.5]
+                                    [make-loop-spinner-hairs 1.5]
                                     [make-wobble 1.75]
                                     [make-spiral 1.25]
                                     [make-static 1.0]
