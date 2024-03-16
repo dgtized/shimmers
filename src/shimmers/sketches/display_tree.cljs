@@ -14,7 +14,7 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
-   [shimmers.math.wobble :as mw]
+   [shimmers.math.wobble :as mw :refer [create-osc R]]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -271,16 +271,6 @@
           (geometry/rotate-around p rotation)
           (g/scale-size (scale t))
           (qdg/draw)))))
-
-(defn R [f p a s]
-  (v/polar a (* eq/TAU (+ (* s f) p))))
-
-(defn O [f p v d s]
-  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
-
-(defn create-osc [f v d]
-  {:f f :v v :d d
-   :fe (fn [p s] (O f p v d s))})
 
 (defn make-spinner [bounds]
   (let [radius (min (g/width bounds) (g/height bounds))

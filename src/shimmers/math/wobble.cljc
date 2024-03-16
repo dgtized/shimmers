@@ -1,6 +1,8 @@
 (ns shimmers.math.wobble
-  (:require [shimmers.math.deterministic-random :as dr]
-            [shimmers.math.equations :as eq]))
+  (:require
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]))
 
 (defn create
   ([r] (create r (dr/random-tau)))
@@ -29,3 +31,13 @@
 
 (defn cube-tcos [osc p t]
   (eq/cube (tcos osc p t)))
+
+(defn R [f p a s]
+  (v/polar a (* eq/TAU (+ (* s f) p))))
+
+(defn O [f p v d s]
+  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
+
+(defn create-osc [f v d]
+  {:f f :v v :d d
+   :fe (fn [p s] (O f p v d s))})
