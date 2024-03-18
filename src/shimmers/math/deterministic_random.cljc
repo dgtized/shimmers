@@ -31,8 +31,8 @@
   ([a b] (+ (* (- b a) (random-double)) a)))
 
 (defn random-int
-  ([n] (Math/floor (random n)))
-  ([a b] (Math/floor (random a b))))
+  ([n] (int (Math/floor (random n))))
+  ([a b] (int (Math/floor (random a b)))))
 
 (defn random-tau []
   (random eq/TAU))
