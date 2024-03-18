@@ -22,7 +22,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn make-line [a b controls scale]
+(defn make-line [a b controls scale rotation]
   (let [perpendicular (tm/normalize (g/normal (tm/- b a)) scale)]
     (-> (concat [a]
                 (for [t (cs/midsection (tm/norm-range (inc controls)))]
@@ -31,7 +31,8 @@
                 [b])
         bezier/auto-spline2
         (g/sample-uniform (* 0.01 height) true)
-        lines/indexed-line-strip)))
+        lines/indexed-line-strip
+        (g/rotate rotation))))
 
 (def spacing-divisions
   {5 1
@@ -48,17 +49,12 @@
         angle (if (dr/chance 0.1)
                 (dr/random -0.3 0.3)
                 (dr/random -0.15 0.15))
-        a (-> (make-line (rv 0.1 0.1) (rv 0.1 0.9) 2 (* 0.08 width))
-              (g/rotate (dr/random -0.05 0.1))
-              simplify
+        mk-line (comp simplify make-line)
+        a (-> (mk-line (rv 0.1 0.1) (rv 0.1 0.9) 2 (* 0.08 width) (dr/random -0.05 0.1))
               (vary-meta assoc :stroke-width 2.0))
-        b (-> (make-line (rv 0.5 0.0) (rv 0.5 1.0) 3 (* 0.12 width))
-              (g/rotate (dr/random -0.05 0.05))
-              simplify
+        b (-> (mk-line (rv 0.5 0.0) (rv 0.5 1.0) 3 (* 0.12 width) (dr/random -0.05 0.05))
               (vary-meta assoc :stroke-width 2.0))
-        c (-> (make-line (rv 0.9 0.1) (rv 0.9 0.9) 2 (* 0.08 width))
-              (g/rotate angle)
-              simplify
+        c (-> (mk-line (rv 0.9 0.1) (rv 0.9 0.9) 2 (* 0.08 width) angle)
               (vary-meta assoc :stroke-width 2.0))
         [n1 n2] (repeatedly 2 #(dr/weighted (dissoc spacing-divisions 5 7)))]
     (swap! defo assoc :base [angle n1 n2])
