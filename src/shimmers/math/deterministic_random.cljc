@@ -147,7 +147,7 @@
   ([] (tm/normalize (gv/vec2 (random -1 1) (random -1 1))))
   ([n] (tm/normalize (gv/vec2 (random -1 1) (random -1 1)) n)))
 
-(def ^:constant MAX-INT (Math/pow 2 32))
+(def ^:constant MAX-INT (Math/pow 2 31))
 (defn gaussian
   ([] (gaussian 0 1))
   ([mu sd]
