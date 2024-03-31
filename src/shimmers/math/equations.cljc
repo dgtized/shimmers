@@ -1,6 +1,7 @@
 (ns shimmers.math.equations
   "Useful equations"
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.quaternion :as quat]
    [thi.ng.geom.vector :as gv]
@@ -8,13 +9,13 @@
 
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
-  [t]
-  (* 0.5 (+ 1 (Math/cos t))))
+  ^double [^double t]
+  (* 0.5 (+ 1 (math/cos t))))
 
 (defn unit-sin
   "Sine function remapped into unit interval [0,1]"
-  [t]
-  (* 0.5 (+ 1 (Math/sin t))))
+  ^double [^double t]
+  (* 0.5 (+ 1 (math/sin t))))
 
 (defn sqr [x]
   (* x x))
@@ -26,19 +27,19 @@
   "Bell curve of magnitude `a`, centered at `b`, width `c`.
   From https://en.wikipedia.org/wiki/Gaussian_function"
   [a b c x]
-  (* a (Math/exp (- (/ (sqr (- x b))
+  (* a (math/exp (- (/ (sqr (- x b))
                        (* 2 (sqr c)))))))
 
 (def ^:const TAU tm/TWO_PI)
-(def ^:const SQRT_TWO_PI (Math/sqrt tm/TWO_PI))
-(def ^:const SQRT2_2 (/ (Math/sqrt 2) 2))
-(def ^:const SQRT2_3 (/ (Math/sqrt 2) 3))
+(def ^:const SQRT_TWO_PI (math/sqrt tm/TWO_PI))
+(def ^:const SQRT2_2 (/ (math/sqrt 2) 2))
+(def ^:const SQRT2_3 (/ (math/sqrt 2) 3))
 
 (defn gaussian-density
   "Probability density function with expected value `mu`, variance `sigma`."
   [mu sigma x]
   (* (/ 1 (* sigma SQRT_TWO_PI))
-     (Math/exp (* -0.5 (/ (sqr (- x mu))
+     (math/exp (* -0.5 (/ (sqr (- x mu))
                           (sqr sigma))))))
 
 (comment
@@ -64,7 +65,7 @@
 
 ;; https://www.researchgate.net/publication/292669884_The_Clothoid_Computation_A_Simple_and_Efficient_Numerical_Algorithm
 (defn clothoid-A [radius length]
-  (Math/sqrt (* radius length)))
+  (math/sqrt (* radius length)))
 
 ;; `A` is defined above
 ;; `lambda` is clockwise or counter-clockwise rotation (1,-1)
@@ -82,8 +83,8 @@
       (reductions (fn [pos n]
                     (let [phi (clothoid-phi A lambda phi0 (* Δs n))]
                       (vector-op pos
-                                 (gv/vec2 (* Δs (Math/cos phi))
-                                          (* Δs (Math/sin phi))))))
+                                 (gv/vec2 (* Δs (math/cos phi))
+                                          (* Δs (math/sin phi))))))
                   pos0
                   (directional (range N))))))
 
@@ -139,10 +140,10 @@
          (range 0 35 1))))
 
 (defn slerp [v0 v1 t]
-  (let [theta (Math/acos (tm/dot v0 v1))
-        s-theta (Math/sin theta)]
-    (tm/+ (tm/* v0 (/ (Math/sin (* (- 1.0 t) theta)) s-theta))
-          (tm/* v1 (/ (Math/sin (* t theta)) s-theta)))))
+  (let [theta (math/acos (tm/dot v0 v1))
+        s-theta (math/sin theta)]
+    (tm/+ (tm/* v0 (/ (math/sin (* (- 1.0 t) theta)) s-theta))
+          (tm/* v1 (/ (math/sin (* t theta)) s-theta)))))
 
 (defn quat-slerp [v0 v1 t]
   (let [q0 (quat/quat (tm/normalize (gv/vec3 v0)) 0)
@@ -174,7 +175,7 @@
 (defn flatstep
   "Sorta an inverse of smoothstep with a slow middle and sharper end slope."
   [t f]
-  (* (Math/pow t f) (+ (* 3 t t t) (* -3 t t) 1)))
+  (* (math/pow t f) (+ (* 3 t t t) (* -3 t t) 1)))
 
 (comment
   (map (fn [x] [x (flatstep x 1.2)]) (range 0 1 0.1)))
