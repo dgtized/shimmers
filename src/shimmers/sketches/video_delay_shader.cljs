@@ -20,7 +20,8 @@
    :edge-detection-length
    :edge-detection-length-div
    :edge-detection-length-mix
-   :motion-extraction])
+   :motion-extraction
+   :motion-extractino-mask])
 
 (defonce ui-state (ctrl/state {:mode :color-delay}))
 

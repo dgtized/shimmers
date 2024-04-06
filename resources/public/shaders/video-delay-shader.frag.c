@@ -84,6 +84,16 @@ void main() {
       vec4(0.0,inv10.g,0.0,0.3)+
       vec4(0.0,0.0,inv25.b,0.6);
     color = color0+motion;
+  } else if (u_mode == 9) { // motion-extraction-mask
+    // https://www.youtube.com/watch?v=NSS6yAMZF78
+    vec4 inv0 = vec4(1.0-color0.r,1.0-color0.g,1.0-color0.b,0.5);
+    vec4 inv10 = vec4(1.0-color10.r,1.0-color10.g,1.0-color10.b,0.5);
+    vec4 inv25 = vec4(1.0-color25.r,1.0-color25.g,1.0-color25.b,0.5);
+    vec4 motion =
+      vec4(inv0.r,0.0,0.0,0.33)+
+      vec4(0.0,inv10.g,0.0,0.33)+
+      vec4(0.0,0.0,inv25.b,0.33);
+    color = vec4(color0.rgb*(color0.rgb+motion.rgb),1.0);
   }
 
   gl_FragColor = color;
