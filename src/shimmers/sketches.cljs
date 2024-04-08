@@ -226,6 +226,7 @@
    shimmers.sketches.string-lights
    shimmers.sketches.subliminal
    shimmers.sketches.substrate
+   shimmers.sketches.sunflower
    shimmers.sketches.superposition
    shimmers.sketches.superposition-mirrored
    shimmers.sketches.terrain-grid
