@@ -13,12 +13,12 @@
 ;; https://stackoverflow.com/questions/28567166/uniformly-distribute-x-points-inside-a-circle
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 24)
   {:alpha 0.0
-   :points 512})
+   :points 768})
 
 (defn update-state [state]
-  (update state :alpha (fn [a] (mod (+ a 1.0) 10.0))))
+  (let [t (/ (q/millis) 1000.0)]
+    (assoc state :alpha (+ 6.0 (* 6.0 (math/sin (* 0.25 t)))))))
 
 (defn draw [{:keys [points alpha]}]
   (q/background 1.0)
