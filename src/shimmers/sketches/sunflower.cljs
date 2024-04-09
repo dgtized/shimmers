@@ -18,9 +18,10 @@
 
 (defn update-state [state]
   (let [t (/ (q/millis) 1000.0)]
-    (assoc state :alpha (+ 6.0 (* 6.0 (math/sin (* 0.25 t)))))))
+    (assoc state :alpha (+ 6.0 (* 6.0 (math/sin (* 0.25 t))))
+           :t t)))
 
-(defn draw [{:keys [points alpha]}]
+(defn draw [{:keys [points alpha t]}]
   (q/background 1.0)
   (let [center (cq/rel-vec 0.5 0.5)
         radius (* 0.45 (min (q/height) (q/width)))
@@ -28,7 +29,7 @@
         interior (- points exterior)
         k-theta (* math/PI (- 3 (math/sqrt 5)))]
     (doseq [[r theta] (mapv (fn [i] [(if (< i interior) (/ (float i) (inc interior)) 1.0)
-                                    (* i k-theta)])
+                                    (+ (* 0.05 t) (* i k-theta))])
                             (range points))]
       (cq/circle (v/+polar center (* r radius) theta)
                  2.0))))
