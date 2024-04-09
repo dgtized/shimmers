@@ -32,7 +32,7 @@
                                     (+ (* 0.05 t) (* i k-theta))])
                             (range points))]
       (cq/circle (v/+polar center (* r radius) theta)
-                 2.0))))
+                 (+ 2.5 (* 1.5 (math/sin (+ t theta))))))))
 
 (defn page []
   [:div
