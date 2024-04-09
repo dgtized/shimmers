@@ -18,7 +18,7 @@
 
 (defn update-state [state]
   (let [t (/ (q/millis) 1000.0)]
-    (assoc state :alpha (+ 6.0 (* 6.0 (math/sin (* 0.25 t))))
+    (assoc state :alpha (+ 10.0 (* 10.0 (math/sin (* 0.15 t))))
            :t t)))
 
 (defn draw [{:keys [points alpha t]}]
