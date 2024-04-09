@@ -28,11 +28,11 @@
         exterior (min (int (tm/roundto (* alpha (math/sqrt points)) 0.1)) points)
         interior (- points exterior)
         k-theta (* math/PI (- 3 (math/sqrt 5)))]
-    (doseq [[r theta] (mapv (fn [i] [(if (< i interior) (/ (float i) (inc interior)) 1.0)
-                                    (+ (* 0.05 t) (* i k-theta))])
-                            (range points))]
-      (cq/circle (v/+polar center (* r radius) theta)
-                 (+ 2.5 (* 1.5 (math/sin (+ t theta))))))))
+    (dotimes [i points]
+      (let [r (if (< i interior) (/ (float i) (inc interior)) 1.0)
+            theta (+ (* 0.05 t) (* i k-theta))]
+        (cq/circle (v/+polar center (* r radius) theta)
+                   (+ 2.5 (* 1.5 (math/sin (+ t theta)))))))))
 
 (defn page []
   [:div
