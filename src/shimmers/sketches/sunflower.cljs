@@ -1,14 +1,14 @@
 (ns shimmers.sketches.sunflower
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]
    [shimmers.common.quil :as cq]
-   [thi.ng.math.core :as tm]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
-   [clojure.math :as math]))
+   [shimmers.sketch :as sketch :include-macros true]))
 
 ;; https://stackoverflow.com/questions/28567166/uniformly-distribute-x-points-inside-a-circle
 (defn setup []
@@ -27,7 +27,7 @@
         radius (* 0.45 (min (q/height) (q/width)))
         exterior (min (int (* alpha (math/sqrt points))) points)
         interior (- points exterior)
-        k-theta (* math/PI (- 3 (math/sqrt 5)))]
+        k-theta (* eq/TAU (+ (- 3 (math/sqrt 5)) (* 0.025 (math/sin (* 0.05 (/ t eq/TAU))))))]
     (dotimes [i points]
       (let [r (if (< i interior) (/ (float i) (inc interior)) 1.0)
             theta (+ (* 0.05 t) (* i k-theta))]
