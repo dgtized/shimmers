@@ -133,6 +133,9 @@
                    0.05 4})
      width))
 
+(defn stroke-width [s width]
+  (vary-meta s assoc :stroke-width width))
+
 (def poly-shapes
   (into [{:sides 20 :shape-fn circle}]
         (mapcat (fn [sides]
@@ -168,8 +171,12 @@
                shape
                (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
                        (dr/random-int 3 9))))
-              [])]
-        (concat [line shape] shading)))))
+              [])
+            shape'
+            (if (and (empty? shading) (dr/chance 0.33))
+              (stroke-width shape (dr/gaussian 1.5 0.5))
+              shape)]
+        (concat [line shape'] shading)))))
 
 (defn add-shapes [shapes connectors n]
   (loop [n n connectors connectors shapes shapes attempts (* n 5)]
