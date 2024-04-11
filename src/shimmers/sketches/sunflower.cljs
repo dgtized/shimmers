@@ -25,7 +25,7 @@
   (q/background 1.0)
   (let [center (cq/rel-vec 0.5 0.5)
         radius (* 0.45 (min (q/height) (q/width)))
-        exterior (min (int (tm/roundto (* alpha (math/sqrt points)) 0.1)) points)
+        exterior (min (int (* alpha (math/sqrt points))) points)
         interior (- points exterior)
         k-theta (* math/PI (- 3 (math/sqrt 5)))]
     (dotimes [i points]
