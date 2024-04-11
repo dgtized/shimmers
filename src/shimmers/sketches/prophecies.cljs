@@ -143,6 +143,20 @@
                    {:sides sides :shape-fn (point-polygon sides)}])
                 (range 3 9))))
 
+(defn inside [s _]
+  [(vary-meta (g/scale-size s 0.95)
+              assoc :fill "none")])
+
+(defn outside [s _]
+  [(vary-meta (g/scale-size s 1.05)
+              assoc :fill "none")])
+
+(defn inside-outside [s _]
+  [(vary-meta (g/scale-size s 1.05)
+              assoc :fill "none")
+   (vary-meta (g/scale-size s 0.95)
+              assoc :fill "none")])
+
 (defn make-shape [connector shapes]
   (let [{:keys [vertex scale] angle :direction} connector
         len (* scale (gen-size))
@@ -167,7 +181,10 @@
                              [nested 4]
                              [spiral 1]
                              [clipper-r 1]
-                             [clipper-p 1]])
+                             [clipper-p 1]
+                             [inside 1]
+                             [outside 1]
+                             [inside-outside 1]])
                shape
                (int (* (if (< p-area 1.2) (- p-area 0.2) 1.0)
                        (dr/random-int 3 9))))
