@@ -6,7 +6,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.video :as video]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]))
 
 (def modes [:modular :delayed :rewind :chance-rewind :random])
@@ -29,9 +29,10 @@
     :modular [0 (mod (q/frame-count) (count frames))]
     :delayed [-1 0]
     :rewind [1 (dec (count frames))]
-    :chance-rewind (p/weighted {[-1 0] 5
-                                [(rand-int 8) (+ 6 (rand-int 12))] 1})
-    :random [0 (rand-int (count frames))]))
+    :chance-rewind
+    (dr/weighted {[-1 0] 5
+                  [(dr/random-int 8) (+ 6 (dr/random-int 12))] 1})
+    :random [0 (dr/random-int (count frames))]))
 
 (defn update-state [{:keys [capture width height] :as state}]
   (let [[r offset] (active-mode state)]
