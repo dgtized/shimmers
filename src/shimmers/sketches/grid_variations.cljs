@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.transition-interval :as transition]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
@@ -73,17 +74,19 @@
    (comp invert centered-y) 1})
 
 (defn option-from [options]
-  (chain-compose [(p/weighted options)
-                  (p/weighted constant-factors)]))
+  (chain-compose
+   [(dr/weighted options)
+    (dr/weighted constant-factors)]))
 
 (defn gen-mode []
   {:position
-   (p/weighted {(constantly (gv/vec2)) 3
-                (let [radius (tm/random 1.0 4.0)]
-                  (fn [_] (perturb [0 0] radius))) 1
-                (let [radius (tm/random 3.0 6.0)
-                      speed (p/weighted {5 1 10 2 15 3 20 2})]
-                  (fn [_] (v/polar radius (/ (q/frame-count) speed)))) 1})
+   (dr/weighted
+    {(constantly (gv/vec2)) 3
+     (let [radius (tm/random 1.0 4.0)]
+       (fn [_] (perturb [0 0] radius))) 1
+     (let [radius (tm/random 3.0 6.0)
+           speed (dr/weighted {5 1 10 2 15 3 20 2})]
+       (fn [_] (v/polar radius (/ (q/frame-count) speed)))) 1})
    :scalar
    (option-from {(constantly 1.0) 1
                  (fn [_] (p/gaussian 1 0.1)) 1
@@ -104,11 +107,12 @@
               (tm/map-interval (Math/cos t) [-1 1] [4 24])])))
 
 (defn gen-grid []
-  (p/weighted {(constantly (gv/vec2 11 13)) 1
-               (constantly (gv/vec2 13 17)) 2
-               (constantly (gv/vec2 17 23)) 3
-               (constantly (gv/vec2 23 29)) 2
-               animate-grid 2}))
+  (dr/weighted
+   {(constantly (gv/vec2 11 13)) 1
+    (constantly (gv/vec2 13 17)) 2
+    (constantly (gv/vec2 17 23)) 3
+    (constantly (gv/vec2 23 29)) 2
+    animate-grid 2}))
 
 ;; Add state for shape+deformations, stroke-weight, color, and opacity.
 (defn setup []
