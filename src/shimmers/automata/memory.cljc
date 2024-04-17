@@ -1,5 +1,6 @@
 (ns shimmers.automata.memory
-  (:require [shimmers.math.probability :as p]))
+  (:require
+   [shimmers.math.deterministic-random :as dr]))
 
 (defrecord Allocation [id base size])
 
@@ -75,7 +76,7 @@
                     (group-by :id)
                     vals
                     (filter (fn [s] (> (count s) 1)))
-                    (p/weighted-by count)
+                    (dr/weighted-by count)
                     (sort-by :size))]
     (if (< (* 1.5 (reduce + (take 2 (map :size allocs))))
            free)

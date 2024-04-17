@@ -7,6 +7,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
@@ -32,10 +33,10 @@
   (< depth max-depth))
 
 (defn subdivide-triangle [{:keys [color depth max-depth] :as t}]
-  (let [opts {:mode (p/weighted {:midpoint 8
-                                 :inset 2
-                                 :trisect 2
-                                 :centroid 1})
+  (let [opts {:mode (dr/weighted {:midpoint 8
+                                  :inset 2
+                                  :trisect 2
+                                  :centroid 1})
               :inner-point triangle/random-point-inside
               :sample (p/gaussian-clamped 0.5 0.1)
               :sample-low (p/gaussian-clamped 0.33 0.1)

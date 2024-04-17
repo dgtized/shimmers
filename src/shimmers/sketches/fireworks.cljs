@@ -100,17 +100,19 @@
     (case type
       :rocket
       (if (p/chance (tm/smoothstep* a b (/ age max-age)))
-        ((p/weighted {#(make-bottle p) 2
-                      #(make-poppers p (rand-int 32)) 8
-                      #(make-mirv p (int (tm/random 8 16)) (partial tm/random 0.5 1.1)) 3
-                      #(make-rain p (int (tm/random 64 96)) [0.4 1.2]) 3
-                      #(make-thumpers p (int (tm/random 1 4))) 1}))
+        ((dr/weighted
+          {#(make-bottle p) 2
+           #(make-poppers p (rand-int 32)) 8
+           #(make-mirv p (int (tm/random 8 16)) (partial tm/random 0.5 1.1)) 3
+           #(make-rain p (int (tm/random 64 96)) [0.4 1.2]) 3
+           #(make-thumpers p (int (tm/random 1 4))) 1}))
         [p])
       :mirv
       (if (p/chance (tm/smoothstep* 0.16 0.9 (/ age max-age)))
-        ((p/weighted {#(make-mirv p 4 (partial tm/random 0.5 1.1)) 1
-                      #(make-poppers p (int (tm/random 12 32))) 4
-                      #(make-rain p (int (tm/random 24 32)) [0.1 0.9]) 5}))
+        ((dr/weighted
+          {#(make-mirv p 4 (partial tm/random 0.5 1.1)) 1
+           #(make-poppers p (int (tm/random 12 32))) 4
+           #(make-rain p (int (tm/random 24 32)) [0.1 0.9]) 5}))
         [p])
       [p])))
 

@@ -8,6 +8,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.probability :as p]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -90,7 +91,7 @@
 
 (defn position-seed
   []
-  (p/weighted
+  (dr/weighted
    {(fn [_] (g/random-point (gc/circle 0.5 0.5 0.2))) 1
     (let [[y0 y1] (repeatedly 2 #(rand-nth [0.35 0.5 0.65]))
           line (gl/line2 0.1 y0 0.9 y1)]

@@ -1,7 +1,8 @@
 (ns shimmers.math.probability
   (:require
-   [shimmers.common.sequence :as cs]
    [kixi.stats.distribution :as ksd]
+   [shimmers.common.sequence :as cs]
+   [shimmers.math.deterministic-random :as dr]
    [thi.ng.math.core :as tm]))
 
 (defn chance [prob]
@@ -14,28 +15,14 @@
     (rand)
     0))
 
-(defn weighted
-  "Given a mapping of values to weights, choose a value biased by weight from a
-  RNG source generating values from 0 to 1."
-  ([weights] (weighted weights (tm/random)))
-  ([weights random-value]
-   (let [sample (* random-value (apply + (vals weights)))]
-     (loop [cumulative 0.0
-            [[choice weight] & remaining] weights]
-       (when weight
-         (let [sum (+ cumulative weight)]
-           (if (< sample sum)
-             choice
-             (recur sum remaining))))))))
-
 (defn weighted-by
   "Given a sequence of values `xs`, weight each value by a function `f` and return
   a weighted random selection."
   [f xs]
-  (weighted (cs/mapping f xs)))
+  (dr/weighted (cs/mapping f xs) (tm/random)))
 
 (comment
-  (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9})))
+  (frequencies (repeatedly 1000 #(dr/weighted {:a 0.1 :b 0.9} (tm/random))))
   (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn mapcat-random-sample
