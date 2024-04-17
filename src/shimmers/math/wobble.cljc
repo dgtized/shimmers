@@ -1,5 +1,6 @@
 (ns shimmers.math.wobble
   (:require
+   [clojure.math :as math]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]))
@@ -9,16 +10,16 @@
   ([r c] {:r r :c c}))
 
 (defn sin [{:keys [r c]} p t]
-  (Math/sin (+ (* r t) p c)))
+  (math/sin (+ (* r t) p c)))
 
 (defn cos [{:keys [r c]} p t]
-  (Math/sin (+ (* r t) p c)))
+  (math/sin (+ (* r t) p c)))
 
 (defn tsin [{:keys [r c]} p t]
-  (Math/sin (* eq/TAU (+ (* r t) p c))))
+  (math/sin (* eq/TAU (+ (* r t) p c))))
 
 (defn tcos [{:keys [r c]} p t]
-  (Math/cos (* eq/TAU (+ (* r t) p c))))
+  (math/cos (* eq/TAU (+ (* r t) p c))))
 
 (defn cube-sin [osc p t]
   (eq/cube (sin osc p t)))
@@ -36,7 +37,7 @@
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
 (defn O [f p v d s]
-  (+ v (* d (Math/sin (* eq/TAU (+ (* s f) p))))))
+  (+ v (* d (math/sin (* eq/TAU (+ (* s f) p))))))
 
 (defn create-osc [f v d]
   {:f f :v v :d d
