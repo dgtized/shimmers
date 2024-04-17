@@ -1,5 +1,6 @@
 (ns shimmers.math.vector
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -29,16 +30,14 @@
 (defn polar
   ([theta] (polar 1.0 theta))
   ([r theta]
-   (g/as-cartesian (v2 r theta))))
+   (v2 (* r (math/cos theta))
+       (* r (math/sin theta)))))
 
 (defn +polar [p r theta]
   (tm/+ p (polar r theta)))
 
 (defn -polar [p r theta]
   (tm/- p (polar r theta)))
-
-(defn- unit2-from-angle [theta]
-  (v2 (Math/cos theta) (Math/sin theta)))
 
 (defn snap-to
   "Snap an input angle `dir` to the closest multiple of `radians`."
@@ -48,7 +47,7 @@
         (/ radians)
         Math/round
         (* radians)
-        unit2-from-angle)
+        polar)
     dir))
 
 (defn turn-right [[x y]]
