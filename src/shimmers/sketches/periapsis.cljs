@@ -6,7 +6,8 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -35,7 +36,7 @@
   (let [G 30000.0]
     (* (Math/sqrt (/ (Math/pow semi-major 3)
                      (* G mass)))
-       tm/TWO_PI)))
+       eq/TAU)))
 
 (defn make-body [{:keys [semi-major eccentricity direction mass] :as params
                   :or {semi-major 0
@@ -46,16 +47,16 @@
                      :eccentricity eccentricity
                      :focal-distance (* eccentricity semi-major)
                      :speed (* direction (orbital-period semi-major mass))
-                     :theta0 (tm/random tm/TWO_PI)
-                     :rotation (tm/random tm/TWO_PI)
+                     :theta0 (dr/random-tau)
+                     :rotation (dr/random-tau)
                      :moons []}
                     params)))
 
 (defn make-moon []
-  (make-body {:semi-major (tm/random 8 24)
-              :eccentricity (p/happensity 0.3)
-              :mass (/ (tm/random 1 4) 4)
-              :direction (if (p/chance 0.1) -1 1)}))
+  (make-body {:semi-major (dr/random 8 24)
+              :eccentricity (dr/happensity 0.3)
+              :mass (/ (dr/random 1 4) 4)
+              :direction (if (dr/chance 0.1) -1 1)}))
 
 (defn make-bodies [n]
   (let [radius (/ (q/width) 2)
@@ -65,14 +66,16 @@
      (make-body {:mass (* base 2)})
      (repeatedly
       n
-      #(let [semi-major (+ base-radius (* (- radius base-radius) (Math/sqrt (tm/random))))]
+      #(let [semi-major (+ base-radius (* (- radius base-radius) (Math/sqrt (dr/random))))]
          (make-body
           {:semi-major semi-major
            ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
-           :eccentricity (p/happensity (* 0.75 (tm/smoothstep* (/ radius 10) (/ radius 1.5) semi-major)))
-           :mass (/ (tm/random 8 12) 4)
-           :direction (if (p/chance 0.1) -1 1)
-           :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})) make-moon)}))))))
+           :eccentricity (dr/happensity (* 0.75 (tm/smoothstep* (/ radius 10) (/ radius 1.5) semi-major)))
+           :mass (/ (dr/random 8 12) 4)
+           :direction (if (dr/chance 0.1) -1 1)
+           :moons (repeatedly (ksd/draw (ksd/poisson {:lambda 0.9})
+                                        {:seed (dr/random-int dr/MAX-INT)})
+                              make-moon)}))))))
 
 (comment
   (->> (ksd/poisson {:lambda 0.9})
