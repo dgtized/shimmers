@@ -102,7 +102,7 @@
              rv)))
 
 (comment
-  (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9} (tm/random))))
+  (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9} (random-double))))
   (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn random-sample
