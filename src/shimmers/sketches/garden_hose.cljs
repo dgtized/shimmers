@@ -8,6 +8,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -15,7 +16,7 @@
 
 (defn next-point [bounds variance {:keys [angle length] :as segment}]
   (loop [variance variance]
-    (let [theta (mod (dr/gaussian angle variance) tm/TWO_PI)
+    (let [theta (mod (dr/gaussian angle variance) eq/TAU)
           endpoint (chain/segment-endpoint (assoc segment :angle theta))]
       (if (g/contains-point? bounds endpoint)
         (chain/->KinematicSegment endpoint theta length)
