@@ -5,7 +5,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
-   [shimmers.math.probability :as p]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
@@ -25,7 +24,7 @@
   (random-point-inside
     [_] (->> (g/tessellate _)
              (map gt/triangle2)
-             (p/weighted-by g/area)
+             (dr/weighted-by g/area)
              triangle/random-point-inside)))
 
 (defn rotate-around-centroid [polygon t]

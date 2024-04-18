@@ -1,7 +1,6 @@
 (ns shimmers.math.probability
   (:require
    [kixi.stats.distribution :as ksd]
-   [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.math.core :as tm]))
 
@@ -14,16 +13,6 @@
   (if (chance prob)
     (rand)
     0))
-
-(defn weighted-by
-  "Given a sequence of values `xs`, weight each value by a function `f` and return
-  a weighted random selection."
-  [f xs]
-  (dr/weighted (cs/mapping f xs) (tm/random)))
-
-(comment
-  (frequencies (repeatedly 1000 #(dr/weighted {:a 0.1 :b 0.9} (tm/random))))
-  (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn mapcat-random-sample
   "Apply `xf` to the subset of `coll` selected with probability density `pf` for

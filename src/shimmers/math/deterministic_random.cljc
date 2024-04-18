@@ -95,8 +95,15 @@
 (defn weighted-by
   "Given a sequence of values `xs`, weight each value by a function `f` and return
   a weighted random selection."
-  [f xs]
-  (weighted (mapv (fn [v] [v (f v)]) xs)))
+  ([f xs]
+   (weighted-by f (random-double) xs))
+  ([f rv xs]
+   (weighted (mapv (fn [v] [v (f v)]) xs)
+             rv)))
+
+(comment
+  (frequencies (repeatedly 1000 #(weighted {:a 0.1 :b 0.9} (tm/random))))
+  (frequencies (repeatedly 1000 #(weighted-by inc [1 2 3]))))
 
 (defn random-sample
   "Returns items from coll with probability of prob (0.0 - 1.0)."
