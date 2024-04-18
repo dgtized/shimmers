@@ -1,7 +1,6 @@
 (ns shimmers.math.probability
   (:require
    [kixi.stats.distribution :as ksd]
-   [shimmers.math.deterministic-random :as dr]
    [thi.ng.math.core :as tm]))
 
 (defn chance [prob]
