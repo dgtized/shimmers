@@ -8,7 +8,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.probability :as p]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -89,13 +88,13 @@
        (fn [_] (v/polar radius (/ (q/frame-count) speed)))) 1})
    :scalar
    (option-from {(constantly 1.0) 1
-                 (fn [_] (p/gaussian 1 0.1)) 1
-                 (fn [_] (p/gaussian 1 0.2)) 1
+                 (fn [_] (dr/gaussian 1 0.1)) 1
+                 (fn [_] (dr/gaussian 1 0.2)) 1
                  (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
                                          [-1 1] [0.2 2.0])) 1})
    :rotation
    (option-from {(constantly 0.0) 1
-                 (fn [_] (p/gaussian 1 0.1)) 1
+                 (fn [_] (dr/gaussian 1 0.1)) 1
                  (let [mag (* (rand-nth [-1 1])
                               (rand-nth [100 150 200 250]))]
                    (fn [_] (/ (q/frame-count) mag))) 1
@@ -128,7 +127,7 @@
       (assoc state
              :modes [(last (:modes state)) (gen-mode)]
              :grid (let [last-grid (last (:grid state))]
-                     [last-grid (if (p/chance 0.3)
+                     [last-grid (if (dr/chance 0.3)
                                   (gen-grid)
                                   last-grid)])
              :transition (transition/after fc (* 100 (rand-nth [3 4 5 6 7 7 8 9 10])))
