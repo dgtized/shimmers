@@ -8,7 +8,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.math.probability :as p]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.math.core :as tm]))
@@ -17,16 +17,16 @@
   (q/color-mode :hsl 1.0)
   (let [circles (for [x (cs/centered-range 8)
                       y (cs/centered-range 6)]
-                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h (p/gaussian 0.05 0.01)))
+                  (assoc (gc/circle (cq/rel-pos x y) (cq/rel-h (dr/gaussian 0.05 0.01)))
                          :spacing (tm/random 2.5 10.0)
                          :theta (tm/random 0 tm/TWO_PI)))]
     {:circles (vec circles)}))
 
 (defn update-circle [c theta]
   (assoc c
-         :r (tm/clamp (+ (:r c) (if (p/chance 0.33) (p/gaussian 0.0 2.0) 0))
+         :r (tm/clamp (+ (:r c) (if (dr/chance 0.33) (dr/gaussian 0.0 2.0) 0))
                       (cq/rel-h 0.01) (cq/rel-h 0.3))
-         :theta (+ theta (* 0.2 (p/happensity 0.2)))
+         :theta (+ theta (* 0.2 (dr/happensity 0.2)))
          :spacing (tm/random 2.5 10.0)))
 
 (defn update-state [{:keys [circles] :as state}]
