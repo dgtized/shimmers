@@ -244,6 +244,7 @@
    shimmers.sketches.triangulating-subdivisions
    shimmers.sketches.trigonometry-boxes
    shimmers.sketches.tunnel-flight
+   shimmers.sketches.twelve-clocks
    shimmers.sketches.typography
    shimmers.sketches.under-the-surface
    shimmers.sketches.undulating-figures
