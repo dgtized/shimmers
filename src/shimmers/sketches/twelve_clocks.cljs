@@ -1,5 +1,6 @@
 (ns shimmers.sketches.twelve-clocks
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -20,7 +21,9 @@
 (defn draw-hand [angle radius time]
   (let [base (v/+polar (cq/rel-vec 0.5 0.5) radius angle)
         q (v/+polar base (/ radius 6) (+ angle time))
-        p (v/+polar q (/ radius 9) (- angle (* 3 time) (Math/sin (+ angle (* 0.5 time)))))]
+        p (v/+polar q (/ radius 9) (- angle (* 3 time)
+                                      (Math/sin (+ angle (* 0.5 time)))))]
+    (q/stroke-weight (+ 1.5 (math/sin (+ angle (* 0.1 time)))))
     (q/line base q)
     (q/line q p)))
 
