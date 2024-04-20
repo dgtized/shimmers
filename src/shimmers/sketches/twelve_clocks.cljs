@@ -18,21 +18,23 @@
 (defn update-state [state]
   state)
 
+(def ^:constant PHI2 (math/pow tm/PHI 2))
+
 (defn draw-hand [step angle radius time]
   (let [r (/ radius (+ 6 (* 2 (math/sin (+ angle (* 0.25 time))))))
         a (v/+polar (cq/rel-vec 0.5 0.5)
                     radius
                     (+ angle (* 0.1 (eq/unit-sin (+ (* 0.25 step) (* 0.075 time))))))
         b (v/+polar a r
-                    (+ angle time
+                    (+ angle (* (math/sqrt tm/PHI) time)
                        (* 0.1 step)
                        (math/sin (- angle (* 0.1 time)))))
         c (v/+polar b (/ r tm/PHI)
-                    (- angle (* 1.5 time)
+                    (- angle (* tm/PHI time)
                        (* 0.2 step (eq/unit-sin (+ angle time)))
                        (Math/sin (+ angle (* 0.3 time)))))
-        d (v/+polar c (/ r (math/pow tm/PHI 2))
-                    (+ angle (* 2.5 time)
+        d (v/+polar c (/ r PHI2)
+                    (+ angle (* PHI2 time)
                        (* 0.3 step (eq/unit-sin time))
                        (Math/sin (+ angle (* 0.5 time)))))]
     (q/stroke-weight (+ 1.75 (* 1.25 (math/sin (+ angle (* -0.15 step) (* (/ 1 60) time))))))
