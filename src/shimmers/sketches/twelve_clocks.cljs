@@ -45,10 +45,15 @@
 (defn draw [_state]
   (q/background 1.0 0.66)
   (let [time (/ (q/millis) 1000.0)
-        radius (cq/rel-h 0.35)
-        dist (* radius 0.1 (eq/unit-sin (* 0.2 time)))]
+        radius (cq/rel-h 0.35)]
     (doseq [hand (range 12)
-            step (range 7)]
+            step (range 7)
+            :let [hand-phase
+                  (->> (eq/unit-sin (+ (* (+ 0.05 (* 0.1 (eq/unit-sin (+ (* 0.33 hand) (* tm/SQRT2 time))))) time)
+                                       (math/sin (/ time tm/SQRT3))))
+                       (tm/smoothstep* 0.33 0.95)
+                       (* 0.15 hand))
+                  dist (* radius 0.1 (eq/unit-sin (+ (* 0.2 time) hand-phase)))]]
       (draw-hand step
                  (* eq/TAU (+ (/ hand 12.0) (math/sin (* 0.025 time))))
                  (- radius (* dist step)) time))))
