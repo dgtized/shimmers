@@ -18,8 +18,9 @@
   state)
 
 (defn draw-hand [step angle radius time]
-  (let [a (v/+polar (cq/rel-vec 0.5 0.5) radius
-                    (+ angle (* 0.05 (eq/unit-sin time) step)))
+  (let [a (v/+polar (cq/rel-vec 0.5 0.5)
+                    radius
+                    (+ angle (* 0.1 (eq/unit-sin (+ (* 0.25 step) (* 0.075 time))))))
         b (v/+polar a (/ radius 6)
                     (+ angle time
                        (* 0.1 step)
