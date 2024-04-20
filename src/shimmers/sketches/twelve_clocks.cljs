@@ -24,7 +24,7 @@
     (q/line base q)
     (q/line q p)))
 
-(defn draw [state]
+(defn draw [_state]
   (q/background 1.0)
   (let [time (/ (q/millis) 1000.0)
         radius (cq/rel-h 0.35)
