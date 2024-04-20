@@ -46,7 +46,7 @@
   (q/background 1.0 0.66)
   (let [time (/ (q/millis) 1000.0)
         radius (cq/rel-h 0.35)
-        dist (* 20 (Math/sin (* 0.2 time)))]
+        dist (* radius 0.1 (eq/unit-sin (* 0.2 time)))]
     (doseq [hand (range 12)
             step (range 7)]
       (draw-hand step
