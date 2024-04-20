@@ -35,7 +35,7 @@
                     (+ angle (* 2.5 time)
                        (* 0.3 step (eq/unit-sin time))
                        (Math/sin (+ angle (* 0.5 time)))))]
-    (q/stroke-weight (+ 1.5 (math/sin (+ angle (* 0.1 time)))))
+    (q/stroke-weight (+ 1.75 (* 1.25 (math/sin (+ angle (* -0.15 step) (* (/ 1 60) time))))))
     (q/line a b)
     (q/line b c)
     (q/line c d)))
