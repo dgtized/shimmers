@@ -31,7 +31,7 @@
                        (* 0.2 step (eq/unit-sin (+ angle time)))
                        (Math/sin (+ angle (* 0.3 time)))))
         d (v/+polar c (/ r PHI2)
-                    (+ angle (* PHI2 time)
+                    (+ (* 0.75 angle) (* PHI2 time)
                        (* 0.3 step (eq/unit-sin time))
                        (Math/sin (+ angle (* 0.5 time)))))]
     (q/stroke-weight (+ 1.75 (* 1.25 (math/sin (+ angle (* -0.15 step) (* (/ 1 60) time))))))
@@ -54,7 +54,8 @@
                   dist (* radius 0.1 (eq/unit-sin (+ (* 0.2 time) hand-phase)))]]
       (draw-hand step
                  (* eq/TAU (+ (/ hand 12.0) (math/sin (* 0.025 time))))
-                 (- radius (* dist step)) time))))
+                 (- radius (* dist step))
+                 time))))
 
 (defn page []
   [:div
