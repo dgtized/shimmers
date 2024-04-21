@@ -15,9 +15,6 @@
   (q/color-mode :hsl 1.0)
   {})
 
-(defn update-state [state]
-  state)
-
 (def ^:constant PHI2 (math/pow tm/PHI 2))
 
 (defn draw-hand [step angle radius time]
@@ -62,11 +59,10 @@
 (defn page []
   [:div
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])])
 
 (sketch/definition twelve-clocks
   {:created-at "2024-04-19"
