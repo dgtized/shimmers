@@ -49,7 +49,8 @@
     (doseq [hand (range 12)
             step (range 7)
             :let [hand-phase
-                  (->> (eq/unit-sin (+ (* (+ 0.05 (* 0.1 (eq/unit-sin (+ (* 0.33 hand) (* tm/SQRT2 time))))) time)
+                  (->> (eq/unit-sin (+ (* (+ 0.05 (* 0.1 (eq/unit-sin (+ (* 0.33 hand) (* tm/SQRT2 time)))))
+                                          (* eq/TAU (eq/unit-sin (/ time eq/TAU))))
                                        (math/sin (/ time tm/SQRT3))))
                        (tm/smoothstep* 0.33 0.95)
                        (* 0.15 hand))
