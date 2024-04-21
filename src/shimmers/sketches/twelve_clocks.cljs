@@ -24,7 +24,7 @@
   (let [r (/ radius (+ 6 (* 2 (math/sin (+ angle (* 0.25 time))))))
         a (v/+polar (cq/rel-vec 0.5 0.5)
                     radius
-                    (+ angle (* 0.1 (eq/unit-sin (+ (* 0.25 step) (* 0.075 time))))))
+                    (+ angle (* 0.1 (eq/unit-sin (+ (* (* 0.35 (math/sin (* 0.5 time))) step) (* 0.075 time))))))
         b (v/+polar a r
                     (+ angle (* (math/sqrt tm/PHI) time)
                        (* 0.1 step)
