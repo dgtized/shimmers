@@ -1,5 +1,6 @@
 (ns shimmers.sketches.slither
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -27,10 +28,10 @@
     (doseq [v (tm/norm-range 23)]
       (q/begin-shape)
       (apply q/curve-vertex (v/polar b (* eq/TAU v)))
-      (apply q/curve-vertex (v/polar (+ b (* h 0.05)) (* eq/TAU (+ v (* 0.075 (Math/sin (* 0.33 t)))))))
-      (apply q/curve-vertex (v/polar (* h (+ 0.5 (* 0.125 (Math/cos (* 0.9 t)))))
-                                     (* eq/TAU (+ v (* 0.09 (Math/sin (* 1.33 t)))))))
-      (apply q/curve-vertex (v/polar (* h 0.95) (* eq/TAU (+ v (* 0.075 (Math/sin (* 0.25 t)))))))
+      (apply q/curve-vertex (v/polar (+ b (* h 0.05)) (* eq/TAU (+ v (* 0.075 (math/sin (* 0.33 t)))))))
+      (apply q/curve-vertex (v/polar (* h (+ 0.5 (* 0.125 (math/cos (* 0.9 t)))))
+                                     (* eq/TAU (+ v (* 0.09 (math/sin (* 1.33 t)))))))
+      (apply q/curve-vertex (v/polar (* h 0.95) (* eq/TAU (+ v (* 0.075 (math/sin (* 0.25 t)))))))
       (apply q/curve-vertex (v/polar (* h 1.0) (* eq/TAU v)))
       (q/end-shape))))
 
