@@ -1,5 +1,6 @@
 (ns shimmers.math.control
   (:require
+   [clojure.math :as math]
    [shimmers.math.equations :as eq]
    [thi.ng.math.core :as tm]))
 
@@ -13,17 +14,17 @@
 (defn angular-acceleration [angle target control angle-vel]
   (let [delta (angular-delta angle target)]
     (- (* control delta)
-       (* (* 2 (Math/sqrt control)) angle-vel))))
+       (* (* 2 (math/sqrt control)) angle-vel))))
 
 (defn spin-acceleration [angle-vel target-vel control]
   (let [delta (- target-vel angle-vel)]
     (- (* control delta)
-       (* (* 2 (Math/sqrt control)) angle-vel))))
+       (* (* 2 (math/sqrt control)) angle-vel))))
 
 (defn force-accel [pos target control velocity]
   (let [dir (tm/- target pos)]
     (tm/- (tm/* dir control)
-          (tm/* velocity (* 2 (Math/sqrt control))))))
+          (tm/* velocity (* 2 (math/sqrt control))))))
 
 ;; see also http://brettbeauregard.com/blog/tag/beginners-pid/
 (defprotocol IPid
