@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.random-points
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -18,10 +19,11 @@
    [thi.ng.math.core :as tm])
   #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2])))
 
+
 (defn cell-fit [{[w h] :size} n]
   (let [ratio (if (> h w) (/ w h) (/ h w))
-        r (Math/ceil (* ratio (Math/sqrt n)))
-        c (Math/ceil (/ n r))]
+        r (math/ceil (* ratio (math/sqrt n)))
+        c (math/ceil (/ n r))]
     {:rows r :cols c}))
 
 (comment (cell-fit {:size [80 60]} 100)
@@ -32,7 +34,7 @@
   ([c] (inside-circle c tm/random))
   ([{:keys [p r]} random]
    (-> (gv/vec2
-        (* r (Math/sqrt (random)))
+        (* r (math/sqrt (random)))
         (* tm/TWO_PI (random)))
        g/as-cartesian
        (tm/+ p))))
@@ -66,7 +68,7 @@
   Note the automatic radius use of PHI is just a magic constant that just seems
   to work. Usually results in a few more points than requested given the radius."
   [bounds n]
-  (let [radius (/ (Math/sqrt (g/area bounds)) (Math/sqrt (* tm/PHI n)))]
+  (let [radius (/ (math/sqrt (g/area bounds)) (math/sqrt (* tm/PHI n)))]
     (pds/generate bounds 12 radius)))
 
 (defn sample-pool-replacement
@@ -89,7 +91,7 @@
     (if (<= index 0)
       result
       (let [fract (/ fraction base)]
-        (recur (Math/floor (/ index base))
+        (recur (math/floor (/ index base))
                fract
                (+ result (* fract (mod index base))))))))
 
@@ -147,7 +149,7 @@
   (sample-point-at
     ([{:keys [p r]} t] (v/+polar p r (* eq/TAU t)))
     ([{:keys [p r]} u v]
-     (v/+polar p (* r (Math/sqrt u)) (* eq/TAU v))))
+     (v/+polar p (* r (math/sqrt u)) (* eq/TAU v))))
   (sample-point-inside [_]
     (sample-point-at _ (dr/random) (dr/random)))
   (sample-point-bounds [{:keys [p r]}]
