@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.arc
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg]
    [shimmers.math.core :as sm]
@@ -46,7 +47,7 @@
   g/ICenter
   (centroid [_]
     (let [alpha (half-angle _)]
-      (gv/vec2 (/ (* 2 r (Math/sin alpha)) (* 3 alpha))
+      (gv/vec2 (/ (* 2 r (math/sin alpha)) (* 3 alpha))
                (:y (v/+polar p r (+ t0 alpha))))))
 
   g/IVertexAccess
@@ -64,7 +65,7 @@
     ;; note, does not include edges to center, just arc surface
     (v/+polar p r (dr/random t0 t1)))
   (random-point-inside [_]
-    (v/+polar p (* r (Math/sqrt (dr/random)))
+    (v/+polar p (* r (math/sqrt (dr/random)))
               (dr/random t0 t1)))
 
   rp/ISamplePoint
@@ -73,7 +74,7 @@
   (sample-point-bounds [_]
     (v/+polar p r (dr/random t0 t1)))
   (sample-point-inside [_]
-    (v/+polar p (* r (Math/sqrt (dr/random)))
+    (v/+polar p (* r (math/sqrt (dr/random)))
               (dr/random t0 t1)))
 
   svg/ISVGConvert
