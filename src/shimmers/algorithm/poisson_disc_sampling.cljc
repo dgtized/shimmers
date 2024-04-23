@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.poisson-disc-sampling
   (:require
+   [clojure.math :as math]
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
@@ -8,8 +9,8 @@
    [thi.ng.math.core :as tm]))
 
 (defn grid-location [w [x y]]
-  [(Math/floor (/ x w))
-   (Math/floor (/ y w))])
+  [(math/floor (/ x w))
+   (math/floor (/ y w))])
 
 ;; Various discussion on variable density sampling:
 ;; https://www.cs.ubc.ca/~rbridson/docs/bridson-siggraph07-poissondisk.pdf
@@ -49,7 +50,7 @@
         location (grid-location w sample)]
     (if (and (g/contains-point? bounds sample)
              (every? (fn [neighbor] (>= (g/dist sample neighbor) (radius-fn neighbor)))
-                     (mapcat identity (neighbors grid (Math/ceil (/ r r-min)) location))))
+                     (mapcat identity (neighbors grid (math/ceil (/ r r-min)) location))))
       (assoc state
              :active (conj active sample)
              :points (conj points sample)
@@ -68,7 +69,7 @@
 
 (defn init [bounds k r]
   (let [dims 2
-        w (/ r (Math/sqrt dims))
+        w (/ r (math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
     {:bounds bounds
      :k k
@@ -81,7 +82,7 @@
 
 (defn init-dynamic [bounds k [r-min r-max] radius-fn]
   (let [dims 2
-        w (/ r-max (Math/sqrt dims))
+        w (/ r-max (math/sqrt dims))
         p (g/unmap-point bounds (gv/vec2 (dr/random) (dr/random)))]
     {:bounds bounds
      :r-min r-min
