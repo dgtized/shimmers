@@ -49,13 +49,13 @@
   "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]
   (tm/* (gv/vec2 (* q (/ 3 2))
-                 (+ (* q 0.5 (Math/sqrt 3)) (* r (Math/sqrt 3))))
+                 (+ (* q 0.5 tm/SQRT3) (* r tm/SQRT3)))
         size))
 
 (defn axial-pointy->pixel
   "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]
-  (tm/* (gv/vec2 (+ (* q (Math/sqrt 3)) (* r 0.5 (Math/sqrt 3)))
+  (tm/* (gv/vec2 (+ (* q tm/SQRT3) (* r 0.5 tm/SQRT3))
                  (* r (/ 3 2)))
         size))
 
