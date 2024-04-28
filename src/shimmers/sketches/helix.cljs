@@ -31,17 +31,17 @@
      (dr/gaussian 0.0 0.05)))
 
 (defn harmonic-loop [center radius a b c]
-  (for [s (tm/norm-range 256)]
+  (for [s (tm/norm-range 1024)]
     (-> (gv/vec2)
-        (tm/+ (R a s 0.50 s))
-        (tm/+ (R b 0 0.35 s))
-        (tm/+ (R c 0 0.15 s))
+        (tm/+ (R a s 0.65 s))
+        (tm/+ (R b (* 0.5 (O 3 0 (- 1.0 s))) 0.30 s))
+        (tm/+ (R c (O 4 0 s) 0.05 s))
         (tm/* radius)
         (tm/+ center))))
 
 (defn shapes [a b c]
-  (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.45 height) a b c)
-        r (* 0.005 height)]
+  (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.48 height) a b c)
+        r (* 0.0033 height)]
     (for [[p q] (partition 2 1 pts)]
       (let [z (tm/- q p)
             delta (tm/normalize (g/rotate z (/ eq/TAU 4)) (* 2 tm/PHI r))
@@ -63,9 +63,10 @@
     (shapes a b c)))
 
 (defn page []
-  (let [a (fractional)
-        b (fractional)
-        c (* -1 tm/PHI (fractional))]
+  (let [a (dr/random-int 2 10)
+        b (- (dr/random-int 2 10))
+        c (* (min (abs a) (abs b))
+             (dr/random-int 1 4))]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene a b c]]
@@ -76,7 +77,7 @@
         [:div "c " c]]])))
 
 (sketch/definition helix
-  {:created-at "2024-04-27"
-   :tags #{}
-   :type :svg}
+    {:created-at "2024-04-27"
+     :tags #{}
+     :type :svg}
   (ctrl/mount page))
