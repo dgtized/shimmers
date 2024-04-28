@@ -103,6 +103,7 @@
    shimmers.sketches.harsh-lines
    shimmers.sketches.harmonograph
    shimmers.sketches.hatched-rectangles
+   shimmers.sketches.helix
    shimmers.sketches.hexaclock
    shimmers.sketches.hexcursive
    shimmers.sketches.hexflare
