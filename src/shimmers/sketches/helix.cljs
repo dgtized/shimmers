@@ -48,9 +48,9 @@
                           (partition 2 1 pts)
                           (tm/norm-range n-points))]
       (let [z (tm/- q p)
-            angle (* Math/PI (O angle-osc 0 s))
+            angle (* Math/PI (O angle-osc (math/sin (* s r)) s))
             delta (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
-                                (+ (* 2 tm/PHI r) (* 2 r (O size-osc 0 s))))
+                                (+ (* 3 tm/PHI r) (* 3 r (O size-osc (* 0.1 angle) s))))
             left (tm/+ p delta)
             right (tm/- p delta)
             line-delta (tm/normalize delta (- (tm/mag delta) r))]
@@ -80,7 +80,7 @@
          :b-osc (* (dr/random-sign) (dr/random-int 6))
          :c-osc (* (dr/random-sign) (dr/random-int 12))
          :angle-osc (dr/random-int 6 24)
-         :size-osc (dr/random-int 4 12)}]
+         :size-osc (dr/random-int 6 24)}]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene params]]
