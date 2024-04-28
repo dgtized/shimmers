@@ -41,12 +41,16 @@
         (tm/* radius)
         (tm/+ center))))
 
-(defn shapes [params]
+(defn shapes [{:keys [angle-osc size-osc] :as params}]
   (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.48 height) params)
         r (* 0.0033 height)]
-    (for [[p q] (partition 2 1 pts)]
+    (for [[[p q] s] (mapv vector
+                          (partition 2 1 pts)
+                          (tm/norm-range 1024))]
       (let [z (tm/- q p)
-            delta (tm/normalize (g/rotate z (/ eq/TAU 4)) (* 2 tm/PHI r))
+            angle (* Math/PI (O angle-osc 0 s))
+            delta (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
+                                (+ (* 2 tm/PHI r) (* 2 r (O size-osc 0 s))))
             left (tm/+ p delta)
             right (tm/- p delta)
             line-delta (tm/normalize delta (- (tm/mag delta) r))]
@@ -65,8 +69,8 @@
     (shapes params)))
 
 (defn page []
-  (let [a (dr/random-int 2 10)
-        b (- (dr/random-int 2 10))
+  (let [a (dr/random-int 2 9)
+        b (- (dr/random-int 2 12))
         params
         {:a a
          :b b
@@ -74,7 +78,9 @@
                (dr/random-int 1 5))
          :a-osc (dr/random-int -3 3)
          :b-osc (dr/random-int -5 5)
-         :c-osc (dr/random-int -11 11)}]
+         :c-osc (dr/random-int -11 11)
+         :angle-osc (dr/random-int 6 24)
+         :size-osc (dr/random-int 4 12)}]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene params]]
