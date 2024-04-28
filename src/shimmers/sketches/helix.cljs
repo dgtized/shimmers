@@ -69,8 +69,8 @@
     (shapes params)))
 
 (defn page []
-  (let [a (dr/random-int 2 9)
-        b (- (dr/random-int 2 12))
+  (let [a (dr/weighted-by #(- 11 %) (range 1 11))
+        b (dr/weighted-by #(- 13 %) (range 1 13))
         params
         {:a a
          :b b
