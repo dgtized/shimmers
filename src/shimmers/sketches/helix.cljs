@@ -3,6 +3,7 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -30,7 +31,7 @@
         (dr/random-int 1 7))
      (dr/gaussian 0.0 0.05)))
 
-(defn harmonic-loop [center radius a b c]
+(defn harmonic-loop [center radius {:keys [a b c]}]
   (for [s (tm/norm-range 1024)]
     (-> (gv/vec2)
         (tm/+ (R a s 0.65 s))
@@ -39,8 +40,8 @@
         (tm/* radius)
         (tm/+ center))))
 
-(defn shapes [a b c]
-  (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.48 height) a b c)
+(defn shapes [params]
+  (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.48 height) params)
         r (* 0.0033 height)]
     (for [[p q] (partition 2 1 pts)]
       (let [z (tm/- q p)
@@ -54,27 +55,28 @@
           (gl/line2 (tm/+ p line-delta)
                     (tm/- p line-delta)))))))
 
-(defn scene [a b c]
+(defn scene [params]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes a b c)))
+    (shapes params)))
 
 (defn page []
   (let [a (dr/random-int 2 10)
         b (- (dr/random-int 2 10))
-        c (* (min (abs a) (abs b))
-             (dr/random-int 1 4))]
+        params
+        {:a a
+         :b b
+         :c (* (min (abs a) (abs b))
+               (dr/random-int 1 4))}]
     (fn []
       [sketch/with-explanation
-       [:div.canvas-frame [scene a b c]]
+       [:div.canvas-frame [scene params]]
        [view-sketch/generate :helix]
        [:div.readable-width
-        [:div "a " a]
-        [:div "b " b]
-        [:div "c " c]]])))
+        (debug/pre-edn params)]])))
 
 (sketch/definition helix
     {:created-at "2024-04-27"
