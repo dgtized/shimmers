@@ -31,12 +31,13 @@
         (dr/random-int 1 7))
      (dr/gaussian 0.0 0.05)))
 
-(defn harmonic-loop [center radius {:keys [a b c]}]
+;; TODO use lcm to find single loop?
+(defn harmonic-loop [center radius {:keys [a a-osc b b-osc c c-osc]}]
   (for [s (tm/norm-range 1024)]
     (-> (gv/vec2)
-        (tm/+ (R a s 0.65 s))
-        (tm/+ (R b (* 0.5 (O 3 0 (- 1.0 s))) 0.30 s))
-        (tm/+ (R c (O 4 0 s) 0.05 s))
+        (tm/+ (R a (* 0.2 (O a-osc 0 s)) 0.65 s))
+        (tm/+ (R b (* 0.6 (O b-osc 0 (- 1.0 s))) 0.30 s))
+        (tm/+ (R c (* 0.8 (O c-osc 0 s)) 0.05 s))
         (tm/* radius)
         (tm/+ center))))
 
@@ -70,7 +71,10 @@
         {:a a
          :b b
          :c (* (min (abs a) (abs b))
-               (dr/random-int 1 4))}]
+               (dr/random-int 1 5))
+         :a-osc (dr/random-int -3 3)
+         :b-osc (dr/random-int -5 5)
+         :c-osc (dr/random-int -11 11)}]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene params]]
