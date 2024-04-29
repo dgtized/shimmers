@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
@@ -75,7 +76,10 @@
         {:n-points 2048
          :a (* (dr/weighted {-1 1 1 6}) a)
          :b (* (dr/weighted {-1 6 1 1}) b)
-         :c (* (min a b) (dr/random-int 1 6))
+         :c (dr/weighted
+             [[(* (min a b) (dr/random-int 1 6)) 2.0]
+              [(sm/lcm a b) 1.0]
+              [(sm/gcd a b) 1.0]])
          :a-osc (* (dr/random-sign) (dr/random-int 4))
          :b-osc (* (dr/random-sign) (dr/random-int 6))
          :c-osc (* (dr/random-sign) (dr/random-int 12))

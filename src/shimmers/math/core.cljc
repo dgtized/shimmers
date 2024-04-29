@@ -116,6 +116,15 @@
 
 (comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
 
+;; https://rosettacode.org/wiki/Least_common_multiple#Clojure
+(defn gcd [a b]
+  (if (zero? b)
+    a
+    (recur b (mod a b))))
+
+(defn lcm [a b]
+  (/ (* a b) (gcd a b)))
+
 ;; https://en.wikipedia.org/wiki/Lagrange_polynomial
 ;; https://www.youtube.com/watch?v=4S6G-zenbFM
 (defn lagrange-interpolate [points]
