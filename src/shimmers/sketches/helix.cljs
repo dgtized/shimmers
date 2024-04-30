@@ -27,11 +27,6 @@
 (defn O ^double [^double f ^double p ^double s]
   (math/sin (* eq/TAU (+ (* s f) p))))
 
-(defn fractional []
-  (+ (/ (dr/random-int 1 9)
-        (dr/random-int 1 7))
-     (dr/gaussian 0.0 0.05)))
-
 ;; TODO use lcm to find single loop?
 (defn harmonic-loop [center radius {:keys [n-points a a-osc b b-osc c c-osc]}]
   (for [s (tm/norm-range n-points)]
