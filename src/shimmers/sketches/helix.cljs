@@ -45,14 +45,12 @@
                           (tm/norm-range n-points))]
       (let [z (tm/- q p)
             angle (* Math/PI (O angle-osc (math/sin (* s r)) s))
-            delta (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
-                                (+ (* 3 tm/PHI r) (* 3 r (O size-osc (* 0.1 angle) s))))
-            left (tm/+ p delta)
-            right (tm/- p delta)
+            delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
+                                 (+ (* 3 tm/PHI r) (* 3 r (O size-osc (* 0.1 angle) s))))
             line-delta (tm/normalize delta (- (tm/mag delta) r))]
         (csvg/group {}
-          (gc/circle left r)
-          (gc/circle right r)
+          (gc/circle (tm/+ p delta) r)
+          (gc/circle (tm/- p delta) r)
           (gl/line2 (tm/+ p line-delta)
                     (tm/- p line-delta)))))))
 
