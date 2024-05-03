@@ -17,6 +17,7 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
+  (q/ellipse-mode :radius)
   (let [a (dr/weighted-by #(- 11 %) (range 1 11))
         b (dr/weighted-by #(- 13 %) (range 1 13))]
     {:params
