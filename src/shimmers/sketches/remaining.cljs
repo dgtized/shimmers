@@ -36,7 +36,8 @@
       :c-osc (* (dr/random-sign) (dr/random-int 13))
       :phase 0
       :angle-osc (dr/random-int 6 24)
-      :size-osc (dr/random-int 6 24)}}))
+      :size-osc (dr/random-int 6 24)
+      :radius-osc (dr/random-int 8 32)}}))
 
 (defn R [^double f ^double p ^double a ^double s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
@@ -69,16 +70,17 @@
     (if (> t 2.0)
       (q/no-loop)
       (let [height (q/height)
-            {:keys [n-points angle-osc size-osc phase]} params
-            pts (harmonic-loop (cq/rel-vec 0.5 0.5) (* 0.48 height) params)
-            r (* 0.0075 height)]
+            {:keys [n-points angle-osc radius-osc size-osc phase]} params
+            pts (harmonic-loop (cq/rel-vec 0.5 0.5) (* 0.45 height) params)
+            radius (* 0.0075 height)]
         (doseq [[[p q] s] (mapv vector
                                 (partition 2 1 pts)
                                 (tm/norm-range n-points))]
           (let [z (tm/- q p)
-                angle (* Math/PI (O angle-osc (math/sin (+ (* s r) phase)) s))
+                r (+ radius (* 0.2 radius (O radius-osc (* 0.25 phase) s)))
+                angle (* Math/PI (O angle-osc (* Math/PI (math/sin (+ (* s radius) phase))) s))
                 delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
-                                     (+ (* 2 tm/PHI r) (* 2 r (O size-osc (* 0.2 angle) s))))
+                                     (+ (* 2 tm/PHI r) (* 2 r (O size-osc (+ 2.0 (* 0.2 angle)) s))))
                 line-delta (tm/normalize delta (- (tm/mag delta) r))]
             (cq/circle (tm/+ p delta) r)
             (cq/circle (tm/- p delta) r)
