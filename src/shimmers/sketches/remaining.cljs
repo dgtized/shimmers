@@ -27,9 +27,9 @@
           [[(* (min a b) (dr/random-int 1 6)) 2.0]
            [(sm/lcm a b) 1.0]
            [(sm/gcd a b) 1.0]])
-      :a-osc (* (dr/random-sign) (dr/random-int 4))
-      :b-osc (* (dr/random-sign) (dr/random-int 6))
-      :c-osc (* (dr/random-sign) (dr/random-int 12))
+      :a-osc (* (dr/random-sign) (dr/random-int 5))
+      :b-osc (* (dr/random-sign) (dr/random-int 7))
+      :c-osc (* (dr/random-sign) (dr/random-int 13))
       :phase 0
       :angle-osc (dr/random-int 6 24)
       :size-osc (dr/random-int 6 24)}}))
@@ -51,7 +51,7 @@
           (tm/+ center)))))
 
 (defn update-state [state]
-  (update-in state [:params :phase] + (* 0.0005 (dr/random))))
+  (update-in state [:params :phase] + (* 0.00025 (dr/random))))
 
 (defn draw [{:keys [params]}]
   (q/stroke-weight (dr/random 0.1 0.6))
@@ -61,16 +61,16 @@
     (if (> t 2.0)
       (q/no-loop)
       (let [height (q/height)
-            {:keys [n-points angle-osc size-osc]} params
+            {:keys [n-points angle-osc size-osc phase]} params
             pts (harmonic-loop (cq/rel-vec 0.5 0.5) (* 0.48 height) params)
             r (* 0.0075 height)]
         (doseq [[[p q] s] (mapv vector
                                 (partition 2 1 pts)
                                 (tm/norm-range n-points))]
           (let [z (tm/- q p)
-                angle (* Math/PI (O angle-osc (math/sin (* s r)) s))
+                angle (* Math/PI (O angle-osc (math/sin (+ phase (* s r))) s))
                 delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
-                                     (+ (* 2 tm/PHI r) (* 2 r (O size-osc (* 0.1 angle) s))))
+                                     (+ (* 2 tm/PHI r) (* 2 r (O size-osc (* 0.2 angle) s))))
                 line-delta (tm/normalize delta (- (tm/mag delta) r))]
             (cq/circle (tm/+ p delta) r)
             (cq/circle (tm/- p delta) r)
