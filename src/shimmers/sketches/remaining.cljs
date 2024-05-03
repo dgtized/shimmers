@@ -52,11 +52,14 @@
           (tm/+ center)))))
 
 (defn update-state [state]
-  (update-in state [:params :phase] + (* 0.00025 (dr/random))))
+  (update-in state [:params :phase] +
+             (-> (dr/gaussian 2.0 0.5)
+                 (tm/clamp 0.5 5.0)
+                 (/ 30000.0))))
 
 (defn draw [{:keys [params]}]
-  (q/stroke-weight (dr/random 0.1 0.6))
-  (q/stroke 0.0 (dr/random 0.15 0.25))
+  (q/stroke-weight (tm/clamp (dr/gaussian 0.225 0.05) 0.1 0.6))
+  (q/stroke 0.0 (tm/clamp (dr/gaussian 0.2 0.06) 0.1 0.6))
   (q/no-fill)
   (let [t (/ (q/millis) 1000.0)]
     (if (> t 2.0)
