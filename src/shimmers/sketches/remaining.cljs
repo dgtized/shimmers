@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -14,6 +15,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state {}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -61,6 +64,7 @@
   (q/stroke-weight (tm/clamp (dr/gaussian 0.225 0.05) 0.1 0.6))
   (q/stroke 0.0 (tm/clamp (dr/gaussian 0.2 0.06) 0.1 0.6))
   (q/no-fill)
+  (reset! defo params)
   (let [t (/ (q/millis) 1000.0)]
     (if (> t 2.0)
       (q/no-loop)
@@ -72,7 +76,7 @@
                                 (partition 2 1 pts)
                                 (tm/norm-range n-points))]
           (let [z (tm/- q p)
-                angle (* Math/PI (O angle-osc (math/sin (+ phase (* s r))) s))
+                angle (* Math/PI (O angle-osc (math/sin (+ (* s r) phase)) s))
                 delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
                                      (+ (* 2 tm/PHI r) (* 2 r (O size-osc (* 0.2 angle) s))))
                 line-delta (tm/normalize delta (- (tm/mag delta) r))]
@@ -82,13 +86,16 @@
                     (tm/- p line-delta))))))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
      :size [800 600]
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [:div.flexcols
+    [:div [:p]
+     [debug/display defo]]]])
 
 (sketch/definition remaining
   {:created-at "2024-05-02"
