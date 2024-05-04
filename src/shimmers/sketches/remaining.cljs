@@ -38,9 +38,9 @@
       :b-osc (* (dr/random-sign) (dr/random-int 7))
       :c-osc (* (dr/random-sign) (dr/random-int 13))
       :phase 0
-      :angle-osc (dr/random-int 6 24)
-      :size-osc (dr/random-int 6 24)
-      :radius-osc (dr/random-int 8 32)}}))
+      :angle-osc (dr/random-int 6 32)
+      :size-osc (dr/random-int 6 32)
+      :radius-osc (dr/random-int 6 32)}}))
 
 (defn R [^double f ^double p ^double a ^double s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
