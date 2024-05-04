@@ -62,6 +62,18 @@
 (defn restart-sketch [sketch-id]
   (sketch-link rfe/push-state sketch-id))
 
+(defn current-seed []
+  (let [hash (.-hash js/location)]
+    (when-let [m (re-find #"seed=(\d+)$" hash)]
+      (parse-long (nth m 1)))))
+
+;; FIXME: almost working but doesn't trigger page rerun?
+(defn regen-sketch [sketch-id]
+  (rfe/push-state
+   ::sketch-by-name
+   {:name sketch-id}
+   {:seed (current-seed)}))
+
 (defn cycle-sketch [sketch known-names]
   (->> (name (:sketch-id sketch))
        (cs/cycle-next known-names)
