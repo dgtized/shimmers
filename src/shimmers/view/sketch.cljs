@@ -50,6 +50,7 @@
     (doseq [t taps] (remove-tap t)))
 
   ;; kill existing sketch at quil-host if present
+  ;; TODO: is this deprecated now that ui.quil/sketch-component handles mounting?
   (when-let [quil (q/get-sketch-by-id "quil-host")]
     (q/with-sketch quil (q/exit)))
 
