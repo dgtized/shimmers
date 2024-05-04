@@ -5,6 +5,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.core :as sm]
@@ -12,10 +13,12 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state (ctrl/state {:screen-size "900x600"}))
 (defonce defo (debug/state {}))
 
 (defn setup []
@@ -90,12 +93,16 @@
 (defn page []
   [sketch/with-explanation
    (sketch/component
-     :size [800 600]
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div.flexcols
+    [ctrl/container
+     [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+      (screen/sizes)
+      {:on-change #(view-sketch/restart-sketch :remaining)}]]
     [:div [:p]
      [debug/display defo]]]])
 
