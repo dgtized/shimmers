@@ -178,6 +178,9 @@
 (defn pareto [scale shape]
   (/ scale (Math/pow (random) (/ 1 shape))))
 
+(comment
+  (repeatedly 20 #(pareto 0.125 1.16)))
+
 (defn var-range
   [n]
   {:pre [(pos-int? n)]}
