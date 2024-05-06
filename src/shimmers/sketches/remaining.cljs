@@ -64,27 +64,32 @@
                  (tm/clamp 0.5 5.0)
                  (/ 30000.0))))
 
-(defn draw-frame [params]
+;; TODO: consider drawing each stream of points instead of all points per frame?
+(defn draw-point
+  [{:keys [angle-osc radius-osc size-osc phase]}
+   radius p q s]
+  (let [z (tm/- q p)
+        r (+ radius (* 0.2 radius (O radius-osc (* 0.25 phase) s)))
+        angle (* Math/PI (O angle-osc (* Math/PI (math/sin (+ (* s radius) phase))) s))
+        delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
+                             (+ (* 2 tm/PHI r) (* 2 r (O size-osc (+ 2.0 (* 0.2 angle)) s))))
+        line-delta (tm/normalize delta (- (tm/mag delta) r))]
+    (cq/circle (tm/+ p delta) r)
+    (cq/circle (tm/- p delta) r)
+    (q/line (tm/+ p line-delta)
+            (tm/- p line-delta))))
+
+(defn draw-frame [{:keys [n-points] :as params}]
   (q/stroke-weight (tm/clamp (dr/gaussian 0.25 0.05) 0.1 0.6))
   (q/stroke 0.0 (tm/clamp (dr/gaussian 0.18 0.06) 0.1 0.6))
   (q/no-fill)
   (let [height (q/height)
-        {:keys [n-points angle-osc radius-osc size-osc phase]} params
         pts (harmonic-loop (cq/rel-vec 0.5 0.5) (* 0.45 height) params)
         radius (* 0.0075 height)]
     (doseq [[[p q] s] (mapv vector
                             (partition 2 1 pts)
                             (tm/norm-range n-points))]
-      (let [z (tm/- q p)
-            r (+ radius (* 0.2 radius (O radius-osc (* 0.25 phase) s)))
-            angle (* Math/PI (O angle-osc (* Math/PI (math/sin (+ (* s radius) phase))) s))
-            delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
-                                 (+ (* 2 tm/PHI r) (* 2 r (O size-osc (+ 2.0 (* 0.2 angle)) s))))
-            line-delta (tm/normalize delta (- (tm/mag delta) r))]
-        (cq/circle (tm/+ p delta) r)
-        (cq/circle (tm/- p delta) r)
-        (q/line (tm/+ p line-delta)
-                (tm/- p line-delta))))))
+      (draw-point params radius p q s))))
 
 (defn draw [{:keys [params]}]
   (reset! defo params)
