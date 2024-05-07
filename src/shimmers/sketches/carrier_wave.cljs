@@ -5,13 +5,10 @@
    [shimmers.common.ui.fraction :as fraction]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.vector :as v]
+   [shimmers.math.wobble :as mw :refer [R]]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
-
-(defn R [f p a s]
-  (v/polar a (* eq/TAU (+ (* s f) p))))
 
 (defn generate-points [[a b c d k] center radius t]
   (for [s (tm/norm-range 1024)

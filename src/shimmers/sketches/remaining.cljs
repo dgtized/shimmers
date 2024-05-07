@@ -11,7 +11,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.vector :as v]
+   [shimmers.math.wobble :as mw :refer [R]]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -41,9 +41,6 @@
       :angle-osc (dr/random-int 6 32)
       :size-osc (dr/random-int 6 32)
       :radius-osc (dr/random-int 6 32)}}))
-
-(defn R [^double f ^double p ^double a ^double s]
-  (v/polar a (* eq/TAU (+ (* s f) p))))
 
 (defn O ^double [^double f ^double p ^double s]
   (math/sin (* eq/TAU (+ (* s f) p))))

@@ -33,7 +33,7 @@
 (defn cube-tcos [osc p t]
   (eq/cube (tcos osc p t)))
 
-(defn R [f p a s]
+(defn R [^double f ^double p ^double a ^double s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
 (defn O [f p v d s]
