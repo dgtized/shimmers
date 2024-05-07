@@ -36,6 +36,9 @@
 (defn R [^double f ^double p ^double a ^double s]
   (v/polar a (* eq/TAU (+ (* s f) p))))
 
+(defn O ^double [^double f ^double p ^double s]
+  (math/sin (* eq/TAU (+ (* s f) p))))
+
 (defn osc [f p v d s]
   (+ v (* d (math/sin (* eq/TAU (+ (* s f) p))))))
 

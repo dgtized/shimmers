@@ -7,7 +7,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.wobble :as mw :refer [R]]
+   [shimmers.math.wobble :as mw :refer [R O]]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -20,11 +20,6 @@
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
-
-
-
-(defn O ^double [^double f ^double p ^double s]
-  (math/sin (* eq/TAU (+ (* s f) p))))
 
 ;; TODO use lcm to find single loop?
 (defn harmonic-loop [center radius {:keys [n-points a a-osc b b-osc c c-osc]}]

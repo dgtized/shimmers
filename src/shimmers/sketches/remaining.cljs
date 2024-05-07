@@ -11,7 +11,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.wobble :as mw :refer [R]]
+   [shimmers.math.wobble :as mw :refer [R O]]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -41,9 +41,6 @@
       :angle-osc (dr/random-int 6 32)
       :size-osc (dr/random-int 6 32)
       :radius-osc (dr/random-int 6 32)}}))
-
-(defn O ^double [^double f ^double p ^double s]
-  (math/sin (* eq/TAU (+ (* s f) p))))
 
 (defn harmonic-loop [center radius {:keys [n-points a a-osc b b-osc c c-osc phase]}]
   (for [s (tm/norm-range n-points)]
