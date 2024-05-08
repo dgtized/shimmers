@@ -22,10 +22,6 @@
 (defonce ui-state (ctrl/state {:screen-size "900x600"}))
 (defonce defo (debug/state {}))
 
-(defn negations []
-  (concat (mc/permutations [-1 1 1])
-          (mc/permutations [-1 -1 1])))
-
 (defn abc []
   (let [a (dr/weighted-by #(- 11 %) (range 1 11))
         b (dr/weighted-by #(- 13 %) (range 1 13))
@@ -34,7 +30,7 @@
             [(sm/lcm a b) 1.0]
             [(sm/gcd a b) 1.0]])]
     (tm/* (gv/vec3 a b c)
-          (gv/vec3 (dr/rand-nth (negations))))))
+          (gv/vec3 (dr/rand-nth (mc/selections [-1 1] 3))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
