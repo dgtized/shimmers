@@ -1,6 +1,7 @@
 (ns shimmers.sketches.remaining
   (:require
    [clojure.math :as math]
+   [clojure.math.combinatorics :as mc]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -11,7 +12,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.wobble :as mw :refer [R O]]
+   [shimmers.math.wobble :as mw :refer [O R]]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -21,19 +22,29 @@
 (defonce ui-state (ctrl/state {:screen-size "900x600"}))
 (defonce defo (debug/state {}))
 
+(defn negations []
+  (concat (mc/permutations [-1 1 1])
+          (mc/permutations [-1 -1 1])))
+
+(defn abc []
+  (let [a (dr/weighted-by #(- 11 %) (range 1 11))
+        b (dr/weighted-by #(- 13 %) (range 1 13))
+        c (dr/weighted
+           [[(* (min a b) (dr/random-int 1 6)) 2.0]
+            [(sm/lcm a b) 1.0]
+            [(sm/gcd a b) 1.0]])]
+    (tm/* (gv/vec3 a b c)
+          (gv/vec3 (dr/rand-nth (negations))))))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  (let [a (dr/weighted-by #(- 11 %) (range 1 11))
-        b (dr/weighted-by #(- 13 %) (range 1 13))]
+  (let [[a b c] (abc)]
     {:params
      {:n-points 200
-      :a (* (dr/weighted {-1 1 1 6}) a)
-      :b (* (dr/weighted {-1 6 1 1}) b)
-      :c (dr/weighted
-          [[(* (min a b) (dr/random-int 1 6)) 2.0]
-           [(sm/lcm a b) 1.0]
-           [(sm/gcd a b) 1.0]])
+      :a a
+      :b b
+      :c c
       :a-osc (* (dr/random-sign) (dr/random-int 5))
       :b-osc (* (dr/random-sign) (dr/random-int 7))
       :c-osc (* (dr/random-sign) (dr/random-int 13))
