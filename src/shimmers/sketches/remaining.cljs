@@ -22,9 +22,14 @@
 (defonce ui-state (ctrl/state {:screen-size "900x600"}))
 (defonce defo (debug/state {}))
 
+(comment
+  (map (fn [x] (Math/pow 0.90 x)) (range 15))
+  (map (fn [x] (sm/gcd 3 x))  (range 20))
+  (map (fn [x] (sm/lcm 3 x))  (range 20)))
+
 (defn abc []
-  (let [a (dr/weighted-by #(- 11 %) (range 1 11))
-        b (dr/weighted-by #(- 13 %) (range 1 13))
+  (let [a (dr/weighted-by #(Math/pow 0.9 %) (range 1 11))
+        b (dr/weighted-by #(sm/lcm % a) (range 1 13))
         c (dr/weighted
            [[(* (min a b) (dr/random-int 1 6)) 2.0]
             [(sm/lcm a b) 1.0]
