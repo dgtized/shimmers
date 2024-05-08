@@ -80,7 +80,7 @@
   [{:keys [angle-osc radius-osc size-osc phase]}
    radius p q s]
   (let [z (tm/- q p)
-        r (+ radius (* 0.2 radius (O radius-osc (* 0.25 phase) s)))
+        r (+ radius (* 0.25 radius (O radius-osc (* 0.25 phase) s)))
         angle (* Math/PI (O angle-osc (* Math/PI (math/sin (+ (* s radius) phase))) s))
         delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
                              (+ (* 2 tm/PHI r) (* 2 r (O size-osc (+ 2.0 (* 0.2 angle)) s))))
