@@ -1,5 +1,6 @@
 (ns shimmers.sketches.phase-shifting
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -24,10 +25,10 @@
   (update state :t + (/ eq/TAU 60)))
 
 (defn draw [{:keys [parts table pendulum t]}]
-  (let [opacity (tm/smoothstep* 0.1 1.0 (eq/unit-sin (+ (* (/ 1 20) t) (Math/sin (* (/ 1 30) t)))))
+  (let [opacity (tm/smoothstep* 0.1 1.0 (eq/unit-sin (+ (* (/ 1 20) t) (math/sin (* (/ 1 30) t)))))
         origin (cq/rel-vec 0.5 0.5)
-        head-amp (eq/unit-sin (+ (* (/ 1 45) t) (Math/sin (* (/ 1 35) t))))
-        spin-amp (tm/smoothstep* 0.66 1.0 (eq/unit-sin (+ (* (/ 1 15 t)) (Math/sin (* (/ 1 9) t)))))
+        head-amp (eq/unit-sin (+ (* (/ 1 45) t) (math/sin (* (/ 1 35) t))))
+        spin-amp (tm/smoothstep* 0.66 1.0 (eq/unit-sin (+ (* (/ 1 15 t)) (math/sin (* (/ 1 9) t)))))
         [ftx fty] table
         [fpx fpy] pendulum]
     (q/background 1.0 (* 0.5 opacity))
@@ -36,25 +37,25 @@
     (doseq [polygon parts]
       (let [centroid (g/centroid polygon)
             head (g/heading (tm/- centroid origin))
-            table (gv/vec2 (* (cq/rel-h 0.1) (Math/cos (* ftx t)))
-                           (* (cq/rel-h 0.1) (Math/sin (* fty t))))
-            pos (gv/vec2 (* (cq/rel-h 0.1) (Math/cos (* fpx t)))
-                         (* (cq/rel-h 0.1) (Math/sin (* fpy t))))]
+            table (gv/vec2 (* (cq/rel-h 0.1) (math/cos (* ftx t)))
+                           (* (cq/rel-h 0.1) (math/sin (* fty t))))
+            pos (gv/vec2 (* (cq/rel-h 0.1) (math/cos (* fpx t)))
+                         (* (cq/rel-h 0.1) (math/sin (* fpy t))))]
         (q/fill (eq/unit-sin (+ (* (/ 1 45) t)
-                                (* (/ 1 30) (Math/sin (* (/ 1 11) (/ (+ head t) tm/PHI))))))
-                (+ 0.55 (* 0.15 (Math/sin (+ (* (/ 1 11) t)
-                                             (Math/sin (* spin-amp (/ 1 7) t))))))
+                                (* (/ 1 30) (math/sin (* (/ 1 11) (/ (+ head t) tm/PHI))))))
+                (+ 0.55 (* 0.15 (math/sin (+ (* (/ 1 11) t)
+                                             (math/sin (* spin-amp (/ 1 7) t))))))
                 0.5 0.05)
         (-> polygon
             g/center
             (g/scale (+ 0.25 (* 0.75 (eq/unit-sin (+ (* 0.5 head head-amp) (* (/ 1 3) t))))))
-            (g/rotate (+ (* t (/ 1 4) (Math/sin (* (/ 1 171) t)))
-                         (* (/ 3 4) (Math/sin (+ head head-amp (* (/ 1 20) t))))))
+            (g/rotate (+ (* t (/ 1 4) (math/sin (* (/ 1 171) t)))
+                         (* (/ 3 4) (math/sin (+ head head-amp (* (/ 1 20) t))))))
             (g/translate (tm/* (tm/- centroid origin)
                                (* 2 (eq/unit-sin (+ (* (/ 1 90) t)
-                                                    (Math/sin (* (/ 1 20) t)))))))
-            (g/rotate (+ (* t (/ 0.5 tm/PHI) (Math/sin (* (/ 1 231) t)))
-                         (Math/sin (+ (* 0.2 head spin-amp)
+                                                    (math/sin (* (/ 1 20) t)))))))
+            (g/rotate (+ (* t (/ 0.5 tm/PHI) (math/sin (* (/ 1 231) t)))
+                         (math/sin (+ (* 0.2 head spin-amp)
                                       (* (/ 1 60) t)))))
             (g/translate (tm/+ origin
                                (tm/mix (gv/vec2)
