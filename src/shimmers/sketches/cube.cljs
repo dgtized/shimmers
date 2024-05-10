@@ -1,5 +1,6 @@
 (ns shimmers.sketches.cube
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.hand-drawn :as hand-drawn]
@@ -31,12 +32,12 @@
 
 (defn rotation [[x y z] [pitch yaw roll]]
   ;; From transformation A in https://en.wikipedia.org/wiki/Rotation_formalisms_in_three_dimensions
-  (let [cx (Math/cos pitch)
-        sx (Math/sin pitch)
-        cy (Math/cos yaw)
-        sy (Math/sin yaw)
-        cz (Math/cos roll)
-        sz (Math/sin roll)]
+  (let [cx (math/cos pitch)
+        sx (math/sin pitch)
+        cy (math/cos yaw)
+        sy (math/sin yaw)
+        cz (math/cos roll)
+        sz (math/sin roll)]
     (gv/vec3 (+ (* x cy cz)
                 (* y (+ (- (* cx sz)) (* sx sy cz)))
                 (* z (+ (* sx sz) (* cx sy cz))))
@@ -111,7 +112,7 @@
          (translate-box (gv/vec3 0 0 (* -0.6 s)))
          (rotate-box [theta theta theta])
          (translate-box lower-left))
-     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (Math/cos theta))] [0 0 0] [s s s])
+     (cube [x1 y2 (q/lerp (* -0.5 s) (* 0.5 s) (math/cos theta))] [0 0 0] [s s s])
      (-> (box (* 0.8 s) (* 0.8 s) (* 0.8 s))
          (rotate-box [theta theta theta])
          (translate-box (gv/vec3 0 0 (* 0.8 s)))
