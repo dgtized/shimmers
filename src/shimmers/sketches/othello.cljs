@@ -33,7 +33,7 @@
         (let [x (* (/ width cols) (+ i 0.5))
               y (* (/ height rows) (+ j 0.5))
               offset (* 0.33 r)
-              dx (* offset (/ (Math/sqrt 3) 2))
+              dx (* offset eq/SQRT3_2)
               dy offset
               [a0 a1] (turns (+ (/ x width) (/ y height) (* 0.45 t))
                              (+ (- 1.0 (/ 1.0 x)) (/ 1.0 y) (* 0.25 t)))

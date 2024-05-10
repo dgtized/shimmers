@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry-test
   (:require
    [clojure.test :as t :refer [deftest is] :include-macros true]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry :as sut]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -19,8 +20,7 @@
 
 (deftest circle-circle-intersection
   (let [c1 (gc/circle 1)
-        c2 (gc/circle 1)
-        sqrt3_2 (/ (Math/sqrt 3) 2)]
+        c2 (gc/circle 1)]
     (is (some? (g/intersect-shape c1 c2))
         "directly overlapping is an intersection with no resolution")
     ;; Returns [(gv/vec2 (/ 0 0) (/ 0 0)) (gv/vec2 (/ 0 0) (/ 0 0))]
@@ -28,7 +28,7 @@
                    [(gv/vec2 0.25 0.968246) (gv/vec2 0.25 -0.968246)])
         "at direct overlap find the intersection points")
     (is (= (g/intersect-shape c1 (g/translate c2 (gv/vec2 1 0)))
-           [(gv/vec2 0.5 sqrt3_2) (gv/vec2 0.5 (- sqrt3_2))])
+           [(gv/vec2 0.5 eq/SQRT3_2) (gv/vec2 0.5 (- eq/SQRT3_2))])
         "at direct overlap find the intersection points")
     (is (= (g/intersect-shape c1 (g/translate c2 (gv/vec2 2 0)))
            [(gv/vec2 1 0) (gv/vec2 1 0)])

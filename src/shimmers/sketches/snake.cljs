@@ -161,7 +161,7 @@
 
 (defn equilateral-point [a b i scale]
   (let [a-b (tm/normalize (tm/- a b)
-                          (* (/ tm/SQRT3 2)
+                          (* eq/SQRT3_2
                              scale
                              (tm/mag (tm/- a b))))]
     (tm/+ (tm/mix a b 0.5)

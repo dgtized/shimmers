@@ -1,5 +1,6 @@
 (ns shimmers.math.hexagon
   (:require
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -15,7 +16,7 @@
 
   Otherwise known as the inset-circle radius."
   [{:keys [r]}]
-  (* (/ tm/SQRT3 2) r))
+  (* eq/SQRT3_2 r))
 
 (def ^:const flat-hex-angles (butlast (range 0 tm/TWO_PI (/ tm/TWO_PI 6))))
 (def ^:const pointy-hex-angles (mapv (partial + tm/SIXTH_PI) flat-hex-angles))
@@ -49,13 +50,13 @@
   "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]
   (tm/* (gv/vec2 (* q (/ 3 2))
-                 (+ (* q 0.5 tm/SQRT3) (* r tm/SQRT3)))
+                 (+ (* q eq/SQRT3_2) (* r tm/SQRT3)))
         size))
 
 (defn axial-pointy->pixel
   "Converts axial coordinates of flat topped hex to a center point of that hex."
   [size [q r]]
-  (tm/* (gv/vec2 (+ (* q tm/SQRT3) (* r 0.5 tm/SQRT3))
+  (tm/* (gv/vec2 (+ (* q tm/SQRT3) (* r eq/SQRT3_2))
                  (* r (/ 3 2)))
         size))
 

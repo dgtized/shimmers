@@ -2,12 +2,13 @@
   (:require
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
 (def width 900)
@@ -16,7 +17,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn triangle [[i j k] side]
-  (let [hside (* side (/ (Math/sqrt 3) 2))
+  (let [hside (* side eq/SQRT3_2)
         x (+ i (* 0.5 j))]
     (if (zero? k)
       (gt/triangle2 (gv/vec2 (* (+ x 0.0) side) (* j hside))
@@ -28,7 +29,7 @@
 
 (defn shapes [{p :p [width height] :size} side]
   (let [wn (/ width side)
-        hside (* side (/ (Math/sqrt 3) 2))
+        hside (* side eq/SQRT3_2)
         o (tm/+ p (gv/vec2 (* -0.2 width) (* -0.5 hside)))]
     (for [i (range wn)
           j (range (/ height hside))

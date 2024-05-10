@@ -85,7 +85,7 @@
 (defn inset-pointy [poly _i]
   (-> poly
       (geometry/rotate-around-centroid (/ eq/TAU 12))
-      (g/scale-size (/ tm/SQRT3 2))))
+      (g/scale-size eq/SQRT3_2)))
 
 (defn coord-label [poly idx {:keys [p coord]}]
   (csvg/group {}
