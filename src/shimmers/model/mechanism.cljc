@@ -1,5 +1,6 @@
 (ns shimmers.model.mechanism
   (:require
+   [clojure.math :as math]
    [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
@@ -39,7 +40,7 @@
 
 ;; in radians
 (defn tooth-thickness [{:keys [teeth]}]
-  (/ Math/PI (* 2 teeth)))
+  (/ math/PI (* 2 teeth)))
 
 (defn addendum [{:keys [diametral-pitch]}]
   (/ 1 diametral-pitch))
@@ -120,9 +121,9 @@
    angle]
   (if driver
     (let [gear-ratio (gear-ratio gear driver)]
-      (-> (if (even? teeth) (/ Math/PI teeth) 0) ;; add a tooth width if even?
+      (-> (if (even? teeth) (/ math/PI teeth) 0) ;; add a tooth width if even?
           (+ (if (or (= driver-type :ring-gear) (= type :ring-gear))
-               (+ (* gear-ratio (+ offset (- Math/PI angle))) angle)
+               (+ (* gear-ratio (+ offset (- math/PI angle))) angle)
                (+ (* gear-ratio offset)
                   (* (+ gear-ratio 1) (* dir angle)))))
           (mod (/ tm/TWO_PI teeth))))
@@ -177,17 +178,17 @@
 
   From https://en.wikipedia.org/wiki/Piston_motion_equations#Deriving_angle_domain_equations"
   [radius length theta]
-  (+ (* radius (Math/cos theta))
-     (Math/sqrt (- (eq/sqr length)
+  (+ (* radius (math/cos theta))
+     (math/sqrt (- (eq/sqr length)
                    (* (eq/sqr radius)
-                      (eq/sqr (Math/sin theta)))))))
+                      (eq/sqr (math/sin theta)))))))
 
 ;; https://en.wikipedia.org/wiki/Belt_problem
 (defn belt-phi [radius1 radius2 center-distance]
-  (Math/acos (/ (+ radius1 radius2) center-distance)))
+  (math/acos (/ (+ radius1 radius2) center-distance)))
 
 (defn pulley-phi [radius1 radius2 center-distance]
-  (Math/acos (* 2 (/ (abs (- radius1 radius2)) center-distance))))
+  (math/acos (* 2 (/ (abs (- radius1 radius2)) center-distance))))
 
 (defn belt-ratio [wheel driver]
   (/ (:radius wheel) (:radius driver)))
@@ -224,7 +225,7 @@
         (every? #(contains? angle-or-by %) [:drive :angle :distance]))]}
 
   (if (number? angle-or-by)
-    (let [angle' (if (= driver-type :ring-gear) (+ angle-or-by Math/PI) angle-or-by)
+    (let [angle' (if (= driver-type :ring-gear) (+ angle-or-by math/PI) angle-or-by)
           gear' (assoc gear
                        :id (count (lg/nodes sys))
                        :depth depth
