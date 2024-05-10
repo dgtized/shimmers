@@ -2,6 +2,7 @@
   "https://tylerxhobbs.com/essays/2020/flow-fields"
   (:require
    [clojure.edn :as edn]
+   [clojure.math :as math]
    [clojure.string :as str]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -65,10 +66,10 @@
                      (let [[x y] point
                            f 0.0005
                            n (q/noise (* f x) (* f y))]
-                       (int (Math/floor (* 12 (eq/sqr (- (* 2 n) 1))))))
+                       (int (math/floor (* 12 (eq/sqr (- (* 2 n) 1))))))
                      snap-resolution)]
     (if (> resolution 0)
-      (* (Math/round (/ theta resolution)) resolution)
+      (* (math/round (/ theta resolution)) resolution)
       theta)))
 
 (defn avoid-obstacles [p {:keys [points radius voronoi]}]
@@ -101,9 +102,9 @@
 
 (defn pointy-hexagon [r [x y]]
   (for [i (range 0 6)]
-    (let [angle (+ (* i (/ Math/PI 3)) (/ Math/PI 6))
-          hx (+ x (* r (Math/cos angle)))
-          hy (+ y (* r (Math/sin angle)))]
+    (let [angle (+ (* i (/ math/PI 3)) (/ math/PI 6))
+          hx (+ x (* r (math/cos angle)))
+          hy (+ y (* r (math/sin angle)))]
       (gv/vec2 hx hy))))
 
 ;; Inspired by https://www.bit-101.com/blog/2019/01/perlinized-hexagons/
@@ -128,7 +129,7 @@
   (map (fn [theta] (v/polar r theta))
        (range 0 tm/TWO_PI resolution)))
 
-(comment (angles 1 (/ Math/PI 6)))
+(comment (angles 1 (/ math/PI 6)))
 
 (defn downhill [[x y] r noise-div snap-resolution]
   (let [surroundings
@@ -215,7 +216,7 @@
      :step-size-variance (* step-size (/ step-size-variance 100))
      :stroke-weight (/ 1 stroke-weight)
      :stroke-weight-variance (* (/ 1 stroke-weight) (/ stroke-weight-variance 100))
-     :noise-div (Math/pow 2 noise-div)
+     :noise-div (math/pow 2 noise-div)
      :draw draw
      :align-triangles align-triangles
      :length length
@@ -286,13 +287,13 @@
    :region-specific-snap #{true false}
    :snap-resolution
    {"Disabled" 0
-    "90 degrees" (/ Math/PI 2)
-    "60 degrees" (/ Math/PI 3)
-    "45 degrees" (/ Math/PI 4)
-    "30 degrees" (/ Math/PI 6)
-    "20 degrees" (/ Math/PI 9)
-    "15 degrees" (/ Math/PI 12)
-    "10 degrees" (/ Math/PI 18)}
+    "90 degrees" (/ math/PI 2)
+    "60 degrees" (/ math/PI 3)
+    "45 degrees" (/ math/PI 4)
+    "30 degrees" (/ math/PI 6)
+    "20 degrees" (/ math/PI 9)
+    "15 degrees" (/ math/PI 12)
+    "10 degrees" (/ math/PI 18)}
    :palette-mode
    {"Monochrome" "monochrome"
     "Random Saturation/Lightness" "random-sl"}
@@ -349,7 +350,7 @@
     (ctrl/slider settings (fn [v] (str "Length " v)) [:length] (:length ui-mappings))
     (ctrl/numeric settings "Length Variance"
                   [:length-variance] (:length-variance ui-mappings))
-    (ctrl/slider settings (fn [v] (scs/format "Noise Multiplier 1/%.1f" (Math/pow 2 v)))
+    (ctrl/slider settings (fn [v] (scs/format "Noise Multiplier 1/%.1f" (math/pow 2 v)))
                  [:noise-div] (:noise-div ui-mappings))
     (ctrl/slider settings (fn [v] (if (> v 0) (str "Jitter 1/" v " * step-size") "No Jitter"))
                  [:jitter] (:jitter ui-mappings))
