@@ -1,5 +1,6 @@
 (ns shimmers.sketches.display-tree
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -188,7 +189,7 @@
 (def seg-path40 (segmented-path 0.4))
 
 (defn segmented-path-var [path t]
-  (let [p (+ 0.2 (* 0.15 (eq/unit-sin (+ (* 0.2 t) (Math/sin (* 0.3 t))))))]
+  (let [p (+ 0.2 (* 0.15 (eq/unit-sin (+ (* 0.2 t) (math/sin (* 0.3 t))))))]
     (doseq [[a b] (partition 2 2 path)]
       (apply q/point a)
       (apply q/point b)
@@ -255,7 +256,7 @@
     (fn [p rotation t f]
       (q/fill (- 1.0 f))
       (let [[x y] (rotated-centroid bounds p rotation)]
-        (q/text-size (+ (* size (/ 2.0 3)) (* 9.0 (Math/sin (* tm/PHI t)))))
+        (q/text-size (+ (* size (/ 2.0 3)) (* 9.0 (math/sin (* tm/PHI t)))))
         (q/with-translation [x (+ y (* 0.025 (q/text-ascent)))]
           (q/with-rotation [rotation]
             (q/text-char letter 0 0)))))))
@@ -287,12 +288,12 @@
             path (for [s (tm/norm-range 128)]
                    (->
                     (gv/vec2)
-                    (tm/+ (R (+ a (Math/sin (* 0.2 t))) (Math/cos (* 0.5 t)) 1.0 s))
-                    (tm/+ (R (+ b (Math/cos (* 0.2 t))) (Math/sin (* 0.5 t)) 1.0 s))
-                    (tm/+ (R (+ c (Math/cos (* 0.5 t))) (Math/sin (* 0.7 t)) 0.5 s))
+                    (tm/+ (R (+ a (math/sin (* 0.2 t))) (math/cos (* 0.5 t)) 1.0 s))
+                    (tm/+ (R (+ b (math/cos (* 0.2 t))) (math/sin (* 0.5 t)) 1.0 s))
+                    (tm/+ (R (+ c (math/cos (* 0.5 t))) (math/sin (* 0.7 t)) 0.5 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (q/stroke-weight ((:fe weight) (Math/sin (* 0.7 a t)) t))
+        (q/stroke-weight ((:fe weight) (math/sin (* 0.7 a t)) t))
         (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
@@ -304,7 +305,7 @@
                  (dr/random-int 1 7))
         direction (* (dr/random-sign)
                      (dr/gaussian 0.66 0.06)
-                     (Math/pow 0.925 (+ major (abs minor))))
+                     (math/pow 0.925 (+ major (abs minor))))
         weight (create-osc (/ 1.0 major) 1.0 0.5)
         osc1 (create-osc (* (dr/weighted {1 6 -1 1})
                             (dr/random-int 1 13))
@@ -329,7 +330,7 @@
                     (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (q/stroke-weight ((:fe weight) (Math/sin (* t (/ 1.0 minor))) t))
+        (q/stroke-weight ((:fe weight) (math/sin (* t (/ 1.0 minor))) t))
         (draw path t)
         (q/stroke-weight 0.5)
         (doseq [[a b] (partition 2 1 path)]
@@ -345,7 +346,7 @@
                  (dr/random-int 1 7))
         direction (* (dr/random-sign)
                      (dr/gaussian 0.66 0.06)
-                     (Math/pow 0.925 (+ major (abs minor))))
+                     (math/pow 0.925 (+ major (abs minor))))
         weight (create-osc (/ 1.0 major) 1.0 0.5)
         osc1 (create-osc (* (dr/weighted {1 6 -1 1})
                             (dr/random-int 1 13))
@@ -370,7 +371,7 @@
                     (tm/+ (R minor ((:fe osc2) s s) 1.0 s))
                     (tm/* (* 0.15 radius))
                     (tm/+ center)))]
-        (q/stroke-weight ((:fe weight) (Math/sin (* t (/ 1.0 minor))) t))
+        (q/stroke-weight ((:fe weight) (math/sin (* t (/ 1.0 minor))) t))
         (draw path t))
       (q/stroke-weight 1.0)
       (q/no-stroke))))
@@ -395,7 +396,7 @@
                    (let [v (dr/random)]
                      (fn [t _f] (mod (+ (* dir t) v) 1.0)))
                    :radial
-                   (let [factor (Math/pow 2.0 (dr/rand-nth [0 0 6]))]
+                   (let [factor (math/pow 2.0 (dr/rand-nth [0 0 6]))]
                      (fn [t _f] (eq/unit-sin (+ (/ r factor) (* 1.5 (* dir t))))))
                    :sweep
                    (let [blades (dr/random-int 4)]
@@ -426,7 +427,7 @@
       (q/no-fill)
       (q/stroke-weight (if (> fxo 4.0)
                          0.8
-                         (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (Math/sin (* fxw1 t) (:p wobble1))))))))
+                         (+ 0.75 (* 0.75 (eq/unit-sin (+ (* fxw0 t) (math/sin (* fxw1 t) (:p wobble1))))))))
       (q/stroke (- 1.0 f))
       (let [t (* dir t)
             path (for [s (tm/norm-range 128)
@@ -442,7 +443,7 @@
       (q/stroke-weight 1.0)
       (q/no-stroke))))
 
-;; (gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 Math/PI) 9.0)
+;; (gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 math/PI) 9.0)
 
 (defn make-spiral [bounds]
   (let [size (min (g/width bounds) (g/height bounds))
@@ -455,11 +456,11 @@
     (fn [pos rotation t f]
       (let [center (rotated-centroid bounds pos rotation)
             dr (- 0.975 (* 0.15 (eq/unit-sin (+ (* dr-rate t) dr-phase
-                                                (Math/sin (+ (* dr-rate' t)
+                                                (math/sin (+ (* dr-rate' t)
                                                              dr-phase'))))))
             dt (+ 0.05 (* (/ eq/TAU 12) (eq/unit-cos (+ (/ t tm/PHI) size f))))
             r (* 0.46 size)
-            theta (* 4 eq/TAU (Math/sin (+ (* 0.06 t) (eq/cube (Math/sin (+ (* 0.13 t) t-phase'))) t-phase)))
+            theta (* 4 eq/TAU (math/sin (+ (* 0.06 t) (eq/cube (math/sin (+ (* 0.13 t) t-phase'))) t-phase)))
             circles (->> {:circle (gc/circle (gv/vec2) r)
                           :theta theta}
                          (iterate
@@ -513,7 +514,7 @@
         dir (dr/random-sign)
         time-f (if (dr/chance 0.5)
                  (fn [t] (* dir t))
-                 (fn [t] (* 10 (Math/sin (* 0.15 t)))))]
+                 (fn [t] (* 10 (math/sin (* 0.15 t)))))]
     (fn [pos rotation t f]
       (q/no-fill)
       (q/stroke-weight 4.0)
@@ -533,7 +534,7 @@
         blades (+ (dr/random-int 2 7) (dr/gaussian 0.0 0.1))
         phase (dr/random-tau)
         rf (fn [theta t]
-             (let [w (Math/sin (+ (* blades theta) (* 1.5 t)))]
+             (let [w (math/sin (+ (* blades theta) (* 1.5 t)))]
                (eq/unit-sin (+ (* 0.66 blades theta)
                                t
                                (* 2 (eq/cube w))
@@ -555,15 +556,15 @@
         (q/stroke-weight 1.0)))))
 
 (defn make-hex [bounds]
-  (let [scale (* 0.435 (Math/pow 0.98 (dr/random-int 5)))
+  (let [scale (* 0.435 (math/pow 0.98 (dr/random-int 5)))
         radius (* scale (min (g/width bounds) (g/height bounds)))
         spin-phase (dr/random-tau)
         o-phase (dr/random-tau)]
     (fn [pos rotation t f]
       (let [center (rotated-centroid bounds pos rotation)
-            outline (Math/sin (+ (* 0.4 t) o-phase (* 1.5 (Math/sin (* 0.6 t)))))
+            outline (math/sin (+ (* 0.4 t) o-phase (* 1.5 (math/sin (* 0.6 t)))))
             r radius
-            spin (* eq/TAU (Math/sin (+ (* 0.13 t) spin-phase (Math/sin (* 0.17 t)))))]
+            spin (* eq/TAU (math/sin (+ (* 0.13 t) spin-phase (math/sin (* 0.17 t)))))]
         (if (pos? outline)
           (do (q/no-stroke)
               (q/fill (* outline (- 1.0 f))))
@@ -645,18 +646,18 @@
 
 (comment
   (for [n (range 200)]
-    [n (* 128 (Math/exp (* -0.12 n)))]))
+    [n (* 128 (math/exp (* -0.12 n)))]))
 
 (defn update-displays [displays t _heat]
   (let [i (dr/random-int (count displays))
         tree (all-displays displays)
         leaves (filter (comp empty? :children) tree)
-        ramp (Math/exp (* 7 (tm/smoothstep* 0.85 0.95 (mod (/ t 50.0) 1.0))))
+        ramp (math/exp (* 7 (tm/smoothstep* 0.85 0.95 (mod (/ t 50.0) 1.0))))
         n (count leaves)
         animations (count (filter :animation leaves))
         display-f
-        (dr/weighted [[subdivide (* 64 (Math/exp (* -0.06 (+ n (dec ramp)))))]
-                      [add-animation (* 32 (Math/exp (* -0.125 (+ animations (dec ramp)))))]
+        (dr/weighted [[subdivide (* 64 (math/exp (* -0.06 (+ n (dec ramp)))))]
+                      [add-animation (* 32 (math/exp (* -0.125 (+ animations (dec ramp)))))]
                       [combine (* 8 ramp)]
                       [collapse (* 2 ramp)]])]
     (swap! defo assoc
@@ -682,10 +683,10 @@
         wobble
         (eq/unit-sin (+ (* 0.02 x)
                         (* 0.15 t tm/PHI)
-                        (* 2 (eq/cube (Math/sin (+ i (* 0.02 y) (/ t (* 1.5 tm/PHI))))))))
+                        (* 2 (eq/cube (math/sin (+ i (* 0.02 y) (/ t (* 1.5 tm/PHI))))))))
         orientation (eq/unit-sin (- theta (* 0.8 t)))
         unison-blink (eq/unit-sin t)
-        ramp-mode (tm/smoothstep* 0.8 0.9 (eq/unit-cos (+ (* 0.05 t) (Math/sin (* 0.17 t)))))]
+        ramp-mode (tm/smoothstep* 0.8 0.9 (eq/unit-cos (+ (* 0.05 t) (math/sin (* 0.17 t)))))]
     (swap! defo assoc :ramp-mode ramp-mode :unison-blink unison-blink)
     (tm/mix*
      (tm/smoothstep* 0.15 0.85
@@ -699,7 +700,7 @@
    {:keys [depth p rotation i t center] :as dstate}]
   (let [div (geometry/rotate-around display p rotation)
         [dx dy] (tm/- (g/centroid display) center)
-        f (fader i dx dy (* t (/ 1 (Math/pow 1.33 depth))))]
+        f (fader i dx dy (* t (/ 1 (math/pow 1.33 depth))))]
     (if (= depth 0)
       (q/stroke 0.0)
       (q/no-stroke))
