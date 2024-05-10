@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.polygon
   (:require
+   [clojure.math :as math]
    [shimmers.math.equations :as eq]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -28,13 +29,13 @@
   "Distance from center of a regular polygon with `n` sides of `side-length` to
   the midpoint of a side."
   [n side-length]
-  (/ side-length (* 2 (Math/tan (/ Math/PI n)))))
+  (/ side-length (* 2 (math/tan (/ math/PI n)))))
 
 (defn apothem-circumradius
   "Distance from center of a regular polygon with `n` sides and `circumradius` to
   the midpoint of a side."
   [n circumradius]
-  (* circumradius (Math/cos (/ Math/PI n))))
+  (* circumradius (math/cos (/ math/PI n))))
 
 ;; https://mathworld.wolfram.com/Sagitta.html
 ;; sagitta = circumradius - inradius
@@ -43,35 +44,35 @@
   "Distance from a midpoint of a `side-length` face of an `n` sided regular
   polygon to the circumradius."
   [n side-length]
-  (/ (* side-length (Math/tan (/ Math/PI (* 2 n)))) 2))
+  (/ (* side-length (math/tan (/ math/PI (* 2 n)))) 2))
 
 (defn sagitta-inradius
   "Distance from the midpoint of a face of an `n` sided regular polygon with
   `inradius`."
   [n inradius]
-  (* inradius (Math/tan (/ Math/PI n)) (Math/tan (/ Math/PI (* 2 n)))))
+  (* inradius (math/tan (/ math/PI n)) (math/tan (/ math/PI (* 2 n)))))
 
 (defn sagitta-circumradius
   "Distance from the midpoint of a face of an `n` sided regular polygon with
   `circumradius`."
   [n circumradius]
-  (* 2 circumradius (eq/sqr (Math/sin (/ Math/PI (* 2 n))))))
+  (* 2 circumradius (eq/sqr (math/sin (/ math/PI (* 2 n))))))
 
 (defn circumradius-side-length
   [n side-length]
-  (/ side-length (* 2 (Math/sin (/ Math/PI n)))))
+  (/ side-length (* 2 (math/sin (/ math/PI n)))))
 
 (defn circumradius-inradius
   [n inradius]
-  (/ inradius (Math/cos (/ Math/PI n))))
+  (/ inradius (math/cos (/ math/PI n))))
 
 (defn side-length-inradius
   [n inradius]
-  (* 2 inradius (Math/tan (/ Math/PI n))))
+  (* 2 inradius (math/tan (/ math/PI n))))
 
 (defn side-length-circumradius
   [n circumradius]
-  (* 2 circumradius (Math/sin (/ Math/PI n))))
+  (* 2 circumradius (math/sin (/ math/PI n))))
 
 ;; https://en.wikipedia.org/wiki/Regular_polygon#Circumradius
 (defn regular-n-gon
@@ -82,13 +83,13 @@
   (let [s (-> (gc/circle circumradius)
               (g/as-polygon n))]
     (if (even? n)
-      (g/rotate s (/ Math/PI n))
+      (g/rotate s (/ math/PI n))
       s)))
 
 (defn sum-interior-angles-regular-polygon
   [n]
   {:pre [(> n 2)]}
-  (* (- n 2) Math/PI))
+  (* (- n 2) math/PI))
 
 (defn interior-angle-regular-polygon
   [n]
