@@ -1,10 +1,11 @@
 (ns shimmers.math.geometry.ellipse
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.core :as g :refer [*resolution*]]
    [thi.ng.geom.vector :as v :refer [vec2]]
    #?(:clj [thi.ng.geom.types]
       :cljs [thi.ng.geom.types :refer [Circle2 Ellipse2 Rect2]])
-   [thi.ng.math.core :as m :refer [PI TWO_PI]])
+   [thi.ng.math.core :as m :refer [TWO_PI]])
   #?(:clj
      (:import [thi.ng.geom.types Circle2 Ellipse2 Rect2])))
 
@@ -19,7 +20,7 @@
 
 (extend-type Ellipse2
   g/IArea
-  (area [{:keys [rx ry]}] (* PI rx ry))
+  (area [{:keys [rx ry]}] (* math/PI rx ry))
 
   g/IBounds
   (bounds
@@ -36,8 +37,8 @@
   ;; https://math.stackexchange.com/a/76463/903738
   g/IBoundary
   (contains-point? [{[px py] :p :keys [rx ry]} [qx qy]]
-    (<= (+ (/ (Math/pow (- qx px) 2) (* rx rx))
-          (/ (Math/pow (- qy py) 2) (* ry ry)))
+    (<= (+ (/ (math/pow (- qx px) 2) (* rx rx))
+          (/ (math/pow (- qy py) 2) (* ry ry)))
        1))
 
   g/ICenter
@@ -58,8 +59,8 @@
           butlast
           (mapv (fn [x]
                   (let [t (* x TWO_PI)]
-                    (m/+ p (vec2 (* rx (Math/cos t))
-                                 (* ry (Math/sin t))))))))))
+                    (m/+ p (vec2 (* rx (math/cos t))
+                                 (* ry (math/sin t))))))))))
 
   g/IEdgeAccess
   (edges
@@ -71,8 +72,8 @@
   g/ISample
   (point-at [{:keys [p rx ry]} t]
     (let [theta (* t TWO_PI)]
-      (m/+ (vec2 (* rx (Math/cos theta))
-                 (* ry (Math/sin theta)))
+      (m/+ (vec2 (* rx (math/cos theta))
+                 (* ry (math/sin theta)))
            p)))
   ;; This is not a uniform distribution of points on the circumfrence. From
   ;; https://codereview.stackexchange.com/questions/243590/generate-random-points-on-perimeter-of-ellipse
@@ -84,8 +85,8 @@
   ;; First answer form https://stackoverflow.com/a/5529199/34450, but might not be uniform
   ;; as the theta's along a longer axis should have more samples?
   (random-point-inside [{:keys [p rx ry]}]
-    (let [rho (Math/sqrt (m/random))
+    (let [rho (math/sqrt (m/random))
           theta (* TWO_PI (m/random))]
-      (m/+ (vec2 (* 2 rx rho (Math/cos theta))
-                 (* 2 ry rho (Math/sin theta)))
+      (m/+ (vec2 (* 2 rx rho (math/cos theta))
+                 (* 2 ry rho (math/sin theta)))
            p))))
