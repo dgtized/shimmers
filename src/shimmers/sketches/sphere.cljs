@@ -1,5 +1,6 @@
 (ns shimmers.sketches.sphere
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -10,11 +11,11 @@
 (defn sphere-points [vertice-count]
   (for [j (range vertice-count)
         i (range vertice-count)
-        :let [longitude (tm/map-interval i 0 vertice-count (- Math/PI) Math/PI)
-              latitude (tm/map-interval j 0 vertice-count (- (/ Math/PI 2)) (/ Math/PI 2))]]
-    [(* (Math/sin longitude) (Math/cos latitude))
-     (* (Math/sin longitude) (Math/sin latitude))
-     (Math/cos longitude)]))
+        :let [longitude (tm/map-interval i 0 vertice-count (- math/PI) math/PI)
+              latitude (tm/map-interval j 0 vertice-count (- (/ math/PI 2)) (/ math/PI 2))]]
+    [(* (math/sin longitude) (math/cos latitude))
+     (* (math/sin longitude) (math/sin latitude))
+     (math/cos longitude)]))
 
 (def ordering-fns
   [shuffle
