@@ -1,5 +1,6 @@
 (ns shimmers.sketches.countdown
   (:require
+   [clojure.math :as math]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.equations :as eq]
@@ -30,21 +31,21 @@
                   pos (tm/+ center (:p hex-pos))
                   pct (/ (float i) (count hexes))
                   rot (+ t (* 0.5 (g/heading (:p hex-pos))))
-                  o-t0 (* eq/TAU (+ (Math/sin (+ t 0.02 (* pct (Math/sin (* 0.4 t))))) rot))
-                  o-t1 (* eq/TAU (+ (Math/sin (- t 0.03 (* pct (Math/sin (* 0.5 t))))) rot))
-                  i-t0 (* eq/TAU (+ (Math/sin (+ t 0.04 (* pct (Math/sin (* 0.6 t))))) rot))
-                  i-t1 (* eq/TAU (+ (Math/sin (- t 0.01 (* pct (Math/sin (* 0.3 t))))) rot))]]
+                  o-t0 (* eq/TAU (+ (math/sin (+ t 0.02 (* pct (math/sin (* 0.4 t))))) rot))
+                  o-t1 (* eq/TAU (+ (math/sin (- t 0.03 (* pct (math/sin (* 0.5 t))))) rot))
+                  i-t0 (* eq/TAU (+ (math/sin (+ t 0.04 (* pct (math/sin (* 0.6 t))))) rot))
+                  i-t1 (* eq/TAU (+ (math/sin (- t 0.01 (* pct (math/sin (* 0.3 t))))) rot))]]
       (canvas/line-width ctx (* 10.0 (+ 0.1 pr)))
       (canvas/clockwise-arc ctx pos
                             (- radius 15
-                               (* 6 (Math/sin (+ (* Math/PI pr) (* 10 t)))))
+                               (* 6 (math/sin (+ (* math/PI pr) (* 10 t)))))
                             o-t0 o-t1)
       (.stroke ctx)
       (canvas/line-width ctx (* 4.0 (+ 0.1 pr)))
       ;; min/max t0/t1 to remove clip jump
       (canvas/clockwise-arc ctx pos
                             (- radius 20
-                               (* 3 (Math/sin (+ (* Math/PI pr) (* 15 t)))))
+                               (* 3 (math/sin (+ (* math/PI pr) (* 15 t)))))
                             (min i-t0 i-t1) (max i-t0 i-t1))
       (.stroke ctx)))
   ctx)
