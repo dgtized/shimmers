@@ -1,5 +1,6 @@
 (ns shimmers.sketches.alignment-perturbations
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -14,13 +15,13 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def ^:constant SQRT3_2 (/ (Math/sqrt 3) 2))
+(def ^:constant SQRT3_2 (/ (math/sqrt 3) 2))
 
 (defn triangle
   [[i j k] side
    [[bias-i-a bias-i-b bias-i-c]
     [bias2-a bias2-b bias2-c]]]
-  (let [hside (* side (/ (Math/sqrt 3) 2))
+  (let [hside (* side (/ (math/sqrt 3) 2))
         x (+ i (* 0.5 j))]
     (if (zero? k)
       (gt/triangle2 (gv/vec2 (* (+ x 0.0 bias-i-a) side) (* j hside))
@@ -32,12 +33,12 @@
                     (gv/vec2 (* (+ (inc x) -0.5 bias2-c) side) (* (inc j) hside))))))
 
 (defn grid [{p :p [width height] :size} side bias]
-  (let [wn (Math/ceil (/ width side))
-        hn (Math/ceil (/ height (* SQRT3_2 side)))]
+  (let [wn (math/ceil (/ width side))
+        hn (math/ceil (/ height (* SQRT3_2 side)))]
     (for [i (range wn)
           j (range hn)
           k (range 2)]
-      (-> (triangle [(- i (Math/ceil (* j 0.5))) j k] side bias)
+      (-> (triangle [(- i (math/ceil (* j 0.5))) j k] side bias)
           (g/translate  p)))))
 
 (defn setup []
@@ -52,14 +53,14 @@
   (let [t (/ (q/millis) 1000.0)
         side (/ (q/width) 20)
         bounds (rect/rect 20 (* 20 SQRT3_2)
-                          (Math/floor (* 19 side))
-                          (Math/floor (* 16 side SQRT3_2)))
-        bias [[(Math/sin (+ 0.8 (* t 0.5) (Math/sin (+ 0.5 (* 0.5 t)))))
-               (Math/sin (+ 0.9 (* t 0.3) (Math/sin (+ 0.1 (* 0.4 t)))))
-               (Math/sin (+ 0.1 (* t 0.4) (Math/sin (+ 0.1 (* 0.2 t)))))]
-              [(Math/sin (+ 0.3 (* t 0.6) (Math/sin (+ 0.5 (* 0.5 t)))))
-               (Math/sin (+ 0.3 (* t 0.2) (Math/sin (+ 0.1 (* 0.4 t)))))
-               (Math/sin (+ 0.1 (* t 0.7) (Math/sin (+ 0.1 (* 0.2 t)))))]]
+                          (math/floor (* 19 side))
+                          (math/floor (* 16 side SQRT3_2)))
+        bias [[(math/sin (+ 0.8 (* t 0.5) (math/sin (+ 0.5 (* 0.5 t)))))
+               (math/sin (+ 0.9 (* t 0.3) (math/sin (+ 0.1 (* 0.4 t)))))
+               (math/sin (+ 0.1 (* t 0.4) (math/sin (+ 0.1 (* 0.2 t)))))]
+              [(math/sin (+ 0.3 (* t 0.6) (math/sin (+ 0.5 (* 0.5 t)))))
+               (math/sin (+ 0.3 (* t 0.2) (math/sin (+ 0.1 (* 0.4 t)))))
+               (math/sin (+ 0.1 (* t 0.7) (math/sin (+ 0.1 (* 0.2 t)))))]]
         d-point (tm/+ (cq/rel-vec 0.5 0.5) (v/polar (tm/mag (cq/rel-vec 0.2 0.2)) (* 0.7 t)))]
     (q/no-fill)
     (qdg/draw bounds)
