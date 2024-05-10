@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hexpansion
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -21,7 +22,7 @@
   [[a0 f0 p0] [a1 f1 p1] t]
   (* a0 (eq/unit-sin
          (+ (* f0 t)
-            (* a1 (eq/cube (Math/sin (+ p1 (* f1 t)))))
+            (* a1 (eq/cube (math/sin (+ p1 (* f1 t)))))
             p0))))
 
 (defn duty-cycle [outer inner t]
@@ -40,7 +41,7 @@
   (q/stroke 0.0 1.0)
   (q/fill 1.0 0.2)
   (let [divs 12
-        r (+ (/ (* 0.4 (q/height)) (* 2 divs)) (* (/ 3 divs) (Math/sin (* 0.75 t))))
+        r (+ (/ (* 0.4 (q/height)) (* 2 divs)) (* (/ 3 divs) (math/sin (* 0.75 t))))
         mmag (tm/mag (cq/rel-vec 0.5 0.5))
         rotation (cube-wobble [(/ eq/TAU 3) (/ 1 37) 1.7]
                               [(/ tm/PHI 3) (/ 1 17) 0.3]
@@ -57,14 +58,14 @@
                       centroid (g/centroid hex)
                       [cx cy] centroid
                       d (/ (tm/mag centroid) mmag)
-                      sqrt-d (Math/sqrt d)
-                      scale-factor (Math/sin (* 0.02 (+ (* 0.55 t cx) (* 0.65 t cy))))
+                      sqrt-d (math/sqrt d)
+                      scale-factor (math/sin (* 0.02 (+ (* 0.55 t cx) (* 0.65 t cy))))
                       scale (+ (- 0.9 d) (* 0.2 scale-factor))
-                      rot (* Math/PI (Math/cos (+ (* 0.5 t)
-                                            (* 2 (Math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
+                      rot (* math/PI (math/cos (+ (* 0.5 t)
+                                                  (* 2 (math/sin (* 0.5 (+ (/ t (+ 1 cx)) (/ t (+ 1 cy)))))))))]]
           (-> hex
               (g/scale-size scale)
-              (g/rotate (* Math/PI sqrt-d spiral-rot))
+              (g/rotate (* math/PI sqrt-d spiral-rot))
               (g/scale (+ 1 (* 0.5 sqrt-d
                                duty-scale
                                (tm/smoothstep* 0.25 1.0 scale-factor))))
