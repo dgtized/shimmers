@@ -4,6 +4,7 @@
   Algorithm is from http://algorithmicbotany.org/papers/colonization.egwnp2007.html"
   (:require
    [clojure.edn :as edn]
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -71,7 +72,7 @@
   [{:keys [attractor-power snap-theta] :as settings}]
   (let [bounds (cq/screen-rect)
         attractors
-        (repeatedly (Math/pow 2 attractor-power)
+        (repeatedly (math/pow 2 attractor-power)
                     (attractor-gen bounds (rand-nth [:triangle :square :circle])))
         roots (dr/weighted {1 4
                             2 2
@@ -153,7 +154,7 @@
    (ctrl/container
     [:section
      [:b "Applies on next run:"]
-     (ctrl/slider settings (fn [v] (str "Attractor Count " (Math/pow 2 v)))
+     (ctrl/slider settings (fn [v] (str "Attractor Count " (math/pow 2 v)))
                   [:attractor-power] [4 12])
      (ctrl/slider settings (fn [v] (str "Influence Distance " v))
                   [:influence-distance] [10 100])
@@ -164,10 +165,10 @@
      (ctrl/dropdown settings
                     "Snap Angles To " [:snap-theta]
                     {"Disabled" 0
-                     "90 degrees" (/ Math/PI 2)
-                     "60 degrees" (/ Math/PI 3)
-                     "45 degrees" (/ Math/PI 4)
-                     "30 degrees" (/ Math/PI 6)})]
+                     "90 degrees" (/ math/PI 2)
+                     "60 degrees" (/ math/PI 3)
+                     "45 degrees" (/ math/PI 4)
+                     "30 degrees" (/ math/PI 6)})]
     [:br]
     [:section
      [:b "Applies immediately:"]
