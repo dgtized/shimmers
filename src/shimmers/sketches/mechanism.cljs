@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mechanism
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -38,18 +39,18 @@
         (driven-by g (wheel (* 0.4 driver-radius)) driver-wheel
                    (belt (* 3 driver-radius) (* eq/TAU 0.2)))
         [g _dw-gear] (attached-to g (gear dp 25) dw-receiver dec)
-        [g left-step] (driven-by g (gear dp 20) driver (* 0.8 Math/PI))
+        [g left-step] (driven-by g (gear dp 20) driver (* 0.8 math/PI))
         [g left] (attached-to g (gear dp2 70) left-step dec)
-        [g left2] (driven-by g (gear dp2 16) left Math/PI)
-        [g piston-driver] (driven-by g (gear dp2 26) left (/ Math/PI 2))
-        [g piston-driver-b] (driven-by g (gear dp2 16) piston-driver Math/PI)
-        [g piston-driver-c] (driven-by g (gear dp2 26) piston-driver-b Math/PI)
-        [g _] (attached-to g (piston (* 0.5 Math/PI)) piston-driver)
-        [g _] (attached-to g (piston (* 0.5 Math/PI)) piston-driver-c)
-        [g _] (attached-to g (piston Math/PI) left2)
+        [g left2] (driven-by g (gear dp2 16) left math/PI)
+        [g piston-driver] (driven-by g (gear dp2 26) left (/ math/PI 2))
+        [g piston-driver-b] (driven-by g (gear dp2 16) piston-driver math/PI)
+        [g piston-driver-c] (driven-by g (gear dp2 26) piston-driver-b math/PI)
+        [g _] (attached-to g (piston (* 0.5 math/PI)) piston-driver)
+        [g _] (attached-to g (piston (* 0.5 math/PI)) piston-driver-c)
+        [g _] (attached-to g (piston math/PI) left2)
         [g right] (driven-by g (gear dp 20) driver 0)
         [g above] (driven-by g (gear dp 26) right (* eq/TAU 0.78))
-        [g top-right] (driven-by g (gear dp 60) above (- (/ Math/PI 3)))
+        [g top-right] (driven-by g (gear dp 60) above (- (/ math/PI 3)))
         [g top-right-b] (attached-to g (gear dp1 20) top-right inc)
         tr-radius (mech/pitch-radius top-right-b)
         [g wheel-driver] (attached-to g (wheel (* 0.7 tr-radius)) top-right-b inc)
@@ -63,7 +64,7 @@
         [g tr-last] (driven-by g (gear dp2 35) tr-bottom (* eq/TAU 0.39))
         [g tr-step] (attached-to g (gear dp 12) tr-last inc)
         [g ring] (driven-by g (ring-gear dp 36) tr-step (* eq/TAU 0.25))
-        [g below] (driven-by g (gear dp 38) right (/ Math/PI 3))
+        [g below] (driven-by g (gear dp 38) right (/ math/PI 3))
         [g _] (attached-to g (piston 0) below)
         [g _] (driven-by g (gear dp 12) ring (* eq/TAU 0.25))
         [g big] (driven-by g (gear dp 128) below 0.1)
@@ -160,8 +161,8 @@
     (when (contains? selected-ids (:id gear))
       (let [{:keys [angle]} gear
             r (+ radius (* 2 (mech/addendum gear)))
-            high-pt (v/polar r (- angle Math/PI))
-            low-pt (v/polar r (- angle Math/PI (:offset gear)))]
+            high-pt (v/polar r (- angle math/PI))
+            low-pt (v/polar r (- angle math/PI (:offset gear)))]
         (q/with-stroke [0.33 0.5 0.4]
           (cq/circle (tm/+ pos high-pt) 3))
         (q/with-stroke [0 0.6 0.6]
@@ -201,7 +202,7 @@
         (case (mech/drive sys driver wheel)
           :belt
           (let [phi (mech/belt-phi radius driver-radius distance)
-                driver-heading (+ Math/PI wheel-heading)]
+                driver-heading (+ math/PI wheel-heading)]
             (q/line (v/+polar driver-pos driver-radius (- driver-heading phi))
                     (v/+polar pos radius (- wheel-heading phi)))
             (q/line (v/+polar driver-pos driver-radius (+ driver-heading phi))
