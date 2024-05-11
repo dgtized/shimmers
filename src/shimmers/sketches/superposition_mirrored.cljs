@@ -1,5 +1,6 @@
 (ns shimmers.sketches.superposition-mirrored
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.linear-assignment :as linear]
@@ -178,10 +179,10 @@
        :lr-in-triangles
        (point-gen
         [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} 0)
-         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} Math/PI)])
+         (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} math/PI)])
        :lr-out-triangles
        (point-gen
-        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} Math/PI)
+        [(triangle/inscribed-equilateral {:p (cq/rel-vec scale 0.5) :r r} math/PI)
          (triangle/inscribed-equilateral {:p (cq/rel-vec (- 1.0 scale) 0.5) :r r} 0)])
        :hex-triangles
        (point-gen (select-random-point (/ 1 11))
@@ -214,18 +215,18 @@
 (defn update-positions [particles t dt]
   (let [controls
         {:wobble (let [amp-n (center-filter 0.3 (q/noise 120.0 30.0 (* 0.25 t)))
-                       amplitude (* (cq/rel-h 0.06) (dec (Math/pow 2.0 amp-n)))
+                       amplitude (* (cq/rel-h 0.06) (dec (math/pow 2.0 amp-n)))
                        rate-n (+ 0.01 (center-filter 0.0 (q/noise 60.0 (* 0.1 t) 20.0)))
-                       rate (* 8 (Math/pow rate-n 2))]
-                   (* amplitude (Math/sin (* rate t))))
-         :pos-c (+ 4 (* 150.0 (Math/pow (center-filter 0.0 (q/noise (* t 0.2) 10.0)) 2)))
+                       rate (* 8 (math/pow rate-n 2))]
+                   (* amplitude (math/sin (* rate t))))
+         :pos-c (+ 4 (* 150.0 (math/pow (center-filter 0.0 (q/noise (* t 0.2) 10.0)) 2)))
          :steering (let [steer-noise (center-filter 0.0 (q/noise (* (/ 3 7) t) 160))]
                      (if (< steer-noise 0.15)
                        :active
                        :spin))
-         :angle-c (+ 4 (* 150.0 (Math/pow (center-filter 0.0 (q/noise 10.0 (* t 0.2))) 2)))
+         :angle-c (+ 4 (* 150.0 (math/pow (center-filter 0.0 (q/noise 10.0 (* t 0.2))) 2)))
          :target-vel (let [vel (* 2 (- (q/noise 250 (* 0.05 t)) 0.5))]
-                       (+ (* (tm/sign vel) 2) (* 512 (Math/pow vel 3))))
+                       (+ (* (tm/sign vel) 2) (* 512 (math/pow vel 3))))
          :drag (- 1.0 (eq/sqr (* dt (+ 0.1 (* 100.0 (center-filter 0.1 (q/noise 20.0 (* 0.3 t))))))))}]
     (swap! defo assoc :controls controls)
     (mapv (move dt controls) particles)))
@@ -301,7 +302,7 @@
 (defn draw-image [{:keys [cycle particles t]}]
   (let [diagonal (g/dist (gv/vec2 0 0) (cq/rel-vec 0.5 0.5))
         scale-noise (center-filter 0.0 (q/noise (* t 0.3) 100.0))
-        scale (cq/rel-h (+ 0.005 (* 0.10 (Math/pow scale-noise 2))))
+        scale (cq/rel-h (+ 0.005 (* 0.10 (math/pow scale-noise 2))))
         color (< 0.2 (q/noise (* t 0.25) 1000.0) 0.8)
         individuality (center-filter 0.4 (q/noise 12000.0 (* t 0.05)))]
     (swap! defo assoc
@@ -312,12 +313,12 @@
                   :color color
                   :individuality individuality})
     (doseq [{:keys [pos angle]} particles]
-      (let [r (* 2 (Math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
+      (let [r (* 2 (math/pow (/ (g/dist pos (cq/rel-vec 0.5 0.5)) diagonal) tm/PHI))
             t (+ t
                  (if (> individuality 0)
                    (let [local-noise (noise-at (tm/+ (gv/vec2 t t) pos) 0.002 [800 900])]
-                     (* (Math/pow 4 individuality)
-                        (Math/pow (+ 1 (center-filter 0.25 local-noise)) 4)))
+                     (* (math/pow 4 individuality)
+                        (math/pow (+ 1 (center-filter 0.25 local-noise)) 4)))
                    0))
             fill-opacity (- 1.0 (center-filter 0.0 (noise-at [t r] 0.006 [200.0 200.0])))
             stroke-opacity (center-filter 0.01 (noise-at [(+ r t) (+ r t)] 0.03 [300.0 300.0]))]
