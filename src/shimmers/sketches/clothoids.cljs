@@ -1,5 +1,6 @@
 (ns shimmers.sketches.clothoids
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -61,24 +62,24 @@
            :accuracy-limit (/ L (* 2 R)) ;; >3 is a problem
            :tangent-angle tangent-angle)
     [(v/-polar tangent-point R
-               (+ tangent-angle (* (tm/sign L) (if clockwise -1 1) 0.5 Math/PI)))
+               (+ tangent-angle (* (tm/sign L) (if clockwise -1 1) 0.5 math/PI)))
      R]))
 
 (defn draw-animation [{:keys [t]}]
-  (let [length (+ 40 (* 20 (Math/sin t)))
+  (let [length (+ 40 (* 20 (math/sin t)))
         scaled (fn scaled [xs] (mapv #(tm/* % 11) xs))
         r 1.0
-        A3 (+ 15 (* 5 (Math/cos t)))
-        A4 (+ 8 (* 2 (Math/cos t)))]
+        A3 (+ 15 (* 5 (math/cos t)))
+        A4 (+ 8 (* 2 (math/cos t)))]
     (q/stroke-weight 0.5)
     (pen-color 0)
     (plot r (scaled (eq/clothoid 18 length 20 1 0.0 (gv/vec2))))
     (pen-color 1)
-    (plot r (scaled (eq/clothoid 12 length 50 1 Math/PI (gv/vec2))))
+    (plot r (scaled (eq/clothoid 12 length 50 1 math/PI (gv/vec2))))
     (pen-color 2)
     (plot r (scaled (eq/clothoid-from A3 50 30 1 0 (gv/vec2 0.0 0.0))))
     (pen-color 3)
-    (plot r (scaled (eq/clothoid-from A4 30 30 1 Math/PI (gv/vec2 0.0 0.0))))))
+    (plot r (scaled (eq/clothoid-from A4 30 30 1 math/PI (gv/vec2 0.0 0.0))))))
 
 (defn draw-sandbox [from]
   (let [points (clothoid->points @ui-state)
@@ -110,7 +111,7 @@
         phi0-c1 (* 0.0 eq/TAU)
         phi0-c2 (* 0.5 eq/TAU)
         f1 (v/+polar (:p c1) (:r c1) 0)
-        f2 (v/+polar (:p c2) (:r c2) Math/PI)
+        f2 (v/+polar (:p c2) (:r c2) math/PI)
         scaled-f1 (g/scale f1 30)
         scaled-f2 (g/scale f2 30)]
     ;; TODO: solve for circle/circle connection clothoids between c1,c2
@@ -120,12 +121,12 @@
     (cq/circle scaled-f2 1.0)
     (let [R (:r c1)
           L (eq/clothoid-length R (eq/clothoid-tau lambda-c1 c1-angle phi0-c1))
-          A (Math/sqrt (* R L))]
+          A (math/sqrt (* R L))]
       (swap! defo assoc :c1 {:circle c1 :phi0 phi0-c1 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c1 phi0-c1 f1))))
     (let [R (:r c2)
           L (eq/clothoid-length R (eq/clothoid-tau lambda-c2 c2-angle phi0-c2))
-          A (Math/sqrt (* R L))]
+          A (math/sqrt (* R L))]
       (swap! defo assoc :c2 {:circle c2 :phi0 phi0-c2 :R R :L L :A A})
       (plot 1.0 (mapv #(tm/* % 30) (eq/clothoid-from A L 30 lambda-c2 phi0-c2 f2))))))
 
