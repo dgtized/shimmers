@@ -1,5 +1,6 @@
 (ns shimmers.sketches.amplification
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -36,12 +37,12 @@
         dest (v/+polar pos r t1)]
     [[:M src]
      [:A [r r] 0.0
-      (if (> (abs (- t1 t0)) Math/PI) 1 0)
+      (if (> (abs (- t1 t0)) math/PI) 1 0)
       (if (> t1 t0) 1 0)
       dest]]))
 
 (defn segmented-circle [pos r]
-  (let [n (Math/ceil (* 64 (dr/circular-random)))
+  (let [n (math/ceil (* 64 (dr/circular-random)))
         gap-spacing (dr/rand-nth [2 3 4])
         base (dr/random-tau)]
     (if (<= n 1)
@@ -66,7 +67,7 @@
          (csvg/path))))
 
 (defn sketch-circle [{:keys [p r]}]
-  (let [n (Math/ceil (* 6 (dr/circular-random)))]
+  (let [n (math/ceil (* 6 (dr/circular-random)))]
     (map (fn [_]
            (let [p' (tm/+ p (dr/jitter (dr/gaussian 2.0 0.5)))]
              (dr/weighted [[(gc/circle p' r) 5]
@@ -75,7 +76,7 @@
          (range n))))
 
 (defn exp-range [exp n]
-  (map #(Math/pow % exp) (tm/norm-range n)))
+  (map #(math/pow % exp) (tm/norm-range n)))
 
 (comment (exp-range 2 10))
 
