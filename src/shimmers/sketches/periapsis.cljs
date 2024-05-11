@@ -1,5 +1,6 @@
 (ns shimmers.sketches.periapsis
   (:require
+   [clojure.math :as math]
    [kixi.stats.distribution :as ksd]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -17,7 +18,7 @@
 ;; https://en.wikipedia.org/wiki/Orbit_equation
 ;; https://en.wikipedia.org/wiki/Elliptic_orbit
 (defn semi-minor [eccentricity semi-major]
-  (* semi-major (Math/sqrt (- 1.0 (Math/pow eccentricity 2)))))
+  (* semi-major (math/sqrt (- 1.0 (math/pow eccentricity 2)))))
 
 ;; TODO: Consider making speed proportional to mass and semi-major to match
 ;; escape velocities correctly?
@@ -29,12 +30,12 @@
                         speed theta0]} t]
   (let [dt (if (> (abs speed) 0) speed 1)
         theta (+ theta0 (/ t dt))]
-    (gv/vec2 (+ focal-distance (* semi-major (Math/cos theta)))
-             (* semi-minor (Math/sin theta)))))
+    (gv/vec2 (+ focal-distance (* semi-major (math/cos theta)))
+             (* semi-minor (math/sin theta)))))
 
 (defn orbital-period [semi-major mass]
   (let [G 30000.0]
-    (* (Math/sqrt (/ (Math/pow semi-major 3)
+    (* (math/sqrt (/ (math/pow semi-major 3)
                      (* G mass)))
        eq/TAU)))
 
@@ -66,7 +67,7 @@
      (make-body {:mass (* base 2)})
      (repeatedly
       n
-      #(let [semi-major (+ base-radius (* (- radius base-radius) (Math/sqrt (dr/random))))]
+      #(let [semi-major (+ base-radius (* (- radius base-radius) (math/sqrt (dr/random))))]
          (make-body
           {:semi-major semi-major
            ;; eccentricity likelyhood is proportional to to size of orbit for aesthetics
