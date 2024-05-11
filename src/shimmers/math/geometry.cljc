@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
    [shimmers.math.deterministic-random :as dr]
@@ -152,12 +153,12 @@
                          (eq/sqr r-big))
                       (* 2 d))
                 x2 (abs (- d x1))
-                y (Math/sqrt (- (eq/sqr r-big) (eq/sqr x1)))
-                a-big (- (* (eq/sqr r-big) (Math/acos (/ x1 r-big)))
+                y (math/sqrt (- (eq/sqr r-big) (eq/sqr x1)))
+                a-big (- (* (eq/sqr r-big) (math/acos (/ x1 r-big)))
                          (* x1 y))
-                a-small (- (* (eq/sqr r-small) (Math/acos (/ x2 r-small)))
+                a-small (- (* (eq/sqr r-small) (math/acos (/ x2 r-small)))
                            (* x2 y))
-                a-small (if (> x1 d) (- (* Math/PI (eq/sqr r-small)) a-small) a-small)
+                a-small (if (> x1 d) (- (* math/PI (eq/sqr r-small)) a-small) a-small)
                 overlap-area (+ a-small a-big)
-                total-area (- (* Math/PI (+ (eq/sqr r-big) (eq/sqr r-small))) overlap-area)]
+                total-area (- (* math/PI (+ (eq/sqr r-big) (eq/sqr r-small))) overlap-area)]
             (/ overlap-area total-area)))))
