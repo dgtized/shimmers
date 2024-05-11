@@ -1,5 +1,6 @@
 (ns shimmers.sketches.ballistics
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -62,15 +63,15 @@
   (initial-state))
 
 (defn initial-velocity [angle [x y]]
-  (Math/sqrt
+  (math/sqrt
    (abs
     (/ (* (eq/sqr x) 9.8)
-       (- (* x (Math/sin (* 2 angle)))
-          (* 2 y (eq/sqr (Math/cos angle))))))))
+       (- (* x (math/sin (* 2 angle)))
+          (* 2 y (eq/sqr (math/cos angle))))))))
 
 ;; need to account for vertical height of target?
 (defn time-of-flight [angle v0 x]
-  (abs (/ x (* v0 (Math/cos angle)))))
+  (abs (/ x (* v0 (math/cos angle)))))
 
 (defn fire-projectile [state {:keys [pos angle target]}]
   (let [dir (v/polar 1.0 angle)
