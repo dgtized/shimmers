@@ -1,5 +1,6 @@
 (ns shimmers.sketches.window-glimpses
   (:require
+   [clojure.math :as math]
    [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.algorithm.line-clipping :as clip]
@@ -68,7 +69,7 @@
                         w h)
         poly (if (dr/chance (if affine 0.5 0.05))
                (let [angle (* (dr/rand-nth [1 -1]) (dr/random 2 4))]
-                 (parallelogram rect (dr/chance 0.33) (/ Math/PI angle)))
+                 (parallelogram rect (dr/chance 0.33) (/ math/PI angle)))
                rect)
         box (if (dr/chance (if affine 0.5 0.2))
               (geometry/rotate-around-centroid poly (dr/gaussian 0.0 0.08))
@@ -124,9 +125,9 @@
     (let [center (g/unmap-point bounds (gv/vec2 0.32 0.70))
           n 7]
       (for [t (tm/norm-range n)
-            :let [theta (* eq/TAU (Math/sqrt t))]]
-        (vary-meta (gc/circle (v/+polar center (* 0.12 height (Math/pow tm/PHI (/ (* 2 theta) Math/PI))) theta)
-                              (* height 0.08 (Math/sqrt (/ theta eq/TAU))))
+            :let [theta (* eq/TAU (math/sqrt t))]]
+        (vary-meta (gc/circle (v/+polar center (* 0.12 height (math/pow tm/PHI (/ (* 2 theta) math/PI))) theta)
+                              (* height 0.08 (math/sqrt (/ theta eq/TAU))))
                    assoc :spiral true)))))
 
 (defn generate [bounds f seed-fn n]
@@ -205,8 +206,8 @@
         p (tm/mix a mid-bc center-pct)
         r (* face-dist (g/dist p mid-bc))
         ap (g/dist a p)
-        a-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
-        proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) a-angle))
+        a-angle (triangle/law-of-sines-angle (/ math/PI 6) r ap)
+        proj (triangle/law-of-cosines-side r ap (- math/PI (/ math/PI 6) a-angle))
         isec-ab (v/+polar a proj (heading-to a b))
         isec-ac (v/+polar a proj (heading-to a c))]
     (arc/arc p r (heading-to p isec-ab) (heading-to p isec-ac))))
@@ -247,7 +248,7 @@
                                :face-dist (dr/random 0.9 1.0)
                                :center-pct (dr/rand-nth [0.5 0.33 0.25])))
               6 (g/as-polygon c 6)
-              8 (geometry/rotate-around-centroid (g/as-polygon c 8) (/ Math/PI 8)))))
+              8 (geometry/rotate-around-centroid (g/as-polygon c 8) (/ math/PI 8)))))
         [alternates circles'] (split-at n (dr/shuffle circles))]
     (into (mapv alternate-shape alternates) circles')))
 
@@ -293,7 +294,7 @@
         theta0 (dr/random-tau)
         theta1 (dr/gaussian (+ theta0 (/ eq/TAU 4)) (/ eq/TAU 8))
         theta2 (dr/gaussian (/ (+ theta0 theta1) 2) (/ eq/TAU 16))
-        shadow-dir (v/polar (Math/sqrt (dr/random (* width 0.02)))
+        shadow-dir (v/polar (math/sqrt (dr/random (* width 0.02)))
                             theta2)
 
         line-density (dr/gaussian (* width 0.08) 6.0)
@@ -403,7 +404,7 @@
            (if (and (on-arc? (first chunk)) (> (count chunk) 1))
              (let [a0 (heading-to p (first chunk))
                    a1 (heading-to p (last chunk))
-                   large-arc (if (< (sm/clockwise-distance a0 a1) Math/PI) 0 1)]
+                   large-arc (if (< (sm/clockwise-distance a0 a1) math/PI) 0 1)]
                [[:L (first chunk)]
                 [:A [r r] 0.0 large-arc 1 (last chunk)]])
              (map (fn [v] [:L v]) chunk)))
