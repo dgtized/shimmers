@@ -3,6 +3,7 @@
   generation."
   (:refer-clojure :exclude [rand-nth shuffle random-sample])
   (:require
+   [clojure.math :as math]
    [clojure.test.check.random :as tcr]
    [kixi.stats.distribution :as ksd]
    [shimmers.math.equations :as eq]
@@ -17,7 +18,7 @@
   (reset! shared-rng (tcr/make-random n)))
 
 (defn fresh-seed-value []
-  (rand-int (Math/pow 2 32)))
+  (rand-int (math/pow 2 32)))
 
 (defn random-double []
   (let [[r1 r2] (tcr/split @shared-rng)]
@@ -31,18 +32,18 @@
   ([a b] (+ (* (- b a) (random-double)) a)))
 
 (defn random-int
-  ([n] (int (Math/floor (random n))))
-  ([a b] (int (Math/floor (random a b)))))
+  ([n] (int (math/floor (random n))))
+  ([a b] (int (math/floor (random a b)))))
 
 (defn random-tau []
   (random eq/TAU))
 
 (defn seed []
-  (random-int (Math/pow 2 32)))
+  (random-int (math/pow 2 32)))
 
 ;; https://ivandianov.com/circular-random/
 (defn circular-random []
-  (- 1 (Math/sqrt (- 1 (eq/sqr (random))))))
+  (- 1 (math/sqrt (- 1 (eq/sqr (random))))))
 
 (defn rand-nth [coll]
   (nth coll (random-int (count coll))))
@@ -154,7 +155,7 @@
   ([] (tm/normalize (gv/vec2 (random -1 1) (random -1 1))))
   ([n] (tm/normalize (gv/vec2 (random -1 1) (random -1 1)) n)))
 
-(def ^:constant MAX-INT (Math/pow 2 31))
+(def ^:constant MAX-INT (math/pow 2 31))
 (defn gaussian
   ([] (gaussian 0 1))
   ([mu sd]
@@ -176,7 +177,7 @@
   (repeatedly 100 (sample-between #(gaussian 0.5 0.5) 0.0 1.0)))
 
 (defn pareto [scale shape]
-  (/ scale (Math/pow (random) (/ 1 shape))))
+  (/ scale (math/pow (random) (/ 1 shape))))
 
 (comment
   (repeatedly 20 #(pareto 0.125 1.16)))
@@ -278,7 +279,7 @@
                (nth sorted (int midpoint)))
      :average avg
      :variance variance
-     :std-dev (Math/sqrt variance)}))
+     :std-dev (math/sqrt variance)}))
 
 (comment
   (summary-stats (range 0 1 0.001))
@@ -296,7 +297,7 @@
   ;; value at 90% percent?
   (ksd/quantile (ksd/pareto {:scale 1 :shape 7.5}) 0.9)
   (ksd/quantile (ksd/pareto {:scale 1 :shape 1}) 0.9)
-  (summary-stats (mapv (fn [x] (let [p (* 1.0 (Math/pow x (/ -1 8)))]
+  (summary-stats (mapv (fn [x] (let [p (* 1.0 (math/pow x (/ -1 8)))]
                                 p))
                        (rest (range 0 1 0.01))))
   (summary-stats (map #(min % 2) (ksd/sample 1000 (ksd/pareto {:scale 0.75 :shape 8}))))
