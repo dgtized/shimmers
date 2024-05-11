@@ -1,17 +1,17 @@
 (ns shimmers.algorithm.hand-drawn
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
+   [shimmers.common.svg :as csvg]
    [shimmers.math.deterministic-random :as dr]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.common.svg :as csvg]))
+   [thi.ng.math.core :as tm]))
 
 ;; See also: https://roughjs.com/
-
 (defn random-point-in-circle [r]
   (-> (gv/vec2
-       (* r (Math/sqrt (dr/random-double)))
+       (* r (math/sqrt (dr/random-double)))
        (* tm/TWO_PI (dr/random-double)))
       g/as-cartesian))
 
@@ -26,9 +26,9 @@
                  :else 0.2)]
     ;; norm-range is inclusive of the last position
     (for [t (tm/norm-range (/ 2.0 dt))]
-      (let [term (- (* 15 (Math/pow t 4))
-                    (* 6 (Math/pow t 5))
-                    (* 10 (Math/pow t 3)))]
+      (let [term (- (* 15 (math/pow t 4))
+                    (* 6 (math/pow t 5))
+                    (* 10 (math/pow t 3)))]
         ;; Seems safer to use abs, but something weird is flipped with mix here?
         (tm/mix p q (abs term))))))
 
