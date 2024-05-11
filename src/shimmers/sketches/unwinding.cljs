@@ -1,5 +1,6 @@
 (ns shimmers.sketches.unwinding
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -40,28 +41,28 @@
         inner
         (mapv (scaled 7)
               (eq/clothoid-from 9
-                                (+ 25 (* 15 (Math/cos t)))
+                                (+ 25 (* 15 (math/cos t)))
                                 50 -1 t (gv/vec2)))
         angle (g/heading (apply tm/- (reverse (take-last 2 inner))))
 
         left
         (remap-from (last inner) 7
                     (eq/clothoid 10
-                                 (+ 35 (* 15 (Math/sin (+ t Math/PI))))
+                                 (+ 35 (* 15 (math/sin (+ t math/PI))))
                                  100 -1 angle (gv/vec2)))
         right
         (remap-from (last inner) 7
                     (eq/clothoid 8
-                                 (+ 40 (* 15 (Math/sin t)))
+                                 (+ 40 (* 15 (math/sin t)))
                                  100 1 angle (gv/vec2)))
         big-left
         (remap-from (last inner) 13
-                    (eq/clothoid (+ 11 (* 6 (Math/sin (+ t Math/PI (/ Math/PI 3)))))
+                    (eq/clothoid (+ 11 (* 6 (math/sin (+ t math/PI (/ math/PI 3)))))
                                  20
                                  60 -1 angle (gv/vec2)))
         big-right
         (remap-from (last inner) 13
-                    (eq/clothoid (+ 13 (* 7 (Math/sin (+ t (/ Math/PI 3)))))
+                    (eq/clothoid (+ 13 (* 7 (math/sin (+ t (/ math/PI 3)))))
                                  25
                                  60 1 angle (gv/vec2)))]
     (doseq [base (butlast (tm/norm-range 5))]
