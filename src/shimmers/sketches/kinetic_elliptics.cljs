@@ -1,5 +1,6 @@
 (ns shimmers.sketches.kinetic-elliptics
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -20,15 +21,15 @@
   (g/heading (tm/- position origin)))
 
 (defn radius-repeats [repeats phase dtheta t]
-  (+ 1 (* 0.25 (Math/sin (+ phase (* repeats dtheta t))))))
+  (+ 1 (* 0.25 (math/sin (+ phase (* repeats dtheta t))))))
 
 (defn cyclic [dtheta phase t]
   (eq/unit-sin (+ (- (* dtheta t) (/ eq/TAU 4)) phase)))
 
 (defn smooth-stepper [steps e0 e1 t]
   (let [t' (/ t steps)]
-    (* steps (+ (Math/floor t')
-                (tm/smoothstep* e0 e1 (- t' (Math/floor t')))))))
+    (* steps (+ (math/floor t')
+                (tm/smoothstep* e0 e1 (- t' (math/floor t')))))))
 
 (comment
   (map (fn [t] (smooth-stepper (/ 6 2) 0.33 0.66 t))
@@ -189,7 +190,7 @@
 (defrecord Element [behavior color children])
 
 (defn random-period [depth]
-  (* (Math/pow 1.1 depth)(dr/random 6 30)))
+  (* (math/pow 1.1 depth)(dr/random 6 30)))
 
 (defn random-behavior [radial-length depth]
   ((dr/weighted
@@ -204,7 +205,7 @@
       1.0]
      [(fn [] (relative-angle radial-length
                             (- (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 8))))
-                               Math/PI)))
+                               math/PI)))
       1.0]
      [(fn [] (let [r0 (dr/random 0.5 0.75)
                   r1 (+ r0 (dr/random 0.25 0.75))]
