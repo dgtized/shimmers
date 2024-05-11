@@ -1,5 +1,6 @@
 (ns shimmers.sketches.harmonograph
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -98,10 +99,10 @@
    [view-sketch/generate :harmonograph]])
 
 (defn dampening [lambda t]
-  (Math/exp (* (- lambda) t)))
+  (math/exp (* (- lambda) t)))
 
 (defn sin-cycle [amplitude frequency period t]
-  (* amplitude (Math/sin (+ (* frequency t) period))))
+  (* amplitude (math/sin (+ (* frequency t) period))))
 
 ;; TODO: Add the real parametric equation from: https://en.wikipedia.org/wiki/Harmonograph
 (defn decay-cycle [amplitude decay frequency period]
@@ -139,10 +140,10 @@
     (fn [t]
       (let [k (dampening (:rate dampen) t)]
         (tm/* (gv/vec2
-               (+ (Math/cos (* table-fx dplat t))
-                  (Math/cos (* pendulum-fx dpend t)))
-               (+ (Math/sin (* table-fy dplat t))
-                  (Math/sin (* pendulum-fy dpend t))))
+               (+ (math/cos (* table-fx dplat t))
+                  (math/cos (* pendulum-fx dpend t)))
+               (+ (math/sin (* table-fy dplat t))
+                  (math/sin (* pendulum-fy dpend t))))
               (* A k))))))
 
 (defn setup []
@@ -176,7 +177,7 @@
          (tm/clamp01 (+ (:weight stroke)
                         (sin-cycle 0.4 (:value (:rate stroke)) 0 t)))))
       (when (or (not (:modulate pen))
-                (> (Math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
+                (> (math/sin (+ (* (:rate pen) t) (:phase pen))) 0))
         (apply q/point (tm/+ (cq/rel-vec 0.5 0.5) (plot t)))))))
 
 (defn page []
