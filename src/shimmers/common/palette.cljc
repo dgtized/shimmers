@@ -1,5 +1,6 @@
 (ns shimmers.common.palette
   (:require
+   [clojure.math :as math]
    [clojure.string :as str]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
@@ -133,9 +134,9 @@
 (defn smooth-palette
   "Output an RGB triplet ranged from 0.0 to 1.0."
   [[ax ay az] [bx by bz] [cx cy cz] [dx dy dz] t]
-  (gv/vec3 (+ ax (* bx (Math/cos (* eq/TAU (+ (* cx t) dx)))))
-           (+ ay (* by (Math/cos (* eq/TAU (+ (* cy t) dy)))))
-           (+ az (* bz (Math/cos (* eq/TAU (+ (* cz t) dz)))))))
+  (gv/vec3 (+ ax (* bx (math/cos (* eq/TAU (+ (* cx t) dx)))))
+           (+ ay (* by (math/cos (* eq/TAU (+ (* cy t) dy)))))
+           (+ az (* bz (math/cos (* eq/TAU (+ (* cz t) dz)))))))
 
 (def smooth-palettes
   {:gold-blue
