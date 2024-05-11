@@ -2,6 +2,7 @@
   "adapted from https://blog.exupero.org/mapping-elliptical-orbits/
    and https://blog.exupero.org/mapping-orbital-positions/"
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -63,7 +64,7 @@
 (defn radial-dist [semi-major-axis eccentricity]
   (fn [theta]
     (/ (* semi-major-axis (- 1 (eq/sqr eccentricity)))
-       (inc (* eccentricity (Math/cos theta))))))
+       (inc (* eccentricity (math/cos theta))))))
 
 (defn orbit-ellipse [{:keys [semi-major-axis eccentricity]}]
   (let [radius (radial-dist semi-major-axis eccentricity)]
@@ -100,13 +101,13 @@
 (defn newtons-method [f f' x0 tolerance]
   (loop [x x0]
     (let [x' (- x (/ (f x) (f' x)))]
-      (if (< tolerance (Math/abs (- x x')))
+      (if (< tolerance (abs (- x x')))
         (recur x')
         x'))))
 
 (defn eccentric-anomaly [mean-anomaly eccentricity]
-  (newtons-method (fn [t] (- t (* eccentricity (Math/sin t)) mean-anomaly))
-                  (fn [t] (- 1 (* eccentricity (Math/cos t))))
+  (newtons-method (fn [t] (- t (* eccentricity (math/sin t)) mean-anomaly))
+                  (fn [t] (- 1 (* eccentricity (math/cos t))))
                   mean-anomaly
                   1e-7))
 
@@ -121,10 +122,10 @@
          orbits)))
 
 (defn true-anomaly [eccentric-anomaly eccentricity]
-  (* 2 (Math/atan2 (* (Math/sqrt (+ 1 eccentricity))
-                      (Math/sin (/ eccentric-anomaly 2)))
-                   (* (Math/sqrt (- 1 eccentricity))
-                      (Math/cos (/ eccentric-anomaly 2))))))
+  (* 2 (math/atan2 (* (math/sqrt (+ 1 eccentricity))
+                      (math/sin (/ eccentric-anomaly 2)))
+                   (* (math/sqrt (- 1 eccentricity))
+                      (math/cos (/ eccentric-anomaly 2))))))
 
 (comment
   (let [today (js/Date.parse "2022-11-17T00:00:00Z")]
