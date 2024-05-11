@@ -1,5 +1,6 @@
 (ns shimmers.sketches.permutations-of-transfiguration
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -41,7 +42,7 @@
 ;; rings or paths?
 
 (defn pinwheel [c r speed dir rotations]
-  (let [target (* (/ Math/PI 2) rotations)]
+  (let [target (* (/ math/PI 2) rotations)]
     {:cells [[(dec c) (dec r)] [c (dec r)] [c r] [(dec c) r]]
      :theta 0
      :step
@@ -70,11 +71,11 @@
    (fn [effect] (update effect :theta + speed))
    :done?
    (fn [{:keys [theta]}]
-     (< (abs (- Math/PI theta)) (* speed 0.5)))
+     (< (abs (- math/PI theta)) (* speed 0.5)))
    :on-complete (rotate-grid-cells 1)
    :draw
    (fn [effect grid w h]
-     (let [pw (* w (Math/cos (:theta effect)))
+     (let [pw (* w (math/cos (:theta effect)))
            [a b] (:cells effect)]
        (q/translate (* (inc c) w) (* r h))
        (q/fill 255)
@@ -92,11 +93,11 @@
    (fn [effect] (update effect :theta + speed))
    :done?
    (fn [{:keys [theta]}]
-     (< (abs (- Math/PI theta)) (* speed 0.5)))
+     (< (abs (- math/PI theta)) (* speed 0.5)))
    :on-complete (rotate-grid-cells 1)
    :draw
    (fn [effect grid w h]
-     (let [ph (* h (Math/cos (:theta effect)))
+     (let [ph (* h (math/cos (:theta effect)))
            [a b] (:cells effect)]
        (q/translate (* c w) (* (inc r) h))
        (q/fill 255)
