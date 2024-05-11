@@ -1,5 +1,6 @@
 (ns shimmers.sketches.angle-of-ascent
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.sketch :as sketch :include-macros true]
@@ -26,13 +27,13 @@
         b (rect/rect (rv 0.325 0.425) (rv 0.675 0.575))
         c (rect/rect (rv 0.55 0.1) (rv 0.9 0.25))]
     (concat [a b c]
-            (lines a (fn [x] (- 1 (Math/pow x 2.5))) 30)
+            (lines a (fn [x] (- 1 (math/pow x 2.5))) 30)
             (lines b (fn [x]
                        (let [k 1.4]
                          (if (< x 0.5)
-                           (- 0.5 (Math/pow x k))
-                           (+ 0.5 (Math/pow (- x 0.5) k))))) 50)
-            (lines c (fn [x] (Math/pow x 2.5)) 30))))
+                           (- 0.5 (math/pow x k))
+                           (+ 0.5 (math/pow (- x 0.5) k))))) 50)
+            (lines c (fn [x] (math/pow x 2.5)) 30))))
 
 (defn scene []
   (csvg/svg-timed {:width width
