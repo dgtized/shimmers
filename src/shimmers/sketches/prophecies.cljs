@@ -1,5 +1,6 @@
 (ns shimmers.sketches.prophecies
   (:require
+   [clojure.math :as math]
    [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
@@ -63,8 +64,8 @@
 (defn clipping [theta polygon n]
   (let [{[cx _] :p radius :r :as bounding } (g/bounding-circle polygon)
         [xstart ystart] (rp/inside-circle bounding dr/random)
-        cosa (Math/cos theta)
-        m (Math/tan theta)
+        cosa (math/cos theta)
+        m (math/tan theta)
         c (- ystart (* m xstart))
         x0 (- cx (* 1.2 radius))
         y0 (+ (* m x0) c)
@@ -233,7 +234,7 @@
 (defn random-skew [meridian]
   (if (dr/chance 0.75) 0.0
       (dr/rand-nth [(* (dr/rand-nth [1 -1])
-                       (dr/rand-nth [(/ Math/PI 16) (/ Math/PI 9)]))
+                       (dr/rand-nth [(/ math/PI 16) (/ math/PI 9)]))
                     (- (g/heading meridian))])))
 
 ;; Suppose a rectangle of width W, with a horizontal line at center. Two circles
