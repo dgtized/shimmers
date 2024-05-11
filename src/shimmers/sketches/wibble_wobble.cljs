@@ -1,5 +1,6 @@
 (ns shimmers.sketches.wibble-wobble
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -18,12 +19,12 @@
   (let [dx (dr/random-tau)
         dy (dr/random-tau)]
     (fn [x y t]
-      (* 0.5 (+ (Math/sin (+ (- (* 1.5 x) (* 1 t))
+      (* 0.5 (+ (math/sin (+ (- (* 1.5 x) (* 1 t))
                              dx
-                             (* 2 (eq/cube (Math/sin (+ (* 2.3 y) (* 1.5 t) 5))))))
-                (Math/sin (+ (- (* 1.2 y) (* 1 t))
+                             (* 2 (eq/cube (math/sin (+ (* 2.3 y) (* 1.5 t) 5))))))
+                (math/sin (+ (- (* 1.2 y) (* 1 t))
                              dy
-                             (* 2 (Math/sin (+ (* 2.1 x) (* 1.3 t) 5))))))))))
+                             (* 2 (math/sin (+ (* 2.1 x) (* 1.3 t) 5))))))))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
