@@ -1,5 +1,6 @@
 (ns shimmers.sketches.constellations
   (:require
+   [clojure.math :as math]
    [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
@@ -60,7 +61,7 @@
   (let [end-angle (+ start-angle dtheta)
         start (v/+polar p r start-angle)
         end (v/+polar p r end-angle)
-        large-arc (if (<= (abs (- end-angle start-angle)) Math/PI) 0 1)
+        large-arc (if (<= (abs (- end-angle start-angle)) math/PI) 0 1)
         sweep (if (> dtheta 0) 1 0)]
     (->RelativeArc start end r large-arc sweep)))
 
@@ -98,8 +99,8 @@
 
 (defn ellipse [center a b dt]
   (-> (for [t (range 0 eq/TAU dt)]
-        (gv/vec2 (* a (Math/cos t))
-                 (* b (Math/sin t))))
+        (gv/vec2 (* a (math/cos t))
+                 (* b (math/sin t))))
       gp/polygon2
       (g/translate center)))
 
@@ -208,14 +209,14 @@
 (defn specify-density [graph]
   (reduce (fn [g p]
             (let [r (lga/attr g p :radius)
-                  rfactor (Math/ceil (/ r (* 0.03 height)))
+                  rfactor (math/ceil (/ r (* 0.03 height)))
                   density (cond (dr/chance 0.08)
                                 (* rfactor (dr/rand-nth [7 11 13]))
                                 (< r (* 0.025 height)) (dr/random-int 2 5)
                                 (< r (* 0.060 height)) (dr/random-int 3 6)
                                 (dr/chance 0.5) (dr/random-int 6 9)
                                 :else
-                                (Math/ceil (* (/ rfactor (lg/out-degree g p))
+                                (math/ceil (* (/ rfactor (lg/out-degree g p))
                                               (dr/random-int 5 8))))]
               (lga/add-attr g p :density density)))
           graph (lg/nodes graph)))
