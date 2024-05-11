@@ -1,5 +1,6 @@
 (ns shimmers.sketches.grid-variations
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -51,7 +52,7 @@
   (- 1.0 x))
 
 (defn sin-rate [rate]
-  (/ (inc (Math/sin (* rate (q/frame-count)))) 2))
+  (/ (inc (math/sin (* rate (q/frame-count)))) 2))
 
 (defn chain-compose [fns]
   (fn [pos]
@@ -90,7 +91,7 @@
    (option-from {(constantly 1.0) 1
                  (fn [_] (dr/gaussian 1 0.1)) 1
                  (fn [_] (dr/gaussian 1 0.2)) 1
-                 (fn [_] (tm/map-interval (Math/sin (/ (q/frame-count) 100))
+                 (fn [_] (tm/map-interval (math/sin (/ (q/frame-count) 100))
                                          [-1 1] [0.2 2.0])) 1})
    :rotation
    (option-from {(constantly 0.0) 1
@@ -102,8 +103,8 @@
 
 (defn animate-grid []
   (let [t (/ (q/frame-count) 100)]
-    (gv/vec2 [(tm/map-interval (Math/sin t) [-1 1] [3 36])
-              (tm/map-interval (Math/cos t) [-1 1] [4 24])])))
+    (gv/vec2 [(tm/map-interval (math/sin t) [-1 1] [3 36])
+              (tm/map-interval (math/cos t) [-1 1] [4 24])])))
 
 (defn gen-grid []
   (dr/weighted
@@ -148,7 +149,7 @@
         [I J] (tm/mix (g1) (g2) tween)
         area (* (q/height) (q/width))
         delta (tm/* (gv/vec2 (q/width) (q/height)) (gv/vec2 (/ 1 I) (/ 1 J)))
-        scale (/ (Math/sqrt area) (Math/sqrt (* I J)))]
+        scale (/ (math/sqrt area) (math/sqrt (* I J)))]
     (doseq [i (range I)]
       (doseq [j (range J)]
         (let [pos (tm/* (gv/vec2 (+ i 0.5) (+ j 0.5)) delta)]
