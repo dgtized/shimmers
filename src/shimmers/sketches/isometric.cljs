@@ -1,5 +1,6 @@
 (ns shimmers.sketches.isometric
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -14,7 +15,7 @@
 ;; See also orthographic perspective:
 ;; https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
 
-(def iso-angle (/ (Math/sqrt 2) 2))
+(def iso-angle (/ (math/sqrt 2) 2))
 
 ;; https://www.redblobgames.com/articles/coordinate-transforms/_2015/
 (defn isometric2 [[x y]]
@@ -22,7 +23,7 @@
            (* iso-angle (- (* y iso-angle) (* x iso-angle)))))
 
 ;; https://gamedev.stackexchange.com/questions/159434/how-to-convert-3d-coordinates-to-2d-isometric-coordinates
-(def SQRT6 (Math/sqrt 6))
+(def SQRT6 (math/sqrt 6))
 (defn isometric3 [[x y z]]
   (gv/vec2 (/ (- x z) tm/SQRT2)
            (/ (+ x (* 2 y) z) SQRT6)))
@@ -47,7 +48,7 @@
                      :let [n (q/noise (* x m) (* y m) t)]]
                  (g/translate (aabb/aabb w)
                               (gv/vec3 (+ x (cq/rel-w 0.35))
-                                       (- (* (/ h iso-angle) (Math/sin (* tm/TWO_PI n))) (cq/rel-h 0.17))
+                                       (- (* (/ h iso-angle) (math/sin (* tm/TWO_PI n))) (cq/rel-h 0.17))
                                        (- (/ y iso-angle) (cq/rel-h 0.5)))))]
     (doseq [shape shapes]
       (doseq [face-pts (isofaces shape)]
