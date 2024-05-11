@@ -1,5 +1,6 @@
 (ns shimmers.sketches.space-filling-curves
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
@@ -8,8 +9,8 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.math.core :as tm]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: space-filling-curves can be used to offset map into a texture with
 ;; interesting locality properties. It can map a 2d coordinate to the closest
@@ -43,7 +44,7 @@
             "R" "+LF-RFR-FL+"}
     :orientation v/up
     :start (fn [depth]
-             (let [divider (Math/pow 2 depth)
+             (let [divider (math/pow 2 depth)
                    length (/ width divider)]
                {:pos (gv/vec2 (* 0.5 (dec divider) length) (* 0.5 length))
                 :length length}))}
@@ -54,7 +55,7 @@
             "B" "-AF+BFB+FA-"}
     :orientation v/left
     :start (fn [depth]
-             (let [divider (Math/pow 2 depth)
+             (let [divider (math/pow 2 depth)
                    length (/ width divider)]
                {:pos (gv/vec2 (- width (/ length 2)) (/ length 2))
                 :length length}))}
@@ -64,10 +65,10 @@
     :rules {"X" "XF-F+F-XF+F+XF-F+F-X"}
     :orientation (g/rotate v/up (/ (- tm/TWO_PI) 8))
     :start (fn [depth]
-             (let [divider (Math/pow 2 depth)
+             (let [divider (math/pow 2 depth)
                    length (/ width divider)]
-               {:pos (gv/vec2 (* (/ (Math/sqrt 2) 3) length) (- height length))
-                :length (/ length (Math/sqrt 2))}))}])
+               {:pos (gv/vec2 (* (/ (math/sqrt 2) 3) length) (- height length))
+                :length (/ length (math/sqrt 2))}))}])
 
 (defn by-name [n]
   (first ((set/index rule-systems [:name]) {:name n})))
@@ -90,9 +91,9 @@
   (fn [path]
     (let [radius (/ length (case radius-div
                              "0.5" 0.5
-                             "1/sqrt2" (/ 1 (Math/sqrt 2))
+                             "1/sqrt2" (/ 1 (math/sqrt 2))
                              "1" 1
-                             "sqrt2" (Math/sqrt 2)
+                             "sqrt2" (math/sqrt 2)
                              "phi" tm/PHI
                              "1.9" 1.9
                              "2" 2))]
