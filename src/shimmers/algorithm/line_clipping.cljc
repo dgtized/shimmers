@@ -4,6 +4,7 @@
   See also thi.ng.geom.core/clip-with, ie thi.ng.geom.polygon/clip-convex* for
   polygon clipping."
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.math.equations :as eq]
@@ -99,8 +100,8 @@
    (let [{[x y] :p [w h] :size} rect
          xstart (+ x (* rx w))
          ystart (+ y (* ry h))
-         cosa (Math/cos theta)
-         m (Math/tan theta)
+         cosa (math/cos theta)
+         m (math/tan theta)
          c (- ystart (* m xstart))
 
          x0 (- x (/ w 2))
@@ -112,7 +113,7 @@
                           [x0 y0] [x1 y1]))))
 
 (comment (hatch-rectangle (rect/rect 2 2 2) 0.1 0.1)
-         (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ Math/PI 2)))
+         (hatch-rectangle (rect/rect 2 2 2) 0.1 (/ math/PI 2)))
 
 ;; Idea for polygon hatch: hatch the bounding rectangle and then for each line,
 ;; intersect with polygon and connect first hit with second, third with 4th,
@@ -140,7 +141,7 @@
                    (+ (* t Dy) (:y a)))
         length-ec (g/dist E c)]
     (cond (< length-ec radius) ;; intersects
-          (let [dt (Math/sqrt (- (eq/sqr radius) (eq/sqr length-ec)))]
+          (let [dt (math/sqrt (- (eq/sqr radius) (eq/sqr length-ec)))]
             (gl/line2 (gv/vec2 (+ (:x a) (* Dx (- t dt)))
                                (+ (:y a) (* Dy (- t dt))))
                       (gv/vec2 (+ (:x a) (* Dx (+ t dt)))
@@ -153,8 +154,8 @@
 (defn hatch-circle [circle spacing theta]
   (let [{[cx _] :p radius :r} circle
         [xstart ystart] (rp/inside-circle circle)
-        cosa (Math/cos theta)
-        m (Math/tan theta)
+        cosa (math/cos theta)
+        m (math/tan theta)
         c (- ystart (* m xstart))
 
         x0 (- cx (* 1.2 radius))
@@ -168,8 +169,8 @@
 ;; TODO: change x0 a percent of width + height of shape to find start of slashes
 (defn variable-hatching [bounds angle x0 n spacing width]
   (let [{[bx by] :p [bw bh] :size} bounds
-        m (Math/tan angle)
-        cosa (Math/cos angle)
+        m (math/tan angle)
+        cosa (math/cos angle)
         c (- (+ by bh) (* m x0))
         x0 (- bx (/ bw 2))
         y0 (+ (* m x0) c)
