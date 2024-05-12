@@ -1,19 +1,21 @@
 (ns shimmers.automata.programs
-  (:require [shimmers.common.sequence :refer [weighted]]))
+  (:require
+   [clojure.math :as math]
+   [shimmers.common.sequence :refer [weighted]]))
 
 (defn op->instruction [op]
   (if (vector? op)
     op
     (case op
       :forward [:forward 50]
-      :left [:rotate (- (/ Math/PI 2))]
-      :right [:rotate (+ (/ Math/PI 2))])))
+      :left [:rotate (- (/ math/PI 2))]
+      :right [:rotate (+ (/ math/PI 2))])))
 
 (defn compile [program]
   (map op->instruction program))
 
 (defn rotate [degrees]
-  [:rotate (/ (* degrees Math/PI) 180)])
+  [:rotate (/ (* degrees math/PI) 180)])
 
 (def petals (compile [:forward :forward :left :forward :left [:rotate 1]]))
 (def skribbles [[:forward 20]
@@ -31,7 +33,7 @@
              [:halt 0] [:halt 0] [:halt 0] [:halt 0]
              [:rotate 0.5] [:rotate -0.5] [:rotate 0.25] [:rotate -0.25]
              [:forward 2] [:forward 5] [:forward 2] [:forward 5]
-             [:heading (* 3 (/ Math/PI 2))]]]])
+             [:heading (* 3 (/ math/PI 2))]]]])
 
 (def test-recursive
   [[:one-of [[:forward 10]
@@ -43,7 +45,7 @@
              [:one-of [[:forward 2] [:forward 5]]]]]
    [:one-of (weighted 2 [:forward 10]
                       2 [:fork 0]
-                      1 [:heading (* 3 (/ Math/PI 2))]
+                      1 [:heading (* 3 (/ math/PI 2))]
                       1 [:halt 0])]])
 
 (def test-random [[:forward [:random 50]] [:rotate 1]])
