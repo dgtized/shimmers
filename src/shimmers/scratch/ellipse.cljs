@@ -1,6 +1,7 @@
 (ns shimmers.scratch.ellipse
   "Experiments in clipping part of an ellipse into a bounded-box."
   (:require
+   [clojure.math :as math]
    [shimmers.math.equations :as eq]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -15,8 +16,8 @@
 
 (defn ellipse-arc [center a b intercept dt]
   (for [t (range intercept (+ intercept eq/TAU) dt)]
-    (tm/+ center (gv/vec2 (* a (Math/cos t))
-                          (* b (Math/sin t))))))
+    (tm/+ center (gv/vec2 (* a (math/cos t))
+                          (* b (math/sin t))))))
 
 (comment (ellipse-arc (gv/vec2 1 0) 10 10 0 0.1))
 

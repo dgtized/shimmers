@@ -1,6 +1,8 @@
 (ns shimmers.scratch.mixing
-  (:require [thi.ng.math.core :as tm]
-            [thi.ng.geom.vector :as gv]))
+  (:require
+   [clojure.math :as math]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (defn inv-mix [a b v]
   (/ (- v a) (- b a)))
@@ -20,7 +22,7 @@
 
 ;; some easing examples
 (comment
-  (map (fn [x] [x (Math/pow (+ 1 x) 3)]) (range 0 1 0.1))
-  (map (fn [x] [x (Math/pow x 4)]) (range 0 1 0.1))
-  (map (fn [x] [x (Math/pow 4 x)]) (range 0 1 0.1))
-  (map (fn [x] [x (Math/pow 4 (+ 1 x))]) (range 0 1 0.1)))
+  (map (fn [x] [x (math/pow (+ 1 x) 3)]) (range 0 1 0.1))
+  (map (fn [x] [x (math/pow x 4)]) (range 0 1 0.1))
+  (map (fn [x] [x (math/pow 4 x)]) (range 0 1 0.1))
+  (map (fn [x] [x (math/pow 4 (+ 1 x))]) (range 0 1 0.1)))

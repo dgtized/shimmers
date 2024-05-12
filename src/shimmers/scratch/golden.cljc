@@ -1,9 +1,11 @@
 (ns shimmers.scratch.golden
-  (:require [thi.ng.math.core :as tm]))
+  (:require
+   [clojure.math :as math]
+   [thi.ng.math.core :as tm]))
 
 ;; Playing with golden ratio splits
 (defn golden [n]
-  (drop 1 (map (fn [i] (/ 1.0 (Math/pow tm/PHI i))) (range (inc n)))))
+  (drop 1 (map (fn [i] (/ 1.0 (math/pow tm/PHI i))) (range (inc n)))))
 
 (comment
   (golden 2)
