@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.intersection
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -43,7 +44,7 @@
                 hit (tm/+ origin (tm/* dir t))]
             {:type :tangent :isec [hit] :points [hit]})
           (> discriminant 0)
-          (let [root-disc (Math/sqrt discriminant)
+          (let [root-disc (math/sqrt discriminant)
                 t0 (/ (- (- B) root-disc) (* 2 A))
                 t1 (/ (+ (- B) root-disc) (* 2 A))
                 [t0 t1] (if (< t0 t1) [t0 t1] [t1 t0])

@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry.group
   "Container for a set of shapes."
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils :as gu]
    [thi.ng.math.core :as tm]))
@@ -65,7 +66,7 @@
                      :cols cols})
         :else
         ;; This is column major, should it support optimizing for rows first as well?
-        (let [cols (tm/ceil (Math/sqrt n))
+        (let [cols (tm/ceil (math/sqrt n))
               rows (tm/ceil (/ n cols))]
           (fit-grid n {:rows rows :cols cols}))))
 
