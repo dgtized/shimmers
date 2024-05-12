@@ -1,5 +1,6 @@
 (ns shimmers.math.core
   (:require
+   [clojure.math :as math]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -150,7 +151,7 @@
                           (reduce (fn [prod m]
                                     (if (= m j)
                                       prod
-                                      (* prod (Math/pow (- xj (:x (nth points m))) -1))))
+                                      (* prod (math/pow (- xj (:x (nth points m))) -1))))
                                   1.0
                                   ks)))
                       ks)]
@@ -187,7 +188,7 @@
         v (* n (mod t 1.0))
         a (if (tm/delta= t 1.0)
             (dec n)
-            (mod (Math/floor v) n))
+            (mod (math/floor v) n))
         b (mod (inc a) n)]
     (tm/mix* (nth xs a) (nth xs b)
              (tm/smoothstep* k (- 1.0 k) (* n (- t (/ a n)))))))
