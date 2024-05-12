@@ -1,5 +1,6 @@
 (ns shimmers.sketches.superposition
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -93,7 +94,7 @@
   ((dr/rand-nth [random-rect random-circle random-triangle])))
 
 (defn var-rate [n]
-  (Math/sin (* (/ Math/PI 2) n)))
+  (math/sin (* (/ math/PI 2) n)))
 
 (defn orbit-transition
   "Transition from old orbit to new in the first 20% of the motion from A to B.
