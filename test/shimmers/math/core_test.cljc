@@ -1,5 +1,6 @@
 (ns shimmers.math.core-test
   (:require
+   [clojure.math :as math]
    [clojure.test :as t :refer [deftest is testing] :include-macros true]
    [shimmers.math.core :as sut]
    [thi.ng.math.core :as tm]))
@@ -48,17 +49,17 @@
   (is (not (sut/radians-between? -0.4 0.4 0.5)))
   (is (sut/radians-between? 5.5 0.5 0.2))
   (is (not (sut/radians-between? 5.5 0.5 0.6)))
-  (is (sut/radians-between? Math/PI 1 0))
-  (is (not (sut/radians-between? 1 Math/PI 0))))
+  (is (sut/radians-between? math/PI 1 0))
+  (is (not (sut/radians-between? 1 math/PI 0))))
 
 (deftest radial-distance
   (is (tm/delta= 1 (sut/radial-distance 0 -1)))
   (is (tm/delta= 1 (sut/radial-distance 0 1)))
   (is (tm/delta= 1 (sut/radial-distance 1 0)))
   (is (tm/delta= 1 (sut/radial-distance -1 0)))
-  (is (tm/delta= Math/PI (sut/radial-distance 0 Math/PI)))
-  (is (tm/delta= 0.5 (sut/radial-distance Math/PI (+ Math/PI 0.5))))
-  (is (tm/delta= 0.5 (sut/radial-distance Math/PI (- Math/PI 0.5))))
+  (is (tm/delta= math/PI (sut/radial-distance 0 math/PI)))
+  (is (tm/delta= 0.5 (sut/radial-distance math/PI (+ math/PI 0.5))))
+  (is (tm/delta= 0.5 (sut/radial-distance math/PI (- math/PI 0.5))))
   (is (tm/delta= 1 (sut/radial-distance 0 (- tm/TWO_PI 1))))
   (is (tm/delta= 1 (sut/radial-distance 0 (+ tm/TWO_PI 1)))))
 
