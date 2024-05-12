@@ -1,5 +1,6 @@
 (ns shimmers.sketches.butterfly
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -44,17 +45,17 @@
   (doseq [[x y] wing-shape]
     (if (zero? x)
       (q/curve-vertex x y 0)
-      (q/curve-vertex x y (* 20 (q/sin angle)))))
+      (q/curve-vertex x y (* 20 (math/sin angle)))))
   (q/end-shape :close)
   (q/pop-matrix))
 
 (defn make-butterfly [wing-shape]
   (fn [theta]
     (q/ellipsoid 5 50 5)
-    (let [angle (q/lerp (- (* Math/PI (/ 70 128))) (/ Math/PI 3)
-                        (/ (+ 1 (q/cos theta)) 2))]
+    (let [angle (q/lerp (- (* math/PI (/ 70 128))) (/ math/PI 3)
+                        (/ (+ 1 (math/cos theta)) 2))]
       (wing wing-shape angle)
-      (q/rotate-y Math/PI)
+      (q/rotate-y math/PI)
       (wing wing-shape (- angle)))))
 
 (defn draw [_]
@@ -68,12 +69,12 @@
       (butterfly theta))
 
     (q/with-translation [-130 -70 0]
-      (q/rotate-x (/ Math/PI 2.2))
+      (q/rotate-x (/ math/PI 2.2))
       (butterfly theta))
 
     (q/with-translation [130 0 0]
       (let [noise (* 2 (q/noise (/ theta 50)))]
-        (q/rotate-z (q/sin (/ theta 20)))
+        (q/rotate-z (math/sin (/ theta 20)))
         (q/rotate-x noise))
       (butterfly theta))))
 
