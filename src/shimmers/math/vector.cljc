@@ -45,7 +45,7 @@
   (if (> radians 0)
     (-> (g/heading dir)
         (/ radians)
-        Math/round
+        math/round
         (* radians)
         polar)
     dir))
