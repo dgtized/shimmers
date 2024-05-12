@@ -1,5 +1,6 @@
 (ns shimmers.common.ui.canvas
   (:require
+   [clojure.math :as math]
    [goog.dom :as dom]
    [reagent.core :as r]
    [shimmers.common.framerate :as framerate]
@@ -16,8 +17,8 @@
 ;; https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas#scaling_for_high_resolution_displays
 (defn scale-dpi [ctx canvas [width height]]
   (let [dpr (dom/getPixelRatio)]
-    (set! (.-width canvas) (Math/floor (* dpr width)))
-    (set! (.-height canvas) (Math/floor (* dpr height)))
+    (set! (.-width canvas) (math/floor (* dpr width)))
+    (set! (.-height canvas) (math/floor (* dpr height)))
     (set! (.-style.width canvas) (str width "px"))
     (set! (.-style.height canvas) (str height "px"))
     (.scale ctx dpr dpr)
