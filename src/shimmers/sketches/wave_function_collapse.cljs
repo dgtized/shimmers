@@ -1,6 +1,7 @@
 (ns shimmers.sketches.wave-function-collapse
   (:require
    [cljs.core.async :as async :include-macros true]
+   [clojure.math :as math]
    [shimmers.algorithm.wave-function-collapse :as wfc]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
@@ -71,8 +72,8 @@
   [cell loc values {:keys [tiles on-click]}]
   (let [options (count values)
         divisions (get subdivisions options
-                       (let [s (Math/sqrt options)]
-                         {:cols (Math/ceil s) :rows (Math/ceil s)}))]
+                       (let [s (math/sqrt options)]
+                         {:cols (math/ceil s) :rows (math/ceil s)}))]
     (->> (g/subdivide cell divisions)
          (map (fn [value piece]
                 (let [tile (if (integer? value)
