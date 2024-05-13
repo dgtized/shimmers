@@ -1,5 +1,6 @@
 (ns shimmers.sketches.k-means
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -15,7 +16,7 @@
    [thi.ng.math.core :as tm]))
 
 (defn magnitude [v]
-  (Math/sqrt (reduce + (map * v v))))
+  (math/sqrt (reduce + (map * v v))))
 
 ;; https://en.wikipedia.org/wiki/Cosine_similarity
 (defn cos-similarity [v1 v2]
