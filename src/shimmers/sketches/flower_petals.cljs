@@ -1,5 +1,6 @@
 (ns shimmers.sketches.flower-petals
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -17,16 +18,16 @@
   (update state :t + 0.005))
 
 (defn r-pos [r0 r blades theta]
-  (+ r0 (* r (Math/cos (* blades theta)))))
+  (+ r0 (* r (math/cos (* blades theta)))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (q/ellipse-mode :radius)
   (q/stroke 0.0)
   (let [center (cq/rel-vec 0.5 0.5)
-        r0 (+ (cq/rel-h 0.1) (* (cq/rel-h 0.05) (Math/sin t)))
+        r0 (+ (cq/rel-h 0.1) (* (cq/rel-h 0.05) (math/sin t)))
         r (cq/rel-h 0.35)
-        blades (+ 5 (* 4 (Math/cos (* 0.1 t))))
+        blades (+ 5 (* 4 (math/cos (* 0.1 t))))
         dt 0.05]
     (q/fill 0.0 0.3 0.3)
     ;; (cq/circle (v/+polar center (r-pos r0 r blades t) t) 3)
