@@ -54,8 +54,8 @@
     pos))
 
 (defn neighbor? [[ax ay] [bx by]]
-  (let [dx (Math/abs (- ax bx))
-        dy (Math/abs (- ay by))]
+  (let [dx (abs (- ax bx))
+        dy (abs (- ay by))]
     (or (and (= dx 1) (= dy 0))
         (and (= dx 0) (= dy 1))
         (and (= dx 1) (= dy 1)))))
