@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hexaclock
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
@@ -8,8 +9,8 @@
 
 (defn spur-angles []
   (for [spur (range 0 6)]
-    (- (/ (* spur 60 Math/PI) 180)
-       (/ Math/PI 2))))
+    (- (/ (* spur 60 math/PI) 180)
+       (/ math/PI 2))))
 
 (defn spur [radius angle]
   [(* radius (q/cos angle))
