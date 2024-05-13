@@ -1,5 +1,6 @@
 (ns shimmers.sketches.cut-and-slide
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.lines :as lines]
@@ -64,7 +65,7 @@
     :init
     {:shapes [(assoc (cq/screen-rect 0.66) :color (random-color))]
      :lines []
-     :angle (tm/roundto (dr/random-tau) (/ Math/PI 12))
+     :angle (tm/roundto (dr/random-tau) (/ math/PI 12))
      :action :cut
      :time 0}
     :cut
@@ -75,7 +76,7 @@
         (assoc state
                :shapes (mapcat (partial cut line mix-color) shapes)
                :lines (conj lines line)
-               :angle (+ angle (tm/roundto (dr/random-tau) (/ Math/PI 12)))
+               :angle (+ angle (tm/roundto (dr/random-tau) (/ math/PI 12)))
                :time (q/frame-count)
                :force (displacement-force angle)
                :action :slide)))
