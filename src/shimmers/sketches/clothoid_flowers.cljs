@@ -1,5 +1,6 @@
 (ns shimmers.sketches.clothoid-flowers
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -26,9 +27,9 @@
 
   (q/translate (cq/rel-vec 0.5 0.5))
   (let [rotation (* eq/TAU (q/noise (* 0.01 t)))
-        length (+ 40 (* 20 (Math/sin t)))]
+        length (+ 40 (* 20 (math/sin t)))]
     (->> (concat (eq/clothoid 18 length 30 -1 (+ rotation 0.0) (gv/vec2))
-                 (eq/clothoid 12 length 50 -1 (+ rotation Math/PI) (gv/vec2)))
+                 (eq/clothoid 12 length 50 -1 (+ rotation math/PI) (gv/vec2)))
          (mapv #(tm/* % 12))
          (cq/plot (fn [p] (cq/circle p 0.3))))))
 
