@@ -1,5 +1,6 @@
 (ns shimmers.sketches.mosaic-tiling
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.mosaic :as mosaic]
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -93,7 +94,7 @@
     (let [scale (int (* size 0.85))]
       (csvg/timed
        (svg-tile scale
-                 (/ scale (* n (Math/pow 2 depth)))
+                 (/ scale (* n (math/pow 2 depth)))
                  ((apply comp (map transformations (take depth operations))) seed)
                  "Scene")))))
 
@@ -102,7 +103,7 @@
     [:div {:style {:column-count 2 :margin "2em"}}
      (for [[title transform] transformations]
        [:div {:key title}
-        [svg-tile 200 (/ 200 (* 2 (Math/sqrt (count seed))))
+        [svg-tile 200 (/ 200 (* 2 (math/sqrt (count seed))))
          (transform seed) title]])]))
 
 ;; TODO: add dropdowns/sliders to control n,square,depth?
