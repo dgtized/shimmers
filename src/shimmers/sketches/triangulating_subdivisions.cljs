@@ -2,6 +2,7 @@
   "Playing with concepts from
   https://tylerxhobbs.com/essays/2017/aesthetically-pleasing-triangle-subdivision."
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -64,7 +65,7 @@
          :max-depth max-depth))
 
 (defn initialize-shape
-  ([triangles] (initialize-shape triangles (Math/pow 2 15)))
+  ([triangles] (initialize-shape triangles (math/pow 2 15)))
   ([triangles triangle-limit]
    {:triangles triangles
     :to-draw triangles
@@ -95,7 +96,7 @@
     (initialize-shape
      [(make-triangle a b d)
       (make-triangle a c d)]
-     (Math/pow 2 16))))
+     (math/pow 2 16))))
 
 (defn subset-rectangle [w h]
   (initialize-shape
@@ -146,7 +147,7 @@
                ;; Less randomization from depth, but roughly stays sorted if
                ;; always taking from front and adding to the back.
                ;; (sort-by by-depth)
-               (split-at (int (Math/pow 1.5 (int (Math/log total))))))
+               (split-at (int (math/pow 1.5 (int (math/log total))))))
           subdivided (mapcat subdivide-triangle to-divide)]
       (if (empty? to-divide)
         [true state]
