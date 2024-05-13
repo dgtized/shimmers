@@ -4,6 +4,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -36,7 +37,7 @@
 (defn contact-hit [{:keys [theta radius center]} point]
   (let [translated-point (tm/- point center)
         heading (g/heading translated-point)
-        mtheta (mod theta (* 2 Math/PI))
+        mtheta (mod theta eq/TAU)
         delta (- heading mtheta)
         tolerance 0.01]
     (when (and (< (g/dist (gv/vec2 0 0) translated-point) radius)
@@ -55,7 +56,7 @@
                   (->> (into contacts new-contacts)
                        (map #(update % :lifespan - 1))
                        (filter #(> (:lifespan %) 0)))))
-        (update :theta + (/ (* 2 Math/PI) (* 60 15)))
+        (update :theta + (/ eq/TAU (* 60 15)))
         (update :particles (partial map step)))))
 
 (defn draw
