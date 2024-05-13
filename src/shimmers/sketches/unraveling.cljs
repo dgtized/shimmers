@@ -1,5 +1,6 @@
 (ns shimmers.sketches.unraveling
   (:require
+   [clojure.math :as math]
    [shimmers.common.ui.canvas :as canvas]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -19,7 +20,7 @@
         (fn [{:keys [circle t r]}]
           (let [r' (* dr r)]
             {:circle (gc/circle (-> (g/point-at circle (/ t eq/TAU))
-                                    (v/+polar r' (+ t Math/PI))
+                                    (v/+polar r' (+ t math/PI))
                                     (tm/+ (dr/jitter tremors)))
                                 r')
              :t (+ t dt)
@@ -38,7 +39,7 @@
 
 (defn draw [ {:keys [t]} ctx [width height] _time]
   (canvas/clear ctx width height)
-  (canvas/line-width ctx (+ 0.70 (* 0.3 (Math/cos (* 1.33 (+ 0.5 t))))))
+  (canvas/line-width ctx (+ 0.70 (* 0.3 (math/cos (* 1.33 (+ 0.5 t))))))
   (doseq [{:keys [p r]}
           (spiral-inside (gc/circle (gv/vec2 (* 0.5 width) (* 0.5 height))
                                     (* 0.48 height))
