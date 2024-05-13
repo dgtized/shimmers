@@ -1,5 +1,6 @@
 (ns shimmers.sketches.control-panels
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.square-packing :as square]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
@@ -80,8 +81,8 @@
 
 (defn vu-meter [center r pct]
   (let [p (tm/+ center (gv/vec2 0 (* 0.66 r)))
-        t0 (* (/ 7 6) Math/PI)
-        t1 (* (/ 11 6) Math/PI)
+        t0 (* (/ 7 6) math/PI)
+        t1 (* (/ 11 6) math/PI)
         inner (* 0.75 r)
         upper (* 0.9 r)
         lower (* 0.8 r)
@@ -160,7 +161,7 @@
 
 (defn ridged [p r ridges theta]
   (let [d (* 0.03 r)
-        w (/ Math/PI (* 2 ridges))]
+        w (/ math/PI (* 2 ridges))]
     (gp/polygon2 (sequence (mapcat (fn [v]
                                      (let [t (+ (* eq/TAU (/ v ridges)) theta)]
                                        (map (fn [[dr dt]]
@@ -232,7 +233,7 @@
             (with-meta {:rx 5})))
       (csvg/group {:fill "white"
                    :transform (csvg/transform (csvg/translate p)
-                                              (csvg/rotate (if vertical 0 (/ Math/PI 2))))}
+                                              (csvg/rotate (if vertical 0 (/ math/PI 2))))}
         (-> (gc/circle (* r 0.55))
             (g/as-polygon 6)
             (g/rotate (/ eq/TAU 12)))
