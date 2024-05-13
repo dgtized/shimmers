@@ -1,5 +1,6 @@
 (ns shimmers.sketches.terrain-grid
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -29,9 +30,9 @@
 
 (defn hex-grid [{p :p [width height] :size} cols rows]
   (let [size (min (/ width (* 1.5 (+ 0.5 cols)))
-                  (/ height (* (Math/sqrt 3) (+ 0.5 rows))))
+                  (/ height (* (math/sqrt 3) (+ 0.5 rows))))
         w (* 2 size)
-        h (* (Math/sqrt 3) size)
+        h (* (math/sqrt 3) size)
         base (tm/+ p
                    (gv/vec2 (* 0.5 (- width (* (/ 3 4) (- cols 1) w)))
                             (* 0.5 (- height (* (- rows 0.5) h)))))]
