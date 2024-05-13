@@ -1,5 +1,6 @@
 (ns shimmers.sketches.folding-triangles
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -27,14 +28,14 @@
 (defn draw [_]
   (q/background 255)
   (let [depth 10
-        theta (mod (/ (q/millis) 500) (* depth 6 Math/PI))
+        theta (mod (/ (q/millis) 500) (* depth 6 math/PI))
         base (-> (gt/equilateral2 1 1.5)
                  (g/center (gv/vec3))
                  (g/rotate (/ theta 12)))
         all
         (mapcat (fn [triangle i]
-                  (let [start (* Math/PI i)
-                        end (+ start (* (- depth i) 6 Math/PI))]
+                  (let [start (* math/PI i)
+                        end (+ start (* (- depth i) 6 math/PI))]
                     (if (and (> theta start) (< theta end))
                       (map (fn [edge]
                              (assoc (geometry/rotate-over-edge triangle edge (- theta start))
