@@ -1,5 +1,6 @@
 (ns shimmers.sketches.intersecting-circle-regions
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -64,8 +65,8 @@
     [a b]))
 
 (defn make-circles [t]
-  [(gc/circle (cq/rel-vec (+ 0.4 (* 0.1 (Math/sin t))) 0.5) (cq/rel-h 0.4))
-   (gc/circle (cq/rel-vec (- 0.6 (* 0.3 (Math/sin t))) 0.5) (cq/rel-h 0.3))])
+  [(gc/circle (cq/rel-vec (+ 0.4 (* 0.1 (math/sin t))) 0.5) (cq/rel-h 0.4))
+   (gc/circle (cq/rel-vec (- 0.6 (* 0.3 (math/sin t))) 0.5) (cq/rel-h 0.3))])
 
 (defn setup []
   (q/color-mode :hsl 1.0)
