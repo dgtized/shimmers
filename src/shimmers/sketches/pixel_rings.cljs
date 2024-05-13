@@ -1,5 +1,6 @@
 (ns shimmers.sketches.pixel-rings
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -22,7 +23,7 @@
       (draw-samples
        (* radius 12000)
        (fn []
-         (let [r (* (cq/rel-h radius) (Math/sqrt (dr/gaussian 0.9 0.08)))
+         (let [r (* (cq/rel-h radius) (math/sqrt (dr/gaussian 0.9 0.08)))
                theta (dr/gaussian 0.0 0.5)]
            (v/+polar center r theta))))))
   (let [center (cq/rel-vec 0.8 0.55)]
@@ -30,7 +31,7 @@
       (draw-samples
        8000
        (fn []
-         (let [r (* (cq/rel-h radius) (Math/sqrt (dr/gaussian 0.9 0.15)))
+         (let [r (* (cq/rel-h radius) (math/sqrt (dr/gaussian 0.9 0.15)))
                theta (dr/gaussian (* 0.45 eq/TAU) 0.8)]
            (v/+polar center r theta))))))
   (q/fill 0.0 0.7 0.35)
@@ -39,7 +40,7 @@
       (draw-samples
        (* radius 16000)
        (fn []
-         (let [r (* (cq/rel-h radius) (Math/sqrt (dr/gaussian 0.9 0.1)))
+         (let [r (* (cq/rel-h radius) (math/sqrt (dr/gaussian 0.9 0.1)))
                theta (dr/gaussian (* 0.75 eq/TAU) (* 0.35 (- 1.2 radius)))]
            (v/+polar center r theta))))))
   (q/no-loop))
