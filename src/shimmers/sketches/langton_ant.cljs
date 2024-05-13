@@ -3,6 +3,7 @@
    * https://en.wikipedia.org/wiki/Langton%27s_ant
    * https://thecodingtrain.com/CodingChallenges/089-langtonsant.html"
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -12,8 +13,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
-(defn turn-right [dir] (+ dir (/ Math/PI 2)))
-(defn turn-left [dir] (- dir (/ Math/PI 2)))
+(defn turn-right [dir] (+ dir (/ math/PI 2)))
+(defn turn-left [dir] (- dir (/ math/PI 2)))
 
 (comment
   ;; Would like to use non-floating point coords but it appears to break
@@ -28,15 +29,15 @@
 
 (defn setup []
   {:grid {}
-   :ants [(create-ant (gv/vec2 0 0) (/ Math/PI 2))
+   :ants [(create-ant (gv/vec2 0 0) (/ math/PI 2))
           (create-ant (gv/vec2 2 0) 0)]})
 
 (defn move-ant [grid {:keys [position direction] :as ant}]
   (let [pixel (get grid (:position ant) default-grid-cell)
         new-dir ((if pixel turn-right turn-left) direction)
         ;; FIXME: possible propagating floating point error?
-        new-pos (v/add position (gv/vec2 (Math/cos new-dir)
-                                         (Math/sin new-dir)))]
+        new-pos (v/add position (gv/vec2 (math/cos new-dir)
+                                         (math/sin new-dir)))]
     [(assoc grid position (not pixel))
      (assoc ant :position new-pos :direction new-dir)]))
 
