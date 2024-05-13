@@ -1,5 +1,6 @@
 (ns shimmers.sketches.barcodes
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -34,7 +35,7 @@
   (let [dt 0.15
         n (count (:barcodes state))
         height (/ 1.0 (inc n))
-        chaos (tm/smoothstep* 0.1 0.8 (Math/sin (* t 0.01)))
+        chaos (tm/smoothstep* 0.1 0.8 (math/sin (* t 0.01)))
         new-code (fn [i]
                    (partial code
                             (cq/rel-h (+ (+ (* 0.5 height) (* i height))
@@ -49,8 +50,8 @@
                          (fn [i codes]
                            (update-barcode codes
                                            (new-code i)
-                                           (gv/vec2 (- (Math/pow differential (+ i 2))) 0.0)
-                                           (* 0.05 (Math/pow differential i))
+                                           (gv/vec2 (- (math/pow differential (+ i 2))) 0.0)
+                                           (* 0.05 (math/pow differential i))
                                            dt)))))))
 
 (defn draw [{:keys [barcodes]}]
