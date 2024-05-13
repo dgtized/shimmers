@@ -1,5 +1,6 @@
 (ns shimmers.sketches.minimum-spanning-tree
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.minimum-spanning-tree :as mst]
@@ -45,10 +46,10 @@
     (cq/circle (cq/rel-pos pt) 0.2))
   (q/stroke-weight 0.5)
   (q/stroke 50 50 230)
-  (doseq [[i [p q]] (map-indexed vector (take (Math/floor (inc step)) edges))
+  (doseq [[i [p q]] (map-indexed vector (take (math/floor (inc step)) edges))
           :let [wp (cq/rel-vec p)
                 wq (cq/rel-vec q)]]
-    (if (< i (Math/floor step))
+    (if (< i (math/floor step))
       (q/line wp wq)
       (q/line wp (tm/mix wp wq (tm/fract step))))))
 
