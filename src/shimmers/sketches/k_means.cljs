@@ -6,6 +6,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -26,16 +27,16 @@
 
 (defn draw-shape [{:keys [position color theta] :or {theta 0}}]
   (apply q/fill color)
-  (-> (gt/triangle2 [0 0] [0 (q/random 13 21)] [(q/random 13 21) 0])
+  (-> (gt/triangle2 [0 0] [0 (dr/random-int 13 21)] [(dr/random-int 13 21) 0])
       (g/translate (cq/rel-pos position))
       (geometry/rotate-around-centroid theta)
       cq/draw-polygon))
 
 (defn make-shape []
-  {:position (gv/vec2 (rand) (rand))
-   :color [(rand-nth (range 0 1 0.12))
-           (q/random 0.3 0.8)
-           (q/random 0.3 0.8)
+  {:position (gv/vec2 (dr/random) (dr/random))
+   :color [(dr/rand-nth (range 0 1 0.12))
+           (dr/random 0.3 0.8)
+           (dr/random 0.3 0.8)
            0.04]})
 
 (defn grouping-vector [{:keys [color position]}]
@@ -52,7 +53,7 @@
 
 (defn seed-cluster [shapes n]
   (let [colors (into {} (map-indexed (fn [i s] {i (grouping-vector s)})
-                                     (take n (shuffle shapes))))]
+                                     (take n (dr/shuffle shapes))))]
     (for [shape shapes]
       (assoc shape
              :cluster
@@ -63,7 +64,6 @@
 ;; Add "attractor" points that can't move or are outside bounds?
 ;; Generate initial triangles by sampling from video or an image?
 (defn setup []
-  (q/frame-rate 60)
   (q/color-mode :hsl 1.0)
   {:shapes (seed-cluster (repeatedly 256 make-shape) 12)})
 
@@ -124,7 +124,7 @@
 (defn draw [{:keys [shapes]}]
   (q/no-stroke)
   (doseq [shape shapes]
-    (draw-shape (assoc shape :theta (* 2 Math/PI (rand))))))
+    (draw-shape (assoc shape :theta (dr/random-tau)))))
 
 (defn page []
   (sketch/component
