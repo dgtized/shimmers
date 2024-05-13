@@ -1,5 +1,6 @@
 (ns shimmers.sketches.motif-shapes
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -41,10 +42,10 @@
   (gt/triangle2 [0 0] [0 1] [0.5 0.5]))
 
 (defn cardinal-direction []
-  (* 2 Math/PI (dr/rand-nth (tm/norm-range 4))))
+  (* 2 math/PI (dr/rand-nth (tm/norm-range 4))))
 
 (defn diagonal-direction []
-  (+ (/ Math/PI 4) (cardinal-direction)))
+  (+ (/ math/PI 4) (cardinal-direction)))
 
 (defn group-rotation [{:keys [children] :as group} theta]
   (let [group-centroid (g/centroid group)]
