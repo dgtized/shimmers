@@ -1,6 +1,7 @@
 (ns shimmers.sketches.probabilistic-automata
   (:require
    [cljs.core.match :refer-macros [match]]
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.automata.programs :as programs]
@@ -23,7 +24,7 @@
 (def max-population 128)
 (defn make-automata [position program]
   {:position position
-   :heading (* 3 (/ Math/PI 2))
+   :heading (* 3 (/ math/PI 2))
    :last-position nil
    :state :running
    :color [0 0 0 10]
@@ -82,7 +83,7 @@
     {(fn [] [:forward (dr/random-int 1 80)]) 5
      (fn [] [:rotate (dr/random tm/TWO_PI)]) 2
      (fn [] (programs/rotate 60)) 1
-     (fn [] [:rotate (dr/random (- (/ Math/PI 3)) (/ Math/PI 3))]) 3 ;; small angles
+     (fn [] [:rotate (dr/random (- (/ math/PI 3)) (/ math/PI 3))]) 3 ;; small angles
      (fn [] [:heading (dr/random tm/TWO_PI)]) 1
      (fn [] [:fork 0]) 2
      (fn [] [:halt 0]) 1
