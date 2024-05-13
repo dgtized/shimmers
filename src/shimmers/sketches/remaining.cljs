@@ -23,12 +23,12 @@
 (defonce defo (debug/state {}))
 
 (comment
-  (map (fn [x] (Math/pow 0.90 x)) (range 15))
+  (map (fn [x] (math/pow 0.90 x)) (range 15))
   (map (fn [x] (sm/gcd 3 x))  (range 20))
   (map (fn [x] (sm/lcm 3 x))  (range 20)))
 
 (defn abc []
-  (let [a (dr/weighted-by #(Math/pow 0.9 %) (range 1 11))
+  (let [a (dr/weighted-by #(math/pow 0.9 %) (range 1 11))
         b (dr/weighted-by #(sm/lcm % a) (range 1 13))
         lcm (sm/lcm a b)
         gcd (sm/gcd a b)
@@ -81,7 +81,7 @@
    radius p q s]
   (let [z (tm/- q p)
         r (+ radius (* 0.25 radius (O radius-osc (* 0.25 phase) s)))
-        angle (* Math/PI (O angle-osc (* Math/PI (math/sin (+ (* s radius) phase))) s))
+        angle (* math/PI (O angle-osc (* math/PI (math/sin (+ (* s radius) phase))) s))
         delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
                              (+ (* 2 tm/PHI r) (* 2 r (O size-osc (+ 2.0 (* 0.2 angle)) s))))
         line-delta (tm/normalize delta (- (tm/mag delta) r))]
