@@ -1,5 +1,6 @@
 (ns shimmers.sketches.offsetting-arcs
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -31,9 +32,9 @@
         (let [n1 (q/noise (* a 0.01) (* b 0.01) t)
               n2 (q/noise (* tm/PHI t) (* b 0.003) (* a 0.003))
               theta (* eq/TAU n2)
-              x (+ a (* n1 (Math/tan (* eq/TAU (+ t n1)))))]
+              x (+ a (* n1 (math/tan (* eq/TAU (+ t n1)))))]
           (q/arc x (+ b (- x a)) scale scale
-                 (+ theta (* eq/TAU (Math/sin t)))
+                 (+ theta (* eq/TAU (math/sin t)))
                  (+ theta (* eq/TAU n1))))))))
 
 (defn page []
