@@ -1,5 +1,6 @@
 (ns shimmers.sketches.deeper-squares
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -35,8 +36,8 @@
         edge-margin-h (/ (mod height h) 2)
         o (/ margin 2)
         depth-scale (/ size 72)
-        min-depth (Math/ceil (* 4 depth-scale))
-        max-depth (Math/ceil (+ min-depth (* 8 depth-scale)))]
+        min-depth (math/ceil (* 4 depth-scale))
+        max-depth (math/ceil (+ min-depth (* 8 depth-scale)))]
     (for [x (range (int (/ width w)))
           y (range (int (/ height h)))
           :let [depth (/ (mod (fx x y) repetition) repetition)]]
