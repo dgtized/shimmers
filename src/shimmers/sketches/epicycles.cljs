@@ -1,5 +1,6 @@
 (ns shimmers.sketches.epicycles
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.kinematic-chain :as chain]
@@ -24,9 +25,9 @@
       (-> segment
           (update :angle +
                   (* (if odd-even (if (odd? i) -1 1) 1)
-                     (/ (Math/pow (inc i) (inc (/ 3 n))) 10) dt))
+                     (/ (math/pow (inc i) (inc (/ 3 n))) 10) dt))
           (assoc :length (+ length (* (if stretchy 0.33 0)
-                                      (/ (- n i) n) length (Math/sin t))))))))
+                                      (/ (- n i) n) length (math/sin t))))))))
 
 (defn rotate-chainlinks [chain base length dt t]
   (let [n (count (:segments chain))]
