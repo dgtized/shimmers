@@ -1,5 +1,6 @@
 (ns shimmers.sketches.imperfect-curves
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -18,8 +19,8 @@
 
 (defn upper-ellipse [p rx ry]
   (for [t (range tm/PI tm/TWO_PI 0.1)]
-    (tm/+ (gv/vec2 (* rx (Math/cos t))
-                   (* ry (Math/sin t)))
+    (tm/+ (gv/vec2 (* rx (math/cos t))
+                   (* ry (math/sin t)))
           p)))
 
 (defn shapes []
