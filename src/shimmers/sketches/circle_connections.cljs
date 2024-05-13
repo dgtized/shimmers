@@ -1,5 +1,6 @@
 (ns shimmers.sketches.circle-connections
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -32,9 +33,9 @@
                  (gc/circle (cq/rel-vec 0.92 0.5) (cq/rel-w 0.075))]
         [c0 c1] circles
         n 20
-        v0 (vertices c0 n (* 0.075 Math/PI (Math/sin (* t 0.3))))
-        v1 (vertices c1 n (* 0.075 Math/PI (Math/cos (* t 0.4))))
-        d (* 0.3 (Math/cos (* 0.1 t)))]
+        v0 (vertices c0 n (* 0.075 math/PI (math/sin (* t 0.3))))
+        v1 (vertices c1 n (* 0.075 math/PI (math/cos (* t 0.4))))
+        d (* 0.3 (math/cos (* 0.1 t)))]
     (q/stroke-weight 1.25)
     (doseq [c circles]
       (qdg/draw c))
