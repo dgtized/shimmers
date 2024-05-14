@@ -75,7 +75,7 @@
               (gv/vec2 0 (- radius))
               (gv/vec2 radius 0)
               (gv/vec2 (- radius) 0)]
-        quarter-axis (map #(g/rotate % (- (/ Math/PI 4))) axis)]
+        quarter-axis (map #(g/rotate % (- tm/QUARTER_PI)) axis)]
     (doseq [p axis]
       (draw-bisector p 0.5))
     (doseq [p quarter-axis]
