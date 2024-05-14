@@ -1,5 +1,6 @@
 (ns shimmers.sketches.snake
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.kinematic-chain :as chain]
@@ -96,8 +97,8 @@
    (fn follow-sinusoidal [pos {:keys [p]} t]
      (let [dirv (tm/- p pos)
            speed (+ (+ 0.5 (* 0.5 (eq/unit-cos (* 0.25 t))))
-                    (* (Math/sin (* 0.9 t)) (Math/cos (* 0.5 t))))]
-       (tm/+ pos (tm/normalize (g/rotate dirv (* 1.33 (Math/sin (* 2 t))))
+                    (* (math/sin (* 0.9 t)) (math/cos (* 0.5 t))))]
+       (tm/+ pos (tm/normalize (g/rotate dirv (* 1.33 (math/sin (* 2 t))))
                                (* 2.0 speed)))))})
 
 ;; TODO: fix how harsh the transition is between old target and new target somehow?
