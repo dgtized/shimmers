@@ -6,8 +6,8 @@
 
 (defn angular-delta [angle target]
   (let [delta (- (mod target eq/TAU) (mod angle eq/TAU))]
-    (cond (< delta (- Math/PI)) (+ delta eq/TAU)
-          (> delta Math/PI) (- delta eq/TAU)
+    (cond (< delta (- math/PI)) (+ delta eq/TAU)
+          (> delta math/PI) (- delta eq/TAU)
           :else delta)))
 
 ;; see also https://gamedev.stackexchange.com/questions/1885/target-tracking-when-to-accelerate-and-decelerate-a-rotating-turret
