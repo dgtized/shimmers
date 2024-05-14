@@ -12,7 +12,8 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.vector :as v]
-   [shimmers.sketch :as sketch :include-macros true]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.math.core :as tm]))
 
 (defn in-bounds? [[x y]]
   (and (>= x 0) (< x (q/width))
@@ -26,7 +27,7 @@
 (defn spawn-crack [{:keys [position angle] :as crack}]
   (make-crack position
               (+ angle
-                 (* (dr/rand-nth [-1 1]) (/ Math/PI 2))
+                 (* (dr/rand-nth [-1 1]) tm/HALF_PI)
                  (* 0.15 (dr/gaussian)))
               crack))
 
@@ -45,7 +46,7 @@
 
 (defn make-random-crack []
   (make-crack (cq/rel-vec (dr/random) (dr/random))
-              (* (dr/rand-nth [0 1 2 3]) (/ Math/PI 2))))
+              (* (dr/rand-nth [0 1 2 3]) tm/HALF_PI)))
 
 (defn create-cracks []
   {:cracks (repeatedly 16 make-random-crack)})
