@@ -82,7 +82,8 @@
   (rand-nth [(gv/vec2 0.5 0.5) (gv/vec2 -0.5 0.5) (gv/vec2 0.5 -0.5) (gv/vec2 -0.5 -0.5)]))
 
 (defn random-hexagon []
-  (rand-nth (for [theta (range 0 (* 2 Math/PI) (/ Math/PI 3))] (g/as-cartesian (gv/vec2 1 theta)))))
+  (rand-nth (for [theta (range 0 tm/TWO_PI tm/THIRD_PI)]
+              (g/as-cartesian (gv/vec2 1 theta)))))
 
 (defn velocity-seed
   "Generates starting velocities according to some common randomized approach"
