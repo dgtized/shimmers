@@ -68,7 +68,7 @@
   (let [weight (/ 50 quantity)]
     (repeatedly quantity
                 #(let [f (apply tm/random force)
-                       theta (tm/random (- Math/PI tm/QUARTER_PI) (+ tm/TWO_PI tm/QUARTER_PI))]
+                       theta (tm/random (- tm/PI tm/QUARTER_PI) (+ tm/TWO_PI tm/QUARTER_PI))]
                    (assoc (vp/make-particle (v/+polar pos f theta) prev weight)
                           :type :rain
                           :hue hue
