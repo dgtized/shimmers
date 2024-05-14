@@ -164,7 +164,7 @@
     :middleware [m/fun-mode framerate/mode])
    [ctrl/container
     [ctrl/slider ui-state (fn [v] (str "Alignment Width " v))
-     [:align-width] [0.0 Math/PI 0.1]]]])
+     [:align-width] [0.0 tm/PI 0.1]]]])
 
 (sketch/definition traffic-intersection
   {:created-at "2021-10-05"
