@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hexflare
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.sequence :as cs]
@@ -37,7 +38,7 @@
         b (gv/vec2 width (clip/project-y a (tm/+ a mid-face) width))
         line1 (gl/line2 a b)
         dist (tm/mag line1)
-        hexes (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
+        hexes (for [t (dr/density-range (/ (* 1.1 (math/sqrt 3) r) dist)
                                         (/ (* 3 r) dist))]
                 (g/as-polygon (gc/circle (g/point-at line1 t) r) 6))
         center (poly-detect/inset-polygon (gp/polygon2 (g/vertices (cs/middle hexes))) -5)
@@ -46,7 +47,7 @@
         line2 (clip/clip-line (rect/rect 0 0 width height)
                               (tm/- centroid (tm/* right-down width))
                               (tm/+ centroid (tm/* right-down width)))
-        hexes2 (->> (for [t (dr/density-range (/ (* 1.1 (Math/sqrt 3) r) dist)
+        hexes2 (->> (for [t (dr/density-range (/ (* 1.1 (math/sqrt 3) r) dist)
                                               (/ (* 4 r) dist))]
                       (g/as-polygon (gc/circle (g/point-at line2 t) r) 6))
                     (remove #(< (g/dist centroid (g/centroid %)) (* 2.0 r))))]
