@@ -5,6 +5,7 @@
   https://blog.hrvoje.org/2020/05/drawing-circles/
   https://www.shadertoy.com/view/4lSGRG"
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -49,7 +50,7 @@
                      {"u_resolution" (array w h)
                       "u_time" (/ (q/millis) 1000.0)
                       "u_d" 1.0
-                      "u_e" (* 4.0 (Math/pow (Math/sin (/ Math/PI k)) 2))})))
+                      "u_e" (* 4.0 (math/pow (math/sin (/ math/PI k)) 2))})))
     (q/image pass1 0 0 (q/width) (q/height))))
 
 (defn page []
