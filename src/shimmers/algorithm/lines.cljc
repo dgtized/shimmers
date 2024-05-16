@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.lines
   (:require
+   [clojure.math :as math]
    [loom.graph :as lg]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.math.deterministic-random :as dr]
@@ -43,7 +44,7 @@
         y21 (- y2 y1)]
     (/ (abs (- (* x21 (- y1 y0))
                (* (- x1 x0) y21)))
-       (Math/sqrt (+ (* x21 x21) (* y21 y21))))))
+       (math/sqrt (+ (* x21 x21) (* y21 y21))))))
 
 (defn max-perpendicular-distance [points]
   (let [a (first points)
