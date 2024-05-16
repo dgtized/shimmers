@@ -1,5 +1,6 @@
 (ns shimmers.sketches.ordered
   (:require
+   [clojure.math :as math]
    [clojure.math.combinatorics :as mc]
    [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
@@ -154,13 +155,13 @@
                               tm/PHI 4
                               2 2
                               3 1})
-          offsets (map (fn [x] (Math/pow x power))
+          offsets (map (fn [x] (math/pow x power))
                        (tm/norm-range n-cuts))
           terminal-stripe? (if (and (> n-cuts 1) (dr/chance 0.5))
                              (dr/weighted {odd? 2 even? 1})
                              (constantly nil))
           perturb-rate (* (dr/rand-nth [0.02 0.05 0.1])
-                          (/ 1 (Math/pow 2 depth)))
+                          (/ 1 (math/pow 2 depth)))
           ;; FIXME: inset-polygon causes too many errors dwonstream
           layers #{}
           shape' (if (contains? layers depth)
