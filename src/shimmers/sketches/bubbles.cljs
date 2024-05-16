@@ -1,5 +1,6 @@
 (ns shimmers.sketches.bubbles
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -32,8 +33,8 @@
    (tm/mix (:p a) (:p b)
            (/ (if (> (:r a) (:r b)) (:r b) (:r a))
               (+ (:r a) (:r b))))
-   (Math/sqrt (+ (Math/pow (:r a) 2)
-                 (Math/pow (:r b) 2)))))
+   (math/sqrt (+ (math/pow (:r a) 2)
+                 (math/pow (:r b) 2)))))
 
 (defn combine-intersecting [bubbles]
   (loop [ordered (sort-by (comp :p :x) bubbles)
