@@ -1,5 +1,6 @@
 (ns shimmers.sketches.tree-rings
   (:require
+   [clojure.math :as math]
    [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -35,8 +36,8 @@
     (mapcat (fn [r]
               (ring seed
                     (* r radius)
-                    (int (Math/pow 30 (+ 1 r)))
-                    (Math/ceil (* radius 0.025 (+ 1 r)))))
+                    (int (math/pow 30 (+ 1 r)))
+                    (math/ceil (* radius 0.025 (+ 1 r)))))
             (dr/gaussian-range 0.01 0.012))))
 
 (defn scene []
