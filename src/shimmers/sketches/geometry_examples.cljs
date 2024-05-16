@@ -87,14 +87,17 @@
 
 (defn inset-arc-example []
   (let [width 400 height 200
-        triangle (triangle/inscribed-equilateral (gc/circle (gv/vec2 (* width 0.5) (* height 0.5)) (* height 0.45)) Math/PI)
+        triangle
+        (triangle/inscribed-equilateral (gc/circle (gv/vec2 (* width 0.5) (* height 0.5))
+                                                   (* height 0.45))
+                                        tm/PI)
         [c a b] (g/vertices triangle)
         mid-bc (tm/mix b c 0.5)
         p (tm/mix a mid-bc 0.5)
         r (g/dist p mid-bc)
         ap (g/dist a p)
-        c-angle (triangle/law-of-sines-angle (/ Math/PI 6) r ap)
-        proj (triangle/law-of-cosines-side r ap (- Math/PI (/ Math/PI 6) c-angle))
+        c-angle (triangle/law-of-sines-angle (/ tm/PI 6) r ap)
+        proj (triangle/law-of-cosines-side r ap (- tm/PI (/ tm/PI 6) c-angle))
         isec-ab (v/+polar a proj (g/heading (tm/- b a)))
         isec-ac (v/+polar a proj (g/heading (tm/- c a)))]
     (csvg/svg {:width width :height height :stroke "black" :fill "none"}
