@@ -1,5 +1,6 @@
 (ns shimmers.sketches.dreamcatcher
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -36,8 +37,8 @@
     (dreamloop {:points points
                 :row points
                 :limit 1000
-                :rotation (* eq/TAU (Math/sin (/ fc 400)))
-                :decay (+ 0.08 (* 0.05 (Math/sin (/ fc 160))))})))
+                :rotation (* eq/TAU (math/sin (/ fc 400)))
+                :decay (+ 0.08 (* 0.05 (math/sin (/ fc 160))))})))
 
 (defn draw [{:keys [points rotation]}]
   (q/background 1.0)
