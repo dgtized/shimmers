@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.polygon-detection
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
@@ -36,7 +37,7 @@
           (lg/weighted-graph) edges))
 
 (defn atan2 [[x y]]
-  (Math/atan2 y x))
+  (math/atan2 y x))
 
 ;; g/angle-between is clockwise angle between with range 0 - 2π.
 (defn small-angle-between
@@ -273,7 +274,7 @@
 (defn convex?
   [polygon]
   (let [vertices (g/vertices polygon)]
-    (every? (fn [[a b c]] (< (g/angle-between (tm/- c b) (tm/- a b)) Math/PI))
+    (every? (fn [[a b c]] (< (g/angle-between (tm/- c b) (tm/- a b)) math/PI))
             (partition 3 1 (into vertices (take 2 vertices))))))
 
 (defn concave?
