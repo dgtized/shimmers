@@ -99,7 +99,7 @@
         (fn [{:keys [circle t r]}]
           (let [r' (* dr r)
                 radial-pt (g/point-at circle (/ t eq/TAU))]
-            {:circle (gc/circle (v/+polar radial-pt r' (- t Math/PI)) r')
+            {:circle (gc/circle (v/+polar radial-pt r' (- t tm/PI)) r')
              :t (+ t dt)
              :r r'})))
        (take-while (fn [{:keys [r]}] (> r min-r)))

@@ -24,7 +24,7 @@
 ;; FIXME: Works for a line on the first pass, but goes below for second
 (defn rotate [t shape]
   (let [vertices (g/vertices shape)
-        cycle (mod (q/floor (/ t Math/PI)) 9)
+        cycle (mod (q/floor (/ t tm/PI)) 9)
         idx (mod (inc cycle) (count vertices))
         vertex (nth vertices idx)
         offset (gv/vec2 (* (- cycle idx) (g/width shape)) 0)]

@@ -118,7 +118,7 @@
 (defn tight-bends [points]
   (for [[a b c] (partition 3 1 points)
         :let [angle (g/angle-between (tm/- a b) (tm/- c b))]
-        :when (< angle (/ Math/PI 8))]
+        :when (< angle (/ tm/PI 8))]
     {:p b :angle angle}))
 
 ;; Need a better partitioning approach. Something like `k` edges, separate into ranges like:

@@ -68,8 +68,8 @@
   (let [p (g/point-at shape t)
         grad (g/point-at shape (+ t 0.01))
         lv (tm/normalize (tm/- grad p))
-        a (g/rotate lv (- (/ Math/PI 2)))
-        b (g/rotate lv (/ Math/PI 2))]
+        a (g/rotate lv (- tm/HALF_PI))
+        b (g/rotate lv tm/HALF_PI)]
     (-> (gl/line2 a b)
         (g/rotate angle)
         (g/scale-size scale)

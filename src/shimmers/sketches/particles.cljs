@@ -47,7 +47,7 @@
         ry (sm/reflect-into y (q/height))
         n (q/noise (/ rx factor) (/ ry factor)
                    (/ (q/frame-count) 2000))
-        r (* 4 Math/PI n)]
+        r (* 4 tm/PI n)]
     (gv/vec2 (q/cos r) (q/sin r))))
 
 (defn acceleration-at-point [{:keys [position mass]}]

@@ -37,7 +37,7 @@
 (defn generate-strokes [brush random-position n]
   (repeatedly n #(geometry/rotate-around-centroid
                   (g/translate brush (random-position))
-                  (q/random 0 Math/PI))))
+                  (q/random 0 tm/PI))))
 
 (defn random-displace [shapes prob offset]
   (dr/map-random-sample

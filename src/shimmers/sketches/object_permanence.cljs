@@ -43,7 +43,7 @@
     (draw-eye (- eye-x) eye-y looking-at)
     (draw-eye eye-x eye-y looking-at)
     (let [clip 0.2]
-      (q/arc 0 (/ H 8) (/ W 6) (/ H 10) clip (- Math/PI clip)))))
+      (q/arc 0 (/ H 8) (/ W 6) (/ H 10) clip (- tm/PI clip)))))
 
 (defn page []
   (sketch/component

@@ -55,7 +55,7 @@
   (q/stroke-weight 0.25)
   (q/no-fill)
   (q/translate (/ (q/width) 2) (/ (q/height) 2))
-  (q/rotate (* 2 Math/PI (q/noise (* 0.05 z) 30)))
+  (q/rotate (* tm/TWO_PI (q/noise (* 0.05 z) 30)))
   (doseq [ring rings]
     (q/push-matrix)
     (apply q/translate (g/scale (:position ring) (* 4 (- z (:base ring)))))

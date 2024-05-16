@@ -20,7 +20,7 @@
 
 (defn sin-target []
   (let [t (q/millis)]
-    (cq/rel-vec (tm/map-interval (q/cos (+ Math/PI (/ t 10000))) [-1 1] [0.05 0.95])
+    (cq/rel-vec (tm/map-interval (q/cos (+ tm/PI (/ t 10000))) [-1 1] [0.05 0.95])
                 (tm/map-interval (q/sin (/ t 2000)) [-1 1] [0.1 0.9]))))
 
 (def modes {:sin sin-target

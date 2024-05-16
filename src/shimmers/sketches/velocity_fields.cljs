@@ -64,7 +64,7 @@
 
 (defn facing-pair []
   [(triangle/inscribed-equilateral {:p (rv 0.25 0.5) :r (* 0.37 height)} 0.0)
-   (triangle/inscribed-equilateral {:p (rv 0.75 0.5) :r (* 0.37 height)} Math/PI)])
+   (triangle/inscribed-equilateral {:p (rv 0.75 0.5) :r (* 0.37 height)} tm/PI)])
 
 (defn inner []
   (dr/weighted

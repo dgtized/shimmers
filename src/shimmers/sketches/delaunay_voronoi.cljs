@@ -87,7 +87,7 @@
   [[p q]]
   (let [d (tm/- q p)]
     (mapv (fn [θ] (tm/+ p (g/rotate d θ)))
-          [(/ Math/PI 3) (* 5 (/ Math/PI 3))])))
+          [(/ tm/PI 3) (* 5 (/ tm/PI 3))])))
 
 (defn plot [[m b]]
   (q/push-style)
