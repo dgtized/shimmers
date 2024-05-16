@@ -1,7 +1,6 @@
 (ns shimmers.sketches.remaining
   (:require
    [clojure.math :as math]
-   [clojure.math.combinatorics :as mc]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -9,10 +8,10 @@
    [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.wobble :as mw :refer [O R]]
+   [shimmers.model.harmonics :as harm]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -22,28 +21,10 @@
 (defonce ui-state (ctrl/state {:screen-size "900x600"}))
 (defonce defo (debug/state {}))
 
-(comment
-  (map (fn [x] (math/pow 0.90 x)) (range 15))
-  (map (fn [x] (sm/gcd 3 x))  (range 20))
-  (map (fn [x] (sm/lcm 3 x))  (range 20)))
-
-(defn abc []
-  (let [a (dr/weighted-by #(math/pow 0.9 %) (range 1 11))
-        b (dr/weighted-by #(sm/lcm % a) (range 1 13))
-        lcm (sm/lcm a b)
-        gcd (sm/gcd a b)
-        c (dr/weighted
-           [[(* (min a b) (dr/random-int 1 6)) 2.0]
-            [lcm (if (> lcm 1.0) 1.0 0.0)]
-            [gcd (if (> gcd 1.0) 1.0 0.0)]
-            [(dr/random-int 1 10) 1.0]])]
-    (tm/* (gv/vec3 a b c)
-          (gv/vec3 (dr/rand-nth (mc/selections [-1 1] 3))))))
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
-  (let [[a b c] (abc)]
+  (let [[a b c] (harm/abc)]
     {:params
      {:n-points 200
       :freqs

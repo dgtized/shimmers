@@ -4,10 +4,10 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
-   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
-   [shimmers.math.wobble :as mw :refer [R O]]
+   [shimmers.math.wobble :as mw :refer [O R]]
+   [shimmers.model.harmonics :as harm]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -56,22 +56,20 @@
                    :stroke-width 0.5}
     (shapes params)))
 
+(defn parameters []
+  (let [[a b c] (harm/abc)]
+    {:n-points 2048
+     :a a
+     :b b
+     :c c
+     :a-osc (* (dr/random-sign) (dr/random-int 4))
+     :b-osc (* (dr/random-sign) (dr/random-int 6))
+     :c-osc (* (dr/random-sign) (dr/random-int 12))
+     :angle-osc (dr/random-int 6 24)
+     :size-osc (dr/random-int 6 24)}))
+
 (defn page []
-  (let [a (dr/weighted-by #(- 11 %) (range 1 11))
-        b (dr/weighted-by #(- 13 %) (range 1 13))
-        params
-        {:n-points 2048
-         :a (* (dr/weighted {-1 1 1 6}) a)
-         :b (* (dr/weighted {-1 6 1 1}) b)
-         :c (dr/weighted
-             [[(* (min a b) (dr/random-int 1 6)) 2.0]
-              [(sm/lcm a b) 1.0]
-              [(sm/gcd a b) 1.0]])
-         :a-osc (* (dr/random-sign) (dr/random-int 4))
-         :b-osc (* (dr/random-sign) (dr/random-int 6))
-         :c-osc (* (dr/random-sign) (dr/random-int 12))
-         :angle-osc (dr/random-int 6 24)
-         :size-osc (dr/random-int 6 24)}]
+  (let [params (parameters)]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene params]]
