@@ -1,5 +1,6 @@
 (ns shimmers.sketches.memory-allocation
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.automata.memory :as mem]
@@ -23,7 +24,7 @@
   (set! (.-disableFriendlyErrors js/p5) true)
 
   (q/color-mode :hsl 1.0)
-  (let [pages (Math/pow 2 12)]
+  (let [pages (math/pow 2 12)]
     (mem/initialize pages)))
 
 (defn update-state [{:keys [pages free allocations defragment-cycles] :as state}]
@@ -58,7 +59,7 @@
   (q/background 1.0)
   (q/no-fill)
   (let [aspect (/ (q/width) (q/height))
-        cols (int (Math/sqrt pages))
+        cols (int (math/sqrt pages))
         w (/ (/ (q/width) cols) aspect)
         h (/ (q/height) (/ pages cols))
         allocs (count allocations)
