@@ -38,7 +38,7 @@
                           (partition 2 1 pts)
                           (tm/norm-range n-points))]
       (let [z (tm/- q p)
-            angle (* Math/PI (O angle-osc (math/sin (* s r)) s))
+            angle (* tm/PI (O angle-osc (math/sin (* s r)) s))
             delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
                                  (+ (* 3 tm/PHI r) (* 3 r (O size-osc (* 0.1 angle) s))))
             line-delta (tm/normalize delta (- (tm/mag delta) r))]
