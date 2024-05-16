@@ -31,14 +31,15 @@
         (tm/* radius)
         (tm/+ center))))
 
-(defn shapes [{:keys [n-points angle-osc size-osc] :as params}]
+(defn shapes [{:keys [n-points angle-osc size-osc radius-osc] :as params}]
   (let [pts (harmonic-loop (rv 0.5 0.5) (* 0.48 height) params)
-        r (* 0.0033 height)]
+        radius (* 0.0033 height)]
     (for [[[p q] s] (mapv vector
                           (partition 2 1 pts)
                           (tm/norm-range n-points))]
-      (let [z (tm/- q p)
-            angle (* tm/PI (O angle-osc (math/sin (* s r)) s))
+      (let [r (+ radius (* 0.35 radius (O radius-osc 0 s)))
+            z (tm/- q p)
+            angle (* tm/PI (O angle-osc (math/sin (* s radius)) s))
             delta  (tm/normalize (g/rotate z (+ angle (/ eq/TAU 4)))
                                  (+ (* 3 tm/PHI r) (* 3 r (O size-osc (* 0.1 angle) s))))
             line-delta (tm/normalize delta (- (tm/mag delta) r))]
@@ -62,11 +63,12 @@
      :a a
      :b b
      :c c
-     :a-osc (* (dr/random-sign) (dr/random-int 4))
-     :b-osc (* (dr/random-sign) (dr/random-int 6))
-     :c-osc (* (dr/random-sign) (dr/random-int 12))
+     :a-osc (* (dr/random-sign) (dr/random-int 5))
+     :b-osc (* (dr/random-sign) (dr/random-int 7))
+     :c-osc (* (dr/random-sign) (dr/random-int 13))
      :angle-osc (dr/random-int 6 24)
-     :size-osc (dr/random-int 6 24)}))
+     :size-osc (dr/random-int 6 24)
+     :radius-osc (dr/random-int 6 24)}))
 
 (defn page []
   (let [params (parameters)]
