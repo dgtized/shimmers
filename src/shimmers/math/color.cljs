@@ -3,6 +3,7 @@
 
   Gradients borrowed from https://github.com/thi-ng/color/blob/master/src/gradients.org"
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [shimmers.math.core :as sm]
    [thi.ng.color.core :as col]
@@ -67,7 +68,7 @@
 ;; https://observablehq.com/@fil/oklab-color-space
 (defn gamma [x]
   (if (>= x 0.0031308)
-    (- (* 1.055 (Math/pow x (/ 1.0 2.4))) 0.055)
+    (- (* 1.055 (math/pow x (/ 1.0 2.4))) 0.055)
     (* 12.92 x)))
 
 ;; https://bottosson.github.io/posts/oklab/
@@ -80,7 +81,7 @@
      (gamma (+ (* -0.0041960863 l) (* -0.7034186147 m) (*  1.7076147010 s)))]))
 
 (defn oklab-lch [L C h]
-  (oklab->rgb L (* C (Math/cos h)) (* C (Math/sin h))))
+  (oklab->rgb L (* C (math/cos h)) (* C (math/sin h))))
 
 (comment (oklab->rgb 0 0.1 0.1)
          (oklab->rgb 0.1 0.1 0.1)
