@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.wave-function-collapse
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [clojure.string :as str]
    [shimmers.common.sequence :as cs]
@@ -109,7 +110,7 @@
         all-options (reduce + 0.0 (vals choices))]
     (reduce (fn [shannon v]
               (let [p (/ v all-options)]
-                (+ shannon (* p (Math/log (/ 1 p))))))
+                (+ shannon (* p (math/log (/ 1 p))))))
             0.0
             (vals choices))))
 
