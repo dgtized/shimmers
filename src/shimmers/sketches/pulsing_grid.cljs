@@ -1,5 +1,6 @@
 (ns shimmers.sketches.pulsing-grid
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -44,7 +45,7 @@
   [rate scale offset]
   (-> (q/frame-count)
       (* rate)
-      Math/sin
+      math/sin
       (* scale)
       (+ offset)))
 
@@ -54,7 +55,7 @@
         (-> t
             (+ phase)
             (* period)
-            Math/cos
+            math/cos
             (tm/map-interval-clamped [-1 1] [1 0])
             (* (- 1.0 (eq/gaussian 0.4 (- (mod (* t 0.2) 2.0) 0.5) 0.18 x))))]
     (assoc cell :color [color 1.0])))
