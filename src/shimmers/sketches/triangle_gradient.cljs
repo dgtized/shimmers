@@ -1,5 +1,6 @@
 (ns shimmers.sketches.triangle-gradient
   (:require
+   [clojure.math :as math]
    [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg]
    [shimmers.common.svg-export :as svg-export]
@@ -41,10 +42,10 @@
         dir-x (dr/weighted {invert 1
                             identity 3})
         generate (fn []
-                   (let [x (dir-x (Math/pow (dr/random) 0.4))
+                   (let [x (dir-x (math/pow (dr/random) 0.4))
                          y (dr/random 0.15 0.85)]
                      (-> template
-                         (g/scale-size (+ 0.15 (dir-s (Math/pow x 1.4))))
+                         (g/scale-size (+ 0.15 (dir-s (math/pow x 1.4))))
                          (g/rotate (dr/random 0 tm/TWO_PI))
                          (g/translate (gv/vec2 (* width x) (* height y))))))]
     (->> (repeatedly 4000 generate)
