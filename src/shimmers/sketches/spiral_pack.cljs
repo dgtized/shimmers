@@ -1,5 +1,6 @@
 (ns shimmers.sketches.spiral-pack
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -29,7 +30,7 @@
          (iterate
           (fn [{r :r dr :dr t :t}]
             (let [dr' (* 1.005 dr)
-                  dt (Math/atan2 (+ dr dr') (+ r dr))]
+                  dt (math/atan2 (+ dr dr') (+ r dr))]
               {:t (+ t dt)
                :r (+ r (* dr' 0.1))
                :dr (* 1.03 dr')
@@ -50,7 +51,7 @@
           (fn [{:keys [circle t r]}]
             (let [r' (* 0.98 r)
                   radial-pt (g/point-at circle (/ t eq/TAU))]
-              {:circle (gc/circle (v/+polar radial-pt r' (- t Math/PI)) r')
+              {:circle (gc/circle (v/+polar radial-pt r' (- t math/PI)) r')
                :t (+ t dt)
                :r r'})))
          (take-while (fn [{:keys [r]}] (> r 4.0)))
