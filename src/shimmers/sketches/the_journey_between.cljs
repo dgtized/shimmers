@@ -1,5 +1,6 @@
 (ns shimmers.sketches.the-journey-between
   (:require
+   [clojure.math :as math]
    [loom.alg :as la]
    [loom.graph :as lg]
    [quil.core :as q :include-macros true]
@@ -33,7 +34,7 @@
 (defn build-grid [seed grid-size]
   (for [loc (g/subdivide (cq/screen-rect) grid-size)
         :let [noise (dr/noise-at-point seed 0.01 (g/centroid loc))]]
-    (assoc loc :noise (Math/pow noise 1.25))))
+    (assoc loc :noise (math/pow noise 1.25))))
 
 (defn to-grid-loc [{:keys [rows cols]} [x y]]
   (gv/vec2 (int (* cols (/ x (q/width))))
@@ -138,7 +139,7 @@
       [:div
        [:h5 "Path"]
        [:div {:style {:font-size "0.75em"
-                      :column-count (Math/ceil (/ (count path) 20))}}
+                      :column-count (math/ceil (/ (count path) 20))}}
         (for [[i s] (map-indexed vector path)]
           [:div {:key (str "v" i)} [debug/pre-edn s]])]]]]))
 
