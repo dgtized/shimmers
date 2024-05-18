@@ -1,5 +1,6 @@
 (ns shimmers.sketches.chaos-cuts
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.lines :as lines]
@@ -49,7 +50,7 @@
    (cline [-3 0.5] 0.8
           [2.5 0.5] 1.1
           (+ 1 (* 0.03 t)) (+ 2 (* 0.04 t)))
-   (cline [-2.5 (+ 0.5 (* 0.3 (Math/sin (* 0.01 t))))] 1.1
+   (cline [-2.5 (+ 0.5 (* 0.3 (math/sin (* 0.01 t))))] 1.1
           [2.25 0.5] 0.8
           (+ 2 (* 0.03 t)) (+ 3 (* 0.035 t)))])
 

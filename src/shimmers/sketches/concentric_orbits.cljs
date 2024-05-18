@@ -1,15 +1,16 @@
 (ns shimmers.sketches.concentric-orbits
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.vector :as v]
-   [shimmers.math.equations :as eq]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -17,7 +18,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn max-radius [r n]
-  (/ r (+ Math/E (Math/sin (/ eq/TAU n)))))
+  (/ r (+ math/E (math/sin (/ eq/TAU n)))))
 
 (defn orbit [{:keys [p r]} n phase]
   (for [t (butlast (tm/norm-range n))]

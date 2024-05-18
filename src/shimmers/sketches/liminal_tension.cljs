@@ -1,5 +1,6 @@
 (ns shimmers.sketches.liminal-tension
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.lines :as lines]
@@ -23,7 +24,7 @@
   (let [v (tm/- pos dest)
         wobble (* wiggle
                   (/ (tm/mag v) (inc t))
-                  (Math/sin (/ t tm/PHI)))]
+                  (math/sin (/ t tm/PHI)))]
     (g/rotate (tm/normalize v wobble) (* 0.25 eq/TAU))))
 
 (defn move [dt t pos-c angle-c drag]

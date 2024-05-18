@@ -1,5 +1,6 @@
 (ns shimmers.sketches.under-the-surface
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -67,7 +68,7 @@
       (update :t + (dr/random 0.05))))
 
 (defn draw-frame [{:keys [storms t]}]
-  (q/background 1.0 (+ 0.08 (* 0.05 (Math/cos t))))
+  (q/background 1.0 (+ 0.08 (* 0.05 (math/cos t))))
   (q/ellipse-mode :radius)
   (q/stroke 0.0)
   (q/stroke-weight 3.0)

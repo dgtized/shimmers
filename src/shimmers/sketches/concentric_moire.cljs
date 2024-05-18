@@ -1,5 +1,6 @@
 (ns shimmers.sketches.concentric-moire
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -26,7 +27,7 @@
   (q/background 1.0)
   (q/no-fill)
   (q/ellipse-mode :radius)
-  (let [change (* 0.5 (+ 1 (Math/sin (/ (q/frame-count) 40))))]
+  (let [change (* 0.5 (+ 1 (math/sin (/ (q/frame-count) 40))))]
     (doseq [{:keys [pos spacing upper weight]} circles]
       (q/stroke-weight weight)
       (doseq [r (range 0 upper)]

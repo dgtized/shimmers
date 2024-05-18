@@ -1,5 +1,6 @@
 (ns shimmers.sketches.balloon
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -59,7 +60,7 @@
     (-> state
         (update :balloon (pressurize pressure mass dt))
         (update :t + dt)
-        (assoc :pressure (+ 15.0 (* 5.0 (Math/cos (* 0.05 t))))))))
+        (assoc :pressure (+ 15.0 (* 5.0 (math/cos (* 0.05 t))))))))
 
 (defn draw [{:keys [balloon]}]
   (q/background 1.0)

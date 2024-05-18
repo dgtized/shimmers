@@ -1,5 +1,6 @@
 (ns shimmers.sketches.trigonometry-boxes
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -56,7 +57,7 @@
         (update :height + (* dy (f (+ t0 (* t dt))))))))
 
 (defn gen-time-function []
-  (dr/weighted [[Math/sin 4.0] [Math/cos 4.0] [Math/tan 1.0]
+  (dr/weighted [[math/sin 4.0] [math/cos 4.0] [math/tan 1.0]
                 [(partial wave/triangle eq/TAU) 2.0]
                 [(partial wave/square (dr/random 0.75 3.5)) 1.0]
                 [(partial wave/sawtooth eq/TAU) 2.0]

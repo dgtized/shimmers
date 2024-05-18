@@ -1,5 +1,6 @@
 (ns shimmers.sketches.triangle-intersections
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -28,7 +29,7 @@
                        (partition 3 1))]
       (let [p (tm/- a b)
             q (tm/- c b)]
-        (Math/acos (/ (tm/dot p q)
+        (math/acos (/ (tm/dot p q)
                       (* (abs (tm/mag p))
                          (abs (tm/mag q)))))))))
 

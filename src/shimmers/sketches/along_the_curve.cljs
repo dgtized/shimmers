@@ -1,5 +1,6 @@
 (ns shimmers.sketches.along-the-curve
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -46,7 +47,7 @@
             fx' (fp x')
             b (gv/vec2 x fx)
             perp (gv/vec2 (tm/cross (gv/vec3 (tm/- (gv/vec2 x' fx') b))
-                                    (gv/vec3 0 0 (* 20 (Math/cos (+ (/ x 5) (* 0.5 t)))))))]
+                                    (gv/vec3 0 0 (* 20 (math/cos (+ (/ x 5) (* 0.5 t)))))))]
         (q/curve-vertex x fx)
         (q/line b (tm/+ b perp))))
     (q/end-shape)))

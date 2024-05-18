@@ -1,5 +1,6 @@
 (ns shimmers.sketches.intersecting-chords
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.circle-packing :as pack]
@@ -62,7 +63,7 @@
 
 (defn rescale [bounds t {:keys [r] :as circle}]
   (or (when-let [{:keys [R dr t0 dt]} (:R circle)]
-        (let [circle' (assoc circle :r (+ R (* dr (Math/sin (+ (* t dt) t0)))))]
+        (let [circle' (assoc circle :r (+ R (* dr (math/sin (+ (* t dt) t0)))))]
           (if (geometry/contains-circle? bounds circle')
             circle'
             (update circle' :p
