@@ -1,5 +1,6 @@
 (ns shimmers.sketches.woven
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -84,7 +85,7 @@
 (defn update-pos [rate t dt {:keys [dir] :as inst}]
   (-> inst
       (update :pos tm/+ (tm/* dir (* 0.075 dt)))
-      (update :rot + (* (* 0.005 (Math/sin (* rate t))) dt))))
+      (update :rot + (* (* 0.005 (math/sin (* rate t))) dt))))
 
 (defn update-state [{:keys [mono triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]
