@@ -34,7 +34,7 @@
 (defn setup []
   (q/no-loop)
   (q/color-mode :hsl 1.0)
-  (let [r (* (/ 0.99 (Math/sqrt 3)) (q/height))]
+  (let [r (* (/ 0.99 tm/SQRT3) (q/height))]
     {:shapes (subdivide -1
                         (assoc (hex/hexagon (gv/vec2) r) :color [1.0 1.0]))}))
 
