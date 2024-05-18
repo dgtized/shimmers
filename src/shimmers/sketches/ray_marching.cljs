@@ -1,5 +1,6 @@
 (ns shimmers.sketches.ray-marching
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -105,7 +106,7 @@
             (cond (< t 0) 0.0
                   (> t 1) 1.0
                   :else t))]
-    (- (Math/sqrt (+ (eq/sqr (- pax (* bax h)))
+    (- (math/sqrt (+ (eq/sqr (- pax (* bax h)))
                      (eq/sqr (- pay (* bay h)))))
        r)))
 

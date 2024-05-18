@@ -1,5 +1,7 @@
 (ns shimmers.math.kinematics
-  (:require [shimmers.math.equations :as eq]))
+  (:require
+   [clojure.math :as math]
+   [shimmers.math.equations :as eq]))
 
 ;; https://www.youtube.com/watch?v=v1V3T5BPd7E
 ;; suvat equations
@@ -30,4 +32,4 @@
 ;; v^2 = u^2 + 2as
 ;; or v = sqrt(u^2+2as)
 (defn velocity-from-displacement [u a s]
-  (Math/sqrt (+ (eq/sqr u) (* 2 a s))))
+  (math/sqrt (+ (eq/sqr u) (* 2 a s))))

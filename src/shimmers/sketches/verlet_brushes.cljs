@@ -1,5 +1,6 @@
 (ns shimmers.sketches.verlet-brushes
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -32,7 +33,7 @@
         (if (< l rsq)
           (physics/add-force particle (tm/* (gv/vec2 (:x b) (:y b))
                                             (/ (* (- 1.0 (/ l rsq)) (* strength delta))
-                                               (Math/sqrt l))))
+                                               (math/sqrt l))))
           (physics/add-force particle (tm/* (tm/- closest pos) 0.0001)))))))
 
 (defn dipole [pos r1 r2 strength]

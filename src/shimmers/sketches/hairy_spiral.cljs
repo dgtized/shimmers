@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hairy-spiral
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -24,7 +25,7 @@
 
 (defn perpindiculars [center dr' rotations width]
   (for [t (dr/density-range 0.0001 0.0005)
-        :let [theta (* eq/TAU rotations (Math/sqrt t))
+        :let [theta (* eq/TAU rotations (math/sqrt t))
               dr (* theta dr')
               r (* dr (/ theta eq/TAU))]]
     (gl/line2 (v/+polar center (- r (* dr width)) theta)

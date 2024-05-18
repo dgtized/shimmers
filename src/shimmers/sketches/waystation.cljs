@@ -1,5 +1,6 @@
 (ns shimmers.sketches.waystation
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -69,7 +70,7 @@
   (let [acc (if target
               (let [control 0.1
                     delta (- target pos)
-                    acc (- (* control delta) (* (* 2 (Math/sqrt control)) vel))]
+                    acc (- (* control delta) (* (* 2 (math/sqrt control)) vel))]
                 (tm/clamp acc (- max-accel) (/ max-accel cars)))
               0)]
     (-> train

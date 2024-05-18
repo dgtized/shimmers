@@ -1,5 +1,6 @@
 (ns shimmers.sketches.decomposite
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -64,7 +65,7 @@
         :else
         (for [o (dr/gaussian-range (/ 500 (g/area shape)) (dr/random 0.01 0.15))]
           (-> shape
-              (poly-detect/inset-polygon (* 0.4 o (Math/sqrt (g/area shape))))
+              (poly-detect/inset-polygon (* 0.4 o (math/sqrt (g/area shape))))
               (geometry/rotate-around-centroid (dr/gaussian 0.0 (* 0.015 o)))))))
 
 (defn break-apart [container depth]

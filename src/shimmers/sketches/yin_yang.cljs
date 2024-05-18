@@ -1,5 +1,6 @@
 (ns shimmers.sketches.yin-yang
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -22,7 +23,7 @@
   (let [rN (+ r1 (* direction r2))]
     (assoc state
            :r1 rN
-           :r2 (Math/sqrt (- (sum-square r-size r-size) (* rN rN))))))
+           :r2 (math/sqrt (- (sum-square r-size r-size) (* rN rN))))))
 
 (defn update-state [{:keys [r1 r2] :as state}]
   (if (or (< r1 10) (< r2 10))

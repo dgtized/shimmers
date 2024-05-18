@@ -1,5 +1,6 @@
 (ns shimmers.sketches.s-chartarum
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -125,7 +126,7 @@
   (q/ellipse-mode :radius)
   (doseq [{:keys [pos radius max-radius points spores]} spots]
     (let [p-radius (/ radius max-radius)
-          sqrt-r (Math/sqrt p-radius)]
+          sqrt-r (math/sqrt p-radius)]
       (q/stroke-weight (+ 0.5 (* 0.4 p-radius)))
       (cond (or (> p-radius 1.0) (dr/chance (* 0.5 (- 1.0 rate))))
             nil

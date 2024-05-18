@@ -1,5 +1,6 @@
 (ns shimmers.sketches.six-of-one-half-dozen-of-the-other
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -48,7 +49,7 @@
   (q/color-mode :hsl 1.0)
   (let [p (gv/vec2)
         ;; height is 1/sqrt(3) to fit exactly, so scale it down by a hair
-        r (* (/ 0.99 (Math/sqrt 3)) (q/height))
+        r (* (/ 0.99 (math/sqrt 3)) (q/height))
         start (hexagon p r)]
     ;; Chance of *two* root hexagons, so patterns can fill in from underneath
     {:shapes (into [start]

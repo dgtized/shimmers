@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hyphae
   (:require
+   [clojure.math :as math]
    [clojure.set :as set]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -124,7 +125,7 @@
 
 (defn attractors-circle [center]
   (fn [] (gc/circle (v/+polar center
-                             (cq/rel-h (Math/sqrt (dr/random 0.08 0.2)))
+                             (cq/rel-h (math/sqrt (dr/random 0.08 0.2)))
                              (dr/random-tau))
                    (attractor-size))))
 

@@ -1,5 +1,6 @@
 (ns shimmers.sketches.epicenter-of-impact
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -20,7 +21,7 @@
 (defn gen-points [bounds radius]
   (->> [(rp/inside-circle (gc/circle (g/unmap-point bounds (gv/vec2 0.5 0.5))  radius) dr/random)]
        (iterate (fn [points] (let [p (tm/+ (dr/rand-nth points)
-                                          (v/polar (* radius (Math/sqrt (dr/random 0.7 0.9)))
+                                          (v/polar (* radius (math/sqrt (dr/random 0.7 0.9)))
                                                    (dr/random-tau)))]
                               (if (and (g/contains-point? bounds p)
                                        (not (some (fn [o] (< (g/dist o p) (* 0.6 radius))) points)))
