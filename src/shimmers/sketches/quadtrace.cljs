@@ -1,5 +1,6 @@
 (ns shimmers.sketches.quadtrace
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.quadtree :as saq]
@@ -37,7 +38,7 @@
     (g/delete-point tree (g/get-point n))))
 
 (defn update-state [{:keys [t] :as state}]
-  (let [rs (eq/unit-sin (+ (* 4 t) (Math/sin (* tm/PHI t))))
+  (let [rs (eq/unit-sin (+ (* 4 t) (math/sin (* tm/PHI t))))
         p (tm/+ (cq/rel-vec 0.5 0.5) (v/polar (* (q/height) (+ 0.05 (* 0.4 rs)))
                                               t))
         cursor (gc/circle p (+ 2 (* 8 (eq/unit-sin (* 3 t)))))]
