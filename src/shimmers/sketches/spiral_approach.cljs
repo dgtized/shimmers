@@ -1,5 +1,6 @@
 (ns shimmers.sketches.spiral-approach
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
@@ -20,7 +21,7 @@
   (for [f (tm/norm-range n)
         :let [t (+ f s)]]
     (v/+polar p
-              (* tm/PHI (Math/pow v (+ s (* 9 t))))
+              (* tm/PHI (math/pow v (+ s (* 9 t))))
               (* 7 t eq/TAU))))
 
 (defn shapes []

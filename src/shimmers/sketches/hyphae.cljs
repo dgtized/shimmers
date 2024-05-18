@@ -104,7 +104,7 @@
     (assoc state :steady-state true)
     (let [[depth influenced]
           (some (fn [depth]
-                  (when-let [s (seq (influenced-branches state (Math/pow 2 depth)))]
+                  (when-let [s (seq (influenced-branches state (math/pow 2 depth)))]
                     [depth s]))
                 [0 2 4])]
       (if (empty? influenced)

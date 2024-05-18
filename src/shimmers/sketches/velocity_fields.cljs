@@ -1,5 +1,6 @@
 (ns shimmers.sketches.velocity-fields
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -146,7 +147,7 @@
                       bounds
                       {:buzzy (and buzzy (dr/chance 0.8))
                        :pareto-width (and pareto-width (dr/chance 0.9))}
-                      (* density (Math/pow 2.5 i))))
+                      (* density (math/pow 2.5 i))))
             (shape-plan)
             (range))))
 

@@ -1,5 +1,6 @@
 (ns shimmers.sketches.decaying-foundations
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -64,7 +65,7 @@
     (q/fill (if (< py 0.55) (dr/random -0.05 0.05) (dr/random 0.35 0.45))
             (* (- 1.8 py) (dr/random 0.3 0.6))
             (* (- 1.2 py) (dr/random 0.2 0.4))
-            (+ (Math/pow (- py 0.45) 2) 0.25))
+            (+ (math/pow (- py 0.45) 2) 0.25))
     (q/stroke-weight 1.0)
     (q/rect x y w h)
     (when (dr/chance (/ py 1.5))

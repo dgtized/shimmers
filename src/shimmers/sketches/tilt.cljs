@@ -1,5 +1,6 @@
 (ns shimmers.sketches.tilt
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -36,7 +37,7 @@
         (geometry/rotate-around-centroid (rand)))))
 
 (defn pow-range [n p]
-  (map #(Math/pow % p) (tm/norm-range n)))
+  (map #(math/pow % p) (tm/norm-range n)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)

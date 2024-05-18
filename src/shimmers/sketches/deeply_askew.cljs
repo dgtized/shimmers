@@ -1,5 +1,6 @@
 (ns shimmers.sketches.deeply-askew
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.poisson-disc-sampling :as pds]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -21,7 +22,7 @@
 (defn shapes []
   (let [bounds (g/scale-size (csvg/screen width height) 0.9)
         seed (dr/noise-seed)
-        point-noise (fn [p] (tm/clamp (Math/pow (dr/noise-at-point seed 0.005 p) 2) 0.1 1.0))
+        point-noise (fn [p] (tm/clamp (math/pow (dr/noise-at-point seed 0.005 p) 2) 0.1 1.0))
         points (pds/generate-dynamic bounds 15 [6 160] point-noise)
         cells (delvor/voronoi-cells points bounds)]
     (->> cells

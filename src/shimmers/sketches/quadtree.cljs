@@ -1,5 +1,6 @@
 (ns shimmers.sketches.quadtree
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.quadtree :as saq]
@@ -68,7 +69,7 @@
       (when-let [circle (g/get-point-data n)]
         (q/stroke 0.0)
         (when depth
-          (q/fill (/ 16.0 (Math/pow 2 (:depth (meta n)))) 0.1))
+          (q/fill (/ 16.0 (math/pow 2 (:depth (meta n)))) 0.1))
         (cq/rectangle (g/bounds n))
         (q/no-fill)
         (q/stroke 0.0 0.5 0.5)

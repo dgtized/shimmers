@@ -1,5 +1,6 @@
 (ns shimmers.sketches.dependents
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.random-points :as rp]
@@ -123,7 +124,7 @@
                 :let [distance (g/dist pos (:pos neighbor))
                       pct-dist (/ distance max-distance)]]
           (when (< pct-dist (* 0.5 (/ (float (inc i)) 4)))
-            (q/stroke 0 (* (- 1.0 pct-dist) (/ 1.0 (Math/pow 4 (inc i)))))
+            (q/stroke 0 (* (- 1.0 pct-dist) (/ 1.0 (math/pow 4 (inc i)))))
             (if connect-surfaces
               (q/line (g/closest-point (:poly neighbor) pos)
                       (g/closest-point poly (:pos neighbor)))

@@ -1,5 +1,6 @@
 (ns shimmers.sketches.marching-squares
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.algorithm.marching-squares :as iso]
@@ -26,7 +27,7 @@
         sx (/ (q/width) n)
         sy (/ (q/height) n)
         {:keys [threshold divisor]} @ui-state
-        m (/ 1 (Math/pow 2 divisor))]
+        m (/ 1 (math/pow 2 divisor))]
     (doseq [px (tm/norm-range n)]
       (doseq [py (tm/norm-range n)]
         (let [[x y] (cq/rel-vec px py)]
