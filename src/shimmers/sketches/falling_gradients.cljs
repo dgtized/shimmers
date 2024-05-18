@@ -1,5 +1,6 @@
 (ns shimmers.sketches.falling-gradients
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -36,7 +37,7 @@
             :let [theta (dr/random-tau)]]
       (let [f (dr/random -0.0075 -0.0125)]
         (doseq [s (range 400)
-                :let [d (* depth (Math/pow Math/E (* f s)))]]
+                :let [d (* depth (math/exp (* f s)))]]
           (-> (cq/rel-vec x1 (+ y1 d))
               (random-triangle-at (+ theta (* eq/TAU d))
                                   slice-width)
