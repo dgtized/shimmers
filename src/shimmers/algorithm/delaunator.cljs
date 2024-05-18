@@ -1,6 +1,7 @@
 (ns shimmers.algorithm.delaunator
   (:require
    ["delaunator"]
+   [clojure.math :as math]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]))
@@ -63,7 +64,7 @@
                    (* cd (- bx ax)))))))
 
 (defn triangle-of-edge [e]
-  (Math/floor (/ e 3)))
+  (math/floor (/ e 3)))
 
 (defn triangle-center [points ^js/Delaunator delaunay t]
   (let [{[a b c] :points} (delaunay-triangle points delaunay t)]

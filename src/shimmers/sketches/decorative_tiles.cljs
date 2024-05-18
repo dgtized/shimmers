@@ -1,5 +1,6 @@
 (ns shimmers.sketches.decorative-tiles
   (:require
+   [clojure.math :as math]
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -120,7 +121,7 @@
    :bounds (g/bounds s)})
 
 (defn mirror [n i]
-  (let [mid (Math/floor (/ n 2))]
+  (let [mid (math/floor (/ n 2))]
     (if (even? n)
       (cond (< i mid) (- (dec mid) i)
             :else (- i mid))
