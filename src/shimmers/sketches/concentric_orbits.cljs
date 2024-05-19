@@ -18,7 +18,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn max-radius [r n]
-  (/ r (+ math/E (math/sin (/ eq/TAU n)))))
+  (/ r (+ math/E (math/sin (/ (/ n math/E) eq/TAU)))))
 
 (defn orbit [{:keys [p r]} n phase]
   (for [t (butlast (tm/norm-range n))]
