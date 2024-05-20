@@ -41,10 +41,11 @@
       (let [d1 (* 0.04 (O d-freq 0 s))
             d2 (* 0.04 (O d-freq tm/QUARTER_PI s))
             p (plot center radius (perturb params (- d1)) s)
-            q (plot center radius (perturb params d2) s)]
+            q (plot center radius (perturb params d2) s)
+            dir (tm/normalize (tm/- p q) r)]
         (csvg/group {}
-          (gc/circle p r)
-          (gc/circle q r)
+          (gc/circle (tm/+ p dir) r)
+          (gc/circle (tm/- q dir) r)
           (gl/line2 p q))))))
 
 (defn scene [params]
