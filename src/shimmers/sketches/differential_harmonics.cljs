@@ -1,7 +1,9 @@
 (ns shimmers.sketches.differential-harmonics
   (:require
    [clojure.math :as math]
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
@@ -59,7 +61,8 @@
           (gl/line2 p q))))))
 
 (defn scene [params]
-  (csvg/svg-timed {:width width
+  (csvg/svg-timed {:id "scene"
+                   :width width
                    :height height
                    :stroke "black"
                    :fill "none"
@@ -84,6 +87,7 @@
       [sketch/with-explanation
        [:div.canvas-frame [scene params]]
        [:div.flexcols
+        [kb/kb-action "alt-s" #(svg-export/download "scene" "differential-harmonics")]
         [view-sketch/generate :differential-harmonics]
         [:p "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]]
        [:div.readable-width
