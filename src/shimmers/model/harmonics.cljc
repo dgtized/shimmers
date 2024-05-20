@@ -8,7 +8,7 @@
    [thi.ng.math.core :as tm]))
 
 (defn abc []
-  (let [a (dr/weighted-by #(math/pow 0.9 %) (range 1 11))
+  (let [a (dr/weighted-by #(math/pow 0.8 %) (range 1 11))
         b (dr/weighted-by #(sm/lcm % a) (range 1 13))
         lcm (sm/lcm a b)
         gcd (sm/gcd a b)
@@ -23,4 +23,6 @@
 (comment
   (map (fn [x] (math/pow 0.90 x)) (range 15))
   (map (fn [x] (sm/gcd 3 x))  (range 20))
-  (map (fn [x] (sm/lcm 3 x))  (range 20)))
+  (map (fn [x] (sm/lcm 3 x))  (range 20))
+
+  (dr/summary-stats (repeatedly 100 #(dr/weighted-by (fn [x] (math/pow 0.8 x)) (range 1 11)))))
