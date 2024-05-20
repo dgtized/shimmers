@@ -22,8 +22,8 @@
 (defn plot
   [center radius {[a b c] :freqs [a-osc b-osc c-osc] :freqs-osc} s]
   (-> (gv/vec2)
-      (tm/+ (R a (* 0.2 (O a-osc 0 s)) 0.65 s))
-      (tm/+ (R b (* 0.6 (O b-osc 0 (- 1.0 s))) 0.30 s))
+      (tm/+ (R a (* 0.2 (O a-osc 0 s)) 0.70 s))
+      (tm/+ (R b (* 0.6 (O b-osc 0 (- 1.0 s))) 0.25 s))
       (tm/+ (R c (* 0.8 (O c-osc 0 s)) 0.05 s))
       (tm/* radius)
       (tm/+ center)))
