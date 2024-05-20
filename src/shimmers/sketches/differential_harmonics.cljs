@@ -39,8 +39,8 @@
         radius (* 0.48 height)
         r (* 0.0033 height)]
     (for [s (tm/norm-range n-points)]
-      (let [d1 (* 0.04 (O d-freq (O d-phase (- tm/QUARTER_PI) s) s))
-            d2 (* 0.04 (O d-freq (+ tm/QUARTER_PI (O d-phase 0 (- 1.0 s))) s))
+      (let [d1 (* 0.05 (O d-freq (O d-phase (- tm/QUARTER_PI) s) s))
+            d2 (* 0.05 (O d-freq (+ tm/QUARTER_PI (O d-phase 0 (- 1.0 s))) s))
             p (plot center radius (perturb params (- d1)) s)
             q (plot center radius (perturb params d2) s)
             dir (tm/normalize (tm/- p q) r)]
