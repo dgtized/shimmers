@@ -34,13 +34,13 @@
       (update-in [:freqs 1] + (* 0.25 v))
       (update-in [:freqs 2] + (* -0.15 v))))
 
-(defn shapes [{:keys [n-points d-freq] :as params}]
+(defn shapes [{:keys [n-points d-freq d-phase] :as params}]
   (let [center (rv 0.5 0.5)
         radius (* 0.48 height)
         r (* 0.0033 height)]
     (for [s (tm/norm-range n-points)]
-      (let [d1 (* 0.04 (O d-freq 0 s))
-            d2 (* 0.04 (O d-freq tm/QUARTER_PI s))
+      (let [d1 (* 0.04 (O d-freq (O d-phase (- tm/QUARTER_PI) s) s))
+            d2 (* 0.04 (O d-freq (+ tm/QUARTER_PI (O d-phase 0 (- 1.0 s))) s))
             p (plot center radius (perturb params (- d1)) s)
             q (plot center radius (perturb params d2) s)
             dir (tm/normalize (tm/- p q) r)]
@@ -64,7 +64,8 @@
      :freqs-osc [(* (dr/random-sign) (dr/random-int 5))
                  (* (dr/random-sign) (dr/random-int 7))
                  (* (dr/random-sign) (dr/random-int 13))]
-     :d-freq (math/floor (tm/clamp (+ 0.5 (dr/gaussian 5.0 3)) 1 12))}))
+     :d-freq (math/floor (tm/clamp (+ 0.5 (dr/gaussian 5.0 3)) 1 12))
+     :d-phase (dr/random-int 1 5)}))
 
 (defn page []
   (let [params (parameters)]
