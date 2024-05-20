@@ -52,8 +52,8 @@
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.5}
+                   :fill "none"
+                   :stroke-width 0.66}
     (shapes params)))
 
 (defn parameters []
