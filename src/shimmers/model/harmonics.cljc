@@ -9,7 +9,7 @@
 
 (defn abc []
   (let [a (dr/weighted-by #(math/pow 0.8 %) (range 1 11))
-        b (dr/weighted-by #(sm/lcm % a) (range 1 13))
+        b (dr/weighted-by #(sm/lcm % a) (range 1 11))
         lcm (sm/lcm a b)
         gcd (sm/gcd a b)
         c (dr/weighted
