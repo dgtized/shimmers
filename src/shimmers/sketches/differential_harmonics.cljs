@@ -1,5 +1,6 @@
 (ns shimmers.sketches.differential-harmonics
   (:require
+   [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -63,7 +64,7 @@
      :freqs-osc [(* (dr/random-sign) (dr/random-int 5))
                  (* (dr/random-sign) (dr/random-int 7))
                  (* (dr/random-sign) (dr/random-int 13))]
-     :d-freq (dr/random-int 1 7)}))
+     :d-freq (math/floor (tm/clamp (+ 0.5 (dr/gaussian 5.0 3)) 1 12))}))
 
 (defn page []
   (let [params (parameters)]
