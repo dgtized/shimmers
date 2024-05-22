@@ -97,10 +97,13 @@
       [sketch/with-explanation
        [:div.canvas-frame [scene (merge params @ui-state)]]
        [:div.flexcols
-        [kb/kb-action "alt-s" #(svg-export/download "scene" "differential-harmonics")]
         [view-sketch/generate :differential-harmonics]
-        [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-10 10 1]]
-        [:p "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]]
+        [:div
+         [kb/kb-action "alt-s" #(svg-export/download "scene" "differential-harmonics")]
+         [:p.readable-width
+          "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
+         [:div {:style {:width "20em"}}
+          [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-10 10 1]]]]]
        [:div.readable-width
         (debug/pre-edn params)]])))
 
