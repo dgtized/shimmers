@@ -106,6 +106,7 @@
    shimmers.sketches.hatched-rectangles
    shimmers.sketches.helix
    shimmers.sketches.hexaclock
+   shimmers.sketches.hexaflexagon
    shimmers.sketches.hexcursive
    shimmers.sketches.hexflare
    shimmers.sketches.hexpansion
