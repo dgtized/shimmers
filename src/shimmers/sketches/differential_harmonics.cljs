@@ -58,7 +58,8 @@
             dir (tm/normalize (tm/- p q) r)
             val (if (zero? remove-freq)
                   0
-                  (Math/sin (+ (* remove-freq eq/TAU s) (Math/sin s))))]
+                  (Math/sin (+ (* remove-freq eq/TAU s)
+                               (* 1.5 (Math/sin (* tm/PHI remove-freq s))))))]
         (cond (< -0.8 val 0.8)
               (csvg/group {}
                 (gc/circle (tm/+ p dir) r)
