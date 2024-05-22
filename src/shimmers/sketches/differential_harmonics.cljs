@@ -81,7 +81,7 @@
 
 (defn parameters []
   (let [[a b c] (harm/abc)]
-    {:n-points 2048
+    {:n-points 1500
      :freqs [a b c]
      :freqs-osc [(* (dr/random-sign) (dr/random-int 5))
                  (* (dr/random-sign) (dr/random-int 7))
