@@ -57,8 +57,8 @@
             dir (tm/normalize (tm/- p q) r)]
         (csvg/group {}
           (gc/circle (tm/+ p dir) r)
-          (gc/circle (tm/- q dir) r)
-          (gl/line2 p q))))))
+          (gl/line2 p q)
+          (gc/circle (tm/- q dir) r))))))
 
 (defn scene [params]
   (csvg/svg-timed {:id "scene"
