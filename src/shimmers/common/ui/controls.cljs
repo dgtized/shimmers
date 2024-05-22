@@ -102,12 +102,15 @@
               :step (or step 1)
               :on-change (assoc-value settings field-ref edn/read-string)}]]))
 
-(defn numeric [settings label field-ref [lower upper step]]
-  [:div.label-set.numeric {:key (str "numeric-" field-ref)}
-   [:label label]
-   [:input {:type "number" :min lower :max upper :step step
-            :value (get-in @settings field-ref)
-            :on-change (assoc-value settings field-ref edn/read-string)}]])
+(defn numeric
+  ([settings label field-ref step-range]
+   (numeric settings label field-ref step-range {}))
+  ([settings label field-ref [lower upper step] {:keys [on-change]}]
+   [:div.label-set.numeric {:key (str "numeric-" field-ref)}
+    [:label label]
+    [:input {:type "number" :min lower :max upper :step step
+             :value (get-in @settings field-ref)
+             :on-change (assoc-value settings field-ref edn/read-string on-change)}]]))
 
 (defn color [settings label field-ref]
   [:div.label-set.color {:key (str "color-" field-ref)}
