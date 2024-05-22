@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.wobble :as mw :refer [O R]]
    [shimmers.model.harmonics :as harm]
    [shimmers.sketch :as sketch :include-macros true]
@@ -45,7 +46,7 @@
       (update-in [:freqs 1] + (* 0.25 v))
       (update-in [:freqs 2] + (* -0.15 v))))
 
-(defn shapes [{:keys [n-points perturb-dist] :as params}]
+(defn shapes [{:keys [n-points perturb-dist remove-freq] :as params}]
   (let [center (rv 0.5 0.5)
         radius (* 0.48 height)
         r (* 0.0033 height)]
@@ -54,11 +55,19 @@
             d2 (* 0.05 (osc perturb-dist (- 1.0 s)))
             p (plot center radius (perturb params (- d1)) s)
             q (plot center radius (perturb params d2) s)
-            dir (tm/normalize (tm/- p q) r)]
-        (csvg/group {}
-          (gc/circle (tm/+ p dir) r)
-          (gl/line2 p q)
-          (gc/circle (tm/- q dir) r))))))
+            dir (tm/normalize (tm/- p q) r)
+            val (if (zero? remove-freq)
+                  0
+                  (Math/sin (+ (* 4 eq/TAU s) (Math/sin s))))]
+        (cond (< -0.8 val 0.8)
+              (csvg/group {}
+                (gc/circle (tm/+ p dir) r)
+                (gl/line2 p q)
+                (gc/circle (tm/- q dir) r))
+              (< val -0.8)
+              (gc/circle p (* 0.2 r))
+              (< 0.8 val)
+              (gc/circle q (* 0.2 r)))))))
 
 (defn scene [params]
   (csvg/svg-timed {:id "scene"
@@ -82,13 +91,15 @@
                                   tm/QUARTER_PI)}))
 
 (defn page []
-  (let [params (parameters)]
+  (let [ui-state (ctrl/state {:remove-freq 0})
+        params (parameters)]
     (fn []
       [sketch/with-explanation
-       [:div.canvas-frame [scene params]]
+       [:div.canvas-frame [scene (merge params @ui-state)]]
        [:div.flexcols
         [kb/kb-action "alt-s" #(svg-export/download "scene" "differential-harmonics")]
         [view-sketch/generate :differential-harmonics]
+        [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-10 10 1]]
         [:p "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]]
        [:div.readable-width
         (debug/pre-edn params)]])))
