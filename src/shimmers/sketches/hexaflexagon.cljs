@@ -43,7 +43,7 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [view-sketch/generate :hexaflexagon]
+     ;; [view-sketch/generate :hexaflexagon]
      [:div.readable-width]]))
 
 (sketch/definition hexaflexagon
