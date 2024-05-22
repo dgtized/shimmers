@@ -6,6 +6,7 @@
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -23,8 +24,12 @@
       (gt/triangle2 (v/+polar p length (* 2 dir)) p (v/+polar p length dir)))))
 
 (defn shapes []
-  (concat (triangle-strip (rv 0.05 0.5) (/ eq/TAU 6) (/ (* width 0.8) 4.5) 9)
-          (triangle-strip (rv 0.05 0.5) (- (/ eq/TAU 6)) (/ (* width 0.8) 4.5) 9)))
+  (for [[s l] (mapv vector
+                    (concat (triangle-strip (rv 0.05 0.5) (/ eq/TAU 6) (/ (* width 0.8) 4.5) 9)
+                            (triangle-strip (rv 0.05 0.5) (- (/ eq/TAU 6)) (/ (* width 0.8) 4.5) 9))
+                    (cycle [1 1 2 2 3 3]))]
+    (csvg/group {} s
+      (csvg/center-label (g/centroid s) (str l) {}))))
 
 (defn scene []
   (csvg/svg-timed {:width width
