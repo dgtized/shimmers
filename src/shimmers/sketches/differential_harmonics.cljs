@@ -41,10 +41,9 @@
   (O f1 (+ p1 (O f2 p2 (- 1.0 s))) s))
 
 (defn perturb [params v]
-  (-> params
-      (update-in [:freqs 0] + (* 0.6 v))
-      (update-in [:freqs 1] + (* 0.25 v))
-      (update-in [:freqs 2] + (* -0.15 v))))
+  (let [weights (gv/vec3 0.6 0.25 -0.15)]
+    (update params :freqs
+            (fn [p] (tm/+ (gv/vec3 p) (tm/* weights v))))))
 
 (defn shapes [{:keys [n-points perturb-dist remove-freq] :as params}]
   (let [center (rv 0.5 0.5)
