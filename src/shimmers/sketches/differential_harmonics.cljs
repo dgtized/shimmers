@@ -86,9 +86,9 @@
                  (* (dr/random-sign) (dr/random-int 7))
                  (* (dr/random-sign) (dr/random-int 13))]
      :perturb-dist (create-wobble (math/floor (tm/clamp (+ 0.5 (dr/gaussian 5.0 3)) 1 12))
-                                  (- tm/QUARTER_PI)
+                                  (- tm/SIXTH_PI)
                                   (dr/random-int 1 5)
-                                  tm/QUARTER_PI)}))
+                                  tm/SIXTH_PI)}))
 
 (defn page []
   (let [ui-state (ctrl/state {:remove-freq 0})
