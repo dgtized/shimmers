@@ -51,11 +51,11 @@
 (defn rectangle [position [width height]]
   (let [hw (/ width 2)
         hh (/ height 2)]
-    (map (fn [p] (v/add position p))
-         [(gv/vec3 (- hw) (- hh) 0)
-          (gv/vec3 hw (- hh) 0)
-          (gv/vec3 hw hh 0)
-          (gv/vec3 (- hw) hh 0)])))
+    (mapv (fn [p] (v/add position p))
+          [(gv/vec3 (- hw) (- hh) 0)
+           (gv/vec3 hw (- hh) 0)
+           (gv/vec3 hw hh 0)
+           (gv/vec3 (- hw) hh 0)])))
 
 (defn box [width height depth]
   (let [hd (/ depth 2)]
@@ -67,11 +67,11 @@
 
 (defn translate-box [b offset]
   (update b :vertices
-          (fn [vertices] (map (fn [p] (tm/+ p offset)) vertices))))
+          (fn [vertices] (mapv (fn [p] (tm/+ p offset)) vertices))))
 
 (defn rotate-box [b angles]
   (update b :vertices
-          (fn [vertices] (map (fn [p] (rotation p angles)) vertices))))
+          (fn [vertices] (mapv (fn [p] (rotation p angles)) vertices))))
 
 (defn cube [[x y z] angles [width height depth]]
   (let [aabb (box width height depth)]
