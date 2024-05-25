@@ -46,9 +46,12 @@
                       (cond
                         ;; allow an edge to intersect
                         (= n-isecs 2)
-                        true
+                        ;; but ensure no other points overlap
+                        (= isecs
+                           (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                           (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
                         ;; allow one point to intersect
-                        ;; FIXME false positive if inside overlaps but no points
+                        ;; FIXME false positive if edges overlaps but no points
                         (= n-isecs 1)
                         (= isecs
                            (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
@@ -114,7 +117,7 @@
         starting (vary-meta (g/center (random-shape size)
                                       (rv 0.5 0.5))
                             assoc :stroke "#772222")
-        generated (gen-shapes size starting 8)]
+        generated (gen-shapes size starting 20)]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene generated]]
