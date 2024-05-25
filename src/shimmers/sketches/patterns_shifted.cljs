@@ -16,7 +16,9 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(defonce ui-state (ctrl/state {:debug false}))
 (defonce defo (debug/state []))
+
 (def width 800)
 (def height 600)
 (def bounds (rect/rect 0 0 width height))
@@ -29,6 +31,7 @@
     (poly/regular-n-gon n r)))
 
 (defn gen-shapes [size shape n]
+  (reset! defo [])
   (loop [structure [shape]
          faces (set (g/edges shape))
          annotation []]
@@ -59,33 +62,34 @@
                  (disj faces face)
                  annotation))))))
 
-(defn shapes []
-  (let [size (* 0.08 height)
-        starting (vary-meta (g/center (random-shape size)
-                                      (rv 0.5 0.5))
-                            assoc :stroke "#772222")
-        {:keys [structure annotation faces]}
-        (gen-shapes size starting 32)]
-    (conj (concat structure annotation)
-          (csvg/group {:stroke-width 2.0}
-            (mapv (fn [[p q]] (gl/line2 p q)) faces)))))
+(defn shapes [{:keys [structure annotation faces]}]
+  (conj (concat structure (if (:debug @ui-state) annotation []))
+        (csvg/group {:stroke-width 2.0}
+          (mapv (fn [[p q]] (gl/line2 p q)) faces))))
 
-(defn scene []
+(defn scene [generated]
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.5}
-    (reset! defo [])
-    (shapes)))
+    (shapes generated)))
 
 (defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :patterns-shifted]
-     [:div.readable-width
-      [debug/display defo]]]))
+  (let [size (* 0.08 height)
+        starting (vary-meta (g/center (random-shape size)
+                                      (rv 0.5 0.5))
+                            assoc :stroke "#772222")
+        generated (gen-shapes size starting 32)]
+    (fn []
+      [sketch/with-explanation
+       [:div.canvas-frame [scene generated]]
+       [:div.flexcols
+        [view-sketch/generate :patterns-shifted]
+        [:div.readable-width
+         [ctrl/checkbox ui-state "Debug" [:debug]]
+         (when (:debug @ui-state)
+           [debug/display defo])]]])))
 
 (sketch/definition patterns-shifted
   {:created-at "2024-05-23"
