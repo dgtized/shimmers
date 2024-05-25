@@ -4,14 +4,15 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
    [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -27,21 +28,24 @@
   (loop [structure [shape]
          faces (set (g/edges shape))
          annotation []]
-    (if (>= (count structure) n)
+    (if (or (empty? faces) (>= (count structure) n))
       {:structure structure :annotation annotation}
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
-            ;; TODO: avoid overlap
             shape (g/rotate (random-shape size) (g/heading (tm/- structure-face)))
             pos (tm/- mid (tm/* structure-face 0.4))
             shape' (g/translate shape pos)
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
                                    (g/edges shape')))]
-        (recur (conj structure shape')
-               (set/union (disj faces face) (set edges))
-               (conj annotation (gc/circle mid 2.0)))))))
+        (if (some (fn [s] (collide/overlaps? s shape')) structure)
+          (recur structure
+                 (disj faces face)
+                 annotation)
+          (recur (conj structure shape')
+                 (set/union (disj faces face) (set edges))
+                 (conj annotation (gc/circle mid 2.0))))))))
 
 (defn shapes []
   (let [starting (vary-meta (g/center (random-shape (* 0.05 height))
