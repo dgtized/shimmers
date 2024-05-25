@@ -29,7 +29,8 @@
          annotation []]
     (if (>= (count structure) n)
       {:structure structure :annotation annotation}
-      (let [[fp fq] (dr/rand-nth (into [] faces))
+      (let [face (dr/rand-nth (into [] faces))
+            [fp fq] face
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
             ;; TODO: avoid overlap
@@ -39,7 +40,7 @@
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
                                    (g/edges shape')))]
         (recur (conj structure shape')
-               (set/union (disj faces [fp fq]) (set edges))
+               (set/union (disj faces face) (set edges))
                (conj annotation (gc/circle mid 2.0)))))))
 
 (defn shapes []
@@ -48,7 +49,7 @@
                             assoc :stroke-width 2.0)
         res (gen-shapes (* 0.05 height)
                         starting
-                        64)]
+                        32)]
     (apply concat (vals res))))
 
 (defn scene []
