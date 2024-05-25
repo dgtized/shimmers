@@ -17,6 +17,7 @@
 
 (def width 800)
 (def height 600)
+(def bounds (rect/rect 0 0 width height))
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -40,7 +41,8 @@
             shape' (g/translate shape pos)
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
                                    (g/edges shape')))]
-        (if (some (fn [s] (collide/overlaps? s shape')) structure)
+        (if (or (not (collide/bounded? bounds shape'))
+                (some (fn [s] (collide/overlaps? s shape')) structure))
           (recur structure
                  (disj faces face)
                  annotation)
