@@ -24,9 +24,11 @@
     (rect/rect size) 0}))
 
 (defn shapes [size shape n]
-  (loop [shapes [shape] faces (set (g/edges shape))]
-    (if (>= (count shapes) n)
-      shapes
+  (loop [structure [shape]
+         faces (set (g/edges shape))
+         annotation []]
+    (if (>= (count structure) n)
+      (concat structure annotation)
       (let [[fp fq] (dr/rand-nth (into [] faces))
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
@@ -35,8 +37,9 @@
             pos (tm/- mid (tm/* structure-face 0.33))
             shape' (g/translate shape pos)]
         ;; TODO remove connecting edge from new shape
-        (recur (conj (conj shapes shape') (gc/circle mid 2.0))
-               (set/union faces (set (g/edges shape'))))))))
+        (recur (conj structure shape')
+               (set/union faces (set (g/edges shape')))
+               (conj annotation (gc/circle mid 2.0)))))))
 
 (defn scene []
   (csvg/svg-timed {:width width
