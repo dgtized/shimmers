@@ -1,4 +1,4 @@
-(ns shimmers.sketches.patterns-shifted
+(ns shimmers.sketches.regular-tilings
   (:require
    [clojure.set :as set]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -122,13 +122,13 @@
       [sketch/with-explanation
        [:div.canvas-frame [scene generated]]
        [:div.flexcols
-        [view-sketch/generate :patterns-shifted]
+        [view-sketch/generate :regular-tilings]
         [:div.readable-width
          [ctrl/checkbox ui-state "Debug" [:debug]]
          (when (:debug @ui-state)
            [debug/display defo])]]])))
 
-(sketch/definition patterns-shifted
+(sketch/definition regular-tilings
   {:created-at "2024-05-23"
    :tags #{}
    :type :svg}
