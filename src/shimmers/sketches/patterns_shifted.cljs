@@ -23,12 +23,12 @@
    {(triangle/inscribed-equilateral (gv/vec2) size 0) 2
     (rect/rect size) 0}))
 
-(defn shapes [size shape n]
+(defn gen-shapes [size shape n]
   (loop [structure [shape]
          faces (set (g/edges shape))
          annotation []]
     (if (>= (count structure) n)
-      (concat structure annotation)
+      {:structure structure :annotation annotation}
       (let [[fp fq] (dr/rand-nth (into [] faces))
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
@@ -41,17 +41,22 @@
                (set/union faces (set (g/edges shape')))
                (conj annotation (gc/circle mid 2.0)))))))
 
+(defn shapes []
+  (let [starting (vary-meta (g/center (random-shape (* 0.05 height))
+                                      (rv 0.5 0.5))
+                            assoc :stroke-width 2.0)
+        res (gen-shapes (* 0.05 height)
+                        starting
+                        64)]
+    (apply concat (vals res))))
+
 (defn scene []
   (csvg/svg-timed {:width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.5}
-    (shapes (* 0.05 height)
-            (vary-meta (g/center (random-shape (* 0.05 height))
-                                 (rv 0.5 0.5))
-                       assoc :stroke-width 2.0)
-            64)))
+    (shapes)))
 
 (defn page []
   (fn []
