@@ -34,11 +34,12 @@
             structure-face (g/normal (tm/- fq fp))
             ;; TODO: avoid overlap
             shape (g/rotate (random-shape size) (g/heading (tm/- structure-face)))
-            pos (tm/- mid (tm/* structure-face 0.33))
-            shape' (g/translate shape pos)]
-        ;; TODO remove connecting edge from new shape
+            pos (tm/- mid (tm/* structure-face 0.4))
+            shape' (g/translate shape pos)
+            edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
+                                   (g/edges shape')))]
         (recur (conj structure shape')
-               (set/union faces (set (g/edges shape')))
+               (set/union (disj faces [fp fq]) (set edges))
                (conj annotation (gc/circle mid 2.0)))))))
 
 (defn shapes []
