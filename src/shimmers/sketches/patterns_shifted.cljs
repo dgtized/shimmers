@@ -14,7 +14,8 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 (defonce ui-state (ctrl/state {:debug false}))
 (defonce defo (debug/state []))
@@ -30,6 +31,39 @@
         r (poly/circumradius-side-length n size)]
     (poly/regular-n-gon n r)))
 
+(defn vector-set [vertices]
+  (set (for [[x y] vertices]
+         (f/format [(f/float 3) (f/float 3)] x y))))
+
+(defn tiles-structure? [structure shape]
+  (let [overlaps (filter (fn [s] (collide/overlaps? s shape)) structure)
+        one-edge (filter
+                  (fn [s]
+                    (let [isecs (set/intersection (vector-set (g/vertices s))
+                                                  (vector-set (g/vertices shape)))
+                          n-isecs (count isecs)]
+                      ;; FIXME still some false negatives
+                      (cond
+                        ;; allow an edge to intersect
+                        (= n-isecs 2)
+                        true
+                        ;; allow one point to intersect
+                        ;; FIXME false positive if inside overlaps but no points
+                        (= n-isecs 1)
+                        (= isecs
+                           (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                           (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
+                        :else
+                        false)))
+                  overlaps)]
+    (cond (empty? overlaps)
+          true
+          (= (count one-edge) (count overlaps))
+          true
+          :else
+          (do (println {:shape shape :overlaps overlaps :one-edge one-edge})
+              false))))
+
 (defn gen-shapes [size shape n]
   (reset! defo [])
   (loop [structure [shape]
@@ -43,24 +77,24 @@
             structure-face (g/normal (tm/- fq fp))
             shape (g/rotate (random-shape size) (g/heading (tm/- structure-face)))
             apothem (poly/apothem-side-length (count (g/vertices shape)) size)
-            pos (tm/- mid (tm/normalize structure-face (+ apothem 0.01)))
+            pos (tm/- mid (tm/normalize structure-face apothem))
             shape' (g/center shape pos)
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
                                    (g/edges shape')))
             inside? (collide/bounded? bounds shape')
-            overlaps? (some (fn [s] (collide/overlaps? s shape')) structure)]
+            tiles? (tiles-structure? structure shape')]
         (swap! defo conj
-               {:shape shape
-                ;; :faces faces
+               {:shape shape'
+                :faces faces
                 :face face
-                :added [inside? overlaps?]})
-        (if (and inside? (not overlaps?))
+                :added [inside? tiles?]})
+        (if (and inside? tiles?)
           (recur (conj structure shape')
                  (set/union (disj faces face) (set edges))
-                 (into annotation [(gc/circle mid 2.0)]))
+                 (into annotation [(gc/circle mid 2.0) (gc/circle pos 1.0)]))
           (recur structure
                  (disj faces face)
-                 annotation))))))
+                 (conj annotation (vary-meta shape' assoc :stroke "red"))))))))
 
 (defn shapes [{:keys [structure annotation faces]}]
   (conj (concat structure (if (:debug @ui-state) annotation []))
@@ -80,7 +114,7 @@
         starting (vary-meta (g/center (random-shape size)
                                       (rv 0.5 0.5))
                             assoc :stroke "#772222")
-        generated (gen-shapes size starting 32)]
+        generated (gen-shapes size starting 8)]
     (fn []
       [sketch/with-explanation
        [:div.canvas-frame [scene generated]]
