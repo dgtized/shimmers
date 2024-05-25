@@ -10,6 +10,7 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -29,7 +30,7 @@
          faces (set (g/edges shape))
          annotation []]
     (if (or (empty? faces) (>= (count structure) n))
-      {:structure structure :annotation annotation}
+      {:structure structure :annotation annotation :faces faces}
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
             mid (tm/mix fp fq 0.5)
@@ -51,10 +52,13 @@
   (let [starting (vary-meta (g/center (random-shape (* 0.05 height))
                                       (rv 0.5 0.5))
                             assoc :stroke-width 2.0)
-        res (gen-shapes (* 0.05 height)
-                        starting
-                        32)]
-    (apply concat (vals res))))
+        {:keys [structure annotation faces]}
+        (gen-shapes (* 0.05 height)
+                    starting
+                    32)]
+    (conj (concat structure annotation)
+          (csvg/group {:stroke-width 2.0}
+            (mapv (fn [[p q]] (gl/line2 p q)) faces)))))
 
 (defn scene []
   (csvg/svg-timed {:width width
