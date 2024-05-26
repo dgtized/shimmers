@@ -320,3 +320,12 @@
 (defmethod coincident-edge?
   [Polygon2 Rect2] [a b]
   (some? (coincident-polygon? a (g/as-polygon b))))
+
+;; TODO: should there be a helper for finding all intersecting points between two shapes?
+;; ie window-glimpses/intersecting-points or intertwined/intersections
+
+;; FIXME shoudl this be iff, ie only the case if coincident-point is unique?
+(defmulti coincident-point?
+  "Test if shapes `a` and `b` share a single point in common, either at a vertice or along
+  an intersecting edge."
+  (fn [a b] [(type a) (type b)]))
