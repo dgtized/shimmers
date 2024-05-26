@@ -37,28 +37,30 @@
 
 (defn tiles-structure? [structure shape]
   (let [overlaps (filter (fn [s] (collide/overlaps? s shape)) structure)
-        one-edge (filter
-                  (fn [s]
-                    (let [isecs (set/intersection (vector-set (g/vertices s))
-                                                  (vector-set (g/vertices shape)))
-                          n-isecs (count isecs)]
-                      ;; FIXME still some false negatives
-                      (cond
-                        ;; allow an edge to intersect
-                        (= n-isecs 2)
-                        ;; but ensure no other points overlap
-                        (= isecs
-                           (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
-                           (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
-                        ;; allow one point to intersect
-                        ;; FIXME false positive if edges overlaps but no points
-                        (= n-isecs 1)
-                        (= isecs
-                           (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
-                           (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
-                        :else
-                        false)))
-                  overlaps)]
+        one-edge
+        (filter
+         (fn [s]
+           (let [isecs (set/intersection (vector-set (g/vertices s))
+                                         (vector-set (g/vertices shape)))
+                 n-isecs (count isecs)]
+             ;; FIXME still some false negatives
+             (cond
+               ;; allow an edge to intersect
+               (= n-isecs 2)
+               ;; but ensure no other points overlap
+               ;; ie filter for coincident edge?
+               (= isecs
+                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
+               ;; allow one point to intersect
+               ;; FIXME false positive if edges overlaps but no points
+               (= n-isecs 1)
+               (= isecs
+                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
+               :else
+               false)))
+         overlaps)]
     (cond (empty? overlaps)
           true
           (= (count one-edge) (count overlaps))
