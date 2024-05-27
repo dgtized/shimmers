@@ -101,10 +101,13 @@
                  (disj faces face)
                  (conj annotation (vary-meta shape' assoc :stroke "red"))))))))
 
+(def palette ["#666" "#999" "#CCC" "#FFF"])
 (defn shapes [{:keys [structure annotation faces]}]
-  (conj (concat structure (if (:debug @ui-state) annotation []))
+  (conj (concat (mapv (fn [s] (vary-meta s assoc :fill (dr/rand-nth palette)))
+                      structure)
+                (if (:debug @ui-state) annotation []))
         (csvg/group {:stroke-width 2.0}
-          (mapv (fn [[p q]] (gl/line2 p q)) faces))))
+                    (mapv (fn [[p q]] (gl/line2 p q)) faces))))
 
 (defn scene [generated]
   (csvg/svg-timed {:width width
