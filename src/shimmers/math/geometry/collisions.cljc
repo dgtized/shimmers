@@ -321,8 +321,24 @@
   [Polygon2 Rect2] [a b]
   (some? (coincident-polygon? a (g/as-polygon b))))
 
+(defn intersecting-points
+  "Finds all intersection points along a line through a set of edges sorted by
+  distance from `rp`."
+  [rp rq edges]
+  (->> edges
+       (sequence
+        (comp
+         (map (fn [[p q]] (isec/intersect-line2-line2? rp rq p q)))
+         (filter (fn [isec]
+                   (when (get isec :p) (= :intersect (get isec :type)))))
+         (map (fn [isec] (let [p (get isec :p)
+                              d (g/dist-squared rp p)]
+                          [p d])))))
+       (sort-by second)
+       (map first)))
+
 ;; TODO: should there be a helper for finding all intersecting points between two shapes?
-;; ie window-glimpses/intersecting-points or intertwined/intersections
+;; see also intertwined/intersections
 
 ;; FIXME shoudl this be iff, ie only the case if coincident-point is unique?
 (defmulti coincident-point?

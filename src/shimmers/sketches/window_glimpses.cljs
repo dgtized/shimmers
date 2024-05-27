@@ -154,22 +154,6 @@
         (assoc (meta s) :arc s)
         (meta s)))))
 
-(defn intersecting-points
-  "Finds all intersection points along a line through a set of edges sorted by
-  distance from `rp`."
-  [rp rq edges]
-  (->> edges
-       (sequence
-        (comp
-         (map (fn [[p q]] (isec/intersect-line2-line2? rp rq p q)))
-         (filter (fn [isec]
-                   (when (get isec :p) (= :intersect (get isec :type)))))
-         (map (fn [isec] (let [p (get isec :p)
-                              d (g/dist-squared rp p)]
-                          [p d])))))
-       (sort-by second)
-       (map first)))
-
 ;; FIXME: this only works for convex shapes
 ;; FIXME: adjust point intersection logic for circles instead of always using edges
 (defn separate
@@ -186,7 +170,7 @@
                               (if (instance? Circle2 s)
                                 (g/edges s 64)
                                 (g/edges s))))
-                    (intersecting-points rp rq))
+                    (collide/intersecting-points rp rq))
                [rq])
        (partition 2 2)
        (map (fn [[p q]]
