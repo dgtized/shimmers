@@ -345,3 +345,7 @@
   "Test if shapes `a` and `b` share a single point in common, either at a vertice or along
   an intersecting edge."
   (fn [a b] [(type a) (type b)]))
+
+(defmulti adjacent?
+  "Test if shapes `a` and `b` share a vertice or an edge, but do not intersect inside."
+  (fn [a b] [(type a) (type b)]))
