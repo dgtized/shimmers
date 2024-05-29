@@ -344,13 +344,17 @@
 ;; FIXME shoudl this be iff, ie only the case if coincident-point is unique?
 (defmulti coincident-point?
   "Test if shapes `a` and `b` share a single point in common, either at a vertice or along
-  an intersecting edge."
+  an intersecting edge. Returns contact point if touching"
   (fn [a b] [(type a) (type b)]))
 
+;; FIXME: This includes cases where polygons just intersect eachother
 (defmethod coincident-point?
   [Polygon2 Polygon2] [a b]
-  (some (fn [[ap bp]] (tm/delta= ap bp))
-        (mc/cartesian-product (g/vertices a) (g/vertices b))))
+  (or (some (fn [[ap bp]] (when (tm/delta= ap bp) ap))
+            (mc/cartesian-product (g/vertices a) (g/vertices b)))
+      (some (fn [[a-edge b-edge]]
+              (intersect/segment-intersect a-edge b-edge))
+            (mc/cartesian-product (g/edges a) (g/edges b)))))
 
 (defmulti adjacent?
   "Test if shapes `a` and `b` share a vertice or an edge, but do not intersect inside."

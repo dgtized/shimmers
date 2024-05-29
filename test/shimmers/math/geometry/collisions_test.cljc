@@ -8,7 +8,8 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (deftest overlap?
   (t/testing "Rect2 Rect2"
@@ -50,7 +51,11 @@
 
 (deftest coincident-point?
   (t/testing "Polygon2 Polygon2"
-    (is (not (sut/coincident-point? (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
-                                    (gp/polygon2 [0.0 0] [5 0.3] [2.5 -3]))))
-    (is (sut/coincident-point? (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
-                               (gp/polygon2 [0.0 0] [5 0.2] [2.5 -3])))))
+    (is (nil? (sut/coincident-point? (gp/polygon2 [0.0 1] [5 2] [2.5 3])
+                                     (gp/polygon2 [0.0 0] [5 0] [2.5 -3]))))
+    (is (tm/delta= (sut/coincident-point? (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
+                                          (gp/polygon2 [0.0 0] [5 0.2] [2.5 -3]))
+                   [5 0.2]))
+    (is (tm/delta= (sut/coincident-point? (gp/polygon2 [0 0] [10 0] [5 -5])
+                                          (gp/polygon2 [5 0] [10 5] [0 5]))
+                   [5 0]))))
