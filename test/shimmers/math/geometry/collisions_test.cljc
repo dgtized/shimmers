@@ -48,10 +48,15 @@
 (deftest coincident-segment?
   (is (tm/delta= (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
                                           [(gv/vec2 0 1) (gv/vec2 0 6)])
-                 (gl/line2 [0 1] [0 5])))
+                 (gl/line2 [0 1] [0 5]))
+      "coincident overlapping edge")
   (is (tm/delta= (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
                                           [(gv/vec2 0 5) (gv/vec2 0 6)])
-                 (gl/line2 [0 5] [0 5]))))
+                 (gl/line2 [0 5] [0 5]))
+      "coincident edge with one connecting vertice")
+  (is (nil? (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
+                                     [(gv/vec2 0 5) (gv/vec2 1 5)]))
+      "touching vertice but edge is not coincident"))
 
 (deftest coincident-edge?
   (t/testing "Rect2 Rect2"
