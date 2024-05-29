@@ -3,6 +3,7 @@
    [clojure.test :as t :refer [deftest is] :include-macros true]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as sut]
+   [shimmers.math.geometry.line]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -43,6 +44,14 @@
   (is (sut/bounded? (gc/circle 2) (gc/circle [1 0] 1)))
   (is (not (sut/bounded? (gc/circle 2) (gc/circle [1.1 0] 1))))
   (is (not (sut/bounded? (gc/circle 2) (gc/circle [1 0] 2)))))
+
+(deftest coincident-segment?
+  (is (tm/delta= (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
+                                          [(gv/vec2 0 1) (gv/vec2 0 6)])
+                 (gl/line2 [0 1] [0 5])))
+  (is (tm/delta= (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
+                                          [(gv/vec2 0 5) (gv/vec2 0 6)])
+                 (gl/line2 [0 5] [0 5]))))
 
 (deftest coincident-edge?
   (t/testing "Rect2 Rect2"

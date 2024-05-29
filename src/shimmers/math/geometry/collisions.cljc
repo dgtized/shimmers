@@ -1,8 +1,9 @@
 (ns shimmers.math.geometry.collisions
   (:require [clojure.math.combinatorics :as mc]
-            [shimmers.math.geometry.intersection :as intersect]
             [shimmers.math.geometry :as geometry]
+            [shimmers.math.geometry.intersection :as intersect]
             [thi.ng.geom.core :as g]
+            [thi.ng.geom.line :as gl]
             [thi.ng.geom.utils.intersect :as isec]
             [thi.ng.geom.rect :as rect]
             [thi.ng.math.core :as tm]
@@ -302,7 +303,7 @@
 (defn coincident-segment? [[p q] [r s]]
   (let [{:keys [type] :as hit} (isec/intersect-line2-line2? p q r s)]
     (when (= type :coincident)
-      [(:p hit) (:q hit)])))
+      (gl/line2 (:p hit) (:q hit)))))
 
 (defn coincident-polygon? [a b]
   (some (fn [edge-a]
