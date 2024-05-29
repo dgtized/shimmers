@@ -6,6 +6,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
+   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
 
@@ -46,3 +47,10 @@
   (t/testing "Rect2 Rect2"
     (is (sut/coincident-edge? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge")
     (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 0 3 2 2))) "overlapping edge")))
+
+(deftest coincident-point?
+  (t/testing "Polygon2 Polygon2"
+    (is (not (sut/coincident-point? (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
+                                    (gp/polygon2 [0.0 0] [5 0.3] [2.5 -3]))))
+    (is (sut/coincident-point? (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
+                               (gp/polygon2 [0.0 0] [5 0.2] [2.5 -3])))))

@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.collisions
-  (:require [shimmers.math.geometry.intersection :as intersect]
+  (:require [clojure.math.combinatorics :as mc]
+            [shimmers.math.geometry.intersection :as intersect]
             [shimmers.math.geometry :as geometry]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.utils.intersect :as isec]
@@ -345,6 +346,11 @@
   "Test if shapes `a` and `b` share a single point in common, either at a vertice or along
   an intersecting edge."
   (fn [a b] [(type a) (type b)]))
+
+(defmethod coincident-point?
+  [Polygon2 Polygon2] [a b]
+  (some (fn [[ap bp]] (tm/delta= ap bp))
+        (mc/cartesian-product (g/vertices a) (g/vertices b))))
 
 (defmulti adjacent?
   "Test if shapes `a` and `b` share a vertice or an edge, but do not intersect inside."
