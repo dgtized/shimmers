@@ -77,3 +77,17 @@
     (is (nil? (sut/coincident-point? (gp/polygon2 [0 0] [5 -5] [10 0])
                                      (gp/polygon2 [0 1] [5 -6] [10 1])))
         "coincident point must be at the intersection point not inside or through")))
+
+(deftest coincident-points
+  (is (empty? (sut/coincident-points (gp/polygon2 [0.0 1] [5 2] [2.5 3])
+                                     (gp/polygon2 [0.0 0] [5 0] [2.5 -3]))))
+  (is (tm/delta= (first (sut/coincident-points (gp/polygon2 [0.1 0] [5 0.2] [2.5 3])
+                                               (gp/polygon2 [0.0 0] [5 0.2] [2.5 -3])))
+                 [5 0.2]))
+  (is (tm/delta= (first (sut/coincident-points (gp/polygon2 [0 0] [10 0] [5 -5])
+                                               (gp/polygon2 [5 0] [10 5] [0 5])))
+                 [5 0])
+      "point intersects with other shapes edge")
+  (is (empty? (sut/coincident-points (gp/polygon2 [0 0] [5 -5] [10 0])
+                                     (gp/polygon2 [0 1] [5 -6] [10 1])))
+      "coincident point must be at the intersection point not inside or through"))

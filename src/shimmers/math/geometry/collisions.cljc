@@ -1,5 +1,6 @@
 (ns shimmers.math.geometry.collisions
   (:require [clojure.math.combinatorics :as mc]
+            [shimmers.algorithm.lines :as lines]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.geometry.intersection :as intersect]
             [thi.ng.geom.core :as g]
@@ -341,6 +342,24 @@
 
 ;; TODO: should there be a helper for finding all intersecting points between two shapes?
 ;; see also intertwined/intersections
+
+(defn coincident-points
+  "Finds unique coincident points between two polygons `a` and `b`.
+
+  O(e^2) complexity."
+  [a b]
+  (->> (for [a-edge (g/edges a)
+             b-edge (g/edges b)
+             :let [ap (first a-edge)
+                   [bp bq] b-edge]]
+         (if (or (tm/delta= ap bp)
+                 (tm/delta= ap bq))
+           [ap]
+           (when-let [isec (intersect/segment-intersect a-edge b-edge)]
+             (filterv (fn [p] (when (tm/delta= isec p) isec))
+                      (concat a-edge b-edge)))))
+       (apply concat)
+       lines/dedupe-points))
 
 ;; FIXME shoudl this be iff, ie only the case if coincident-point is unique?
 (defmulti coincident-point?
