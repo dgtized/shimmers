@@ -90,4 +90,19 @@
       "point intersects with other shapes edge")
   (is (empty? (sut/coincident-points (gp/polygon2 [0 0] [5 -5] [10 0])
                                      (gp/polygon2 [0 1] [5 -6] [10 1])))
-      "coincident point must be at the intersection point not inside or through"))
+      "coincident point must be at the intersection point not inside or through")
+
+  (is (= (sut/coincident-points (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+                                (gp/polygon2 [10 0] [20 0] [20 10] [10 10]))
+         [[10 0] [10 10]])
+      "polygons share an edge")
+
+  #_(is (= (sut/coincident-points (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+                                  (gp/polygon2 [10 -1] [20 0] [20 10] [10 11]))
+           [[10 0] [10 10]])
+        "polygons cover a shared edge")
+
+  #_(is (= (sut/coincident-points (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
+                                  (gp/polygon2 [10 0] [20 0] [20 20] [10 20]))
+           [[10 0] [10 10]])
+        "polygons overlap a shared edge"))
