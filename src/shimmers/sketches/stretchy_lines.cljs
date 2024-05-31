@@ -1,15 +1,16 @@
 (ns shimmers.sketches.stretchy-lines
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
-   [shimmers.common.quil :as cq]
-   [thi.ng.geom.core :as g]
-   [clojure.math :as math]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.geom.core :as g]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -27,11 +28,13 @@
   (q/background 1.0)
   (let [N 256
         secs (/ (q/millis) 1000.0)
-        t (+ secs (math/sin (+ w0 (* 0.75 secs) (math/sin (+ p0 (* 0.5 secs))))))]
+        t (+ (* 0.9 secs)
+             (math/sin (+ w0 (* 0.75 secs)
+                          (* 2 (eq/cube (math/sin (+ p0 (* 0.5 secs))))))))]
     (dotimes [i N]
-      (let [a (mod (/ (- i (* 0.15 t) (* 0.6 N (math/sin (+ (* w0 i) (* 0.3 t) p0))))
+      (let [a (mod (/ (- i (* 0.09 t) (* 0.6 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
                       (float N)) 1.0)
-            b (mod (/ (+ i (* 0.10 t) (* 0.7 N (math/sin (- (* w1 i) (* 0.4 t) p1))))
+            b (mod (/ (+ i (* 0.13 t) (* 0.7 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
                       (float N)) 1.0)]
         (q/line (g/point-at outline a)
                 (g/point-at outline b))))))
