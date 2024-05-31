@@ -33,6 +33,7 @@
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
    shimmers.sketches.circuit-intersections
+   shimmers.sketches.circular-repetition
    shimmers.sketches.clothoid-flowers
    shimmers.sketches.clothoids
    shimmers.sketches.clustered-farmlands
