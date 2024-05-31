@@ -7,7 +7,6 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]))
 
@@ -26,9 +25,9 @@
           t (/ (q/millis) 2000.0)]
       (dotimes [i 360]
         (q/push-matrix)
-        (q/rotate-z (mod (+ (* c (+ t i)) (* 2 (Math/sin (* o3 t)))) eq/TAU))
-        (q/rotate-y (mod (+ (* b (+ t i)) (* 2 (math/sin (* o2 t)))) eq/TAU))
-        (q/rotate-x (mod (+ (* a (+ t i)) (* 2 (math/sin (* o1 t)))) eq/TAU))
+        (q/rotate-z (+ (* c (+ t i)) (* 2 (Math/sin (* o3 t)))))
+        (q/rotate-y (+ (* b (+ t i)) (* 2 (math/sin (* o2 t)))))
+        (q/rotate-x (+ (* a (+ t i)) (* 2 (math/sin (* o1 t)))))
         (cq/circle center r)
         (q/pop-matrix)))))
 
