@@ -48,12 +48,14 @@
    [:div
     [:div.readable-width
      "Inpired by " [:a {:href "https://junkiyoshi.com/openframeworks20240527/"} "Junki Yoshi - overlap circles"]
-     " but using random phase modulation instead of pure noise."]
+     " but using random phase modulation instead of pure noise to seed the x,y,z rotation of each circle."]
     [:div
+     [:p]
      (let [{:keys [weights osc]} @defo]
        (for [[axis w o] (mapv vector [:x :y :z] weights osc)]
-         [:code {:key axis}
-          (f/format [(f/pad-left 2 " ") " "(f/float 2) " " (f/float 2)] (name axis) w o) [:br]]))]]])
+         [:div {:key axis}
+          [:code
+           (f/format [(f/pad-left 2 " ") " "(f/float 2) " " (f/float 2)] (name axis) w o)]]))]]])
 
 (sketch/definition circular-repetition
     {:created-at "2024-05-31"
