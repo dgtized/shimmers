@@ -19,11 +19,12 @@
   (q/stroke-weight 0.25)
   (let [params
         {:weights (repeatedly 3 #(dr/random -1.0 1.0))
-         :osc (repeatedly 3 #(dr/random -0.5 0.5))}]
+         :osc (repeatedly 3 #(dr/random -0.5 0.5))
+         :phase (repeatedly 3 dr/random-tau)}]
     (reset! defo params)
     params))
 
-(defn draw [{[a b c] :weights [o1 o2 o3] :osc}]
+(defn draw [{[a b c] :weights [o1 o2 o3] :osc [p1 p2 p3] :phase}]
   (q/background 1.0)
   (let [r (cq/rel-h 0.4)
         t (/ (q/millis) 2000.0)]
@@ -31,9 +32,9 @@
       (q/push-matrix)
       (let [angle i
             scale 0.075]
-        (q/rotate-z (+ (* scale c (+ t angle)) (* 2 (math/sin (* o3 t)))))
-        (q/rotate-y (+ (* scale b (+ t angle)) (* 2 (math/sin (* o2 t)))))
-        (q/rotate-x (+ (* scale a (+ t angle)) (* 2 (math/sin (* o1 t))))))
+        (q/rotate-z (+ (* scale c (+ t angle)) (* 2 (math/sin (+ p1 (* o3 t))))))
+        (q/rotate-y (+ (* scale b (+ t angle)) (* 2 (math/sin (+ p2 (* o2 t))))))
+        (q/rotate-x (+ (* scale a (+ t angle)) (* 2 (math/sin (+ p3 (* o1 t)))))))
       (q/ellipse 0 0 r r)
       (q/pop-matrix))))
 
@@ -51,11 +52,13 @@
      " but using random phase modulation instead of pure noise to seed the x,y,z rotation of each circle."]
     [:div
      [:p]
-     (let [{:keys [weights osc]} @defo]
-       (for [[axis w o] (mapv vector [:x :y :z] weights osc)]
+     (let [{:keys [weights osc phase]} @defo]
+       (for [[axis w o p] (mapv vector [:x :y :z] weights osc phase)]
          [:div {:key axis}
           [:code
-           (f/format [(f/pad-left 2 " ") " "(f/float 2) " " (f/float 2)] (name axis) w o)]]))]]])
+           (f/format [(f/pad-left 2 " ") " "
+                      (f/float 2) " " (f/float 2) " " (f/float 2)]
+                     (name axis) w o p)]]))]]])
 
 (sketch/definition circular-repetition
     {:created-at "2024-05-31"
