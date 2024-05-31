@@ -32,13 +32,16 @@
         (q/pop-matrix)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
      :size [800 600]
      :renderer :p3d
      :setup setup
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [:div.readable-width
+    "Inpired by " [:a {:href "https://junkiyoshi.com/openframeworks20240527/"} "Junki Yoshi - overlap circles"]
+    " but using random phase modulation instead of pure noise."]])
 
 (sketch/definition circular-repetition
   {:created-at "2024-05-31"
