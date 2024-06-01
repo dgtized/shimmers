@@ -60,10 +60,10 @@
         center (cq/rel-vec 0.5 0.5)
         d (+ 0.05 (* 0.2 (eq/unit-sin t)))]
     (dotimes [i N]
-      (let [a (mod (/ (- i (* 0.07 t) (* 0.55 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
+      (let [a (mod (/ (- i (* 0.070 t) (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
                       (float N)) 1.0)
-            b (mod (/ (+ i (* 0.05 t) (* 0.75 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
-                      (float N)) 1.0)
+            b (- 1.0 (mod (/ (+ i (* 0.011 t) (* 0.35 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
+                             (float N)) 1.0))
             [px py] (g/point-at outline a)
             [qx qy] (g/point-at outline b)
             [rx ry] (tm/mix center (g/point-at outline (sm/mix-mod a b d)) 0.66)
