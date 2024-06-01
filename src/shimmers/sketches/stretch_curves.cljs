@@ -15,8 +15,15 @@
    [thi.ng.math.core :as tm]))
 
 (defn mk-transition []
-  {:interval (dr/weighted {2.0 1.0 3.0 2.0 6.0 1.0})
-   :freeze 0.25})
+  {:interval (dr/weighted {2.0 1.0
+                           3.0 2.0
+                           4.0 2.0
+                           6.0 2.0
+                           8.0 1.0
+                           10.0 1.0
+                           12.0 1.0
+                           16.0 1.0})
+   :freeze (abs (dr/gaussian 0.3 0.1))})
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -36,13 +43,14 @@
   (let [dt (- (/ (q/millis) 1000.0) time)
         {:keys [interval freeze]} transition
         mt (mod time interval)
+        active (- interval freeze)
         state' (if (<= mt 0.0001)
                  (assoc state :transition (mk-transition))
                  state)]
     (-> state'
         (update :t +
-                (if (<= mt (- interval freeze))
-                  (* 0.025 (math/log (- (inc (- interval freeze)) mt)))
+                (if (<= mt active)
+                  (* 0.025 (math/sin (* math/PI (/ mt active))))
                   0.0))
         (update :time + dt))))
 
