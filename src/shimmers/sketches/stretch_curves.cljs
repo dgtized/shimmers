@@ -16,13 +16,12 @@
 
 (defn mk-transition []
   {:interval (dr/weighted {2.0 1.0
-                           3.0 2.0
+                           3.0 1.0
                            4.0 2.0
-                           6.0 2.0
-                           8.0 1.0
-                           10.0 1.0
-                           12.0 1.0
-                           16.0 1.0})
+                           6.0 3.0
+                           8.0 2.0
+                           10.0 2.0
+                           12.0 1.0})
    :freeze (abs (dr/gaussian 0.3 0.1))})
 
 (defn setup []
