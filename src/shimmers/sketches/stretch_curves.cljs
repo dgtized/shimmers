@@ -14,20 +14,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
 
-(defn mk-transition []
-  {:interval (dr/weighted {2.0 1.0
-                           3.0 1.0
-                           4.0 2.0
-                           6.0 4.0
-                           8.0 4.0
-                           10.0 3.0
-                           12.0 2.0
-                           14.0 2.0
-                           16.0 1.0
-                           18.0 1.0
-                           20.0 1.0})
-   :freeze (abs (dr/gaussian 0.3 0.1))})
-
 (defn setup []
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
@@ -38,29 +24,17 @@
                           (cq/screen-rect 0.9)])
    :weights (repeatedly 2 #(dr/random -0.1 0.1))
    :phase (repeatedly 2 dr/random-tau)
-   :time (/ (q/millis) 1000.0)
-   :transition (mk-transition)
-   :t 0.0})
+   :time (/ (q/millis) 1000.0)})
 
-(defn update-state [{:keys [time transition] :as state}]
-  (let [dt (- (/ (q/millis) 1000.0) time)
-        {:keys [interval freeze]} transition
-        mt (mod time interval)
-        active (- interval freeze)
-        state' (if (<= mt 0.0001)
-                 (assoc state :transition (mk-transition))
-                 state)]
-    (-> state'
-        (update :t +
-                (if (<= mt active)
-                  (* 0.035 (math/sin (* math/PI (/ mt active))))
-                  0.0))
-        (update :time + dt))))
+(defn update-state [{:keys [time] :as state}]
+  (let [dt (- (/ (q/millis) 1000.0) time)]
+    (-> state (update :time + dt))))
 
-(defn draw [{[w0 w1] :weights [p0 p1] :phase :keys [t outline]}]
+(defn draw [{[w0 w1] :weights [p0 p1] :phase :keys [time outline]}]
   (q/background 1.0)
   (let [N 256
         center (cq/rel-vec 0.5 0.5)
+        t (+ (* 2.5 time) (* 1.5 (math/sin (+ (* 0.35 time) (* 2 (math/sin (* 0.4 time)))))))
         d (+ 0.05 (* 0.2 (eq/unit-sin t)))]
     (dotimes [i N]
       (let [a (mod (/ (- i (* 0.070 t) (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
