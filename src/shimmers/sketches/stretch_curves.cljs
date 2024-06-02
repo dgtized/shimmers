@@ -61,7 +61,7 @@
     (dotimes [i N]
       (let [a (mod (/ (- i (* 0.070 t) (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
                       (float N)) 1.0)
-            b (- 1.0 (mod (/ (+ i (* 0.011 t) (* 0.35 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
+            b (- 1.0 (mod (/ (+ i (* 0.011 t) (* 0.25 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
                              (float N)) 1.0))
             [px py] (g/point-at outline a)
             [qx qy] (g/point-at outline b)
