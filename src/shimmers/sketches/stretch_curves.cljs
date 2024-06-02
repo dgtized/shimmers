@@ -18,9 +18,9 @@
   {:interval (dr/weighted {2.0 1.0
                            3.0 1.0
                            4.0 2.0
-                           6.0 3.0
-                           8.0 2.0
-                           10.0 2.0
+                           6.0 4.0
+                           8.0 4.0
+                           10.0 3.0
                            12.0 1.0})
    :freeze (abs (dr/gaussian 0.3 0.1))})
 
@@ -49,7 +49,7 @@
     (-> state'
         (update :t +
                 (if (<= mt active)
-                  (* 0.025 (math/sin (* math/PI (/ mt active))))
+                  (* 0.035 (math/sin (* math/PI (/ mt active))))
                   0.0))
         (update :time + dt))))
 
