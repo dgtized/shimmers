@@ -34,18 +34,18 @@
   (q/background 1.0)
   (let [N 256
         center (cq/rel-vec 0.5 0.5)
-        t (+ (* 2.5 time) (* 1.5 (math/sin (+ (* 0.35 time) (* 2 (math/sin (* 0.4 time)))))))
-        d (+ 0.05 (* 0.2 (eq/unit-sin t)))
-        d2 (+ 0.5 (* 0.4 (math/sin (+ (* 0.3 t) (math/sin (* 0.4 t))))))]
+        t (+ (* 2.5 time) (* 1.5 (math/sin (+ (* 0.35 time) (* 2 (math/sin (* 0.4 time)))))))]
     (dotimes [i N]
       (let [a (mod (/ (- i (* 0.070 t) (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
                       (float N)) 1.0)
             b (- 1.0 (mod (/ (+ i (* 0.011 t) (* 0.25 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
                              (float N)) 1.0))
+            d1 (+ 0.05 (* 0.25 (eq/unit-sin (- t (* 0.1 i)))))
+            d2 (+ 0.5 (* 0.4 (math/sin (+ (* 0.3 t) (math/sin (+ (* 0.1 i) (* 0.4 t)))))))
             [px py] (g/point-at outline a)
             [qx qy] (g/point-at outline b)
-            [rx ry] (tm/mix center (g/point-at outline (sm/mix-mod a b d)) d2)
-            [sx sy] (tm/mix center (g/point-at outline (sm/mix-mod a b (- 1.0 d))) d2)]
+            [rx ry] (tm/mix center (g/point-at outline (sm/mix-mod a b d1)) d2)
+            [sx sy] (tm/mix center (g/point-at outline (sm/mix-mod a b (- 1.0 d1))) d2)]
         (q/bezier px py rx ry sx sy qx qy)))))
 
 (defn page []
