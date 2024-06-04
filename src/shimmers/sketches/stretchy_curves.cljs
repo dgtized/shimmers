@@ -5,14 +5,19 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.screen :as screen]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]))
+
+(defonce ui-state
+  (ctrl/state {:screen-size "800x600"}))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -56,13 +61,17 @@
         (q/bezier px py rx ry sx sy qx qy)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-     :size [800 600]
+     :size (screen/parse-size (:screen-size @ui-state))
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [ctrl/container
+    [ctrl/dropdown ui-state "Screen Size" [:screen-size]
+     (screen/sizes)
+     {:on-change #(view-sketch/restart-sketch :stretchy-curves)}]]])
 
 (sketch/definition stretchy-curves
   {:created-at "2024-06-01"
