@@ -37,10 +37,12 @@
         t (+ (* 1.5 time) (* 1.5 (math/sin (+ (* 0.35 time) (* 2 (math/sin (* 0.4 time)))))))]
     (dotimes [i N]
       (let [pidx (/ (float i) N)
-            a (mod (/ (- i (* 0.070 t) (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
-                      (float N)) 1.0)
-            b (- 1.0 (mod (/ (+ i (* 0.011 t) (* 0.25 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
-                             (float N)) 1.0))
+            a (mod (- (/ (- i (* 0.15 N (math/sin (+ (* w0 i) (* 0.25 t) p0))))
+                         (float N))
+                      (* 0.003 t)) 1.0)
+            b (- 1.0 (mod (+ (* 0.005 t)
+                             (/ (+ i (* 0.25 N (math/sin (- (* w1 i) (* 0.35 t) p1))))
+                                (float N))) 1.0))
             d1 (+ 0.05 (* 0.25 (eq/unit-sin (- t pidx))))
             d2 (+ 0.5 (* 0.4 (math/sin (+ (* 0.3 t)
                                           (math/sin (+ (* eq/TAU pidx) (* 0.8 t)))))))
