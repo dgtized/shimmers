@@ -108,6 +108,7 @@
     `[shimmers.common.ui.quil/sketch-component ~opts]))
 
 (defmacro definition
+  {:style/indent [:defn]}
   [sketch-page-name options & body]
   (let [runner (vary-meta sketch-page-name merge {:export true})
         {:keys [created-at] :as options}
