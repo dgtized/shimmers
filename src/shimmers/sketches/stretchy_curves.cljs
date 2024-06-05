@@ -10,6 +10,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.ellipse :as ellipse]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
@@ -24,9 +25,13 @@
   (q/ellipse-mode :radius)
   (q/no-fill)
   (q/stroke-weight 0.5)
-  {:outline (dr/rand-nth [(gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5))
-                          (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 6)
-                          (cq/screen-rect 0.9)])
+  {:outline
+   (dr/rand-nth [(gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5))
+                 (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 6)
+                 (ellipse/ellipse (cq/rel-vec 0.5 0.5)
+                                  (cq/rel-w 0.49)
+                                  (cq/rel-h 0.49))
+                 (cq/screen-rect 0.9)])
    :weights (repeatedly 2 #(dr/random -0.1 0.1))
    :phase (repeatedly 2 dr/random-tau)
    :time (/ (q/millis) 1000.0)})
