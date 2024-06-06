@@ -15,9 +15,11 @@
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    #?(:clj [thi.ng.geom.types]
-      :cljs [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]])
+      :cljs [thi.ng.geom.types
+             :refer [Circle2 Ellipse2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]])
    [thi.ng.math.core :as tm])
-  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2])))
+  #?(:clj (:import [thi.ng.geom.types
+                    Circle2 Ellipse2 Line2 LineStrip2 Polygon2 Rect2 Triangle2])))
 
 
 (defn cell-fit [{[w h] :size} n]
@@ -154,6 +156,28 @@
     (sample-point-at _ (dr/random) (dr/random)))
   (sample-point-bounds [{:keys [p r]}]
     (v/+polar p r (dr/random-tau))))
+
+(extend-type Ellipse2
+  ISamplePoint
+  (sample-point-at
+    ([{:keys [p rx ry]} t]
+     (let [theta (* t eq/TAU)]
+       ;; FIXME: this is biased, need to use arc length somehow?
+       ;; see: shimmers/math/geometry/ellipse.cljc#L82
+       ;; possibly by using gu/point-at over vertices?
+       (tm/+ (gv/vec2 (* rx (math/cos theta))
+                      (* ry (math/sin theta)))
+             p)))
+    ([{:keys [p rx ry]} u v]
+     (let [theta (* v eq/TAU)
+           w (math/sqrt u)]
+       (tm/+ (gv/vec2 (* w rx (math/cos theta))
+                      (* w ry (math/sin theta)))
+             p))))
+  (sample-point-inside [_]
+    (sample-point-at _ (dr/random) (dr/random)))
+  (sample-point-bounds [_]
+    (sample-point-at _ (dr/random))))
 
 (extend-type Rect2
   ISamplePoint
