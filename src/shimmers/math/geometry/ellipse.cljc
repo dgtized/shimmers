@@ -93,4 +93,27 @@
           theta (* TWO_PI (m/random))]
       (m/+ (vec2 (* 2 rx rho (math/cos theta))
                  (* 2 ry rho (math/sin theta)))
-           p))))
+           p)))
+
+  ;; FIXME: need a rotate around point for ellipse
+  g/IRotate
+  (rotate [{:keys [p rx ry]} theta]
+    (Ellipse2. (g/rotate p theta) rx ry))
+
+  g/IScale
+  (scale [{:keys [p rx ry]} s]
+    (Ellipse2. (m/* p s) (* rx s) (* ry s)))
+  (scale-size [{:keys [p rx ry]} s]
+    (Ellipse2. p (* rx s) (* ry s)))
+
+  g/ITranslate
+  (translate [{:keys [p rx ry]} t]
+    (Ellipse2. (m/+ p t) rx ry))
+
+  ;; FIXME: this should not upcast to polygon and instead transform the ellipse basis.
+  g/ITransform
+  (transform [_ m]
+    (g/transform (g/as-polygon _) m))
+
+  g/IVolume
+  (volume [_] 0))
