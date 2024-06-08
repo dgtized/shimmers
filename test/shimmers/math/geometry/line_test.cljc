@@ -22,6 +22,10 @@
   (is (tm/delta= (g/slope-xy (gl/line2 [0 0] [2 1])) 0.5))
   (is (tm/delta= (g/slope-xy (gl/line2 [0 0] [1 2])) 2)))
 
+(deftest line3-delta=
+  (is (tm/delta= (gl/line2 [0 0 0] [(/ 1 7) (/ 1 3) 0.666666])
+                 (gl/line2 [0 0 0] [(/ 1 7) 0.333333 (/ 2 3)]))))
+
 (deftest line3-headings-interface
   (is (tm/delta= (g/heading (gl/line3 [0 0 0] [2 0 0])) 0))
   (is (tm/delta= (g/heading (gl/line3 [0 0 0] [0 1 0])) tm/HALF_PI))

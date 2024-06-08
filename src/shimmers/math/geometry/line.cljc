@@ -27,6 +27,13 @@
     (g/slope-xy (tm/- q p))))
 
 (extend-type Line3
+  tm/IDeltaEquals
+  (delta=
+    ([_ line] (tm/delta= _ line tm/*eps*))
+    ([{[a b] :points} line eps]
+     (and (instance? Line3 line)
+          (let [{[c d] :points} line]
+            (and (tm/delta= a c eps) (tm/delta= b d eps))))))
   g/IHeading
   (heading [{[p q] :points}]
     (g/heading (tm/- q p)))
