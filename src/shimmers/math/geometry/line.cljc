@@ -13,10 +13,9 @@
   (delta=
     ([_ line] (tm/delta= _ line tm/*eps*))
     ([{[a b] :points} line eps]
-     (if (instance? Line2 line)
-       (let [{[c d] :points} line]
-         (and (tm/delta= a c eps) (tm/delta= b d eps)))
-       false)))
+     (and (instance? Line2 line)
+          (let [{[c d] :points} line]
+            (and (tm/delta= a c eps) (tm/delta= b d eps))))))
   g/IHeading
   (heading [{[p q] :points}]
     (g/heading (tm/- q p)))
