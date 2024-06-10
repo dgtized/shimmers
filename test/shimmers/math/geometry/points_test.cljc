@@ -6,6 +6,8 @@
   (is (sut/points-delta= [[(/ 1 3) 0.3] [0.1 0.1]]
                          [[0.333333 0.3] [0.1 0.1]])
       "equals vectors")
+  (is (not (sut/points-delta= [] []))
+      "vectors contain points")
   (is (not (sut/points-delta= [[(/ 1 3) 0.3] [0.1 0.1] [0.5 0.5]]
                               [[0.333333 0.3] [0.1 0.1]]))
       "extra args for first set")
