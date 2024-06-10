@@ -27,6 +27,7 @@
    [shimmers.math.geometry.group-test]
    [shimmers.math.geometry.intersection-test]
    [shimmers.math.geometry.line-test]
+   [shimmers.math.geometry.points-test]
    [shimmers.math.geometry.rectangle-test]
    [shimmers.math.geometry.triangle-test]
    [shimmers.math.graph-test]

@@ -5,5 +5,6 @@
 (defn points-delta=
   ([as bs] (points-delta= as bs tm/*eps*))
   ([as bs eps]
-   (every? true? (map (fn [a b] (tm/delta= a b eps))
-                      as bs))))
+   (and (= (count as) (count bs))
+        (every? true? (map (fn [a b] (tm/delta= a b eps))
+                           as bs)))))
