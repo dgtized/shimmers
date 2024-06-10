@@ -1,0 +1,9 @@
+(ns shimmers.math.geometry.points
+  (:require
+   [thi.ng.math.core :as tm]))
+
+(defn points-delta=
+  ([as bs] (points-delta= as bs tm/*eps*))
+  ([as bs eps]
+   (every? true? (map (fn [a b] (tm/delta= a b eps))
+                      as bs))))

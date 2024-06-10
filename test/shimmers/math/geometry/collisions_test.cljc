@@ -4,6 +4,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as sut]
    [shimmers.math.geometry.line]
+   [shimmers.math.geometry.points :as mgp]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -78,12 +79,6 @@
                                      (gp/polygon2 [0 1] [5 -6] [10 1])))
         "coincident point must be at the intersection point not inside or through")))
 
-(defn points-delta=
-  ([as bs] (points-delta= as bs tm/*eps*))
-  ([as bs eps]
-   (every? true? (map (fn [a b] (tm/delta= a b eps))
-                      as bs))))
-
 (deftest coincident-points
   (is (empty? (sut/coincident-points (gp/polygon2 [0.0 1] [5 2] [2.5 3])
                                      (gp/polygon2 [0.0 0] [5 0] [2.5 -3]))))
@@ -98,7 +93,7 @@
                                      (gp/polygon2 [0 1] [5 -6] [10 1])))
       "coincident point must be at the intersection point not inside or through")
 
-  (is (points-delta=
+  (is (mgp/points-delta=
        (sut/coincident-points (gp/polygon2 [0 0] [10 0] [10 10] [0 10])
                               (gp/polygon2 [10 0] [20 0] [20 10] [10 10]))
        [[10 0] [10 10]])
