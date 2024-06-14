@@ -57,7 +57,11 @@
       "coincident edge with one connecting vertice")
   (is (nil? (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 5)]
                                      [(gv/vec2 0 5) (gv/vec2 1 5)]))
-      "touching vertice but edge is not coincident"))
+      "touching vertice but edge is not coincident")
+
+  (is (nil? (sut/coincident-segment? [(gv/vec2 0 0) (gv/vec2 0 4)]
+                                     [(gv/vec2 0 5) (gv/vec2 0 6)]))
+      "same line in plane, but with no overlap"))
 
 (deftest coincident-edge?
   (t/testing "Rect2 Rect2"
