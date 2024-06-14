@@ -33,37 +33,36 @@
         (println action "sketch" (:sketch-id sketch)))
       (f sketch))))
 
-(defn on-index []
-  [{:start #(favicon/start 333)
-    :stop #(favicon/stop)}])
-
 ;; FIXME: moving this to a different namespace seems to break routing
 ;; index does not load and p5 is not required somehow
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
-  [["/" ::root]
-   ["/sketches"
-    {:name :shimmers.view.index/by-alphabetical
-     :view #(view-index/by-alphabetical (sketches/all))
-     :controllers (on-index)}]
-   ["/sketches-by-date"
-    {:name :shimmers.view.index/by-date
-     :view #(view-index/by-date (sketches/all))
-     :controllers (on-index)}]
-   ["/sketches-by-tag"
-    {:name :shimmers.view.index/by-tag
-     :view #(view-index/by-tag (sketches/all))
-     :controllers (on-index)}]
-   ["/sketches/:name"
-    {:name :shimmers.view.sketch/sketch-by-name
-     :view (on-event #(view-sketch/sketch-by-name % (sketches/known-names)) nil)
-     :parameters
-     {:path {:name (every-pred string? (set (sketches/known-names)))}
-      :query {(ds/opt :seed) int?}}
-     :controllers
-     [{:parameters {:path [:name] :query [:seed]}
-       :start (on-event view-sketch/start-sketch "start")
-       :stop (on-event view-sketch/stop-sketch "stop")}]}]])
+  (let [on-index
+        [{:start #(favicon/start 333)
+          :stop #(favicon/stop)}]]
+    [["/" ::root]
+     ["/sketches"
+      {:name :shimmers.view.index/by-alphabetical
+       :view #(view-index/by-alphabetical (sketches/all))
+       :controllers on-index}]
+     ["/sketches-by-date"
+      {:name :shimmers.view.index/by-date
+       :view #(view-index/by-date (sketches/all))
+       :controllers on-index}]
+     ["/sketches-by-tag"
+      {:name :shimmers.view.index/by-tag
+       :view #(view-index/by-tag (sketches/all))
+       :controllers on-index}]
+     ["/sketches/:name"
+      {:name :shimmers.view.sketch/sketch-by-name
+       :view (on-event #(view-sketch/sketch-by-name % (sketches/known-names)) nil)
+       :parameters
+       {:path {:name (every-pred string? (set (sketches/known-names)))}
+        :query {(ds/opt :seed) int?}}
+       :controllers
+       [{:parameters {:path [:name] :query [:seed]}
+         :start (on-event view-sketch/start-sketch "start")
+         :stop (on-event view-sketch/stop-sketch "stop")}]}]]))
 
 (defn on-navigate [page-match new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) ::root))
