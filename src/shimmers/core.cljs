@@ -37,6 +37,8 @@
   [{:start #(favicon/start 333)
     :stop #(favicon/stop)}])
 
+;; FIXME: moving this to a different namespace seems to break routing
+;; index does not load and p5 is not required somehow
 ;; FIXME: handle invalid paths, re-route to index by-alphabetical
 (def routes
   [["/" ::root]
