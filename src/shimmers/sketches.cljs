@@ -64,6 +64,7 @@
    shimmers.sketches.deformed-spirals
    shimmers.sketches.delaunator
    shimmers.sketches.delaunay-voronoi
+   shimmers.sketches.density-variation
    shimmers.sketches.dependents
    shimmers.sketches.differential-growth
    shimmers.sketches.differential-harmonics
