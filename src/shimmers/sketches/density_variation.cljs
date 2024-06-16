@@ -18,20 +18,31 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn fill [shape]
+(defn pairs []
   (let [p0 (dr/random-tau)
         p1 (dr/random-tau)]
     (for [d (dr/density-range 0.002 0.01)]
       (let [n0 (Math/sin (+ p0 (* eq/TAU d) (Math/sin (+ p1 (* math/PI (- 1.0 d))))))
             n1 (Math/cos (+ p1 (* eq/TAU d) (Math/sin (+ p0 (* math/PI (- 1.0 d))))))]
-        (gl/line2 (g/unmap-point shape (gv/vec2 d (+ 0.25 (* 0.15 n0))))
-                  (g/unmap-point shape (gv/vec2 d (+ 0.75 (* 0.15 n1)))))))))
+        [(gv/vec2 d (+ 0.25 (* 0.15 n0)))
+         (gv/vec2 d (+ 0.75 (* 0.15 n1)))]))))
+
+(defn fill [shape pairs]
+  (for [[p q] pairs]
+    (gl/line2 (g/unmap-point shape p)
+              (g/unmap-point shape q))))
 
 (defn shapes []
-  (let [s0 (g/translate (g/scale-size (rect/rect 0 0 width height) 0.9) (rv 0 -0.05))
-        s1 (g/translate (g/scale-size (rect/rect 0 0 width height) 0.9) (rv 0 0.05))]
-    [(svg/group {} (fill s0))
-     (svg/group {} (fill s1))]))
+  (let [box (g/scale-size (rect/rect 0 0 width height) 0.85)]
+    ((dr/weighted [[(fn [] (let [s0 (g/translate box (rv 0 -0.05))
+                                s1 (g/translate box (rv 0 0.05))]
+                            [(svg/group {} (fill s0 (pairs)))
+                             (svg/group {} (fill s1 (pairs)))]))
+                    1.0]
+                   [(fn []
+                      [(svg/group {} (fill box (pairs)))
+                       (svg/group {} (fill box (map (fn [pair] (mapv reverse pair)) (pairs))))])
+                    1.0]]))))
 
 (defn scene []
   (csvg/svg-timed
