@@ -1,17 +1,19 @@
 (ns shimmers.sketches.density-variation
   (:require
+   [clojure.math :as math]
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.deterministic-random :as dr]
-   [thi.ng.geom.line :as gl]
-   [shimmers.math.equations :as eq]
-   [clojure.math :as math]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
-   [thi.ng.geom.rect :as rect]))
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 600)
@@ -68,7 +70,8 @@
 
 (defn scene []
   (csvg/svg-timed
-    {:width width
+    {:id "scene"
+     :width width
      :height height
      :stroke "black"
      :fill "none"
@@ -79,6 +82,7 @@
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
+     [kb/kb-action "alt-s" #(svg-export/download "scene" "density-variation")]
      [view-sketch/generate :density-variation]
      [:div.readable-width]]))
 
