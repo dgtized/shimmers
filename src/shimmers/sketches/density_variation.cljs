@@ -18,13 +18,27 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn rescale [xs]
+  (let [m (apply max xs)]
+    (map (fn [x] (/ x m)) xs)))
+
+(defn sin-density []
+  (let [rate (dr/random-int 1 6)
+        phase (dr/random-tau)
+        scale (dr/random 0.0075 0.015)]
+    (->> (range 0 1 0.005)
+         (map (fn [x] (* scale 0.5 (+ 1.0 (math/sin (+ phase (* eq/TAU rate x)))))))
+         (reductions +)
+         (take-while (fn [s] (<= s 1.0)))
+         rescale)))
+
 (defn densities []
   (let [samples (range 0 1 (dr/random 0.005 0.01))]
     ((dr/rand-nth [identity reverse])
      ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
-                    [(fn [] (let [v (Math/log 2.0)]
-                             (map (fn [x] (/ (Math/log (inc x)) v)) samples))) 1.0]
-                    [(fn [] samples)]])))))
+                    [(fn [] (rescale (map (fn [x] (Math/log (inc x))) samples))) 1.0]
+                    [(fn [] samples) 1.0]
+                    [sin-density 1.0]])))))
 
 (defn pairs []
   (let [p0 (dr/random-tau)
