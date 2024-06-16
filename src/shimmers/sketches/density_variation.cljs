@@ -19,10 +19,12 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn densities []
-  ((dr/rand-nth [identity reverse])
-   ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
-                  [(fn [] (let [v (Math/log 2.0)]
-                           (map (fn [x] (/ (Math/log (inc x)) v)) (range 0 1 0.01)))) 1.0]]))))
+  (let [samples (range 0 1 (dr/random 0.005 0.01))]
+    ((dr/rand-nth [identity reverse])
+     ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
+                    [(fn [] (let [v (Math/log 2.0)]
+                             (map (fn [x] (/ (Math/log (inc x)) v)) samples))) 1.0]
+                    [(fn [] samples)]])))))
 
 (defn pairs []
   (let [p0 (dr/random-tau)
