@@ -18,10 +18,16 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn densities []
+  ((dr/rand-nth [identity reverse])
+   ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
+                  [(fn [] (let [v (Math/log 2.0)]
+                           (map (fn [x] (/ (Math/log (inc x)) v)) (range 0 1 0.01)))) 1.0]]))))
+
 (defn pairs []
   (let [p0 (dr/random-tau)
         p1 (dr/random-tau)]
-    (for [d (dr/density-range 0.002 0.01)]
+    (for [d (densities)]
       (let [n0 (Math/sin (+ p0 (* eq/TAU d) (Math/sin (+ p1 (* math/PI (- 1.0 d))))))
             n1 (Math/cos (+ p1 (* eq/TAU d) (Math/sin (+ p0 (* math/PI (- 1.0 d))))))]
         [(gv/vec2 d (+ 0.25 (* 0.15 n0)))
