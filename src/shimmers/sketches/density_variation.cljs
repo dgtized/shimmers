@@ -34,9 +34,12 @@
          (take-while (fn [s] (<= s 1.0)))
          rescale)))
 
+(defn invert [xs]
+  (mapv (fn [x] (- 1.0 x)) (reverse xs)))
+
 (defn densities []
   (let [samples (range 0 1 (dr/random 0.005 0.01))]
-    ((dr/rand-nth [identity reverse])
+    ((dr/rand-nth [identity invert])
      ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
                     [(fn [] (rescale (map (fn [x] (Math/log (inc x))) samples))) 1.0]
                     [(fn [] samples) 1.0]
