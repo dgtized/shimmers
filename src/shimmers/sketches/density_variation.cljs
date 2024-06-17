@@ -41,7 +41,7 @@
   (let [samples (range 0 1 (dr/random 0.005 0.01))]
     ((dr/rand-nth [identity invert])
      ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
-                    [(fn [] (rescale (map (fn [x] (Math/log (inc x))) samples))) 1.0]
+                    [(fn [] (rescale (map (fn [x] (math/log (inc x))) samples))) 1.0]
                     [(fn [] samples) 1.0]
                     [(fn [] (dr/var-range (dr/random-int 100 250))) 1.0]
                     [sin-density 1.0]])))))
@@ -50,8 +50,8 @@
   (let [p0 (dr/random-tau)
         p1 (dr/random-tau)]
     (for [d (densities)]
-      (let [n0 (Math/sin (+ p0 (* eq/TAU d) (Math/sin (+ p1 (* math/PI (- 1.0 d))))))
-            n1 (Math/cos (+ p1 (* eq/TAU d) (Math/sin (+ p0 (* math/PI (- 1.0 d))))))]
+      (let [n0 (math/sin (+ p0 (* eq/TAU d) (math/sin (+ p1 (* math/PI (- 1.0 d))))))
+            n1 (math/cos (+ p1 (* eq/TAU d) (math/sin (+ p0 (* math/PI (- 1.0 d))))))]
         [(gv/vec2 d (+ 0.25 (* 0.15 n0)))
          (gv/vec2 d (+ 0.75 (* 0.15 n1)))]))))
 
