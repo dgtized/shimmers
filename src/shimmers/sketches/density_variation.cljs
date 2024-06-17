@@ -52,7 +52,7 @@
         p1 (dr/random-tau)]
     (for [d (densities)]
       (let [n0 (math/sin (+ p0 (* eq/TAU d) (math/sin (+ p1 (* math/PI (- 1.0 d))))))
-            n1 (math/cos (+ p1 (* eq/TAU d) (math/sin (+ p0 (* math/PI (- 1.0 d))))))]
+            n1 (math/sin (+ p1 (* eq/TAU d) (math/sin (+ p0 (* math/PI (- 1.0 d))))))]
         [(gv/vec2 d (+ 0.25 (* 0.15 n0)))
          (gv/vec2 d (+ 0.75 (* 0.15 n1)))]))))
 
