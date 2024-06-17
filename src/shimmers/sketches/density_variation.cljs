@@ -42,6 +42,7 @@
     ((dr/rand-nth [identity invert])
      ((dr/weighted [[(fn [] (dr/density-range 0.002 0.01)) 1.0]
                     [(fn [] (rescale (map (fn [x] (math/log (inc x))) samples))) 1.0]
+                    [(fn [] (rescale (map (fn [x] (dec (math/pow (inc x) math/E))) samples))) 1.0]
                     [(fn [] samples) 1.0]
                     [(fn [] (dr/var-range (dr/random-int 100 250))) 1.0]
                     [sin-density 1.0]])))))
