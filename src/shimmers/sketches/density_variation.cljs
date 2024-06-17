@@ -49,12 +49,16 @@
 
 (defn pairs []
   (let [p0 (dr/random-tau)
-        p1 (dr/random-tau)]
-    (for [d (densities)]
-      (let [n0 (math/sin (+ p0 (* eq/TAU d) (math/sin (+ p1 (* math/PI (- 1.0 d))))))
-            n1 (math/sin (+ p1 (* eq/TAU d) (math/sin (+ p0 (* math/PI (- 1.0 d))))))]
-        [(gv/vec2 d (+ 0.25 (* 0.15 n0)))
-         (gv/vec2 d (+ 0.75 (* 0.15 n1)))]))))
+        p1 (dr/random-tau)
+        samples (densities)
+        disp (if (dr/chance 0.5)
+               (* (dr/random) (/ 0.8 (count samples)))
+               0.0)]
+    (for [d samples]
+      (let [n0 (math/sin (+ p0 (* eq/TAU d) (* 1.5 (math/sin (+ p1 (* math/PI (- 1.0 d)))))))
+            n1 (math/sin (+ p1 (* eq/TAU d) (* 1.5 (math/sin (+ p0 (* math/PI (- 1.0 d)))))))]
+        [(gv/vec2 (dr/gaussian d disp) (+ 0.25 (* 0.15 n0)))
+         (gv/vec2 (dr/gaussian d disp) (+ 0.75 (* 0.15 n1)))]))))
 
 (defn fill [shape pairs]
   (println (count pairs))
