@@ -29,7 +29,7 @@
         phase (dr/random-tau)
         scale (dr/random 0.0075 0.015)]
     (->> (range 0 1 0.005)
-         (map (fn [x] (* scale 0.5 (+ 1.0 (math/sin (+ phase (* eq/TAU rate x)))))))
+         (map (fn [x] (max 0.001 (* scale 0.5 (+ 1.0 (math/sin (+ phase (* eq/TAU rate x))))))))
          (reductions +)
          (take-while (fn [s] (<= s 1.0)))
          rescale)))
@@ -52,6 +52,7 @@
          (gv/vec2 d (+ 0.75 (* 0.15 n1)))]))))
 
 (defn fill [shape pairs]
+  (println (count pairs))
   (for [[p q] pairs]
     (gl/line2 (g/unmap-point shape p)
               (g/unmap-point shape q))))
