@@ -117,7 +117,7 @@
     (assert (and created-at (re-matches #"\d{4}-(\d{2}-\d{2})?" created-at))
             "definition requires created-at in form of YYYY-MM-DD")
     (assert (:type options) "definition requires type")
-    `(do (defn ~runner []
+    `(do (defn ~runner [~'sketch-args]
            ~@body)
 
          (let [page-identifier# ~(keyword sketch-page-name)

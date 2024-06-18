@@ -38,7 +38,7 @@
 
   (ui/screen-view (name (:sketch-id sketch)))
   (when-let [run-sketch (:fn sketch)]
-    (apply run-sketch [])))
+    (apply run-sketch [sketch])))
 
 ;; TODO: limit to dependencies used by sketch
 (defn stop-sketch [sketch]
