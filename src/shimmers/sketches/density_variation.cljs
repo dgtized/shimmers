@@ -88,16 +88,16 @@
      :stroke-width 1.0}
     (shapes)))
 
-(defn page []
+(defn page [{:keys [sketch-id]}]
   (fn []
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
-     [kb/kb-action "alt-s" #(svg-export/download "scene" "density-variation")]
-     [view-sketch/generate :density-variation]
+     [kb/kb-action "alt-s" #(svg-export/download "scene" (name sketch-id))]
+     [view-sketch/generate sketch-id]
      [:div.readable-width]]))
 
 (sketch/definition density-variation
   {:created-at "2024-06-15"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (page sketch-args)))
