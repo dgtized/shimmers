@@ -24,7 +24,7 @@
     (reset! defo params)
     params))
 
-(defn draw [{[a b c] :weights [o1 o2 o3] :osc [p1 p2 p3] :phase}]
+(defn draw [{[w1 w2 w3] :weights [o1 o2 o3] :osc [p1 p2 p3] :phase}]
   (q/background 1.0)
   (let [r (cq/rel-h 0.4)
         t (/ (q/millis) 2000.0)]
@@ -32,9 +32,9 @@
       (q/push-matrix)
       (let [angle i
             scale 0.075]
-        (q/rotate-z (+ (* scale c (+ t angle)) (* 2 (math/sin (+ p1 (* o3 t))))))
-        (q/rotate-y (+ (* scale b (+ t angle)) (* 2 (math/sin (+ p2 (* o2 t))))))
-        (q/rotate-x (+ (* scale a (+ t angle)) (* 2 (math/sin (+ p3 (* o1 t)))))))
+        (q/rotate-z (+ (* scale w3 (+ t angle)) (* 2 (math/sin (+ p3 (* o3 t))))))
+        (q/rotate-y (+ (* scale w2 (+ t angle)) (* 2 (math/sin (+ p2 (* o2 t))))))
+        (q/rotate-x (+ (* scale w1 (+ t angle)) (* 2 (math/sin (+ p1 (* o1 t)))))))
       (q/ellipse 0 0 r r)
       (q/pop-matrix))))
 
