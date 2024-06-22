@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yaml/badge.svg?branch=main)](https://github.com/dgtized/shimmers/actions/workflows/continuous-deployment.yaml)
 
-Shimmering quil sketches; a few particle simulations, video processing
-experiments, randomly generated L-systems, 3d transformations, and cellular
-automata.
+Shimmering [quil](https://github.com/quil/quil) sketches; a few particle
+simulations, video processing experiments, randomly generated L-systems, 3d
+transformations, and cellular automata.
 
 https://dgtized.github.io/shimmers
 
