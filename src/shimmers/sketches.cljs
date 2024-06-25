@@ -177,6 +177,7 @@
    shimmers.sketches.polygon-recomposition
    shimmers.sketches.polygrowth
    shimmers.sketches.polygrowth2
+   shimmers.sketches.position-out-of-phase
    shimmers.sketches.precipitation
    shimmers.sketches.probabilistic-automata
    shimmers.sketches.probability-distributions
