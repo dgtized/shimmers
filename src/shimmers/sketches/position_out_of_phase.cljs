@@ -36,21 +36,21 @@
         size3 {:rows 12 :cols 16}
         size4 {:rows 6 :cols 8}
         size5 {:rows 3 :cols 4}]
-    (concat (grid seed s-bounds size1 0.001)
-            (grid seed s-bounds size1 0.00125)
-            (grid seed s-bounds size1 0.0015)
-            (grid seed s-bounds size2 0.001)
-            (grid seed s-bounds size2 0.0011)
-            (grid seed s-bounds size2 0.0012)
-            (grid seed s-bounds size3 0.001)
-            (grid seed s-bounds size3 0.0011)
-            (grid seed s-bounds size3 0.0012)
+    (concat (grid seed s-bounds size1 0.005)
+            (grid seed s-bounds size1 0.00525)
+            (grid seed s-bounds size1 0.0055)
+            (grid seed s-bounds size2 0.003)
+            (grid seed s-bounds size2 0.0031)
+            (grid seed s-bounds size2 0.0032)
+            (grid seed s-bounds size3 0.002)
+            (grid seed s-bounds size3 0.0021)
+            (grid seed s-bounds size3 0.0022)
             (grid seed s-bounds size4 0.001)
             (grid seed s-bounds size4 0.0011)
             (grid seed s-bounds size4 0.0012)
-            (grid seed s-bounds size5 0.00100)
-            (grid seed s-bounds size5 0.00105)
-            (grid seed s-bounds size5 0.00110))))
+            (grid seed s-bounds size5 0.00050)
+            (grid seed s-bounds size5 0.00055)
+            (grid seed s-bounds size5 0.00060))))
 
 (defn scene []
   (csvg/svg-timed {:width width
