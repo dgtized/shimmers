@@ -1,6 +1,8 @@
 (ns shimmers.sketches.position-out-of-phase
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -53,7 +55,8 @@
             (grid seed s-bounds size5 0.00060))))
 
 (defn scene []
-  (csvg/svg-timed {:width width
+  (csvg/svg-timed {:id "scene"
+                   :width width
                    :height height
                    :stroke "black"
                    :fill "none"
@@ -65,6 +68,7 @@
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
      [view-sketch/generate :position-out-of-phase]
+     [kb/kb-action "alt-s" #(svg-export/download "scene" "position-out-of-phase")]
      [:div.readable-width]]))
 
 (sketch/definition position-out-of-phase
