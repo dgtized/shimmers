@@ -1,7 +1,9 @@
 (ns shimmers.sketches.amplification
   (:require
    [clojure.math :as math]
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -118,13 +120,16 @@
                     children))))
 
 (defn scene []
-  (csvg/svg-timed
-    {:width width
-     :height height
-     :stroke "black"
-     :fill "none"
-     :stroke-width 1.0}
-    (shapes (rect/rect 0 0 width height))))
+  [:div
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "amplification")]
+   (csvg/svg-timed
+     {:id "scene"
+      :width width
+      :height height
+      :stroke "black"
+      :fill "none"
+      :stroke-width 1.0}
+     (shapes (rect/rect 0 0 width height)))])
 
 (sketch/definition amplification
   {:created-at "2023-03-24"
