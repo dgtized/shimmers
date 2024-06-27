@@ -1,7 +1,9 @@
 (ns shimmers.sketches.concentric-chords
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
@@ -58,12 +60,15 @@
     (concat circles chords)))
 
 (defn scene []
-  (csvg/svg-timed {:width width
-                   :height height
-                   :stroke "black"
-                   :fill "none"
-                   :stroke-width 1.0}
-    (shapes (g/scale-size (rect/rect 0 0 width height) 0.98))))
+  [:div
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "concentric-chords")]
+   (csvg/svg-timed {:id "scene"
+                    :width width
+                    :height height
+                    :stroke "black"
+                    :fill "none"
+                    :stroke-width 1.0}
+     (shapes (g/scale-size (rect/rect 0 0 width height) 0.98)))])
 
 (sketch/definition concentric-chords
   {:created-at "2023-03-08"
