@@ -1,13 +1,12 @@
 (ns shimmers.sketches.prophecies
   (:require
    [clojure.math :as math]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
@@ -324,7 +323,7 @@
 
 (defn ui-controls []
   [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "prophecies")]
+   [usvg/download-shortcut "scene" "prophecies"]
    [ctrl/checkbox ui-state "Filled" [:filled]]])
 
 (sketch/definition prophecies
