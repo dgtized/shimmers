@@ -1,8 +1,10 @@
 (ns shimmers.sketches.radial-symmetries
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
@@ -181,13 +183,16 @@
          (mapcat change-hexes))))
 
 (defn scene []
-  (csvg/svg-timed {:width width
-                   :height height
-                   :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.66}
-    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-      (hexagons 17))))
+  [:div
+   [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-symmetries")]
+   (csvg/svg-timed {:id "scene"
+                    :width width
+                    :height height
+                    :stroke "black"
+                    :fill "white"
+                    :stroke-width 0.66}
+     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+       (hexagons 17)))])
 
 (sketch/definition radial-symmetries
   {:created-at "2022-11-24"
