@@ -4,12 +4,11 @@
    [loom.alg :as la]
    [loom.attr :as lga]
    [loom.graph :as lg]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -374,7 +373,7 @@
 (defn ui-controls []
   [:div
    [ctrl/change-mode ui-state (keys modes)]
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "constellations")]
+   [usvg/download-shortcut "scene" "constellations"]
    [debug/display defo]])
 
 (sketch/definition constellations

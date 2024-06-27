@@ -1,15 +1,14 @@
 (ns shimmers.sketches.window-glimpses
   (:require
    [clojure.math :as math]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.palette :as palette]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -480,7 +479,7 @@
 ;; TODO: clip out pie shapes from circles that do not clip any other shape?
 (defn scene [{:keys [bounds] :as layers}]
   [:<>
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "window-glimpses")]
+   [usvg/download-shortcut "scene" "window-glimpses"]
    (csvg/svg-timed {:id "scene"
                     :width (g/width bounds)
                     :height (g/height bounds)

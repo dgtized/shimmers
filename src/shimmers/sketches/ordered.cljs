@@ -2,13 +2,12 @@
   (:require
    [clojure.math :as math]
    [clojure.math.combinatorics :as mc]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -295,7 +294,7 @@
                     :stroke "black"
                     :fill "none"}
      (shapes rules))
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "ordered")]])
+   [usvg/download-shortcut "scene" "ordered"]])
 
 (defn page []
   (let [rules (ruleset)]

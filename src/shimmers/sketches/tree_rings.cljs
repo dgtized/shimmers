@@ -1,11 +1,10 @@
 (ns shimmers.sketches.tree-rings
   (:require
    [clojure.math :as math]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
@@ -51,7 +50,7 @@
       (shapes))))
 
 (defn ui-controls []
-  [:div [kb/kb-action "alt-s" #(svg-export/download "scene" "tree-rings")]])
+  [usvg/download-shortcut "scene" "tree-rings"])
 
 (sketch/definition tree-rings
   {:created-at "2022-10-22"

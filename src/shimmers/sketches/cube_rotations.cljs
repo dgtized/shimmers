@@ -1,9 +1,8 @@
 (ns shimmers.sketches.cube-rotations
   (:require
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
@@ -67,7 +66,7 @@
     (grid)))
 
 (defn ui-controls []
-  [kb/kb-action "alt-s" #(svg-export/download "scene" "cube-rotations")])
+  [usvg/download-shortcut "scene" "cube-rotations"])
 
 (sketch/definition cube-rotations
   {:created-at "2022-01-09"

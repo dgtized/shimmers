@@ -1,11 +1,10 @@
 (ns shimmers.sketches.differential-harmonics
   (:require
    [clojure.math :as math]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.wobble :as mw :refer [O R]]
@@ -99,7 +98,7 @@
        [:div.flexcols
         [view-sketch/generate :differential-harmonics]
         [:div
-         [kb/kb-action "alt-s" #(svg-export/download "scene" "differential-harmonics")]
+         [usvg/download-shortcut "scene" "differential-harmonics"]
          [:p.readable-width
           "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
          [:div {:style {:width "20em"}}

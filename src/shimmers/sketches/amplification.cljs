@@ -1,10 +1,9 @@
 (ns shimmers.sketches.amplification
   (:require
    [clojure.math :as math]
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.polygon :as poly]
@@ -130,7 +129,7 @@
     (shapes (rect/rect 0 0 width height))))
 
 (defn ui-controls []
-  [kb/kb-action "alt-s" #(svg-export/download "scene" "amplification")])
+  [usvg/download-shortcut "scene" "amplification"])
 
 (sketch/definition amplification
   {:created-at "2023-03-24"

@@ -1,9 +1,8 @@
 (ns shimmers.sketches.template.svg
   (:require
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]))
@@ -30,7 +29,7 @@
     [sketch/with-explanation
      [:div.canvas-frame [scene]]
      [view-sketch/generate :template.svg]
-     [kb/kb-action "alt-s" #(svg-export/download "scene" "template.svg")]
+     [usvg/download-shortcut "scene" "template.svg"]
      [:div.readable-width]]))
 
 (sketch/definition template.svg

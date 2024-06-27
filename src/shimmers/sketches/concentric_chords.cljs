@@ -1,10 +1,9 @@
 (ns shimmers.sketches.concentric-chords
   (:require
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.bounded-shapes :as bounded]
@@ -69,7 +68,7 @@
     (shapes (g/scale-size (rect/rect 0 0 width height) 0.98))))
 
 (defn ui-controls []
-  [kb/kb-action "alt-s" #(svg-export/download "scene" "concentric-chords")])
+  [usvg/download-shortcut "scene" "concentric-chords"])
 
 (sketch/definition concentric-chords
   {:created-at "2023-03-08"

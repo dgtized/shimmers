@@ -1,11 +1,10 @@
 (ns shimmers.sketches.radial-symmetries
   (:require
-   [reagent-keybindings.keyboard :as kb]
    [shimmers.algorithm.lines :as lines]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
-   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -193,7 +192,7 @@
       (hexagons 17))))
 
 (defn ui-controls []
-  [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-symmetries")])
+  [usvg/download-shortcut "scene" "radial-symmetries"])
 
 (sketch/definition radial-symmetries
   {:created-at "2022-11-24"
