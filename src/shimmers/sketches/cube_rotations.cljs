@@ -1,6 +1,8 @@
 (ns shimmers.sketches.cube-rotations
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.common.svg :as csvg]
+   [shimmers.common.svg-export :as svg-export]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -56,15 +58,19 @@
          (k-swaps 3 (cubes (* r c) [(/ width c) (/ height r)])))))
 
 (defn scene []
-  (csvg/svg-timed {:width width
+  (csvg/svg-timed {:id "scene"
+                   :width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.8}
     (grid)))
 
+(defn ui-controls []
+  [kb/kb-action "alt-s" #(svg-export/download "scene" "cube-rotations")])
+
 (sketch/definition cube-rotations
   {:created-at "2022-01-09"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :cube-rotations)))
+  (ctrl/mount (view-sketch/static-page scene :cube-rotations ui-controls)))
