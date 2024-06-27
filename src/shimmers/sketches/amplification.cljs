@@ -120,19 +120,20 @@
                     children))))
 
 (defn scene []
-  [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "amplification")]
-   (csvg/svg-timed
-     {:id "scene"
-      :width width
-      :height height
-      :stroke "black"
-      :fill "none"
-      :stroke-width 1.0}
-     (shapes (rect/rect 0 0 width height)))])
+  (csvg/svg-timed
+    {:id "scene"
+     :width width
+     :height height
+     :stroke "black"
+     :fill "none"
+     :stroke-width 1.0}
+    (shapes (rect/rect 0 0 width height))))
+
+(defn ui-controls []
+  [kb/kb-action "alt-s" #(svg-export/download "scene" "amplification")])
 
 (sketch/definition amplification
   {:created-at "2023-03-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :amplification)))
+  (ctrl/mount (view-sketch/static-page scene :amplification ui-controls)))

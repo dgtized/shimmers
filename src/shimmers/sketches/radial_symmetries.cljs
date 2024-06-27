@@ -183,19 +183,20 @@
          (mapcat change-hexes))))
 
 (defn scene []
-  [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-symmetries")]
-   (csvg/svg-timed {:id "scene"
-                    :width width
-                    :height height
-                    :stroke "black"
-                    :fill "white"
-                    :stroke-width 0.66}
-     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
-       (hexagons 17)))])
+  (csvg/svg-timed {:id "scene"
+                   :width width
+                   :height height
+                   :stroke "black"
+                   :fill "white"
+                   :stroke-width 0.66}
+    (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
+      (hexagons 17))))
+
+(defn ui-controls []
+  [kb/kb-action "alt-s" #(svg-export/download "scene" "radial-symmetries")])
 
 (sketch/definition radial-symmetries
   {:created-at "2022-11-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :radial-symmetries)))
+  (ctrl/mount (view-sketch/static-page scene :radial-symmetries ui-controls)))

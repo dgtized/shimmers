@@ -60,18 +60,19 @@
     (concat circles chords)))
 
 (defn scene []
-  [:div
-   [kb/kb-action "alt-s" #(svg-export/download "scene" "concentric-chords")]
-   (csvg/svg-timed {:id "scene"
-                    :width width
-                    :height height
-                    :stroke "black"
-                    :fill "none"
-                    :stroke-width 1.0}
-     (shapes (g/scale-size (rect/rect 0 0 width height) 0.98)))])
+  (csvg/svg-timed {:id "scene"
+                   :width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"
+                   :stroke-width 1.0}
+    (shapes (g/scale-size (rect/rect 0 0 width height) 0.98))))
+
+(defn ui-controls []
+  [kb/kb-action "alt-s" #(svg-export/download "scene" "concentric-chords")])
 
 (sketch/definition concentric-chords
   {:created-at "2023-03-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :concentric-chords)))
+  (ctrl/mount (view-sketch/static-page scene :concentric-chords ui-controls)))
