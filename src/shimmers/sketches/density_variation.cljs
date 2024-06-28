@@ -7,7 +7,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -77,9 +76,9 @@
                        (svg/group {} (fill box (map (fn [pair] (mapv reverse pair)) (pairs))))])
                     1.0]]))))
 
-(defn scene []
+(defn scene [scene-id]
   (csvg/svg-timed
-    {:id "scene"
+    {:id scene-id
      :width width
      :height height
      :stroke "black"
@@ -87,16 +86,8 @@
      :stroke-width 1.0}
     (shapes)))
 
-(defn page [{:keys [sketch-id]}]
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [usvg/download-shortcut "scene" (name sketch-id)]
-     [view-sketch/generate sketch-id]
-     [:div.readable-width]]))
-
 (sketch/definition density-variation
   {:created-at "2024-06-15"
    :tags #{}
    :type :svg}
-  (ctrl/mount (page sketch-args)))
+  (ctrl/mount (usvg/page sketch-args scene)))
