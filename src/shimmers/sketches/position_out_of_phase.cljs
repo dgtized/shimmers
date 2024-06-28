@@ -7,7 +7,6 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
@@ -53,8 +52,8 @@
             (grid seed s-bounds size5 0.00055)
             (grid seed s-bounds size5 0.00060))))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [scene-id]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -62,16 +61,8 @@
                    :stroke-width 0.5}
     (shapes (rect/rect 0 0 width height))))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :position-out-of-phase]
-     [usvg/download-shortcut "scene" "position-out-of-phase"]
-     [:div.readable-width]]))
-
 (sketch/definition position-out-of-phase
   {:created-at "2024-06-25"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page sketch-args scene)))
