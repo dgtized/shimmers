@@ -19,7 +19,7 @@
      [sketch/with-explanation
       [:div.canvas-frame [scene scene-id]]
       [download-shortcut scene-id (name sketch-id)]
-      [view-sketch/generate sketch-id]
+      [:p.center [view-sketch/generate sketch-id]]
       (when explanation
         [:div.readable-width
          [explanation sketch-args]])])))
