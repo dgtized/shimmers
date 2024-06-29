@@ -3,8 +3,8 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -35,8 +35,9 @@
                            (+ 0.5 (math/pow (- x 0.5) k))))) 50)
             (lines c (fn [x] (math/pow x 2.5)) 30))))
 
-(defn scene []
-  (csvg/svg-timed {:width width
+(defn scene [scene-id]
+  (csvg/svg-timed {:id scene-id
+                   :width width
                    :height height
                    :stroke "black"
                    :fill "white"
@@ -47,4 +48,4 @@
   {:created-at "2022-01-31"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :angle-of-ascent)))
+  (ctrl/mount (usvg/page sketch-args scene)))
