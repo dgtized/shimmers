@@ -10,12 +10,10 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.collisions :as collide]
-   ;; side-effect extend-type to Line2
    [shimmers.math.geometry.line]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -323,11 +321,10 @@
 
 (defn ui-controls []
   [:div
-   [usvg/download-shortcut "scene" "prophecies"]
    [ctrl/checkbox ui-state "Filled" [:filled]]])
 
 (sketch/definition prophecies
   {:created-at "2022-07-08"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :prophecies ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene ui-controls)))
