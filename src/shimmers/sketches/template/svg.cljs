@@ -4,7 +4,6 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -15,8 +14,8 @@
 (defn shapes []
   [])
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -24,16 +23,8 @@
                    :stroke-width 0.5}
     (shapes)))
 
-(defn page []
-  (fn []
-    [sketch/with-explanation
-     [:div.canvas-frame [scene]]
-     [view-sketch/generate :template.svg]
-     [usvg/download-shortcut "scene" "template.svg"]
-     [:div.readable-width]]))
-
 (sketch/definition template.svg
   {:created-at "2024-"
    :tags #{}
    :type :svg}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page sketch-args scene)))
