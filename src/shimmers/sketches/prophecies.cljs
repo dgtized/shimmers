@@ -303,12 +303,12 @@
      :debug [(gc/circle left-p 3.0)
              (gc/circle right-p 3.0)]}))
 
-(defn scene []
+(defn scene [{:keys [scene-id]}]
   (csvg/timed
    (let [{:keys [shapes debug]} (shapes)]
      (fn []
        (let [{:keys [filled]} @ui-state]
-         (csvg/svg {:id "scene"
+         (csvg/svg {:id scene-id
                     :width width
                     :height height
                     :stroke "black"
@@ -327,4 +327,4 @@
   {:created-at "2022-07-08"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (usvg/page sketch-args scene ui-controls)))
+  (ctrl/mount (usvg/page (assoc sketch-args :explanation ui-controls) scene)))

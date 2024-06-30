@@ -76,7 +76,7 @@
                        (svg/group {} (fill box (map (fn [pair] (mapv reverse pair)) (pairs))))])
                     1.0]]))))
 
-(defn scene [scene-id]
+(defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
     {:id scene-id
      :width width

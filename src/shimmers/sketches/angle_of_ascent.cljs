@@ -35,7 +35,7 @@
                            (+ 0.5 (math/pow (- x 0.5) k))))) 50)
             (lines c (fn [x] (math/pow x 2.5)) 30))))
 
-(defn scene [scene-id]
+(defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height

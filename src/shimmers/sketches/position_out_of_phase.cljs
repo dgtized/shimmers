@@ -52,7 +52,7 @@
             (grid seed s-bounds size5 0.00055)
             (grid seed s-bounds size5 0.00060))))
 
-(defn scene [scene-id]
+(defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height

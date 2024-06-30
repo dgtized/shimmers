@@ -38,8 +38,8 @@
                     (math/ceil (* radius 0.025 (+ 1 r)))))
             (dr/gaussian-range 0.01 0.012))))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"

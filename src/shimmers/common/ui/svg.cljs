@@ -10,16 +10,15 @@
    (fn [] (svg-export/download id filename))])
 
 (defn page
-  ([sketch-args scene] (page sketch-args scene nil))
-  ([{:keys [sketch-id scene-id]
-     :or {scene-id "scene"}
-     :as sketch-args}
-    scene explanation]
-   (fn []
-     [sketch/with-explanation
-      [:div.canvas-frame [scene scene-id]]
-      [download-shortcut scene-id (name sketch-id)]
-      [:p.center [view-sketch/generate sketch-id]]
-      (when explanation
-        [:div.readable-width
-         [explanation sketch-args]])])))
+  [{:keys [sketch-id scene-id explanation]
+    :or {scene-id "scene"}
+    :as sketch-args}
+   scene]
+  (fn []
+    [sketch/with-explanation
+     [:div.canvas-frame [scene sketch-args]]
+     [download-shortcut scene-id (name sketch-id)]
+     [:p.center [view-sketch/generate sketch-id]]
+     (when explanation
+       [:div.readable-width
+        [explanation sketch-args]])]))
