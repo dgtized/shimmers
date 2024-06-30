@@ -201,6 +201,7 @@
    shimmers.sketches.regular-tilings
    shimmers.sketches.remaining
    shimmers.sketches.ring
+   shimmers.sketches.ring-impressions
    shimmers.sketches.ripples
    shimmers.sketches.rolling-shapes
    shimmers.sketches.rose
