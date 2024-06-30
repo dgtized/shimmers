@@ -8,7 +8,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -49,11 +48,8 @@
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
       (shapes))))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "tree-rings"])
-
 (sketch/definition tree-rings
   {:created-at "2022-10-22"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :tree-rings ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
