@@ -45,9 +45,9 @@
 
 (defn shapes []
   (let [bounds (csvg/screen width height)
-        seeds (gen-circles bounds)]
-    (concat seeds
-            (connectives seeds))))
+        circles (gen-circles bounds)]
+    (concat circles
+            (connectives circles))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
