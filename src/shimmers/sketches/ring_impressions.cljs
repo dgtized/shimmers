@@ -1,17 +1,22 @@
 (ns shimmers.sketches.ring-impressions
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [shimmers.common.sequence :as cs]
-   [thi.ng.geom.line :as gl]))
+   [thi.ng.math.core :as tm]))
 
 ;; use distorted tree-ring rendering but with connectives ala constellations
 
@@ -43,10 +48,29 @@
     (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
       (gl/line2 p q))))
 
+(defn ring [seed p r n displace]
+  (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
+        base-t (dr/random-tau)
+        points (for [t (range 0 eq/TAU (/ eq/TAU n))]
+                 (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
+                       noise (dr/noise-at-point-01 seed 0.0035 p)]
+                   (tm/+ p (g/as-cartesian (gv/vec2 displace (* eq/TAU noise))))))]
+    (map (fn [segment] (g/translate segment p))
+         (lines/split-segments split-chance points))))
+
+(defn tree-rings [seed {p :p radius :r}]
+  (mapcat (fn [r]
+            (ring seed
+                  p
+                  (* r radius)
+                  (int (math/pow 30 (+ 1 r)))
+                  (math/ceil (* radius 0.025 (+ 1 r)))))
+          (dr/gaussian-range 0.01 0.012)))
+
 (defn shapes []
   (let [bounds (csvg/screen width height)
         circles (gen-circles bounds)]
-    (concat circles
+    (concat (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle)) circles)
             (connectives circles))))
 
 (defn scene [{:keys [scene-id]}]
