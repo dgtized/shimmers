@@ -48,9 +48,10 @@
     (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
       (gl/line2 p q))))
 
-(defn ring [seed p r n displace]
+(defn ring [seed p r n displace _exits]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
         base-t (dr/random-tau)
+        ;; TODO: split on exits with a margin
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
                  (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
                        noise (dr/noise-at-point-01 seed 0.0035 p)]
@@ -58,20 +59,34 @@
     (map (fn [segment] (g/translate segment p))
          (lines/split-segments split-chance points))))
 
-(defn tree-rings [seed {p :p radius :r}]
+(defn tree-rings [seed {p :p radius :r} exits]
   (mapcat (fn [r]
             (ring seed
                   p
                   (* r radius)
                   (int (math/pow 30 (+ 1 r)))
-                  (math/ceil (* radius 0.025 (+ 1 r)))))
+                  (math/ceil (* radius 0.025 (+ 1 r)))
+                  exits))
           (dr/gaussian-range 0.01 0.012)))
+
+(defn exits [{center :p} lines]
+  (mapcat (fn [line]
+            (let [[p q] (g/vertices line)]
+              (cond (tm/delta= center p)
+                    q
+                    (tm/delta= center q)
+                    p
+                    :else
+                    [])))
+          lines))
 
 (defn shapes []
   (let [bounds (csvg/screen width height)
-        circles (gen-circles bounds)]
-    (concat (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle)) circles)
-            (connectives circles))))
+        circles (gen-circles bounds)
+        lines (connectives circles)]
+    (concat lines
+            (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle (exits circle lines)))
+                    circles))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
