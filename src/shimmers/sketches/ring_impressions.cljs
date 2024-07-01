@@ -20,7 +20,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn candidate-seeds [bounds]
+(defn candidate-circles [bounds]
   (let [small-bounds (g/scale-size bounds 0.75)
         rules {:bounds bounds
                :candidates 5
@@ -30,22 +30,22 @@
                :spacing (* 0.025 height)}]
     (pack/circle-pack [] rules)))
 
-(defn gen-seeds [bounds]
+(defn gen-circles [bounds]
   (some (fn [circles] (when (and (> (count circles) 2)
                                 (> (reduce + (map g/area circles))
                                    (* 0.33 (g/area bounds))))
                        circles))
-        (repeatedly 200 #(candidate-seeds bounds))))
+        (repeatedly 200 #(candidate-circles bounds))))
 
 ;; filter for overlapping circle in between?
-(defn connectives [seeds]
-  (let [pts (map :p seeds)]
-    (for [[p q] (take (dec (count seeds)) (cs/all-pairs pts))]
+(defn connectives [circles]
+  (let [pts (map :p circles)]
+    (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
       (gl/line2 p q))))
 
 (defn shapes []
   (let [bounds (csvg/screen width height)
-        seeds (gen-seeds bounds)]
+        seeds (gen-circles bounds)]
     (concat seeds
             (connectives seeds))))
 
