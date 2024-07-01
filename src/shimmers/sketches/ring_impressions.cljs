@@ -73,9 +73,9 @@
   (mapcat (fn [line]
             (let [[p q] (g/vertices line)]
               (cond (tm/delta= center p)
-                    q
+                    [q]
                     (tm/delta= center q)
-                    p
+                    [p]
                     :else
                     [])))
           lines))
