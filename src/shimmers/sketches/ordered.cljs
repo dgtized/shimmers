@@ -279,7 +279,7 @@
       (recur rules))))
 
 (defn ruleset []
-  {:bounds (rect/rect 0 0 width height)
+  {:bounds (csvg/screen width height)
    :p-extrusion (dr/weighted {0.0 3.0
                               0.01 2.0
                               0.015 1.0

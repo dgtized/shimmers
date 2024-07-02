@@ -13,7 +13,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -232,7 +231,7 @@
                 (cycle segmentation))))
 
 (defn page []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         path (path-segments (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 90))
         segmentation (partition-range (count path) 3 1)]
     (fn []

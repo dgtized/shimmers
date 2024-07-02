@@ -6,7 +6,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -48,7 +47,7 @@
      :stroke "black"
      :fill (csvg/hsl 0.0 0.5 0.5 0.2)
      :stroke-width 1.0}
-    (shapes (g/scale-size (rect/rect 0 0 width height) 0.66)
+    (shapes (g/scale-size (csvg/screen width height) 0.66)
             100)))
 
 (defn page []

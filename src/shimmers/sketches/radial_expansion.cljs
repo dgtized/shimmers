@@ -11,7 +11,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -93,7 +92,7 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes (rect/rect 0 0 width height)
+    (shapes (csvg/screen width height)
             (dr/random-int 3 6))))
 
 (sketch/definition radial-expansion

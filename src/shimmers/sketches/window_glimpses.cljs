@@ -521,7 +521,7 @@
 
 (defn page []
   (let [palette (pick-palette)
-        bounds (rect/rect 0 0 width height)
+        bounds (csvg/screen width height)
         layers (generate-layers bounds palette)]
     (fn []
       [:<>
