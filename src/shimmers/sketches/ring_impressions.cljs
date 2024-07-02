@@ -11,6 +11,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.polygon :as poly]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -53,9 +54,9 @@
         base-t (dr/random-tau)
         ;; TODO: split on exits with a margin
         points (for [t (range 0 eq/TAU (/ eq/TAU n))]
-                 (let [p (g/as-cartesian (gv/vec2 r (+ t base-t)))
-                       noise (dr/noise-at-point-01 seed 0.0035 p)]
-                   (tm/+ p (g/as-cartesian (gv/vec2 displace (* eq/TAU noise))))))]
+                 (let [pos (v/polar r (+ t base-t))
+                       noise (dr/noise-at-point-01 seed 0.0035 pos)]
+                   (v/+polar pos displace (* eq/TAU noise))))]
     (map (fn [segment] (g/translate segment p))
          (lines/split-segments split-chance points))))
 
