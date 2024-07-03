@@ -59,7 +59,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.5}
-    (shapes (rect/rect 0 0 width height))))
+    (shapes (csvg/screen width height))))
 
 (sketch/definition position-out-of-phase
   {:created-at "2024-06-25"

@@ -10,7 +10,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.triangle :as gt]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -49,7 +48,7 @@
                          (g/translate (gv/vec2 (* width x) (* height y))))))]
     (->> (repeatedly 4000 generate)
          (filter (partial contained-by? some circle))
-         (gu/fit-all-into-bounds (rect/rect 0 0 width height)))))
+         (gu/fit-all-into-bounds (csvg/screen width height)))))
 
 (defn scene []
   (csvg/svg-timed {:id "scene"

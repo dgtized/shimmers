@@ -24,7 +24,7 @@
             {:stroke-width 3})})
 
 (defn in-bounds? [p]
-  (g/contains-point? (rect/rect 0 0 width height) p))
+  (g/contains-point? (csvg/screen width height) p))
 
 (defn legal-building? [{:keys [entities]} change]
   (let [entity (-> change :entity)

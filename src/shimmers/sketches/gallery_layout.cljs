@@ -100,7 +100,7 @@
                    :stroke-width 1.0}
     (let [n (dr/random-int 1 6)]
       (wall-layout
-       (rect/rect 0 0 width height)
+       (csvg/screen width height)
        (choose-layout n)
        n))))
 

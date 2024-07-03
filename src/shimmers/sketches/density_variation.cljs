@@ -9,7 +9,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]))
 
@@ -65,7 +64,7 @@
               (g/unmap-point shape q))))
 
 (defn shapes []
-  (let [box (g/scale-size (rect/rect 0 0 width height) 0.85)]
+  (let [box (g/scale-size (csvg/screen width height) 0.85)]
     ((dr/weighted [[(fn [] (let [s0 (g/translate box (rv 0 -0.05))
                                 s1 (g/translate box (rv 0 0.05))]
                             [(svg/group {} (fill s0 (pairs)))

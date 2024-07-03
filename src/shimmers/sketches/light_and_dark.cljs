@@ -67,7 +67,7 @@
               (vary-meta s assoc :fill "maroon")))))
 
 (defn scene []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         angle (* eq/TAU (dr/random 0.10 0.40))
         cuts (dr/rand-nth (sm/primes-between 4 20))]
     (csvg/svg-timed {:width width

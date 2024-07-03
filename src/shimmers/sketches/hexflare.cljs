@@ -14,7 +14,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -44,7 +43,7 @@
         center (poly-detect/inset-polygon (gp/polygon2 (g/vertices (cs/middle hexes))) -5)
         centroid (g/centroid center)
         right-down (g/as-cartesian (gv/vec2 r (/ tm/TWO_PI 12)))
-        line2 (clip/clip-line (rect/rect 0 0 width height)
+        line2 (clip/clip-line (csvg/screen width height)
                               (tm/- centroid (tm/* right-down width))
                               (tm/+ centroid (tm/* right-down width)))
         hexes2 (->> (for [t (dr/density-range (/ (* 1.1 (math/sqrt 3) r) dist)

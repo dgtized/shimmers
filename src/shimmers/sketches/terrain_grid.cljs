@@ -8,7 +8,6 @@
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -73,7 +72,7 @@
             "64x40" [64 40]})
 
 (defn shapes []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
+  (let [bounds (g/scale-size (csvg/screen width height) 0.98)
         show-coords (get-in @ui-state [:debug :coords])
         size (get sizes (get-in @ui-state [:size]))
         grid (apply hex-grid bounds size)

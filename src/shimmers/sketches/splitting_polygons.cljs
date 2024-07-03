@@ -8,7 +8,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -84,7 +83,7 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 2.5}
-    (shapes (rect/rect 0 0 width height))))
+    (shapes (csvg/screen width height))))
 
 (defn page []
   (fn []

@@ -11,7 +11,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -152,7 +151,7 @@
        shapes))))
 
 (defn page []
-  (let [screen (g/scale-size (rect/rect 0 0 width height) 0.95)
+  (let [screen (g/scale-size (csvg/screen width height) 0.95)
         palette (dr/rand-nth palettes)]
     [:<>
      [:div.canvas-frame [scene screen palette]]

@@ -15,7 +15,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -150,7 +149,7 @@
       [(vary-meta circle assoc :fill "white")])))
 
 (defn shapes [seed]
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.98)
+  (let [bounds (g/scale-size (csvg/screen width height) 0.98)
         R (min (g/width bounds) (g/height bounds))
         [boxes seeds] (generate-seeds bounds)
         circles (sort-by :r > (generate-circles bounds seeds R 800

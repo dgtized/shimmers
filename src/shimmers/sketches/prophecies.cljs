@@ -271,7 +271,7 @@
 (defonce ui-state (ctrl/state {:filled true}))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         cut (cut-percent)
         slant (slant-grade)
         y-pos (+ 0.5 (/ slant 2))

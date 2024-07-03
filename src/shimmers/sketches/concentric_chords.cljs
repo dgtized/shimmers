@@ -12,7 +12,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -65,7 +64,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 1.0}
-    (shapes (g/scale-size (rect/rect 0 0 width height) 0.98))))
+    (shapes (g/scale-size (csvg/screen width height) 0.98))))
 
 (defn ui-controls []
   [usvg/download-shortcut "scene" "concentric-chords"])

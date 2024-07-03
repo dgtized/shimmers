@@ -11,7 +11,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -135,7 +134,7 @@
        (mapcat (fn [layer] (apply concat (vals layer))))))
 
 (defn scene []
-  (let [bounds (rect/rect 0 0 width height)]
+  (let [bounds (csvg/screen width height)]
     (csvg/svg-timed {:width (g/width bounds)
                      :height (g/height bounds)
                      :stroke "black"

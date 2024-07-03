@@ -22,7 +22,6 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.svg.core :as svg :refer [ISVGConvert]]
    [thi.ng.geom.utils :as gu]
    [thi.ng.geom.vector :as gv]
@@ -359,7 +358,7 @@
 (defonce ui-state (ctrl/state {:mode :constellations}))
 
 (defn scene []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         scene-fn (get modes (:mode @ui-state))]
     (reset! defo {})
     (csvg/svg-timed {:id "scene"

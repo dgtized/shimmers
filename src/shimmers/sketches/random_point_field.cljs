@@ -44,7 +44,7 @@
          (circle-between-closest points)))]))
 
 (defn page []
-  (let [bounds (g/scale-size (rect/rect 0 0 width height) 0.99)
+  (let [bounds (g/scale-size (csvg/screen width height) 0.99)
         {:keys [mode n-points mst]} @ui-state
         point-cloud (get rp/modes mode)
         primes (rp/halton-prime-pair 20 60)

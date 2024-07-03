@@ -20,7 +20,7 @@
 
 (def width 800)
 (def height 600)
-(def screen (rect/rect 0 0 width height))
+(def screen (csvg/screen width height))
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 

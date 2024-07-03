@@ -189,10 +189,10 @@
 
 (defn page []
   (let [state (r/atom {:show {:closest true}
-                       :landscape (grid+roads (rect/rect 0 0 width height))})]
+                       :landscape (grid+roads (csvg/screen width height))})]
     (view-sketch/static-page (partial scene state)
-                          :texas-fields
-                          (partial ui-controls state))))
+                             :texas-fields
+                             (partial ui-controls state))))
 
 (sketch/definition texas-fields
   {:created-at "2022-04-24"

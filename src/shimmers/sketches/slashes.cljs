@@ -6,7 +6,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -15,7 +14,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         hatch (partial clip/variable-hatching bounds)]
     (concat (hatch (dr/random 5.0 6.0) 0
                    (int (dr/random 6 16)) (constantly 10) (constantly 1))

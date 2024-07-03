@@ -34,7 +34,7 @@
     (and (> w 20) (> h 20))))
 
 (def base-shape
-  (assoc (rect/rect 0 0 width height) :open 2r0000))
+  (assoc (csvg/screen width height) :open 2r0000))
 
 (defn assign-open [shapes open]
   (map #(assoc % :open open) shapes))

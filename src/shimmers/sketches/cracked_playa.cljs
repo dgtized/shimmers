@@ -13,7 +13,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -25,7 +24,7 @@
 ;; TODO: add rough edges to each polygon?
 ;; TODO: look at smoothing polygons first, but gp/smooth does something else
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         seed (dr/noise-seed)
         points (pds/generate-dynamic bounds 10 [8 64] (partial dr/noise-at-point seed 0.005))
         cells (delvor/voronoi-cells points bounds)]

@@ -8,7 +8,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -51,7 +50,7 @@
      :strength (if (dr/chance 0.5) strength (- strength))}))
 
 (defn shapes []
-  (let [bounds (rect/rect 0 0 width height)
+  (let [bounds (csvg/screen width height)
         dipoles (repeatedly (dr/random-int 2 5) (partial random-dipole bounds))]
     [(csvg/group {}
        (for [{:keys [p strength]} dipoles]

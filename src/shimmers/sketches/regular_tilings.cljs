@@ -12,7 +12,6 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
    [thi.ng.strf.core :as f]))
@@ -22,7 +21,7 @@
 
 (def width 800)
 (def height 600)
-(def bounds (rect/rect 0 0 width height))
+(def bounds (csvg/screen width height))
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 

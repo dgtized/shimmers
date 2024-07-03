@@ -106,7 +106,7 @@
         (map #(g/translate (rect/rect 3) %) points)))))
 
 (defn scene []
-  (let [bounds (rect/rect 0 0 width height)]
+  (let [bounds (csvg/screen width height)]
     (csvg/svg-timed {:width width
                      :height height
                      :stroke "black"

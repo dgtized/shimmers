@@ -12,7 +12,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -21,7 +20,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(def screen (rect/rect 0 0 width height))
+(def screen (csvg/screen width height))
 
 (defn spiral-surrounding []
   (let [radius (* height 0.05)
