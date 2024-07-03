@@ -14,7 +14,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -44,7 +43,7 @@
             0.5)})))))
 
 (defn screen-rect []
-  (rect/rect 0 0 width height))
+  (csvg/screen width height))
 
 (defn triplet []
   (let [center (rv 0.5 0.5)
@@ -69,10 +68,10 @@
 
 (defn inner []
   (dr/weighted
-   [[(g/scale-size (rect/rect 0 0 width height) 0.8) 1]
+   [[(g/scale-size (csvg/screen width height) 0.8) 1]
     [(g/translate
       (geometry/rotate-around-centroid
-       (g/scale-size (rect/rect 0 0 width height) 0.66)
+       (g/scale-size (csvg/screen width height) 0.66)
        (* eq/TAU (dr/random -0.1 0.1)))
       (dr/randvec2 (* 0.05 height))) 1]
     [(gc/circle (rv (dr/rand-nth [0.4 0.5 0.6]) 0.5) (* 0.45 height)) 1]
