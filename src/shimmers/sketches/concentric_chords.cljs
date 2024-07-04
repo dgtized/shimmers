@@ -9,7 +9,6 @@
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.intersection :as isec]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]))
@@ -57,8 +56,8 @@
         chords (mapcat gen-chords circles)]
     (concat circles chords)))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -66,11 +65,8 @@
                    :stroke-width 1.0}
     (shapes (g/scale-size (csvg/screen width height) 0.98))))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "concentric-chords"])
-
 (sketch/definition concentric-chords
   {:created-at "2023-03-08"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :concentric-chords ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
