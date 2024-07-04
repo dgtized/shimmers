@@ -17,7 +17,6 @@
    [shimmers.math.points :as points]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -357,11 +356,11 @@
 
 (defonce ui-state (ctrl/state {:mode :constellations}))
 
-(defn scene []
+(defn scene [{:keys [scene-id]}]
   (let [bounds (csvg/screen width height)
         scene-fn (get modes (:mode @ui-state))]
     (reset! defo {})
-    (csvg/svg-timed {:id "scene"
+    (csvg/svg-timed {:id scene-id
                      :width width
                      :height height
                      :stroke "black"
@@ -372,11 +371,12 @@
 (defn ui-controls []
   [:div
    [ctrl/change-mode ui-state (keys modes)]
-   [usvg/download-shortcut "scene" "constellations"]
    [debug/display defo]])
 
 (sketch/definition constellations
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :constellations ui-controls)))
+  (ctrl/mount (usvg/page (assoc sketch-args
+                                :explanation ui-controls)
+                         scene)))
