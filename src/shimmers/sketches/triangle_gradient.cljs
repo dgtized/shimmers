@@ -7,7 +7,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.triangle :as gt]
@@ -50,8 +49,8 @@
          (filter (partial contained-by? some circle))
          (gu/fit-all-into-bounds (csvg/screen width height)))))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -59,11 +58,8 @@
                    :stroke-width 0.5}
     (shapes)))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "triangle-gradient"])
-
 (sketch/definition triangle-gradient
   {:created-at "2022-01-07"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount (view-sketch/static-page scene :triangle-gradient ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
