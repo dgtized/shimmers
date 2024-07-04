@@ -9,7 +9,6 @@
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -117,9 +116,9 @@
                               [(skip-line center proj)]))
                     children))))
 
-(defn scene []
+(defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
-    {:id "scene"
+    {:id scene-id
      :width width
      :height height
      :stroke "black"
@@ -127,11 +126,8 @@
      :stroke-width 1.0}
     (shapes (csvg/screen width height))))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "amplification"])
-
 (sketch/definition amplification
   {:created-at "2023-03-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :amplification ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
