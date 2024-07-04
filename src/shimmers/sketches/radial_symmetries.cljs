@@ -11,7 +11,6 @@
    [shimmers.math.geometry :as geometry]
    [shimmers.math.hexagon :as hex]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -181,8 +180,8 @@
          (partition-by :ring)
          (mapcat change-hexes))))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -191,11 +190,8 @@
     (csvg/group {:transform (csvg/translate (rv 0.5 0.5))}
       (hexagons 17))))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "radial-symmetries"])
-
 (sketch/definition radial-symmetries
   {:created-at "2022-11-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :radial-symmetries ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
