@@ -6,7 +6,6 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.aabb :as aabb]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -56,8 +55,8 @@
          (g/subdivide bounds {:cols c :rows r})
          (k-swaps 3 (cubes (* r c) [(/ width c) (/ height r)])))))
 
-(defn scene []
-  (csvg/svg-timed {:id "scene"
+(defn scene [{:keys [scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
@@ -65,11 +64,8 @@
                    :stroke-width 0.8}
     (grid)))
 
-(defn ui-controls []
-  [usvg/download-shortcut "scene" "cube-rotations"])
-
 (sketch/definition cube-rotations
   {:created-at "2022-01-09"
    :type :svg
    :tags #{}}
-  (ctrl/mount (view-sketch/static-page scene :cube-rotations ui-controls)))
+  (ctrl/mount (usvg/page sketch-args scene)))
