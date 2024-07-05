@@ -106,7 +106,7 @@
          [:p.readable-width
           "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
          [:div {:style {:width "20em"}}
-          [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-10 10 1]]]]]
+          [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]]
        [:div.readable-width
         (debug/pre-edn params)]])))
 
