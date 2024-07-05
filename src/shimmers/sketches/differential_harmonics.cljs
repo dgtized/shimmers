@@ -21,12 +21,15 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn wob-osc [freq phase-freq]
+  {:f freq :pf phase-freq})
+
 (defn plot
-  [center radius {[a b c] :freqs [a-osc b-osc c-osc] :freqs-osc} s]
+  [center radius {[a b c] :freqs} s]
   (-> (gv/vec2)
-      (tm/+ (R a (* 0.2 (O a-osc 0 s)) 0.70 s))
-      (tm/+ (R b (* 0.6 (O b-osc 0 (- 1.0 s))) 0.25 s))
-      (tm/+ (R c (* 0.8 (O c-osc 0 s)) 0.05 s))
+      (tm/+ (R (:f a) (* 0.2 (O (:pf a) 0 s)) 0.70 s))
+      (tm/+ (R (:f b) (* 0.6 (O (:pf b) 0 (- 1.0 s))) 0.25 s))
+      (tm/+ (R (:f c) (* 0.8 (O (:pf c) 0 s)) 0.05 s))
       (tm/* radius)
       (tm/+ center)))
 
@@ -42,7 +45,9 @@
 (defn perturb [params v]
   (let [weights (gv/vec3 0.6 0.25 -0.15)]
     (update params :freqs
-            (fn [p] (tm/+ (gv/vec3 p) (tm/* weights v))))))
+            (fn [freqs]
+              (map (fn [p w] (update p :f + (* w v)))
+                   freqs weights)))))
 
 (defn shapes [{:keys [n-points perturb-dist remove-freq] :as params}]
   (let [center (rv 0.5 0.5)
@@ -80,10 +85,9 @@
 (defn parameters []
   (let [[a b c] (harm/abc)]
     {:n-points 1500
-     :freqs [a b c]
-     :freqs-osc [(* (dr/random-sign) (dr/random-int 5))
-                 (* (dr/random-sign) (dr/random-int 7))
-                 (* (dr/random-sign) (dr/random-int 13))]
+     :freqs [(wob-osc a (* (dr/random-sign) (dr/random-int 5)))
+             (wob-osc b (* (dr/random-sign) (dr/random-int 7)))
+             (wob-osc c (* (dr/random-sign) (dr/random-int 13)))]
      :perturb-dist (create-wobble (math/floor (tm/clamp (+ 0.5 (dr/gaussian 5.0 3)) 1 12))
                                   (- tm/SIXTH_PI)
                                   (dr/random-int 1 5)
