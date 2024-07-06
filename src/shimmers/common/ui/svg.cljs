@@ -16,8 +16,9 @@
    scene]
   (fn []
     [sketch/with-explanation
-     [:div.canvas-frame [scene sketch-args]]
-     [download-shortcut scene-id (name sketch-id)]
+     [:div.canvas-frame
+      [scene sketch-args]
+      [download-shortcut scene-id (name sketch-id)]]
      [:p.center [view-sketch/generate sketch-id]]
      (when explanation
        [:div.readable-width
