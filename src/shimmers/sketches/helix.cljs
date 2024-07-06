@@ -4,12 +4,12 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.wobble :as mw :refer [O R]]
    [shimmers.model.harmonics :as harm]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -49,8 +49,9 @@
           (gl/line2 (tm/+ p line-delta)
                     (tm/- p line-delta)))))))
 
-(defn scene [params]
-  (csvg/svg-timed {:width width
+(defn scene [{:keys [scene-id params]}]
+  (csvg/svg-timed {:id scene-id
+                   :width width
                    :height height
                    :stroke "black"
                    :fill "white"
@@ -70,17 +71,13 @@
      :size-osc (dr/random-int 6 24)
      :radius-osc (dr/random-int 6 24)}))
 
-(defn page []
-  (let [params (parameters)]
-    (fn []
-      [sketch/with-explanation
-       [:div.canvas-frame [scene params]]
-       [view-sketch/generate :helix]
-       [:div.readable-width
-        (debug/pre-edn params)]])))
-
 (sketch/definition helix
-    {:created-at "2024-04-27"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2024-04-27"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount
+   (usvg/page (let [params (parameters)]
+                (assoc sketch-args
+                       :params params
+                       :explanation (fn [] (debug/pre-edn params))))
+              scene)))
