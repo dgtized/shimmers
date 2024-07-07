@@ -15,7 +15,6 @@
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
@@ -285,29 +284,20 @@
                               0.015 1.0
                               0.02 1.0})})
 
-(defn scene [rules]
+(defn scene [{:keys [scene-id rules]}]
   (reset! defo {:shapes []})
-  [:<>
-   (csvg/svg-timed {:id "scene"
-                    :width width
-                    :height height
-                    :stroke "black"
-                    :fill "none"}
-     (shapes rules))
-   [usvg/download-shortcut "scene" "ordered"]])
-
-(defn page []
-  (let [rules (ruleset)]
-    (fn []
-      [:<>
-       [:div.canvas-frame [scene rules]]
-       [:div.contained
-        [:div.evencols
-         [view-sketch/generate :ordered]
-         [debug/display defo]]]])))
+  (csvg/svg-timed {:id scene-id
+                   :width width
+                   :height height
+                   :stroke "black"
+                   :fill "none"}
+    (shapes rules)))
 
 (sketch/definition ordered
   {:created-at "2023-02-24"
    :type :svg
    :tags #{}}
-  (ctrl/mount page))
+  (ctrl/mount (usvg/page
+               (assoc sketch-args :rules (ruleset)
+                      :explanation (fn [] [debug/display defo]))
+               scene)))
