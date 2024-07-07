@@ -123,32 +123,33 @@
                ;; width and displace more the closer the piece is to theta?
                :displacement {:arc0 -0.5 :arc1 0.5 :percent 1.0 :force 0.3}})))
 
-(defn page []
-  (let [{:keys [palette] :as params} (mosaic-params)]
-    (fn []
-      [:<>
-       [:div.canvas-frame
-        (csvg/svg-timed {:id "scene"
-                         :width width
-                         :height height}
-          [(scene params)])
-        [usvg/download-shortcut "scene" "radial-mosaic"]]
-       [:div.contained
-        [:div.evencols
-         [view-sketch/generate :radial-mosaic]
-         [:div.readable-width
-          [palette/as-svg {} palette]
-          #_(ctrl/checkbox settings "Dispersion" [:dispersion])
-          [:p "A circle is chopped into a set of radial arcs, ascending from the
+(defn explanation [palette]
+  (fn []
+    [:div.evencols
+     [:div.readable-width
+      [palette/as-svg {} palette]
+      #_(ctrl/checkbox settings "Dispersion" [:dispersion])
+      [:p "A circle is chopped into a set of radial arcs, ascending from the
         origin. Each arc is broken up into a number of segments proportional to
         the arc length. Find the common multiples between the number of segments
         and 12, and pick one randomly. That factor is used to pick a list of
         colors from a source palette for that particular row, which are then
         cycled across all segments in the arc, subdviding evenly as it's an even
-        divisor."]]]]])))
+        divisor."]]]))
+
+;; FIXME: download-sketch is failing in console
+(defn sketch [{:keys [params scene-id]}]
+  (csvg/svg-timed {:id scene-id
+                   :width width
+                   :height height}
+    [(scene params)]))
 
 (sketch/definition radial-mosaic
   {:created-at "2021-05-15"
    :type :svg
    :tags #{:static :deterministic}}
-  (ctrl/mount page))
+  (ctrl/mount (let [{:keys [palette] :as params} (mosaic-params)]
+                (usvg/page (assoc sketch-args
+                                  :params params
+                                  :explanation (explanation palette))
+                           sketch))))
