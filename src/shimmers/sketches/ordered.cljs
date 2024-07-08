@@ -298,6 +298,7 @@
    :type :svg
    :tags #{}}
   (ctrl/mount (usvg/page
-               (assoc sketch-args :rules (ruleset)
+               (assoc sketch-args
+                      :rules (ruleset)
                       :explanation (fn [] [debug/display defo]))
                scene)))
