@@ -73,14 +73,14 @@
               (< 0.8 val)
               (gc/circle q (* 0.2 r)))))))
 
-(defn scene [params]
-  (csvg/svg-timed {:id "scene"
+(defn scene [ui-state {:keys [params scene-id]}]
+  (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.66}
-    (shapes params)))
+    (shapes (merge params @ui-state))))
 
 (defn parameters []
   (let [[a b c] (harm/abc)]
@@ -93,25 +93,25 @@
                                   (dr/random-int 1 5)
                                   tm/SIXTH_PI)}))
 
-(defn page []
-  (let [ui-state (ctrl/state {:remove-freq 0})
-        params (parameters)]
-    (fn []
-      [sketch/with-explanation
-       [:div.canvas-frame [scene (merge params @ui-state)]]
-       [:div.flexcols
-        [view-sketch/generate :differential-harmonics]
-        [:div
-         [usvg/download-shortcut "scene" "differential-harmonics"]
-         [:p.readable-width
-          "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
-         [:div {:style {:width "20em"}}
-          [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]]
-       [:div.readable-width
-        (debug/pre-edn params)]])))
+(defn explanation [ui-state params]
+  (fn []
+    [:<>
+     [:div.flexcols
+      [:p.readable-width
+       "Similar to helix but instead perturb oscillation frequency forward and backward from base harmonic."]
+      [:div {:style {:width "10em"}}
+       [ctrl/numeric ui-state "Remove Frequency" [:remove-freq] [-32 32 1]]]]
+     [:div.readable-width
+      (debug/pre-edn params)]]))
 
 (sketch/definition differential-harmonics
-    {:created-at "2024-05-16"
-     :tags #{}
-     :type :svg}
-  (ctrl/mount page))
+  {:created-at "2024-05-16"
+   :tags #{}
+   :type :svg}
+  (ctrl/mount
+   (let [ui-state (ctrl/state {:remove-freq 0})
+         params (parameters)]
+     (usvg/page (assoc sketch-args
+                       :params params
+                       :explanation (explanation ui-state params))
+                (partial scene ui-state)))))
