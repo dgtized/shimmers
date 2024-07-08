@@ -136,8 +136,7 @@
         cycled across all segments in the arc, subdviding evenly as it's an even
         divisor."]]]))
 
-;; FIXME: download-sketch is failing in console
-(defn sketch [{:keys [params scene-id]}]
+(defn sketch [{:keys [scene-id params]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height}
