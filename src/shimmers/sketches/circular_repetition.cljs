@@ -6,9 +6,9 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.ui.debug :as debug]
    [thi.ng.strf.core :as f]))
 
 (defonce defo (debug/state {}))
