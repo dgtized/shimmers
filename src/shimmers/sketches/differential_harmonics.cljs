@@ -10,7 +10,6 @@
    [shimmers.math.wobble :as mw :refer [O R]]
    [shimmers.model.harmonics :as harm]
    [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
