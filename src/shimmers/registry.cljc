@@ -4,5 +4,5 @@
 
 (def sketches (atom {}))
 
-(defn add! [name sketch]
-  (swap! sketches assoc name sketch))
+(defn add! [sketch]
+  (swap! sketches assoc (:sketch-id sketch) sketch))

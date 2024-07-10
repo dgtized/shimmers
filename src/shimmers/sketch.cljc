@@ -87,16 +87,16 @@
 
        (let [page-identifier# ~(keyword sketch-page-name)
              m# (meta (var ~sketch-page-name))]
-         (registry/add! page-identifier#
-                        {:sketch-id page-identifier#
-                         :type :quil
-                         :fn ~runner
-                         :taps ~(:taps options)
-                         :created-at ~(:created-at opts)
-                         :tags ~(:tags opts #{})
-                         :ns (:ns m#)
-                         :file (:file m#)
-                         :line (:line m#)})))))
+         (registry/add!
+          {:sketch-id page-identifier#
+           :type :quil
+           :fn ~runner
+           :taps ~(:taps options)
+           :created-at ~(:created-at opts)
+           :tags ~(:tags opts #{})
+           :ns (:ns m#)
+           :file (:file m#)
+           :line (:line m#)})))))
 
 
 ;; `component` is a macro specifically to allow repl changes to
@@ -122,16 +122,16 @@
 
          (let [page-identifier# ~(keyword sketch-page-name)
                m# (meta (var ~sketch-page-name))]
-           (registry/add! page-identifier#
-                          {:sketch-id page-identifier#
-                           :type ~(:type options)
-                           :fn ~runner
-                           :taps ~(:taps options)
-                           :created-at ~created-at
-                           :tags ~(:tags options #{})
-                           :ns (:ns m#)
-                           :file (:file m#)
-                           :line (:line m#)})))))
+           (registry/add!
+            {:sketch-id page-identifier#
+             :type ~(:type options)
+             :fn ~runner
+             :taps ~(:taps options)
+             :created-at ~created-at
+             :tags ~(:tags options #{})
+             :ns (:ns m#)
+             :file (:file m#)
+             :line (:line m#)})))))
 
 (defn with-explanation
   [component & children]
