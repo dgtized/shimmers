@@ -26,12 +26,14 @@
   (q/no-fill)
   (q/stroke-weight 0.5)
   {:outline
-   (dr/rand-nth [(gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5))
-                 (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 6)
+   (dr/weighted {(gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 1.0
+                 (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 8) 1.0
+                 (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 6) 1.0
+                 (g/as-polygon (gc/circle (cq/rel-vec 0.5 0.5) (cq/rel-h 0.5)) 5) 1.0
                  (ellipse/ellipse (cq/rel-vec 0.5 0.5)
                                   (cq/rel-w 0.49)
-                                  (cq/rel-h 0.49))
-                 (cq/screen-rect 0.9)])
+                                  (cq/rel-h 0.49)) 1.0
+                 (cq/screen-rect 0.9) 1.0})
    :weights (repeatedly 2 #(dr/random -0.1 0.1))
    :phase (repeatedly 2 dr/random-tau)
    :time (/ (q/millis) 1000.0)})
