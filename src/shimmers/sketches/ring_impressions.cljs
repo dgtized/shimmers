@@ -61,12 +61,13 @@
        sort
        cs/pair-cycle))
 
-(defn ring [seed p r n displace exits]
+(defn ring [seed p r n-r n displace exits]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
         exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)
         ;; TODO: split on exits with a margin
         groups (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
-                          :when (let [v (every? (fn [e] (> (sm/radial-distance t e) 0.15))
+                          :when (let [v (every? (fn [e] (> (sm/radial-distance t e)
+                                                          (* 0.15 (math/sqrt (- 1.0 n-r)))))
                                                 exit-angles)]
                                   v)]
                       (let [pos (v/polar r t)
@@ -87,6 +88,7 @@
             (ring seed
                   p
                   (* r radius)
+                  r
                   (int (math/pow 30 (+ 1 r)))
                   (math/ceil (* radius 0.025 (+ 1 r)))
                   exits))
