@@ -61,8 +61,12 @@
        sort
        cs/pair-cycle))
 
-(defn ring [seed p r n-r n displace exits]
-  (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
+(defn noise-pos [seed]
+  (fn [scale pos]
+    (dr/noise-at-point-01 seed scale pos)))
+
+(defn ring [noise p r n-r n displace exits]
+  (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))
         exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)
         ;; TODO: split on exits with a margin
         groups (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
@@ -71,8 +75,8 @@
                                                 exit-angles)]
                                   v)]
                       (let [pos (v/polar r t)
-                            noise (dr/noise-at-point-01 seed 0.0035 pos)]
-                        (v/+polar pos displace (* eq/TAU noise))))
+                            n (noise 0.0035 pos)]
+                        (v/+polar pos displace (* eq/TAU n))))
                     (partition 2 1)
                     (partition-by (fn [[p q]] (> (g/dist p q) 5)))
                     (filter (fn [group] (> (count group) 1)))
@@ -82,10 +86,9 @@
                    (lines/split-segments split-chance points)))
             groups)))
 
-(defn tree-rings [seed {p :p radius :r} exits]
-  (println exits)
+(defn tree-rings [noise {p :p radius :r} exits]
   (mapcat (fn [r]
-            (ring seed
+            (ring noise
                   p
                   (* r radius)
                   r
@@ -110,8 +113,9 @@
         circles (gen-circles bounds)
         lines (connectives circles)]
     (concat (mapcat second lines)
-            (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle
-                                            (exits circle (map first lines))))
+            (mapcat (fn [circle]
+                      (tree-rings (noise-pos (dr/noise-seed)) circle
+                                  (exits circle (map first lines))))
                     circles))))
 
 (defn scene [{:keys [scene-id]}]
