@@ -11,6 +11,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -44,14 +45,23 @@
                        circles))
         (repeatedly 200 #(candidate-circles bounds))))
 
+(defn planar-pairs [pairs]
+  (reduce (fn [xs segment]
+            (if (not-any? (fn [line] (when (isec/segment-intersect line segment)
+                                      segment))
+                          xs)
+              (conj xs segment)
+              xs))
+          []
+          (cs/all-pairs pairs)))
+
 ;; filter for overlapping circle in between?
 (defn connectives [circles]
-  (let [pts (map :p circles)]
-    (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
-      [(gl/line2 p q)
-       (->> (tm/norm-range (/ (g/dist p q) 3.0))
-            (mapv (fn [t] (tm/mix p q t)))
-            (lines/split-segments 0.33))])))
+  (for [[p q] (planar-pairs (map :p circles))]
+    [(gl/line2 p q)
+     (->> (tm/norm-range (/ (g/dist p q) 3.0))
+          (mapv (fn [t] (tm/mix p q t)))
+          (lines/split-segments 0.33))]))
 
 ;; TODO use exit-bands to calculate range bands for each ring. Should help with
 ;; not showing the obviously starting line at the zero angle
