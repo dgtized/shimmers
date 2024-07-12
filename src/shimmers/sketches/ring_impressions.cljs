@@ -53,7 +53,8 @@
             (mapv (fn [t] (tm/mix p q t)))
             (lines/split-segments 0.33))])))
 
-;;  TODO use exit-bands to calculate range bands for each ring
+;; TODO use exit-bands to calculate range bands for each ring. Should help with
+;; not showing the obviously starting line at the zero angle
 (defn exit-bands [center exits]
   (->> exits
        (map (fn [exit] (g/heading (tm/- exit center))))
@@ -63,14 +64,12 @@
 (defn ring [seed p r n displace exits]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
         exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)
-        _ (println exit-angles)
-        base-t 0
         ;; TODO: split on exits with a margin
         groups (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
                           :when (let [v (every? (fn [e] (> (sm/radial-distance t e) 0.15))
                                                 exit-angles)]
                                   v)]
-                      (let [pos (v/polar r (+ t base-t))
+                      (let [pos (v/polar r t)
                             noise (dr/noise-at-point-01 seed 0.0035 pos)]
                         (v/+polar pos displace (* eq/TAU noise))))
                     (partition 2 1)
@@ -91,7 +90,7 @@
                   (int (math/pow 30 (+ 1 r)))
                   (math/ceil (* radius 0.025 (+ 1 r)))
                   exits))
-          (dr/gaussian-range 0.12 0.012)))
+          (dr/gaussian-range 0.025 0.012)))
 
 (defn exits [{center :p} lines]
   (mapcat (fn [line]
