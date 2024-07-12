@@ -40,7 +40,7 @@
 (defn gen-circles [bounds]
   (some (fn [circles] (when (and (> (count circles) 2)
                                 (> (reduce + (map g/area circles))
-                                   (* 0.33 (g/area bounds))))
+                                   (* 0.4 (g/area bounds))))
                        circles))
         (repeatedly 200 #(candidate-circles bounds))))
 
@@ -111,6 +111,7 @@
 (defn shapes []
   (let [bounds (csvg/screen width height)
         circles (gen-circles bounds)
+        ;; TODO: fix the center point so it's displaced correctly
         lines (connectives circles)]
     (concat (mapcat second lines)
             (mapcat (fn [circle]
