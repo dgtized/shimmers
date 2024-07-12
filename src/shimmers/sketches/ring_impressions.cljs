@@ -48,7 +48,10 @@
 (defn connectives [circles]
   (let [pts (map :p circles)]
     (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
-      (gl/line2 p q))))
+      [(gl/line2 p q)
+       (->> (tm/norm-range (/ (g/dist p q) 3.0))
+            (mapv (fn [t] (tm/mix p q t)))
+            (lines/split-segments 0.33))])))
 
 ;;  TODO use exit-bands to calculate range bands for each ring
 (defn exit-bands [center exits]
@@ -105,8 +108,9 @@
   (let [bounds (csvg/screen width height)
         circles (gen-circles bounds)
         lines (connectives circles)]
-    (concat lines
-            (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle (exits circle lines)))
+    (concat (mapcat second lines)
+            (mapcat (fn [circle] (tree-rings (dr/noise-seed) circle
+                                            (exits circle (map first lines))))
                     circles))))
 
 (defn scene [{:keys [scene-id]}]
