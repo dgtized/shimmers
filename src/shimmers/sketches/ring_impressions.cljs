@@ -8,6 +8,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.polygon :as poly]
@@ -49,18 +50,37 @@
     (for [[p q] (take (dec (count circles)) (cs/all-pairs pts))]
       (gl/line2 p q))))
 
-(defn ring [seed p r n displace _exits]
+;;  TODO use exit-bands to calculate range bands for each ring
+(defn exit-bands [center exits]
+  (->> exits
+       (map (fn [exit] (g/heading (tm/- exit center))))
+       sort
+       cs/pair-cycle))
+
+(defn ring [seed p r n displace exits]
   (let [split-chance (+ 0.25 (* 0.75 (dr/noise-at-point-01 seed 0.05 (gv/vec2 0.0 r))))
-        base-t (dr/random-tau)
+        exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)
+        _ (println exit-angles)
+        base-t 0
         ;; TODO: split on exits with a margin
-        points (for [t (range 0 eq/TAU (/ eq/TAU n))]
-                 (let [pos (v/polar r (+ t base-t))
-                       noise (dr/noise-at-point-01 seed 0.0035 pos)]
-                   (v/+polar pos displace (* eq/TAU noise))))]
-    (map (fn [segment] (g/translate segment p))
-         (lines/split-segments split-chance points))))
+        groups (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
+                          :when (let [v (every? (fn [e] (> (sm/radial-distance t e) 0.15))
+                                                exit-angles)]
+                                  v)]
+                      (let [pos (v/polar r (+ t base-t))
+                            noise (dr/noise-at-point-01 seed 0.0035 pos)]
+                        (v/+polar pos displace (* eq/TAU noise))))
+                    (partition 2 1)
+                    (partition-by (fn [[p q]] (> (g/dist p q) 5)))
+                    (filter (fn [group] (> (count group) 1)))
+                    (map (fn [group] (map first group))))]
+    (mapcat (fn [points]
+              (map (fn [segment] (g/translate segment p))
+                   (lines/split-segments split-chance points)))
+            groups)))
 
 (defn tree-rings [seed {p :p radius :r} exits]
+  (println exits)
   (mapcat (fn [r]
             (ring seed
                   p
@@ -68,7 +88,7 @@
                   (int (math/pow 30 (+ 1 r)))
                   (math/ceil (* radius 0.025 (+ 1 r)))
                   exits))
-          (dr/gaussian-range 0.01 0.012)))
+          (dr/gaussian-range 0.12 0.012)))
 
 (defn exits [{center :p} lines]
   (mapcat (fn [line]
