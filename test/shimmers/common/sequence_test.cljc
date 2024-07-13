@@ -109,4 +109,8 @@
   (is (= [[0 2] [0 3] [0 4] [1 3] [1 4] [2 4]]
          (sut/non-consecutive-pairs (range 5)))))
 
+(deftest take-until
+  (is (= [0] (sut/take-until #(= 0 %) (range 10))))
+  (is (= [0 1] (sut/take-until #(= 1 %) (range 10)))))
+
 (comment (t/run-tests))
