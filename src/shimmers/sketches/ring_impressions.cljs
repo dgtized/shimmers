@@ -75,22 +75,25 @@
   (fn [scale pos]
     (dr/noise-at-point-01 seed scale pos)))
 
+(defn ring-groups [noise p r n-r n displace exits]
+  (let [exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)]
+    (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
+               :when (let [v (every? (fn [e] (> (sm/radial-distance t e)
+                                               (* 0.15 (math/sqrt (- 1.0 n-r)))))
+                                     exit-angles)]
+                       v)]
+           (let [pos (v/polar r t)
+                 n (noise 0.0035 pos)]
+             (v/+polar pos displace (* eq/TAU n))))
+         (partition 2 1)
+         (partition-by (fn [[p q]] (> (g/dist p q) 5)))
+         (filter (fn [group] (> (count group) 1)))
+         (map (fn [group] (map first group))))))
+
 (defn ring [noise p r n-r n displace exits]
   (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))
-        exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)
         ;; TODO: split on exits with a margin
-        groups (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
-                          :when (let [v (every? (fn [e] (> (sm/radial-distance t e)
-                                                          (* 0.15 (math/sqrt (- 1.0 n-r)))))
-                                                exit-angles)]
-                                  v)]
-                      (let [pos (v/polar r t)
-                            n (noise 0.0035 pos)]
-                        (v/+polar pos displace (* eq/TAU n))))
-                    (partition 2 1)
-                    (partition-by (fn [[p q]] (> (g/dist p q) 5)))
-                    (filter (fn [group] (> (count group) 1)))
-                    (map (fn [group] (map first group))))]
+        groups (ring-groups noise p r n-r n displace exits)]
     (mapcat (fn [points]
               (map (fn [segment] (g/translate segment p))
                    (lines/split-segments split-chance points)))
