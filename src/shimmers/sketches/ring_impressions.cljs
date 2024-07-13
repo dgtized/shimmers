@@ -69,46 +69,37 @@
   (->> exits
        (map (fn [exit] (g/heading (tm/- exit center))))
        sort
-       cs/pair-cycle))
+       cs/pair-cycle
+       (mapv (fn [[a b]] (if (> a b) [a (+ b eq/TAU)] [a b])))))
 
 (defn noise-pos [seed]
   (fn [scale pos]
     (dr/noise-at-point-01 seed scale pos)))
 
-(defn ring-groups [noise p r n-r n displace exits]
-  (let [exit-angles (map (fn [e] (g/heading (tm/- e p))) exits)]
-    (->> (for [t (range 0 eq/TAU (/ eq/TAU n))
-               :when (let [v (every? (fn [e] (> (sm/radial-distance t e)
-                                               (* 0.15 (math/sqrt (- 1.0 n-r)))))
-                                     exit-angles)]
-                       v)]
-           (let [pos (v/polar r t)
-                 n (noise 0.0035 pos)]
-             (v/+polar pos displace (* eq/TAU n))))
-         (partition 2 1)
-         (partition-by (fn [[p q]] (> (g/dist p q) 5)))
-         (filter (fn [group] (> (count group) 1)))
-         (map (fn [group] (map first group))))))
-
-(defn ring [noise p r n-r n displace exits]
+(defn ring [noise p r n-r n displace bands]
   (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))
-        ;; TODO: split on exits with a margin
-        groups (ring-groups noise p r n-r n displace exits)]
-    (mapcat (fn [points]
-              (map (fn [segment] (g/translate segment p))
-                   (lines/split-segments split-chance points)))
-            groups)))
+        margin (* 0.2 (math/sqrt (- 1.0 n-r)))]
+    (->> (for [[a b] bands]
+           (->>  (tm/norm-range (math/ceil (* n (/ (- b a) eq/TAU))))
+                 (map (fn [t]
+                        (let [angle (tm/mix* (+ a margin) (- b margin) t)
+                              pos (v/polar r angle)]
+                          (v/+polar pos displace (* eq/TAU (noise 0.0035 pos))))))))
+         (mapcat (fn [points]
+                   (map (fn [segment] (g/translate segment p))
+                        (lines/split-segments split-chance points)))))))
 
 (defn tree-rings [noise {p :p radius :r} exits]
-  (mapcat (fn [r]
-            (ring noise
-                  p
-                  (* r radius)
-                  r
-                  (int (math/pow 30 (+ 1 r)))
-                  (math/ceil (* radius 0.025 (+ 1 r)))
-                  exits))
-          (dr/gaussian-range 0.025 0.012)))
+  (let [bands (exit-bands p exits)]
+    (mapcat (fn [r]
+              (ring noise
+                    p
+                    (* r radius)
+                    r
+                    (int (math/pow 30 (+ 1 r)))
+                    (math/ceil (* radius 0.025 (+ 1 r)))
+                    bands))
+            (dr/gaussian-range 0.025 0.012))))
 
 (defn exits [{center :p} lines]
   (mapcat (fn [line]
