@@ -113,4 +113,9 @@
   (is (= [0] (sut/take-until #(= 0 %) (range 10))))
   (is (= [0 1] (sut/take-until #(= 1 %) (range 10)))))
 
+(deftest drop-until
+  (is (= [] (sut/drop-until #(> % 4) (range 4))))
+  (is (= [2 3] (sut/drop-until #(= % 2) (range 4))))
+  (is (= [2 3] (sut/drop-until #(>= % 2) (range 4)))))
+
 (comment (t/run-tests))

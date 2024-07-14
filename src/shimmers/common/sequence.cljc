@@ -209,3 +209,14 @@
      (if (pred (first s))
        (cons (first s) nil)
        (cons (first s) (take-until pred (rest s)))))))
+
+(defn drop-until
+  "Returns a lazy sequence of the items in coll starting from the
+  first item for which (pred item) returns logical true."
+  [pred coll]
+  (let [step (fn [pred coll]
+               (let [s (seq coll)]
+                 (if (and s (not (pred (first s))))
+                   (recur pred (rest s))
+                   s)))]
+    (lazy-seq (step pred coll))))
