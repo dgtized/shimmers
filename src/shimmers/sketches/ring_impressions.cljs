@@ -49,9 +49,10 @@
   (let [small-bounds (g/scale-size bounds 0.75)
         rules {:bounds bounds
                :candidates 5
-               :gen-circle (fn [] (let [pt (rp/sample-point-inside small-bounds)]
-                                   (gc/circle pt (min (* 0.9 (poly/dist-to-closest-point bounds pt))
-                                                      (* 0.3 height)))))
+               :gen-circle
+               (fn [] (let [pt (rp/sample-point-inside small-bounds)]
+                       (gc/circle pt (min (* 0.9 (poly/dist-to-closest-point bounds pt))
+                                          (* 0.3 height)))))
                :spacing (* 0.025 height)}]
     (pack/circle-pack [] rules)))
 
