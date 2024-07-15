@@ -56,11 +56,15 @@
     (pack/circle-pack [] rules)))
 
 (defn gen-circles [bounds]
-  (some (fn [circles] (when (and (> (count circles) 2)
-                                (> (reduce + (map g/area circles))
-                                   (* 0.4 (g/area bounds))))
-                       circles))
-        (repeatedly 200 #(candidate-circles bounds))))
+  (some (fn [{:keys [circles] :as candidate}]
+          (when (and (> (count circles) 2)
+                     (> (reduce + (map g/area circles))
+                        (* 0.4 (g/area bounds))))
+            candidate))
+        (repeatedly 200
+                    (fn [] (let [circles (candidate-circles bounds)]
+                            {:circles circles
+                             :lines (connectives circles)})))))
 
 ;; TODO use exit-bands to calculate range bands for each ring. Should help with
 ;; not showing the obviously starting line at the zero angle
@@ -113,9 +117,8 @@
 
 (defn shapes []
   (let [bounds (csvg/screen width height)
-        circles (gen-circles bounds)
-        ;; TODO: fix the center point so it's displaced correctly
-        lines (connectives circles)]
+        {:keys [circles lines]} (gen-circles bounds)]
+    ;; TODO: fix the center point so it's displaced correctly
     (concat (mapcat second lines)
             (mapcat (fn [circle]
                       (tree-rings (noise-pos (dr/noise-seed)) circle
