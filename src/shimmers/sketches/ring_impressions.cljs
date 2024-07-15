@@ -63,9 +63,11 @@
                         (* 0.4 (g/area bounds))))
             candidate))
         (repeatedly 200
-                    (fn [] (let [circles (candidate-circles bounds)]
-                            {:circles circles
-                             :lines (connectives circles)})))))
+                    (fn []
+                      (let [circles (map (fn [c] (vary-meta c assoc :noise (dr/noise-seed)))
+                                         (candidate-circles bounds))]
+                        {:circles circles
+                         :lines (connectives circles)})))))
 
 ;; TODO use exit-bands to calculate range bands for each ring. Should help with
 ;; not showing the obviously starting line at the zero angle
@@ -93,8 +95,9 @@
                    (map (fn [segment] (g/translate segment p))
                         (lines/split-segments split-chance points)))))))
 
-(defn tree-rings [noise {p :p radius :r} exits]
-  (let [bands (exit-bands p exits)]
+(defn tree-rings [{p :p radius :r :as c} exits]
+  (let [bands (exit-bands p exits)
+        noise (noise-pos (:noise (meta c)))]
     (mapcat (fn [r]
               (ring noise
                     p
@@ -122,8 +125,7 @@
     ;; TODO: fix the center point so it's displaced correctly
     (concat (mapcat second lines)
             (mapcat (fn [circle]
-                      (tree-rings (noise-pos (dr/noise-seed)) circle
-                                  (exits circle (map first lines))))
+                      (tree-rings circle (exits circle (map first lines))))
                     circles))))
 
 (defn scene [{:keys [scene-id]}]
