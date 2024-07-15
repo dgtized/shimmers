@@ -37,9 +37,17 @@
           []
           (cs/all-pairs pairs)))
 
+(defn noise-pos [seed]
+  (fn [scale pos]
+    (dr/noise-at-point-01 seed scale pos)))
+
 ;; filter for overlapping circle in between?
 (defn connectives [circles]
-  (for [[p q] (planar-pairs (map :p circles))]
+  (for [[p q] (->> circles
+                   (map (fn [{:keys [p r] :as c}]
+                          (let [n ((noise-pos (:noise (meta c))) 0.0035 (gv/vec2))]
+                            (v/+polar p (* 0.025 r) (* eq/TAU n)))))
+                   planar-pairs)]
     [(gl/line2 p q)
      (->> (tm/norm-range (/ (g/dist p q) 3.0))
           (mapv (fn [t] (tm/mix p q t)))
@@ -78,10 +86,6 @@
        cs/pair-cycle
        (mapv (fn [[a b]] (if (> a b) [a (+ b eq/TAU)] [a b])))))
 
-(defn noise-pos [seed]
-  (fn [scale pos]
-    (dr/noise-at-point-01 seed scale pos)))
-
 (defn ring [noise p r n-r n displace bands]
   (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))
         margin (* 0.2 (math/sqrt (- 1.0 n-r)))]
@@ -111,9 +115,9 @@
 (defn exits [{center :p} lines]
   (mapcat (fn [line]
             (let [[p q] (g/vertices line)]
-              (cond (tm/delta= center p)
+              (cond (tm/delta= center p 8.0)
                     [q]
-                    (tm/delta= center q)
+                    (tm/delta= center q 8.0)
                     [p]
                     :else
                     [])))
