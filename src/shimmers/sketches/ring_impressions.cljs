@@ -27,23 +27,6 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn candidate-circles [bounds]
-  (let [small-bounds (g/scale-size bounds 0.75)
-        rules {:bounds bounds
-               :candidates 5
-               :gen-circle (fn [] (let [pt (rp/sample-point-inside small-bounds)]
-                                   (gc/circle pt (min (* 0.9 (poly/dist-to-closest-point bounds pt))
-                                                      (* 0.3 height)))))
-               :spacing (* 0.025 height)}]
-    (pack/circle-pack [] rules)))
-
-(defn gen-circles [bounds]
-  (some (fn [circles] (when (and (> (count circles) 2)
-                                (> (reduce + (map g/area circles))
-                                   (* 0.4 (g/area bounds))))
-                       circles))
-        (repeatedly 200 #(candidate-circles bounds))))
-
 (defn planar-pairs [pairs]
   (reduce (fn [xs segment]
             (if (not-any? (fn [line] (when (isec/segment-intersect line segment)
@@ -61,6 +44,23 @@
      (->> (tm/norm-range (/ (g/dist p q) 3.0))
           (mapv (fn [t] (tm/mix p q t)))
           (lines/split-segments 0.33))]))
+
+(defn candidate-circles [bounds]
+  (let [small-bounds (g/scale-size bounds 0.75)
+        rules {:bounds bounds
+               :candidates 5
+               :gen-circle (fn [] (let [pt (rp/sample-point-inside small-bounds)]
+                                   (gc/circle pt (min (* 0.9 (poly/dist-to-closest-point bounds pt))
+                                                      (* 0.3 height)))))
+               :spacing (* 0.025 height)}]
+    (pack/circle-pack [] rules)))
+
+(defn gen-circles [bounds]
+  (some (fn [circles] (when (and (> (count circles) 2)
+                                (> (reduce + (map g/area circles))
+                                   (* 0.4 (g/area bounds))))
+                       circles))
+        (repeatedly 200 #(candidate-circles bounds))))
 
 ;; TODO use exit-bands to calculate range bands for each ring. Should help with
 ;; not showing the obviously starting line at the zero angle
