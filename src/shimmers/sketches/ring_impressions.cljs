@@ -8,7 +8,6 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
-   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.intersection :as isec]
