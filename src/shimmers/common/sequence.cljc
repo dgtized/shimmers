@@ -212,6 +212,9 @@
 
 (defn drop-until
   "Returns a lazy sequence of the items in coll starting from the
-  first item for which (pred item) returns logical true."
-  [pred coll]
-  (drop-while (complement pred) coll))
+  first item for which (pred item) returns logical true. Returns a
+  stateful transducer when no collection is provided."
+  ([pred]
+   (drop-while (complement pred)))
+  ([pred coll]
+   (drop-while (complement pred) coll)))
