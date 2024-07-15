@@ -126,7 +126,6 @@
 (defn shapes []
   (let [bounds (csvg/screen width height)
         {:keys [circles lines]} (gen-circles bounds)]
-    ;; TODO: fix the center point so it's displaced correctly
     (concat (mapcat second lines)
             (mapcat (fn [circle]
                       (tree-rings circle (exits circle (map first lines))))
