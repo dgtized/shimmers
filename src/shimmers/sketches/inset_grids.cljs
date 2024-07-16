@@ -27,7 +27,7 @@
     (if (< (g/area rect) limit)
       [rect]
       (mapcat (fn [r]
-                (into [r] (division limit (g/scale-size r 0.975))))
+                (into [r] (division limit r)))
               (g/subdivide rect (splits rect))))))
 
 (defn shapes [bounds]
