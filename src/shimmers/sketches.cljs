@@ -116,6 +116,7 @@
    ;; shimmers.sketches.imperfect-curves
    shimmers.sketches.impressions-of-open-space
    shimmers.sketches.inconsequential-drift
+   shimmers.sketches.inset-grids
    shimmers.sketches.inset-polygon
    shimmers.sketches.inside-outside
    shimmers.sketches.integer-circles
