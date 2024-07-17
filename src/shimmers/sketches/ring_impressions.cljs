@@ -86,9 +86,8 @@
        cs/pair-cycle
        (mapv (fn [[a b]] (if (> a b) [a (+ b eq/TAU)] [a b])))))
 
-(defn ring [noise p r n-r n displace bands]
-  (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))
-        margin (* 0.2 (math/sqrt (- 1.0 n-r)))]
+(defn ring [noise p r n margin displace bands]
+  (let [split-chance (+ 0.25 (* 0.75 (noise 0.05 (gv/vec2 0.0 r))))]
     (->> (for [[a b] bands]
            (->>  (tm/norm-range (math/ceil (* n (/ (- b a) eq/TAU))))
                  (map (fn [t]
@@ -106,8 +105,8 @@
               (ring noise
                     p
                     (* r radius)
-                    r
                     (int (math/pow 30 (+ 1 r)))
+                    (* 0.225 (math/sqrt (- 1.0 r)))
                     (math/ceil (* radius 0.025 (+ 1 r)))
                     bands))
             (dr/gaussian-range 0.025 0.012))))
