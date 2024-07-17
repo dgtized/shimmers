@@ -106,7 +106,7 @@
                     p
                     (* r radius)
                     (int (math/pow 30 (+ 1 r)))
-                    (* 0.225 (math/sqrt (- 1.0 r)))
+                    (* 0.075 (+ 1 (math/sqrt (- 1.0 r))))
                     (math/ceil (* radius 0.025 (+ 1 r)))
                     bands))
             (dr/gaussian-range 0.025 0.012))))
