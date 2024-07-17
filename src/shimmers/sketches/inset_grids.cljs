@@ -8,6 +8,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]))
 
@@ -30,12 +31,19 @@
       {:rows (dr/random-int 2 11)
        :cols (dr/random-int 1 5)})))
 
+(defn circles [rect]
+  (map (fn [box]
+         (let [r (* 0.4 (min (g/width box) (g/height box)))]
+           (gc/circle (g/unmap-point box (gv/vec2 0.5 0.5)) r)))
+       (g/subdivide rect (splits rect))))
+
 (defn division [limit bounds]
   (let [rect (g/scale-size bounds 0.975)]
     (if (< (g/area rect) limit)
       [rect]
       (mapcat (fn [r]
-                (let [r' (if (dr/chance (* 0.3 (- 1.0 (/ (g/area r) (* width height)))))
+                (let [p-area (/ (g/area r) (* width height))
+                      r' (if (dr/chance (* 0.3 (- 1.0 p-area)))
                            (let [d (dr/rand-nth [0.025 0.0125])]
                              (g/translate
                               r
@@ -44,7 +52,9 @@
                                             (v/polar (* d (g/height r)) (* 0.25 eq/TAU))
                                             (v/polar (* d (g/height r)) (* 0.75 eq/TAU))])))
                            r)]
-                  (into [r'] (division limit r'))))
+                  (into [r'] (if (and (< 0.0001 p-area 0.04) (dr/chance 0.05))
+                               (circles r')
+                               (division limit r')))))
               (g/subdivide rect (splits rect))))))
 
 (defn shapes [bounds]
