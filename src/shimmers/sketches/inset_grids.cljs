@@ -32,8 +32,8 @@
        :cols (dr/random-int 1 5)})))
 
 (defn circles [rect]
-  (map (fn [box]
-         (let [r (* 0.4 (min (g/width box) (g/height box)))]
+  (map (fn [{[w h] :size :as box}]
+         (let [r (* 0.33 (min w h))]
            (gc/circle (g/unmap-point box (gv/vec2 0.5 0.5)) r)))
        (g/subdivide rect (splits rect))))
 
