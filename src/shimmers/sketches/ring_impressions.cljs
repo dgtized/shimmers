@@ -27,13 +27,19 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn planar-pairs [pairs]
+(defn planar-pairs [circles pairs]
   (reduce (fn [xs segment]
-            (if (not-any? (fn [line] (when (isec/segment-intersect line segment)
-                                      segment))
-                          xs)
-              (conj xs segment)
-              xs))
+            (let [[p q] segment]
+              (if (and (not-any? (fn [line] (when (isec/segment-intersect line segment)
+                                             segment))
+                                 xs)
+                       (not-any? (fn [circle]
+                                   (when-let [isec (isec/circle-ray circle p q) ]
+                                     (when (= :impale (:type isec))
+                                       circle)))
+                                 circles))
+                (conj xs segment)
+                xs)))
           []
           (cs/all-pairs pairs)))
 
@@ -47,7 +53,7 @@
                    (map (fn [{:keys [p r] :as c}]
                           (let [n ((noise-pos (:noise (meta c))) 0.0035 (gv/vec2))]
                             (v/+polar p (* 0.025 r) (* eq/TAU n)))))
-                   planar-pairs)]
+                   (planar-pairs circles))]
     [(gl/line2 p q)
      (->> (tm/norm-range (/ (g/dist p q) 3.0))
           (mapv (fn [t] (tm/mix p q t)))
