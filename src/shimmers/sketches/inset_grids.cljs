@@ -52,7 +52,7 @@
                                             (v/polar (* d (g/height r)) (* 0.25 eq/TAU))
                                             (v/polar (* d (g/height r)) (* 0.75 eq/TAU))])))
                            r)]
-                  (into [r'] (if (and (< 0.0001 p-area 0.04) (dr/chance 0.05))
+                  (into [r'] (if (and (< 0.0001 p-area 0.04) (dr/chance 0.075))
                                (circles r')
                                (division limit r')))))
               (g/subdivide rect (splits rect))))))
