@@ -28,20 +28,22 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn planar-pairs [circles pairs]
-  (reduce (fn [xs segment]
+  (letfn [(planar? [circles xs segment]
             (let [[p q] segment]
-              (if (and (not-any? (fn [line] (when (isec/segment-intersect line segment)
-                                             segment))
-                                 xs)
-                       (not-any? (fn [circle]
-                                   (when-let [isec (isec/circle-ray (g/scale-size circle 1.1) p q)]
-                                     (when (= :impale (:type isec))
-                                       circle)))
-                                 circles))
+              (and (not-any? (fn [line] (when (isec/segment-intersect line segment)
+                                         segment))
+                             xs)
+                   (not-any? (fn [circle]
+                               (when-let [isec (isec/circle-ray (g/scale-size circle 1.1) p q)]
+                                 (when (= :impale (:type isec))
+                                   circle)))
+                             circles))))]
+    (reduce (fn [xs segment]
+              (if (planar? circles xs segment)
                 (conj xs segment)
-                xs)))
-          []
-          (cs/all-pairs pairs)))
+                xs))
+            []
+            (cs/all-pairs pairs))))
 
 (defn noise-pos [seed]
   (fn [scale pos]
