@@ -122,7 +122,10 @@
                     (* 0.075 (+ 1 (math/sqrt (- 1.0 r))))
                     (math/ceil (* radius 0.025 (+ 1 r)))
                     bands))
-            (dr/gaussian-range 0.025 0.012))))
+            (apply dr/gaussian-range
+                   (dr/weighted {[0.0125 0.0075] 1.0
+                                 [0.025 0.0125] 2.0
+                                 [0.033 0.02] 1.0})))))
 
 (defn exits [{center :p} lines]
   (mapcat (fn [line]
