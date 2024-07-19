@@ -10,6 +10,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
@@ -138,13 +139,29 @@
                     [])))
           lines))
 
+(defn flow-field [bounds circles noise n]
+  (->> (fn []
+         (let [p (rp/sample-point-inside bounds)]
+           (->> p
+                (iterate (fn [p]
+                           (let [n (noise 0.00075 p)]
+                             (v/+polar p 1.0 (* eq/TAU n)))))
+                (take 128)
+                (take-while (fn [p]
+                              (and (collide/bounded? bounds p)
+                                   (not-any? (fn [c] (collide/bounded? (g/scale-size c 1.075) p))
+                                             circles))))
+                gl/linestrip2)))
+       (repeatedly n)))
+
 (defn shapes []
   (let [bounds (csvg/screen width height)
         {:keys [circles lines]} (gen-circles bounds)]
     (concat (mapcat second lines)
             (mapcat (fn [circle]
                       (tree-rings circle (exits circle (map first lines))))
-                    circles))))
+                    circles)
+            (flow-field bounds circles (noise-pos (dr/noise-seed)) 512))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
