@@ -34,7 +34,7 @@
                                              segment))
                                  xs)
                        (not-any? (fn [circle]
-                                   (when-let [isec (isec/circle-ray circle p q) ]
+                                   (when-let [isec (isec/circle-ray (g/scale-size circle 1.1) p q)]
                                      (when (= :impale (:type isec))
                                        circle)))
                                  circles))
