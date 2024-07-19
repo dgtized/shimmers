@@ -139,7 +139,19 @@
                     [])))
           lines))
 
-(defn flow-field [bounds circles noise n]
+(defn cut-lines [lines]
+  (fn [strip]
+    (let [points (g/vertices strip)
+          a (first points)
+          b (last points)]
+      (when (not-any? (fn [line]
+                        (let [[p q] (g/vertices line)]
+                          (when (isec/segment-intersect [p q] [a b])
+                            line)))
+                      lines)
+        strip))))
+
+(defn flow-field [bounds circles lines noise n]
   (->> (fn []
          (let [p (rp/sample-point-inside bounds)]
            (->> p
@@ -152,7 +164,8 @@
                                    (not-any? (fn [c] (collide/bounded? (g/scale-size c 1.085) p))
                                              circles))))
                 gl/linestrip2)))
-       (repeatedly n)))
+       (repeatedly n)
+       (keep (cut-lines lines))))
 
 (defn shapes []
   (let [bounds (csvg/screen width height)
@@ -161,7 +174,8 @@
             (mapcat (fn [circle]
                       (tree-rings circle (exits circle (map first lines))))
                     circles)
-            (flow-field bounds circles (noise-pos (dr/noise-seed)) 512))))
+            (flow-field bounds circles (map first lines)
+                        (noise-pos (dr/noise-seed)) 200))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
