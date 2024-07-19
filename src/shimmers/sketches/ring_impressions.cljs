@@ -27,17 +27,22 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn intersected-segment? [segment]
+  (fn [line]
+    (when (isec/segment-intersect line segment)
+      segment)))
+
+(defn impaled-circle? [segment]
+  (let [[p q] segment]
+    (fn [circle]
+      (when-let [isec (isec/circle-ray (g/scale-size circle 1.1) p q)]
+        (when (= :impale (:type isec))
+          circle)))))
+
 (defn planar-pairs [circles pairs]
   (letfn [(planar? [circles xs segment]
-            (let [[p q] segment]
-              (and (not-any? (fn [line] (when (isec/segment-intersect line segment)
-                                         segment))
-                             xs)
-                   (not-any? (fn [circle]
-                               (when-let [isec (isec/circle-ray (g/scale-size circle 1.1) p q)]
-                                 (when (= :impale (:type isec))
-                                   circle)))
-                             circles))))]
+            (and (not-any? (intersected-segment? segment) xs)
+                 (not-any? (impaled-circle? segment) circles)))]
     (reduce (fn [xs segment]
               (if (planar? circles xs segment)
                 (conj xs segment)
