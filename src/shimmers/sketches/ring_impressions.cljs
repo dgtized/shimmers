@@ -157,12 +157,12 @@
            (->> p
                 (iterate (fn [p]
                            (let [n (noise noise-div p)]
-                             (v/+polar p (dr/random-int 1 5) (* eq/TAU n)))))
+                             (v/+polar p (dr/random-int 2 8) (* eq/TAU n)))))
                 (take-while (fn [p]
                               (and (collide/bounded? bounds p)
                                    (not-any? (fn [c] (collide/bounded? (g/scale-size c 1.085) p))
                                              circles))))
-                (take (dr/random-int 32 128))
+                (take (dr/random-int 16 128))
                 gl/linestrip2)))
        (repeatedly n)
        (keep (cut-lines lines))))
