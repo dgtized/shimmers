@@ -151,18 +151,18 @@
                       lines)
         strip))))
 
-(defn flow-field [bounds circles lines noise n]
+(defn flow-field [bounds circles lines noise noise-div n]
   (->> (fn []
          (let [p (rp/sample-point-inside bounds)]
            (->> p
                 (iterate (fn [p]
-                           (let [n (noise 0.00075 p)]
+                           (let [n (noise noise-div p)]
                              (v/+polar p (dr/random-int 1 5) (* eq/TAU n)))))
-                (take 128)
                 (take-while (fn [p]
                               (and (collide/bounded? bounds p)
                                    (not-any? (fn [c] (collide/bounded? (g/scale-size c 1.085) p))
                                              circles))))
+                (take (dr/random-int 32 128))
                 gl/linestrip2)))
        (repeatedly n)
        (keep (cut-lines lines))))
@@ -175,7 +175,9 @@
                       (tree-rings circle (exits circle (map first lines))))
                     circles)
             (flow-field bounds circles (map first lines)
-                        (noise-pos (dr/noise-seed)) 200))))
+                        (noise-pos (dr/noise-seed))
+                        (dr/gaussian 0.00075 0.0001)
+                        256))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
