@@ -142,13 +142,18 @@
 (defn cut-lines [lines]
   (fn [strip]
     (let [points (g/vertices strip)
-          a (first points)
-          b (last points)]
-      (when (not-any? (fn [line]
-                        (let [[p q] (g/vertices line)]
-                          (when (isec/segment-intersect [p q] [a b])
-                            line)))
-                      lines)
+          n (count points)]
+      (when (and (> n 1)
+                 (let [a (first points)
+                       m (nth points (int (/ n 2)))
+                       b (last points)]
+                   (not-any? (fn [line]
+                               (let [[p q] (g/vertices line)]
+                                 (when (or (isec/segment-intersect [p q] [a b])
+                                           (isec/segment-intersect [p m] [a b])
+                                           (isec/segment-intersect [m q] [a b]))
+                                   line)))
+                             lines)))
         strip))))
 
 (defn flow-field [bounds circles lines noise noise-div n]
