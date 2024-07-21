@@ -11,7 +11,8 @@
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -41,11 +42,11 @@
 (defn division [limit bounds]
   (let [rect (g/scale-size bounds 0.975)]
     (if (< (g/area rect) limit)
-      (if (dr/chance 0.075)
+      (if (dr/chance 0.05)
         (into [rect]
               (clip/hatch-rectangle rect
                                     (* (dr/random 0.1 0.2) (min (g/width rect) (g/height rect)))
-                                    (dr/random-tau)
+                                    (+ (* 0.25 eq/TAU) (g/heading (tm/- (g/centroid rect) (rv 0.5 0.5))))
                                     [(dr/random) (dr/random)]))
         [rect])
       (mapcat (fn [r]
