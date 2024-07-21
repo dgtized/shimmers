@@ -1,6 +1,7 @@
 (ns shimmers.sketches.inset-grids
   (:require
    [clojure.math :as math]
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -40,7 +41,13 @@
 (defn division [limit bounds]
   (let [rect (g/scale-size bounds 0.975)]
     (if (< (g/area rect) limit)
-      [rect]
+      (if (dr/chance 0.075)
+        (into [rect]
+              (clip/hatch-rectangle rect
+                                    (* (dr/random 0.1 0.2) (min (g/width rect) (g/height rect)))
+                                    (dr/random-tau)
+                                    [(dr/random) (dr/random)]))
+        [rect])
       (mapcat (fn [r]
                 (let [p-area (/ (g/area r) (* width height))
                       r' (if (dr/chance (* 0.3 (- 1.0 p-area)))
