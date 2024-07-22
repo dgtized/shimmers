@@ -279,6 +279,11 @@
        (not-any? (fn [p] (g/contains-point? poly p))
                  (g/vertices bounds))))
 
+(defn overlapping-range?
+  "Check if range a0:a1 overlaps range b0:b1 on the number line."
+  [a0 a1 b0 b1]
+  (and (<= a0 b1) (<= b0 a1)))
+
 (defmulti coincident-edge?
   "Test if shapes `a` and `b` have an edge that touches for some distance.
 
@@ -292,14 +297,15 @@
         [ax2 ay2] (rect/top-right a)
         [bx1 by1] (:p b)
         [bx2 by2] (rect/top-right b)]
-    (cond (or (> ax1 bx2) (> bx1 ax2))
-          false
-          (or (> ay1 by2) (> by1 ay2))
-          false
-          :else (or (tm/delta= ax1 bx2)
-                    (tm/delta= ax2 bx1)
-                    (tm/delta= ay1 by2)
-                    (tm/delta= ay2 by1)))))
+    (cond (tm/delta= ax1 bx2)
+          (overlapping-range? ay1 ay2 by1 by2)
+          (tm/delta= ax2 bx1)
+          (overlapping-range? ay1 ay2 by1 by2)
+          (tm/delta= ay1 by2)
+          (overlapping-range? ax1 ax2 bx1 bx2)
+          (tm/delta= ay2 by1)
+          (overlapping-range? ax1 ax2 bx1 bx2)
+          :else false)))
 
 (defn coincident-segment? [[p q] [r s]]
   (let [{:keys [type] :as hit} (isec/intersect-line2-line2? p q r s)]

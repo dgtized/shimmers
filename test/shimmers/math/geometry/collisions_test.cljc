@@ -65,7 +65,10 @@
 
 (deftest coincident-edge?
   (t/testing "Rect2 Rect2"
-    (is (sut/coincident-edge? (rect/rect 4) (rect/rect 0 4 2 2)) "touching edge")
+    (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 2))) "inside touching edge")
+    (is (sut/coincident-edge? (rect/rect 4) (rect/rect 0 4 2 2)) "outside touching edge")
+    (is (sut/coincident-edge? (rect/rect 4) (rect/rect 4 0 2 2)) "outside touching edge")
+    ;; (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 4 4 2 2))) "outside touching point")
     (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 0 3 2 2))) "overlapping edge")))
 
 (deftest coincident-point?
