@@ -291,6 +291,8 @@
   touches on one edge."
   (fn [a b] [(type a) (type b)]))
 
+;; a1 < a2 and b1 < b2 guarenteed
+;; but nothing is certain about a1 to b1 or same for a2 and b2.
 (defmethod coincident-edge?
   [Rect2 Rect2] [a b]
   (let [[ax1 ay1] (:p a)
