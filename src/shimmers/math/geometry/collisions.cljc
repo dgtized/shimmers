@@ -295,17 +295,17 @@
 ;; but nothing is certain about a1 to b1 or same for a2 and b2.
 (defmethod coincident-edge?
   [Rect2 Rect2] [a b]
-  (let [[ax1 ay1] (:p a)
+  (let [[ax1 ay1] (rect/bottom-left a)
         [ax2 ay2] (rect/top-right a)
-        [bx1 by1] (:p b)
+        [bx1 by1] (rect/bottom-left b)
         [bx2 by2] (rect/top-right b)]
-    (cond (tm/delta= ax1 bx2)
+    (cond (tm/delta= ax1 bx2) ;; a-left == b-right
           (overlapping-range? ay1 ay2 by1 by2)
-          (tm/delta= ax2 bx1)
+          (tm/delta= ax2 bx1) ;; a-right == b-left
           (overlapping-range? ay1 ay2 by1 by2)
-          (tm/delta= ay1 by2)
+          (tm/delta= ay1 by2) ;; a-bottom == b-top
           (overlapping-range? ax1 ax2 bx1 bx2)
-          (tm/delta= ay2 by1)
+          (tm/delta= ay2 by1) ;; a-top == b-bottom
           (overlapping-range? ax1 ax2 bx1 bx2)
           :else false)))
 
