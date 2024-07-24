@@ -3,6 +3,7 @@
             [shimmers.algorithm.lines :as lines]
             [shimmers.math.geometry :as geometry]
             [shimmers.math.geometry.intersection :as intersect]
+            [shimmers.math.interval :as interval]
             [thi.ng.geom.core :as g]
             [thi.ng.geom.line :as gl]
             [thi.ng.geom.utils.intersect :as isec]
@@ -279,26 +280,6 @@
        (not-any? (fn [p] (g/contains-point? poly p))
                  (g/vertices bounds))))
 
-(defn overlapping-range?
-  "Check if range a0:a1 overlaps range b0:b1 on the number line."
-  [a0 a1 b0 b1]
-  (and (<= a0 b1) (<= b0 a1)))
-
-(defn range-overlap
-  [a0 a1 b0 b1]
-  (cond (<= a0 b0 b1 a1)
-        [b0 b1]
-        (<= b0 a0 a1 b1)
-        [a0 a1]
-        (<= a0 b0 a1 b1)
-        [b0 a1]
-        (<= b0 a0 b1 a1)
-        [a0 b1]))
-
-(comment (range-overlap 0 2 1 3)
-         (range-overlap 0 2 1 2)
-         (range-overlap 1 2 0 3))
-
 (defmulti coincident-edge?
   "Test if shapes `a` and `b` have an edge that touches for some distance.
 
@@ -315,13 +296,13 @@
         [bx1 by1] (rect/bottom-left b)
         [bx2 by2] (rect/top-right b)]
     (cond (tm/delta= ax1 bx2) ;; a-left == b-right
-          (overlapping-range? ay1 ay2 by1 by2)
+          (interval/overlap? ay1 ay2 by1 by2)
           (tm/delta= ax2 bx1) ;; a-right == b-left
-          (overlapping-range? ay1 ay2 by1 by2)
+          (interval/overlap? ay1 ay2 by1 by2)
           (tm/delta= ay1 by2) ;; a-bottom == b-top
-          (overlapping-range? ax1 ax2 bx1 bx2)
+          (interval/overlap? ax1 ax2 bx1 bx2)
           (tm/delta= ay2 by1) ;; a-top == b-bottom
-          (overlapping-range? ax1 ax2 bx1 bx2)
+          (interval/overlap? ax1 ax2 bx1 bx2)
           :else false)))
 
 (defn coincident-segment? [[p q] [r s]]
