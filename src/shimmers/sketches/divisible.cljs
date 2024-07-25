@@ -71,8 +71,7 @@
 
 (defn reduce-overlapping [shapes overlap]
   (let [[overlapping remaining]
-        (cs/separate (fn [s] (and (collide/overlaps? overlap s)
-                                 (not (collide/coincident-edge? overlap s)))) shapes)]
+        (cs/separate (fn [s] (collide/overlaps? overlap s)) shapes)]
     (->> (for [[p q](g/edges overlap)]
            (g/scale-size (gl/line2 p q) 1000))
          (lines/slice-polygons (joined-polygons overlapping))

@@ -295,15 +295,16 @@
         [ax2 ay2] (rect/top-right a)
         [bx1 by1] (rect/bottom-left b)
         [bx2 by2] (rect/top-right b)]
-    (cond (tm/delta= ax1 bx2) ;; a-left == b-right
-          (interval/overlap? ay1 ay2 by1 by2)
-          (tm/delta= ax2 bx1) ;; a-right == b-left
-          (interval/overlap? ay1 ay2 by1 by2)
-          (tm/delta= ay1 by2) ;; a-bottom == b-top
-          (interval/overlap? ax1 ax2 bx1 bx2)
-          (tm/delta= ay2 by1) ;; a-top == b-bottom
-          (interval/overlap? ax1 ax2 bx1 bx2)
-          :else false)))
+    (some?
+     (cond (tm/delta= ax1 bx2) ;; a-left == b-right
+           (interval/overlap-range ay1 ay2 by1 by2)
+           (tm/delta= ax2 bx1) ;; a-right == b-left
+           (interval/overlap-range ay1 ay2 by1 by2)
+           (tm/delta= ay1 by2) ;; a-bottom == b-top
+           (interval/overlap-range ax1 ax2 bx1 bx2)
+           (tm/delta= ay2 by1) ;; a-top == b-bottom
+           (interval/overlap-range ax1 ax2 bx1 bx2)
+           :else false))))
 
 (defn coincident-segment? [[p q] [r s]]
   (let [{:keys [type] :as hit} (isec/intersect-line2-line2? p q r s)]

@@ -65,11 +65,15 @@
 
 (deftest coincident-edge?
   (t/testing "Rect2 Rect2"
-    (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 2))) "inside touching edge")
+    (is (sut/coincident-edge? (rect/rect 4) (rect/rect 2)) "inside touching edge")
     (is (sut/coincident-edge? (rect/rect 4) (rect/rect 0 4 2 2)) "outside touching edge")
     (is (sut/coincident-edge? (rect/rect 4) (rect/rect 4 0 2 2)) "outside touching edge")
-    ;; (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 4 4 2 2))) "outside touching point")
-    (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 0 3 2 2))) "overlapping edge")))
+    (is (not (sut/coincident-edge? (rect/rect 4) (rect/rect 4 4 2 2))) "outside touching point")
+    (is (sut/coincident-edge? (rect/rect 4) (rect/rect 0 3 2 2)) "overlapping edge")
+
+    (let [xs (g/subdivide (rect/rect 3 3) {:rows 3 :cols 3})
+          t (rect/rect 1 1 1 1)]
+      (is (= 5 (count (filter (fn [s] (sut/coincident-edge? t s)) xs)))))))
 
 (deftest coincident-point?
   (t/testing "Polygon2 Polygon2"
