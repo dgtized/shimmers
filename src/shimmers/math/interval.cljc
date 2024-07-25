@@ -24,3 +24,12 @@
          (overlap 0 2 1 3)
          (overlap 0 2 1 2)
          (overlap 1 2 0 3))
+
+(defn overlap-range
+  ([[a0 a1] [b0 b1]]
+   (overlap-range a0 a1 b0 b1))
+  ([a0 a1 b0 b1]
+   (when-let [hit (overlap a0 a1 b0 b1)]
+     (let [[a b] hit]
+       (when (< a b)
+         [a b])))))
