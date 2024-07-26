@@ -20,9 +20,9 @@
   ([a0 a1 b0 b1]
    (and (<= a0 b1) (<= b0 a1))))
 
-(defn overlap
+(defn intersection
   ([[a0 a1] [b0 b1]]
-   (overlap a0 a1 b0 b1))
+   (intersection a0 a1 b0 b1))
   ([a0 a1 b0 b1]
    (cond (<= a0 b0 b1 a1)
          [b0 b1]
@@ -33,16 +33,16 @@
          (<= b0 a0 b1 a1)
          [a0 b1])))
 
-(comment (overlap 0 1 1 3)
-         (overlap 0 2 1 3)
-         (overlap 0 2 1 2)
-         (overlap 1 2 0 3))
+(comment (intersection 0 1 1 3)
+         (intersection 0 2 1 3)
+         (intersection 0 2 1 2)
+         (intersection 1 2 0 3))
 
 (defn overlap-range
   ([[a0 a1] [b0 b1]]
    (overlap-range a0 a1 b0 b1))
   ([a0 a1 b0 b1]
-   (when-let [hit (overlap a0 a1 b0 b1)]
+   (when-let [hit (intersection a0 a1 b0 b1)]
      (let [[a b] hit]
        (when (< a b)
          [a b])))))
