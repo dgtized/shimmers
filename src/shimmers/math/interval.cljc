@@ -1,5 +1,18 @@
 (ns shimmers.math.interval)
 
+;; experimenting with some interval math helpers
+
+(defn min-range
+  [[a0 _] [b0 _]]
+  (min a0 b0))
+
+(defn max-range
+  [[_ a1] [_ b1]]
+  (max a1 b1))
+
+(defn min-max-cover [a b]
+  [(min-range a b) (max-range a b)])
+
 (defn overlap?
   "Check if range a0:a1 overlaps range b0:b1 on the number line."
   ([[a0 a1] [b0 b1]]
