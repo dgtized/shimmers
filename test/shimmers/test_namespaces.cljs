@@ -20,6 +20,7 @@
    [shimmers.math.core-test]
    [shimmers.math.control-test]
    [shimmers.math.equations-test]
+   [shimmers.math.interval-test]
    [shimmers.math.geometry-test]
    [shimmers.math.geometry.arc-test]
    [shimmers.math.geometry.collisions-test]

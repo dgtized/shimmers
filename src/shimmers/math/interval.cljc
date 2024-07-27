@@ -33,11 +33,6 @@
          (<= b0 a0 b1 a1)
          [a0 b1])))
 
-(comment (intersection 0 1 1 3)
-         (intersection 0 2 1 3)
-         (intersection 0 2 1 2)
-         (intersection 1 2 0 3))
-
 (defn overlap-range
   ([[a0 a1] [b0 b1]]
    (overlap-range a0 a1 b0 b1))
