@@ -66,6 +66,7 @@
    shimmers.sketches.delaunay-voronoi
    shimmers.sketches.density-variation
    shimmers.sketches.dependents
+   shimmers.sketches.designed-imperfections
    shimmers.sketches.differential-growth
    shimmers.sketches.differential-harmonics
    shimmers.sketches.disassociated-boxes
