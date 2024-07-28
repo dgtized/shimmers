@@ -13,8 +13,12 @@
   (is (sut/overlap? 2 5 3 4) "cover second"))
 
 (deftest intersection
-  (is (nil? (sut/intersection 0 1 2 3)))
-  (is (= [1 1] (sut/intersection 0 1 1 3)))
-  (is (= [1 2] (sut/intersection 0 2 1 3)))
-  (is (= [1 2] (sut/intersection 0 2 1 2)))
-  (is (= [1 2] (sut/intersection 1 2 0 3))))
+  (is (nil? (sut/intersection 0 1 2 3)) "no overlap")
+  (is (= [1 1] (sut/intersection 0 1 1 3)) "lower touch")
+  (is (= [1 2] (sut/intersection 0 2 1 3)) "lower overlap")
+  (is (= [1 2] (sut/intersection 0 2 1 2)) "lower cover/touch")
+  (is (= [1 2] (sut/intersection 0 3 1 2)) "lower cover")
+  (is (= [3 3] (sut/intersection -1 3 3 4)) "upper touch")
+  (is (= [3 3] (sut/intersection 3 4 2 3)) "upper touch")
+  (is (= [-1 1] (sut/intersection -1 3 -2 1)) "upper overlap")
+  (is (= [1 2] (sut/intersection 1 2 0 3)) "upper cover"))
