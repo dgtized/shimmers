@@ -35,7 +35,7 @@
                    :height height
                    :stroke "black"
                    :fill "none"
-                   :stroke-width 0.5}
+                   :stroke-width 1.0}
     (shapes)))
 
 (sketch/definition designed-imperfections
