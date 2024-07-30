@@ -21,11 +21,12 @@
   (let [seed (dr/noise-seed)]
     (for [box (g/subdivide (csvg/screen width height)
                            {:cols (/ width 10) :rows (/ height 10)})]
-      (let [pos (g/centroid box)]
+      (let [pos (g/centroid box)
+            n (dr/noise-at-point seed 0.015 pos)
+            damp (/ 1.0 (Math/pow 1.004 (g/dist pos (rv 0.5 0.5))))]
         (gc/circle (tm/+ pos
-                         (v/polar (* 8.0 (/ 1.0 (Math/pow 1.005 (g/dist pos (rv 0.5 0.5)))))
-                                  (* eq/TAU (dr/noise-at-point seed 0.015 pos))))
-                   2.0)))))
+                         (v/polar (* 8.0 damp) (* eq/TAU n)))
+                   (* 2.0 (+ 1.0 (* 0.5 (Math/sin (* eq/TAU n)) damp))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
