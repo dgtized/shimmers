@@ -26,7 +26,7 @@
         (gc/circle (tm/+ p
                          (tm/+ (gv/vec2 (* r dampen1 (math/cos (* dampen2 dx t)))
                                         (* r dampen1 (math/sin (* dampen2 dy t))))
-                               (v/polar (* 0.04 r dampen2) (* math/PI t))))
+                               (v/polar (* 0.04 r dampen2) (* 3 t))))
                    (dr/gaussian 1.1 0.2))))))
 
 (defn gen-parameters []
