@@ -40,7 +40,7 @@
        :width width
        :height height
        :stroke "black"
-       :fill "white"
+       :fill "none"
        :stroke-width 0.5}
       (plot {:p (rv 0.5 0.5) :r (* 0.475 height)}
             0.004 0.003 dx dy))))
