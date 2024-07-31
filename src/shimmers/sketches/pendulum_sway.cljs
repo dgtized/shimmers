@@ -18,32 +18,42 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn plot [{:keys [p r]} lambda1 lambda2 dx dy]
+(defn f1 [r t {:keys [lambda1 lambda2 dx dy]}]
+  (let [dampen1 (math/exp (* (- lambda1) t))
+        dampen2 (math/exp (* (- lambda2) t))]
+    (tm/+ (gv/vec2 (* r dampen1 (math/cos (* dampen2 dx t)))
+                   (* r dampen1 (math/sin (* dampen2 dy t))))
+          (v/polar (* 0.04 r dampen2) (* 3 t)))))
+
+(defn f2 [r t {:keys [lambda1 lambda2 dx dy]}]
+  (let [dampen1 (math/exp (* (- lambda1) t))
+        dampen2 (math/exp (* (- lambda2) t))]
+    (tm/+ (gv/vec2 (* r dampen1 (math/cos (+ (* 2 dampen2) (* dx t))))
+                   (* r dampen1 (math/sin (+ (* 2 dampen2) (* dy t)))))
+          (v/polar (* 0.04 r dampen2) (* 3 t)))))
+
+(defn plot [{:keys [p r]} {:keys [f] :as params}]
   (let [limit 90]
     (for [t (range 0 (* limit eq/TAU) 0.05)]
-      (let [dampen1 (math/exp (* (- lambda1) t))
-            dampen2 (math/exp (* (- lambda2) t))]
-        (gc/circle (tm/+ p
-                         (tm/+ (gv/vec2 (* r dampen1 (math/cos (* dampen2 dx t)))
-                                        (* r dampen1 (math/sin (* dampen2 dy t))))
-                               (v/polar (* 0.04 r dampen2) (* 3 t))))
-                   (dr/gaussian 1.1 0.2))))))
+      (gc/circle (tm/+ p (f r t params))
+                 (dr/gaussian 1.1 0.2)))))
 
 (defn gen-parameters []
-  {:dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
-   :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))})
+  {:f (dr/rand-nth [f1 f2])
+   :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
+   :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
+   :lambda1 0.004
+   :lambda2 0.003})
 
 (defn scene [{:keys [scene-id params]}]
-  (let [{:keys [dx dy]} params]
-    (csvg/svg-timed
-      {:id scene-id
-       :width width
-       :height height
-       :stroke "black"
-       :fill "none"
-       :stroke-width 0.5}
-      (plot {:p (rv 0.5 0.5) :r (* 0.475 height)}
-            0.004 0.003 dx dy))))
+  (csvg/svg-timed
+    {:id scene-id
+     :width width
+     :height height
+     :stroke "black"
+     :fill "none"
+     :stroke-width 0.5}
+    (plot {:p (rv 0.5 0.5) :r (* 0.475 height)} params)))
 
 (defn ui-controls [{:keys [params]}]
   [:div
