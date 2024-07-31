@@ -30,8 +30,8 @@
                    (dr/gaussian 1.1 0.2))))))
 
 (defn gen-parameters []
-  {:dx (+ (dr/random-int 1 4) (dr/random -0.01 0.01))
-   :dy (+ (dr/random-int 1 4) (dr/random -0.01 0.01))})
+  {:dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
+   :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))})
 
 (defn scene [{:keys [scene-id params]}]
   (let [{:keys [dx dy]} params]
