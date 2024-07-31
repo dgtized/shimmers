@@ -3,6 +3,7 @@
    [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -28,10 +29,12 @@
                                (v/polar (* 0.04 r dampen2) (* math/PI t))))
                    (dr/gaussian 1.1 0.2))))))
 
-(defn scene [{:keys [scene-id]}]
-  (let [dx (+ (dr/random-int 1 4) (dr/random -0.01 0.01))
-        dy (+ (dr/random-int 1 4) (dr/random -0.01 0.01))]
-    (println dx dy)
+(defn gen-parameters []
+  {:dx (+ (dr/random-int 1 4) (dr/random -0.01 0.01))
+   :dy (+ (dr/random-int 1 4) (dr/random -0.01 0.01))})
+
+(defn scene [{:keys [scene-id params]}]
+  (let [{:keys [dx dy]} params]
     (csvg/svg-timed
       {:id scene-id
        :width width
@@ -42,8 +45,14 @@
       (plot {:p (rv 0.5 0.5) :r (* 0.475 height)}
             0.004 0.003 dx dy))))
 
+(defn ui-controls [{:keys [params]}]
+  [:div
+   [debug/pre-edn params]])
+
 (sketch/definition pendulum-sway
   {:created-at "2024-07-31"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page (assoc sketch-args
+                                :params (gen-parameters)
+                                :explanation ui-controls) scene)))
