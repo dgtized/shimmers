@@ -4,13 +4,13 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -26,7 +26,7 @@
                          (tm/+ (gv/vec2 (* r dampen1 (math/cos (* dampen2 dx t)))
                                         (* r dampen1 (math/sin (* dampen2 dy t))))
                                (v/polar (* 0.04 r dampen2) (* math/PI t))))
-                   1.0)))))
+                   (dr/gaussian 1.1 0.2))))))
 
 (defn scene [{:keys [scene-id]}]
   (let [dx (+ (dr/random-int 1 4) (dr/random -0.01 0.01))
