@@ -26,7 +26,7 @@
                                 {:cols (/ width 6) :rows (/ height 6)})]
            (let [pos (g/centroid box)
                  n (dr/noise-at-point seed 0.008 pos)
-                 damp (/ 1.0 (Math/pow 1.006 (g/dist pos center)))]
+                 damp (/ 1.0 (Math/pow 1.005 (g/dist pos center)))]
              (gc/circle (tm/+ pos
                               (tm/+ (v/polar (* 10.0 damp) (* eq/TAU n))
                                     (v/polar (* 20.0 (- 1.0 damp)) (g/heading (tm/- pos center)))))
