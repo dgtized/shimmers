@@ -18,28 +18,33 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn f1 [r t {:keys [lambda1 lambda2 dx dy]}]
+(defn alpha [r t {:keys [lambda1 lambda2 dx dy]}]
   (let [dampen1 (math/exp (* (- lambda1) t))
         dampen2 (math/exp (* (- lambda2) t))]
     (tm/+ (gv/vec2 (* r dampen1 (math/cos (* dampen2 dx t)))
                    (* r dampen1 (math/sin (* dampen2 dy t))))
           (v/polar (* 0.04 r dampen2) (* 3 t)))))
 
-(defn f2 [r t {:keys [lambda1 lambda2 dx dy]}]
+(defn beta [r t {:keys [lambda1 lambda2 dx dy]}]
   (let [dampen1 (math/exp (* (- lambda1) t))
         dampen2 (math/exp (* (- lambda2) t))]
     (tm/+ (gv/vec2 (* r dampen1 (math/cos (+ (* 2 dampen2) (* dx t))))
                    (* r dampen1 (math/sin (+ (* 2 dampen2) (* dy t)))))
           (v/polar (* 0.04 r dampen2) (* 3 t)))))
 
-(defn plot [{:keys [p r]} {:keys [f] :as params}]
-  (let [limit 90]
+(def functions
+  {:alpha alpha
+   :beta beta})
+
+(defn plot [{:keys [p r]} {:keys [select-fn] :as params}]
+  (let [limit 90
+        f (functions select-fn)]
     (for [t (range 0 (* limit eq/TAU) 0.05)]
       (gc/circle (tm/+ p (f r t params))
                  (dr/gaussian 1.1 0.2)))))
 
 (defn gen-parameters []
-  {:f (dr/rand-nth [f1 f2])
+  {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :lambda1 0.004
