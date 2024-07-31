@@ -20,14 +20,16 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes []
-  (let [seed (dr/noise-seed)]
+  (let [seed (dr/noise-seed)
+        center (rv 0.5 0.5)]
     (->> (for [box (g/subdivide (csvg/screen width height)
                                 {:cols (/ width 6) :rows (/ height 6)})]
            (let [pos (g/centroid box)
                  n (dr/noise-at-point seed 0.008 pos)
-                 damp (/ 1.0 (Math/pow 1.006 (g/dist pos (rv 0.5 0.5))))]
+                 damp (/ 1.0 (Math/pow 1.006 (g/dist pos center)))]
              (gc/circle (tm/+ pos
-                              (v/polar (* 10.0 damp) (* eq/TAU n)))
+                              (tm/+ (v/polar (* 10.0 damp) (* eq/TAU n))
+                                    (v/polar (* 20.0 (- 1.0 damp)) (g/heading (tm/- pos center)))))
                         (+ 2.0 (* 0.8 damp (math/sin (* eq/TAU (- 1.0 n))))))))
          (dr/map-random-sample (fn [{:keys [r]}]  (/ r 200.0))
                                (fn [{:keys [p r]}] (g/center (rect/rect (* 1.9 r)) p))))))
