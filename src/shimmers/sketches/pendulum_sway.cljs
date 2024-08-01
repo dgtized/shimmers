@@ -1,6 +1,7 @@
 (ns shimmers.sketches.pendulum-sway
   (:require
    [clojure.math :as math]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -37,9 +38,10 @@
    :beta beta})
 
 (defn plot [{:keys [p r]} {:keys [select-fn] :as params}]
-  (let [limit 90
+  (let [limit 100
         f (functions select-fn)]
-    (for [t (range 0 (* limit eq/TAU) 0.05)]
+    (for [t (cs/range-series 0 (* limit eq/TAU)
+                             (fn [t] (* 0.0225 (math/exp (* 0.003 t)))))]
       (gc/circle (tm/+ p (f r t params))
                  (+ 1.3 (* 0.7
                            (math/exp (* -0.001 t))
