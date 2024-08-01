@@ -41,7 +41,9 @@
         f (functions select-fn)]
     (for [t (range 0 (* limit eq/TAU) 0.05)]
       (gc/circle (tm/+ p (f r t params))
-                 (dr/gaussian 1.1 0.2)))))
+                 (+ 1.3 (* 0.7
+                           (math/exp (* -0.001 t))
+                           (math/sin (+ (* 9 t)))))))))
 
 (defn gen-parameters []
   {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0]])
