@@ -1,4 +1,5 @@
-(ns shimmers.common.sequence)
+(ns shimmers.common.sequence
+  (:require [clojure.math :as math]))
 
 (defn index-of
   "Find the index of a particular value in coll."
@@ -218,3 +219,12 @@
    (drop-while (complement pred)))
   ([pred coll]
    (drop-while (complement pred) coll)))
+
+(defn range-series [start end rate-f]
+  (take-while (fn [t] (<= t end))
+              (iterate (fn [t] (+ t (rate-f t)))
+                       start)))
+
+(comment (range-series 0 1 (fn [t] (max 0.01 (* 0.1 t))))
+         (range-series 0 1 (fn [t] (* 0.1 (math/exp (* (- 0.1) t)))))
+         (range-series 0 100 (fn [t] (math/exp (* 0.02 t)))))
