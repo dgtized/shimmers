@@ -33,9 +33,20 @@
                    (* r dampen1 (math/sin (+ (* 2 dampen2) (* dy t)))))
           (v/polar (* 0.04 r dampen2) (* 3 t)))))
 
+;; experiment with frequency modulation
+(defn gamma [r t {:keys [lambda1 lambda2 dx dy]}]
+  (let [dampen1 (math/exp (* (- lambda1) t))
+        dampen2 (math/exp (* (- lambda2) t))
+        fx (+ dx (* 0.001 (math/sin (* 0.5 t))))
+        fy (+ dy (* 0.001 (math/cos (* 0.5 t))))]
+    (tm/+ (gv/vec2 (* r dampen1 (math/cos (+ (* 6 dampen2) (* fx t))))
+                   (* r dampen1 (math/sin (+ (* 6 dampen2) (* fy t)))))
+          (v/polar (* 0.04 r dampen2) (* 4 t)))))
+
 (def functions
   {:alpha alpha
-   :beta beta})
+   :beta beta
+   :gamma gamma})
 
 (defn plot [{:keys [p r]} {:keys [select-fn] :as params}]
   (let [limit 100
@@ -48,7 +59,7 @@
                            (math/sin (+ (* 9 t)))))))))
 
 (defn gen-parameters []
-  {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0]])
+  {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0] [:gamma 1.0]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :lambda1 0.004
