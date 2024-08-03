@@ -8,9 +8,11 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -58,6 +60,13 @@
                            (math/exp (* -0.001 t))
                            (math/sin (+ (* 9 t)))))))))
 
+(defn triangulate [circles]
+  (map-indexed (fn [i {:keys [p] :as c}]
+                 (if (or (= 0 (mod i 5)) (= 0 (mod i 7)))
+                   (triangle/inscribed-equilateral c (g/heading (tm/- (rv 0.5 0.5) p)))
+                   c))
+               circles))
+
 (defn gen-parameters []
   {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0] [:gamma 1.0]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
@@ -74,7 +83,7 @@
      :stroke "black"
      :fill "none"
      :stroke-width 0.5}
-    (plot {:p (rv 0.5 0.5) :r (* 0.475 height)} params)))
+    (triangulate (plot {:p (rv 0.5 0.5) :r (* 0.475 height)} params))))
 
 (defn ui-controls [{:keys [params]}]
   [:div
