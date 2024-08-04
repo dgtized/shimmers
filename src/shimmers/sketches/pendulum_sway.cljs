@@ -39,8 +39,8 @@
 (defn gamma [r t {:keys [lambda1 lambda2 dx dy gamma-rate]}]
   (let [dampen1 (math/exp (* (- lambda1) t))
         dampen2 (math/exp (* (- lambda2) t))
-        fx (+ dx (* 0.001 (math/sin (* gamma-rate t))))
-        fy (+ dy (* 0.001 (math/cos (* gamma-rate t))))]
+        fx (+ dx (* 0.00025 (math/sin (* gamma-rate t))))
+        fy (+ dy (* 0.00025 (math/cos (* gamma-rate t))))]
     (tm/+ (gv/vec2 (* r dampen1 (math/cos (+ (* 6 dampen2) (* fx t))))
                    (* r dampen1 (math/sin (+ (* 6 dampen2) (* fy t)))))
           (v/polar (* 0.04 r dampen2) (* 4 t)))))
@@ -68,12 +68,12 @@
                circles))
 
 (defn gen-parameters []
-  {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0] [:gamma 1.0]])
+  {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0] [:gamma 1.5]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :lambda1 0.004
    :lambda2 0.003
-   :gamma-rate (dr/weighted {0.25 1 0.5 2 0.75 1 1.25 1})})
+   :gamma-rate (dr/weighted {0.125 4 0.25 2 0.5 1 0.75 1 1.25 1})})
 
 (defn scene [{:keys [scene-id params]}]
   (csvg/svg-timed
