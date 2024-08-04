@@ -17,6 +17,10 @@
   (q/color-mode :hsl 1.0)
   (q/ellipse-mode :radius)
   (q/stroke-weight 0.25)
+  ;; pseudo work-around as chrome is not drawing p3d lines since update sometime
+  ;; in june 2024?
+  (q/stroke 0.0)
+  (q/fill 0.5 0.05)
   (let [params
         {:weights (repeatedly 3 #(dr/random -1.0 1.0))
          :osc (repeatedly 3 #(dr/random -0.5 0.5))
