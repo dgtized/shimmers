@@ -1,5 +1,6 @@
 (ns shimmers.sketches.infographics
   (:require
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -40,11 +41,20 @@
       (duplicate bounds (gl/line2 (gv/vec2 0 (:y p)) (gv/vec2 w (:y p))))
       (duplicate bounds (gl/line2 (gv/vec2 (:x p) 0) (gv/vec2 (:x p) h))))))
 
+(defn angle-from-quadrant [[rx ry]]
+  (* (if (or (and (< rx 0.5) (< ry 0.5))
+             (and (> rx 0.5) (> ry 0.5)))
+       1 -1)
+     (dr/rand-nth [(tm/radians 30) (tm/radians 45) (tm/radians 60)])))
+
 (defn shapes [bounds]
   (let [p (rp/sample-point-inside (g/scale-size bounds 0.75))
-        a-circle (gc/circle p (* 0.7 (g/dist p (g/closest-point bounds p))))]
+        rp (g/map-point bounds p)
+        a-circle (gc/circle p (* 0.7 (g/dist p (g/closest-point bounds p))))
+        line (clip/line-through-point bounds p (angle-from-quadrant rp))]
     (concat [(vary-meta a-circle assoc :stroke-width 2.0)]
-            (lines bounds a-circle))))
+            (lines bounds a-circle)
+            [line])))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
@@ -52,8 +62,8 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
-                  (shapes (csvg/screen width height))))
+                   :stroke-width 1.0}
+    (shapes (csvg/screen width height))))
 
 (sketch/definition infographics
   {:created-at "2024-08-05"
