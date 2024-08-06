@@ -91,6 +91,23 @@
           hatches
           (recur (inc i) (into hatches lines)))))))
 
+(defn line-through-point
+  "Generate a line through a point `p` with an angle `theta`, clipped to a
+  rectangle.
+
+  `p` is in world coordinates, not relative coordinates to the rectangle."
+  [rect p theta]
+  (let [{[x _] :p [w _] :size} rect
+        [xstart ystart] p
+        m (math/tan theta)
+        c (- ystart (* m xstart))
+
+        x0 (- x (/ w 2))
+        y0 (+ (* m x0) c)
+        x1 (+ x w (/ w 2))
+        y1 (+ (* m x1) c)]
+    (clip-line rect (gv/vec2 x0 y0) (gv/vec2 x1 y1))))
+
 ;; adapted from draw-square in
 ;; https://sighack.com/post/cohen-sutherland-line-clipping-algorithm
 (defn hatch-rectangle
