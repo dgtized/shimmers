@@ -51,10 +51,17 @@
   (let [p (rp/sample-point-inside (g/scale-size bounds 0.75))
         rp (g/map-point bounds p)
         a-circle (gc/circle p (* 0.7 (g/dist p (g/closest-point bounds p))))
-        line (clip/line-through-point bounds p (angle-from-quadrant rp))]
+        isec-lines (lines bounds a-circle)
+        angle (g/heading (first isec-lines))
+        line (clip/line-through-point bounds p (angle-from-quadrant rp))
+        parallel (clip/line-through-point bounds
+                                          (if (tm/delta= angle 0) (gv/vec2 (- width (:x p)) (* 0.5 height))
+                                              (gv/vec2 (* width 0.5) (- height (:y p))))
+                                          angle)
+        ]
     (concat [(vary-meta a-circle assoc :stroke-width 2.0)]
-            (lines bounds a-circle)
-            [line])))
+            isec-lines
+            [line parallel])))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
