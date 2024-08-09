@@ -55,10 +55,18 @@
         angle (g/heading (first isec-lines))
         line (clip/line-through-point bounds p (angle-from-quadrant rp))
         parallel (clip/line-through-point bounds
-                                          (if (tm/delta= angle 0) (gv/vec2 (- width (:x p)) (* 0.5 height))
-                                              (gv/vec2 (* width 0.5) (- height (:y p))))
+                                          (if (tm/delta= angle 0)
+                                            (gv/vec2 0
+                                                     (if (< (:y p) (* 0.5 height))
+                                                       (:y p)
+                                                       (- height (:y p))))
+                                            (gv/vec2 (if (< (:x p) (* 0.5 width))
+                                                       (- width (:x p))
+                                                       (:x p))
+                                                     0))
                                           angle)
         ]
+    (println p angle parallel)
     (concat [(vary-meta a-circle assoc :stroke-width 2.0)]
             isec-lines
             [line parallel])))
