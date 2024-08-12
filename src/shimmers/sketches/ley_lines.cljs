@@ -21,17 +21,19 @@
 
 (defn make-path [bounds start-fn seed scale lifespan]
   (fn []
-    (let [path
+    (let [seed2 (tm/+ seed (gv/vec2 width height))
+          path
           (->> [(start-fn) (gv/vec2)]
                (iterate
                 (fn [[p v]]
                   (let [noise (dr/noise-at-point-01 seed scale p)
-                        v' (tm/* (tm/+ v (v/polar (/ 100 height) (* noise eq/TAU))) 0.85)]
+                        str (dr/noise-at-point-01 seed2 scale p)
+                        v' (tm/* (tm/+ v (v/polar (/ (+ 0.5 str) 10) (* noise eq/TAU))) 0.85)]
                     [(tm/+ p v) v'])))
                (take (lifespan))
                (take-while (fn [[p _v]] (g/contains-point? bounds p)))
                (map first))]
-      (when (and (seq path) (> (count path) 1))
+      (when (and (seq path) (> (count path) 2))
         (csvg/group {}
           (csvg/path (csvg/segmented-path path)
                      {:stroke-width 0.5})
@@ -40,9 +42,9 @@
 
 (defn shapes [bounds]
   (let [start (fn [] (rp/sample-point-inside (gc/circle (rv 0.5 0.5) (* 0.4 height))))
-        scale 0.001
+        scale 0.00125
         seed (dr/noise-seed)
-        lifespan (fn [] (int (dr/gaussian 100 10)))]
+        lifespan (fn [] (int (dr/gaussian 128 48)))]
     (repeatedly
      384
      (make-path (g/scale-size bounds 0.95) start seed scale lifespan))))
