@@ -35,7 +35,7 @@
       [(g/translate line v)
        (g/translate line (tm/- v))])))
 
-(defn lines [{[w h] :size :as bounds} {:keys [p r]}]
+(defn lines [{[w h] :size :as bounds} {:keys [p]}]
   (let [x-dir (dr/chance 0.5)]
     (if x-dir
       (duplicate bounds (gl/line2 (gv/vec2 0 (:y p)) (gv/vec2 w (:y p))))
