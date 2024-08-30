@@ -4,6 +4,10 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]))
 
+;; search for time change locations on base 64 or 48
+(comment (filter (fn [x] (or (= 0 (mod x 64))
+                            (= 0 (mod x 48))))  (range 2049)))
+
 (defn scene [_]
   (let [divisions [1 4 6 8 12 16 24 32]]
     [:table
