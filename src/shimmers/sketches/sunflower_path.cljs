@@ -1,4 +1,4 @@
-(ns shimmers.sketches.sunflower-points
+(ns shimmers.sketches.sunflower-path
   (:require
    [clojure.math :as math]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -33,9 +33,9 @@
                    :stroke "black"
                    :fill "white"
                    :stroke-width 0.5}
-    (shapes {:points 256 :alpha 1.0})))
+                  (shapes {:points 256 :alpha 1.0})))
 
-(sketch/definition sunflower-points
+(sketch/definition sunflower-path
   {:created-at "2024-09-30"
    :tags #{}
    :type :svg}

@@ -244,7 +244,7 @@
    shimmers.sketches.subliminal
    shimmers.sketches.substrate
    shimmers.sketches.sunflower
-   shimmers.sketches.sunflower-points
+   shimmers.sketches.sunflower-path
    shimmers.sketches.superposition
    shimmers.sketches.superposition-mirrored
    shimmers.sketches.terrain-grid
