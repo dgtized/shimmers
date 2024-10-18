@@ -1,5 +1,7 @@
 (ns shimmers.math.wave
-  (:require [clojure.math :as math]))
+  (:require
+   [clojure.math :as math]
+   [shimmers.math.equations :as eq]))
 
 ;; https://en.wikipedia.org/wiki/List_of_periodic_functions
 ;; Consider implementing cycloid
@@ -32,10 +34,17 @@
   [p t]
   (* 2 (abs (- (/ t p) (math/floor (+ (/ t p) (/ 1 2)))))))
 
+(defn sinc [x]
+  (let [t (* x eq/TAU)]
+    (if (zero? t)
+      0
+      (/ (math/sin t) t))))
+
 (comment
   (map (fn [t] [t (square 1.0 t)]) (range -2 2 0.1))
   (map (fn [t] [t (pulse 1.0 0.25 t)]) (range -2 2 0.125))
   (map (fn [t] [t (pulse 1.0 0.75 t)]) (range -2 2 0.125))
   (map (fn [t] [t (pulse 2.0 0.25 t)]) (range -2 2 0.125))
   (map (fn [t] [t (sawtooth 1.0 t)]) (range -2 2 0.1))
-  (map (fn [t] [t (triangle01 1 t)]) (range -1 1 0.1)))
+  (map (fn [t] [t (triangle01 1 t)]) (range -1 1 0.1))
+  (map (fn [t] [t (sinc t)]) (range -3 3 0.1)))
