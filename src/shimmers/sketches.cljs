@@ -143,6 +143,7 @@
    shimmers.sketches.light-and-dark
    shimmers.sketches.liminal-tension
    shimmers.sketches.logistics-flow
+   shimmers.sketches.loop-control
    shimmers.sketches.magnetic-fields
    shimmers.sketches.marching-squares
    shimmers.sketches.mechanism
