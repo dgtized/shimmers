@@ -14,9 +14,9 @@
 
 (defn random-equation []
   (dr/weighted
-   [[(fn [c t] (* 0.5 (+ c 1))) 1.0]
-    [(fn [c t] (* 0.5 (math/exp (+ 1 c)))) 1.0]
-    [(fn [c t] (* 0.5 (math/pow 3 (+ 1 c)))) 1.0]
+   [[(fn [c _t] (* 0.5 (+ c 1))) 1.0]
+    [(fn [c _t] (* 0.5 (math/exp (+ 1 c)))) 1.0]
+    [(fn [c _t] (* 0.5 (math/pow 3 (+ 1 c)))) 1.0]
     ;; FIXME why is this reversing?
     [(fn [c t] (+ 1.0 (* 0.5 (math/sin (+ t (* eq/TAU c)))))) 1.0]]))
 
