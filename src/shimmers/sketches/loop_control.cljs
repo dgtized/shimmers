@@ -35,14 +35,11 @@
   (let [t (/ (q/millis) 1000.0)
         state' (assoc state :t t)]
     (if (> t (+ t0 transition))
-      (let [state''
-            (assoc state'
-                   :t0 t
-                   :transition (dr/random 16.0 32.0)
-                   :rate-fn (random-equation)
-                   :rate-fn' rate-fn)]
-        (println state'')
-        state'')
+      (assoc state'
+             :t0 t
+             :transition (dr/random 30.0 60.0)
+             :rate-fn (random-equation)
+             :rate-fn' rate-fn)
       state')))
 
 (defn draw [{:keys [circles rate-fn rate-fn' transition t0 t]}]
