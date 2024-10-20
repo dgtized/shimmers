@@ -14,14 +14,16 @@
 
 (defn random-equation []
   (dr/weighted
-   [[(fn [c t] (* t (* 8.0 (+ c 1)))) 1.0]
-    [(fn [c t] (* t (math/exp (+ 1 c)))) 1.0]
-    [(fn [c t] (* t 2.0 (math/pow 3 (+ 1 c)))) 1.0]
-    [(fn [c t] (* t (+ 10.0 (* 2.0 (math/sin (* eq/TAU c)))))) 1.0]]))
+   [[(fn [c t] (* 0.5 (+ c 1))) 1.0]
+    [(fn [c t] (* 0.5 (math/exp (+ 1 c)))) 1.0]
+    [(fn [c t] (* 0.5 (math/pow 3 (+ 1 c)))) 1.0]
+    ;; FIXME why is this reversing?
+    [(fn [c t] (+ 1.0 (* 0.5 (math/sin (+ t (* eq/TAU c)))))) 1.0]]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t0 0
+  {:t 0
+   :t0 0
    :transition (dr/random 16.0 32.0)
    :rate-fn (random-equation)
    :rate-fn' (random-equation)
@@ -47,10 +49,11 @@
   (let [r (cq/rel-h 0.05)
         mix (tm/map-interval-clamped t [t0 (+ t0 (* 0.2 transition))] [0 1])]
     (doseq [{:keys [p c]} circles
-            :let [rate (tm/mix* (rate-fn' c t)
-                                (rate-fn c t)
-                                mix)
-                  p2 (v/+polar p r rate)]]
+            :let [r0 (rate-fn' c t)
+                  r1 (rate-fn c t)
+                  rate (tm/mix* r0 r1 mix)
+                  theta (* rate eq/TAU t)
+                  p2 (v/+polar p r theta)]]
       (cq/circle p 2.0)
       (q/line p p2)
       (cq/circle p2 2.0))))
