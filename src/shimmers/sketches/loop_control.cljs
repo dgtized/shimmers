@@ -12,13 +12,12 @@
    [shimmers.math.deterministic-random :as dr]
    [clojure.math :as math]))
 
+;; This is setting position, not velocity, so need to integrate to use sin
 (defn random-equation []
   (dr/weighted
-   [[(fn [c _t] (* 0.5 (+ c 1))) 1.0]
-    [(fn [c _t] (* 0.5 (math/exp (+ 1 c)))) 1.0]
-    [(fn [c _t] (* 0.5 (math/pow 3 (+ 1 c)))) 1.0]
-    ;; FIXME why is this reversing?
-    [(fn [c t] (+ 1.0 (* 0.5 (math/sin (+ t (* eq/TAU c)))))) 1.0]]))
+   [[(fn [c t] (* t (+ c 1))) 1.0]
+    [(fn [c t] (* t (math/exp (+ 1 c)))) 1.0]
+    [(fn [c t] (* t (math/pow 3 (+ 1 c)))) 1.0]]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -51,8 +50,7 @@
     (doseq [{:keys [p c]} circles
             :let [r0 (rate-fn' c t)
                   r1 (rate-fn c t)
-                  rate (tm/mix* r0 r1 mix)
-                  theta (* rate eq/TAU t)
+                  theta (tm/mix* r0 r1 mix)
                   p2 (v/+polar p r theta)]]
       (cq/circle p 2.0)
       (q/line p p2)
