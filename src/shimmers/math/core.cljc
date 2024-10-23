@@ -64,7 +64,7 @@
   (mod-between? tm/TWO_PI a b t))
 
 (defn mod-distance
-  "Calculate the distance between `a` and `b` in modular space `m`.
+  "Calculate the shortest distance between `a` and `b` in modular space `m`.
   Note that distance is always positive in this space."
   ([a b] (mod-distance 1.0 a b))
   ([m a b]
@@ -73,6 +73,17 @@
 
 (comment (mod-distance 0.4 1.0)
          (mod-distance 0.6 1.0))
+
+(defn mod-far-distance
+  "Calculate the longest distance between `a` and `b` in modular space `m`.
+  Note that distance is always positive in this space."
+  ([a b] (mod-far-distance 1.0 a b))
+  ([m a b]
+   (max (mod (- a b) m)
+        (mod (- b a) m))))
+
+(comment (mod-far-distance 0.4 1.0)
+         (mod-far-distance 0.6 1.0))
 
 (defn radial-distance
   "Calculate the shortest rotational distance between `a` and `b`.
