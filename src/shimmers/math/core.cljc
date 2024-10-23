@@ -136,10 +136,15 @@
   (take 10 primes)
   (primes-between 10 50))
 
-(defn factors [n k]
-  (filter (fn [factor] (= (mod n factor) 0)) (range 2 k)))
+(defn factors
+  "List of factors for a positive integer `n`.
 
-(comment (map (fn [n] [n (factors n 9)]) (range 1 100)))
+  Second argument `k` is the maximum factor to scan for."
+  ([n] (factors n (inc (/ n 2))))
+  ([n k]
+   (filter (fn [factor] (= (mod n factor) 0)) (range 2 k))))
+
+(comment (map (fn [n] [n (factors n)]) (range 0 65)))
 
 ;; https://rosettacode.org/wiki/Least_common_multiple#Clojure
 (defn gcd [a b]
