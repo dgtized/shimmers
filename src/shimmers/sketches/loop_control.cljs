@@ -18,7 +18,9 @@
   (dr/weighted
    [[(fn [c t] (* t (+ c 1))) 1.0]
     [(fn [c t] (* t (math/exp (+ 1 c)))) 1.0]
-    [(fn [c t] (* t (math/pow 3 (+ 1 c)))) 1.0]]))
+    [(fn [c t] (* t (math/pow 3 (+ 1 c)))) 1.0]
+    [(fn [c t] (* t 0.66 (math/pow 3 (+ 1 (eq/unit-sin (* eq/TAU c)))))) 1.0]
+    [(fn [c t] (* t 0.66 (math/exp (+ 1 (eq/unit-sin (* eq/TAU c)))))) 1.0]]))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
