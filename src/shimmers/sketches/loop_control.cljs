@@ -1,16 +1,17 @@
 (ns shimmers.sketches.loop-control
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.core :as sm]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]
-   [clojure.math :as math]))
+   [thi.ng.math.core :as tm]))
 
 ;; This is setting position, not velocity, so need to integrate to use sin
 (defn random-equation []
@@ -50,7 +51,7 @@
     (doseq [{:keys [p c]} circles
             :let [r0 (rate-fn' c t)
                   r1 (rate-fn c t)
-                  theta (tm/mix* r0 r1 mix)
+                  theta (sm/radial-mix r0 r1 mix)
                   p0 (v/+polar p r r0)
                   p1 (v/+polar p r r1)
                   p2 (v/+polar p r theta)]]
