@@ -94,8 +94,21 @@
 (comment (radial-distance 0 -1)
          (radial-distance -1 -5))
 
-(defn clockwise-distance [a b]
-  (- (if (< b a) (+ b tm/TWO_PI) b) a))
+(defn clockwise-distance
+  "Distance between `a` and `b` in a clockwise orientation.
+
+  Range is [0, 𝜏]"
+  [a b]
+  (let [a' (mod a tm/TWO_PI)
+        b' (mod b tm/TWO_PI)]
+    (- (if (< b' a') (+ b' tm/TWO_PI) b') a')))
+
+(comment (clockwise-distance 0 2)
+         (clockwise-distance 2 0)
+         (clockwise-distance 0 10)
+         (clockwise-distance 10 0)
+         (clockwise-distance 0 tm/TWO_PI)
+         (clockwise-distance tm/TWO_PI 0))
 
 (defn relative-diff
   "Calculate relative difference between two positive values `a` and `b`"
