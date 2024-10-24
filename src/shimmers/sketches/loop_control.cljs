@@ -15,9 +15,10 @@
 
 ;; This is setting position, not velocity, so need to integrate to use sin
 (defn random-equation []
-  (let [inv-f (if (dr/chance 0.5)
-                identity
-                (fn [c] (- 1.0 c)))]
+  (let [rc (dr/random)
+        inv-f (if (dr/chance 0.5)
+                (fn [c] (mod (+ c rc) 1.0))
+                (fn [c] (mod (- 1.0 c rc) 1.0)))]
     (dr/weighted
      [[(fn [c t] (* t (+ (inv-f c) 1))) 1.0]
       [(fn [c t] (* t (math/exp (+ 1 (inv-f c))))) 1.0]
