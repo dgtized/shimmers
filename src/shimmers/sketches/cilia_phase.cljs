@@ -29,39 +29,42 @@
         cx' (dr/random)]
     (fn [x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
 
-(defn screen-space [fx x]
-  (rv x (+ 0.5 (* 0.35 (fx x)))))
+(defn screen-space [y amp fx x]
+  (rv x (+ y (* amp (fx x)))))
 
-(defn base-spline [fx]
+(defn base-spline [screen-space fx]
   (for [x (range 0 1 0.0025)]
     (screen-space fx x)))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [fx]
-  (let [spx (spline-fx)]
-    (for [x (range 0 1 0.005)]
-      (let [pt (screen-space fx x)
-            pt' (screen-space fx (+ x 0.0001))
-            len (+ 12 (* 8 (spx x)))
-            offset (tm/normalize (g/rotate (tm/- pt' pt) (* eq/TAU 0.25)) len)]
-        (gl/line2 (tm/+ pt offset) (tm/- pt offset))))))
+(defn cilias [screen-space fx spx]
+  (for [x (range 0 1 0.005)]
+    (let [pt (screen-space fx x)
+          pt' (screen-space fx (+ x 0.0001))
+          len (+ 12 (* 8 (spx x)))
+          offset (tm/normalize (g/rotate (tm/- pt' pt) (* eq/TAU 0.25)) len)]
+      (gl/line2 (tm/+ pt offset) (tm/- pt offset)))))
 
 (defn shapes []
   (let [fx (spline-fx)
-        spline-pts (base-spline fx)
-        cilia (cilias fx)]
-    (concat [(csvg/path (csvg/segmented-path spline-pts))]
-            cilia)))
+        spx (spline-fx)]
+    (mapcat (fn [[y amp]]
+              (let [screen (partial screen-space y amp)
+                    spline-pts (base-spline screen fx)
+                    cilia (cilias screen fx spx)]
+                (concat [(csvg/path (csvg/segmented-path spline-pts))]
+                        cilia)))
+            [[0.33 0.2] [0.5 0.25] [0.66 0.2]])))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
-   {:id scene-id
-    :width width
-    :height height
-    :stroke "black"
-    :fill "white"
-    :stroke-width 1.0}
-   (shapes)))
+    {:id scene-id
+     :width width
+     :height height
+     :stroke "black"
+     :fill "none"
+     :stroke-width 1.0}
+    (shapes)))
 
 (sketch/definition cilia-phase
   {:created-at "2024-10-24"
