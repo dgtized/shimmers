@@ -45,6 +45,19 @@
           offset (tm/normalize (g/rotate (tm/- pt' pt) (* eq/TAU 0.25)) len)]
       (gl/line2 (tm/+ pt offset) (tm/- pt offset)))))
 
+(defn params []
+  (dr/weighted
+   {[[0.15 0.1 0.0075]
+     [0.33 0.2 0.015]
+     [0.5 0.25 0.0275]
+     [0.66 0.2 0.015]
+     [0.85 0.1 0.0075]]
+    1.0
+    [[0.25 0.2 0.015]
+     [0.5 0.25 0.035]
+     [0.75 0.2 0.015]]
+    1.0}))
+
 (defn shapes []
   (let [fx (spline-fx)
         spx (spline-fx)]
@@ -54,7 +67,7 @@
                     cilia (cilias screen fx spx c-amp)]
                 (concat [(csvg/path (csvg/segmented-path spline-pts))]
                         cilia)))
-            [[0.33 0.2 0.015] [0.5 0.25 0.025] [0.66 0.2 0.015]])))
+            (params))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
