@@ -36,14 +36,18 @@
   (for [x (range 0 1 0.0025)]
     (screen-space fx x)))
 
+(defn cilia-line [pt angle len]
+  (let [offset (g/rotate (gv/vec2 len 0) angle)]
+    (gl/line2 (tm/+ pt offset) (tm/- pt offset))))
+
 ;; How to avoid intersecting cilia?
 (defn cilias [screen-space fx spx c-amp]
   (for [x (range 0 1 0.004)]
     (let [pt (screen-space fx x)
           pt' (screen-space fx (+ x 0.0001))
-          len (* height (+ c-amp (* 0.75 c-amp (spx x))))
-          offset (tm/normalize (g/rotate (tm/- pt' pt) (* eq/TAU 0.25)) len)]
-      (gl/line2 (tm/+ pt offset) (tm/- pt offset)))))
+          angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25))
+          len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
+      (cilia-line pt angle len))))
 
 (defn params []
   (dr/weighted
