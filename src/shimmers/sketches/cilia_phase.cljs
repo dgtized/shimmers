@@ -42,7 +42,7 @@
 
 ;; How to avoid intersecting cilia?
 (defn cilias [screen-space fx spx c-amp]
-  (for [x (range 0 1 0.004)]
+  (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space fx x)
           pt' (screen-space fx (+ x 0.0001))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25))
