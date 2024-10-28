@@ -41,11 +41,12 @@
     (gl/line2 (tm/+ pt offset) (tm/- pt offset))))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space fx spx c-amp]
+(defn cilias [screen-space fx spx c-amp theta-x]
   (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space fx x)
           pt' (screen-space fx (+ x 0.0001))
-          angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25))
+          rotation (* 0.125 math/PI (theta-x x))
+          angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
       (cilia-line pt angle len))))
 
@@ -64,11 +65,12 @@
 
 (defn shapes []
   (let [fx (spline-fx)
-        spx (spline-fx)]
+        spx (spline-fx)
+        theta-x (spline-fx)]
     (mapcat (fn [[y amp c-amp]]
               (let [screen (partial screen-space y amp)
                     spline-pts (base-spline screen fx)
-                    cilia (cilias screen fx spx c-amp)]
+                    cilia (cilias screen fx spx c-amp theta-x)]
                 (concat [(csvg/path (csvg/segmented-path spline-pts))]
                         cilia)))
             (params))))
