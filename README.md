@@ -49,7 +49,9 @@ be run locally using:
 
 ## Release
 
-    $ bin/publish.sh
+Push to github will build a release automatically. It's using `bb build` to
+create a build in `static-site`, and then uploads the new build to github pages using
+actions.
 
 ## License
 
