@@ -53,15 +53,3 @@
                                  (str "js/" (release-file opts)))
               (str/replace-first "<span id=\"revision\"><code>rev:abcdef12</code></span>"
                                  (revision-span timestamp revision))))))
-
-;; deprecated
-(defn github-publish [& {:keys [dir repo fake]}]
-  (letfn [(xsh [& cmd]
-            (println (apply str "+ " (interpose " " cmd)))
-            (apply bt/shell {:dir dir} cmd))]
-    (println (str "Publishing from within: " dir " -> " repo))
-    (xsh "git init")
-    (xsh "git checkout" "-b" "gh-pages")
-    (xsh "git add index.html .gitignore js/* css/* shaders/*")
-    (xsh "git commit -m \"Deploy to Github pages\"")
-    ((if fake println xsh) (str "git push --force --quiet \"" repo "\" gh-pages:gh-pages"))))
