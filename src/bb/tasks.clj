@@ -21,11 +21,13 @@
        (subs sha 0 8)
        "</code></span>"))
 
-(defn release-file [{:keys [build-dir]}]
-  (let [manifest-file (str build-dir "manifest.edn")
-        release-file (str build-dir "release-main.js")
-        manifest (edn/read-string (slurp manifest-file))]
-    (fs/file-name (get manifest release-file))))
+(defn release-file [{:keys [build-dir manifest release]
+                     :or {manifest "manifest.edn"
+                          release "release-main.js"}}]
+  (let [manifest-file (str build-dir manifest)
+        release-build (str build-dir release)
+        manifest-db (edn/read-string (slurp manifest-file))]
+    (fs/file-name (get manifest-db release-build))))
 
 (defn build-static-site [& {:keys [build-dir from to]}]
   (let [js-dir (str to "/js")]
