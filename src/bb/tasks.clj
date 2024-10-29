@@ -49,13 +49,15 @@
     (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir release-glob))))
 
 (defn rewrite-index [& opts]
-  (let [{:keys [from to base-href] :as opts} (default-opts opts)
+  (let [{:keys [index-file from to base-href] :as opts} (default-opts opts)
+        from-index (str (fs/path from index-file))
+        to-index (str (fs/path to index-file))
         revision (git-revision)
         timestamp (timestamp-iso8601)
-        contents (slurp from)]
-    (println "Rewriting" from "->" to)
+        contents (slurp from-index)]
+    (println "Rewriting" from-index "->" to-index)
     (println "  build:" timestamp "rev:" revision)
-    (spit to
+    (spit to-index
           (-> contents
               (str/replace-first #"<base href=\"\">"
                                  (str "<base href=\"" base-href "\">"))
