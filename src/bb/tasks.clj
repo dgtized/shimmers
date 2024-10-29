@@ -21,17 +21,23 @@
        (subs sha 0 8)
        "</code></span>"))
 
-(defn release-file [{:keys [build-dir manifest release]
-                     :or {manifest "manifest.edn"
-                          release "release-main.js"}}]
-  (let [manifest-file (str build-dir manifest)
+;; TODO: use variables from figwheel config?
+(defn default-opts [{:keys [manifest release] :as opts}]
+  (assoc opts
+         :manifest (or manifest "manifest.edn")
+         :release (or release "release-main.js")))
+
+(defn release-file [opts]
+  (let [{:keys [build-dir manifest release]} (default-opts opts)
+        manifest-file (str build-dir manifest)
         release-build (str build-dir release)
         manifest-db (edn/read-string (slurp manifest-file))]
     (fs/file-name (get manifest-db release-build))))
 
-(defn build-static-site [& {:keys [build-dir from to release]}]
-  (let [js-dir (str to "/js")
-        release-base (fs/strip-ext (or release "release-main.js"))
+(defn build-static-site [& opts]
+  (let [{:keys [build-dir from to release]} (default-opts opts)
+        js-dir (str to "/js")
+        release-base (fs/strip-ext release)
         release-glob (str "/" (fs/file-name release-base) "*")]
     (fs/delete-tree to)
     (println "Creating" to "from" from "with javascript")
@@ -41,8 +47,9 @@
       (fs/copy js js-dir))
     (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir release-glob))))
 
-(defn rewrite-index [& {:keys [from to base-href] :as opts}]
-  (let [revision (git-revision)
+(defn rewrite-index [& opts]
+  (let [{:keys [from to base-href] :as opts} (default-opts opts)
+        revision (git-revision)
         timestamp (timestamp-iso8601)
         contents (slurp from)]
     (println "Rewriting" from "->" to)
