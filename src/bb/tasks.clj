@@ -21,9 +21,11 @@
        (subs sha 0 8)
        "</code></span>"))
 
-(defn release-file [build-dir]
-  (let [manifest (edn/read-string (slurp (str build-dir "manifest.edn")))]
-    (fs/file-name (get manifest (str build-dir "release-main.js")))))
+(defn release-file [{:keys [build-dir]}]
+  (let [manifest-file (str build-dir "manifest.edn")
+        release-file (str build-dir "release-main.js")
+        manifest (edn/read-string (slurp manifest-file))]
+    (fs/file-name (get manifest release-file))))
 
 (defn build-static-site [& {:keys [build-dir from to]}]
   (let [js-dir (str to "/js")]
@@ -35,7 +37,7 @@
       (fs/copy js js-dir))
     (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir "/release-main*"))))
 
-(defn rewrite-index [& {:keys [build-dir from to base-href]}]
+(defn rewrite-index [& {:keys [from to base-href] :as opts}]
   (let [revision (git-revision)
         timestamp (timestamp-iso8601)
         contents (slurp from)]
@@ -46,7 +48,7 @@
               (str/replace-first #"<base href=\"\">"
                                  (str "<base href=\"" base-href "\">"))
               (str/replace-first #"cljs-out\/dev-main\.js"
-                                 (str "js/" (release-file build-dir)))
+                                 (str "js/" (release-file opts)))
               (str/replace-first "<span id=\"revision\"><code>rev:abcdef12</code></span>"
                                  (revision-span timestamp revision))))))
 
