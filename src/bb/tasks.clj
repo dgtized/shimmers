@@ -29,15 +29,17 @@
         manifest-db (edn/read-string (slurp manifest-file))]
     (fs/file-name (get manifest-db release-build))))
 
-(defn build-static-site [& {:keys [build-dir from to]}]
-  (let [js-dir (str to "/js")]
+(defn build-static-site [& {:keys [build-dir from to release]}]
+  (let [js-dir (str to "/js")
+        release-base (fs/strip-ext (or release "release-main.js"))
+        release-glob (str "/" (fs/file-name release-base) "*")]
     (fs/delete-tree to)
     (println "Creating" to "from" from "with javascript")
     (fs/copy-tree from to)
     (fs/create-dirs js-dir)
-    (doseq [js (fs/glob build-dir "**release-main*")]
+    (doseq [js (fs/glob build-dir (str "**" release-base "*"))]
       (fs/copy js js-dir))
-    (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir "/release-main*"))))
+    (bt/shell "bash" "-c" (str "ls -hs --format=single-column " js-dir release-glob))))
 
 (defn rewrite-index [& {:keys [from to base-href] :as opts}]
   (let [revision (git-revision)
