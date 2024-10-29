@@ -22,8 +22,9 @@
        "</code></span>"))
 
 ;; TODO: use variables from figwheel config?
-(defn default-opts [{:keys [manifest release] :as opts}]
+(defn default-opts [{:keys [build-dir manifest release] :as opts}]
   (assoc opts
+         :build-dir (or build-dir "target/public/cljs-out/")
          :manifest (or manifest "manifest.edn")
          :release (or release "release-main.js")))
 
