@@ -1,6 +1,7 @@
 (ns shimmers.sketches.cilia-phase
   (:require
    [clojure.math :as math]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -66,7 +67,7 @@
           s (dr/random 1.0)
           amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
       (into []
-            (for [y (butlast (drop 1 (tm/norm-range n)))]
+            (for [y (cs/midsection (tm/norm-range n))]
               [y
                (* (/ 1.0 (inc n))
                   (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
