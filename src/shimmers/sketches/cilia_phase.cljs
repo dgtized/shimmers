@@ -61,7 +61,17 @@
     [[0.25 0.2 0.015]
      [0.5 0.25 0.035]
      [0.75 0.2 0.015]]
-    1.0}))
+    1.0
+    (let [n (dr/random-int 3 8)
+          s (dr/random 1.0)]
+      (into []
+            (for [y (butlast (drop 1 (tm/norm-range n)))]
+              [y
+               (* (/ 1.0 (inc n))
+                  (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
+               (* (/ 1.0 (inc n))
+                  (+ 0.025 (eq/gaussian 0.35 0.5 -0.125 y)))])))
+    2.0}))
 
 (defn shapes []
   (let [fx (spline-fx)
