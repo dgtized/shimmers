@@ -101,8 +101,9 @@
               (let [screen (partial screen-space y amp)
                     spline-pts (base-spline screen fx)
                     cilia (cilias screen cilia-spline fx spx c-amp theta-x)]
-                (concat [(csvg/path (csvg/segmented-path spline-pts))]
-                        cilia)))
+                [(csvg/path (csvg/segmented-path spline-pts))
+                 (csvg/group {:stroke-width 0.75}
+                   cilia)]))
             (params))))
 
 (defn scene [{:keys [scene-id]}]
