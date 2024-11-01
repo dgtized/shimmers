@@ -41,15 +41,27 @@
   (let [offset (g/rotate (gv/vec2 len 0) angle)]
     (gl/line2 (tm/+ pt offset) (tm/- pt offset))))
 
+(defn cilia-line-plot [spline pt angle len]
+  (let [offset (g/rotate (gv/vec2 len 0) angle)
+        axis (g/rotate (gv/vec2 (* 0.075 len) 0) (+ angle (* eq/TAU 0.25)))
+        a (tm/+ pt offset)
+        b (tm/- pt offset)]
+    (csvg/path
+     (csvg/segmented-path
+      (for [x (range 0 1 0.02)]
+        (let [fy (spline x)]
+          (tm/+ (tm/mix a b x)
+                (tm/mix (tm/- axis) axis fy))))))))
+
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space fx spx c-amp theta-x]
-  (for [x (range -0.05 1.05 0.004)]
+(defn cilias [screen-space cilia-spline fx spx c-amp theta-x]
+  (for [x (range -0.05 1.05 0.005)]
     (let [pt (screen-space fx x)
           pt' (screen-space fx (+ x 0.0001))
           rotation (* 0.125 math/PI (theta-x x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
-      (cilia-line pt angle len))))
+      (cilia-spline pt angle len))))
 
 (defn params []
   (dr/weighted
@@ -79,11 +91,15 @@
 (defn shapes []
   (let [fx (spline-fx)
         spx (spline-fx)
-        theta-x (spline-fx)]
+        cspx (spline-fx)
+        theta-x (spline-fx)
+        cilia-spline
+        (dr/weighted {cilia-line 1.0
+                      (partial cilia-line-plot cspx) 1.0})]
     (mapcat (fn [[y amp c-amp]]
               (let [screen (partial screen-space y amp)
                     spline-pts (base-spline screen fx)
-                    cilia (cilias screen fx spx c-amp theta-x)]
+                    cilia (cilias screen cilia-spline fx spx c-amp theta-x)]
                 (concat [(csvg/path (csvg/segmented-path spline-pts))]
                         cilia)))
             (params))))
