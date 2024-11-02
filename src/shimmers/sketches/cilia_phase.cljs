@@ -30,6 +30,13 @@
         cx' (dr/random)]
     (fn [x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
 
+(defn cilia-spline-fx []
+  (let [rx (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+        rx' (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+        amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
+        cx (dr/random)]
+    (fn [cx' x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
+
 (defn screen-space [y amp fx x]
   (rv x (+ y (* amp (fx x)))))
 
@@ -37,11 +44,11 @@
   (for [x (range 0 1 0.0025)]
     (screen-space fx x)))
 
-(defn cilia-line [pt angle len]
+(defn cilia-line [_ pt angle len]
   (let [offset (g/rotate (gv/vec2 len 0) angle)]
     (gl/line2 (tm/+ pt offset) (tm/- pt offset))))
 
-(defn cilia-line-plot [spline pt angle len]
+(defn cilia-line-plot [spline cx pt angle len]
   (let [offset (g/rotate (gv/vec2 len 0) angle)
         axis (g/rotate (gv/vec2 (* 0.075 len) 0) (+ angle (* eq/TAU 0.25)))
         a (tm/+ pt offset)
@@ -49,7 +56,7 @@
     (csvg/path
      (csvg/segmented-path
       (for [x (range 0 1 0.02)]
-        (let [fy (spline x)]
+        (let [fy (spline cx x)]
           (tm/+ (tm/mix a b x)
                 (tm/mix (tm/- axis) axis fy))))))))
 
@@ -61,7 +68,7 @@
           rotation (* 0.125 math/PI (theta-x x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
-      (cilia-spline pt angle len))))
+      (cilia-spline x pt angle len))))
 
 (defn params []
   (dr/weighted
@@ -92,7 +99,7 @@
 (defn shapes []
   (let [fx (spline-fx)
         spx (spline-fx)
-        cspx (spline-fx)
+        cspx (cilia-spline-fx)
         theta-x (spline-fx)
         cilia-spline
         (dr/weighted {cilia-line 1.0
