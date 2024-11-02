@@ -103,7 +103,7 @@
         theta-x (spline-fx)
         cilia-spline
         (dr/weighted {cilia-line 1.0
-                      (partial cilia-line-plot cspx) 1.5})]
+                      (partial cilia-line-plot cspx) 2.0})]
     (mapcat (fn [[y amp c-amp]]
               (let [screen (partial screen-space y amp)
                     spline-pts (base-spline screen fx)
