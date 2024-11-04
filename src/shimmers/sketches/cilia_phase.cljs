@@ -70,8 +70,6 @@
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
       (cilia-spline x pt angle len))))
 
-;; vector for each line;
-;; [ry, amplitude of line, amplitude of cilia from line]
 (defn params []
   (let [n (dr/weighted {(dr/random-int 3 8) 1.5
                         (dr/random-int 2 14) 1.0
@@ -80,11 +78,11 @@
         amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
     (into []
           (for [y (cs/midsection (tm/norm-range n))]
-            [y
-             (* (/ 1.0 (inc n))
-                (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
-             (* (/ 1.0 (inc n))
-                (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))]))))
+            {:ry y
+             :amp (* (/ 1.0 (inc n))
+                     (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
+             :c-amp (* (/ 1.0 (inc n))
+                       (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))}))))
 
 (defn shapes []
   (let [fx (spline-fx)
@@ -94,8 +92,8 @@
         cilia-spline
         (dr/weighted {cilia-line 1.0
                       (partial cilia-line-plot cspx) 2.0})]
-    (mapcat (fn [[y amp c-amp]]
-              (let [screen (partial screen-space y amp)
+    (mapcat (fn [{:keys [ry amp c-amp]}]
+              (let [screen (partial screen-space ry amp)
                     spline-pts (base-spline screen fx)
                     cilia (cilias screen cilia-spline fx spx c-amp theta-x)]
                 [(csvg/path (csvg/segmented-path spline-pts))
