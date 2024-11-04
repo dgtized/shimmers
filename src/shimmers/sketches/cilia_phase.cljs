@@ -73,7 +73,7 @@
           rotation (* 0.125 math/PI (theta-x x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
-      (cilia-spline x pt angle len))))
+      (cilia-spline (+ x phase) pt angle len))))
 
 (defn parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
@@ -88,7 +88,7 @@
                      (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
              :c-amp (* (/ 1.0 (inc n))
                        (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
-             :phase (dr/gaussian 0.0 0.01)}))))
+             :phase (dr/gaussian 0.0 0.0125)}))))
 
 (defonce defo (debug/state))
 
