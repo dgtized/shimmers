@@ -37,12 +37,12 @@
         cx (dr/random)]
     (fn [cx' x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
 
-(defn screen-space [y amp fx x]
-  (rv x (+ y (* amp (fx x)))))
+(defn screen-space [y amp fx x phase]
+  (rv x (+ y (* amp (fx (+ x phase))))))
 
-(defn base-spline [screen-space fx]
+(defn base-spline [screen-space fx phase]
   (for [x (range 0 1 0.0025)]
-    (screen-space fx x)))
+    (screen-space fx x phase)))
 
 (defn cilia-line [_ pt angle len]
   (let [offset (g/rotate (gv/vec2 len 0) angle)]
@@ -61,10 +61,10 @@
                 (tm/mix (tm/- axis) axis fy))))))))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space cilia-spline fx spx c-amp theta-x]
+(defn cilias [screen-space cilia-spline fx spx c-amp theta-x phase]
   (for [x (range -0.05 1.05 0.005)]
-    (let [pt (screen-space fx x)
-          pt' (screen-space fx (+ x 0.0001))
+    (let [pt (screen-space fx x phase)
+          pt' (screen-space fx (+ x 0.0001) phase)
           rotation (* 0.125 math/PI (theta-x x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
@@ -82,7 +82,8 @@
              :amp (* (/ 1.0 (inc n))
                      (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
              :c-amp (* (/ 1.0 (inc n))
-                       (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))}))))
+                       (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
+             :phase (dr/gaussian 0.0 0.01)}))))
 
 (defn shapes []
   (let [fx (spline-fx)
@@ -92,10 +93,10 @@
         cilia-spline
         (dr/weighted {cilia-line 1.0
                       (partial cilia-line-plot cspx) 2.0})]
-    (mapcat (fn [{:keys [ry amp c-amp]}]
+    (mapcat (fn [{:keys [ry amp c-amp phase]}]
               (let [screen (partial screen-space ry amp)
-                    spline-pts (base-spline screen fx)
-                    cilia (cilias screen cilia-spline fx spx c-amp theta-x)]
+                    spline-pts (base-spline screen fx phase)
+                    cilia (cilias screen cilia-spline fx spx c-amp theta-x phase)]
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
