@@ -71,8 +71,8 @@
       (cilia-spline x pt angle len))))
 
 (defn params []
-  (let [n (dr/weighted {(dr/random-int 3 8) 1.5
-                        (dr/random-int 2 14) 1.0
+  (let [n (dr/weighted {(dr/random-int 3 8) 3.0
+                        (dr/random-int 2 14) 1.5
                         (dr/random-int 2 20) 1.0})
         s (dr/random 1.0)
         amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
