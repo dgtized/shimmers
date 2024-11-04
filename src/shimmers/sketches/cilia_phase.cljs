@@ -70,31 +70,21 @@
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
       (cilia-spline x pt angle len))))
 
+;; vector for each line;
+;; [ry, amplitude of line, amplitude of cilia from line]
 (defn params []
-  (dr/weighted
-   {[[0.15 0.1 0.0075]
-     [0.33 0.2 0.015]
-     [0.5 0.25 0.0275]
-     [0.66 0.2 0.015]
-     [0.85 0.1 0.0075]]
-    0.0
-    [[0.25 0.2 0.015]
-     [0.5 0.25 0.035]
-     [0.75 0.2 0.015]]
-    0.0
-    (let [n (dr/weighted {(dr/random-int 3 8) 1.5
-                          (dr/random-int 2 14) 1.0
-                          (dr/random-int 2 20) 1.0})
-          s (dr/random 1.0)
-          amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
-      (into []
-            (for [y (cs/midsection (tm/norm-range n))]
-              [y
-               (* (/ 1.0 (inc n))
-                  (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
-               (* (/ 1.0 (inc n))
-                  (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))])))
-    1.0}))
+  (let [n (dr/weighted {(dr/random-int 3 8) 1.5
+                        (dr/random-int 2 14) 1.0
+                        (dr/random-int 2 20) 1.0})
+        s (dr/random 1.0)
+        amp (tm/clamp (dr/gaussian 0.35 0.05) 0.075 0.6)]
+    (into []
+          (for [y (cs/midsection (tm/norm-range n))]
+            [y
+             (* (/ 1.0 (inc n))
+                (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
+             (* (/ 1.0 (inc n))
+                (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))]))))
 
 (defn shapes []
   (let [fx (spline-fx)
