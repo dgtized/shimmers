@@ -67,7 +67,7 @@
 
 ;; How to avoid intersecting cilia?
 (defn cilias [screen-space cilia-spline fx spx c-amp theta-x phase]
-  (for [x (range -0.05 1.05 0.005)]
+  (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space fx x phase)
           pt' (screen-space fx (+ x 0.0001) phase)
           rotation (* 0.125 math/PI (theta-x x))
