@@ -1,6 +1,6 @@
 (ns shimmers.common.ui.debug
   (:require
-   [fipp.edn :as fedn]
+   [shimmers.common.edn :as sc-edn]
    [fipp.ednize :refer [IEdn]]
    #?@(:cljs
        [[shimmers.common.ui.controls :as ctrl]
@@ -95,7 +95,7 @@
 (defn pre-edn
   ([edn] (pre-edn edn {}))
   ([edn options]
-   [:pre.debug [:code (with-out-str (fedn/pprint edn options))]]))
+   [:pre.debug [:code (with-out-str (sc-edn/pprint edn options))]]))
 
 (defn display [atom]
   (pre-edn (deref atom)))
