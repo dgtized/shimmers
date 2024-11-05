@@ -5,7 +5,9 @@
             [fipp.visit :refer [visit visit*]]
             [fipp.engine :refer (pprint-document)]))
 
-;; Variation on shimmers.common.ui.debug/fixed-width
+;; See https://github.com/brandonbloom/fipp/issues/83 for symbol hack, basically
+;; it's forcing EdnPrinter to believe it's a symbol and not a float so it
+;; doesn't wrap it in a string.
 (defn fixed-width
   "Format float `v` to `width` decimal places as long as it's not infinite."
   [v width]

@@ -18,22 +18,12 @@
 (defn untyped [s]
   (zipmap (keys s) (vals s)))
 
-;; See https://github.com/brandonbloom/fipp/issues/83 for symbol hack, basically
-;; it's forcing EdnPrinter to believe it's a symbol and not a float so it
-;; doesn't wrap it in a string.
 (defn fixed-width
   "Format float `v` to 2 decimal places as long as it's not infinite."
-  [v]
-  #?(:cljs
-     (if (or (integer? v) (infinite? v))
-       v
-       (symbol (.toFixed v 2)))
-     :clj
-     (if (or (integer? v)
-             (= v Double/POSITIVE_INFINITY)
-             (= v Double/NEGATIVE_INFINITY))
-       v
-       (symbol (format "%.2f" v)))))
+  ([v]
+   (sc-edn/fixed-width v 2))
+  ([v width]
+   (sc-edn/fixed-width v width)))
 
 ;; Simplify IEdn output for pretty printing
 (extend-protocol IEdn
