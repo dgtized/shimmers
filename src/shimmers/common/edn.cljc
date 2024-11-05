@@ -5,7 +5,22 @@
             [fipp.visit :refer [visit visit*]]
             [fipp.engine :refer (pprint-document)]))
 
-(defrecord EdnPrinter [symbols print-meta print-length print-level]
+;; Variation on shimmers.common.ui.debug/fixed-width
+(defn fixed-width
+  "Format float `v` to `width` decimal places as long as it's not infinite."
+  [v width]
+  #?(:cljs
+     (if (or (integer? v) (infinite? v))
+       v
+       (symbol (.toFixed v width)))
+     :clj
+     (if (or (integer? v)
+             (= v Double/POSITIVE_INFINITY)
+             (= v Double/NEGATIVE_INFINITY))
+       v
+       (symbol (format (str "%." width "f") v)))))
+
+(defrecord EdnPrinter [symbols print-meta print-length print-level print-fixed-width]
 
   fipp.visit/IVisitor
 
@@ -33,7 +48,7 @@
     [:text (str x)])
 
   (visit-number [this x]
-    [:text (pr-str x)])
+    [:text (pr-str (fixed-width x print-fixed-width))])
 
   (visit-seq [this x]
     (if-let [pretty (symbols (first x))]
@@ -71,15 +86,14 @@
     [:text (pr-str x)])
 
   (visit-record [this x]
-    (visit this (record->tagged x)))
-
-  )
+    (visit this (record->tagged x))))
 
 (defn pprint
   ([x] (pprint x {}))
   ([x options]
    (let [defaults {:symbols {}
                    :print-length *print-length*
+                   :print-fixed-width 6
                    :print-level *print-level*
                    :print-meta *print-meta*}
          printer (map->EdnPrinter (merge defaults options))]
