@@ -1,64 +1,20 @@
 (ns shimmers.common.ui.debug
   (:require
-   [shimmers.common.edn :as sc-edn]
-   [fipp.ednize :refer [IEdn]]
+   [shimmers.common.format :as sc-format]
    #?@(:cljs
-       [[shimmers.common.ui.controls :as ctrl]
-        [thi.ng.geom.types :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
-        [thi.ng.geom.vector :refer [Vec2 Vec3]]]
-       :clj [[thi.ng.geom.types]
-             [thi.ng.geom.vector]]))
-  #?(:clj (:import [thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]
-                   [thi.ng.geom.vector Vec2 Vec3])))
+       [[shimmers.common.edn :as sc-edn]
+        [shimmers.common.ui.controls :as ctrl]])))
 
-;; identity operation for a map record that removes type info so tagged-literal
-;; will not be called recursively with the original type. However this should
-;; pickup extra keys if something else has been assoced in beyond the record keys.
-;; TODO: worth including meta info?
-(defn untyped [s]
-  (zipmap (keys s) (vals s)))
+#?(:cljs (def untyped sc-edn/untyped))
 
 (defn fixed-width
   "Format float `v` to 2 decimal places as long as it's not infinite."
   ([v]
-   (sc-edn/fixed-width v 2))
+   (sc-format/fixed-width v 2))
   ([v width]
-   (sc-edn/fixed-width v width)))
+   (sc-format/fixed-width v width)))
 
-;; Simplify IEdn output for pretty printing
-(extend-protocol IEdn
-  Circle2
-  (-edn [s]
-    (tagged-literal 'Circle2 (untyped s)))
-
-  Line2
-  (-edn [s]
-    (tagged-literal 'Line2 (untyped s)))
-
-  LineStrip2
-  (-edn [s]
-    (tagged-literal 'LineStrip2 (untyped s)))
-
-  Polygon2
-  (-edn [s]
-    (tagged-literal 'Polygon2 (untyped s)))
-
-  Rect2
-  (-edn [s]
-    (tagged-literal 'Rect2 (untyped s)))
-
-  Triangle2
-  (-edn [s]
-    (tagged-literal 'Triangle2 (untyped s)))
-
-  Vec2
-  (-edn [s]
-    (tagged-literal 'v2 (mapv fixed-width s)))
-
-  Vec3
-  (-edn [s]
-    (tagged-literal 'v3 (mapv fixed-width s))))
-
+;; cljs only
 (defmacro time-it
   "Evaluates expr and stores it in debug `atom` at `key`. Returns the value of expr."
   [atom key expr]
@@ -69,6 +25,7 @@
                                      " msecs"))
      ret#))
 
+;; cljs only
 (defmacro span-prof
   [desc expr]
   `(let [start# (cljs.core/system-time)
@@ -82,13 +39,15 @@
     (when (= :profile (first tap-value))
       (swap! sink conj (second tap-value)))))
 
-(defn pre-edn
-  ([edn] (pre-edn edn {}))
-  ([edn options]
-   [:pre.debug [:code (with-out-str (sc-edn/pprint edn options))]]))
+#?(:cljs
+   (defn pre-edn
+     ([edn] (pre-edn edn {}))
+     ([edn options]
+      [:pre.debug [:code (with-out-str (sc-edn/pprint edn options))]])))
 
-(defn display [atom]
-  (pre-edn (deref atom)))
+#?(:cljs
+   (defn display [atom]
+     (pre-edn (deref atom))))
 
 #?(:cljs
    (do

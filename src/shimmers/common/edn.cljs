@@ -1,26 +1,55 @@
 (ns shimmers.common.edn
   "Adjusted formatting from `fipp.edn` for Clojure/EDN forms"
-  (:require [fipp.ednize :refer [edn record->tagged]]
-            [fipp.edn :refer [pretty-coll]]
-            [fipp.visit :refer [visit visit*]]
-            [fipp.engine :refer (pprint-document)]))
+  (:require
+   [fipp.edn :refer [pretty-coll]]
+   [fipp.ednize :refer [edn IEdn record->tagged]]
+   [fipp.engine :refer [pprint-document]]
+   [fipp.visit :refer [visit visit*]]
+   [shimmers.common.format :refer [fixed-width]]
+   [thi.ng.geom.types
+    :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
+   [thi.ng.geom.vector :refer [Vec2 Vec3]]))
 
-;; See https://github.com/brandonbloom/fipp/issues/83 for symbol hack, basically
-;; it's forcing EdnPrinter to believe it's a symbol and not a float so it
-;; doesn't wrap it in a string.
-(defn fixed-width
-  "Format float `v` to `width` decimal places as long as it's not infinite."
-  [v width]
-  #?(:cljs
-     (if (or (integer? v) (infinite? v))
-       v
-       (symbol (.toFixed v width)))
-     :clj
-     (if (or (integer? v)
-             (= v Double/POSITIVE_INFINITY)
-             (= v Double/NEGATIVE_INFINITY))
-       v
-       (symbol (format (str "%." width "f") v)))))
+;; identity operation for a map record that removes type info so tagged-literal
+;; will not be called recursively with the original type. However this should
+;; pickup extra keys if something else has been assoced in beyond the record keys.
+;; TODO: worth including meta info?
+(defn untyped [s]
+  (zipmap (keys s) (vals s)))
+
+;; Simplify IEdn output for pretty printing
+(extend-protocol IEdn
+  Circle2
+  (-edn [s]
+    (tagged-literal 'Circle2 (untyped s)))
+
+  Line2
+  (-edn [s]
+    (tagged-literal 'Line2 (untyped s)))
+
+  LineStrip2
+  (-edn [s]
+    (tagged-literal 'LineStrip2 (untyped s)))
+
+  Polygon2
+  (-edn [s]
+    (tagged-literal 'Polygon2 (untyped s)))
+
+  Rect2
+  (-edn [s]
+    (tagged-literal 'Rect2 (untyped s)))
+
+  Triangle2
+  (-edn [s]
+    (tagged-literal 'Triangle2 (untyped s)))
+
+  Vec2
+  (-edn [s]
+    (tagged-literal 'v2 (mapv (fn [v] (fixed-width v 2)) s)))
+
+  Vec3
+  (-edn [s]
+    (tagged-literal 'v3 (mapv (fn [v] (fixed-width v 2)) s))))
 
 (defrecord EdnPrinter [symbols print-meta print-length print-level print-fixed-width]
 
@@ -31,25 +60,25 @@
     (visit this (edn x)))
 
 
-  (visit-nil [this]
+  (visit-nil [_this]
     [:text "nil"])
 
-  (visit-boolean [this x]
+  (visit-boolean [_this x]
     [:text (str x)])
 
-  (visit-string [this x]
+  (visit-string [_this x]
     [:text (pr-str x)])
 
-  (visit-character [this x]
+  (visit-character [_this x]
     [:text (pr-str x)])
 
-  (visit-symbol [this x]
+  (visit-symbol [_this x]
     [:text (str x)])
 
-  (visit-keyword [this x]
+  (visit-keyword [_this x]
     [:text (str x)])
 
-  (visit-number [this x]
+  (visit-number [_this x]
     [:text (pr-str (fixed-width x print-fixed-width))])
 
   (visit-seq [this x]
@@ -81,10 +110,10 @@
       [:align [:span "^" (visit this m)] :line (visit* this x)]
       (visit* this x)))
 
-  (visit-var [this x]
+  (visit-var [_this x]
     [:text (str x)])
 
-  (visit-pattern [this x]
+  (visit-pattern [_this x]
     [:text (pr-str x)])
 
   (visit-record [this x]
