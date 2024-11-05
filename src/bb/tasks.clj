@@ -38,7 +38,7 @@
 (defn build-static-site [& opts]
   (let [{:keys [build-dir from to release]} (default-opts opts)
         js-dir (str to "/js")
-        release-base (fs/filename (fs/strip-ext release))
+        release-base (fs/file-name (fs/strip-ext release))
         release-glob (str "/" release-base "*")]
     (fs/delete-tree to)
     (println "Creating" to "from" from "with javascript")
