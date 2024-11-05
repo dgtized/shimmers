@@ -4,6 +4,7 @@
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -70,7 +71,7 @@
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
       (cilia-spline x pt angle len))))
 
-(defn params []
+(defn parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
                         (dr/random-int 2 14) 1.5
                         (dr/random-int 2 20) 1.0})
@@ -85,7 +86,7 @@
                        (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
              :phase (dr/gaussian 0.0 0.01)}))))
 
-(defn shapes []
+(defn shapes [{:keys [params]}]
   (let [fx (spline-fx)
         spx (spline-fx)
         cspx (cilia-spline-fx)
@@ -100,9 +101,9 @@
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
-            (params))))
+            params)))
 
-(defn scene [{:keys [scene-id]}]
+(defn scene [{:keys [scene-id] :as args}]
   (csvg/svg-timed
     {:id scene-id
      :width width
@@ -110,10 +111,19 @@
      :stroke "black"
      :fill "none"
      :stroke-width 1.0}
-    (shapes)))
+    (shapes args)))
+
+(defn explanation [{:keys [params]}]
+  (ctrl/details "Debug"
+                [:div (debug/pre-edn params)]))
 
 (sketch/definition cilia-phase
   {:created-at "2024-10-24"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount
+   (let [params (parameters)]
+     (usvg/page (assoc sketch-args
+                       :params params
+                       :explanation explanation)
+                scene))))
