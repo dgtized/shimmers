@@ -36,7 +36,9 @@
         rx' (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
         cx (dr/random)]
-    (fn [cx' x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
+    {:params {:rx rx :rx' rx' :amp amp :cx cx}
+     :fn
+     (fn [cx' x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))}))
 
 (defn screen-space [y amp fx x phase]
   (rv x (+ y (* amp (fx (+ x phase))))))
@@ -86,6 +88,8 @@
                        (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
              :phase (dr/gaussian 0.0 0.01)}))))
 
+(defonce defo (debug/state))
+
 (defn shapes [{:keys [params]}]
   (let [fx (spline-fx)
         spx (spline-fx)
@@ -93,7 +97,8 @@
         theta-x (spline-fx)
         cilia-spline
         (dr/weighted {cilia-line 1.0
-                      (partial cilia-line-plot cspx) 2.5})]
+                      (partial cilia-line-plot (:fn cspx)) 2.5})]
+    (reset! defo {:cspx (:params cspx)})
     (mapcat (fn [{:keys [ry amp c-amp phase]}]
               (let [screen (partial screen-space ry amp)
                     spline-pts (base-spline screen fx phase)
@@ -115,7 +120,9 @@
 
 (defn explanation [{:keys [params]}]
   (ctrl/details "Debug"
-                [:div (debug/pre-edn params)]))
+                [:div (debug/pre-edn
+                       (merge {:params params} @defo)
+                       {:width 120})]))
 
 (defn page [sketch-args]
   (let [params (parameters)]
