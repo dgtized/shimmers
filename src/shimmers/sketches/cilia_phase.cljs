@@ -93,7 +93,7 @@
         theta-x (spline-fx)
         cilia-spline
         (dr/weighted {cilia-line 1.0
-                      (partial cilia-line-plot cspx) 2.0})]
+                      (partial cilia-line-plot cspx) 2.5})]
     (mapcat (fn [{:keys [ry amp c-amp phase]}]
               (let [screen (partial screen-space ry amp)
                     spline-pts (base-spline screen fx phase)
