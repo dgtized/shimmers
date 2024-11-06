@@ -117,13 +117,15 @@
   (ctrl/details "Debug"
                 [:div (debug/pre-edn params)]))
 
+(defn page [sketch-args]
+  (let [params (parameters)]
+    (usvg/page (assoc sketch-args
+                      :params params
+                      :explanation explanation)
+               scene)))
+
 (sketch/definition cilia-phase
   {:created-at "2024-10-24"
    :tags #{}
    :type :svg}
-  (ctrl/mount
-   (let [params (parameters)]
-     (usvg/page (assoc sketch-args
-                       :params params
-                       :explanation explanation)
-                scene))))
+  (ctrl/mount (page sketch-args)))
