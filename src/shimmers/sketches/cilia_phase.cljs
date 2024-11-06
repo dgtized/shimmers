@@ -125,15 +125,15 @@
     (shapes args)))
 
 (defn explanation [{:keys [params]}]
-  (ctrl/details "Debug"
-                [:div (debug/pre-edn
-                       (merge {:params params} @defo)
-                       {:width 120})]))
+  (debug/pre-edn
+   (merge {:params params} @defo)
+   {:width 120}))
 
 (defn page [sketch-args]
   (let [params (parameters)]
     (usvg/page (assoc sketch-args
                       :params params
+                      :explanation-div [:div.evencols]
                       :explanation explanation)
                scene)))
 

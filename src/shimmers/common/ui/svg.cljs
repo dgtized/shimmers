@@ -10,7 +10,7 @@
    (fn [] (svg-export/download id filename))])
 
 (defn page
-  [{:keys [sketch-id explanation]
+  [{:keys [sketch-id explanation explanation-div]
     :as sketch-args}
    scene]
   (fn []
@@ -20,7 +20,8 @@
        [:div.canvas-frame
         [scene args]
         [download-shortcut scene-id (name sketch-id)]]
-       [:p.center [view-sketch/generate sketch-id]]
-       (when explanation
-         [:div.readable-width
-          [explanation sketch-args]])])))
+       (into (or explanation-div [:div])
+             [[:p.center [view-sketch/generate sketch-id]]
+              (when explanation
+                [:div.readable-width
+                 [explanation sketch-args]])])])))
