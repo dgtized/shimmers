@@ -29,7 +29,9 @@
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
         cx (dr/random)
         cx' (dr/random)]
-    (fn [x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))))
+    {:params {:rx rx :rx' rx' :amp amp :cx cx :cx' cx'}
+     :fn
+     (fn [x] (math/sin (* eq/TAU (+ (* rx x) cx (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))}))
 
 (defn cilia-spline-fx []
   (let [rx (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
@@ -98,11 +100,15 @@
         cilia-spline
         (dr/weighted {cilia-line 1.0
                       (partial cilia-line-plot (:fn cspx)) 2.5})]
-    (reset! defo {:cspx (:params cspx)})
+    (reset! defo {:cspx (:params cspx)
+                  :fx (:params fx)
+                  :spx (:params spx)
+                  :theta-x (:params theta-x)})
     (mapcat (fn [{:keys [ry amp c-amp phase]}]
               (let [screen (partial screen-space ry amp)
-                    spline-pts (base-spline screen fx phase)
-                    cilia (cilias screen cilia-spline fx spx c-amp theta-x phase)]
+                    spline-pts (base-spline screen (:fn fx) phase)
+                    cilia (cilias screen cilia-spline (:fn fx) (:fn spx)
+                                  c-amp (:fn theta-x) phase)]
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
