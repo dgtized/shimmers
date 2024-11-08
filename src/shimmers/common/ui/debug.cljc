@@ -1,6 +1,6 @@
 (ns shimmers.common.ui.debug
   (:require
-   [shimmers.common.format :as sc-format]
+   [shimmers.common.string :as sc-format]
    #?@(:cljs
        [[shimmers.common.edn :as sc-edn]
         [shimmers.common.ui.controls :as ctrl]])))

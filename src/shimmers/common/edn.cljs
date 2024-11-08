@@ -5,7 +5,7 @@
    [fipp.ednize :refer [edn IEdn record->tagged]]
    [fipp.engine :refer [pprint-document]]
    [fipp.visit :refer [visit visit*]]
-   [shimmers.common.format :refer [fixed-width]]
+   [shimmers.common.string :refer [fixed-width]]
    [thi.ng.geom.types
     :refer [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2]]
    [thi.ng.geom.vector :refer [Vec2 Vec3]]))
