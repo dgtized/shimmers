@@ -1,18 +1,10 @@
 (ns shimmers.common.ui.debug
-  (:require
-   [shimmers.common.string :as sc-format]
-   #?@(:cljs
-       [[shimmers.common.edn :as sc-edn]
-        [shimmers.common.ui.controls :as ctrl]])))
+  #?(:cljs
+     (:require
+      [shimmers.common.edn :as sc-edn]
+      [shimmers.common.ui.controls :as ctrl])))
 
 #?(:cljs (def untyped sc-edn/untyped))
-
-(defn fixed-width
-  "Format float `v` to 2 decimal places as long as it's not infinite."
-  ([v]
-   (sc-format/fixed-width v 2))
-  ([v width]
-   (sc-format/fixed-width v width)))
 
 ;; cljs only
 (defmacro time-it
