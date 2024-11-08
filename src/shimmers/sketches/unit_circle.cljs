@@ -6,6 +6,7 @@
    [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.string :as scs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
@@ -58,7 +59,7 @@
                       :d (int (g/dist (gv/vec2) p))})))
         turns (for [[a b c] (partition 3 1 segments)]
                 (assoc b :dir (v/orient2d (:p a) (:p b) (:p c))))]
-    (concat (take 1 segments) turns (take-last 1 segments))))
+    (cs/sandwich segments turns)))
 
 (defn radial-points [points heading]
   (let [pts (geometry/radial-sort (gv/vec2) points)
