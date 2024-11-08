@@ -56,10 +56,10 @@
                      {:p (mapv int p)
                       :rθ (scs/fixed-width a)
                       :θ (scs/fixed-width (g/heading p))
-                      :d (int (g/dist (gv/vec2) p))})))
-        turns (for [[a b c] (partition 3 1 segments)]
-                (assoc b :dir (v/orient2d (:p a) (:p b) (:p c))))]
-    (cs/sandwich segments turns)))
+                      :d (int (g/dist (gv/vec2) p))})))]
+    (cs/sandwich segments
+                 (for [[a b c] (partition 3 1 segments)]
+                   (assoc b :dir (v/orient2d (:p a) (:p b) (:p c)))))))
 
 (defn radial-points [points heading]
   (let [pts (geometry/radial-sort (gv/vec2) points)
