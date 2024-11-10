@@ -27,10 +27,13 @@
   (dr/weighted {0.25 0.5 0.5 1.0 1.0 1.0 2.0 1.0 3.0 1.0
                 4.0 0.5 5.0 0.25}))
 
+(defn gen-amp []
+  (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0}))
+
 (defn spline-fx []
   (let [r (gen-rate)
         dr (gen-rate)
-        amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
+        amp (gen-amp)
         c (dr/random)
         dc (dr/random)]
     {:params {:r r :dr dr :amp amp :c c :dc dc}
@@ -41,7 +44,7 @@
 (defn cilia-spline-fx []
   (let [r (gen-rate)
         dr (gen-rate)
-        amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
+        amp (gen-amp)
         c (dr/random)]
     {:params {:r r :dr dr :amp amp :c c}
      :fn
