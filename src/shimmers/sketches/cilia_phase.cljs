@@ -77,7 +77,7 @@
           len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
-(defn parameters []
+(defn line-parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
                         (dr/random-int 2 14) 1.5
                         (dr/random-int 2 20) 1.0})
@@ -94,7 +94,7 @@
 
 (defonce defo (debug/state))
 
-(defn shapes [{:keys [params]}]
+(defn shapes [{:keys [line-params]}]
   (let [fx (spline-fx)
         spx (spline-fx)
         cspx (cilia-spline-fx)
@@ -114,7 +114,7 @@
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
-            params)))
+            line-params)))
 
 (defn scene [{:keys [scene-id] :as args}]
   (csvg/svg-timed
@@ -126,15 +126,15 @@
      :stroke-width 1.0}
     (shapes args)))
 
-(defn explanation [{:keys [params]}]
+(defn explanation [{:keys [line-params]}]
   (debug/pre-edn
-   (merge {:params params} @defo)
+   (merge {:line-params line-params} @defo)
    {:width 120}))
 
 (defn page [sketch-args]
-  (let [params (parameters)]
+  (let [line-params (line-parameters)]
     (usvg/page (assoc sketch-args
-                      :params params
+                      :line-params line-params
                       :explanation-div [:div.evencols]
                       :explanation explanation)
                scene)))
