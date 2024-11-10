@@ -68,13 +68,13 @@
                 (tm/mix (tm/- axis) axis fy))))))))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space cilia-spline line-fx length-fx c-amp rot-fx phase]
+(defn cilias [screen-space cilia-spline line-fx length-fx cilia-amp rot-fx phase]
   (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space line-fx x phase)
           pt' (screen-space line-fx (+ x 0.0001) phase)
           rotation (* 0.125 math/PI (rot-fx x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
-          len (* height (+ c-amp (* 0.75 c-amp (length-fx x))))]
+          len (* height (+ cilia-amp (* 0.75 cilia-amp (length-fx x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn line-parameters []
@@ -86,11 +86,14 @@
     (into []
           (for [y (cs/midsection (tm/norm-range n))]
             {:ry y
-             :amp (* (/ 1.0 (inc n))
-                     (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
-             :c-amp (* (/ 1.0 (inc n))
-                       (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
-             :phase (dr/gaussian 0.0 0.0125)}))))
+             :amp
+             (* (/ 1.0 (inc n))
+                (+ 0.025 (eq/gaussian s 0.5 -0.4 y)))
+             :cilia-amp
+             (* (/ 1.0 (inc n))
+                (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
+             :phase
+             (dr/gaussian 0.0 0.0125)}))))
 
 (defonce defo (debug/state))
 
@@ -106,11 +109,11 @@
                   :path (:params line-fx)
                   :length (:params length-fx)
                   :rotation (:params rot-fx)})
-    (mapcat (fn [{:keys [ry amp c-amp phase]}]
+    (mapcat (fn [{:keys [ry amp cilia-amp phase]}]
               (let [screen (partial screen-space ry amp)
                     spline-pts (base-spline screen (:fn line-fx) phase)
                     cilia (cilias screen cilia-spline (:fn line-fx) (:fn length-fx)
-                                  c-amp (:fn rot-fx) phase)]
+                                  cilia-amp (:fn rot-fx) phase)]
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
