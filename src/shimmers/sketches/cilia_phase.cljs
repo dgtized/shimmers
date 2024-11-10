@@ -45,11 +45,13 @@
   (let [r (gen-rate)
         dr (gen-rate)
         amp (gen-amp)
-        c (dr/random)]
-    {:params {:r r :dr dr :amp amp :c c}
+        c (dr/random)
+        dc (dr/random)]
+    {:params {:r r :dr dr :amp amp :c c :dc dc}
      :fn
-     (fn [dc x] (math/sin (* eq/TAU (+ (* r x) c
-                                 (* amp (math/cos (* eq/TAU (+ (* dr x) dc))))))))}))
+     (fn [phase x]
+       (let [phase-mod (math/cos (* eq/TAU (+ (* dr x) dc phase)))]
+         (math/sin (* eq/TAU (+ (* r x) c (* amp phase-mod))))))}))
 
 (defn screen-space [y amp fx x phase]
   (rv x (+ y (* amp (fx (+ x phase))))))
