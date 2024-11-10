@@ -68,13 +68,13 @@
                 (tm/mix (tm/- axis) axis fy))))))))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space cilia-spline fx spx c-amp theta-x phase]
+(defn cilias [screen-space cilia-spline line-fx length-fx c-amp rot-fx phase]
   (for [x (range -0.05 1.05 0.004)]
-    (let [pt (screen-space fx x phase)
-          pt' (screen-space fx (+ x 0.0001) phase)
-          rotation (* 0.125 math/PI (theta-x x))
+    (let [pt (screen-space line-fx x phase)
+          pt' (screen-space line-fx (+ x 0.0001) phase)
+          rotation (* 0.125 math/PI (rot-fx x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
-          len (* height (+ c-amp (* 0.75 c-amp (spx x))))]
+          len (* height (+ c-amp (* 0.75 c-amp (length-fx x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn line-parameters []
@@ -95,22 +95,22 @@
 (defonce defo (debug/state))
 
 (defn shapes [{:keys [line-params]}]
-  (let [fx (spline-fx)
-        spx (spline-fx)
-        cspx (cilia-spline-fx)
-        theta-x (spline-fx)
+  (let [line-fx (spline-fx)
+        length-fx (spline-fx)
+        rot-fx (spline-fx)
+        cilia-fx (cilia-spline-fx)
         cilia-spline
         (dr/weighted {cilia-line 1.0
-                      (partial cilia-line-plot (:fn cspx)) 2.5})]
-    (reset! defo {:cspx (:params cspx)
-                  :fx (:params fx)
-                  :spx (:params spx)
-                  :theta-x (:params theta-x)})
+                      (partial cilia-line-plot (:fn cilia-fx)) 2.5})]
+    (reset! defo {:cilia (:params cilia-fx)
+                  :path (:params line-fx)
+                  :length (:params length-fx)
+                  :rotation (:params rot-fx)})
     (mapcat (fn [{:keys [ry amp c-amp phase]}]
               (let [screen (partial screen-space ry amp)
-                    spline-pts (base-spline screen (:fn fx) phase)
-                    cilia (cilias screen cilia-spline (:fn fx) (:fn spx)
-                                  c-amp (:fn theta-x) phase)]
+                    spline-pts (base-spline screen (:fn line-fx) phase)
+                    cilia (cilias screen cilia-spline (:fn line-fx) (:fn length-fx)
+                                  c-amp (:fn rot-fx) phase)]
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75}
                    cilia)]))
