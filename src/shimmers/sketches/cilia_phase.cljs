@@ -24,25 +24,25 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn spline-fx []
-  (let [rx (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
-        rx' (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+  (let [r (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+        dr (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
-        cx (dr/random)
-        cx' (dr/random)]
-    {:params {:rx rx :rx' rx' :amp amp :cx cx :cx' cx'}
+        c (dr/random)
+        dc (dr/random)]
+    {:params {:r r :dr dr :amp amp :c c :dc dc}
      :fn
-     (fn [x] (math/sin (* eq/TAU (+ (* rx x) cx
-                              (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))}))
+     (fn [x] (math/sin (* eq/TAU (+ (* r x) c
+                              (* amp (math/cos (* eq/TAU (+ (* dr x) dc))))))))}))
 
 (defn cilia-spline-fx []
-  (let [rx (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
-        rx' (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+  (let [r (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+        dr (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
-        cx (dr/random)]
-    {:params {:rx rx :rx' rx' :amp amp :cx cx}
+        c (dr/random)]
+    {:params {:r r :dr dr :amp amp :c c}
      :fn
-     (fn [cx' x] (math/sin (* eq/TAU (+ (* rx x) cx
-                                  (* amp (math/cos (* eq/TAU (+ (* rx' x) cx'))))))))}))
+     (fn [dc x] (math/sin (* eq/TAU (+ (* r x) c
+                                 (* amp (math/cos (* eq/TAU (+ (* dr x) dc))))))))}))
 
 (defn screen-space [y amp fx x phase]
   (rv x (+ y (* amp (fx (+ x phase))))))
