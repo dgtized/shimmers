@@ -23,9 +23,13 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn gen-rate []
+  (dr/weighted {0.25 0.5 0.5 1.0 1.0 1.0 2.0 1.0 3.0 1.0
+                4.0 0.5 5.0 0.25}))
+
 (defn spline-fx []
-  (let [r (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
-        dr (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+  (let [r (gen-rate)
+        dr (gen-rate)
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
         c (dr/random)
         dc (dr/random)]
@@ -35,8 +39,8 @@
                               (* amp (math/cos (* eq/TAU (+ (* dr x) dc))))))))}))
 
 (defn cilia-spline-fx []
-  (let [r (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
-        dr (dr/weighted {1.0 1.0 0.5 1.0 2.0 1.0})
+  (let [r (gen-rate)
+        dr (gen-rate)
         amp (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0})
         c (dr/random)]
     {:params {:r r :dr dr :amp amp :c c}
