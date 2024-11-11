@@ -72,11 +72,11 @@
   [{:keys [screen-space cilia-spline line-fx
            length-fx cilia-amp rot-fx phase]}]
   (for [x (range -0.05 1.05 0.004)]
-    (let [pt (screen-space line-fx x phase)
-          pt' (screen-space line-fx (+ x 0.0001) phase)
-          rotation (* 0.125 math/PI (rot-fx x))
+    (let [pt (screen-space (:fn line-fx) x phase)
+          pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
+          rotation (* 0.125 math/PI ((:fn rot-fx) x))
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
-          len (* height (+ cilia-amp (* 0.75 cilia-amp (length-fx x))))]
+          len (* height (+ cilia-amp (* 0.75 cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn line-parameters []
@@ -117,10 +117,10 @@
                     cilia
                     (cilias {:screen-space screen
                              :cilia-spline cilia-spline
-                             :line-fx (:fn line-fx)
-                             :length-fx (:fn length-fx)
+                             :line-fx line-fx
+                             :length-fx length-fx
                              :cilia-amp cilia-amp
-                             :rot-fx (:fn rot-fx)
+                             :rot-fx rot-fx
                              :phase phase})]
                 [(csvg/path (csvg/segmented-path spline-pts))
                  (csvg/group {:stroke-width 0.75} cilia)]))
