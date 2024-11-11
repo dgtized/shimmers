@@ -74,8 +74,7 @@
   (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space (:fn line-fx) x phase)
           pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
-          rotation ((:fn rot-fx) x)
-          angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
+          angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) ((:fn rot-fx) x))
           len (* height (+ cilia-amp (* 0.75 cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
