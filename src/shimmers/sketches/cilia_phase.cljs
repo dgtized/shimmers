@@ -111,20 +111,21 @@
                   :path (:params line-fx)
                   :length (:params length-fx)
                   :rotation (:params rot-fx)})
-    (mapcat (fn [{:keys [ry amp cilia-amp phase]}]
-              (let [screen (partial screen-space ry amp)
-                    spline-pts (base-spline screen (:fn line-fx) phase)
-                    cilia
-                    (cilias {:screen-space screen
-                             :cilia-spline cilia-spline
-                             :line-fx line-fx
-                             :length-fx length-fx
-                             :cilia-amp cilia-amp
-                             :rot-fx rot-fx
-                             :phase phase})]
-                [(csvg/path (csvg/segmented-path spline-pts))
-                 (csvg/group {:stroke-width 0.75} cilia)]))
-            line-params)))
+    (mapcat
+     (fn [{:keys [ry amp cilia-amp phase]}]
+       (let [screen (partial screen-space ry amp)
+             spline-pts (base-spline screen (:fn line-fx) phase)
+             cilia
+             (cilias {:screen-space screen
+                      :cilia-spline cilia-spline
+                      :line-fx line-fx
+                      :length-fx length-fx
+                      :cilia-amp cilia-amp
+                      :rot-fx rot-fx
+                      :phase phase})]
+         [(csvg/path (csvg/segmented-path spline-pts))
+          (csvg/group {:stroke-width 0.75} cilia)]))
+     line-params)))
 
 (defn scene [{:keys [scene-id] :as args}]
   (csvg/svg-timed
