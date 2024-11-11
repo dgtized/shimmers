@@ -30,19 +30,19 @@
 (defn gen-amp []
   (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0}))
 
-(defn gen-spline-fx []
+(defn gen-spline-fx [amplitude]
   (let [r (gen-rate)
         dr (gen-rate)
-        amp (gen-amp)
+        phase-amp (gen-amp)
         c (dr/random)
         dc (dr/random)]
-    {:params {:r r :dr dr :amp amp :c c :dc dc}
+    {:params {:r r :dr dr :amp amplitude :phase-amp phase-amp :c c :dc dc}
      :fn
      (fn spline-fx
        ([x] (spline-fx 0 x))
        ([phase x]
         (let [phase-mod (math/cos (* eq/TAU (+ (* dr x) dc phase)))]
-          (math/sin (* eq/TAU (+ (* r x) c (* amp phase-mod)))))))}))
+          (* amplitude (math/sin (* eq/TAU (+ (* r x) c (* phase-amp phase-mod))))))))}))
 
 (defn screen-space [y amp fx x phase]
   (rv x (+ y (* amp (fx (+ x phase))))))
@@ -74,7 +74,7 @@
   (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space (:fn line-fx) x phase)
           pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
-          rotation (* 0.125 math/PI ((:fn rot-fx) x))
+          rotation ((:fn rot-fx) x)
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) rotation)
           len (* height (+ cilia-amp (* 0.75 cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
@@ -100,10 +100,10 @@
 (defonce defo (debug/state))
 
 (defn shapes [{:keys [line-params]}]
-  (let [line-fx (gen-spline-fx)
-        length-fx (gen-spline-fx)
-        rot-fx (gen-spline-fx)
-        cilia-fx (gen-spline-fx)
+  (let [line-fx (gen-spline-fx 1.0)
+        length-fx (gen-spline-fx 1.0)
+        rot-fx (gen-spline-fx (* 0.125 math/PI))
+        cilia-fx (gen-spline-fx 1.0)
         cilia-spline
         (dr/weighted {cilia-line 1.0
                       (partial cilia-line-plot (:fn cilia-fx)) 2.5})]
