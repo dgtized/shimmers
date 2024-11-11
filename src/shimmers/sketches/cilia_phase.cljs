@@ -104,9 +104,15 @@
 (defonce defo (debug/state))
 
 (defn shapes [{:keys [line-params]}]
-  (let [line-fx (gen-spline-fx 1.0)
+  (let [;; defines the path of the line
+        line-fx (gen-spline-fx 1.0)
+        ;; amplitude length of cilia out from line-fx
         length-fx (gen-spline-fx 0.75)
+        ;; rotation around line-fx
         rot-fx (gen-spline-fx (* 0.125 math/PI))
+        ;; cilia are either lines perpindicular to line-fx or the function
+        ;; cilia-fx which is the perpindicular displacement from the line of
+        ;; each cilia.
         cilia-fx (gen-spline-fx 1.0)
         cilia-spline
         (dr/weighted {cilia-line 1.0
