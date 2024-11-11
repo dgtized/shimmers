@@ -68,7 +68,9 @@
                 (tm/mix (tm/- axis) axis fy))))))))
 
 ;; How to avoid intersecting cilia?
-(defn cilias [screen-space cilia-spline line-fx length-fx cilia-amp rot-fx phase]
+(defn cilias
+  [{:keys [screen-space cilia-spline line-fx
+           length-fx cilia-amp rot-fx phase]}]
   (for [x (range -0.05 1.05 0.004)]
     (let [pt (screen-space line-fx x phase)
           pt' (screen-space line-fx (+ x 0.0001) phase)
@@ -112,11 +114,16 @@
     (mapcat (fn [{:keys [ry amp cilia-amp phase]}]
               (let [screen (partial screen-space ry amp)
                     spline-pts (base-spline screen (:fn line-fx) phase)
-                    cilia (cilias screen cilia-spline (:fn line-fx) (:fn length-fx)
-                                  cilia-amp (:fn rot-fx) phase)]
+                    cilia
+                    (cilias {:screen-space screen
+                             :cilia-spline cilia-spline
+                             :line-fx (:fn line-fx)
+                             :length-fx (:fn length-fx)
+                             :cilia-amp cilia-amp
+                             :rot-fx (:fn rot-fx)
+                             :phase phase})]
                 [(csvg/path (csvg/segmented-path spline-pts))
-                 (csvg/group {:stroke-width 0.75}
-                   cilia)]))
+                 (csvg/group {:stroke-width 0.75} cilia)]))
             line-params)))
 
 (defn scene [{:keys [scene-id] :as args}]
