@@ -140,7 +140,8 @@
 (defn explanation [{:keys [line-params]}]
   (debug/pre-edn
    (merge {:line-params line-params} @defo)
-   {:width 120}))
+   {:width 120
+    :print-fixed-width 4}))
 
 (defn page [sketch-args]
   (let [line-params (line-parameters)]
