@@ -24,11 +24,16 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn gen-rate []
-  (dr/weighted {0.25 0.5 0.5 1.0 1.0 1.0 2.0 1.0 3.0 1.0
-                4.0 0.5 5.0 0.25}))
+  (dr/weighted {0.25 0.5 0.5 1.0
+                1.0 1.0 1.5 1.0 2.0 1.0 2.5 1.0
+                3.0 1.0 4.0 0.5 5.0 0.25}))
 
 (defn gen-amp []
-  (dr/weighted {0.1 1.0 0.2 1.0 0.3 1.0 0.4 1.0}))
+  (dr/weighted {0.10 1.0 0.15 1.0
+                0.20 1.0 0.25 1.0
+                0.30 1.0 0.35 1.0
+                0.40 1.0
+                0.50 1.0}))
 
 (defn gen-spline-fx [amplitude]
   (let [r (gen-rate)
