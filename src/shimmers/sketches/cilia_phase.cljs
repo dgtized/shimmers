@@ -75,7 +75,7 @@
     (let [pt (screen-space (:fn line-fx) x phase)
           pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) ((:fn rot-fx) x))
-          len (* height (+ cilia-amp (* 0.75 cilia-amp ((:fn length-fx) x))))]
+          len (* height (+ cilia-amp (* cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn line-parameters []
@@ -100,7 +100,7 @@
 
 (defn shapes [{:keys [line-params]}]
   (let [line-fx (gen-spline-fx 1.0)
-        length-fx (gen-spline-fx 1.0)
+        length-fx (gen-spline-fx 0.75)
         rot-fx (gen-spline-fx (* 0.125 math/PI))
         cilia-fx (gen-spline-fx 1.0)
         cilia-spline
