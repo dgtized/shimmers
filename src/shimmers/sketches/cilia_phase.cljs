@@ -98,11 +98,11 @@
              :cilia-amp
              (* (/ 1.0 (inc n))
                 (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
-             :density-mode
-             (dr/weighted {:equal 1.0
-                           :gaussian 1.0})
-             :density (dr/weighted {150 1.0 200 5.0 250 4.0
-                                    300 2.0 400 0.75 600 0.25})
+             :pts
+             [(dr/weighted {:equal 1.0
+                            :gaussian 1.0})
+              (dr/weighted {150 1.0 200 5.0 250 4.0
+                            300 2.0 400 0.75 600 0.25})]
              :phase
              (dr/gaussian 0.0 0.0125)}))))
 
@@ -127,9 +127,10 @@
                   :length (:params length-fx)
                   :rotation (:params rot-fx)})
     (mapcat
-     (fn [{:keys [ry amp cilia-amp phase density-mode density]}]
+     (fn [{:keys [ry amp cilia-amp phase pts]}]
        (let [screen (partial screen-space ry amp)
              spline-pts (base-spline screen (:fn line-fx) phase)
+             [density-mode density] pts
              samples
              (case density-mode
                :equal (range -0.05 1.05 (/ 1.0 density))
