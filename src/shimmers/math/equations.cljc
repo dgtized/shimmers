@@ -179,3 +179,6 @@
 
 (comment
   (map (fn [x] [x (flatstep x 1.2)]) (range 0 1 0.1)))
+
+(defn inv-smoothstep [x]
+  (- 0.5 (math/sin (/ (math/asin (- 1.0 (* 2.0 x))) 3.0))))
