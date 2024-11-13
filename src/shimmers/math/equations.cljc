@@ -182,3 +182,7 @@
 
 (defn inv-smoothstep [x]
   (- 0.5 (math/sin (/ (math/asin (- 1.0 (* 2.0 x))) 3.0))))
+
+;; https://stackoverflow.com/a/34576808/34450
+(defn flat-smooth [x]
+  (+ x (- x (* (sqr x) (- 3.0 (* 2.0 x))))))

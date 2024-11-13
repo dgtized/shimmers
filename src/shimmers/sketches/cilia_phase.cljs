@@ -101,7 +101,8 @@
              :pts
              [(dr/weighted {:equal 1.0
                             :gaussian 1.0
-                            :inv-smooth 1.0})
+                            :inv-smooth 1.0
+                            :flat-smooth 1.0})
               (dr/weighted {150 1.0 200 5.0 250 4.0
                             300 2.0 400 0.75 600 0.25})]
              :phase
@@ -139,8 +140,11 @@
                (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))
                                   true [-0.05 1.05])
                :inv-smooth
-               (for [x (tm/norm-range density)]
-                 (eq/inv-smoothstep x)))
+               (for [x (range -0.05 1.05 (/ 1.0 density))]
+                 (eq/inv-smoothstep x))
+               :flat-smooth
+               (for [x (range -0.05 1.05 (/ 1.0 density))]
+                 (eq/flat-smooth x)))
              cilia
              (cilias {:samples samples
                       :screen-space screen
