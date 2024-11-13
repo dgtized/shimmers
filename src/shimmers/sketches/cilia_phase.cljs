@@ -74,9 +74,9 @@
 
 ;; How to avoid intersecting cilia?
 (defn cilias
-  [{:keys [screen-space cilia-spline line-fx
+  [{:keys [samples screen-space cilia-spline line-fx
            length-fx cilia-amp rot-fx phase]}]
-  (for [x (range -0.05 1.05 0.004)]
+  (for [x samples]
     (let [pt (screen-space (:fn line-fx) x phase)
           pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) ((:fn rot-fx) x))
@@ -98,6 +98,11 @@
              :cilia-amp
              (* (/ 1.0 (inc n))
                 (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
+             :density-mode
+             (dr/weighted {:equal 1.0
+                           :gaussian 1.0})
+             :density (dr/weighted {150 1.0 200 5.0 250 4.0
+                                    300 2.0 400 0.75 600 0.25})
              :phase
              (dr/gaussian 0.0 0.0125)}))))
 
@@ -122,11 +127,15 @@
                   :length (:params length-fx)
                   :rotation (:params rot-fx)})
     (mapcat
-     (fn [{:keys [ry amp cilia-amp phase]}]
+     (fn [{:keys [ry amp cilia-amp phase density-mode density]}]
        (let [screen (partial screen-space ry amp)
              spline-pts (base-spline screen (:fn line-fx) phase)
+             samples (case density-mode
+                       :equal (range -0.05 1.05 (/ 1.0 density))
+                       :gaussian (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))))
              cilia
-             (cilias {:screen-space screen
+             (cilias {:samples samples
+                      :screen-space screen
                       :cilia-spline cilia-spline
                       :line-fx line-fx
                       :length-fx length-fx
