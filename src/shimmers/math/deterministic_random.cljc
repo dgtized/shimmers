@@ -216,21 +216,27 @@
          (count (density-range 0.1 0.2 true)))
 
 (defn gaussian-range
-  "Generate an ordered range of values from [0..1] with normal spacing `mu`, and
-  standard-deviation `sd`."
+  "Generate an ordered range of values from [`lower`..`upper`] with normal spacing
+  `mu`, and standard-deviation `sd`. `include-edges?` determines if the `lower`
+  and `upper` values should be included in the output sequence."
   ([mu sd]
-   (->> #(abs (gaussian mu sd))
-        repeatedly
-        (reductions +)
-        (take-while #(< % 1.0))
-        doall))
+   (gaussian-range mu sd false [0.0 1.0]))
   ([mu sd include-edges?]
-   (let [range (gaussian-range mu sd)]
+   (gaussian-range mu sd include-edges? [0.0 1.0]))
+  ([mu sd include-edges? [lower upper]]
+   (let [range (->> #(abs (gaussian mu sd))
+                    repeatedly
+                    (reductions + lower)
+                    (take-while #(< % upper))
+                    (drop 1)
+                    doall)]
      (if include-edges?
-       (concat [0.0] range [1.0])
+       (concat [lower] range [upper])
        range))))
 
-(comment (gaussian-range 0.1 0.05))
+(comment (gaussian-range 0.1 0.05)
+         (gaussian-range 0.2 0.1 true)
+         (gaussian-range 0.2 0.1 true [-0.05 1.05]))
 
 ;; (defn random-swap [xs]
 ;;   (let [n (count xs)

@@ -130,9 +130,12 @@
      (fn [{:keys [ry amp cilia-amp phase density-mode density]}]
        (let [screen (partial screen-space ry amp)
              spline-pts (base-spline screen (:fn line-fx) phase)
-             samples (case density-mode
-                       :equal (range -0.05 1.05 (/ 1.0 density))
-                       :gaussian (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))))
+             samples
+             (case density-mode
+               :equal (range -0.05 1.05 (/ 1.0 density))
+               :gaussian
+               (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))
+                                  true [-0.05 1.05]))
              cilia
              (cilias {:samples samples
                       :screen-space screen
