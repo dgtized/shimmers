@@ -99,10 +99,12 @@
              (* (/ 1.0 (inc n))
                 (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
              :pts
-             [(dr/weighted {:equal 1.0
-                            :gaussian 1.0
-                            :inv-smooth 1.0
-                            :flat-smooth 1.0})
+             [(dr/weighted {:equal 1.33
+                            :gaussian 1.33
+                            :inv-smooth 1.33
+                            :flat-smooth 1.33
+                            :random 0.66
+                            :random-normal 0.75})
               (dr/weighted {150 1.0 200 5.0 250 4.0
                             300 2.0 400 0.75 600 0.25})]
              :phase
@@ -144,7 +146,12 @@
                  (eq/inv-smoothstep x))
                :flat-smooth
                (for [x (range -0.05 1.05 (/ 1.0 density))]
-                 (eq/flat-smooth x)))
+                 (eq/flat-smooth x))
+               :random
+               (repeatedly (* 1.1 density) #(dr/random))
+               :random-normal
+               (repeatedly (* 0.8 density)
+                           #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1)))
              cilia
              (cilias {:samples samples
                       :screen-space screen
