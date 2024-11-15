@@ -104,7 +104,8 @@
                             :inv-smooth 1.33
                             :flat-smooth 1.33
                             :random 0.66
-                            :random-normal 0.75})
+                            :random-normal 0.75
+                            :stripes 1.0})
               (let [proportion
                     (dr/weighted {6 1.0
                                   5.0 1.0
@@ -160,7 +161,10 @@
                (repeatedly (* 1.1 density) #(dr/random))
                :random-normal
                (repeatedly (* 0.8 density)
-                           #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1)))
+                           #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
+               :stripes
+               (for [x (range -0.05 1.05 (/ 1.0 density))]
+                 (/ (mod (* x 67.0) 13.0) 13.0)))
              cilia
              (cilias {:samples samples
                       :screen-space screen
