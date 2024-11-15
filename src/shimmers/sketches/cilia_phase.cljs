@@ -105,8 +105,17 @@
                             :flat-smooth 1.33
                             :random 0.66
                             :random-normal 0.75})
-              (dr/weighted {150 1.0 200 5.0 250 4.0
-                            300 2.0 400 0.75 600 0.25})]
+              (let [proportion
+                    (dr/weighted {6 1.0
+                                  5.0 1.0
+                                  4.50 5.0
+                                  4.0 3.0
+                                  3.5 4.0
+                                  3 2.0
+                                  2.25 0.75
+                                  2.0 0.5
+                                  1.5 0.25})]
+                (math/floor (/ (max width height) proportion)))]
              :phase
              (dr/gaussian 0.0 0.0125)}))))
 
