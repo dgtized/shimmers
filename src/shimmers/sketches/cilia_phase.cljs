@@ -83,6 +83,47 @@
           len (* height (+ cilia-amp (* cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
+(defn gen-density []
+  [(dr/weighted {:equal 1.33
+                 :gaussian 1.33
+                 :inv-smooth 1.33
+                 :flat-smooth 1.33
+                 :random 0.66
+                 :random-normal 0.75
+                 :stripes 1.0})
+   (let [proportion
+         (dr/weighted {6 1.0
+                       5.0 1.0
+                       4.50 5.0
+                       4.0 3.0
+                       3.5 4.0
+                       3 2.0
+                       2.25 0.75
+                       2.0 0.5
+                       1.5 0.25})]
+     (math/floor (/ (max width height) proportion)))])
+
+(defn samples-from-density [[density-mode density]]
+  (case density-mode
+    :equal (range -0.05 1.05 (/ 1.0 density))
+    :gaussian
+    (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))
+                       true [-0.05 1.05])
+    :inv-smooth
+    (for [x (range -0.05 1.05 (/ 1.0 density))]
+      (eq/inv-smoothstep x))
+    :flat-smooth
+    (for [x (range -0.05 1.05 (/ 1.0 density))]
+      (eq/flat-smooth x))
+    :random
+    (repeatedly (* 1.1 density) #(dr/random))
+    :random-normal
+    (repeatedly (* 0.8 density)
+                #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
+    :stripes
+    (for [x (range -0.05 1.05 (/ 1.0 density))]
+      (/ (mod (* x 67.0) 13.0) 13.0))))
+
 (defn line-parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
                         (dr/random-int 2 14) 1.5
@@ -98,25 +139,7 @@
              :cilia-amp
              (* (/ 1.0 (inc n))
                 (+ 0.025 (eq/gaussian amp 0.5 -0.125 y)))
-             :pts
-             [(dr/weighted {:equal 1.33
-                            :gaussian 1.33
-                            :inv-smooth 1.33
-                            :flat-smooth 1.33
-                            :random 0.66
-                            :random-normal 0.75
-                            :stripes 1.0})
-              (let [proportion
-                    (dr/weighted {6 1.0
-                                  5.0 1.0
-                                  4.50 5.0
-                                  4.0 3.0
-                                  3.5 4.0
-                                  3 2.0
-                                  2.25 0.75
-                                  2.0 0.5
-                                  1.5 0.25})]
-                (math/floor (/ (max width height) proportion)))]
+             :pts (gen-density)
              :phase
              (dr/gaussian 0.0 0.0125)}))))
 
@@ -144,27 +167,7 @@
      (fn [{:keys [ry amp cilia-amp phase pts]}]
        (let [screen (partial screen-space ry amp)
              spline-pts (base-spline screen (:fn line-fx) phase)
-             [density-mode density] pts
-             samples
-             (case density-mode
-               :equal (range -0.05 1.05 (/ 1.0 density))
-               :gaussian
-               (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))
-                                  true [-0.05 1.05])
-               :inv-smooth
-               (for [x (range -0.05 1.05 (/ 1.0 density))]
-                 (eq/inv-smoothstep x))
-               :flat-smooth
-               (for [x (range -0.05 1.05 (/ 1.0 density))]
-                 (eq/flat-smooth x))
-               :random
-               (repeatedly (* 1.1 density) #(dr/random))
-               :random-normal
-               (repeatedly (* 0.8 density)
-                           #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
-               :stripes
-               (for [x (range -0.05 1.05 (/ 1.0 density))]
-                 (/ (mod (* x 67.0) 13.0) 13.0)))
+             samples (samples-from-density pts)
              cilia
              (cilias {:samples samples
                       :screen-space screen
