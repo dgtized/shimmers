@@ -29,8 +29,8 @@
         aysylu/loom {:mvn/version "1.0.2"} ;; graph representation
 
         ;; clientside view rendering, routing, and HTML5 pushState support
-        cljsjs/react {:mvn/version "18.2.0-1"}
-        cljsjs/react-dom {:mvn/version "18.2.0-1"}
+        cljsjs/react {:mvn/version "18.3.1-1"}
+        cljsjs/react-dom {:mvn/version "18.3.1-1"}
         reagent/reagent {:mvn/version "1.2.0"}
         metosin/reitit-frontend {:mvn/version "0.7.2"}
         metosin/reitit-spec {:mvn/version "0.7.2"}
