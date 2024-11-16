@@ -102,11 +102,19 @@
                       2.25 0.75
                       2.0 0.5
                       1.5 0.25})]
-    {:mode mode
-     :density
-     (math/floor (/ (max width height) proportion))}))
+    (merge
+     {:mode mode
+      :density
+      (math/floor (/ (max width height) proportion))}
+     (when (= mode :stripes)
+       (let[primes (sm/primes-between 16 256)
+            threshold (fn [x] (< x 64))
+            mul-prime (dr/rand-nth (remove threshold primes))
+            div-prime (dr/rand-nth (filter threshold primes))]
+         {:mul-prime mul-prime
+          :div-prime div-prime})))))
 
-(defn samples-from-density [{:keys [mode density]}]
+(defn samples-from-density [{:keys [mode density] :as pts}]
   (case mode
     :equal (range -0.05 1.05 (/ 1.0 density))
     :gaussian
@@ -124,10 +132,7 @@
     (repeatedly (* 0.8 density)
                 #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
     :stripes
-    (let [primes (sm/primes-between 16 256)
-          threshold (fn [x] (< x 64))
-          mul-prime (dr/rand-nth (remove threshold primes))
-          div-prime (dr/rand-nth (filter threshold primes))]
+    (let [{:keys [mul-prime div-prime]} pts]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
         (/ (mod (* x mul-prime) div-prime) div-prime)))))
 
