@@ -6,6 +6,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
@@ -90,7 +91,7 @@
                  :flat-smooth 1.33
                  :random 0.66
                  :random-normal 0.75
-                 :stripes 1.0})
+                 :stripes 1.5})
    (let [proportion
          (dr/weighted {6 1.0
                        5.0 1.0
@@ -121,8 +122,12 @@
     (repeatedly (* 0.8 density)
                 #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
     :stripes
-    (for [x (range -0.05 1.05 (/ 1.0 density))]
-      (/ (mod (* x 67.0) 13.0) 13.0))))
+    (let [primes (sm/primes-between 16 256)
+          threshold (fn [x] (< x 64))
+          mul-prime (dr/rand-nth (remove threshold primes))
+          div-prime (dr/rand-nth (filter threshold primes))]
+      (for [x (range -0.05 1.05 (/ 1.0 density))]
+        (/ (mod (* x mul-prime) div-prime) div-prime)))))
 
 (defn line-parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
