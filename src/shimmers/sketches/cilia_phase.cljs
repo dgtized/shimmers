@@ -85,27 +85,29 @@
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn gen-density []
-  [(dr/weighted {:equal 1.33
-                 :gaussian 1.33
-                 :inv-smooth 1.33
-                 :flat-smooth 1.33
-                 :random 0.66
-                 :random-normal 0.75
-                 :stripes 1.5})
-   (let [proportion
-         (dr/weighted {6 1.0
-                       5.0 1.0
-                       4.50 5.0
-                       4.0 3.0
-                       3.5 4.0
-                       3 2.0
-                       2.25 0.75
-                       2.0 0.5
-                       1.5 0.25})]
-     (math/floor (/ (max width height) proportion)))])
+  (let [mode (dr/weighted {:equal 1.33
+                           :gaussian 1.33
+                           :inv-smooth 1.33
+                           :flat-smooth 1.33
+                           :random 0.66
+                           :random-normal 0.75
+                           :stripes 1.5})
+        proportion
+        (dr/weighted {6 1.0
+                      5.0 1.0
+                      4.50 5.0
+                      4.0 3.0
+                      3.5 4.0
+                      3 2.0
+                      2.25 0.75
+                      2.0 0.5
+                      1.5 0.25})]
+    {:mode mode
+     :density
+     (math/floor (/ (max width height) proportion))}))
 
-(defn samples-from-density [[density-mode density]]
-  (case density-mode
+(defn samples-from-density [{:keys [mode density]}]
+  (case mode
     :equal (range -0.05 1.05 (/ 1.0 density))
     :gaussian
     (dr/gaussian-range (/ 1.0 density) (/ 1.0 (eq/sqr density))
