@@ -41,7 +41,7 @@
   (q/stroke-weight 1.0)
   (q/no-fill)
   (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 (+ t (math/sin (+ (* eq/TAU 0.2 t) 0.5)))))
-                                 -1000 1000))]
+                                 -100 100))]
     (doseq [v (range -2 3 1)]
       (plot (graph (+ t (* v offset)))
             400))))
