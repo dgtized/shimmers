@@ -92,7 +92,8 @@
                            :random 0.5
                            :random-normal 0.66
                            :stripes 1.5
-                           :sin-stripes 1.0})
+                           :sin-stripes 1.0
+                           :stair-sigmoid 1.33})
         proportion
         (dr/weighted {6 1.0
                       5.0 1.0
@@ -117,6 +118,9 @@
           :div-prime div-prime})
        :sin-stripes
        {:freq (dr/random 0.66 1.33)}
+       :stair-sigmoid
+       {:freq (dr/random-int 2 32)
+        :alpha (dr/random 1.0 3.0)}
        {}))))
 
 (defn samples-from-density [{:keys [mode density] :as pts}]
@@ -142,7 +146,12 @@
         (/ (mod (* x mul-prime) div-prime) div-prime)))
     :sin-stripes
     (for [x (range -0.05 1.05 (/ 1.0 density))]
-      (eq/unit-sin (* eq/TAU (:freq pts) x)))))
+      (eq/unit-sin (* eq/TAU (:freq pts) x)))
+    :stair-sigmoid
+    (let [freq (:freq pts)
+          alpha (:alpha pts)]
+      (for [x (range -0.05 1.05 (/ 1.0 density))]
+        (eq/stair-sigmoid (/ 1.0 freq) freq 0 alpha x)))))
 
 (defn line-parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0

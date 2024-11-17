@@ -186,3 +186,17 @@
 ;; https://stackoverflow.com/a/34576808/34450
 (defn flat-smooth [x]
   (+ x (- x (* (sqr x) (- 3.0 (* 2.0 x))))))
+
+;; https://math.stackexchange.com/a/2529617/903738
+(defn stair-sigmoid
+  [height hscale hoffset alpha x]
+  (let [m (- (/ 1 (+ 1 (math/exp (- alpha)))) 0.5)
+        term (- (* hscale x) hoffset 0.5)
+        r (- term (math/floor term) 0.5)]
+    (* height (+ (math/floor term)
+                 (* (/ 1.0 (* 2.0 m))
+                    (- (/ 1.0 (+ 1.0 (math/exp (* -2.0 alpha r)))) 0.5))
+                 1))))
+
+(comment (map (fn [x] (stair-sigmoid 0.1 10.0 0 1 x))
+              (range 0 1 (/ 1.0 30))))
