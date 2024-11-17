@@ -30,23 +30,23 @@
 (defn graph [t]
   (let [t (* 0.1 t)]
     (fn [x]
-      (let [tx (+ (* t 0.2 (eq/unit-sin (* eq/TAU 2 (+ x t)))) x)
-            dtx (* 1.5 (math/sin (* 0.1 eq/TAU (* 0.5 t (* 0.1 x)))))]
+      (let [tx (+ (* t 0.2 (eq/unit-sin (* 2 eq/TAU (+ x (* 0.9 t))))) x)
+            dtx (* 1.5 (math/sin (* 0.1 eq/TAU (* 0.5 t (* 6 (math/sin (+ x (* 2 t))) x)))))]
         (+ 0.075
-           (* 0.85 (eq/unit-sin (* 2 eq/TAU (+ tx dtx))) (eq/unit-sin (* eq/TAU x))))))))
+           (* 0.85
+              (eq/unit-sin (* 2 eq/TAU (+ tx dtx)))
+              (eq/unit-sin (* eq/TAU (+ (* 2 x) (* 3 (math/sin t)))))))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (q/color 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 t)) -1000 1000))]
-    (plot (graph (- t offset))
-          400)
-    (plot (graph t)
-          400)
-    (plot (graph (+ t offset))
-          400)))
+  (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 (+ t (math/sin (+ (* eq/TAU 0.2 t) 0.5)))))
+                                 -1000 1000))]
+    (doseq [v (range -2 3 1)]
+      (plot (graph (+ t (* v offset)))
+            400))))
 
 (defn page []
   [:div
