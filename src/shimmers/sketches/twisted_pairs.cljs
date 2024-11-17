@@ -16,7 +16,7 @@
 (defn plot [f res]
   (q/begin-shape)
   (doseq [x (range -0.05 1.05 (/ 1.0 res))]
-    (q/vertex (cq/rel-w x) (cq/rel-h (f x))))
+    (q/vertex (cq/rel-w x) (cq/rel-h (+ (* 0.45 (f x)) 0.5))))
   (q/end-shape))
 
 (defn setup []
@@ -32,10 +32,8 @@
     (fn [x]
       (let [tx (+ (* t 0.2 (eq/unit-sin (* 2 eq/TAU (+ x (* 0.9 t))))) x)
             dtx (* 1.5 (math/sin (* 0.1 eq/TAU (* 0.5 t (* 6 (math/sin (+ x (* 2 t))) x)))))]
-        (+ 0.075
-           (* 0.85
-              (eq/unit-sin (* 2 eq/TAU (+ tx dtx)))
-              (eq/unit-sin (* eq/TAU (+ (* 2 x) (* 3 (math/sin t)))))))))))
+        (* (math/sin (* 2 eq/TAU (+ tx dtx)))
+           (math/sin (* eq/TAU (+ (* 0.33 x) (* 2 (math/sin (+ x (* 4 t))))))))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
