@@ -1,0 +1,64 @@
+(ns shimmers.sketches.twisted-pairs
+  (:require
+   [quil.core :as q :include-macros true]
+   [quil.middleware :as m]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.equations :as eq]
+   [shimmers.sketch :as sketch :include-macros true]
+   [clojure.math :as math]
+   [thi.ng.math.core :as tm]))
+
+(defn seconds []
+  (/ (q/millis) 1000.0))
+
+(defn plot [f res]
+  (q/begin-shape)
+  (doseq [x (range -0.05 1.05 (/ 1.0 res))]
+    (q/vertex (cq/rel-w x) (cq/rel-h (f x))))
+  (q/end-shape))
+
+(defn setup []
+  (q/color-mode :hsl 1.0)
+  {:t (seconds)})
+
+(defn update-state [state]
+  (assoc state
+         :t (seconds)))
+
+(defn graph [t]
+  (let [t (* 0.1 t)]
+    (fn [x]
+      (let [tx (+ (* t 0.2 (eq/unit-sin (* eq/TAU 2 (+ x t)))) x)
+            dtx (* 1.5 (math/sin (* 0.1 eq/TAU (* 0.5 t (* 0.1 x)))))]
+        (+ 0.075
+           (* 0.85 (eq/unit-sin (* 2 eq/TAU (+ tx dtx))) (eq/unit-sin (* eq/TAU x))))))))
+
+(defn draw [{:keys [t]}]
+  (q/background 1.0)
+  (q/color 0.0)
+  (q/stroke-weight 1.0)
+  (q/no-fill)
+  (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 t)) -1000 1000))]
+    (plot (graph (- t offset))
+          400)
+    (plot (graph t)
+          400)
+    (plot (graph (+ t offset))
+          400)))
+
+(defn page []
+  [:div
+   (sketch/component
+    :size [900 600]
+    :setup setup
+    :update update-state
+    :draw draw
+    :middleware [m/fun-mode framerate/mode])])
+
+(sketch/definition twisted-pairs
+  {:created-at "2024-11-17"
+   :tags #{}
+   :type :quil}
+  (ctrl/mount page))
