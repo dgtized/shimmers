@@ -89,8 +89,8 @@
                            :gaussian 1.33
                            :inv-smooth 1.33
                            :flat-smooth 1.33
-                           :random 0.66
-                           :random-normal 0.75
+                           :random 0.5
+                           :random-normal 0.66
                            :stripes 1.5
                            :sin-stripes 1.0})
         proportion
