@@ -1,4 +1,4 @@
-(ns shimmers.sketches.twisted-pairs
+(ns shimmers.sketches.envelope-collapse
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
@@ -55,7 +55,7 @@
     :draw draw
     :middleware [m/fun-mode framerate/mode])])
 
-(sketch/definition twisted-pairs
+(sketch/definition envelope-collapse
   {:created-at "2024-11-17"
    :tags #{}
    :type :quil}
