@@ -134,8 +134,8 @@
     :random
     (repeatedly (* 1.1 density) #(dr/random))
     :random-normal
-    (repeatedly (* 0.8 density)
-                #(dr/sample-between (dr/gaussian 0.5 0.15) 0 1))
+    (repeatedly density
+                (dr/sample-between #(dr/gaussian 0.5 0.15) 0 1))
     :stripes
     (let [{:keys [mul-prime div-prime]} pts]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
