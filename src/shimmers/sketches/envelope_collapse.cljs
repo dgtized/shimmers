@@ -27,6 +27,7 @@
   (assoc state
          :t (seconds)))
 
+;; FIXME: amplitude modulation somewhere here slows down after too many frames
 (defn graph [t]
   (let [t (* 0.1 t)]
     (fn [x]
