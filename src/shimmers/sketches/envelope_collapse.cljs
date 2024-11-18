@@ -34,7 +34,8 @@
             dtx (* 1.5 (math/sin (* eq/TAU (+ (* 0.5 t)
                                          (* 2.5 (math/sin (+ (* 0.1 x) (* 2 t))) x)))))]
         (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
-              (math/sin (* eq/TAU (+ (* 0.17 x) (* 1.1 (math/sin (- x (* 0.25 t))))))))
+              (math/sin (* eq/TAU (+ (* 0.17 x) (* 1.1 (math/sin (- x (* 0.25 t))))
+                                (eq/sqr (math/sin (* eq/TAU (+ (* 0.15 t) (math/sin (* eq/TAU 0.0001 t))))))))))
            (* 0.1 (math/sin (* eq/TAU (+ (* 4 x) (* 0.01 t))))))))))
 
 (defn draw [{:keys [t]}]
