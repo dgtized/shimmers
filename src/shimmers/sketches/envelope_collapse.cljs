@@ -31,16 +31,19 @@
   (let [t (* 0.1 t)]
     (fn [x]
       (let [tx (+ (* t 0.2 (eq/unit-sin (* 2 eq/TAU (+ x (* 0.9 t))))) x)
-            dtx (* 1.5 (math/sin (* 0.1 eq/TAU (* 0.5 t (* 2.5 (math/sin (+ (* 0.1 x) (* 2 t))) x)))))]
-        (* (math/sin (* 2 eq/TAU (+ tx dtx)))
-           (math/sin (* eq/TAU (+ (* 0.33 x) (* 1.1 (math/sin (- x (* 0.25 t))))))))))))
+            dtx (* 1.5 (math/sin (* eq/TAU (+ (* 0.5 t)
+                                         (* 2.5 (math/sin (+ (* 0.1 x) (* 2 t))) x)))))]
+        (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
+              (math/sin (* eq/TAU (+ (* 0.17 x) (* 1.1 (math/sin (- x (* 0.25 t))))))))
+           (* 0.1 (math/sin (* eq/TAU (+ (* 4 x) (* 0.01 t))))))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
   (q/color 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 (+ t (math/sin (+ (* eq/TAU 0.2 t) 0.5)))))
+  (let [offset (* 0.15 (tm/clamp (math/tan (* eq/TAU 0.1 (+ (* 0.25 t)
+                                                       (* 2.1 (math/sin (+ (* eq/TAU 0.15 t) 0.75))))))
                                  -100 100))]
     (doseq [v (range -2 3 1)]
       (plot (graph (+ t (* v offset)))
