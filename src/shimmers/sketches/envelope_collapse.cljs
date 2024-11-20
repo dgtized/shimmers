@@ -27,6 +27,14 @@
   (assoc state
          :t (seconds)))
 
+(defn tsin
+  ^double [^double r ^double t ^double phase]
+  (math/sin (* eq/TAU (+ (* r t) phase))))
+
+(defn utsin
+  ^double [^double r ^double t ^double phase]
+  (+ 0.5 (* 0.5 (math/sin (* eq/TAU (+ (* r t) phase))))))
+
 ;; FIXME: amplitude modulation somewhere here slows down after too many frames
 (defn graph [t]
   (let [t (* 0.1 t)]
@@ -38,9 +46,7 @@
               (math/sin
                (* eq/TAU (+ (* 0.011 x)
                        (* 1.1 (math/sin (- x (* 0.21 t) 1.2)))
-                       (eq/sqr (math/sin
-                                (* eq/TAU (+ (* 0.15 t)
-                                        (math/sin (* eq/TAU (+ (* 0.01 x) (* 0.0001 t))))))))))))
+                       (eq/sqr (tsin 0.15 t (tsin 0.0001 t (* 0.01 x))))))))
            (* 0.07 (math/sin (* eq/TAU (+ (* 7 x) (* 0.005 t) 2.9)))))))))
 
 (defn draw [{:keys [t]}]
