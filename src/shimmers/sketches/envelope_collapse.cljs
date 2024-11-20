@@ -45,7 +45,7 @@
         (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
               (math/sin
                (* eq/TAU (+ (* 0.011 x)
-                       (* 1.1 (math/sin (- x (* 0.21 t) 1.2)))
+                       (* 1.1 (tsin -0.051 t (* 0.05 (- x 1.2))))
                        (eq/sqr (tsin 0.15 t (tsin 0.0001 t (* 0.01 x))))))))
            (* 0.07 (math/sin (* eq/TAU (+ (* 7 x) (* 0.005 t) 2.9)))))))))
 
