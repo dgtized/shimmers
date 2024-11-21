@@ -11,6 +11,7 @@
 (def ^:const SQRT_TWO_PI (math/sqrt tm/TWO_PI))
 (def ^:const SQRT2_2 (/ (math/sqrt 2) 2)) ;; 0.707106
 (def ^:const SQRT3_2 (/ (math/sqrt 3) 2)) ;; 0.866025
+(def ^:const PHI (/ (+ 1 (math/sqrt 5.0)) 2)) ;; 1.618034
 
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
