@@ -40,8 +40,8 @@
   (let [t (* 0.1 t)]
     (fn [x]
       (let [tx (+ (tsin 0.05 t -0.1)
-                  (eq/unit-sin (* 2 eq/TAU (+ x (* 0.9 t))))
-                  x)
+                  (utsin 1.15 t (* 0.2 x))
+                  (* 0.1 x))
             dtx
             (* 1.5 (tsin 0.23 t (* 0.5 x (tsin 1.25 t (+ 0.001 x)))))]
         (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
