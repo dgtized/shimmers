@@ -122,7 +122,8 @@
        {:freq (dr/random 0.66 1.33)}
        :stair-sigmoid
        {:freq (dr/random-int 2 32)
-        :alpha (dr/random 1.0 3.0)}
+        :alpha (dr/random 1.0 3.0)
+        :rate (* 2.5 (dr/happensity 0.4))}
        {}))))
 
 (defn samples-from-density [{:keys [mode density] :as pts}]
@@ -153,7 +154,8 @@
     (let [freq (:freq pts)
           alpha (:alpha pts)]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
-        (eq/stair-sigmoid (/ 1.0 freq) freq 0 alpha x)))))
+        (eq/stair-sigmoid (/ 1.0 freq) freq 0 alpha
+                          (+ x (* 0.05 (eq/sin-tau (* (:rate pts) x)))))))))
 
 (defn line-parameters []
   (let [n (dr/weighted {(dr/random-int 3 8) 3.0
