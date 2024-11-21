@@ -56,8 +56,8 @@
   (q/color 0.0)
   (q/stroke-weight 1.0)
   (q/no-fill)
-  (let [tan-term (+ (* 0.007 t)
-                    (* 2.1 (math/sin (+ (* eq/TAU 0.003 t) 0.75))))
+  (let [tan-term (+ (* 0.004 t)
+                    (* 1.37 (tsin 0.003 t 0.5)))
         offset (* 0.15 (tm/clamp (math/tan (* eq/TAU tan-term)) -100 100))]
     (doseq [v (range -2 3 1)]
       (plot (graph (+ t (* v offset)))
