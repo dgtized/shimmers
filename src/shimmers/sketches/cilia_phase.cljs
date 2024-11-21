@@ -91,9 +91,9 @@
                            :flat-smooth 1.33
                            :random 0.5
                            :random-normal 0.66
-                           :stripes 1.5
+                           :stripes 1.33
                            :sin-stripes 1.0
-                           :stair-sigmoid 1.33})
+                           :stair-sigmoid 1.66})
         proportion
         (dr/weighted {6 1.0
                       5.0 1.0
