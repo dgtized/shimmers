@@ -62,7 +62,7 @@
         offset (* 0.15 (tm/clamp (math/tan (* eq/TAU tan-term)) -100 100))]
     (doseq [v (range -2 3 1)]
       (plot (graph (+ t (* v offset)))
-            400))))
+            300))))
 
 (defn page []
   [:div
