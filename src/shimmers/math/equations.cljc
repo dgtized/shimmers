@@ -7,6 +7,11 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
+(def ^:const TAU tm/TWO_PI)
+(def ^:const SQRT_TWO_PI (math/sqrt tm/TWO_PI))
+(def ^:const SQRT2_2 (/ (math/sqrt 2) 2)) ;; 0.707106
+(def ^:const SQRT3_2 (/ (math/sqrt 3) 2)) ;; 0.866025
+
 (defn unit-cos
   "Cosine function remapped into unit interval [0,1]"
   ^double [^double t]
@@ -16,6 +21,15 @@
   "Sine function remapped into unit interval [0,1]"
   ^double [^double t]
   (* 0.5 (+ 1 (math/sin t))))
+
+(defn cos-tau ^double [^double t]
+  (math/cos (* TAU t)))
+
+(defn sin-tau ^double [^double t]
+  (math/sin (* TAU t)))
+
+(defn tan-tau ^double [^double t]
+  (math/tan (* TAU t)))
 
 (defn sqr [x]
   (* x x))
@@ -29,11 +43,6 @@
   [a b c x]
   (* a (math/exp (- (/ (sqr (- x b))
                        (* 2 (sqr c)))))))
-
-(def ^:const TAU tm/TWO_PI)
-(def ^:const SQRT_TWO_PI (math/sqrt tm/TWO_PI))
-(def ^:const SQRT2_2 (/ (math/sqrt 2) 2)) ;; 0.707106
-(def ^:const SQRT3_2 (/ (math/sqrt 3) 2)) ;; 0.866025
 
 (defn gaussian-density
   "Probability density function with expected value `mu`, variance `sigma`."
