@@ -45,11 +45,12 @@
             dtx
             (* 1.5 (tsin 0.23 t (* 0.5 x (tsin 1.25 t (+ 0.001 x)))))]
         (+ (* (tsin 0.66 (+ tx dtx) 0)
-              (math/sin
-               (* eq/TAU (+ (* 0.011 x)
+              (tsin 1.0
+                    (+ (* 0.011 x)
                        (* 1.1 (tsin -0.051 t (* 0.05 (- x 1.2))))
-                       (eq/sqr (tsin 0.15 t (tsin 0.0001 t (* 0.01 x))))))))
-           (* 0.07 (math/sin (* eq/TAU (+ (* 7 x) (* 0.005 t) 2.9)))))))))
+                       (eq/sqr (tsin 0.15 t (tsin 0.0001 t (* 0.01 x)))))
+                    0.0))
+           (* 0.07 (tsin 0.005 t (+ (* 7 x) 2.9))))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
