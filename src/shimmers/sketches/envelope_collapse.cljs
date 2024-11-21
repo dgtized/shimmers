@@ -42,8 +42,8 @@
       (let [tx (+ (tsin 0.05 t -0.1)
                   (eq/unit-sin (* 2 eq/TAU (+ x (* 0.9 t))))
                   x)
-            dtx (* 1.5 (math/sin (* eq/TAU (+ (* 0.23 t)
-                                         (* 1.75 x (math/sin (+ (* 0.1 x) (* 2 t))))))))]
+            dtx
+            (* 1.5 (tsin 0.23 t (* 0.5 x (tsin 1.25 t (+ 0.001 x)))))]
         (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
               (math/sin
                (* eq/TAU (+ (* 0.011 x)
