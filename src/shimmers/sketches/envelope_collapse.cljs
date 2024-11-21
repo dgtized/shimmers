@@ -44,7 +44,7 @@
                   (* 0.1 x))
             dtx
             (* 1.5 (tsin 0.23 t (* 0.5 x (tsin 1.25 t (+ 0.001 x)))))]
-        (+ (* (math/sin (* 1.5 eq/TAU (+ tx dtx)))
+        (+ (* (tsin 0.66 (+ tx dtx) 0)
               (math/sin
                (* eq/TAU (+ (* 0.011 x)
                        (* 1.1 (tsin -0.051 t (* 0.05 (- x 1.2))))
