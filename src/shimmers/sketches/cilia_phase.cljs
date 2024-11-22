@@ -94,7 +94,7 @@
                            :random-normal 0.66
                            :stripes 1.33
                            :sin-stripes 1.0
-                           :stair-sigmoid 1.66})
+                           :stair-sigmoid 2.0})
         proportion
         (dr/weighted {6 1.0
                       5.0 1.0
