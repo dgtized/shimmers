@@ -31,8 +31,9 @@
                 3.0 1.0 4.0 0.5 5.0 0.25}))
 
 (defn gen-amp []
-  (dr/weighted {0.10 1.0 0.15 1.0
-                0.20 1.0 0.25 1.0
+  (dr/weighted {0.05 1.0
+                0.10 1.0 0.15 2.0
+                0.20 2.0 0.25 2.0
                 0.30 1.0 0.35 1.0
                 0.40 1.0
                 0.50 1.0}))
@@ -48,8 +49,8 @@
      (fn spline-fx
        ([x] (spline-fx 0 x))
        ([phase x]
-        (let [phase-mod (math/cos (* eq/TAU (+ (* dr x) dc phase)))]
-          (* amplitude (math/sin (* eq/TAU (+ (* r x) c (* phase-amp phase-mod))))))))}))
+        (let [phase-mod (* phase-amp (math/cos (* eq/TAU (+ (* dr x) dc phase))))]
+          (* amplitude (math/sin (* eq/TAU (+ (* r x) c phase-mod)))))))}))
 
 (defn screen-space [y amp fx x phase]
   (rv x (+ y (* amp (fx (+ x phase))))))
