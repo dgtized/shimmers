@@ -9,6 +9,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -65,13 +66,13 @@
   (let [offset (g/rotate (gv/vec2 len 0) angle)
         axis (g/rotate (gv/vec2 (* 0.075 len) 0) (+ angle (* eq/TAU 0.25)))
         a (tm/+ pt offset)
-        b (tm/- pt offset)]
-    (csvg/path
-     (csvg/segmented-path
-      (for [x (range 0 1 0.02)]
-        (let [fy (spline cx x)]
-          (tm/+ (tm/mix a b x)
-                (tm/mix (tm/- axis) axis fy))))))))
+        b (tm/- pt offset)
+        pts (for [x (range 0 1 0.025)]
+              (let [fy (spline cx x)]
+                (tm/+ (tm/mix a b x)
+                      (tm/mix (tm/- axis) axis fy))))]
+    (when (not-any? v/contains-NaN? pts)
+      (csvg/path (csvg/segmented-path pts)))))
 
 ;; How to avoid intersecting cilia?
 (defn cilias

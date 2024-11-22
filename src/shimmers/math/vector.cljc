@@ -65,3 +65,7 @@
 (defn orient2d [[ax ay] [bx by] [cx cy]]
   (- (* (- ay cy) (- bx cx))
      (* (- ax cx) (- by cy))))
+
+#?(:cljs
+   (defn contains-NaN? [v]
+     (some js/isNaN v)))
