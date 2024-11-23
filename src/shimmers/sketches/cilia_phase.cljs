@@ -65,7 +65,7 @@
 
 (defn cilia-line-plot [spline cx pt angle len]
   (let [offset (g/rotate (gv/vec2 len 0) angle)
-        axis (g/rotate (gv/vec2 (* 0.075 len) 0) (+ angle (* eq/TAU 0.25)))
+        axis (g/rotate (gv/vec2 (* 0.066 len) 0) (+ angle (* eq/TAU 0.25)))
         a (tm/+ pt offset)
         b (tm/- pt offset)
         pts (for [x (range 0 1 0.025)]
