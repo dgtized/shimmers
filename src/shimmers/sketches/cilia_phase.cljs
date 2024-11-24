@@ -154,7 +154,7 @@
     (let [{:keys [mul-prime div-prime]} pts]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
         (/ (mod (* x mul-prime) div-prime) div-prime)))
-    :sin-stripes
+    :sin-stripes ;; also consider (+ x (* 0.01 (sin-tau x)))
     (for [x (range -0.05 1.05 (/ 1.0 density))]
       (eq/unit-sin (* eq/TAU (:freq pts) x)))
     :stair-sigmoid
