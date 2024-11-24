@@ -129,8 +129,8 @@
         :rate (* 2.5 (dr/happensity 0.4))
         :amp (dr/weighted {0.05 1.0 0.075 1.0 0.025 1.0 0.1 0.5})}
        :minkowski
-       {:amp (dr/random 0.05 0.25)
-        :rate (dr/random 1.0 4.0)}
+       {:amp (dr/random 0.001 0.1)
+        :rate (dr/random 1.0 16.0)}
        {}))))
 
 (defn samples-from-density [{:keys [mode density] :as pts}]
