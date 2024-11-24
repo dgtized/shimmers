@@ -210,3 +210,17 @@
 
 (comment (map (fn [x] (stair-sigmoid 0.1 10.0 0 1 x))
               (range 0 1 (/ 1.0 30))))
+
+;; https://en.wikipedia.org/wiki/Minkowski%27s_question-mark_function
+;; https://rosettacode.org/wiki/Minkowski_question-mark_function#Julia
+(defn minkowski? [^double x]
+  (loop [p (mod x 1.0) q (- 1.0 x) y (quot x 1.0) d 0.5]
+    (if (> (+ y d) y)
+      (if (< p q)
+        (recur p (- q p) y (/ d 2.0))
+        (recur (- p q) q (+ y d) (/ d 2.0)))
+      y)))
+
+(comment
+  (for [x (range 0 1 0.02)]
+    [x (minkowski? x)]))
