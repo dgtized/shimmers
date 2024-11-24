@@ -224,3 +224,8 @@
 (comment
   (for [x (range 0 1 0.02)]
     [x (minkowski? x)]))
+
+;; consider:
+;; \frac{\sin\left(x+\sin\left(2x+i\right)+\sin\left(3x+j\right)\right)}{\sin\ 2x}
+;; and
+;; \sin\left(x+\sin\left(2x+i\right)+\sin\left(3x+j\right)\right)
