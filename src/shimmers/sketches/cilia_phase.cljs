@@ -95,6 +95,7 @@
                            :random-normal 0.66
                            :stripes 1.33
                            :sin-stripes 1.0
+                           :x-sin-stripes 1.0
                            :stair-sigmoid 2.0
                            :minkowski 1.33})
         proportion
@@ -123,6 +124,9 @@
           :div-prime div-prime})
        :sin-stripes
        {:freq (dr/random 0.66 1.33)}
+       :x-sin-stripes
+       {:freq (dr/random 0.25 16)
+        :amp (dr/random 0.01 0.1)}
        :stair-sigmoid
        {:freq (dr/random-int 2 32)
         :alpha (dr/random 1.0 3.0)
@@ -154,9 +158,14 @@
     (let [{:keys [mul-prime div-prime]} pts]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
         (/ (mod (* x mul-prime) div-prime) div-prime)))
-    :sin-stripes ;; also consider (+ x (* 0.01 (sin-tau x)))
-    (for [x (range -0.05 1.05 (/ 1.0 density))]
-      (eq/unit-sin (* eq/TAU (:freq pts) x)))
+    :sin-stripes
+    (let [{:keys [freq]} pts]
+      (for [x (range -0.05 1.05 (/ 1.0 density))]
+        (eq/unit-sin (* eq/TAU freq x))))
+    :x-sin-stripes
+    (let [{:keys [freq amp]} pts]
+      (for [x (range -0.05 1.05 (/ 1.0 density))]
+        (+ x (* amp (eq/sin-tau (* freq x))))))
     :stair-sigmoid
     (let [{:keys [freq alpha rate amp]} pts]
       (for [x (range -0.05 1.05 (/ 1.0 density))]
