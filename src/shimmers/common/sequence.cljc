@@ -220,11 +220,11 @@
   ([pred coll]
    (drop-while (complement pred) coll)))
 
-(defn range-series [start end rate-f]
-  (take-while (fn [t] (<= t end))
-              (iterate (fn [t] (+ t (rate-f t)))
-                       start)))
+(defn series-limit [start end rate-f]
+  (->> start
+       (iterate (fn [t] (+ t (rate-f t))))
+       (take-while (fn [t] (<= t end)))))
 
-(comment (range-series 0 1 (fn [t] (max 0.01 (* 0.1 t))))
-         (range-series 0 1 (fn [t] (* 0.1 (math/exp (* (- 0.1) t)))))
-         (range-series 0 100 (fn [t] (math/exp (* 0.02 t)))))
+(comment (series-limit 0 1 (fn [t] (max 0.01 (* 0.1 t))))
+         (series-limit 0 1 (fn [t] (* 0.1 (math/exp (* (- 0.1) t)))))
+         (series-limit 0 100 (fn [t] (math/exp (* 0.02 t)))))

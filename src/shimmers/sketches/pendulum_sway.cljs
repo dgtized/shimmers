@@ -65,8 +65,9 @@
 (defn plot [{:keys [p r]} {:keys [select-fn] :as params}]
   (let [limit 100
         f (functions select-fn)]
-    (for [t (cs/range-series 0 (* limit eq/TAU)
-                             (fn [t] (* 0.02 (math/exp (* 0.003 t)))))]
+    (for [t (cs/series-limit
+             0 (* limit eq/TAU)
+             (fn [t] (* 0.02 (math/exp (* 0.003 t)))))]
       (gc/circle (tm/+ p (f r t params))
                  (+ 1.3 (* 0.7
                            (math/exp (* -0.001 t))
