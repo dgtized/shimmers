@@ -56,11 +56,22 @@
                                              (* 0.005 (math/cos (* 0.2 t)))))))
           (v/polar (* 0.04 r dampen2) (* 4 t)))))
 
+;; dampen opposites
+(defn epsilon [r t {:keys [lambda1 lambda2 dx dy]}]
+  (let [dampen1 (math/exp (* (- lambda1) t))
+        dampen2 (math/exp (* (- lambda2) t))]
+    (tm/+ (gv/vec2 (* r dampen1 (math/cos (+ (* 6 dampen2) (* dx t)
+                                             (* 0.005 (math/sin (* 0.2 t))))))
+                   (* r dampen2 (math/sin (+ (* 6 dampen1) (* dy t)
+                                             (* 0.005 (math/cos (* 0.2 t)))))))
+          (v/polar (* 0.04 r dampen2) (* 4 t)))))
+
 (def functions
   {:alpha alpha
    :beta beta
    :gamma gamma
-   :delta delta})
+   :delta delta
+   :epsilon epsilon})
 
 (defn plot [{:keys [p r]} {:keys [select-fn] :as params}]
   (let [limit 85
@@ -82,7 +93,8 @@
 
 (defn gen-parameters []
   {:select-fn (dr/weighted [[:alpha 1.0] [:beta 2.0]
-                            [:gamma 1.5] [:delta 1.0]])
+                            [:gamma 1.5] [:delta 1.0]
+                            [:epsilon 1.0]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :lambda1 (tm/clamp (dr/gaussian 0.005 0.0015) 0.0001 0.05)
