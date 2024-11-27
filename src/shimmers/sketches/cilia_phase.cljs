@@ -78,13 +78,13 @@
 ;; How to avoid intersecting cilia?
 (defn cilias
   [{:keys [samples screen-space cilia-spline line-fx
-           length-fx cilia-amp rot-fx phase]}]
+           length-fx cilia-amp height-prop rot-fx phase]}]
   (for [x samples]
     (let [pt (screen-space (:fn line-fx) x phase)
           ;; what happens if the lookahead distance for the derivitive is oscillating?
           pt' (screen-space (:fn line-fx) (+ x 0.0001) phase)
           angle (+ (g/heading (tm/- pt' pt)) (* eq/TAU 0.25) ((:fn rot-fx) x))
-          len (* height (+ cilia-amp (* cilia-amp ((:fn length-fx) x))))]
+          len (* height-prop (+ cilia-amp (* cilia-amp ((:fn length-fx) x))))]
       (cilia-spline (+ x phase) pt angle len))))
 
 (defn gen-density []
@@ -229,6 +229,7 @@
                       :line-fx line-fx
                       :length-fx length-fx
                       :cilia-amp cilia-amp
+                      :height-prop height ;; FIXME: combine with cilia-amp
                       :rot-fx rot-fx
                       :phase phase})]
          [(csvg/path (csvg/segmented-path spline-pts))
