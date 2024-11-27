@@ -69,3 +69,7 @@
 #?(:cljs
    (defn contains-NaN? [v]
      (some js/isNaN v)))
+
+#?(:cljs
+   (defn valid? [v]
+     (not-any? js/isNaN v)))

@@ -72,7 +72,7 @@
               (let [fy (spline cx x)]
                 (tm/+ (tm/mix a b x)
                       (tm/mix (tm/- axis) axis fy))))]
-    (when (not-any? v/contains-NaN? pts)
+    (when (every? v/valid? pts)
       (csvg/path (csvg/segmented-path pts)))))
 
 ;; How to avoid intersecting cilia?
