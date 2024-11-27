@@ -324,7 +324,7 @@
      :windows
      (map (fn [s]
             (-> s
-                (vary-width (tm/clamp (dr/gaussian 1.5 1.0) 0.75 2.5))
+                (vary-width ((dr/sample-between #(dr/gaussian 1.5 1.0) 0.75 2.5)))
                 (vary-meta assoc :project
                            (when (dr/chance (* (if (instance? Circle2 s) 0.5 1.0) 0.2))
                              (tm/* shadow-dir 1.8)))))

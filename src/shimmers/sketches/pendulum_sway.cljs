@@ -97,8 +97,8 @@
                             [:epsilon 1.0]])
    :dx (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
    :dy (+ (dr/random-int 1 6) (dr/random -0.01 0.01))
-   :lambda1 (tm/clamp (dr/gaussian 0.005 0.0015) 0.0001 0.05)
-   :lambda2 (tm/clamp (dr/gaussian 0.005 0.0015) 0.0001 0.05)
+   :lambda1 ((dr/sample-between #(dr/gaussian 0.005 0.0015) 0.0001 0.05))
+   :lambda2 ((dr/sample-between #(dr/gaussian 0.005 0.0015) 0.0001 0.05))
    :gamma-rate (dr/weighted {0.125 4 0.25 2 0.5 1 0.75 1 1.25 1})})
 
 (defn scene [{:keys [scene-id params]}]

@@ -72,8 +72,8 @@
             (tm/- p line-delta))))
 
 (defn draw-frame [{:keys [n-points] :as params}]
-  (q/stroke-weight (tm/clamp (dr/gaussian 0.225 0.15) 0.1 0.6))
-  (q/stroke 0.0 (tm/clamp (dr/gaussian 0.25 0.1) 0.1 0.6))
+  (q/stroke-weight ((dr/sample-between #(dr/gaussian 0.225 0.15) 0.1 0.6)))
+  (q/stroke 0.0 ((dr/sample-between #(dr/gaussian 0.1 0.1) 0.005 0.5)))
   (q/no-fill)
   (let [height (q/height)
         pts (harmonic-loop (cq/rel-vec 0.5 0.5) (* 0.45 height) params)
