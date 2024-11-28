@@ -4,6 +4,7 @@
    [shimmers.algorithm.hand-drawn :as hand-drawn]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.palette :as palette]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -340,17 +341,6 @@
      :crossed-lines
      (clip/hatch-rectangle bounds cross-density theta2 [(dr/random) (dr/random)])}))
 
-(defn clockwise-vertices
-  "Force a clockwise ordering by sorting vertices around centroid.
-
-  This only works if the polygon is convex. This is likely an artifact of
-  `g/clip-with`."
-  [convex-polygon]
-  (let [centroid (g/centroid convex-polygon)]
-    (->> convex-polygon
-         g/vertices
-         (sort-by (fn [v] (heading-to centroid v))))))
-
 (defn debug-chunks [arc-groups]
   (for [g arc-groups]
     (csvg/group {}
@@ -378,7 +368,7 @@
 
 (defn arc-path [polygon {:keys [p r]} attribs show-path-points]
   (let [on-arc? (fn [v] (tm/delta= (g/dist p v) r 0.0001))
-        vertices (clockwise-vertices polygon)
+        vertices (poly-detect/clockwise-vertices polygon)
         arc-groups (partition-by on-arc? vertices)
         commands
         (mapcat

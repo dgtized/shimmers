@@ -183,6 +183,17 @@
        (reduce + 0)
        (* 0.5)))
 
+(defn clockwise-vertices
+  "Force a clockwise ordering by sorting vertices around centroid.
+
+  This only works if the polygon is convex. This is likely an artifact of
+  `g/clip-with`."
+  [convex-polygon]
+  (let [centroid (g/centroid convex-polygon)]
+    (->> convex-polygon
+         g/vertices
+         (sort-by (fn [v] (g/heading (tm/- v centroid)))))))
+
 (defn clockwise-polygon?
   "return true if points in polygon are in a clockwise ordering."
   [points]
