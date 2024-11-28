@@ -212,7 +212,7 @@
 ;; TODO: inline cycle-clockwise-from-edge and keep track of a single list of
 ;; seen edges
 (defn simple-polygons
-  "`graph` is a digraph of points, returns a set of cycles, where cycles are a list of points.
+  "`graph` is a digraph of points, returns a set of polygons from each point cycles.
 
   They should be simple cycles without any internal edges/chords."
   [graph]
@@ -225,7 +225,7 @@
       (if (or (empty? pending) (zero? limit))
         (do (when (and (zero? limit) (> (count polygons) 2))
               (println "halted after " (count polygons) " polygons"))
-            polygons)
+            (map gp/polygon2 polygons))
         (let [edge (first pending)
               [p q] edge
               cycle (cycle-clockwise-from-edge g p q)]
@@ -413,6 +413,5 @@
                          (for [[p q] (partition 2 1 (concat [a] isecs [b]))]
                            [p q (g/dist p q)]))))))
           (lg/weighted-graph))
-         simple-polygons
-         (map gp/polygon2))
+         simple-polygons)
     [polygon]))

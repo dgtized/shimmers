@@ -228,7 +228,7 @@
                :polygon polygon))
 
       :polygons
-      (let [polygons (mapv gp/polygon2 (poly-detect/simple-polygons graph))]
+      (let [polygons (poly-detect/simple-polygons graph)]
         (q/stroke 0 0.5)
         (q/stroke-weight 0.5)
         (swap! defo assoc :polygons polygons)

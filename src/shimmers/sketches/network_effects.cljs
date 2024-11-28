@@ -99,7 +99,8 @@
         polygons (->> conns
                       (mapv :points)
                       poly-detect/edges->graph
-                      poly-detect/simple-polygons)]
+                      poly-detect/simple-polygons
+                      (map g/vertices))]
     (assoc state
            :nodes nodes'
            :quadtree (build-tree bounds nodes')

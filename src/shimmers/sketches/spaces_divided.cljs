@@ -66,8 +66,7 @@
 (defn calculate-polygons [edges]
   (->> edges
        poly-detect/edges->graph
-       poly-detect/simple-polygons
-       (mapv gp/polygon2)))
+       poly-detect/simple-polygons))
 
 (defn inset-shapes [polygons]
   (->> (for [poly polygons
