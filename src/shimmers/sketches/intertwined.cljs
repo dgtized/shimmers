@@ -16,7 +16,6 @@
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
