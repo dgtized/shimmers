@@ -211,7 +211,7 @@
         rect (-> (rect/rect 0 0 (* pw (g/width region)) (* ph (g/height region)))
                  (g/center (g/centroid region)))
         [a b c d] (g/vertices rect)
-        displace (gv/vec2 (* (dr/rand-nth [1 -1]) (* (g/width rect) (* 0.5 pw))) 0)
+        displace (gv/vec2 (* (dr/random-sign) (g/width rect) 0.5 pw) 0)
         [a b c d] (if (dr/chance 0.5)
                     [(g/translate a displace)
                      (g/translate b displace)
