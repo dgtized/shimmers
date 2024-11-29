@@ -85,7 +85,7 @@
 (defn update-pos [rate t dt {:keys [dir] :as inst}]
   (-> inst
       (update :pos tm/+ (tm/* dir (* 0.075 dt)))
-      (update :rot + (* (* 0.005 (math/sin (* rate t))) dt))))
+      (update :rot + (* 0.005 (math/sin (* rate t)) dt))))
 
 (defn update-state [{:keys [mono triangles rate screen pass t] :as state}]
   (let [dt (- (q/millis) t)]

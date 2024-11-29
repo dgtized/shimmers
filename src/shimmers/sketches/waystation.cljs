@@ -70,7 +70,7 @@
   (let [acc (if target
               (let [control 0.1
                     delta (- target pos)
-                    acc (- (* control delta) (* (* 2 (math/sqrt control)) vel))]
+                    acc (- (* control delta) (* 2 (math/sqrt control) vel))]
                 (tm/clamp acc (- max-accel) (/ max-accel cars)))
               0)]
     (-> train
