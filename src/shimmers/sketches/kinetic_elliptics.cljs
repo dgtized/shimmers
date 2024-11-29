@@ -215,19 +215,19 @@
       1.0]
      [(fn [] (clock-behavior radial-length
                             (* 1.5
-                               (dr/weighted {-1 1 1 1})
+                               (dr/random-sign)
                                (random-period depth))
                             (dr/random-int 2 32)
                             (dr/random-tau)))
       1.0]
      [(fn [] (orbit-behavior radial-length
-                            (* (dr/weighted {-1 1 1 1})
+                            (* (dr/random-sign)
                                (random-period depth))
                             (dr/random-tau)))
       3.0]
      [(fn [] (orbit-r-behavior (* radial-length (dr/random 0.2 1.2))
                               (dr/random-int 1 8)
-                              (* (dr/weighted {-1 1 1 1})
+                              (* (dr/random-sign)
                                  (random-period depth))
                               (dr/random-tau)))
       1.5]

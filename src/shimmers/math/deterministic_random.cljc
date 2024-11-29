@@ -70,8 +70,10 @@
 (defn happensity [prob]
   (if (< (random-double) prob) (random-double) 0))
 
-(defn random-sign []
-  (if (chance 0.5) -1 1))
+(defn random-sign
+  "Generate a sign, ie 1 or -1 with probability `p`."
+  ([] (random-sign 0.5))
+  ([p] (if (chance p) 1 -1)))
 
 (defn weighted
   "Given a pairing of values to weights, randomly choose a value biased by weight.
