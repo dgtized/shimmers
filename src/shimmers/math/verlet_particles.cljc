@@ -2,6 +2,7 @@
   "Simplified version of thi.ng.geom.physics.core.VerletPhysics with slightly
   more functional approach."
   (:require
+   [shimmers.math.equations :as eq]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -25,7 +26,7 @@
   IParticle
   (pstep [_ drag force delta]
     (let [pos' (tm/madd force
-                        (* (/ 1.0 mass) (* delta delta))
+                        (* (/ 1.0 mass) (eq/sqr delta))
                         (tm/msub pos 2.0 prev))]
       (set! prev (tm/mix pos pos' drag))
       (set! pos pos')
