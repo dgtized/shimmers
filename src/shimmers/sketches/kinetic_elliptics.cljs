@@ -214,8 +214,9 @@
                                0.5)))
       1.0]
      [(fn [] (clock-behavior radial-length
-                            (* (dr/weighted {-1 1 1 1})
-                               (* 1.5 (random-period depth)))
+                            (* 1.5
+                               (dr/weighted {-1 1 1 1})
+                               (random-period depth))
                             (dr/random-int 2 32)
                             (dr/random-tau)))
       1.0]
