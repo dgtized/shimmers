@@ -30,11 +30,12 @@
             d (tm/- pos closest)
             b (tm/cross (gv/vec3 (:x d) (:y d) 0) (gv/vec3 0 0 strength))
             l (+ (tm/mag-squared d) 1e-6)]
-        (if (< l rsq)
-          (physics/add-force particle (tm/* (gv/vec2 (:x b) (:y b))
-                                            (/ (* (- 1.0 (/ l rsq)) strength delta)
-                                               (math/sqrt l))))
-          (physics/add-force particle (tm/* (tm/- closest pos) 0.0001)))))))
+        (->> (if (< l rsq)
+               (tm/* (gv/vec2 (:x b) (:y b))
+                     (/ (* (- 1.0 (/ l rsq)) strength delta)
+                        (math/sqrt l)))
+               (tm/* (tm/- closest pos) 0.0001))
+             (physics/add-force particle))))))
 
 (defn dipole [pos r1 r2 strength]
   (boundary-push (gc/circle pos r1) r2 strength))
