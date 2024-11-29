@@ -222,7 +222,7 @@
 (defn make-triangle [bounds]
   (let [limit (min (g/width bounds) (g/height bounds))
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
-        radius (* s (* 0.65 limit))
+        radius (* s 0.65 limit)
         n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
         angle (* eq/TAU (dr/rand-nth (butlast (tm/norm-range 4))))
         spin (* (dr/random-sign)
@@ -397,10 +397,10 @@
                      (fn [t _f] (mod (+ (* dir t) v) 1.0)))
                    :radial
                    (let [factor (math/pow 2.0 (dr/rand-nth [0 0 6]))]
-                     (fn [t _f] (eq/unit-sin (+ (/ r factor) (* 1.5 (* dir t))))))
+                     (fn [t _f] (eq/unit-sin (+ (/ r factor) (* 1.5 dir t)))))
                    :sweep
                    (let [blades (dr/random-int 4)]
-                     (fn [t _f] (eq/unit-sin (+ (+ blades theta) (* dir t))))))))]
+                     (fn [t _f] (eq/unit-sin (+ blades theta (* dir t))))))))]
     (fn [p rotation t f]
       (doseq [{:keys [value] :as div} divisions]
         (q/fill (value t f))

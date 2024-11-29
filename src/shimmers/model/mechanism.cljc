@@ -125,7 +125,7 @@
           (+ (if (or (= driver-type :ring-gear) (= type :ring-gear))
                (+ (* gear-ratio (+ offset (- math/PI angle))) angle)
                (+ (* gear-ratio offset)
-                  (* (+ gear-ratio 1) (* dir angle)))))
+                  (* (+ gear-ratio 1) dir angle))))
           (mod (/ tm/TWO_PI teeth))))
     0))
 

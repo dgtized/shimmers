@@ -14,12 +14,12 @@
 (defn angular-acceleration [angle target control angle-vel]
   (let [delta (angular-delta angle target)]
     (- (* control delta)
-       (* (* 2 (math/sqrt control)) angle-vel))))
+       (* 2 (math/sqrt control) angle-vel))))
 
 (defn spin-acceleration [angle-vel target-vel control]
   (let [delta (- target-vel angle-vel)]
     (- (* control delta)
-       (* (* 2 (math/sqrt control)) angle-vel))))
+       (* 2 (math/sqrt control) angle-vel))))
 
 (defn force-accel [pos target control velocity]
   (let [dir (tm/- target pos)]
