@@ -38,8 +38,9 @@
         chaos (tm/smoothstep* 0.1 0.8 (math/sin (* t 0.01)))
         new-code (fn [i]
                    (partial code
-                            (cq/rel-h (+ (+ (* 0.5 height) (* i height))
-                                         (* chaos (* 0.01 (dr/random)))))
+                            (cq/rel-h (+ (* 0.5 height)
+                                         (* i height)
+                                         (* 0.01 chaos (dr/random))))
                             (cq/rel-w (abs (dr/gaussian 0.005 0.002)))
                             (cq/rel-h (* (if (dr/chance 0.08) 0.7 0.8) height))))
         differential (+ 1.66 (* 0.3 chaos))]
