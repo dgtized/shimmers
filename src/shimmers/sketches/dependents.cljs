@@ -87,13 +87,13 @@
                :vel (tm/* (tm/+ vel (tm/* (forces pos repulsors) (* 0.01 dt)))
                           0.999)
                :last-pos pos
-               :heading (+ heading (* spin (* 0.01 dt))))
+               :heading (+ heading (* 0.01 spin dt)))
         (let [bounce (reflect bounds particle)]
           (assoc particle
                  :pos (tm/+ pos (tm/* bounce dt))
                  :last-pos pos
                  :vel bounce
-                 :heading (+ heading (* spin (* 0.01 dt)))
+                 :heading (+ heading (* 0.01 spin dt))
                  :spin (* -1 spin)))))))
 
 (defn update-state [{:keys [t bounds repulsors] :as state}]

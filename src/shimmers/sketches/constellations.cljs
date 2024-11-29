@@ -290,7 +290,7 @@
              (for [[i [a b]] (map-indexed vector (partition 2 1 range))
                    :let [major (= 0 (mod (+ i offset) beat))
                          leading (= 0 (mod (- (+ i offset) 2) beat))
-                         trailing (= 0 (mod (+ (+ i offset) 2) beat))]
+                         trailing (= 0 (mod (+ i offset 2) beat))]
                    :when (or leading major trailing)]
                (if major
                  (gl/linestrip2 (g/point-at arc a)

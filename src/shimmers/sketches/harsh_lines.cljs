@@ -34,8 +34,8 @@
                  {[p q] :points}
                  (verticle-line line
                                 t
-                                (* x (* 0.2 (inc i)) (* height 0.01))
-                                (* 0.03 (* t (inc i))))]
+                                (* 0.002 x (inc i) height)
+                                (* 0.03 t (inc i)))]
              (gl/line2 p q)))
          (range 0 1 dx))))
 

@@ -32,7 +32,7 @@
                          chain
                          (cq/rel-vec (+ 0.15 (* 0.6 (/ idx 2))) 0.5)
                          (circle-target (cq/rel-vec (/ idx 2) 0.5)
-                                        (* (* (inc idx) 0.8) (cq/rel-h 0.2)))))
+                                        (* 0.8 (inc idx) (cq/rel-h 0.2)))))
                       chains)))
 
 (defn draw [{:keys [chains]}]

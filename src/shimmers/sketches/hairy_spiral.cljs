@@ -21,7 +21,7 @@
 (defn spiral-points [center dr' rotations]
   (for [t (tm/norm-range (int (* 7 rotations)))
         :let [theta (* eq/TAU rotations t)]]
-    (v/+polar center (* (* theta dr') (/ theta eq/TAU)) theta)))
+    (v/+polar center (* theta dr' (/ theta eq/TAU)) theta)))
 
 (defn perpindiculars [center dr' rotations width]
   (for [t (dr/density-range 0.0001 0.0005)

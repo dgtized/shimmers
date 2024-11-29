@@ -9,7 +9,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]
-   [thi.ng.ndarray.core :as nd]))
+   [thi.ng.ndarray.core :as nd]
+   [shimmers.math.equations :as eq]))
 
 ;; other reading:
 ;; https://shahriyarshahrabi.medium.com/gentle-introduction-to-fluid-simulation-for-programmers-and-technical-artists-7c0045c40bac
@@ -78,7 +79,7 @@
     (* (weights direction)
        (+
         (/ (* 3 eiu) c)
-        (/ (* (/ 9 2) (* eiu eiu)) c2)
+        (/ (* (/ 9 2) (eq/sqr eiu)) c2)
         (- (/ (* (/ 3 2) (tm/dot velocity velocity)) c2))))))
 
 #_:clj-kondo/ignore

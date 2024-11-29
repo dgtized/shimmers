@@ -163,7 +163,7 @@
               (-> cell
                   (g/translate (tm/* corner side))
                   (g/rotate (if diagonal
-                              (- eq/TAU (* (- 1 v) (* 0.5 eq/TAU)))
+                              (- eq/TAU (* (- 1 v) 0.5 eq/TAU))
                               (+ (* 0.75 eq/TAU) (* (- 1 v) 0.75 eq/TAU))))
                   (draw-cell (- 2.0 (* 1.25 (wave/triangle01 1 v)))
                              (tm/+ corner position))))
