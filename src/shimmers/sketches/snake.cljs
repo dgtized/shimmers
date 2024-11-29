@@ -96,7 +96,8 @@
    :sinusoidal
    (fn follow-sinusoidal [pos {:keys [p]} t]
      (let [dirv (tm/- p pos)
-           speed (+ (+ 0.5 (* 0.5 (eq/unit-cos (* 0.25 t))))
+           rate (+ 0.5 (* 0.5 (eq/unit-cos (* 0.25 t))))
+           speed (+ rate
                     (* (math/sin (* 0.9 t)) (math/cos (* 0.5 t))))]
        (tm/+ pos (tm/normalize (g/rotate dirv (* 1.33 (math/sin (* 2 t))))
                                (* 2.0 speed)))))})

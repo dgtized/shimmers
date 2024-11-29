@@ -32,7 +32,7 @@
             l (+ (tm/mag-squared d) 1e-6)]
         (if (< l rsq)
           (physics/add-force particle (tm/* (gv/vec2 (:x b) (:y b))
-                                            (/ (* (- 1.0 (/ l rsq)) (* strength delta))
+                                            (/ (* (- 1.0 (/ l rsq)) strength delta)
                                                (math/sqrt l))))
           (physics/add-force particle (tm/* (tm/- closest pos) 0.0001)))))))
 
