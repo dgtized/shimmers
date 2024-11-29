@@ -21,7 +21,8 @@
   (let [r (/ radius (+ 6 (* 2 (math/sin (+ angle (* 0.25 time))))))
         a (v/+polar (cq/rel-vec 0.5 0.5)
                     radius
-                    (+ angle (* 0.1 (eq/unit-sin (+ (* (* 0.35 (math/sin (* 0.5 time))) step) (* 0.075 time))))))
+                    (+ angle (* 0.1 (eq/unit-sin (+ (* 0.35 step (math/sin (* 0.5 time)))
+                                                    (* 0.075 time))))))
         b (v/+polar a r
                     (+ angle (* (math/sqrt tm/PHI) time)
                        (* 0.1 step)
@@ -46,8 +47,9 @@
     (doseq [hand (range 12)
             step (range 7)
             :let [hand-phase
-                  (->> (eq/unit-sin (+ (* (+ 0.05 (* 0.1 (eq/unit-sin (+ (* 0.33 hand) (* tm/SQRT2 time)))))
-                                          (* eq/TAU (eq/unit-sin (/ time eq/TAU))))
+                  (->> (eq/unit-sin (+ (* (+ 0.05 (* 0.1 (eq/unit-sin (+ (* 0.33 hand)
+                                                                         (* tm/SQRT2 time)))))
+                                          eq/TAU (eq/unit-sin (/ time eq/TAU)))
                                        (math/sin (/ time tm/SQRT3))))
                        (tm/smoothstep* 0.33 0.95)
                        (* 0.15 hand))
