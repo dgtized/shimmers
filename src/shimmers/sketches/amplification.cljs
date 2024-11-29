@@ -97,11 +97,10 @@
     [(gc/circle center (* 0.66 edge-dist))
      (keep (fn [t]
              (let [direction (dr/gaussian (+ (* 0.75 eq/TAU) (* eq/TAU t)) 0.2)
-                   proj (v/+polar center
-                                  (+ (* (- 1 (eq/cos-similarity (tm/- close-edge-point center)
-                                                                (v/polar 1 direction)))
-                                        (* 0.5 edge-dist))
-                                     (* 0.6 edge-dist))
+                   similarity (- 1 (eq/cos-similarity (tm/- close-edge-point center)
+                                                      (v/polar 1 direction)))
+                   proj (v/+polar center (+ (* 0.5 similarity edge-dist)
+                                            (* 0.6 edge-dist))
                                   direction)
                    proj-edge-dist (poly/dist-to-closest-point bounds proj)]
                (when (g/contains-point? (g/scale-size bounds 0.9) proj)
