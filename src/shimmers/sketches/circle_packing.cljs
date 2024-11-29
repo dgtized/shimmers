@@ -60,7 +60,8 @@
             (let [growth (assoc (g/scale-size circle scale) :color (:color circle))
                   near (saq/closest-circle (g/delete-point tree (:p circle)) growth)]
               (if (and (geometry/contains-circle? boundary growth)
-                       (and near (> (saq/circle-overlap growth near) 0)))
+                       near
+                       (> (saq/circle-overlap growth near) 0))
                 (recur (pack/replace-circle-at tree growth)
                        remaining
                        (conj result growth))

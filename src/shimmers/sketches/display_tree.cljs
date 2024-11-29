@@ -736,7 +736,7 @@
       (q/fill 0.0)
       (cq/circle center 10.0)
       (q/fill (- 1.0 fade))
-      (let [s (str i "\n" (int x) "," (int y) "\n" (str (:info screen)))]
+      (let [s (str i "\n" (int x) "," (int y) "\n" (:info screen))]
         (q/with-translation [x y]
           (q/with-rotation [rotation]
             (q/text s 0 0)))))))
