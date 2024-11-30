@@ -33,7 +33,7 @@
         max-jitter (* 2 max-scale)
         x-slide (let [s (math/cos (+ 0.25 (* 0.12 t)))]
                   (* 3 (tm/sign s) (tm/smoothstep* 0.35 0.75 (abs s))))
-        width (+ (* 0.6 (eq/unit-sin (* 0.1 (* 0.6 t))))
+        width (+ (* 0.6 (eq/unit-sin (+ 0.1 (* 0.1 t))))
                  (* 0.3 (eq/unit-sin (+ 0.2 (* 1.1 t))))
                  (* 0.1 (eq/unit-sin (+ 0.3 (* 1.4 t)))))
         wobble (tm/smoothstep* 0.65 0.95 (eq/unit-sin (+ (/ 1 7) (* (/ 1 6) t))))
