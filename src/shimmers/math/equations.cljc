@@ -32,6 +32,10 @@
 (defn tan-tau ^double [^double t]
   (math/tan (* TAU t)))
 
+(defn phase-sin
+  ^double [^double r ^double t ^double phase]
+  (math/sin (* TAU (+ (* r t) phase))))
+
 (defn sqr [x]
   (* x x))
 

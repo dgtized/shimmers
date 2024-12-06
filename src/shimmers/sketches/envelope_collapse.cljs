@@ -27,10 +27,6 @@
   (assoc state
          :t (seconds)))
 
-(defn tsin
-  ^double [^double r ^double t ^double phase]
-  (math/sin (* eq/TAU (+ (* r t) phase))))
-
 (defn utsin
   ^double [^double r ^double t ^double phase]
   (+ 0.5 (* 0.5 (math/sin (* eq/TAU (+ (* r t) phase))))))
@@ -39,18 +35,18 @@
 (defn graph [t]
   (let [t (* 0.1 t)]
     (fn [x]
-      (let [tx (+ (tsin 0.05 t -0.1)
+      (let [tx (+ (eq/phase-sin 0.05 t -0.1)
                   (utsin 1.15 t (* 0.2 x))
                   (* 0.1 x))
             dtx
-            (* 1.5 (tsin 0.23 t (* 0.5 x (tsin 1.25 t (+ 0.001 x)))))]
-        (+ (* (tsin 0.66 (+ tx dtx) 0)
-              (tsin 1.0
-                    (+ (* 0.011 x)
-                       (* 1.1 (tsin -0.051 t (* 0.05 (- x 1.2))))
-                       (eq/sqr (tsin 0.15 t (tsin 0.0001 t (* 0.01 x)))))
-                    0.0))
-           (* 0.07 (tsin 0.005 t (+ (* 7 x) 2.9))))))))
+            (* 1.5 (eq/phase-sin 0.23 t (* 0.5 x (eq/phase-sin 1.25 t (+ 0.001 x)))))]
+        (+ (* (eq/phase-sin 0.66 (+ tx dtx) 0)
+              (eq/phase-sin 1.0
+                            (+ (* 0.011 x)
+                               (* 1.1 (eq/phase-sin -0.051 t (* 0.05 (- x 1.2))))
+                               (eq/sqr (eq/phase-sin 0.15 t (eq/phase-sin 0.0001 t (* 0.01 x)))))
+                            0.0))
+           (* 0.07 (eq/phase-sin 0.005 t (+ (* 7 x) 2.9))))))))
 
 (defn draw [{:keys [t]}]
   (q/background 1.0)
@@ -58,7 +54,7 @@
   (q/stroke-weight 1.0)
   (q/no-fill)
   (let [tan-term (+ (* 0.004 t)
-                    (* 1.37 (tsin 0.003 t 0.5)))
+                    (* 1.37 (eq/phase-sin 0.003 t 0.5)))
         offset (* 0.15 (tm/clamp (math/tan (* eq/TAU tan-term)) -100 100))]
     (doseq [v (range -2 3 1)]
       (plot (graph (+ t (* v offset)))
