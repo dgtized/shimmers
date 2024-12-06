@@ -27,16 +27,12 @@
   (assoc state
          :t (seconds)))
 
-(defn utsin
-  ^double [^double r ^double t ^double phase]
-  (+ 0.5 (* 0.5 (math/sin (* eq/TAU (+ (* r t) phase))))))
-
 ;; FIXME: amplitude modulation somewhere here slows down after too many frames
 (defn graph [t]
   (let [t (* 0.1 t)]
     (fn [x]
       (let [tx (+ (eq/phase-sin 0.05 t -0.1)
-                  (utsin 1.15 t (* 0.2 x))
+                  (eq/unit-phase-sin 1.15 t (* 0.2 x))
                   (* 0.1 x))
             dtx
             (* 1.5 (eq/phase-sin 0.23 t (* 0.5 x (eq/phase-sin 1.25 t (+ 0.001 x)))))]

@@ -36,6 +36,10 @@
   ^double [^double r ^double t ^double phase]
   (math/sin (* TAU (+ (* r t) phase))))
 
+(defn unit-phase-sin
+  ^double [^double r ^double t ^double phase]
+  (+ 0.5 (* 0.5 (math/sin (* TAU (+ (* r t) phase))))))
+
 (defn sqr [x]
   (* x x))
 
