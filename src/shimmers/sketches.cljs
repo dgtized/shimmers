@@ -34,6 +34,7 @@
    shimmers.sketches.circle-connections
    shimmers.sketches.circle-hatch
    shimmers.sketches.circle-packing
+   shimmers.sketches.circuit-diagrams
    shimmers.sketches.circuit-intersections
    shimmers.sketches.circular-repetition
    shimmers.sketches.clothoid-flowers
