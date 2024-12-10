@@ -3,11 +3,13 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
-   [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.polygon :as poly]
-   [thi.ng.geom.core :as g]))
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.math.core :as tm]))
 
 ;; Concept: tile the plain with regular-n-gons that don't overlap like in
 ;; regular-tilings then for the tiles with edges connecting to neighboring
@@ -24,11 +26,20 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn face-normals [polygon]
+  (->>
+   polygon
+   g/edges
+   (mapcat
+    (fn [[p q]]
+      [(gc/circle (tm/mix p q 0.5) 10)]))))
+
 (defn shapes []
   (let [size (* 0.33 height)
         center (rv 0.5 0.5)
-        shape (g/center (g/rotate (random-shape size) (dr/random-tau)) center)]
-    [shape]))
+        shape (g/center (g/rotate (random-shape size) (dr/random-tau)) center)
+        faces (face-normals shape)]
+    (into [shape] faces)))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
