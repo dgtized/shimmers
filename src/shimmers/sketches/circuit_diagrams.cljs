@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
@@ -62,11 +63,15 @@
                   [in & out] (filter :connected faces)]
               (into (when in
                       [(connector in center)
-                       (gc/circle center 4.0)])
+                       (vary-meta (gc/circle center 6.0)
+                                  assoc :stroke-width 2.0)])
                     (when (seq out)
-                      (into [(arc/arc center 10.0
-                                      (- (g/heading (tm/- (face-center (first out)) center)) 0.5)
-                                      (+ (g/heading (tm/- (face-center (last out)) center)) 0.5))]
+                      (into [(let [margin (* eq/TAU 0.66 (/ 1.0 (inc (count faces))))
+                                   t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
+                                   t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
+                               (vary-meta (arc/arc center 18.0 t0 t1)
+                                          assoc :stroke-width 2.0
+                                          :fill "none"))]
                             (for [face out]
                               (connector face (tm/mix center (face-center face) 0.1))))))))
           (mapcat draw-face faces)))
