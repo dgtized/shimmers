@@ -80,7 +80,8 @@
   svg/ISVGConvert
   (as-svg [_ opts]
     (csvg/path [[:M (v/+polar p r t0)]
-                [:A [r r] 0.0 0 1 (v/+polar p r t1)]]
+                [:A [r r] 0.0 (if (> (- t1 t0) math/PI) 1 0) 1
+                 (v/+polar p r t1)]]
                opts)))
 
 ;; Forces arcs to be clockwise from t0 to t1

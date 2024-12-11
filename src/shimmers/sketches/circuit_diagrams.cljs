@@ -7,6 +7,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.polygon :as poly]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -60,25 +61,28 @@
                         (connector face center))) faces))
             :orb
             (let [center (g/centroid shape)
+                  radius 18.0
                   [in & out] (filter :connected faces)]
               (into (when in
                       [(connector in center)
                        (vary-meta (gc/circle center 6.0)
                                   assoc :stroke-width 2.0)])
                     (when (seq out)
-                      (into [(let [margin (* eq/TAU 0.66 (/ 1.0 (inc (count faces))))
+                      (into [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
                                    t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
                                    t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
-                               (vary-meta (arc/arc center 18.0 t0 t1)
+                               (vary-meta (arc/arc center radius t0 t1)
                                           assoc :stroke-width 2.0
-                                          :fill "none"))]
+                                          :fill "none"))
+                             (gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
+                             (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
                             (for [face out]
-                              (connector face (tm/mix center (face-center face) 0.1))))))))
+                              (connector face (v/+polar center radius (g/heading (tm/- (face-center face) center))))))))))
           (mapcat draw-face faces)))
 
 (defn make-component [shape]
   {:shape shape
-   :kind (dr/weighted {:wire 1 :orb 1})
+   :kind (dr/weighted {:wire 1 :orb 10})
    :faces (face-normals shape)})
 
 (defn shapes []
