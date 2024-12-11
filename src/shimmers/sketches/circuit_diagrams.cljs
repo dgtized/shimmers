@@ -30,21 +30,29 @@
   (->>
    polygon
    g/edges
-   (map
-    (fn [[p q]]
-      {:edge [p q] :connected (dr/weighted {false 2 true 1})}))))
+   (map-indexed
+    (fn [i [p q]]
+      {:id i
+       :edge [p q]
+       :connected (dr/weighted {false 3 true 2})}))))
 
 (defn draw-face [{:keys [edge connected]}]
   (let [[p q] edge]
     [(vary-meta (gc/circle (tm/mix p q 0.5) 6)
                 assoc :fill (if connected "black" "white"))]))
 
+(defn draw [{:keys [shape faces]}]
+  (into [shape] (mapcat draw-face faces)))
+
+(defn make-component [shape]
+  {:shape shape
+   :faces (face-normals shape)})
+
 (defn shapes []
   (let [size (* 0.33 height)
         center (rv 0.5 0.5)
-        shape (g/center (g/rotate (random-shape size) (dr/random-tau)) center)
-        faces (face-normals shape)]
-    (into [shape] (mapcat draw-face faces))))
+        shape (g/center (g/rotate (random-shape size) (dr/random-tau)) center)]
+    (mapcat draw [(make-component shape)])))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
