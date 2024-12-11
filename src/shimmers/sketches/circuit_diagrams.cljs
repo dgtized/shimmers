@@ -4,11 +4,13 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
    [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; Concept: tile the plain with regular-n-gons that don't overlap like in
@@ -36,16 +38,42 @@
        :edge [p q]
        :connected (dr/weighted {false 3 true 2})}))))
 
-(defn draw-face [{:keys [edge connected]}]
-  (let [[p q] edge]
-    [(vary-meta (gc/circle (tm/mix p q 0.5) 6)
-                assoc :fill (if connected "black" "white"))]))
+(defn face-center [{[p q] :edge}]
+  (tm/mix p q 0.5))
 
-(defn draw [{:keys [shape faces]}]
-  (into [shape] (mapcat draw-face faces)))
+(defn draw-face [{:keys [connected] :as face}]
+  [(vary-meta (gc/circle (face-center face) 6)
+              assoc :fill (if connected "black" "white"))])
+
+(defn connector [face pt]
+  (vary-meta (gl/line2 (face-center face) pt)
+             assoc :stroke-width 1.25))
+
+(defn draw [{:keys [shape kind faces]}]
+  (concat [shape]
+          (case kind
+            :wire
+            (let [center (g/centroid shape)]
+              (keep (fn [{conn :connected :as face}]
+                      (when conn
+                        (connector face center))) faces))
+            :orb
+            (let [center (g/centroid shape)
+                  [in & out] (filter :connected faces)]
+              (into (when in
+                      [(connector in center)
+                       (gc/circle center 4.0)])
+                    (when (seq out)
+                      (into [(arc/arc center 10.0
+                                      (- (g/heading (tm/- (face-center (first out)) center)) 0.5)
+                                      (+ (g/heading (tm/- (face-center (last out)) center)) 0.5))]
+                            (for [face out]
+                              (connector face (tm/mix center (face-center face) 0.1))))))))
+          (mapcat draw-face faces)))
 
 (defn make-component [shape]
   {:shape shape
+   :kind (dr/weighted {:wire 1 :orb 1})
    :faces (face-normals shape)})
 
 (defn shapes []
