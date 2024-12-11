@@ -68,16 +68,16 @@
                        (vary-meta (gc/circle center 6.0)
                                   assoc :stroke-width 2.0)])
                     (when (seq out)
-                      (into [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
-                                   t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
-                                   t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
-                               (vary-meta (arc/arc center radius t0 t1)
-                                          assoc :stroke-width 2.0
-                                          :fill "none"))
-                             (gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
-                             (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
-                            (for [face out]
-                              (connector face (v/+polar center radius (g/heading (tm/- (face-center face) center))))))))))
+                      (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
+                                     t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
+                                     t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
+                                 (vary-meta (arc/arc center radius t0 t1)
+                                            assoc :stroke-width 2.0
+                                            :fill "none"))]
+                              #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
+                                 (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
+                              (for [face out]
+                                (connector face (v/+polar center radius (g/heading (tm/- (face-center face) center))))))))))
           (mapcat draw-face faces)))
 
 (defn make-component [shape]
