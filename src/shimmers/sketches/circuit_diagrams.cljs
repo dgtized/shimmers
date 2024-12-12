@@ -43,6 +43,9 @@
 (defn face-center [{[p q] :edge}]
   (tm/mix p q 0.5))
 
+(defn face-angle [face center]
+  (g/heading (tm/- (face-center face) center)))
+
 (defn draw-face [{:keys [connected] :as face}]
   [(vary-meta (gc/circle (face-center face) 6)
               assoc :fill (if connected "black" "white"))])
@@ -71,16 +74,15 @@
                         assoc :stroke-width 2.0)])
           (when (seq out)
             (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
-                           t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
-                           t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
+                           t0 (- (face-angle (first out) center) margin)
+                           t1 (+ (face-angle (last out) center) margin)]
                        (vary-meta (arc/arc center radius t0 t1)
                                   assoc :stroke-width 2.0
                                   :fill "none"))]
                     #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
                        (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
-                    (for [face out
-                          :let [angle (g/heading (tm/- (face-center face) center))]]
-                      (connector face (v/+polar center radius angle))))))))
+                    (for [face out]
+                      (connector face (v/+polar center radius (face-angle face center)))))))))
 
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
