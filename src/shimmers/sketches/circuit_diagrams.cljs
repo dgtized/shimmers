@@ -51,35 +51,41 @@
   (vary-meta (gl/line2 (face-center face) pt)
              assoc :stroke-width 1.25))
 
-(defn draw [{:keys [shape kind faces]}]
+(defmulti draw-component :kind)
+
+(defmethod draw-component :wire
+  [{:keys [shape faces]}]
+  (let [center (g/centroid shape)]
+    (keep (fn [{conn :connected :as face}]
+            (when conn
+              (connector face center))) faces)))
+
+(defmethod draw-component :orb
+  [{:keys [shape faces]}]
+  (let [center (g/centroid shape)
+        radius 18.0
+        [in & out] (filter :connected faces)]
+    (into (when in
+            [(connector in center)
+             (vary-meta (gc/circle center 6.0)
+                        assoc :stroke-width 2.0)])
+          (when (seq out)
+            (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
+                           t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
+                           t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
+                       (vary-meta (arc/arc center radius t0 t1)
+                                  assoc :stroke-width 2.0
+                                  :fill "none"))]
+                    #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
+                       (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
+                    (for [face out
+                          :let [angle (g/heading (tm/- (face-center face) center))]]
+                      (connector face (v/+polar center radius angle))))))))
+
+(defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
-          (case kind
-            :wire
-            (let [center (g/centroid shape)]
-              (keep (fn [{conn :connected :as face}]
-                      (when conn
-                        (connector face center))) faces))
-            :orb
-            (let [center (g/centroid shape)
-                  radius 18.0
-                  [in & out] (filter :connected faces)]
-              (into (when in
-                      [(connector in center)
-                       (vary-meta (gc/circle center 6.0)
-                                  assoc :stroke-width 2.0)])
-                    (when (seq out)
-                      (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
-                                     t0 (- (g/heading (tm/- (face-center (first out)) center)) margin)
-                                     t1 (+ (g/heading (tm/- (face-center (last out)) center)) margin)]
-                                 (vary-meta (arc/arc center radius t0 t1)
-                                            assoc :stroke-width 2.0
-                                            :fill "none"))]
-                              #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
-                                 (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
-                              (for [face out
-                                    :let [angle (g/heading (tm/- (face-center face) center))]]
-                                (connector face (v/+polar center radius angle))))))))
-          (mapcat draw-face faces)))
+          (mapcat draw-face faces)
+          (draw-component component)))
 
 (defn make-component [shape]
   {:shape shape
