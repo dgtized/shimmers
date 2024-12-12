@@ -84,6 +84,27 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
+(defn bar [pt r angle]
+  (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
+                       (v/+polar pt r (+ angle (* 0.25 eq/TAU))))
+             assoc :stroke-width 2.0))
+
+(defmethod draw-component :ground
+  [{:keys [shape faces]}]
+  (let [center (g/centroid shape)
+        size (min (g/width shape) (g/height shape))]
+    (mapcat (fn [{:keys [connected] :as face}]
+              (when connected
+                (let [angle (face-angle face center)
+                      pt (v/+polar center (* 0.17 size) angle)
+                      pt2 (v/+polar center (* 0.14 size) angle)
+                      pt3 (v/+polar center (* 0.11 size) angle)]
+                  [(connector face pt)
+                   (bar pt (* 0.06 size) angle)
+                   (bar pt2 (* 0.04 size) angle)
+                   (bar pt3 (* 0.02 size) angle)])))
+            faces)))
+
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
           (mapcat draw-face faces)
@@ -91,7 +112,7 @@
 
 (defn make-component [shape]
   {:shape shape
-   :kind (dr/weighted {:wire 1 :orb 10})
+   :kind (dr/weighted {:wire 1 :orb 1 :ground 1})
    :faces (face-normals shape)})
 
 (defn shapes []
