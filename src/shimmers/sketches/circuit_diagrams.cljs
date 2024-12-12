@@ -63,11 +63,11 @@
 (defmethod draw-component :orb
   [{:keys [shape faces]}]
   (let [center (g/centroid shape)
-        radius 18.0
+        radius (* 0.12 (min (g/width shape) (g/height shape)))
         [in & out] (filter :connected faces)]
     (into (when in
             [(connector in center)
-             (vary-meta (gc/circle center 6.0)
+             (vary-meta (gc/circle center (* radius (/ 1 3)))
                         assoc :stroke-width 2.0)])
           (when (seq out)
             (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
