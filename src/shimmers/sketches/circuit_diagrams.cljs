@@ -105,6 +105,28 @@
                    (bar pt3 (* 0.02 size) angle)])))
             faces)))
 
+(defn resistor [steps p q]
+  (let [a (tm/mix p q 0.2)
+        b (tm/mix p q 0.8)
+        perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
+    (csvg/group {:stroke-width 2.0}
+      (concat
+       [(gl/line2 p a)
+        (gl/line2 b q)]
+       (map gl/line2
+            (partition 2 1 (for [n (range (inc steps))]
+                             (cond (zero? n) a
+                                   (= steps n) b
+                                   (odd? n) (tm/+ (tm/mix a b (* n (/ 1.0 steps))) perp)
+                                   (even? n) (tm/- (tm/mix a b (* n (/ 1.0 steps))) perp)))))))))
+
+(defmethod draw-component :resistor
+  [{:keys [shape faces]}]
+  (let [center (g/centroid shape)]
+    (keep (fn [{conn :connected :as face}]
+            (when conn
+              (resistor (dr/random-int 6 11) (face-center face) center))) faces)))
+
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
           (mapcat draw-face faces)
@@ -112,7 +134,7 @@
 
 (defn make-component [shape]
   {:shape shape
-   :kind (dr/weighted {:wire 1 :orb 1 :ground 1})
+   :kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1})
    :faces (face-normals shape)})
 
 (defn shapes []
