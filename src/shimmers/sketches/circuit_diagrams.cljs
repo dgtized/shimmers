@@ -76,8 +76,9 @@
                                             :fill "none"))]
                               #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
                                  (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
-                              (for [face out]
-                                (connector face (v/+polar center radius (g/heading (tm/- (face-center face) center))))))))))
+                              (for [face out
+                                    :let [angle (g/heading (tm/- (face-center face) center))]]
+                                (connector face (v/+polar center radius angle))))))))
           (mapcat draw-face faces)))
 
 (defn make-component [shape]
