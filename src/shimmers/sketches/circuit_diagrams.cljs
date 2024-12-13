@@ -30,15 +30,20 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn face-normals [polygon]
+(defn face-normals [polygon kind]
   (->>
    polygon
    g/edges
    (map-indexed
     (fn [i [p q]]
-      {:id i
-       :edge [p q]
-       :connected (dr/weighted {false 3 true 2})}))))
+      (merge
+       {:id i
+        :edge [p q]
+        :connected (dr/weighted {false 3 true 2})}
+       (case kind
+         :resistor
+         {:params {:resistor-steps (dr/random-int 6 11)}}
+         {}))))))
 
 (defn face-center [{[p q] :edge}]
   (tm/mix p q 0.5))
@@ -123,9 +128,10 @@
 (defmethod draw-component :resistor
   [{:keys [shape faces]}]
   (let [center (g/centroid shape)]
-    (keep (fn [{conn :connected :as face}]
-            (when conn
-              (resistor (dr/random-int 6 11) (face-center face) center))) faces)))
+    (keep (fn [{:keys [connected params] :as face}]
+            (when connected
+              (resistor (:resistor-steps params)
+                        (face-center face) center))) faces)))
 
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
@@ -133,9 +139,10 @@
           (draw-component component)))
 
 (defn make-component [shape]
-  {:shape shape
-   :kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1})
-   :faces (face-normals shape)})
+  (let [kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1})]
+    {:shape shape
+     :kind kind
+     :faces (face-normals shape kind)}))
 
 (defn shapes []
   (let [size (* 0.33 height)
