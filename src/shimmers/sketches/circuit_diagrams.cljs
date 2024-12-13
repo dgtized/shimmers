@@ -30,20 +30,23 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn face-normals [polygon kind]
+;; FIXME: ensure at least one pass through connection for resistor/wire/capacitor
+(defn face-normals [polygon]
   (->>
    polygon
    g/edges
    (map-indexed
     (fn [i [p q]]
-      (merge
-       {:id i
-        :edge [p q]
-        :connected (dr/weighted {false 3 true 2})}
-       (case kind
-         :resistor
-         {:params {:resistor-steps (dr/random-int 6 11)}}
-         {}))))))
+      (let [kind (dr/weighted {:wire 1 :ground 1 :resistor 1 :capacitor 1})]
+        (merge
+         {:id i
+          :kind kind
+          :edge [p q]
+          :connected (dr/weighted {false 3 true 2})}
+         (case kind
+           :resistor
+           {:params {:resistor-steps (dr/random-int 6 11)}}
+           {})))))))
 
 (defn face-center [{[p q] :edge}]
   (tm/mix p q 0.5))
@@ -92,14 +95,44 @@
       (gl/line2 b (tm/+ b perp))
       (gl/line2 b (tm/- b perp)))))
 
+(defmulti draw-connection :kind)
+
+(defmethod draw-connection :wire
+  [face shape]
+  (connector face (g/centroid shape)))
+
+(defmethod draw-connection :ground
+  [face shape]
+  (let [center (g/centroid shape)
+        size (min (g/width shape) (g/height shape))
+        angle (face-angle face center)
+        pt (v/+polar center (* 0.17 size) angle)
+        pt2 (v/+polar center (* 0.14 size) angle)
+        pt3 (v/+polar center (* 0.11 size) angle)]
+    (csvg/group {}
+      (connector face pt)
+      (bar pt (* 0.06 size) angle)
+      (bar pt2 (* 0.04 size) angle)
+      (bar pt3 (* 0.02 size) angle))))
+
+(defmethod draw-connection :resistor
+  [{:keys [params] :as face} shape]
+  (let [center (g/centroid shape)]
+    (resistor (:resistor-steps params)
+              (face-center face) center)))
+
+(defmethod draw-connection :capacitor
+  [face shape]
+  (capacitor (face-center face) (g/centroid shape)))
+
 (defmulti draw-component :kind)
 
 (defmethod draw-component :wire
   [{:keys [shape faces]}]
-  (let [center (g/centroid shape)]
-    (keep (fn [{conn :connected :as face}]
-            (when conn
-              (connector face center))) faces)))
+  (keep (fn [{conn :connected :as face}]
+          (when conn
+            (draw-connection face shape)))
+        faces))
 
 (defmethod draw-component :orb
   [{:keys [shape faces]}]
@@ -122,49 +155,16 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
-(defmethod draw-component :ground
-  [{:keys [shape faces]}]
-  (let [center (g/centroid shape)
-        size (min (g/width shape) (g/height shape))]
-    (mapcat (fn [{:keys [connected] :as face}]
-              (when connected
-                (let [angle (face-angle face center)
-                      pt (v/+polar center (* 0.17 size) angle)
-                      pt2 (v/+polar center (* 0.14 size) angle)
-                      pt3 (v/+polar center (* 0.11 size) angle)]
-                  [(connector face pt)
-                   (bar pt (* 0.06 size) angle)
-                   (bar pt2 (* 0.04 size) angle)
-                   (bar pt3 (* 0.02 size) angle)])))
-            faces)))
-
-(defmethod draw-component :resistor
-  [{:keys [shape faces]}]
-  (let [center (g/centroid shape)]
-    (keep (fn [{:keys [connected params] :as face}]
-            (when connected
-              (resistor (:resistor-steps params)
-                        (face-center face) center)))
-          faces)))
-
-(defmethod draw-component :capacitor
-  [{:keys [shape faces]}]
-  (let [center (g/centroid shape)]
-    (keep (fn [{:keys [connected] :as face}]
-            (when connected
-              (capacitor (face-center face) center)))
-          faces)))
-
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
           (mapcat draw-face faces)
           (draw-component component)))
 
 (defn make-component [shape]
-  (let [kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1 :capacitor 1})]
+  (let [kind (dr/weighted {:wire 3 :orb 1})]
     {:shape shape
      :kind kind
-     :faces (face-normals shape kind)}))
+     :faces (face-normals shape)}))
 
 (defn shapes []
   (let [size (* 0.33 height)
