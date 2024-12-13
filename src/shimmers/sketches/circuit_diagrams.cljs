@@ -69,15 +69,28 @@
         b (tm/mix p q 0.8)
         perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
     (csvg/group {:stroke-width 2.0}
-      (concat
-       [(gl/line2 p a)
-        (gl/line2 b q)]
-       (map gl/line2
-            (partition 2 1 (for [n (range (inc steps))]
-                             (cond (zero? n) a
-                                   (= steps n) b
-                                   (odd? n) (tm/+ (tm/mix a b (* n (/ 1.0 steps))) perp)
-                                   (even? n) (tm/- (tm/mix a b (* n (/ 1.0 steps))) perp)))))))))
+      (->> (for [n (range (inc steps))]
+             (cond (zero? n) a
+                   (= steps n) b
+                   (odd? n) (tm/+ (tm/mix a b (* n (/ 1.0 steps))) perp)
+                   (even? n) (tm/- (tm/mix a b (* n (/ 1.0 steps))) perp)))
+           (partition 2 1)
+           (map gl/line2)
+           (concat
+            [(gl/line2 p a)
+             (gl/line2 b q)])))))
+
+(defn capacitor [p q]
+  (let [a (tm/mix p q 0.45)
+        b (tm/mix p q 0.55)
+        perp (g/rotate (tm/- b a) (* 0.25 eq/TAU))]
+    (csvg/group {:stroke-width 2.0}
+      (gl/line2 p a)
+      (gl/line2 b q)
+      (gl/line2 a (tm/+ a perp))
+      (gl/line2 a (tm/- a perp))
+      (gl/line2 b (tm/+ b perp))
+      (gl/line2 b (tm/- b perp)))))
 
 (defmulti draw-component :kind)
 
@@ -131,7 +144,16 @@
     (keep (fn [{:keys [connected params] :as face}]
             (when connected
               (resistor (:resistor-steps params)
-                        (face-center face) center))) faces)))
+                        (face-center face) center)))
+          faces)))
+
+(defmethod draw-component :capacitor
+  [{:keys [shape faces]}]
+  (let [center (g/centroid shape)]
+    (keep (fn [{:keys [connected] :as face}]
+            (when connected
+              (capacitor (face-center face) center)))
+          faces)))
 
 (defn draw [{:keys [shape faces] :as component}]
   (concat [shape]
@@ -139,7 +161,7 @@
           (draw-component component)))
 
 (defn make-component [shape]
-  (let [kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1})]
+  (let [kind (dr/weighted {:wire 1 :orb 1 :ground 1 :resistor 1 :capacitor 1})]
     {:shape shape
      :kind kind
      :faces (face-normals shape kind)}))
