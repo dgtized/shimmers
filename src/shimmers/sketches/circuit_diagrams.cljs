@@ -54,6 +54,26 @@
   (vary-meta (gl/line2 (face-center face) pt)
              assoc :stroke-width 1.25))
 
+(defn bar [pt r angle]
+  (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
+                       (v/+polar pt r (+ angle (* 0.25 eq/TAU))))
+             assoc :stroke-width 2.0))
+
+(defn resistor [steps p q]
+  (let [a (tm/mix p q 0.2)
+        b (tm/mix p q 0.8)
+        perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
+    (csvg/group {:stroke-width 2.0}
+      (concat
+       [(gl/line2 p a)
+        (gl/line2 b q)]
+       (map gl/line2
+            (partition 2 1 (for [n (range (inc steps))]
+                             (cond (zero? n) a
+                                   (= steps n) b
+                                   (odd? n) (tm/+ (tm/mix a b (* n (/ 1.0 steps))) perp)
+                                   (even? n) (tm/- (tm/mix a b (* n (/ 1.0 steps))) perp)))))))))
+
 (defmulti draw-component :kind)
 
 (defmethod draw-component :wire
@@ -84,11 +104,6 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
-(defn bar [pt r angle]
-  (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
-                       (v/+polar pt r (+ angle (* 0.25 eq/TAU))))
-             assoc :stroke-width 2.0))
-
 (defmethod draw-component :ground
   [{:keys [shape faces]}]
   (let [center (g/centroid shape)
@@ -104,21 +119,6 @@
                    (bar pt2 (* 0.04 size) angle)
                    (bar pt3 (* 0.02 size) angle)])))
             faces)))
-
-(defn resistor [steps p q]
-  (let [a (tm/mix p q 0.2)
-        b (tm/mix p q 0.8)
-        perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
-    (csvg/group {:stroke-width 2.0}
-      (concat
-       [(gl/line2 p a)
-        (gl/line2 b q)]
-       (map gl/line2
-            (partition 2 1 (for [n (range (inc steps))]
-                             (cond (zero? n) a
-                                   (= steps n) b
-                                   (odd? n) (tm/+ (tm/mix a b (* n (/ 1.0 steps))) perp)
-                                   (even? n) (tm/- (tm/mix a b (* n (/ 1.0 steps))) perp)))))))))
 
 (defmethod draw-component :resistor
   [{:keys [shape faces]}]
