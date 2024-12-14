@@ -37,7 +37,7 @@
    g/edges
    (map-indexed
     (fn [i [p q]]
-      (let [kind (dr/weighted {:wire 1 :ground 1 :resistor 1 :capacitor 1})]
+      (let [kind (dr/weighted {:wire 3 :ground 1 :resistor 2 :capacitor 2})]
         (merge
          {:id i
           :kind kind
