@@ -70,7 +70,7 @@
 
 (defn connector [face pt]
   (vary-meta (gl/line2 (face-center face) pt)
-             assoc :stroke-width 1.25))
+             assoc :stroke-width 2.0))
 
 (defn bar [pt r angle]
   (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
