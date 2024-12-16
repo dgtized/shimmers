@@ -31,22 +31,32 @@
   (gv/vec2 (* width x) (* height y)))
 
 ;; FIXME: ensure at least one pass through connection for resistor/wire/capacitor
+;; FIXME: face-normals needs to take shape/kind to avoid adding connection types for orbs
 (defn face-normals [polygon]
-  (->>
-   polygon
-   g/edges
-   (map-indexed
-    (fn [i [p q]]
-      (let [kind (dr/weighted {:wire 3 :ground 1 :resistor 2 :capacitor 2})]
-        (merge
-         {:id i
-          :kind kind
-          :edge [p q]
-          :connected (dr/weighted {false 3 true 2})}
-         (case kind
-           :resistor
-           {:params {:resistor-steps (dr/random-int 6 11)}}
-           {})))))))
+  (let [faces (->>
+               polygon
+               g/edges
+               (map-indexed
+                (fn [i [p q]]
+                  {:id i
+                   :edge [p q]
+                   :connected (dr/weighted {false 3 true 2})})))
+        distribution (case (count (filter :connected faces))
+                       0 {}
+                       1 {:ground 1}
+                       2 (if (dr/chance 0.25)
+                           {:ground 1}
+                           {:wire 3 :resistor 2 :capacitor 2})
+                       {:wire 3 :ground 1 :resistor 2 :capacitor 2})]
+    (for [face faces]
+      (if (:connected face)
+        (let [kind (dr/weighted distribution)]
+          (merge (assoc face :kind kind)
+                 (case kind
+                   :resistor
+                   {:params {:resistor-steps (dr/random-int 6 11)}}
+                   {})))
+        face))))
 
 (defn face-center [{[p q] :edge}]
   (tm/mix p q 0.5))
@@ -109,7 +119,7 @@
         pt (v/+polar center (* 0.17 size) angle)
         pt2 (v/+polar center (* 0.14 size) angle)
         pt3 (v/+polar center (* 0.11 size) angle)]
-    (csvg/group {}
+    (csvg/group {:stroke-width 2.0}
       (connector face pt)
       (bar pt (* 0.06 size) angle)
       (bar pt2 (* 0.04 size) angle)
