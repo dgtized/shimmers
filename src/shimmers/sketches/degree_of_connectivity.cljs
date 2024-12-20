@@ -56,7 +56,7 @@
                     r (dr/random 4.0 16.0)
                     d (dr/random 0.2)]
                 (csvg/group {}
-                  (into [] (repeatedly (int (* 24 (+ pw qw) (dr/random 0.2 0.8)))
+                  (into [] (repeatedly (tm/clamp (int (* 24 (+ pw qw) (dr/random 0.2 0.8))) 0 64)
                                        #(connection p q (* r pw) (* r qw) (* d pw) (* d qw))))))))))
 
 (defn scene [{:keys [scene-id]}]
@@ -65,7 +65,7 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
+                   :stroke-width 0.75}
     (shapes (rect/rect 0 0 width height))))
 
 (sketch/definition degree-of-connectivity
