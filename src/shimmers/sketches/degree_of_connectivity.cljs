@@ -46,9 +46,11 @@
     (concat (for [p (:points g)]
               (gc/circle p 1.5))
             (for [[p q] (:edges g)]
-              (csvg/group {}
-                (into [] (repeatedly (int (* 24 (dr/pareto 0.125 1.16)))
-                                     #(connection p q (dr/random 2.0 8.0) (dr/random 0.075)))))))))
+              (let [r (dr/random 2.0 10.0)
+                    d (dr/random 0.075)]
+                (csvg/group {}
+                  (into [] (repeatedly (int (* 24 (dr/pareto 0.125 1.16)))
+                                       #(connection p q r d)))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
