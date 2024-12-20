@@ -25,7 +25,7 @@
 
 (defn graph [bounds]
   (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95)
-                                         (dr/weighted {25 1}))
+                                         (+ 15 (* 5 (dr/random-int 5))))
         max-dist (g/dist (g/unmap-point bounds (gv/vec2 0 0))
                          (g/unmap-point bounds (gv/vec2 1.0 1.0)))]
     {:points points
