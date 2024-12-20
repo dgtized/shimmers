@@ -53,11 +53,13 @@
             (for [[p q] (:edges g)]
               (let [pw (:w (meta p))
                     qw (:w (meta q))
-                    r (dr/random 4.0 16.0)
+                    r (dr/random 4.0 12.0)
                     d (dr/random 0.2)]
                 (csvg/group {}
                   (into [] (repeatedly (tm/clamp (int (* 24 (+ pw qw) (dr/random 0.2 0.8))) 0 64)
-                                       #(connection p q (* r pw) (* r qw) (* d pw) (* d qw))))))))))
+                                       #(connection p q
+                                                    (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
+                                                    (* d pw) (* d qw))))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
