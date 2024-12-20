@@ -35,11 +35,11 @@
                              (< (dr/random) 0.5))]
               [p q])}))
 
-(defn connection [p q]
-  (let [p' (rp/confusion-disk p 4.0)
-        q' (rp/confusion-disk q 4.0)]
-    (gl/line2 (tm/mix p' q' (dr/random 0.15))
-              (tm/mix p' q' (- 1.0 (dr/random 0.15))))))
+(defn connection [p q r d]
+  (let [p' (rp/confusion-disk p r)
+        q' (rp/confusion-disk q r)]
+    (gl/line2 (tm/mix p' q' (dr/random (- d) d))
+              (tm/mix p' q' (- 1.0 (dr/random (- d) d))))))
 
 (defn shapes [bounds]
   (let [g (graph bounds)]
@@ -47,8 +47,8 @@
               (gc/circle p 1.5))
             (for [[p q] (:edges g)]
               (csvg/group {}
-                (into [] (repeatedly (dr/random-int 2 15)
-                                     #(connection p q))))))))
+                (into [] (repeatedly (int (* 24 (dr/pareto 0.125 1.16)))
+                                     #(connection p q (dr/random 2.0 8.0) (dr/random 0.075)))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
