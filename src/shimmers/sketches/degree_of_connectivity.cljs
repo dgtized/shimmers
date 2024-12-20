@@ -24,33 +24,40 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn graph [bounds]
-  (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95) 50)
+  (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95)
+                                         (dr/weighted {25 1}))
         max-dist (g/dist (g/unmap-point bounds (gv/vec2 0 0))
                          (g/unmap-point bounds (gv/vec2 1.0 1.0)))]
     {:points points
-     :edges (for [[p q] (cs/all-pairs points)
-                  :let [dist (g/dist p q)
+     :edges (for [[p q] (cs/all-pairs
+                         (map (fn [pos] (vary-meta pos assoc :w (dr/pareto 0.1 1.66)))
+                              points))
+                  :let [pw (:w (meta p))
+                        qw (:w (meta q))
+                        dist (g/dist p q)
                         pd (/ dist max-dist)]
-                  :when (and (< pd 0.175)
-                             (< (dr/random) 0.5))]
+                  :when (and (< pd 0.225)
+                             (< (dr/random) (* 2.0 (+ pw qw))))]
               [p q])}))
 
-(defn connection [p q r d]
-  (let [p' (rp/confusion-disk p r)
-        q' (rp/confusion-disk q r)]
-    (gl/line2 (tm/mix p' q' (dr/random (- d) d))
-              (tm/mix p' q' (- 1.0 (dr/random (- d) d))))))
+(defn connection [p q rp rq dp dq]
+  (let [p' (rp/confusion-disk p rp)
+        q' (rp/confusion-disk q rq)]
+    (gl/line2 (tm/mix p' q' (dr/random (- dp) dp))
+              (tm/mix p' q' (- 1.0 (dr/random (- dq) dq))))))
 
 (defn shapes [bounds]
   (let [g (graph bounds)]
     (concat (for [p (:points g)]
               (gc/circle p 1.5))
             (for [[p q] (:edges g)]
-              (let [r (dr/random 2.0 10.0)
-                    d (dr/random 0.075)]
+              (let [pw (:w (meta p))
+                    qw (:w (meta q))
+                    r (dr/random 4.0 16.0)
+                    d (dr/random 0.2)]
                 (csvg/group {}
-                  (into [] (repeatedly (int (* 24 (dr/pareto 0.125 1.16)))
-                                       #(connection p q r d)))))))))
+                  (into [] (repeatedly (int (* 24 (+ pw qw) (dr/random 0.2 0.8)))
+                                       #(connection p q (* r pw) (* r qw) (* d pw) (* d qw))))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
