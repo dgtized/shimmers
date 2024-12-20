@@ -59,7 +59,8 @@
                   (into [] (repeatedly (tm/clamp (int (* 24 (+ pw qw) (dr/random 0.2 0.8))) 0 64)
                                        #(connection p q
                                                     (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
-                                                    (* d pw) (* d qw))))))))))
+                                                    (tm/clamp (* d pw) -0.35 0.35)
+                                                    (tm/clamp (* d qw) -0.35 0.35))))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
