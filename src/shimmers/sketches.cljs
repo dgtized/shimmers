@@ -65,6 +65,7 @@
    shimmers.sketches.deeper-squares
    shimmers.sketches.deeply-askew
    shimmers.sketches.deformed-spirals
+   shimmers.sketches.degree-of-connectivity
    shimmers.sketches.delaunator
    shimmers.sketches.delaunay-voronoi
    shimmers.sketches.density-variation
