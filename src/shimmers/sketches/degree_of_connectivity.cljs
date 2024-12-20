@@ -7,6 +7,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -43,8 +44,11 @@
 (defn connection [p q rp rq dp dq]
   (let [p' (rp/confusion-disk p rp)
         q' (rp/confusion-disk q rq)]
-    (gl/line2 (tm/mix p' q' (dr/random (- dp) dp))
-              (tm/mix p' q' (- 1.0 (dr/random (- dq) dq))))))
+    (if (dr/chance (* 0.01 (+ rp rq)))
+      (let [mid (rp/confused-midpoint p' q' (* 0.01 (+ rp rq)))]
+        (gl/linestrip2 (g/sample-uniform (bezier/auto-spline2 [p' mid q']) 16 true)))
+      (gl/line2 (tm/mix p' q' (dr/random (- dp) dp))
+                (tm/mix p' q' (- 1.0 (dr/random (- dq) dq)))))))
 
 (defn shapes [bounds]
   (let [g (graph bounds)]
