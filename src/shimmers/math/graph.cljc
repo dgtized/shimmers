@@ -1,5 +1,6 @@
 (ns shimmers.math.graph
   (:require
+   [clojure.set :as set]
    [loom.attr :as lga]
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
@@ -74,3 +75,31 @@
 (defn heaviest-edge [graph]
   (apply max-key (partial lg/weight graph) (lg/edges graph)))
 
+;; https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
+(defn bk-pivot [neighbors r p x]
+  "Bron–Kerbosch algorithm finds all maximal cliques in undirected graph.
+
+`neighbors` is a map of nodes -> neighboring nodes, `r` is the starting clique,
+`p` is the set of all nodes, and `x` is the excluded set already proved not part
+of the clique in `r`."
+  (if (and (empty? p) (empty? x))
+    [(set r)]
+    (let [pivot-u (first (concat p x))
+          pivot-set (set/difference (set p) (set (neighbors pivot-u)))]
+      (loop [p p
+             pivot-set pivot-set
+             x x
+             result []]
+        (if (empty? pivot-set)
+          result
+          (let [v (first pivot-set)
+                v-neighbors (set (neighbors v))]
+            (recur (rest p) (rest pivot-set) (conj x v)
+                   (into result
+                         (bk-pivot neighbors
+                                   (conj r v)
+                                   (set/intersection (set p) v-neighbors)
+                                   (set/intersection (set x) v-neighbors))))))))))
+
+(defn cliques [neighbors nodes]
+  (bk-pivot neighbors #{} (set nodes) #{}))
