@@ -6,6 +6,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.bezier :as bezier]
    [thi.ng.geom.circle :as gc]
@@ -28,18 +29,30 @@
   (let [points (rp/poisson-disc-sampling (g/scale-size bounds 0.95)
                                          (+ 15 (* 5 (dr/random-int 5))))
         max-dist (g/dist (g/unmap-point bounds (gv/vec2 0 0))
-                         (g/unmap-point bounds (gv/vec2 1.0 1.0)))]
+                         (g/unmap-point bounds (gv/vec2 1.0 1.0)))
+        edges (for [[p q] (cs/all-pairs
+                           (map (fn [pos] (vary-meta pos assoc :w (dr/pareto 0.1 1.66)))
+                                points))
+                    :let [pw (:w (meta p))
+                          qw (:w (meta q))
+                          dist (g/dist p q)
+                          pd (/ dist max-dist)]
+                    :when (and (< pd 0.225)
+                               (< (dr/random) (* 2.0 (+ pw qw))))]
+                [p q])
+        g (graph/adjacent-peers edges)
+        cliques (graph/cliques g (keys g))]
+    (println (count cliques))
     {:points points
-     :edges (for [[p q] (cs/all-pairs
-                         (map (fn [pos] (vary-meta pos assoc :w (dr/pareto 0.1 1.66)))
-                              points))
-                  :let [pw (:w (meta p))
-                        qw (:w (meta q))
-                        dist (g/dist p q)
-                        pd (/ dist max-dist)]
-                  :when (and (< pd 0.225)
-                             (< (dr/random) (* 2.0 (+ pw qw))))]
-              [p q])}))
+     :edges (for [edge edges
+                  :let [[p q] edge]]
+              (vary-meta edge assoc
+                         :weight
+                         (reduce (fn [acc clique]
+                                   (+ acc (* (count clique) (if (and (contains? clique p)
+                                                                     (contains? clique q))
+                                                              1 0))))
+                                 0 cliques)))}))
 
 (defn connection [p q rp rq dp dq]
   (let [p' (rp/confusion-disk p rp)
@@ -54,13 +67,15 @@
   (let [g (graph bounds)]
     (concat (for [p (:points g)]
               (gc/circle p 1.5))
-            (for [[p q] (:edges g)]
-              (let [pw (:w (meta p))
+            (for [edge (:edges g)]
+              (let [[p q] edge
+                    weight (:weight (meta edge))
+                    pw (:w (meta p))
                     qw (:w (meta q))
                     r (dr/random 4.0 12.0)
                     d (dr/random 0.2)]
                 (csvg/group {}
-                  (into [] (repeatedly (tm/clamp (int (* 24 (+ pw qw) (dr/random 0.2 0.8))) 0 64)
+                  (into [] (repeatedly (tm/clamp (int (* (dr/random 0.85 1.25) weight)) 0 64)
                                        #(connection p q
                                                     (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
                                                     (tm/clamp (* d pw) -0.35 0.35)

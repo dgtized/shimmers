@@ -75,6 +75,13 @@
 (defn heaviest-edge [graph]
   (apply max-key (partial lg/weight graph) (lg/edges graph)))
 
+(defn adjacent-peers [edges]
+  (reduce (fn [peers [p q]]
+            (-> peers
+                (update p (fnil conj #{}) q)
+                (update q (fnil conj #{}) p)))
+          {} edges))
+
 ;; https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
 (defn bk-pivot [neighbors r p x]
   "Bron–Kerbosch algorithm finds all maximal cliques in undirected graph.
