@@ -110,3 +110,11 @@ of the clique in `r`."
 
 (defn cliques [neighbors nodes]
   (bk-pivot neighbors #{} (set nodes) #{}))
+
+(defn index-graph [pts]
+  {:points (vec pts)
+   :vertex-index (zipmap pts (range (count pts)))
+   :vertices (mapv (fn [v] (str "v" v)) (range (count pts)))})
+
+;; TODO: should edges be imported by points or by vertices?
+(comment (index-graph [(gv/vec2 0 1) (gv/vec2 1 0)]))
