@@ -66,23 +66,26 @@
 
 (defn shapes [bounds]
   (let [g (graph bounds)]
-    (concat (for [p (:points g)]
-              (gc/circle p 1.5))
-            (for [edge (:edges g)]
-              (let [[p q] edge
-                    weight (:weight (meta edge))
-                    pw (:w (meta p))
-                    qw (:w (meta q))
-                    r (dr/random 4.0 12.0)
-                    d (dr/random 0.2)
-                    width (tm/clamp (* 0.75 (math/log10 weight)) 0.01 2.5)]
-                (csvg/group {}
-                  (into [] (repeatedly (tm/clamp (int (* (dr/random 0.85 1.25) weight)) 0 64)
-                                       #(vary-meta (connection p q
-                                                               (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
-                                                               (tm/clamp (* d pw) -0.35 0.35)
-                                                               (tm/clamp (* d qw) -0.35 0.35))
-                                                   assoc :stroke-width width)))))))))
+    (concat
+     (for [p (:points g)]
+       (gc/circle p 1.5))
+     (for [edge (:edges g)]
+       (let [[p q] edge
+             weight (:weight (meta edge))
+             pw (:w (meta p))
+             qw (:w (meta q))
+             r (dr/random 4.0 12.0)
+             d (dr/random 0.2)
+             n (tm/clamp (int (* (dr/random 0.85 1.25) weight)) 0 64)
+             width (tm/clamp (* 0.75 (math/log10 weight)) 0.01 2.5)
+             conn (fn []
+                    (vary-meta (connection p q
+                                           (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
+                                           (tm/clamp (* d pw) -0.35 0.35)
+                                           (tm/clamp (* d qw) -0.35 0.35))
+                               assoc :stroke-width width))]
+         (csvg/group {}
+           (into [] (repeatedly n conn))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
