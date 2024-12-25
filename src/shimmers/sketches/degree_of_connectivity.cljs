@@ -1,5 +1,6 @@
 (ns shimmers.sketches.degree-of-connectivity
   (:require
+   [clojure.math :as math]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -73,13 +74,15 @@
                     pw (:w (meta p))
                     qw (:w (meta q))
                     r (dr/random 4.0 12.0)
-                    d (dr/random 0.2)]
+                    d (dr/random 0.2)
+                    width (tm/clamp (* 0.75 (math/log10 weight)) 0.01 2.5)]
                 (csvg/group {}
                   (into [] (repeatedly (tm/clamp (int (* (dr/random 0.85 1.25) weight)) 0 64)
-                                       #(connection p q
-                                                    (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
-                                                    (tm/clamp (* d pw) -0.35 0.35)
-                                                    (tm/clamp (* d qw) -0.35 0.35))))))))))
+                                       #(vary-meta (connection p q
+                                                               (tm/clamp (* r pw) 2 18) (tm/clamp (* r qw) 2 18)
+                                                               (tm/clamp (* d pw) -0.35 0.35)
+                                                               (tm/clamp (* d qw) -0.35 0.35))
+                                                   assoc :stroke-width width)))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
