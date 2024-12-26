@@ -31,16 +31,20 @@
                                          (+ 15 (* 5 (dr/random-int 5))))
         max-dist (g/dist (g/unmap-point bounds (gv/vec2 0 0))
                          (g/unmap-point bounds (gv/vec2 1.0 1.0)))
-        edges (for [[p q] (cs/all-pairs
-                           (map (fn [pos] (vary-meta pos assoc :w (dr/pareto 0.1 1.66)))
-                                points))
-                    :let [pw (:w (meta p))
-                          qw (:w (meta q))
-                          dist (g/dist p q)
-                          pd (/ dist max-dist)]
-                    :when (and (< pd 0.225)
-                               (< (dr/random) (* 2.0 (+ pw qw))))]
-                [p q])
+        weighted-points
+        (map (fn [pos] (vary-meta pos assoc :weight (dr/pareto 0.1 1.66)))
+             points)
+
+        edges
+        (for [[p q] (cs/all-pairs weighted-points)
+              :let [pw (:weight (meta p))
+                    qw (:weight (meta q))
+                    dist (g/dist p q)
+                    pd (/ dist max-dist)]
+              :when (and (< pd 0.25)
+                         (< (dr/random) (* 2.0 (+ pw qw))))]
+          [p q])
+
         g (graph/adjacent-peers edges)
         cliques (graph/cliques g (keys g))]
     (println (count cliques))
@@ -72,8 +76,8 @@
      (for [edge (:edges g)]
        (let [[p q] edge
              weight (:weight (meta edge))
-             pw (:w (meta p))
-             qw (:w (meta q))
+             pw (:weight (meta p))
+             qw (:weight (meta q))
              r (dr/random 4.0 12.0)
              d (dr/random 0.2)
              n (tm/clamp (int (* (dr/random 0.85 1.25) weight)) 0 64)
