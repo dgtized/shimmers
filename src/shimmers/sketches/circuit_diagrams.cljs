@@ -108,6 +108,17 @@
           (do (println {:shape shape :overlaps overlaps :one-edge one-edge})
               false))))
 
+(defn opposing-face-apothem [shape heading]
+  (let [opposing-face (some (fn [face]
+                              (let [[p q] face
+                                    angle (g/heading (g/normal (tm/- q p)))]
+                                (when (tm/delta= angle heading 0.01)
+                                  face)))
+                            (g/edges shape))]
+    (when opposing-face
+      (let [[a b] opposing-face]
+        (tm/mag (tm/mix a b 0.5))))))
+
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
          faces (set (g/edges seed))]
@@ -117,8 +128,10 @@
             [fp fq] face
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
-            shape (g/rotate (random-shape size) (g/heading (tm/- structure-face)))
-            apothem (poly/apothem-side-length (count (g/vertices shape)) size)
+            angle (g/heading (tm/- structure-face))
+            shape (g/rotate (random-shape size) angle)
+            apothem (or (opposing-face-apothem shape angle)
+                        (poly/apothem-side-length (count (g/vertices shape)) size))
             pos (tm/- mid (tm/normalize structure-face apothem))
             shape' (g/center shape pos)
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
@@ -249,7 +262,7 @@
         seed (random-shape size)
         shape (g/center (g/rotate seed 0) center)
         {:keys [structure]} (tiling {:size size :bounds (csvg/screen width height)}
-                                    shape 8)]
+                                    shape 6)]
     (mapcat draw (map make-component structure))))
 
 (defn scene [{:keys [scene-id]}]
