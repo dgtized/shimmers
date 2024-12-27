@@ -1,11 +1,13 @@
 (ns shimmers.sketches.circuit-diagrams
   (:require
+   [clojure.set :as set]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.arc :as arc]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -13,7 +15,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 ;; Concept: tile the plain with regular-n-gons that don't overlap like in
 ;; regular-tilings then for the tiles with edges connecting to neighboring
@@ -66,6 +69,67 @@
 
 (defn face-angle [face center]
   (g/heading (tm/- (face-center face) center)))
+
+(defn vector-set [vertices]
+  (set (for [[x y] vertices]
+         (f/format [(f/float 3) (f/float 3)] x y))))
+
+(defn tiles-structure? [structure shape]
+  (let [overlaps (filter (fn [s] (collide/overlaps? s shape)) structure)
+        one-edge
+        (filter
+         (fn [s]
+           (let [isecs (set/intersection (vector-set (g/vertices s))
+                                         (vector-set (g/vertices shape)))
+                 n-isecs (count isecs)]
+             ;; FIXME still some false negatives
+             (cond
+               ;; allow an edge to intersect
+               (= n-isecs 2)
+               ;; but ensure no other points overlap
+               ;; ie filter for coincident edge?
+               (= isecs
+                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
+               ;; allow one point to intersect
+               ;; FIXME false positive if edges overlaps but no points
+               (= n-isecs 1)
+               (= isecs
+                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
+                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
+               :else
+               false)))
+         overlaps)]
+    (cond (empty? overlaps)
+          true
+          (= (count one-edge) (count overlaps))
+          true
+          :else
+          (do (println {:shape shape :overlaps overlaps :one-edge one-edge})
+              false))))
+
+(defn tiling [{:keys [size bounds]} seed n]
+  (loop [structure [seed]
+         faces (set (g/edges seed))]
+    (if (or (empty? faces) (>= (count structure) n))
+      {:structure structure}
+      (let [face (dr/rand-nth (into [] faces))
+            [fp fq] face
+            mid (tm/mix fp fq 0.5)
+            structure-face (g/normal (tm/- fq fp))
+            shape (g/rotate (random-shape size) (g/heading (tm/- structure-face)))
+            apothem (poly/apothem-side-length (count (g/vertices shape)) size)
+            pos (tm/- mid (tm/normalize structure-face apothem))
+            shape' (g/center shape pos)
+            edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
+                                   (g/edges shape')))
+            inside? (collide/bounded? bounds shape')
+            tiles? (tiles-structure? structure shape')]
+        (if (and inside? tiles?)
+          (recur (conj structure shape')
+                 (set/union (disj faces face) (set edges)))
+          (recur structure
+                 (disj faces face)))))))
 
 (defn draw-face [{:keys [connected] :as face}]
   [(vary-meta (gc/circle (face-center face) 6)
@@ -180,11 +244,13 @@
      :faces (face-normals shape)}))
 
 (defn shapes []
-  (let [size (* 0.33 height)
+  (let [size (* 0.25 height)
         center (rv 0.5 0.5)
         seed (random-shape size)
-        shape (g/center (g/rotate seed 0) center)]
-    (mapcat draw [(make-component shape)])))
+        shape (g/center (g/rotate seed 0) center)
+        {:keys [structure]} (tiling {:size size :bounds (csvg/screen width height)}
+                                    shape 8)]
+    (mapcat draw (map make-component structure))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
