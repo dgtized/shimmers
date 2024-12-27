@@ -88,10 +88,15 @@
       s)))
 
 ;; TODO calculate top/bottom versions and then the other off rotations?
-(defn pentagon [circumradius]
-  (gp/polygon2 (take 4 (g/vertices (regular-n-gon 6 circumradius)))))
+(defn pentagon [circumradius orientation]
+  (->> (regular-n-gon 6 circumradius)
+       g/vertices
+       cycle
+       (drop orientation)
+       (take 4)
+       gp/polygon2))
 
-(comment (pentagon 1))
+(comment (pentagon 1 0))
 
 (defn sum-interior-angles-regular-polygon
   [n]

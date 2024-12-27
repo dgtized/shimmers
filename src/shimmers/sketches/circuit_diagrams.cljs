@@ -21,9 +21,12 @@
 ;; random shape generated inside.
 
 (defn random-shape [size]
-  (let [n (dr/weighted {3 8 4 4 5 1 6 2 7 1 8 1})
-        r (poly/circumradius-side-length n size)]
-    (poly/regular-n-gon n r)))
+  (if (dr/chance 0.25)
+    (poly/pentagon (poly/circumradius-side-length 6 size)
+                   (dr/random-int 6))
+    (let [n (dr/weighted {3 8 4 4 5 1 6 2 7 1 8 1})
+          r (poly/circumradius-side-length n size)]
+      (poly/regular-n-gon n r))))
 
 (def width 800)
 (def height 600)
@@ -179,7 +182,8 @@
 (defn shapes []
   (let [size (* 0.33 height)
         center (rv 0.5 0.5)
-        shape (g/center (g/rotate (random-shape size) (dr/random-tau)) center)]
+        seed (random-shape size)
+        shape (g/center (g/rotate seed 0) center)]
     (mapcat draw [(make-component shape)])))
 
 (defn scene [{:keys [scene-id]}]
