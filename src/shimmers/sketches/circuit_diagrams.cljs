@@ -115,15 +115,17 @@
                                 (when (tm/delta= angle heading 0.01)
                                   face)))
                             (g/edges shape))]
+    (println [:opposing opposing-face shape])
     (when opposing-face
       (let [[a b] opposing-face]
-        (tm/mag (tm/mix a b 0.5))))))
+        (tm/mix a b 0.5)))))
 
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
-         faces (set (g/edges seed))]
+         faces (set (g/edges seed))
+         annotation []]
     (if (or (empty? faces) (>= (count structure) n))
-      {:structure structure}
+      {:structure structure :annotation annotation}
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
             mid (tm/mix fp fq 0.5)
@@ -131,8 +133,9 @@
             angle (g/heading (tm/- structure-face))
             shape (g/rotate (random-shape size) angle)
             apothem (or (opposing-face-apothem shape angle)
-                        (poly/apothem-side-length (count (g/vertices shape)) size))
-            pos (tm/- mid (tm/normalize structure-face apothem))
+                        (->> (poly/apothem-side-length (count (g/vertices shape)) size)
+                             (tm/normalize structure-face)))
+            pos (tm/- mid apothem)
             shape' (g/center shape pos)
             edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
                                    (g/edges shape')))
@@ -140,9 +143,15 @@
             tiles? (tiles-structure? structure shape')]
         (if (and inside? tiles?)
           (recur (conj structure shape')
-                 (set/union (disj faces face) (set edges)))
+                 (set/union (disj faces face) (set edges))
+                 (conj annotation
+                       (vary-meta (gc/circle pos 1.0)
+                                  assoc
+                                  :stroke "red"
+                                  :fill "none")))
           (recur structure
-                 (disj faces face)))))))
+                 (disj faces face)
+                 annotation))))))
 
 (defn draw-face [{:keys [connected] :as face}]
   [(vary-meta (gc/circle (face-center face) 6)
@@ -261,9 +270,11 @@
         center (rv 0.5 0.5)
         seed (random-shape size)
         shape (g/center (g/rotate seed 0) center)
-        {:keys [structure]} (tiling {:size size :bounds (csvg/screen width height)}
-                                    shape 6)]
-    (mapcat draw (map make-component structure))))
+        {:keys [structure annotation]}
+        (tiling {:size size :bounds (csvg/screen width height)}
+                shape 6)]
+    (into (mapcat draw (map make-component structure))
+          annotation)))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
