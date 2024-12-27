@@ -21,11 +21,11 @@
 ;; random shape generated inside.
 
 (defn random-shape [size]
-  (if (dr/chance 0.25)
-    (poly/pentagon (poly/circumradius-side-length 6 size)
-                   (dr/random-int 6))
-    (let [n (dr/weighted {3 8 4 4 5 1 6 2 7 1 8 1})
-          r (poly/circumradius-side-length n size)]
+  (let [n (dr/weighted {3 8 4 4 5 4 6 2})
+        r (poly/circumradius-side-length n size)]
+    (if (= n 5)
+      (poly/pentagon (poly/circumradius-side-length 6 size)
+                     (dr/random-int 6))
       (poly/regular-n-gon n r))))
 
 (def width 800)
