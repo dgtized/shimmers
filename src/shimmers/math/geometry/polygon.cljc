@@ -5,6 +5,7 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]
+   [thi.ng.geom.polygon :as gp]
    #?(:clj [thi.ng.geom.types]
       :cljs [thi.ng.geom.types :refer [Polygon2]]))
   #?(:clj (:import [thi.ng.geom.types Polygon2])))
@@ -85,6 +86,12 @@
     (if (even? n)
       (g/rotate s (/ math/PI n))
       s)))
+
+;; TODO calculate top/bottom versions and then the other off rotations?
+(defn pentagon [circumradius]
+  (gp/polygon2 (take 4 (g/vertices (regular-n-gon 6 circumradius)))))
+
+(comment (pentagon 1))
 
 (defn sum-interior-angles-regular-polygon
   [n]
