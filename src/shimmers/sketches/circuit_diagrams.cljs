@@ -33,6 +33,7 @@
 
 (def width 800)
 (def height 600)
+(def strokew 1.25)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -161,18 +162,18 @@
 
 (defn connector [face pt]
   (vary-meta (gl/line2 (face-center face) pt)
-             assoc :stroke-width 2.0))
+             assoc :stroke-width strokew))
 
 (defn bar [pt r angle]
   (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
                        (v/+polar pt r (+ angle (* 0.25 eq/TAU))))
-             assoc :stroke-width 2.0))
+             assoc :stroke-width strokew))
 
 (defn resistor [steps p q]
   (let [a (tm/mix p q 0.2)
         b (tm/mix p q 0.8)
         perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
-    (csvg/group {:stroke-width 2.0}
+    (csvg/group {:stroke-width strokew}
       (->> (for [n (range (inc steps))]
              (cond (zero? n) a
                    (= steps n) b
@@ -188,7 +189,7 @@
   (let [a (tm/mix p q 0.45)
         b (tm/mix p q 0.55)
         perp (g/rotate (tm/- b a) (* 0.25 eq/TAU))]
-    (csvg/group {:stroke-width 2.0}
+    (csvg/group {:stroke-width strokew}
       (gl/line2 p a)
       (gl/line2 b q)
       (gl/line2 a (tm/+ a perp))
@@ -210,7 +211,7 @@
         pt (v/+polar center (* 0.17 size) angle)
         pt2 (v/+polar center (* 0.14 size) angle)
         pt3 (v/+polar center (* 0.11 size) angle)]
-    (csvg/group {:stroke-width 2.0}
+    (csvg/group {:stroke-width strokew}
       (connector face pt)
       (bar pt (* 0.06 size) angle)
       (bar pt2 (* 0.04 size) angle)
@@ -243,13 +244,13 @@
     (into (when in
             [(connector in center)
              (vary-meta (gc/circle center (* radius (/ 1 3)))
-                        assoc :stroke-width 2.0)])
+                        assoc :stroke-width strokew)])
           (when (seq out)
             (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
                            t0 (- (face-angle (first out) center) margin)
                            t1 (+ (face-angle (last out) center) margin)]
                        (vary-meta (arc/arc center radius t0 t1)
-                                  assoc :stroke-width 2.0
+                                  assoc :stroke-width strokew
                                   :fill "none"))]
                     #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
                        (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
