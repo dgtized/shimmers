@@ -144,11 +144,13 @@
         (if (and inside? tiles?)
           (recur (conj structure shape')
                  (set/union (disj faces face) (set edges))
-                 (conj annotation
-                       (vary-meta (gc/circle pos 1.0)
-                                  assoc
-                                  :stroke "red"
-                                  :fill "none")))
+                 (into annotation
+                       [(gc/circle mid 3.0)
+                        (gc/circle pos 5.0)
+                        (gl/line2 pos
+                                  (tm/+ pos (or (opposing-face-apothem shape angle)
+                                                (gv/vec2 5 5))))
+                        (gl/line2 fp fq)]))
           (recur structure
                  (disj faces face)
                  annotation))))))
@@ -273,8 +275,9 @@
         {:keys [structure annotation]}
         (tiling {:size size :bounds (csvg/screen width height)}
                 shape 6)]
-    (into (mapcat draw (map make-component structure))
-          annotation)))
+    (conj (vec (mapcat draw (map make-component structure)))
+          (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
+            annotation))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
