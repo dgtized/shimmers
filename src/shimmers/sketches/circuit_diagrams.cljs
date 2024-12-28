@@ -131,7 +131,7 @@
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
             angle (g/heading (tm/- structure-face))
-            shape (g/rotate (random-shape size) angle)
+            shape (g/rotate (g/center (random-shape size)) angle)
             apothem (or (opposing-face-apothem shape angle)
                         (->> (poly/apothem-side-length (count (g/vertices shape)) size)
                              (tm/normalize structure-face)))
