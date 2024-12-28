@@ -152,7 +152,7 @@
                                                 (gv/vec2 5 5))))
                         (gl/line2 fp fq)]))
           (recur structure
-                 (disj faces face)
+                 faces
                  annotation))))))
 
 (defn draw-face [{:keys [connected] :as face}]
