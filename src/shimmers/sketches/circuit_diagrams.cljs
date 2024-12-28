@@ -268,13 +268,13 @@
      :faces (face-normals shape)}))
 
 (defn shapes []
-  (let [size (* 0.25 height)
+  (let [size (* 0.15 height)
         center (rv 0.5 0.5)
         seed (random-shape size)
         shape (g/center (g/rotate seed 0) center)
         {:keys [structure annotation]}
-        (tiling {:size size :bounds (csvg/screen width height)}
-                shape 6)]
+        (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
+                shape 24)]
     (conj (vec (mapcat draw (map make-component structure)))
           (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
             annotation))))
