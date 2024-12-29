@@ -23,6 +23,8 @@
 ;; n-gons, calculate which faces are connectives and use that to inform the
 ;; random shape generated inside.
 
+(defonce ui-state (ctrl/state {:annotation true}))
+
 (defn random-shape [size]
   (let [n (dr/weighted {3 8 4 4 5 4 6 2})
         r (poly/circumradius-side-length n size)]
@@ -276,21 +278,34 @@
         {:keys [structure annotation]}
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
                 shape 24)]
-    (conj (vec (mapcat draw (map make-component structure)))
-          (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
-            annotation))))
+    {:components (vec (mapcat draw (map make-component structure)))
+     :annotation annotation}))
 
 (defn scene [{:keys [scene-id]}]
-  (csvg/svg-timed {:id scene-id
-                   :width width
-                   :height height
-                   :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.5}
-    (shapes)))
+  (csvg/timed
+   (let [{:keys [components annotation]} (shapes)]
+     (fn []
+       (csvg/svg {:id scene-id
+                  :width width
+                  :height height
+                  :stroke "black"
+                  :fill "white"
+                  :stroke-width 0.5}
+         (csvg/group {}
+           components)
+         (when (:annotation @ui-state)
+           (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
+             annotation)))))))
+
+(defn ui-controls []
+  [:div
+   [ctrl/checkbox ui-state "Annotation" [:annotation]]])
 
 (sketch/definition circuit-diagrams
   {:created-at "2024-12-10"
    :tags #{}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount
+   (usvg/page (assoc sketch-args
+                     :explanation ui-controls)
+              scene)))
