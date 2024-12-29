@@ -38,7 +38,6 @@
 
 (def width 800)
 (def height 600)
-(def strokew 1.25)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -166,19 +165,17 @@
               assoc :fill (if connected "black" "white"))])
 
 (defn connector [face pt]
-  (vary-meta (gl/line2 (face-center face) pt)
-             assoc :stroke-width strokew))
+  (gl/line2 (face-center face) pt))
 
 (defn bar [pt r angle]
-  (vary-meta (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
-                       (v/+polar pt r (+ angle (* 0.25 eq/TAU))))
-             assoc :stroke-width strokew))
+  (gl/line2 (v/+polar pt r (- angle (* 0.25 eq/TAU)))
+            (v/+polar pt r (+ angle (* 0.25 eq/TAU)))))
 
 (defn resistor [steps p q]
   (let [a (tm/mix p q 0.2)
         b (tm/mix p q 0.8)
         perp (g/scale (g/rotate (tm/- b a) (* 0.25 eq/TAU)) (/ 1.0 steps))]
-    (csvg/group {:stroke-width strokew}
+    (csvg/group {}
       (->> (for [n (range (inc steps))]
              (cond (zero? n) a
                    (= steps n) b
@@ -194,7 +191,7 @@
   (let [a (tm/mix p q 0.45)
         b (tm/mix p q 0.55)
         perp (g/rotate (tm/- b a) (* 0.25 eq/TAU))]
-    (csvg/group {:stroke-width strokew}
+    (csvg/group {}
       (gl/line2 p a)
       (gl/line2 b q)
       (gl/line2 a (tm/+ a perp))
@@ -216,7 +213,7 @@
         pt (v/+polar center (* 0.17 size) angle)
         pt2 (v/+polar center (* 0.14 size) angle)
         pt3 (v/+polar center (* 0.11 size) angle)]
-    (csvg/group {:stroke-width strokew}
+    (csvg/group {}
       (connector face pt)
       (bar pt (* 0.06 size) angle)
       (bar pt2 (* 0.04 size) angle)
@@ -248,15 +245,13 @@
         [in & out] (filter :connected faces)]
     (into (when in
             [(connector in center)
-             (vary-meta (gc/circle center (* radius (/ 1 3)))
-                        assoc :stroke-width strokew)])
+             (gc/circle center (* radius (/ 1 3)))])
           (when (seq out)
             (concat [(let [margin (* eq/TAU 0.75 (/ 1.0 (inc (count faces))))
                            t0 (- (face-angle (first out) center) margin)
                            t1 (+ (face-angle (last out) center) margin)]
                        (vary-meta (arc/arc center radius t0 t1)
-                                  assoc :stroke-width strokew
-                                  :fill "none"))]
+                                  assoc :fill "none"))]
                     #_[(gc/circle (tm/mix center (face-center (first out)) 0.33) 4.0)
                        (gc/circle (tm/mix center (face-center (last out)) 0.66) 4.0)]
                     (for [face out]
@@ -299,7 +294,7 @@
            (csvg/group {}
              shapes))
          (when (:circuits @ui-state)
-           (csvg/group {}
+           (csvg/group {:stroke-width 1.25}
              components))
          (when (:annotation @ui-state)
            (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
