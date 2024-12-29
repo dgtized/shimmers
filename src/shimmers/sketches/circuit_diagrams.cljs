@@ -23,7 +23,10 @@
 ;; n-gons, calculate which faces are connectives and use that to inform the
 ;; random shape generated inside.
 
-(defonce ui-state (ctrl/state {:annotation true}))
+(defonce ui-state
+  (ctrl/state {:annotation true
+               :circuits true
+               :shapes true}))
 
 (defn random-shape [size]
   (let [n (dr/weighted {3 8 4 4 5 4 6 2})
@@ -259,10 +262,9 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
-(defn draw [{:keys [shape faces] :as component}]
-  (concat [shape]
-          (mapcat draw-face faces)
-          (draw-component component)))
+(defn draw-shape [{:keys [shape faces]}]
+  (into [shape]
+        (mapcat draw-face faces)))
 
 (defn make-component [shape]
   (let [kind (dr/weighted {:wire 3 :orb 1})]
@@ -277,13 +279,15 @@
         shape (g/center (g/rotate seed 0) center)
         {:keys [structure annotation]}
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
-                shape 24)]
-    {:components (vec (mapcat draw (map make-component structure)))
+                shape 24)
+        components (map make-component structure)]
+    {:shapes (mapcat draw-shape components)
+     :components (vec (mapcat draw-component components))
      :annotation annotation}))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/timed
-   (let [{:keys [components annotation]} (shapes)]
+   (let [{:keys [shapes components annotation]} (shapes)]
      (fn []
        (csvg/svg {:id scene-id
                   :width width
@@ -291,15 +295,21 @@
                   :stroke "black"
                   :fill "white"
                   :stroke-width 0.5}
-         (csvg/group {}
-           components)
+         (when (:shapes @ui-state)
+           (csvg/group {}
+             shapes))
+         (when (:circuits @ui-state)
+           (csvg/group {}
+             components))
          (when (:annotation @ui-state)
            (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
              annotation)))))))
 
 (defn ui-controls []
   [:div
-   [ctrl/checkbox ui-state "Annotation" [:annotation]]])
+   [ctrl/checkbox ui-state "Annotation" [:annotation]]
+   [ctrl/checkbox ui-state "Circuits" [:circuits]]
+   [ctrl/checkbox ui-state "Shapes" [:shapes]]])
 
 (sketch/definition circuit-diagrams
   {:created-at "2024-12-10"
