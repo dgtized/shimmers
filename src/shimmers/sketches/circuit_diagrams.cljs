@@ -14,10 +14,8 @@
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [thi.ng.strf.core :as f]))
+   [thi.ng.math.core :as tm]))
 
 ;; Concept: tile the plain with regular-n-gons that don't overlap like in
 ;; regular-tilings then for the tiles with edges connecting to neighboring
