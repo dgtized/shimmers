@@ -3,6 +3,7 @@
    [clojure.set :as set]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
@@ -26,6 +27,8 @@
   (ctrl/state {:annotation true
                :circuits true
                :shapes true}))
+
+(defonce defo (debug/state))
 
 (defn random-shape [size]
   (let [n (dr/weighted {3 8 4 4 5 4 6 2})
@@ -228,8 +231,14 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
+(defn shape-click [shape faces]
+  (fn []
+    (reset! defo
+            {:shape shape
+             :faces faces})))
+
 (defn draw-shape [{:keys [shape faces]}]
-  (into [shape]
+  (into [(vary-meta shape assoc :on-click (shape-click shape faces))]
         (mapcat draw-face faces)))
 
 (defn make-component [shape]
@@ -260,7 +269,9 @@
                   :height height
                   :stroke "black"
                   :fill "white"
-                  :stroke-width 0.5}
+                  :stroke-width 0.5
+                  ;; required for on-click to fire on pointer events within group/polygon clip path
+                  :style {:pointer-events "fill"}}
          (when (:shapes @ui-state)
            (csvg/group {}
              shapes))
@@ -273,9 +284,13 @@
 
 (defn ui-controls []
   [:div
-   [ctrl/checkbox ui-state "Annotation" [:annotation]]
-   [ctrl/checkbox ui-state "Circuits" [:circuits]]
-   [ctrl/checkbox ui-state "Shapes" [:shapes]]])
+   [:div
+    [ctrl/checkbox ui-state "Annotation" [:annotation]]
+    [ctrl/checkbox ui-state "Circuits" [:circuits]]
+    [ctrl/checkbox ui-state "Shapes" [:shapes]]]
+   [:div
+    [:h4 "Debug"]
+    (debug/display defo)]])
 
 (sketch/definition circuit-diagrams
   {:created-at "2024-12-10"
