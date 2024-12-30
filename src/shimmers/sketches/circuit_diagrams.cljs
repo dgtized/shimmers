@@ -89,7 +89,6 @@
 (defn same-edge? [[p1 q1] [p2 q2]]
   (or (exact-edge? [p1 q1] [p2 q2])
       (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
-        (println isec)
         (when (get #{:coincident :coincident-no-intersect} (get isec :type))
           (let [{:keys [p q]} isec]
             (or (exact-edge? [p1 q1] [p q])
@@ -110,39 +109,25 @@
               [(gv/vec2 2 -1) (gv/vec2 2 5)]) ;; intersection
   )
 
+(defn adjacent-edge? [[p1 q1] [p2 q2]]
+  (or (and (tm/delta= p1 p2) (not (tm/delta= q1 q2)))
+      (and (tm/delta= p1 q2) (not (tm/delta= p2 q1)))
+      (and (tm/delta= p2 q1) (not (tm/delta= p1 q2)))))
+
+(defn cross-edge? [[p1 q1] [p2 q2]]
+  (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
+    (when (= (:type isec) :intersect)
+      (not-any? (fn [v] (tm/delta= (:p isec) v)) [p1 q1 p2 q2]))))
+
 (defn tiles-structure? [structure shape]
-  (let [overlaps (filter (fn [s] (collide/overlaps? s shape)) structure)
-        one-edge
-        (filter
-         (fn [s]
-           (let [isecs (set/intersection (vector-set (g/vertices s))
-                                         (vector-set (g/vertices shape)))
-                 n-isecs (count isecs)]
-             ;; FIXME still some false negatives
-             (cond
-               ;; allow an edge to intersect
-               (= n-isecs 2)
-               ;; but ensure no other points overlap
-               ;; ie filter for coincident edge?
-               (= isecs
-                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
-                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
-               ;; allow one point to intersect
-               ;; FIXME false positive if edges overlaps but no points
-               (= n-isecs 1)
-               (= isecs
-                  (vector-set (filter (fn [p] (g/contains-point? s p)) (g/vertices shape)))
-                  (vector-set (filter (fn [p] (g/contains-point? shape p)) (g/vertices s))))
-               :else
-               false)))
-         overlaps)]
-    (cond (empty? overlaps)
-          true
-          (= (count one-edge) (count overlaps))
-          true
-          :else
-          (do (println {:shape shape :overlaps overlaps :one-edge one-edge})
-              false))))
+  (let [overlaps (filter (fn [s] (and (collide/overlaps? s shape)
+                                     (not (collide/bounded? s shape))))
+                         structure)
+        cross (for [edge (g/edges shape)
+                    s-edge (mapcat g/edges overlaps)
+                    :when (cross-edge? edge s-edge)]
+                [edge s-edge])]
+    (or (empty? overlaps) (empty? cross))))
 
 (defn opposing-face-apothem [shape heading]
   (let [opposing-face (some (fn [face]
