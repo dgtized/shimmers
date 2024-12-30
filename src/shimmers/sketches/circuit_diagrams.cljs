@@ -88,16 +88,15 @@
         (empty? cross))))
 
 (defn opposing-face-apothem [shape heading]
-  (let [opposing-face (some (fn [face]
-                              (let [[p q] face
-                                    angle (g/heading (g/normal (tm/- q p)))]
-                                (when (tm/delta= angle heading 0.01)
-                                  face)))
-                            (g/edges shape))]
-    (println [:opposing opposing-face shape])
-    (when opposing-face
-      (let [[a b] opposing-face]
-        (tm/mix a b 0.5)))))
+  (when-let [opposing-face
+             (some (fn [face]
+                     (let [[p q] face
+                           angle (g/heading (g/normal (tm/- q p)))]
+                       (when (tm/delta= angle heading 0.01)
+                         face)))
+                   (g/edges shape))]
+    (let [[a b] opposing-face]
+      (tm/mix a b 0.5))))
 
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
