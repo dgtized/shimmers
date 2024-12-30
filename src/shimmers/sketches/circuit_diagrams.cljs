@@ -126,7 +126,10 @@
                                            (gv/vec2 5 5))))
                    (gl/line2 fp fq)]]
         (if (and inside? tiles?)
-          (recur (conj structure (vary-meta shape' assoc :annotation notes))
+          (recur (conj structure
+                       (vary-meta shape' assoc
+                                  :annotation notes
+                                  :parent {:face face}))
                  (set/union (disj faces face) (set edges)))
           (recur structure
                  faces))))))
@@ -230,7 +233,8 @@
 
 (defn shape-click [component]
   (fn []
-    (reset! defo component)))
+    (reset! defo (assoc component
+                        :meta (meta (:shape component))))))
 
 (defn draw-shape [{:keys [shape faces] :as component}]
   (into [(vary-meta shape assoc :on-click (shape-click component))]
