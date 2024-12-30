@@ -83,12 +83,13 @@
           {} edges))
 
 ;; https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm
-(defn bk-pivot [neighbors r p x]
+(defn bk-pivot
   "Bron–Kerbosch algorithm finds all maximal cliques in undirected graph.
 
-`neighbors` is a map of nodes -> neighboring nodes, `r` is the starting clique,
-`p` is the set of all nodes, and `x` is the excluded set already proved not part
-of the clique in `r`."
+  `neighbors` is a map of nodes -> neighboring nodes, `r` is the starting clique,
+  `p` is the set of all nodes, and `x` is the excluded set already proved not part
+  of the clique in `r`."
+  [neighbors r p x]
   (if (and (empty? p) (empty? x))
     [(set r)]
     (let [pivot-u (first (concat p x))
