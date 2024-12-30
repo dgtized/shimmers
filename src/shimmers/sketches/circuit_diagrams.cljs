@@ -231,14 +231,12 @@
                     (for [face out]
                       (connector face (v/+polar center radius (face-angle face center)))))))))
 
-(defn shape-click [shape faces]
+(defn shape-click [component]
   (fn []
-    (reset! defo
-            {:shape shape
-             :faces faces})))
+    (reset! defo component)))
 
-(defn draw-shape [{:keys [shape faces]}]
-  (into [(vary-meta shape assoc :on-click (shape-click shape faces))]
+(defn draw-shape [{:keys [shape faces] :as component}]
+  (into [(vary-meta shape assoc :on-click (shape-click component))]
         (mapcat draw-face faces)))
 
 (defn make-component [shape]
