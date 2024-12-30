@@ -76,58 +76,16 @@
 (defn face-angle [face center]
   (g/heading (tm/- (face-center face) center)))
 
-(defn vector-set [vertices]
-  (set (for [[x y] vertices]
-         (f/format [(f/float 3) (f/float 3)] x y))))
-
-(defn exact-edge? [[p1 q1] [p2 q2]]
-  (or (and (tm/delta= p1 p2)
-           (tm/delta= q1 q2))
-      (and (tm/delta= p1 q2)
-           (tm/delta= p2 q1))))
-
-(defn same-edge? [[p1 q1] [p2 q2]]
-  (or (exact-edge? [p1 q1] [p2 q2])
-      (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
-        (when (get #{:coincident :coincident-no-intersect} (get isec :type))
-          (let [{:keys [p q]} isec]
-            (or (exact-edge? [p1 q1] [p q])
-                (exact-edge? [p2 q2] [p q])))))))
-
-(comment
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 0 0) (gv/vec2 5 0)]) ;; same
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 5 0) (gv/vec2 0 0)]) ;; same-reversed
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 2 0) (gv/vec2 6 0)]) ;; coincident-overlap
-  (same-edge? [(gv/vec2 1 0) (gv/vec2 4 0)]
-              [(gv/vec2 0 0) (gv/vec2 6 0)]) ;; coincident-covers
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 0 0) (gv/vec2 0 5)]) ;; edges adjacent at point
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 2 -1) (gv/vec2 2 5)]) ;; intersection
-  )
-
-(defn adjacent-edge? [[p1 q1] [p2 q2]]
-  (or (and (tm/delta= p1 p2) (not (tm/delta= q1 q2)))
-      (and (tm/delta= p1 q2) (not (tm/delta= p2 q1)))
-      (and (tm/delta= p2 q1) (not (tm/delta= p1 q2)))))
-
-(defn cross-edge? [[p1 q1] [p2 q2]]
-  (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
-    (when (= (:type isec) :intersect)
-      (not-any? (fn [v] (tm/delta= (:p isec) v)) [p1 q1 p2 q2]))))
-
 (defn tiles-structure? [structure shape]
   (let [overlaps (filter (fn [s] (and (collide/overlaps? s shape)
                                      (not (collide/bounded? s shape))))
                          structure)
         cross (for [edge (g/edges shape)
                     s-edge (mapcat g/edges overlaps)
-                    :when (cross-edge? edge s-edge)]
+                    :when (collide/cross-edge? edge s-edge)]
                 [edge s-edge])]
-    (or (empty? overlaps) (empty? cross))))
+    (or (empty? overlaps)
+        (empty? cross))))
 
 (defn opposing-face-apothem [shape heading]
   (let [opposing-face (some (fn [face]
