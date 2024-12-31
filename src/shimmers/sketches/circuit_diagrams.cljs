@@ -236,13 +236,19 @@
     (reset! defo (assoc component
                         :meta (meta (:shape component))))))
 
-(defn draw-shape [{:keys [shape faces] :as component}]
-  (into [(vary-meta shape assoc :on-click (shape-click component))]
-        (mapcat draw-face faces)))
+(defn draw-shape [{:keys [id shape faces] :as component}]
+  (let [m {:on-click (shape-click component)}]
+    (into [(vary-meta (vary-meta shape dissoc :parent) merge
+                      (if (= (:id @defo) id)
+                        (assoc m :stroke "blue"
+                               :stroke-width 1.5)
+                        m))]
+          (mapcat draw-face faces))))
 
-(defn make-component [shape]
+(defn make-component [idx shape]
   (let [kind (dr/weighted {:wire 3 :orb 1})]
-    {:shape (vary-meta shape dissoc :annotation)
+    {:id idx
+     :shape (vary-meta shape dissoc :annotation)
      :annotation (:annotation (meta shape))
      :kind kind
      :faces (face-normals shape)}))
@@ -254,15 +260,13 @@
         shape (g/center (g/rotate seed 0) center)
         structure
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
-                shape 24)
-        components (map make-component structure)]
-    {:shapes (mapcat draw-shape components)
-     :components (vec (mapcat draw-component components))
-     :annotation (mapcat :annotation components)}))
+                shape 24)]
+    (map-indexed make-component structure)))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/timed
-   (let [{:keys [shapes components annotation]} (shapes)]
+   (let [components (shapes)]
+     (reset! defo {})
      (fn []
        (csvg/svg {:id scene-id
                   :width width
@@ -274,13 +278,13 @@
                   :style {:pointer-events "fill"}}
          (when (:shapes @ui-state)
            (csvg/group {}
-             shapes))
+             (mapcat draw-shape components)))
          (when (:circuits @ui-state)
            (csvg/group {:stroke-width 1.25}
-             components))
+             (mapcat draw-component components)))
          (when (:annotation @ui-state)
            (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
-             annotation)))))))
+             (mapcat :annotation components))))))))
 
 (defn ui-controls []
   [:div
