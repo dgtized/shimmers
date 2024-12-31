@@ -78,15 +78,23 @@
   (g/heading (tm/- (face-center face) center)))
 
 (defn tiles-structure? [structure shape]
-  (let [overlaps (filter (fn [s] (and (collide/overlaps? s shape)
-                                     (not (collide/bounded? s shape))))
-                         structure)
-        cross (for [edge (g/edges shape)
-                    s-edge (mapcat g/edges overlaps)
-                    :when (collide/cross-edge? edge s-edge)]
-                [edge s-edge])]
+  (let [overlaps
+        (filter (fn [s] (and (collide/overlaps? s shape)
+                            (not (collide/bounded? s shape))))
+                structure)
+        cross
+        (for [edge (g/edges shape)
+              s-edge (mapcat g/edges overlaps)
+              :when (collide/cross-edge? edge s-edge)]
+          [edge s-edge])
+        coincident
+        (for [edge (g/edges shape)
+              s-edge (mapcat g/edges overlaps)
+              :when (collide/coincident-edge edge s-edge)]
+          [edge s-edge])]
     (or (empty? overlaps)
-        (empty? cross))))
+        (and (empty? cross)
+             (empty? coincident)))))
 
 (defn opposing-face-apothem [shape heading]
   (when-let [opposing-face

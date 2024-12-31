@@ -390,33 +390,38 @@
   (fn [a b] [(type a) (type b)]))
 
 ;;; Helpers for tiling problems
-(defn exact-edge? [[p1 q1] [p2 q2]]
-  (or (and (tm/delta= p1 p2)
-           (tm/delta= q1 q2))
-      (and (tm/delta= p1 q2)
-           (tm/delta= p2 q1))))
+(defn exact-edge [[p1 q1] [p2 q2]]
+  (when (or (and (tm/delta= p1 p2)
+                 (tm/delta= q1 q2))
+            (and (tm/delta= p1 q2)
+                 (tm/delta= p2 q1)))
+    [p1 q1]))
 
-(defn same-edge? [[p1 q1] [p2 q2]]
-  (or (exact-edge? [p1 q1] [p2 q2])
-      (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
-        (when (get #{:coincident :coincident-no-intersect} (get isec :type))
-          (let [{:keys [p q]} isec]
-            (or (exact-edge? [p1 q1] [p q])
-                (exact-edge? [p2 q2] [p q])))))))
+(defn coincident-edge [[p1 q1] [p2 q2]]
+  (when-let [isec (isec/intersect-line2-line2? p1 q1 p2 q2)]
+    (when (get #{:coincident :coincident-no-intersect} (get isec :type))
+      (let [{:keys [p q]} isec]
+        (when (or (exact-edge [p1 q1] [p q])
+                  (exact-edge [p2 q2] [p q]))
+          [p q])))))
+
+(defn same-edge [e1 e2]
+  (or (exact-edge e1 e2)
+      (coincident-edge e1 e2)))
 
 (comment
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 0 0) (gv/vec2 5 0)]) ;; same
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 5 0) (gv/vec2 0 0)]) ;; same-reversed
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 2 0) (gv/vec2 6 0)]) ;; coincident-overlap
-  (same-edge? [(gv/vec2 1 0) (gv/vec2 4 0)]
-              [(gv/vec2 0 0) (gv/vec2 6 0)]) ;; coincident-covers
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 0 0) (gv/vec2 0 5)]) ;; edges adjacent at point
-  (same-edge? [(gv/vec2 0 0) (gv/vec2 5 0)]
-              [(gv/vec2 2 -1) (gv/vec2 2 5)]) ;; intersection
+  (same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+             [(gv/vec2 0 0) (gv/vec2 5 0)]) ;; same
+  (same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+             [(gv/vec2 5 0) (gv/vec2 0 0)]) ;; same-reversed
+  (same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+             [(gv/vec2 2 0) (gv/vec2 6 0)]) ;; coincident-overlap
+  (same-edge [(gv/vec2 1 0) (gv/vec2 4 0)]
+             [(gv/vec2 0 0) (gv/vec2 6 0)]) ;; coincident-covers
+  (same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+             [(gv/vec2 0 0) (gv/vec2 0 5)]) ;; edges adjacent at point
+  (same-edge [(gv/vec2 0 0) (gv/vec2 5 0)]
+             [(gv/vec2 2 -1) (gv/vec2 2 5)]) ;; intersection
   )
 
 (defn adjacent-edge? [[p1 q1] [p2 q2]]
