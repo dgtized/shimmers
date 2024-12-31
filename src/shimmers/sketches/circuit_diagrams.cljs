@@ -44,17 +44,23 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn s-midpoint [[p q]]
+  (let [[x y] (tm/mix p q 0.5)]
+    (f/format [(f/float 2) "," (f/float 2)] x y)))
+
 ;; FIXME: ensure at least one pass through connection for resistor/wire/capacitor
 ;; FIXME: face-normals needs to take shape/kind to avoid adding connection types for orbs
-(defn face-normals [polygon]
+(defn face-normals [polygon neighbors]
   (let [faces (->>
                polygon
                g/edges
                (map-indexed
                 (fn [i [p q]]
-                  {:id i
-                   :edge [p q]
-                   :connected (dr/weighted {false 3 true 2})})))
+                  (let [mid (s-midpoint [p q])]
+                    {:id i
+                     :edge [p q]
+                     :connected (or (some? (get neighbors mid))
+                                    (dr/chance 0.15))}))))
         distribution (case (count (filter :connected faces))
                        0 {}
                        1 {:ground 1}
@@ -269,13 +275,10 @@
     {:id idx
      :shape (vary-meta shape dissoc :annotation)
      :annotation (:annotation (meta shape))
-     :kind kind
-     :faces (face-normals shape)}))
+     :kind kind}))
 
 (defn midpoints [shape]
-  (for [[p q] (g/edges shape)]
-    (let [[x y] (tm/mix p q 0.5)]
-      (f/format [(f/float 2) "," (f/float 2)] x y))))
+  (map s-midpoint (g/edges shape)))
 
 (defn connect-faces [components]
   (let [midpoint-index (reduce (fn [idx {:keys [id shape]}]
@@ -284,14 +287,17 @@
                                          (midpoints shape)))
                                {}
                                components)]
-    (for [{:keys [id shape] :as c} components]
-      (assoc c :neighbors
-             (reduce (fn [neighbors mid]
-                       (let [n (remove #{id} (get midpoint-index mid))]
-                         (if (empty? n)
-                           neighbors
-                           (assoc neighbors mid n))))
-                     {} (midpoints shape))))))
+    (for [{:keys [id shape] :as component} components]
+      (let [neighbors
+            (reduce (fn [neighbors mid]
+                      (let [n (remove #{id} (get midpoint-index mid))]
+                        (if (empty? n)
+                          neighbors
+                          (assoc neighbors mid n))))
+                    {} (midpoints shape))]
+        (assoc component
+               :neighbors neighbors
+               :faces (face-normals shape neighbors))))))
 
 (defn shapes []
   (let [size (* 0.15 height)
