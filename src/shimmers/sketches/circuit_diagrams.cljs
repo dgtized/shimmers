@@ -254,10 +254,14 @@
 (defn draw-shape [{:keys [id shape faces] :as component}]
   (let [m {:on-click (shape-click component)}]
     (into [(vary-meta (vary-meta shape dissoc :parent) merge
-                      (if (= (:id @defo) id)
-                        (assoc m :stroke "blue"
-                               :stroke-width 1.5)
-                        m))]
+                      (cond (= (:id @defo) id)
+                            (assoc m :stroke "blue"
+                                   :stroke-width 1.5)
+                            (contains? (set (flatten (vals (:neighbors @defo)))) id)
+                            (assoc m :stroke "green"
+                                   :stroke-width 1.5)
+                            :else
+                            m))]
           (mapcat draw-face faces))))
 
 (defn make-component [idx shape]
@@ -274,16 +278,16 @@
       (f/format [(f/float 2) "," (f/float 2)] x y))))
 
 (defn connect-faces [components]
-  (let [midpoint-index (reduce (fn [idx {:keys [shape]}]
-                                 (reduce (fn [idx mid] (update idx mid (fnil conj []) shape))
+  (let [midpoint-index (reduce (fn [idx {:keys [id shape]}]
+                                 (reduce (fn [idx mid] (update idx mid (fnil conj []) id))
                                          idx
                                          (midpoints shape)))
                                {}
                                components)]
-    (for [{:keys [shape] :as c} components]
+    (for [{:keys [id shape] :as c} components]
       (assoc c :neighbors
              (reduce (fn [neighbors mid]
-                       (let [n (remove #{shape} (get midpoint-index mid))]
+                       (let [n (remove #{id} (get midpoint-index mid))]
                          (if (empty? n)
                            neighbors
                            (assoc neighbors mid n))))
