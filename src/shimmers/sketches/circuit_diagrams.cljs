@@ -109,8 +109,9 @@
 
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
-         faces (set (g/edges seed))]
-    (if (or (empty? faces) (>= (count structure) n))
+         faces (set (g/edges seed))
+         attempts 512]
+    (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
@@ -138,9 +139,14 @@
                        (vary-meta shape' assoc
                                   :annotation notes
                                   :parent {:face face}))
-                 (set/union (disj faces face) (set edges)))
+                 (set/union (disj faces face) (set edges))
+                 attempts)
           (recur structure
-                 faces))))))
+                 (if (< (:attempt (meta face)) 4)
+                   (conj (disj faces face) (vary-meta face update :attempt (fnil inc 0)))
+                   (disj faces face))
+                 (dec attempts))
+          )))))
 
 (defn draw-face [{:keys [connected] :as face}]
   [(vary-meta (gc/circle (face-center face) 6)
@@ -268,7 +274,7 @@
         shape (g/center (g/rotate seed 0) center)
         structure
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
-                shape 24)]
+                shape 36)]
     (map-indexed make-component structure)))
 
 (defn scene [{:keys [scene-id]}]
