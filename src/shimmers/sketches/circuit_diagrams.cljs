@@ -16,7 +16,8 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.math.core :as tm]
+   [thi.ng.strf.core :as f]))
 
 ;; Concept: tile the plain with regular-n-gons that don't overlap like in
 ;; regular-tilings then for the tiles with edges connecting to neighboring
@@ -267,6 +268,27 @@
      :kind kind
      :faces (face-normals shape)}))
 
+(defn midpoints [shape]
+  (for [[p q] (g/edges shape)]
+    (let [[x y] (tm/mix p q 0.5)]
+      (f/format [(f/float 2) "," (f/float 2)] x y))))
+
+(defn connect-faces [components]
+  (let [midpoint-index (reduce (fn [idx {:keys [shape]}]
+                                 (reduce (fn [idx mid] (update idx mid (fnil conj []) shape))
+                                         idx
+                                         (midpoints shape)))
+                               {}
+                               components)]
+    (for [{:keys [shape] :as c} components]
+      (assoc c :neighbors
+             (reduce (fn [neighbors mid]
+                       (let [n (remove #{shape} (get midpoint-index mid))]
+                         (if (empty? n)
+                           neighbors
+                           (assoc neighbors mid n))))
+                     {} (midpoints shape))))))
+
 (defn shapes []
   (let [size (* 0.15 height)
         center (rv 0.5 0.5)
@@ -275,7 +297,7 @@
         structure
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
                 shape 36)]
-    (map-indexed make-component structure)))
+    (connect-faces (map-indexed make-component structure))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/timed
