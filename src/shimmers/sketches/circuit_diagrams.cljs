@@ -114,6 +114,8 @@
     (let [[a b] opposing-face]
       (tm/mix a b 0.5))))
 
+;; FIXME: fix apothem calculation for half hexagon pentagons
+;; FIXME: face removal is occasionally allowing overlapping shapes
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
          faces (set (g/edges seed))
@@ -131,10 +133,10 @@
                              (tm/normalize structure-face)))
             pos (tm/- mid apothem)
             shape' (g/center shape pos)
-            edges (drop 1 (sort-by (fn [[p q]] (g/dist-squared mid (tm/mix p q 0.5)))
-                                   (g/edges shape')))
             inside? (collide/bounded? bounds shape')
             tiles? (tiles-structure? structure shape')
+            edges (remove (fn [edge] (some (fn [face] (= (s-midpoint edge) (s-midpoint face))) faces))
+                          (g/edges shape'))
             notes [(gc/circle mid 3.0)
                    (gc/circle pos 5.0)
                    (gl/line2 pos
