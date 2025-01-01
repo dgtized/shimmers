@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -32,10 +33,17 @@
             :else
             [line]))))
 
+(defn add-shape [shapes]
+  (let [candidate (g/center (g/rotate (rect/rect (* width (dr/random 0.1 0.25))) (dr/random-tau))
+                            (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))]
+    (if (some (fn [s] (when (collide/overlaps? candidate s)
+                       s))
+              shapes)
+      shapes
+      (conj shapes candidate))))
+
 (defn shapes []
-  (let [shapes (repeatedly (dr/random-int 3 7)
-                           (fn [] (g/center (g/rotate (rect/rect (* width (dr/random 0.1 0.25))) (dr/random-tau))
-                                           (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))))
+  (let [shapes (nth (iterate add-shape []) (dr/random-int 4 12))
         lines (for [t ((dr/weighted [[(fn [] (tm/norm-range 128)) 1.0]
                                      [(fn [] (dr/gaussian-range (/ 1.0 128) (/ 1.0 256))) 1.0]]))]
                 (let [y (tm/smoothstep* 0 1 t)]
