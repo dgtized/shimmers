@@ -33,19 +33,14 @@
             [line]))))
 
 (defn shapes []
-  (let [box1 (g/center (g/rotate (rect/rect (* width 0.2)) (dr/random-tau))
-                       (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))
-        box2 (g/center (g/rotate (rect/rect (* width 0.2)) (dr/random-tau))
-                       (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))
-        box3 (g/center (g/rotate (rect/rect (* width 0.2)) (dr/random-tau))
-                       (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))
+  (let [shapes (repeatedly (dr/random-int 3 7)
+                           (fn [] (g/center (g/rotate (rect/rect (* width (dr/random 0.1 0.25))) (dr/random-tau))
+                                           (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))))
         lines (for [t (tm/norm-range 128)]
                 (let [y (tm/smoothstep* 0 1 t)]
                   (gl/line2 (rv 0.0 y) (rv 1.0 y))))]
-    (->> lines
-         (mapcat (fn [line] (cut-line box1 line)))
-         (mapcat (fn [line] (cut-line box2 line)))
-         (mapcat (fn [line] (cut-line box3 line))))))
+    (reduce (fn [lines shape] (mapcat (fn [line] (cut-line shape line)) lines))
+            lines shapes)))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
