@@ -21,14 +21,14 @@
   (when line
     (let [[p q] (g/vertices line)
           isec (isec/intersect-line2-edges? p q (g/edges shape))]
-      (cond isec
+      (cond (and (g/contains-point? shape p) (g/contains-point? shape q))
+            []
+            isec
             (conj [(if (g/contains-point? shape p)
                      (gl/line2 isec q)
                      (gl/line2 p isec))]
                   (when-let [isec2 (isec/intersect-line2-edges? (tm/mix isec q 0.00001) q (g/edges shape))]
                     (gl/line2 isec2 q)))
-            (and (g/contains-point? shape p) (g/contains-point? shape q))
-            []
             :else
             [line]))))
 
