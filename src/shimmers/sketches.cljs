@@ -10,6 +10,7 @@
    shimmers.sketches.along-the-curve
    shimmers.sketches.amplification
    shimmers.sketches.angle-of-ascent
+   shimmers.sketches.anterior-declination
    shimmers.sketches.ascendance
    shimmers.sketches.ballistics
    shimmers.sketches.balloon
