@@ -5,10 +5,10 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
-   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as isec]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -34,13 +34,15 @@
             [line]))))
 
 (defn add-shape [shapes]
-  (let [candidate (g/center (g/rotate (rect/rect (* width (dr/random 0.1 0.25))) (dr/random-tau))
+  (let [shape (poly/regular-n-gon (dr/random-int 3 7) (* width (dr/random 0.066 0.225)))
+        candidate (g/center (g/rotate shape (dr/random-tau))
                             (tm/+ (rv 0.5 0.5) (dr/randvec2 (* 0.2 width))))]
-    (if (some (fn [s] (when (collide/overlaps? candidate s)
-                       s))
-              shapes)
-      shapes
-      (conj shapes candidate))))
+    (if (and (collide/bounded? (g/scale-size (csvg/screen width height) 0.975) candidate)
+             (not-any? (fn [s] (when (collide/overlaps? candidate s)
+                                s))
+                       shapes))
+      (conj shapes candidate)
+      shapes)))
 
 (defn shapes []
   (let [shapes (nth (iterate add-shape []) (dr/random-int 4 12))
