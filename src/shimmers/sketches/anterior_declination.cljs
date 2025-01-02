@@ -62,8 +62,13 @@
                    :stroke-width 0.5}
     (shapes)))
 
+(defn explanation [_]
+  [:p "Genuary 2025 Day 1 - Vertical or Horizontal Lines only"])
+
 (sketch/definition anterior-declination
   {:created-at "2025-01-01"
-   :tags #{}
+   :tags #{:genuary2025}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page (assoc sketch-args
+                                :explanation explanation)
+                         scene)))
