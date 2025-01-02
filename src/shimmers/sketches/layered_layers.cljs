@@ -41,7 +41,7 @@
      (add-independent-shape
       bounds
       (fn [_] (-> (poly/regular-n-gon 4
-                                     (* (g/width bounds) (dr/random 0.05 0.15)))
+                                     (* (g/width bounds) (dr/random 0.01 0.05) (- 5 level)))
                  (g/rotate (dr/random-tau))
                  (g/center (tm/+ (rv 0.5 0.5)
                                  (dr/randvec2 (* level 0.075 (g/width bounds))))))))
