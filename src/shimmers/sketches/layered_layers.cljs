@@ -41,7 +41,7 @@
      (add-independent-shape
       bounds
       (fn [_] (-> (poly/regular-n-gon 4
-                                     (* (g/width bounds) (dr/random 0.01 0.05) (- 5 level)))
+                                     (* (g/width bounds) (dr/random 0.01 0.05) (- 7 level)))
                  (g/rotate (dr/random-tau))
                  (g/center (tm/+ (rv 0.5 0.5)
                                  (dr/randvec2 (* level 0.075 (g/width bounds))))))))
@@ -56,7 +56,9 @@
   (update state :levels conj (gen-layer state)))
 
 (defn shapes [bounds]
-  (mapcat identity (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 5))))
+  (map-indexed (fn [i level] (csvg/group {:fill (if (even? i) "white" "none")}
+                              level))
+               (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
