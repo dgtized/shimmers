@@ -143,6 +143,7 @@
    shimmers.sketches.lattice-in-steps
    shimmers.sketches.lattice-of-common-chords
    shimmers.sketches.layered-intersections
+   shimmers.sketches.layered-layers
    shimmers.sketches.ley-lines
    shimmers.sketches.lifecycle-of-shapes
    shimmers.sketches.light-and-dark
