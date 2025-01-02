@@ -1,9 +1,11 @@
 (ns shimmers.sketches.layered-layers
   (:require
+   [shimmers.algorithm.circle-packing :as pack]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
@@ -47,8 +49,25 @@
                                  (dr/randvec2 (* level 0.075 (g/width bounds))))))))
      (dr/random-int 3 8))))
 
+(defn circles [{:keys [bounds]}]
+  (let [R (max (g/width bounds) (g/height bounds))]
+    (reduce
+     (fn [circles pct]
+       (let [radius (* R pct)
+             r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))
+             gen-circle (fn [] (bounded/circle-with-radius bounds r))]
+         (pack/circle-pack
+          circles
+          {:bounds bounds
+           :candidates (int (/ 10 pct))
+           :gen-circle gen-circle
+           :spacing (max (* 0.02 R) (* 0.1 radius))})))
+     []
+     [0.15 0.12 0.1 0.08 0.06 0.04 0.02 0.01])))
+
 (defn gen-layer [state]
-  (let [layer (dr/weighted [[boxes 1.0]])
+  (let [layer (dr/weighted [[boxes 1.0]
+                            [circles 1.0]])
         shapes (layer state)]
     shapes))
 
