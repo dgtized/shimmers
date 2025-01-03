@@ -39,16 +39,17 @@
        :shapes))
 
 (defn boxes [{:keys [bounds levels]}]
-  (let [level (count levels)
-        size (dr/random 0.05 0.15)]
+  (let [_level (count levels)
+        size (dr/random 0.05 0.15)
+        displacement (dr/random 0.25 0.5)]
     (gen-shapes
      (add-independent-shape
       bounds
       (fn [_] (-> (poly/regular-n-gon 4
-                                     (* (g/width bounds) (dr/random 0.01 0.05) (- 7 level)))
+                                     (* (g/width bounds) (dr/random 1.0 2.0) size))
                  (g/rotate (dr/random-tau))
                  (g/center (tm/+ (rv 0.5 0.5)
-                                 (dr/randvec2 (* size (g/width bounds))))))))
+                                 (dr/randvec2 (* displacement (dr/random 0.5 1.0) (g/width bounds))))))))
      (dr/random-int 3 8))))
 
 (defn circles [{:keys [bounds]}]
@@ -81,7 +82,7 @@
                    (csvg/group {:fill (nth colors (mod i (count colors)))
                                 :opacity 0.9}
                      level))
-                 (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6)))))
+                 (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 8)))))
 
 (defn scene [{:keys [scene-id palette]}]
   (fn []
