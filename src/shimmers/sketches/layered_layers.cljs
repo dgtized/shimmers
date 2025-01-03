@@ -81,25 +81,31 @@
                                 level))
                  (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6)))))
 
-(defn scene [{:keys [scene-id]}]
-  (let [palette (dr/rand-nth palette/db)]
-    (fn []
-      (csvg/svg-timed {:id scene-id
-                       :width width
-                       :height height
-                       :stroke "black"
-                       :fill "white"
-                       :stroke-width 0.5}
-        (shapes (g/scale-size (csvg/screen width height) 0.975)
-                (palette :colors))))))
+(defn scene [{:keys [scene-id palette]}]
+  (fn []
+    (csvg/svg-timed {:id scene-id
+                     :width width
+                     :height height
+                     :stroke "black"
+                     :fill "white"
+                     :stroke-width 0.5}
+      (shapes (g/scale-size (csvg/screen width height) 0.975)
+              palette))))
 
-(defn explanation [_]
-  [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"])
+(defn explanation [{:keys [palette]}]
+  [:div.evencols
+   [:div.readable-width
+    [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"]]
+   [:p
+    [palette/as-svg {} palette]]])
 
 (sketch/definition layered-layers
   {:created-at "2025-01-02"
    :tags #{:genuary2025}
    :type :svg}
-  (ctrl/mount (usvg/page (assoc sketch-args
-                                :explanation explanation)
-                         scene)))
+  (ctrl/mount
+   (let [palette (:colors (dr/rand-nth palette/db))]
+     (usvg/page (assoc sketch-args
+                       :palette palette
+                       :explanation explanation)
+                scene))))
