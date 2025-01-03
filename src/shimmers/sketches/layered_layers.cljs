@@ -1,6 +1,7 @@
 (ns shimmers.sketches.layered-layers
   (:require
    [shimmers.algorithm.circle-packing :as pack]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -38,7 +39,8 @@
        :shapes))
 
 (defn boxes [{:keys [bounds levels]}]
-  (let [level (count levels)]
+  (let [level (count levels)
+        size (dr/random 0.05 0.15)]
     (gen-shapes
      (add-independent-shape
       bounds
@@ -46,7 +48,7 @@
                                      (* (g/width bounds) (dr/random 0.01 0.05) (- 7 level)))
                  (g/rotate (dr/random-tau))
                  (g/center (tm/+ (rv 0.5 0.5)
-                                 (dr/randvec2 (* level 0.075 (g/width bounds))))))))
+                                 (dr/randvec2 (* size (g/width bounds))))))))
      (dr/random-int 3 8))))
 
 (defn circles [{:keys [bounds]}]
@@ -54,16 +56,15 @@
     (reduce
      (fn [circles pct]
        (let [radius (* R pct)
-             r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))
-             gen-circle (fn [] (bounded/circle-with-radius bounds r))]
+             r (max (dr/gaussian radius (* 0.05 radius)) (* 0.001 R))]
          (pack/circle-pack
           circles
           {:bounds bounds
-           :candidates (int (/ 10 pct))
-           :gen-circle gen-circle
+           :candidates (int (/ 5 pct))
+           :gen-circle (fn [] (bounded/circle-with-radius bounds r))
            :spacing (max (* 0.02 R) (* 0.1 radius))})))
      []
-     [0.15 0.12 0.1 0.08 0.06 0.04 0.02 0.01])))
+     [0.1 0.08 0.06 0.04 0.02 0.01])))
 
 (defn gen-layer [state]
   (let [layer (dr/weighted [[boxes 1.0]
@@ -74,19 +75,23 @@
 (defn add-layer [state]
   (update state :levels conj (gen-layer state)))
 
-(defn shapes [bounds]
-  (map-indexed (fn [i level] (csvg/group {:fill (if (even? i) "white" "none")}
-                              level))
-               (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6))))
+(defn shapes [bounds palette]
+  (let [colors (dr/shuffle (into palette ["none" "none"]))]
+    (map-indexed (fn [i level] (csvg/group {:fill (nth colors (mod i (count colors)))}
+                                level))
+                 (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6)))))
 
 (defn scene [{:keys [scene-id]}]
-  (csvg/svg-timed {:id scene-id
-                   :width width
-                   :height height
-                   :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.5}
-    (shapes (g/scale-size (csvg/screen width height) 0.975))))
+  (let [palette (dr/rand-nth palette/db)]
+    (fn []
+      (csvg/svg-timed {:id scene-id
+                       :width width
+                       :height height
+                       :stroke "black"
+                       :fill "white"
+                       :stroke-width 0.5}
+        (shapes (g/scale-size (csvg/screen width height) 0.975)
+                (palette :colors))))))
 
 (defn explanation [_]
   [:p "Genuary 2025 - Day 02 - Layers on layers upon layers"])
