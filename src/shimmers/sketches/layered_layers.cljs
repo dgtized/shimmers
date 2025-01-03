@@ -77,8 +77,10 @@
 
 (defn shapes [bounds palette]
   (let [colors (dr/shuffle (into palette ["none" "none"]))]
-    (map-indexed (fn [i level] (csvg/group {:fill (nth colors (mod i (count colors)))}
-                                level))
+    (map-indexed (fn [i level]
+                   (csvg/group {:fill (nth colors (mod i (count colors)))
+                                :opacity 0.9}
+                     level))
                  (:levels (nth (iterate add-layer {:bounds bounds :levels []}) 6)))))
 
 (defn scene [{:keys [scene-id palette]}]
