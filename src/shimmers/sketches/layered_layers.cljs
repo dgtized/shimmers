@@ -38,19 +38,19 @@
        first
        :shapes))
 
-(defn boxes [{:keys [bounds levels]}]
-  (let [_level (count levels)
-        size (dr/random 0.05 0.15)
-        displacement (dr/random 0.25 0.5)]
-    (gen-shapes
-     (add-independent-shape
-      bounds
-      (fn [_] (-> (poly/regular-n-gon 4
-                                     (* (g/width bounds) (dr/random 1.0 2.0) size))
-                 (g/rotate (dr/random-tau))
-                 (g/center (tm/+ (rv 0.5 0.5)
-                                 (dr/randvec2 (* displacement (dr/random 0.5 1.0) (g/width bounds))))))))
-     (dr/random-int 3 8))))
+(defn regular-polygons [n]
+  (fn [{:keys [bounds levels]}]
+    (let [_level (count levels)
+          size (dr/random 0.025 0.125)
+          displacement (dr/random 0.25 0.5)]
+      (gen-shapes
+       (add-independent-shape
+        bounds
+        (fn [_] (-> (poly/regular-n-gon n (* (g/width bounds) (dr/random 0.5 2.0) size))
+                   (g/rotate (dr/random-tau))
+                   (g/center (tm/+ (rv 0.5 0.5)
+                                   (dr/randvec2 (* displacement (dr/random 0.5 1.0) (g/width bounds))))))))
+       (dr/random-int 3 8)))))
 
 (defn circles [{:keys [bounds]}]
   (let [R (max (g/width bounds) (g/height bounds))]
@@ -68,7 +68,10 @@
      [0.1 0.08 0.06 0.04 0.02 0.01])))
 
 (defn gen-layer [state]
-  (let [layer (dr/weighted [[boxes 1.0]
+  (let [layer (dr/weighted [[(regular-polygons 3) 1.0]
+                            [(regular-polygons 4) 2.0]
+                            [(regular-polygons 5) 1.0]
+                            [(regular-polygons 6) 1.0]
                             [circles 1.0]])
         shapes (layer state)]
     shapes))
