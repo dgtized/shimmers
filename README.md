@@ -59,4 +59,4 @@ This source repository is released under the AGPL 3.0 free software license.
 
 See [LICENSE](LICENSE) for details.
 
-Copyright © 2020-2024 Charles L.G. Comstock
+Copyright © 2020-2025 Charles L.G. Comstock
