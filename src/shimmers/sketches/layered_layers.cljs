@@ -38,18 +38,30 @@
        first
        :shapes))
 
+(defn positioning-method [bounds]
+  (dr/weighted
+   [[(let [displacement (dr/random 0.25 0.5)]
+       (fn [_r]
+         (let [dist (* displacement (dr/random 0.5 1.0) (g/width bounds))]
+           (tm/+ (rv 0.5 0.5) (dr/randvec2 dist)))))
+     2.0]
+    [(fn [r]
+       (:p (bounded/circle-with-radius bounds (* 1.1 r))))
+     3.0]]))
+
 (defn regular-polygons [n]
   (fn [{:keys [bounds levels]}]
     (let [_level (count levels)
           size (dr/random 0.025 0.125)
-          displacement (dr/random 0.25 0.5)]
+          position-f (positioning-method bounds)]
       (gen-shapes
        (add-independent-shape
         bounds
-        (fn [_] (-> (poly/regular-n-gon n (* (g/width bounds) (dr/random 0.5 2.0) size))
-                   (g/rotate (dr/random-tau))
-                   (g/center (tm/+ (rv 0.5 0.5)
-                                   (dr/randvec2 (* displacement (dr/random 0.5 1.0) (g/width bounds))))))))
+        (fn [_]
+          (let [circumradius (* (g/width bounds) (dr/random 0.5 2.0) size)]
+            (-> (poly/regular-n-gon n circumradius)
+                (g/rotate (dr/random-tau))
+                (g/center (position-f circumradius))))))
        (dr/random-int 3 8)))))
 
 (defn circles [{:keys [bounds]}]
