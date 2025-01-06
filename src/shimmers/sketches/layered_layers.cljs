@@ -100,7 +100,7 @@
   (let [centroids (map (fn [s] (vary-meta (g/centroid s) assoc :shape s)) shapes)
         edges (sort-by (fn [[p1 p2]] (g/dist-squared p1 p2))
                        (cs/all-pairs centroids))]
-    (for [[p1 p2] (take (dr/random-int 8 20) (planar-edges edges))]
+    (for [[p1 p2] (take (dr/random-int 8 24) (planar-edges edges))]
       (let [s1 (:shape (meta p1))
             s2 (:shape (meta p2))]
         (poly/connect-polygons s1 s2)))))
