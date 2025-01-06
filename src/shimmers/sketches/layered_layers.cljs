@@ -2,6 +2,7 @@
   (:require
    [shimmers.algorithm.circle-packing :as pack]
    [shimmers.common.palette :as palette]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -79,6 +80,12 @@
      []
      [0.1 0.08 0.06 0.04 0.02 0.01])))
 
+(defn make-graph [shapes]
+  (let [centroids (map (fn [s] [s (g/centroid s)]) shapes)]
+    (for [[[s1 _] [s2 _]] (take 8 (sort-by (fn [[[_ p1] [_ p2]]] (g/dist-squared p1 p2))
+                                           (take 32 (cs/all-pairs centroids))))]
+      (poly/connect-polygons s1 s2))))
+
 (defn gen-layer [state]
   (let [layer (dr/weighted [[(regular-polygons 3) 1.0]
                             [(regular-polygons 4) 2.0]
@@ -86,7 +93,11 @@
                             [(regular-polygons 6) 1.0]
                             [circles 1.0]])
         shapes (layer state)]
-    shapes))
+    (if (dr/chance 0.33)
+      (concat shapes
+              [(csvg/group {:stroke-width 1.5}
+                 (make-graph shapes))])
+      shapes)))
 
 (defn add-layer [state]
   (update state :levels conj (gen-layer state)))
