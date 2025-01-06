@@ -9,6 +9,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
+   [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -80,11 +81,28 @@
      []
      [0.1 0.08 0.06 0.04 0.02 0.01])))
 
+;; TODO: should allow isec at start/end of segment
+(defn intersected-segment? [segment]
+  (fn [line]
+    (when (isec/segment-intersect line segment)
+      segment)))
+
+(defn planar-edges [edges]
+  (reduce (fn [planar [p q]]
+            (if (some (intersected-segment? [p q]) planar)
+              planar
+              (conj planar [p q])))
+          []
+          edges))
+
 (defn make-graph [shapes]
-  (let [centroids (map (fn [s] [s (g/centroid s)]) shapes)]
-    (for [[[s1 _] [s2 _]] (take 8 (sort-by (fn [[[_ p1] [_ p2]]] (g/dist-squared p1 p2))
-                                           (take 32 (cs/all-pairs centroids))))]
-      (poly/connect-polygons s1 s2))))
+  (let [centroids (map (fn [s] (vary-meta (g/centroid s) assoc :shape s)) shapes)
+        edges (sort-by (fn [[p1 p2]] (g/dist-squared p1 p2))
+                       (cs/all-pairs centroids))]
+    (for [[p1 p2] (take (dr/random-int 8 20) (planar-edges edges))]
+      (let [s1 (:shape (meta p1))
+            s2 (:shape (meta p2))]
+        (poly/connect-polygons s1 s2)))))
 
 (defn gen-layer [state]
   (let [layer (dr/weighted [[(regular-polygons 3) 1.0]
