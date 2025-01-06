@@ -52,3 +52,4 @@
   (slope-yz [{[p q] :points}]
     (g/slope-yz (tm/- q p))))
 
+;; TODO generic midpoint?

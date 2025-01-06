@@ -2,9 +2,11 @@
   (:require
    [clojure.math :as math]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.line :as line]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.math.core :as tm]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.polygon :as gp]
    #?(:clj [thi.ng.geom.types]
       :cljs [thi.ng.geom.types :refer [Polygon2]]))
@@ -122,3 +124,13 @@
   (-> shape
       (g/closest-point p)
       (g/dist p)))
+
+(defn midpoint [[a b]]
+  (tm/mix a b 0.5))
+
+(defn closest-point [point points]
+  (apply min-key (partial g/dist-squared point) points))
+
+(defn connect-polygons [a b]
+  (gl/line2 (closest-point (g/centroid b) (concat (map midpoint (g/edges a)) (g/vertices a)))
+            (closest-point (g/centroid a) (concat (map midpoint (g/edges b)) (g/vertices b)))))
