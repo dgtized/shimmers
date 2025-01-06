@@ -81,11 +81,12 @@
      []
      [0.1 0.08 0.06 0.04 0.02 0.01])))
 
-;; TODO: should allow isec at start/end of segment
 (defn intersected-segment? [segment]
   (fn [line]
-    (when (isec/segment-intersect line segment)
-      segment)))
+    (when-let [p (isec/segment-intersect line segment)]
+      (let [[a b] line]
+        (when (and (not (tm/delta= a p)) (not (tm/delta= b p)))
+          segment)))))
 
 (defn planar-edges [edges]
   (reduce (fn [planar [p q]]
