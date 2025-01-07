@@ -105,21 +105,21 @@
             s2 (:shape (meta p2))]
         (poly/connect-polygons s1 s2)))))
 
-(defn gen-layer [state]
+(defn gen-layer [state levels]
   (let [layer (dr/weighted [[(regular-polygons 3) 1.0]
                             [(regular-polygons 4) 2.0]
                             [(regular-polygons 5) 1.0]
                             [(regular-polygons 6) 1.0]
                             [circles 1.0]])
         shapes (layer state)]
-    (if (dr/chance 0.33)
+    (if (dr/chance 0.4)
       (concat shapes
-              [(csvg/group {:stroke-width 1.5}
+              [(csvg/group {:stroke-width (+ 0.75 (* 0.125 levels))}
                  (make-graph shapes))])
       shapes)))
 
-(defn add-layer [state]
-  (update state :levels conj (gen-layer state)))
+(defn add-layer [{:keys [levels] :as state}]
+  (update state :levels conj (gen-layer state (count levels))))
 
 (defn shapes [bounds palette]
   (let [colors (dr/shuffle (into palette ["none" "none"]))]
