@@ -4,6 +4,7 @@
    [loom.attr :as lga]
    [loom.graph :as lg]
    [shimmers.common.sequence :as cs]
+   [shimmers.math.geometry.intersection :as isec]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils.intersect :as gisec]
    [thi.ng.geom.vector :as gv]
@@ -119,3 +120,19 @@
 
 ;; TODO: should edges be imported by points or by vertices?
 (comment (index-graph [(gv/vec2 0 1) (gv/vec2 1 0)]))
+
+(defn crossing-segment? [segment]
+  (fn [line]
+    (when-let [p (isec/segment-intersect line segment)]
+      (let [[a b] line]
+        (when (and (not (tm/delta= a p)) (not (tm/delta= b p)))
+          line)))))
+
+(defn planar-edges [edges]
+  (reduce
+   (fn [planar [p q]]
+     (if (some (crossing-segment? [p q]) planar)
+       planar
+       (conj planar [p q])))
+   []
+   edges))

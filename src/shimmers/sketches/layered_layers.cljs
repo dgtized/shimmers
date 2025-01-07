@@ -9,8 +9,8 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
-   [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.geometry.polygon :as poly]
+   [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.vector :as gv]
@@ -81,26 +81,11 @@
      []
      [0.1 0.08 0.06 0.04 0.02 0.01])))
 
-(defn intersected-segment? [segment]
-  (fn [line]
-    (when-let [p (isec/segment-intersect line segment)]
-      (let [[a b] line]
-        (when (and (not (tm/delta= a p)) (not (tm/delta= b p)))
-          segment)))))
-
-(defn planar-edges [edges]
-  (reduce (fn [planar [p q]]
-            (if (some (intersected-segment? [p q]) planar)
-              planar
-              (conj planar [p q])))
-          []
-          edges))
-
 (defn make-graph [shapes]
   (let [centroids (map (fn [s] (vary-meta (g/centroid s) assoc :shape s)) shapes)
         edges (sort-by (fn [[p1 p2]] (g/dist-squared p1 p2))
                        (cs/all-pairs centroids))]
-    (for [[p1 p2] (take (dr/random-int 8 24) (planar-edges edges))]
+    (for [[p1 p2] (take (dr/random-int 8 24) (graph/planar-edges edges))]
       (let [s1 (:shape (meta p1))
             s2 (:shape (meta p2))]
         (poly/connect-polygons s1 s2)))))
