@@ -228,3 +228,19 @@
 (comment (series-limit 0 1 (fn [t] (max 0.01 (* 0.1 t))))
          (series-limit 0 1 (fn [t] (* 0.1 (math/exp (* (- 0.1) t)))))
          (series-limit 0 100 (fn [t] (math/exp (* 0.02 t)))))
+
+(defn filterv-self
+  "Returns a vector of the items in coll that do not conflict with a prior element in `coll`.
+
+  `pred` takes the prior accepted elements and the current item to add and
+  returns if the item should be included in the result."
+  [pred coll]
+  (reduce (fn [self o]
+            (if (pred self o)
+              (conj self o)
+              self))
+          []
+          coll))
+
+(comment
+  (filterv-self (fn [xs el] (not= el (last xs))) [:a :b :b :c :c :c]))

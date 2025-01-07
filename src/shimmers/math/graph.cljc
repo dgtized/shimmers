@@ -134,10 +134,4 @@
     (fn [graph edge] (not-any? (crossing-segment? edge) graph))
     edges))
   ([planar? edges]
-   (reduce
-    (fn [graph edge]
-      (if (planar? graph edge)
-        (conj graph edge)
-        graph))
-    []
-    edges)))
+   (cs/filterv-self planar? edges)))
