@@ -10,6 +10,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.graph :as graph]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.utils.intersect :as gisec]
@@ -44,11 +45,7 @@
        (sort-by (fn [[p q]] (g/dist (position nodes p)
                                    (position nodes q))))
        ;; greedy accept planar edges
-       (reduce (fn [accepted edge]
-                 (if (planar? nodes accepted edge)
-                   (conj accepted edge)
-                   accepted))
-               [])))
+       (graph/planar-edges (fn [graph edge] (planar? nodes graph edge)))))
 
 (defrecord MultiGraph [nodes edges])
 
