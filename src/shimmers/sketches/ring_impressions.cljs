@@ -13,6 +13,7 @@
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.intersection :as isec]
    [shimmers.math.geometry.polygon :as poly]
+   [shimmers.math.graph :as graph]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -28,11 +29,6 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn intersected-segment? [segment]
-  (fn [line]
-    (when (isec/segment-intersect line segment)
-      segment)))
-
 (defn impaled-circle? [segment]
   (let [[p q] segment]
     (fn [circle]
@@ -40,16 +36,11 @@
         (when (= :impale (:type isec))
           circle)))))
 
-(defn planar-pairs [circles pairs]
-  (letfn [(planar? [circles xs segment]
-            (and (not-any? (intersected-segment? segment) xs)
-                 (not-any? (impaled-circle? segment) circles)))]
-    (reduce (fn [xs segment]
-              (if (planar? circles xs segment)
-                (conj xs segment)
-                xs))
-            []
-            (cs/all-pairs pairs))))
+(defn planar-pairs [circles pts]
+  (letfn [(planar? [graph segment]
+            (and (not-any? (impaled-circle? segment) circles)
+                 (not-any? (graph/crossing-segment? segment) graph)))]
+    (graph/planar-edges planar? (cs/all-pairs pts))))
 
 (defn noise-pos [seed]
   (fn [scale pos]

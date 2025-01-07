@@ -128,11 +128,16 @@
         (when (and (not (tm/delta= a p)) (not (tm/delta= b p)))
           line)))))
 
-(defn planar-edges [edges]
-  (reduce
-   (fn [planar [p q]]
-     (if (some (crossing-segment? [p q]) planar)
-       planar
-       (conj planar [p q])))
-   []
-   edges))
+(defn planar-edges
+  ([edges]
+   (planar-edges
+    (fn [graph edge] (not-any? (crossing-segment? edge) graph))
+    edges))
+  ([planar? edges]
+   (reduce
+    (fn [graph edge]
+      (if (planar? graph edge)
+        (conj graph edge)
+        graph))
+    []
+    edges)))
