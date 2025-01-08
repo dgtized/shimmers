@@ -92,7 +92,8 @@
   (mod-distance tm/TWO_PI a b))
 
 (comment (radial-distance 0 -1)
-         (radial-distance -1 -5))
+         (radial-distance -1 -5)
+         (radial-distance -5 -1))
 
 (defn clockwise-distance
   "Distance between `a` and `b` in a clockwise orientation.
