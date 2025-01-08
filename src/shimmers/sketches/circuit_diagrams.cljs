@@ -134,6 +134,12 @@
             pos (tm/- mid apothem)
             shape' (g/translate shape pos)
             inside? (collide/bounded? bounds shape')
+            matching-length? (when-let [matching-face (some (fn [[p q]] (when (tm/delta= mid (tm/mix p q 0.5) 1.0)
+                                                                         [p q]))
+                                                            (g/edges shape'))]
+                               (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
+                                          (tm/mag-squared (tm/- fq fp))
+                                          1.0))
             tiles? (tiles-structure? structure shape')
             edges (remove (fn [edge] (some (fn [face] (= (s-midpoint edge) (s-midpoint face))) faces))
                           (g/edges shape'))
@@ -141,7 +147,7 @@
                    (gc/circle pos 5.0)
                    (gl/line2 pos (tm/+ pos apothem))
                    (gl/line2 fp fq)]]
-        (if (and inside? tiles?)
+        (if (and inside? tiles? matching-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
                                   :annotation notes
@@ -149,7 +155,7 @@
                  (set/union (disj faces face) (set edges))
                  attempts)
           (recur structure
-                 (if (< (:attempt (meta face)) 4)
+                 (if (< (:attempt (meta face)) 12)
                    (conj (disj faces face) (vary-meta face update :attempt (fnil inc 0)))
                    (disj faces face))
                  (dec attempts))
