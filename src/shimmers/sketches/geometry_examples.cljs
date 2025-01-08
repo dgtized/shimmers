@@ -118,10 +118,16 @@
   (let [width 600 height 200]
     (csvg/svg {:width width :height height :stroke "black" :fill "none"}
       (for [n (range 3 11)]
-        (let [r (poly/circumradius-side-length n 20)]
-          (-> (poly/regular-n-gon n r)
-              (g/center (tm/+ (gv/vec2 (* 2 r) (* height 0.5))
-                              (tm/* (gv/vec2 width 0) (/ (- n 3) 9))))))))))
+        (let [r (poly/circumradius-side-length n 20)
+              poly (-> (poly/regular-n-gon n r)
+                       (g/center (tm/+ (gv/vec2 (* 2 r) (* height 0.5))
+                                       (tm/* (gv/vec2 width 0) (/ (- n 3) 9)))))]
+          (csvg/group {}
+            (into [poly]
+                  (for [[p q] (g/edges poly)
+                        :let [mp (tm/mix p q 0.5)
+                              perp (tm/normalize (g/normal (tm/- p q)) (* 0.15 r))]]
+                    (gl/line2 mp (tm/+ mp perp))))))))))
 
 (defn page []
   [:div.contained.explanation
