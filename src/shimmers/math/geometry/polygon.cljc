@@ -89,6 +89,8 @@
       (g/rotate s (/ math/PI n))
       s)))
 
+(comment (regular-n-gon 4 2))
+
 ;; TODO calculate top/bottom versions and then the other off rotations?
 (defn pentagon [circumradius orientation]
   (->> (regular-n-gon 6 circumradius)

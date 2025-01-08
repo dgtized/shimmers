@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -113,6 +114,15 @@
               (for [c [a mid-bc p isec-ab isec-ac]]
                 (gc/circle c 2.0))))))
 
+(defn regular-polygons-example []
+  (let [width 600 height 200]
+    (csvg/svg {:width width :height height :stroke "black" :fill "none"}
+      (for [n (range 3 11)]
+        (let [r (poly/circumradius-side-length n 20)]
+          (-> (poly/regular-n-gon n r)
+              (g/center (tm/+ (gv/vec2 (* 2 r) (* height 0.5))
+                              (tm/* (gv/vec2 width 0) (/ (- n 3) 9))))))))))
+
 (defn page []
   [:div.contained.explanation
    [:div
@@ -129,7 +139,11 @@
     [:p "Given an equilateral triangle pick an inner point along an axis, and
     then draw an arc with radius the distance between the point and the midpoint
     of the opposing face. "]
-    (inset-arc-example)]])
+    (inset-arc-example)]
+   [:div
+    [:h2 "Regular Polygons"]
+    (regular-polygons-example)
+    ]])
 
 (sketch/definition geometry-examples
   {:created-at "2022-05-05"
