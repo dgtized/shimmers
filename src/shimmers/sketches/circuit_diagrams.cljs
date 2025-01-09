@@ -117,6 +117,16 @@
     (let [[a b] opposing-face]
       (tm/mix a b 0.5))))
 
+(defn matching-length? [shape [fp fq]]
+  (let [mid (tm/mix fp fq 0.5)]
+    (when-let [matching-face
+               (some (fn [[p q]] (when (tm/delta= mid (tm/mix p q 0.5) 1.0)
+                                  [p q]))
+                     (g/edges shape))]
+      (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
+                 (tm/mag-squared (tm/- fq fp))
+                 1.0))))
+
 ;; FIXME: face removal is occasionally allowing overlapping shapes
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
@@ -134,12 +144,7 @@
             pos (tm/- mid apothem)
             shape' (g/translate shape pos)
             inside? (collide/bounded? bounds shape')
-            matching-length? (when-let [matching-face (some (fn [[p q]] (when (tm/delta= mid (tm/mix p q 0.5) 1.0)
-                                                                         [p q]))
-                                                            (g/edges shape'))]
-                               (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
-                                          (tm/mag-squared (tm/- fq fp))
-                                          1.0))
+            match-edge-length? (matching-length? shape' face)
             tiles? (tiles-structure? structure shape')
             edges (remove (fn [edge] (some (fn [face] (= (s-midpoint edge) (s-midpoint face))) faces))
                           (g/edges shape'))
@@ -147,7 +152,7 @@
                    (gc/circle pos 5.0)
                    (gl/line2 pos (tm/+ pos apothem))
                    (gl/line2 fp fq)]]
-        (if (and inside? tiles? matching-length?)
+        (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
                                   :annotation notes
