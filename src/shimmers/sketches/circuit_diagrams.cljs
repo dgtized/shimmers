@@ -128,6 +128,7 @@
                  1.0))))
 
 ;; FIXME: face removal is occasionally allowing overlapping shapes
+;; might be for triangles in particular, maybe because one face is shared?
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
          faces (set (g/edges seed))
@@ -146,7 +147,10 @@
             inside? (collide/bounded? bounds shape')
             match-edge-length? (matching-length? shape' face)
             tiles? (tiles-structure? structure shape')
-            edges (remove (fn [edge] (some (fn [face] (= (s-midpoint edge) (s-midpoint face))) faces))
+            edges (remove (fn [edge]
+                            (some (fn [face] (when (= (s-midpoint edge) (s-midpoint face))
+                                              face))
+                                  faces))
                           (g/edges shape'))
             notes [(gc/circle mid 3.0)
                    (gc/circle pos 5.0)
