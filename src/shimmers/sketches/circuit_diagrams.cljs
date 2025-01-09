@@ -171,8 +171,10 @@
           )))))
 
 (defn draw-face [{:keys [connected] :as face}]
-  [(vary-meta (gc/circle (face-center face) 6)
-              assoc :fill (if connected "black" "white"))])
+  (if connected
+    [(vary-meta (gc/circle (face-center face) 6)
+                assoc :fill "black")]
+    []))
 
 (defn connector [face pt]
   (gl/line2 (face-center face) pt))
