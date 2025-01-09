@@ -172,7 +172,7 @@
 
 (defn draw-face [{:keys [connected] :as face}]
   (if connected
-    [(vary-meta (gc/circle (face-center face) 6)
+    [(vary-meta (gc/circle (face-center face) 2)
                 assoc :fill "black")]
     []))
 
