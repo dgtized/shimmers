@@ -107,8 +107,11 @@
   (when-let [opposing-face
              (some (fn [face]
                      (let [[p q] face
-                           angle (g/heading (g/normal (tm/- q p)))]
-                       (when (tm/delta= angle heading 0.01)
+                           angle (g/heading (g/normal (tm/- q p)))
+                           ;; this happens for edges on squares it's rotated off?
+                           angle2 (g/heading (g/normal (tm/- p q)))]
+                       (when (or (tm/delta= angle heading 0.1)
+                                 (tm/delta= angle2 heading 0.1))
                          face)))
                    (g/edges shape))]
     (let [[a b] opposing-face]
@@ -127,10 +130,7 @@
             structure-face (g/normal (tm/- fq fp))
             angle (g/heading (tm/- structure-face))
             shape (g/rotate (g/center (random-shape size)) angle)
-            apothem (or (opposing-face-apothem shape angle)
-                        ;; this happens for edges on squares it's rotated off?
-                        (->> (poly/apothem-side-length (count (g/vertices shape)) size)
-                             (tm/normalize structure-face)))
+            apothem (opposing-face-apothem shape angle)
             pos (tm/- mid apothem)
             shape' (g/translate shape pos)
             inside? (collide/bounded? bounds shape')
