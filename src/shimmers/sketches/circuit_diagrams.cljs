@@ -340,13 +340,13 @@
                   ;; required for on-click to fire on pointer events within group/polygon clip path
                   :style {:pointer-events "fill"}}
          (when (:shapes @ui-state)
-           (csvg/group {}
+           (csvg/group {:stroke-width 0.33}
              (mapcat draw-shape components)))
          (when (:circuits @ui-state)
-           (csvg/group {:stroke-width 1.25}
+           (csvg/group {:stroke-width 1.0}
              (mapcat draw-component components)))
          (when (:annotation @ui-state)
-           (csvg/group {:stroke "red" :fill "none" :stroke-width 1.0}
+           (csvg/group {:stroke-width 0.66 :stroke "red" :fill "none"}
              (mapcat :annotation components))))))))
 
 (defn ui-controls []
