@@ -317,13 +317,13 @@
                :faces (face-normals shape neighbors))))))
 
 (defn shapes []
-  (let [size (* 0.15 height)
+  (let [size (* 0.1 height)
         center (rv 0.5 0.5)
         seed (random-shape size)
         shape (g/center (g/rotate seed 0) center)
         structure
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
-                shape 36)]
+                shape 48)]
     (connect-faces (map-indexed make-component structure))))
 
 (defn scene [{:keys [scene-id]}]
