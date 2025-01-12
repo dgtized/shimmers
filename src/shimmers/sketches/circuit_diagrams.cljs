@@ -131,7 +131,8 @@
 ;; might be for triangles in particular, maybe because one face is shared?
 (defn tiling [{:keys [size bounds]} seed n]
   (loop [structure [seed]
-         faces (set (g/edges seed))
+         faces (set (map (fn [e] (vary-meta e assoc :shape seed))
+                         (g/edges seed)))
          attempts 512]
     (if (or (empty? faces) (>= (count structure) n) (zero? attempts))
       structure
@@ -139,10 +140,10 @@
             [fp fq] face
             mid (tm/mix fp fq 0.5)
             structure-face (g/normal (tm/- fq fp))
-            angle (g/heading (tm/- structure-face))
+            angle (g/heading structure-face)
             shape (g/rotate (g/center (random-shape size)) angle)
             apothem (opposing-face-apothem shape angle)
-            pos (tm/- mid apothem)
+            pos (tm/+ mid apothem)
             shape' (g/translate shape pos)
             inside? (collide/bounded? bounds shape')
             match-edge-length? (matching-length? shape' face)
@@ -151,11 +152,19 @@
                             (some (fn [face] (when (= (s-midpoint edge) (s-midpoint face))
                                               face))
                                   faces))
-                          (g/edges shape'))
-            notes [(gc/circle mid 3.0)
-                   (gc/circle pos 5.0)
-                   (gl/line2 pos (tm/+ pos apothem))
-                   (gl/line2 fp fq)]]
+                          (map (fn [e] (vary-meta e assoc :shape shape'))
+                               (g/edges shape')))
+            notes
+            (concat
+             [#_(gc/circle mid 3.0)
+              #_(gc/circle pos 5.0)
+              (gl/line2 mid pos)
+              #_(gl/line2 fp fq)
+              (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))
+              ]
+             (if (g/contains-point? (:shape (meta face)) pos)
+               [(gc/circle pos 2.5)]
+               []))]
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
@@ -346,7 +355,7 @@
            (csvg/group {:stroke-width 1.0}
              (mapcat draw-component components)))
          (when (:annotation @ui-state)
-           (csvg/group {:stroke-width 0.66 :stroke "red" :fill "none"}
+           (csvg/group {:stroke-width 1.5 :stroke "red" :fill "none"}
              (mapcat :annotation components))))))))
 
 (defn ui-controls []
