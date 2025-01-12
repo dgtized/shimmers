@@ -325,7 +325,7 @@
                :neighbors neighbors
                :faces (face-normals shape neighbors))))))
 
-(defn shapes []
+(defn gen-components []
   (let [size (* 0.1 height)
         center (rv 0.5 0.5)
         seed (random-shape size)
@@ -337,7 +337,7 @@
 
 (defn scene [{:keys [scene-id]}]
   (csvg/timed
-   (let [components (shapes)]
+   (let [components (gen-components)]
      (reset! defo {})
      (fn []
        (csvg/svg {:id scene-id
