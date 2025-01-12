@@ -115,7 +115,7 @@
                          face)))
                    (g/edges shape))]
     (let [[a b] opposing-face]
-      (tm/mix a b 0.5))))
+      (tm/- (tm/mix a b 0.5)))))
 
 (defn matching-length? [shape [fp fq]]
   (let [mid (tm/mix fp fq 0.5)]
@@ -126,6 +126,11 @@
       (tm/delta= (tm/mag-squared (tm/- (second matching-face) (first matching-face)))
                  (tm/mag-squared (tm/- fq fp))
                  1.0))))
+
+(defn rotate-to-face [shape angle]
+  (let [[p q] (dr/rand-nth (g/edges shape))
+        edge-angle (g/heading (g/normal (tm/- q p)))]
+    (g/rotate shape (- angle edge-angle))))
 
 ;; FIXME: face removal is occasionally allowing overlapping shapes
 ;; might be for triangles in particular, maybe because one face is shared?
@@ -139,9 +144,9 @@
       (let [face (dr/rand-nth (into [] faces))
             [fp fq] face
             mid (tm/mix fp fq 0.5)
-            structure-face (g/normal (tm/- fq fp))
+            structure-face (g/normal (tm/- fp fq))
             angle (g/heading structure-face)
-            shape (g/rotate (g/center (random-shape size)) angle)
+            shape (rotate-to-face (g/center (random-shape size)) angle)
             apothem (opposing-face-apothem shape angle)
             pos (tm/+ mid apothem)
             shape' (g/translate shape pos)
@@ -156,8 +161,8 @@
                                (g/edges shape')))
             notes
             (concat
-             [#_(gc/circle mid 3.0)
-              #_(gc/circle pos 5.0)
+             [(gc/circle mid 3.0)
+              (gc/circle pos 5.0)
               (gl/line2 mid pos)
               #_(gl/line2 fp fq)
               (gl/line2 mid (tm/+ mid (tm/normalize structure-face 8)))
@@ -169,7 +174,6 @@
                (let [mid (tm/mix p q 0.5)
                      normal (tm/normalize (g/normal (tm/- p q)) 5)]
                  (gl/line2 mid (tm/+ mid normal)))))]
-        (println inside? tiles? match-edge-length?)
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
@@ -337,7 +341,7 @@
         shape (g/center (g/rotate seed 0) center)
         structure
         (tiling {:size size :bounds (g/scale-size (csvg/screen width height) 0.95)}
-                shape 48)]
+                shape 32)]
     (connect-faces (map-indexed make-component structure))))
 
 (defn scene [{:keys [scene-id]}]
