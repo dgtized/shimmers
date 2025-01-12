@@ -166,8 +166,9 @@
                [(gc/circle pos 2.5)]
                [])
              (for [[p q] (g/edges shape')]
-               (let [mid (tm/mix p q 0.5)]
-                 (gl/line2 mid (tm/+ mid (tm/normalize (g/normal (tm/- p q)) 5))))))]
+               (let [mid (tm/mix p q 0.5)
+                     normal (tm/normalize (g/normal (tm/- p q)) 5)]
+                 (gl/line2 mid (tm/+ mid normal)))))]
         (println inside? tiles? match-edge-length?)
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
