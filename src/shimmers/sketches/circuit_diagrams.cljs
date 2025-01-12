@@ -164,7 +164,11 @@
               ]
              (if (g/contains-point? (:shape (meta face)) pos)
                [(gc/circle pos 2.5)]
-               []))]
+               [])
+             (for [[p q] (g/edges shape')]
+               (let [mid (tm/mix p q 0.5)]
+                 (gl/line2 mid (tm/+ mid (tm/normalize (g/normal (tm/- p q)) 5))))))]
+        (println inside? tiles? match-edge-length?)
         (if (and inside? tiles? match-edge-length?)
           (recur (conj structure
                        (vary-meta shape' assoc
