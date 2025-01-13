@@ -323,7 +323,11 @@
         (if (tm/delta= c1 c2)
           c1
           ;; IDEA: check if c1 is still clockwise from c2 otherwise handle self-intersect?
-          (get (isec/intersect-line2-line2? prev' c1 c2 next') :p)))
+          (let [isec (isec/intersect-line2-line2? prev' c1 c2 next')]
+            ;; FIXME: c1 is not right, but better than error on nil vector
+            (if (= (:type isec) :parallel)
+              c1
+              (get isec :p)))))
       curr)))
 
 ;; references:
