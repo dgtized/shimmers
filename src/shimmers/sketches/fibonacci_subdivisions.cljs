@@ -31,6 +31,25 @@
     (gv/vec2 x 0)
     (gv/vec2 0 y)))
 
+(defn face-subdivide [shape cuts]
+  (let [parcels (take cuts (fib))
+        divisions (apply + parcels)
+        [p q] (dr/rand-nth (g/edges shape))
+        angle (g/normal (tm/- p q))
+        c (g/centroid shape)
+        shape-r (g/rotate (g/center shape c) (- (g/heading angle)))
+        offset (g/rotate (axis-vector (g/bounds shape-r) :x) (g/heading angle))
+        base (g/scale-size (gl/line2 p q) 100)
+        lines
+        (for [parcel parcels]
+          (g/translate base (tm/* offset (/ parcel divisions))))]
+    (reduce (fn [shapes cut]
+              (mapcat (fn [shape]
+                        (lines/cut-polygon shape cut))
+                      shapes))
+            [shape]
+            lines)))
+
 (defn subdivide [shape axis direction cuts]
   (let [parcels (take cuts (fib))
         divisions (apply + parcels)
@@ -64,12 +83,15 @@
              (dr/mapcat-random-sample
               (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
               (fn [s]
-                (let [{[w h] :size} (g/bounds s)]
-                  (subdivide s
-                             (if (> w h) :x :y)
-                             (dr/weighted {:asc 1 :desc 1})
-                             (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
-                                            (zipmap (drop 2 s) (reverse s)))))))
+                (let [{[w h] :size} (g/bounds s)
+                      n (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
+                                       (zipmap (drop 2 s) (reverse s))))]
+                  (if true
+                    (subdivide s
+                               (if (> w h) :x :y)
+                               (dr/weighted {:asc 1 :desc 1})
+                               n)
+                    (face-subdivide s n))))
               shapes)))))
 
 (defn scene [{:keys [scene-id palette]}]
