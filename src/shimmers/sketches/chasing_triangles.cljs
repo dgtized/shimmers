@@ -36,11 +36,16 @@
 (comment
   (gu/arc-length-index (g/vertices (triangle/inscribed-equilateral {} 0))))
 
-(defn arc-seq [{:keys [shape t0 t1]}]
+(defn arc-seq
+  "Given a `shape`, return the sequence of vertices between `t0` and `t1`.
+
+  Point order will always be in the same ordering as shape vertices. If `t1` <
+  `t0` then they are swapped."
+  [{:keys [shape t0 t1]}]
   (let [sv (g/vertices shape)
         vertices (conj (vec sv) (first sv))
         arc-idx (gu/arc-length-index vertices)
-        [t0 t1] (sort [t0 t1])
+        [t0 t1] (if (< t1 t0) [t1 t0] [t0 t1])
         [p0 i0] (if (== 1.0 t0)
                   [(last vertices) (dec (count vertices))]
                   (gu/point-at* vertices arc-idx (peek arc-idx) t0 1))
