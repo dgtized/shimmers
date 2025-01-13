@@ -106,9 +106,11 @@
                      :fill "none"
                      :stroke-width 0.5}
       (shapes (if (dr/chance 0.5)
-                (g/center (poly/regular-n-gon (dr/random-int 3 9)
-                                              (* 0.5 height))
-                          (rv 0.5 0.5))
+                (g/center
+                 (g/rotate (poly/regular-n-gon (dr/random-int 3 9)
+                                               (* 0.5 height))
+                           (dr/random-tau))
+                 (rv 0.5 0.5))
                 (g/scale-size (csvg/screen width height) 0.99))
               palette))))
 
