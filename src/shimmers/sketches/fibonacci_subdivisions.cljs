@@ -75,11 +75,13 @@
     (if (zero? depth)
       (let [weighted-palette (zipmap (dr/shuffle (into ["none"] palette))
                                      (take (+ 1 (count palette)) (fib)))]
-        (map (fn [s]
-               ;; FIXME: more offset bugs from inset tossing shapes around
-               (vary-meta (poly-detect/inset-polygon s 2)
-                          assoc :fill (dr/weighted weighted-palette)))
-             shapes))
+        (->> shapes
+             (map (fn [s]
+                    ;; FIXME: more offset bugs from inset tossing shapes around
+                    (vary-meta (poly-detect/inset-polygon s 2)
+                               assoc :fill (dr/weighted weighted-palette))))
+             ;; FIXME filter is a hack to remove bad polygons from inset offset
+             (filter (fn [s] (every? #(g/contains-point? bounds %) (g/vertices s))))))
       (recur (dec depth)
              (dr/mapcat-random-sample
               (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
