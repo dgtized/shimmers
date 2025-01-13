@@ -40,6 +40,7 @@
   (let [sv (g/vertices shape)
         vertices (conj (vec sv) (first sv))
         arc-idx (gu/arc-length-index vertices)
+        [t0 t1] (sort [t0 t1])
         [p0 i0] (if (== 1.0 t0)
                   [(last vertices) (dec (count vertices))]
                   (gu/point-at* vertices arc-idx (peek arc-idx) t0 1))
