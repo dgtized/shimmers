@@ -1,6 +1,7 @@
 (ns shimmers.sketches.fibonacci-subdivisions
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -48,35 +49,50 @@
             [shape]
             lines)))
 
-(defn shapes [bounds]
+(defn shapes [bounds palette]
   (loop [depth 8 shapes [bounds]]
     (if (zero? depth)
-      (map (fn [s] (g/scale-size s 0.99)) shapes)
+      (let [weighted-palette (zipmap (dr/shuffle (into ["none"] palette))
+                                     (take (+ 1 (count palette)) (fib)))]
+        (map (fn [s]
+               (vary-meta (g/scale-size s 0.99)
+                          assoc :fill (dr/weighted weighted-palette)))
+             shapes))
       (recur (dec depth)
              (dr/mapcat-random-sample
               (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
               (fn [s]
                 (let [{[w h] :size} (g/bounds s)]
                   (subdivide s
-                             (dr/weighted (if (> w h)
-                                            {:x 13 :y 5}
-                                            {:x 5 :y 13}))
+                             (if (> w h) :x :y)
                              (dr/weighted {:asc 1 :desc 1})
                              (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
                                             (zipmap (drop 2 s) (reverse s)))))))
               shapes)))))
 
-(defn scene [{:keys [scene-id]}]
-  (csvg/svg-timed {:id scene-id
-                   :width width
-                   :height height
-                   :stroke "black"
-                   :fill "none"
-                   :stroke-width 0.5}
-    (shapes (g/scale-size (csvg/screen width height) 0.95))))
+(defn scene [{:keys [scene-id palette]}]
+  (fn []
+    (csvg/svg-timed {:id scene-id
+                     :width width
+                     :height height
+                     :stroke "black"
+                     :fill "none"
+                     :stroke-width 0.5}
+      (shapes (g/scale-size (csvg/screen width height) 0.99)
+              palette))))
+
+(defn explanation [{:keys [palette]}]
+  [:div.evencols
+   [:div.readable-width
+    [:p "Genuary 2025 - Day 12 - Subdivisions"]]
+   [:p
+    [palette/as-svg {} palette]]])
 
 (sketch/definition fibonacci-subdivisions
   {:created-at "2025-01-12"
    :tags #{:genuary2025}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount
+   (let [palette (:colors (dr/rand-nth palette/db))]
+     (usvg/page (assoc sketch-args :palette palette
+                       :explanation explanation) scene))))
