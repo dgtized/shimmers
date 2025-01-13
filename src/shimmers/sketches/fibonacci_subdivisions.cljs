@@ -35,7 +35,7 @@
   (let [parcels (take cuts (fib))
         divisions (apply + parcels)
         [p q] (dr/rand-nth (g/edges shape))
-        angle (g/normal (tm/- p q))
+        angle (g/normal (tm/- q p))
         c (g/centroid shape)
         shape-r (g/rotate (g/center shape c) (- (g/heading angle)))
         offset (g/rotate (axis-vector (g/bounds shape-r) :x) (g/heading angle))
@@ -76,6 +76,7 @@
       (let [weighted-palette (zipmap (dr/shuffle (into ["none"] palette))
                                      (take (+ 1 (count palette)) (fib)))]
         (map (fn [s]
+               ;; FIXME: more offset bugs from inset tossing shapes around
                (vary-meta (poly-detect/inset-polygon s 2)
                           assoc :fill (dr/weighted weighted-palette)))
              shapes))
@@ -86,7 +87,7 @@
                 (let [{[w h] :size} (g/bounds s)
                       n (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
                                        (zipmap (drop 2 s) (reverse s))))]
-                  (if true
+                  (if (dr/chance 0.25)
                     (subdivide s
                                (if (> w h) :x :y)
                                (dr/weighted {:asc 1 :desc 1})
