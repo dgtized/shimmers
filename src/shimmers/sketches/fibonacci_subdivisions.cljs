@@ -1,6 +1,7 @@
 (ns shimmers.sketches.fibonacci-subdivisions
   (:require
    [shimmers.algorithm.lines :as lines]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.palette :as palette]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
@@ -50,12 +51,12 @@
             lines)))
 
 (defn shapes [bounds palette]
-  (loop [depth 8 shapes [bounds]]
+  (loop [depth 21 shapes [bounds]]
     (if (zero? depth)
       (let [weighted-palette (zipmap (dr/shuffle (into ["none"] palette))
                                      (take (+ 1 (count palette)) (fib)))]
         (map (fn [s]
-               (vary-meta (g/scale-size s 0.99)
+               (vary-meta (poly-detect/inset-polygon s 2)
                           assoc :fill (dr/weighted weighted-palette)))
              shapes))
       (recur (dec depth)
