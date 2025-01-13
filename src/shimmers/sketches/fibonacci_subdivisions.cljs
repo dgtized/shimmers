@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.polygon :as poly]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -79,7 +80,11 @@
                      :stroke "black"
                      :fill "none"
                      :stroke-width 0.5}
-      (shapes (g/scale-size (csvg/screen width height) 0.99)
+      (shapes (if (dr/chance 0.5)
+                (g/center (poly/regular-n-gon (dr/random-int 3 9)
+                                              (* 0.5 height))
+                          (rv 0.5 0.5))
+                (g/scale-size (csvg/screen width height) 0.99))
               palette))))
 
 (defn explanation [{:keys [palette]}]
