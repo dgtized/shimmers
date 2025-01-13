@@ -24,7 +24,7 @@
     (shapes)))
 
 (sketch/definition template.svg
-  {:created-at "2024-"
+  {:created-at "2025-"
    :tags #{}
    :type :svg}
   (ctrl/mount (usvg/page sketch-args scene)))
