@@ -88,6 +88,7 @@
    shimmers.sketches.epicycles
    shimmers.sketches.envelope-collapse
    shimmers.sketches.falling-gradients
+   shimmers.sketches.fibonacci-subdivisions
    shimmers.sketches.fire
    shimmers.sketches.fireworks
    shimmers.sketches.flocking-brushes
