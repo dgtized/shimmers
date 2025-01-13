@@ -49,9 +49,9 @@
             lines)))
 
 (defn shapes [bounds]
-  (loop [depth 5 shapes [bounds]]
+  (loop [depth 8 shapes [bounds]]
     (if (zero? depth)
-      shapes
+      (map (fn [s] (g/scale-size s 0.99)) shapes)
       (recur (dec depth)
              (dr/mapcat-random-sample
               (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
@@ -62,7 +62,7 @@
                                             {:x 13 :y 5}
                                             {:x 5 :y 13}))
                              (dr/weighted {:asc 1 :desc 1})
-                             (dr/weighted (let [s (take 7 (fib))]
+                             (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
                                             (zipmap (drop 2 s) (reverse s)))))))
               shapes)))))
 
