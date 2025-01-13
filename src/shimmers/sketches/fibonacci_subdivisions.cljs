@@ -89,12 +89,12 @@
                 (let [{[w h] :size} (g/bounds s)
                       n (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
                                        (zipmap (drop 2 s) (reverse s))))]
-                  (if (dr/chance 0.25)
+                  (if (dr/chance (/ 1.0 tm/PHI))
+                    (face-subdivide s n)
                     (subdivide s
                                (if (> w h) :x :y)
                                (dr/weighted {:asc 1 :desc 1})
-                               n)
-                    (face-subdivide s n))))
+                               n))))
               shapes)))))
 
 (defn scene [{:keys [scene-id palette]}]
