@@ -30,6 +30,7 @@
    shimmers.sketches.chaikin-demo
    shimmers.sketches.chance-connections
    shimmers.sketches.chaos-cuts
+   shimmers.sketches.chasing-triangles
    shimmers.sketches.chemical-attraction
    shimmers.sketches.cilia-phase
    shimmers.sketches.circle-connections
