@@ -51,10 +51,10 @@
         pw (/ x (q/width))
         ph (/ y (q/height))]
     (assoc s
-           :t0 (eq/unit-phase-sin (+ 0.05 (* 0.1 ph)) t
-                                  (* 0.5 (eq/unit-sin (* 0.5 pw t))))
-           :t1 (eq/unit-phase-sin (+ 0.1 (* 0.05 pw)) t
-                                  (* 0.5 (eq/unit-sin (* 0.5 ph t)))))))
+           :t0 (eq/unit-phase-sin 0.05 t
+                                  (* 0.5 (eq/unit-sin (+ (* 0.5 pw t) ph))))
+           :t1 (eq/unit-phase-sin 0.1 t
+                                  (* 0.5 (eq/unit-sin (+ (* 0.5 ph t) pw)))))))
 
 (defn shapes-update [shapes t]
   (map (fn [shape] (shape-update shape t)) shapes))
