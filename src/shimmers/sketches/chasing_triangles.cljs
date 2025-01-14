@@ -41,29 +41,35 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:shapes
+  {:seed (dr/noise-seed)
+   :shapes
    (for [s (shapes (cq/screen-rect 0.66) 60)]
      {:shape (poly-detect/inset-polygon s 2)
       :v (dr/random -0.15 0.15)
       :t0 0
       :t1 1})})
 
-(defn shape-update [{:keys [shape v] :as s} t]
-  (let [[x y] (g/centroid shape)
+(defn shape-update [{:keys [shape v] :as s} t seed]
+  (let [p (g/centroid shape)
+        [x y] p
         pw (/ x (q/width))
-        ph (/ y (q/height))]
+        ph (/ y (q/height))
+        vv (dr/noise-at-point-01 seed 0.0001 p)]
     (assoc s
-           :t0 (eq/unit-phase-sin 0.05 t
-                                  (* 0.5 (eq/unit-sin (+ (* 0.5 pw t) ph v))))
+           :t0 (mod (+ vv
+                       (eq/unit-phase-sin 0.05 t
+                                          (* 0.5 (eq/unit-sin (+ (* 0.5 pw t) ph v)))))
+                    1.0)
            :t1 (eq/unit-phase-sin 0.1 t
                                   (* 0.5 (eq/unit-sin (- (+ (* 0.5 ph t) pw) v)))))))
 
-(defn shapes-update [shapes t]
-  (map (fn [shape] (shape-update shape t)) shapes))
+(defn shapes-update [shapes t seed]
+  (map (fn [shape] (shape-update shape t seed)) shapes))
 
-(defn update-state [state]
+(defn update-state [{:keys [seed] :as state}]
   (let [t (/ (q/millis) 1000)]
-    (update state :shapes shapes-update t)))
+    (update state :shapes shapes-update t
+            (tm/+ seed (tm/* (gv/vec2 0.1 0.1) (* 0.00001 t))))))
 
 (comment
   (gu/arc-length-index (g/vertices (triangle/inscribed-equilateral {} 0))))
