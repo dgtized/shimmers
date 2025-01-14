@@ -31,7 +31,7 @@
 (defn shapes [{p :p [width height] :size} side]
   (let [wn (/ width side)
         hside (* side eq/SQRT3_2)
-        o (tm/+ p (gv/vec2 (* -2.1 hside) (* -0.5 hside)))]
+        o (tm/+ p (gv/vec2 (* -2 side) (* -0.33 side)))]
     (apply concat
            (for [i (range wn)
                  j (range (/ height hside))
