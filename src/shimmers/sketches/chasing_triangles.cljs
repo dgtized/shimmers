@@ -2,29 +2,59 @@
   (:require
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
-   [shimmers.common.ui.debug :as debug]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.utils :as gu]))
+   [thi.ng.geom.triangle :as gt]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
-(defonce !defo (debug/state {}))
+;; TODO: merge with triangle-mosiac
+(defn triangle [[i j k] side]
+  (let [hside (* side eq/SQRT3_2)
+        x (+ i (* 0.5 j))]
+    (if (zero? k)
+      (gt/triangle2 (gv/vec2 (* (+ x 0.0) side) (* j hside))
+                    (gv/vec2 (* (+ x 1.0) side) (* j hside))
+                    (gv/vec2 (* (+ x 0.5) side) (* (inc j) hside)))
+      (gt/triangle2 (gv/vec2 (* (inc x) side) (* j hside))
+                    (gv/vec2 (* (+ (inc x) 0.5) side) (* (inc j) hside))
+                    (gv/vec2 (* (- (inc x) 0.5) side) (* (inc j) hside))))))
+
+(defn shapes [{p :p [width height] :size} side]
+  (let [wn (/ width side)
+        hside (* side eq/SQRT3_2)
+        o (tm/+ p (gv/vec2 (* -2.1 hside) (* -0.5 hside)))]
+    (apply concat
+           (for [i (range wn)
+                 j (range (/ height hside))
+                 :let [tl (g/translate (triangle [i j 0] side) o)
+                       tr (g/translate (triangle [i j 1] side) o)]]
+             [tl tr]))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
   {:shapes
-   [{:shape (triangle/inscribed-equilateral (cq/rel-vec 0.5 0.5) (cq/rel-h 0.35) 0)
-     :t0 0
-     :t1 1}]})
+   (for [s (shapes (cq/screen-rect 0.66) 60)]
+     {:shape (poly-detect/inset-polygon s 2)
+      :t0 0
+      :t1 1})})
 
 (defn shape-update [s t]
-  (assoc s
-         :t0 (eq/unit-phase-sin 0.05 t (* 0.5 (eq/unit-sin (* 0.3 t))))
-         :t1 (eq/unit-phase-sin 0.1 t (* 0.5 (eq/unit-sin (* 0.2 t))))))
+  (let [[x y] (g/centroid (:shape s))
+        pw (/ x (q/width))
+        ph (/ y (q/height))]
+    (assoc s
+           :t0 (eq/unit-phase-sin (+ 0.05 (* 0.1 ph)) t
+                                  (* 0.5 (eq/unit-sin (* 0.5 pw t))))
+           :t1 (eq/unit-phase-sin (+ 0.1 (* 0.05 pw)) t
+                                  (* 0.5 (eq/unit-sin (* 0.5 ph t)))))))
 
 (defn shapes-update [shapes t]
   (map (fn [shape] (shape-update shape t)) shapes))
@@ -36,7 +66,7 @@
 (comment
   (gu/arc-length-index (g/vertices (triangle/inscribed-equilateral {} 0))))
 
-(defn arc-seq
+(defn vertices-between
   "Given a `shape`, return the sequence of vertices between `t0` and `t1`.
 
   Point order will always be in the same ordering as shape vertices. If `t1` <
@@ -60,10 +90,9 @@
             [p1])))
 
 (defn draw [{:keys [shapes]}]
-  (reset! !defo shapes)
   (q/background 1.0)
   (doseq [s shapes]
-    (cq/draw-path (arc-seq s))))
+    (cq/draw-path (vertices-between s))))
 
 (defn page []
   [sketch/with-explanation
@@ -72,8 +101,7 @@
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])
-   [debug/display !defo]])
+     :middleware [m/fun-mode framerate/mode])])
 
 (sketch/definition chasing-triangles
   {:created-at "2025-01-13"
