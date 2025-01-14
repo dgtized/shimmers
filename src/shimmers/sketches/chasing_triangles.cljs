@@ -6,6 +6,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
@@ -43,18 +44,19 @@
   {:shapes
    (for [s (shapes (cq/screen-rect 0.66) 60)]
      {:shape (poly-detect/inset-polygon s 2)
+      :v (dr/random -0.15 0.15)
       :t0 0
       :t1 1})})
 
-(defn shape-update [s t]
-  (let [[x y] (g/centroid (:shape s))
+(defn shape-update [{:keys [shape v] :as s} t]
+  (let [[x y] (g/centroid shape)
         pw (/ x (q/width))
         ph (/ y (q/height))]
     (assoc s
            :t0 (eq/unit-phase-sin 0.05 t
-                                  (* 0.5 (eq/unit-sin (+ (* 0.5 pw t) ph))))
+                                  (* 0.5 (eq/unit-sin (+ (* 0.5 pw t) ph v))))
            :t1 (eq/unit-phase-sin 0.1 t
-                                  (* 0.5 (eq/unit-sin (+ (* 0.5 ph t) pw)))))))
+                                  (* 0.5 (eq/unit-sin (- (+ (* 0.5 ph t) pw) v)))))))
 
 (defn shapes-update [shapes t]
   (map (fn [shape] (shape-update shape t)) shapes))
