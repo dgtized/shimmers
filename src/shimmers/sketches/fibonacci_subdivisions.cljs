@@ -118,8 +118,8 @@
   [:div.evencols
    [:div.readable-width
     [:p "Genuary 2025 - Day 12 - Subdivisions"]
-    [:p "Subdivision ratios and probabilities are all derived from fibonnanci
-    sequence weighting. Even the palette distribution is weighted by fibonnanci
+    [:p "Subdivision ratios and probabilities are all derived from Fibonacci
+    sequence weighting. Even the palette distribution is weighted by Fibonacci
     values."]]
    [:p
     [palette/as-svg {} palette]]])
