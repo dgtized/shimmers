@@ -89,13 +89,19 @@
     (qdg/draw cell)))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
-    :size [800 600]
-    :setup setup
-    :update update-state
-    :draw draw
-    :middleware [m/fun-mode framerate/mode])])
+     :size [800 600]
+     :setup setup
+     :update update-state
+     :draw draw
+     :middleware [m/fun-mode framerate/mode])
+   [:div {:style {:width "75ch"}}
+    [:p "Genuary2025 Day 14 - Pure Black and White, No Gray"]
+    [:p "A cellular automata like experiment, but using floating point values
+    for each node, and rendering black and white. It's trying to flood fill
+    neighboring cells with a similar value and then adjust the node down or up
+    depending on the value of the seed node."]]])
 
 (sketch/definition flipboard
   {:created-at "2025-01-14"
