@@ -109,7 +109,11 @@
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   [:div {:style {:width "75ch"}}
+    [:p "Genuary2025 Day 13 - Triangles and Nothing Else"]
+    [:p "Experimenting with drawing a partial subset of a shapes edges, and then
+    varying the subset over a grid of triangles."]]])
 
 (sketch/definition chasing-triangles
   {:created-at "2025-01-13"
