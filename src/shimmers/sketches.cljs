@@ -12,6 +12,7 @@
    shimmers.sketches.angle-of-ascent
    shimmers.sketches.anterior-declination
    shimmers.sketches.ascendance
+   shimmers.sketches.bad-circles
    shimmers.sketches.ballistics
    shimmers.sketches.balloon
    shimmers.sketches.barcodes
