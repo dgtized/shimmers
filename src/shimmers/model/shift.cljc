@@ -1,7 +1,14 @@
 (ns shimmers.model.shift
   "Shift over time between different parameter sets. Either by converging all in
   tandem or one parameter at a time."
-  (:require [thi.ng.math.core :as tm]))
+  (:require
+   [shimmers.algorithm.random-points :as rp]
+   [shimmers.math.deterministic-random :as dr]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.utils :as gu]
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 ;; TODO: state machine to schedule a change on one or more parameters in the set
 ;; and on complettion initiate a new parameter change.
@@ -82,3 +89,22 @@
                   (converge pset t))
                 params
                 (range 0.0 4.0 0.2))))
+
+(defn constrain [bounds p]
+  (if (g/contains-point? bounds p)
+    p
+    (first (gu/closest-point-on-segments p (g/edges bounds)))))
+
+(comment
+  ;; domain object
+  {:bounds [0.0 1.0]
+   :fresh-value (fn [] (dr/random 0.0 1.0))
+   :nearby-value (fn [v] (tm/clamp (dr/gaussian v 0.05) 0 1))}
+
+  (constrain (rect/rect 0 0 10 10) (gv/vec2 5 5))
+  (constrain (rect/rect 0 0 10 10) (gv/vec2 5 11))
+
+  (let [bounds (rect/rect 0 0 10 10)]
+    {:bounds bounds
+     :fresh-value (fn [] (rp/sample-point-inside bounds))
+     :nearby-value (fn [p] (constrain bounds (tm/+ p (dr/jitter 2.0))))}))
