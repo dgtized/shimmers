@@ -52,7 +52,7 @@
                                       (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
                                       b0))
                  (+ theta (* 0.125 v) tlen))
-            ch (* (eq/unit-sin (+ (* 6 theta) (* 0.05 t)))
+            ch (* (eq/unit-sin (+ (* PI theta) (* 0.025 t)))
                   (tm/smoothstep* 0.66 1.0
                                   (eq/unit-sin (+ (* 0.01 t) (math/sin (+ theta (* 0.15 t))) c0))))
             c (+ (* 0.25 PI v) theta (math/sin (* 0.04 t)))
