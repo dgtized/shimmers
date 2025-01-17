@@ -97,14 +97,18 @@
 
 (comment
   ;; domain object
-  {:bounds [0.0 1.0]
-   :fresh-value (fn [] (dr/random 0.0 1.0))
-   :nearby-value (fn [v] (tm/clamp (dr/gaussian v 0.05) 0 1))}
+  (let [constrain (fn [v] (tm/clamp v 0.0 1.0))]
+    {:bounds [0.0 1.0]
+     :constrain constrain
+     :fresh-value (fn [] (dr/random 0.0 1.0))
+     :nearby-value (fn [v] (constrain (dr/gaussian v 0.05)))})
 
   (constrain (rect/rect 0 0 10 10) (gv/vec2 5 5))
   (constrain (rect/rect 0 0 10 10) (gv/vec2 5 11))
 
-  (let [bounds (rect/rect 0 0 10 10)]
+  (let [bounds (rect/rect 0 0 10 10)
+        constrain (partial constrain bounds)]
     {:bounds bounds
+     :constrain constrain
      :fresh-value (fn [] (rp/sample-point-inside bounds))
-     :nearby-value (fn [p] (constrain bounds (tm/+ p (dr/jitter 2.0))))}))
+     :nearby-value (fn [p] (constrain (tm/+ p (dr/jitter 2.0))))}))
