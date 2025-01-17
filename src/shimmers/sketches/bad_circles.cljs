@@ -7,6 +7,7 @@
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
@@ -23,7 +24,8 @@
    :a0 (dr/random PI)
    :a1 (dr/random PI)
    :b0 (dr/random PI)
-   :b1 (dr/random PI)})
+   :b1 (dr/random PI)
+   :c0 (dr/random PI)})
 
 (defn update-state [state]
   (let [t (seconds)]
@@ -31,7 +33,7 @@
 
 ;; Why does one edge grow and loop fast, but the other does not, how to make
 ;; that grow from the center out?
-(defn draw [{:keys [t a0 a1 b0 b1]}]
+(defn draw [{:keys [t a0 a1 b0 b1 c0]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
   (doseq [theta (map (partial * 2 PI) (tm/norm-range 512))
@@ -43,14 +45,19 @@
                                      (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
                                      a0))
                  (+ inv-theta (* 0.125 v) (* 0.002 t)))
-            b (* 1.5 PI (math/sin (- (* 0.09 t)
+            b (* 1.5 PI (math/sin (+ (* 0.09 t)
                                      (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
                                      b0))
                  (+ theta (* 0.125 v) (* 0.002 t)))
+            ch (* (eq/unit-sin (+ (* 6 theta) t))
+                  (tm/smoothstep* 0.66 1.0
+                                  (eq/unit-sin (+ (* 0.1 t) (math/sin (+ theta (* 0.15 t))) c0))))
+            c (+ (* 0.25 PI v) theta)
             [x y] (-> (cq/rel-vec 0.5 0.5)
                       (v/+polar (* h 0.6) theta)
                       (v/+polar (* h 0.15) a)
-                      (v/+polar (* h 0.15) b))]
+                      (v/+polar (* h 0.15) b)
+                      (v/+polar (* h ch 0.15) c))]
         (q/point x y)))))
 
 (defn page []
