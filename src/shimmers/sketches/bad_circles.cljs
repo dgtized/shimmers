@@ -29,6 +29,8 @@
   (let [t (seconds)]
     (assoc state :t t)))
 
+;; Why does one edge grow and loop fast, but the other does not, how to make
+;; that grow from the center out?
 (defn draw [{:keys [t a0 a1 b0 b1]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
