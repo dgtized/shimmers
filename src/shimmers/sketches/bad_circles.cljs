@@ -36,7 +36,9 @@
 (defn draw [{:keys [t a0 a1 b0 b1 c0]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
-  (doseq [theta (map (partial * 2 PI) (tm/norm-range 512))
+  (doseq [theta
+          (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.025 t) (math/sin (* 0.04 t))))))]
+            (map (fn [n] (* len n)) (tm/norm-range 512)))
           :let [h (cq/rel-h 0.5)]]
     (doseq [v (tm/norm-range PI)]
       (let [theta (+ theta (* 0.125 t) v)
