@@ -39,7 +39,7 @@
   (doseq [theta (map (partial * 2 PI) (tm/norm-range 512))
           :let [h (cq/rel-h 0.5)]]
     (doseq [v (tm/norm-range PI)]
-      (let [theta (+ theta (* 0.1 t) v)
+      (let [theta (+ theta (* 0.125 t) v)
             inv-theta (- (* 2 PI) theta)
             a (* 1.5 PI (math/sin (+ (* 0.07 t)
                                      (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
