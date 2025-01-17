@@ -17,20 +17,19 @@
   (converge [_ t])
   (converged? [_ t]))
 
-(defrecord Constant [base-t complete-t value]
+(defrecord Constant [t0 t1 value]
   IConverge
   (converge [_ _t] value)
   (converged? [_ t]
-    (> t complete-t)))
+    (> t t1)))
 
-(defrecord Linear [base-t complete-t value target]
+(defrecord Linear [t0 t1 value target mix-f]
   IConverge
   (converge [_ t]
-    (tm/mix* value target
-             (/ (- t base-t)
-                (- complete-t base-t))))
+    (mix-f value target (/ (- t t0)
+                           (- t1 t0))))
   (converged? [_ t]
-    (> t complete-t)))
+    (> t t1)))
 
 ;; TODO: this is should be generic for vector, num, float, etc
 (defrecord Parameter [id domain value updaters]
@@ -72,8 +71,8 @@
 
 (comment
   (let [param (reduce add-updater (make-parameter :a [0.0 1.0] 0.0)
-                      [(Linear. 1.5 2.0 1.0 0.0)
-                       (Linear. 0.5 1.25 0.0 1.0)])]
+                      [(Linear. 1.5 2.0 1.0 0.0 tm/mix*)
+                       (Linear. 0.5 1.25 0.0 1.0 tm/mix*)])]
     (reductions (fn [param t]
                   (converge param t))
                 param
@@ -83,8 +82,8 @@
                        (ParameterSet.
                         [(make-parameter :a [0.0 1.0] 0.0)
                          (make-parameter :b [0.0 1.0] 1.0)])
-                       {:a (Linear. 0.5 1.25 0.0 1.0)
-                        :b (Linear. 1.5 2.0 1.0 0.0)})]
+                       {:a (Linear. 0.5 1.25 0.0 1.0 tm/mix*)
+                        :b (Linear. 1.5 2.0 1.0 0.0 tm/mix*)})]
     (reductions (fn [pset t]
                   (converge pset t))
                 params
