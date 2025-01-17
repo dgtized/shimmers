@@ -1,12 +1,12 @@
 (ns shimmers.sketches.bad-circles
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
-   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.math.core :as tm]))
@@ -36,14 +36,15 @@
           :let [h (cq/rel-h 0.5)]]
     (doseq [v (tm/norm-range PI)]
       (let [theta (+ theta (* 0.1 t) v)
-            a (* (+ 1 (* 5 (eq/unit-sin (+ (* 0.12 t)
-                                           (eq/unit-sin (+ (* 0.05 theta) (* 0.05 t) a1))
-                                           a0))))
-                 (- theta (* 0.125 v)))
-            b (* (+ 1 (* 5 (eq/unit-sin (+ (* 0.15 t)
-                                           (eq/unit-sin (- (* 0.07 theta) (* 0.10 t) b1))
-                                           b0))))
-                 (+ theta (* 0.125 v)))
+            inv-theta (- (* 2 PI) theta)
+            a (* 1.5 PI (math/sin (+ (* 0.07 t)
+                                     (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
+                                     a0))
+                 (+ inv-theta (* 0.125 v) (* 0.002 t)))
+            b (* 1.5 PI (math/sin (- (* 0.09 t)
+                                     (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
+                                     b0))
+                 (+ theta (* 0.125 v) (* 0.002 t)))
             [x y] (-> (cq/rel-vec 0.5 0.5)
                       (v/+polar (* h 0.6) theta)
                       (v/+polar (* h 0.15) a)
