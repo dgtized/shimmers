@@ -90,6 +90,10 @@
                 params
                 (range 0.0 4.0 0.2))))
 
+;; TODO: this doesn't deal well with stateful systems that have N parameters
+;; where the parameters are interelated. As example for a harmonograph, might
+;; want to target parameters that are nearby others or multiples there of
+
 (defn constrain [bounds p]
   (if (g/contains-point? bounds p)
     p
