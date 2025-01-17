@@ -37,21 +37,21 @@
   (q/background 1.0)
   (q/stroke-weight 4.0)
   (doseq [theta
-          (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.025 t) (math/sin (* 0.04 t))))))]
+          (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.01 t) (math/sin (* 0.04 t))))))]
             (map (fn [n] (* len n)) (tm/norm-range 512)))
           :let [h (cq/rel-h 0.5)]]
     (doseq [v (tm/norm-range PI)]
       (let [theta (+ theta (* 0.125 t) v)
             inv-theta (- (* 2 PI) theta)
-            a (* 1.5 PI (math/sin (+ (* 0.07 t)
-                                     (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
-                                     a0))
+            a (* 1.25 PI (math/sin (+ (* 0.19 t)
+                                      (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
+                                      a0))
                  (+ inv-theta (* 0.125 v) (* 0.002 t)))
-            b (* 1.5 PI (math/sin (+ (* 0.09 t)
-                                     (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
-                                     b0))
+            b (* 1.25 PI (math/sin (+ (* 0.21 t)
+                                      (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
+                                      b0))
                  (+ theta (* 0.125 v) (* 0.002 t)))
-            ch (* (eq/unit-sin (+ (* 6 theta) t))
+            ch (* (eq/unit-sin (+ (* 6 theta) (* 0.5 t)))
                   (tm/smoothstep* 0.66 1.0
                                   (eq/unit-sin (+ (* 0.1 t) (math/sin (+ theta (* 0.15 t))) c0))))
             c (+ (* 0.25 PI v) theta)
