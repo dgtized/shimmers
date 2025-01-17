@@ -46,4 +46,13 @@
     (reductions (fn [param t]
                   (converge param t))
                 param
-                (range 0.0 3.0 0.2))))
+                (range 0.0 3.0 0.2)))
+
+  (let [params [(Parameter. :a [0.0 1.0] 0.0
+                            [(Linear. 1.5 2.0 1.0 0.0)
+                             (Linear. 0.5 1.25 0.0 1.0)])
+                (Parameter. :b [0.0 1.0] 0.0 [])]]
+    (reductions (fn [params t]
+                  (map (fn [param] (converge param t)) params))
+                params
+                (range 0.0 4.0 0.2))))
