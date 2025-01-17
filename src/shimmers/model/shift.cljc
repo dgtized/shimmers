@@ -46,7 +46,8 @@
     (every? (fn [updater] (converged? updater t)) updaters)))
 
 (defn make-parameter [id domain value]
-  (Parameter. id domain value #queue []))
+  (Parameter. id domain value
+              PersistentQueue.EMPTY))
 
 (defrecord ParameterSet [parameters]
   IConverge
