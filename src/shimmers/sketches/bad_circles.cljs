@@ -5,6 +5,7 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
@@ -18,13 +19,17 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  {:t (seconds)})
+  {:t (seconds)
+   :a0 (dr/random PI)
+   :a1 (dr/random PI)
+   :b0 (dr/random PI)
+   :b1 (dr/random PI)})
 
 (defn update-state [state]
   (let [t (seconds)]
     (assoc state :t t)))
 
-(defn draw [{:keys [t]}]
+(defn draw [{:keys [t a0 a1 b0 b1]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
   (doseq [theta (map (partial * 2 PI) (tm/norm-range 512))
@@ -32,10 +37,12 @@
     (doseq [v (tm/norm-range PI)]
       (let [theta (+ theta (* 0.1 t) v)
             a (* (+ 1 (* 5 (eq/unit-sin (+ (* 0.12 t)
-                                           (eq/unit-sin (+ (* 0.05 theta) (* 0.05 t)))))))
+                                           (eq/unit-sin (+ (* 0.05 theta) (* 0.05 t) a1))
+                                           a0))))
                  (- theta (* 0.125 v)))
             b (* (+ 1 (* 5 (eq/unit-sin (+ (* 0.15 t)
-                                           (eq/unit-sin (+ (* 0.07 theta) (* 0.10 t)))))))
+                                           (eq/unit-sin (- (* 0.07 theta) (* 0.10 t) b1))
+                                           b0))))
                  (+ theta (* 0.125 v)))
             [x y] (-> (cq/rel-vec 0.5 0.5)
                       (v/+polar (* h 0.6) theta)
