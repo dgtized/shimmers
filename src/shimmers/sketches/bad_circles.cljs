@@ -10,6 +10,7 @@
    [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 ;; silly rule for the prompt
@@ -25,15 +26,24 @@
    :a1 (dr/random PI)
    :b0 (dr/random PI)
    :b1 (dr/random PI)
-   :c0 (dr/random PI)})
+   :c0 (dr/random PI)
+   :r0 (dr/random PI)})
 
 (defn update-state [state]
   (let [t (seconds)]
     (assoc state :t t)))
 
+(defn ratio [t]
+  [(+ 1.0 (* 3.0 (eq/unit-sin t)))
+   (+ 1.0 (* 3.0 (eq/unit-cos t)))])
+
+(defn polar-ratio [r theta a b]
+  (gv/vec2 (* r (math/cos (* a theta)))
+           (* r (math/sin (* b theta)))))
+
 ;; Why does one edge grow and loop fast, but the other does not, how to make
 ;; that grow from the center out?
-(defn draw [{:keys [t a0 a1 b0 b1 c0]}]
+(defn draw [{:keys [t a0 a1 b0 b1 c0 r0]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
   (doseq [theta
@@ -55,11 +65,13 @@
             ch (* (eq/unit-sin (+ (* PI theta) (* 0.025 t)))
                   (tm/smoothstep* 0.66 1.0
                                   (eq/unit-sin (+ (* 0.01 t) (math/sin (+ theta (* 0.15 t))) c0))))
-            c (+ (* 0.25 PI v) theta (math/sin (* 0.04 t)))
+            c (+ theta (math/sin (+ (* 0.1 v) (* 0.04 t))))
+            [cx cy] (ratio (+ (* 0.01 t) r0 (* 0.05 v)))
             [x y] (-> (cq/rel-vec 0.5 0.5)
                       (v/+polar (* h 0.6) theta)
                       (v/+polar (* h 0.15) a)
                       (v/+polar (* h 0.15) b)
+                      (tm/+ (polar-ratio (* h ch 0.15) c cx cy))
                       (v/+polar (* h ch 0.15) c))]
         (q/point x y)))))
 
