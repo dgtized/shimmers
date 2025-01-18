@@ -18,6 +18,7 @@
    shimmers.sketches.barcodes
    shimmers.sketches.beat-table
    shimmers.sketches.blobical
+   shimmers.sketches.blustery-day
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
