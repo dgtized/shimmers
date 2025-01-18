@@ -46,34 +46,34 @@
 (defn draw [{:keys [t a0 a1 b0 b1 c0 r0]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
-  (doseq [theta
-          (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.01 t) (math/sin (* 0.04 t))))))]
-            (map (fn [n] (* len n)) (tm/norm-range 512)))
-          :let [h (cq/rel-h 0.5)]]
-    (doseq [v (tm/norm-range PI)]
-      (let [theta (+ theta (math/sin (* 0.125 v t)))
-            tlen (* 2 (math/sin (* 0.002 t)))
-            inv-theta (- (* 2 PI) theta)
-            a (* 1.25 PI (math/sin (+ (* 0.19 t)
-                                      (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
-                                      a0))
-                 (+ inv-theta (* 0.125 v) tlen))
-            b (* 1.25 PI (math/sin (+ (* 0.21 t)
-                                      (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
-                                      b0))
-                 (+ theta (* 0.125 v) tlen))
-            ch (* (eq/unit-sin (+ (* PI theta) (* 0.025 t)))
-                  (tm/smoothstep* 0.66 1.0
-                                  (eq/unit-sin (+ (* 0.01 t) (math/sin (+ theta (* 0.15 t))) c0))))
-            c (+ theta (math/sin (+ (* 0.1 v) (* 0.4 t))))
-            [cx cy] (ratio (+ (* 0.06 t) r0 (* 0.05 v)))
-            [x y] (-> (cq/rel-vec 0.5 0.5)
-                      (v/+polar (* h 0.6) theta)
-                      (v/+polar (* h 0.15) a)
-                      (v/+polar (* h 0.15) b)
-                      (tm/+ (polar-ratio (* h ch 0.15) c cx cy))
-                      (v/+polar (* h ch 0.1) c))]
-        (q/point x y)))))
+  (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.01 t) (math/sin (* 0.04 t))))))
+        w (* 0.4 (eq/unit-sin (+ (* 0.1 t) (math/sin (+ (* 0.1 len) (* 0.02 t))))))]
+    (doseq [theta (map (fn [n] (* len n)) (tm/norm-range 512))
+            :let [h (cq/rel-h 0.5)]]
+      (doseq [v (tm/norm-range PI)]
+        (let [theta (math/pow (* 1 (+ theta (math/sin (* 0.125 v t)))) (+ 0.95 w))
+              tlen (* 2 (math/sin (* 0.002 t)))
+              inv-theta (- (* 2 PI) theta)
+              a (* 1.25 PI (math/sin (+ (* 0.19 t)
+                                        (math/sin (+ (* 0.02 theta) (* 0.03 t) a1))
+                                        a0))
+                   (+ inv-theta (* 0.125 v) tlen))
+              b (* 1.25 PI (math/sin (+ (* 0.21 t)
+                                        (math/sin (+ (* 0.03 inv-theta) (* 0.04 t) b1))
+                                        b0))
+                   (+ theta (* 0.125 v) tlen))
+              ch (* (eq/unit-sin (+ (* PI theta) (* 0.025 t)))
+                    (tm/smoothstep* 0.66 1.0
+                                    (eq/unit-sin (+ (* 0.01 t) (math/sin (+ theta (* 0.15 t))) c0))))
+              c (+ theta (math/sin (+ (* 0.1 v) (* 0.4 t))))
+              [cx cy] (ratio (+ (* 0.06 t) r0 (* 0.05 v)))
+              [x y] (-> (cq/rel-vec 0.5 0.5)
+                        (v/+polar (* h 0.6 (math/pow 0.975 (* w theta))) theta)
+                        (v/+polar (* h 0.15) a)
+                        (v/+polar (* h 0.15) b)
+                        (tm/+ (polar-ratio (* h ch 0.15) c cx cy))
+                        (v/+polar (* h ch 0.1) c))]
+          (q/point x y))))))
 
 (defn page []
   [sketch/with-explanation
