@@ -24,8 +24,10 @@
   {:t (seconds)
    :a0 (dr/random PI)
    :a1 (dr/random PI)
+   :a2 (dr/random PI)
    :b0 (dr/random PI)
    :b1 (dr/random PI)
+   :b2 (dr/random PI)
    :c0 (dr/random PI)
    :r0 (dr/random PI)})
 
@@ -41,9 +43,12 @@
   (gv/vec2 (* r (math/cos (* a theta)))
            (* r (math/sin (* b theta)))))
 
+(defn cyclic-mix [a b w t]
+  (tm/mix* a b (tm/smoothstep* (- w) w (math/sin t))))
+
 ;; Why does one edge grow and loop fast, but the other does not, how to make
 ;; that grow from the center out?
-(defn draw [{:keys [t a0 a1 b0 b1 c0 r0]}]
+(defn draw [{:keys [t a0 a1 a2 b0 b1 b2 c0 r0]}]
   (q/background 1.0)
   (q/stroke-weight 4.0)
   (let [len (* PI (+ 1.5 (eq/unit-sin (+ (* 0.01 t) (math/sin (* 0.04 t))))))
@@ -51,7 +56,7 @@
     (doseq [theta (map (fn [n] (* len n)) (tm/norm-range 512))
             :let [h (cq/rel-h 0.5)]]
       (doseq [v (tm/norm-range PI)]
-        (let [theta (math/pow (* 1 (+ theta (math/sin (* 0.125 v t)))) (+ 0.95 w))
+        (let [theta (math/pow (* 1 (+ theta (math/pow (math/sin (* 0.125 v t)) 2))) (+ 0.95 w))
               tlen (* 2 (math/sin (* 0.002 t)))
               inv-theta (- (* 2 PI) theta)
               a (* 1.25 PI (math/sin (+ (* 0.19 t)
@@ -69,9 +74,13 @@
               [cx cy] (ratio (+ (* 0.06 t) r0 (* 0.05 v)))
               [x y] (-> (cq/rel-vec 0.5 0.5)
                         (v/+polar (* h 0.6 (math/pow 0.975 (* w theta))) theta)
-                        (v/+polar (* h 0.15) a)
-                        (v/+polar (* h 0.15) b)
-                        (tm/+ (polar-ratio (* h ch 0.15) c cx cy))
+                        (v/+polar (* h 0.125)
+                                  (cyclic-mix theta a 0.5
+                                              (math/sin (+ (* 0.04 t) a2 (math/sin (+ (* 0.1 t) b2))))))
+                        (v/+polar (* h 0.125)
+                                  (cyclic-mix theta b 0.5
+                                              (math/sin (+ (* 0.05 t) b2 (math/sin (+ (* 0.09 t) a2))))))
+                        (tm/+ (polar-ratio (* h ch 0.125) c cx cy))
                         (v/+polar (* h ch 0.1) c))]
           (q/point x y))))))
 
