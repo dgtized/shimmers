@@ -34,8 +34,8 @@
     (assoc state :t t)))
 
 (defn ratio [t]
-  [(+ 1.0 (* 3.0 (eq/unit-sin t)))
-   (+ 1.0 (* 3.0 (eq/unit-cos t)))])
+  [(+ 1.0 (* 4.0 (eq/unit-sin t)))
+   (+ 1.0 (* 4.0 (eq/unit-cos t)))])
 
 (defn polar-ratio [r theta a b]
   (gv/vec2 (* r (math/cos (* a theta)))
@@ -65,14 +65,14 @@
             ch (* (eq/unit-sin (+ (* PI theta) (* 0.025 t)))
                   (tm/smoothstep* 0.66 1.0
                                   (eq/unit-sin (+ (* 0.01 t) (math/sin (+ theta (* 0.15 t))) c0))))
-            c (+ theta (math/sin (+ (* 0.1 v) (* 0.04 t))))
-            [cx cy] (ratio (+ (* 0.01 t) r0 (* 0.05 v)))
+            c (+ theta (math/sin (+ (* 0.1 v) (* 0.4 t))))
+            [cx cy] (ratio (+ (* 0.06 t) r0 (* 0.05 v)))
             [x y] (-> (cq/rel-vec 0.5 0.5)
                       (v/+polar (* h 0.6) theta)
                       (v/+polar (* h 0.15) a)
                       (v/+polar (* h 0.15) b)
                       (tm/+ (polar-ratio (* h ch 0.15) c cx cy))
-                      (v/+polar (* h ch 0.15) c))]
+                      (v/+polar (* h ch 0.1) c))]
         (q/point x y)))))
 
 (defn page []
