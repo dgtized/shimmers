@@ -94,6 +94,7 @@
    shimmers.sketches.fibonacci-subdivisions
    shimmers.sketches.fire
    shimmers.sketches.fireworks
+   shimmers.sketches.flickering-dots
    shimmers.sketches.flipboard
    shimmers.sketches.flocking-brushes
    shimmers.sketches.flow-fields
