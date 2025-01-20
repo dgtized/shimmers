@@ -14,21 +14,17 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn subdivide [r]
-  (g/subdivide r {:rows 2 :cols 2}))
+(defn subdivide [p r]
+  (if (or (> p 0.66) (dr/chance p))
+    [r]
+    (mapcat (fn [rs]
+              (subdivide (+ p (dr/random 0.075 0.225)) rs))
+            (g/subdivide r {:rows 2 :cols 2}))))
 
 (defn shapes [bounds]
   (let [squares
-        (apply concat
-               (for [r (g/subdivide bounds {:rows 10 :cols 10})]
-                 (if (dr/chance 0.35)
-                   [r]
-                   (apply concat
-                          (for [rs (subdivide r)]
-                            (if (dr/chance 0.55)
-                              [rs]
-                              (for [rss (subdivide rs)]
-                                rss)))))))]
+        (mapcat (fn [r] (subdivide 0.33 r))
+                (g/subdivide bounds {:rows 10 :cols 10}))]
     [(csvg/group {}
        (for [s squares]
          (g/scale-size s 0.9)))
@@ -54,7 +50,9 @@
    [:p "Genuary 2025 - Day 19 - Op Art"]
    [:p "Using the "
     [:a {:href "https://en.wikipedia.org/wiki/Grid_illusion"} "Grid Illusion"]
-    " as a basis for some optical illusion art. The grid is then subdivided up to two times."]])
+    " as a basis for some optical illusion art. The grid is then selectively
+    subdivided for several iterations. The eye is tricked into finding black
+    dots at different intersections."]])
 
 (sketch/definition flickering-dots
   {:created-at "2025-01-19"
