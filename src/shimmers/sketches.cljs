@@ -234,6 +234,7 @@
    shimmers.sketches.shapes-and-patterns
    shimmers.sketches.shattered
    shimmers.sketches.six-of-one-half-dozen-of-the-other
+   shimmers.sketches.skyline
    shimmers.sketches.slashes
    shimmers.sketches.slither
    shimmers.sketches.slow-zone
