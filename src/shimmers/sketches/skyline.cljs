@@ -6,6 +6,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -26,6 +27,7 @@
                :let [h (dr/gaussian (- 0.4 (abs (- b 0.5))) 0.025)]]
            (concat (mapv (fn [s] (g/translate s (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) (* height (- h))))))
                          (building (- b a) h))
+                   [(gl/line2 (rv 0 0.6) (rv 1.0 0.6))]
                    (mapv (fn [s] (g/translate
                                  s
                                  (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) 0.0))))
@@ -36,7 +38,7 @@
                    :width width
                    :height height
                    :stroke "black"
-                   :fill "white"
+                   :fill "none"
                    :stroke-width 0.5}
     (shapes)))
 
