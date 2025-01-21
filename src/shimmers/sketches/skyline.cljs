@@ -20,7 +20,8 @@
 
 (defn shapes []
   (apply concat
-         (for [[a b] (partition 2 1 (dr/gaussian-range 0.034 0.02 false [0.05 0.95]))
+         (for [[a b] (partition 2 1 (filter (fn [x] (<= 0.05 x 0.95))
+                                            (dr/density-range 0.025 0.05 false)))
                :let [h (dr/gaussian (- 0.4 (abs (- b 0.5))) 0.025)]]
            [(g/translate
              (building (- b a) h)
