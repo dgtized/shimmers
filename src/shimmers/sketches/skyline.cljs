@@ -16,7 +16,7 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn building [w h]
-  (rect/rect 0 0 (* width w) (* height h)))
+  [(rect/rect 0 0 (* width w) (* height h))])
 
 (defn shapes []
   (apply concat
@@ -24,12 +24,12 @@
                           (filter (fn [x] (<= 0.05 x 0.95)))
                           (partition 2 1))
                :let [h (dr/gaussian (- 0.4 (abs (- b 0.5))) 0.025)]]
-           [(g/translate
-             (building (- b a) h)
-             (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) (* height (- h)))))
-            (g/translate
-             (building (- b a) (* 0.7 h))
-             (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) 0.0)))])))
+           (concat (mapv (fn [s] (g/translate s (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) (* height (- h))))))
+                         (building (- b a) h))
+                   (mapv (fn [s] (g/translate
+                                 s
+                                 (tm/+ (rv 0.0 0.6) (gv/vec2 (* width a) 0.0))))
+                         (building (- b a) (* 0.7 h)))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
