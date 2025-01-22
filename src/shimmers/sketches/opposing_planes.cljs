@@ -1,16 +1,15 @@
 (ns shimmers.sketches.opposing-planes
   (:require
    [clojure.math :as math]
-   [shimmers.common.quil :as cq]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.polygon :as gp]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
