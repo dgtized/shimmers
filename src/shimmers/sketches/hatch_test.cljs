@@ -17,10 +17,13 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn example-rect [{[w _] :size :as cell}]
+  (-> (rect/rect (/ w 1.5))
+      (g/center (g/centroid cell))))
+
 (defn examples []
-  [(fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 1.5))
-                    (g/center (g/centroid cell)))]
+  [(fn [cell]
+     (let [rect (example-rect cell)]
        (into [rect]
              (clip/hatch-rectangle rect (dr/random 4 12) (dr/random-tau)
                                    [(dr/random) (dr/random)]))))
@@ -34,9 +37,8 @@
                                          [(dr/random) (dr/random)])))))
 
    ;; hatching
-   (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 1.5))
-                    (g/center (g/centroid cell)))
+   (fn [cell]
+     (let [rect (example-rect cell)
            spacing (dr/random 6 16)
            theta (dr/random-tau)
            theta0 (dr/random-tau)
@@ -50,9 +52,8 @@
                                            [(dr/random) (dr/random)])))))
 
    ;; double with same theta
-   (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 1.5))
-                    (g/center (g/centroid cell)))
+   (fn [cell]
+     (let [rect (example-rect cell)
            theta (dr/random-tau)
            theta0 (dr/random-tau)]
        (concat [(geometry/rotate-around-centroid rect theta)]
@@ -63,9 +64,8 @@
                      (clip/hatch-rectangle rect (dr/random 6 12) theta0
                                            [(dr/random) (dr/random)])))))
    ;; double with close theta
-   (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 1.5))
-                    (g/center (g/centroid cell)))
+   (fn [cell]
+     (let [rect (example-rect cell)
            theta (dr/random-tau)
            theta0 (dr/random-tau)
            theta1 (dr/gaussian theta0 0.1)]
