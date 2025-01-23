@@ -19,23 +19,25 @@
 
 (defn examples []
   [(fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 2))
+     (let [rect (-> (rect/rect (/ w 1.5))
                     (g/center (g/centroid cell)))]
        (into [rect]
              (clip/hatch-rectangle rect (dr/random 4 12) (dr/random-tau)
                                    [(dr/random) (dr/random)]))))
    (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 2))
+     (let [rect (-> (rect/rect (/ w 1.5))
                     (g/center (g/centroid cell)))
            theta (dr/random-tau)]
        (into [(geometry/rotate-around-centroid rect theta)]
              (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
                    (clip/hatch-rectangle rect (dr/random 4 12) (dr/random-tau)
                                          [(dr/random) (dr/random)])))))
+
+   ;; hatching
    (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 2))
+     (let [rect (-> (rect/rect (/ w 1.5))
                     (g/center (g/centroid cell)))
-           spacing (dr/random 4 16)
+           spacing (dr/random 6 16)
            theta (dr/random-tau)
            theta0 (dr/random-tau)
            theta1 (+ theta0 (dr/gaussian (* eq/TAU 0.25) 0.1))]
@@ -47,21 +49,36 @@
                      (clip/hatch-rectangle rect spacing theta1
                                            [(dr/random) (dr/random)])))))
 
+   ;; double with same theta
    (fn [{[w _] :size :as cell}]
-     (let [rect (-> (rect/rect (/ w 2))
+     (let [rect (-> (rect/rect (/ w 1.5))
                     (g/center (g/centroid cell)))
            theta (dr/random-tau)
            theta0 (dr/random-tau)]
        (concat [(geometry/rotate-around-centroid rect theta)]
                (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
-                     (clip/hatch-rectangle rect (dr/random 4 12) theta0
+                     (clip/hatch-rectangle rect (dr/random 6 12) theta0
                                            [(dr/random) (dr/random)]))
                (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
-                     (clip/hatch-rectangle rect (dr/random 4 12) theta0
+                     (clip/hatch-rectangle rect (dr/random 6 12) theta0
+                                           [(dr/random) (dr/random)])))))
+   ;; double with close theta
+   (fn [{[w _] :size :as cell}]
+     (let [rect (-> (rect/rect (/ w 1.5))
+                    (g/center (g/centroid cell)))
+           theta (dr/random-tau)
+           theta0 (dr/random-tau)
+           theta1 (dr/gaussian theta0 0.1)]
+       (concat [(geometry/rotate-around-centroid rect theta)]
+               (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
+                     (clip/hatch-rectangle rect (dr/random 6 12) theta0
+                                           [(dr/random) (dr/random)]))
+               (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
+                     (clip/hatch-rectangle rect (dr/random 6 12) theta1
                                            [(dr/random) (dr/random)])))))])
 
 (defn shapes [bounds examples]
-  (for [[cell example] (map vector (g/subdivide bounds {:num 2})
+  (for [[cell example] (map vector (g/subdivide bounds {:num 3})
                             examples)]
     (csvg/group {}
       (example cell))))
