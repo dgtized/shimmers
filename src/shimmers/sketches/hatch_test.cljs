@@ -5,12 +5,15 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
+   [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.vector :as gv]
-   [shimmers.math.geometry :as geometry]
-   [shimmers.math.equations :as eq]))
+   [thi.ng.geom.utils.intersect :as gisec]
+   [thi.ng.geom.vector :as gv]))
 
 (def width 800)
 (def height 800)
@@ -75,7 +78,19 @@
                                            [(dr/random) (dr/random)]))
                (mapv (fn [line] (geometry/rotate-around line (g/centroid rect) theta))
                      (clip/hatch-rectangle rect (dr/random 6 12) theta1
-                                           [(dr/random) (dr/random)])))))])
+                                           [(dr/random) (dr/random)])))))
+   ;; radial
+   (fn [cell]
+     (let [rect (example-rect cell)
+           midpoint (g/unmap-point rect (gv/vec2 (dr/random 0.45 0.55)
+                                                 (dr/random 0.45 0.55)))
+           theta (dr/random-tau)]
+       (concat [(geometry/rotate-around-centroid rect theta)]
+               (for [t (range 0 eq/TAU (/ eq/TAU (dr/random-int 15 40)))]
+                 (geometry/rotate-around (gl/line2 midpoint (gisec/intersect-ray2-edges?
+                                                             midpoint (v/polar 1.0 t)
+                                                             (g/edges rect)))
+                                         (g/centroid rect) theta)))))])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:num 3})
@@ -88,7 +103,7 @@
                    :width width
                    :height height
                    :stroke "black"
-                   :fill "white"
+                   :fill "none"
                    :stroke-width 0.5}
     (shapes (csvg/screen width height)
             (examples))))
