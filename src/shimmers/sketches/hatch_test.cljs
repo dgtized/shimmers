@@ -10,6 +10,7 @@
    [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
@@ -110,10 +111,10 @@
                  (geometry/rotate-around (gl/line2 pt (g/closest-point line pt))
                                          (g/centroid rect) theta)))))
 
-   ;; bad random hatch
+   ;; bubble hatching
    (fn [cell]
      (let [rect (example-rect cell)
-           points (rp/poisson-disc-sampling rect (dr/random-int 150 300))
+           points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
            rlen (/ (* 8 (g/width rect)) (count points))
            center (g/centroid rect)
            theta (dr/random-tau)
@@ -131,7 +132,20 @@
                                                  center theta)
                          (geometry/rotate-around (gl/line2 (v/-polar pt (len) angle1)
                                                            (v/+polar pt (len) angle1))
-                                                 center theta)])))))])
+                                                 center theta)])))))
+
+   (fn [cell]
+     (let [rect (example-rect cell)
+           points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
+           rlen (/ (* 6 (g/width rect)) (count points))
+           center (g/centroid rect)
+           theta (dr/random-tau)]
+       (concat [(geometry/rotate-around-centroid rect theta)]
+               (for [pt points
+                     :let [d (g/dist pt (g/closest-point rect pt))
+                           len (fn [] (min d (dr/gaussian rlen (/ rlen 8.0))))]
+                     :when (> d (* 0.5 rlen))]
+                 (geometry/rotate-around (gc/circle pt (len)) center theta)))))])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:num 3})
