@@ -13,7 +13,8 @@
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.utils.intersect :as gisec]
-   [thi.ng.geom.vector :as gv]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 800)
@@ -90,6 +91,22 @@
                  (geometry/rotate-around (gl/line2 midpoint (gisec/intersect-ray2-edges?
                                                              midpoint (v/polar 1.0 t)
                                                              (g/edges rect)))
+                                         (g/centroid rect) theta)))))
+
+   ;; seem line (not very pleasing)
+   (fn [cell]
+     (let [rect (example-rect cell)
+           p (g/unmap-point rect (gv/vec2 (dr/random 0.35 0.65)
+                                          (dr/random 0.35 0.65)))
+           q (g/unmap-point rect (gv/vec2 (dr/random 0.35 0.65)
+                                          (dr/random 0.35 0.65)))
+           line (g/scale-size (gl/line2 p q) 1.2)
+           theta (dr/random-tau)]
+       (concat [(geometry/rotate-around-centroid rect theta)
+                (geometry/rotate-around line (g/centroid rect) theta)]
+               (for [t (tm/norm-range (dr/random-int 20 60))
+                     :let [pt (g/point-at rect t)]]
+                 (geometry/rotate-around (gl/line2 pt (g/closest-point line pt))
                                          (g/centroid rect) theta)))))])
 
 (defn shapes [bounds examples]
