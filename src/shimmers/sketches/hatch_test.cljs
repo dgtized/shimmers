@@ -1,6 +1,7 @@
 (ns shimmers.sketches.hatch-test
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -107,7 +108,30 @@
                (for [t (tm/norm-range (dr/random-int 20 60))
                      :let [pt (g/point-at rect t)]]
                  (geometry/rotate-around (gl/line2 pt (g/closest-point line pt))
-                                         (g/centroid rect) theta)))))])
+                                         (g/centroid rect) theta)))))
+
+   ;; bad random hatch
+   (fn [cell]
+     (let [rect (example-rect cell)
+           points (rp/poisson-disc-sampling rect (dr/random-int 150 300))
+           rlen (/ (* 8 (g/width rect)) (count points))
+           center (g/centroid rect)
+           theta (dr/random-tau)
+           base (dr/random-tau)]
+       (concat [(geometry/rotate-around-centroid rect theta)]
+               (apply concat
+                      (for [pt points
+                            :let [d (g/dist pt (g/closest-point rect pt))
+                                  angle0 (dr/gaussian base 0.05)
+                                  angle1 (dr/gaussian (+ angle0 (* eq/TAU 0.25)) 0.1)
+                                  len (fn [] (min d (dr/gaussian rlen (/ rlen 8.0))))]
+                            :when (> d (* 0.5 rlen))]
+                        [(geometry/rotate-around (gl/line2 (v/-polar pt (len) angle0)
+                                                           (v/+polar pt (len) angle0))
+                                                 center theta)
+                         (geometry/rotate-around (gl/line2 (v/-polar pt (len) angle1)
+                                                           (v/+polar pt (len) angle1))
+                                                 center theta)])))))])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:num 3})
