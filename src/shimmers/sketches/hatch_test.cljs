@@ -136,6 +136,7 @@
                                                            (v/+polar pt (len) angle1))
                                                  center theta)])))))
 
+   ;; poisson-disc sampled bubbles inside of shape
    (fn [cell]
      (let [rect (example-rect cell)
            points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
@@ -149,6 +150,7 @@
                      :when (> d (* 0.5 rlen))]
                  (geometry/rotate-around (gc/circle pt (len)) center theta)))))
 
+   ;; split rectangle into voronoi cells
    (fn [cell]
      (let [rect (example-rect cell)
            points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
@@ -159,6 +161,7 @@
                (for [poly voronoi]
                  (geometry/rotate-around poly center theta)))))
 
+   ;; hatch each delaunay triangle
    (fn [cell]
      (let [rect (example-rect cell)
            points (rp/poisson-disc-sampling rect (dr/random-int 50 150))
