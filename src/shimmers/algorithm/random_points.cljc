@@ -217,8 +217,12 @@
 
 (extend-type Polygon2
   ISamplePoint
-  (sample-point-at [{:keys [points]} t]
-    (gu/point-at t (conj points (first points))))
+  (sample-point-at
+    ([{:keys [points]} t]
+     (gu/point-at t (conj points (first points))))
+    ([polygon u v]
+     (throw (ex-info "uv coordinates not implemented"
+                     {:polygon polygon :args [u v]}))))
   (sample-point-inside [_]
     (->> (g/tessellate _)
          (map gt/triangle2)
