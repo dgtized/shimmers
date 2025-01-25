@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hatch-test
   (:require
+   [shimmers.algorithm.delaunator :as deltor]
    [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.random-points :as rp]
@@ -19,8 +20,8 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(def width 800)
-(def height 800)
+(def width 900)
+(def height 1200)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
@@ -151,16 +152,28 @@
    (fn [cell]
      (let [rect (example-rect cell)
            points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
-           triangles (delvor/voronoi-cells points rect)
+           voronoi (delvor/voronoi-cells points rect)
            center (g/centroid rect)
            theta (dr/random-tau)]
        (concat [(geometry/rotate-around-centroid rect theta)]
-               (for [triangle triangles]
-                 (geometry/rotate-around triangle center theta)))))
+               (for [poly voronoi]
+                 (geometry/rotate-around poly center theta)))))
+
+   (fn [cell]
+     (let [rect (example-rect cell)
+           points (rp/poisson-disc-sampling rect (dr/random-int 50 150))
+           triangles (deltor/triangles points)
+           center (g/centroid rect)
+           theta (dr/random-tau)]
+       (into [(geometry/rotate-around-centroid rect theta)]
+             (mapcat (fn [triangle]
+                       (map (fn [line] (geometry/rotate-around line center theta))
+                            (clip/hatch-polygon triangle (dr/random 1.75 8) (dr/random-tau))))
+                     triangles))))
    ])
 
 (defn shapes [bounds examples]
-  (for [[cell example] (map vector (g/subdivide bounds {:num 3})
+  (for [[cell example] (map vector (g/subdivide bounds {:rows 4 :cols 3})
                             examples)]
     (csvg/group {}
       (example cell))))
