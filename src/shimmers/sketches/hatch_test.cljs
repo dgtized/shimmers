@@ -1,5 +1,6 @@
 (ns shimmers.sketches.hatch-test
   (:require
+   [shimmers.algorithm.delaunay :as delvor]
    [shimmers.algorithm.line-clipping :as clip]
    [shimmers.algorithm.random-points :as rp]
    [shimmers.common.svg :as csvg :include-macros true]
@@ -145,7 +146,18 @@
                      :let [d (g/dist pt (g/closest-point rect pt))
                            len (fn [] (min d (dr/gaussian rlen (/ rlen 8.0))))]
                      :when (> d (* 0.5 rlen))]
-                 (geometry/rotate-around (gc/circle pt (len)) center theta)))))])
+                 (geometry/rotate-around (gc/circle pt (len)) center theta)))))
+
+   (fn [cell]
+     (let [rect (example-rect cell)
+           points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
+           triangles (delvor/voronoi-cells points rect)
+           center (g/centroid rect)
+           theta (dr/random-tau)]
+       (concat [(geometry/rotate-around-centroid rect theta)]
+               (for [triangle triangles]
+                 (geometry/rotate-around triangle center theta)))))
+   ])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:num 3})
