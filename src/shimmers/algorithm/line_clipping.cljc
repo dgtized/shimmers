@@ -6,7 +6,9 @@
   (:require
    [clojure.math :as math]
    [clojure.set :as set]
+   [shimmers.algorithm.lines :as lines]
    [shimmers.algorithm.random-points :as rp]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
@@ -210,3 +212,23 @@
 ;;
 ;; Not sure if same algorithm, but might work to just find bounds, hatch that
 ;; bounds, and then do a ray-intersection check and clip using each line?
+
+(defn hatch-polygon
+  ([polygon spacing theta] (hatch-polygon polygon spacing theta [(dr/random) (dr/random)]))
+  ([polygon spacing theta [rx ry]]
+   (let [[xstart ystart] (rp/sample-point-at polygon rx ry)
+         cosa (math/cos theta)
+         m (math/tan theta)
+         c (- ystart (* m xstart))
+         {[x _] :p [w h] :size} (g/bounds polygon)
+         len (max w h)
+
+         x0 (- x (/ len 2))
+         y0 (+ (* m x0) c)
+         x1 (+ x len (/ len 2))
+         y1 (+ (* m x1) c)]
+     (hatching-middle-out
+      (fn [a b]
+        (first (lines/clip-line (gl/line2 a b) polygon)))
+      spacing cosa
+      [x0 y0] [x1 y1]))))
