@@ -161,19 +161,30 @@
                (for [poly voronoi]
                  (geometry/rotate-around poly center theta)))))
 
+   ;; split rectangle into delaunay triangles
+   (fn [cell]
+     (let [rect (example-rect cell)
+           points (rp/poisson-disc-sampling rect (dr/random-int 50 150))
+           triangles (deltor/triangles (into (g/vertices rect) points))
+           center (g/centroid rect)
+           theta (dr/random-tau)]
+       (into [(geometry/rotate-around-centroid rect theta)]
+             (map (fn [triangle]
+                    (geometry/rotate-around triangle center theta))
+                  triangles))))
+
    ;; hatch each delaunay triangle
    (fn [cell]
      (let [rect (example-rect cell)
            points (rp/poisson-disc-sampling rect (dr/random-int 50 150))
-           triangles (deltor/triangles points)
+           triangles (deltor/triangles (into (g/vertices rect) points))
            center (g/centroid rect)
            theta (dr/random-tau)]
        (into [(geometry/rotate-around-centroid rect theta)]
              (mapcat (fn [triangle]
                        (map (fn [line] (geometry/rotate-around line center theta))
                             (clip/hatch-polygon triangle (dr/random 1.75 8) (dr/random-tau))))
-                     triangles))))
-   ])
+                     triangles))))])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:rows 4 :cols 3})
