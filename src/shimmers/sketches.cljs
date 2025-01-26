@@ -51,6 +51,7 @@
    shimmers.sketches.concentric-moire
    shimmers.sketches.concentric-orbits
    shimmers.sketches.constellations
+   shimmers.sketches.continuity
    shimmers.sketches.control-panels
    shimmers.sketches.convex-spiral
    shimmers.sketches.conveyors
