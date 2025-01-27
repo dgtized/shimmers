@@ -100,9 +100,13 @@
                                   (* amp (dr/random 0.66 1.33)))
                             0.0 2.0)])
           :rate
-          (let [field (dr/rand-nth [:fx :fy])]
+          (let [field (dr/rand-nth [:fx :fy])
+                rate (* (dr/random 0.85 1.15) (get pendulum field))]
             [field
-             (* (dr/random 0.85 1.15) (get pendulum field))])
+             (tm/clamp (if (dr/chance 0.5)
+                         (tm/roundto rate 1.0)
+                         (dr/gaussian rate 0.001))
+                       0.1 32)])
           :phase
           (let [field (dr/rand-nth [:px :py])]
             [field
@@ -112,7 +116,7 @@
      :field field
      :fx (dr/weighted [[(fn [_value pct-t]
                           (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t))) 1.5]
-                       [(let [rate (dr/random-int 25)]
+                       [(let [rate (* (dr/random 0.25 4) duration)]
                           (fn [_value pct-t]
                             (tm/mix* curr target
                                      (eq/unit-sin (- (* rate 0.25 eq/TAU (tm/smoothstep* 0.01 0.99 pct-t))
