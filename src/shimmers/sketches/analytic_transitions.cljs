@@ -69,16 +69,32 @@
                         (fn [xs] (remove (fn [{:keys [t1]}] (> t t1)) xs))))))
         pendulums))
 
+(defn generate-transition [pendulum t]
+  (let [duration (+ (dr/random 1.5 6.0)
+                    (dr/random 1.0 2.0))
+        [field target]
+        (case (dr/weighted {:amp 0.5
+                            :rate 1.0
+                            :phase 1.0})
+          :amp
+          [:amp (* (get pendulum :amp) (dr/random 0.66 1.33))]
+          :rate
+          (let [field (dr/rand-nth [:fx :fy])]
+            [field
+             (* (dr/random 0.85 1.15) (get pendulum field))])
+          :phase
+          (let [field (dr/rand-nth [:px :py])]
+            [field
+             (dr/gaussian (get pendulum field) 1.25)]))
+        curr (get pendulum field)]
+    {:t0 t :t1 (+ t duration)
+     :field field
+     :fx (fn [_value pct-t]
+           (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t)))}))
+
 (defn new-transition [pendulum t]
-  (let [duration (dr/random 1.5 9.0)
-        field (dr/rand-nth [:px :py])
-        curr (get pendulum field)
-        target (dr/random-tau)
-        transition {:t0 t :t1 (+ t duration)
-                    :field field
-                    :fx (fn [_value pct-t]
-                          (tm/mix* curr target pct-t))}]
-    (update pendulum :transitions conj transition)))
+  (update pendulum :transitions conj
+          (generate-transition pendulum t)))
 
 (defn run [pendulum {:keys [t0 t1 fx field]} t]
   (let [pct-t (/ (- t t0) (- t1 t0))]
@@ -111,7 +127,7 @@
         (q/point x y)))))
 
 (defn page []
-  [:div
+  [sketch/with-explanation
    (sketch/component
      :size [800 600]
      :setup setup
