@@ -6,11 +6,14 @@
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
+   [shimmers.common.ui.debug :as debug]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
+
+(defonce defo (debug/state))
 
 (defn cyclic [amplitude decay freq phase]
   (fn [t]
@@ -18,7 +21,7 @@
        amplitude
        (math/sin (+ (* freq t) phase)))))
 
-(defrecord Pendulum [amp fx fy px py r-decay])
+(defrecord Pendulum [amp fx fy px py r-decay transitions])
 
 (defn render [{:keys [amp fx fy px py r-decay]} weight]
   (fn [theta]
@@ -47,10 +50,12 @@
         b (dr/random-int 1 6)]
     {:pendulums [(->Pendulum (dr/random 0.5 1.0) a b
                              (dr/random-tau) (dr/random-tau)
-                             0.005)
-                 (->Pendulum (dr/random 0.1 0.5) 9.01 1.0
+                             0.005 [])
+                 (->Pendulum (dr/random 0.1 0.5)
+                             (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
+                             (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
                              (dr/random-tau) (dr/random-tau)
-                             0.005)]}))
+                             0.005 [])]}))
 
 (defn update-state [state]
   state)
@@ -58,6 +63,7 @@
 (defn draw [{:keys [pendulums]}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
+  (reset! defo pendulums)
   (let [time (/ (q/millis) 3000.0)
         size (cq/rel-h 0.45)
         center (cq/rel-vec 0.5 0.5)]
@@ -72,7 +78,8 @@
      :setup setup
      :update update-state
      :draw draw
-     :middleware [m/fun-mode framerate/mode])])
+     :middleware [m/fun-mode framerate/mode])
+   #_(debug/display defo)])
 
 (sketch/definition analytic-transitions
   {:created-at "2025-01-26"
