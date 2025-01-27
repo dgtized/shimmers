@@ -64,7 +64,7 @@
                                0.005 [])]]
     {:pendulums (if (dr/chance 0.4)
                   (conj pendulums
-                        (->Pendulum (dr/random 0.025 0.15)
+                        (->Pendulum (dr/random 0.01 0.125)
                                     (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
                                     (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
                                     (dr/random-tau) (dr/random-tau)
@@ -72,11 +72,32 @@
                   pendulums)
      :t (/ (q/millis) 1000.0)}))
 
+(defn transition-fx [_value {:keys [kind t0 t1 rate v0 v1]} t]
+  (let [pct-t (/ (- t t0) (- t1 t0))
+        smooth-t (tm/smoothstep* 0.01 0.99 pct-t)]
+    (case kind
+      :linear
+      (tm/mix* v0 v1 smooth-t)
+      :sin-osc
+      (tm/mix* v0 v1
+               (eq/unit-sin (- (* rate 0.25 eq/TAU smooth-t)
+                               (* 0.25 eq/TAU)))))))
+
+(comment
+  ;; -0.25 tau push it from 0 -> 1, so initial state lines up
+  ;; something is occasionally still jumping though
+  (for [t (range 0 1 0.05)]
+    (eq/unit-sin (- (* 1.25 eq/TAU (tm/smoothstep* 0.01 0.99 t))
+                    (* 0.25 eq/TAU)))))
+
+(defn run-effect [pendulum {:keys [field] :as transition} t]
+  (update pendulum field transition-fx transition t))
+
 (defn remove-ended? [pendulums t]
   (mapv (fn [{:keys [transitions] :as pendulum}]
           (let [to-remove (filter (fn [{:keys [t1]}] (> t t1)) transitions)]
-            (-> (reduce (fn [pendulum {:keys [field fx]}]
-                          (update pendulum field fx 1.0))
+            (-> (reduce (fn [pendulum transition]
+                          (run-effect pendulum transition t))
                         pendulum
                         to-remove)
                 (update :transitions
@@ -110,36 +131,23 @@
           :phase
           (let [field (dr/rand-nth [:px :py])]
             [field
-             (dr/gaussian (get pendulum field) 1.25)]))
-        curr (get pendulum field)]
+             (dr/gaussian (get pendulum field) 1.25)]))]
     {:t0 t :t1 (+ t duration)
      :field field
-     :fx (dr/weighted [[(fn [_value pct-t]
-                          (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t))) 1.5]
-                       [(let [rate (* (dr/random 0.25 4) duration)]
-                          (fn [_value pct-t]
-                            (tm/mix* curr target
-                                     (eq/unit-sin (- (* rate 0.25 eq/TAU (tm/smoothstep* 0.01 0.99 pct-t))
-                                                     (* 0.25 eq/TAU)))))) 1.0]])}))
-
-(comment
-  ;; -0.25 tau push it from 0 -> 1, so initial state lines up
-  ;; something is occasionally still jumping though
-  (for [t (range 0 1 0.05)]
-    (eq/unit-sin (- (* 1.25 eq/TAU (tm/smoothstep* 0.01 0.99 t))
-                    (* 0.25 eq/TAU)))))
+     :v0 (get pendulum field)
+     :v1 target
+     :rate (* (dr/random 0.25 4) duration)
+     :kind (dr/weighted {:linear 1.5
+                         :sin-osc 1.0})}))
 
 (defn new-transition [pendulum t]
   (update pendulum :transitions conj
           (generate-transition pendulum t)))
 
-(defn run [pendulum {:keys [t0 t1 fx field]} t]
-  (let [pct-t (/ (- t t0) (- t1 t0))]
-    (update pendulum field fx pct-t)))
-
 (defn run-transitions [pendulums t]
   (for [{:keys [transitions] :as pendulum} pendulums]
-    (reduce (fn [pendulum tx] (run pendulum tx t)) pendulum transitions)))
+    (reduce (fn [pendulum tx] (run-effect pendulum tx t))
+            pendulum transitions)))
 
 (defn update-state [{:keys [pendulums] :as state}]
   (let [t (/ (q/millis) 1000.0)
