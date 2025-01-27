@@ -9,6 +9,7 @@
    shimmers.sketches.all-the-shapes-in-between
    shimmers.sketches.along-the-curve
    shimmers.sketches.amplification
+   shimmers.sketches.analytic-transitions
    shimmers.sketches.angle-of-ascent
    shimmers.sketches.anterior-declination
    shimmers.sketches.ascendance
