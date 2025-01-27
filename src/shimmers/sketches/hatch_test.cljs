@@ -184,7 +184,22 @@
              (mapcat (fn [triangle]
                        (map (fn [line] (geometry/rotate-around line center theta))
                             (clip/hatch-polygon triangle (dr/random 1.75 8) (dr/random-tau))))
-                     triangles))))])
+                     triangles))))
+
+   ;; FIXME: rp/sample-point-at needed to find coordinate in polygon
+   ;; hatch each voronoi cell
+   #_(fn [cell]
+       (let [rect (example-rect cell)
+             points (rp/poisson-disc-sampling rect (dr/random-int 200 300))
+             voronoi (delvor/voronoi-cells points rect)
+             center (g/centroid rect)
+             theta (dr/random-tau)]
+         (concat [(geometry/rotate-around-centroid rect theta)]
+                 (mapcat (fn [poly]
+                           (map (fn [line] (geometry/rotate-around line center theta))
+                                (clip/hatch-polygon poly (dr/random 1.75 8) (dr/random-tau))))
+                         voronoi))))
+   ])
 
 (defn shapes [bounds examples]
   (for [[cell example] (map vector (g/subdivide bounds {:rows 4 :cols 3})
