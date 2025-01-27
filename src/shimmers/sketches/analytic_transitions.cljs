@@ -34,19 +34,25 @@
     (gv/vec2 ((cyclic (/ amp weight) r-decay fx px) theta)
              ((cyclic (/ amp weight) r-decay fy py) theta))))
 
-(defn plot [pendulums samples t]
+(defn plot [pendulums p1 samples t]
   (let [weight (reduce + (mapv :amp pendulums))
         plot-fs (mapv
                  (fn [pendulum]
                    (render pendulum weight))
                  pendulums)
-        revolutions (* 16 eq/TAU)
-        base (* revolutions 0.33) ;; push forward so sample rate is already spread out
+        revolutions (* 24 eq/TAU)
+        base (* revolutions 0.1) ;; push forward so sample rate is already spread out
         ]
     (for [theta (range 0 revolutions (/ revolutions samples))]
       (reduce (fn [p f]
-                (tm/+ p (f (+ (math/exp (* 0.05 (+ base theta)))
-                              (mod (* 0.1 t) eq/TAU)))))
+                (let [factor (+ 0.5 (* 2.0 (math/sin (+ (* 0.05 t)
+                                                        (eq/sqr (math/sin (+ (* 0.0005 theta) p1
+                                                                             (* 0.03 t))))))))]
+                  (tm/+ p (f (* (+ base theta)
+                                tm/PHI
+                                (- 1.0 (math/exp (* -0.001
+                                                    (math/pow 2 factor)
+                                                    (+ base theta)))))))))
               (gv/vec2)
               plot-fs))))
 
@@ -70,6 +76,7 @@
                                     (dr/random-tau) (dr/random-tau)
                                     0.005 []))
                   pendulums)
+     :p1 (dr/random-tau)
      :t (/ (q/millis) 1000.0)}))
 
 (defn transition-fx [_value {:keys [kind t0 t1 rate v0 v1]} t]
@@ -163,13 +170,13 @@
           state')
         (assoc :t t))))
 
-(defn draw [{:keys [pendulums t] :as state}]
+(defn draw [{:keys [pendulums p1 t] :as state}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (reset! defo state)
   (let [size (cq/rel-h 0.5)
         center (cq/rel-vec 0.5 0.5)]
-    (doseq [p (plot (run-transitions pendulums t) 6000 t)]
+    (doseq [p (plot (run-transitions pendulums t) p1 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
 
