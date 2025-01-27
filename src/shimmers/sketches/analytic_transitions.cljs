@@ -1,6 +1,7 @@
 (ns shimmers.sketches.analytic-transitions
   (:require
    [clojure.math :as math]
+   [fipp.ednize :refer [IEdn]]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
@@ -22,6 +23,11 @@
        (math/sin (+ (* freq t) phase)))))
 
 (defrecord Pendulum [amp fx fy px py r-decay transitions])
+
+(extend-protocol IEdn
+  Pendulum
+  (-edn [s]
+    (tagged-literal 'Pendulum (debug/untyped s))))
 
 (defn render [{:keys [amp fx fy px py r-decay]} weight]
   (fn [theta]
@@ -47,15 +53,23 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [a (dr/random-int 1 6)
-        b (dr/random-int 1 6)]
-    {:pendulums [(->Pendulum (dr/random 0.5 1.0) a b
-                             (dr/random-tau) (dr/random-tau)
-                             0.005 [])
-                 (->Pendulum (dr/random 0.1 0.5)
-                             (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
-                             (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
-                             (dr/random-tau) (dr/random-tau)
-                             0.005 [])]
+        b (dr/random-int 1 6)
+        pendulums [(->Pendulum (dr/random 0.5 1.0) a b
+                               (dr/random-tau) (dr/random-tau)
+                               0.005 [])
+                   (->Pendulum (dr/random 0.1 0.5)
+                               (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
+                               (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
+                               (dr/random-tau) (dr/random-tau)
+                               0.005 [])]]
+    {:pendulums (if (dr/chance 0.4)
+                  (conj pendulums
+                        (->Pendulum (dr/random 0.025 0.15)
+                                    (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
+                                    (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
+                                    (dr/random-tau) (dr/random-tau)
+                                    0.005 []))
+                  pendulums)
      :t (/ (q/millis) 1000.0)}))
 
 (defn remove-ended? [pendulums t]
@@ -77,7 +91,14 @@
                             :rate 1.0
                             :phase 1.0})
           :amp
-          [:amp (* (get pendulum :amp) (dr/random 0.66 1.33))]
+          (let [amp (get pendulum :amp)]
+            [:amp (tm/clamp (cond (tm/delta= 0.0 amp)
+                                  (dr/random 0.33)
+                                  (dr/chance 0.33)
+                                  0.0
+                                  :else
+                                  (* amp (dr/random 0.66 1.33)))
+                            0.0 2.0)])
           :rate
           (let [field (dr/rand-nth [:fx :fy])]
             [field
@@ -89,8 +110,19 @@
         curr (get pendulum field)]
     {:t0 t :t1 (+ t duration)
      :field field
-     :fx (fn [_value pct-t]
-           (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t)))}))
+     :fx (dr/weighted [[(fn [_value pct-t]
+                          (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t))) 1.0]
+                       [(let [rate (dr/random-int 13)]
+                          (fn [_value pct-t]
+                            (tm/mix* curr target
+                                     (eq/unit-sin (- (* rate 0.25 eq/TAU (tm/smoothstep* 0.01 0.99 pct-t))
+                                                     (* 0.25 eq/TAU)))))) 1.0]])}))
+
+(comment
+  ;; -0.25 tau push it from 0 -> 1, so initial state lines up
+  (for [t (range 0 1 0.05)]
+    (eq/unit-sin (- (* 1.25 eq/TAU (tm/smoothstep* 0.01 0.99 t))
+                    (* 0.25 eq/TAU)))))
 
 (defn new-transition [pendulum t]
   (update pendulum :transitions conj
@@ -120,9 +152,9 @@
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (reset! defo state)
-  (let [size (cq/rel-h 0.45)
+  (let [size (cq/rel-h 0.5)
         center (cq/rel-vec 0.5 0.5)]
-    (doseq [p (plot (run-transitions pendulums t) 5000 t)]
+    (doseq [p (plot (run-transitions pendulums t) 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
 
@@ -134,7 +166,8 @@
      :update update-state
      :draw draw
      :middleware [m/fun-mode framerate/mode])
-   (debug/display defo)])
+   [:div {:style {:font-size "0.75em"}}
+    (debug/display defo)]])
 
 (sketch/definition analytic-transitions
   {:created-at "2025-01-26"
