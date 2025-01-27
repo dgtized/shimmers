@@ -95,13 +95,13 @@
 
 (defn remove-ended? [pendulums t]
   (mapv (fn [{:keys [transitions] :as pendulum}]
-          (let [to-remove (filter (fn [{:keys [t1]}] (> t t1)) transitions)]
+          (let [done? (fn [{:keys [t1]}] (> t t1))
+                to-remove (filter done? transitions)]
             (-> (reduce (fn [pendulum transition]
                           (run-effect pendulum transition t))
                         pendulum
                         to-remove)
-                (update :transitions
-                        (fn [xs] (remove (fn [{:keys [t1]}] (> t t1)) xs))))))
+                (update :transitions (partial remove done?)))))
         pendulums))
 
 (defn generate-transition [pendulum t]
