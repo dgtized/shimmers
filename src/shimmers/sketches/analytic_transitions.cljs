@@ -84,8 +84,8 @@
         pendulums))
 
 (defn generate-transition [pendulum t]
-  (let [duration (+ (dr/random 1.5 6.0)
-                    (dr/random 1.0 2.0))
+  (let [duration (+ (dr/random 1.0 6.0)
+                    (dr/random 1.0 6.0))
         [field target]
         (case (dr/weighted {:amp 0.5
                             :rate 1.0
@@ -111,8 +111,8 @@
     {:t0 t :t1 (+ t duration)
      :field field
      :fx (dr/weighted [[(fn [_value pct-t]
-                          (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t))) 1.0]
-                       [(let [rate (dr/random-int 13)]
+                          (tm/mix* curr target (tm/smoothstep* 0.01 0.99 pct-t))) 1.5]
+                       [(let [rate (dr/random-int 25)]
                           (fn [_value pct-t]
                             (tm/mix* curr target
                                      (eq/unit-sin (- (* rate 0.25 eq/TAU (tm/smoothstep* 0.01 0.99 pct-t))
@@ -120,6 +120,7 @@
 
 (comment
   ;; -0.25 tau push it from 0 -> 1, so initial state lines up
+  ;; something is occasionally still jumping though
   (for [t (range 0 1 0.05)]
     (eq/unit-sin (- (* 1.25 eq/TAU (tm/smoothstep* 0.01 0.99 t))
                     (* 0.25 eq/TAU)))))
