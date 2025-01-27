@@ -131,7 +131,9 @@
           :phase
           (let [field (dr/rand-nth [:px :py])]
             [field
-             (dr/gaussian (get pendulum field) 1.25)]))]
+             (if (dr/chance 0.66)
+               (dr/gaussian (get pendulum field) 1.25)
+               (dr/random (* 4 eq/TAU)))]))]
     {:t0 t :t1 (+ t duration)
      :field field
      :v0 (get pendulum field)
