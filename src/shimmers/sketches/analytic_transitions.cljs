@@ -145,7 +145,7 @@
      :field field
      :v0 (get pendulum field)
      :v1 target
-     :rate (* (dr/random 0.25 4) duration)
+     :rate (* (dr/random 0.25 3) duration)
      :kind (dr/weighted {:linear 1.5
                          :sin-osc 1.0})}))
 
