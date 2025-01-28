@@ -113,7 +113,7 @@
 
 (defn generate-transition [pendulum t]
   (let [duration (+ (dr/random 1.0 6.0)
-                    (dr/random 1.0 6.0))
+                    (dr/random 1.0 12.0))
         [field target]
         (case (dr/weighted {:amp 0.5
                             :rate 1.0
