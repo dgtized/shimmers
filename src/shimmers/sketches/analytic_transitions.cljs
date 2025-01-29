@@ -131,11 +131,17 @@
           (let [field (dr/rand-nth [:fx :fy])
                 rate (get pendulum field)
                 new-rate (* (dr/random 0.85 1.15) rate)
-                rate' (if (and (< (get pendulum :amp) 0.1)
-                               (< rate 10)
-                               (dr/chance 0.66))
-                        (tm/roundto (* (dr/random 1.5 4.0) rate) 1.0)
-                        new-rate)]
+                amp (get pendulum :amp)
+                rate' (cond (and (< amp 0.1)
+                                 (< new-rate 10)
+                                 (dr/chance 0.75))
+                            (tm/roundto (* (dr/random 1.5 4.0) new-rate) 1.0)
+                            (and (> amp 0.15)
+                                 (> new-rate 16)
+                                 (dr/chance 0.75))
+                            (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
+                            :else
+                            new-rate)]
             [field
              (tm/clamp (if (dr/chance 0.5)
                          (tm/roundto rate' 1.0)
