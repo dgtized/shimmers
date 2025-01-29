@@ -115,9 +115,10 @@
   (let [duration (+ (dr/random 1.0 6.0)
                     (dr/random 1.0 12.0))
         [field target]
-        (case (dr/weighted {:amp 0.5
-                            :rate 1.0
-                            :phase 1.0})
+        (case (dr/weighted {:amp 1.0
+                            :rate 2.0
+                            :phase 2.0
+                            :decay 1.0})
           :amp
           (let [amp (get pendulum :amp)]
             [:amp (tm/clamp (cond (tm/delta= 0.0 amp)
@@ -152,7 +153,14 @@
             [field
              (if (dr/chance 0.66)
                (dr/gaussian (get pendulum field) 1.25)
-               (dr/random (* 4 eq/TAU)))]))]
+               (dr/random (* 4 eq/TAU)))])
+          :decay
+          [:r-decay (dr/weighted {0.007 1.0
+                                  0.006 1.5
+                                  0.005 2.0
+                                  0.004 1.5
+                                  0.003 1.0
+                                  0.002 1.0})])]
     {:t0 t :t1 (+ t duration)
      :field field
      :v0 (get pendulum field)
