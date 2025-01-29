@@ -129,12 +129,18 @@
                             0.0 2.0)])
           :rate
           (let [field (dr/rand-nth [:fx :fy])
-                rate (* (dr/random 0.85 1.15) (get pendulum field))]
+                rate (get pendulum field)
+                new-rate (* (dr/random 0.85 1.15) rate)
+                rate' (if (and (< (get pendulum :amp) 0.1)
+                               (< rate 10)
+                               (dr/chance 0.66))
+                        (tm/roundto (* (dr/random 1.5 4.0) rate) 1.0)
+                        new-rate)]
             [field
              (tm/clamp (if (dr/chance 0.5)
-                         (tm/roundto rate 1.0)
-                         (dr/gaussian rate 0.001))
-                       0.1 32)])
+                         (tm/roundto rate' 1.0)
+                         (dr/gaussian rate' 0.001))
+                       0.1 48)])
           :phase
           (let [field (dr/rand-nth [:px :py])]
             [field
