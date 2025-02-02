@@ -16,7 +16,7 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn generate-path [bounds n r]
+(defn generate-path [bounds n _r]
   (let [pts (rp/poisson-disc-sampling bounds (inc n))
         voronoi (delvor/voronoi-cells pts bounds)
         start (g/centroid (dr/rand-nth voronoi))]
