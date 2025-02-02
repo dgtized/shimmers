@@ -7,6 +7,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
@@ -34,8 +35,8 @@
        :cols (dr/random-int 1 5)})))
 
 (defn circles [rect]
-  (map (fn [{[w h] :size :as box}]
-         (let [r (* 0.33 (min w h))]
+  (map (fn [box]
+         (let [r (* 0.33 (geometry/min-axis box))]
            (gc/circle (g/unmap-point box (gv/vec2 0.5 0.5)) r)))
        (g/subdivide rect (splits rect))))
 

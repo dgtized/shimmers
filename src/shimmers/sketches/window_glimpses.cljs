@@ -99,8 +99,8 @@
        (rect/rect (g/unmap-point bounds (gv/vec2 (- 0.9 width) 0.4))
                   (g/unmap-point bounds (gv/vec2 0.9 0.9)))])))
 
-(defn gen-circle [{[width height] :size} existing]
-  (let [r (int (* (min width height) (dr/random 0.05 0.40)))
+(defn gen-circle [{[width height] :size :as bounds} existing]
+  (let [r (int (* (geometry/min-axis bounds) (dr/random 0.05 0.40)))
         circle (gc/circle (dr/random-int r (- width r))
                           (dr/random-int r (- height r))
                           r)]

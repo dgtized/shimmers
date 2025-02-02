@@ -28,6 +28,11 @@
              (dr/weighted-by g/area)
              triangle/random-point-inside)))
 
+(defn min-axis
+  "minimum extent axis of a shape in 2d."
+  [shape]
+  (min (g/width shape) (g/height shape)))
+
 (defn rotate-around-centroid [polygon t]
   (-> polygon
       g/center
