@@ -5,6 +5,7 @@
    [shimmers.math.core :as sm]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.triangle :as triangle]
    [shimmers.math.vector :as v]
    [thi.ng.geom.circle :as gc]
@@ -60,8 +61,9 @@
   the cell and pick a random point inside that circle."
   [bounds n]
   (let [cells (g/subdivide bounds (cell-fit bounds n))]
-    (for [{[w h] :size :as cell} cells]
-      (inside-circle (gc/circle (g/centroid cell) (/ (min w h) 2))
+    (for [cell cells]
+      (inside-circle (gc/circle (g/centroid cell)
+                                (/ (geometry/min-axis cell) 2))
                      dr/random))))
 
 (defn poisson-disc-sampling
