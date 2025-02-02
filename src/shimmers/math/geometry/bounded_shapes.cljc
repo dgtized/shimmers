@@ -1,6 +1,7 @@
 (ns shimmers.math.geometry.bounded-shapes
   (:require
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.polygon :as poly]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -32,8 +33,8 @@
   "Construct a random circle in `bounds` with radius `r`.
 
   `r` is constrained to the minimum side length of the bounds."
-  [{[width height] :size :as bounds} r]
-  (let [short (min width height)
+  [bounds r]
+  (let [short (geometry/min-axis bounds)
         r (min r short)
         m (/ r short)
         c (gv/vec2 (dr/random m (- 1 m))
