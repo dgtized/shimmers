@@ -7,6 +7,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.bounded-shapes :as bounded]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.vector :as v]
@@ -57,7 +58,7 @@
   (let [boundaries (first (drop-while (fn [s] (< (count s) 5)) (generate-boxes bounds)))]
     [boundaries
      (mapcat (fn [box] (generate-circles (g/scale-size box 0.95) []
-                                        (min (g/width box) (g/height box)) 10 []))
+                                        (geometry/min-axis box) 10 []))
              boundaries)]))
 
 (defn flow-group [circle force]
@@ -150,7 +151,7 @@
 
 (defn shapes [seed]
   (let [bounds (g/scale-size (csvg/screen width height) 0.98)
-        R (min (g/width bounds) (g/height bounds))
+        R (geometry/min-axis bounds)
         [boxes seeds] (generate-seeds bounds)
         circles (sort-by :r > (generate-circles bounds seeds R 800
                                                 (map (fn [b] (g/scale-size b 1.02)) boxes)))
