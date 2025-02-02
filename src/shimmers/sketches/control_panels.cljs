@@ -290,7 +290,7 @@
                        #(dr/rand-nth pool)))))
 
 (defn assign-pane [{[w h] :size :as bounds}]
-  (let [min-edge (min w h)
+  (let [min-edge (geometry/min-axis bounds)
         area-ratio (/ (g/area bounds) (g/area screen))
         weights {:vertical-sliders (if (< h (* 0.12 height)) 0 0.8)
                  :horizontal-sliders (if (< w (* 0.12 width)) 0 0.8)
@@ -357,7 +357,7 @@
         (level-meter bounds (repeatedly n #(dr/random-int 10))))
       :knobs
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
-                      (* 0.06 (min width height)))
+                      (* 0.06 (geometry/min-axis screen)))
             cnt (subdivision-count bounds size)
             size (min (cond (> cnt 40) (* size 4)
                             (> cnt 32) (* size 3)
@@ -374,7 +374,7 @@
           (knob (g/centroid s) (* 0.33 size) (dr/random) opts)))
       :toggle-switch
       (let [size (max (* (dr/rand-nth [0.25 0.33 0.5]) min-edge)
-                      (* 0.06 (min width height)))
+                      (* 0.06 (geometry/min-axis screen)))
             cnt (subdivision-count bounds size)
             size (min (cond (> cnt 40) (* size 4)
                             (> cnt 32) (* size 3)
@@ -390,25 +390,28 @@
             opts (cond (> w (* 1.8 h)) {:rows 1 :cols n}
                        (> h (* 2 w)) {:rows n :cols 1}
                        :else {:rows 1 :cols 1})]
-        (for [{[w1 h1] :size :as s} (g/subdivide bounds opts)]
-          (vu-meter (g/centroid s) (* 0.45 (min w1 h1)) (dr/random))))
+        (for [s (g/subdivide bounds opts)]
+          (vu-meter (g/centroid s)
+                    (* 0.45 (geometry/min-axis s))
+                    (dr/random))))
       :oscilliscope
       (oscilliscope (g/centroid bounds) (* 0.45 min-edge))
       :plugs
-      (let [size (* (dr/rand-nth [0.05 0.066 0.08]) (min width height))
+      (let [size (* (dr/rand-nth [0.05 0.066 0.08])
+                    (geometry/min-axis screen))
             label (dr/chance 0.33)]
         (for [s (subdivide-to-cells bounds size)]
           (plug (g/centroid s) (* 0.3 size) label)))
       :button
       (let [scale (dr/rand-nth [0.08 0.12 0.16])
-            size (* scale (min width height))
+            size (* scale (geometry/min-axis screen))
             style (dr/weighted {:square 1
                                 :circle 1
                                 :indicator-toggle (if (> scale 0.09) 1 0)})]
         (for [s (subdivide-to-cells bounds size)]
           (button (g/centroid s) (* 0.3 size) style (random-label) (dr/chance 0.5))))
       :indicator-light
-      (let [size (* 0.05 (min width height))]
+      (let [size (* 0.05 (geometry/min-axis screen))]
         (for [s (subdivide-to-cells bounds size)]
           (indicator-light (g/centroid s) (* 0.33 size) (dr/chance 0.5)))))))
 
