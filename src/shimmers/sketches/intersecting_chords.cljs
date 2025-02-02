@@ -40,17 +40,18 @@
             candidate))
         candidate))))
 
-(defn circle-pack [{[w h] :size :as bounds} n]
-  (pack/add-circles
-   (saq/circletree bounds)
-   (fn [tree]
-     (legal-candidate
-      tree
-      {:bounds (g/scale-size bounds 0.95)
-       :gen-circle (partial make-circle bounds)
-       :min-spacing (- (* 0.1 (min w h)))
-       :max-spacing (* 0.05 (min w h))}))
-   n))
+(defn circle-pack [bounds n]
+  (let [min-axis (geometry/min-axis bounds)]
+    (pack/add-circles
+     (saq/circletree bounds)
+     (fn [tree]
+       (legal-candidate
+        tree
+        {:bounds (g/scale-size bounds 0.95)
+         :gen-circle (partial make-circle bounds)
+         :min-spacing (* -0.1 min-axis)
+         :max-spacing (* 0.05 min-axis)}))
+     n)))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
