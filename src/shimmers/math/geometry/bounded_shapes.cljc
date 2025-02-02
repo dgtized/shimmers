@@ -73,8 +73,8 @@
 
   `s%` is the percent size of min(width,height) of the bounding rectangle."
   ([bounds] (square bounds (dr/random)))
-  ([{pos :p [width height] :size} s%]
-   (let [size (* s% (min height width))]
+  ([{pos :p [width height] :size :as bounds} s%]
+   (let [size (* s% (geometry/min-axis bounds))]
      (rect/rect (tm/+ pos (gv/vec2 (dr/random 0 (- width size))
                                    (dr/random 0 (- height size))))
                 size size))))
