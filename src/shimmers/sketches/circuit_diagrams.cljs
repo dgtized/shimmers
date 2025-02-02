@@ -7,6 +7,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.arc :as arc]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.math.geometry.polygon :as poly]
@@ -238,7 +239,7 @@
 (defmethod draw-connection :ground
   [face shape]
   (let [center (g/centroid shape)
-        size (min (g/width shape) (g/height shape))
+        size (geometry/min-axis shape)
         angle (face-angle face center)
         pt (v/+polar center (* 0.17 size) angle)
         pt2 (v/+polar center (* 0.14 size) angle)
@@ -271,7 +272,7 @@
 (defmethod draw-component :orb
   [{:keys [shape faces]}]
   (let [center (g/centroid shape)
-        radius (* 0.12 (min (g/width shape) (g/height shape)))
+        radius (* 0.12 (geometry/min-axis shape))
         [in & out] (filter :connected faces)]
     (into (when in
             [(connector in center)
