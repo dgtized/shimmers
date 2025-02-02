@@ -1,5 +1,6 @@
 (ns shimmers.algorithm.square-packing
   (:require
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
@@ -97,8 +98,7 @@
   ([rectangle ratio percent]
    (proportional-split rectangle ratio percent (row-major rectangle)))
   ([rectangle ratio percent split]
-   (let [{[w h] :size} rectangle
-         square (* (min w h) ratio)]
+   (let [square (* ratio (geometry/min-axis rectangle))]
      (filter has-area? (split-panes rectangle square percent split)))))
 
 ;; TODO: rename method for clarity
