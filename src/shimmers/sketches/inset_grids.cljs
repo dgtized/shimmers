@@ -45,10 +45,11 @@
     (if (< (g/area rect) limit)
       (if (dr/chance 0.05)
         (into [rect]
-              (clip/hatch-rectangle rect
-                                    (* (dr/random 0.1 0.2) (min (g/width rect) (g/height rect)))
-                                    (+ (* 0.25 eq/TAU) (g/heading (tm/- (g/centroid rect) (rv 0.5 0.5))))
-                                    [(dr/random) (dr/random)]))
+              (clip/hatch-rectangle
+               rect
+               (* (dr/random 0.1 0.2) (geometry/min-axis rect))
+               (+ (* 0.25 eq/TAU) (g/heading (tm/- (g/centroid rect) (rv 0.5 0.5))))
+               [(dr/random) (dr/random)]))
         [rect])
       (mapcat (fn [r]
                 (let [p-area (/ (g/area r) (* width height))
