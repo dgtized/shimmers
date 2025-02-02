@@ -220,7 +220,7 @@
     [cq/draw-path 2.0]]))
 
 (defn make-triangle [bounds]
-  (let [limit (min (g/width bounds) (g/height bounds))
+  (let [limit (geometry/min-axis bounds)
         s (if (dr/chance 0.75) (dr/random 0.15 0.66) 0)
         radius (* s 0.65 limit)
         n-triangles (dr/weighted {1 1 3 2 5 3 7 2})
@@ -274,7 +274,7 @@
           (qdg/draw)))))
 
 (defn make-spinner [bounds]
-  (let [radius (min (g/width bounds) (g/height bounds))
+  (let [radius (geometry/min-axis bounds)
         direction (* (dr/random-sign) (dr/gaussian 0.7 0.06))
         [a b c] (repeatedly 3 #(dr/random-int -4 4))
         weight (create-osc (* 0.3 b) 1.25 0.75)
@@ -299,7 +299,7 @@
       (q/no-stroke))))
 
 (defn make-loop-spinner-hairs [bounds]
-  (let [radius (min (g/width bounds) (g/height bounds))
+  (let [radius (geometry/min-axis bounds)
         major (dr/random-int 1 7)
         minor (* (dr/weighted {-1 6 1 1})
                  (dr/random-int 1 7))
@@ -340,7 +340,7 @@
       (q/no-stroke))))
 
 (defn make-loop-spinner [bounds]
-  (let [radius (min (g/width bounds) (g/height bounds))
+  (let [radius (geometry/min-axis bounds)
         major (dr/random-int 1 7)
         minor (* (dr/weighted {-1 6 1 1})
                  (dr/random-int 1 7))
@@ -447,7 +447,7 @@
 ;; (gc/circle (v/+polar (g/point-at (gc/circle (gv/vec2) 10) 0) 9.0 math/PI) 9.0)
 
 (defn make-spiral [bounds]
-  (let [size (min (g/width bounds) (g/height bounds))
+  (let [size (geometry/min-axis bounds)
         dr-rate (dr/random 0.45 1.2)
         dr-rate' (dr/gaussian 1.0 0.2)
         dr-phase (dr/random-tau)
@@ -530,7 +530,7 @@
       (q/stroke-weight 1.0))))
 
 (defn make-circle-blob [bounds]
-  (let [radius (* 0.4 (min (g/width bounds) (g/height bounds)))
+  (let [radius (* 0.4 (geometry/min-axis bounds))
         samples 40
         blades (+ (dr/random-int 2 7) (dr/gaussian 0.0 0.1))
         phase (dr/random-tau)
@@ -558,7 +558,7 @@
 
 (defn make-hex [bounds]
   (let [scale (* 0.435 (math/pow 0.98 (dr/random-int 5)))
-        radius (* scale (min (g/width bounds) (g/height bounds)))
+        radius (* scale (geometry/min-axis bounds))
         spin-phase (dr/random-tau)
         o-phase (dr/random-tau)]
     (fn [pos rotation t f]
