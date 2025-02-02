@@ -4,6 +4,7 @@
    [shimmers.common.svg :as csvg]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry :as geometry]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
@@ -22,7 +23,7 @@
                (filter (fn [{:keys [size]}] (every? #(> % 20) size)))
                (dr/weighted-by g/area))
           area (* w h)
-          min-size (min w h)
+          min-size (geometry/min-axis rect)
           [sq & panes]
           (square/split-panes
            rect
@@ -31,7 +32,7 @@
                       (> area 800)
                       (* min-size (dr/rand-nth [0.5 0.66 0.75 0.8]))
                       :else
-                      (min w h)))
+                      min-size))
            [0 0] (dr/weighted {(square/row-major rect) 2
                                :all 1}))]
       (recur (conj squares sq)
