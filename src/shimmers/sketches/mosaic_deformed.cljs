@@ -4,11 +4,13 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [shimmers.view.sketch :as view-sketch]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
+   [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -38,8 +40,8 @@
             (dr/random 0.5 0.8)
             (tm/clamp01 (dr/gaussian 0.85 0.12))))
 
-(defn shapes [[width height] seed base-color]
-  (let [radius (* 0.45 (min width height))
+(defn shapes [bounds seed base-color]
+  (let [radius (* 0.45 (geometry/min-axis bounds))
         rings (mapv (fn [r]
                       (vary-meta
                        (gp/polygon2 (ring seed
@@ -63,34 +65,31 @@
                    :fill (fill-color base-color)))))
          (into rings))))
 
-(defn mosaic [seed dims pos base-color]
-  (csvg/group {:transform (csvg/translate pos)}
-    (reverse (shapes dims
-                     (tm/+ seed pos)
-                     base-color))))
+(defn mosaic [seed bounds base-color]
+  (csvg/group {:transform (csvg/translate (:p bounds))}
+    (reverse (shapes bounds seed base-color))))
+
+(defn place [px py pw ph]
+  (let [[x y] (rv px py)
+        w (* pw width)
+        h (* ph height)]
+    (rect/rect x y w h)))
 
 (defn layout [seed base-color]
   (case (dr/weighted {:pair-left 1
                       :pair-right 1
                       :solo 1})
     :pair-left
-    [(mosaic seed [(* 0.75 width) (* 0.50 height)]
-             (rv 0.3 0.25) base-color)
-     (mosaic seed [(* 0.75 width) (* 0.50 height)]
-             (rv 0.3 0.75) base-color)
-     (mosaic seed [(* 0.8 width) (* 0.8 height)]
-             (rv 0.7 (+ 0.45 (dr/random 0.1))) base-color)]
+    [(mosaic seed (place 0.3 0.25 0.75 0.5) base-color)
+     (mosaic seed (place 0.3 0.75 0.75 0.5) base-color)
+     (mosaic seed (place 0.7 (+ 0.45 (dr/random 0.1)) 0.8 0.8) base-color)]
     :pair-right
-    [(mosaic seed [(* 0.75 width) (* 0.50 height)]
-             (rv 0.7 0.25) base-color)
-     (mosaic seed [(* 0.75 width) (* 0.50 height)]
-             (rv 0.7 0.75) base-color)
-     (mosaic seed [(* 0.8 width) (* 0.8 height)]
-             (rv 0.3 (+ 0.45 (dr/random 0.1))) base-color)]
+    [(mosaic seed (place 0.7 0.25 0.75 0.5) base-color)
+     (mosaic seed (place 0.7 0.75 0.75 0.5) base-color)
+     (mosaic seed (place 0.3 (+ 0.45 (dr/random 0.1)) 0.8 0.8) base-color)]
     :solo
-    (mosaic seed [width height]
-            (rv (dr/random 0.4 0.6) (dr/random 0.45 0.55))
-            base-color)))
+    [(mosaic seed (place (dr/random 0.4 0.6) (dr/random 0.45 0.55) 1.0 1.0)
+             base-color)]))
 
 (defn scene [seed base-color]
   (csvg/svg-timed
