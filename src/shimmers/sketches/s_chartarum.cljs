@@ -3,6 +3,7 @@
    [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
+   [shimmers.algorithm.random-points :as rp]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
    [shimmers.common.ui.controls :as ctrl]
@@ -78,7 +79,7 @@
 
 (defn position-on-radius [bounds spots]
   (let [candidates (remove (fn [{:keys [radius]}] (< radius (cq/rel-h 0.03))) spots)
-        inner (cq/screen-rect 0.8)]
+        inner (g/scale-size bounds 0.9)]
     (->> (fn []
            (if-let [{:keys [pos radius]}
                     (and (dr/chance 0.66)
@@ -88,8 +89,7 @@
                             (* max-radius (tm/smoothstep* 0.66 1.0 (/ radius max-radius))))
                           candidates))]
              (v/+polar pos (* (+ 1 (dr/gaussian 0.4 0.1)) radius) (dr/random-tau))
-             (let [{p :p [x y] :size} inner]
-               (tm/+ p (dr/random x) (dr/random y)))))
+             (rp/sample-point-inside inner)))
          repeatedly
          (some (fn [p] (when (and (g/contains-point? bounds p)
                                  (not-any? (fn [{:keys [pos radius]}]
