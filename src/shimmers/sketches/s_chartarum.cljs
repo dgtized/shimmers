@@ -42,7 +42,8 @@
   {:spots []
    :t 0
    :rate 0.75
-   :lifespan 100})
+   :lifespan 100
+   :bounds (cq/screen-rect 0.92)})
 
 (defn similarity
   "Distance between two normalized vectors"
@@ -75,9 +76,8 @@
             (and (> radius max-radius) (dr/chance 0.2)))
           spots))
 
-(defn position-on-radius [spots]
+(defn position-on-radius [bounds spots]
   (let [candidates (remove (fn [{:keys [radius]}] (< radius (cq/rel-h 0.03))) spots)
-        bounds (cq/screen-rect 0.9)
         inner (cq/screen-rect 0.8)]
     (->> (fn []
            (if-let [{:keys [pos radius]}
@@ -97,28 +97,28 @@
                                            spots))
                         p))))))
 
-(defn add-spots [spots]
+(defn add-spots [bounds spots]
   (if (and (< (count spots) 64) (dr/chance 0.125))
     (conj spots
-          (let [position (position-on-radius spots)
+          (let [position (position-on-radius bounds spots)
                 max-radius
                 (min (cq/rel-h (tm/clamp (+ (dr/pareto 0.01 tm/PHI)
                                             (dr/gaussian 0.02 0.06))
                                          0.01 0.2))
-                     (poly/dist-to-closest-point (cq/screen-rect 0.92) position))]
+                     (poly/dist-to-closest-point bounds position))]
             (make-spot position
                        max-radius
                        (dr/randvec2 (/ (cq/rel-h 0.05) max-radius)))))
     spots))
 
-(defn update-state [{:keys [t rate lifespan] :as state}]
+(defn update-state [{:keys [t rate lifespan bounds] :as state}]
   (let [dt (dr/random 0.05 0.20)]
     (if (< t lifespan)
       (-> state
           (update :t + dt)
           (update :spots (comp
                           remove-dead
-                          add-spots
+                          (partial add-spots bounds)
                           (partial update-spots dt rate))))
       state)))
 
