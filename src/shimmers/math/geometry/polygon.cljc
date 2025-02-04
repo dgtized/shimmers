@@ -134,5 +134,7 @@
   (apply min-key (partial g/dist-squared point) points))
 
 (defn connect-polygons [a b]
-  (gl/line2 (closest-point (g/centroid b) (concat (map midpoint (g/edges a)) (g/vertices a)))
-            (closest-point (g/centroid a) (concat (map midpoint (g/edges b)) (g/vertices b)))))
+  (let [a-points (concat (map midpoint (g/edges a)) (g/vertices a))
+        b-points (concat (map midpoint (g/edges b)) (g/vertices b))]
+    (gl/line2 (closest-point (g/centroid b) a-points)
+              (closest-point (g/centroid a) b-points))))
