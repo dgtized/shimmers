@@ -59,23 +59,23 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [a (dr/random-int 1 6)
-        b (dr/random-int 1 6)
-        pendulums [(->Pendulum (dr/random 0.5 1.0) a b
-                               (dr/random-tau) (dr/random-tau)
-                               0.005 [])
-                   (->Pendulum (dr/random 0.1 0.5)
-                               (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
-                               (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
-                               (dr/random-tau) (dr/random-tau)
-                               0.005 [])]]
-    {:pendulums (if (dr/chance 0.4)
-                  (conj pendulums
-                        (->Pendulum (dr/random 0.01 0.125)
-                                    (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
-                                    (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
-                                    (dr/random-tau) (dr/random-tau)
-                                    0.005 []))
-                  pendulums)
+        b (dr/random-int 1 6)]
+    {:pendulums
+     [(->Pendulum (dr/random 0.5 1.0) a b
+                  (dr/random-tau) (dr/random-tau)
+                  0.005 [])
+      (->Pendulum (dr/random 0.1 0.5)
+                  (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
+                  (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
+                  (dr/random-tau) (dr/random-tau)
+                  0.005 [])
+      (->Pendulum (if (dr/chance 0.35)
+                    (dr/random 0.01 0.125)
+                    0.0)
+                  (+ (* (dr/random-int 1 6) a) (dr/gaussian 0.0 0.0075))
+                  (+ (* (dr/random-int 1 6) b) (dr/gaussian 0.0 0.0075))
+                  (dr/random-tau) (dr/random-tau)
+                  0.005 [])]
      :p1 (dr/random-tau)
      :t (/ (q/millis) 1000.0)}))
 
