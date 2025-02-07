@@ -111,56 +111,58 @@
                 (update :transitions (partial remove done?)))))
         pendulums))
 
+(defn field-transition [pendulum]
+  (case (dr/weighted {:amp 1.0
+                      :rate 2.0
+                      :phase 2.0
+                      :decay 1.0})
+    :amp
+    (let [amp (get pendulum :amp)]
+      [:amp (tm/clamp (cond (tm/delta= 0.0 amp)
+                            (dr/random 0.33)
+                            (dr/chance 0.33)
+                            0.0
+                            :else
+                            (* amp (dr/random 0.66 1.33)))
+                      0.0 2.0)])
+    :rate
+    (let [field (dr/rand-nth [:fx :fy])
+          rate (get pendulum field)
+          new-rate (* (dr/random 0.85 1.15) rate)
+          amp (get pendulum :amp)
+          rate' (cond (and (< amp 0.1)
+                           (< new-rate 10)
+                           (dr/chance 0.75))
+                      (tm/roundto (* (dr/random 1.5 4.0) new-rate) 1.0)
+                      (and (> amp 0.15)
+                           (> new-rate 16)
+                           (dr/chance 0.75))
+                      (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
+                      :else
+                      new-rate)]
+      [field
+       (tm/clamp (if (dr/chance 0.5)
+                   (tm/roundto rate' 1.0)
+                   (dr/gaussian rate' 0.001))
+                 0.1 48)])
+    :phase
+    (let [field (dr/rand-nth [:px :py])]
+      [field
+       (if (dr/chance 0.66)
+         (dr/gaussian (get pendulum field) 1.25)
+         (dr/random (* 4 eq/TAU)))])
+    :decay
+    [:r-decay (dr/weighted {0.007 1.0
+                            0.006 1.5
+                            0.005 2.0
+                            0.004 1.5
+                            0.003 1.0
+                            0.002 1.0})]))
+
 (defn generate-transition [pendulum t]
   (let [duration (+ (dr/random 1.0 6.0)
                     (dr/random 1.0 12.0))
-        [field target]
-        (case (dr/weighted {:amp 1.0
-                            :rate 2.0
-                            :phase 2.0
-                            :decay 1.0})
-          :amp
-          (let [amp (get pendulum :amp)]
-            [:amp (tm/clamp (cond (tm/delta= 0.0 amp)
-                                  (dr/random 0.33)
-                                  (dr/chance 0.33)
-                                  0.0
-                                  :else
-                                  (* amp (dr/random 0.66 1.33)))
-                            0.0 2.0)])
-          :rate
-          (let [field (dr/rand-nth [:fx :fy])
-                rate (get pendulum field)
-                new-rate (* (dr/random 0.85 1.15) rate)
-                amp (get pendulum :amp)
-                rate' (cond (and (< amp 0.1)
-                                 (< new-rate 10)
-                                 (dr/chance 0.75))
-                            (tm/roundto (* (dr/random 1.5 4.0) new-rate) 1.0)
-                            (and (> amp 0.15)
-                                 (> new-rate 16)
-                                 (dr/chance 0.75))
-                            (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
-                            :else
-                            new-rate)]
-            [field
-             (tm/clamp (if (dr/chance 0.5)
-                         (tm/roundto rate' 1.0)
-                         (dr/gaussian rate' 0.001))
-                       0.1 48)])
-          :phase
-          (let [field (dr/rand-nth [:px :py])]
-            [field
-             (if (dr/chance 0.66)
-               (dr/gaussian (get pendulum field) 1.25)
-               (dr/random (* 4 eq/TAU)))])
-          :decay
-          [:r-decay (dr/weighted {0.007 1.0
-                                  0.006 1.5
-                                  0.005 2.0
-                                  0.004 1.5
-                                  0.003 1.0
-                                  0.002 1.0})])]
+        [field target] (field-transition pendulum)]
     {:t0 t :t1 (+ t duration)
      :field field
      :v0 (get pendulum field)
