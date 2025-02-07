@@ -182,10 +182,11 @@
 
 (defn update-state [{:keys [pendulums] :as state}]
   (let [t (/ (q/millis) 1000.0)
-        state' (update state :pendulums remove-ended? t)]
-    (-> (if (and (every? (fn [{:keys [transitions]}] (empty? transitions))
-                         pendulums)
-                 (dr/chance 0.1))
+        state' (update state :pendulums remove-ended? t)
+        transitions (mapcat :transitions pendulums)
+        n-transitions (count transitions)]
+    (-> (if (and (< n-transitions 4)
+                 (dr/chance (math/pow 0.03 (+ 1 n-transitions))))
           (let [n (count pendulums)
                 i (dr/random-int n)]
             (update-in state' [:pendulums i] new-transition t))
