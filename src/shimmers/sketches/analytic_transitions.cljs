@@ -34,7 +34,7 @@
     (gv/vec2 ((cyclic (/ amp weight) r-decay fx px) theta)
              ((cyclic (/ amp weight) r-decay fy py) theta))))
 
-(defn plot [pendulums p1 samples t]
+(defn plot [pendulums phase samples t]
   (let [weight (reduce + (mapv :amp pendulums))
         plot-fs (mapv
                  (fn [pendulum]
@@ -46,7 +46,7 @@
     (for [theta (range 0 revolutions (/ revolutions samples))]
       (reduce (fn [p f]
                 (let [factor (+ 0.5 (* 2.0 (math/sin (+ (* 0.05 t)
-                                                        (eq/sqr (math/sin (+ (* 0.0005 theta) p1
+                                                        (eq/sqr (math/sin (+ (* 0.0005 theta) phase
                                                                              (* 0.03 t))))))))]
                   (tm/+ p (f (* (+ base theta)
                                 tm/PHI
@@ -76,7 +76,7 @@
                   (+ (* (dr/random-int -5 6) b) (dr/gaussian 0.0 0.01))
                   (dr/random-tau) (dr/random-tau)
                   0.005 [])]
-     :p1 (dr/random-tau)
+     :plot-phase (dr/random-tau)
      :t (/ (q/millis) 1000.0)}))
 
 (defn transition-fx [_value {:keys [kind t0 t1 rate v0 v1]} t]
@@ -190,13 +190,13 @@
           state')
         (assoc :t t))))
 
-(defn draw [{:keys [pendulums p1 t] :as state}]
+(defn draw [{:keys [pendulums plot-phase t] :as state}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (reset! defo state)
   (let [size (cq/rel-h 0.5)
         center (cq/rel-vec 0.5 0.5)]
-    (doseq [p (plot (run-transitions pendulums t) p1 6000 t)]
+    (doseq [p (plot (run-transitions pendulums t) plot-phase 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
 
