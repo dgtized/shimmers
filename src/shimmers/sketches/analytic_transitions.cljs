@@ -45,9 +45,9 @@
         ]
     (for [theta (range 0 revolutions (/ revolutions samples))]
       (reduce (fn [p f]
-                (let [factor (+ 0.5 (* 2.0 (math/sin (+ (* 0.05 t)
-                                                        (eq/sqr (math/sin (+ (* 0.0005 theta) phase
-                                                                             (* 0.03 t))))))))]
+                (let [factor (+ 0.66 (* 1.33 (math/sin (+ (* 0.05 t)
+                                                          (eq/sqr (math/sin (+ (* 0.0005 theta) phase
+                                                                               (* 0.03 t))))))))]
                   (tm/+ p (f (* (+ base theta)
                                 tm/PHI
                                 (- 1.0 (math/exp (* -0.001
