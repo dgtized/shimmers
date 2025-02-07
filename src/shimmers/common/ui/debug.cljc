@@ -38,8 +38,11 @@
       [:pre.debug [:code (with-out-str (sc-edn/pprint edn options))]])))
 
 #?(:cljs
-   (defn display [atom]
-     (pre-edn (deref atom))))
+   (defn display
+     ([atom]
+      (display atom {}))
+     ([atom params]
+      (pre-edn (deref atom) params))))
 
 #?(:cljs
    (do
