@@ -100,16 +100,18 @@
 (defn run-effect [pendulum {:keys [field] :as transition} t]
   (update pendulum field transition-fx transition t))
 
-(defn remove-ended? [pendulums t]
-  (mapv (fn [{:keys [transitions] :as pendulum}]
-          (let [done? (fn [{:keys [t1]}] (> t t1))
-                to-remove (filter done? transitions)]
-            (-> (reduce (fn [pendulum transition]
-                          (run-effect pendulum transition t))
-                        pendulum
-                        to-remove)
-                (update :transitions (partial remove done?)))))
-        pendulums))
+(defn remove-ended? [state t]
+  (update state :pendulums
+          (fn [pendulums]
+            (mapv (fn [{:keys [transitions] :as pendulum}]
+                    (let [done? (fn [{:keys [t1]}] (> t t1))
+                          to-remove (filter done? transitions)]
+                      (-> (reduce (fn [pendulum transition]
+                                    (run-effect pendulum transition t))
+                                  pendulum
+                                  to-remove)
+                          (update :transitions (partial remove done?)))))
+                  pendulums))))
 
 (defn field-transition [pendulum]
   (case (dr/weighted {:amp 1.0
@@ -182,7 +184,7 @@
 
 (defn update-state [{:keys [pendulums] :as state}]
   (let [t (/ (q/millis) 1000.0)
-        state' (update state :pendulums remove-ended? t)
+        state' (remove-ended? state t)
         transitions (mapcat :transitions pendulums)
         n-transitions (count transitions)]
     (-> (if (and (< n-transitions 4)
