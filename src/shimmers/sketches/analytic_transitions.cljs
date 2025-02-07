@@ -211,7 +211,7 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div {:style {:font-size "0.75em"}}
-    (debug/display defo {:width 140})]])
+    (debug/display defo {:width 140 :print-fixed-width 3})]])
 
 (sketch/definition analytic-transitions
   {:created-at "2025-01-26"
