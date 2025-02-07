@@ -173,9 +173,10 @@
      :kind (dr/weighted {:linear 2.5
                          :sin-osc 1.0})}))
 
-(defn new-transition [pendulum t]
-  (update pendulum :transitions conj
-          (generate-transition pendulum t)))
+(defn new-transition [{:keys [pendulums] :as state} t]
+  (let [i (dr/random-int (count pendulums))]
+    (update-in state [:pendulums i :transitions] conj
+               (generate-transition (nth pendulums i) t))))
 
 (defn run-transitions [pendulums t]
   (for [{:keys [transitions] :as pendulum} pendulums]
@@ -187,10 +188,8 @@
         {:keys [pendulums] :as state'} (remove-ended? state t)
         n-transitions (count (mapcat :transitions pendulums))]
     (-> (if (and (< n-transitions 4)
-                 (dr/chance (math/pow 0.03 (+ 1 n-transitions))))
-          (let [n (count pendulums)
-                i (dr/random-int n)]
-            (update-in state' [:pendulums i] new-transition t))
+                 (dr/chance (math/pow 0.025 (+ 1 n-transitions))))
+          (new-transition state' t)
           state')
         (assoc :t t))))
 
