@@ -182,9 +182,9 @@
     (reduce (fn [pendulum tx] (run-effect pendulum tx t))
             pendulum transitions)))
 
-(defn update-state [{:keys [pendulums] :as state}]
+(defn update-state [state]
   (let [t (/ (q/millis) 1000.0)
-        state' (remove-ended? state t)
+        {:keys [pendulums] :as state'} (remove-ended? state t)
         n-transitions (count (mapcat :transitions pendulums))]
     (-> (if (and (< n-transitions 4)
                  (dr/chance (math/pow 0.03 (+ 1 n-transitions))))
