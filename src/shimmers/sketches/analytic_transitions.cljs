@@ -79,7 +79,7 @@
      :plot-phase (dr/random-tau)
      :t (/ (q/millis) 1000.0)}))
 
-(defn transition-fx [_value {:keys [kind t0 t1 rate v0 v1]} t]
+(defn transition-fx [_value {:keys [kind t0 t1 freq v0 v1]} t]
   (let [pct-t (/ (- t t0) (- t1 t0))
         smooth-t (tm/smoothstep* 0.01 0.99 pct-t)]
     (case kind
@@ -87,7 +87,7 @@
       (tm/mix* v0 v1 smooth-t)
       :sin-osc
       (tm/mix* v0 v1
-               (eq/unit-sin (- (* rate 0.25 eq/TAU smooth-t)
+               (eq/unit-sin (- (* freq 0.25 eq/TAU smooth-t)
                                (* 0.25 eq/TAU)))))))
 
 (comment
@@ -167,7 +167,7 @@
      :field field
      :v0 (get pendulum field)
      :v1 target
-     :rate (* (dr/random 0.25 3) duration)
+     :freq (* (dr/random 0.25 3) duration)
      :kind (dr/weighted {:linear 2.5
                          :sin-osc 1.0})}))
 
