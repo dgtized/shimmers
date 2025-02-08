@@ -23,7 +23,7 @@
        amplitude
        (math/sin (+ (* freq t) phase)))))
 
-(defrecord Pendulum [amp fx fy px py r-decay transitions])
+(defrecord Pendulum [amp fx fy px py r-decay])
 
 (extend-protocol IEdn
   Pendulum
@@ -65,19 +65,19 @@
     {:pendulums
      [(->Pendulum (dr/random 0.5 1.0) a b
                   (dr/random-tau) (dr/random-tau)
-                  0.005 [])
+                  0.005)
       (->Pendulum (dr/random 0.1 0.5)
                   (+ (* (dr/random-int -5 6) a) (dr/gaussian 0.0 0.0075))
                   (+ (* (dr/random-int -5 6) b) (dr/gaussian 0.0 0.0075))
                   (dr/random-tau) (dr/random-tau)
-                  0.005 [])
+                  0.005)
       (->Pendulum (if (dr/chance 0.35)
                     (dr/random 0.01 0.125)
                     0.0)
                   (+ (* (dr/random-int -5 6) a) (dr/gaussian 0.0 0.01))
                   (+ (* (dr/random-int -5 6) b) (dr/gaussian 0.0 0.01))
                   (dr/random-tau) (dr/random-tau)
-                  0.005 [])]
+                  0.005)]
      :plot-phase (dr/random-tau)
      :transitions []
      :t (/ (q/millis) 1000.0)}))
