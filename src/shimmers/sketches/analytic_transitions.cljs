@@ -43,14 +43,16 @@
         base (* revolutions 0.1) ;; push forward so sample rate is already spread out
         ]
     (for [theta (range 0 revolutions (/ revolutions samples))
-          :let [factor
-                (+ 0.66 (* 1.33 (math/sin (+ (* 0.05 t)
-                                             (eq/cube (math/sin (+ (* 0.0005 theta) phase
-                                                                   (* 0.03 t))))))))
+          :let [
+                factor (-> (math/sin (+ (* 0.05 t)
+                                        (eq/cube (math/sin (+ phase
+                                                              (* 0.001 theta)
+                                                              (* 0.03 t))))))
+                           (tm/map-interval [-1.0 1.0] [-0.33 2.0]))
                 m-theta
                 (* (+ base theta)
                    tm/PHI
-                   (- 1.0 (math/exp (* -0.001 (math/pow 2 factor)
+                   (- 1.0 (math/exp (* -0.001 (math/pow 2.0 factor)
                                        (+ base theta)))))]]
       (reduce (fn [p f] (tm/+ p (f m-theta)))
               (gv/vec2) plot-fs))))
