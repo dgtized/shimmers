@@ -113,25 +113,24 @@
                           (update :transitions (partial remove done?)))))
                   pendulums))))
 
-(defn field-transition [pendulum]
-  (case (dr/weighted {:amp 1.0
+(defn field-transition [{:keys [amp] :as pendulum}]
+  (case (dr/weighted {:amp (if (tm/delta= amp 0.0) 4.0 1.0)
                       :rate 2.0
                       :phase 2.0
                       :decay 1.0})
     :amp
-    (let [amp (get pendulum :amp)]
-      [:amp (tm/clamp (cond (tm/delta= 0.0 amp)
-                            (dr/random 0.33)
-                            (dr/chance 0.33)
-                            0.0
-                            :else
-                            (* amp (dr/random 0.66 1.33)))
-                      0.0 2.0)])
+    [:amp
+     (-> (cond (tm/delta= amp 0.0)
+               (dr/random 0.33)
+               (dr/chance 0.33)
+               0.0
+               :else
+               (* amp (dr/random 0.66 1.33)))
+         (tm/clamp 0.0 2.0))]
     :rate
     (let [field (dr/rand-nth [:fx :fy])
           rate (get pendulum field)
           new-rate (* (dr/random 0.85 1.15) rate)
-          amp (get pendulum :amp)
           rate' (cond (and (< amp 0.1)
                            (< new-rate 10)
                            (dr/chance 0.75))
