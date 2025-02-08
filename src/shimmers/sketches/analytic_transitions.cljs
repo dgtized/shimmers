@@ -48,7 +48,7 @@
                                         (eq/cube (math/sin (+ phase
                                                               (* 0.001 theta)
                                                               (* 0.03 t))))))
-                           (tm/map-interval [-1.0 1.0] [-0.33 2.0]))
+                           (tm/map-interval [-1.0 1.0] [-0.66 2.0]))
                 m-theta
                 (* (+ base theta)
                    tm/PHI
