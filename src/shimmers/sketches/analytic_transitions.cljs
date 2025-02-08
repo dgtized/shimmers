@@ -90,7 +90,7 @@
       (tm/mix* v0 v1 smooth-t)
       :sin-osc
       (tm/mix* v0 v1
-               (eq/unit-sin (- (* freq 0.25 eq/TAU smooth-t)
+               (eq/unit-sin (- (* freq eq/TAU smooth-t)
                                (* 0.25 eq/TAU)))))))
 
 (comment
@@ -167,14 +167,15 @@
   (let [pendulum (get-in state target)
         duration (+ (dr/random 1.0 6.0)
                     (dr/random 1.0 12.0))
-        [field v1] (field-transition pendulum)]
+        [field v1] (field-transition pendulum)
+        kind (dr/weighted {:linear 2.5
+                           :sin-osc 1.0})]
     {:t0 t :t1 (+ t duration)
      :field (conj target field)
      :v0 (get pendulum field)
      :v1 v1
-     :freq (* (dr/random 0.25 3) duration)
-     :kind (dr/weighted {:linear 2.5
-                         :sin-osc 1.0})}))
+     :freq (/ duration (dr/random 0.66 6))
+     :kind kind}))
 
 (defn new-transition [{:keys [pendulums] :as state} t]
   (let [i (dr/random-int (count pendulums))]
