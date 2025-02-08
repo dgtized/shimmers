@@ -36,10 +36,9 @@
 
 (defn plot [pendulums phase samples t]
   (let [weight (reduce + (mapv :amp pendulums))
-        plot-fs (mapv
-                 (fn [pendulum]
-                   (render pendulum weight))
-                 pendulums)
+        plot-fs (mapv (fn [pendulum]
+                        (render pendulum weight))
+                      pendulums)
         revolutions (* 24 eq/TAU)
         base (* revolutions 0.1) ;; push forward so sample rate is already spread out
         ]
@@ -51,7 +50,8 @@
                 m-theta
                 (* (+ base theta)
                    tm/PHI
-                   (- 1.0 (math/exp (* -0.001 (math/pow 2 factor) (+ base theta)))))]]
+                   (- 1.0 (math/exp (* -0.001 (math/pow 2 factor)
+                                       (+ base theta)))))]]
       (reduce (fn [p f] (tm/+ p (f m-theta)))
               (gv/vec2) plot-fs))))
 
