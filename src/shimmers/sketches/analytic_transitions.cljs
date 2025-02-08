@@ -6,6 +6,7 @@
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
    [shimmers.common.quil :as cq]
+   [shimmers.common.sequence :as cs]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.debug :as debug]
    [shimmers.math.deterministic-random :as dr]
@@ -78,6 +79,7 @@
                   (dr/random-tau) (dr/random-tau)
                   0.005 [])]
      :plot-phase (dr/random-tau)
+     :transitions []
      :t (/ (q/millis) 1000.0)}))
 
 (defn transition-fx [_value {:keys [kind t0 t1 freq v0 v1]} t]
@@ -98,21 +100,16 @@
     (eq/unit-sin (- (* 1.25 eq/TAU (tm/smoothstep* 0.01 0.99 t))
                     (* 0.25 eq/TAU)))))
 
-(defn run-effect [pendulum {:keys [field] :as transition} t]
-  (update pendulum field transition-fx transition t))
+(defn run-effect [state {:keys [field] :as transition} t]
+  (update-in state field transition-fx transition t))
 
 (defn remove-ended? [state t]
-  (update state :pendulums
-          (fn [pendulums]
-            (mapv (fn [{:keys [transitions] :as pendulum}]
-                    (let [done? (fn [{:keys [t1]}] (> t t1))
-                          to-remove (filter done? transitions)]
-                      (-> (reduce (fn [pendulum transition]
-                                    (run-effect pendulum transition t))
-                                  pendulum
-                                  to-remove)
-                          (update :transitions (partial remove done?)))))
-                  pendulums))))
+  (let [done? (fn [{:keys [t1]}] (> t t1))
+        [to-remove active] (cs/separate done? (:transitions state))]
+    (reduce (fn [state' transition]
+              (run-effect state' transition t))
+            (assoc state :transitions active)
+            to-remove)))
 
 (defn field-transition [{:keys [amp] :as pendulum}]
   (case (dr/weighted {:amp (if (tm/delta= amp 0.0) 4.0 1.0)
@@ -161,45 +158,48 @@
                             0.003 1.0
                             0.002 1.0})]))
 
-(defn generate-transition [pendulum t]
-  (let [duration (+ (dr/random 1.0 6.0)
+(defn generate-transition [state target t]
+  (let [pendulum (get-in state target)
+        duration (+ (dr/random 1.0 6.0)
                     (dr/random 1.0 12.0))
-        [field target] (field-transition pendulum)]
+        [field v1] (field-transition pendulum)]
     {:t0 t :t1 (+ t duration)
-     :field field
+     :field (conj target field)
      :v0 (get pendulum field)
-     :v1 target
+     :v1 v1
      :freq (* (dr/random 0.25 3) duration)
      :kind (dr/weighted {:linear 2.5
                          :sin-osc 1.0})}))
 
 (defn new-transition [{:keys [pendulums] :as state} t]
   (let [i (dr/random-int (count pendulums))]
-    (update-in state [:pendulums i :transitions] conj
-               (generate-transition (nth pendulums i) t))))
+    (update state :transitions conj
+            (generate-transition state [:pendulums i] t))))
 
-(defn run-transitions [pendulums t]
-  (for [{:keys [transitions] :as pendulum} pendulums]
-    (reduce (fn [pendulum tx] (run-effect pendulum tx t))
-            pendulum transitions)))
+(defn run-transitions [state t]
+  (reduce (fn [state transition]
+            (run-effect state transition t))
+          state
+          (:transitions state)))
 
 (defn update-state [state]
   (let [t (/ (q/millis) 1000.0)
-        {:keys [pendulums] :as state'} (remove-ended? state t)
-        n-transitions (count (mapcat :transitions pendulums))]
+        state' (remove-ended? state t)
+        n-transitions (count (:transitions state'))]
     (-> (if (and (< n-transitions 4)
                  (dr/chance (math/pow 0.025 (+ 1 n-transitions))))
           (new-transition state' t)
           state')
         (assoc :t t))))
 
-(defn draw [{:keys [pendulums plot-phase t] :as state}]
+(defn draw [{:keys [plot-phase t] :as state}]
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (reset! defo state)
   (let [size (cq/rel-h 0.5)
-        center (cq/rel-vec 0.5 0.5)]
-    (doseq [p (plot (run-transitions pendulums t) plot-phase 6000 t)]
+        center (cq/rel-vec 0.5 0.5)
+        pendulums (:pendulums (run-transitions state t))]
+    (doseq [p (plot pendulums plot-phase 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
 
