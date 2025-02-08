@@ -103,13 +103,18 @@
 (defn run-effect [state {:keys [field] :as transition} t]
   (update-in state field transition-fx transition t))
 
+(defn run-transitions [state transitions t]
+  (reduce (fn [state transition]
+            (run-effect state transition t))
+          state
+          transitions))
+
 (defn remove-ended? [state t]
   (let [done? (fn [{:keys [t1]}] (> t t1))
         [to-remove active] (cs/separate done? (:transitions state))]
-    (reduce (fn [state' transition]
-              (run-effect state' transition t))
-            (assoc state :transitions active)
-            to-remove)))
+    (-> state
+        (assoc :transitions active)
+        (run-transitions to-remove t))))
 
 (defn field-transition [{:keys [amp] :as pendulum}]
   (case (dr/weighted {:amp (if (tm/delta= amp 0.0) 4.0 1.0)
@@ -176,12 +181,6 @@
     (update state :transitions conj
             (generate-transition state [:pendulums i] t))))
 
-(defn run-transitions [state t]
-  (reduce (fn [state transition]
-            (run-effect state transition t))
-          state
-          (:transitions state)))
-
 (defn update-state [state]
   (let [t (/ (q/millis) 1000.0)
         state' (remove-ended? state t)
@@ -198,7 +197,7 @@
   (reset! defo state)
   (let [size (cq/rel-h 0.5)
         center (cq/rel-vec 0.5 0.5)
-        pendulums (:pendulums (run-transitions state t))]
+        pendulums (:pendulums (run-transitions state (:transitions state) t))]
     (doseq [p (plot pendulums plot-phase 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
