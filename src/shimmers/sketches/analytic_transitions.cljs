@@ -43,18 +43,17 @@
         revolutions (* 24 eq/TAU)
         base (* revolutions 0.1) ;; push forward so sample rate is already spread out
         ]
-    (for [theta (range 0 revolutions (/ revolutions samples))]
-      (reduce (fn [p f]
-                (let [factor (+ 0.66 (* 1.33 (math/sin (+ (* 0.05 t)
-                                                          (eq/sqr (math/sin (+ (* 0.0005 theta) phase
-                                                                               (* 0.03 t))))))))]
-                  (tm/+ p (f (* (+ base theta)
-                                tm/PHI
-                                (- 1.0 (math/exp (* -0.001
-                                                    (math/pow 2 factor)
-                                                    (+ base theta)))))))))
-              (gv/vec2)
-              plot-fs))))
+    (for [theta (range 0 revolutions (/ revolutions samples))
+          :let [factor
+                (+ 0.66 (* 1.33 (math/sin (+ (* 0.05 t)
+                                             (eq/cube (math/sin (+ (* 0.0005 theta) phase
+                                                                   (* 0.03 t))))))))
+                m-theta
+                (* (+ base theta)
+                   tm/PHI
+                   (- 1.0 (math/exp (* -0.001 (math/pow 2 factor) (+ base theta)))))]]
+      (reduce (fn [p f] (tm/+ p (f m-theta)))
+              (gv/vec2) plot-fs))))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
