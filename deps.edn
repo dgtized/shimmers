@@ -56,7 +56,7 @@
    :extra-deps {com.bhauman/figwheel-main {:mvn/version "0.2.20"}
                 com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
   :repl
-  {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
+  {:extra-deps {com.bhauman/rebel-readline-cljs {:mvn/version "0.1.5"}}
    :main-opts ["-m" "figwheel.main" "-b" "dev" "-r"]}
 
   ;; clj -Mclj-kondo --lint src
