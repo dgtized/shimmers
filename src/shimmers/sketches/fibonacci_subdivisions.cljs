@@ -50,6 +50,10 @@
             [shape]
             lines)))
 
+(defn weighted-cuts []
+  (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
+                 (zipmap (drop 2 s) (reverse s)))))
+
 (defn subdivide [shapes axis direction cuts]
   (let [parcels (take cuts (fib))
         divisions (apply + parcels)
@@ -83,19 +87,29 @@
              ;; FIXME filter is a hack to remove bad polygons from inset offset
              (filter (fn [s] (every? #(g/contains-point? bounds %) (g/vertices s))))))
       (recur (dec depth)
-             (dr/mapcat-random-sample
-              (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
-              (fn [s]
-                (let [{[w h] :size} (g/bounds s)
-                      n (dr/weighted (let [s (take (dr/rand-nth (range 5 8)) (fib))]
-                                       (zipmap (drop 2 s) (reverse s))))]
-                  (if (dr/chance (/ 1.0 tm/PHI))
-                    (face-subdivide s n)
-                    (subdivide [s]
-                               (if (> w h) :x :y)
-                               (dr/weighted {:asc 1 :desc 1})
-                               n))))
-              shapes)))))
+             (let [n-shapes (count shapes)]
+               (if (and (> n-shapes 4) (dr/chance 0.25))
+                 ;; cut lines from one shape over a subset of all shapes
+                 (let [el (dr/random-int 1 (int (* 0.66 n-shapes)))
+                       [in out] (split-at el (dr/shuffle shapes))]
+                   (concat (subdivide (reverse (sort-by (fn [s] (g/area s)) in))
+                                      (dr/weighted {:x 1 :y 1})
+                                      (dr/weighted {:asc 1 :desc 1})
+                                      (weighted-cuts))
+                           out))
+                 ;; cut a subset of shapes
+                 (dr/mapcat-random-sample
+                  (fn [s] (/ (g/area s) (+ (g/area bounds) 1)))
+                  (fn [s]
+                    (let [{[w h] :size} (g/bounds s)
+                          n (weighted-cuts)]
+                      (if (dr/chance (/ 1.0 tm/PHI))
+                        (face-subdivide s n)
+                        (subdivide [s]
+                                   (if (> w h) :x :y)
+                                   (dr/weighted {:asc 1 :desc 1})
+                                   n))))
+                  shapes)))))))
 
 (defn scene [{:keys [scene-id palette]}]
   (fn []
