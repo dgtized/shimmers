@@ -50,10 +50,10 @@
             [shape]
             lines)))
 
-(defn subdivide [shape axis direction cuts]
+(defn subdivide [shapes axis direction cuts]
   (let [parcels (take cuts (fib))
         divisions (apply + parcels)
-        bounds (g/bounds shape)
+        bounds (g/bounds (first shapes))
         a (:p bounds)
         b (tm/+ a (axis-vector bounds ({:x :y :y :x} axis)))
         o (axis-vector bounds axis)
@@ -67,7 +67,7 @@
               (mapcat (fn [shape]
                         (lines/cut-polygon shape cut))
                       shapes))
-            [shape]
+            shapes
             lines)))
 
 (defn shapes [bounds palette]
@@ -91,7 +91,7 @@
                                        (zipmap (drop 2 s) (reverse s))))]
                   (if (dr/chance (/ 1.0 tm/PHI))
                     (face-subdivide s n)
-                    (subdivide s
+                    (subdivide [s]
                                (if (> w h) :x :y)
                                (dr/weighted {:asc 1 :desc 1})
                                n))))
