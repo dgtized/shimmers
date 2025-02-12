@@ -71,27 +71,54 @@
       (reduce (fn [p f] (tm/+ p (f d-theta)))
               (gv/vec2) plot-fs))))
 
+(defn random-seed [amp]
+  (->> (fn [] (dr/random-int (- amp) (inc amp)))
+       (repeatedly 100)
+       (remove (fn [v] (< (abs v) 0.1)))
+       first))
+
+(defn random-rate [m amp n]
+  (->> (fn []
+         (let [a (if (< amp 1)
+                   1.0
+                   (if (dr/chance 0.33)
+                     (* (dr/random-sign)
+                        (dr/weighted {0.1 1.0
+                                      0.2 1.0
+                                      0.25 2.0
+                                      0.33 2.0
+                                      0.5 3.0
+                                      0.66 2.0
+                                      0.75 2.0
+                                      0.8 1.0
+                                      0.9 1.0}))
+                     (dr/random-int (- amp) (+ amp 1))))]
+           (dr/gaussian (* a m) n)))
+       (repeatedly 100)
+       (remove (fn [v] (< (abs v) 0.1)))
+       first))
+
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [a (dr/random-int -5 6)
-        b (dr/random-int -5 6)
+  (let [a (random-seed 6)
+        b (random-seed 6)
         inner (fn []
                 (->Phaser (if (dr/chance 0.75)
                             0.0
                             (dr/random 0.1 0.4))
-                          (dr/gaussian (dr/random-int -3 4) 0.005)
-                          (dr/gaussian (dr/random-int -3 4) 0.005)
+                          (random-rate 1 3 0.005)
+                          (random-rate 1 3 0.005)
                           (dr/random-tau) (dr/random-tau)))]
     {:pendulums
      [(->Pendulum (->Phaser (dr/random 0.5 1.0)
-                            (dr/gaussian a 0.005)
-                            (dr/gaussian b 0.005)
+                            (random-rate a 0.0 0.005)
+                            (random-rate b 0.0 0.005)
                             (dr/random-tau) (dr/random-tau))
                   (inner)
                   0.008)
       (->Pendulum (->Phaser (dr/random 0.1 0.5)
-                            (dr/gaussian (* (dr/random-int -3 4) a) 0.005)
-                            (dr/gaussian (* (dr/random-int -3 4) b) 0.005) 
+                            (random-rate a 3 0.005)
+                            (random-rate b 3 0.005)
                             (dr/random-tau) (dr/random-tau))
                   (inner)
                   0.005
@@ -99,8 +126,8 @@
       (->Pendulum (->Phaser (if (dr/chance 0.35)
                               (dr/random 0.01 0.125)
                               0.0)
-                            (dr/gaussian (* (dr/random-int -4 5) a) 0.01)
-                            (dr/gaussian (* (dr/random-int -4 5) b) 0.01)
+                            (random-rate a 5 0.01)
+                            (random-rate b 5 0.01)
                             (dr/random-tau) (dr/random-tau))
                   (inner)
                   0.004)]
