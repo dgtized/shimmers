@@ -103,12 +103,12 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [a (random-seed 6)
-        b (random-seed 6)
-        inner (fn []
-                (->Phaser (if (dr/chance 0.75)
-                            0.0
-                            (dr/random 0.1 0.4))
+  (let [a (random-seed 5)
+        b (random-seed 5)
+        inner (fn [p]
+                (->Phaser (if (dr/chance p)
+                            (* p (dr/random 0.33 0.66))
+                            0.0)
                           (random-rate 1 3 0.005)
                           (random-rate 1 3 0.005)
                           (dr/random-tau) (dr/random-tau)))]
@@ -117,13 +117,13 @@
                             (random-rate a 0.0 0.005)
                             (random-rate b 0.0 0.005)
                             (dr/random-tau) (dr/random-tau))
-                  (inner)
+                  (inner 0.1)
                   0.008)
       (->Pendulum (->Phaser (dr/random 0.1 0.5)
                             (random-rate a 3 0.005)
                             (random-rate b 3 0.005)
                             (dr/random-tau) (dr/random-tau))
-                  (inner)
+                  (inner 0.15)
                   0.005
                   )
       (->Pendulum (->Phaser (if (dr/chance 0.35)
@@ -132,7 +132,7 @@
                             (random-rate a 5 0.01)
                             (random-rate b 5 0.01)
                             (dr/random-tau) (dr/random-tau))
-                  (inner)
+                  (inner 0.25)
                   0.004)]
      :plot-phase (dr/random-tau)
      :transitions []
