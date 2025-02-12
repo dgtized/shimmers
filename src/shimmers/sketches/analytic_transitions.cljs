@@ -35,6 +35,19 @@
     (gv/vec2 ((cyclic (/ amp weight) r-decay fx px) theta)
              ((cyclic (/ amp weight) r-decay fy py) theta))))
 
+(defn distribute
+  "Adjust sampling distribution for theta."
+  [base theta phase t]
+  (let [factor (-> (math/sin (+ (* 0.05 t)
+                                (eq/cube (math/sin (+ phase
+                                                      (* 0.001 theta)
+                                                      (* 0.03 t))))))
+                   (tm/map-interval [-1.0 1.0] [-0.66 2.0]))]
+    (* (+ base theta)
+       tm/PHI
+       (- 1.0 (math/exp (* -0.001 (math/pow 2.0 factor)
+                           (+ base theta)))))))
+
 (defn plot [pendulums phase samples t]
   (let [weight (reduce + (mapv :amp pendulums))
         plot-fs (mapv (fn [pendulum]
@@ -44,18 +57,8 @@
         base (* revolutions 0.1) ;; push forward so sample rate is already spread out
         ]
     (for [theta (range 0 revolutions (/ revolutions samples))
-          :let [
-                factor (-> (math/sin (+ (* 0.05 t)
-                                        (eq/cube (math/sin (+ phase
-                                                              (* 0.001 theta)
-                                                              (* 0.03 t))))))
-                           (tm/map-interval [-1.0 1.0] [-0.66 2.0]))
-                m-theta
-                (* (+ base theta)
-                   tm/PHI
-                   (- 1.0 (math/exp (* -0.001 (math/pow 2.0 factor)
-                                       (+ base theta)))))]]
-      (reduce (fn [p f] (tm/+ p (f m-theta)))
+          :let [d-theta (distribute base theta phase t)]]
+      (reduce (fn [p f] (tm/+ p (f d-theta)))
               (gv/vec2) plot-fs))))
 
 (defn setup []
