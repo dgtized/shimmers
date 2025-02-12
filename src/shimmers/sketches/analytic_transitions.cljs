@@ -71,6 +71,18 @@
       (reduce (fn [p f] (tm/+ p (f d-theta)))
               (gv/vec2) plot-fs))))
 
+(defn random-multiple []
+  (* (dr/random-sign)
+     (dr/weighted {0.1 1.0
+                   0.2 1.0
+                   0.25 2.0
+                   0.33 2.0
+                   0.5 3.0
+                   0.66 2.0
+                   0.75 2.0
+                   0.8 1.0
+                   0.9 1.0})))
+
 (defn random-seed [amp]
   (->> (fn [] (dr/random-int (- amp) (inc amp)))
        (repeatedly 100)
@@ -82,16 +94,7 @@
          (let [a (if (< amp 1)
                    1.0
                    (if (dr/chance 0.33)
-                     (* (dr/random-sign)
-                        (dr/weighted {0.1 1.0
-                                      0.2 1.0
-                                      0.25 2.0
-                                      0.33 2.0
-                                      0.5 3.0
-                                      0.66 2.0
-                                      0.75 2.0
-                                      0.8 1.0
-                                      0.9 1.0}))
+                     (random-multiple)
                      (dr/random-int (- amp) (+ amp 1))))]
            (dr/gaussian (* a m) n)))
        (repeatedly 100)
@@ -191,7 +194,7 @@
       :rate
       (let [field (dr/rand-nth [:fx :fy])
             rate (get phaser field)
-            new-rate (* (dr/random 0.85 1.15) rate)
+            new-rate (dr/gaussian (tm/roundto (dr/gaussian rate 0.33) 1.0) 0.005)
             rate' (cond (and (< amp 0.1)
                              (< new-rate 10)
                              (dr/chance 0.75))
@@ -200,13 +203,16 @@
                              (> new-rate 16)
                              (dr/chance 0.75))
                         (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
+                        (< (abs new-rate) 0.1)
+                        (random-multiple)
                         :else
                         new-rate)]
         [[kind field]
-         (tm/clamp (if (dr/chance 0.5)
-                     (tm/roundto rate' 1.0)
-                     (dr/gaussian rate' 0.001))
-                   0.1 48)])
+         (* (tm/sign rate')
+            (tm/clamp (if (dr/chance 0.5)
+                        (tm/roundto rate' 1.0)
+                        (dr/gaussian rate' 0.001))
+                      0.1 48))])
       :phase
       (let [field (dr/rand-nth [:px :py])]
         [[kind field]
