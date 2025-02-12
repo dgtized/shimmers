@@ -17,31 +17,41 @@
 
 (defonce defo (debug/state))
 
-(defn cyclic [amplitude decay freq phase]
+(defn cyclic [amplitude decay freq phase amp-phase freq-phase phase-phase]
   (fn [t]
     (* (math/exp (* (- decay) t))
        amplitude
-       (math/sin (+ (* freq t) phase)))))
+       (math/sin (+ (* freq eq/TAU t)
+                    phase
+                    (* amp-phase
+                       (math/sin (+ (* freq-phase eq/TAU t)
+                                    phase-phase))))))))
 
-(defrecord Pendulum [amp fx fy px py r-decay])
+(defrecord Phaser [amp fx fy px py])
+(defrecord Pendulum [f p r-decay])
 
 (extend-protocol IEdn
   Pendulum
   (-edn [s]
-    (tagged-literal 'Pendulum (debug/untyped s))))
+    (tagged-literal 'Pendulum (debug/untyped s)))
+  Phaser
+  (-edn [s]
+    (tagged-literal 'Phaser (debug/untyped s))))
 
-(defn render [{:keys [amp fx fy px py r-decay]} weight]
-  (fn [theta]
-    (gv/vec2 ((cyclic (/ amp weight) r-decay fx px) theta)
-             ((cyclic (/ amp weight) r-decay fy py) theta))))
+(defn render [{:keys [f p r-decay]} weight]
+  (let [{:keys [amp fx fy px py ]} f
+        {amp1 :amp fpx :fx fpy :fy ppx :px ppy :py} p]
+    (fn [theta]
+      (gv/vec2 ((cyclic (/ amp weight) r-decay fx px amp1 fpx ppx) theta)
+               ((cyclic (/ amp weight) r-decay fy py amp1 fpy ppy) theta)))))
 
 (defn distribute
   "Adjust sampling distribution for theta."
   [base theta phase t]
-  (let [factor (-> (math/sin (+ (* 0.05 t)
+  (let [factor (-> (math/sin (+ (* 0.00025 t)
                                 (eq/cube (math/sin (+ phase
                                                       (* 0.001 theta)
-                                                      (* 0.03 t))))))
+                                                      (* 0.001 t))))))
                    (tm/map-interval [-1.0 1.0] [-0.66 2.0]))]
     (* (+ base theta)
        tm/PHI
@@ -49,12 +59,12 @@
                            (+ base theta)))))))
 
 (defn plot [pendulums phase samples t]
-  (let [weight (reduce + (mapv :amp pendulums))
+  (let [weight (reduce + (mapv (fn [{:keys [f]}] (:amp f)) pendulums))
         plot-fs (mapv (fn [pendulum]
                         (render pendulum weight))
                       pendulums)
-        revolutions (* 24 eq/TAU)
-        base (* revolutions 0.1) ;; push forward so sample rate is already spread out
+        revolutions 64
+        base (* revolutions 0.25) ;; push forward so sample rate is already spread out
         ]
     (for [theta (range 0 revolutions (/ revolutions samples))
           :let [d-theta (distribute base theta phase t)]]
@@ -63,24 +73,37 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (let [a (dr/random-int 1 6)
-        b (dr/random-int 1 6)]
+  (let [a (dr/random-int -5 6)
+        b (dr/random-int -5 6)
+        inner (fn []
+                (->Phaser (if (dr/chance 0.75)
+                            0.0
+                            (dr/random 0.1 0.4))
+                          (dr/gaussian (dr/random-int -3 4) 0.005)
+                          (dr/gaussian (dr/random-int -3 4) 0.005)
+                          (dr/random-tau) (dr/random-tau)))]
     {:pendulums
-     [(->Pendulum (dr/random 0.5 1.0) a b
-                  (dr/random-tau) (dr/random-tau)
-                  0.005)
-      (->Pendulum (dr/random 0.1 0.5)
-                  (+ (* (dr/random-int -5 6) a) (dr/gaussian 0.0 0.0075))
-                  (+ (* (dr/random-int -5 6) b) (dr/gaussian 0.0 0.0075))
-                  (dr/random-tau) (dr/random-tau)
-                  0.005)
-      (->Pendulum (if (dr/chance 0.35)
-                    (dr/random 0.01 0.125)
-                    0.0)
-                  (+ (* (dr/random-int -5 6) a) (dr/gaussian 0.0 0.01))
-                  (+ (* (dr/random-int -5 6) b) (dr/gaussian 0.0 0.01))
-                  (dr/random-tau) (dr/random-tau)
-                  0.005)]
+     [(->Pendulum (->Phaser (dr/random 0.5 1.0)
+                            (dr/gaussian a 0.005)
+                            (dr/gaussian b 0.005)
+                            (dr/random-tau) (dr/random-tau))
+                  (inner)
+                  0.008)
+      (->Pendulum (->Phaser (dr/random 0.1 0.5)
+                            (dr/gaussian (* (dr/random-int -3 4) a) 0.005)
+                            (dr/gaussian (* (dr/random-int -3 4) b) 0.005) 
+                            (dr/random-tau) (dr/random-tau))
+                  (inner)
+                  0.005
+                  )
+      (->Pendulum (->Phaser (if (dr/chance 0.35)
+                              (dr/random 0.01 0.125)
+                              0.0)
+                            (dr/gaussian (* (dr/random-int -4 5) a) 0.01)
+                            (dr/gaussian (* (dr/random-int -4 5) b) 0.01)
+                            (dr/random-tau) (dr/random-tau))
+                  (inner)
+                  0.004)]
      :plot-phase (dr/random-tau)
      :transitions []
      :t (/ (q/millis) 1000.0)}))
@@ -119,52 +142,57 @@
         (assoc :transitions active)
         (run-transitions to-remove t))))
 
-(defn field-transition [{:keys [amp] :as pendulum}]
-  (case (dr/weighted {:amp (if (tm/delta= amp 0.0) 4.0 1.0)
-                      :rate 2.0
-                      :phase 2.0
-                      :decay 1.0})
-    :amp
-    [:amp
-     (-> (cond (tm/delta= amp 0.0)
-               (dr/random 0.33)
-               (dr/chance 0.33)
-               0.0
-               :else
-               (* amp (dr/random 0.66 1.33)))
-         (tm/clamp 0.0 2.0))]
-    :rate
-    (let [field (dr/rand-nth [:fx :fy])
-          rate (get pendulum field)
-          new-rate (* (dr/random 0.85 1.15) rate)
-          rate' (cond (and (< amp 0.1)
-                           (< new-rate 10)
-                           (dr/chance 0.75))
-                      (tm/roundto (* (dr/random 1.5 4.0) new-rate) 1.0)
-                      (and (> amp 0.15)
-                           (> new-rate 16)
-                           (dr/chance 0.75))
-                      (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
-                      :else
-                      new-rate)]
-      [field
-       (tm/clamp (if (dr/chance 0.5)
-                   (tm/roundto rate' 1.0)
-                   (dr/gaussian rate' 0.001))
-                 0.1 48)])
-    :phase
-    (let [field (dr/rand-nth [:px :py])]
-      [field
-       (if (dr/chance 0.66)
-         (dr/gaussian (get pendulum field) 1.25)
-         (dr/random (* 4 eq/TAU)))])
-    :decay
-    [:r-decay (dr/weighted {0.007 1.0
-                            0.006 1.5
-                            0.005 2.0
-                            0.004 1.5
-                            0.003 1.0
-                            0.002 1.0})]))
+(defn field-transition [pendulum]
+  (let [kind (dr/weighted {:f 2 :p 1})
+        {:keys [amp] :as phaser} (get pendulum kind)]
+    (case (dr/weighted {:amp (case kind
+                               :f
+                               (if (<= amp 0.1) 4.0 1.0)
+                               :p
+                               1.0)
+                        :rate 2.0
+                        :phase 2.5})
+      :amp
+      [[kind :amp]
+       (-> (cond (tm/delta= amp 0.0)
+                 (dr/random 0.33)
+                 (dr/chance 0.33)
+                 0.0
+                 :else
+                 (* amp (dr/random 0.66 1.33)))
+           (tm/clamp 0.0 2.0))]
+      :rate
+      (let [field (dr/rand-nth [:fx :fy])
+            rate (get phaser field)
+            new-rate (* (dr/random 0.85 1.15) rate)
+            rate' (cond (and (< amp 0.1)
+                             (< new-rate 10)
+                             (dr/chance 0.75))
+                        (tm/roundto (* (dr/random 1.5 4.0) new-rate) 1.0)
+                        (and (> amp 0.15)
+                             (> new-rate 16)
+                             (dr/chance 0.75))
+                        (tm/roundto (* (dr/random 0.1 0.66) new-rate) 1.0)
+                        :else
+                        new-rate)]
+        [[kind field]
+         (tm/clamp (if (dr/chance 0.5)
+                     (tm/roundto rate' 1.0)
+                     (dr/gaussian rate' 0.001))
+                   0.1 48)])
+      :phase
+      (let [field (dr/rand-nth [:px :py])]
+        [[kind field]
+         (if (dr/chance 0.66)
+           (dr/gaussian (get phaser field) 1.25)
+           (dr/random (* 4 eq/TAU)))])
+      :decay
+      [[:r-decay] (dr/weighted {0.007 1.0
+                                0.006 1.5
+                                0.005 2.0
+                                0.004 1.5
+                                0.003 1.0
+                                0.002 1.0})])))
 
 (defn generate-transition [state target t]
   (let [pendulum (get-in state target)
@@ -174,10 +202,10 @@
         kind (dr/weighted {:linear 2.5
                            :sin-osc 1.0})]
     {:t0 t :t1 (+ t duration)
-     :field (conj target field)
-     :v0 (get pendulum field)
+     :field (vec (concat target field))
+     :v0 (get-in pendulum field)
      :v1 v1
-     :freq (/ duration (dr/random 0.66 6))
+     :freq (/ duration (dr/random 0.66 8))
      :kind kind}))
 
 (defn new-transition [{:keys [pendulums] :as state} t]
