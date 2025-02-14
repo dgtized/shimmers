@@ -316,13 +316,16 @@
 (defn midpoints [shape]
   (map s-midpoint (g/edges shape)))
 
+(defn index-midpoint-to-shape-id [components]
+  (reduce (fn [idx {:keys [id shape]}]
+            (reduce (fn [idx mid] (update idx mid (fnil conj []) id))
+                    idx
+                    (midpoints shape)))
+          {}
+          components))
+
 (defn connect-faces [components]
-  (let [midpoint-index (reduce (fn [idx {:keys [id shape]}]
-                                 (reduce (fn [idx mid] (update idx mid (fnil conj []) id))
-                                         idx
-                                         (midpoints shape)))
-                               {}
-                               components)]
+  (let [midpoint-index (index-midpoint-to-shape-id components)]
     (for [{:keys [id shape] :as component} components]
       (let [neighbors
             (reduce (fn [neighbors mid]
