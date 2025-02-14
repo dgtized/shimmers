@@ -361,15 +361,17 @@
                   :stroke-width 0.5
                   ;; required for on-click to fire on pointer events within group/polygon clip path
                   :style {:pointer-events "fill"}}
-         (when (:shapes @ui-state)
-           (csvg/group {:stroke-width 0.33}
-             (mapcat draw-shape components)))
-         (when (:circuits @ui-state)
-           (csvg/group {:stroke-width 1.0}
-             (mapcat draw-component components)))
-         (when (:annotation @ui-state)
-           (csvg/group {:stroke-width 1.5 :stroke "red" :fill "none"}
-             (mapcat :annotation components))))))))
+         (for [component components]
+           (csvg/group {}
+             (when (:shapes @ui-state)
+               (csvg/group {:stroke-width 0.33}
+                 (draw-shape component)))
+             (when (:circuits @ui-state)
+               (csvg/group {:stroke-width 1.0}
+                 (draw-component component)))
+             (when (:annotation @ui-state)
+               (csvg/group {:stroke-width 1.5 :stroke "red" :fill "none"}
+                 (:annotation component))))))))))
 
 (defn ui-controls []
   [:div
