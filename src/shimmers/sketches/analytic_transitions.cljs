@@ -194,7 +194,7 @@
       :rate
       (let [field (dr/rand-nth [:fx :fy])
             rate (get phaser field)
-            new-rate (dr/gaussian (tm/roundto (dr/gaussian rate 0.33) 1.0) 0.005)
+            new-rate (dr/gaussian (tm/roundto (dr/gaussian rate 0.5) 1.0) 0.005)
             rate' (cond (and (< amp 0.1)
                              (< new-rate 10)
                              (dr/chance 0.75))
@@ -209,9 +209,9 @@
                         new-rate)]
         [[kind field]
          (* (tm/sign rate')
-            (tm/clamp (if (dr/chance 0.5)
-                        (tm/roundto rate' 1.0)
-                        (dr/gaussian rate' 0.001))
+            (tm/clamp (abs (if (dr/chance 0.5)
+                             (tm/roundto rate' 1.0)
+                             (dr/gaussian rate' 0.001)))
                       0.1 48))])
       :phase
       (let [field (dr/rand-nth [:px :py])]
