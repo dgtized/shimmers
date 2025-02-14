@@ -173,7 +173,7 @@
         (run-transitions to-remove t))))
 
 (defn field-transition [pendulum]
-  (let [kind (dr/weighted {:f 2 :p 1})
+  (let [kind (dr/weighted {:f 1.5 :p 1})
         {:keys [amp] :as phaser} (get pendulum kind)]
     (case (dr/weighted {:amp (case kind
                                :f
