@@ -311,3 +311,32 @@
   (summary-stats (map #(min % 2) (ksd/sample 1000 (ksd/pareto {:scale 0.75 :shape 8}))))
   (summary-stats (ksd/sample 1000 (ksd/log-normal {:mu 0.0 :sd 0.2})))
   (summary-stats (ksd/sample 1000 (ksd/normal {:mu 0.0 :sd 0.2}))))
+
+(defn ceiled-sample
+  "Sample `f` for values less than `ceiling`."
+  [ceiling f]
+  (->> f
+       repeatedly
+       (drop-while (fn [x] (> x ceiling)))
+       first))
+
+(defn floored-sample
+  "Sample `f` for values greater than `floor`."
+  [floor f]
+  (->> f
+       repeatedly
+       (drop-while (fn [x] (< x floor)))
+       first))
+
+(defn clamped-sample
+  "Sample `f` for values between `floor` and `ceiling` inclusive."
+  [floor ceiling f]
+  (->> f
+       repeatedly
+       (drop-while (fn [x] (or (< x floor)
+                              (> x ceiling))))
+       first))
+
+(comment (summary-stats (repeatedly 1000 (fn [] (ceiled-sample 10 (fn [] (pareto 1 2))))))
+         (summary-stats (repeatedly 1000 (fn [] (floored-sample 2 (fn [] (pareto 1 2))))))
+         (summary-stats (repeatedly 1000 (fn [] (clamped-sample 2 8 (fn [] (pareto 1 2)))))))
