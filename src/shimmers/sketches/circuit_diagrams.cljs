@@ -391,3 +391,7 @@
    (usvg/page (assoc sketch-args
                      :explanation ui-controls)
               scene)))
+
+;; alternative approach:
+;; Beyond Wave Function Collapse: Procedular Modeling without Tiles
+;; https://www.youtube.com/watch?v=1tgMl92DAqk
