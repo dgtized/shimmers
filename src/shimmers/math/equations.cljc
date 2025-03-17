@@ -237,3 +237,24 @@
 ;; \frac{\sin\left(x+\sin\left(2x+i\right)+\sin\left(3x+j\right)\right)}{\sin\ 2x}
 ;; and
 ;; \sin\left(x+\sin\left(2x+i\right)+\sin\left(3x+j\right)\right)
+
+(defn sigmoid [^double k ^double x]
+  (/ 1.0 (+ 1.0 (math/exp (- (* k x))))))
+
+(defn p-wide
+  "Probability to prioritize wide over tall given ratio of `width` to `height`.
+
+  4/3 has a p=0.731, and 2/1 has a p=0.953."
+  ([width height]
+   (->> (if (< width height)
+          (- 1.0 (/ height width))  ;; tall
+          (- (/ width height) 1.0)) ;; wide
+        (sigmoid 3.0)))
+  ([{[w h] :size}]
+   (p-wide w h)))
+
+(comment
+  (->> (for [w (range 1.0 8.0)
+             h (range 1.0 8.0)]
+         [[w h] (p-wide w h)])
+       (sort-by second)))
