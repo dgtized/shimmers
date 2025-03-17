@@ -241,20 +241,22 @@
 (defn sigmoid [^double k ^double x]
   (/ 1.0 (+ 1.0 (math/exp (- (* k x))))))
 
-(defn p-wide
-  "Probability to prioritize wide over tall given ratio of `width` to `height`.
+(defn p-width-priority
+  "Likelyhood to favor x axis on ratio of `width` to `height`.
 
-  4/3 has a p=0.731, and 2/1 has a p=0.953."
+   `window` indicates how far askew to allow off axis priority.
+   Returns p=0.5 if `width` and `height` are equal.
+   For window=0.205, 4/3 has a p=0.751, and 2/1 has a p=0.975."
+  ([window width height]
+   (tm/smoothstep* (- 0.5 window) (+ 0.5 window)
+                   (/ (float width) (+ width height))))
   ([width height]
-   (->> (if (< width height)
-          (- 1.0 (/ height width))  ;; tall
-          (- (/ width height) 1.0)) ;; wide
-        (sigmoid 3.0)))
+   (p-width-priority 0.205 width height))
   ([{[w h] :size}]
-   (p-wide w h)))
+   (p-width-priority w h)))
 
 (comment
   (->> (for [w (range 1.0 8.0)
              h (range 1.0 8.0)]
-         [[w h] (p-wide w h)])
+         [[w h] (p-width-priority w h)])
        (sort-by second)))
