@@ -56,11 +56,17 @@
          (do (random-seed 6)
              (repeatedly 6 #(random-double))))
 
+(defn ascending [a b]
+  (compare a b))
+
+(defn descending [a b]
+  (compare b a))
+
 ;; TODO: transducer or mapv?
 (defn shuffle [coll]
   (->> coll
        (map (fn [x] [x (random-double)]))
-       (sort-by second)
+       (sort-by second ascending)
        (map first)))
 
 (defn weighted-shuffle
@@ -68,16 +74,14 @@
   [weight coll]
   (->> coll
        (map (fn [x] [x (math/pow (random-double) (/ 1.0 (weight x)))]))
-       ;; sort descending by weighted random value
-       (sort-by second (fn [a b] (compare b a)))
+       (sort-by second descending)
        (map first)))
 
 (comment
   (->> #(map first (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
        (repeatedly 5000)
        frequencies
-       (sort-by second)
-       reverse))
+       (sort-by second descending)))
 
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?
