@@ -340,3 +340,19 @@
 (comment (summary-stats (repeatedly 1000 (fn [] (ceiled-sample 10 (fn [] (pareto 1 2))))))
          (summary-stats (repeatedly 1000 (fn [] (floored-sample 2 (fn [] (pareto 1 2))))))
          (summary-stats (repeatedly 1000 (fn [] (clamped-sample 2 8 (fn [] (pareto 1 2)))))))
+
+(defn upto-k-samples-of
+  "Pick a value from 1 to `n`, but bias towards smaller values.
+
+  Increasing `bias` from 1.0 increases the likleyhood that result is 1 and
+  adjusts the tail of `n` to be less likely.
+
+  Useful for selecting number of samples to select from a larger set."
+  ([n] (upto-k-samples-of 1.0 n))
+  ([bias n]
+   (let [p (- 1.0 (math/pow (random) (/ 1.0 (* bias math/E))))]
+     (int (math/ceil (* n p))))))
+
+(comment
+  (frequencies (repeatedly 1000 #(upto-k-samples-of 8)))
+  (frequencies (repeatedly 1000 #(upto-k-samples-of 1.2 8))))
