@@ -63,6 +63,22 @@
        (sort-by second)
        (map first)))
 
+(defn weighted-shuffle
+  "Shuffle a `coll` using a per element `weight` to bias the order."
+  [weight coll]
+  (->> coll
+       (map (fn [x] [x (math/pow (random-double) (/ 1.0 (weight x)))]))
+       ;; sort descending by weighted random value
+       (sort-by second (fn [a b] (compare b a)))
+       (map first)))
+
+(comment
+  (->> #(map first (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
+       (repeatedly 5000)
+       frequencies
+       (sort-by second)
+       reverse))
+
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?
 (defn chance [prob]
