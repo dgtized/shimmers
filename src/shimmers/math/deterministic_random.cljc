@@ -56,6 +56,7 @@
          (do (random-seed 6)
              (repeatedly 6 #(random-double))))
 
+;; TODO: transducer or mapv?
 (defn shuffle [coll]
   (->> coll
        (map (fn [x] [x (random-double)]))
