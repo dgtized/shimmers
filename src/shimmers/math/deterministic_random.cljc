@@ -83,28 +83,44 @@
        frequencies
        (sort-by second descending))
 
+  ;; This should be run from JVM, not JS
   ;; sudo sysctl -w kernel.perf_event_paranoid=1 && sudo sysctl -w kernel.kptr_restrict=0
   (do
     (require '[clj-async-profiler.core :as prof])
+    (require '[clj-memory-meter.trace :as cmm.trace])
     (require '[criterium.core :as crit])
     (prof/profile
-     (do
-       (println "Fixed Example: 4")
-       (crit/quick-bench
-        (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
+        (do
+          (println "Fixed Example: 4")
+          (crit/quick-bench
+              (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
 
-       ;; durations in µs per call
-       ;; (/ 17.72 7.31) ~ 2.42 @ 32
-       ;; (/ 40.93 17.72) ~ 2.31 @ 64
-       ;; (/ 95.20 40.93) ~ 2.33 @ 128
-       ;; (/ 224.21 95.20) ~ 2.35 @ 256
-       ;; (/ 509.66 224.21) ~ 2.27 @ 512
-       ;; time increases by a multiple of ~2.35 for each doubling
-       (doseq [size [8 16 32 64 128 256 512 1024]]
-         (println "Example Size:" size)
-         (let [weighted (mapv (fn [x] {:value x :weight (random-int 1 10)}) (range size))]
-           (crit/quick-bench
-            (weighted-shuffle :weight weighted))))))
+          ;; durations in µs per call
+          ;; (/ 17.72 7.31) ~ 2.42 @ 32
+          ;; (/ 40.93 17.72) ~ 2.31 @ 64
+          ;; (/ 95.20 40.93) ~ 2.33 @ 128
+          ;; (/ 224.21 95.20) ~ 2.35 @ 256
+          ;; (/ 509.66 224.21) ~ 2.27 @ 512
+          ;; time increases by a multiple of ~2.35 for each doubling
+          (doseq [size [8 16 32 64 128 256 512 1024]]
+            (println "Example Size:" size)
+            (let [weighted (mapv (fn [x] {:value x :weight (random-int 1 10)}) (range size))]
+              (crit/quick-bench
+                  (weighted-shuffle :weight weighted))))))
+
+    (println "Profile Allocations")
+    (let [weighted (mapv (fn [x] {:value x :weight (random-int 1 10)}) (range 32))]
+      (prof/profile {:event :alloc}
+        (crit/quick-bench
+            (weighted-shuffle :weight weighted))))
+
+    (println "Profile Heap Change")
+    (cmm.trace/trace-var #'weighted-shuffle)
+    ;; +26 KiB relative
+    (let [weighted (mapv (fn [x] {:value x :weight (random-int 1 10)}) (range 32))]
+      (cmm.trace/with-relative-usage
+        (weighted-shuffle :weight weighted)))
+    (cmm.trace/untrace-var #'weighted-shuffle)
     (prof/serve-ui 9000)))
 
 ;; TODO: some sort of protocol to swap in seeded random?
