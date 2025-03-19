@@ -78,10 +78,21 @@
        (map first)))
 
 (comment
-  (->> #(map first (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
-       (repeatedly 5000)
-       frequencies
-       (sort-by second descending)))
+  (require '[criterium.core :as crit])
+  (crit/quick-bench
+      (->> #(map first (weighted-shuffle second [[1 6] [2 4] [3 2] [4 1]]))
+           (repeatedly 1000)
+           frequencies
+           (sort-by second descending)))
+
+  (doseq [size [8 16 32 64 128 256 512 1024]]
+    (println "Size:" size)
+    (let [weighted (mapv (fn [x] {:value x :weight (random-int 1 10)}) (range size))]
+      (crit/quick-bench
+          (->> #(map :value (weighted-shuffle :weight weighted))
+               (repeatedly 100)
+               frequencies
+               (sort-by second descending))))))
 
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?
