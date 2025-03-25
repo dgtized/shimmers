@@ -415,5 +415,5 @@
      (int (math/ceil (* n p))))))
 
 (comment
-  (frequencies (repeatedly 1000 #(upto-k-samples-of 8)))
-  (frequencies (repeatedly 1000 #(upto-k-samples-of 1.2 8))))
+  (sort-by second descending (frequencies (repeatedly 1000 #(upto-k-samples-of 8))))
+  (sort-by second descending (frequencies (repeatedly 1000 #(upto-k-samples-of 1.2 8)))))
