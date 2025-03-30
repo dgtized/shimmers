@@ -260,7 +260,7 @@
   (q/background 1.0)
   (q/stroke-weight 2.0)
   (reset! defo state)
-  (let [size (cq/rel-h 0.5)
+  (let [size (cq/rel-h 0.475)
         center (cq/rel-vec 0.5 0.5)
         state' (run-transitions state (:transitions state) t)]
     (doseq [p (plot (:pendulums state') plot-phase 6000 t)]
