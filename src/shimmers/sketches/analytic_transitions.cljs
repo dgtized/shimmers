@@ -55,7 +55,7 @@
                    (tm/map-interval [-1.0 1.0] [-0.66 2.0]))]
     (* (+ base theta)
        tm/PHI
-       (- 1.0 (math/exp (* -0.001 (math/pow 2.0 factor)
+       (- 1.0 (math/exp (* -0.001 (math/pow math/E factor)
                            (+ base theta)))))))
 
 (defn plot [pendulums phase samples t]
