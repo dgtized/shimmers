@@ -262,8 +262,8 @@
   (reset! defo state)
   (let [size (cq/rel-h 0.5)
         center (cq/rel-vec 0.5 0.5)
-        pendulums (:pendulums (run-transitions state (:transitions state) t))]
-    (doseq [p (plot pendulums plot-phase 6000 t)]
+        state' (run-transitions state (:transitions state) t)]
+    (doseq [p (plot (:pendulums state') plot-phase 6000 t)]
       (let [[x y] (tm/+ center (tm/* p size))]
         (q/point x y)))))
 
