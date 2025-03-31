@@ -40,11 +40,9 @@
         length (cq/rel-h (/ 0.45 n))]
     {:t 0
      :length length
-     :chain (chain/->KinematicChain
-             (for [i (range n)]
-               (chain/->KinematicSegment (gv/vec2 (* i length) 0)
-                                         0
-                                         length)))}))
+     :chain
+     (chain/links->chain (gv/vec2)
+                         (repeatedly n (fn [] [0 length])))}))
 
 (defn update-state [{:keys [length t] :as state}]
   (-> state

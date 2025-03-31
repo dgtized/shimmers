@@ -1,7 +1,9 @@
 (ns shimmers.algorithm.kinematic-chain
   (:require
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn segment-endpoint [{:keys [base angle length]}]
@@ -47,6 +49,22 @@
 
 (defn make-chain [start n length]
   (->KinematicChain (repeatedly n #(->KinematicSegment start 0 length))))
+
+(defn links->chain [start links]
+  (->KinematicChain
+   (reduce (fn [chain [angle len]]
+             (conj chain
+                   (if (seq chain)
+                     (let [p (segment-endpoint (last chain))]
+                       (->KinematicSegment p angle len))
+                     (->KinematicSegment start angle len))))
+           []
+           links)))
+
+(comment
+  (links->chain
+   (gv/vec2)
+   [[0 1] [(/ eq/TAU 4) 1] [0 2] [(* (/ 3 4) eq/TAU) 1] [(* (/ 1 2) eq/TAU) 1] [0 1]]))
 
 (defn chain-update [chain base target]
   (cond-> chain
