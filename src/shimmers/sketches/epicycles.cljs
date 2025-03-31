@@ -10,8 +10,7 @@
    [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]))
+   [thi.ng.geom.vector :as gv]))
 
 (defonce ui-state (ctrl/state {:n 3
                                :persistent true
@@ -43,7 +42,7 @@
      :length length
      :chain (chain/->KinematicChain
              (for [i (range n)]
-               (chain/->KinematicSegment (tm/+ (gv/vec2) (tm/* (gv/vec2 length 0) i))
+               (chain/->KinematicSegment (gv/vec2 (* i length) 0)
                                          0
                                          length)))}))
 
