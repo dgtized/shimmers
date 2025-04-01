@@ -32,13 +32,21 @@
     (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height 0.225)))
                0.5)))
 
-(defn scene [{{:keys [a b c d]} :params :keys [scene-id]}]
+(defn scene [{:keys [scene-id params]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "none"
                    :fill "black"}
-    (shapes (dejong-ifs a b c d))))
+    (let [{:keys [a b c d]} @params]
+      (shapes (dejong-ifs a b c d)))))
+
+(defn ui-controls [{:keys [params]}]
+  [ctrl/container {:class "wide-input"}
+   (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
+   (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
+   (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
+   (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])
 
 (sketch/definition iterated-function-system
   {:created-at "2025-03-31"
@@ -46,5 +54,6 @@
    :type :svg}
   (ctrl/mount
    (usvg/page (assoc sketch-args
-                     :params (gen-params))
+                     :params (ctrl/state (gen-params))
+                     :explanation ui-controls)
               scene)))

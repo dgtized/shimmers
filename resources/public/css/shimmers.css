@@ -98,6 +98,10 @@ input[type=number] {
   width: 5em;
 }
 
+.wide-input input[type=number] {
+  width: 8em;
+}
+
 .fraction input[type=text] {
   width: 5em;
 }
