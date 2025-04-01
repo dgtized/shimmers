@@ -143,6 +143,7 @@
    shimmers.sketches.intertwined
    shimmers.sketches.isometric
    shimmers.sketches.iterative-displacement
+   shimmers.sketches.iterated-function-system
    shimmers.sketches.k-means
    shimmers.sketches.kaleidoscope
    shimmers.sketches.kd-tree
