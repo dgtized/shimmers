@@ -34,7 +34,8 @@
 
 (defn shapes [ifs]
   (for [seed (repeatedly 128 dr/randvec2)
-        point (take 128 (iterate ifs seed))]
+        point (take 128 (iterate ifs seed))
+        :when (not (tm/delta= seed point))]
     (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height 0.225)))
                0.5)))
 
