@@ -26,20 +26,19 @@
     (gv/vec2 (- (math/sin (* a y)) (math/cos (* b x)))
              (- (math/sin (* c x)) (math/cos (* d y))))))
 
-(defn shapes [{:keys [a b c d]}]
-  (let [ifs (dejong-ifs a b c d)]
-    (for [seed (repeatedly 128 dr/randvec2)
-          point (take 128 (iterate ifs seed))]
-      (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height 0.225)))
-                 0.5))))
+(defn shapes [ifs]
+  (for [seed (repeatedly 128 dr/randvec2)
+        point (take 128 (iterate ifs seed))]
+    (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height 0.225)))
+               0.5)))
 
-(defn scene [{:keys [scene-id params]}]
+(defn scene [{{:keys [a b c d]} :params :keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "none"
                    :fill "black"}
-    (shapes params)))
+    (shapes (dejong-ifs a b c d))))
 
 (sketch/definition iterated-function-system
   {:created-at "2025-03-31"
