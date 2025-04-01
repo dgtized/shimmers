@@ -44,13 +44,13 @@
     (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height scale)))
                0.5)))
 
-(defn scene [{:keys [scene-id params]}]
+(defn scene [{:keys [scene-id ui-state params]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "none"
                    :fill "black"}
-    (let [ifs (case (:mode @params)
+    (let [ifs (case (:mode @ui-state)
                 "dejong"
                 (let [{:keys [a b c d]} @params]
                   (dejong-ifs a b c d))
@@ -60,22 +60,25 @@
                 "sierpinsky"
                 (sierpinsky-ifs))]
       (shapes ifs
-              (if (= "phased" (:mode @params))
+              (if (= "phased" (:mode @ui-state))
                 0.45
                 0.225)))))
 
-(defn ui-controls [{:keys [params]}]
+(defn ui-controls [{:keys [ui-state params]}]
   [ctrl/container {:class "wide-input"}
-   (ctrl/dropdown params "Mode" [:mode]
+   (ctrl/dropdown ui-state "Mode" [:mode]
                   {"DeJong" "dejong"
                    "Phased" "phased"
                    "Sierpinsky" "sierpinsky"})
-   (when (contains? #{"dejong" "phased"} (:mode @params))
+   (when (contains? #{"dejong" "phased"} (:mode @ui-state))
      [:div
       (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
       (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
       (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
       (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])])
+
+(defonce ui-state
+  (ctrl/state {:mode "dejong"}))
 
 (sketch/definition iterated-function-system
   {:created-at "2025-03-31"
@@ -83,8 +86,7 @@
    :type :svg}
   (ctrl/mount
    (usvg/page (assoc sketch-args
-                     :params
-                     (ctrl/state (assoc (gen-params)
-                                        :mode "dejong"))
+                     :ui-state ui-state
+                     :params (ctrl/state (gen-params))
                      :explanation ui-controls)
               scene)))
