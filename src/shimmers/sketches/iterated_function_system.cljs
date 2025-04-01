@@ -26,17 +26,22 @@
     (gv/vec2 (- (math/sin (* a y)) (math/cos (* b x)))
              (- (math/sin (* c x)) (math/cos (* d y))))))
 
+(defn phased-ifs [a b c d]
+  (fn [[x y]]
+    (gv/vec2 (math/sin (+ (* a y) (math/cos (* b x))))
+             (math/sin (+ (* c x) (math/cos (* d y)))))))
+
 (defn sierpinsky-ifs []
   (fn [[x y]]
     (dr/weighted {(gv/vec2 (/ x 2.0) (/ y 2.0)) 1.0
                   (gv/vec2 (+ (/ x 2.0) 0.5) (/ y 2.0)) 1.0
                   (gv/vec2 (/ x 2.0) (+ (/ y 2.0) 0.5)) 1.0})))
 
-(defn shapes [ifs]
+(defn shapes [ifs scale]
   (for [seed (repeatedly 128 dr/randvec2)
         point (take 128 (iterate ifs seed))
         :when (not (tm/delta= seed point))]
-    (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height 0.225)))
+    (gc/circle (tm/+ (rv 0.5 0.5) (tm/* point (* height scale)))
                0.5)))
 
 (defn scene [{:keys [scene-id params]}]
@@ -49,16 +54,23 @@
                 "dejong"
                 (let [{:keys [a b c d]} @params]
                   (dejong-ifs a b c d))
+                "phased"
+                (let [{:keys [a b c d]} @params]
+                  (phased-ifs a b c d))
                 "sierpinsky"
                 (sierpinsky-ifs))]
-      (shapes ifs))))
+      (shapes ifs
+              (if (= "phased" (:mode @params))
+                0.45
+                0.225)))))
 
 (defn ui-controls [{:keys [params]}]
   [ctrl/container {:class "wide-input"}
    (ctrl/dropdown params "Mode" [:mode]
                   {"DeJong" "dejong"
+                   "Phased" "phased"
                    "Sierpinsky" "sierpinsky"})
-   (when (= "dejong" (:mode @params))
+   (when (contains? #{"dejong" "phased"} (:mode @params))
      [:div
       (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
       (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
