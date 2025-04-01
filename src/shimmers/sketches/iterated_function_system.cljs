@@ -26,6 +26,12 @@
     (gv/vec2 (- (math/sin (* a y)) (math/cos (* b x)))
              (- (math/sin (* c x)) (math/cos (* d y))))))
 
+(defn sierpinsky-ifs []
+  (fn [[x y]]
+    (dr/weighted {(gv/vec2 (/ x 2.0) (/ y 2.0)) 1.0
+                  (gv/vec2 (+ (/ x 2.0) 0.5) (/ y 2.0)) 1.0
+                  (gv/vec2 (/ x 2.0) (+ (/ y 2.0) 0.5)) 1.0})))
+
 (defn shapes [ifs]
   (for [seed (repeatedly 128 dr/randvec2)
         point (take 128 (iterate ifs seed))]
@@ -38,15 +44,25 @@
                    :height height
                    :stroke "none"
                    :fill "black"}
-    (let [{:keys [a b c d]} @params]
-      (shapes (dejong-ifs a b c d)))))
+    (let [ifs (case (:mode @params)
+                "dejong"
+                (let [{:keys [a b c d]} @params]
+                  (dejong-ifs a b c d))
+                "sierpinsky"
+                (sierpinsky-ifs))]
+      (shapes ifs))))
 
 (defn ui-controls [{:keys [params]}]
   [ctrl/container {:class "wide-input"}
-   (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
-   (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
-   (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
-   (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])
+   (ctrl/dropdown params "Mode" [:mode]
+                  {"DeJong" "dejong"
+                   "Sierpinsky" "sierpinsky"})
+   (when (= "dejong" (:mode @params))
+     [:div
+      (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
+      (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
+      (ctrl/numeric params "C" [:c] [(- math/PI) math/PI 0.01])
+      (ctrl/numeric params "D" [:d] [(- math/PI) math/PI 0.01])])])
 
 (sketch/definition iterated-function-system
   {:created-at "2025-03-31"
@@ -54,6 +70,8 @@
    :type :svg}
   (ctrl/mount
    (usvg/page (assoc sketch-args
-                     :params (ctrl/state (gen-params))
+                     :params
+                     (ctrl/state (assoc (gen-params)
+                                        :mode "dejong"))
                      :explanation ui-controls)
               scene)))
