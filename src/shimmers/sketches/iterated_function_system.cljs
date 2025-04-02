@@ -31,6 +31,11 @@
     (gv/vec2 (math/sin (+ (* a y) (math/cos (* b x))))
              (math/sin (+ (* c x) (math/cos (* d y)))))))
 
+(defn switch-ifs [a b c d]
+  (fn [[x y]]
+    (gv/vec2 (math/sin (+ (* a y) (* b x)))
+             (math/cos (+ (* c x) (* d y))))))
+
 (defn sierpinsky-ifs []
   (fn [[x y]]
     (dr/weighted {(gv/vec2 (/ x 2.0) (/ y 2.0)) 1.0
@@ -57,10 +62,14 @@
                 "phased"
                 (let [{:keys [a b c d]} @params]
                   (phased-ifs a b c d))
+                "switch"
+                (let [{:keys [a b c d]} @params]
+                  (switch-ifs a b c d))
                 "sierpinsky"
                 (sierpinsky-ifs))]
       (shapes ifs
-              (if (= "phased" (:mode @ui-state))
+              (if (contains? #{"phased" "switch"}
+                             (:mode @ui-state))
                 0.45
                 0.225)))))
 
@@ -69,8 +78,9 @@
    (ctrl/dropdown ui-state "Mode" [:mode]
                   {"DeJong" "dejong"
                    "Phased" "phased"
+                   "Switch" "switch"
                    "Sierpinsky" "sierpinsky"})
-   (when (contains? #{"dejong" "phased"} (:mode @ui-state))
+   (when (contains? #{"dejong" "phased" "switch"} (:mode @ui-state))
      [:div
       (ctrl/numeric params "A" [:a] [(- math/PI) math/PI 0.01])
       (ctrl/numeric params "B" [:b] [(- math/PI) math/PI 0.01])
