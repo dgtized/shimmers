@@ -8,11 +8,11 @@
    [thi.ng.geom.types
     :refer
     #?(:clj []
-       :cljs [Circle2 Line2 Polygon2 Rect2 Triangle2])])
+       :cljs [Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2])])
   #?(:clj
      (:import
       (shimmers.math.geometry.group Group)
-      (thi.ng.geom.types Circle2 Line2 Polygon2 Rect2 Triangle2))))
+      (thi.ng.geom.types Circle2 Line2 LineStrip2 Polygon2 Rect2 Triangle2))))
 
 (defprotocol QuilDrawGeom
   (draw [s])
@@ -37,7 +37,17 @@
 
 (extend-type Line2
   QuilDrawGeom
-  (draw [s] (apply q/line (g/vertices s))))
+  (draw [s] (apply q/line (g/vertices s)))
+  (contour-draw [s] (draw-contour (g/vertices s))))
+
+(extend-type LineStrip2
+  QuilDrawGeom
+  (draw [s]
+    (q/begin-shape)
+    (doseq [v (g/vertices s)]
+      (apply q/vertex v))
+    (q/end-shape))
+  (contour-draw [s] (draw-contour s)))
 
 (extend-type Triangle2
   QuilDrawGeom
@@ -54,7 +64,10 @@
   QuilDrawGeom
   (draw [group]
     (doseq [s (:children group)]
-      (draw s))))
+      (draw s)))
+  (contour-draw [group]
+    (doseq [s (:children group)]
+      (contour-draw s))))
 
 (defrecord ContourPolygon [outer inners]
   QuilDrawGeom
@@ -67,7 +80,10 @@
       (draw outer))
     (doseq [inner inners]
       (contour-draw inner))
-    (q/end-shape :close)))
+    (q/end-shape :close))
+  ;; FIXME: this maybe should be opposite?
+  (contour-draw [s]
+    (draw s)))
 
 (defn contour-polygon [outer inners]
   (ContourPolygon. outer inners))
