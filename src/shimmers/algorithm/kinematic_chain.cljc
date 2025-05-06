@@ -20,7 +20,9 @@
           heading (g/heading direction)]
       (KinematicSegment. (v/-polar target length heading)
                          heading
-                         length))))
+                         length)))
+  (propagate [link base]
+    (assoc link :base base)))
 
 (defrecord KinematicChain [segments]
   IKinematicChain
@@ -35,7 +37,7 @@
     (loop [links segments base base new-chain []]
       (if (empty? links)
         (assoc chain :segments new-chain)
-        (let [link (assoc (first links) :base base)]
+        (let [link (propagate (first links) base)]
           (recur (rest links) (segment-endpoint link) (conj new-chain link))))))
 
   g/IVertexAccess
