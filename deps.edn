@@ -87,7 +87,7 @@
   ;; sudo sysctl -w kernel.perf_event_paranoid=1
   ;; sudo sysctl -w kernel.kptr_restrict=0
   :perf
-  {:extra-deps {com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.6.1"}
+  {:extra-deps {com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.6.2"}
                 com.clojure-goes-fast/clj-java-decompiler {:mvn/version "0.3.7"}
                 com.clojure-goes-fast/clj-memory-meter {:mvn/version "0.4.0"}
                 criterium/criterium {:mvn/version "0.4.6"}
