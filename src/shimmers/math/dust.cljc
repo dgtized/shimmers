@@ -48,6 +48,9 @@
 
 (comment
   (map (fn [v] [v (quantize (range 5) v)])
+       (range -1 6 0.33))
+
+  (map (fn [v] [v (quantize [1 2 3.5 5] v)])
        (range -1 6 0.33)))
 
 ;; pseudo window of sample and hold values
