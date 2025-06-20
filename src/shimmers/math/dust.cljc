@@ -49,3 +49,22 @@
 (comment
   (map (fn [v] [v (quantize (range 5) v)])
        (range -1 6 0.33)))
+
+;; pseudo window of sample and hold values
+(defn window-init [history-len values]
+  (atom {:history-len history-len
+         :values (take history-len values)}))
+
+(defn window-sample! [!atom sample]
+  (let [{:keys [history-len]} @!atom]
+    (swap! !atom update :values
+           (fn [values] (conj (take (dec history-len) values) sample)))))
+
+(defn window-values [!atom]
+  (let [{:keys [history-len values]} @!atom]
+    (take history-len values)))
+
+(comment (let [sh (window-init 3 [1 2 3])]
+           (doseq [v (range 5)]
+             (window-sample! sh v))
+           (window-values sh)))
