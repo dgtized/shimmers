@@ -417,3 +417,26 @@
 (comment
   (sort-by second descending (frequencies (repeatedly 1000 #(upto-k-samples-of 8))))
   (sort-by second descending (frequencies (repeatedly 1000 #(upto-k-samples-of 1.2 8)))))
+
+(defn buckets [n xs]
+  (let [xs (sort xs)
+        low (first xs)
+        high (last xs)
+        width (/ (- high low) n)]
+    (loop [i 0 sets [] sorted xs]
+      (if (= i n)
+        sets
+        (let [chunk (take-while (fn [x] (<= x (+ low (* (inc i) width))))
+                                sorted)]
+          (recur (inc i)
+                 (conj sets chunk)
+                 (drop (count chunk) sorted)))))))
+
+(comment (buckets 3 (repeatedly 5 random)))
+
+;; FIXME: handle nil buckets
+(defn histogram [n xs]
+  (for [bucket (buckets n xs)]
+    [(first bucket) (last bucket) (count bucket)]))
+
+(comment (histogram 4 (repeatedly 8 random)))
