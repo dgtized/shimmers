@@ -61,7 +61,7 @@
 
   ;; clj -Mclj-kondo --lint src
   :clj-kondo
-  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.04.07"}}
+  {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2025.06.05"}}
    :main-opts ["-m" "clj-kondo.main"]}
 
   ;; clj -Meastwood
