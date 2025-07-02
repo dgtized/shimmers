@@ -91,7 +91,7 @@
                 com.clojure-goes-fast/clj-java-decompiler {:mvn/version "0.3.7"}
                 com.clojure-goes-fast/clj-memory-meter {:mvn/version "0.4.0"}
                 criterium/criterium {:mvn/version "0.4.6"}
-                com.taoensso/tufte {:mvn/version "2.7.0"}}
+                com.taoensso/tufte {:mvn/version "3.0.0"}}
    :jvm-opts ["-Djdk.attach.allowAttachSelf"
               "-XX:+UnlockDiagnosticVMOptions"
               "-XX:+DebugNonSafepoints"]}}}
