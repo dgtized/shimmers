@@ -440,3 +440,9 @@
     [(first bucket) (last bucket) (count bucket)]))
 
 (comment (histogram 4 (repeatedly 8 random)))
+
+(defn sample-freqs [n f]
+  (sort-by first (frequencies (repeatedly n f))))
+
+(comment
+  (sample-freqs 100 #(random-int 5)))
