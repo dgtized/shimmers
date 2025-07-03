@@ -434,9 +434,9 @@
 
 (comment (buckets 3 (repeatedly 5 random)))
 
-;; FIXME: handle nil buckets
 (defn histogram [n xs]
-  (for [bucket (buckets n xs)]
+  (for [bucket (buckets n xs)
+        :when (seq bucket)]
     [(first bucket) (last bucket) (count bucket)]))
 
 (comment (histogram 4 (repeatedly 8 random)))
