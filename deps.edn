@@ -80,7 +80,7 @@
   {:extra-paths ["test"]
    :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
                 lambdaisland/kaocha {:mvn/version "1.91.1392"}
-                com.lambdaisland/kaocha-cljs {:mvn/version "1.5.154"}}}
+                com.lambdaisland/kaocha-cljs {:mvn/version "1.8.163"}}}
 
   ;; From https://github.com/clojure-goes-fast/clj-async-profiler
   ;; Profiling is JVM only and requires:
