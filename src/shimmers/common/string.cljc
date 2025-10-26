@@ -3,7 +3,8 @@
             [cljs.pprint :as pp]
             [goog.string :as gstring]
             [goog.string.format])
-     :clj (:require [clojure.pprint :as pp])))
+     :clj (:require [clojure.pprint :as pp]))
+  #?(:clj (:refer-clojure :exclude [format])))
 
 ;; see https://martinklepsch.org/posts/requiring-closure-namespaces.html for
 ;; weirdness around requiring goog.string.format to force it to create format
@@ -12,8 +13,9 @@
 
 #?(:cljs
    (defn format [fmt & args]
-     (apply gstring/format fmt args)))
-
+     (apply gstring/format fmt args))
+   :clj
+   (def format clojure.core/format))
 
 ;; https://gigamonkeys.com/book/a-few-format-recipes.html
 (defn cl-format [fmt & args]
