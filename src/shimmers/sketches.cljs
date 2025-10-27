@@ -18,6 +18,7 @@
    shimmers.sketches.balloon
    shimmers.sketches.barcodes
    shimmers.sketches.beat-table
+   shimmers.sketches.bias-gain
    shimmers.sketches.blobical
    shimmers.sketches.blustery-day
    shimmers.sketches.bold-moves

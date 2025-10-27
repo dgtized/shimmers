@@ -61,9 +61,10 @@
   (let [epsilon 1e-6]
     (if (< x t)
       (/ (* t x)
-         (+ x (* s (- t x) epsilon)))
+         (+ x (* s (- t x)) epsilon))
       (+ 1 (/ (* (- 1 t) (- x 1))
-              (+ (- 1 x (* s (- t x))) epsilon))))))
+              (+ (- 1 x (* s (- t x)))
+                 epsilon))))))
 
 (comment
   (for [s [0.1 0.5 1.0 2.0 10.0]
