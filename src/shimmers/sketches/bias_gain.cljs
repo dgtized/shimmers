@@ -1,5 +1,6 @@
 (ns shimmers.sketches.bias-gain
   (:require
+   [shimmers.common.sequence :as cs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
@@ -14,15 +15,18 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn shapes [s t]
-  (let [points (mapv (fn [x] (rv x (- 1.0 (mbg/bias-gain x s t))))
+  (let [w 0.0075
+        points (mapv (fn [x] (rv x (- 1.0 (mbg/bias-gain x s t))))
                      (range 0 1 0.0025))]
     [(csvg/path (csvg/segmented-path points) {})
      (csvg/group {:stroke-width 0.66}
-       (for [x (range 0 1 0.1)]
-         (gl/line2 (rv x 0.985) (rv x 1.0))))
+       (cs/midsection
+        (for [x (range 0 1 0.1)]
+          (gl/line2 (rv x (- 1.0 w)) (rv x 1.0)))))
      (csvg/group {:stroke-width 0.66}
-       (for [y (range 0 1 0.1)]
-         (gl/line2 (rv 0.0 y) (rv 0.015 y))))]))
+       (cs/midsection
+        (for [y (range 0 1 0.1)]
+          (gl/line2 (rv 0.0 y) (rv w y)))))]))
 
 (defonce ui-state (ctrl/state {:s 1.0 :t 0.5}))
 
