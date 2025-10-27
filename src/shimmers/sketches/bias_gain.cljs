@@ -5,6 +5,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.bias-gain :as mbg]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]))
 
 (def width 800)
@@ -15,7 +16,13 @@
 (defn shapes [s t]
   (let [points (mapv (fn [x] (rv x (- 1.0 (mbg/bias-gain x s t))))
                      (range 0 1 0.0025))]
-    [(csvg/path (csvg/segmented-path points) {})]))
+    [(csvg/path (csvg/segmented-path points) {})
+     (csvg/group {:stroke-width 0.66}
+       (for [x (range 0 1 0.1)]
+         (gl/line2 (rv x 0.985) (rv x 1.0))))
+     (csvg/group {:stroke-width 0.66}
+       (for [y (range 0 1 0.1)]
+         (gl/line2 (rv 0.0 y) (rv 0.015 y))))]))
 
 (defonce ui-state (ctrl/state {:s 1.0 :t 0.5}))
 
