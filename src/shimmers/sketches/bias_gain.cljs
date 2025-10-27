@@ -26,8 +26,8 @@
                      :height height
                      :stroke "black"
                      :fill "white"
-                     :stroke-width 0.5}
-                    (shapes s t))))
+                     :stroke-width 1.5}
+      (shapes s t))))
 
 (defn ui-controls []
   [:div.contained
