@@ -30,9 +30,9 @@
                     (shapes s t))))
 
 (defn ui-controls []
-  [:div
-   [ctrl/numeric ui-state "S" [:s] [0.0001 100.0 0.0001]]
-   [ctrl/numeric ui-state "T" [:t] [0.0 1.0 0.0001]]])
+  [:div.contained
+   [ctrl/numeric ui-state "S" [:s] [0.01 100.0 0.01]]
+   [ctrl/numeric ui-state "T" [:t] [0.0 1.0 0.01]]])
 
 (sketch/definition bias-gain
   {:created-at "2025-10-27"
