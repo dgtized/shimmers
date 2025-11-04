@@ -31,7 +31,7 @@
         ;; clientside view rendering, routing, and HTML5 pushState support
         cljsjs/react {:mvn/version "18.3.1-1"}
         cljsjs/react-dom {:mvn/version "18.3.1-1"}
-        reagent/reagent {:mvn/version "2.0.0"}
+        reagent/reagent {:mvn/version "2.0.1"}
         metosin/reitit-frontend {:mvn/version "0.9.2"}
         metosin/reitit-spec {:mvn/version "0.9.2"}
 
