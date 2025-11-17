@@ -257,6 +257,7 @@
    shimmers.sketches.splitting-polygons
    shimmers.sketches.square-packing
    shimmers.sketches.squiggle-line
+   shimmers.sketches.stair-demo
    shimmers.sketches.stem-and-leaf
    shimmers.sketches.stretchy-curves
    shimmers.sketches.stretchy-lines
