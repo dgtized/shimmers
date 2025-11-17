@@ -32,4 +32,5 @@
    [shimmers.math.geometry.rectangle-test]
    [shimmers.math.geometry.triangle-test]
    [shimmers.math.graph-test]
-   [shimmers.math.hexagon-test]))
+   [shimmers.math.hexagon-test]
+   [shimmers.math.stair-test]))
