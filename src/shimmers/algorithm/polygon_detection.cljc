@@ -332,7 +332,7 @@
 
 ;; references:
 ;; https://stackoverflow.com/questions/1109536/an-algorithm-for-inflating-deflating-offsetting-buffering-polygons
-
+;; https://mcmains.me.berkeley.edu/pubs/DAC05OffsetPolygon.pdf
 (defn inset-polygon
   "For CW polygons, use positive distance to inset or negative to outset.
   For CCW polygons, use opposite."
