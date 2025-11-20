@@ -14,13 +14,17 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn plot [k]
-  (mapv (fn [x] (rv x (- 1.0 (ms/staircase k x))))
-        (range 0 1 0.0025)))
+(defn plot
+  ([f]
+   (plot f {:resolution 0.0025}))
+  ([f {:keys [resolution]}]
+   (mapv (fn [x] (rv x (- 1.0 (f x))))
+         (range 0 1 resolution))))
 
 (defn shapes [k]
   (let [w 0.0075]
-    [(csvg/path (csvg/segmented-path (plot k)) {:stroke-width 1.5})
+    [(csvg/path (csvg/segmented-path (plot (fn [x] (ms/staircase k x))))
+                {:stroke-width 1.5})
      (csvg/group {:stroke-width 0.66}
        (cs/midsection
         (for [x (range 0 1 0.1)]
