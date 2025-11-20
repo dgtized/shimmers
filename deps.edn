@@ -14,7 +14,7 @@
                                   org.jogamp.jogl/jogl-all]}
 
         ;; probability distributions
-        kixi/stats {:mvn/version "0.5.7"}
+        kixi/stats {:mvn/version "0.5.8"}
 
         ;; Helper libraries
         org.clojure/core.async {:mvn/version "1.8.741"}
