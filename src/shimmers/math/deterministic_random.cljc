@@ -126,9 +126,9 @@
 ;; TODO: some sort of protocol to swap in seeded random?
 ;; Or optimize such that cost is negligable?
 (defn chance
+  ([] (chance 0.5))
   ([prob]
-   (< (random-double) prob))
-  ([] (chance 0.5)))
+   (< (random-double) prob)))
 
 (defn happensity [prob]
   (if (< (random-double) prob) (random-double) 0))
