@@ -53,8 +53,11 @@ jobs:
       - name: Lint
         run: bin/lint
 
-      - name: Test
+      - name: Test CLJC
         run: bin/kaocha unit-cljc
+
+      - name: Test CLJS
+        run: bin/kaocha unit-cljs
 
   build:
     name: Build
