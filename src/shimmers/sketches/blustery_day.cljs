@@ -50,8 +50,8 @@
                    :width width
                    :height height
                    :stroke "black"
-                   :fill "white"
-                   :stroke-width 0.5}
+                   :fill "none"
+                   :stroke-width 0.75}
     (shapes (dr/noise-seed)
             (g/scale-size (csvg/screen width height) 0.925))))
 
