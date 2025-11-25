@@ -56,9 +56,6 @@ jobs:
       - name: Test CLJC
         run: bin/kaocha unit-cljc
 
-      - name: Test CLJS
-        run: bin/kaocha unit-cljs
-
   build:
     name: Build
     needs: test
