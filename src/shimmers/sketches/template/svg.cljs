@@ -23,7 +23,7 @@
                    :stroke-width 0.5}
     (shapes)))
 
-(sketch/definition template.svg
+(sketch/definition template-svg
   {:created-at "2025-"
    :tags #{}
    :type :svg}

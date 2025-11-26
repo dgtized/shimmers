@@ -27,7 +27,7 @@
       [:div
        [canvas/canvas-frame attributes canvas-state canvas/animate-frame]])))
 
-(sketch/definition template.canvas
+(sketch/definition template-canvas
   {:created-at "2025-"
    :tags #{}
    :type :canvas}
