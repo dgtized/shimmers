@@ -53,17 +53,15 @@
   (let [pages {::by-alphabetical "Alphabetically"
                ::by-date "By Date"
                ::by-tag "By Tag"}
-        search-input [:input {:type :search
-                              :placeholder "search by name"
-                              :value @text-filter
-                              :on-input update-terms}]
         links (for [[page link-name] pages]
                 [:a {:href (when-not (= page active) (rfe/href page))}
                  link-name])]
-    (into [:div.selector
-           search-input
-           " Listing: "]
-          (interpose [:span " | "] links))))
+    [:div.selector
+     [:input {:type :search
+              :placeholder "search by name"
+              :value @text-filter
+              :on-input update-terms}]
+     (into [:span " Listing: "] (interpose [:span " | "] links))]))
 
 ;; FIXME: links are *always* fresh now since the seed is baked in
 (defn by-alphabetical [sketches]
