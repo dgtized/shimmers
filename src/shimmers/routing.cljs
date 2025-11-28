@@ -1,6 +1,10 @@
 (ns shimmers.routing
   (:require
    [reagent-keybindings.keyboard :as kb]
+   [reitit.coercion.spec :as rss]
+   [reitit.frontend :as rf]
+   [reitit.frontend.controllers :as rfc]
+   [reitit.frontend.easy :as rfe]
    [shimmers.sketches :as sketches]
    [shimmers.view.favicon :as favicon]
    [shimmers.view.index :as view-index]
@@ -61,3 +65,24 @@
       [:div
        [kb/keyboard-listener]
        [view (:parameters page)]])))
+
+(defn on-navigate [page-match new-match]
+  (if (or (nil? new-match) (= (:name (:data new-match)) :shimmers.routing/root))
+    ;; default route, not sure on reitit for frontend routing
+    (rfe/replace-state :shimmers.view.index/by-alphabetical)
+    (swap! page-match
+           (fn [old-match]
+             (if new-match
+               (assoc new-match :controllers
+                      (rfc/apply-controllers (:controllers old-match) new-match))
+               old-match)))))
+
+(defn start! [!active-route]
+  ;; Render at least one frame of the favicon animation at start
+  (favicon/favicon)
+  (allow-reload-save-keybindings)
+  (rfe/start!
+   ;; coercion here will cause missing sketches to explode
+   (rf/router routes {:data {:coercion rss/coercion}})
+   (partial on-navigate !active-route)
+   {:use-fragment true}))
