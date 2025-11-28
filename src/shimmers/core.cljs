@@ -1,7 +1,6 @@
 (ns shimmers.core
   (:require
    [goog.dom :as dom]
-   [reagent-keybindings.keyboard :as kb]
    [reagent.core :as r]
    [reagent.dom.client :as rdomc]
    [reitit.coercion.spec :as rss]
@@ -28,17 +27,6 @@
                       (rfc/apply-controllers (:controllers old-match) new-match))
                old-match)))))
 
-(defn allow-reload-save-keybindings []
-  (reset! kb/preventing-default-keys []))
-
-(defn page-root [page-match]
-  (let [page @page-match
-        view (:view (:data page))]
-    (when view
-      [:div
-       [kb/keyboard-listener]
-       [view (:parameters page)]])))
-
 (defonce shimmer-root (rdomc/create-root (dom/getElement "shimmer-mount")))
 (defonce !active-route (r/atom nil))
 (comment @!active-route)
@@ -53,9 +41,9 @@
   ;; Render at least one frame of the favicon animation at start
   (favicon/favicon)
 
-  (allow-reload-save-keybindings)
+  (routing/allow-reload-save-keybindings)
 
-  (rdomc/render shimmer-root [page-root !active-route]))
+  (rdomc/render shimmer-root [routing/page-root !active-route]))
 
 ;; initialize sketch on first-load
 (defonce start-up (init))

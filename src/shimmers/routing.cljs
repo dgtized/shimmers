@@ -1,5 +1,6 @@
 (ns shimmers.routing
   (:require
+   [reagent-keybindings.keyboard :as kb]
    [shimmers.sketches :as sketches]
    [shimmers.view.favicon :as favicon]
    [shimmers.view.index :as view-index]
@@ -49,3 +50,14 @@
        [{:parameters {:path [:name] :query [:seed]}
          :start (on-event view-sketch/start-sketch "start")
          :stop (on-event view-sketch/stop-sketch "stop")}]}]]))
+
+(defn allow-reload-save-keybindings []
+  (reset! kb/preventing-default-keys []))
+
+(defn page-root [page-match]
+  (let [page @page-match
+        view (:view (:data page))]
+    (when view
+      [:div
+       [kb/keyboard-listener]
+       [view (:parameters page)]])))
