@@ -32,7 +32,7 @@
       (let [gap (* 0.05 (- b a))
             ga (+ a gap)
             gb (- b gap)
-            slant (dr/weighted {0.025 1 -0.025 1})
+            slant (dr/weighted {0.025 2 -0.025 2 -0.03 1 0.03 1 -0.015 1 0.015 1})
             n (dr/weighted {100 1 125 0.5 150 1 175 0.5 200 0.5 250 0.5})]
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
@@ -45,7 +45,7 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 1.0}
+                   :stroke-width 0.8}
     (shapes)))
 
 (sketch/definition diagonal-spaces
