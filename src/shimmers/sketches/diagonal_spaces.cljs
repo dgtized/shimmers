@@ -24,8 +24,9 @@
        [(gl/line2 (rv t a) (rv t b))]))
    (mapv (dr/weighted {identity 9.0
                        (partial ms/staircase (dr/random-int 3 15)) 1.0})
-         (dr/weighted {(tm/norm-range n) 5.0
-                       (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0}))))
+         (dr/weighted {(tm/norm-range n) 6.0
+                       (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0
+                       (dr/density-range (/ 0.5 n) (/ 1.5 n) true) 1.0}))))
 
 (defn shapes []
   (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1})]
