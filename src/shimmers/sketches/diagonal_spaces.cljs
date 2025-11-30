@@ -3,6 +3,7 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.bias-gain :as mbg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.stair :as ms]
    [shimmers.sketch :as sketch :include-macros true]
@@ -22,8 +23,12 @@
      (if (and (<= 0.05 t 0.95) (dr/chance (/ p-slant n)))
        [(gl/line2 (rv (- t slant) a) (rv (+ t slant) b))]
        [(gl/line2 (rv t a) (rv t b))]))
-   (mapv (dr/weighted {identity 9.0
-                       (partial ms/staircase (dr/random-int 3 15)) 1.0})
+   (mapv (let [s (dr/weighted {0.5 1.0 1.5 1.0 0.66 1.0 1.33 1.0})
+               t (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
+                               0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0})]
+           (dr/weighted {identity 10.0
+                         (partial ms/staircase (dr/random-int 3 15)) 1.0
+                         (fn [x] (mbg/bias-gain x s t)) 3.0}))
          (dr/weighted {(tm/norm-range n) 6.0
                        (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0
                        (dr/density-range (/ 0.5 n) (/ 1.5 n) true) 1.0}))))
