@@ -25,12 +25,12 @@
    (mapv (dr/weighted {identity 9.0
                        (partial ms/staircase (dr/random-int 3 15)) 1.0})
          (dr/weighted {(tm/norm-range n) 5.0
-                       (dr/gaussian-range (/ 1.0 n) (/ 0.15 n) true) 1.0}))))
+                       (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0}))))
 
 (defn shapes []
   (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1 15 1})]
     (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
-                                             (dr/gaussian-range (/ 1.0 rows) (/ 0.25 rows) true) 1.0}))]
+                                             (dr/gaussian-range (/ 1.0 rows) (/ 0.2 rows) true) 1.0}))]
       (let [gap (* 0.05 (- b a))
             ga (+ a gap)
             gb (- b gap)
@@ -39,7 +39,7 @@
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
                    (gl/line2 (rv 0 gb) (rv 1 gb))
-                   (svg/group {} (row ga gb n slant (dr/random 1.0 12.0))))))))
+                   (svg/group {} (row ga gb n slant (dr/random 1.0 16.0))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
