@@ -50,8 +50,12 @@
                    :stroke-width 0.8}
     (shapes)))
 
+(defn explanation []
+  [:div.readable-width
+   "Explorations of textures from repetition with random outliers."])
+
 (sketch/definition diagonal-spaces
   {:created-at "2025-11-29"
-   :tags #{}
+   :tags #{:deterministic}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page (assoc sketch-args :explanation explanation) scene)))
