@@ -78,6 +78,7 @@
    shimmers.sketches.density-variation
    shimmers.sketches.dependents
    shimmers.sketches.designed-imperfections
+   shimmers.sketches.diagonal-spaces
    shimmers.sketches.differential-growth
    shimmers.sketches.differential-harmonics
    shimmers.sketches.disassociated-boxes
