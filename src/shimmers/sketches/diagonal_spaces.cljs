@@ -23,7 +23,8 @@
 
 (defn shapes []
   (let [rows (dr/weighted {5 1 7 1 9 1 11 1})]
-    (for [[a b] (partition 2 1 (tm/norm-range rows))]
+    (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
+                                             (dr/gaussian-range (/ 1.0 rows) (/ 0.15 rows) true) 1.0}))]
       (let [gap (* 0.05 (- b a))
             ga (+ a gap)
             gb (- b gap)
