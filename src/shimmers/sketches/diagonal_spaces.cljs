@@ -28,13 +28,13 @@
                        (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0}))))
 
 (defn shapes []
-  (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1 15 1})]
+  (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1})]
     (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
                                              (dr/gaussian-range (/ 1.0 rows) (/ 0.2 rows) true) 1.0}))]
       (let [gap (* 0.05 (- b a))
             ga (+ a gap)
             gb (- b gap)
-            slant (dr/weighted {0.025 2 -0.025 2 -0.03 1 0.03 1 -0.015 1 0.015 1})
+            slant (* (dr/random-sign) (dr/weighted {0.025 4 0.03 1 0.015 1}))
             n (dr/weighted {100 1 125 0.5 150 1 175 0.5 200 0.5 250 0.5})]
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
