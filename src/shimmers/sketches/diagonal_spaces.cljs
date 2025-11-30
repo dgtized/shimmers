@@ -17,7 +17,7 @@
 
 (defn row [a b n slant]
   (for [t (tm/norm-range n)]
-    (if (and (<= 0.1 t 0.9) (dr/chance 0.05))
+    (if (and (<= 0.05 t 0.95) (dr/chance 0.05))
       (gl/line2 (rv (- t slant) a) (rv (+ t slant) b))
       (gl/line2 (rv t a) (rv t b)))))
 
