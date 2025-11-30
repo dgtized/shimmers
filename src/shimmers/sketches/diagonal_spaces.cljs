@@ -3,12 +3,13 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.stair :as ms]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.deterministic-random :as dr]))
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -16,8 +17,10 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn row [a b n slant]
-  (for [t (dr/weighted {(tm/norm-range n) 5.0
-                        (dr/gaussian-range (/ 1.0 n) (/ 0.15 n) true) 1.0})]
+  (for [t (mapv (dr/weighted {identity 9.0
+                              (partial ms/staircase (dr/random-int 2 11)) 1.0})
+                (dr/weighted {(tm/norm-range n) 5.0
+                              (dr/gaussian-range (/ 1.0 n) (/ 0.15 n) true) 1.0}))]
     (if (and (<= 0.05 t 0.95) (dr/chance 0.05))
       (gl/line2 (rv (- t slant) a) (rv (+ t slant) b))
       (gl/line2 (rv t a) (rv t b)))))
