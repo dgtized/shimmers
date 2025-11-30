@@ -16,13 +16,14 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn row [a b n slant]
-  (for [t (tm/norm-range n)]
+  (for [t (dr/weighted {(tm/norm-range n) 5.0
+                        (dr/gaussian-range (/ 1.0 n) (/ 0.15 n) true) 1.0})]
     (if (and (<= 0.05 t 0.95) (dr/chance 0.05))
       (gl/line2 (rv (- t slant) a) (rv (+ t slant) b))
       (gl/line2 (rv t a) (rv t b)))))
 
 (defn shapes []
-  (let [rows (dr/weighted {5 1 7 1 9 1 11 1})]
+  (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1 15 1})]
     (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
                                              (dr/gaussian-range (/ 1.0 rows) (/ 0.15 rows) true) 1.0}))]
       (let [gap (* 0.05 (- b a))
