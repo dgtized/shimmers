@@ -373,10 +373,9 @@
    [ctrl/change-mode ui-state (keys modes)]
    [debug/display defo]])
 
+;; FIXME: hanging at start?
 (sketch/definition constellations
   {:created-at "2022-01-31"
    :type :svg
    :tags #{:deterministic}}
-  (ctrl/mount (usvg/page (assoc sketch-args
-                                :explanation ui-controls)
-                         scene)))
+  (ctrl/mount (usvg/page sketch-args ui-controls scene)))
