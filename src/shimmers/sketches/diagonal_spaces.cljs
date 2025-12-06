@@ -64,4 +64,4 @@
   {:created-at "2025-11-29"
    :tags #{:deterministic}
    :type :svg}
-  (ctrl/mount (usvg/page (assoc sketch-args :explanation explanation) scene)))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
