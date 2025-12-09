@@ -176,7 +176,7 @@
   [prob coll]
   (if (ifn? prob)
     (filter (fn [x] (chance (prob x))) coll)
-    (filter (partial chance prob) coll)))
+    (filter (fn [_] (chance prob)) coll)))
 
 (comment
   (random-sample 0.2 (range 20))
