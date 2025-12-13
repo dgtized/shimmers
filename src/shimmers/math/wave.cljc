@@ -46,5 +46,6 @@
   (map (fn [t] [t (pulse 1.0 0.75 t)]) (range -2 2 0.125))
   (map (fn [t] [t (pulse 2.0 0.25 t)]) (range -2 2 0.125))
   (map (fn [t] [t (sawtooth 1.0 t)]) (range -2 2 0.1))
+  (map (fn [t] [t (triangle (/ 1.0 9) t)]) (range -2 2 0.1))
   (map (fn [t] [t (triangle01 1 t)]) (range -1 1 0.1))
   (map (fn [t] [t (sinc t)]) (range -3 3 0.1)))

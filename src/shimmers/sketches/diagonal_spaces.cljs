@@ -6,6 +6,7 @@
    [shimmers.math.bias-gain :as mbg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.stair :as ms]
+   [shimmers.math.wave :as wave]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.svg.core :as svg]
@@ -35,6 +36,20 @@
                        (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0
                        (dr/density-range (/ 0.5 n) (/ 1.5 n) true) 1.0}))))
 
+(defn left-vert-right [x]
+  (cond (< x -0.5) -1
+        (< -0.5 x 0.5) 0
+        (< 0.5 x) 1))
+
+(defn left-right [t]
+  (if (< t 0.0) -1 1))
+
+(defn left-vert [t]
+  (if (< t 0.0) -1 0))
+
+(defn vert-right [t]
+  (if (< t 0.0) 0 1))
+
 (defn shapes []
   (let [rows (dr/weighted {5 1 7 1 9 2 11 2 13 1 15 1})]
     (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
@@ -45,9 +60,18 @@
             slant (* (dr/random-sign) (dr/weighted {0.025 4 0.03 1 0.015 1}))
             n (dr/weighted {100 1 125 0.5 150 1 175 0.5 200 0.5 250 0.5})
             [vert diag] (dr/weighted {[6 1] 4.0 [1 4] 1.0})
-            p-slant (dr/weighted [[(/ (dr/random 1.0 16.0) n) vert]
-                                  [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])
-            slant-sweep (fn [t] (if (and (<= 0.05 t 0.95) (dr/chance p-slant)) 1 0))]
+            m (dr/rand-nth [left-vert-right left-right left-vert vert-right])
+            slant-sweep
+            (dr/weighted
+             [[(let [p-slant (dr/weighted [[(/ (dr/random 1.0 16.0) n) vert]
+                                           [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])]
+                 (fn [t] (if (and (<= 0.05 t 0.95) (dr/chance p-slant)) 1 0))) 3.0]
+              [(let [f (dr/random 0.1 16)
+                     p-slant (dr/weighted [[(/ (dr/random 0.5 4.0) n) vert]
+                                           [(- 1.0 (/ (dr/random 0.5 4.0) n)) diag]])]
+                 (fn [t]
+                   (if (dr/chance p-slant) (dr/rand-nth [-1 0 1])
+                       (m (wave/triangle (/ 1.0 f) t))))) 1.0]])]
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
                    (gl/line2 (rv 0 gb) (rv 1 gb))
