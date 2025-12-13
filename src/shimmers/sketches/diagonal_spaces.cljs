@@ -26,9 +26,8 @@
 (defn row [a b n slant slant-sweep]
   (mapcat
    (fn [t]
-     (if (slant-sweep t)
-       [(gl/line2 (rv (- t slant) a) (rv (+ t slant) b))]
-       [(gl/line2 (rv t a) (rv t b))]))
+     (let [s (slant-sweep t)]
+       [(gl/line2 (rv (- t (* s slant)) a) (rv (+ t (* s slant)) b))]))
    (mapv (dr/weighted {identity 20.0
                        (partial ms/staircase (dr/random-int 3 13)) 1.0
                        (bias-sweep) 4.0})
@@ -48,7 +47,7 @@
             [vert diag] (dr/weighted {[6 1] 4.0 [1 4] 1.0})
             p-slant (dr/weighted [[(/ (dr/random 1.0 16.0) n) vert]
                                   [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])
-            slant-sweep (fn [t] (and (<= 0.05 t 0.95) (dr/chance p-slant)))]
+            slant-sweep (fn [t] (if (and (<= 0.05 t 0.95) (dr/chance p-slant)) 1 0))]
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
                    (gl/line2 (rv 0 gb) (rv 1 gb))
