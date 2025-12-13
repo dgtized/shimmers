@@ -17,24 +17,27 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defn bias-sweep []
+  (let [s (dr/weighted {0.5 1.0 1.5 1.0 0.66 1.0 1.33 1.0})
+        t (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
+                        0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0})]
+    (fn [x] (mbg/bias-gain x s t))))
+
 (defn row [a b n slant p-slant]
   (mapcat
    (fn [t]
      (if (and (<= 0.05 t 0.95) (dr/chance p-slant))
        [(gl/line2 (rv (- t slant) a) (rv (+ t slant) b))]
        [(gl/line2 (rv t a) (rv t b))]))
-   (mapv (let [s (dr/weighted {0.5 1.0 1.5 1.0 0.66 1.0 1.33 1.0})
-               t (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
-                               0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0})]
-           (dr/weighted {identity 20.0
-                         (partial ms/staircase (dr/random-int 3 13)) 1.0
-                         (fn [x] (mbg/bias-gain x s t)) 4.0}))
+   (mapv (dr/weighted {identity 20.0
+                       (partial ms/staircase (dr/random-int 3 13)) 1.0
+                       (bias-sweep) 4.0})
          (dr/weighted {(tm/norm-range n) 6.0
                        (dr/gaussian-range (/ 1.0 n) (/ 0.2 n) true) 1.0
                        (dr/density-range (/ 0.5 n) (/ 1.5 n) true) 1.0}))))
 
 (defn shapes []
-  (let [rows (dr/weighted {5 1 7 1 9 2 11 1 13 1})]
+  (let [rows (dr/weighted {5 1 7 1 9 2 11 2 13 1 15 1})]
     (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
                                              (dr/gaussian-range (/ 1.0 rows) (/ 0.2 rows) true) 1.0}))]
       (let [gap (* 0.05 (- b a))
