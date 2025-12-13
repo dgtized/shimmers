@@ -65,10 +65,10 @@
             (dr/weighted
              [[(let [p-slant (dr/weighted [[(/ (dr/random 1.0 16.0) n) vert]
                                            [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])]
-                 (fn [t] (if (and (<= 0.05 t 0.95) (dr/chance p-slant)) 1 0))) 3.0]
+                 (fn [t] (if (and (<= 0.025 t 0.975) (dr/chance p-slant)) 1 0))) 3.0]
               [(let [f (dr/random 0.1 16)
-                     p-slant (dr/weighted [[(/ (dr/random 0.5 4.0) n) vert]
-                                           [(- 1.0 (/ (dr/random 0.5 4.0) n)) diag]])]
+                     k (dr/random 0.5 3.0)
+                     p-slant (/ k n)]
                  (fn [t]
                    (if (dr/chance p-slant) (dr/rand-nth [-1 0 1])
                        (m (wave/triangle (/ 1.0 f) t))))) 1.0]])]
