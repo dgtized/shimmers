@@ -23,10 +23,10 @@
                         0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0})]
     (fn [x] (mbg/bias-gain x s t))))
 
-(defn row [a b n slant p-slant]
+(defn row [a b n slant slant-sweep]
   (mapcat
    (fn [t]
-     (if (and (<= 0.05 t 0.95) (dr/chance p-slant))
+     (if (slant-sweep t)
        [(gl/line2 (rv (- t slant) a) (rv (+ t slant) b))]
        [(gl/line2 (rv t a) (rv t b))]))
    (mapv (dr/weighted {identity 20.0
@@ -47,11 +47,12 @@
             n (dr/weighted {100 1 125 0.5 150 1 175 0.5 200 0.5 250 0.5})
             [vert diag] (dr/weighted {[6 1] 4.0 [1 4] 1.0})
             p-slant (dr/weighted [[(/ (dr/random 1.0 16.0) n) vert]
-                                  [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])]
+                                  [(- 1.0 (/ (dr/random 1.0 16.0) n)) diag]])
+            slant-sweep (fn [t] (and (<= 0.05 t 0.95) (dr/chance p-slant)))]
         (svg/group {}
                    (gl/line2 (rv 0 ga) (rv 1 ga))
                    (gl/line2 (rv 0 gb) (rv 1 gb))
-                   (svg/group {} (row ga gb n slant p-slant)))))))
+                   (svg/group {} (row ga gb n slant slant-sweep)))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
