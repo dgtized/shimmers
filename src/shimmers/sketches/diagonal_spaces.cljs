@@ -51,9 +51,11 @@
   (if (< t 0.0) 0 1))
 
 (defn shapes []
-  (let [rows (dr/weighted {5 1 7 1 9 2 11 2 13 1 15 1})]
-    (for [[a b] (partition 2 1 (dr/weighted {(tm/norm-range rows) 1.0
-                                             (dr/gaussian-range (/ 1.0 rows) (/ 0.2 rows) true) 1.0}))]
+  (let [rows (dr/weighted {5 1 7 1 9 2 11 2 13 1 15 1})
+        row-dist
+        (dr/weighted {(tm/norm-range rows) 1.0
+                      (dr/gaussian-range (/ 1.0 rows) (/ 0.2 rows) true) 1.0})]
+    (for [[a b] (partition 2 1 row-dist)]
       (let [gap (* 0.05 (- b a))
             ga (+ a gap)
             gb (- b gap)
