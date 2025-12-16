@@ -22,11 +22,12 @@
 (defonce defo (debug/state {}))
 
 (defn gen-s []
-  (dr/weighted {0.5 1.0 1.5 1.0
-                0.66 1.0 1.33 1.0
+  (dr/weighted {0.5 2.0 1.5 2.0
+                0.75 2.0 1.25 2.0
+                0.66 2.0 1.33 2.0
                 0.33 1.0 1.66 1.0
-                (dr/random 0.1 0.5) 1.0
-                (dr/random 1.5 1.9) 1.0}))
+                (dr/random 0.1 0.9) 1.0
+                (dr/random 1.1 1.9) 1.0}))
 
 (defn gen-t []
   (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
