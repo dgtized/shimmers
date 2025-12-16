@@ -30,7 +30,8 @@
 
 (defn gen-t []
   (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
-                0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0}))
+                0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0
+                (dr/random 0.05 0.95) 2.0}))
 
 (defn bias-sweep [s t]
   (fn [x] (mbg/bias-gain x s t)))
@@ -44,9 +45,9 @@
 (defn shapes []
   (let [s (gen-s)
         t (gen-t)
-        f1 (dr/random 1 3)
-        f2 (dr/random 1 5)
-        path (fn [x] (rv x (+ 0.5 (* (+ 0.05 (* 0.2 x))
+        f1 (dr/random 0.5 3)
+        f2 (dr/random 0.5 4)
+        path (fn [x] (rv x (+ 0.5 (* (+ 0.1 (* 0.2 x))
                                     (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x))))))))
         magnitude (fn [x] (* (max width height)
                             (math/sin (+ (* 0.33 f2 eq/TAU x) (math/sin (* 0.33 f1 eq/TAU x))))))]
