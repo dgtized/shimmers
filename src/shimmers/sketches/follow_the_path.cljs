@@ -21,7 +21,9 @@
 (defn bias-sweep []
   (let [s (dr/weighted {0.5 1.0 1.5 1.0
                         0.66 1.0 1.33 1.0
-                        0.25 1.0 1.75 1.0})
+                        0.33 1.0 1.66 1.0
+                        (dr/random 0.1 0.5) 1.0
+                        (dr/random 1.5 1.9) 1.0})
         t (dr/weighted {0.0 1.0 0.25 0.5 0.33 0.5
                         0.5 1.0 0.66 0.5 0.75 0.5 1.0 1.0})]
     (fn [x] (mbg/bias-gain x s t))))
@@ -34,14 +36,15 @@
 
 (defn shapes []
   (let [f1 (dr/random 1 4)
-        f2 (dr/random 1 8)
-        path (fn [x] (rv x (+ 0.5 (* (+ 0.05 (* 0.25 x))
+        f2 (dr/random 1 7)
+        path (fn [x] (rv x (+ 0.5 (* (+ 0.05 (* 0.2 x))
                                     (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x))))))))
-        magnitude (fn [x] (* 10.0 (math/sin (+ (* 0.5 f2 eq/TAU x) (math/sin (* 0.5 f1 eq/TAU x))))))]
-    (into [(gl/linestrip2 (mapv path (tm/norm-range 200)))]
+        magnitude (fn [x] (* (max width height)
+                            (math/sin (+ (* 0.33 f2 eq/TAU x) (math/sin (* 0.33 f1 eq/TAU x))))))]
+    (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
           (mapv (partial perp path magnitude)
                 (map (bias-sweep)
-                     (tm/norm-range 200))))))
+                     (tm/norm-range 250))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
