@@ -48,13 +48,14 @@
         t (gen-t)
         f1 (dr/random 0.5 3)
         f2 (dr/random 0.5 4)
+        invert (dr/weighted [[identity 2.0] [(fn [x] (- 1.0 x)) 1.0]])
         path (fn [x] (rv x (+ 0.5 (* (+ 0.1 (* 0.2 x))
                                     (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x))))))))
         magnitude (fn [x] (* (max width height)
                             (math/sin (+ (* 0.33 f2 eq/TAU x) (math/sin (* 0.33 f1 eq/TAU x))))))]
     (swap! defo assoc :s s :t t :f1 f1 :f2 f2)
     (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
-          (mapv (partial perp path magnitude)
+          (mapv (partial perp (comp path invert) magnitude)
                 (map (bias-sweep s t)
                      (tm/norm-range 250))))))
 
