@@ -56,15 +56,17 @@
          repeatedly
          (some (fn [xs] (when (< lower (reduce + xs) upper) xs))))))
 
+(defn phase-osc [f1 f2 x]
+  (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x)))))
+
 (defn gen-path [f1 f2]
   (let [functions
         [{:id "ramp"
-          :f (fn [x] (+ 0.5 (* (+ 0.1 (* 0.2 x))
-                              (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x)))))))
+          :f (fn [x] (+ 0.5 (* (+ 0.1 (* 0.2 x)) (phase-osc f1 f2 x))))
           :weight 1.0}
          {:id "osc"
           :f (let [r (dr/weighted {0.25 1.0 0.3 1.0 0.35 1.0})]
-               (fn [x] (+ 0.5 (* r (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x))))))))
+               (fn [x] (+ 0.5 (* r (phase-osc f1 f2 x)))))
           :weight 1.0}]]
     (dr/weighted-by :weight functions)))
 
@@ -76,7 +78,7 @@
         {:keys [id f]} (gen-path f1 f2)
         path (fn [x] (rv x (f x)))
         magnitude (fn [x] (* (max width height)
-                            (math/sin (+ (* 0.33 f2 eq/TAU x) (math/sin (* 0.33 f1 eq/TAU x))))))]
+                            (phase-osc (* 0.33 f2) (* 0.33 f1) x)))]
     (swap! defo assoc :id id :s s :t t :f1 f1 :f2 f2)
     (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
           (mapv (partial perp (comp path invert) magnitude)
