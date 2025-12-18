@@ -44,12 +44,17 @@
     (gl/line2 (tm/- p dp) (tm/+ p dp))))
 
 (defn gen-pair []
-  (let [f (dr/random 0.2 2.25)
-        r (dr/weighted
-           [[(dr/random 0.5 4) 1.0]
-            [(* f (dr/random-int 2 4)) (max f 1.0)]
-            [(/ f (dr/random-int 2 4)) (min f 1.0)]])]
-    [f r]))
+  (let [lower 0.5
+        upper 3.5]
+    (->> (fn []
+           (let [f (dr/random 0.2 2.25)
+                 r (dr/weighted
+                    [[(dr/random 0.5 4) 1.0]
+                     [(* f (dr/random-int 2 4)) (max f 1.0)]
+                     [(/ f (dr/random-int 2 4)) (min f 1.0)]])]
+             [f r]))
+         repeatedly
+         (some (fn [xs] (when (< lower (reduce + xs) upper) xs))))))
 
 (defn gen-path [f1 f2]
   (let [functions
@@ -65,8 +70,7 @@
 (defn shapes []
   (let [s (gen-s)
         t (gen-t)
-        [f1 f2] (some (fn [xs] (when (< 0.5 (reduce + xs) 4.0) xs))
-                      (repeatedly gen-pair))
+        [f1 f2] (gen-pair)
         invert (dr/weighted [[identity 2.0] [(fn [x] (- 1.0 x)) 1.0]])
         {:keys [id f]} (gen-path f1 f2)
         path (fn [x] (rv x (f x)))
