@@ -53,13 +53,15 @@
                      [(* f (dr/random-int 2 4)) (max f 1.0)]
                      [(/ f (dr/random-int 2 4)) (min f 1.0)]])
                  z (dr/weighted [[0 1.0]
-                                 [(* f (dr/random 4 16) 1.0) 2.0]])]
+                                 [(* f (dr/random 4 16) 1.0) 3.0]])]
              [f r z]))
          repeatedly
          (some (fn [xs] (when (< lower (reduce + (take 2 xs)) upper) xs))))))
 
 (defn phase-osc [f1 f2 f3 x]
-  (math/sin (+ (* f1 eq/TAU x) (math/sin (+ (* f2 eq/TAU x) (* 0.01 (math/sin (* f3 eq/TAU x))))))))
+  (math/sin (+ (* f1 eq/TAU x)
+               (math/sin (+ (* f2 eq/TAU x)
+                            (* 0.008 (math/sin (* f3 eq/TAU x))))))))
 
 (defn gen-path [f1 f2 f3]
   (let [functions
