@@ -43,7 +43,7 @@
                      (* 0.25 eq/TAU))]
     (gl/line2 (tm/- p dp) (tm/+ p dp))))
 
-(defn gen-pair []
+(defn gen-freqs []
   (let [lower 0.5
         upper 3.5]
     (->> (fn []
@@ -51,35 +51,37 @@
                  r (dr/weighted
                     [[(dr/random 0.5 4) 1.0]
                      [(* f (dr/random-int 2 4)) (max f 1.0)]
-                     [(/ f (dr/random-int 2 4)) (min f 1.0)]])]
-             [f r]))
+                     [(/ f (dr/random-int 2 4)) (min f 1.0)]])
+                 z (dr/weighted [[0 1.0]
+                                 [(* f (dr/random 4 16) 1.0) 2.0]])]
+             [f r z]))
          repeatedly
-         (some (fn [xs] (when (< lower (reduce + xs) upper) xs))))))
+         (some (fn [xs] (when (< lower (reduce + (take 2 xs)) upper) xs))))))
 
-(defn phase-osc [f1 f2 x]
-  (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x)))))
+(defn phase-osc [f1 f2 f3 x]
+  (math/sin (+ (* f1 eq/TAU x) (math/sin (+ (* f2 eq/TAU x) (* 0.01 (math/sin (* f3 eq/TAU x))))))))
 
-(defn gen-path [f1 f2]
+(defn gen-path [f1 f2 f3]
   (let [functions
         [{:id "ramp"
-          :f (fn [x] (+ 0.5 (* (+ 0.1 (* 0.2 x)) (phase-osc f1 f2 x))))
+          :f (fn [x] (+ 0.5 (* (+ 0.1 (* 0.2 x)) (phase-osc f1 f2 f3 x))))
           :weight 1.0}
          {:id "osc"
           :f (let [r (dr/weighted {0.25 1.0 0.3 1.0 0.35 1.0})]
-               (fn [x] (+ 0.5 (* r (phase-osc f1 f2 x)))))
+               (fn [x] (+ 0.5 (* r (phase-osc f1 f2 f3 x)))))
           :weight 1.0}]]
     (dr/weighted-by :weight functions)))
 
 (defn shapes []
   (let [s (gen-s)
         t (gen-t)
-        [f1 f2] (gen-pair)
+        [f1 f2 f3] (gen-freqs)
         invert (dr/weighted [[identity 2.0] [(fn [x] (- 1.0 x)) 1.0]])
-        {:keys [id f]} (gen-path f1 f2)
+        {:keys [id f]} (gen-path f1 f2 f3)
         path (fn [x] (rv x (f x)))
         magnitude (fn [x] (* (max width height)
-                            (phase-osc (* 0.33 f2) (* 0.33 f1) x)))]
-    (swap! defo assoc :id id :s s :t t :f1 f1 :f2 f2)
+                            (phase-osc (* 0.33 f2) (* 0.33 f1) f3 x)))]
+    (swap! defo assoc :id id :s s :t t :f1 f1 :f2 f2 :f3 f3)
     (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
           (mapv (partial perp (comp path invert) magnitude)
                 (map (bias-sweep s t)
