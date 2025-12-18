@@ -53,15 +53,19 @@
                      [(* f (dr/random-int 2 4)) (max f 1.0)]
                      [(/ f (dr/random-int 2 4)) (min f 1.0)]])
                  z (dr/weighted [[0 1.0]
-                                 [(* f (dr/random 4 16) 1.0) 3.0]])]
+                                 [(* f (dr/random 2 12) 1.0) 4.0]])]
              [f r z]))
          repeatedly
          (some (fn [xs] (when (< lower (reduce + (take 2 xs)) upper) xs))))))
 
+(defn tsin ^double [^double x]
+  (math/sin (* eq/TAU x)))
+
 (defn phase-osc [f1 f2 f3 x]
-  (math/sin (+ (* f1 eq/TAU x)
-               (math/sin (+ (* f2 eq/TAU x)
-                            (* 0.008 (math/sin (* f3 eq/TAU x))))))))
+  (tsin
+   (+ (* f1 x)
+      (* 0.1 (tsin (+ (* f2 x)
+                      (* 0.01 (tsin (* f3 x)))))))))
 
 (defn gen-path [f1 f2 f3]
   (let [functions
@@ -82,7 +86,7 @@
         {:keys [id f]} (gen-path f1 f2 f3)
         path (fn [x] (rv x (f x)))
         magnitude (fn [x] (* (max width height)
-                            (phase-osc (* 0.33 f2) (* 0.33 f1) f3 x)))]
+                            (phase-osc (* 0.33 f2) (* 0.33 f1) (* 0.2 f3) x)))]
     (swap! defo assoc :id id :s s :t t :f1 f1 :f2 f2 :f3 f3)
     (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
           (mapv (partial perp (comp path invert) magnitude)
