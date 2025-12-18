@@ -63,7 +63,8 @@
                               (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x)))))))
           :weight 1.0}
          {:id "osc"
-          :f (fn [x] (+ 0.5 (* 0.3 (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x)))))))
+          :f (let [r (dr/weighted {0.25 1.0 0.3 1.0 0.35 1.0})]
+               (fn [x] (+ 0.5 (* r (math/sin (+ (* f1 eq/TAU x) (math/sin (* f2 eq/TAU x))))))))
           :weight 1.0}]]
     (dr/weighted-by :weight functions)))
 
