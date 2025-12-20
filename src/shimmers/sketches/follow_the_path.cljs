@@ -88,7 +88,9 @@
         [f1 f2 f3] (gen-freqs)
         invert (dr/weighted [[identity 2.0] [(fn [x] (- 1.0 x)) 1.0]])
         {:keys [id f]} (gen-path f1 f2 f3)
-        path (fn [x] (rv x (f x)))
+        path (if (dr/chance 0.2)
+               (fn [x] (rv (f x) x))
+               (fn [x] (rv x (f x))))
         magnitude (fn [x] (* (max width height)
                             (phase-osc (* 0.33 f2) (* 0.33 f1) (* 0.2 f3) x)))]
     (swap! defo assoc :id id :s s :t t :f1 f1 :f2 f2 :f3 f3)
