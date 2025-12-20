@@ -59,16 +59,17 @@
          (some (fn [xs] (when (< lower (reduce + (take 2 xs)) upper) xs))))))
 
 (defn phase-mod ^double
-  ([^double x] (phase-mod x 0))
-  ([^double x ^double y]
-   (math/sin (* eq/TAU (+ x y)))))
+  ([^double amp ^double x] (phase-mod amp x 0))
+  ([^double amp ^double x ^double y]
+   (* amp (math/sin (* eq/TAU (+ x y))))))
 
 (defn phase-osc [f1 f2 f3 x]
   (phase-mod
+   1.0
    (* f1 x)
-   (* 0.1 (phase-mod
-           (* f2 x)
-           (* 0.01 (phase-mod (* f3 x)))))))
+   (phase-mod 0.1
+              (* f2 x)
+              (phase-mod 0.01 (* f3 x)))))
 
 (defn gen-path [f1 f2 f3]
   (let [functions
