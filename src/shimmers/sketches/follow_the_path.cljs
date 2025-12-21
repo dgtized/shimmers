@@ -97,7 +97,7 @@
     (into [#_(gl/linestrip2 (mapv path (tm/norm-range 200)))]
           (mapv (partial perp (comp path invert) magnitude)
                 (map (bias-sweep s t)
-                     (tm/norm-range 250))))))
+                     (tm/norm-range 200))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
@@ -105,7 +105,7 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
+                   :stroke-width 0.75}
     (shapes)))
 
 (defn explanation []
