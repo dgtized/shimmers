@@ -50,8 +50,8 @@
            (let [f (dr/random 0.2 2.25)
                  r (dr/weighted
                     [[(dr/random 0.5 4) 1.0]
-                     [(* f (dr/random-int 2 4)) (max f 1.0)]
-                     [(/ f (dr/random-int 2 4)) (min f 1.0)]])
+                     [(* f (dr/random 1.1 4)) (max f 1.0)]
+                     [(/ f (dr/random 1.1 4)) (min f 1.0)]])
                  z (dr/weighted [[0 1.0]
                                  [(* f (dr/random 2 12) 1.0) 4.0]])]
              [f r z]))
