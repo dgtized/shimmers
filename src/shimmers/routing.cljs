@@ -5,6 +5,7 @@
    [reitit.frontend :as rf]
    [reitit.frontend.controllers :as rfc]
    [reitit.frontend.easy :as rfe]
+   [shimmers.common.ui.debug :as debug]
    [shimmers.sketches :as sketches]
    [shimmers.view.favicon :as favicon]
    [shimmers.view.index :as view-index]
@@ -61,10 +62,13 @@
 (defn page-root [page-match]
   (let [page @page-match
         view (:view (:data page))]
-    (when view
+    (if view
       [:div
        [kb/keyboard-listener]
-       [view (:parameters page)]])))
+       [view (:parameters page)]]
+      [:div
+       [:h3 "Error in page:"]
+       (debug/pre-edn page)])))
 
 (defn on-navigate [page-match new-match]
   (if (or (nil? new-match) (= (:name (:data new-match)) :shimmers.routing/root))
