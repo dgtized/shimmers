@@ -46,7 +46,7 @@
   (every?
    (fn [[a b c]]
      (let [angle (poly-detect/small-angle-between (tm/- a b) (tm/- c b))]
-       (> angle (* eq/TAU 0.1))))
+       (< (* eq/TAU 0.075) angle (* 0.425 eq/TAU))))
    (point-triplets pts)))
 
 (defn points [bounds n]
