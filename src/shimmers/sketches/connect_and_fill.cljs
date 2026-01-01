@@ -119,8 +119,13 @@
                    :stroke-width 0.5}
     (shapes (g/scale-size (csvg/screen width height) 0.9))))
 
+(defn explanation [_]
+  [:div.readable-width
+   [:p "Genuary 2026 - Day 01 - One Color, One Shape"]
+   [:p "Generate a random 8 vertice shape and then make " [:em "n"] " copies of it arranged in different patterns."]])
+
 (sketch/definition connect-and-fill
   {:created-at "2026-01-01"
    :tags #{:genuary2026}
    :type :svg}
-  (ctrl/mount (usvg/page sketch-args scene)))
+  (ctrl/mount (usvg/page sketch-args explanation scene)))
