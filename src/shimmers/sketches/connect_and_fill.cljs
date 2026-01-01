@@ -1,22 +1,22 @@
 (ns shimmers.sketches.connect-and-fill
   (:require
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.algorithm.random-points :as rp]
+   [shimmers.common.string :as scs]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.color.core :as col]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.polygon :as gp]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.math.core :as tm]
-   [shimmers.algorithm.polygon-detection :as poly-detect]
-   [shimmers.math.equations :as eq]
-   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.svg.core :as svg]
-   [shimmers.common.string :as scs]
-   [thi.ng.color.core :as col]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
@@ -45,7 +45,6 @@
   (every?
    (fn [[a b c]]
      (let [angle (poly-detect/small-angle-between (tm/- a b) (tm/- c b))]
-       (when (<= angle (* eq/TAU 0.05)) (println [a b c] angle))
        (> angle (* eq/TAU 0.05))))
    (point-triplets pts)))
 
@@ -53,8 +52,8 @@
   (->>
    (fn []
      (take n
-           (iterate (fn [p] (displace (g/scale-size bounds 0.95) p))
-                    (rp/sample-point-inside (g/scale-size bounds 0.75)))))
+           (iterate (fn [p] (displace (g/scale-size bounds 0.7) p))
+                    (rp/sample-point-inside (g/scale-size bounds 0.3)))))
    repeatedly
    (some
     (fn [pts] (when (acceptable? (vec pts)) pts)))))
@@ -71,15 +70,32 @@
                       (apply scs/cl-format "[~0,1f, ~0,1f]" b))))
         (point-triplets pts)))
 
+;; g/centroid for polygon assumes non-self-intersecting polygon
+(defn simple-centroid [shape]
+  (let [pts (g/vertices shape)]
+    (tm/div (reduce tm/+ pts) (count pts))))
+
 (defn shapes [bounds]
-  (let [pts (vec (points bounds 10))]
-    (concat #_(debug-points pts)
-            (into
-             [(gp/polygon2 pts)]
-             (repeatedly 4 #(vary-meta (g/translate (gp/polygon2 pts)
-                                                    (gv/vec2 (* (dr/random-sign) (dr/random 2 26))
-                                                             (* (dr/random-sign) (dr/random 2 26))))
-                                       assoc :fill (col/as-css (col/hsla 0.55 0.5 0.5 0.05))))))))
+  (let [pts (vec (points bounds 8))
+        copies (dr/rand-nth [3 5 7])
+        shape (gp/polygon2 pts)
+        color (col/as-css (col/hsla (dr/random) 0.8 0.4 0.05))
+        cshape (g/translate shape (tm/- (g/centroid bounds) (simple-centroid shape)))
+        displacement (tm/* (gv/vec2 (/ (g/width bounds) 5)
+                                    (/ (g/height bounds) 5))
+                           (dr/weighted {(gv/vec2 1 0) 1
+                                         (gv/vec2 0 1) 1
+                                         (gv/vec2 1 (* -1 (dr/random 0.75 1.0))) 1
+                                         (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))]
+    (concat #_(debug-points (g/vertices shape))
+            (mapv
+             (fn [s]
+               (vary-meta s assoc :fill color))
+             (mapv
+              (fn [s t] (g/translate s t))
+              (repeat copies cshape)
+              (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
+                    (tm/norm-range (dec copies))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
@@ -88,7 +104,7 @@
                    :stroke "black"
                    :fill "none"
                    :stroke-width 0.5}
-    (shapes (csvg/screen width height))))
+    (shapes (g/scale-size (csvg/screen width height) 0.9))))
 
 (sketch/definition connect-and-fill
   {:created-at "2026-01-01"
