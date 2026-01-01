@@ -18,7 +18,7 @@
 
         ;; Helper libraries
         org.clojure/core.async {:mvn/version "1.8.741"}
-        org.clojure/core.match {:mvn/version "1.1.0"}
+        org.clojure/core.match {:mvn/version "1.1.1"}
         org.clojure/math.combinatorics {:mvn/version "0.3.0"}
         instaparse/instaparse {:mvn/version "1.5.0"}
         ;; Need both priority-maps to use in CLJC files
