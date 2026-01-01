@@ -8,6 +8,7 @@
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.vector :as v]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.color.core :as col]
@@ -92,11 +93,15 @@
          {(mapv (fn [t] (v/polar (/ (g/height bounds) 3.5) (* eq/TAU t)))
                 (butlast (tm/norm-range copies))) 1.0
           (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
-                (tm/norm-range (dec copies))) 1.0})]
+                (tm/norm-range (dec copies))) 1.0})
+        jitter (dr/random 0.0 0.1)]
     {:shape cshape
      :copies (mapv
-              (fn [s t] (g/translate s t))
-              (repeat copies cshape)
+              (fn [t] (g/translate (if (> jitter 0)
+                                    (geometry/rotate-around cshape
+                                                            (simple-centroid cshape)
+                                                            (dr/gaussian 0.0 jitter))
+                                    cshape) t))
               translations)}))
 
 (defn legal? [bounds]
