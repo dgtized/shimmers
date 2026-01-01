@@ -26,7 +26,7 @@
     :middleware [m/fun-mode framerate/mode])])
 
 (sketch/definition template-quil
-  {:created-at "2025-"
+  {:created-at "2026-"
    :tags #{}
    :type :quil}
   (ctrl/mount page))
