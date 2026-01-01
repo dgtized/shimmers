@@ -86,13 +86,18 @@
               (dr/weighted {(gv/vec2 1 0) 1
                             (gv/vec2 0 1) 1
                             (gv/vec2 1 (* -1 (dr/random 0.75 1.0))) 1
-                            (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))]
+                            (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))
+        translations
+        (dr/weighted
+         {(mapv (fn [t] (v/polar (/ (g/height bounds) 3.5) (* eq/TAU t)))
+                (butlast (tm/norm-range copies))) 1.0
+          (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
+                (tm/norm-range (dec copies))) 1.0})]
     {:shape cshape
      :copies (mapv
               (fn [s t] (g/translate s t))
               (repeat copies cshape)
-              (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
-                    (tm/norm-range (dec copies))))}))
+              translations)}))
 
 (defn legal? [bounds]
   (fn [{:keys [copies] :as set}]
