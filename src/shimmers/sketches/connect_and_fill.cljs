@@ -46,15 +46,15 @@
   (every?
    (fn [[a b c]]
      (let [angle (poly-detect/small-angle-between (tm/- a b) (tm/- c b))]
-       (> angle (* eq/TAU 0.05))))
+       (> angle (* eq/TAU 0.1))))
    (point-triplets pts)))
 
 (defn points [bounds n]
   (->>
    (fn []
      (take n
-           (iterate (fn [p] (displace (g/scale-size bounds 0.7) p))
-                    (rp/sample-point-inside (g/scale-size bounds 0.3)))))
+           (iterate (fn [p] (displace (g/scale-size bounds 0.95) p))
+                    (rp/sample-point-inside (g/scale-size bounds 0.5)))))
    repeatedly
    (some
     (fn [pts] (when (acceptable? (vec pts)) pts)))))
@@ -79,22 +79,22 @@
 (defn shape-set [bounds n]
   (let [pts (vec (points bounds n))
         shape (gp/polygon2 pts)
-        copies (dr/rand-nth [3 5 7])
+        copies (dr/weighted {3 1 5 4 7 4 9 1 11 1})
         cshape (g/translate shape (tm/- (g/centroid bounds) (simple-centroid shape)))
         displacement
-        (tm/* (gv/vec2 (/ (g/width bounds) 5)
-                       (/ (g/height bounds) 5))
-              (dr/weighted {(gv/vec2 1 0) 1
-                            (gv/vec2 0 1) 1
-                            (gv/vec2 1 (* -1 (dr/random 0.75 1.0))) 1
-                            (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))
+        (tm/* (gv/vec2 (/ (g/width bounds) 3.5)
+                       (/ (g/height bounds) 3.5))
+              (dr/weighted {(gv/vec2 (dr/random 0.8 1.2) 0) 1
+                            (gv/vec2 0 (dr/random 0.8 1.2)) 1
+                            (gv/vec2 1 (* (dr/random-sign) (dr/random 0.66 1.2))) 1
+                            (gv/vec2 (* (dr/random-sign) (dr/random 0.66 1.2)) 1) 1}))
         translations
         (dr/weighted
          {(mapv (fn [t] (v/polar (/ (g/height bounds) 3.5) (* eq/TAU t)))
                 (butlast (tm/norm-range copies))) 1.0
           (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
                 (tm/norm-range (dec copies))) 1.0})
-        jitter (dr/random 0.0 0.1)]
+        jitter (max 0.0 (dr/random -0.05 0.1))]
     {:shape cshape
      :copies (mapv
               (fn [t] (g/translate (if (> jitter 0)
@@ -112,7 +112,7 @@
 
 (defn shapes [bounds]
   (let [color (col/as-css (col/hsla (dr/random) 0.8 0.5 0.225))
-        set (some (legal? (g/scale-size bounds 0.95))
+        set (some (legal? (g/scale-size bounds 0.975))
                   (repeatedly #(shape-set bounds 7)))]
     (concat #_(debug-points (g/vertices (:shape set)))
             (mapv
