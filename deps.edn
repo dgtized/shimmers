@@ -22,7 +22,7 @@
         org.clojure/math.combinatorics {:mvn/version "0.3.0"}
         instaparse/instaparse {:mvn/version "1.5.0"}
         ;; Need both priority-maps to use in CLJC files
-        org.clojure/data.priority-map {:mvn/version "1.2.0"} ;; CLJ
+        org.clojure/data.priority-map {:mvn/version "1.2.1"} ;; CLJ
         tailrecursion/cljs-priority-map {:mvn/version "1.2.1"} ;; CLJS
         org.clojure/data.avl {:mvn/version "0.2.0"}
         huahaiy/nifty {:mvn/version "0.1.0"} ;; disjoint-set + priority-map
