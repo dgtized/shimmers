@@ -75,33 +75,46 @@
   (let [pts (g/vertices shape)]
     (tm/div (reduce tm/+ pts) (count pts))))
 
-(defn shapes [bounds]
-  (let [pts (vec (points bounds 8))
-        copies (dr/rand-nth [3 5 7])
+(defn shape-set [bounds n]
+  (let [pts (vec (points bounds n))
         shape (gp/polygon2 pts)
-        color (col/as-css (col/hsla (dr/random) 0.8 0.4 0.05))
+        copies (dr/rand-nth [3 5 7])
         cshape (g/translate shape (tm/- (g/centroid bounds) (simple-centroid shape)))
-        displacement (tm/* (gv/vec2 (/ (g/width bounds) 5)
-                                    (/ (g/height bounds) 5))
-                           (dr/weighted {(gv/vec2 1 0) 1
-                                         (gv/vec2 0 1) 1
-                                         (gv/vec2 1 (* -1 (dr/random 0.75 1.0))) 1
-                                         (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))]
-    (concat #_(debug-points (g/vertices shape))
-            (mapv
-             (fn [s]
-               (vary-meta s assoc :fill color))
-             (mapv
+        displacement
+        (tm/* (gv/vec2 (/ (g/width bounds) 5)
+                       (/ (g/height bounds) 5))
+              (dr/weighted {(gv/vec2 1 0) 1
+                            (gv/vec2 0 1) 1
+                            (gv/vec2 1 (* -1 (dr/random 0.75 1.0))) 1
+                            (gv/vec2 (* -1 (dr/random 0.75 1.0)) 1) 1}))]
+    {:shape cshape
+     :copies (mapv
               (fn [s t] (g/translate s t))
               (repeat copies cshape)
               (mapv (fn [x] (tm/* displacement (* 2 (- x 0.5))))
-                    (tm/norm-range (dec copies))))))))
+                    (tm/norm-range (dec copies))))}))
+
+(defn legal? [bounds]
+  (fn [{:keys [copies] :as set}]
+    (when (every? (fn [p] (g/contains-point? bounds p))
+                  (mapcat g/vertices copies))
+      set)))
+
+(defn shapes [bounds]
+  (let [color (col/as-css (col/hsla (dr/random) 0.8 0.5 0.225))
+        set (some (legal? (g/scale-size bounds 0.95))
+                  (repeatedly #(shape-set bounds 7)))]
+    (concat #_(debug-points (g/vertices (:shape set)))
+            (mapv
+             (fn [s]
+               (vary-meta s assoc :fill color))
+             (:copies set)))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
-                   :stroke "black"
+                   :stroke "none"
                    :fill "none"
                    :stroke-width 0.5}
     (shapes (g/scale-size (csvg/screen width height) 0.9))))
