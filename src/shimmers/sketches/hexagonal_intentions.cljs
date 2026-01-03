@@ -27,6 +27,8 @@
         center (cq/rel-vec 0.5 0.5)
         radius (* 0.5 (q/height))
         polygon
+        ;; FIXME: can it stay mostly hexagonal for most of the time and then
+        ;; fiddle with low frequency modulation on some of the vertices?
         (gp/polygon2
          (mapv (fn [s]
                  (v/+polar center
