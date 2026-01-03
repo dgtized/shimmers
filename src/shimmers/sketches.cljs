@@ -129,6 +129,7 @@
    shimmers.sketches.helix
    shimmers.sketches.hexaclock
    shimmers.sketches.hexaflexagon
+   shimmers.sketches.hexagonal-intentions
    shimmers.sketches.hexcursive
    shimmers.sketches.hexflare
    shimmers.sketches.hexpansion
