@@ -40,10 +40,11 @@
     (csvg/path [[:M p]
                 [:A [r r] 0.0 0 (if right 0 1) q]])))
 
+;; FIXME: ignoring the arc length for the arc segments in both distance traveled
+;; and in mapping positions on the number line.
 (defn point-at [lines t]
   (let [n (count lines)
         st (* n t)]
-    (println n st (- st (int st)))
     (cond (tm/delta= 0.0 t) (g/point-at (first lines) 0.0)
           (tm/delta= 1.0 t) (g/point-at (last lines) 1.0)
           :else
