@@ -96,6 +96,7 @@
    shimmers.sketches.epicycles
    shimmers.sketches.envelope-collapse
    shimmers.sketches.falling-gradients
+   shimmers.sketches.fibonnaci-days
    shimmers.sketches.fibonacci-subdivisions
    shimmers.sketches.fire
    shimmers.sketches.fireworks
