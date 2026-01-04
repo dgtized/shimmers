@@ -5,6 +5,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.vector :as gv]
@@ -20,21 +21,53 @@
   (= 20 (+ 1 1 2 3 5 8))
   (= 33 (+ 1 1 2 3 5 8 13)))
 
+(defn fib
+  ([] (fib 1 1))
+  ([a b]
+   (lazy-seq (cons a (fib b (+ a b))))))
+
+(comment (take 7 (fib)))
+
+(defn cuts [n]
+  (let [xs (take n (fib))
+        ss (reductions + xs)
+        total (last ss)]
+    (mapv (fn [x] (/ x total)) ss)))
+
 (defn arc-segment [p q right]
   (let [mid (tm/mix p q 0.5)
         r (g/dist p mid)]
     (csvg/path [[:M p]
                 [:A [r r] 0.0 0 (if right 0 1) q]])))
 
+(defn point-at [lines t]
+  (let [n (count lines)
+        st (* n t)]
+    (println n st (- st (int st)))
+    (cond (tm/delta= 0.0 t) (g/point-at (first lines) 0.0)
+          (tm/delta= 1.0 t) (g/point-at (last lines) 1.0)
+          :else
+          (g/point-at (nth lines (int st))
+                      (- st (int st))))))
+
 (defn shapes []
-  (let [lines (cs/midsection (tm/norm-range (inc 13)))]
-    (concat (for [t lines]
-              (gl/line2 (rv 0.2 t) (rv 0.8 t)))
+  (let [lines (cs/midsection (tm/norm-range (inc 13)))
+        path
+        (map-indexed
+         (fn [i t]
+           (if (odd? i)
+             (gl/line2 (rv 0.8 t) (rv 0.2 t))
+             (gl/line2 (rv 0.2 t) (rv 0.8 t))))
+         lines)]
+    (concat path
             (map-indexed
              (fn [i [a b]]
                (let [x (if (odd? i) 0.2 0.8)]
                  (arc-segment (rv x a) (rv x b) (odd? i))))
-             (partition 2 1 lines)))))
+             (partition 2 1 lines))
+            (map (fn [t]
+                   (gc/circle (point-at path t) 6))
+                 (cuts 10)))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
