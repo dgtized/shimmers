@@ -297,6 +297,7 @@
    shimmers.sketches.unraveling
    shimmers.sketches.unwinding
    shimmers.sketches.vanishing-points
+   shimmers.sketches.variations-on-molnar
    shimmers.sketches.velocity-fields
    shimmers.sketches.verlet-brushes
    shimmers.sketches.vertex-curves
