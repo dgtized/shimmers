@@ -31,6 +31,7 @@
          [0.25 0.3]]
     []))
 
+;; TODO: add some inversion regions with white on black?
 (defn render [box path]
   (let [translated (map (fn [p] (g/unmap-point box (gv/vec2 p))) path)
         strip (gl/linestrip2 translated)]
