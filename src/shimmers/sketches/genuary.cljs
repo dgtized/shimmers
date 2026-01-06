@@ -4,6 +4,7 @@
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.geometry.triangle :as triangle]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
@@ -37,8 +38,14 @@
       (into [#_(csvg/path (csvg/segmented-path translated)
                           {:stroke-width 1 :fill "none"})]
             (mapv (fn [t]
-                    (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
-                               (dr/random 3.0 6.0)))
+                    (vary-meta
+                     (let [circle (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
+                                             (dr/random 3.0 6.0))]
+                       (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
+                         :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
+                         :circle circle
+                         :square (g/scale-size (g/bounds circle) 0.9)))
+                     assoc :stroke-width (dr/random 1.0 2.0)))
                   (tm/norm-range 35))))))
 
 (comment
