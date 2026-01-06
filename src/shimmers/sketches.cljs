@@ -113,6 +113,7 @@
    shimmers.sketches.future-cities
    shimmers.sketches.gallery-layout
    shimmers.sketches.garden-hose
+   shimmers.sketches.genuary
    shimmers.sketches.geometry-examples
    shimmers.sketches.geometry-interactive
    shimmers.sketches.gl-cube
