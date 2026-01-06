@@ -3,8 +3,11 @@
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
+   [shimmers.math.deterministic-random :as dr]
    [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.circle :as gc]
    [thi.ng.geom.core :as g]
+   [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
@@ -15,29 +18,36 @@
   (gv/vec2 (* width x) (* height y)))
 
 (defn letter-path [letter]
-  (println letter)
   (case letter
     "G" [[0.85 0.1] [0.15 0.1] [0.15 0.9] [0.85 0.9] [0.85 0.55] [0.65 0.6]]
     "e" [[0.3 0.55] [0.9 0.5] [0.5 0.25] [0.1 0.5] [0.5 0.9] [0.9 0.7]]
     "n" [[0.15 0.3] [0.15 0.9] [0.15 0.4] [0.5 0.3] [0.85 0.4] [0.85 0.9]]
     "u" [[0.15 0.3] [0.15 0.6] [0.25 0.9] [0.75 0.9] [0.85 0.6] [0.85 0.3] [0.85 0.9]]
     "a" [[0.15 0.3] [0.85 0.25] [0.85 0.9] [0.15 0.9] [0.15 0.45] [0.85 0.55]]
+    ;; kerning!
     "r" [[0.2 0.9] [0.2 0.3] [0.2 0.425] [0.8 0.3]]
     "y" [[0.15 0.9] [0.85 0.3] (tm/mix (gv/vec2 0.15 0.9) (gv/vec2 0.85 0.3) 0.6)
          [0.25 0.3]]
     []))
 
 (defn render [box path]
-  (let [translated (map (fn [p] (g/unmap-point box (gv/vec2 p))) path)]
-    (csvg/path (csvg/segmented-path translated)
-               {:stroke-width 2 :fill "none"})))
+  (let [translated (map (fn [p] (g/unmap-point box (gv/vec2 p))) path)
+        strip (gl/linestrip2 translated)]
+    (csvg/group {:stroke-width 1.5}
+      (into [#_(csvg/path (csvg/segmented-path translated)
+                          {:stroke-width 1 :fill "none"})]
+            (mapv (fn [t]
+                    (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
+                               (dr/random 3.0 6.0)))
+                  (tm/norm-range 35))))))
 
-(render (rect/rect 0 0 10 10) (letter-path "a"))
+(comment
+  (render (rect/rect 0 0 10 10) (letter-path "a")))
 
 (defn letter [region character]
-  (let [box (g/scale-size region 0.9)]
+  (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))]
     (csvg/group {}
-      [box
+      [#_box
        (render box (letter-path character))
        #_(svg/text (rect/bottom-left box) character)
        #_(svg/text (rect/top-right box) character)])))
