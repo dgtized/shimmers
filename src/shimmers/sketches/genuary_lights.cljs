@@ -17,8 +17,6 @@
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:debug false :lights false}))
-
 (defn gen-particle [bounds]
   (let [new-target (fn [] (rp/sample-point-inside bounds))
         pos (new-target)]
@@ -36,10 +34,10 @@
      :new-target new-target}))
 
 (defn update-particle
-  [{:keys [pos vel target new-target] :as particle} dt]
+  [{:keys [pos vel target new-target] :as particle} lights dt]
   (let [mag (min (tm/mag-squared (tm/- target pos)) 30000)]
     (if (< mag 3.0)
-      (if (:lights @ui-state)
+      (if lights
         (assoc particle :vel (gv/vec2))
         (assoc particle :target (new-target)))
       (let [force (tm/limit (tm/* (tm/- target pos) (/ 1.0 mag))
@@ -52,8 +50,8 @@
             (assoc :color (> (tm/mag-squared vel') mag))
             (assoc :last-pos pos))))))
 
-(defn update-particles [particles dt]
-  (mapv (fn [x] (update-particle x dt)) particles))
+(defn update-particles [particles lights dt]
+  (mapv (fn [x] (update-particle x lights dt)) particles))
 
 (defn setup []
   (q/color-mode :hsl 1.0)
@@ -73,20 +71,21 @@
             (fn [] (rp/sample-point-inside (:strip (dr/rand-nth (:paths state)))))
             (fn [] (rp/sample-point-inside (cq/screen-rect))))))
 
-(defn run-sim [state steps dt]
-  (last (take steps (iterate (fn [s] (update s :particles update-particles dt))
+(defn run-sim [state lights steps dt]
+  (last (take steps (iterate (fn [s] (update s :particles update-particles lights dt))
                              state))))
 
-(defn update-state [light-switch]
+(defn update-state [ui-state]
   (fn [{:keys [t] :as state}]
-    (let [target (if (:lights @ui-state) 1.0 0.0)
+    (let [lights (:lights @ui-state)
+          target (if lights 1.0 0.0)
           dt (- (q/millis) t)]
-      (-> (if (:changed @light-switch)
-            (do (swap! light-switch assoc :changed false)
-                (change-targets state (:lights @ui-state)))
+      (-> (if (:changed @ui-state)
+            (do (swap! ui-state assoc :changed false)
+                (change-targets state lights))
             state)
           (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
-          (run-sim 16 (/ dt 16.0))
+          (run-sim lights 16 (/ dt 16.0))
           (assoc :t (q/millis))))))
 
 (defn draw [{:keys [light particles]}]
@@ -101,18 +100,18 @@
                            pos))))
 
 (defn page []
-  (let [light-switch (atom {:changed false})]
+  (let [ui-state (ctrl/state {:debug false :lights false :changed false})]
     [:div
      (sketch/component
        :size [800 600]
        :setup setup
-       :update (update-state light-switch)
+       :update (update-state ui-state)
        :draw draw
        :middleware [m/fun-mode framerate/mode])
      [:div.centered.readable-width
       [:p "Genuary 2026 - Day 6 - Lights On/Off"]
       [ctrl/checkbox ui-state "Lights" [:lights]
-       {:on-change (fn [_] (swap! light-switch assoc :changed true))}]
+       {:on-change (fn [_] (swap! ui-state assoc :changed true))}]
       ;; [ctrl/checkbox ui-state "Debug" [:debug]]
       [:p "Little bit of a repeat of assets from the Day 5 sketch."]]]))
 
