@@ -41,13 +41,13 @@
         (assoc particle :vel (gv/vec2))
         (assoc particle :target (new-target)))
       (let [force (tm/limit (tm/* (tm/- target pos) (/ 1.0 mag))
-                            (* 0.05 (math/sqrt mag)))
+                            (* 0.125 (math/sqrt mag)))
             pos' (tm/+ pos (tm/+ (tm/* vel dt) (tm/* force (* 0.5 dt dt))))
             vel' (tm/* (tm/+ vel (tm/* force dt)) 0.95)]
         (-> particle
             (assoc :pos pos')
             (assoc :vel vel')
-            (assoc :color (> (tm/mag-squared vel') mag))
+            (assoc :color false #_(> (tm/mag-squared vel') mag))
             (assoc :last-pos pos))))))
 
 (defn update-particles [particles lights dt]
@@ -85,7 +85,7 @@
                 (change-targets state lights))
             state)
           (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
-          (run-sim lights 16 (/ dt 16.0))
+          (run-sim lights 16 (/ dt 10.0))
           (assoc :t (q/millis))))))
 
 (defn draw [{:keys [light particles]}]
