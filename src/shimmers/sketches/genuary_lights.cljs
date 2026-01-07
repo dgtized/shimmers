@@ -99,7 +99,7 @@
     [:p "Genuary 2026 - Day 6 - Lights On/Off"]
     [ctrl/checkbox ui-state "Lights" [:lights]
      {:on-change (fn [_] (swap! light-switch assoc :changed true))}]
-    [ctrl/checkbox ui-state "Debug" [:debug]]
+    ;; [ctrl/checkbox ui-state "Debug" [:debug]]
     [:p "Little bit of a repeat of assets from the Day 5 sketch."]]])
 
 (sketch/definition genuary-lights
