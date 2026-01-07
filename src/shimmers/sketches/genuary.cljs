@@ -33,31 +33,32 @@
     []))
 
 ;; TODO: add some inversion regions with white on black?
-(defn render [box path]
-  (let [translated (map (fn [p] (g/unmap-point box (gv/vec2 p))) path)
-        strip (gl/linestrip2 translated)]
-    (csvg/group {:stroke-width 1.5}
-      (into [#_(csvg/path (csvg/segmented-path translated)
-                          {:stroke-width 1 :fill "none"})]
-            (mapv (fn [t]
-                    (vary-meta
-                     (let [circle (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
-                                             (dr/random 3.0 6.0))]
-                       (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
-                         :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
-                         :circle circle
-                         :square (g/scale-size (g/bounds circle) 0.9)))
-                     assoc :stroke-width (dr/random 1.0 2.0)))
-                  (tm/norm-range 35))))))
-
-(comment
-  (render (rect/rect 0 0 10 10) (letter-path "a")))
+(defn render [{:keys [strip]}]
+  (csvg/group {:stroke-width 1.5}
+    (into [#_(csvg/path (csvg/segmented-path translated)
+                        {:stroke-width 1 :fill "none"})]
+          (mapv (fn [t]
+                  (vary-meta
+                   (let [circle (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
+                                           (dr/random 3.0 6.0))]
+                     (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
+                       :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
+                       :circle circle
+                       :square (g/scale-size (g/bounds circle) 0.9)))
+                   assoc :stroke-width (dr/random 1.0 2.0)))
+                (tm/norm-range 35)))))
 
 (defn letter [region character]
-  (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))]
+  (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))
+        path (mapv (fn [p] (g/unmap-point box (gv/vec2 p))) (letter-path character))
+        strip (gl/linestrip2 path)]
     {:box box
      :character character
-     :path (letter-path character)}))
+     :path path
+     :strip strip}))
+
+(comment
+  (render (letter (rect/rect 0 0 10 10) "a")))
 
 (defn word-paths [bounds word]
   (let [cgroup (g/center (first (g/subdivide (g/scale-size bounds 0.99) {:rows 3 :cols 1}))
@@ -66,11 +67,11 @@
     (mapv letter letter-boxes (seq word))))
 
 (defn shapes [bounds debug word]
-  (for [{:keys [box character path]} (word-paths bounds word)]
+  (for [{:keys [box character] :as letter} (word-paths bounds word)]
     (csvg/group {}
       (concat
        (when debug [box])
-       [(render box path)]
+       [(render letter)]
        (when debug
          [(svg/text (rect/bottom-left box) character)
           (svg/text (rect/top-right box) character)])))))
