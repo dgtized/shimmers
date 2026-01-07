@@ -117,8 +117,13 @@
       [ctrl/checkbox ui-state "Lights" [:lights]
        {:on-change (fn [_] (swap! ui-state assoc :changed true))}]
       ;; [ctrl/checkbox ui-state "Debug" [:debug]]
-      [:p "When the light is on, show a message, otherwise the particles scatter randomly."]
-      [:p "Little bit of a repeat of assets from the Day 5 sketch."]]]))
+      [:p "When the light is on, show a message, otherwise the particles scatter
+      randomly."]
+      [:p "Little bit of a repeat of assets from the Day 5 sketch."]
+      [:p "Uses "
+       [:a {:href "https://en.wikipedia.org/wiki/Verlet_integration#Velocity_Verlet"} "Velocity Verlet"] " integration to calculate position of each particle. See also "
+       [:a {:href "https://www.gorillasun.de/blog/euler-and-verlet-integration-for-particle-physics/"} "Euler and Verlet Integration."]]
+      ]]))
 
 (sketch/definition genuary-lights
   {:created-at "2026-01-06"
