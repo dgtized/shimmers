@@ -16,7 +16,8 @@
    [shimmers.common.quil-draws-geom :as qdg]
    [thi.ng.math.core :as tm]))
 
-(defonce ui-state (ctrl/state {:debug false :lights true}))
+(defonce ui-state (ctrl/state {:debug false :lights false}))
+(defonce light-switch (atom {:changed false}))
 
 (defn gen-particle [bounds]
   (let [pos (rp/sample-point-inside bounds)]
@@ -34,7 +35,7 @@
   (if (tm/delta= pos target)
     particle
     (let [acc (tm/normalize (tm/- target pos))
-          velocity (tm/limit (tm/- pos last-pos) 2.0)]
+          velocity (tm/limit (tm/- pos last-pos) (/ (g/dist pos target) 10.0))]
       (-> particle
           (update :pos tm/+ (tm/+ velocity (tm/* acc 0.1 dt)))
           (assoc :last-pos pos)))))
@@ -50,9 +51,22 @@
      :paths (genuary/word-paths bounds "Genuary")
      :particles (repeatedly 200 (partial gen-particle bounds))}))
 
+(defn new-target [particles pos-f]
+  (mapv (fn [particle] (assoc particle :target (pos-f)))
+        particles))
+
+(defn change-targets [state lights]
+  (update state :particles new-target
+          (if lights
+            (fn [] (rp/sample-point-inside (:strip (dr/rand-nth (:paths state)))))
+            (fn [] (rp/sample-point-inside (cq/screen-rect))))))
+
 (defn update-state [state]
   (let [target (if (:lights @ui-state) 1.0 0.0)]
-    (-> state
+    (-> (if (:changed @light-switch)
+          (do (swap! light-switch assoc :changed false)
+              (change-targets state (:lights @ui-state)))
+          state)
         (update :light (fn [curr] (+ (* 0.85 curr) (* 0.15 target))))
         (update :particles update-particles 0.001)
         (update :t + 0.01))))
@@ -75,7 +89,8 @@
      :middleware [m/fun-mode framerate/mode])
    [:div.centered.readable-width
     [:p "Genuary 2026 - Day 6 - Lights On/Off"]
-    [ctrl/checkbox ui-state "Lights" [:lights]]
+    [ctrl/checkbox ui-state "Lights" [:lights]
+     {:on-change (fn [_] (swap! light-switch assoc :changed true))}]
     [ctrl/checkbox ui-state "Debug" [:debug]]
     [:p "Little bit of a repeat of assets from the Day 5 sketch."]]])
 
