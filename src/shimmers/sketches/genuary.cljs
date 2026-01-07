@@ -35,9 +35,9 @@
     []))
 
 ;; TODO: add some inversion regions with white on black?
-(defn render [{:keys [path strip]}]
+(defn render [{:keys [path strip debug]}]
   (csvg/group {:stroke-width 1.5}
-    (concat (when (:debug @ui-state)
+    (concat (when debug
               [(csvg/path (csvg/segmented-path path)
                           {:stroke-width 1 :fill "none"})])
             (mapv (fn [t]
@@ -61,7 +61,7 @@
      :strip strip}))
 
 (comment
-  (render (letter (rect/rect 0 0 10 10) "a")))
+  (render (assoc (letter (rect/rect 0 0 10 10) "a") :debug true)))
 
 (defn word-paths [bounds word]
   (let [cgroup (g/center (first (g/subdivide (g/scale-size bounds 0.99) {:rows 3 :cols 1}))
@@ -74,7 +74,7 @@
     (csvg/group {}
       (concat
        (when debug [box])
-       [(render letter)]
+       [(render (assoc letter :debug debug))]
        (when debug
          [(svg/text (rect/bottom-left box) character)
           (svg/text (rect/top-right box) character)])))))
