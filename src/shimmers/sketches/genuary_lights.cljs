@@ -18,7 +18,6 @@
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:debug false :lights false}))
-(defonce light-switch (atom {:changed false}))
 
 (defn gen-particle [bounds]
   (let [new-target (fn [] (rp/sample-point-inside bounds))
@@ -78,16 +77,17 @@
   (last (take steps (iterate (fn [s] (update s :particles update-particles dt))
                              state))))
 
-(defn update-state [{:keys [t] :as state}]
-  (let [target (if (:lights @ui-state) 1.0 0.0)
-        dt (- (q/millis) t)]
-    (-> (if (:changed @light-switch)
-          (do (swap! light-switch assoc :changed false)
-              (change-targets state (:lights @ui-state)))
-          state)
-        (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
-        (run-sim 16 (/ dt 16.0))
-        (assoc :t (q/millis)))))
+(defn update-state [light-switch]
+  (fn [{:keys [t] :as state}]
+    (let [target (if (:lights @ui-state) 1.0 0.0)
+          dt (- (q/millis) t)]
+      (-> (if (:changed @light-switch)
+            (do (swap! light-switch assoc :changed false)
+                (change-targets state (:lights @ui-state)))
+            state)
+          (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
+          (run-sim 16 (/ dt 16.0))
+          (assoc :t (q/millis))))))
 
 (defn draw [{:keys [light particles]}]
   (q/ellipse-mode :radius)
@@ -101,19 +101,20 @@
                            pos))))
 
 (defn page []
-  [:div
-   (sketch/component
-     :size [800 600]
-     :setup setup
-     :update update-state
-     :draw draw
-     :middleware [m/fun-mode framerate/mode])
-   [:div.centered.readable-width
-    [:p "Genuary 2026 - Day 6 - Lights On/Off"]
-    [ctrl/checkbox ui-state "Lights" [:lights]
-     {:on-change (fn [_] (swap! light-switch assoc :changed true))}]
-    ;; [ctrl/checkbox ui-state "Debug" [:debug]]
-    [:p "Little bit of a repeat of assets from the Day 5 sketch."]]])
+  (let [light-switch (atom {:changed false})]
+    [:div
+     (sketch/component
+       :size [800 600]
+       :setup setup
+       :update (update-state light-switch)
+       :draw draw
+       :middleware [m/fun-mode framerate/mode])
+     [:div.centered.readable-width
+      [:p "Genuary 2026 - Day 6 - Lights On/Off"]
+      [ctrl/checkbox ui-state "Lights" [:lights]
+       {:on-change (fn [_] (swap! light-switch assoc :changed true))}]
+      ;; [ctrl/checkbox ui-state "Debug" [:debug]]
+      [:p "Little bit of a repeat of assets from the Day 5 sketch."]]]))
 
 (sketch/definition genuary-lights
   {:created-at "2026-01-06"
