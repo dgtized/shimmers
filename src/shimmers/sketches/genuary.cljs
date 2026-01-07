@@ -19,6 +19,8 @@
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
+(defonce ui-state (ctrl/state {:debug false}))
+
 (defn letter-path [letter]
   (case letter
     "G" [[0.85 0.1] [0.15 0.1] [0.15 0.9] [0.85 0.9] [0.85 0.55] [0.65 0.6]]
@@ -33,20 +35,21 @@
     []))
 
 ;; TODO: add some inversion regions with white on black?
-(defn render [{:keys [strip]}]
+(defn render [{:keys [path strip]}]
   (csvg/group {:stroke-width 1.5}
-    (into [#_(csvg/path (csvg/segmented-path translated)
-                        {:stroke-width 1 :fill "none"})]
-          (mapv (fn [t]
-                  (vary-meta
-                   (let [circle (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
-                                           (dr/random 3.0 6.0))]
-                     (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
-                       :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
-                       :circle circle
-                       :square (g/scale-size (g/bounds circle) 0.9)))
-                   assoc :stroke-width (dr/random 1.0 2.0)))
-                (tm/norm-range 35)))))
+    (concat (when (:debug @ui-state)
+              [(csvg/path (csvg/segmented-path path)
+                          {:stroke-width 1 :fill "none"})])
+            (mapv (fn [t]
+                    (vary-meta
+                     (let [circle (gc/circle (tm/+ (g/point-at strip t) (dr/randvec2 1.5))
+                                             (dr/random 3.0 6.0))]
+                       (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
+                         :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
+                         :circle circle
+                         :square (g/scale-size (g/bounds circle) 0.9)))
+                     assoc :stroke-width (dr/random 1.0 2.0)))
+                  (tm/norm-range 35)))))
 
 (defn letter [region character]
   (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))
@@ -75,8 +78,6 @@
        (when debug
          [(svg/text (rect/bottom-left box) character)
           (svg/text (rect/top-right box) character)])))))
-
-(defonce ui-state (ctrl/state {:debug false}))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
