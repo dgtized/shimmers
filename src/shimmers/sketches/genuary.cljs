@@ -53,7 +53,10 @@
 
 (defn letter [region character]
   (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))
-        path (mapv (fn [p] (g/unmap-point box (gv/vec2 p))) (letter-path character))
+        path (mapv (fn [p]
+                     (g/unmap-point box (tm/+ (gv/vec2 p)
+                                              (dr/randvec2 (dr/gaussian 0.0 0.04)))))
+                   (letter-path character))
         strip (gl/linestrip2 path)]
     {:box box
      :character character
