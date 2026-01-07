@@ -26,7 +26,7 @@
      :last-pos pos
      :lumen (dr/random 0.1 0.2)
      :shape (let [circle (gc/circle (gv/vec2)
-                                    (dr/random 3.0 6.0))]
+                                    (dr/random 3.25 6.5))]
               (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
                 :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
                 :circle circle
@@ -36,14 +36,14 @@
 
 (defn update-particle
   [{:keys [pos last-pos target new-target] :as particle} dt]
-  (if (tm/delta= pos target 0.5)
+  (if (< (g/dist pos target) 1.25)
     (if (:lights @ui-state)
-      particle
+      (assoc particle :last-pos pos)
       (assoc particle :target (new-target)))
     (let [acc (tm/normalize (tm/- target pos))
           velocity (tm/- pos last-pos)]
       (-> particle
-          (update :pos tm/+ (tm/* (tm/+ velocity (tm/* acc dt)) 0.875))
+          (update :pos tm/+ (tm/* (tm/+ velocity (tm/* acc dt)) 0.9))
           (assoc :last-pos pos)))))
 
 (defn update-particles [particles dt]
@@ -79,10 +79,11 @@
         (assoc :t (q/millis)))))
 
 (defn draw [{:keys [light particles]}]
+  (q/ellipse-mode :radius)
   (q/background light)
   (q/color (- 1.0 light))
   (doseq [{:keys [pos last-pos shape lumen]} particles]
-    (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8)))
+    (q/fill (tm/clamp (* lumen (- 1.0 light)) 0.2 0.8))
     (qdg/draw (g/translate (g/rotate shape (g/heading (tm/- pos last-pos)))
                            pos))))
 
