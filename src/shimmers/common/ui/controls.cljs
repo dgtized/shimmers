@@ -33,6 +33,11 @@
   (fn [_]
     (swap! settings update-in field-ref not)))
 
+(defn toggle-value-on-change [settings field-ref on-change]
+  (fn [_]
+    (swap! settings update-in field-ref not)
+    (on-change (get-in @settings field-ref))))
+
 (defn container [& body]
   (let [[params body] (if (map? (first body))
                         [(first body) (rest body)]
@@ -71,11 +76,15 @@
               :value (str (get states mode))
               :on-click toggle}]]))
 
-(defn checkbox [settings label field-ref]
-  [:div.label-set {:key label}
-   [:input {:type "checkbox" :checked (get-in @settings field-ref)
-            :on-change (toggle-value settings field-ref)}]
-   [:label label]])
+(defn checkbox
+  ([settings label field-ref]
+   (checkbox settings label field-ref {}))
+  ([settings label field-ref
+    {:keys [on-change] :or {on-change (fn [])}}]
+   [:div.label-set {:key label}
+    [:input {:type "checkbox" :checked (get-in @settings field-ref)
+             :on-change (toggle-value-on-change settings field-ref on-change)}]
+    [:label label]]))
 
 (defn checkbox-after [settings label field-ref]
   [:div.label-set {:key label}
