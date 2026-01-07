@@ -10,6 +10,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.svg.core :as svg]
    [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
@@ -54,11 +55,9 @@
 
 (defn letter [region character]
   (let [box (g/translate (g/scale-size region 0.9) (dr/randvec2 4))]
-    (csvg/group {}
-      [#_box
-       (render box (letter-path character))
-       #_(svg/text (rect/bottom-left box) character)
-       #_(svg/text (rect/top-right box) character)])))
+    {:box box
+     :character character
+     :path (letter-path character)}))
 
 (defn word-paths [bounds word]
   (let [cgroup (g/center (first (g/subdivide (g/scale-size bounds 0.99) {:rows 3 :cols 1}))
@@ -66,8 +65,17 @@
         letter-boxes (g/subdivide cgroup {:rows 1 :cols (count word)})]
     (mapv letter letter-boxes (seq word))))
 
-(defn shapes [bounds word]
-  (word-paths bounds word))
+(defn shapes [bounds debug word]
+  (for [{:keys [box character path]} (word-paths bounds word)]
+    (csvg/group {}
+      (concat
+       (when debug [box])
+       [(render box path)]
+       (when debug
+         [(svg/text (rect/bottom-left box) character)
+          (svg/text (rect/top-right box) character)])))))
+
+(defonce ui-state (ctrl/state {:debug false}))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
@@ -78,12 +86,14 @@
      :fill "none"
      :stroke-width 0.5}
     (shapes (csvg/screen width height)
+            (:debug @ui-state)
             "Genuary")))
 
 (defn explanation []
   [:div
    [:p "Genuary 2026 - Day5 - Genuary"]
-   [:p "Ie write Genuary while avoiding a font."]])
+   [:p "Ie write Genuary while avoiding a font."]
+   [ctrl/checkbox ui-state "Debug" [:debug]]])
 
 (sketch/definition genuary
   {:created-at "2026-01-05"
