@@ -60,12 +60,14 @@
        #_(svg/text (rect/bottom-left box) character)
        #_(svg/text (rect/top-right box) character)])))
 
-(defn shapes [word bounds]
+(defn word-paths [bounds word]
   (let [cgroup (g/center (first (g/subdivide (g/scale-size bounds 0.99) {:rows 3 :cols 1}))
                          (rv 0.5 0.5))
-        letter-boxes
-        (g/subdivide cgroup {:rows 1 :cols (count word)}) ]
+        letter-boxes (g/subdivide cgroup {:rows 1 :cols (count word)})]
     (mapv letter letter-boxes (seq word))))
+
+(defn shapes [bounds word]
+  (word-paths bounds word))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed
@@ -75,8 +77,8 @@
      :stroke "black"
      :fill "none"
      :stroke-width 0.5}
-    (shapes "Genuary"
-            (csvg/screen width height))))
+    (shapes (csvg/screen width height)
+            "Genuary")))
 
 (defn explanation []
   [:div
