@@ -117,6 +117,7 @@
       [ctrl/checkbox ui-state "Lights" [:lights]
        {:on-change (fn [_] (swap! ui-state assoc :changed true))}]
       ;; [ctrl/checkbox ui-state "Debug" [:debug]]
+      [:p "When the light is on, show a message, otherwise the particles scatter randomly."]
       [:p "Little bit of a repeat of assets from the Day 5 sketch."]]]))
 
 (sketch/definition genuary-lights
