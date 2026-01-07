@@ -21,6 +21,7 @@
    shimmers.sketches.bias-gain
    shimmers.sketches.blobical
    shimmers.sketches.blustery-day
+   shimmers.sketches.boolean-grid
    shimmers.sketches.bold-moves
    shimmers.sketches.box-o-rama
    shimmers.sketches.braid
