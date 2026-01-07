@@ -30,6 +30,7 @@
                 :circle circle
                 :square (g/scale-size (g/bounds circle) 0.9)))
      :target (new-target)
+     :stroke (dr/chance 0.75)
      :color false
      :new-target new-target}))
 
@@ -91,11 +92,14 @@
 (defn draw [{:keys [light particles]}]
   (q/ellipse-mode :radius)
   (q/background light)
-  (q/no-stroke)
-  (doseq [{:keys [pos vel shape color lumen]} particles]
-    (if color
-      (q/fill 0.0 1.0 0.5 1.0)
-      (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8))))
+  (doseq [{:keys [pos vel shape color stroke lumen]} particles
+          :let [sl (* lumen (tm/clamp (- 1.0 light) 0.2 0.8))]]
+    (q/no-stroke)
+    (q/no-fill)
+    (cond color
+          (q/fill 0.0 1.0 0.5 1.0)
+          stroke (q/stroke sl)
+          :else (q/fill sl))
     (qdg/draw (g/translate (g/rotate shape (g/heading vel))
                            pos))))
 
