@@ -1,19 +1,20 @@
 (ns shimmers.sketches.genuary-lights
   (:require
+   [clojure.math :as math]
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
-   [shimmers.common.framerate :as framerate]
-   [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketches.genuary :as genuary]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.common.quil :as cq]
-   [thi.ng.geom.core :as g]
    [shimmers.algorithm.random-points :as rp]
-   [thi.ng.geom.circle :as gc]
-   [thi.ng.geom.vector :as gv]
+   [shimmers.common.framerate :as framerate]
+   [shimmers.common.quil :as cq]
+   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.common.ui.controls :as ctrl]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.geometry.triangle :as triangle]
-   [shimmers.common.quil-draws-geom :as qdg]
+   [shimmers.sketch :as sketch :include-macros true]
+   [shimmers.sketches.genuary :as genuary]
+   [thi.ng.geom.circle :as gc]
+   [thi.ng.geom.core :as g]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defonce ui-state (ctrl/state {:debug false :lights false}))
@@ -23,7 +24,7 @@
   (let [new-target (fn [] (rp/sample-point-inside bounds))
         pos (new-target)]
     {:pos pos
-     :last-pos pos
+     :vel (gv/vec2)
      :lumen (dr/random 0.01 0.33)
      :shape (let [circle (gc/circle (gv/vec2)
                                     (dr/random 3.25 6.5))]
@@ -32,19 +33,25 @@
                 :circle circle
                 :square (g/scale-size (g/bounds circle) 0.9)))
      :target (new-target)
+     :color false
      :new-target new-target}))
 
 (defn update-particle
-  [{:keys [pos last-pos target new-target] :as particle} dt]
-  (if (< (g/dist pos target) 1.25)
-    (if (:lights @ui-state)
-      (assoc particle :last-pos pos)
-      (assoc particle :target (new-target)))
-    (let [acc (tm/normalize (tm/- target pos))
-          velocity (tm/- pos last-pos)]
-      (-> particle
-          (update :pos tm/+ (tm/* (tm/+ velocity (tm/* acc dt)) 0.9))
-          (assoc :last-pos pos)))))
+  [{:keys [pos vel target new-target] :as particle} dt]
+  (let [mag (min (tm/mag-squared (tm/- target pos)) 30000)]
+    (if (< mag 3.0)
+      (if (:lights @ui-state)
+        (assoc particle :vel (gv/vec2))
+        (assoc particle :target (new-target)))
+      (let [force (tm/limit (tm/* (tm/- target pos) (/ 1.0 mag))
+                            (* 0.05 (math/sqrt mag)))
+            pos' (tm/+ pos (tm/+ (tm/* vel dt) (tm/* force (* 0.5 dt dt))))
+            vel' (tm/* (tm/+ vel (tm/* force dt)) 0.95)]
+        (-> particle
+            (assoc :pos pos')
+            (assoc :vel vel')
+            (assoc :color (> (tm/mag-squared vel') mag))
+            (assoc :last-pos pos))))))
 
 (defn update-particles [particles dt]
   (mapv (fn [x] (update-particle x dt)) particles))
@@ -67,6 +74,10 @@
             (fn [] (rp/sample-point-inside (:strip (dr/rand-nth (:paths state)))))
             (fn [] (rp/sample-point-inside (cq/screen-rect))))))
 
+(defn run-sim [state steps dt]
+  (last (take steps (iterate (fn [s] (update s :particles update-particles dt))
+                             state))))
+
 (defn update-state [{:keys [t] :as state}]
   (let [target (if (:lights @ui-state) 1.0 0.0)
         dt (- (q/millis) t)]
@@ -74,17 +85,19 @@
           (do (swap! light-switch assoc :changed false)
               (change-targets state (:lights @ui-state)))
           state)
-        (update :light (fn [curr] (+ (* 0.9 curr) (* 0.1 target))))
-        (update :particles update-particles (/ dt 30))
+        (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
+        (run-sim 16 (/ dt 16.0))
         (assoc :t (q/millis)))))
 
 (defn draw [{:keys [light particles]}]
   (q/ellipse-mode :radius)
   (q/background light)
   (q/no-stroke)
-  (doseq [{:keys [pos last-pos shape lumen]} particles]
-    (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8)))
-    (qdg/draw (g/translate (g/rotate shape (g/heading (tm/- pos last-pos)))
+  (doseq [{:keys [pos vel shape color lumen]} particles]
+    (if color
+      (q/fill 0.0 1.0 0.5 1.0)
+      (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8))))
+    (qdg/draw (g/translate (g/rotate shape (g/heading vel))
                            pos))))
 
 (defn page []
