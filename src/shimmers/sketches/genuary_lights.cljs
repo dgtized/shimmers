@@ -24,7 +24,7 @@
         pos (new-target)]
     {:pos pos
      :last-pos pos
-     :lumen (dr/random 0.1 0.2)
+     :lumen (dr/random 0.01 0.33)
      :shape (let [circle (gc/circle (gv/vec2)
                                     (dr/random 3.25 6.5))]
               (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
@@ -81,9 +81,9 @@
 (defn draw [{:keys [light particles]}]
   (q/ellipse-mode :radius)
   (q/background light)
-  (q/color (- 1.0 light))
+  (q/no-stroke)
   (doseq [{:keys [pos last-pos shape lumen]} particles]
-    (q/fill (tm/clamp (* lumen (- 1.0 light)) 0.2 0.8))
+    (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8)))
     (qdg/draw (g/translate (g/rotate shape (g/heading (tm/- pos last-pos)))
                            pos))))
 
