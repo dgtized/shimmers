@@ -20,24 +20,30 @@
 (defonce light-switch (atom {:changed false}))
 
 (defn gen-particle [bounds]
-  (let [pos (rp/sample-point-inside bounds)]
+  (let [new-target (fn [] (rp/sample-point-inside bounds))
+        pos (new-target)]
     {:pos pos
      :last-pos pos
+     :lumen (dr/random 0.1 0.2)
      :shape (let [circle (gc/circle (gv/vec2)
                                     (dr/random 3.0 6.0))]
               (case (dr/weighted {:triangle 1.0 :circle 1.0 :square 1.0})
                 :triangle (triangle/inscribed-equilateral circle (dr/random-tau))
                 :circle circle
                 :square (g/scale-size (g/bounds circle) 0.9)))
-     :target (rp/sample-point-inside bounds)}))
+     :target (new-target)
+     :new-target new-target}))
 
-(defn update-particle [{:keys [pos last-pos target] :as particle} dt]
-  (if (tm/delta= pos target)
-    particle
+(defn update-particle
+  [{:keys [pos last-pos target new-target] :as particle} dt]
+  (if (tm/delta= pos target 0.5)
+    (if (:lights @ui-state)
+      particle
+      (assoc particle :target (new-target)))
     (let [acc (tm/normalize (tm/- target pos))
-          velocity (tm/limit (tm/- pos last-pos) (/ (g/dist pos target) 10.0))]
+          velocity (tm/- pos last-pos)]
       (-> particle
-          (update :pos tm/+ (tm/+ velocity (tm/* acc 0.1 dt)))
+          (update :pos tm/+ (tm/* (tm/+ velocity (tm/* acc dt)) 0.875))
           (assoc :last-pos pos)))))
 
 (defn update-particles [particles dt]
@@ -46,10 +52,10 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [bounds (cq/screen-rect)]
-    {:t 0.0
+    {:t (q/millis)
      :light 0.0
      :paths (genuary/word-paths bounds "Genuary")
-     :particles (repeatedly 200 (partial gen-particle bounds))}))
+     :particles (repeatedly 300 (partial gen-particle bounds))}))
 
 (defn new-target [particles pos-f]
   (mapv (fn [particle] (assoc particle :target (pos-f)))
@@ -61,21 +67,22 @@
             (fn [] (rp/sample-point-inside (:strip (dr/rand-nth (:paths state)))))
             (fn [] (rp/sample-point-inside (cq/screen-rect))))))
 
-(defn update-state [state]
-  (let [target (if (:lights @ui-state) 1.0 0.0)]
+(defn update-state [{:keys [t] :as state}]
+  (let [target (if (:lights @ui-state) 1.0 0.0)
+        dt (- (q/millis) t)]
     (-> (if (:changed @light-switch)
           (do (swap! light-switch assoc :changed false)
               (change-targets state (:lights @ui-state)))
           state)
-        (update :light (fn [curr] (+ (* 0.85 curr) (* 0.15 target))))
-        (update :particles update-particles 0.001)
-        (update :t + 0.01))))
+        (update :light (fn [curr] (+ (* 0.9 curr) (* 0.1 target))))
+        (update :particles update-particles (/ dt 30))
+        (assoc :t (q/millis)))))
 
 (defn draw [{:keys [light particles]}]
   (q/background light)
   (q/color (- 1.0 light))
-  (q/fill (* 0.1 (- 1.0 light)))
-  (doseq [{:keys [pos last-pos shape]} particles]
+  (doseq [{:keys [pos last-pos shape lumen]} particles]
+    (q/fill (* lumen (tm/clamp (- 1.0 light) 0.2 0.8)))
     (qdg/draw (g/translate (g/rotate shape (g/heading (tm/- pos last-pos)))
                            pos))))
 
