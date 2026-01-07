@@ -36,7 +36,7 @@
 (defn update-particle
   [{:keys [pos vel target new-target] :as particle} lights dt]
   (let [mag (min (tm/mag-squared (tm/- target pos)) 30000)]
-    (if (< mag 3.0)
+    (if (< mag 2.0)
       (if lights
         (assoc particle :vel (gv/vec2))
         (assoc particle :target (new-target)))
@@ -59,7 +59,7 @@
     {:t (q/millis)
      :light 0.0
      :paths (genuary/word-paths bounds "Genuary")
-     :particles (repeatedly 300 (partial gen-particle bounds))}))
+     :particles (repeatedly 350 (partial gen-particle bounds))}))
 
 (defn new-target [particles pos-f]
   (mapv (fn [particle] (assoc particle :target (pos-f)))
@@ -85,7 +85,7 @@
                 (change-targets state lights))
             state)
           (update :light (fn [curr] (+ (* 0.9 curr) (* 0.125 target))))
-          (run-sim lights 16 (/ dt 10.0))
+          (run-sim lights 16 (/ dt 12.0))
           (assoc :t (q/millis))))))
 
 (defn draw [{:keys [light particles]}]
