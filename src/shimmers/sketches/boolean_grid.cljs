@@ -20,7 +20,8 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [circles (mapv (fn [p] (let [r (/ (tm/clamp (dr/gaussian 1.0 0.4) 0.1 2.0) 14.0)]
-                               (gc/circle p (* 0.5 r (q/height)))))
+                               (vary-meta (gc/circle p (* 0.5 r (q/height)))
+                                          assoc :state (dr/chance 0.3))))
                       (rp/poisson-disc-sampling (cq/screen-rect 0.875) 150))]
     {:circles circles
      :tree (saq/add-to-circletree (saq/circletree (cq/screen-rect)) circles)}))
@@ -31,7 +32,6 @@
 (defn draw [{:keys [circles tree]}]
   (q/ellipse-mode :radius)
   (q/background 1.0)
-  (q/no-fill)
   (q/stroke 0.0 1.0)
   (doseq [circle circles]
     (qdg/draw circle))
@@ -47,6 +47,9 @@
                                 (g/get-point-data neighbor)))
                             neighbors)]
         (qdg/draw (gl/line2 (:p circle) (:p overlap))))
+      (if (:state (meta circle))
+        (q/fill 0.0 0.25)
+        (q/no-fill))
       (qdg/draw (g/scale-size circle 0.9)))))
 
 (defn page []
