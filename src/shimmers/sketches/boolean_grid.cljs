@@ -15,6 +15,7 @@
    [thi.ng.geom.core :as g]
    [thi.ng.geom.line :as gl]
    [thi.ng.geom.rect :as rect]
+   [thi.ng.geom.vector :as gv]
    [thi.ng.math.core :as tm]))
 
 (defn tree-annotate [{:keys [circles] :as state}]
@@ -45,17 +46,17 @@
 (defn force-push
   [{:keys [p r] :as circle} bounds neighborhood]
   (let [close (g/closest-point bounds p)
-        pressure (tm/normalize (tm/- p close) (/ (* 1.33 r) (g/dist p close)))
+        pressure (tm/normalize (tm/- p close) (/ (* 1.01 r) (g/dist p close)))
         forces (reduce (fn [f n]
                          (let [c (g/get-point-data n)]
                            (tm/+ f (tm/normalize (tm/- p (:p c))
-                                                 (/ (* 1.1 r) (g/dist p (:p c)))))))
-                       pressure neighborhood)]
-    (g/translate circle forces)))
+                                                 (/ (+ r (:r c)) (g/dist p (:p c)))))))
+                       (gv/vec2) neighborhood)]
+    (g/translate circle (tm/+ (tm/* forces (/ 1.0 (count neighborhood))) pressure))))
 
 (defn update-circle-state [circles tree]
   (for [c circles]
-    (let [neighborhood (rest (saq/k-nearest-neighbors tree 3 (:p c)))
+    (let [neighborhood (rest (saq/k-nearest-neighbors tree 5 (:p c)))
           mc (meta c)
           on (:state mc)
           energy (:energy mc)
@@ -71,7 +72,7 @@
                  assoc
                  :state next-on
                  :energy (tm/mix* energy (if next-on 1.0 0.0)
-                                  (dr/random 0.01 0.05))))))
+                                  (dr/random 0.025 0.075))))))
 
 (defn update-neighborhood [{:keys [tree] :as state}]
   (update state :circles update-circle-state tree))
@@ -90,7 +91,7 @@
   (doseq [{:keys [r] :as node} traversal
           :let [circle (:d node)]]
     (q/no-fill)
-    (let [neighbors (saq/k-nearest-neighbors tree 4 (:p circle))]
+    (let [neighbors (rest (saq/k-nearest-neighbors tree 5 (:p circle)))]
       (comment (qdg/draw (apply rect/rect r)))
       (doseq [overlap (keep (fn [neighbor]
                               (when (collide/overlaps? circle
@@ -98,8 +99,7 @@
                                 (g/get-point-data neighbor)))
                             neighbors)]
         (qdg/draw (gl/line2 (:p circle) (:p overlap))))
-      (when (:state (meta circle))
-        (q/fill 0.0 (* (:energy (meta circle)) 0.25)))
+      (q/fill 0.0 (* (:energy (meta circle)) 0.25))
       (qdg/draw (g/scale-size circle 0.9)))))
 
 (defn page []
@@ -111,7 +111,8 @@
      :draw draw
      :middleware [m/fun-mode framerate/mode])
    [:div.centered.readable-width
-    [:p "Genuary 2026 - Day 7 - Boolean Logic"]]])
+    [:p "Genuary 2026 - Day 7 - Boolean Logic"]
+    [:p "The circles are all force pushing eachother around, but only if they are 'on'. They flip their energy from on to off based on an " [:em "xor"] " operation with their closest 3 neighbors."]]])
 
 (sketch/definition boolean-grid
   {:created-at "2026-01-07"
