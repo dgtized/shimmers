@@ -27,7 +27,7 @@
 (defn setup []
   (q/color-mode :hsl 1.0)
   (let [circles (map-indexed (fn [i p]
-                               (let [r (/ (tm/clamp (dr/gaussian 1.0 0.4) 0.1 2.0) 14.0)
+                               (let [r (/ (tm/clamp (dr/gaussian 1.0 0.4) 0.1 2.0) 16.0)
                                      on (dr/chance 0.3)]
                                  (vary-meta (gc/circle p (* 0.5 r (q/height)))
                                             assoc
@@ -44,7 +44,7 @@
         :else false))
 
 (defn force-push
-  [{:keys [p r] :as circle} bounds neighborhood]
+  [{:keys [p r] :as circle} bounds neighborhood v]
   (let [close (g/closest-point bounds p)
         pressure (tm/normalize (tm/- p close) (/ (* 1.01 r) (g/dist p close)))
         forces (reduce (fn [f n]
@@ -52,7 +52,7 @@
                            (tm/+ f (tm/normalize (tm/- p (:p c))
                                                  (/ (+ r (:r c)) (g/dist p (:p c)))))))
                        (gv/vec2) neighborhood)]
-    (g/translate circle (tm/+ (tm/* forces (/ 1.0 (count neighborhood))) pressure))))
+    (g/translate circle (tm/* (tm/+ (tm/* forces (/ 1.0 (count neighborhood))) pressure) v))))
 
 (defn update-circle-state [circles tree]
   (for [c circles]
@@ -66,13 +66,11 @@
           next-on (if (< 0.02 energy 0.98)
                     on
                     (xor on (reduce xor neighbor-states)))]
-      (vary-meta (if on
-                   (force-push c (g/bounds tree) neighborhood)
-                   c)
+      (vary-meta (force-push c (g/bounds tree) neighborhood (if on (dr/gaussian 1.5 0.5) 0.5))
                  assoc
                  :state next-on
                  :energy (tm/mix* energy (if next-on 1.0 0.0)
-                                  (dr/random 0.025 0.075))))))
+                                  (dr/random 0.025 0.1))))))
 
 (defn update-neighborhood [{:keys [tree] :as state}]
   (update state :circles update-circle-state tree))
