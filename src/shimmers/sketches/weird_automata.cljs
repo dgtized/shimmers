@@ -3,12 +3,13 @@
    [quil.core :as q :include-macros true]
    [quil.middleware :as m]
    [shimmers.common.framerate :as framerate]
-   [shimmers.common.ui.controls :as ctrl]
-   [shimmers.sketch :as sketch :include-macros true]
-   [shimmers.math.deterministic-random :as dr]
    [shimmers.common.quil :as cq]
+   [shimmers.common.ui.controls :as ctrl]
+   [shimmers.math.deterministic-random :as dr]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.geom.core :as g]))
+   [thi.ng.math.core :as tm]))
 
 (defn center-box [{[w h] :size :as bounds}]
   (let [s (min w h)]
@@ -16,16 +17,13 @@
 
 (defn setup []
   (q/color-mode :hsl 1.0)
-  (q/frame-rate 6)
-  (let [n 48]
+  (q/frame-rate 8)
+  (let [n 64]
     {:n n
      :grid
      (into {} (for [x (range n)
                     y (range n)]
-                [[x y] (dr/chance 0.25)]))}))
-
-(defn xor [a b]
-  (bit-xor (if a 1 0) (if b 1 0)))
+                [[x y] (dr/random 0.1 0.9)]))}))
 
 (defn neighbors [grid cell]
   (for [r [-1 0 1]
@@ -35,10 +33,13 @@
     [[r c] v]))
 
 (defn step [grid]
-  (reduce-kv (fn [g cell _]
+  (reduce-kv (fn [g cell value]
                (let [neighborhood (neighbors grid cell)
-                     values (count (keep true? (mapv second neighborhood)))]
-                 (assoc g cell (< 0.2 (/ values 9.0) 0.85))))
+                     avg (/ (reduce + (mapv second neighborhood))
+                            (+ 1 (count neighborhood)))]
+                 (assoc g cell
+                        (tm/mix* value (if (< 0.2 avg 0.85) 1.0 0.0)
+                                 (+ 0.05 (* 0.65 (tm/smoothstep* 0.25 0.85 avg)))))))
              grid
              grid))
 
@@ -54,7 +55,7 @@
         h (int (/ (float height) n))
         off (/ (- 1.0 scale) 2.0)]
     (doseq [[[x y] on] grid]
-      (q/fill (if on 1.0 0.0))
+      (q/fill on)
       (q/rect (+ cx (* (+ off x) w)) (+ cy (* (+ off y) h)) (* scale w) (* scale h)))))
 
 (defn page []
@@ -67,8 +68,9 @@
      :middleware [m/fun-mode framerate/mode])
    [:div.centered.readable-width
     [:p "Genuary 2026 - Day 9 - Weird Cellular Automata"]
-    [:p "Uses a conway's life sorta rule but instead based on the threshold of " [:em "on"] " values surrounding the cell. It stays on if (< 0.2 (/ neighbors 9.0) 0.85)."]
-    ]])
+    [:p "Floating point automata, where each location turns on or off based on
+    the average value of the neighboring 9 cells adjusted based on how full that
+    region is."] ]])
 
 (sketch/definition weird-automata
   {:created-at "2026-01-09"
