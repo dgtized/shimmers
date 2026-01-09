@@ -310,6 +310,7 @@
    shimmers.sketches.wave-function-collapse
    shimmers.sketches.wavetracker
    shimmers.sketches.waystation
+   shimmers.sketches.weird-automata
    shimmers.sketches.wibble-wobble
    shimmers.sketches.window-glimpses
    shimmers.sketches.wood-grain
