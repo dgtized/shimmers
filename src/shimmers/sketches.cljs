@@ -206,6 +206,7 @@
    shimmers.sketches.pixel-rings
    shimmers.sketches.plaid-arrangements
    shimmers.sketches.point-to-point
+   shimmers.sketches.polar-accession
    shimmers.sketches.poisson-disc-sampling
    shimmers.sketches.polygon-recomposition
    shimmers.sketches.polygrowth
