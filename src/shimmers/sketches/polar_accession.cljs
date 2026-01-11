@@ -30,10 +30,10 @@
 (defn shapes []
   (let [center (rv 0.5 0.5)
         radius (* 0.475 height)]
-    (for [r (range 0.25 1.0 0.2)
-          [a b] (cs/pair-cycle (dr/gaussian-range 0.15 0.025))
-          :let [[a b] (if (< a b) [a b] [a (+ b 1.0)])
-                gap (* 0.1 (abs (- b a)))]]
+    (for [r (range 0.15 1.0 0.15)
+          [a b] (cs/pair-cycle (dr/gaussian-range 0.125 0.025))
+          :let [b (if (> a b) (+ 1.0 b) b)
+                gap (* 0.1 (- b a))]]
       (sweep-arc center (* r radius)
                  (* eq/TAU (+ a gap))
                  (* eq/TAU (- b gap))))))
