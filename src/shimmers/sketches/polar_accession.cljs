@@ -21,10 +21,8 @@
         (if (< t0 0.0)
           [(+ t0 eq/TAU) [(+ t1 eq/TAU)]]
           [t0 t1])
-        [t0 t1] (if (< t0 t1) [t0 t1] [t0 (+ t1 eq/TAU)])
         large-arc (if (<= (abs (- t1 t0)) (* 0.5 eq/TAU)) 0 1)
         sweep (if (> t0 t1) 0 1)]
-    (println [t0 t1 large-arc sweep])
     (svg/path [[:M (v/+polar c r t0)]
                [:A [r r] 0.0 large-arc sweep
                 (v/+polar c r t1)]])))
@@ -34,7 +32,8 @@
         radius (* 0.475 height)]
     (for [r (range 0.25 1.0 0.2)
           [a b] (cs/pair-cycle (dr/gaussian-range 0.15 0.025))
-          :let [gap (* 0.1 (abs (- b a)))]]
+          :let [[a b] (if (< a b) [a b] [a (+ b 1.0)])
+                gap (* 0.1 (abs (- b a)))]]
       (sweep-arc center (* r radius)
                  (* eq/TAU (+ a gap))
                  (* eq/TAU (- b gap))))))
