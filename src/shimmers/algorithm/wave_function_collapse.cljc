@@ -17,6 +17,7 @@
 ;; https://adam-james-v.github.io/oatmilk/index.html#/notebooks/wave-collapse.org.md
 ;; https://github.com/maacl/wfclj
 ;; https://github.com/mxgmn/WaveFunctionCollapse
+;; https://www.youtube.com/watch?v=AdCgi9E90jw -- Caves of Qud tile based implementation overview
 
 (defn str->matrix [s]
   (->> s
