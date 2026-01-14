@@ -1,11 +1,13 @@
 (ns shimmers.sketches.boxes-boxes-boxes
   (:require
    [shimmers.algorithm.line-clipping :as clip]
+   [shimmers.algorithm.polygon-detection :as poly-detect]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
    [shimmers.math.deterministic-random :as dr]
    [shimmers.math.equations :as eq]
+   [shimmers.math.geometry :as geometry]
    [shimmers.math.geometry.collisions :as collide]
    [shimmers.sketch :as sketch :include-macros true]
    [thi.ng.geom.core :as g]
@@ -69,7 +71,7 @@
 (defn add-hatching [box parent]
   (csvg/group {:stroke-weight 0.5}
     (for [line (clip/hatch-rectangle
-                box (* (dr/random 0.075 0.2)
+                box (* (dr/random 0.075 0.18)
                        (min (g/width box) (g/height box)))
                 (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
                    (* eq/TAU 0.25)))]
@@ -82,8 +84,10 @@
       (let [{:keys [parent]} (meta box)]
         (csvg/group {}
           (conj [(vary-meta box dissoc :parent)]
-                (when parent
-                  (add-hatching box parent))))))))
+                (if parent
+                  (add-hatching box parent)
+                  (for [i (range 3 (/ (geometry/min-axis box) 2.1) 3)]
+                    (poly-detect/inset-polygon (g/as-polygon box) i)))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
