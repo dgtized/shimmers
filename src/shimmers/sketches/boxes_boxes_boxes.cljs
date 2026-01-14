@@ -52,11 +52,12 @@
 
 (defn satisfying? [bounds boxes]
   (fn [box]
-    (when (and (collide/bounded? bounds box)
-               (not-any? (fn [x] (collide/overlaps? box x)) boxes)
-               (> (g/width box) (* 0.02 (g/width bounds)))
-               (> (g/height box) (* 0.02 (g/height bounds))))
-      box)))
+    (let [scale-box (g/scale-size box 1.02)]
+      (when (and (collide/bounded? bounds box)
+                 (not-any? (fn [x] (collide/overlaps? scale-box x)) boxes)
+                 (> (g/width box) (* 0.02 (g/width bounds)))
+                 (> (g/height box) (* 0.02 (g/height bounds))))
+        box))))
 
 (defn add-box [bounds boxes]
   (let [generate (fn [] (adjacent-box (dr/rand-nth boxes)))
