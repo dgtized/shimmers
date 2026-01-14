@@ -23,13 +23,19 @@
              :parent parent
              :direction direction))
 
+(defn size-factor []
+  (dr/rand-nth [0.33 0.5 0.66 0.75 0.8 0.9 1.0 1.1 1.2 1.33 1.5]))
+
+(defn offset-factor []
+  (dr/random -0.8 0.8))
+
 (defn adjacent-box [{:keys [p size] :as parent}]
   (let [[w h] size
         gap 4.0
-        wsize (* (dr/rand-nth [0.33 0.5 0.66 0.75 0.8 0.9 1.0 1.1 1.2 1.33 1.5]) w)
-        hsize (* (dr/rand-nth [0.33 0.5 0.66 0.75 0.8 0.9 1.0 1.1 1.2 1.33 1.5]) h)
-        woff (* (dr/random -0.8 0.8) wsize)
-        hoff (* (dr/random -0.8 0.8) hsize)
+        wsize (* (size-factor) w)
+        hsize (* (size-factor) h)
+        woff (* (offset-factor) wsize)
+        hoff (* (offset-factor) hsize)
         direction (dr/rand-nth [:north :south :east :west])]
     (annotate
      (case direction
