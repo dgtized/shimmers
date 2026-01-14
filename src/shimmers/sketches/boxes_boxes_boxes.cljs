@@ -1,29 +1,29 @@
 (ns shimmers.sketches.boxes-boxes-boxes
   (:require
+   [shimmers.algorithm.line-clipping :as clip]
    [shimmers.common.svg :as csvg :include-macros true]
    [shimmers.common.ui.controls :as ctrl]
    [shimmers.common.ui.svg :as usvg]
-   [shimmers.sketch :as sketch :include-macros true]
-   [thi.ng.geom.vector :as gv]
-   [thi.ng.geom.core :as g]
    [shimmers.math.deterministic-random :as dr]
+   [shimmers.math.equations :as eq]
+   [shimmers.math.geometry.collisions :as collide]
+   [shimmers.sketch :as sketch :include-macros true]
+   [thi.ng.geom.core :as g]
    [thi.ng.geom.rect :as rect]
-   [thi.ng.math.core :as tm]
-   [shimmers.math.geometry.collisions :as collide]))
+   [thi.ng.geom.vector :as gv]
+   [thi.ng.math.core :as tm]))
 
 (def width 800)
 (def height 600)
 (defn rv [x y]
   (gv/vec2 (* width x) (* height y)))
 
-(defn annotate [box direction]
-  (vary-meta box assoc :fill (case direction
-                               :north "red"
-                               :east "green"
-                               :south "blue"
-                               :west "yellow")))
+(defn annotate [box parent direction]
+  (vary-meta box assoc
+             :parent parent
+             :direction direction))
 
-(defn adjacent-box [{:keys [p size]}]
+(defn adjacent-box [{:keys [p size] :as parent}]
   (let [[w h] size
         gap 4.0
         wsize (* (dr/rand-nth [0.33 0.5 0.66 0.75 0.8 0.9 1.0 1.1 1.2 1.33 1.5]) w)
@@ -41,6 +41,7 @@
                          (tm/+ p (gv/vec2 (+ wsize woff) (+ (* h 2) gap))))
        :west (rect/rect (tm/+ p (gv/vec2 (- (+ w gap)) (+ hoff)))
                         (tm/+ p (gv/vec2 (- gap) (+ hoff hsize)))))
+     parent
      direction)))
 
 (defn satisfying? [bounds boxes]
@@ -60,7 +61,19 @@
 
 (defn shapes [bounds]
   (let [start (g/scale-size bounds (dr/random 0.06 0.12))]
-    (nth (iterate (partial add-box bounds) [start]) 16)))
+    (for [box (nth (iterate (partial add-box bounds) [start]) 32)]
+      (let [{:keys [parent]} (meta box)]
+        (csvg/group {}
+          (conj [(vary-meta box dissoc :parent)]
+                (when parent
+                  (println parent)
+                  (csvg/group {:stroke-weight 0.5}
+                    (for [line (clip/hatch-rectangle
+                                box (* (dr/random 0.05 0.25)
+                                       (min (g/width box) (g/height box)))
+                                (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
+                                   (* eq/TAU 0.25)))]
+                      (g/scale-size line (dr/random 0.66 1.0)))))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
