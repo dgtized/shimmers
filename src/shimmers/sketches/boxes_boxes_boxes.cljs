@@ -60,8 +60,9 @@
       boxes)))
 
 (defn shapes [bounds]
-  (let [start (g/scale-size bounds (dr/random 0.06 0.12))]
-    (for [box (nth (iterate (partial add-box bounds) [start]) 32)]
+  (let [start (g/scale-size bounds (dr/random 0.08 0.15))]
+    (for [box (nth (iterate (partial add-box bounds) [start])
+                   (dr/random-int 24 64))]
       (let [{:keys [parent]} (meta box)]
         (csvg/group {}
           (conj [(vary-meta box dissoc :parent)]
@@ -69,7 +70,7 @@
                   (println parent)
                   (csvg/group {:stroke-weight 0.5}
                     (for [line (clip/hatch-rectangle
-                                box (* (dr/random 0.05 0.25)
+                                box (* (dr/random 0.075 0.25)
                                        (min (g/width box) (g/height box)))
                                 (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
                                    (* eq/TAU 0.25)))]
