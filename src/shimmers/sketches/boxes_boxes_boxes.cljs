@@ -66,6 +66,15 @@
       (conj boxes box)
       boxes)))
 
+(defn add-hatching [box parent]
+  (csvg/group {:stroke-weight 0.5}
+    (for [line (clip/hatch-rectangle
+                box (* (dr/random 0.075 0.2)
+                       (min (g/width box) (g/height box)))
+                (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
+                   (* eq/TAU 0.25)))]
+      (g/scale-size line (dr/random 0.66 1.0)))))
+
 (defn shapes [bounds]
   (let [start (g/scale-size bounds (dr/random 0.08 0.15))]
     (for [box (nth (iterate (partial add-box bounds) [start])
@@ -74,14 +83,7 @@
         (csvg/group {}
           (conj [(vary-meta box dissoc :parent)]
                 (when parent
-                  (println parent)
-                  (csvg/group {:stroke-weight 0.5}
-                    (for [line (clip/hatch-rectangle
-                                box (* (dr/random 0.075 0.25)
-                                       (min (g/width box) (g/height box)))
-                                (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
-                                   (* eq/TAU 0.25)))]
-                      (g/scale-size line (dr/random 0.66 1.0)))))))))))
+                  (add-hatching box parent))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
