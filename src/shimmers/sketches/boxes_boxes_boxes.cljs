@@ -69,13 +69,28 @@
       boxes)))
 
 (defn add-hatching [box parent]
-  (csvg/group {:stroke-width 0.25}
-    (for [line (clip/hatch-rectangle
-                box (* (dr/random 0.075 0.18)
-                       (min (g/width box) (g/height box)))
-                (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
-                   (* eq/TAU 0.25)))]
-      (g/scale-size line (dr/random 0.66 1.0)))))
+  (let [rotation (dr/weighted {0.0 3.0
+                               0.01 1.0
+                               0.02 1.0})]
+    (csvg/group {:stroke-width 0.25}
+      (for [line (clip/hatch-rectangle
+                  box (* (dr/random 0.075 0.18)
+                         (min (g/width box) (g/height box)))
+                  (+ (g/heading (tm/- (g/centroid parent) (g/centroid box)))
+                     (* eq/TAU 0.25)))]
+        (-> line
+            (g/scale-size (dr/random 0.66 1.0))
+            (geometry/rotate-around-centroid (dr/gaussian 0.0 rotation)))))))
+
+(defn nesting [box]
+  (let [spacings (dr/weighted [[(dr/gaussian-range 0.15 0.02) 1.0]
+                               [(tm/norm-range (dr/random-int 5 10)) 1.0]])
+        rotation (dr/weighted {0.0 3.0
+                               0.01 1.0
+                               0.02 1.0})]
+    (for [offset spacings]
+      (let [i (* offset (/ (geometry/min-axis box) 2.1))]
+        (poly-detect/inset-polygon (geometry/rotate-around-centroid (g/as-polygon box) (dr/gaussian 0.0 rotation)) i)))))
 
 (defn shapes [bounds]
   (let [start (g/scale-size bounds (dr/random 0.08 0.15))]
@@ -86,15 +101,14 @@
           (conj [(vary-meta box dissoc :parent)]
                 (if (and parent (dr/chance 0.9))
                   (add-hatching box parent)
-                  (for [i (range 3 (/ (geometry/min-axis box) 2.1) 3)]
-                    (poly-detect/inset-polygon (g/as-polygon box) i)))))))))
+                  (nesting box))))))))
 
 (defn scene [{:keys [scene-id]}]
   (csvg/svg-timed {:id scene-id
                    :width width
                    :height height
                    :stroke "black"
-                   :fill "white"
+                   :fill "none"
                    :stroke-width 0.75}
     (shapes (csvg/screen width height))))
 
