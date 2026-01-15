@@ -69,7 +69,7 @@
       boxes)))
 
 (defn add-hatching [box parent]
-  (csvg/group {:stroke-weight 0.5}
+  (csvg/group {:stroke-width 0.25}
     (for [line (clip/hatch-rectangle
                 box (* (dr/random 0.075 0.18)
                        (min (g/width box) (g/height box)))
@@ -95,7 +95,7 @@
                    :height height
                    :stroke "black"
                    :fill "white"
-                   :stroke-width 0.5}
+                   :stroke-width 0.75}
     (shapes (csvg/screen width height))))
 
 (sketch/definition boxes-boxes-boxes
