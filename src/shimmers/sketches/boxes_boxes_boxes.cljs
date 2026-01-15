@@ -84,7 +84,7 @@
       (let [{:keys [parent]} (meta box)]
         (csvg/group {}
           (conj [(vary-meta box dissoc :parent)]
-                (if parent
+                (if (and parent (dr/chance 0.9))
                   (add-hatching box parent)
                   (for [i (range 3 (/ (geometry/min-axis box) 2.1) 3)]
                     (poly-detect/inset-polygon (g/as-polygon box) i)))))))))
