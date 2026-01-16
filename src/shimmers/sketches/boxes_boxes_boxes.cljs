@@ -31,9 +31,8 @@
 (defn offset-factor []
   (dr/random -0.8 0.8))
 
-(defn adjacent-box [{:keys [p size] :as parent}]
+(defn adjacent-box [{:keys [p size] :as parent} gap]
   (let [[w h] size
-        gap 4.0
         wsize (* (size-factor) w)
         hsize (* (size-factor) h)
         woff (* (offset-factor) wsize)
@@ -51,9 +50,9 @@
         (g/translate p)
         (annotate parent direction))))
 
-(defn satisfying? [bounds boxes]
+(defn satisfying? [bounds gap boxes]
   (fn [box]
-    (let [scale-box (g/scale-size box 1.02)]
+    (let [scale-box (poly-detect/inset-polygon (g/as-polygon box) (+ 1 (- gap)))]
       (when (and (collide/bounded? bounds box)
                  (not-any? (fn [x] (collide/overlaps? scale-box x)) boxes)
                  (> (g/width box) (* 0.02 (g/width bounds)))
@@ -61,8 +60,9 @@
         box))))
 
 (defn add-box [bounds boxes]
-  (let [generate (fn [] (adjacent-box (dr/rand-nth boxes)))
-        box (some (satisfying? bounds boxes) (repeatedly 8 generate))]
+  (let [gap 4.0
+        generate (fn [] (adjacent-box (dr/rand-nth boxes) gap))
+        box (some (satisfying? bounds gap boxes) (repeatedly 8 generate))]
     (if (some? box)
       (conj boxes box)
       boxes)))
