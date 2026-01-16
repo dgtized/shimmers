@@ -62,7 +62,7 @@
 
 (defn add-box [bounds boxes]
   (let [generate (fn [] (adjacent-box (dr/rand-nth boxes)))
-        box (some (satisfying? bounds boxes) (repeatedly 32 generate))]
+        box (some (satisfying? bounds boxes) (repeatedly 8 generate))]
     (if (some? box)
       (conj boxes box)
       boxes)))
